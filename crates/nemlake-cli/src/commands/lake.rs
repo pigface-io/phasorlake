@@ -95,6 +95,12 @@ async fn run_plan(
                 "{}",
                 render::table(&["table", "period", "size", "url"], &rows)
             );
+            let known: u64 = report.listed.iter().filter_map(|f| f.size).sum();
+            println!(
+                "{} file(s), {:.2} GB to download where the listing gives a size",
+                report.listed.len(),
+                known as f64 / 1e9
+            );
         }
         print!("{}", render::summary_text(&report.summary, &report.report));
     }
@@ -106,6 +112,7 @@ pub async fn fetch(cli: &Cli, ctx: &Context, market: &FetchMarket) -> Result<i32
     match market {
         FetchMarket::Nem {
             table,
+            exclude,
             from,
             to,
             dry_run,
@@ -117,25 +124,25 @@ pub async fn fetch(cli: &Cli, ctx: &Context, market: &FetchMarket) -> Result<i32
                 MmsdmArchive::new(&ctx.config.sources.nem_base_url)
                     .map_err(|e| anyhow::anyhow!("{}", e.diagnostic().render()))?,
             );
-            let tables: Vec<String> = if table.is_empty() {
-                ctx.registry
-                    .tables()
-                    .filter(|(_, t)| !t.archive_files.is_empty())
-                    .flat_map(|(_, t)| t.archive_files.clone())
-                    .collect()
-            } else {
-                table.iter().map(|t| t.to_ascii_uppercase()).collect()
-            };
+            // No table named: every file the archive has for the months,
+            // whether the registry declares its table or not.
+            let tables: Vec<String> = table.iter().map(|t| t.to_ascii_uppercase()).collect();
+            let exclude: Vec<String> = exclude.iter().map(|t| t.to_ascii_uppercase()).collect();
             let to = to.unwrap_or(*from);
             if to < *from {
                 anyhow::bail!("--to {to} is before --from {from}.");
             }
             let request = format!(
-                "fetch nem {} {from}..{to}",
+                "fetch nem {}{} {from}..{to}",
                 if table.is_empty() {
                     "*".to_owned()
                 } else {
                     table.join(",")
+                },
+                if exclude.is_empty() {
+                    String::new()
+                } else {
+                    format!(" except {}", exclude.join(","))
                 }
             );
             let plan = Plan {
@@ -143,6 +150,7 @@ pub async fn fetch(cli: &Cli, ctx: &Context, market: &FetchMarket) -> Result<i32
                 input: Input::Remote {
                     source,
                     query: Query {
+                        exclude,
                         tables,
                         from: *from,
                         to,

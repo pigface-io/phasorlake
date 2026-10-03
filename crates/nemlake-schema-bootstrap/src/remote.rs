@@ -285,6 +285,7 @@ pub async fn fetch_heads(
     opts: HeadOptions,
 ) -> Result<Vec<HeadOutcome>, HeadError> {
     let query = Query {
+        exclude: Vec::new(),
         tables: Vec::new(),
         from: month,
         to: month,

@@ -160,6 +160,7 @@ pub async fn wem(ctx: &Context, cmd: &WemCmd) -> Result<i32> {
             let files = w
                 .list(
                     &Query {
+                        exclude: Vec::new(),
                         tables: vec![],
                         from,
                         to,

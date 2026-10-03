@@ -32,7 +32,7 @@ the file is already in the lake.
 
 | command | what it does |
 |---|---|
-| `nemlake fetch nem --table T[,T] --from YYYY-MM [--to YYYY-MM]` | list the archive, download, ingest |
+| `nemlake fetch nem --from YYYY-MM [--to YYYY-MM] [--table T,T] [--exclude T,T] [--dry-run]` | list the archive, download, ingest. Without `--table`: every table the archive has for those months. `--dry-run` lists the files and totals their size |
 | `nemlake ingest <zip\|csv\|dir>...` | ingest local files, no network |
 | `nemlake reingest [--dry-run]` | read again, from disk, every source whose lake files are behind the current rules; no network |
 | `nemlake inspect <file> [--infer]` | every block in a file, its version and how the registry resolves it; draft a schema for unknown ones |

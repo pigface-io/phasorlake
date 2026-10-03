@@ -949,6 +949,7 @@ async fn remote_source_downloads_then_serves_from_cache_and_reports_fetch_failur
         remote("PUBLIC_DVD_REGION_202401010000.zip", "REGION"),
     ]));
     let query = Query {
+        exclude: Vec::new(),
         tables: vec![],
         from: ym,
         to: ym,

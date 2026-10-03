@@ -198,6 +198,7 @@ mod tests {
             },
         );
         let q = Query {
+            exclude: Vec::new(),
             tables: vec![],
             from: YearMonth::new(2023, 8).unwrap(),
             to: YearMonth::new(2023, 9).unwrap(),

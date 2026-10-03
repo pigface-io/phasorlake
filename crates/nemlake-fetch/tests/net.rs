@@ -32,6 +32,7 @@ async fn lists_and_downloads_the_smallest_zip() {
     let files = source
         .list(
             &Query {
+                exclude: Vec::new(),
                 tables: vec![],
                 from: ym,
                 to: ym,

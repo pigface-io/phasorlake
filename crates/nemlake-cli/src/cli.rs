@@ -156,9 +156,13 @@ pub enum Command {
 pub enum FetchMarket {
     /// The National Electricity Market monthly archive.
     Nem {
-        /// Tables, comma separated (default: every table in the registry).
+        /// Tables, comma separated (default: every table the archive has
+        /// for the months asked, declared in the registry or not).
         #[arg(long, value_delimiter = ',')]
         table: Vec<String>,
+        /// Tables to leave out, comma separated.
+        #[arg(long, value_delimiter = ',')]
+        exclude: Vec<String>,
         /// First month, YYYY-MM.
         #[arg(long)]
         from: YearMonth,

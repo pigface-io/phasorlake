@@ -12,8 +12,11 @@ use crate::remotezip::ZipMember;
 /// What the user asked for.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Query {
-    /// Table names (data-model names), upper-case. Empty means every table.
+    /// Table names (data-model names), upper-case. Empty means every table
+    /// the source has for the period, whether a schema declares it or not.
     pub tables: Vec<String>,
+    /// Table names to leave out, upper-case.
+    pub exclude: Vec<String>,
     /// First month.
     pub from: YearMonth,
     /// Last month, inclusive.

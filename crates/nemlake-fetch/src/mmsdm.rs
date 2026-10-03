@@ -326,48 +326,64 @@ impl Source for MmsdmArchive {
 
     async fn list(&self, query: &Query, fetcher: &Fetcher) -> Result<Vec<RemoteFile>, FetchError> {
         let mut out = Vec::new();
-        let wanted: Vec<String> = query
-            .tables
-            .iter()
-            .map(|t| t.to_ascii_uppercase())
-            .collect();
+        let upper = |names: &[String]| -> Vec<String> {
+            names.iter().map(|t| t.to_ascii_uppercase()).collect()
+        };
+        let wanted = upper(&query.tables);
+        let excluded = upper(&query.exclude);
+        // Tables come and go over the years, so a table asked for by name
+        // may be missing from some months of a range. It is an error only
+        // when no month of the range has it: then the name is likely wrong.
+        let mut found = vec![false; wanted.len()];
+        let mut last_listing: Option<(String, Vec<String>)> = None;
         for ym in query.from.range_inclusive(query.to) {
             let (listed_url, files) = self.month_files(ym, fetcher).await?;
-            let mut seen_tables: Vec<&str> = Vec::new();
             for (table, remote) in &files {
-                if !wanted.is_empty() && !wanted.iter().any(|w| matches_table(table, w)) {
-                    continue;
+                if !wanted.is_empty() {
+                    let mut any = false;
+                    for (i, w) in wanted.iter().enumerate() {
+                        if matches_table(table, w) {
+                            found[i] = true;
+                            any = true;
+                        }
+                    }
+                    if !any {
+                        continue;
+                    }
                 }
-                if !seen_tables.contains(&table.as_str()) {
-                    seen_tables.push(table);
+                // Leaving a table out wins over asking for it.
+                if excluded.iter().any(|x| matches_table(table, x)) {
+                    continue;
                 }
                 out.push(remote.clone());
             }
-            for w in &wanted {
-                if !seen_tables.iter().any(|t| matches_table(t, w)) {
-                    // Nearest by longest shared prefix, then by name.
-                    let mut nearest: Vec<&String> = files.iter().map(|(t, _)| t).collect();
-                    nearest.sort();
-                    nearest.dedup();
-                    nearest.sort_by_key(|n| {
-                        std::cmp::Reverse(
-                            n.bytes().zip(w.bytes()).take_while(|(a, b)| a == b).count(),
-                        )
-                    });
-                    let nearest: Vec<&str> = nearest.iter().take(5).map(|s| s.as_str()).collect();
-                    return Err(FetchError::NoMatch {
-                        url: listed_url.clone(),
-                        entries: files.len(),
-                        table: w.clone(),
-                        period: ym.to_string(),
-                        nearest: if nearest.is_empty() {
-                            "none".into()
-                        } else {
-                            nearest.join(", ")
-                        },
-                    });
-                }
-            }
+            last_listing = Some((listed_url, files.into_iter().map(|(t, _)| t).collect()));
+        }
+        if let (Some(i), Some((url, mut names))) = (found.iter().position(|f| !f), last_listing) {
+            let w = &wanted[i];
+            let entries = names.len();
+            // Nearest by longest shared prefix, then by name.
+            names.sort();
+            names.dedup();
+            names.sort_by_key(|n| {
+                std::cmp::Reverse(n.bytes().zip(w.bytes()).take_while(|(a, b)| a == b).count())
+            });
+            let nearest: Vec<&str> = names.iter().take(5).map(String::as_str).collect();
+            return Err(FetchError::NoMatch {
+                url,
+                entries,
+                table: w.clone(),
+                period: if query.from == query.to {
+                    query.from.to_string()
+                } else {
+                    format!("{}..{}", query.from, query.to)
+                },
+                nearest: if nearest.is_empty() {
+                    "none".into()
+                } else {
+                    nearest.join(", ")
+                },
+            });
         }
         out.sort_by(|a, b| {
             (a.period, &a.table, a.url.as_str()).cmp(&(b.period, &b.table, b.url.as_str()))
@@ -471,6 +487,7 @@ mod tests {
         let f = Fetcher::new(Arc::new(t.clone()), DiskCache::new(dir.path()), cfg);
         assert_eq!(a.id(), "nem-mmsdm");
         let q = Query {
+            exclude: Vec::new(),
             tables: vec!["dispatch_unit_scada".into(), "BIDPEROFFER".into()],
             from: ym,
             to: ym,
@@ -498,6 +515,7 @@ mod tests {
         let all = a
             .list(
                 &Query {
+                    exclude: Vec::new(),
                     tables: vec![],
                     from: ym,
                     to: ym,
@@ -515,6 +533,7 @@ mod tests {
         let e = a
             .list(
                 &Query {
+                    exclude: Vec::new(),
                     tables: vec!["DISPATCH_UNIT_SCADAX".into()],
                     from: ym,
                     to: ym,
@@ -536,12 +555,65 @@ mod tests {
             }
             other => panic!("{other}"),
         }
+        // A table asked for beside others that exist is still an error
+        // when no month of the range has it.
+        let e = a
+            .list(
+                &Query {
+                    exclude: vec![],
+                    tables: vec!["DISPATCH_UNIT_SCADA".into(), "NOPE".into()],
+                    from: ym,
+                    to: ym,
+                },
+                &f,
+            )
+            .await
+            .unwrap_err();
+        assert!(
+            matches!(e, FetchError::NoMatch { ref table, ref period, .. } if table == "NOPE" && period == "2024-01"),
+            "{e}"
+        );
+        // Tables left out, with every table and with named ones.
+        let without = a
+            .list(
+                &Query {
+                    exclude: vec!["bidperoffer".into(), "PREDISPATCHPRICE".into()],
+                    tables: vec![],
+                    from: ym,
+                    to: ym,
+                },
+                &f,
+            )
+            .await
+            .unwrap();
+        assert!(without.len() < 148 - 2);
+        assert!(
+            without
+                .iter()
+                .all(|r| !matches!(r.table.as_deref(), Some("BIDPEROFFER" | "PREDISPATCHPRICE")))
+        );
+        let named = a
+            .list(
+                &Query {
+                    exclude: vec!["BIDPEROFFER".into()],
+                    tables: vec!["DISPATCH_UNIT_SCADA".into(), "BIDPEROFFER".into()],
+                    from: ym,
+                    to: ym,
+                },
+                &f,
+            )
+            .await
+            .unwrap();
+        // Asked for and left out at once: left out, and not a wrong name.
+        assert_eq!(named.len(), 1);
+        assert_eq!(named[0].table.as_deref(), Some("DISPATCH_UNIT_SCADA"));
         // A month with no directory is looked up in its year's listing, and
         // a year that lists nothing for it is a missing month.
         let ym2 = YearMonth::new(2024, 2).unwrap();
         let e = a
             .list(
                 &Query {
+                    exclude: Vec::new(),
                     tables: vec![],
                     from: ym2,
                     to: ym2,
@@ -560,6 +632,7 @@ mod tests {
         assert!(matches!(
             a.list(
                 &Query {
+                    exclude: Vec::new(),
                     tables: vec![],
                     from: ym3,
                     to: ym3
@@ -600,6 +673,7 @@ mod tests {
         let all = a
             .list(
                 &Query {
+                    exclude: Vec::new(),
                     tables: vec![],
                     from: ym,
                     to: ym,
@@ -612,6 +686,7 @@ mod tests {
         let bids = a
             .list(
                 &Query {
+                    exclude: Vec::new(),
                     tables: vec!["BIDOFFERPERIOD".into()],
                     from: ym,
                     to: ym,
@@ -624,6 +699,7 @@ mod tests {
         let price = a
             .list(
                 &Query {
+                    exclude: Vec::new(),
                     tables: vec!["dispatchprice".into()],
                     from: ym,
                     to: ym,
@@ -756,6 +832,7 @@ mod tests {
         let all = a
             .list(
                 &Query {
+                    exclude: Vec::new(),
                     tables: vec![],
                     from: ym,
                     to: ym,
@@ -791,6 +868,7 @@ mod tests {
         let one = a
             .list(
                 &Query {
+                    exclude: Vec::new(),
                     tables: vec!["region".into()],
                     from: ym,
                     to: ym,
@@ -872,6 +950,7 @@ mod tests {
         let e = a
             .list(
                 &Query {
+                    exclude: Vec::new(),
                     tables: vec!["REGIONX".into()],
                     from: ym,
                     to: ym,
@@ -896,6 +975,7 @@ mod tests {
         let q = |y, m| {
             let ym = YearMonth::new(y, m).unwrap();
             Query {
+                exclude: Vec::new(),
                 tables: vec![],
                 from: ym,
                 to: ym,
@@ -965,6 +1045,7 @@ mod tests {
         let listed = a
             .list(
                 &Query {
+                    exclude: Vec::new(),
                     tables: vec!["REGION".into()],
                     from: ym,
                     to: ym,
