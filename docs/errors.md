@@ -79,6 +79,7 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 | `parse.integer` | `crates/nemlake-mms/src/error.rs` |
 | `parse.null_not_allowed` | `crates/nemlake-mms/src/error.rs` |
 | `parse.timestamp` | `crates/nemlake-mms/src/error.rs` |
+| `parse.timestamp_clamped` | `crates/nemlake-mms/src/arrow_sink.rs` |
 | `parse.utf8` | `crates/nemlake-mms/src/error.rs` |
 
 ## schema

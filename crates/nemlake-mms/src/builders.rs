@@ -3,7 +3,7 @@
 use arrow_array::ArrayRef;
 use arrow_array::builder::{
     ArrayBuilder, BooleanBuilder, Date32Builder, Decimal128Builder, Float64Builder, Int64Builder,
-    StringBuilder, TimestampMicrosecondBuilder,
+    StringBuilder, TimestampNanosecondBuilder,
 };
 use arrow_schema::DataType;
 use nemlake_core::{nemtime, num};
@@ -20,8 +20,11 @@ pub enum Parsed {
     Null,
     /// A float.
     F64(f64),
-    /// An integer or timestamp micros or days.
+    /// An integer, timestamp nanoseconds or days.
     I64(i64),
+    /// A timestamp beyond what nanoseconds hold, clamped to the nearest end
+    /// of the range.
+    Clamped(i64),
     /// An unscaled decimal.
     I128(i128),
     /// Text: the field index to fetch from the row again.
@@ -81,8 +84,14 @@ pub fn parse_field(
                 value: text(),
                 source,
             }),
-        Cast::TimestampMicros { offset_secs } => nemtime::parse_micros(bytes, offset_secs)
-            .map(Parsed::I64)
+        Cast::TimestampNanos { offset_secs } => nemtime::parse_nanos(bytes, offset_secs)
+            .map(|(nanos, clamped)| {
+                if clamped {
+                    Parsed::Clamped(nanos)
+                } else {
+                    Parsed::I64(nanos)
+                }
+            })
             .map_err(|source| RowError::Timestamp {
                 column: column.to_owned(),
                 value: text(),
@@ -117,8 +126,8 @@ pub enum ColumnBuilder {
     I64(Int64Builder),
     /// `Decimal128`.
     Dec(Decimal128Builder),
-    /// Timestamp micros with a zone.
-    Ts(TimestampMicrosecondBuilder),
+    /// Timestamp nanoseconds with a zone.
+    Ts(TimestampNanosecondBuilder),
     /// Days.
     Date(Date32Builder),
     /// Booleans.
@@ -137,7 +146,7 @@ impl ColumnBuilder {
                     .with_data_type(DataType::Decimal128(*p, *s)),
             ),
             DataType::Timestamp(_, tz) => Self::Ts(
-                TimestampMicrosecondBuilder::with_capacity(capacity).with_timezone_opt(tz.clone()),
+                TimestampNanosecondBuilder::with_capacity(capacity).with_timezone_opt(tz.clone()),
             ),
             DataType::Date32 => Self::Date(Date32Builder::with_capacity(capacity)),
             DataType::Boolean => Self::Bool(BooleanBuilder::with_capacity(capacity)),
@@ -173,7 +182,7 @@ impl ColumnBuilder {
             (Self::F64(b), Parsed::F64(v)) => b.append_value(v),
             (Self::I64(b), Parsed::I64(v)) => b.append_value(v),
             (Self::Dec(b), Parsed::I128(v)) => b.append_value(v),
-            (Self::Ts(b), Parsed::I64(v)) => b.append_value(v),
+            (Self::Ts(b), Parsed::I64(v) | Parsed::Clamped(v)) => b.append_value(v),
             (Self::Date(b), Parsed::I64(v)) => b.append_value(v as i32),
             (Self::Bool(b), Parsed::Bool(v)) => b.append_value(v),
             (b, v) => unreachable!("parsed {v:?} does not match builder {b:?}"),
@@ -220,7 +229,7 @@ mod tests {
 
     #[test]
     fn parses_every_cast() {
-        let ts = Cast::TimestampMicros {
+        let ts = Cast::TimestampNanos {
             offset_secs: 36_000,
         };
         assert!(matches!(
@@ -230,6 +239,15 @@ mod tests {
         assert!(matches!(
             parse_field(ts, true, 0, "T", b"nope"),
             Err(RowError::Timestamp { .. })
+        ));
+        // A far-future "no end" date is kept, clamped and marked as such.
+        assert_eq!(
+            parse_field(ts, true, 0, "T", b"9999/12/31 00:00:00"),
+            Ok(Parsed::Clamped(i64::MAX))
+        );
+        assert!(matches!(
+            parse_field(ts, true, 0, "T", b"2026/07/28 09:29:54.000000001"),
+            Ok(Parsed::I64(n)) if n % 1_000_000_000 == 1
         ));
         assert_eq!(parse_field(ts, true, 0, "T", b""), Ok(Parsed::Null));
         assert!(matches!(
@@ -308,7 +326,7 @@ mod tests {
 
     #[test]
     fn builders_round_trip() {
-        let tz = DataType::Timestamp(arrow_schema::TimeUnit::Microsecond, Some("+10:00".into()));
+        let tz = DataType::Timestamp(arrow_schema::TimeUnit::Nanosecond, Some("+10:00".into()));
         let types = [
             DataType::Utf8,
             DataType::Float64,

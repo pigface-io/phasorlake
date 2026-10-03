@@ -96,9 +96,9 @@ pub struct WrittenFile {
     pub rows: u64,
     /// Bytes on disk.
     pub bytes: u64,
-    /// Minimum of the time column, UTC micros.
+    /// Minimum of the time column, UTC nanoseconds.
     pub min_time: Option<i64>,
-    /// Maximum of the time column, UTC micros.
+    /// Maximum of the time column, UTC nanoseconds.
     pub max_time: Option<i64>,
     /// Whether rows arrived in non-decreasing time order.
     #[serde(default)]

@@ -3,9 +3,11 @@
 //!
 //! AEMO writes every timestamp in market time: the NEM runs on Australian
 //! Eastern Standard Time all year (UTC+10, no daylight saving) and the WEM on
-//! Australian Western Standard Time (UTC+8). The lake stores instants as
-//! microseconds since the Unix epoch in UTC, with the market offset recorded
-//! in the Arrow type, so a value is `local_seconds - offset`.
+//! Australian Western Standard Time (UTC+8). The lake stores every instant as
+//! nanoseconds since the Unix epoch in UTC, with the market offset recorded
+//! in the Arrow type. One unit everywhere means no value has to be asked
+//! which unit it is in; the price is a range that ends in 2262, so the
+//! far-future dates AEMO uses for "no end" are clamped and reported.
 //!
 //! This module is on the hot path: no allocation, no `chrono`, no `jiff`.
 
@@ -14,8 +16,8 @@ pub const NEM_OFFSET_SECS: i32 = 10 * 3600;
 /// Seconds east of UTC for the Wholesale Electricity Market (AWST, fixed).
 pub const WEM_OFFSET_SECS: i32 = 8 * 3600;
 
-/// Microseconds in one day.
-pub const MICROS_PER_DAY: i64 = 86_400 * 1_000_000;
+/// Nanoseconds in one second.
+pub const NANOS_PER_SECOND: i64 = 1_000_000_000;
 
 /// Why a byte string is not an MMS timestamp.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -34,8 +36,7 @@ pub enum TimestampError {
     Minute(u8),
     /// Second outside 0..=59.
     Second(u8),
-    /// A fractional second that is not 1 to 9 digits, or that microseconds
-    /// cannot hold exactly.
+    /// A fractional second that is not one to nine digits.
     Fraction,
 }
 
@@ -55,10 +56,7 @@ impl std::fmt::Display for TimestampError {
             Self::Hour(h) => write!(f, "has hour {h}, which is not between 0 and 23"),
             Self::Minute(m) => write!(f, "has minute {m}, which is not between 0 and 59"),
             Self::Second(s) => write!(f, "has second {s}, which is not between 0 and 59"),
-            Self::Fraction => write!(
-                f,
-                "has a fractional second that is not 1 to 9 digits, or is finer than a microsecond"
-            ),
+            Self::Fraction => write!(f, "has a fractional second that is not one to nine digits"),
         }
     }
 }
@@ -181,49 +179,68 @@ pub fn parse_local_seconds(s: &[u8]) -> Result<i64, TimestampError> {
 }
 
 /// Parses an MMS timestamp in a market with the given UTC offset into
-/// microseconds since the Unix epoch, UTC.
+/// whole seconds since the Unix epoch, UTC, and the nanoseconds within
+/// that second.
 ///
-/// Newer tables publish some timestamps with a fractional second
-/// (`2026/07/28 09:29:54.000`). Up to nine digits are read; the lake holds
-/// microseconds, so anything finer must be zeros or the value is refused
-/// rather than rounded.
+/// This is the full reading of the text: a fractional second of one to
+/// nine digits is padded with zeros to nanoseconds, so nothing published
+/// is lost here. The two parts are kept apart because a single `i64` of
+/// nanoseconds ends in April 2262 and AEMO's data carries dates such as
+/// `9999/12/31 00:00:00` as "no end".
 #[inline]
-pub fn parse_micros(s: &[u8], offset_secs: i32) -> Result<i64, TimestampError> {
+pub fn parse_seconds_nanos(s: &[u8], offset_secs: i32) -> Result<(i64, u32), TimestampError> {
     // The plain 19-byte form first: it is nearly every value.
     if s.len() > 19 && s[19] == b'.' {
         let local = parse_local_seconds(&s[..19])?;
-        let fraction = fraction_micros(&s[20..])?;
-        return Ok((local - i64::from(offset_secs)) * 1_000_000 + fraction);
+        let nanos = fraction_nanos(&s[20..])?;
+        return Ok((local - i64::from(offset_secs), nanos));
     }
-    let local = parse_local_seconds(s)?;
-    Ok((local - i64::from(offset_secs)) * 1_000_000)
+    Ok((parse_local_seconds(s)? - i64::from(offset_secs), 0))
 }
 
-/// The digits after the decimal point of a second, as microseconds.
-fn fraction_micros(digits: &[u8]) -> Result<i64, TimestampError> {
+/// Parses an MMS timestamp in a market with the given UTC offset into
+/// nanoseconds since the Unix epoch, UTC: the one unit of every timestamp
+/// in the lake. Every digit of a fractional second is kept.
+///
+/// An `i64` of nanoseconds spans 1677-09-21 to 2262-04-11. AEMO writes
+/// "no end" as `9999/12/31` or `2999/12/31`; such a value is clamped to the
+/// nearest end of the range and the flag returned is `true`, so the caller
+/// can report it. Clamping keeps `end > now` true, which a null would not.
+#[inline]
+pub fn parse_nanos(s: &[u8], offset_secs: i32) -> Result<(i64, bool), TimestampError> {
+    let (secs, nanos) = parse_seconds_nanos(s, offset_secs)?;
+    match secs
+        .checked_mul(NANOS_PER_SECOND)
+        .and_then(|n| n.checked_add(i64::from(nanos)))
+    {
+        Some(n) => Ok((n, false)),
+        None if secs < 0 => Ok((i64::MIN, true)),
+        None => Ok((i64::MAX, true)),
+    }
+}
+
+/// The digits after the decimal point of a second, padded with zeros to
+/// nanoseconds.
+fn fraction_nanos(digits: &[u8]) -> Result<u32, TimestampError> {
     if digits.is_empty() || digits.len() > 9 {
         return Err(TimestampError::Fraction);
     }
-    let mut micros: i64 = 0;
-    for i in 0..6 {
+    let mut nanos: u32 = 0;
+    for i in 0..9 {
         let d = match digits.get(i) {
             Some(&b) => digit(b).ok_or(TimestampError::Fraction)?,
             None => 0,
         };
-        micros = micros * 10 + i64::from(d);
+        nanos = nanos * 10 + d;
     }
-    // Finer than a microsecond is only exact when it is nothing.
-    if digits.iter().skip(6).any(|&b| b != b'0') {
-        return Err(TimestampError::Fraction);
-    }
-    Ok(micros)
+    Ok(nanos)
 }
 
 /// Whether `s` is an MMS timestamp or date, with or without a fractional
 /// second: what a sampler asks of a value.
 #[must_use]
 pub fn is_timestamp(s: &[u8]) -> bool {
-    parse_micros(s, 0).is_ok()
+    parse_seconds_nanos(s, 0).is_ok()
 }
 
 /// Parses `yyyy/mm/dd` (or the date part of a timestamp) as days since the
@@ -234,26 +251,32 @@ pub fn parse_days(s: &[u8]) -> Result<i32, TimestampError> {
 }
 
 /// The civil `(year, month)` in the market's local time of a UTC instant in
-/// microseconds, for partitioning.
-pub fn local_year_month(micros_utc: i64, offset_secs: i32) -> (i32, u32) {
-    let local = micros_utc + i64::from(offset_secs) * 1_000_000;
-    let days = local.div_euclid(MICROS_PER_DAY);
-    let (y, m, _) = civil_from_days(days);
+/// nanoseconds, for partitioning.
+pub fn local_year_month(nanos_utc: i64, offset_secs: i32) -> (i32, u32) {
+    // Seconds first: adding the offset in nanoseconds could overflow at the
+    // ends of the range, where clamped values sit.
+    let local_secs = nanos_utc.div_euclid(NANOS_PER_SECOND) + i64::from(offset_secs);
+    let (y, m, _) = civil_from_days(local_secs.div_euclid(86_400));
     (y, m)
 }
 
-/// Formats a UTC instant in microseconds as the MMS string in market time.
-pub fn format_local(micros_utc: i64, offset_secs: i32) -> String {
-    let local = micros_utc + i64::from(offset_secs) * 1_000_000;
-    let days = local.div_euclid(MICROS_PER_DAY);
-    let rem = local.rem_euclid(MICROS_PER_DAY) / 1_000_000;
-    let (y, m, d) = civil_from_days(days);
+/// Formats a UTC instant in whole seconds as the MMS string in market time.
+pub fn format_local_seconds(secs_utc: i64, offset_secs: i32) -> String {
+    let local = secs_utc + i64::from(offset_secs);
+    let rem = local.rem_euclid(86_400);
+    let (y, m, d) = civil_from_days(local.div_euclid(86_400));
     format!(
         "{y:04}/{m:02}/{d:02} {:02}:{:02}:{:02}",
         rem / 3600,
         (rem / 60) % 60,
         rem % 60
     )
+}
+
+/// Formats a UTC instant in nanoseconds as the MMS string in market time,
+/// to the second.
+pub fn format_local(nanos_utc: i64, offset_secs: i32) -> String {
+    format_local_seconds(nanos_utc.div_euclid(NANOS_PER_SECOND), offset_secs)
 }
 
 #[cfg(test)]
@@ -272,64 +295,112 @@ mod tests {
     #[test]
     fn parses_mms_timestamp_in_nem_time() {
         // 2024/01/01 00:05:00 AEST = 2023/12/31 14:05:00 UTC
-        let micros = parse_micros(b"2024/01/01 00:05:00", NEM_OFFSET_SECS).unwrap();
+        let (nanos, clamped) = parse_nanos(b"2024/01/01 00:05:00", NEM_OFFSET_SECS).unwrap();
+        assert!(!clamped);
         let utc_secs = days_from_civil(2023, 12, 31) * 86_400 + 14 * 3600 + 5 * 60;
-        assert_eq!(micros, utc_secs * 1_000_000);
-        assert_eq!(format_local(micros, NEM_OFFSET_SECS), "2024/01/01 00:05:00");
-        assert_eq!(local_year_month(micros, NEM_OFFSET_SECS), (2024, 1));
+        assert_eq!(nanos, utc_secs * NANOS_PER_SECOND);
+        assert_eq!(format_local(nanos, NEM_OFFSET_SECS), "2024/01/01 00:05:00");
+        assert_eq!(
+            format_local_seconds(utc_secs, NEM_OFFSET_SECS),
+            "2024/01/01 00:05:00"
+        );
+        assert_eq!(local_year_month(nanos, NEM_OFFSET_SECS), (2024, 1));
         // The same instant is still December in UTC, which is why partitions
         // are computed in market time.
-        assert_eq!(local_year_month(micros, 0), (2023, 12));
+        assert_eq!(local_year_month(nanos, 0), (2023, 12));
     }
 
     #[test]
     fn parses_fractional_seconds() {
-        let whole = parse_micros(b"2026/07/28 09:29:54", NEM_OFFSET_SECS).unwrap();
+        let nanos = |s: &[u8]| parse_nanos(s, NEM_OFFSET_SECS).map(|(n, _)| n);
+        let whole = nanos(b"2026/07/28 09:29:54").unwrap();
+        assert_eq!(nanos(b"2026/07/28 09:29:54.000"), Ok(whole));
+        assert_eq!(nanos(b"2026/07/28 09:29:54.5"), Ok(whole + 500_000_000));
         assert_eq!(
-            parse_micros(b"2026/07/28 09:29:54.000", NEM_OFFSET_SECS),
-            Ok(whole)
+            nanos(b"2026/07/28 09:29:54.123456"),
+            Ok(whole + 123_456_000)
         );
+        // Every digit is kept, down to the nanosecond.
         assert_eq!(
-            parse_micros(b"2026/07/28 09:29:54.5", NEM_OFFSET_SECS),
-            Ok(whole + 500_000)
+            nanos(b"2026/07/28 09:29:54.123456789"),
+            Ok(whole + 123_456_789)
         );
-        assert_eq!(
-            parse_micros(b"2026/07/28 09:29:54.123456", NEM_OFFSET_SECS),
-            Ok(whole + 123_456)
-        );
-        assert_eq!(
-            parse_micros(b"2026/07/28 09:29:54.123456000", NEM_OFFSET_SECS),
-            Ok(whole + 123_456)
-        );
+        assert_eq!(nanos(b"2026/07/28 09:29:54.000000001"), Ok(whole + 1));
         // Before the epoch the fraction still moves time forward.
-        let early = parse_micros(b"1969/12/31 23:59:59", 0).unwrap();
-        assert_eq!(early, -1_000_000);
-        assert_eq!(parse_micros(b"1969/12/31 23:59:59.250", 0), Ok(-750_000));
-        // Finer than a microsecond, no digits, too many, or not digits: refused.
+        assert_eq!(
+            parse_nanos(b"1969/12/31 23:59:59", 0),
+            Ok((-NANOS_PER_SECOND, false))
+        );
+        assert_eq!(
+            parse_nanos(b"1969/12/31 23:59:59.25", 0),
+            Ok((-750_000_000, false))
+        );
+        // No digits, more than nine, or not digits: refused.
         for bad in [
-            &b"2026/07/28 09:29:54.1234567"[..],
-            b"2026/07/28 09:29:54.",
+            &b"2026/07/28 09:29:54."[..],
             b"2026/07/28 09:29:54.1234567890",
             b"2026/07/28 09:29:54.12x",
         ] {
             assert_eq!(
-                parse_micros(bad, 0),
+                parse_nanos(bad, 0),
                 Err(TimestampError::Fraction),
                 "{}",
                 String::from_utf8_lossy(bad)
             );
         }
-        assert!(TimestampError::Fraction.to_string().contains("microsecond"));
+        assert!(TimestampError::Fraction.to_string().contains("nine digits"));
+        // The parts: whole seconds, and nanoseconds padded with zeros.
+        assert_eq!(
+            parse_seconds_nanos(b"2026/07/28 09:29:54.5", 0).unwrap().1,
+            500_000_000
+        );
+        assert_eq!(parse_seconds_nanos(b"2026/07/28 09:29:54", 0).unwrap().1, 0);
         // Anything else after the seconds is still a length error.
         assert_eq!(
-            parse_micros(b"2026/07/28 09:29:54Z", 0),
+            parse_nanos(b"2026/07/28 09:29:54Z", 0),
             Err(TimestampError::Length(20))
         );
         assert!(is_timestamp(b"2026/07/28 09:29:54.000"));
         assert!(is_timestamp(b"2026/07/28 09:29:54"));
         assert!(is_timestamp(b"2026/07/28"));
+        assert!(is_timestamp(b"9999/12/31 00:00:00"));
         assert!(!is_timestamp(b"GOOD"));
         assert!(!is_timestamp(b""));
+    }
+
+    #[test]
+    fn clamps_what_nanoseconds_cannot_hold() {
+        // The ends of the range, to the second.
+        assert_eq!(
+            parse_nanos(b"2262/04/11 23:47:16", 0).map(|v| v.1),
+            Ok(false)
+        );
+        assert_eq!(parse_nanos(b"2262/04/11 23:47:17", 0), Ok((i64::MAX, true)));
+        assert_eq!(
+            parse_nanos(b"1677/09/21 00:12:44", 0).map(|v| v.1),
+            Ok(false)
+        );
+        assert_eq!(parse_nanos(b"1677/09/21 00:12:43", 0), Ok((i64::MIN, true)));
+        // The values AEMO uses for "no end".
+        for sentinel in [
+            &b"9999/12/31 00:00:00"[..],
+            b"9999/12/31 23:59:59.997",
+            b"2999/12/31 00:00:00",
+            b"9999/12/30 00:00:00",
+        ] {
+            assert_eq!(parse_nanos(sentinel, NEM_OFFSET_SECS), Ok((i64::MAX, true)));
+        }
+        assert_eq!(parse_nanos(b"0001/01/01 00:00:00", 0), Ok((i64::MIN, true)));
+        // The text itself is read in full before it is clamped.
+        let (far, nanos) = parse_seconds_nanos(b"9999/12/31 23:59:59.997", 0).unwrap();
+        assert_eq!(nanos, 997_000_000);
+        assert_eq!(format_local_seconds(far, 0), "9999/12/31 23:59:59");
+        // A clamped value still has a month: the last, or the first.
+        assert_eq!(local_year_month(i64::MAX, NEM_OFFSET_SECS), (2262, 4));
+        assert_eq!(local_year_month(i64::MIN, NEM_OFFSET_SECS), (1677, 9));
+        assert_eq!(format_local(i64::MAX, 0), "2262/04/11 23:47:16");
+        // What is not a timestamp is an error, not a clamp.
+        assert!(parse_nanos(b"9999/13/31 00:00:00", 0).is_err());
     }
 
     #[test]
@@ -406,9 +477,11 @@ mod tests {
 
     #[test]
     fn negative_days_floor_correctly() {
-        // 1969-12-31 23:00 UTC in micros, offset 0.
-        let micros = -3_600_000_000;
-        assert_eq!(local_year_month(micros, 0), (1969, 12));
-        assert_eq!(format_local(micros, 0), "1969/12/31 23:00:00");
+        // 1969-12-31 23:00 UTC in nanoseconds, offset 0.
+        let nanos = -3_600 * NANOS_PER_SECOND;
+        assert_eq!(local_year_month(nanos, 0), (1969, 12));
+        assert_eq!(format_local(nanos, 0), "1969/12/31 23:00:00");
+        // One nanosecond before the epoch is still the last second of 1969.
+        assert_eq!(format_local(-1, 0), "1969/12/31 23:59:59");
     }
 }

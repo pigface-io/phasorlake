@@ -8,7 +8,7 @@ fn bench(c: &mut Criterion) {
     let mut g = c.benchmark_group("parse_values");
     g.bench_function("timestamp", |b| {
         b.iter(|| {
-            nemlake_core::nemtime::parse_micros(black_box(b"2024/01/07 13:45:00"), 36_000).unwrap()
+            nemlake_core::nemtime::parse_nanos(black_box(b"2024/01/07 13:45:00"), 36_000).unwrap()
         });
     });
     g.bench_function("float_short", |b| {

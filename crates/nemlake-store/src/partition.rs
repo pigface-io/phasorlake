@@ -1,7 +1,7 @@
 //! Splitting a batch by the market-local month of its time column.
 
 use arrow_array::cast::AsArray;
-use arrow_array::types::{Int32Type, TimestampMicrosecondType, UInt32Type};
+use arrow_array::types::{Int32Type, TimestampNanosecondType, UInt32Type};
 use arrow_array::{Array, PrimitiveArray, RecordBatch};
 use arrow_schema::DataType;
 use nemlake_core::nemtime::local_year_month;
@@ -19,13 +19,13 @@ pub fn split_by_month(
     offset_secs: i32,
 ) -> Result<Vec<(Partition, RecordBatch)>, StoreError> {
     let col = batch.column(time_col);
-    let DataType::Timestamp(arrow_schema::TimeUnit::Microsecond, _) = col.data_type() else {
+    let DataType::Timestamp(arrow_schema::TimeUnit::Nanosecond, _) = col.data_type() else {
         return Err(StoreError::PartitionColumnNotTimestamp {
             column: batch.schema().field(time_col).name().clone(),
             observed: col.data_type().to_string(),
         });
     };
-    let ts: &PrimitiveArray<TimestampMicrosecondType> = col.as_primitive();
+    let ts: &PrimitiveArray<TimestampNanosecondType> = col.as_primitive();
     if batch.num_rows() == 0 {
         return Ok(vec![]);
     }
@@ -77,7 +77,7 @@ pub fn split_by_month(
 /// Minimum and maximum of a timestamp column, ignoring nulls.
 pub fn time_bounds(batch: &RecordBatch, time_col: usize) -> (Option<i64>, Option<i64>) {
     let col = batch.column(time_col);
-    let Some(ts) = col.as_primitive_opt::<TimestampMicrosecondType>() else {
+    let Some(ts) = col.as_primitive_opt::<TimestampNanosecondType>() else {
         return (None, None);
     };
     let mut min = None;
@@ -93,7 +93,7 @@ pub fn time_bounds(batch: &RecordBatch, time_col: usize) -> (Option<i64>, Option
 pub fn is_sorted(batch: &RecordBatch, time_col: usize) -> bool {
     let Some(ts) = batch
         .column(time_col)
-        .as_primitive_opt::<TimestampMicrosecondType>()
+        .as_primitive_opt::<TimestampNanosecondType>()
     else {
         return false;
     };
@@ -119,23 +119,23 @@ fn date_days(batch: &RecordBatch, col: usize) -> Option<&PrimitiveArray<Int32Typ
 mod tests {
     use std::sync::Arc;
 
-    use arrow_array::{Int64Array, TimestampMicrosecondArray};
+    use arrow_array::{Int64Array, TimestampNanosecondArray};
     use arrow_schema::{Field, Schema, TimeUnit};
-    use nemlake_core::nemtime::{NEM_OFFSET_SECS, parse_micros};
+    use nemlake_core::nemtime::{NEM_OFFSET_SECS, parse_nanos};
 
     use super::*;
 
     fn batch(times: &[Option<&str>]) -> RecordBatch {
         let vals: Vec<Option<i64>> = times
             .iter()
-            .map(|t| t.map(|s| parse_micros(s.as_bytes(), NEM_OFFSET_SECS).unwrap()))
+            .map(|t| t.map(|s| parse_nanos(s.as_bytes(), NEM_OFFSET_SECS).unwrap().0))
             .collect();
-        let ts = TimestampMicrosecondArray::from(vals).with_timezone("+10:00");
+        let ts = TimestampNanosecondArray::from(vals).with_timezone("+10:00");
         let ids = Int64Array::from((0..times.len() as i64).collect::<Vec<_>>());
         let schema = Arc::new(Schema::new(vec![
             Field::new(
                 "SETTLEMENTDATE",
-                DataType::Timestamp(TimeUnit::Microsecond, Some("+10:00".into())),
+                DataType::Timestamp(TimeUnit::Nanosecond, Some("+10:00".into())),
                 true,
             ),
             Field::new("ID", DataType::Int64, false),
@@ -208,11 +208,19 @@ mod tests {
         let (min, max) = time_bounds(&b, 0);
         assert_eq!(
             min,
-            Some(parse_micros(b"2024/01/01 00:00:00", NEM_OFFSET_SECS).unwrap())
+            Some(
+                parse_nanos(b"2024/01/01 00:00:00", NEM_OFFSET_SECS)
+                    .unwrap()
+                    .0
+            )
         );
         assert_eq!(
             max,
-            Some(parse_micros(b"2024/01/02 00:00:00", NEM_OFFSET_SECS).unwrap())
+            Some(
+                parse_nanos(b"2024/01/02 00:00:00", NEM_OFFSET_SECS)
+                    .unwrap()
+                    .0
+            )
         );
         assert!(!is_sorted(&b, 0));
         let sorted = batch(&[

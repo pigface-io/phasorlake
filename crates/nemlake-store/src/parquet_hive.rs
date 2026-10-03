@@ -328,10 +328,10 @@ pub fn sweep_tmp(lake_root: &Path) -> std::io::Result<usize> {
 mod tests {
     use std::sync::Arc;
 
-    use arrow_array::{Float64Array, StringArray, TimestampMicrosecondArray};
+    use arrow_array::{Float64Array, StringArray, TimestampNanosecondArray};
     use arrow_schema::{DataType, Field, Schema, TimeUnit};
     use nemlake_core::Fingerprint;
-    use nemlake_core::nemtime::{NEM_OFFSET_SECS, parse_micros};
+    use nemlake_core::nemtime::{NEM_OFFSET_SECS, parse_nanos};
     use parquet::arrow::arrow_reader::ParquetRecordBatchReaderBuilder;
 
     use super::*;
@@ -341,7 +341,7 @@ mod tests {
         Arc::new(Schema::new(vec![
             Field::new(
                 "SETTLEMENTDATE",
-                DataType::Timestamp(TimeUnit::Microsecond, Some("+10:00".into())),
+                DataType::Timestamp(TimeUnit::Nanosecond, Some("+10:00".into())),
                 false,
             ),
             Field::new("DUID", DataType::Utf8, false),
@@ -352,12 +352,12 @@ mod tests {
     fn batch(times: &[&str], ids: &[&str], vals: &[Option<f64>]) -> RecordBatch {
         let ts: Vec<i64> = times
             .iter()
-            .map(|t| parse_micros(t.as_bytes(), NEM_OFFSET_SECS).unwrap())
+            .map(|t| parse_nanos(t.as_bytes(), NEM_OFFSET_SECS).unwrap().0)
             .collect();
         RecordBatch::try_new(
             schema(),
             vec![
-                Arc::new(TimestampMicrosecondArray::from(ts).with_timezone("+10:00")),
+                Arc::new(TimestampNanosecondArray::from(ts).with_timezone("+10:00")),
                 Arc::new(StringArray::from(ids.to_vec())),
                 Arc::new(Float64Array::from(vals.to_vec())),
             ],
@@ -421,11 +421,19 @@ mod tests {
         );
         assert_eq!(
             f.min_time,
-            Some(parse_micros(b"2024/01/01 00:05:00", NEM_OFFSET_SECS).unwrap())
+            Some(
+                parse_nanos(b"2024/01/01 00:05:00", NEM_OFFSET_SECS)
+                    .unwrap()
+                    .0
+            )
         );
         assert_eq!(
             f.max_time,
-            Some(parse_micros(b"2024/01/01 00:15:00", NEM_OFFSET_SECS).unwrap())
+            Some(
+                parse_nanos(b"2024/01/01 00:15:00", NEM_OFFSET_SECS)
+                    .unwrap()
+                    .0
+            )
         );
         assert!(
             f.path.ends_with(
@@ -450,7 +458,7 @@ mod tests {
         assert_eq!(batches.iter().map(RecordBatch::num_rows).sum::<usize>(), 3);
         assert_eq!(
             batches[0].schema().field(0).data_type(),
-            &DataType::Timestamp(TimeUnit::Microsecond, Some("+10:00".into()))
+            &DataType::Timestamp(TimeUnit::Nanosecond, Some("+10:00".into()))
         );
         assert_eq!(batches[0].column(2).null_count(), 1);
     }
@@ -468,7 +476,11 @@ mod tests {
         assert!(!f.sorted, "the second batch went backwards");
         assert_eq!(
             f.min_time,
-            Some(parse_micros(b"2024/02/01 00:00:00", NEM_OFFSET_SECS).unwrap())
+            Some(
+                parse_nanos(b"2024/02/01 00:00:00", NEM_OFFSET_SECS)
+                    .unwrap()
+                    .0
+            )
         );
         // Schema mismatch.
         let id = w.open(&key(3), schema(), &meta()).unwrap();

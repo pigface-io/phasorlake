@@ -45,8 +45,8 @@ pub enum Cast {
         /// Scale.
         scale: u8,
     },
-    /// MMS timestamp in market time to UTC microseconds.
-    TimestampMicros {
+    /// MMS timestamp in market time to UTC nanoseconds.
+    TimestampNanos {
         /// Market offset east of UTC, seconds.
         offset_secs: i32,
     },
@@ -69,7 +69,7 @@ impl Cast {
             },
             ColumnType::Number { .. } => Self::Float64,
             ColumnType::Integer => Self::Int64,
-            ColumnType::Timestamp => Self::TimestampMicros {
+            ColumnType::Timestamp => Self::TimestampNanos {
                 offset_secs: market.utc_offset_secs,
             },
             ColumnType::Date => Self::Date32,
@@ -569,7 +569,7 @@ mod tests {
             p.casts[0],
             ColumnCast {
                 target: Some(0),
-                cast: Cast::TimestampMicros {
+                cast: Cast::TimestampNanos {
                     offset_secs: 36_000
                 },
                 nullable: false

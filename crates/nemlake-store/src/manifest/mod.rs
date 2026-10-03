@@ -188,7 +188,7 @@ fn now() -> String {
     let secs = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .map_or(0, |d| d.as_secs()) as i64;
-    nemlake_core::nemtime::format_local(secs * 1_000_000, 0)
+    nemlake_core::nemtime::format_local_seconds(secs, 0)
         .replace('/', "-")
         .replacen(' ', "T", 1)
         + "Z"

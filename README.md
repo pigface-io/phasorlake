@@ -68,9 +68,16 @@ as a `[[version.variant]]` of its version; a file of any declared shape
 resolves exactly, and only a shape nobody has seen before is reported as
 drift.
 
-Types: `DATE` → `Timestamp(us, +10:00)` (NEM time is fixed AEST), `NUMBER(p,s)`
-→ `Float64` (or `Decimal128(p, s)` with `--decimal`), `NUMBER(p,0)` → `Int64`,
-`VARCHAR2`/`CHAR` → `Utf8`.
+Types: `DATE` and `TIMESTAMP` → `Timestamp(ns, +10:00)` (NEM time is fixed
+AEST), `NUMBER(p,s)` → `Float64` (or `Decimal128(p, s)` with `--decimal`),
+`NUMBER(p,0)` → `Int64`, `VARCHAR2`/`CHAR` → `Utf8`.
+
+Every timestamp in the lake is nanoseconds since the epoch in UTC, one unit
+with no exceptions, and a fractional second is kept to the last digit. That
+unit spans 1677-09-21 to 2262-04-11. AEMO writes "no end" as `9999/12/31`
+or `2999/12/31`; such a value is stored as the last instant of the range,
+so `END_DATE > now()` still holds, and each column it happens in is
+reported as `parse.timestamp_clamped` with a count and an example.
 
 ## Your own tables
 

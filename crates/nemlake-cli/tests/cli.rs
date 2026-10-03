@@ -209,9 +209,19 @@ fn every_archive_table_ingests_strictly() {
             );
         }
         let errors = cli.ok(&["--json", "errors", "--limit", "1000"]);
+        // No row fails to parse. The one parse diagnostic allowed is the
+        // warning that a "no end" date beyond the nanosecond range was
+        // clamped, which the standing data of this month does contain.
+        for line in errors.lines().filter(|l| l.contains("\"parse.")) {
+            assert!(
+                line.contains("parse.timestamp_clamped")
+                    && line.contains("\"severity\":\"warning\""),
+                "{mode:?}: {line}"
+            );
+        }
         assert!(
-            !errors.contains("\"parse."),
-            "{mode:?}: no parse diagnostics: {errors}"
+            errors.contains("parse.timestamp_clamped") && errors.contains("2999/12/31 00:00:00"),
+            "{mode:?}: the clamp is reported: {errors}"
         );
         // The only schema diagnostic allowed is the note that a column without
         // a usable precision is a float in decimal mode.

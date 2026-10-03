@@ -28,7 +28,7 @@ pub fn data_type(ty: ColumnType, market: &MarketDef, opts: TypeOptions) -> DataT
         ColumnType::Number { .. } => DataType::Float64,
         ColumnType::Integer => DataType::Int64,
         ColumnType::Timestamp => {
-            DataType::Timestamp(TimeUnit::Microsecond, Some(Arc::from(market.arrow_tz())))
+            DataType::Timestamp(TimeUnit::Nanosecond, Some(Arc::from(market.arrow_tz())))
         }
         ColumnType::Date => DataType::Date32,
         ColumnType::Boolean => DataType::Boolean,
@@ -113,7 +113,7 @@ mod tests {
         );
         assert_eq!(
             data_type(ColumnType::Timestamp, &nem(), dec),
-            DataType::Timestamp(TimeUnit::Microsecond, Some(Arc::from("+10:00")))
+            DataType::Timestamp(TimeUnit::Nanosecond, Some(Arc::from("+10:00")))
         );
     }
 }

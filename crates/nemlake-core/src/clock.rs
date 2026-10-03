@@ -11,7 +11,7 @@ pub fn now_utc_rfc3339() -> String {
 
 /// A Unix timestamp as `YYYY-MM-DDTHH:MM:SSZ`.
 pub fn rfc3339_from_unix(secs: i64) -> String {
-    crate::nemtime::format_local(secs * 1_000_000, 0)
+    crate::nemtime::format_local_seconds(secs, 0)
         .replace('/', "-")
         .replacen(' ', "T", 1)
         + "Z"

@@ -299,7 +299,10 @@ impl MmsdmArchive {
 
     fn listing_ttl(ym: YearMonth) -> i64 {
         let now = nemlake_core::clock::unix_now();
-        let (y, m) = nemlake_core::nemtime::local_year_month(now * 1_000_000, 0);
+        let (y, m) = nemlake_core::nemtime::local_year_month(
+            now * nemlake_core::nemtime::NANOS_PER_SECOND,
+            0,
+        );
         let current = YearMonth::new(y, m as u8).expect("civil month is 1..=12");
         if current.ordinal() - ym.ordinal() >= 2 {
             OLD_LISTING_TTL

@@ -1,7 +1,7 @@
 //! The sink that turns blocks into typed `RecordBatch`es.
 
 use arrow_array::RecordBatch;
-use nemlake_core::{Diagnostic, Fingerprint, IRow};
+use nemlake_core::{Category, Diagnostic, Fingerprint, IRow};
 use nemlake_schema::{Registry, ResolveOptions, Resolved, SchemaVersion, TableId};
 
 use crate::builders::{ColumnBuilder, Parsed, parse_field};
@@ -45,6 +45,9 @@ struct Block {
     report_subtype: String,
     version_text: String,
     rows: usize,
+    /// Per lake column: how many timestamps were clamped since the last
+    /// flush, and the first such value as text.
+    clamped: Vec<(u64, Option<String>)>,
 }
 
 /// Builds typed batches from MMS rows through the registry.
@@ -125,6 +128,29 @@ impl<'r, B: BatchSink> ArrowSink<'r, B> {
             .map(ColumnBuilder::finish)
             .collect();
         let table = self.registry.table(block.resolved.table);
+        // Timestamps beyond the nanosecond range were stored at its nearest
+        // end; say so once per column, with how many and an example.
+        for (i, (count, sample)) in block.clamped.iter_mut().enumerate() {
+            if *count == 0 {
+                continue;
+            }
+            let column = &table.columns[i].name;
+            let mut d = Diagnostic::warning(
+                "parse.timestamp_clamped",
+                Category::Parse,
+                format!(
+                    "{count} value(s) of column {column} in table {} lie beyond what nanoseconds hold (1677-09-21 to 2262-04-11) and were stored as the nearest end of that range. AEMO writes such dates to mean no end or no start; the downloaded file keeps the original.",
+                    table.name
+                ),
+            )
+            .with_table(table.name.clone())
+            .with_version(block.resolved.version.0)
+            .with_column(column.clone());
+            d.observed = sample.take();
+            d.expected = Some("1677-09-21 to 2262-04-11".into());
+            self.out.warning(d);
+            *count = 0;
+        }
         let batch = RecordBatch::try_new(schema, arrays).map_err(|e| SinkError::Arrow {
             table: table.name.clone(),
             message: e.to_string(),
@@ -182,6 +208,7 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
             report_subtype: irow.report_subtype.to_owned(),
             version_text: irow.version.to_string(),
             rows: 0,
+            clamped: vec![(0, None); schema.fields().len()],
             resolved,
         });
         Ok(())
@@ -233,13 +260,21 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
             let Some(target) = c.target else { continue };
             let bytes = row.get(PREFIX_FIELDS + i).unwrap_or(b"");
             let column = &table.columns[target as usize].name;
-            self.parsed[target as usize] = parse_field(
+            let parsed = parse_field(
                 c.cast,
                 c.nullable,
                 (PREFIX_FIELDS + i) as u16,
                 column,
                 bytes,
             )?;
+            if matches!(parsed, Parsed::Clamped(_)) {
+                let seen = &mut block.clamped[target as usize];
+                seen.0 += 1;
+                if seen.1.is_none() {
+                    seen.1 = Some(String::from_utf8_lossy(bytes).into_owned());
+                }
+            }
+            self.parsed[target as usize] = parsed;
         }
         for &m in &block.resolved.projection.missing {
             let col = &table.columns[m as usize];
@@ -353,7 +388,7 @@ pub fn collect<R: std::io::Read>(
 mod tests {
     use std::sync::Arc;
 
-    use arrow_array::{Array, Float64Array, StringArray, TimestampMicrosecondArray};
+    use arrow_array::{Array, Float64Array, StringArray, TimestampNanosecondArray};
     use nemlake_schema::{Mode, TypeOptions};
 
     use super::*;
@@ -389,10 +424,12 @@ mod tests {
         let ts = b
             .column(0)
             .as_any()
-            .downcast_ref::<TimestampMicrosecondArray>()
+            .downcast_ref::<TimestampNanosecondArray>()
             .unwrap();
         assert_eq!(ts.timezone(), Some("+10:00"));
-        let expected = nemlake_core::nemtime::parse_micros(b"2024/01/01 00:05:00", 36_000).unwrap();
+        let expected = nemlake_core::nemtime::parse_nanos(b"2024/01/01 00:05:00", 36_000)
+            .unwrap()
+            .0;
         assert_eq!(ts.value(0), expected);
         let duid = b.column(1).as_any().downcast_ref::<StringArray>().unwrap();
         assert_eq!(duid.value(0), "BUTLERSG");
@@ -527,6 +564,52 @@ mod tests {
                     .sum::<usize>()
             );
         }
+    }
+
+    #[test]
+    fn timestamps_keep_their_fraction_and_far_dates_are_clamped_and_reported() {
+        let r = reg();
+        let csv = "I,DISPATCH,UNIT_SCADA,1,SETTLEMENTDATE,DUID,SCADAVALUE\n\
+                   D,DISPATCH,UNIT_SCADA,1,\"9999/12/31 00:00:00\",A,1\n\
+                   D,DISPATCH,UNIT_SCADA,1,\"2999/12/31 00:00:00\",B,2\n\
+                   D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00.250\",C,3\n";
+        let (out, stats) = collect(
+            &r,
+            csv.as_bytes(),
+            ResolveOptions { mode: Mode::Strict },
+            &ScanOptions::default(),
+        )
+        .unwrap();
+        assert_eq!(stats.rows, 3);
+        assert_eq!(stats.bad_rows, 0);
+        let ts = out.batches[0]
+            .batch
+            .column(0)
+            .as_any()
+            .downcast_ref::<TimestampNanosecondArray>()
+            .unwrap();
+        assert_eq!(ts.value(0), i64::MAX);
+        assert_eq!(ts.value(1), i64::MAX);
+        let whole = nemlake_core::nemtime::parse_nanos(b"2024/01/01 00:05:00", 36_000)
+            .unwrap()
+            .0;
+        assert_eq!(ts.value(2), whole + 250_000_000);
+        // One warning for the column, with how many and the first of them.
+        let clamped: Vec<_> = out
+            .warnings
+            .iter()
+            .filter(|w| w.code == "parse.timestamp_clamped")
+            .collect();
+        assert_eq!(clamped.len(), 1, "{:?}", out.warnings);
+        let w = clamped[0];
+        assert!(
+            w.message.starts_with("2 value(s) of column SETTLEMENTDATE"),
+            "{}",
+            w.message
+        );
+        assert_eq!(w.observed.as_deref(), Some("9999/12/31 00:00:00"));
+        assert_eq!(w.column.as_deref(), Some("SETTLEMENTDATE"));
+        assert_eq!(w.table.as_deref(), Some("DISPATCH_UNIT_SCADA"));
     }
 
     #[test]
