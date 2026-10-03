@@ -181,6 +181,22 @@ pub fn trim_head(csv: &[u8], max_rows: usize) -> Vec<u8> {
     out
 }
 
+/// A head without its `END OF REPORT` row. A small file's head is the whole
+/// file, footer included; inside a bundle that footer would end the report
+/// early and count lines that are not the bundle's.
+#[must_use]
+pub fn without_footer(head: &[u8]) -> Vec<u8> {
+    let mut out = Vec::with_capacity(head.len());
+    for line in head.split_inclusive(|&b| b == b'\n') {
+        let is_footer =
+            line.first() == Some(&b'C') && line.windows(13).any(|w| w == b"END OF REPORT");
+        if !is_footer {
+            out.extend_from_slice(line);
+        }
+    }
+    out
+}
+
 /// What [`fetch_heads`] did for one zip.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct HeadOutcome {
@@ -326,6 +342,7 @@ pub async fn fetch_heads(
             }
             HeadDest::Bundle(f) => {
                 bundle.extend_from_slice(format!("{HEAD_MARKER}{stem}\r\n").as_bytes());
+                let bytes = without_footer(&bytes);
                 bundle.extend_from_slice(&bytes);
                 if !bytes.ends_with(b"\n") {
                     bundle.extend_from_slice(b"\r\n");
@@ -1174,6 +1191,16 @@ mod tests {
         assert!(d.cause.iter().any(|c| c.contains("disk full")));
         let d = HeadError::Fetch(FetchError::Offline { url: "u".into() }).diagnostic();
         assert_eq!(d.code, "net.offline");
+    }
+
+    #[test]
+    fn a_bundle_part_has_no_footer() {
+        let head = b"C,x\r\nI,A,B,1,X\r\nD,A,B,1,1\r\nC,\"END OF REPORT\",4\r\n";
+        assert_eq!(without_footer(head), b"C,x\r\nI,A,B,1,X\r\nD,A,B,1,1\r\n");
+        // Only a C row is a footer; data that mentions the words is kept.
+        let data = b"I,A,B,1,X\nD,A,B,1,END OF REPORT\n";
+        assert_eq!(without_footer(data), data);
+        assert!(without_footer(b"").is_empty());
     }
 
     #[test]
