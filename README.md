@@ -40,7 +40,7 @@ the file is already in the lake.
 | `nemlake errors [--last] [--table T] [--code C]` | diagnostics recorded by past runs |
 | `nemlake verify` | every Parquet file the manifest lists exists with its size |
 | `nemlake schema list\|show\|diff\|lineage\|validate` | the registry |
-| `nemlake schema infer <file> [--write]` | draft what a file adds to the registry: a new table, version or variant |
+| `nemlake schema infer <file> [--write] [--ctl FILE]` | draft what a file adds to the registry: a new table, version or variant; `--ctl` types it from AEMO's control file for the table |
 | `nemlake archive ls\|verify` | every downloaded file with when and how it was requested; `verify` hashes each one again |
 | `nemlake cache gc\|clear` | throwaway files only: `gc` removes leftovers of interrupted work, `clear` the cached listings; neither touches the archive |
 | `nemlake wem manifest <dataset>` | a WEM dataset's file list (WEM ingestion comes later) |
@@ -147,7 +147,12 @@ against its record.
 AEMO adds tables and versions faster than releases follow. When a file does
 not resolve, `nemlake schema infer <file> --write` drafts what is missing:
 a table for a report pair nobody declared, or a new version or variant of a
-table that exists, with the types of new columns guessed from the rows. The
+table that exists, with the types of new columns guessed from the rows.
+Give it the table's control file from the same archive month with `--ctl`
+(the `.ctl` files sit in the month's `CTL/` directory) and the draft is
+typed from AEMO's own loader definition instead, takes the table's real
+name, and keeps a guess only where a sampled value does not fit what the
+control file says. The
 drafts land in `~/.nemlake/schemas/nem/mms/DRAFT_{TABLE}.toml` and do nothing
 until you have looked at them and renamed one to `{TABLE}.toml`. From then
 on every command uses it: a file named after a built-in table replaces it,

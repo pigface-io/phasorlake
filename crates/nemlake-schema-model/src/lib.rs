@@ -12,6 +12,7 @@
 
 pub mod blob;
 pub mod compat;
+pub mod ctl;
 pub mod error;
 pub mod file;
 pub mod model;

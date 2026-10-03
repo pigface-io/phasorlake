@@ -239,6 +239,12 @@ pub enum SchemaCmd {
         /// Rows to sample per block for the types of new columns.
         #[arg(long, default_value_t = 1000)]
         sample_rows: u64,
+        /// A control file (`.ctl`) of the same table from AEMO's archive,
+        /// to type new columns from; repeatable. It is used for a block
+        /// that carries every column it names, and the sampled rows
+        /// overrule it where a value does not fit.
+        #[arg(long, value_name = "FILE")]
+        ctl: Vec<PathBuf>,
     },
 }
 

@@ -20,6 +20,8 @@
 
 use nemlake_core::{Category, Diagnose, Diagnostic};
 
+use crate::model::ColumnType;
+
 /// A SQL*Loader column datatype.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum LoaderType {
@@ -40,6 +42,32 @@ pub enum LoaderType {
 }
 
 impl LoaderType {
+    /// The logical type a loader type implies; `None` for a filler. A
+    /// control file knows the class of a column (text with a length, a
+    /// number, a time) but not a number's precision and scale.
+    pub fn column_type(&self) -> Option<ColumnType> {
+        Some(match self {
+            Self::Filler => return None,
+            Self::Char(n) => ColumnType::Utf8 {
+                max_len: Some(*n),
+                dict: false,
+            },
+            Self::Date(f) | Self::Timestamp(Some(f)) => {
+                if f.to_ascii_lowercase().contains("hh") {
+                    ColumnType::Timestamp
+                } else {
+                    ColumnType::Date
+                }
+            }
+            Self::Timestamp(None) => ColumnType::Timestamp,
+            Self::FloatExternal | Self::DecimalExternal => ColumnType::Number {
+                precision: None,
+                scale: None,
+            },
+            Self::IntegerExternal => ColumnType::Integer,
+        })
+    }
+
     /// The type as written in a CTL, for the `loader` field of a schema.
     pub fn render(&self) -> String {
         match self {

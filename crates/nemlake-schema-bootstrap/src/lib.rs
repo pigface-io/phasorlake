@@ -17,7 +17,9 @@
 //! human marked `curated = true` in the existing file. The output is
 //! deterministic so CI can regenerate and diff.
 
-pub mod ctl;
+/// The control-file parser, which lives with the schema model so the
+/// command-line tool can read control files too.
+pub use nemlake_schema_model::ctl;
 pub mod datamodel;
 pub mod dmreport;
 pub mod merge;

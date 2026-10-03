@@ -495,6 +495,69 @@ fn reingest_brings_the_lake_up_to_the_rules() {
     assert_eq!(parquet(), after, "what is in the lake stays");
 }
 
+/// A control file from AEMO's archive types a draft: its loader types are
+/// the base, the table takes the name the control file loads into, and a
+/// sampled value that does not fit overrules it with a note.
+#[test]
+fn schema_infer_types_a_draft_from_a_control_file() {
+    let cli = Cli::new();
+    let csv = cli.home.path().join("PUBLIC_DVD_CTLTYPED_202403010000.CSV");
+    std::fs::write(
+        &csv,
+        "C,NEMP.WORLD,TEST\nI,NEMLAKE_TEST,CTLTYPED,1,SETTLEMENTDATE,UNIT,VALUE,FLAG\nD,NEMLAKE_TEST,CTLTYPED,1,\"2024/03/01 00:05:00\",7,1.5,yes\nC,\"END OF REPORT\",4\n",
+    )
+    .unwrap();
+    let ctl = cli.home.path().join("PUBLIC_DVD_CTLTYPED_202403.ctl");
+    std::fs::write(
+        &ctl,
+        "LOAD DATA\nINFILE PUBLIC_DVD_CTLTYPED_202403010000.CSV\nAPPEND INTO TABLE NEMLAKE_CTLTYPED\nWHEN (1:1) = 'D'\nFIELDS TERMINATED BY ','\nOPTIONALLY ENCLOSED BY '\"'\nTRAILING NULLCOLS\n(row_type FILLER,\nreport_type FILLER,\nreport_subtype FILLER,\nreport_version FILLER,\nSETTLEMENTDATE DATE \"yyyy/mm/dd hh24:mi:ss\",\nUNIT CHAR(20),\nVALUE FLOAT EXTERNAL,\nFLAG FLOAT EXTERNAL)\n",
+    )
+    .unwrap();
+    let (csv, ctl) = (csv.to_str().unwrap(), ctl.to_str().unwrap());
+    // Without it the rows alone decide: UNIT, a number in this sample, is
+    // guessed a number.
+    let out = cli.ok(&["schema", "infer", csv]);
+    assert!(out.contains("# draft for NEMLAKE_TEST_CTLTYPED"), "{out}");
+    assert!(!out.contains("CHAR(20)"), "{out}");
+    // With it: the table's own name, UNIT as text of 20, and FLAG, which
+    // the control file calls a number, stays text because `yes` is not one.
+    let out = cli.ok(&["schema", "infer", csv, "--ctl", ctl]);
+    assert!(out.contains("# draft for NEMLAKE_CTLTYPED"), "{out}");
+    assert!(
+        out.contains("loader = \"CHAR(20)\"") && out.contains("max_len = 20"),
+        "{out}"
+    );
+    assert!(out.contains("PUBLIC_DVD_CTLTYPED_202403.ctl"), "{out}");
+    assert!(
+        out.contains("# note: column FLAG: the control file says FLOAT EXTERNAL"),
+        "{out}"
+    );
+    let json = cli.ok(&["--json", "schema", "infer", csv, "--ctl", ctl, "--write"]);
+    assert!(
+        json.contains("\"table\":\"NEMLAKE_CTLTYPED\"")
+            && json.contains("\"notes\":[\"column FLAG"),
+        "{json}"
+    );
+    let dir = cli.home.path().join("schemas/nem/mms");
+    std::fs::rename(
+        dir.join("DRAFT_NEMLAKE_CTLTYPED.toml"),
+        dir.join("NEMLAKE_CTLTYPED.toml"),
+    )
+    .unwrap();
+    let (code, out, err) = cli.code(&["ingest", csv, "--strict"]);
+    assert_eq!(code, 0, "{out}{err}");
+    assert!(out.contains("1 rows (0 quarantined)"), "{out}");
+    // A control file that cannot be parsed stops the command and says why.
+    let bad = cli.home.path().join("bad.ctl");
+    std::fs::write(&bad, "not a control file").unwrap();
+    let (code, _, err) = cli.code(&["schema", "infer", csv, "--ctl", bad.to_str().unwrap()]);
+    assert_ne!(code, 0);
+    assert!(err.contains("bad.ctl"), "{err}");
+    let (code, _, err) = cli.code(&["schema", "infer", csv, "--ctl", "/nonexistent/x.ctl"]);
+    assert_ne!(code, 0);
+    assert!(err.contains("could not be read"), "{err}");
+}
+
 /// Files of an earlier interval that today's table cannot read, a value
 /// with its unit where a number is declared, are brought in by a rule
 /// written by hand in the table file; changing the rule puts exactly the

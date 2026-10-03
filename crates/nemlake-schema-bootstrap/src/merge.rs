@@ -82,26 +82,7 @@ impl Diagnose for MergeError {
 
 /// Maps a loader type to a logical type.
 pub fn loader_to_type(l: &LoaderType) -> Option<ColumnType> {
-    Some(match l {
-        LoaderType::Filler => return None,
-        LoaderType::Char(n) => ColumnType::Utf8 {
-            max_len: Some(*n),
-            dict: false,
-        },
-        LoaderType::Date(f) | LoaderType::Timestamp(Some(f)) => {
-            if f.to_ascii_lowercase().contains("hh") {
-                ColumnType::Timestamp
-            } else {
-                ColumnType::Date
-            }
-        }
-        LoaderType::Timestamp(None) => ColumnType::Timestamp,
-        LoaderType::FloatExternal | LoaderType::DecimalExternal => ColumnType::Number {
-            precision: None,
-            scale: None,
-        },
-        LoaderType::IntegerExternal => ColumnType::Integer,
-    })
+    l.column_type()
 }
 
 fn same_class(a: ColumnType, b: ColumnType) -> bool {

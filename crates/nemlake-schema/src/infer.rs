@@ -13,6 +13,8 @@ pub struct ColumnEvidence {
     pub non_null: u64,
     /// Non-empty values that parsed as a number.
     pub numeric: u64,
+    /// Non-empty values that parsed as a whole number.
+    pub integer: u64,
     /// Non-empty values that parsed as an MMS timestamp.
     pub timestamp: u64,
     /// Longest value in bytes.
@@ -48,6 +50,9 @@ impl Sampler {
             ev.max_len = ev.max_len.max(f.len() as u32);
             if nemlake_core::num::parse_f64(f).is_ok() {
                 ev.numeric += 1;
+            }
+            if nemlake_core::num::parse_i64(f).is_ok() {
+                ev.integer += 1;
             }
             if nemlake_core::nemtime::is_timestamp(f) {
                 ev.timestamp += 1;
@@ -158,6 +163,95 @@ pub fn draft_table(market: Market, irow: &IRow<'_>, sampler: &Sampler) -> TableD
             ..Default::default()
         },
     }
+}
+
+/// Types the inferred columns of a draft from a control file, AEMO's own
+/// statement of how a table's file is loaded.
+///
+/// The control file is the base and the rows have the last word. A column
+/// the control file names takes its loader type where every sampled value
+/// can be read as that type: text takes the declared length (or the longest
+/// value seen, if longer), `FLOAT EXTERNAL` is a number, `INTEGER EXTERNAL`
+/// a whole number, a `DATE` with a time of day a timestamp. Where a value
+/// does not fit, the type guessed from the rows stays, the column remains
+/// `inferred`, and the returned notes say which and why. A column typed
+/// this way is no longer `inferred`: its sources are the control file and
+/// the sample.
+///
+/// Only columns still marked `inferred` are touched, so what the registry
+/// or a person already decided stands. Returns one note per column the
+/// rows overruled.
+pub fn apply_ctl(
+    t: &mut TableDef,
+    irow: &IRow<'_>,
+    sampler: &Sampler,
+    ctl: &nemlake_schema_model::ctl::CtlFile,
+) -> Vec<String> {
+    let mut notes = Vec::new();
+    for c in &mut t.columns {
+        if c.src != ["inferred"] {
+            continue;
+        }
+        let Some(loader) = ctl
+            .data_columns()
+            .find(|k| k.name.eq_ignore_ascii_case(&c.name))
+        else {
+            continue;
+        };
+        let Some(declared) = loader.ty.column_type() else {
+            continue;
+        };
+        let evidence = irow
+            .columns
+            .iter()
+            .position(|n| *n == c.name)
+            .and_then(|i| sampler.columns.get(i));
+        let fits = evidence.is_none_or(|ev| match declared {
+            ColumnType::Utf8 { .. } => true,
+            ColumnType::Number { .. } => ev.numeric == ev.non_null,
+            ColumnType::Integer => ev.integer == ev.non_null,
+            ColumnType::Timestamp => ev.timestamp == ev.non_null,
+            // A day without a time, or a flag: the sampler cannot vouch
+            // for either, so only an empty sample lets them through.
+            ColumnType::Date | ColumnType::Boolean => ev.non_null == 0,
+        });
+        if !fits {
+            notes.push(format!(
+                "column {}: the control file says {} but a sampled value cannot be read as that; kept as {}",
+                c.name,
+                loader.ty.render(),
+                c.ty.kind_name()
+            ));
+            continue;
+        }
+        c.ty = match declared {
+            ColumnType::Utf8 { max_len, dict } => ColumnType::Utf8 {
+                max_len: max_len.max(evidence.map(|ev| ev.max_len)),
+                dict,
+            },
+            other => other,
+        };
+        c.loader = Some(loader.ty.render());
+        c.src = vec!["ctl".into(), "sampled".into()];
+    }
+    if t.time_column.is_none() {
+        t.time_column = t
+            .columns
+            .iter()
+            .find(|c| c.ty == ColumnType::Timestamp)
+            .map(|c| c.name.clone());
+    } else if let Some(tc) = &t.time_column
+        && t.column(tc)
+            .is_none_or(|c| !matches!(c.ty, ColumnType::Timestamp | ColumnType::Date))
+    {
+        // The rows looked like times; the control file says otherwise.
+        t.time_column = t
+            .columns
+            .iter()
+            .find(|c| c.ty == ColumnType::Timestamp)
+            .map(|c| c.name.clone());
+    }
+    notes
 }
 
 /// Adds the shape of `irow` to a table the registry already has: a new
@@ -272,6 +366,120 @@ mod tests {
     use nemlake_schema_model::validate::validate_table;
 
     use super::*;
+
+    /// The control file is the base; the rows have the last word.
+    #[test]
+    fn a_control_file_types_a_draft_where_the_rows_agree() {
+        let ctl = nemlake_schema_model::ctl::parse(
+            "x.ctl",
+            r#"LOAD DATA
+INFILE PUBLIC_DVD_NEW_THING_202401010000.CSV
+APPEND INTO TABLE NEW_THING
+WHEN (1:1) = 'D'
+FIELDS TERMINATED BY ','
+OPTIONALLY ENCLOSED BY '"'
+TRAILING NULLCOLS
+(row_type FILLER,
+report_type FILLER,
+report_subtype FILLER,
+report_version FILLER,
+WHEN DATE "yyyy/mm/dd hh24:mi:ss",
+AMOUNT FLOAT EXTERNAL,
+HOWMANY INTEGER EXTERNAL,
+PARTS INTEGER EXTERNAL,
+LABEL CHAR(4),
+CODE FLOAT EXTERNAL,
+EMPTY CHAR(3),
+DAY DATE "yyyy/mm/dd",
+STAMP CHAR(30))
+"#,
+        )
+        .unwrap();
+        let cols = [
+            "WHEN", "AMOUNT", "HOWMANY", "PARTS", "LABEL", "CODE", "EMPTY", "DAY", "STAMP",
+            "BESIDE",
+        ];
+        let irow = IRow {
+            report_type: "NEW",
+            report_subtype: "THING",
+            version: 1,
+            columns: &cols,
+        };
+        let mut s = Sampler::new(cols.len());
+        s.observe([
+            b"2024/01/01 00:05:00".as_slice(),
+            b"1.5",
+            b"3",
+            b"2.5",
+            b"longer",
+            b"abc",
+            b"",
+            b"2024/01/01",
+            b"2024/01/01 00:05:00",
+            b"7",
+        ]);
+        assert_eq!((s.columns[2].integer, s.columns[3].integer), (1, 0));
+        let mut t = draft_table(Market::Nem, &irow, &s);
+        // The rows alone took STAMP for the time column; the control file
+        // says it is text, and WHEN is the time.
+        t.time_column = Some("STAMP".into());
+        let notes = apply_ctl(&mut t, &irow, &s, &ctl);
+        let col = |n: &str| t.column(n).unwrap();
+        assert_eq!(col("WHEN").ty, ColumnType::Timestamp);
+        assert_eq!(col("WHEN").src, ["ctl", "sampled"]);
+        assert_eq!(
+            col("WHEN").loader.as_deref(),
+            Some("DATE \"yyyy/mm/dd hh24:mi:ss\"")
+        );
+        assert!(matches!(col("AMOUNT").ty, ColumnType::Number { .. }));
+        assert_eq!(col("HOWMANY").ty, ColumnType::Integer);
+        // A whole number was declared and 2.5 was published: a number.
+        assert!(matches!(col("PARTS").ty, ColumnType::Number { .. }));
+        assert_eq!(col("PARTS").src, ["inferred"]);
+        // Text takes the declared length, or the longest value if longer.
+        assert_eq!(
+            col("LABEL").ty,
+            ColumnType::Utf8 {
+                max_len: Some(6),
+                dict: false
+            }
+        );
+        // A number was declared and text was published: text.
+        assert!(matches!(col("CODE").ty, ColumnType::Utf8 { .. }));
+        assert_eq!(col("CODE").src, ["inferred"]);
+        // Nothing sampled: the control file stands.
+        assert_eq!(
+            col("EMPTY").ty,
+            ColumnType::Utf8 {
+                max_len: Some(3),
+                dict: false
+            }
+        );
+        assert_eq!(col("EMPTY").src, ["ctl", "sampled"]);
+        // A day without a time cannot be vouched for by the sample.
+        assert_eq!(col("DAY").src, ["inferred"]);
+        // What looked like a time is text by declaration; the time column
+        // moves to the one that is a time.
+        assert!(matches!(col("STAMP").ty, ColumnType::Utf8 { .. }));
+        assert_eq!(t.time_column.as_deref(), Some("WHEN"));
+        // A column the control file does not name stays a guess.
+        assert_eq!(col("BESIDE").src, ["inferred"]);
+        assert!(col("BESIDE").loader.is_none());
+        assert_eq!(notes.len(), 3, "{notes:?}");
+        assert!(notes[0].contains("PARTS") && notes[0].contains("INTEGER EXTERNAL"));
+        assert!(notes[1].contains("CODE") && notes[1].contains("FLOAT EXTERNAL"));
+        assert!(notes[2].contains("DAY"));
+        // Applying it again changes nothing: decided columns are left alone.
+        let before = t.clone();
+        assert_eq!(apply_ctl(&mut t, &irow, &s, &ctl).len(), 3);
+        assert_eq!(t, before);
+        // A draft with no time column gets the first timestamp.
+        let mut t2 = draft_table(Market::Nem, &irow, &Sampler::new(0));
+        assert!(t2.time_column.is_none());
+        assert!(apply_ctl(&mut t2, &irow, &Sampler::new(0), &ctl).is_empty());
+        assert_eq!(t2.time_column.as_deref(), Some("WHEN"));
+        assert_eq!(t2.column("DAY").unwrap().ty, ColumnType::Date);
+    }
 
     #[test]
     fn infers_types_from_evidence() {

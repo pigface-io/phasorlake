@@ -130,7 +130,8 @@ pub fn schema(ctx: &Context, cmd: &SchemaCmd) -> Result<i32> {
             path,
             write,
             sample_rows,
-        } => infer(ctx, path, *write, *sample_rows),
+            ctl,
+        } => infer(ctx, path, *write, *sample_rows, ctl),
         SchemaCmd::Validate { dir } => match dir {
             None => {
                 println!(
@@ -167,12 +168,46 @@ pub fn schema(ctx: &Context, cmd: &SchemaCmd) -> Result<i32> {
 }
 
 /// `nemlake schema infer <file>`
-fn infer(ctx: &Context, path: &Path, write: bool, sample_rows: u64) -> Result<i32> {
+fn infer(
+    ctx: &Context,
+    path: &Path,
+    write: bool,
+    sample_rows: u64,
+    ctl_paths: &[std::path::PathBuf],
+) -> Result<i32> {
     use std::collections::BTreeMap;
 
-    use nemlake_schema::infer::{draft_table, extend_table};
+    use nemlake_schema::ctl::CtlFile;
+    use nemlake_schema::infer::{apply_ctl, draft_table, extend_table};
 
     let r = &ctx.registry;
+    // The control files on offer, each with the name it was given under.
+    let mut ctls: Vec<(String, CtlFile)> = Vec::new();
+    for p in ctl_paths {
+        let text = std::fs::read_to_string(p).map_err(|e| {
+            anyhow::anyhow!("The control file {} could not be read: {e}", p.display())
+        })?;
+        let parsed = nemlake_schema::ctl::parse(&p.display().to_string(), &text)
+            .map_err(|e| anyhow::anyhow!("{}", e.diagnostic().render()))?;
+        let name = p.file_name().map_or_else(
+            || p.display().to_string(),
+            |n| n.to_string_lossy().into_owned(),
+        );
+        ctls.push((name, parsed));
+    }
+    // The control file for a block: one whose every column the block
+    // carries, the widest if several do.
+    let ctl_for = |irow: &nemlake_core::IRow<'_>| {
+        ctls.iter()
+            .filter(|(_, c)| {
+                c.data_columns().next().is_some()
+                    && c.data_columns()
+                        .all(|k| irow.columns.iter().any(|n| n.eq_ignore_ascii_case(&k.name)))
+            })
+            .max_by_key(|(_, c)| c.data_columns().count())
+    };
+    // What the rows overruled, by table.
+    let mut overruled: BTreeMap<String, Vec<String>> = BTreeMap::new();
     // Tables this file changes, by name, and the draft that claims each
     // report pair nobody declared.
     let mut changed: BTreeMap<String, nemlake_schema::TableDef> = BTreeMap::new();
@@ -188,7 +223,23 @@ fn infer(ctx: &Context, path: &Path, write: bool, sample_rows: u64) -> Result<i3
         let known = b.table.clone().or_else(|| drafted.get(&pair).cloned());
         match known {
             None => {
-                let draft = draft_table(nemlake_schema::Market::Nem, &irow, &b.sampler);
+                let mut draft = draft_table(nemlake_schema::Market::Nem, &irow, &b.sampler);
+                if let Some((file, ctl)) = ctl_for(&irow) {
+                    let notes = apply_ctl(&mut draft, &irow, &b.sampler, ctl);
+                    // The control file knows the table's own name.
+                    let name = ctl.table.to_ascii_uppercase();
+                    if r.table_by_name(&name).is_none() && !changed.contains_key(&name) {
+                        draft.name = name;
+                    }
+                    draft.provenance.ctl = Some(file.clone());
+                    draft.provenance.note = Some(
+                        "draft; columns typed from the control file where the sampled rows agree, inferred otherwise".into(),
+                    );
+                    overruled
+                        .entry(draft.name.clone())
+                        .or_default()
+                        .extend(notes);
+                }
                 drafted.insert(pair, draft.name.clone());
                 changed.insert(draft.name.clone(), draft);
             }
@@ -200,7 +251,11 @@ fn infer(ctx: &Context, path: &Path, write: bool, sample_rows: u64) -> Result<i3
                         None => continue,
                     },
                 };
-                if let Some(t) = extend_table(&base, &irow, &b.sampler) {
+                if let Some(mut t) = extend_table(&base, &irow, &b.sampler) {
+                    if let Some((_, ctl)) = ctl_for(&irow) {
+                        let notes = apply_ctl(&mut t, &irow, &b.sampler, ctl);
+                        overruled.entry(name.clone()).or_default().extend(notes);
+                    }
                     changed.insert(name, t);
                 }
             }
@@ -235,17 +290,19 @@ fn infer(ctx: &Context, path: &Path, write: bool, sample_rows: u64) -> Result<i3
             }
             std::fs::write(&target, &toml)?;
         }
-        out.push((name, toml, issues, target));
+        let notes = overruled.get(name).cloned().unwrap_or_default();
+        out.push((name, toml, issues, target, notes));
     }
     if ctx.json {
         let drafts: Vec<serde_json::Value> = out
             .iter()
-            .map(|(name, toml, issues, target)| {
+            .map(|(name, toml, issues, target, notes)| {
                 serde_json::json!({
                     "table": name,
                     "toml": toml,
                     "path": if write { Some(target.display().to_string()) } else { None },
                     "issues": issues.iter().map(ToString::to_string).collect::<Vec<_>>(),
+                    "notes": notes,
                 })
             })
             .collect();
@@ -253,7 +310,7 @@ fn infer(ctx: &Context, path: &Path, write: bool, sample_rows: u64) -> Result<i3
             &serde_json::json!({ "file": path.display().to_string(), "drafts": drafts }),
         );
     } else {
-        for (name, toml, issues, target) in &out {
+        for (name, toml, issues, target, notes) in &out {
             if write {
                 println!("wrote {}", target.display());
             } else {
@@ -261,6 +318,9 @@ fn infer(ctx: &Context, path: &Path, write: bool, sample_rows: u64) -> Result<i3
             }
             for i in issues {
                 println!("# to fix by hand: {i}");
+            }
+            for n in notes {
+                println!("# note: {n}");
             }
         }
         if write {
