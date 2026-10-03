@@ -91,6 +91,7 @@ impl Context {
         let _ = downloads;
         let cfg = FetcherConfig {
             refresh,
+            min_interval: Duration::from_millis(self.config.request_interval_ms),
             ..Default::default()
         };
         let mut f = Fetcher::new(transport, DiskCache::new(self.home.cache()), cfg);

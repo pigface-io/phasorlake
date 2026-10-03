@@ -16,6 +16,9 @@ pub struct Config {
     pub jobs: usize,
     /// Concurrent downloads.
     pub downloads: usize,
+    /// Minimum gap between two requests to a server, in milliseconds.
+    /// AEMO's web server blocks clients that ask too fast.
+    pub request_interval_ms: u64,
     /// Emit `Decimal128` for `NUMBER(p,s)` columns instead of `f64`.
     pub decimal: bool,
     /// Bad rows tolerated per source before it fails.
@@ -43,6 +46,7 @@ impl Default for Config {
         Self {
             jobs: 0,
             downloads: 4,
+            request_interval_ms: 250,
             decimal: false,
             max_bad_rows: 0,
             strict: false,
@@ -150,6 +154,7 @@ mod tests {
         let c = Config::parse("").unwrap();
         assert_eq!(c, Config::default());
         assert_eq!(c.downloads, 4);
+        assert_eq!(c.request_interval_ms, 250);
         let c =
             Config::parse("jobs = 3\n[sources]\nnem_base_url = \"http://localhost:1\"\n").unwrap();
         assert_eq!(c.jobs, 3);

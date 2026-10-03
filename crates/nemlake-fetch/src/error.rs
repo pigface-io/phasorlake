@@ -107,6 +107,20 @@ pub enum FetchError {
         /// The months it does list.
         available: String,
     },
+    /// The server refuses this client.
+    #[error(
+        "The server refused {url} with HTTP {status}, first seen at {first_url}. AEMO's web server does this after too many requests in a short time, so nemlake sends it nothing more in this run. Wait a while before trying again; a larger `request_interval_ms` in the config file slows nemlake down."
+    )]
+    Blocked {
+        /// The URL of this request.
+        url: String,
+        /// The status that tripped the block.
+        status: u16,
+        /// The request that was refused first.
+        first_url: String,
+        /// First bytes of that refusal's body.
+        body_head: Vec<u8>,
+    },
     /// The server ignored a `Range` header.
     #[error(
         "The server answered a ranged request for {url} with HTTP {status} instead of 206; reading part of this file is not possible."
@@ -266,6 +280,15 @@ impl Diagnose for FetchError {
                 Diagnostic::error("listing.month_missing", Category::Listing, msg)
                     .with_url(url.clone())
             }
+            Self::Blocked {
+                url,
+                status,
+                body_head,
+                ..
+            } => Diagnostic::error("net.blocked", Category::Net, msg)
+                .with_url(url.clone())
+                .expected_observed("200", status.to_string())
+                .with_sample(body_head),
             Self::RangeIgnored { url, status } => {
                 Diagnostic::error("net.range_ignored", Category::Net, msg)
                     .with_url(url.clone())
@@ -476,6 +499,15 @@ mod tests {
                     status: 200,
                 },
                 "net.range_ignored",
+            ),
+            (
+                FetchError::Blocked {
+                    url: "u".into(),
+                    status: 403,
+                    first_url: "f".into(),
+                    body_head: b"Website is unavailable".to_vec(),
+                },
+                "net.blocked",
             ),
             (
                 FetchError::RemoteZip {

@@ -14,6 +14,7 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 
 | code | raised in |
 |---|---|
+| `net.blocked` | `crates/nemlake-fetch/src/error.rs` |
 | `net.body` | `crates/nemlake-fetch/src/error.rs` |
 | `net.connect` | `crates/nemlake-fetch/src/error.rs` |
 | `net.content_length_mismatch` | `crates/nemlake-fetch/src/error.rs` |

@@ -80,6 +80,14 @@ nemlake reads that zip's index with ranged requests and downloads only the
 members asked for, checked against the CRC-32 the index records. One table
 of January 2012 is a 12 MB download, not 1.9 GB.
 
+File names changed along the way, from `PUBLIC_DVD_{TABLE}_{YYYYMM}010000.zip`
+to `PUBLIC_ARCHIVE#{TABLE}#FILE{NN}#{YYYYMM}010000.zip`; both are read.
+
+AEMO's web server blocks a client that asks too fast. nemlake leaves 250 ms
+between requests (`request_interval_ms` in `config.toml`), and when the
+server refuses it (HTTP 403, or 429 through every retry) it sends nothing
+more in that run and reports `net.blocked` for what is left.
+
 ## Errors
 
 Every error and warning carries a stable code (`csv.field_count_mismatch`,

@@ -59,7 +59,7 @@ impl Default for FetcherConfig {
             attempts: 5,
             backoff: Duration::from_millis(500),
             max_backoff: Duration::from_secs(30),
-            min_interval: Duration::from_millis(100),
+            min_interval: Duration::from_millis(250),
             refresh: false,
             verify_cache: false,
         }
@@ -73,6 +73,10 @@ pub struct Fetcher {
     config: FetcherConfig,
     last_request: Mutex<Option<Instant>>,
     events: Option<tokio::sync::mpsc::Sender<Event>>,
+    /// Set once the server refuses this client (HTTP 403, or 429 through
+    /// every retry): status, the URL refused and the start of its body.
+    /// Every later request fails at once without touching the network.
+    blocked: std::sync::OnceLock<(u16, String, Vec<u8>)>,
 }
 
 impl Fetcher {
@@ -83,6 +87,7 @@ impl Fetcher {
             cache,
             config,
             last_request: Mutex::new(None),
+            blocked: std::sync::OnceLock::new(),
             events: None,
         }
     }
@@ -106,6 +111,30 @@ impl Fetcher {
     /// Whether downloads are forbidden.
     pub fn is_offline(&self) -> bool {
         self.transport.is_offline()
+    }
+
+    /// Whether the server has refused this client during this run.
+    pub fn is_blocked(&self) -> bool {
+        self.blocked.get().is_some()
+    }
+
+    fn blocked_error(&self, url: &str) -> Option<FetchError> {
+        self.blocked
+            .get()
+            .map(|(status, first_url, body_head)| FetchError::Blocked {
+                url: url.to_owned(),
+                status: *status,
+                first_url: first_url.clone(),
+                body_head: body_head.clone(),
+            })
+    }
+
+    /// GETs part of `url` into memory, paced and retried like every other
+    /// request.
+    pub async fn fetch_range(&self, url: &str, range: ByteRange) -> Result<Vec<u8>, FetchError> {
+        let req = HttpRequest::get(url).with_range(range);
+        self.get_with_retries(&req, |resp| async move { read_all(url, resp).await })
+            .await
     }
 
     async fn pace(&self) {
@@ -215,9 +244,7 @@ impl Fetcher {
 
     /// GETs bytes `start..=end` of `url` into memory.
     async fn get_span(&self, url: &str, start: u64, end: u64) -> Result<Vec<u8>, FetchError> {
-        let req = HttpRequest::get(url).with_range(ByteRange::Span { start, end });
-        self.get_with_retries(&req, |resp| async move { read_all(url, resp).await })
-            .await
+        self.fetch_range(url, ByteRange::Span { start, end }).await
     }
 
     /// Fetches a remote file into the cache, or returns the cached copy.
@@ -346,10 +373,19 @@ impl Fetcher {
                 let jitter = Duration::from_millis(u64::from(attempt) * 37 % 250);
                 tokio::time::sleep(exp.min(self.config.max_backoff) + jitter).await;
             }
+            // A server that has refused us is left alone for the rest of the run.
+            if let Some(e) = self.blocked_error(url) {
+                return Err(e);
+            }
             self.pace().await;
             let result = match self.transport.get(req.clone()).await {
                 Err(e) => Err(e),
                 Ok(resp) if resp.status == want => consume(resp).await,
+                Ok(resp) if resp.status == 403 => {
+                    let head = read_head(resp.body, 256).await;
+                    let _ = self.blocked.set((403, url.to_owned(), head));
+                    return Err(self.blocked_error(url).expect("just set"));
+                }
                 // A server without range support answers 200 with the whole
                 // file; reading that would defeat the point.
                 Ok(resp) if want == 206 && resp.status == 200 => Err(FetchError::RangeIgnored {
@@ -370,6 +406,16 @@ impl Fetcher {
                 Err(e) if e.is_retryable() => last = Some(e),
                 Err(e) => return Err(e),
             }
+        }
+        // Too Many Requests through every retry is the same refusal, stated politely.
+        if let Some(FetchError::HttpStatus {
+            status: 429,
+            body_head,
+            ..
+        }) = &last
+        {
+            let _ = self.blocked.set((429, url.to_owned(), body_head.clone()));
+            return Err(self.blocked_error(url).expect("just set"));
         }
         Err(FetchError::RetriesExhausted {
             url: url.to_owned(),
@@ -746,6 +792,78 @@ mod tests {
             f.fetch(&remote("https://h/refused.zip")).await.unwrap_err(),
             FetchError::RetriesExhausted { .. }
         ));
+    }
+
+    #[tokio::test]
+    async fn a_refusal_stops_every_later_request() {
+        let dir = tempfile::tempdir().unwrap();
+        let t = Arc::new(StaticTransport::default());
+        let mut refusal = Canned::status(403);
+        refusal.body = b"Website is unavailable".to_vec();
+        t.add("https://h/a.zip", refusal);
+        t.add("https://h/b.zip", Canned::ok(b"fine"));
+        t.add("https://h/listing/", Canned::ok(b"<pre></pre>"));
+        let f = Fetcher::new(Arc::new(t.clone()), DiskCache::new(dir.path()), fast());
+        assert!(!f.is_blocked());
+        // A 403 is not retried: one request, and the breaker trips.
+        let e = f.fetch(&remote("https://h/a.zip")).await.unwrap_err();
+        assert!(
+            matches!(&e, FetchError::Blocked { status: 403, first_url, .. } if first_url == "https://h/a.zip"),
+            "{e}"
+        );
+        assert_eq!(t.request_count(), 1);
+        assert!(f.is_blocked());
+        let d = nemlake_core::Diagnose::diagnostic(&e);
+        assert_eq!(d.code, "net.blocked");
+        assert!(d.sample.is_some());
+        assert!(e.to_string().contains("request_interval_ms"), "{e}");
+        // Everything after it fails at once and sends nothing.
+        let e = f.fetch(&remote("https://h/b.zip")).await.unwrap_err();
+        assert!(
+            matches!(&e, FetchError::Blocked { url, first_url, .. } if url == "https://h/b.zip" && first_url == "https://h/a.zip"),
+            "{e}"
+        );
+        assert!(matches!(
+            f.fetch_listing("https://h/listing/", 60).await,
+            Err(FetchError::Blocked { .. })
+        ));
+        assert!(matches!(
+            f.fetch_range("https://h/b.zip", ByteRange::Last { len: 2 })
+                .await,
+            Err(FetchError::Blocked { .. })
+        ));
+        assert_eq!(t.request_count(), 1, "no request after the refusal");
+
+        // 429 is retried with backoff; when every attempt is refused the breaker trips too.
+        let t = Arc::new(StaticTransport::default());
+        t.add("https://h/busy.zip", Canned::status(429));
+        t.add("https://h/b.zip", Canned::ok(b"fine"));
+        let f = Fetcher::new(
+            Arc::new(t.clone()),
+            DiskCache::new(dir.path().join("two")),
+            fast(),
+        );
+        let e = f.fetch(&remote("https://h/busy.zip")).await.unwrap_err();
+        assert!(matches!(&e, FetchError::Blocked { status: 429, .. }), "{e}");
+        assert_eq!(t.request_count(), 3);
+        assert!(f.fetch(&remote("https://h/b.zip")).await.is_err());
+        assert_eq!(t.request_count(), 3);
+
+        // A ranged read works through the same path when nothing is wrong.
+        let t = Arc::new(StaticTransport::default());
+        t.add("https://h/b.zip", Canned::ok(b"0123456789"));
+        let f = Fetcher::new(
+            Arc::new(t.clone()),
+            DiskCache::new(dir.path().join("three")),
+            fast(),
+        );
+        assert_eq!(
+            f.fetch_range("https://h/b.zip", ByteRange::Span { start: 2, end: 4 })
+                .await
+                .unwrap(),
+            b"234"
+        );
+        assert!(!f.is_blocked());
     }
 
     #[tokio::test]
