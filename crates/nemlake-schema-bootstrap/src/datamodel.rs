@@ -2,8 +2,9 @@
 //!
 //! The JSON is one object keyed by table name; each entry carries the
 //! package, visibility, primary key, indexes and columns with their Oracle
-//! types. The scrape itself is `scripts/scrape-datamodel.py` for now; a Rust
-//! scraper arrives with the full bootstrap in M1 and must emit this shape.
+//! types. The committed JSON was scraped once by a script that is not in
+//! this repository; a scraper in this tool is still to be written and must
+//! emit this shape.
 
 use std::collections::BTreeMap;
 use std::path::Path;

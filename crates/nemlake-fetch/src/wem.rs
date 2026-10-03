@@ -7,8 +7,8 @@
 //!   generatedAt: "Thu Nov 02 2023 11:35:00Z"
 //! ```
 //!
-//! M0 reads manifests; downloading and parsing the CSVs arrives with the
-//! plain-CSV decoder in M3.
+//! Only manifests are read today; downloading and parsing the CSVs needs
+//! the plain-CSV decoder, which is not written yet.
 
 use async_trait::async_trait;
 use nemlake_core::YearMonth;
