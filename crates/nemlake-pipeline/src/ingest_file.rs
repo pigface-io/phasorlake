@@ -1,0 +1,527 @@
+//! One source file, end to end, on a blocking worker: walk its CSV entries,
+//! scan each through the registry into typed batches, write Parquet per
+//! partition, quarantine bad rows. Nothing here touches the manifest or the
+//! network; the result is handed back for the async commit step.
+
+use std::collections::HashMap;
+use std::path::{Path, PathBuf};
+use std::sync::Arc;
+
+use nemlake_core::event::Event;
+use nemlake_core::{Category, Diagnose, Diagnostic, Fingerprint, IRow, YearMonth};
+use nemlake_fetch::LocalFile;
+use nemlake_mms::archive::{WalkError, walk_csv_entries};
+use nemlake_mms::arrow_sink::{ArrowSink, BatchSink, BlockBatch};
+use nemlake_mms::quarantine::QuarantineWriter;
+use nemlake_mms::scan::{Flow, Pos, ScanOptions, ScanStats, scan};
+use nemlake_mms::{RowError, SinkError};
+use nemlake_schema::{LoadMode, Registry, ResolveOptions, Resolved, TableId};
+use nemlake_store::partition::split_by_month;
+use nemlake_store::{
+    FileMeta, LakeWriter, ParquetHive, Partition, PartitionKey, WriterId, WrittenFile,
+};
+use tokio::sync::mpsc;
+
+use crate::plan::RunOptions;
+
+/// What one worker is given.
+pub struct IngestInput {
+    /// The file.
+    pub local: LocalFile,
+    /// The registry.
+    pub registry: Arc<Registry>,
+    /// `lake/` root.
+    pub lake_root: PathBuf,
+    /// `quarantine/` root.
+    pub quarantine_root: PathBuf,
+    /// Scratch for spooled nested zips.
+    pub tmp_dir: PathBuf,
+    /// Options.
+    pub options: RunOptions,
+    /// The request, for diagnostics.
+    pub request: String,
+    /// Events.
+    pub events: Option<mpsc::Sender<Event>>,
+}
+
+/// One (table, version) within one entry.
+#[derive(Debug, Clone)]
+pub struct IngestResult {
+    /// Table.
+    pub table: String,
+    /// Table handle.
+    pub table_id: TableId,
+    /// Version the projection used.
+    pub version: u16,
+    /// Observed I-row fingerprint.
+    pub fingerprint: Fingerprint,
+    /// Resolution status label.
+    pub status: &'static str,
+    /// Report type.
+    pub report_type: String,
+    /// Report subtype.
+    pub report_subtype: String,
+    /// Observed version.
+    pub observed_version: u16,
+    /// Observed columns.
+    pub columns: Vec<String>,
+    /// Rows written.
+    pub rows: u64,
+    /// Rows quarantined.
+    pub bad_rows: u64,
+    /// Files written.
+    pub outputs: Vec<WrittenFile>,
+    /// Quarantine file.
+    pub quarantine_path: Option<String>,
+}
+
+/// One CSV entry of a source.
+#[derive(Debug)]
+pub struct EntryReport {
+    /// Entry name, nested joined with `!`.
+    pub entry: String,
+    /// Per-table results.
+    pub results: Vec<IngestResult>,
+    /// Warnings raised.
+    pub warnings: Vec<Diagnostic>,
+    /// The error that failed the entry, if any.
+    pub error: Option<Diagnostic>,
+    /// Scanner counts.
+    pub stats: Option<ScanStats>,
+}
+
+/// One source file.
+#[derive(Debug)]
+pub struct FileReport {
+    /// The file.
+    pub local: LocalFile,
+    /// Entries in archive order.
+    pub entries: Vec<EntryReport>,
+    /// An error that prevented reading the file at all.
+    pub file_error: Option<Diagnostic>,
+    /// Entries that were not CSVs or zips.
+    pub skipped_entries: Vec<String>,
+}
+
+impl FileReport {
+    /// Whether anything failed.
+    pub fn failed(&self) -> bool {
+        self.file_error.is_some() || self.entries.iter().any(|e| e.error.is_some())
+    }
+}
+
+/// Routes batches to Parquet writers and quarantines bad rows.
+struct LakeSink<'a> {
+    registry: &'a Registry,
+    writer: ParquetHive,
+    writers: HashMap<(TableId, u16, Partition), WriterId>,
+    results: Vec<IngestResult>,
+    current: Option<usize>,
+    quarantine: HashMap<String, QuarantineWriter>,
+    quarantine_root: &'a Path,
+    local: &'a LocalFile,
+    entry: &'a str,
+    period: Option<YearMonth>,
+    warnings: Vec<Diagnostic>,
+    fail_fast: bool,
+    events: Option<&'a mpsc::Sender<Event>>,
+}
+
+impl LakeSink<'_> {
+    fn meta(
+        &self,
+        table: &str,
+        version: u16,
+        fingerprint: Fingerprint,
+        time_column: Option<usize>,
+    ) -> FileMeta {
+        FileMeta {
+            table: table.to_owned(),
+            source_stem: self.local.remote.stem(),
+            schema_version: version,
+            fingerprint,
+            source_url: self.local.remote.url.to_string(),
+            source_sha256: self.local.sha256.clone(),
+            entry: self.entry.to_owned(),
+            time_column,
+        }
+    }
+
+    fn close_all(&mut self) -> Result<(), nemlake_store::StoreError> {
+        let mut keys: Vec<_> = self.writers.drain().collect();
+        keys.sort_by_key(|(k, _)| (k.0, k.1, k.2));
+        for ((table_id, version, _), wid) in keys {
+            let written = self.writer.close(wid)?;
+            if let Some(r) = self
+                .results
+                .iter_mut()
+                .find(|r| r.table_id == table_id && r.version == version)
+            {
+                r.outputs.push(written);
+            }
+        }
+        Ok(())
+    }
+
+    fn abort_all(&mut self) {
+        let ids: Vec<WriterId> = self.writers.drain().map(|(_, w)| w).collect();
+        for w in ids {
+            self.writer.abort(w);
+        }
+    }
+
+    fn finish_quarantine(&mut self) {
+        let qs: Vec<(String, QuarantineWriter)> = self.quarantine.drain().collect();
+        for (table, q) in qs {
+            if let Ok(Some(p)) = q.finish()
+                && let Some(r) = self.results.iter_mut().find(|r| r.table == table)
+            {
+                r.quarantine_path = Some(p.display().to_string());
+            }
+        }
+    }
+}
+
+impl BatchSink for LakeSink<'_> {
+    fn block_started(&mut self, irow: &IRow<'_>, resolved: &Resolved, _pos: Pos) {
+        let table = self.registry.table(resolved.table);
+        let idx = match self
+            .results
+            .iter()
+            .position(|r| r.table_id == resolved.table && r.version == resolved.version.0)
+        {
+            Some(i) => i,
+            None => {
+                self.results.push(IngestResult {
+                    table: table.name.clone(),
+                    table_id: resolved.table,
+                    version: resolved.version.0,
+                    fingerprint: irow.fingerprint(),
+                    status: resolved.status.label(),
+                    report_type: irow.report_type.to_owned(),
+                    report_subtype: irow.report_subtype.to_owned(),
+                    observed_version: irow.version,
+                    columns: irow.columns.iter().map(|c| (*c).to_owned()).collect(),
+                    rows: 0,
+                    bad_rows: 0,
+                    outputs: vec![],
+                    quarantine_path: None,
+                });
+                self.results.len() - 1
+            }
+        };
+        self.current = Some(idx);
+        if let Some(tx) = self.events {
+            let _ = tx.try_send(Event::BlockResolved {
+                source: format!("{}!{}", self.local.remote.url, self.entry),
+                table: table.name.clone(),
+                version: resolved.version.0,
+                status: resolved.status.label().to_owned(),
+            });
+        }
+    }
+
+    fn batch(&mut self, b: BlockBatch) -> Result<(), SinkError> {
+        let table = self.registry.table(b.table);
+        let market = self.registry.market_of(b.table);
+        let Some(idx) = self.current else {
+            return Ok(());
+        };
+        let rows = b.batch.num_rows() as u64;
+        let time_col = self
+            .registry
+            .projection(b.table, b.version)
+            .and_then(|p| p.time_column)
+            .map(usize::from)
+            .or_else(|| {
+                table
+                    .time_column
+                    .as_deref()
+                    .and_then(|c| table.column_index(c))
+            });
+        let parts: Vec<(Partition, arrow_array::RecordBatch)> = match (table.load_mode, time_col) {
+            (LoadMode::Snapshot, _) => vec![(
+                self.period
+                    .map_or(Partition::Unknown, |p| Partition::Snapshot {
+                        year: p.year(),
+                        month: p.month(),
+                    }),
+                b.batch,
+            )],
+            (LoadMode::Append, Some(tc)) => split_by_month(&b.batch, tc, market.utc_offset_secs)
+                .map_err(|e| SinkError::Write {
+                    table: table.name.clone(),
+                    message: e.to_string(),
+                })?,
+            (LoadMode::Append, None) => vec![(Partition::Unknown, b.batch)],
+        };
+        for (partition, batch) in parts {
+            let key = (b.table, b.version.0, partition);
+            let wid = match self.writers.get(&key) {
+                Some(w) => *w,
+                None => {
+                    let pk = PartitionKey {
+                        market: table.market.to_string(),
+                        table_dir: table.dir_name(),
+                        partition,
+                    };
+                    let meta = self.meta(&table.name, b.version.0, b.fingerprint, time_col);
+                    let w = self.writer.open(&pk, batch.schema(), &meta).map_err(|e| {
+                        SinkError::Write {
+                            table: table.name.clone(),
+                            message: e.to_string(),
+                        }
+                    })?;
+                    self.writers.insert(key, w);
+                    w
+                }
+            };
+            self.writer
+                .write(wid, &batch)
+                .map_err(|e| SinkError::Write {
+                    table: table.name.clone(),
+                    message: e.to_string(),
+                })?;
+        }
+        self.results[idx].rows += rows;
+        Ok(())
+    }
+
+    fn warning(&mut self, mut d: Diagnostic) {
+        if d.table.is_none()
+            && let Some(idx) = self.current
+        {
+            d.table = Some(self.results[idx].table.clone());
+        }
+        self.warnings.push(d);
+    }
+
+    fn bad_row(&mut self, raw: &[u8], pos: Pos, err: &RowError) -> Flow {
+        let (table, version) = match self.current {
+            Some(i) => (self.results[i].table.clone(), Some(self.results[i].version)),
+            None => ("unknown".to_owned(), None),
+        };
+        let mut d = err
+            .diagnostic()
+            .at(pos.line, pos.byte_offset)
+            .with_sample(raw)
+            .with_table(table.clone());
+        d.version = version;
+        if let Some(i) = self.current {
+            self.results[i].bad_rows += 1;
+        }
+        let stem = self.local.remote.stem();
+        let q = self
+            .quarantine
+            .entry(table.clone())
+            .or_insert_with(|| QuarantineWriter::new(self.quarantine_root, &table, &stem));
+        if let Err(e) = q.write(raw, &d) {
+            self.warnings.push(
+                Diagnostic::warning(
+                    "store.quarantine_write",
+                    Category::Store,
+                    format!(
+                        "The quarantine file {} could not be written.",
+                        q.path().display()
+                    ),
+                )
+                .caused_by(&e),
+            );
+        }
+        if self.fail_fast {
+            Flow::Stop
+        } else {
+            Flow::Continue
+        }
+    }
+}
+
+/// The archive month in a `PUBLIC_DVD_{TABLE}_{YYYYMM}010000` stem.
+pub fn period_from_stem(stem: &str) -> Option<YearMonth> {
+    let (_, suffix) = stem.rsplit_once('_')?;
+    if suffix.len() != 12 || !suffix.bytes().all(|b| b.is_ascii_digit()) {
+        return None;
+    }
+    YearMonth::new(suffix[..4].parse().ok()?, suffix[4..6].parse().ok()?)
+}
+
+fn ingest_entry(input: &IngestInput, entry: &str, reader: &mut dyn std::io::Read) -> EntryReport {
+    let period = input
+        .local
+        .remote
+        .period
+        .or_else(|| period_from_stem(&input.local.remote.stem().to_ascii_uppercase()));
+    let initial = LakeSink {
+        registry: &input.registry,
+        writer: ParquetHive::new(&input.lake_root),
+        writers: HashMap::new(),
+        results: Vec::new(),
+        current: None,
+        quarantine: HashMap::new(),
+        quarantine_root: &input.quarantine_root,
+        local: &input.local,
+        entry,
+        period,
+        warnings: Vec::new(),
+        fail_fast: input.options.fail_fast,
+        events: input.events.as_ref(),
+    };
+    let resolve = ResolveOptions {
+        mode: input.options.mode,
+    };
+    let mut arrow = ArrowSink::new(&input.registry, resolve, input.options.batch_rows, initial)
+        .skip_unknown(input.options.skip_unknown);
+    let mut sink: LakeSink<'_>;
+    let scan_opts = ScanOptions {
+        max_bad_rows: input.options.max_bad_rows,
+        ..Default::default()
+    };
+    let ctx = nemlake_core::diag::Context {
+        request: Some(input.request.clone()),
+        url: Some(input.local.remote.url.to_string()),
+        file: Some(input.local.path.display().to_string()),
+        entry: Some(entry.to_owned()),
+        table: None,
+        version: None,
+    };
+    let scanned = scan(reader, &mut arrow, &scan_opts);
+    let (recovered, flushed) = arrow.finish();
+    sink = recovered;
+    let scanned = match (scanned, flushed) {
+        (Ok(stats), Ok(())) => Ok(stats),
+        (Ok(_), Err(e)) => Err(e.diagnostic()),
+        (Err(e), _) => Err(e.diagnostic()),
+    };
+    let mut report = EntryReport {
+        entry: entry.to_owned(),
+        results: vec![],
+        warnings: vec![],
+        error: None,
+        stats: None,
+    };
+    match scanned {
+        Ok(stats) => {
+            if let Err(e) = sink.close_all() {
+                sink.abort_all();
+                let mut d = e.diagnostic();
+                d.fill_from(&ctx);
+                report.error = Some(d);
+            } else {
+                report.stats = Some(stats);
+                if stats.footer_mismatch() {
+                    let d = Diagnostic::new(
+                        "csv.footer_count_mismatch",
+                        Category::Csv,
+                        if input.options.strict_footer {
+                            nemlake_core::Severity::Error
+                        } else {
+                            nemlake_core::Severity::Warning
+                        },
+                        format!(
+                            "The footer says {} lines but {} were read.",
+                            stats.footer_declared.unwrap_or(0),
+                            stats.lines
+                        ),
+                    )
+                    .expected_observed(
+                        stats.footer_declared.unwrap_or(0).to_string(),
+                        stats.lines.to_string(),
+                    );
+                    if input.options.strict_footer {
+                        report.error = Some(d);
+                    } else {
+                        sink.warnings.push(d);
+                    }
+                }
+            }
+        }
+        Err(mut d) => {
+            sink.abort_all();
+            d.fill_from(&ctx);
+            report.error = Some(d);
+        }
+    }
+    sink.finish_quarantine();
+    for w in &mut sink.warnings {
+        w.fill_from(&ctx);
+    }
+    if let Some(e) = &mut report.error {
+        e.fill_from(&ctx);
+    }
+    report.warnings = std::mem::take(&mut sink.warnings);
+    report.results = std::mem::take(&mut sink.results);
+    report
+}
+
+/// Ingests one local file: a zip (entries walked, nested zips included) or
+/// a bare CSV.
+pub fn ingest_file(input: IngestInput) -> FileReport {
+    let path = input.local.path.clone();
+    let is_csv = path
+        .extension()
+        .is_some_and(|e| e.eq_ignore_ascii_case("csv"));
+    let mut entries = Vec::new();
+    let mut skipped_entries = Vec::new();
+    let mut file_error = None;
+    if is_csv {
+        let name = path
+            .file_name()
+            .map(|n| n.to_string_lossy().into_owned())
+            .unwrap_or_default();
+        match std::fs::File::open(&path) {
+            Ok(mut f) => entries.push(ingest_entry(&input, &name, &mut f)),
+            Err(e) => {
+                file_error = Some(
+                    Diagnostic::error(
+                        "csv.read_failed",
+                        Category::Csv,
+                        format!("The file {} could not be opened.", path.display()),
+                    )
+                    .with_file(path.display().to_string())
+                    .caused_by(&e),
+                );
+            }
+        }
+    } else {
+        let fail_fast = input.options.fail_fast;
+        let result: Result<usize, WalkError<()>> = walk_csv_entries(
+            &path,
+            &input.tmp_dir,
+            &mut |e| {
+                let rep = ingest_entry(&input, &e.name, e.reader);
+                let stop = fail_fast && rep.error.is_some();
+                entries.push(rep);
+                if stop { Err(()) } else { Ok(()) }
+            },
+            &mut |other| skipped_entries.push(other.to_owned()),
+        );
+        if let Err(WalkError::Archive(e)) = result {
+            let mut d = e.diagnostic();
+            d.request = Some(input.request.clone());
+            d.url = Some(input.local.remote.url.to_string());
+            d.file = Some(path.display().to_string());
+            file_error = Some(d);
+        }
+    }
+    FileReport {
+        local: input.local,
+        entries,
+        file_error,
+        skipped_entries,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn periods() {
+        assert_eq!(
+            period_from_stem("PUBLIC_DVD_REGION_202401010000"),
+            YearMonth::new(2024, 1)
+        );
+        assert_eq!(period_from_stem("REGION_v1_head"), None);
+        assert_eq!(period_from_stem("PUBLIC_DVD_REGION_2024010100001"), None);
+    }
+}

@@ -58,13 +58,16 @@ pub struct ManifestHandle {
     tx: mpsc::Sender<Cmd>,
 }
 
-/// Owns the thread; dropping it after every handle is gone stops the thread.
+/// Owns the thread. The thread stops when the last [`ManifestHandle`] is
+/// dropped; dropping this detaches it, [`ManifestThread::join`] waits for it.
 pub struct ManifestThread {
     join: Option<JoinHandle<()>>,
 }
 
-impl Drop for ManifestThread {
-    fn drop(&mut self) {
+impl ManifestThread {
+    /// Waits for the thread to finish. Every handle must be dropped first or
+    /// this never returns.
+    pub fn join(mut self) {
         if let Some(j) = self.join.take() {
             let _ = j.join();
         }
@@ -325,7 +328,7 @@ mod tests {
         h.finish_run(run, 0, "{}").await.unwrap();
         assert_eq!(h.latest_run().await.unwrap().unwrap().exit_code, Some(0));
         drop(h);
-        drop(thread);
+        thread.join();
     }
 
     #[tokio::test]

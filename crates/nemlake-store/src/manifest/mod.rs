@@ -18,7 +18,7 @@ use serde::{Deserialize, Serialize};
 use crate::error::ManifestError;
 use crate::writer::WrittenFile;
 
-pub use handle::ManifestHandle;
+pub use handle::{ManifestHandle, ManifestThread};
 
 const MIGRATIONS: &[(&str, &str)] = &[("0001_init", include_str!("migrations/0001_init.sql"))];
 

@@ -81,10 +81,24 @@ impl<'r, B: BatchSink> ArrowSink<'r, B> {
         }
     }
 
+    /// Blocks whose table the registry does not know are skipped with a
+    /// warning instead of failing the file.
+    pub fn skip_unknown(mut self, yes: bool) -> Self {
+        self.skip_unknown = yes;
+        self
+    }
+
     /// Takes the inner sink back.
     pub fn into_inner(mut self) -> Result<B, SinkError> {
         self.flush()?;
         Ok(self.out)
+    }
+
+    /// Flushes and takes the inner sink back, keeping the sink even when the
+    /// final flush failed so the caller can abort what it had opened.
+    pub fn finish(mut self) -> (B, Result<(), SinkError>) {
+        let r = self.flush();
+        (self.out, r)
     }
 
     /// The inner sink.

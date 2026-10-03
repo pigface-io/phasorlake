@@ -19,6 +19,7 @@ pub mod registry;
 pub mod resolve;
 
 pub use error::ResolveError;
+pub use nemlake_schema_model::file;
 pub use nemlake_schema_model::{ColumnDef, ColumnType, LoadMode, Market, SchemaVersion, TableDef};
 pub use registry::{LineageEntry, Registry, TableId, TypeOptions};
 pub use resolve::{Cast, ColumnCast, Mode, Projection, ResolveOptions, Resolved, Status};

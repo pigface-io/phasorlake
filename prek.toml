@@ -1,0 +1,131 @@
+# Git hooks, run by prek (https://prek.j178.dev). Install them with
+# `just hooks`; run them all with `just check`.
+#
+# Every hook calls a `just` recipe or a builtin, so the hooks, `just` and CI
+# run the same commands. Hooks are filtered by path: a commit runs only the
+# checks for the files it touches.
+#:schema https://www.schemastore.org/prek.json
+
+default_install_hook_types = ["pre-commit", "pre-push"]
+default_stages = ["pre-commit"]
+
+# ── Style ────────────────────────────────────────────────────────────────────
+
+[[repos]]
+repo = "builtin"
+hooks = [
+    { id = "trailing-whitespace", exclude = '^testdata/' },
+    { id = "end-of-file-fixer", exclude = '^testdata/' },
+    { id = "check-yaml" },
+    { id = "check-toml" },
+    { id = "check-json" },
+    { id = "check-merge-conflict" },
+    # The data-model JSON is the one large fixture; everything else is small.
+    { id = "check-added-large-files", args = ["--maxkb=200"], exclude = '^testdata/bootstrap/datamodel/' },
+    # ── Secrets (first line of defence; gitleaks is below) ──
+    { id = "detect-private-key" },
+]
+
+[[repos]]
+repo = "local"
+
+[[repos.hooks]]
+id = "rust-fmt"
+name = "style: rustfmt"
+language = "system"
+entry = "just fmt-check"
+files = '\.rs$'
+pass_filenames = false
+
+# ── Lint ─────────────────────────────────────────────────────────────────────
+
+[[repos.hooks]]
+id = "rust-lint"
+name = "lint: clippy and rustdoc (warnings are errors)"
+language = "system"
+entry = "just lint"
+files = '^(crates/|Cargo\.(toml|lock)$|rust-toolchain\.toml$)'
+pass_filenames = false
+
+[[repos.hooks]]
+id = "rust-test"
+name = "test: every unit and integration test"
+language = "system"
+entry = "just test"
+files = '^(crates/|Cargo\.(toml|lock)$|testdata/|schemas/)'
+pass_filenames = false
+
+[[repos.hooks]]
+id = "errors-doc"
+name = "docs: every diagnostic code is in docs/errors.md"
+language = "system"
+entry = "just errors-check"
+files = '^(crates/.*\.rs|docs/errors\.md)$'
+pass_filenames = false
+
+# On every commit, not only when the index changes: a file renamed anywhere
+# can break a pointer in it.
+[[repos.hooks]]
+id = "llm-index"
+name = "lint: agent index (paths and recipes exist, size budget)"
+language = "system"
+entry = "just llm-check"
+always_run = true
+pass_filenames = false
+
+# ── Secrets ──────────────────────────────────────────────────────────────────
+
+[[repos.hooks]]
+id = "secrets-staged"
+name = "secrets: gitleaks (staged changes)"
+language = "system"
+entry = "just secrets-staged"
+always_run = true
+pass_filenames = false
+
+[[repos.hooks]]
+id = "secrets-push"
+name = "secrets: gitleaks (commits being pushed)"
+language = "system"
+entry = "just secrets-push"
+stages = ["pre-push"]
+always_run = true
+pass_filenames = false
+
+# ── Before a push: the slow tiers ────────────────────────────────────────────
+
+[[repos.hooks]]
+id = "rust-cover"
+name = "coverage: every crate, held to coverage.json"
+language = "system"
+entry = "just cover"
+stages = ["pre-push"]
+files = '^(crates/|Cargo\.(toml|lock)$|testdata/|schemas/|coverage\.json$)'
+pass_filenames = false
+
+[[repos.hooks]]
+id = "bench-fast"
+name = "bench: the fast set, held to bench/budgets.json"
+language = "system"
+entry = "just bench-fast"
+stages = ["pre-push"]
+files = '^(crates/nemlake-(core|mms|schema|schema-model|store)/|bench/budgets\.json$)'
+pass_filenames = false
+
+[[repos.hooks]]
+id = "budget-ratchet"
+name = "bench: no budget loosened, no coverage floor dropped"
+language = "system"
+entry = "just budget-check"
+stages = ["pre-push"]
+files = '^(bench/budgets\.json|coverage\.json)$'
+pass_filenames = false
+
+[[repos.hooks]]
+id = "schema-check"
+name = "derived: schemas/ regenerates byte-identically from the fixtures"
+language = "system"
+entry = "just schema-check"
+stages = ["pre-push"]
+files = '^(schemas/|testdata/(bootstrap|csv)/|crates/nemlake-schema-bootstrap/)'
+pass_filenames = false

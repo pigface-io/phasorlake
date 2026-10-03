@@ -107,12 +107,6 @@ impl Fetcher {
         self.transport.is_offline()
     }
 
-    fn emit(&self, e: Event) {
-        if let Some(tx) = &self.events {
-            let _ = tx.try_send(e);
-        }
-    }
-
     async fn pace(&self) {
         let mut last = self.last_request.lock().await;
         if let Some(t) = *last {
@@ -157,11 +151,6 @@ impl Fetcher {
                 true
             };
             if ok {
-                self.emit(Event::DownloadDone {
-                    url: url.to_owned(),
-                    cached: true,
-                    bytes: blob.sidecar.size,
-                });
                 return Ok(LocalFile {
                     remote: remote.clone(),
                     path: blob.path,
@@ -208,11 +197,6 @@ impl Fetcher {
             accept_ranges,
         };
         DiskCache::write_sidecar(&path, &sidecar)?;
-        self.emit(Event::DownloadDone {
-            url: url.to_owned(),
-            cached: false,
-            bytes: size,
-        });
         Ok(LocalFile {
             remote: remote.clone(),
             path,

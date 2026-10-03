@@ -1,0 +1,19 @@
+{
+  "exclude": [
+    "crates/xtask/",
+    "crates/nemlake-bench/",
+    "crates/nemlake-cli/src/main.rs",
+    "crates/nemlake-schema-bootstrap/src/main.rs"
+  ],
+  "floors": {
+    "crates/nemlake-core/src": 95,
+    "crates/nemlake-schema-model/src": 90,
+    "crates/nemlake-schema/src": 90,
+    "crates/nemlake-schema-bootstrap/src": 80,
+    "crates/nemlake-mms/src": 90,
+    "crates/nemlake-fetch/src": 85,
+    "crates/nemlake-store/src": 85,
+    "crates/nemlake-pipeline/src": 75,
+    "crates/nemlake-cli/src": 30
+  }
+}
