@@ -260,6 +260,66 @@ impl VersionDef {
     }
 }
 
+/// A rule a person wrote for the files of an interval.
+///
+/// The registry maps a file's columns onto the lake by name. Where that is
+/// not right for some files (a column published under another name for a
+/// few years, a column whose values were of another kind before a market
+/// change) a rule says so, for exactly the files it names: those of a span
+/// of months, of one version, of one column list, or any combination. Each
+/// rule routes named file columns to declared lake columns; the column's
+/// declared type decides how the values are read.
+///
+/// Rules are never generated and never inferred. Regeneration carries them
+/// over as written.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct RuleDef {
+    /// Why the rule exists and how it was checked. Required.
+    pub note: String,
+    /// First source month the rule applies to.
+    pub from: Option<YearMonth>,
+    /// Last source month the rule applies to, inclusive.
+    pub to: Option<YearMonth>,
+    /// Only blocks published under this version number.
+    pub version: Option<SchemaVersion>,
+    /// Only blocks with this column list.
+    pub fingerprint: Option<Fingerprint>,
+    /// The routes: which file column feeds which lake column.
+    pub columns: Vec<RuleColumn>,
+}
+
+/// One route of a rule.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct RuleColumn {
+    /// The column's name in the file.
+    pub source: String,
+    /// The lake column it feeds: a declared column, by its own name.
+    pub column: String,
+}
+
+impl RuleDef {
+    /// Whether the rule is for a block of this version and column list in
+    /// a source of this month. A rule bounded by months does not apply to
+    /// a source whose month is not known.
+    pub fn applies(
+        &self,
+        period: Option<YearMonth>,
+        version: SchemaVersion,
+        fingerprint: Fingerprint,
+    ) -> bool {
+        if self.from.is_some() || self.to.is_some() {
+            let Some(p) = period else {
+                return false;
+            };
+            if self.from.is_some_and(|f| p < f) || self.to.is_some_and(|t| p > t) {
+                return false;
+            }
+        }
+        self.version.is_none_or(|v| v == version)
+            && self.fingerprint.is_none_or(|f| f == fingerprint)
+    }
+}
+
 /// A table: its identity, its unified columns, and every version.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct TableDef {
@@ -300,6 +360,9 @@ pub struct TableDef {
     pub columns: Vec<ColumnDef>,
     /// Versions ascending.
     pub versions: Vec<VersionDef>,
+    /// Hand-written rules for the files of an interval, in the order they
+    /// are applied.
+    pub rules: Vec<RuleDef>,
     /// Where the facts came from.
     pub provenance: Provenance,
 }
@@ -373,5 +436,44 @@ mod tests {
         assert_eq!(ColumnType::Integer.kind_name(), "integer");
         assert_eq!(ColumnId(3).to_string(), "3");
         assert_eq!(SchemaVersion(4).to_string(), "4");
+    }
+
+    #[test]
+    fn a_rule_applies_within_its_bounds() {
+        let month = |s: &str| s.parse::<YearMonth>().unwrap();
+        let fp = Fingerprint::of_names(["A", "B"]);
+        let other = Fingerprint::of_names(["A"]);
+        let mut rule = RuleDef {
+            note: "why".into(),
+            from: None,
+            to: None,
+            version: None,
+            fingerprint: None,
+            columns: vec![],
+        };
+        // Unbounded: every block, whatever is known of its source.
+        assert!(rule.applies(None, SchemaVersion(1), fp));
+        assert!(rule.applies(Some(month("2012-01")), SchemaVersion(9), other));
+        // Bounded by months, both ends inclusive.
+        rule.from = Some(month("2010-01"));
+        rule.to = Some(month("2012-06"));
+        assert!(rule.applies(Some(month("2010-01")), SchemaVersion(1), fp));
+        assert!(rule.applies(Some(month("2012-06")), SchemaVersion(1), fp));
+        assert!(!rule.applies(Some(month("2009-12")), SchemaVersion(1), fp));
+        assert!(!rule.applies(Some(month("2012-07")), SchemaVersion(1), fp));
+        assert!(
+            !rule.applies(None, SchemaVersion(1), fp),
+            "a month nobody knows is in no interval"
+        );
+        // One end alone.
+        rule.to = None;
+        assert!(rule.applies(Some(month("2026-08")), SchemaVersion(1), fp));
+        // By version and by column list.
+        rule.version = Some(SchemaVersion(2));
+        assert!(!rule.applies(Some(month("2011-01")), SchemaVersion(1), fp));
+        assert!(rule.applies(Some(month("2011-01")), SchemaVersion(2), fp));
+        rule.fingerprint = Some(fp);
+        assert!(rule.applies(Some(month("2011-01")), SchemaVersion(2), fp));
+        assert!(!rule.applies(Some(month("2011-01")), SchemaVersion(2), other));
     }
 }

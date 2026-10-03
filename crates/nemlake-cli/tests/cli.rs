@@ -495,6 +495,103 @@ fn reingest_brings_the_lake_up_to_the_rules() {
     assert_eq!(parquet(), after, "what is in the lake stays");
 }
 
+/// Files of an earlier interval that today's table cannot read, a value
+/// with its unit where a number is declared, are brought in by a rule
+/// written by hand in the table file; changing the rule puts exactly the
+/// sources it touches behind.
+#[test]
+fn a_hand_written_rule_brings_in_the_files_of_an_interval() {
+    let cli = Cli::new();
+    let write = |name: &str, stamp: &str, value: &str| -> String {
+        let p = cli.home.path().join(name);
+        std::fs::write(
+            &p,
+            format!(
+                "C,NEMP.WORLD,TEST\nI,NEMLAKE_TEST,RULED,1,SETTLEMENTDATE,UNIT,VALUE\nD,NEMLAKE_TEST,RULED,1,\"{stamp}\",A1,{value}\nC,\"END OF REPORT\",4\n"
+            ),
+        )
+        .unwrap();
+        p.to_str().unwrap().to_owned()
+    };
+    let new = write(
+        "PUBLIC_DVD_RULED_202403010000.CSV",
+        "2024/03/01 00:05:00",
+        "2.5",
+    );
+    let old = write(
+        "PUBLIC_DVD_RULED_201003010000.CSV",
+        "2010/03/01 00:05:00",
+        "1.5 MW",
+    );
+    // The table as today's file shows it: VALUE is a number.
+    cli.ok(&["schema", "infer", &new, "--write"]);
+    let dir = cli.home.path().join("schemas/nem/mms");
+    let table = dir.join("NEMLAKE_TEST_RULED.toml");
+    std::fs::rename(dir.join("DRAFT_NEMLAKE_TEST_RULED.toml"), &table).unwrap();
+    let (code, out, err) = cli.code(&["ingest", &new]);
+    assert_eq!(code, 0, "{out}{err}");
+    // The 2010 file does not fit it: its row cannot be read.
+    let (code, out, _) = cli.code(&["ingest", &old]);
+    assert_ne!(code, 0, "{out}");
+    assert!(out.contains("csv.too_many_bad_rows"), "{out}");
+
+    // A column to keep the old values as published, and a rule that sends
+    // them there for the files up to 2011-12.
+    let text = std::fs::read_to_string(&table).unwrap();
+    assert!(text.contains("next_column_id = 4"), "{text}");
+    let ruled = format!(
+        "{}\n[[column]]\nid = 4\nname = \"VALUE_AS_PUBLISHED\"\ntype = \"utf8\"\nadded_in = 1\nsrc = [\"manual\"]\n\n[[rule]]\nnote = \"Until 2011 the value carried its unit.\"\nto = \"2011-12\"\n\n[[rule.column]]\nsource = \"VALUE\"\ncolumn = \"VALUE_AS_PUBLISHED\"\n",
+        text.replace("next_column_id = 4", "next_column_id = 5")
+    );
+    std::fs::write(&table, &ruled).unwrap();
+    assert!(
+        cli.ok(&["schema", "show", "NEMLAKE_TEST_RULED"])
+            .contains("VALUE_AS_PUBLISHED")
+    );
+    // The table changed, so the 2024 file is behind (it gains a column)
+    // and the 2010 file, which failed, is still to be read.
+    let out = cli.ok(&["reingest", "--dry-run"]);
+    assert!(out.contains("2 listed"), "{out}");
+    let (code, out, err) = cli.code(&["reingest"]);
+    assert_eq!(code, 0, "{out}{err}");
+    assert!(
+        out.contains("2 ingested") && out.contains("(0 quarantined)"),
+        "{out}"
+    );
+    let ls = cli.ok(&["--json", "ls"]);
+    let line = |period: &str| {
+        ls.lines()
+            .find(|l| l.contains(&format!("\"source_period\":\"{period}\"")))
+            .unwrap_or_else(|| panic!("no ingest of {period}: {ls}"))
+            .to_owned()
+    };
+    assert!(
+        line("2010-03").contains("\"resolution\":\"exact+rule\""),
+        "{ls}"
+    );
+    assert!(line("2010-03").contains("\"status\":\"ok\""), "{ls}");
+    assert!(line("2024-03").contains("\"resolution\":\"exact\""), "{ls}");
+    assert!(cli.ok(&["reingest"]).contains("0 listed"));
+
+    // Widen the rule to every month: only the 2024 source is behind now.
+    std::fs::write(&table, ruled.replace("to = \"2011-12\"\n", "")).unwrap();
+    let out = cli.ok(&["reingest", "--dry-run"]);
+    assert!(
+        out.contains("1 listed") && out.contains("RULED_202403"),
+        "{out}"
+    );
+
+    // A rule that names a column nobody declared is refused with the reason.
+    std::fs::write(
+        &table,
+        ruled.replace("column = \"VALUE_AS_PUBLISHED\"", "column = \"NOWHERE\""),
+    )
+    .unwrap();
+    let (code, _, err) = cli.code(&["schema", "list"]);
+    assert_ne!(code, 0);
+    assert!(err.contains("not a declared column"), "{err}");
+}
+
 /// `schema infer` drafts what a file adds; a draft renamed into
 /// `{home}/schemas/` is in effect for every command, without a rebuild.
 #[test]

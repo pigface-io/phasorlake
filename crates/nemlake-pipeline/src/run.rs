@@ -100,12 +100,15 @@ pub fn rules_current(registry: &Registry, shapes: &[IngestShape]) -> bool {
             version: t.source_version,
             columns: &columns,
         };
+        // The month the source was read as: rules can be bounded by months.
+        let period = t.source_period.as_deref().and_then(|p| p.parse().ok());
         registry
-            .resolve(
+            .resolve_in(
                 &irow,
                 ResolveOptions {
                     mode: Mode::Permissive,
                 },
+                period,
             )
             .is_ok_and(|r| r.rules().to_string() == t.rules)
     })

@@ -26,6 +26,10 @@ const MIGRATIONS: &[(&str, &str)] = &[
         "0002_transform",
         include_str!("migrations/0002_transform.sql"),
     ),
+    (
+        "0003_source_period",
+        include_str!("migrations/0003_source_period.sql"),
+    ),
 ];
 
 /// A row of `files`.
@@ -441,7 +445,7 @@ impl Manifest {
             return Ok(None);
         }
         let mut stmt = self.sql(self.conn.prepare(
-            "SELECT status, table_name, report_type, report_subtype, source_version, source_columns, rules, schema_source, resolution
+            "SELECT status, table_name, report_type, report_subtype, source_version, source_columns, rules, schema_source, resolution, source_period
              FROM ingests WHERE file_id = ?1 AND status != 'superseded' ORDER BY id",
         ))?;
         let rows: Vec<(String, IngestShape)> = self.sql(
@@ -501,8 +505,8 @@ impl Manifest {
         let t = &s.transform;
         let r = self.conn.execute(
             "INSERT INTO ingests (run_id, file_id, entry, table_name, schema_version, fingerprint, status, started_at,
-                                  report_type, report_subtype, source_version, source_columns, rules, schema_source, resolution)
-             VALUES (?1, ?2, ?3, ?4, ?5, ?6, 'running', ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14)",
+                                  report_type, report_subtype, source_version, source_columns, rules, schema_source, resolution, source_period)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, 'running', ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15)",
             params![
                 s.run_id,
                 s.file_id,
@@ -517,7 +521,8 @@ impl Manifest {
                 t.source_columns.join(","),
                 t.rules,
                 t.schema_source,
-                t.resolution
+                t.resolution,
+                t.source_period
             ],
         );
         self.sql(r)?;
@@ -617,7 +622,7 @@ impl Manifest {
     ) -> Result<Vec<IngestRecord>, ManifestError> {
         let sql = format!(
             "SELECT i.id, i.run_id, f.url, i.entry, i.table_name, i.schema_version, i.status, i.rows, i.bad_rows, i.started_at, i.finished_at, i.error_code,
-                    i.fingerprint, i.report_type, i.report_subtype, i.source_version, i.source_columns, i.rules, i.schema_source, i.resolution
+                    i.fingerprint, i.report_type, i.report_subtype, i.source_version, i.source_columns, i.rules, i.schema_source, i.resolution, i.source_period
              FROM ingests i JOIN files f ON i.file_id = f.id
              WHERE (?1 IS NULL OR i.table_name = ?1) AND (?2 = 0 OR i.status = 'failed')
              ORDER BY i.id DESC LIMIT {}",
@@ -717,9 +722,9 @@ pub struct IngestShape {
     pub transform: Transform,
 }
 
-/// Reads the seven transform columns of an `ingests` row, starting at `at`:
-/// report type, report subtype, source version, source columns, rules,
-/// schema source, resolution.
+/// Reads the eight transform columns of an `ingests` row, starting at
+/// `at`: report type, report subtype, source version, source columns,
+/// rules, schema source, resolution, source period.
 fn transform_from_row(r: &rusqlite::Row<'_>, at: usize) -> rusqlite::Result<Transform> {
     let columns: String = r.get(at + 3)?;
     Ok(Transform {
@@ -734,6 +739,7 @@ fn transform_from_row(r: &rusqlite::Row<'_>, at: usize) -> rusqlite::Result<Tran
         rules: r.get(at + 4)?,
         schema_source: r.get(at + 5)?,
         resolution: r.get(at + 6)?,
+        source_period: r.get(at + 7)?,
     })
 }
 
@@ -768,6 +774,7 @@ mod tests {
             report_subtype: "B".into(),
             source_version: 3,
             source_columns: vec!["X".into(), "Y".into()],
+            source_period: Some("2024-01".into()),
             rules: "rules:1".into(),
             schema_source: "registry".into(),
             resolution: "exact".into(),

@@ -100,6 +100,7 @@ All three are written into the file's footer and into the manifest:
 |---|---|
 | `nemlake.source_url`, `nemlake.source_sha256`, `nemlake.entry` | the source: where it came from, its hash, the CSV inside it |
 | `nemlake.report_type`, `nemlake.report_subtype`, `nemlake.source_version`, `nemlake.source_columns`, `nemlake.fingerprint` | the shape: the block's I row as AEMO published it |
+| `nemlake.source_period` | the month of the source, which rules for an interval are chosen by |
 | `nemlake.rules` | a hash of the rules: the lake columns and their types, which field feeds which column and how it is parsed, the partitioning, the directory |
 | `nemlake.schema_source` | where the table's definition came from: `registry` (built in), `user` (your own table file), `file` (nobody declared it, so the file's own header) |
 | `nemlake.resolution`, `nemlake.table`, `nemlake.schema_version` | how the shape matched the definition: `exact`, `aliased`, `drift` or `derived`, and as which table and version |
@@ -153,6 +154,53 @@ on every command uses it: a file named after a built-in table replaces it,
 any other adds a table. `--no-user-schemas` runs without them. What was
 ingested before the table file existed is brought up to it by
 `nemlake reingest`.
+
+## Rules for an interval
+
+AEMO's files are not uniform over seventeen years, and no one set of rules
+explains them all. nemlake does not try. The registry describes what is
+published today; an older file is read by its own header, and whatever does
+not fit today's table is kept beside it rather than forced into it.
+
+Where you know better for some stretch of time, say so in the table file,
+by hand, for exactly the files you mean:
+
+```toml
+[[column]]                       # a column of your own to receive the values
+id = 14
+name = "RRP_AS_PUBLISHED"
+type = "utf8"
+added_in = 1
+src = ["manual"]
+
+[[rule]]
+note = "Until 2011-12 RRP carried a currency suffix; checked against the 2010-03 and 2011-12 archives."
+from = "2009-07"                 # first source month, optional
+to = "2011-12"                   # last source month, inclusive, optional
+version = 1                      # only blocks published as this version, optional
+# fingerprint = "xxh3:..."       # only this exact column list, optional
+
+[[rule.column]]
+source = "RRP"                   # the column's name in the file
+column = "RRP_AS_PUBLISHED"      # the lake column it feeds in this interval
+```
+
+A rule routes named file columns to declared lake columns; the lake
+column's type decides how the values are read. With that, a column
+published under another name for a few years can feed the column it
+belongs to, and a column whose values were of another kind before a market
+change can be kept as published in a column of its own. Rules apply in the
+order written, each needs a `note` saying why it exists, and none is ever
+generated or inferred: regenerating the registry carries them over as
+written. A rule never loses data. If a file carries both the routed column
+and the column it would feed, both are kept and the run reports
+`schema.rule_conflict`.
+
+Which rules read a file is on record: the `nemlake.resolution` of a file a
+rule touched ends in `+rule`, `nemlake.source_period` is the month the
+rules were chosen by, and the rules hash differs from that of a file read
+without them. Edit a rule and `nemlake reingest` reads again exactly the
+sources it affects.
 
 ## Which months
 

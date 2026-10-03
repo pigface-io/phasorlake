@@ -206,9 +206,10 @@ impl BatchSink for LakeSink<'_> {
                         report_subtype: irow.report_subtype.to_owned(),
                         source_version: irow.version,
                         source_columns: irow.columns.iter().map(|c| (*c).to_owned()).collect(),
+                        source_period: self.period.map(|p| p.to_string()),
                         rules: resolved.rules().to_string(),
                         schema_source: resolved.source.label().to_owned(),
-                        resolution: resolved.status.label().to_owned(),
+                        resolution: resolved.label(),
                     },
                     rows: 0,
                     bad_rows: 0,
@@ -224,7 +225,7 @@ impl BatchSink for LakeSink<'_> {
                 source: format!("{}!{}", self.local.remote.url, self.entry),
                 table: table.name.clone(),
                 version: resolved.version.0,
-                status: resolved.status.label().to_owned(),
+                status: resolved.label(),
             });
         }
     }
@@ -413,7 +414,8 @@ fn ingest_entry(input: &IngestInput, entry: &str, reader: &mut dyn std::io::Read
     let resolve = ResolveOptions {
         mode: input.options.mode,
     };
-    let mut arrow = ArrowSink::new(&input.registry, resolve, input.options.batch_rows, initial);
+    let mut arrow = ArrowSink::new(&input.registry, resolve, input.options.batch_rows, initial)
+        .with_period(period);
     let mut sink: LakeSink<'_>;
     let scan_opts = ScanOptions {
         max_bad_rows: input.options.max_bad_rows,

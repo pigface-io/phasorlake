@@ -623,6 +623,16 @@ pub fn merge(inputs: &Inputs<'_>) -> Result<TableDef, MergeError> {
         });
     }
 
+    // A column a person declared by hand (the target of a rule, say) is in
+    // no sampled list. It stays as written.
+    if let Some(ex) = inputs.existing {
+        for c in &ex.columns {
+            if c.src.iter().any(|s| s == "manual") && !columns.iter().any(|x| x.name == c.name) {
+                columns.push(c.clone());
+            }
+        }
+    }
+
     // 4. Table-level facts.
     let has_lastchanged = column_order.iter().any(|c| c == "LASTCHANGED");
     let load_mode = if inputs.snapshot {
@@ -734,6 +744,8 @@ pub fn merge(inputs: &Inputs<'_>) -> Result<TableDef, MergeError> {
         deprecated: inputs.existing.is_some_and(|e| e.deprecated),
         columns,
         versions,
+        // Rules are a person's: carried over as written, never generated.
+        rules: inputs.existing.map(|e| e.rules.clone()).unwrap_or_default(),
         provenance,
     })
 }
@@ -1249,6 +1261,57 @@ mod tests {
                 .unwrap()
                 .contains("read as two columns")
         );
+    }
+
+    /// What a person wrote by hand survives regeneration untouched: the
+    /// rules of a table and the columns declared for them.
+    #[test]
+    fn rules_and_hand_declared_columns_are_carried_over() {
+        use nemlake_schema_model::{RuleColumn, RuleDef};
+        let (ctl, dm, blocks) = load_scada();
+        let mut existing = merge(&scada_inputs(&ctl, &dm, &blocks)).unwrap();
+        assert!(existing.rules.is_empty());
+        let manual = ColumnDef {
+            id: ColumnId(existing.next_column_id),
+            name: "SCADAVALUE_TEXT".into(),
+            aliases: vec![],
+            ty: ColumnType::Utf8 {
+                max_len: None,
+                dict: false,
+            },
+            nullable: true,
+            oracle: None,
+            loader: None,
+            added_in: SchemaVersion(1),
+            removed_in: None,
+            description: Some("As published before 2012.".into()),
+            src: vec!["manual".into()],
+            curated: true,
+        };
+        existing.columns.push(manual.clone());
+        existing.next_column_id += 1;
+        existing.rules.push(RuleDef {
+            note: "the value was text until 2011".into(),
+            from: None,
+            to: Some("2011-12".parse().unwrap()),
+            version: None,
+            fingerprint: None,
+            columns: vec![RuleColumn {
+                source: "SCADAVALUE".into(),
+                column: "SCADAVALUE_TEXT".into(),
+            }],
+        });
+        assert_eq!(validate_table(&existing), vec![]);
+        let mut inputs = scada_inputs(&ctl, &dm, &blocks);
+        inputs.existing = Some(&existing);
+        let t = merge(&inputs).unwrap();
+        assert_eq!(t.rules, existing.rules);
+        assert_eq!(t.columns.last(), Some(&manual));
+        assert_eq!(t.next_column_id, existing.next_column_id);
+        assert_eq!(validate_table(&t), vec![]);
+        // And again over its own output.
+        inputs.existing = Some(&t);
+        assert_eq!(merge(&inputs).unwrap(), t);
     }
 
     #[test]

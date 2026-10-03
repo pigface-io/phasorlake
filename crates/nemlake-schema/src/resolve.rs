@@ -4,7 +4,7 @@
 use std::sync::Arc;
 
 use arrow_schema::SchemaRef;
-use nemlake_core::{Category, Diagnostic, IRow};
+use nemlake_core::{Category, Diagnostic, Fingerprint, IRow, YearMonth};
 use nemlake_schema_model::{ColumnType, MarketDef, SchemaVersion, TableDef};
 
 use crate::arrow::{data_type, decimal_fallback};
@@ -193,6 +193,22 @@ impl Projection {
         names: &[&str],
         dir: &str,
     ) -> Self {
+        Self::build_routed(t, market, opts, lake, names, dir, &[])
+    }
+
+    /// As [`Projection::build_file_shape`], with the routes of the
+    /// hand-written rules that apply: each names a file column and the
+    /// index of the lake column it feeds in place of the one its name
+    /// would give it.
+    pub fn build_routed(
+        t: &TableDef,
+        market: &MarketDef,
+        opts: TypeOptions,
+        lake: &SchemaRef,
+        names: &[&str],
+        dir: &str,
+        routes: &[(&str, usize)],
+    ) -> Self {
         let lake_width = lake.fields().len();
         let mut fields: Vec<arrow_schema::Field> =
             lake.fields().iter().map(|f| f.as_ref().clone()).collect();
@@ -200,7 +216,11 @@ impl Projection {
         let mut supplied = vec![false; lake_width];
         let mut extra: Vec<String> = Vec::new();
         for n in names {
-            match t.column_index(n).filter(|&i| !supplied[i]) {
+            let routed = routes.iter().find(|(s, _)| s == n).map(|(_, i)| *i);
+            match routed
+                .or_else(|| t.column_index(n))
+                .filter(|&i| !supplied[i])
+            {
                 Some(i) => {
                     let c = &t.columns[i];
                     supplied[i] = true;
@@ -331,6 +351,9 @@ pub struct Resolved {
     pub projection: Arc<Projection>,
     /// Where the table's definition came from.
     pub source: SchemaSource,
+    /// The routes of hand-written rules that were applied: file column,
+    /// lake column.
+    pub routed: Vec<(String, String)>,
     /// Warnings raised while resolving (drift, decimal fallback).
     pub warnings: Vec<Diagnostic>,
 }
@@ -340,11 +363,140 @@ impl Resolved {
     pub fn rules(&self) -> RulesHash {
         self.projection.rules
     }
+
+    /// How the shape matched, in one word, with `+rule` when a
+    /// hand-written rule changed where a column goes.
+    pub fn label(&self) -> String {
+        if self.routed.is_empty() {
+            self.status.label().to_owned()
+        } else {
+            format!("{}+rule", self.status.label())
+        }
+    }
 }
 
 impl Registry {
-    /// Resolves an I row.
+    /// Resolves an I row of a source whose month is not known. Rules
+    /// bounded by months do not apply; see [`Registry::resolve_in`].
     pub fn resolve(&self, irow: &IRow<'_>, opts: ResolveOptions) -> Result<Resolved, ResolveError> {
+        self.resolve_in(irow, opts, None)
+    }
+
+    /// Resolves an I row of a source of month `period`: by the registry's
+    /// declarations first, then by the table's hand-written rules for that
+    /// month, version and column list.
+    ///
+    /// Strictness is decided before the rules: a rule changes where a
+    /// column goes, not whether its shape is declared.
+    pub fn resolve_in(
+        &self,
+        irow: &IRow<'_>,
+        opts: ResolveOptions,
+        period: Option<YearMonth>,
+    ) -> Result<Resolved, ResolveError> {
+        let plain = self.resolve_declared(irow, opts)?;
+        if self.is_derived(plain.table) || self.table(plain.table).rules.is_empty() {
+            return Ok(plain);
+        }
+        Ok(self.apply_rules(plain, irow, period))
+    }
+
+    /// Applies the table's rules that are for this block.
+    fn apply_rules(
+        &self,
+        mut res: Resolved,
+        irow: &IRow<'_>,
+        period: Option<YearMonth>,
+    ) -> Resolved {
+        let id = res.table;
+        let t = self.table(id);
+        let fp = irow.fingerprint();
+        let version = SchemaVersion(irow.version);
+        // Routes in the order the rules are written; the first route of a
+        // file column, and the first into a lake column, stands.
+        let mut routes: Vec<(&str, usize)> = Vec::new();
+        for (n, rule) in t.rules.iter().enumerate() {
+            if !rule.applies(period, version, fp) {
+                continue;
+            }
+            for c in &rule.columns {
+                let Some(target) = t.columns.iter().position(|d| d.name == c.column) else {
+                    continue;
+                };
+                if !irow.columns.contains(&c.source.as_str())
+                    || routes.iter().any(|(s, i)| *s == c.source || *i == target)
+                {
+                    continue;
+                }
+                // Two fields cannot feed one column: where the file also
+                // carries the column under its own name, that one stands
+                // and the routed one is kept under its own.
+                if let Some(other) = irow
+                    .columns
+                    .iter()
+                    .find(|o| **o != c.source && t.column_index(o) == Some(target))
+                {
+                    res.warnings.push(
+                        Diagnostic::warning(
+                            "schema.rule_conflict",
+                            Category::Schema,
+                            format!(
+                                "Rule {} of table {} routes {} to {}, but this file also carries {other}, which feeds that column. The rule is not applied to this file: {} is kept under its own name.",
+                                n + 1,
+                                t.name,
+                                c.source,
+                                c.column,
+                                c.source
+                            ),
+                        )
+                        .with_table(t.name.clone())
+                        .with_version(irow.version),
+                    );
+                    continue;
+                }
+                routes.push((c.source.as_str(), target));
+            }
+        }
+        if routes.is_empty() {
+            return res;
+        }
+        // The same list read by other routes is another shape to the cache.
+        let key = Fingerprint::of_names(
+            irow.columns
+                .iter()
+                .copied()
+                .chain(std::iter::once("\u{1e}routes"))
+                .chain(
+                    routes
+                        .iter()
+                        .flat_map(|(s, i)| [*s, t.columns[*i].name.as_str()]),
+                ),
+        );
+        let market = self.market_of(id);
+        res.projection = self.dynamic_projection(id, key, || {
+            Arc::new(Projection::build_routed(
+                t,
+                market,
+                self.options(),
+                self.lake_schema(id),
+                irow.columns,
+                &self.table_dir(id),
+                &routes,
+            ))
+        });
+        res.routed = routes
+            .iter()
+            .map(|(s, i)| ((*s).to_owned(), t.columns[*i].name.clone()))
+            .collect();
+        res
+    }
+
+    /// Resolves an I row by what the registry declares, rules aside.
+    fn resolve_declared(
+        &self,
+        irow: &IRow<'_>,
+        opts: ResolveOptions,
+    ) -> Result<Resolved, ResolveError> {
         if irow.columns.is_empty() {
             return Err(ResolveError::NoColumns {
                 report_type: irow.report_type.to_owned(),
@@ -393,6 +545,7 @@ impl Registry {
                     status: Status::Exact,
                     projection,
                     source: self.schema_source(id),
+                    routed: Vec::new(),
                     warnings,
                 });
             }
@@ -427,6 +580,7 @@ impl Registry {
                 status: Status::Aliased { matched },
                 projection,
                 source: self.schema_source(id),
+                routed: Vec::new(),
                 warnings,
             });
         }
@@ -567,6 +721,7 @@ impl Registry {
             },
             projection,
             source: self.schema_source(id),
+            routed: Vec::new(),
             warnings,
         })
     }
@@ -607,6 +762,7 @@ impl Registry {
             status: Status::Derived,
             projection,
             source: self.schema_source(id),
+            routed: Vec::new(),
             warnings: vec![warning],
         }
     }
@@ -646,6 +802,7 @@ impl Registry {
                 status: Status::Exact,
                 projection,
                 source: self.schema_source(id),
+                routed: Vec::new(),
                 warnings: vec![],
             });
         }
@@ -698,6 +855,7 @@ impl Registry {
             },
             projection,
             source: self.schema_source(id),
+            routed: Vec::new(),
             warnings: vec![],
         })
     }
@@ -1336,6 +1494,180 @@ mod tests {
             r.resolve(&row, ResolveOptions { mode: Mode::Strict }),
             Err(ResolveError::VersionDrift { .. })
         ));
+    }
+
+    /// A registry of one table: DISPATCH_UNIT_SCADA with a hand-declared
+    /// text column and rules that route SCADAVALUE to it for the files of
+    /// 2009-07 to 2011-12, and CONFIDENTIAL_TO to DUID in version 7.
+    fn ruled() -> Registry {
+        use nemlake_schema_model::blob::SchemaSet;
+        use nemlake_schema_model::{ColumnDef, ColumnId, RuleColumn, RuleDef};
+        let embedded = reg();
+        let mut t = embedded
+            .table(embedded.table_by_name("DISPATCH_UNIT_SCADA").unwrap())
+            .clone();
+        t.columns.push(ColumnDef {
+            id: ColumnId(t.next_column_id),
+            name: "SCADAVALUE_TEXT".into(),
+            aliases: vec![],
+            ty: ColumnType::Utf8 {
+                max_len: None,
+                dict: false,
+            },
+            nullable: true,
+            oracle: None,
+            loader: None,
+            added_in: SchemaVersion(1),
+            removed_in: None,
+            description: None,
+            src: vec!["manual".into()],
+            curated: true,
+        });
+        t.next_column_id += 1;
+        t.rules = vec![
+            RuleDef {
+                note: "the value was published as text until 2011".into(),
+                from: Some("2009-07".parse().unwrap()),
+                to: Some("2011-12".parse().unwrap()),
+                version: None,
+                fingerprint: None,
+                columns: vec![RuleColumn {
+                    source: "SCADAVALUE".into(),
+                    column: "SCADAVALUE_TEXT".into(),
+                }],
+            },
+            RuleDef {
+                note: "version 7 named the unit CONFIDENTIAL_TO".into(),
+                from: None,
+                to: None,
+                version: Some(SchemaVersion(7)),
+                fingerprint: None,
+                columns: vec![RuleColumn {
+                    source: "CONFIDENTIAL_TO".into(),
+                    column: "DUID".into(),
+                }],
+            },
+        ];
+        assert_eq!(
+            nemlake_schema_model::validate::validate_structure(&t),
+            vec![]
+        );
+        Registry::from_set(
+            SchemaSet {
+                markets: vec![],
+                tables: vec![t],
+            },
+            TypeOptions::default(),
+        )
+    }
+
+    #[test]
+    fn a_rule_routes_a_column_for_the_files_of_its_interval() {
+        let r = ruled();
+        let cols = ["SETTLEMENTDATE", "DUID", "SCADAVALUE"];
+        let row = IRow {
+            report_type: "DISPATCH",
+            report_subtype: "UNIT_SCADA",
+            version: 1,
+            columns: &cols,
+        };
+        let month = |s: &str| Some(s.parse::<YearMonth>().unwrap());
+        let opts = ResolveOptions::default();
+        let id = r.table_by_name("DISPATCH_UNIT_SCADA").unwrap();
+        let t = r.table(id);
+        let text = t.column_index("SCADAVALUE_TEXT").unwrap() as u16;
+        let value = t.column_index("SCADAVALUE").unwrap() as u16;
+
+        // Outside the interval, and where the month is not known, the
+        // file is read by the declarations alone.
+        for period in [month("2012-01"), month("2009-06"), None] {
+            let plain = r.resolve_in(&row, opts, period).unwrap();
+            assert_eq!(plain.status, Status::Exact);
+            assert!(plain.routed.is_empty());
+            assert_eq!(plain.label(), "exact");
+            assert_eq!(plain.projection.casts[2].target, Some(value));
+            assert_eq!(plain.projection.casts[2].cast, Cast::Float64);
+        }
+        let plain = r.resolve(&row, opts).unwrap();
+
+        // Inside it, SCADAVALUE goes to the text column, as text, and the
+        // number column is null for these files.
+        for period in [month("2009-07"), month("2010-05"), month("2011-12")] {
+            let res = r.resolve_in(&row, opts, period).unwrap();
+            assert_eq!(res.status, Status::Exact);
+            assert_eq!(res.label(), "exact+rule");
+            assert_eq!(
+                res.routed,
+                [("SCADAVALUE".to_owned(), "SCADAVALUE_TEXT".to_owned())]
+            );
+            assert_eq!(res.projection.casts[2].target, Some(text));
+            assert_eq!(res.projection.casts[2].cast, Cast::Utf8);
+            assert!(res.projection.missing.contains(&value));
+            assert!(!res.projection.missing.contains(&text));
+            assert_eq!(res.projection.casts[0], plain.projection.casts[0]);
+            // Other rules, other hash: the lake knows which made a file.
+            assert_ne!(res.rules(), plain.rules());
+            assert!(res.warnings.is_empty());
+            // Strict mode takes the same rule: the shape is declared.
+            let strict = r
+                .resolve_in(&row, ResolveOptions { mode: Mode::Strict }, period)
+                .unwrap();
+            assert!(Arc::ptr_eq(&strict.projection, &res.projection));
+        }
+
+        // A rule by version, whatever the month: an undeclared name is
+        // routed to a declared column instead of being kept beside it.
+        let v7 = ["SETTLEMENTDATE", "CONFIDENTIAL_TO", "SCADAVALUE"];
+        let row7 = IRow {
+            version: 7,
+            columns: &v7,
+            ..row
+        };
+        let res = r.resolve_in(&row7, opts, None).unwrap();
+        assert!(matches!(res.status, Status::Drift { .. }));
+        assert_eq!(res.label(), "drift+rule");
+        assert_eq!(
+            res.routed,
+            [("CONFIDENTIAL_TO".to_owned(), "DUID".to_owned())]
+        );
+        assert_eq!(res.projection.casts[1].target, Some(1));
+        assert_eq!(res.projection.lake_width(), t.columns.len());
+        // Both rules at once: each routes its own column.
+        let res = r.resolve_in(&row7, opts, month("2010-01")).unwrap();
+        assert_eq!(
+            res.routed,
+            [
+                ("SCADAVALUE".to_owned(), "SCADAVALUE_TEXT".to_owned()),
+                ("CONFIDENTIAL_TO".to_owned(), "DUID".to_owned())
+            ]
+        );
+        // Strictness comes first: a rule does not declare a shape.
+        assert!(matches!(
+            r.resolve_in(&row7, ResolveOptions { mode: Mode::Strict }, None),
+            Err(ResolveError::UnknownVersion { .. })
+        ));
+
+        // Two fields cannot feed one column. A file that carries the
+        // target under its own name keeps both, and says so.
+        let both = ["SETTLEMENTDATE", "DUID", "CONFIDENTIAL_TO", "SCADAVALUE"];
+        let row_both = IRow {
+            version: 7,
+            columns: &both,
+            ..row
+        };
+        let res = r.resolve_in(&row_both, opts, None).unwrap();
+        assert!(res.routed.is_empty());
+        assert_eq!(res.label(), "drift");
+        let conflict = res
+            .warnings
+            .iter()
+            .find(|w| w.code == "schema.rule_conflict")
+            .expect("the conflict is reported");
+        assert!(conflict.message.contains("CONFIDENTIAL_TO") && conflict.message.contains("DUID"));
+        assert_eq!(
+            res.projection.column_name(res.projection.lake_width() - 1),
+            "CONFIDENTIAL_TO"
+        );
     }
 
     #[test]

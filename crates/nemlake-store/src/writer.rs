@@ -74,13 +74,17 @@ pub struct Transform {
     pub source_version: u16,
     /// Columns of the I row, in order.
     pub source_columns: Vec<String>,
+    /// The month of the source, `YYYY-MM`, when it is known. Rules can be
+    /// bounded by months, so it is part of what was read by which rules.
+    #[serde(default)]
+    pub source_period: Option<String>,
     /// Hash of the rules the shape was read with (`rules:<32 hex digits>`).
     /// Empty for an ingest recorded before rules were.
     pub rules: String,
     /// Where the table's definition came from: `registry`, `user`, `file`.
     pub schema_source: String,
     /// How the shape matched the definition: `exact`, `aliased`, `drift`,
-    /// `derived`.
+    /// `derived`; with `+rule` when a hand-written rule routed a column.
     pub resolution: String,
 }
 

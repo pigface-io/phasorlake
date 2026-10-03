@@ -54,6 +54,9 @@ struct Block {
 pub struct ArrowSink<'r, B: BatchSink> {
     registry: &'r Registry,
     opts: ResolveOptions,
+    /// The month of the source being read, when it is known: a table's
+    /// rules can be bounded by months.
+    period: Option<nemlake_core::YearMonth>,
     batch_rows: usize,
     out: B,
     block: Option<Block>,
@@ -69,11 +72,20 @@ impl<'r, B: BatchSink> ArrowSink<'r, B> {
         Self {
             registry,
             opts,
+            period: None,
             batch_rows: batch_rows.max(1),
             out,
             block: None,
             parsed: Vec::new(),
         }
+    }
+
+    /// Says which month the source being read is of, so that rules
+    /// bounded by months apply to it.
+    #[must_use]
+    pub fn with_period(mut self, period: Option<nemlake_core::YearMonth>) -> Self {
+        self.period = period;
+        self
     }
 
     /// Takes the inner sink back.
@@ -158,7 +170,7 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
 
     fn header(&mut self, irow: &IRow<'_>, pos: Pos) -> Result<(), SinkError> {
         self.flush()?;
-        let resolved = self.registry.resolve(irow, self.opts)?;
+        let resolved = self.registry.resolve_in(irow, self.opts, self.period)?;
         for w in &resolved.warnings {
             self.out.warning(w.clone());
         }

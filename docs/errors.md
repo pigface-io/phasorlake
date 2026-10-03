@@ -109,6 +109,7 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 | `schema.missing_key` | `crates/nemlake-schema/src/error.rs` |
 | `schema.no_columns` | `crates/nemlake-schema/src/error.rs` |
 | `schema.out_dir` | `crates/nemlake-schema-bootstrap/src/main.rs` |
+| `schema.rule_conflict` | `crates/nemlake-schema/src/resolve.rs` |
 | `schema.sample_irow` | `crates/nemlake-schema-bootstrap/src/sample.rs` |
 | `schema.sample_no_csv` | `crates/nemlake-schema-bootstrap/src/sample.rs` |
 | `schema.sample_read` | `crates/nemlake-schema-bootstrap/src/sample.rs` |

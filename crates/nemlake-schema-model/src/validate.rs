@@ -308,6 +308,7 @@ pub fn validate_structure(t: &TableDef) -> Vec<Issue> {
         }
         validate_variants(t, v, &mut out);
     }
+    validate_rules(t, &mut out);
     for c in &t.columns {
         let in_a_shape = t.versions.iter().any(|v| {
             v.columns.contains(&c.name)
@@ -320,6 +321,66 @@ pub fn validate_structure(t: &TableDef) -> Vec<Issue> {
         }
     }
     out
+}
+
+/// Checks the hand-written rules of a table: each says why it exists,
+/// names an interval that is not empty, and routes file columns to
+/// declared lake columns without ambiguity.
+fn validate_rules(t: &TableDef, out: &mut Vec<Issue>) {
+    for (i, r) in t.rules.iter().enumerate() {
+        let n = i + 1;
+        if r.note.trim().is_empty() {
+            out.push(issue(
+                t,
+                format!("rule {n} has no note; say why it exists and how it was checked"),
+            ));
+        }
+        if let (Some(a), Some(b)) = (r.from, r.to)
+            && b < a
+        {
+            out.push(issue(t, format!("rule {n} has to {b} before from {a}")));
+        }
+        if r.columns.is_empty() {
+            out.push(issue(t, format!("rule {n} routes no column")));
+        }
+        let mut sources = HashSet::new();
+        let mut targets = HashSet::new();
+        for c in &r.columns {
+            if c.source.is_empty() {
+                out.push(issue(t, format!("rule {n} has a route with no source")));
+            }
+            if !sources.insert(c.source.as_str()) {
+                out.push(issue(
+                    t,
+                    format!("rule {n} routes source {} twice", c.source),
+                ));
+            }
+            if !targets.insert(c.column.as_str()) {
+                out.push(issue(
+                    t,
+                    format!("rule {n} routes two sources to column {}", c.column),
+                ));
+            }
+            if !t.columns.iter().any(|d| d.name == c.column) {
+                out.push(issue(
+                    t,
+                    format!(
+                        "rule {n} routes {} to {}, which is not a declared column; declare it with src = [\"manual\"]",
+                        c.source, c.column
+                    ),
+                ));
+            }
+            if c.source == c.column {
+                out.push(issue(
+                    t,
+                    format!(
+                        "rule {n} routes {} to itself, which is what happens without a rule",
+                        c.source
+                    ),
+                ));
+            }
+        }
+    }
 }
 
 /// Checks a set of tables together: unique names and report pairs.
@@ -718,6 +779,51 @@ mod tests {
             "{:?}",
             msgs(&t)
         );
+    }
+
+    #[test]
+    fn rule_issues() {
+        use crate::file::tests::unit_scada_with_rule;
+        use crate::model::RuleColumn;
+        assert_eq!(validate_table(&unit_scada_with_rule()), vec![]);
+
+        let mut t = unit_scada_with_rule();
+        t.rules[0].note = "  ".into();
+        has(&t, "rule 1 has no note");
+
+        let mut t = unit_scada_with_rule();
+        t.rules[0].from = Some("2012-01".parse().unwrap());
+        has(&t, "rule 1 has to 2011-12 before from 2012-01");
+
+        let mut t = unit_scada_with_rule();
+        t.rules[0].columns.clear();
+        has(&t, "rule 1 routes no column");
+
+        let mut t = unit_scada_with_rule();
+        t.rules[0].columns[0].column = "NOWHERE".into();
+        has(&t, "which is not a declared column");
+
+        let mut t = unit_scada_with_rule();
+        t.rules[0].columns[0].source = "SCADAVALUE_TEXT".into();
+        has(&t, "to itself");
+
+        let mut t = unit_scada_with_rule();
+        t.rules[0].columns.push(RuleColumn {
+            source: "SCADAVALUE".into(),
+            column: "DUID".into(),
+        });
+        has(&t, "routes source SCADAVALUE twice");
+
+        let mut t = unit_scada_with_rule();
+        t.rules[0].columns.push(RuleColumn {
+            source: "DUID".into(),
+            column: "SCADAVALUE_TEXT".into(),
+        });
+        has(&t, "routes two sources to column SCADAVALUE_TEXT");
+
+        let mut t = unit_scada_with_rule();
+        t.rules[0].columns[0].source = String::new();
+        has(&t, "a route with no source");
     }
 
     #[test]

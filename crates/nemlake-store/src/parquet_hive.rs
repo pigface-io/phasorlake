@@ -133,6 +133,10 @@ impl ParquetHive {
                     "nemlake.source_columns".to_owned(),
                     meta.transform.source_columns.join(","),
                 ),
+                KeyValue::new(
+                    "nemlake.source_period".to_owned(),
+                    meta.transform.source_period.clone().unwrap_or_default(),
+                ),
                 KeyValue::new("nemlake.rules".to_owned(), meta.transform.rules.clone()),
                 KeyValue::new(
                     "nemlake.schema_source".to_owned(),
@@ -408,6 +412,7 @@ mod tests {
                 report_subtype: "UNIT_SCADA".into(),
                 source_version: 1,
                 source_columns: vec!["SETTLEMENTDATE".into(), "DUID".into()],
+                source_period: Some("2024-01".into()),
                 rules: "rules:00000000000000000000000000000abc".into(),
                 schema_source: "registry".into(),
                 resolution: "exact".into(),
@@ -500,6 +505,7 @@ mod tests {
         assert_eq!(value("nemlake.report_subtype"), "UNIT_SCADA");
         assert_eq!(value("nemlake.source_version"), "1");
         assert_eq!(value("nemlake.source_columns"), "SETTLEMENTDATE,DUID");
+        assert_eq!(value("nemlake.source_period"), "2024-01");
         assert_eq!(
             value("nemlake.rules"),
             "rules:00000000000000000000000000000abc"

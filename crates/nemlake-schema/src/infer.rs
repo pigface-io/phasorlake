@@ -152,6 +152,7 @@ pub fn draft_table(market: Market, irow: &IRow<'_>, sampler: &Sampler) -> TableD
             src: Some("inferred".into()),
             variants: Vec::new(),
         }],
+        rules: vec![],
         provenance: Provenance {
             note: Some("draft; every column is inferred".into()),
             ..Default::default()

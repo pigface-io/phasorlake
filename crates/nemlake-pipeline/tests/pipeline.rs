@@ -443,6 +443,203 @@ async fn a_source_is_read_again_when_its_rules_change() {
     assert_eq!(walk(&e.home.lake()), files, "what is in the lake stays");
 }
 
+/// A person's rule for an interval: the files of those months have a
+/// column read into another lake column, as that column's type. The same
+/// table, the same column list, read two ways by the month of the source,
+/// and the lake says which.
+#[tokio::test]
+async fn a_rule_for_an_interval_reads_its_files_another_way() {
+    use arrow_array::Array;
+    let e = env();
+    let columns = ["SETTLEMENTDATE", "UNIT", "VALUE"];
+    let table = format!(
+        r#"schema_format = 1
+market = "nem"
+source = "mms"
+name = "NEMLAKE_TEST_RULED"
+package = "TEST"
+visibility = "public"
+report_pairs = [["NEMLAKE_TEST", "RULED"]]
+load_mode = "append"
+dedupe = "none"
+time_column = "SETTLEMENTDATE"
+next_column_id = 5
+
+[[column]]
+id = 1
+name = "SETTLEMENTDATE"
+type = "timestamp"
+added_in = 1
+
+[[column]]
+id = 2
+name = "UNIT"
+type = "utf8"
+added_in = 1
+
+[[column]]
+id = 3
+name = "VALUE"
+type = "number"
+added_in = 1
+
+[[column]]
+id = 4
+name = "VALUE_TEXT"
+type = "utf8"
+added_in = 1
+src = ["manual"]
+
+[[version]]
+n = 1
+columns = ["SETTLEMENTDATE", "UNIT", "VALUE"]
+fingerprint = "{}"
+
+[[rule]]
+note = "Until 2011 the value was published with its unit."
+to = "2011-12"
+
+[[rule.column]]
+source = "VALUE"
+column = "VALUE_TEXT"
+"#,
+        nemlake_core::Fingerprint::of_names(columns)
+    );
+    let schemas = e.home.root().join("schemas/nem/mms");
+    std::fs::create_dir_all(&schemas).unwrap();
+    std::fs::write(schemas.join("NEMLAKE_TEST_RULED.toml"), table).unwrap();
+    let registry = Arc::new(
+        e.deps
+            .registry
+            .with_overlay(&e.home.root().join("schemas"))
+            .unwrap(),
+    );
+    let deps = Deps {
+        registry,
+        ..e.deps.clone()
+    };
+    let file = |name: &str, stamp: &str, value: &str| {
+        let p = e.home.root().join(name);
+        std::fs::write(
+            &p,
+            format!(
+                "C,NEMP.WORLD,TEST\nI,NEMLAKE_TEST,RULED,1,SETTLEMENTDATE,UNIT,VALUE\nD,NEMLAKE_TEST,RULED,1,\"{stamp}\",A1,{value}\nC,\"END OF REPORT\",4\n"
+            ),
+        )
+        .unwrap();
+        p
+    };
+    let old = file(
+        "PUBLIC_DVD_RULED_201003010000.CSV",
+        "2010/03/01 00:05:00",
+        "1.5 MW",
+    );
+    let new = file(
+        "PUBLIC_DVD_RULED_202403010000.CSV",
+        "2024/03/01 00:05:00",
+        "2.5",
+    );
+    let (tx, _rx) = tokio::sync::mpsc::channel(4096);
+    let rep = run(
+        Plan {
+            request: "ingest ruled".into(),
+            input: Input::Local(vec![old, new]),
+            options: RunOptions {
+                mode: nemlake_schema::Mode::Strict,
+                ..Default::default()
+            },
+        },
+        deps.clone(),
+        tx,
+        CancellationToken::new(),
+    )
+    .await;
+    assert_eq!(rep.exit_code, 0, "{:?}", rep.report.summary_lines());
+    assert_eq!(rep.summary.bad_rows, 0);
+
+    let read = |month: &str| {
+        let files: Vec<String> = walk(&e.home.lake())
+            .into_iter()
+            .filter(|p| p.contains(month))
+            .collect();
+        assert_eq!(files.len(), 1, "{month}: {files:?}");
+        let f = std::fs::File::open(&files[0]).unwrap();
+        let b = parquet::arrow::arrow_reader::ParquetRecordBatchReaderBuilder::try_new(f).unwrap();
+        let batch = b.build().unwrap().next().unwrap().unwrap();
+        let number = batch
+            .column_by_name("VALUE")
+            .unwrap()
+            .as_any()
+            .downcast_ref::<arrow_array::Float64Array>()
+            .unwrap()
+            .clone();
+        let text = batch
+            .column_by_name("VALUE_TEXT")
+            .unwrap()
+            .as_any()
+            .downcast_ref::<arrow_array::StringArray>()
+            .unwrap()
+            .clone();
+        (files[0].clone(), number, text)
+    };
+    // 2010: inside the interval. The value is kept as published, as text.
+    let (path, number, text) = read("year=2010");
+    assert!(number.is_null(0));
+    assert_eq!(text.value(0), "1.5 MW");
+    assert_eq!(footer(&path, "nemlake.resolution"), "exact+rule");
+    assert_eq!(footer(&path, "nemlake.source_period"), "2010-03");
+    let old_rules = footer(&path, "nemlake.rules");
+    // 2024: outside it. The value is a number.
+    let (path, number, text) = read("year=2024");
+    assert!((number.value(0) - 2.5).abs() < 1e-12);
+    assert!(text.is_null(0));
+    assert_eq!(footer(&path, "nemlake.resolution"), "exact");
+    assert_eq!(footer(&path, "nemlake.source_period"), "2024-03");
+    assert_ne!(footer(&path, "nemlake.rules"), old_rules);
+
+    // The manifest has the same, and with it both sources are current.
+    let ingests = deps.manifest.list_ingests(None, false, 10).await.unwrap();
+    let by_period = |p: &str| {
+        ingests
+            .iter()
+            .find(|i| i.transform.source_period.as_deref() == Some(p))
+            .unwrap()
+    };
+    assert_eq!(by_period("2010-03").transform.resolution, "exact+rule");
+    assert_eq!(by_period("2024-03").transform.resolution, "exact");
+    let (tx, _rx) = tokio::sync::mpsc::channel(4096);
+    let rep = run(
+        Plan {
+            request: "reingest".into(),
+            input: Input::Stale,
+            options: RunOptions::default(),
+        },
+        deps.clone(),
+        tx,
+        CancellationToken::new(),
+    )
+    .await;
+    assert_eq!(rep.summary.listed, 0, "nothing is behind its rules");
+    // Under the registry without the rule's table the same sources are
+    // behind: their table is gone and they would be read from the file.
+    let (tx, _rx) = tokio::sync::mpsc::channel(4096);
+    let rep = run(
+        Plan {
+            request: "reingest".into(),
+            input: Input::Stale,
+            options: RunOptions {
+                dry_run: true,
+                ..Default::default()
+            },
+        },
+        e.deps.clone(),
+        tx,
+        CancellationToken::new(),
+    )
+    .await;
+    assert_eq!(rep.summary.listed, 2);
+}
+
 /// What the manifest records of a source is enough to name it again.
 #[test]
 fn a_recorded_source_becomes_a_file_to_read() {
