@@ -209,7 +209,7 @@ pub fn merge(inputs: &Inputs<'_>) -> Result<TableDef, MergeError> {
     let mut column_order: Vec<String> = Vec::new();
     let mut seen: BTreeSet<String> = BTreeSet::new();
     let mut versions: Vec<VersionDef> = Vec::new();
-    // Renames AEMO made without bumping the version: canonical name -> other names seen.
+    // Names declared to be one column: canonical name -> its curated aliases.
     let mut renames: BTreeMap<String, Vec<String>> = BTreeMap::new();
     let mut sampled_months: BTreeSet<YearMonth> = BTreeSet::new();
     let mut max_len: BTreeMap<String, u32> = BTreeMap::new();
@@ -217,100 +217,32 @@ pub fn merge(inputs: &Inputs<'_>) -> Result<TableDef, MergeError> {
     let mut evidence: BTreeMap<String, (bool, bool, bool)> = BTreeMap::new();
     // The decimal shape of each column's sampled values.
     let mut digits: BTreeMap<String, crate::sample::Digits> = BTreeMap::new();
-    // Pass 1: renames. AEMO sometimes renames a column in place without
-    // bumping the version: two lists of one version, same length, differing
-    // only in names at a few positions. The name the data model knows (or
-    // the one in the longer-lived list) stays canonical and the other
-    // becomes an alias, so files with either name feed the same lake column.
-    // A name that is a column in its own right somewhere, beside the other
-    // name, is not an alias: then both are columns and the lists are simply
-    // two shapes.
+    // Pass 1: names a person has declared to be one column. AEMO sometimes
+    // renames a column in place without bumping the version: two lists of
+    // one version that differ only in a name at one position. Whether the
+    // two names are one field is a judgment about meaning, and the files
+    // do not say. So nothing is inferred here: each name is a column, each
+    // list a shape of its own, and nothing is lost either way. Only an
+    // alias on a column marked `curated` in the committed file, which is a
+    // person's statement that the names are one field, makes files with
+    // either name feed the same lake column. Even that stands down when a
+    // file shows both names side by side.
     let coexist = |x: &str, y: &str| {
         inputs
             .samples
             .iter()
             .any(|(_, b)| b.columns.iter().any(|c| c == x) && b.columns.iter().any(|c| c == y))
     };
-    let dm_knows = |n: &str| {
-        inputs
-            .dm
-            .is_some_and(|d| d.columns.iter().any(|c| c.name == n))
-    };
-    // What the committed file already knows about aliases stands, unless a
-    // file now shows both names side by side.
     if let Some(ex) = inputs.existing {
-        for c in &ex.columns {
+        for c in ex.columns.iter().filter(|c| c.curated) {
             for a in &c.aliases {
-                if !coexist(&c.name, a) {
+                if coexist(&c.name, a) {
+                    notes.push(format!(
+                        "column {} is curated with alias {a}, but a file carries both names; they are read as two columns",
+                        c.name
+                    ));
+                } else {
                     renames.entry(c.name.clone()).or_default().push(a.clone());
-                }
-            }
-        }
-    }
-    for (v, blocks) in &by_version {
-        // Every pair of lists of the version, newest first so the name in
-        // use today is the one that stays canonical.
-        let mut shapes: Vec<(Option<YearMonth>, &SampledBlock)> = Vec::new();
-        for (m, b) in blocks {
-            match shapes
-                .iter_mut()
-                .find(|(_, s)| s.fingerprint == b.fingerprint)
-            {
-                Some((seen, _)) => *seen = max_month(*seen, *m),
-                None => shapes.push((*m, b)),
-            }
-        }
-        shapes.sort_by(|(ma, a), (mb, b)| mb.cmp(ma).then(a.fingerprint.0.cmp(&b.fingerprint.0)));
-        for (i, (_, newer)) in shapes.iter().enumerate() {
-            for (_, older) in &shapes[i + 1..] {
-                if older.columns.len() != newer.columns.len() {
-                    continue;
-                }
-                let differing: Vec<(&String, &String)> = newer
-                    .columns
-                    .iter()
-                    .zip(&older.columns)
-                    .filter(|(x, y)| x != y)
-                    .collect();
-                let is_rename = !differing.is_empty()
-                    && differing.iter().all(|(x, y)| !coexist(x, y))
-                    // Not a reorder: every differing name is new to the other list.
-                    && differing
-                        .iter()
-                        .all(|(x, y)| !older.columns.contains(x) && !newer.columns.contains(y));
-                if !is_rename {
-                    continue;
-                }
-                for (x, y) in differing {
-                    let known = |canon: &String, alias: &String| {
-                        renames.get(canon).is_some_and(|a| a.contains(alias))
-                    };
-                    if known(x, y) {
-                        notes.push(format!("version {v} names column {x} as {y} in some files; recorded as an alias"));
-                        continue;
-                    }
-                    if known(y, x) {
-                        notes.push(format!("version {v} names column {y} as {x} in some files; recorded as an alias"));
-                        continue;
-                    }
-                    let (canon, alias) = if dm_knows(y) && !dm_knows(x) {
-                        (y, x)
-                    } else {
-                        (x, y)
-                    };
-                    // One canonical name per alias, and no chains.
-                    if renames.contains_key(alias)
-                        || renames
-                            .values()
-                            .any(|a| a.contains(canon) || a.contains(alias))
-                    {
-                        continue;
-                    }
-                    notes.push(format!("version {v} names column {canon} as {alias} in some files; recorded as an alias"));
-                    renames
-                        .entry(canon.clone())
-                        .or_default()
-                        .push(alias.clone());
                 }
             }
         }
@@ -911,7 +843,9 @@ mod tests {
         existing.next_column_id = 8;
         existing.columns[1].description = Some("Hand-written.".into());
         existing.columns[1].curated = true;
+        // An alias a person wrote, on a column marked as theirs.
         existing.columns[2].aliases = vec!["OLD_SCADA".into()];
+        existing.columns[2].curated = true;
         existing.versions.push(VersionDef {
             n: SchemaVersion(2),
             columns: vec![
@@ -1225,8 +1159,11 @@ mod tests {
         );
     }
 
+    /// Two lists of one version that differ in one name: the files do not
+    /// say whether the names are one field, so each is a column. Only a
+    /// person, by a curated alias, makes them one.
     #[test]
-    fn same_version_rename_becomes_alias() {
+    fn a_renamed_column_is_its_own_column_unless_a_person_says_otherwise() {
         let (ctl, dm, blocks) = load_scada();
         let mut renamed = blocks[0].clone();
         renamed.columns[1] = "CONFIDENTIAL_TO".into();
@@ -1236,27 +1173,82 @@ mod tests {
             .samples
             .push((Some("2026-09".parse().unwrap()), &renamed));
         let t = merge(&inputs).unwrap();
-        assert_eq!(validate_table(&t), vec![]);
-        let duid = t.column("DUID").unwrap();
-        assert_eq!(duid.aliases, ["CONFIDENTIAL_TO"]);
-        assert_eq!(t.versions[0].columns[1], "DUID");
-        assert!(t.column("CONFIDENTIAL_TO").is_some(), "alias lookup works");
-        // The renamed list is a variant, written with the name as published.
+        assert_eq!(
+            nemlake_schema_model::validate::validate_structure(&t),
+            vec![]
+        );
+        assert!(t.columns.iter().all(|c| c.aliases.is_empty()));
+        let duid = t.columns.iter().find(|c| c.name == "DUID").unwrap();
+        let conf = t
+            .columns
+            .iter()
+            .find(|c| c.name == "CONFIDENTIAL_TO")
+            .unwrap();
+        assert_ne!(duid.id, conf.id);
+        // Both lists are declared, each with its names as published.
+        assert_eq!(t.versions.len(), 1);
         assert_eq!(t.versions[0].variants.len(), 1);
+        let lists = [&t.versions[0].columns, &t.versions[0].variants[0].columns];
+        assert!(lists.iter().any(|l| l[1] == "DUID"));
+        assert!(lists.iter().any(|l| l[1] == "CONFIDENTIAL_TO"));
+        // Regenerating over the result changes nothing.
+        let mut again = scada_inputs(&ctl, &dm, &blocks);
+        again.samples = inputs.samples.clone();
+        again.existing = Some(&t);
+        assert_eq!(merge(&again).unwrap(), t);
+
+        // An alias in the committed file that nobody curated is not kept.
+        let mut inferred = merge(&scada_inputs(&ctl, &dm, &blocks)).unwrap();
+        let at = inferred
+            .columns
+            .iter()
+            .position(|c| c.name == "DUID")
+            .unwrap();
+        inferred.columns[at].aliases = vec!["CONFIDENTIAL_TO".into()];
+        let mut inputs = scada_inputs(&ctl, &dm, &blocks);
+        inputs
+            .samples
+            .push((Some("2026-09".parse().unwrap()), &renamed));
+        inputs.existing = Some(&inferred);
+        let t = merge(&inputs).unwrap();
+        assert!(t.columns.iter().all(|c| c.aliases.is_empty()));
+        assert!(t.columns.iter().any(|c| c.name == "CONFIDENTIAL_TO"));
+
+        // A person's alias stands: one column, fed by either name.
+        let mut curated = inferred.clone();
+        curated.columns[at].curated = true;
+        let mut inputs = scada_inputs(&ctl, &dm, &blocks);
+        inputs
+            .samples
+            .push((Some("2026-09".parse().unwrap()), &renamed));
+        inputs.existing = Some(&curated);
+        let t = merge(&inputs).unwrap();
+        assert_eq!(validate_table(&t), vec![]);
+        assert_eq!(t.columns.len(), 3);
+        assert_eq!(t.column("DUID").unwrap().aliases, ["CONFIDENTIAL_TO"]);
+        assert_eq!(t.versions[0].columns[1], "DUID");
         assert_eq!(t.versions[0].variants[0].columns[1], "CONFIDENTIAL_TO");
-        assert_eq!(t.versions[0].variants[0].fingerprint, renamed.fingerprint);
+
+        // Unless a file carries both names side by side: then they are two
+        // columns whatever the alias says, and the merge says so.
+        let both = block(
+            ("DISPATCH", "UNIT_SCADA"),
+            2,
+            &["SETTLEMENTDATE", "DUID", "SCADAVALUE", "CONFIDENTIAL_TO"],
+            &["SETTLEMENTDATE"],
+        );
+        inputs
+            .samples
+            .push((Some("2026-10".parse().unwrap()), &both));
+        let t = merge(&inputs).unwrap();
+        assert!(t.columns.iter().any(|c| c.name == "CONFIDENTIAL_TO"));
         assert!(
             t.provenance
                 .note
                 .as_deref()
                 .unwrap()
-                .contains("recorded as an alias")
+                .contains("read as two columns")
         );
-        // The data-model name wins even when the renamed sample is the longer/first one.
-        let mut inputs = scada_inputs(&ctl, &dm, &blocks);
-        inputs.samples.insert(0, (None, &renamed));
-        let t = merge(&inputs).unwrap();
-        assert_eq!(t.versions[0].columns[1], "DUID");
     }
 
     #[test]
@@ -1288,80 +1280,6 @@ mod tests {
             all_timestamp: columns.iter().map(|c| timestamps.contains(c)).collect(),
             digits: vec![crate::sample::Digits::default(); n],
         }
-    }
-
-    #[test]
-    fn a_rename_between_two_older_lists_is_still_an_alias() {
-        // Three lists of one version, as P5MIN_CONSTRAINTSOLUTION has: the
-        // newest reorders the columns, and the two older ones differ only in
-        // one name. Comparing each list with the newest alone would miss it.
-        let (ctl, dm, blocks) = load_scada();
-        let pair = ("DISPATCH", "UNIT_SCADA");
-        let newest = block(
-            pair,
-            1,
-            &["SETTLEMENTDATE", "SCADAVALUE", "DUID"],
-            &["SETTLEMENTDATE"],
-        );
-        let renamed = block(
-            pair,
-            1,
-            &["SETTLEMENTDATE", "CONFIDENTIAL_TO", "SCADAVALUE"],
-            &["SETTLEMENTDATE"],
-        );
-        let mut inputs = scada_inputs(&ctl, &dm, &blocks);
-        inputs
-            .samples
-            .push((Some("2026-08".parse().unwrap()), &newest));
-        inputs
-            .samples
-            .push((Some("2022-07".parse().unwrap()), &renamed));
-        let t = merge(&inputs).unwrap();
-        assert_eq!(validate_table(&t), vec![]);
-        let names: Vec<&str> = t.columns.iter().map(|c| c.name.as_str()).collect();
-        assert_eq!(names, ["SETTLEMENTDATE", "SCADAVALUE", "DUID"]);
-        assert_eq!(t.column("DUID").unwrap().aliases, ["CONFIDENTIAL_TO"]);
-        assert_eq!(t.versions.len(), 1);
-        assert_eq!(t.versions[0].columns, newest.columns);
-        assert_eq!(t.versions[0].variants.len(), 2);
-        let mut ids: Vec<u32> = t.columns.iter().map(|c| c.id.0).collect();
-        ids.sort_unstable();
-        ids.dedup();
-        assert_eq!(ids.len(), 3, "every column has its own id");
-
-        // Regenerating over the result changes nothing: the alias the file
-        // already records stands and ids stay where they are.
-        let mut again = scada_inputs(&ctl, &dm, &blocks);
-        again.samples = inputs.samples.clone();
-        again.existing = Some(&t);
-        assert_eq!(merge(&again).unwrap(), t);
-
-        // A file that carries both names side by side shows they are two
-        // columns: the alias goes and the new column gets an id of its own.
-        let both = block(
-            pair,
-            2,
-            &["SETTLEMENTDATE", "DUID", "SCADAVALUE", "CONFIDENTIAL_TO"],
-            &["SETTLEMENTDATE"],
-        );
-        let mut split = scada_inputs(&ctl, &dm, &blocks);
-        split.samples = inputs.samples.clone();
-        split
-            .samples
-            .push((Some("2026-09".parse().unwrap()), &both));
-        split.existing = Some(&t);
-        let t2 = merge(&split).unwrap();
-        assert_eq!(validate_table(&t2), vec![]);
-        assert!(t2.column("DUID").unwrap().aliases.is_empty());
-        let duid = t2.columns.iter().find(|c| c.name == "DUID").unwrap();
-        let conf = t2
-            .columns
-            .iter()
-            .find(|c| c.name == "CONFIDENTIAL_TO")
-            .unwrap();
-        assert_eq!(duid.id, t.column("DUID").unwrap().id);
-        assert_ne!(conf.id, duid.id);
-        assert_eq!(conf.id.0, t.next_column_id);
     }
 
     #[test]

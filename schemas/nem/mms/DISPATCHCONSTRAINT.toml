@@ -21,7 +21,7 @@ primary_key = [
     "INTERVENTION",
 ]
 time_column = "SETTLEMENTDATE"
-next_column_id = 14
+next_column_id = 15
 
 [[column]]
 id = 1
@@ -165,18 +165,13 @@ src = [
 ]
 
 [[column]]
-id = 10
-name = "DUID"
-aliases = ["CONFIDENTIAL_TO"]
+id = 14
+name = "CONFIDENTIAL_TO"
 type = "utf8"
-max_len = 20
-dict = true
-oracle = "VARCHAR2(20)"
 added_in = 5
-description = "DUID to which the Constraint is confidential. Null denotes non-confidential"
 src = [
-    "dm",
     "irow",
+    "sampled",
 ]
 
 [[column]]
@@ -225,29 +220,22 @@ src = [
     "irow",
 ]
 
+[[column]]
+id = 10
+name = "DUID"
+type = "utf8"
+max_len = 20
+dict = true
+oracle = "VARCHAR2(20)"
+added_in = 5
+description = "DUID to which the Constraint is confidential. Null denotes non-confidential"
+src = [
+    "dm",
+    "irow",
+]
+
 [[version]]
 n = 5
-columns = [
-    "SETTLEMENTDATE",
-    "RUNNO",
-    "CONSTRAINTID",
-    "DISPATCHINTERVAL",
-    "INTERVENTION",
-    "RHS",
-    "MARGINALVALUE",
-    "VIOLATIONDEGREE",
-    "LASTCHANGED",
-    "DUID",
-    "GENCONID_EFFECTIVEDATE",
-    "GENCONID_VERSIONNO",
-    "LHS",
-]
-fingerprint = "xxh3:1a5b9a08eea9266f1b4bcad160c7c736"
-first_seen = "2024-01"
-last_seen = "2024-01"
-src = "irow"
-
-[[version.variant]]
 columns = [
     "SETTLEMENTDATE",
     "RUNNO",
@@ -266,9 +254,28 @@ columns = [
 fingerprint = "xxh3:71ba6dc84cd5e236345dcd15e74fda10"
 first_seen = "2024-01"
 last_seen = "2024-01"
+src = "irow"
+
+[[version.variant]]
+columns = [
+    "SETTLEMENTDATE",
+    "RUNNO",
+    "CONSTRAINTID",
+    "DISPATCHINTERVAL",
+    "INTERVENTION",
+    "RHS",
+    "MARGINALVALUE",
+    "VIOLATIONDEGREE",
+    "LASTCHANGED",
+    "DUID",
+    "GENCONID_EFFECTIVEDATE",
+    "GENCONID_VERSIONNO",
+    "LHS",
+]
+fingerprint = "xxh3:1a5b9a08eea9266f1b4bcad160c7c736"
 
 [provenance]
 ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_DISPATCHCONSTRAINT_202401.ctl"
 data_model = "MMS_126.htm@v5.0.0.1"
 sampled_months = ["2024-01"]
-note = "version 5 names column DUID as CONFIDENTIAL_TO in some files; recorded as an alias"
+note = "version 5 was published with 13 columns and with 13; the lists differ by more than appended columns; the shorter is a variant"

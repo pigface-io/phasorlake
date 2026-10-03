@@ -1176,8 +1176,9 @@ mod tests {
     #[test]
     fn declared_variants_resolve_exactly() {
         let r = reg();
-        // A rename AEMO made in place: the archive says CONFIDENTIAL_TO where
-        // the live feed says DUID, both as version 5.
+        // Two lists of one version that differ in a name: the archive says
+        // CONFIDENTIAL_TO where the live feed says DUID, both as version 5.
+        // Each list is declared and each name is a column of its own.
         let id = r.table_by_name("DISPATCHCONSTRAINT").unwrap();
         let t = r.table(id);
         let v = t.versions.last().unwrap();
@@ -1196,13 +1197,27 @@ mod tests {
             assert_eq!(res.version, v.n);
             assert!(res.warnings.is_empty(), "{:?}", res.warnings);
             assert!(res.projection.casts.iter().all(|c| c.target.is_some()));
-            assert!(res.projection.missing.is_empty());
+            // What the other list has under its own name is null here.
+            let lacking: Vec<&str> = res
+                .projection
+                .missing
+                .iter()
+                .map(|&i| t.columns[usize::from(i)].name.as_str())
+                .collect();
+            assert_eq!(lacking.len(), 1, "{lacking:?}");
+            assert!(v.columns.iter().any(|c| c == lacking[0]));
+            assert!(!variant.columns.iter().any(|c| c == lacking[0]));
         }
-        // The alias column feeds the same lake column as the canonical name.
+        // The two lists feed the same lake columns but for that one name.
         let main = r.projection(id, v.n).unwrap();
         let res = r.resolve(&row, ResolveOptions::default()).unwrap();
         let targets = |p: &Projection| p.casts.iter().map(|c| c.target).collect::<Vec<_>>();
-        assert_eq!(targets(&res.projection), targets(main));
+        let differing = targets(&res.projection)
+            .iter()
+            .zip(targets(main))
+            .filter(|(a, b)| **a != *b)
+            .count();
+        assert_eq!(differing, 1);
         assert!(Arc::ptr_eq(
             &res.projection,
             r.variant_projection(id, v.n, variant.fingerprint).unwrap()
@@ -1237,15 +1252,24 @@ mod tests {
     }
 
     #[test]
-    fn alias_in_an_undeclared_shape_is_compatible_drift() {
+    fn an_undeclared_cut_of_a_declared_list_is_compatible_drift() {
         let r = reg();
         let id = r.table_by_name("DISPATCHCONSTRAINT").unwrap();
         let t = r.table(id);
         let v = t.versions.last().unwrap();
-        // The alias shape minus its last column is not declared anywhere.
+        // A declared variant minus its last column is not declared anywhere.
         let variant = v.variants.first().unwrap();
         let mut cols = variant.columns.clone();
-        let dropped = cols.pop().unwrap();
+        cols.pop().unwrap();
+        // Missing, against the version's own list: what was cut, and the
+        // name only that list has.
+        let missing: Vec<String> = v
+            .columns
+            .iter()
+            .filter(|c| !cols.contains(c))
+            .cloned()
+            .collect();
+        assert_eq!(missing.len(), 2);
         let refs: Vec<&str> = cols.iter().map(String::as_str).collect();
         let row = IRow {
             report_type: &t.report_pairs[0].0,
@@ -1257,7 +1281,7 @@ mod tests {
         assert_eq!(
             res.status,
             Status::Drift {
-                missing: vec![dropped],
+                missing,
                 extra: vec![],
                 reordered: false
             }
