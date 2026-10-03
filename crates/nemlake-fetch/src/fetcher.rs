@@ -225,11 +225,7 @@ impl Fetcher {
                 tokio::time::sleep(exp.min(self.config.max_backoff) + jitter).await;
             }
             self.pace().await;
-            let req = HttpRequest {
-                url: url.to_owned(),
-                if_none_match: None,
-                if_modified_since: None,
-            };
+            let req = HttpRequest::get(url);
             let result = match self.transport.get(req).await {
                 Err(e) => Err(e),
                 Ok(resp) if resp.status == 200 => consume(resp).await,

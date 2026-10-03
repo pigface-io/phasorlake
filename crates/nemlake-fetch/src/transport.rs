@@ -20,6 +20,48 @@ pub struct HttpRequest {
     pub if_none_match: Option<String>,
     /// `If-Modified-Since`.
     pub if_modified_since: Option<String>,
+    /// `Range: bytes={start}-{end}`; an open end reads to the end of the file.
+    pub range: Option<ByteRange>,
+}
+
+/// An inclusive byte range for a partial GET.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct ByteRange {
+    /// First byte.
+    pub start: u64,
+    /// Last byte, inclusive; `None` means to the end.
+    pub end: Option<u64>,
+}
+
+impl ByteRange {
+    /// The header value.
+    #[must_use]
+    pub fn header_value(&self) -> String {
+        match self.end {
+            Some(e) => format!("bytes={}-{e}", self.start),
+            None => format!("bytes={}-", self.start),
+        }
+    }
+}
+
+impl HttpRequest {
+    /// A plain GET of `url`.
+    #[must_use]
+    pub fn get(url: &str) -> Self {
+        Self {
+            url: url.to_owned(),
+            if_none_match: None,
+            if_modified_since: None,
+            range: None,
+        }
+    }
+
+    /// The same request limited to `range`.
+    #[must_use]
+    pub fn with_range(mut self, range: ByteRange) -> Self {
+        self.range = Some(range);
+        self
+    }
 }
 
 /// A response with a streaming body.
@@ -87,6 +129,9 @@ impl Transport for ReqwestTransport {
         }
         if let Some(m) = &req.if_modified_since {
             r = r.header("If-Modified-Since", m);
+        }
+        if let Some(range) = &req.range {
+            r = r.header("Range", range.header_value());
         }
         let resp = r.send().await.map_err(|e| {
             if e.is_timeout() {
@@ -244,6 +289,17 @@ impl Transport for Arc<StaticTransport> {
                 message: m,
             });
         }
+        // A range over a 200 answer is served as 206 with the slice, as IIS does.
+        let mut canned = canned;
+        if let Some(range) = req.range
+            && canned.status == 200
+        {
+            let total = canned.body.len() as u64;
+            let start = range.start.min(total) as usize;
+            let end = range.end.map_or(total, |e| (e + 1).min(total)) as usize;
+            canned.body = canned.body[start..end.max(start)].to_vec();
+            canned.status = 206;
+        }
         let len = canned.body.len();
         let content_length = match canned.claimed_length {
             None => Some(len as u64),
@@ -273,26 +329,78 @@ mod tests {
     use super::*;
 
     #[tokio::test]
+    async fn ranges() {
+        assert_eq!(
+            ByteRange {
+                start: 0,
+                end: Some(9)
+            }
+            .header_value(),
+            "bytes=0-9"
+        );
+        assert_eq!(
+            ByteRange {
+                start: 100,
+                end: None
+            }
+            .header_value(),
+            "bytes=100-"
+        );
+        let req = HttpRequest::get("https://h/a").with_range(ByteRange {
+            start: 2,
+            end: Some(4),
+        });
+        assert_eq!(req.url, "https://h/a");
+        assert_eq!(
+            req.range,
+            Some(ByteRange {
+                start: 2,
+                end: Some(4)
+            })
+        );
+        let t = Arc::new(StaticTransport::default());
+        t.add("https://h/a", Canned::ok(b"0123456789"));
+        let body = |r: HttpResponse| async move { r.body.map(Result::unwrap).concat().await };
+        let r = t.get(req).await.unwrap();
+        assert_eq!(r.status, 206);
+        assert_eq!(r.content_length, Some(3));
+        assert_eq!(body(r).await, b"234");
+        // An open end reads to the end; a range past the end is empty.
+        let open = HttpRequest::get("https://h/a").with_range(ByteRange {
+            start: 7,
+            end: None,
+        });
+        assert_eq!(body(t.get(open).await.unwrap()).await, b"789");
+        let past = HttpRequest::get("https://h/a").with_range(ByteRange {
+            start: 50,
+            end: Some(60),
+        });
+        let r = t.get(past).await.unwrap();
+        assert_eq!(r.status, 206);
+        assert!(body(r).await.is_empty());
+        // A range does not turn an error status into a partial answer.
+        t.add("https://h/gone", Canned::status(404));
+        let r = t
+            .get(HttpRequest::get("https://h/gone").with_range(ByteRange {
+                start: 0,
+                end: Some(1),
+            }))
+            .await
+            .unwrap();
+        assert_eq!(r.status, 404);
+    }
+
+    #[tokio::test]
     async fn offline_and_static() {
         let off = OfflineTransport;
         assert!(off.is_offline());
-        let r = off
-            .get(HttpRequest {
-                url: "https://h/x".into(),
-                if_none_match: None,
-                if_modified_since: None,
-            })
-            .await;
+        let r = off.get(HttpRequest::get("https://h/x")).await;
         assert!(matches!(r, Err(FetchError::Offline { .. })));
         let t = Arc::new(StaticTransport::default());
         t.add("https://h/a", Canned::ok(b"abc"))
             .add("https://h/a", Canned::status(503));
         assert!(!t.is_offline());
-        let req = |u: &str| HttpRequest {
-            url: u.into(),
-            if_none_match: None,
-            if_modified_since: None,
-        };
+        let req = HttpRequest::get;
         let r = t.get(req("https://h/a")).await.unwrap();
         assert_eq!(r.status, 200);
         assert_eq!(r.content_length, Some(3));

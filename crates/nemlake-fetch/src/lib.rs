@@ -20,5 +20,7 @@ pub use error::FetchError;
 pub use fetcher::{Fetcher, FetcherConfig, LocalFile};
 pub use mmsdm::MmsdmArchive;
 pub use source::{FileKind, Query, RemoteFile, Source};
-pub use transport::{HttpRequest, HttpResponse, OfflineTransport, ReqwestTransport, Transport};
+pub use transport::{
+    ByteRange, HttpRequest, HttpResponse, OfflineTransport, ReqwestTransport, Transport,
+};
 pub use wem::WemDatafiles;
