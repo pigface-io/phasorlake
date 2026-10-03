@@ -5,6 +5,7 @@ source = "mms"
 name = "SETCFG_PARTICIPANT_MPFTRK"
 package = "SETTLEMENT_CONFIG"
 visibility = "public"
+description = "SETCFG_PARTICIPANT_MPFTRK is the tracking table for Market Participation Factors (MPF) data stored in the SETCFG_PARTICIPANT_MPF table for each participant."
 report_pairs = [[
     "SETTLEMENT_CONFIG",
     "SETCFG_PARTICIPANT_MPFTRK",

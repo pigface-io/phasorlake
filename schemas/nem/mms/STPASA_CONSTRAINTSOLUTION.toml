@@ -5,6 +5,7 @@ source = "mms"
 name = "STPASA_CONSTRAINTSOLUTION"
 package = "STPASA_SOLUTION"
 visibility = "public"
+description = "STPASA_CONSTRAINTSOLUTION shows binding and violated constraint results from the capacity evaluation, including the RHS value."
 report_pairs = [[
     "STPASA",
     "CONSTRAINTSOLUTION",
@@ -140,7 +141,7 @@ nullable = false
 oracle = "VARCHAR2(20)"
 loader = "CHAR(20)"
 added_in = 3
-description = "Type of run.  Values are RELIABILITY_LRC and OUTAGE_LRC"
+description = "Type of run. Values are RELIABILITY_LRC and OUTAGE_LRC"
 src = [
     "ctl",
     "dm",

@@ -5,6 +5,9 @@ source = "mms"
 name = "BIDTYPES"
 package = "MARKET_CONFIG"
 visibility = "public"
+description = """
+BIDTYPES, together with the associated tracking data in BIDTYPESTRK, define a set of ancillary services with bidding parameters from a given date.
+BIDTYPES is static data describing each type of bid quantity, the number of applicable bands, how many days ahead a price lock down becomes effective and the validation rule that applies."""
 report_pairs = [[
     "MARKET_CONFIG",
     "BIDTYPES",

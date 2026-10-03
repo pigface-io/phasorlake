@@ -5,6 +5,7 @@ source = "mms"
 name = "SPDCONNECTIONPOINTCONSTRAINT"
 package = "GENERIC_CONSTRAINT"
 visibility = "public"
+description = "SPDCONNECTIONPOINTCONSTRAINT sets out details of connections point constraints issued in dispatch, predispatch and STPASA."
 report_pairs = [[
     "SPDCPC",
     "",

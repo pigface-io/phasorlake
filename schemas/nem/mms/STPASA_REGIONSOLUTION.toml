@@ -5,6 +5,7 @@ source = "mms"
 name = "STPASA_REGIONSOLUTION"
 package = "STPASA_SOLUTION"
 visibility = "public"
+description = "STPASA_REGIONSOLUTION shows the results of the regional capacity, maximum surplus reserve and maximum spare capacity evaluations for each period of the study."
 report_pairs = [[
     "STPASA",
     "REGIONSOLUTION",
@@ -247,7 +248,7 @@ type = "integer"
 oracle = "NUMBER(1,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 6
-description = "The regional reserve condition: 0  Adequate, 1  LRC"
+description = "The regional reserve condition: 0 Adequate, 1 LRC"
 src = [
     "ctl",
     "dm",
@@ -263,7 +264,7 @@ scale = 2
 oracle = "NUMBER(12,2)"
 loader = "FLOAT EXTERNAL"
 added_in = 6
-description = "The Maximum Surplus Reserve evaluated for this region in this period.  Calculated for each region in turn."
+description = "The Maximum Surplus Reserve evaluated for this region in this period. Calculated for each region in turn."
 src = [
     "ctl",
     "dm",
@@ -309,7 +310,7 @@ scale = 2
 oracle = "NUMBER(12,2)"
 loader = "FLOAT EXTERNAL"
 added_in = 6
-description = "Sum of  MAXAVAIL quantities offered by all Scheduled Generators in a given Region for a given PERIODID."
+description = "Sum of MAXAVAIL quantities offered by all Scheduled Generators in a given Region for a given PERIODID."
 src = [
     "ctl",
     "dm",
@@ -325,7 +326,7 @@ scale = 2
 oracle = "NUMBER(12,2)"
 loader = "FLOAT EXTERNAL"
 added_in = 6
-description = "Sum of  MAXAVAIL quantities bid by of all Scheduled Loads in a given Region for a given PERIODID."
+description = "Sum of MAXAVAIL quantities bid by of all Scheduled Loads in a given Region for a given PERIODID."
 src = [
     "ctl",
     "dm",
@@ -353,7 +354,7 @@ type = "integer"
 oracle = "NUMBER(12,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 6
-description = "Sum of  PASAAVAILABILITY quantities offered by all Scheduled Generators in a given Region for a given PERIODID."
+description = "Sum of PASAAVAILABILITY quantities offered by all Scheduled Generators in a given Region for a given PERIODID."
 src = [
     "ctl",
     "dm",
@@ -370,7 +371,7 @@ nullable = false
 oracle = "VARCHAR2(20)"
 loader = "CHAR(20)"
 added_in = 6
-description = "Type of run.  Values are RELIABILITY_LRC and OUTAGE_LRC"
+description = "Type of run. Values are RELIABILITY_LRC and OUTAGE_LRC"
 src = [
     "ctl",
     "dm",

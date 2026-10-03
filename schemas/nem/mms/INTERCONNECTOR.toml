@@ -5,6 +5,7 @@ source = "mms"
 name = "INTERCONNECTOR"
 package = "MARKET_CONFIG"
 visibility = "public"
+description = "INTERCONNECTOR sets out valid identifiers for each interconnector."
 report_pairs = [[
     "MARKET_CONFIG",
     "INTERCONNECTOR",

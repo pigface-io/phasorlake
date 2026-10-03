@@ -5,6 +5,7 @@ source = "mms"
 name = "MTPASA_CONSTRAINTSUMMARY"
 package = "MTPASA"
 visibility = "public"
+description = "Constraint Summary results over aggregation periods"
 report_pairs = [[
     "MTPASA",
     "CONSTRAINTSUMMARY",

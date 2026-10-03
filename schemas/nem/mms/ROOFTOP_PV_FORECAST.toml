@@ -5,6 +5,7 @@ source = "mms"
 name = "ROOFTOP_PV_FORECAST"
 package = "DEMAND_FORECASTS"
 visibility = "public"
+description = "Regional forecasts of Rooftop Solar generation across the half-hour intervals over 8 days"
 report_pairs = [[
     "ROOFTOP",
     "FORECAST",

@@ -5,6 +5,7 @@ source = "mms"
 name = "PARTICIPANTCATEGORY"
 package = "PARTICIPANT_REGISTRATION"
 visibility = "public"
+description = "PARTICIPANTCATEGORY sets out valid participant categories."
 report_pairs = [[
     "PARTICIPANT_REGISTRATION",
     "PARTICIPANTCATEGORY",

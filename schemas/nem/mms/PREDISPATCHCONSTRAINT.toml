@@ -5,6 +5,9 @@ source = "mms"
 name = "PREDISPATCHCONSTRAINT"
 package = "PRE_DISPATCH"
 visibility = "public"
+description = """
+PREDISPATCHCONSTRAINT sets out constraints that are binding in each predispatch run and interconnector constraints (whether binding or not). Only binding and interconnector constraints are reported. Binding contracts have marginal value greater than $0. Interconnector constraints are listed so RHS values can be reported for ST PASA.
+Constraint solutions only report fixed loading /MR constraints on the next day."""
 report_pairs = [[
     "PREDISPATCH",
     "CONSTRAINT_SOLUTION",

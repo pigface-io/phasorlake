@@ -5,6 +5,7 @@ source = "mms"
 name = "PERDEMAND"
 package = "DEMAND_FORECASTS"
 visibility = "public"
+description = "PERDEMAND sets out the regional demands and MR schedule data for each half-hour period. PERDEMAND is a child table to RESDEMANDTRK."
 report_pairs = [[
     "DEMAND",
     "PERIOD",

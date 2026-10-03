@@ -5,6 +5,7 @@ source = "mms"
 name = "SETIRSURPLUS"
 package = "SETTLEMENT_DATA"
 visibility = "public"
+description = "SETIRSURPLUS records the interregional residue calculation for each interconnector and each side of the interconnector."
 report_pairs = [[
     "SETTLEMENTS",
     "IRSURPLUS",

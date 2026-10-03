@@ -5,6 +5,7 @@ source = "mms"
 name = "GENUNITS"
 package = "PARTICIPANT_REGISTRATION"
 visibility = "public"
+description = "GENUNITS shows Genset details for each physical unit with the relevant station."
 report_pairs = [[
     "PARTICIPANT_REGISTRATION",
     "GENUNITS",
@@ -285,7 +286,7 @@ max_len = 100
 oracle = "VARCHAR2(100)"
 loader = "CHAR(100)"
 added_in = 2
-description = "The energy source for the generating unit, as used in the calculation of the CO2-e emissions factor.  Distinct from the Energy Source for a generating unit published as part of the Registration Master List"
+description = "The energy source for the generating unit, as used in the calculation of the CO2-e emissions factor. Distinct from the Energy Source for a generating unit published as part of the Registration Master List"
 src = [
     "ctl",
     "dm",

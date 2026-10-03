@@ -5,6 +5,7 @@ source = "mms"
 name = "PREDISPATCHSCENARIODEMANDTRK"
 package = "PRE_DISPATCH"
 visibility = "public"
+description = "Tracks the predispatch scenario offset updates across time"
 report_pairs = [[
     "PREDISPATCH",
     "SCENARIO_DEMAND_TRK",

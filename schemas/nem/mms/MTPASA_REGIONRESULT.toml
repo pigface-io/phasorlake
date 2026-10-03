@@ -5,6 +5,7 @@ source = "mms"
 name = "MTPASA_REGIONRESULT"
 package = "MTPASA"
 visibility = "public"
+description = "Region results for interval of max demand per day."
 report_pairs = [[
     "MTPASA",
     "REGIONRESULT",

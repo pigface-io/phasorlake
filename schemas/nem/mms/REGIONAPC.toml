@@ -5,6 +5,7 @@ source = "mms"
 name = "REGIONAPC"
 package = "FORCE_MAJEURE"
 visibility = "public"
+description = "REGIONAPC defines Administered Price profiles (Energy and FCAS) for a region."
 report_pairs = [[
     "AP",
     "REGIONAPC",

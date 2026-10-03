@@ -5,6 +5,7 @@ source = "mms"
 name = "BIDOFFERPERIOD"
 package = "BIDS"
 visibility = "public"
+description = "BIDOFFERPERIOD shows 5-minute period-based Energy and Ancillary Service bid data.BIDOFFERPERIOD is a child table of BIDDAYOFFER"
 report_pairs = [[
     "BIDS",
     "BIDOFFERPERIOD",

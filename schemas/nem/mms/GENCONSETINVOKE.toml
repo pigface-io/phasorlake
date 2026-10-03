@@ -5,6 +5,9 @@ source = "mms"
 name = "GENCONSETINVOKE"
 package = "GENERIC_CONSTRAINT"
 visibility = "public"
+description = """
+GENCONSETINVOKE provides details of invoked and revoked generic constraints. GENCONSETINVOKE is the key table for determining what constraints are active in dispatch, predispatch and PASA.
+GENCONSETINVOKE also indicates whether constraints are for interconnector limits, ancillary services, etc."""
 report_pairs = [[
     "GENERIC_CONSTRAINT",
     "GENCONSETINVOKE",

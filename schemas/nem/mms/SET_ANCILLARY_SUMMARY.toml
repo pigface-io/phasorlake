@@ -5,6 +5,7 @@ source = "mms"
 name = "SET_ANCILLARY_SUMMARY"
 package = "SETTLEMENT_DATA"
 visibility = "public"
+description = "SET_ANCILLARY_SUMMARY summarises payments for all Ancillary Services to participants on the basis of regions and trading intervals."
 report_pairs = [[
     "SETTLEMENTS",
     "ANCILLARY_SUMMARY",

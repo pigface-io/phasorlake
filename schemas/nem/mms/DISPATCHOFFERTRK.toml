@@ -5,6 +5,7 @@ source = "mms"
 name = "DISPATCHOFFERTRK"
 package = "DISPATCH"
 visibility = "public"
+description = "DISPATCHOFFERTRK is the energy and ancillary service bid tracking table for the Dispatch process. The table identifies which bids from BIDDAYOFFER and BIDPEROFFER were applied for a given unit and bid type for each dispatch interval."
 report_pairs = [[
     "DISPATCH",
     "OFFERTRK",

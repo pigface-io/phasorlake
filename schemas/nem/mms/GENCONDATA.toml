@@ -5,6 +5,9 @@ source = "mms"
 name = "GENCONDATA"
 package = "GENERIC_CONSTRAINT"
 visibility = "public"
+description = """
+GENCONDATA sets out the generic constraints contained within a generic constraint set invoked in PASA, predispatch and dispatch.
+Fields enable selective application of invoked constraints in the Dispatch, Predispatch, ST PASA or MT PASA processes."""
 report_pairs = [[
     "GENCONDATA",
     "",

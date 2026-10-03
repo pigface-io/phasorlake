@@ -5,6 +5,7 @@ source = "mms"
 name = "DISPATCH_FCAS_REQ"
 package = "DISPATCH"
 visibility = "public"
+description = "DISPATCH_FCAS_REQ shows Dispatch Constraint tracking for Regional FCAS recovery."
 report_pairs = [[
     "DISPATCH",
     "FCAS_REQ",

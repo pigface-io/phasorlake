@@ -5,6 +5,7 @@ source = "mms"
 name = "IRFMAMOUNT"
 package = "FORCE_MAJEURE"
 visibility = "public"
+description = "IRFMAMOUNT sets out settlement amounts associated with Industrial Relations Forced Majeure events."
 report_pairs = [[
     "FORCE_MAJEURE",
     "IRFMAMOUNT",

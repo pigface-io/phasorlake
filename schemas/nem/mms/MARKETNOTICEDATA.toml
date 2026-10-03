@@ -5,6 +5,7 @@ source = "mms"
 name = "MARKETNOTICEDATA"
 package = "MARKET_NOTICE"
 visibility = "public"
+description = "MARKETNOTICEDATA shows market notices data provided to all participants (market) and specific participants (participant)."
 report_pairs = [[
     "MARKET_NOTICE",
     "MARKETNOTICEDATA",

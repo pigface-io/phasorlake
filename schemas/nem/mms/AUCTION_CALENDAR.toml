@@ -5,6 +5,7 @@ source = "mms"
 name = "AUCTION_CALENDAR"
 package = "IRAUCTION"
 visibility = "public"
+description = "AUCTION_CALENDAR holds the definitions of each auction quarter in a contract year. AUCTION_CALENDAR supports the Settlement Residue Auction."
 report_pairs = [[
     "IRAUCTION_CONFIG",
     "AUCTION_CALENDAR",

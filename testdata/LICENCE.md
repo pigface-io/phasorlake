@@ -8,7 +8,9 @@ bytes of every zip in the January 2024 archive (`just schema-fixtures`): the
 `C` header, the `I` row and at most 20 `D` rows, no footer. The control files
 under `bootstrap/MMSDM_2024_01/CTL/` and the listing under `listings/` are
 copied verbatim from the same archive. The JSON
-under `bootstrap/datamodel/` is scraped from AEMO's MMS Data Model Report.
+under `bootstrap/datamodel/` is AEMO's MMS Data Model Report as read by
+`just schema-datamodel`; the four pages under `bootstrap/datamodel/pages/`
+are copied verbatim from that report.
 
 © AEMO. Reproduced for software testing under AEMO's copyright permissions
 (https://aemo.com.au/privacy-and-legal-notices/copyright-permissions), which

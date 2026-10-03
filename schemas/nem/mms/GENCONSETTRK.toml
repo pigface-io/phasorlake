@@ -5,6 +5,7 @@ source = "mms"
 name = "GENCONSETTRK"
 package = "GENERIC_CONSTRAINT"
 visibility = "public"
+description = "GENCONSETTRK assists in determining the correct version of a generic constraint set that has been invoked in GENCONSETINVOKE."
 report_pairs = [[
     "GENCONSETTRK",
     "",

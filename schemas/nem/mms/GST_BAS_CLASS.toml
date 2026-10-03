@@ -5,6 +5,7 @@ source = "mms"
 name = "GST_BAS_CLASS"
 package = "BILLING_CONFIG"
 visibility = "public"
+description = "GST_BAS_CLASS contains a static list of BAS (Business Activity Statement) classifications supported by the MMS."
 report_pairs = [[
     "BILLING_CONFIG",
     "GST_BAS_CLASS",

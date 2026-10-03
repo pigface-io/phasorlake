@@ -5,6 +5,7 @@ source = "mms"
 name = "PREDISPATCHREGIONSUM"
 package = "PRE_DISPATCH"
 visibility = "public"
+description = "PREDISPATCHREGIONSUM sets out the overall regional Pre-Dispatch results for base case details (excluding price)."
 report_pairs = [[
     "PREDISPATCH",
     "REGION_SOLUTION",
@@ -632,7 +633,7 @@ scale = 5
 oracle = "NUMBER(15,5)"
 loader = "FLOAT EXTERNAL"
 added_in = 5
-description = "Not used since Dec 2003.  Raise 5 min MW imported"
+description = "Not used since Dec 2003. Raise 5 min MW imported"
 src = [
     "ctl",
     "dm",

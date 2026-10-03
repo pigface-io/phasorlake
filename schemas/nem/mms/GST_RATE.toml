@@ -5,6 +5,7 @@ source = "mms"
 name = "GST_RATE"
 package = "BILLING_CONFIG"
 visibility = "public"
+description = "GST_RATE maintains the GST rates on a BAS (Business Activity Statement) class basis."
 report_pairs = [[
     "BILLING_CONFIG",
     "GST_RATE",

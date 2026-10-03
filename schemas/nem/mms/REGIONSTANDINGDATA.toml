@@ -5,6 +5,7 @@ source = "mms"
 name = "REGIONSTANDINGDATA"
 package = "MARKET_CONFIG"
 visibility = "public"
+description = "REGIONSTANDINGDATA sets out standing region data including the region reference node."
 report_pairs = [[
     "MARKET_CONFIG",
     "REGIONSTANDINGDATA",

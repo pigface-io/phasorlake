@@ -5,6 +5,7 @@ source = "mms"
 name = "DISPATCHCONSTRAINT"
 package = "DISPATCH"
 visibility = "public"
+description = "DISPATCHCONSTRAINT sets out details of all binding and interregion constraints in each dispatch run. Note: invoked constraints can be established from GENCONSETINVOKE. Binding constraints show as marginal value >$0. Interconnector constraints are listed so RHS (SCADA calculated limits) can be reported."
 report_pairs = [[
     "DISPATCH",
     "CONSTRAINT",

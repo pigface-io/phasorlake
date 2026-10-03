@@ -5,6 +5,7 @@ source = "mms"
 name = "PARTICIPANT"
 package = "PARTICIPANT_REGISTRATION"
 visibility = "public"
+description = "PARTICIPANT sets out Participant ID, name and class for all participants."
 report_pairs = [[
     "PARTICIPANT_REGISTRATION",
     "PARTICIPANT",

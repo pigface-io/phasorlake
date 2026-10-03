@@ -5,6 +5,7 @@ source = "mms"
 name = "STATIONOPERATINGSTATUS"
 package = "PARTICIPANT_REGISTRATION"
 visibility = "public"
+description = "STATIONOPERATINGSTATUS sets out the operating status of each station."
 report_pairs = [[
     "PARTICIPANT_REGISTRATION",
     "STATIONOPERATINGSTATUS",

@@ -5,6 +5,7 @@ source = "mms"
 name = "STPASA_CASESOLUTION"
 package = "STPASA_SOLUTION"
 visibility = "public"
+description = "STPASA_CASESOLUTION holds one record containing results pertaining to each entire solution"
 report_pairs = [[
     "STPASA",
     "CASESOLUTION",
@@ -67,7 +68,7 @@ type = "integer"
 oracle = "NUMBER(1,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 3
-description = "Lack of Reserve Condition (LOR) flag for the case indicates the most severe condition in the case  (3 = LOR3, 2 = LOR2, 1 = LOR1, 0 = No LOR)"
+description = "Lack of Reserve Condition (LOR) flag for the case indicates the most severe condition in the case (3 = LOR3, 2 = LOR2, 1 = LOR1, 0 = No LOR)"
 src = [
     "ctl",
     "dm",

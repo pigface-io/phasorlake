@@ -51,7 +51,7 @@ enum Cmd {
         /// so name the newest month first.
         #[arg(long, required = true)]
         ctl: Vec<PathBuf>,
-        /// The scraped data-model JSON.
+        /// The data-model JSON, as the `datamodel` subcommand writes it.
         #[arg(long)]
         datamodel: PathBuf,
         /// Directories of `.CSV`/`.zip` files to sample I rows from; repeatable.
@@ -117,6 +117,23 @@ enum Cmd {
         cache: PathBuf,
         /// Archive base URL.
         #[arg(long, default_value = "https://www.nemweb.com.au")]
+        base: String,
+    },
+    /// Read AEMO's MMS Data Model Report and write it as the JSON `regen`
+    /// takes with `--datamodel` (network: one request per package and per
+    /// table, a few hundred in all).
+    Datamodel {
+        /// Output directory; the file is `mms_data_model_{version}.json`.
+        #[arg(long, default_value = "testdata/bootstrap/datamodel")]
+        out: PathBuf,
+        /// Milliseconds between two requests.
+        #[arg(long, default_value_t = 1000)]
+        interval_ms: u64,
+        /// Where fetched pages are cached between runs.
+        #[arg(long, default_value = "target/bootstrap-cache")]
+        cache: PathBuf,
+        /// Where the report's pages live.
+        #[arg(long, default_value = nemlake_schema_bootstrap::dmreport::REPORT_BASE)]
         base: String,
     },
     /// Gather what historical months add: a bundle of heads per month and
@@ -296,6 +313,47 @@ fn main() -> ExitCode {
                     ExitCode::SUCCESS
                 }
                 Err(e) => fail(&e.diagnostic()),
+            }
+        }
+        Cmd::Datamodel {
+            out,
+            interval_ms,
+            cache,
+            base,
+        } => {
+            let transport = match nemlake_schema_bootstrap::remote::nemweb_transport() {
+                Ok(t) => t,
+                Err(e) => return fail(&e.diagnostic()),
+            };
+            let fetcher = nemlake_schema_bootstrap::remote::paced_fetcher(
+                transport,
+                &cache,
+                std::time::Duration::from_millis(interval_ms),
+            );
+            let report = match run_async(nemlake_schema_bootstrap::dmreport::fetch_report(
+                &fetcher, &base,
+            )) {
+                Ok(r) => r,
+                Err(e) => return fail(&e.diagnostic()),
+            };
+            let version = report.version.as_deref().unwrap_or("unversioned");
+            let path = out.join(format!("mms_data_model_{version}.json"));
+            let written = std::fs::create_dir_all(&out).and_then(|()| {
+                std::fs::write(&path, nemlake_schema_bootstrap::dmreport::to_json(&report))
+            });
+            match written {
+                Ok(()) => {
+                    eprintln!(
+                        "{} table(s) of data model {version} written to {}",
+                        report.tables.len(),
+                        path.display()
+                    );
+                    ExitCode::SUCCESS
+                }
+                Err(e) => {
+                    eprintln!("error: {} could not be written: {e}", path.display());
+                    ExitCode::from(1)
+                }
             }
         }
         Cmd::History {

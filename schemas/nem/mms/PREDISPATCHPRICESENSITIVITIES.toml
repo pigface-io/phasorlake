@@ -5,6 +5,7 @@ source = "mms"
 name = "PREDISPATCHPRICESENSITIVITIES"
 package = "PRE_DISPATCH"
 visibility = "public"
+description = "PREDISPATCHPRICESENSITIVITIES sets out the sensitivity prices for each region by period."
 report_pairs = [[
     "PREDISPATCH",
     "PRICESENSITIVITIES",

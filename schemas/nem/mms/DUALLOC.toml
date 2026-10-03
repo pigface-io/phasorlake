@@ -5,6 +5,7 @@ source = "mms"
 name = "DUALLOC"
 package = "PARTICIPANT_REGISTRATION"
 visibility = "private"
+description = "DUALLOC cross references dispatch unit identifier to genset ID for each participant."
 report_pairs = [[
     "PARTICIPANT_REGISTRATION",
     "DUALLOC",

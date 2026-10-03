@@ -5,6 +5,7 @@ source = "mms"
 name = "TRADINGPRICE"
 package = "TRADING_DATA"
 visibility = "public"
+description = "TRADINGPRICE sets out half-hourly spot market price, including fields to handle the Ancillary Services functionality. If prices are adjusted, the final price is recorded in the regional reference price (RRP) field with price before adjustment recorded in the regional original price (ROP) field."
 report_pairs = [[
     "TRADING",
     "PRICE",

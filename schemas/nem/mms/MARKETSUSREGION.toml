@@ -5,6 +5,9 @@ source = "mms"
 name = "MARKETSUSREGION"
 package = "HISTORICAL TABLES"
 visibility = "public"
+description = """
+MARKETSUSREGION is obsolete from 2017 End of Year DM4.27 Release.
+MARKETSUSREGION sets out a regions affected by a market suspension."""
 report_pairs = [[
     "FORCE_MAJEURE",
     "MARKETSUSREGION",

@@ -5,6 +5,7 @@ source = "mms"
 name = "MCC_CASESOLUTION"
 package = "MCC_DISPATCH"
 visibility = "public"
+description = "Top level table for each MCC dispatch rerun process. Note there will be one record for each dispatch interval"
 report_pairs = [[
     "MCC",
     "CASESOLUTION",

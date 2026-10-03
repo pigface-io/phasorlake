@@ -5,6 +5,7 @@ source = "mms"
 name = "BILLINGDAYTRK"
 package = "BILLING_RUN"
 visibility = "public"
+description = "BILLINGDAYTRK is key for matching settlement versions with billing runs. BILLINGDAYTRK displays the billrunnos per billing week, and the settlement version numbers per settlement day comprising the billrunno."
 report_pairs = [[
     "BILLING",
     "DAYTRK",

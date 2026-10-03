@@ -5,6 +5,7 @@ source = "mms"
 name = "DISPATCH_UNIT_SCADA"
 package = "DISPATCH"
 visibility = "public"
+description = "Dispatchable unit MW from SCADA at the start of the dispatch interval. The table includes all scheduled and semi-scheduled (and non-scheduled units where SCADA is available)"
 report_pairs = [[
     "DISPATCH",
     "UNIT_SCADA",

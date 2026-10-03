@@ -5,6 +5,7 @@ source = "mms"
 name = "MARKETFEETRK"
 package = "SETTLEMENT_CONFIG"
 visibility = "public"
+description = "MARKETFEETRK sets out versions of each market fee used and its effective date."
 report_pairs = [[
     "SETTLEMENT_CONFIG",
     "MARKETFEETRK",

@@ -5,6 +5,7 @@ source = "mms"
 name = "RESIDUE_CON_FUNDS"
 package = "IRAUCTION"
 visibility = "public"
+description = "RESIDUE_CON_FUNDS supports the Settlement Residue Auction, by holding the fund details for each contract."
 report_pairs = [[
     "IRAUCTION",
     "RESIDUE_CON_FUNDS",

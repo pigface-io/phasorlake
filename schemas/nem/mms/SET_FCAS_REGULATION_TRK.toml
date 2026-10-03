@@ -5,6 +5,7 @@ source = "mms"
 name = "SET_FCAS_REGULATION_TRK"
 package = "SETTLEMENT_DATA"
 visibility = "public"
+description = "SET_FCAS_REGULATION_TRK shows FCAS Regulation Service Constraint tracking for Regional FCAS Regulation recovery"
 report_pairs = [[
     "SETTLEMENTS",
     "SET_FCAS_REGULATION_TRK",

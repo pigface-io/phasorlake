@@ -5,6 +5,7 @@ source = "mms"
 name = "DISPATCHPRICE"
 package = "DISPATCH"
 visibility = "public"
+description = "DISPATCHPRICE records 5 minute dispatch prices for energy and FCAS, including whether an intervention has occurred, or price override (e.g. for Administered Price Cap). DISPATCHPRICE updates when price adjustments occur, in which case the new price is written to the RRP field, and the old price to the ROP field as an audit trail."
 report_pairs = [[
     "DISPATCH",
     "PRICE",

@@ -5,6 +5,7 @@ source = "mms"
 name = "INSTRUCTIONTYPE"
 package = "GD_INSTRUCT"
 visibility = "public"
+description = "Dispatch instruction (GD instruct) has types and subtypes. INSTRUCTIONTYPE, together with INSTRUCTIONSUBTYPE, sets out valid instruction types."
 report_pairs = [[
     "GD_INSTRUCT",
     "INSTRUCTIONTYPE",

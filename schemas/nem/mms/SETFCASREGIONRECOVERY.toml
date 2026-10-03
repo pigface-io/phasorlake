@@ -5,6 +5,7 @@ source = "mms"
 name = "SETFCASREGIONRECOVERY"
 package = "SETTLEMENT_DATA"
 visibility = "public"
+description = "SETFCASREGIONRECOVERY shows FCAS Regional Recovery Data against each Trading Interval."
 report_pairs = [[
     "SETTLEMENTS",
     "FCASREGIONRECOVERY",

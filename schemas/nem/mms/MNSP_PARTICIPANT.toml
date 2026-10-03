@@ -5,6 +5,7 @@ source = "mms"
 name = "MNSP_PARTICIPANT"
 package = "PARTICIPANT_REGISTRATION"
 visibility = "public"
+description = "MNSP_PARTICIPANT registers MNSP ownership."
 report_pairs = [[
     "PARTICIPANT_REGISTRATION",
     "MNSP_PARTICIPANT",

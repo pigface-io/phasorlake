@@ -5,6 +5,7 @@ source = "mms"
 name = "MTPASA_CONSTRAINTRESULT"
 package = "MTPASA"
 visibility = "public"
+description = "Constraint results for Binding or Violating Constraints"
 report_pairs = [[
     "MTPASA",
     "CONSTRAINTRESULT",

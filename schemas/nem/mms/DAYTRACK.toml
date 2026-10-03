@@ -5,6 +5,7 @@ source = "mms"
 name = "DAYTRACK"
 package = "SETTLEMENT_DATA"
 visibility = "public"
+description = "DAYTRACK identifies the actual settlement run processed for each settlement day. Settlement run is in the column EXPOSTRUNNO. Generally the number of the settlement run used in the latest statement is the maximum number."
 report_pairs = [[
     "SETTLEMENTS",
     "DAYTRACK",

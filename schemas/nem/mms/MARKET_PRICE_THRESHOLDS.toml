@@ -5,6 +5,7 @@ source = "mms"
 name = "MARKET_PRICE_THRESHOLDS"
 package = "MARKET_CONFIG"
 visibility = "public"
+description = "MARKET_PRICE_THRESHOLDS sets out the market cap , floor and administered price thresholds applying to the electricity market"
 report_pairs = [[
     "MARKET_CONFIG",
     "MARKET_PRICE_THRESHOLDS",

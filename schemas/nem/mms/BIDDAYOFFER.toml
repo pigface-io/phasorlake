@@ -5,6 +5,7 @@ source = "mms"
 name = "BIDDAYOFFER"
 package = "BIDS"
 visibility = "public"
+description = "BIDDAYOFFER shows the Energy and Ancillary Service bid data for each Market Day. BIDDAYOFFER is the parent table to BIDPEROFFER."
 report_pairs = [[
     "BIDS",
     "BIDDAYOFFER",

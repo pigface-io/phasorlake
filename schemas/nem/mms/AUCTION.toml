@@ -5,6 +5,7 @@ source = "mms"
 name = "AUCTION"
 package = "IRAUCTION"
 visibility = "public"
+description = "AUCTION holds auction details. AUCTION is new in March 2003 to support SRA Inter-Temporal Linking."
 report_pairs = [[
     "IRAUCTION_CONFIG",
     "AUCTION",

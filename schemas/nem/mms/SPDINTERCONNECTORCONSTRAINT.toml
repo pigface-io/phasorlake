@@ -5,6 +5,7 @@ source = "mms"
 name = "SPDINTERCONNECTORCONSTRAINT"
 package = "GENERIC_CONSTRAINT"
 visibility = "public"
+description = "SPDINTERCONNECTORCONSTRAINT contains details on the interconnector constraint factors used in dispatch, predispatch and STPASA. The details set a LHS value."
 report_pairs = [[
     "SPDICC",
     "",

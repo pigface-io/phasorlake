@@ -5,6 +5,9 @@ source = "mms"
 name = "RESDEMANDTRK"
 package = "DEMAND_FORECASTS"
 visibility = "public"
+description = """
+RESDEMANDTRK defines the existence and versioning information of a forecast for a specific region and trading date.
+RESDEMANDTRK and PERDEMAND have a parent/child relationship, and are for defined forecast regional demands since market start. RESDEMANDTRK defines the existence and versioning information of a forecast for a specific region and trading date. PERDEMAND defines the numerical forecast values for each trading interval of a the trading day for that region. A complete trading day forecast for one region consists of one RESDEMANDTRK record and 48 PERDEMAND records."""
 report_pairs = [[
     "DEMAND",
     "TRK",

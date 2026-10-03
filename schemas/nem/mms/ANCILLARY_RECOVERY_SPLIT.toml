@@ -5,6 +5,7 @@ source = "mms"
 name = "ANCILLARY_RECOVERY_SPLIT"
 package = "SETTLEMENT_CONFIG"
 visibility = "public"
+description = "ANCILLARY_RECOVERY_SPLIT holds the actual customer portion for each service and payment type. A single EFFECTIVEDATE/VERSIONNO combination applies to all services (i.e. the latest EFFECTIVEDATE/VERSIONNO is not retrieved for a single service, but applies to a data set)."
 report_pairs = [[
     "SETTLEMENT_CONFIG",
     "ANCILLARY_RECOVERY_SPLIT",

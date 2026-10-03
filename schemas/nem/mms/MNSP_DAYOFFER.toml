@@ -5,6 +5,9 @@ source = "mms"
 name = "MNSP_DAYOFFER"
 package = "BIDS"
 visibility = "public"
+description = """
+MNSP_DAYOFFER shows price and other non-period data pertaining to a specific MNSP bid and Link ID to be effective from the given Settlement Date.
+MNSP_DAYOFFER is the parent table to MNSP_PEROFFER, and joins to MNSP_OFFERTRK."""
 report_pairs = [[
     "BIDS",
     "MNSP_DAYOFFER",

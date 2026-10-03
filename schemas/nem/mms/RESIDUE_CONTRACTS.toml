@@ -5,6 +5,7 @@ source = "mms"
 name = "RESIDUE_CONTRACTS"
 package = "IRAUCTION"
 visibility = "public"
+description = "RESIDUE_CONTRACTS supports the Settlement Residue Auction, by holding the contract details for each period for which a residue contract will be offered."
 report_pairs = [[
     "IRAUCTION",
     "RESIDUE_CONTRACTS",

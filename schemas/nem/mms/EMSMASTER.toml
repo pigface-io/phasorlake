@@ -5,6 +5,7 @@ source = "mms"
 name = "EMSMASTER"
 package = "GENERIC_CONSTRAINT"
 visibility = "public"
+description = "EMSMASTER provides a description of the SCADA measurements that are associated with the SPD_ID points utilised in generic equation RHS terms"
 report_pairs = [[
     "GENERIC_CONSTRAINT",
     "EMSMASTER",

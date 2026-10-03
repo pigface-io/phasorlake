@@ -5,6 +5,9 @@ source = "mms"
 name = "GENERICCONSTRAINTRHS"
 package = "GENERIC_CONSTRAINT"
 visibility = "public"
+description = """
+GENERICCONSTRAINTRHS sets out details of generic constraint Right Hand Side (RHS) formulations for dispatch (DS), predispatch (PD) and Short Term PASA (ST). GENERICCONSTRAINTRHS also includes general expressions (EQ) used in the dispatch, predispatch and PASA time frames.
+GENERICCONSTRAINTRHS replaces data previously available via the "Constraint Library” Excel spreadsheet."""
 report_pairs = [[
     "GCRHS",
     "",

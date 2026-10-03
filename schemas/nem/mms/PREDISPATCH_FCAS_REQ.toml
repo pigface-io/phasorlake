@@ -5,6 +5,7 @@ source = "mms"
 name = "PREDISPATCH_FCAS_REQ"
 package = "PRE_DISPATCH"
 visibility = "public"
+description = "PREDISPATCH_FCAS_REQ shows Predispatch Constraint tracking for Regional FCAS Requirements."
 report_pairs = [[
     "PREDISPATCH",
     "REGIONFCASREQUIREMENT",

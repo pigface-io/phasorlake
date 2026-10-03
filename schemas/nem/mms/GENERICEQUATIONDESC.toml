@@ -5,6 +5,7 @@ source = "mms"
 name = "GENERICEQUATIONDESC"
 package = "GENERIC_CONSTRAINT"
 visibility = "public"
+description = "GENERICEQUATIONDESC defines a generic equation identifier with a description. The formulation of the generic equation is detailed in GENERICEQUATIONRHS."
 report_pairs = [[
     "GEQDESC",
     "",

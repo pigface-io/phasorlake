@@ -5,6 +5,7 @@ source = "mms"
 name = "STATIONOWNERTRK"
 package = "PARTICIPANT_REGISTRATION"
 visibility = "public"
+description = "STATIONOWNERTRK shows the tracking for the associated object STATIONOWNER. Together, STATIONOWNERTRK and STATIONOWNER sets out the owner details of each station."
 report_pairs = [[
     "PARTICIPANT_REGISTRATION",
     "STATIONOWNERTRK",

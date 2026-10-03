@@ -5,6 +5,7 @@ source = "mms"
 name = "MARKETNOTICETYPE"
 package = "MARKET_NOTICE"
 visibility = "public"
+description = "MARKETNOTICETYPE sets out the different types of market notices (e.g. market systems)."
 report_pairs = [[
     "MARKET_NOTICE",
     "MARKETNOTICETYPE",

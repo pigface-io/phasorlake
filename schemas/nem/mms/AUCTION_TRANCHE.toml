@@ -5,6 +5,7 @@ source = "mms"
 name = "AUCTION_TRANCHE"
 package = "IRAUCTION"
 visibility = "public"
+description = "AUCTION_TRANCHE supports the Settlement Residue Auction, by holding the default definitions for the percentage number of units allocated and dates applicable to each tranche for a specified auction quarter. This information provides the basis for setting up contracts for individual tranches."
 report_pairs = [[
     "IRAUCTION_CONFIG",
     "AUCTION_TRANCHE",

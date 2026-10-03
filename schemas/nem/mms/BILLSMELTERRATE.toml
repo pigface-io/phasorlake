@@ -5,6 +5,7 @@ source = "mms"
 name = "BILLSMELTERRATE"
 package = "HISTORICAL TABLES"
 visibility = "public"
+description = "BILLSMELTERRATE is standing data, setting out the rates used in smelter reduction calculations."
 report_pairs = [[
     "BILLING_CONFIG",
     "BILLSMELTERRATE",

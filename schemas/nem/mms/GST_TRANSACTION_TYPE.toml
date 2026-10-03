@@ -5,6 +5,7 @@ source = "mms"
 name = "GST_TRANSACTION_TYPE"
 package = "BILLING_CONFIG"
 visibility = "public"
+description = "GST_TRANSACTION_TYPE shows a static list of transaction types supported by the MMS."
 report_pairs = [[
     "BILLING_CONFIG",
     "GST_TRANSACTION_TYPE",

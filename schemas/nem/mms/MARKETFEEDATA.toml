@@ -5,6 +5,7 @@ source = "mms"
 name = "MARKETFEEDATA"
 package = "SETTLEMENT_CONFIG"
 visibility = "public"
+description = "MARKETFEEDATA sets out actual fee rates, as adjusted from time to time."
 report_pairs = [[
     "SETTLEMENT_CONFIG",
     "MARKETFEEDATA",

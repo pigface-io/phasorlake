@@ -5,6 +5,7 @@ source = "mms"
 name = "PDPASA_REGIONSOLUTION"
 package = "PDPASA"
 visibility = "public"
+description = "The PDPASA region solution data"
 report_pairs = [[
     "PDPASA",
     "REGIONSOLUTION",
@@ -233,7 +234,7 @@ scale = 2
 oracle = "NUMBER(12,2)"
 loader = "FLOAT EXTERNAL"
 added_in = 6
-description = "Surplus reserve (MW) above the demand, scheduled load,  net interchange and reserve requirement in this region from the capacity adequacy (LRC) assessment."
+description = "Surplus reserve (MW) above the demand, scheduled load, net interchange and reserve requirement in this region from the capacity adequacy (LRC) assessment."
 src = [
     "ctl",
     "dm",
@@ -293,7 +294,7 @@ type = "integer"
 oracle = "NUMBER(1,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 6
-description = "Lack of Reserve Condition (LOR) flag for this region and interval   (3 = LOR3, 2 = LOR2, 1 = LOR1, 0 = No LOR)"
+description = "Lack of Reserve Condition (LOR) flag for this region and interval (3 = LOR3, 2 = LOR2, 1 = LOR1, 0 = No LOR)"
 src = [
     "ctl",
     "dm",
@@ -309,7 +310,7 @@ scale = 2
 oracle = "NUMBER(12,2)"
 loader = "FLOAT EXTERNAL"
 added_in = 6
-description = "Sum of  MAXAVAIL quantities offered by all Scheduled Generators in a given Region for a given PERIODID."
+description = "Sum of MAXAVAIL quantities offered by all Scheduled Generators in a given Region for a given PERIODID."
 src = [
     "ctl",
     "dm",
@@ -325,7 +326,7 @@ scale = 2
 oracle = "NUMBER(12,2)"
 loader = "FLOAT EXTERNAL"
 added_in = 6
-description = "Sum of  MAXAVAIL quantities bid by of all Scheduled Loads in a given Region for a given PERIODID."
+description = "Sum of MAXAVAIL quantities bid by of all Scheduled Loads in a given Region for a given PERIODID."
 src = [
     "ctl",
     "dm",
@@ -339,7 +340,7 @@ type = "integer"
 oracle = "NUMBER(12,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 6
-description = "Sum of  PASAAVAILABILITY quantities offered by all Scheduled Generators in a given Region for a given PERIODID."
+description = "Sum of PASAAVAILABILITY quantities offered by all Scheduled Generators in a given Region for a given PERIODID."
 src = [
     "ctl",
     "dm",
@@ -370,7 +371,7 @@ nullable = false
 oracle = "VARCHAR2(20)"
 loader = "CHAR(20)"
 added_in = 6
-description = "Type of run.  Values are RELIABILITY_LRC and OUTAGE_LRC"
+description = "Type of run. Values are RELIABILITY_LRC and OUTAGE_LRC"
 src = [
     "ctl",
     "dm",

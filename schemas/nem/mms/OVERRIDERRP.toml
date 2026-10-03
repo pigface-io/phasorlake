@@ -5,6 +5,7 @@ source = "mms"
 name = "OVERRIDERRP"
 package = "FORCE_MAJEURE"
 visibility = "public"
+description = "OVERRIDERRP shows details of override price periods."
 report_pairs = [[
     "FORCE_MAJEURE",
     "OVERRIDERRP",

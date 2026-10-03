@@ -5,6 +5,7 @@ source = "mms"
 name = "MCC_CONSTRAINTSOLUTION"
 package = "MCC_DISPATCH"
 visibility = "public"
+description = "Constraint solution data from the MCC dispatch rerun process. Note only constraints with a non-zero marginal value are published."
 report_pairs = [[
     "MCC",
     "CONSTRAINTSOLUTION",

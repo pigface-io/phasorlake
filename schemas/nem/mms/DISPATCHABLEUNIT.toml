@@ -5,6 +5,7 @@ source = "mms"
 name = "DISPATCHABLEUNIT"
 package = "PARTICIPANT_REGISTRATION"
 visibility = "public"
+description = "DISPATCHABLEUNIT sets out the unit name and type of each dispatchable unit in the market."
 report_pairs = [[
     "PARTICIPANT_REGISTRATION",
     "DISPATCHABLEUNIT",

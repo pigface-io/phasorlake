@@ -5,6 +5,9 @@ source = "mms"
 name = "P5MIN_REGIONSOLUTION"
 package = "P5MIN"
 visibility = "public"
+description = """
+The five-minute predispatch (P5Min) is a MMS system providing projected dispatch for 12 Dispatch cycles (one hour). The 5-minute Predispatch cycle runs every 5-minutes to produce a dispatch and pricing schedule to a 5-minute resolution covering the next hour, a total of twelve periods.
+P5MIN_REGIONSOLUTION shows the results of the regional capacity, maximum surplus reserve and maximum spare capacity evaluations for each period of the study."""
 report_pairs = [[
     "P5MIN",
     "REGIONSOLUTION",

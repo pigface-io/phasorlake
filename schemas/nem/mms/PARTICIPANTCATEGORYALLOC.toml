@@ -5,6 +5,7 @@ source = "mms"
 name = "PARTICIPANTCATEGORYALLOC"
 package = "PARTICIPANT_REGISTRATION"
 visibility = "public"
+description = "PARTICIPANTCATEGORYALLOC sets out the assignment of participants to particular categories."
 report_pairs = [[
     "PARTICIPANT_REGISTRATION",
     "PARTICIPANTCATEGORYALLOC",

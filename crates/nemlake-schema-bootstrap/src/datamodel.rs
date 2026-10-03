@@ -2,19 +2,18 @@
 //!
 //! The JSON is one object keyed by table name; each entry carries the
 //! package, visibility, primary key, indexes and columns with their Oracle
-//! types. The committed JSON was scraped once by a script that is not in
-//! this repository; a scraper in this tool is still to be written and must
-//! emit this shape.
+//! types. The JSON is written by the `datamodel` subcommand, which reads
+//! the report's pages (see [`crate::dmreport`]).
 
 use std::collections::BTreeMap;
 use std::path::Path;
 
 use nemlake_core::{Category, Diagnose, Diagnostic};
 use nemlake_schema_model::ColumnType;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 /// One table of the data model.
-#[derive(Debug, Clone, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq)]
 pub struct DmTable {
     /// Report page, e.g. `MMS_123.htm`.
     pub page: String,
@@ -38,7 +37,7 @@ pub struct DmTable {
 }
 
 /// One column of the data model.
-#[derive(Debug, Clone, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq)]
 pub struct DmColumn {
     /// Name as written.
     pub name: String,

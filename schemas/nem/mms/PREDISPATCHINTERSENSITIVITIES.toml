@@ -5,6 +5,7 @@ source = "mms"
 name = "PREDISPATCHINTERSENSITIVITIES"
 package = "PRE_DISPATCH"
 visibility = "public"
+description = "PREDISPATCHINTERSENSITIVITIES sets out the sensitivity flows for each interconnector by period."
 report_pairs = [[
     "PREDISPATCH",
     "INTERCONNECTR_SENS",

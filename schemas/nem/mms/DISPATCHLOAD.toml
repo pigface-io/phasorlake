@@ -5,6 +5,7 @@ source = "mms"
 name = "DISPATCHLOAD"
 package = "DISPATCH"
 visibility = "public"
+description = "DISPATCHLOAD set out the current SCADA MW and target MW for each dispatchable unit, including relevant Frequency Control Ancillary Services (FCAS) enabling targets for each five minutes and additional fields to handle the new Ancillary Services functionality. Fast Start Plant status is indicated by dispatch mode."
 report_pairs = [[
     "DISPATCH",
     "UNIT_SOLUTION",
@@ -549,7 +550,7 @@ type = "integer"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 3
-description = "Raise 6sec status flag  - see"
+description = "Raise 6sec status flag - see"
 src = [
     "ctl",
     "dm",
@@ -563,7 +564,7 @@ type = "integer"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 3
-description = "Raise 60sec status flag  - see"
+description = "Raise 60sec status flag - see"
 src = [
     "ctl",
     "dm",
@@ -590,7 +591,7 @@ type = "integer"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 3
-description = "Raise Reg status flag  - see"
+description = "Raise Reg status flag - see"
 src = [
     "ctl",
     "dm",
@@ -604,7 +605,7 @@ type = "integer"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 3
-description = "Lower 6sec status flag  - see"
+description = "Lower 6sec status flag - see"
 src = [
     "ctl",
     "dm",
@@ -646,7 +647,7 @@ type = "integer"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 3
-description = "Lower Reg status flag  - see"
+description = "Lower Reg status flag - see"
 src = [
     "ctl",
     "dm",

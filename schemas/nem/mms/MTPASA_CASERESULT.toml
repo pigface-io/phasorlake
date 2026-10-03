@@ -5,6 +5,7 @@ source = "mms"
 name = "MTPASA_CASERESULT"
 package = "MTPASA"
 visibility = "public"
+description = "MTPASA solution header table"
 report_pairs = [[
     "MTPASA",
     "CASERESULT",

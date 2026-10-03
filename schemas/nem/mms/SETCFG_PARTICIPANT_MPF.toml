@@ -5,6 +5,7 @@ source = "mms"
 name = "SETCFG_PARTICIPANT_MPF"
 package = "SETTLEMENT_CONFIG"
 visibility = "public"
+description = "SETCFG_PARTICIPANT_MPF shows the Market Participation Factors (MPF) for each participant for each connection point. The MPF values are used to determine recovery amounts for regulation FCAS."
 report_pairs = [[
     "SETTLEMENT_CONFIG",
     "SETCFG_PARTICIPANT_MPF",

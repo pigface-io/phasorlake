@@ -5,6 +5,7 @@ source = "mms"
 name = "PREDISPATCHPRICE"
 package = "PRE_DISPATCH"
 visibility = "public"
+description = "PREDISPATCHPRICE records predispatch prices for each region by period for each predispatch run, including fields to handle the Ancillary Services functionality."
 report_pairs = [[
     "PREDISPATCH",
     "REGION_PRICES",

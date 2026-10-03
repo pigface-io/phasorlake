@@ -5,6 +5,7 @@ source = "mms"
 name = "BILLINGCALENDAR"
 package = "BILLING_CONFIG"
 visibility = "public"
+description = "BILLINGCALENDAR sets out the billing calendar for the year, with week number 1 starting on 1 January. BILLINGCALENDAR advises preliminary and final statement posting date and corresponding settlement for each billing week."
 report_pairs = [[
     "BILLING_CONFIG",
     "BILLINGCALENDAR",

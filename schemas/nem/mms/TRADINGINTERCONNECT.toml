@@ -5,6 +5,7 @@ source = "mms"
 name = "TRADINGINTERCONNECT"
 package = "TRADING_DATA"
 visibility = "public"
+description = "TRADINGINTERCONNECT shows the half-hourly summary of Interconnector flows based on 5-minute averages."
 report_pairs = [[
     "TRADING",
     "INTERCONNECTORRES",

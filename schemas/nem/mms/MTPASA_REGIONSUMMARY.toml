@@ -5,6 +5,7 @@ source = "mms"
 name = "MTPASA_REGIONSUMMARY"
 package = "MTPASA"
 visibility = "public"
+description = "Region Results summary over aggregation periods."
 report_pairs = [[
     "MTPASA",
     "REGIONSUMMARY",

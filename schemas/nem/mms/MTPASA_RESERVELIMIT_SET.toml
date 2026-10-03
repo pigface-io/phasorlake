@@ -5,6 +5,7 @@ source = "mms"
 name = "MTPASA_RESERVELIMIT_SET"
 package = "RESERVE_DATA"
 visibility = "public"
+description = "MT PASA input table defining a set of MT PASA Reserve Requirements. Note only one set can be active on a given date."
 report_pairs = [[
     "MTPASA",
     "RESERVELIMIT_SET",

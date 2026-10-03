@@ -5,6 +5,7 @@ source = "mms"
 name = "DUDETAILSUMMARY"
 package = "PARTICIPANT_REGISTRATION"
 visibility = "public"
+description = "DUDETAILSUMMARY sets out a single summary unit table so reducing the need for participants to use the various dispatchable unit detail and owner tables to establish generating unit specific details."
 report_pairs = [[
     "PARTICIPANT_REGISTRATION",
     "DUDETAILSUMMARY",
@@ -249,9 +250,9 @@ loader = "CHAR(20)"
 added_in = 6
 description = """
 Scheduled status of the unit:
-    'SCHEDULED'
-    'NON-SCHEDULED'
-    'SEMI-SCHEDULED'"""
+'SCHEDULED'
+'NON-SCHEDULED'
+'SEMI-SCHEDULED'"""
 src = [
     "ctl",
     "dm",

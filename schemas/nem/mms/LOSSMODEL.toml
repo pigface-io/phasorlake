@@ -5,6 +5,7 @@ source = "mms"
 name = "LOSSMODEL"
 package = "MARKET_CONFIG"
 visibility = "public"
+description = "LOSSMODEL sets out segment breakpoints in loss model for each interconnector, used by LP Solver modelling of interconnector flows."
 report_pairs = [[
     "MARKET_CONFIG",
     "LOSSMODEL",

@@ -5,6 +5,7 @@ source = "mms"
 name = "SETCPDATAREGION"
 package = "SETTLEMENT_DATA"
 visibility = "public"
+description = "SETCPDATAREGION sets out summary meter settlement data for each region."
 report_pairs = [[
     "SETTLEMENTS",
     "CPDATAREGION",

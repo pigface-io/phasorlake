@@ -5,6 +5,7 @@ source = "mms"
 name = "PDPASA_CASESOLUTION"
 package = "PDPASA"
 visibility = "public"
+description = "The top-level table identifying a PDPASA case, reporting options applied in the case and summary results"
 report_pairs = [[
     "PDPASA",
     "CASESOLUTION",
@@ -67,7 +68,7 @@ type = "integer"
 oracle = "NUMBER(1,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 3
-description = "Lack of Reserve Condition (LOR) flag for the case indicates the most severe condition in the case  (3 = LOR3, 2 = LOR2, 1 = LOR1, 0 = No LOR)"
+description = "Lack of Reserve Condition (LOR) flag for the case indicates the most severe condition in the case (3 = LOR3, 2 = LOR2, 1 = LOR1, 0 = No LOR)"
 src = [
     "ctl",
     "dm",

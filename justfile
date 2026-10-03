@@ -70,10 +70,14 @@ schema-check:
 schema-regen:
     cargo run -q -p nemlake-schema-bootstrap -- regen --schemas schemas --ctl testdata/bootstrap/MMSDM_2024_01/CTL --datamodel testdata/bootstrap/datamodel/mms_data_model_v5.0.0.1.json --samples testdata/csv --samples testdata/bootstrap/MMSDM_2024_01/heads
 
-# refresh the bootstrap fixtures from nemweb: every CTL and the head of every zip (needs the network)
-schema-fixtures month="2024-01":
-    cargo run -q -p nemlake-schema-bootstrap -- ctls --month {{month}} --out testdata/bootstrap/MMSDM_{{replace(month, "-", "_")}}/CTL
-    cargo run -q -p nemlake-schema-bootstrap -- heads --month {{month}} --out testdata/bootstrap/MMSDM_{{replace(month, "-", "_")}}/heads
+# refresh the bootstrap fixtures of a month from nemweb: every CTL and the head of every zip (needs the network; one request per interval, nemweb blocks fast clients)
+schema-fixtures month="2024-01" interval_ms="1200":
+    cargo run -q -p nemlake-schema-bootstrap -- ctls --month {{month}} --interval-ms {{interval_ms}} --out testdata/bootstrap/MMSDM_{{replace(month, "-", "_")}}/CTL
+    cargo run -q -p nemlake-schema-bootstrap -- heads --month {{month}} --interval-ms {{interval_ms}} --out testdata/bootstrap/MMSDM_{{replace(month, "-", "_")}}/heads
+
+# read AEMO's MMS Data Model Report into testdata/bootstrap/datamodel/ (needs the network; a few hundred paced requests)
+schema-datamodel interval_ms="1200":
+    cargo run -q -p nemlake-schema-bootstrap -- datamodel --interval-ms {{interval_ms}} --out testdata/bootstrap/datamodel
 
 # the real nemweb: one small month listing and the smallest zip (needs the network)
 net-test:

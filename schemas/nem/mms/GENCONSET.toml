@@ -5,6 +5,7 @@ source = "mms"
 name = "GENCONSET"
 package = "GENERIC_CONSTRAINT"
 visibility = "public"
+description = "GENCONSET sets out generic constraint sets that are invoked and revoked, and may contain many generic constraints (GENCONDATA)."
 report_pairs = [[
     "GENCONSET",
     "",

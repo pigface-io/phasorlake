@@ -5,6 +5,7 @@ source = "mms"
 name = "PREDISPATCHLOAD"
 package = "PRE_DISPATCH"
 visibility = "public"
+description = "PREDISPATCHLOAD shows pre-dispatch targets for each dispatchable unit, including additional fields to handle the Ancillary Services functionality. No record is written where a unit is not dispatched. PREDISPATCHLOAD shows all the results for each period."
 report_pairs = [[
     "PREDISPATCH",
     "UNIT_SOLUTION",

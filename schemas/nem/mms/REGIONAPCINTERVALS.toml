@@ -5,6 +5,7 @@ source = "mms"
 name = "REGIONAPCINTERVALS"
 package = "FORCE_MAJEURE"
 visibility = "public"
+description = "REGIONAPCINTERVALS contains Administered Price profiles (Energy and FCAS) applicable to each interval for a region."
 report_pairs = [[
     "AP",
     "REGIONAPCINTERVALS",

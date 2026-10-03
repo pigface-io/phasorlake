@@ -5,6 +5,7 @@ source = "mms"
 name = "GENERICEQUATIONRHS"
 package = "GENERIC_CONSTRAINT"
 visibility = "public"
+description = "GENERICEQUATIONRHS stores the formulation of commonly used Generic Constraint Right Hand Side Equations referenced from Generic Constraint Right Hand Side definitions stored in GENERICCONSTRAINTRHS. The Generic Equation definitions are versioned and the latest effective version is applied to the dispatch process."
 report_pairs = [[
     "GEQRHS",
     "",

@@ -5,6 +5,7 @@ source = "mms"
 name = "PREDISPATCHCASESOLUTION"
 package = "PRE_DISPATCH"
 visibility = "public"
+description = "PREDISPATCHCASESOLUTION provides information relating to the complete predispatch run. The fields provide an overview of the dispatch run results allowing immediate identification of conditions such as energy or FCAS deficiencies."
 report_pairs = [[
     "PREDISPATCH",
     "CASE_SOLUTION",

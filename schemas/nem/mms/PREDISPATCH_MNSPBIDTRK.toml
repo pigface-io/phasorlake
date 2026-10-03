@@ -5,6 +5,7 @@ source = "mms"
 name = "PREDISPATCH_MNSPBIDTRK"
 package = "PRE_DISPATCH"
 visibility = "public"
+description = "PREDISPATCH_MNSPBIDTRK shows the MNSP bid tracking, including the bid version used in each predispatch run for each MNSP Interconnector Link. PREDISPATCH_MNSPBIDTRK shows the audit trail of the bid used for each predispatch run."
 report_pairs = [[
     "PREDISPATCH",
     "MNSPBIDTRK",

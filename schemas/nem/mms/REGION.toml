@@ -5,6 +5,7 @@ source = "mms"
 name = "REGION"
 package = "MARKET_CONFIG"
 visibility = "public"
+description = "REGION sets out valid region IDs."
 report_pairs = [[
     "MARKET_CONFIG",
     "REGION",

@@ -5,6 +5,7 @@ source = "mms"
 name = "MTPASA_RESERVELIMIT"
 package = "RESERVE_DATA"
 visibility = "public"
+description = "MT PASA input table defining a MT PASA Reserve Requirement within a single set. An MT PASA Reserve Requirement can span more than one region."
 report_pairs = [[
     "MTPASA",
     "RESERVELIMIT",

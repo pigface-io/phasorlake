@@ -5,6 +5,7 @@ source = "mms"
 name = "BILLINGREGIONIMPORTS"
 package = "BILLING_RUN"
 visibility = "public"
+description = "BILLINGREGIONIMPORTS sets out the region summary table of overall energy imported to and from each region for each billing run."
 report_pairs = [[
     "BILLING",
     "REGIONIMPORTS",

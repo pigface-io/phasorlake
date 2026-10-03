@@ -92,6 +92,7 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 | `schema.compatible_drift` | `crates/nemlake-schema/src/resolve.rs` |
 | `schema.ctl_dir` | `crates/nemlake-schema-bootstrap/src/main.rs` |
 | `schema.ctl_read` | `crates/nemlake-schema-bootstrap/src/main.rs` |
+| `schema.datamodel_page` | `crates/nemlake-schema-bootstrap/src/dmreport.rs` |
 | `schema.datamodel_parse` | `crates/nemlake-schema-bootstrap/src/datamodel.rs` |
 | `schema.datamodel_read` | `crates/nemlake-schema-bootstrap/src/datamodel.rs` |
 | `schema.decimal_fallback` | `crates/nemlake-schema/src/resolve.rs` |

@@ -5,6 +5,7 @@ source = "mms"
 name = "BILLINGREGIONFIGURES"
 package = "BILLING_RUN"
 visibility = "public"
+description = "BILLINGREGIONFIGURES sets out additional summary region details including ancillary service amounts for each billing run."
 report_pairs = [[
     "BILLING",
     "REGIONFIGURES",

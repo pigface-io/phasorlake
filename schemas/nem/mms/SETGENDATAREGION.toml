@@ -5,6 +5,7 @@ source = "mms"
 name = "SETGENDATAREGION"
 package = "SETTLEMENT_DATA"
 visibility = "public"
+description = "SETGENDATAREGION sets out summary settlement data for generation within the specified region."
 report_pairs = [[
     "SETTLEMENTS",
     "GENDATAREGION",

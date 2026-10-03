@@ -5,6 +5,7 @@ source = "mms"
 name = "BILLING_CO2E_PUBLICATION"
 package = "BILLING_RUN"
 visibility = "public"
+description = "Carbon Dioxide Intensity Index publication table"
 report_pairs = [[
     "BILLING",
     "BILLING_CO2E_PUBLICATION",

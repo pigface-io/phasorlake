@@ -5,6 +5,7 @@ source = "mms"
 name = "GST_TRANSACTION_CLASS"
 package = "BILLING_CONFIG"
 visibility = "public"
+description = "GST_TRANSACTION_CLASS maps NEM settlement transaction types with BAS (Business Activity Statement) classifications."
 report_pairs = [[
     "BILLING_CONFIG",
     "GST_TRANSACTION_CLASS",

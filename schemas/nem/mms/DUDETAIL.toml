@@ -5,6 +5,7 @@ source = "mms"
 name = "DUDETAIL"
 package = "PARTICIPANT_REGISTRATION"
 visibility = "public"
+description = "DUDETAIL sets out a records specific details for each unit including start type and whether normally on or off load. Much of this data is information only and is not used in dispatch or settlements."
 report_pairs = [[
     "PARTICIPANT_REGISTRATION",
     "DUDETAIL",

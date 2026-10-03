@@ -5,6 +5,7 @@ source = "mms"
 name = "PREDISPATCHSCENARIODEMAND"
 package = "PRE_DISPATCH"
 visibility = "public"
+description = "PREDISPATCHSCENARIODEMAND defines the demand offsets that are applied for each of the predispatch sensitivity scenarios."
 report_pairs = [[
     "PREDISPATCH",
     "SCENARIO_DEMAND",

@@ -5,6 +5,7 @@ source = "mms"
 name = "DISPATCHINTERCONNECTORRES"
 package = "DISPATCH"
 visibility = "public"
+description = "DISPATCHINTERCONNECTORRES sets out MW flow and losses on each interconnector for each dispatch period, including fields for the Frequency Controlled Ancillary Services export and import limits and extra reporting of the generic constraints set the energy import and export limits."
 report_pairs = [[
     "DISPATCH",
     "INTERCONNECTORRES",

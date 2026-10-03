@@ -5,6 +5,7 @@ source = "mms"
 name = "MNSP_BIDOFFERPERIOD"
 package = "BIDS"
 visibility = "public"
+description = "MNSP_BIDOFFERPERIOD shows 5-minute availability and data about a specific bid and LinkID for the given Settlement Date and period. MNSP_BIDOFFERPERIOD is a child to MNSP_DAYOFFER and links to MNSP_OFFERTRK."
 report_pairs = [[
     "BIDS",
     "MNSP_BIDOFFERPERIOD",

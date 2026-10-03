@@ -5,6 +5,7 @@ source = "mms"
 name = "MTPASA_INTERCONNECTORRESULT"
 package = "MTPASA"
 visibility = "public"
+description = "Interconnector results for interval of max demand per day"
 report_pairs = [[
     "MTPASA",
     "INTERCONNECTORRESULT",

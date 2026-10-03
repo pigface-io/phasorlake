@@ -5,6 +5,7 @@ source = "mms"
 name = "AUCTION_IC_ALLOCATIONS"
 package = "IRAUCTION"
 visibility = "public"
+description = "AUCTION_IC_ALLOCATIONS supports the Settlement Residue Auction by providing the basis for setting up contracts for individual tranches. AUCTION_IC_ALLOCATIONS shows the default definitions for the total number of units and proportion applicable to each directional interconnector for a specified auction quarter."
 report_pairs = [[
     "IRAUCTION_CONFIG",
     "AUCTION_IC_ALLOCATIONS",

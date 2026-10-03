@@ -5,6 +5,7 @@ source = "mms"
 name = "DISPATCHREGIONSUM"
 package = "DISPATCH"
 visibility = "public"
+description = "DISPATCHREGIONSUM sets out the 5-minute solution for each dispatch run for each region, including the Frequency Control Ancillary Services (FCAS) services provided. Additional fields are for the Raise Regulation and Lower Regulation Ancillary Services plus improvements to demand calculations."
 report_pairs = [[
     "DISPATCH",
     "REGIONSUM",
