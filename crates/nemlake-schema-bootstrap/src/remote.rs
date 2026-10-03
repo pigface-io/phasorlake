@@ -16,14 +16,13 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::time::Duration;
 
-use futures::StreamExt;
 use nemlake_core::{Category, Diagnose, Diagnostic, YearMonth};
 use nemlake_fetch::listing;
 use nemlake_fetch::mmsdm::MonthLayout;
 use nemlake_fetch::source::Source;
 use nemlake_fetch::{
-    ByteRange, DiskCache, FetchError, Fetcher, FetcherConfig, FileKind, HttpRequest, MmsdmArchive,
-    Query, RemoteFile, ReqwestTransport, Transport,
+    ByteRange, DiskCache, FetchError, Fetcher, FetcherConfig, FileKind, MmsdmArchive, Query,
+    RemoteFile, ReqwestTransport, Transport,
 };
 
 /// How much of each zip to request. The I row sits in the first few KiB of
@@ -201,97 +200,174 @@ pub fn nemweb_transport() -> Result<Arc<dyn Transport>, HeadError> {
     )?))
 }
 
+/// Where heads are written.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum HeadDest {
+    /// One `{zip stem}.CSV` per zip in this directory.
+    Dir(PathBuf),
+    /// One file holding every head of the month, each introduced by a
+    /// `C,NEMLAKE.HEAD,{zip stem}` row. The file is itself a valid MMS CSV
+    /// of many blocks, so it can be ingested and inspected like any other.
+    Bundle(PathBuf),
+}
+
+/// The first row of a bundle.
+pub const BUNDLE_MARKER: &str = "C,NEMLAKE.HEADS,";
+/// The row that introduces one zip's head inside a bundle.
+pub const HEAD_MARKER: &str = "C,NEMLAKE.HEAD,";
+
+/// How heads are taken.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct HeadOptions {
+    /// D rows kept per block.
+    pub rows: usize,
+    /// Bytes requested of each zip.
+    pub bytes: u64,
+    /// Minimum gap between two requests. A month is 150 to 250 requests and
+    /// nemweb blocks a client that sends them too fast.
+    pub interval: Duration,
+}
+
+impl Default for HeadOptions {
+    fn default() -> Self {
+        Self {
+            rows: 20,
+            bytes: HEAD_BYTES,
+            interval: DEFAULT_INTERVAL,
+        }
+    }
+}
+
+/// The default gap between requests of the bootstrap tool: two a second.
+pub const DEFAULT_INTERVAL: Duration = Duration::from_millis(500);
+
+fn paced_fetcher(transport: Arc<dyn Transport>, cache_root: &Path, interval: Duration) -> Fetcher {
+    Fetcher::new(
+        transport,
+        DiskCache::new(cache_root),
+        FetcherConfig {
+            min_interval: interval,
+            ..Default::default()
+        },
+    )
+}
+
 /// Fetches the head of every archive zip of `month` (every table, all three
-/// data directories) and writes `{out}/{zip stem}.CSV` fixtures of at most
-/// `max_rows` D rows per block. Runs `parallel` requests at once. Listings
-/// are cached under `cache_root`.
+/// data directories, either month layout) and writes them to `dest` with at
+/// most `opts.rows` D rows per block. Listings are cached under `cache_root`.
 pub async fn fetch_heads(
     transport: Arc<dyn Transport>,
     archive: &MmsdmArchive,
     cache_root: &Path,
-    out: &Path,
+    dest: &HeadDest,
     month: YearMonth,
-    max_rows: usize,
-    parallel: usize,
+    opts: HeadOptions,
 ) -> Result<Vec<HeadOutcome>, HeadError> {
-    let fetcher = Fetcher::new(
-        Arc::clone(&transport),
-        DiskCache::new(cache_root),
-        FetcherConfig::default(),
-    );
+    let fetcher = paced_fetcher(transport, cache_root, opts.interval);
     let query = Query {
         tables: Vec::new(),
         from: month,
         to: month,
     };
     let remotes = archive.list(&query, &fetcher).await?;
-    std::fs::create_dir_all(out).map_err(|source| HeadError::Write {
-        path: out.display().to_string(),
+    let write_err = |path: &Path, source| HeadError::Write {
+        path: path.display().to_string(),
         source,
-    })?;
-    let outcomes = futures::stream::iter(remotes)
-        .map(|remote| {
-            let transport = Arc::clone(&transport);
-            let out = out.to_path_buf();
-            async move {
-                let url = remote.url.to_string();
-                match fetch_one(transport.as_ref(), &remote, &out, max_rows).await {
-                    Ok(path) => HeadOutcome {
-                        url,
-                        path: Some(path),
-                        error: None,
-                    },
-                    Err(e) => HeadOutcome {
-                        url,
-                        path: None,
-                        error: Some(e.diagnostic().render()),
-                    },
-                }
+    };
+    let dir = match dest {
+        HeadDest::Dir(d) => d.as_path(),
+        HeadDest::Bundle(f) => f.parent().unwrap_or(Path::new(".")),
+    };
+    std::fs::create_dir_all(dir).map_err(|e| write_err(dir, e))?;
+    // One request at a time: the fetcher paces them, retries what is worth
+    // retrying and stops for good when the server refuses.
+    let mut heads: Vec<(String, String, Result<Vec<u8>, HeadError>)> = Vec::new();
+    for remote in &remotes {
+        let name = remote.file_name();
+        let stem = name.strip_suffix(".zip").unwrap_or(&name).to_owned();
+        let head = fetch_head(&fetcher, remote, opts).await;
+        heads.push((remote.url.to_string(), stem, head));
+    }
+    if fetcher.is_blocked() {
+        // Half a month of heads is worse than none: write nothing.
+        let refused = heads
+            .into_iter()
+            .find_map(|(_, _, h)| match h {
+                Err(HeadError::Fetch(e @ FetchError::Blocked { .. })) => Some(e),
+                _ => None,
+            })
+            .expect("a blocked fetcher refused at least one head");
+        return Err(refused.into());
+    }
+    heads.sort_by(|a, b| a.1.cmp(&b.1).then_with(|| a.0.cmp(&b.0)));
+    let mut outcomes = Vec::with_capacity(heads.len());
+    let mut bundle: Vec<u8> = Vec::new();
+    let good = heads.iter().filter(|h| h.2.is_ok()).count();
+    if matches!(dest, HeadDest::Bundle(_)) {
+        bundle.extend_from_slice(
+            format!(
+                "{BUNDLE_MARKER}MMSDM_{}_{:02},{good}\r\n",
+                month.year(),
+                month.month()
+            )
+            .as_bytes(),
+        );
+    }
+    for (url, stem, head) in heads {
+        let written = head.and_then(|bytes| match dest {
+            HeadDest::Dir(d) => {
+                let path = d.join(format!("{stem}.CSV"));
+                std::fs::write(&path, &bytes).map_err(|e| write_err(&path, e))?;
+                Ok(path)
             }
-        })
-        .buffer_unordered(parallel.max(1))
-        .collect::<Vec<_>>()
-        .await;
+            HeadDest::Bundle(f) => {
+                bundle.extend_from_slice(format!("{HEAD_MARKER}{stem}\r\n").as_bytes());
+                bundle.extend_from_slice(&bytes);
+                if !bytes.ends_with(b"\n") {
+                    bundle.extend_from_slice(b"\r\n");
+                }
+                Ok(f.clone())
+            }
+        });
+        outcomes.push(match written {
+            Ok(path) => HeadOutcome {
+                url,
+                path: Some(path),
+                error: None,
+            },
+            Err(e) => HeadOutcome {
+                url,
+                path: None,
+                error: Some(e.diagnostic().render()),
+            },
+        });
+    }
+    if let HeadDest::Bundle(f) = dest {
+        std::fs::write(f, &bundle).map_err(|e| write_err(f, e))?;
+    }
     Ok(outcomes)
 }
 
-async fn fetch_one(
-    transport: &dyn Transport,
+/// The trimmed head of one remote zip.
+async fn fetch_head(
+    fetcher: &Fetcher,
     remote: &RemoteFile,
-    out: &Path,
-    max_rows: usize,
-) -> Result<PathBuf, HeadError> {
+    opts: HeadOptions,
+) -> Result<Vec<u8>, HeadError> {
     // A per-table zip that is itself a member of a whole-month zip starts
     // at the member's local header inside the container.
     let request_url = remote.request_url();
-    let url = request_url.as_str();
     let start = remote.member.as_ref().map_or(0, |m| m.header_offset);
-    let req = HttpRequest::get(url).with_range(ByteRange::Span {
-        start,
-        end: start + HEAD_BYTES - 1,
-    });
-    let resp = transport.get(req).await?;
-    if resp.status != 206 && resp.status != 200 {
-        return Err(FetchError::HttpStatus {
-            url: url.to_owned(),
-            status: resp.status,
-            body_head: Vec::new(),
-        }
-        .into());
-    }
-    let mut body = Vec::new();
-    let mut stream = resp.body;
-    while let Some(chunk) = stream.next().await {
-        let chunk = chunk.map_err(|message| FetchError::Body {
-            url: url.to_owned(),
-            received: body.len() as u64,
-            message,
-        })?;
-        body.extend_from_slice(&chunk);
-        if body.len() as u64 >= HEAD_BYTES {
-            break;
-        }
-    }
+    let want = opts.bytes.max(1024);
+    let body = fetcher
+        .fetch_range(
+            request_url.as_str(),
+            ByteRange::Span {
+                start,
+                end: start + want - 1,
+            },
+        )
+        .await?;
     let identity = remote.url.as_str();
     let (_, mut inflated) = inflate_head(identity, &body)?;
     if remote.member.is_some() {
@@ -299,7 +375,7 @@ async fn fetch_one(
         // entry is the CSV.
         inflated = inflate_head(identity, &inflated)?.1;
     }
-    let trimmed = trim_head(&inflated, max_rows);
+    let trimmed = trim_head(&inflated, opts.rows);
     let has_i_row = trimmed.starts_with(b"I,") || trimmed.windows(3).any(|w| w == b"\nI,");
     if !has_i_row {
         return Err(HeadError::NoIRow {
@@ -307,30 +383,46 @@ async fn fetch_one(
             bytes: inflated.len(),
         });
     }
-    let name = remote.file_name();
-    let stem = name.strip_suffix(".zip").unwrap_or(&name);
-    let path = out.join(format!("{stem}.CSV"));
-    std::fs::write(&path, &trimmed).map_err(|source| HeadError::Write {
-        path: path.display().to_string(),
-        source,
-    })?;
-    Ok(path)
+    Ok(trimmed)
 }
 
-/// Downloads every `.ctl` of `month` into `out`, from the month's `CTL/`
+/// The table a control file loads, from its name in either archive naming
+/// scheme, upper-case. A split digit of the old scheme stays on the name.
+#[must_use]
+pub fn ctl_table(file_name: &str) -> Option<String> {
+    if !file_name.to_ascii_lowercase().ends_with(".ctl") {
+        return None;
+    }
+    nemlake_core::archive_name::parse(file_name).map(|n| n.table)
+}
+
+/// Downloads the `.ctl` files of `month` into `out`, from the month's `CTL/`
 /// directory or, for a month published only as one zip, out of that zip.
+/// A control file is skipped when `out` or one of the `skip_known`
+/// directories already has one for the same table, so a walk back through
+/// history only collects the tables that later months no longer carry.
 pub async fn fetch_ctls(
     transport: Arc<dyn Transport>,
     archive: &MmsdmArchive,
     cache_root: &Path,
     out: &Path,
     month: YearMonth,
+    skip_known: &[PathBuf],
+    interval: Duration,
 ) -> Result<Vec<PathBuf>, HeadError> {
-    let fetcher = Fetcher::new(
-        Arc::clone(&transport),
-        DiskCache::new(cache_root),
-        FetcherConfig::default(),
-    );
+    let mut known: std::collections::BTreeSet<String> = std::collections::BTreeSet::new();
+    if !skip_known.is_empty() {
+        for dir in skip_known.iter().map(PathBuf::as_path).chain([out]) {
+            let Ok(rd) = std::fs::read_dir(dir) else {
+                continue;
+            };
+            known.extend(
+                rd.filter_map(Result::ok)
+                    .filter_map(|e| ctl_table(&e.file_name().to_string_lossy())),
+            );
+        }
+    }
+    let fetcher = paced_fetcher(transport, cache_root, interval);
     let remote = |url, member| RemoteFile {
         url,
         source: nemlake_fetch::mmsdm::SOURCE_ID,
@@ -383,6 +475,9 @@ pub async fn fetch_ctls(
     })?;
     let mut written = Vec::new();
     for r in &remotes {
+        if ctl_table(&r.file_name()).is_some_and(|t| known.contains(&t)) {
+            continue;
+        }
         let local = fetcher.fetch(r).await?;
         let path = out.join(r.file_name());
         std::fs::copy(&local.path, &path).map_err(|source| HeadError::Write {
@@ -510,10 +605,13 @@ mod tests {
             Arc::new(Arc::clone(&t)),
             &archive,
             &tmp.path().join("cache"),
-            &tmp.path().join("heads"),
+            &HeadDest::Dir(tmp.path().join("heads")),
             month,
-            1,
-            2,
+            HeadOptions {
+                rows: 1,
+                interval: Duration::ZERO,
+                ..Default::default()
+            },
         )
         .await
         .unwrap();
@@ -551,6 +649,8 @@ mod tests {
             &tmp.path().join("cache"),
             &tmp.path().join("ctl"),
             month,
+            &[],
+            Duration::ZERO,
         )
         .await
         .unwrap();
@@ -606,32 +706,134 @@ mod tests {
             Arc::new(Arc::clone(&t)),
             &archive,
             &tmp.path().join("cache"),
-            &tmp.path().join("heads"),
+            &HeadDest::Bundle(tmp.path().join("history/MMSDM_2012_01.heads.csv")),
             month,
-            2,
-            1,
+            HeadOptions {
+                rows: 2,
+                bytes: 4096,
+                interval: Duration::ZERO,
+            },
         )
         .await
         .unwrap();
         assert_eq!(outcomes.len(), 1, "{outcomes:?}");
         let path = outcomes[0].path.as_ref().expect("a head was written");
-        assert!(path.ends_with("PUBLIC_DVD_X_201201010000.CSV"));
+        assert!(path.ends_with("MMSDM_2012_01.heads.csv"));
         assert_eq!(
             std::fs::read_to_string(path).unwrap(),
-            "C,x\r\nI,A,X,1,SETTLEMENTDATE,V\r\nD,A,X,1,\"2012/01/01 00:00:00\",0\r\nD,A,X,1,\"2012/01/01 00:00:00\",1\r\n"
+            "C,NEMLAKE.HEADS,MMSDM_2012_01,1\r\nC,NEMLAKE.HEAD,PUBLIC_DVD_X_201201010000\r\nC,x\r\nI,A,X,1,SETTLEMENTDATE,V\r\nD,A,X,1,\"2012/01/01 00:00:00\",0\r\nD,A,X,1,\"2012/01/01 00:00:00\",1\r\n"
         );
+        // The bundle samples as one file per head, each with its table and month.
+        let sampled = crate::sample::sample_file(path, 10).unwrap();
+        assert_eq!(sampled.len(), 1);
+        assert_eq!(sampled[0].table.as_deref(), Some("X"));
+        assert_eq!(sampled[0].month, Some(month));
+        assert_eq!(sampled[0].blocks[0].rows, 2);
         let ctls = fetch_ctls(
             Arc::new(t),
             &archive,
             &tmp.path().join("cache"),
             &tmp.path().join("ctl"),
             month,
+            &[],
+            Duration::ZERO,
         )
         .await
         .unwrap();
         assert_eq!(ctls.len(), 1);
         assert!(ctls[0].ends_with("PUBLIC_DVD_X_201201.ctl"));
         assert_eq!(std::fs::read_to_string(&ctls[0]).unwrap(), "LOAD DATA 2012");
+        // A table that already has a control file somewhere is not fetched again.
+        let again = fetch_ctls(
+            nemweb_like(year, &month_zip),
+            &archive,
+            &tmp.path().join("cache2"),
+            &tmp.path().join("ctl2"),
+            month,
+            &[tmp.path().join("ctl")],
+            Duration::ZERO,
+        )
+        .await
+        .unwrap();
+        assert!(again.is_empty());
+        assert_eq!(
+            ctl_table("PUBLIC_DVD_BIDPEROFFER_D_201201.ctl").as_deref(),
+            Some("BIDPEROFFER_D")
+        );
+        assert_eq!(ctl_table("public_dvd_x_202401.CTL").as_deref(), Some("X"));
+        assert_eq!(ctl_table("PUBLIC_DVD_X_2024.ctl"), None);
+        assert_eq!(
+            ctl_table("PUBLIC_ARCHIVE#DISPATCHPRICE#FILE01#202608.ctl").as_deref(),
+            Some("DISPATCHPRICE")
+        );
+        assert_eq!(ctl_table("PUBLIC_DVD_X_202401010000.zip"), None);
+        assert_eq!(ctl_table("readme.txt"), None);
+    }
+
+    fn nemweb_like(year: &str, month_zip: &[u8]) -> Arc<dyn Transport> {
+        use nemlake_fetch::transport::{Canned, StaticTransport};
+        let t = Arc::new(StaticTransport::default());
+        t.add(
+            year,
+            Canned::ok(br#"<pre> 2/21/2012 3:10 PM 1912843433 <A HREF="/Data_Archive/Wholesale_Electricity/MMSDM/2012/MMSDM_2012_01.zip">MMSDM_2012_01.zip</A><br></pre>"#),
+        );
+        t.add(&format!("{year}MMSDM_2012_01.zip"), Canned::ok(month_zip));
+        Arc::new(t)
+    }
+
+    #[tokio::test]
+    async fn a_refusal_stops_the_month_and_writes_nothing() {
+        use nemlake_fetch::transport::{Canned, StaticTransport};
+        let root = "https://h/Data_Archive/Wholesale_Electricity/MMSDM/2024/MMSDM_2024_01/MMSDM_Historical_Data_SQLLoader";
+        let link = |name: &str| {
+            format!(
+                r#" 2/13/2024 8:27 AM 12 <A HREF="/Data_Archive/Wholesale_Electricity/MMSDM/2024/MMSDM_2024_01/MMSDM_Historical_Data_SQLLoader/DATA/{name}">{name}</A><br>"#
+            )
+        };
+        let listing = format!(
+            "<pre>{}{}{}</pre>",
+            link("PUBLIC_DVD_A_202401010000.zip"),
+            link("PUBLIC_DVD_B_202401010000.zip"),
+            link("PUBLIC_DVD_C_202401010000.zip")
+        );
+        let t = Arc::new(StaticTransport::default());
+        t.add(&format!("{root}/DATA/"), Canned::ok(listing.as_bytes()))
+            .add(&format!("{root}/P5MIN_ALL_DATA/"), Canned::status(404))
+            .add(&format!("{root}/PREDISP_ALL_DATA/"), Canned::status(404));
+        t.add(
+            &format!("{root}/DATA/PUBLIC_DVD_A_202401010000.zip"),
+            Canned::ok(&zip_of(b"I,A,X,1,V\r\nD,A,X,1,1\r\n")),
+        );
+        let mut refusal = Canned::status(403);
+        refusal.body = b"Website is unavailable".to_vec();
+        t.add(
+            &format!("{root}/DATA/PUBLIC_DVD_B_202401010000.zip"),
+            refusal,
+        );
+        t.add(
+            &format!("{root}/DATA/PUBLIC_DVD_C_202401010000.zip"),
+            Canned::ok(&zip_of(b"I,A,Z,1,V\r\nD,A,Z,1,1\r\n")),
+        );
+        let archive = MmsdmArchive::new("https://h").unwrap();
+        let tmp = tempfile::tempdir().unwrap();
+        let bundle = tmp.path().join("b.heads.csv");
+        let e = fetch_heads(
+            Arc::new(Arc::clone(&t)),
+            &archive,
+            &tmp.path().join("cache"),
+            &HeadDest::Bundle(bundle.clone()),
+            "2024-01".parse().unwrap(),
+            HeadOptions {
+                interval: Duration::ZERO,
+                ..Default::default()
+            },
+        )
+        .await
+        .unwrap_err();
+        assert_eq!(e.diagnostic().code, "net.blocked");
+        assert!(!bundle.exists(), "a refused month writes no bundle");
+        // Three listings, head A, the refusal for B, and nothing for C.
+        assert_eq!(t.request_count(), 5);
     }
 
     #[test]

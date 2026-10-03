@@ -21,7 +21,6 @@ nemlake-fetch.workspace = true
 nemlake-schema-model.workspace = true
 clap.workspace = true
 flate2.workspace = true
-futures.workspace = true
 tokio.workspace = true
 serde.workspace = true
 serde_json.workspace = true

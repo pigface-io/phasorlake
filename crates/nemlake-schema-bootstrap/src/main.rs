@@ -46,9 +46,11 @@ enum Cmd {
         /// The `schemas/` directory to write into.
         #[arg(long, default_value = "schemas")]
         schemas: PathBuf,
-        /// Directory of `PUBLIC_DVD_*.ctl` files.
-        #[arg(long)]
-        ctl: PathBuf,
+        /// Directories of `PUBLIC_DVD_*.ctl` files; repeatable. When two
+        /// directories have a control file for the same table the first wins,
+        /// so name the newest month first.
+        #[arg(long, required = true)]
+        ctl: Vec<PathBuf>,
         /// The scraped data-model JSON.
         #[arg(long)]
         datamodel: PathBuf,
@@ -68,25 +70,31 @@ enum Cmd {
         #[arg(long)]
         check: bool,
     },
-    /// Fetch the head of every archive zip of a month as `{stem}.CSV` fixtures (network).
+    /// Fetch the head of every archive zip of a month as fixtures (network).
     Heads {
         /// Archive month.
         #[arg(long)]
         month: nemlake_core::YearMonth,
-        /// Output directory.
+        /// Output directory: one `{stem}.CSV` per zip.
+        #[arg(long, required_unless_present = "bundle", conflicts_with = "bundle")]
+        out: Option<PathBuf>,
+        /// Output file: every head of the month in one multi-block CSV.
         #[arg(long)]
-        out: PathBuf,
+        bundle: Option<PathBuf>,
         /// D rows to keep per block.
         #[arg(long, default_value_t = 20)]
         rows: usize,
-        /// Concurrent requests.
-        #[arg(long, default_value_t = 6)]
-        parallel: usize,
+        /// Bytes to request of each zip.
+        #[arg(long, default_value_t = nemlake_schema_bootstrap::remote::HEAD_BYTES)]
+        bytes: u64,
+        /// Milliseconds between two requests; nemweb blocks fast clients.
+        #[arg(long, default_value_t = 500)]
+        interval_ms: u64,
         /// Archive base URL.
         #[arg(long, default_value = "https://www.nemweb.com.au")]
         base: String,
     },
-    /// Fetch every CTL of a month (network).
+    /// Fetch the control files of a month (network).
     Ctls {
         /// Archive month.
         #[arg(long)]
@@ -94,6 +102,13 @@ enum Cmd {
         /// Output directory.
         #[arg(long)]
         out: PathBuf,
+        /// Skip tables that already have a control file in `--out` or in
+        /// one of these directories; repeatable.
+        #[arg(long)]
+        skip_known: Vec<PathBuf>,
+        /// Milliseconds between two requests; nemweb blocks fast clients.
+        #[arg(long, default_value_t = 500)]
+        interval_ms: u64,
         /// Archive base URL.
         #[arg(long, default_value = "https://www.nemweb.com.au")]
         base: String,
@@ -180,10 +195,23 @@ fn main() -> ExitCode {
         Cmd::Heads {
             month,
             out,
+            bundle,
             rows,
-            parallel,
+            bytes,
+            interval_ms,
             base,
         } => {
+            use nemlake_schema_bootstrap::remote::{HeadDest, HeadOptions};
+            let dest = match (out, bundle) {
+                (_, Some(f)) => HeadDest::Bundle(f),
+                (Some(d), None) => HeadDest::Dir(d),
+                (None, None) => unreachable!("clap requires --out or --bundle"),
+            };
+            let opts = HeadOptions {
+                rows,
+                bytes,
+                interval: std::time::Duration::from_millis(interval_ms),
+            };
             let archive = match nemlake_fetch::MmsdmArchive::new(&base) {
                 Ok(a) => a,
                 Err(e) => return fail(&e.diagnostic()),
@@ -194,7 +222,7 @@ fn main() -> ExitCode {
             };
             let cache = tmp_cache();
             let result = run_async(nemlake_schema_bootstrap::remote::fetch_heads(
-                transport, &archive, &cache, &out, month, rows, parallel,
+                transport, &archive, &cache, &dest, month, opts,
             ));
             let _ = std::fs::remove_dir_all(&cache);
             match result {
@@ -202,6 +230,7 @@ fn main() -> ExitCode {
                     let mut failed = 0;
                     for o in &outcomes {
                         match (&o.path, &o.error) {
+                            (Some(_), _) if matches!(dest, HeadDest::Bundle(_)) => {}
                             (Some(p), _) => eprintln!("wrote {}", p.display()),
                             (None, Some(e)) => {
                                 failed += 1;
@@ -220,7 +249,13 @@ fn main() -> ExitCode {
                 Err(e) => fail(&e.diagnostic()),
             }
         }
-        Cmd::Ctls { month, out, base } => {
+        Cmd::Ctls {
+            month,
+            out,
+            skip_known,
+            interval_ms,
+            base,
+        } => {
             let archive = match nemlake_fetch::MmsdmArchive::new(&base) {
                 Ok(a) => a,
                 Err(e) => return fail(&e.diagnostic()),
@@ -231,7 +266,13 @@ fn main() -> ExitCode {
             };
             let cache = tmp_cache();
             let result = run_async(nemlake_schema_bootstrap::remote::fetch_ctls(
-                transport, &archive, &cache, &out, month,
+                transport,
+                &archive,
+                &cache,
+                &out,
+                month,
+                &skip_known,
+                std::time::Duration::from_millis(interval_ms),
             ));
             let _ = std::fs::remove_dir_all(&cache);
             match result {
@@ -248,7 +289,7 @@ fn main() -> ExitCode {
 #[allow(clippy::too_many_arguments)]
 fn regen(
     schemas: &Path,
-    ctl_dir: &Path,
+    ctl_dirs: &[PathBuf],
     datamodel: &Path,
     sample_dirs: &[PathBuf],
     snapshot_list: &Path,
@@ -265,22 +306,26 @@ fn regen(
     // CTLs by the table they load, plus the archive stem each one reads.
     let mut ctls: BTreeMap<String, (CtlFile, String)> = BTreeMap::new();
     let mut by_infile: BTreeMap<String, String> = BTreeMap::new();
-    let mut ctl_paths: Vec<_> = std::fs::read_dir(ctl_dir)
-        .map_err(|e| {
-            Box::new(
-                nemlake_core::Diagnostic::error(
-                    "schema.ctl_dir",
-                    nemlake_core::Category::Schema,
-                    format!("The CTL directory {} could not be read.", ctl_dir.display()),
+    let mut ctl_paths: Vec<PathBuf> = Vec::new();
+    for ctl_dir in ctl_dirs {
+        let mut in_dir: Vec<_> = std::fs::read_dir(ctl_dir)
+            .map_err(|e| {
+                Box::new(
+                    nemlake_core::Diagnostic::error(
+                        "schema.ctl_dir",
+                        nemlake_core::Category::Schema,
+                        format!("The CTL directory {} could not be read.", ctl_dir.display()),
+                    )
+                    .caused_by(&e),
                 )
-                .caused_by(&e),
-            )
-        })?
-        .filter_map(Result::ok)
-        .map(|e| e.path())
-        .filter(|p| p.extension().is_some_and(|e| e == "ctl"))
-        .collect();
-    ctl_paths.sort();
+            })?
+            .filter_map(Result::ok)
+            .map(|e| e.path())
+            .filter(|p| p.extension().is_some_and(|e| e == "ctl"))
+            .collect();
+        in_dir.sort();
+        ctl_paths.extend(in_dir);
+    }
     for p in ctl_paths {
         let text = std::fs::read_to_string(&p).map_err(|e| {
             Box::new(
