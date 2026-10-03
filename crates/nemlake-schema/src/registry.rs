@@ -104,8 +104,9 @@ pub struct Registry {
     dynamic: Mutex<HashMap<(TableId, Fingerprint), Arc<Projection>>>,
     /// Tables derived at run time from the header of a file whose report
     /// pair no table claims. Slots are written once and never moved, so a
-    /// reference to one lives as long as the registry.
-    derived: Vec<OnceLock<Derived>>,
+    /// reference to one lives as long as the registry. Each is boxed: an
+    /// empty slot costs a pointer, not a table.
+    derived: Vec<OnceLock<Box<Derived>>>,
     /// The report pair of each derived table, in slot order.
     derived_pairs: Mutex<Vec<(String, String)>>,
 }
@@ -366,7 +367,7 @@ impl Registry {
             timestamp_format: nemlake_schema_model::TimestampFormat::AemoSlash,
         });
         let lake = lake_schema(&table, &market_def, self.opts);
-        let _ = self.derived[slot].set(Derived { table, lake });
+        let _ = self.derived[slot].set(Box::new(Derived { table, lake }));
         pairs.push((irow.report_type.to_owned(), irow.report_subtype.to_owned()));
         Some(TableId((self.tables.len() + slot) as u32))
     }
