@@ -1,0 +1,20 @@
+# The toolchain every job needs: Rust (version, components and target from
+# rust-toolchain.toml), just, zsh for the recipes, and the cargo cache.
+#
+# Actions are pinned to a commit and downloads to a checksum: CI runs what it
+# downloads with the repository checked out.
+name: setup
+description: Install the toolchain and just
+
+runs:
+  using: composite
+  steps:
+    # rust-toolchain.toml names the version and the components; rustup reads it on first use.
+    - run: rustup show
+      shell: bash
+    - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2
+    - uses: extractions/setup-just@dd310ad5a97d8e7b41793f8ef055398d51ad4de6 # v2
+    # The justfile's recipes run under zsh, which the Linux runner does not ship.
+    - run: |
+        if [ "$RUNNER_OS" = "Linux" ]; then sudo apt-get update && sudo apt-get install -y zsh; fi
+      shell: bash

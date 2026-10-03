@@ -1,6 +1,8 @@
-//! `llm/index.md` is loaded into every agent session through `CLAUDE.md`, so
-//! it has to stay short, and every pointer in it has to be true: a path that
-//! has moved sends an agent to the wrong place with confidence.
+//! `llm/index.md` is the map an agent reads when it needs to find where
+//! something lives; `CLAUDE.md` points at it without loading it, so it must
+//! stay short enough to read on demand, and every pointer in it has to be
+//! true: a path that has moved sends an agent to the wrong place with
+//! confidence.
 
 use std::collections::BTreeSet;
 use std::process::Command;
@@ -20,7 +22,13 @@ pub fn path_spans(markdown: &str) -> BTreeSet<String> {
         let after = &rest[start + 1..];
         let Some(end) = after.find('`') else { break };
         let span = &after[..end];
-        if !span.contains(' ') && !span.contains('\n') && (span.contains('/') || span.rsplit_once('.').is_some_and(|(_, ext)| ext.chars().all(char::is_alphanumeric) && !ext.is_empty())) {
+        if !span.contains(' ')
+            && !span.contains('\n')
+            && (span.contains('/')
+                || span.rsplit_once('.').is_some_and(|(_, ext)| {
+                    ext.chars().all(char::is_alphanumeric) && !ext.is_empty()
+                }))
+        {
             out.insert(span.to_owned());
         }
         rest = &after[end + 1..];
@@ -37,7 +45,10 @@ pub fn recipe_spans(markdown: &str) -> BTreeSet<String> {
         let Some(end) = after.find('`') else { break };
         let span = &after[..end];
         if let Some(r) = span.strip_prefix("just ") {
-            let recipe: String = r.chars().take_while(|c| c.is_alphanumeric() || *c == '-' || *c == '_').collect();
+            let recipe: String = r
+                .chars()
+                .take_while(|c| c.is_alphanumeric() || *c == '-' || *c == '_')
+                .collect();
             if !recipe.is_empty() {
                 out.insert(recipe);
             }
@@ -57,42 +68,71 @@ pub fn run() -> Result<bool> {
         };
         let lines = text.trim_end().lines().count();
         if lines > budget.0 {
-            failures.push(format!("{name} has {lines} lines; the budget is {}", budget.0));
+            failures.push(format!(
+                "{name} has {lines} lines; the budget is {}",
+                budget.0
+            ));
         }
         if text.len() > budget.1 {
-            failures.push(format!("{name} has {} bytes; the budget is {}", text.len(), budget.1));
+            failures.push(format!(
+                "{name} has {} bytes; the budget is {}",
+                text.len(),
+                budget.1
+            ));
         }
         text
     };
     let entry = read(ENTRY, ENTRY_BUDGET, &mut failures);
-    if !entry.is_empty() && !entry.lines().any(|l| l.trim() == format!("@{INDEX}")) {
-        failures.push(format!("{ENTRY} does not import the index: it needs a line that reads @{INDEX}"));
+    if !entry.is_empty() && !entry.contains(INDEX) {
+        failures.push(format!(
+            "{ENTRY} does not point at the index: it must name {INDEX}"
+        ));
+    }
+    if entry.lines().any(|l| l.trim() == format!("@{INDEX}")) {
+        failures.push(format!("{ENTRY} imports the index with @{INDEX}; it must only point at it, so the index is read when needed, not on every session"));
     }
     let index = read(INDEX, INDEX_BUDGET, &mut failures);
     for p in path_spans(&index) {
         let path = root.join(&p);
-        let ignored = Command::new("git").args(["check-ignore", "-q", &p]).current_dir(&root).status().is_ok_and(|s| s.success());
+        let ignored = Command::new("git")
+            .args(["check-ignore", "-q", &p])
+            .current_dir(&root)
+            .status()
+            .is_ok_and(|s| s.success());
         if !path.exists() && !ignored {
             failures.push(format!("{INDEX} names `{p}`, which does not exist"));
         }
     }
-    let summary = Command::new("just").arg("--summary").current_dir(&root).output();
+    let summary = Command::new("just")
+        .arg("--summary")
+        .current_dir(&root)
+        .output();
     match summary {
         Ok(out) if out.status.success() => {
-            let recipes: BTreeSet<String> = String::from_utf8_lossy(&out.stdout).split_whitespace().map(str::to_owned).collect();
+            let recipes: BTreeSet<String> = String::from_utf8_lossy(&out.stdout)
+                .split_whitespace()
+                .map(str::to_owned)
+                .collect();
             for r in recipe_spans(&index) {
                 if !recipes.contains(&r) {
                     failures.push(format!("{INDEX} names `just {r}`, which is not a recipe"));
                 }
             }
         }
-        _ => failures.push("`just --summary` failed, so the recipes named in the index could not be checked".into()),
+        _ => failures.push(
+            "`just --summary` failed, so the recipes named in the index could not be checked"
+                .into(),
+        ),
     }
     for f in &failures {
         eprintln!("{f}");
     }
     if failures.is_empty() {
-        println!("{INDEX}: {} lines, {} bytes, every path and recipe exists", index.trim_end().lines().count(), index.len());
+        println!(
+            "{INDEX}: {} lines, {} bytes, every path and recipe exists",
+            index.trim_end().lines().count(),
+            index.len()
+        );
     }
     Ok(failures.is_empty())
 }

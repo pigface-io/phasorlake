@@ -97,18 +97,6 @@ fn bench(c: &mut Criterion) {
         });
     });
     g.finish();
-    let mut g = c.benchmark_group("parse_values");
-    g.bench_function("timestamp", |b| {
-        b.iter(|| {
-            nemlake_core::nemtime::parse_micros(black_box(b"2024/01/07 13:45:00"), 36_000).unwrap()
-        });
-    });
-    g.bench_function("float", |b| {
-        b.iter(|| {
-            nemlake_core::num::parse_f64(black_box(b"13878.2169050000000000000000")).unwrap()
-        });
-    });
-    g.finish();
 }
 
 criterion_group!(benches, bench);

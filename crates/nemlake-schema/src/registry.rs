@@ -75,6 +75,11 @@ static EMBEDDED_DECIMAL: OnceLock<Arc<Registry>> = OnceLock::new();
 /// The blob `build.rs` packed from `schemas/`.
 const EMBEDDED_BLOB: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/registry.bin"));
 
+/// The embedded blob, for benchmarks and tools that decode it themselves.
+pub fn embedded_blob() -> &'static [u8] {
+    EMBEDDED_BLOB
+}
+
 impl Registry {
     /// The registry compiled into the binary, built once per type mode.
     pub fn load_embedded(opts: TypeOptions) -> Arc<Registry> {

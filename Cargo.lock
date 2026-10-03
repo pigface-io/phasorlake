@@ -1430,6 +1430,19 @@ dependencies = [
 [[package]]
 name = "nemlake-bench"
 version = "0.1.0"
+dependencies = [
+ "nemlake-core",
+ "nemlake-fetch",
+ "nemlake-pipeline",
+ "nemlake-schema",
+ "nemlake-store",
+ "peak_alloc",
+ "serde_json",
+ "tempfile",
+ "tokio",
+ "tokio-util",
+ "zip",
+]
 
 [[package]]
 name = "nemlake-cli"
@@ -1458,6 +1471,7 @@ dependencies = [
 name = "nemlake-core"
 version = "0.1.0"
 dependencies = [
+ "criterion",
  "fast-float2",
  "memchr",
  "proptest",
@@ -1533,6 +1547,7 @@ name = "nemlake-schema"
 version = "0.1.0"
 dependencies = [
  "arrow-schema",
+ "criterion",
  "hashbrown 0.17.1",
  "insta",
  "nemlake-core",
@@ -1575,6 +1590,7 @@ dependencies = [
  "arrow-array",
  "arrow-schema",
  "arrow-select",
+ "criterion",
  "nemlake-core",
  "parquet",
  "rusqlite",
@@ -1692,6 +1708,12 @@ dependencies = [
  "twox-hash",
  "zstd",
 ]
+
+[[package]]
+name = "peak_alloc"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ccc90935a8dd139fdf341762773687a1e361d3f54b396a55d9dd1f7001e484bb"
 
 [[package]]
 name = "percent-encoding"

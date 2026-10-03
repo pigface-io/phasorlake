@@ -5,7 +5,7 @@
 //! registry's `build.rs` can use it to validate `schemas/` at compile time
 //! and emit a compact blob; the registry crate adds the Arrow mapping.
 //!
-//! On disk a table is one TOML file (see [`file`]) with every column declared
+//! On disk a table is one TOML file (see [`mod@file`]) with every column declared
 //! once and every version as an ordered list of column names. In memory it is
 //! a [`TableDef`]. [`validate`] holds the invariants, [`compat`] the evolution
 //! rules, and [`blob`] the postcard encoding of a whole set of tables.

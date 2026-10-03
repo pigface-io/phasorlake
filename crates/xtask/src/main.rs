@@ -76,5 +76,8 @@ fn main() -> ExitCode {
 
 /// The repository root: the parent of `crates/`.
 fn repo_root() -> PathBuf {
-    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../..").canonicalize().expect("the workspace root exists")
+    PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("../..")
+        .canonicalize()
+        .expect("the workspace root exists")
 }

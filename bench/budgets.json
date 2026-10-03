@@ -1,0 +1,54 @@
+{
+  "machine": "apple-m-series",
+  "tolerance": {
+    "time_pct": 10.0,
+    "mem_pct": 5.0
+  },
+  "benches": {
+    "e2e/ingest_synthetic_zip": {
+      "max_ms": 143.092,
+      "max_peak_heap_mb": 12.161,
+      "max_rss_mb": 102.655,
+      "min_rows_per_s": 3663999.13
+    },
+    "parse/scan_split_only": {
+      "min_mb_per_s": 1378.312
+    },
+    "parse/scan_typed_arrow": {
+      "min_mb_per_s": 474.192
+    },
+    "parse_values/decimal": {
+      "max_ns": 17.381
+    },
+    "parse_values/float_long": {
+      "max_ns": 38.876
+    },
+    "parse_values/float_short": {
+      "max_ns": 6.274
+    },
+    "parse_values/integer": {
+      "max_ns": 14.098
+    },
+    "parse_values/timestamp": {
+      "max_ns": 8.908
+    },
+    "registry/load_embedded_from_blob": {
+      "max_ns": 604908.234
+    },
+    "registry/resolve_drift_cached": {
+      "max_ns": 529.553
+    },
+    "registry/resolve_exact": {
+      "max_ns": 45.891
+    },
+    "store/parquet_write": {
+      "min_mb_per_s": 418.713
+    },
+    "store/partition_split_one_month": {
+      "max_ms": 2.554
+    },
+    "store/partition_split_two_months": {
+      "max_ms": 5.05
+    }
+  }
+}

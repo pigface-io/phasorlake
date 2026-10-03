@@ -288,7 +288,7 @@ impl Diagnose for ScanError {
                     .expected_observed(format!("at most {limit}"), bad.to_string())
             }
             Self::Sink(e) => e.diagnostic(),
-            Self::Stopped { .. } => Diagnostic::error("internal.stopped", Category::Internal, msg),
+            Self::Stopped { .. } => Diagnostic::error("csv.stopped_fail_fast", Category::Csv, msg),
         };
         if let Some(l) = self.line() {
             d.line = Some(l);
@@ -395,7 +395,7 @@ mod tests {
         );
         assert_eq!(
             ScanError::Stopped { line: 9 }.diagnostic().code,
-            "internal.stopped"
+            "csv.stopped_fail_fast"
         );
         let e = ScanError::Io {
             bytes: 10,

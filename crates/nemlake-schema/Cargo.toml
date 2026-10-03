@@ -23,5 +23,10 @@ thiserror.workspace = true
 nemlake-schema-model.workspace = true
 
 [dev-dependencies]
+criterion.workspace = true
 insta.workspace = true
 tempfile.workspace = true
+
+[[bench]]
+name = "resolve"
+harness = false

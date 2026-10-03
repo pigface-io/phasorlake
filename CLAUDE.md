@@ -1,6 +1,6 @@
 # nemlake
 
-Before any task, find the matching entry in the index below and read the files
-it names before you edit. Trust the repo's files over what you recall.
-
-@llm/index.md
+Rust workspace: AEMO market data into a local Parquet lake. Run tools only
+through `just` (`just --list`). Rules a hook or CI enforces, and a map of
+where each feature lives, are in `llm/index.md`: read it when you need to
+find code or check a rule, not as a matter of course.

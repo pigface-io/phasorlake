@@ -24,7 +24,11 @@ pub fn parse_lcov(text: &str, root: &Path) -> BTreeMap<String, (u64, u64)> {
     for line in text.lines() {
         if let Some(path) = line.strip_prefix("SF:") {
             let p = Path::new(path);
-            let rel = p.strip_prefix(root).unwrap_or(p).to_string_lossy().replace('\\', "/");
+            let rel = p
+                .strip_prefix(root)
+                .unwrap_or(p)
+                .to_string_lossy()
+                .replace('\\', "/");
             current = Some(rel);
         } else if let Some(rest) = line.strip_prefix("DA:")
             && let Some(file) = &current
@@ -51,11 +55,21 @@ pub fn check(config: &Config, files: &BTreeMap<String, (u64, u64)>) -> Vec<Strin
         if !file.starts_with("crates/") || config.exclude.iter().any(|x| file.starts_with(x)) {
             continue;
         }
-        let floor = config.floors.iter().filter(|(prefix, _)| file.starts_with(prefix.as_str())).max_by_key(|(p, _)| p.len());
+        let floor = config
+            .floors
+            .iter()
+            .filter(|(prefix, _)| file.starts_with(prefix.as_str()))
+            .max_by_key(|(p, _)| p.len());
         match floor {
-            None => failures.push(format!("{file}: no coverage floor covers this file; add one to coverage.json")),
+            None => failures.push(format!(
+                "{file}: no coverage floor covers this file; add one to coverage.json"
+            )),
             Some((prefix, floor)) => {
-                let pct = if *total == 0 { 100.0 } else { *hit as f64 * 100.0 / *total as f64 };
+                let pct = if *total == 0 {
+                    100.0
+                } else {
+                    *hit as f64 * 100.0 / *total as f64
+                };
                 if pct + 1e-9 < *floor {
                     failures.push(format!("{file}: {pct:.1}% of {total} lines covered; the floor for {prefix} is {floor}%"));
                 }
@@ -67,15 +81,30 @@ pub fn check(config: &Config, files: &BTreeMap<String, (u64, u64)>) -> Vec<Strin
 
 pub fn run(lcov: &Path) -> Result<bool> {
     let root = crate::repo_root();
-    let config: Config = serde_json::from_str(&std::fs::read_to_string(root.join("coverage.json")).context("reading coverage.json")?)?;
-    let text = std::fs::read_to_string(lcov).with_context(|| format!("reading {}", lcov.display()))?;
+    let config: Config = serde_json::from_str(
+        &std::fs::read_to_string(root.join("coverage.json")).context("reading coverage.json")?,
+    )?;
+    let text =
+        std::fs::read_to_string(lcov).with_context(|| format!("reading {}", lcov.display()))?;
     let files = parse_lcov(&text, &root);
     let failures = check(&config, &files);
     for f in &failures {
         eprintln!("{f}");
     }
-    let (hit, total) = files.iter().filter(|(f, _)| f.starts_with("crates/")).fold((0u64, 0u64), |(h, t), (_, (fh, ft))| (h + fh, t + ft));
-    println!("coverage: {hit}/{total} lines ({:.1}%) over {} files; {} failure(s)", if total == 0 { 100.0 } else { hit as f64 * 100.0 / total as f64 }, files.len(), failures.len());
+    let (hit, total) = files
+        .iter()
+        .filter(|(f, _)| f.starts_with("crates/"))
+        .fold((0u64, 0u64), |(h, t), (_, (fh, ft))| (h + fh, t + ft));
+    println!(
+        "coverage: {hit}/{total} lines ({:.1}%) over {} files; {} failure(s)",
+        if total == 0 {
+            100.0
+        } else {
+            hit as f64 * 100.0 / total as f64
+        },
+        files.len(),
+        failures.len()
+    );
     Ok(failures.is_empty())
 }
 
@@ -89,12 +118,18 @@ mod tests {
         let files = parse_lcov(lcov, Path::new("/r"));
         assert_eq!(files["crates/a/src/x.rs"], (1, 2));
         assert_eq!(files["crates/b/src/y.rs"], (1, 1));
-        let config = Config { exclude: vec![], floors: [("crates/a/src".to_owned(), 60.0)].into_iter().collect() };
+        let config = Config {
+            exclude: vec![],
+            floors: [("crates/a/src".to_owned(), 60.0)].into_iter().collect(),
+        };
         let f = check(&config, &files);
         assert_eq!(f.len(), 2, "{f:?}");
         assert!(f[0].contains("50.0% of 2 lines"));
         assert!(f[1].contains("no coverage floor"));
-        let config = Config { exclude: vec!["crates/b/".into()], floors: [("crates/a/src".to_owned(), 50.0)].into_iter().collect() };
+        let config = Config {
+            exclude: vec!["crates/b/".into()],
+            floors: [("crates/a/src".to_owned(), 50.0)].into_iter().collect(),
+        };
         assert!(check(&config, &files).is_empty());
     }
 }

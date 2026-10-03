@@ -548,13 +548,13 @@ pub fn merge(inputs: &Inputs<'_>) -> Result<TableDef, MergeError> {
         generated: None,
         note: None,
     };
-    if let Some(ex) = inputs.existing {
-        // Keep a human's note; append new findings after it.
-        if let Some(n) = &ex.provenance.note
-            && !n.starts_with("regen:")
-        {
-            notes.insert(0, n.clone());
-        }
+    if let Some(ex) = inputs.existing
+        && let Some(n) = &ex.provenance.note
+        && let Some(human) = n.split(" | ").find(|part| part.starts_with("human:"))
+    {
+        // Regenerated notes are derived from the inputs and rewritten every run;
+        // only a note a person marked `human:` survives.
+        notes.insert(0, human.to_owned());
     }
     if !notes.is_empty() {
         provenance.note = Some(notes.join(" | "));
@@ -705,7 +705,7 @@ mod tests {
         });
         existing.versions[0].first_seen = Some("2009-07".parse().unwrap());
         existing.feeds = vec!["Dispatch_SCADA".into()];
-        existing.provenance.note = Some("human note".into());
+        existing.provenance.note = Some("human: keep me | version 1 was published with 3 columns and later with 4; the longer list is recorded and shorter files read as drift".into());
         let mut inputs = scada_inputs(&ctl, &dm, &blocks);
         inputs.existing = Some(&existing);
         let t = merge(&inputs).unwrap();
@@ -740,7 +740,7 @@ mod tests {
                 .note
                 .as_deref()
                 .unwrap()
-                .starts_with("human note")
+                .starts_with("human: keep me")
         );
         let issues = validate_table(&t);
         assert!(

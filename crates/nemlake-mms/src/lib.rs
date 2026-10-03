@@ -7,7 +7,7 @@
 //! C,"END OF REPORT",4193482                                                  footer: total lines
 //! ```
 //!
-//! Layer L2, synchronous and allocation-free per row. [`scan`] splits bytes
+//! Layer L2, synchronous and allocation-free per row. [`scan()`] splits bytes
 //! into rows and drives a [`Sink`]; [`ArrowSink`] resolves each block through
 //! the registry and builds typed `RecordBatch`es; [`archive`] walks zips,
 //! including zips inside zips; [`inspect`] summarises a file without

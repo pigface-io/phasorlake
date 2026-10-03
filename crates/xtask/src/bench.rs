@@ -53,13 +53,28 @@ pub fn compare(budgets: &Budgets, measured: &Measurements) -> (Vec<String>, Vec<
             continue;
         };
         for (key, value) in keys {
-            let Some(limit) = budget.get(key) else { continue };
-            let pct = if is_memory_key(key) { budgets.tolerance.mem_pct } else { budgets.tolerance.time_pct };
+            let Some(limit) = budget.get(key) else {
+                continue;
+            };
+            let pct = if is_memory_key(key) {
+                budgets.tolerance.mem_pct
+            } else {
+                budgets.tolerance.time_pct
+            };
             let slack = limit * pct / 100.0;
-            let ok = if key.starts_with("min_") { *value >= limit - slack } else { *value <= limit + slack };
-            rows.push(format!("{:<4} {bench:<32} {key:<22} {value:>14.3}  budget {limit:>12.3}", if ok { "ok" } else { "FAIL" }));
+            let ok = if key.starts_with("min_") {
+                *value >= limit - slack
+            } else {
+                *value <= limit + slack
+            };
+            rows.push(format!(
+                "{:<4} {bench:<32} {key:<22} {value:>14.3}  budget {limit:>12.3}",
+                if ok { "ok" } else { "FAIL" }
+            ));
             if !ok {
-                breaches.push(format!("{bench}.{key} = {value:.3} breaks budget {limit:.3} (tolerance {pct}%)"));
+                breaches.push(format!(
+                    "{bench}.{key} = {value:.3} breaks budget {limit:.3} (tolerance {pct}%)"
+                ));
             }
         }
     }
@@ -73,10 +88,16 @@ pub fn tighten(budgets: &mut Budgets, measured: &Measurements) -> usize {
         let b = budgets.benches.entry(bench.clone()).or_default();
         for (key, value) in keys {
             let slack = if is_memory_key(key) { 1.10 } else { 1.15 };
-            let proposed = if key.starts_with("min_") { value / slack } else { value * slack };
+            let proposed = if key.starts_with("min_") {
+                value / slack
+            } else {
+                value * slack
+            };
             let proposed = round3(proposed);
             match b.get(key) {
-                Some(cur) if (key.starts_with("min_") && proposed <= *cur) || (!key.starts_with("min_") && proposed >= *cur) => {}
+                Some(cur)
+                    if (key.starts_with("min_") && proposed <= *cur)
+                        || (!key.starts_with("min_") && proposed >= *cur) => {}
                 _ => {
                     b.insert(key.clone(), proposed);
                     n += 1;
@@ -116,7 +137,9 @@ pub fn read_criterion(target: &Path) -> Result<Measurements> {
     let root = target.join("criterion");
     let mut stack = vec![root.clone()];
     while let Some(d) = stack.pop() {
-        let Ok(rd) = std::fs::read_dir(&d) else { continue };
+        let Ok(rd) = std::fs::read_dir(&d) else {
+            continue;
+        };
         for e in rd.filter_map(Result::ok) {
             let p = e.path();
             if !p.is_dir() {
@@ -124,13 +147,22 @@ pub fn read_criterion(target: &Path) -> Result<Measurements> {
             }
             let new = p.join("new");
             if new.is_dir() {
-                let est: Estimates = serde_json::from_str(&std::fs::read_to_string(new.join("estimates.json"))?)?;
-                let meta: BenchmarkMeta = serde_json::from_str(&std::fs::read_to_string(new.join("benchmark.json"))?)?;
-                let name = p.strip_prefix(&root).unwrap_or(&p).to_string_lossy().replace('\\', "/");
+                let est: Estimates =
+                    serde_json::from_str(&std::fs::read_to_string(new.join("estimates.json"))?)?;
+                let meta: BenchmarkMeta =
+                    serde_json::from_str(&std::fs::read_to_string(new.join("benchmark.json"))?)?;
+                let name = p
+                    .strip_prefix(&root)
+                    .unwrap_or(&p)
+                    .to_string_lossy()
+                    .replace('\\', "/");
                 let ns = est.median.point_estimate;
                 let keys = out.entry(name).or_default();
                 if let Some(bytes) = meta.throughput.and_then(|t| t.bytes) {
-                    keys.insert("min_mb_per_s".into(), round3(bytes as f64 / 1e6 / (ns / 1e9)));
+                    keys.insert(
+                        "min_mb_per_s".into(),
+                        round3(bytes as f64 / 1e6 / (ns / 1e9)),
+                    );
                 } else if ns > 1e6 {
                     keys.insert("max_ms".into(), round3(ns / 1e6));
                 } else {
@@ -146,22 +178,37 @@ pub fn read_criterion(target: &Path) -> Result<Measurements> {
 
 /// Runs the end-to-end harness; returns its measurements.
 fn run_e2e(root: &Path) -> Result<Measurements> {
-    let status = Command::new("cargo").args(["build", "--release", "-q", "-p", "nemlake-bench"]).current_dir(root).status()?;
+    let status = Command::new("cargo")
+        .args(["build", "--release", "-q", "-p", "nemlake-bench"])
+        .current_dir(root)
+        .status()?;
     if !status.success() {
         bail!("building nemlake-bench failed");
     }
     let bin = root.join("target/release/nemlake-bench");
     let out = if cfg!(target_os = "macos") {
-        Command::new("/usr/bin/time").arg("-l").arg(&bin).current_dir(root).output()?
+        Command::new("/usr/bin/time")
+            .arg("-l")
+            .arg(&bin)
+            .current_dir(root)
+            .output()?
     } else {
-        Command::new("/usr/bin/time").arg("-v").arg(&bin).current_dir(root).output()?
+        Command::new("/usr/bin/time")
+            .arg("-v")
+            .arg(&bin)
+            .current_dir(root)
+            .output()?
     };
     if !out.status.success() {
-        bail!("nemlake-bench failed: {}", String::from_utf8_lossy(&out.stderr));
+        bail!(
+            "nemlake-bench failed: {}",
+            String::from_utf8_lossy(&out.stderr)
+        );
     }
     let stdout = String::from_utf8_lossy(&out.stdout);
     let stderr = String::from_utf8_lossy(&out.stderr);
-    let mut measured: Measurements = serde_json::from_str(stdout.trim()).context("nemlake-bench did not print JSON measurements")?;
+    let mut measured: Measurements = serde_json::from_str(stdout.trim())
+        .context("nemlake-bench did not print JSON measurements")?;
     if let Some(rss) = parse_rss_mb(&stderr) {
         for keys in measured.values_mut() {
             keys.insert("max_rss_mb".into(), round3(rss));
@@ -187,27 +234,48 @@ pub fn parse_rss_mb(time_output: &str) -> Option<f64> {
 pub fn run(set: &str, do_tighten: bool) -> Result<bool> {
     let root = crate::repo_root();
     let budgets_path = root.join("bench/budgets.json");
-    let mut budgets: Budgets = serde_json::from_str(&std::fs::read_to_string(&budgets_path).context("reading bench/budgets.json")?)?;
-    let packages: &[&str] = match set {
-        "fast" => &["nemlake-mms", "nemlake-schema", "nemlake-core"],
-        "full" => &["nemlake-mms", "nemlake-schema", "nemlake-core", "nemlake-store"],
+    let mut budgets: Budgets = serde_json::from_str(
+        &std::fs::read_to_string(&budgets_path).context("reading bench/budgets.json")?,
+    )?;
+    // (package, bench target). Named explicitly: `--benches` would also run the
+    // library's unit tests as a benchmark harness, which rejects criterion flags.
+    let targets: &[(&str, &str)] = match set {
+        "fast" => &[
+            ("nemlake-mms", "scan"),
+            ("nemlake-schema", "resolve"),
+            ("nemlake-core", "values"),
+        ],
+        "full" => &[
+            ("nemlake-mms", "scan"),
+            ("nemlake-schema", "resolve"),
+            ("nemlake-core", "values"),
+            ("nemlake-store", "write"),
+        ],
         other => bail!("unknown set {other}; use fast or full"),
     };
-    let target = root.join("target");
-    let _ = std::fs::remove_dir_all(target.join("criterion"));
-    for p in packages {
-        let status = Command::new("cargo").args(["bench", "-q", "-p", p, "--", "--quick", "--noplot"]).current_dir(&root).status()?;
+    let target_dir = root.join("target");
+    let _ = std::fs::remove_dir_all(target_dir.join("criterion"));
+    for (p, target) in targets {
+        let status = Command::new("cargo")
+            .args([
+                "bench", "-q", "-p", p, "--bench", target, "--", "--quick", "--noplot",
+            ])
+            .current_dir(&root)
+            .status()?;
         if !status.success() {
             bail!("cargo bench -p {p} failed");
         }
     }
-    let mut measured = read_criterion(&target)?;
+    let mut measured = read_criterion(&target_dir)?;
     if set == "full" {
         measured.extend(run_e2e(&root)?);
     }
     if do_tighten {
         let n = tighten(&mut budgets, &measured);
-        std::fs::write(&budgets_path, serde_json::to_string_pretty(&budgets)? + "\n")?;
+        std::fs::write(
+            &budgets_path,
+            serde_json::to_string_pretty(&budgets)? + "\n",
+        )?;
         println!("tightened {n} budget(s)");
     }
     let (breaches, rows) = compare(&budgets, &measured);
@@ -226,21 +294,49 @@ mod tests {
 
     fn budgets() -> Budgets {
         let mut benches = BTreeMap::new();
-        benches.insert("parse/x".to_owned(), [("min_mb_per_s".to_owned(), 100.0), ("max_ns".to_owned(), 10.0)].into_iter().collect());
-        Budgets { machine: "test".into(), tolerance: Tolerance { time_pct: 10.0, mem_pct: 5.0 }, benches }
+        benches.insert(
+            "parse/x".to_owned(),
+            [
+                ("min_mb_per_s".to_owned(), 100.0),
+                ("max_ns".to_owned(), 10.0),
+            ]
+            .into_iter()
+            .collect(),
+        );
+        Budgets {
+            machine: "test".into(),
+            tolerance: Tolerance {
+                time_pct: 10.0,
+                mem_pct: 5.0,
+            },
+            benches,
+        }
     }
 
     #[test]
     fn compares_with_tolerance() {
         let b = budgets();
         let mut m: Measurements = BTreeMap::new();
-        m.insert("parse/x".into(), [("min_mb_per_s".to_owned(), 91.0), ("max_ns".to_owned(), 10.9)].into_iter().collect());
+        m.insert(
+            "parse/x".into(),
+            [
+                ("min_mb_per_s".to_owned(), 91.0),
+                ("max_ns".to_owned(), 10.9),
+            ]
+            .into_iter()
+            .collect(),
+        );
         let (breaches, rows) = compare(&b, &m);
         assert!(breaches.is_empty(), "{breaches:?}");
         assert_eq!(rows.len(), 2);
-        m.get_mut("parse/x").unwrap().insert("min_mb_per_s".into(), 80.0);
+        m.get_mut("parse/x")
+            .unwrap()
+            .insert("min_mb_per_s".into(), 80.0);
         m.get_mut("parse/x").unwrap().insert("max_ns".into(), 12.0);
-        m.insert("new/bench".into(), [("max_ms".to_owned(), 1.0)].into_iter().collect());
+        m.insert(
+            "new/bench".into(),
+            [("max_ms".to_owned(), 1.0)].into_iter().collect(),
+        );
         let (breaches, _) = compare(&b, &m);
         assert_eq!(breaches.len(), 3, "{breaches:?}");
     }
@@ -249,18 +345,36 @@ mod tests {
     fn tightens_only_tighter() {
         let mut b = budgets();
         let mut m: Measurements = BTreeMap::new();
-        m.insert("parse/x".into(), [("min_mb_per_s".to_owned(), 200.0), ("max_ns".to_owned(), 20.0), ("max_rss_mb".to_owned(), 50.0)].into_iter().collect());
+        m.insert(
+            "parse/x".into(),
+            [
+                ("min_mb_per_s".to_owned(), 200.0),
+                ("max_ns".to_owned(), 20.0),
+                ("max_rss_mb".to_owned(), 50.0),
+            ]
+            .into_iter()
+            .collect(),
+        );
         let n = tighten(&mut b, &m);
         assert_eq!(n, 2, "{b:?}");
         assert!((b.benches["parse/x"]["min_mb_per_s"] - 173.913).abs() < 0.01);
-        assert_eq!(b.benches["parse/x"]["max_ns"], 10.0, "a looser measurement leaves the budget alone");
+        assert_eq!(
+            b.benches["parse/x"]["max_ns"], 10.0,
+            "a looser measurement leaves the budget alone"
+        );
         assert_eq!(b.benches["parse/x"]["max_rss_mb"], 55.0);
     }
 
     #[test]
     fn parses_time_output() {
-        assert_eq!(parse_rss_mb("  1.00 real\n   123456789  maximum resident set size\n"), Some(123.456_789));
-        assert_eq!(parse_rss_mb("\tMaximum resident set size (kbytes): 2048\n"), Some(2.097_152));
+        assert_eq!(
+            parse_rss_mb("  1.00 real\n   123456789  maximum resident set size\n"),
+            Some(123.456_789)
+        );
+        assert_eq!(
+            parse_rss_mb("\tMaximum resident set size (kbytes): 2048\n"),
+            Some(2.097_152)
+        );
         assert_eq!(parse_rss_mb("nothing"), None);
     }
 }

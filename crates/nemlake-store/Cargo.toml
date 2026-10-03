@@ -24,5 +24,10 @@ thiserror.workspace = true
 tokio = { workspace = true, features = ["sync"] }
 
 [dev-dependencies]
+criterion.workspace = true
 tempfile.workspace = true
 tokio = { workspace = true, features = ["rt", "macros"] }
+
+[[bench]]
+name = "write"
+harness = false

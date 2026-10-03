@@ -431,18 +431,14 @@ mod tests {
         assert!(again.cached);
         assert_eq!(again.path, local.path);
         assert_eq!(t.request_count(), 1, "the cache answered the second fetch");
-        assert!(matches!(
-            rx.recv().await,
-            Some(Event::DownloadStarted { .. })
-        ));
-        assert!(matches!(
-            rx.recv().await,
-            Some(Event::DownloadDone { cached: false, .. })
-        ));
-        assert!(matches!(
-            rx.recv().await,
-            Some(Event::DownloadDone { cached: true, .. })
-        ));
+        let got = tokio::time::timeout(Duration::from_secs(5), rx.recv())
+            .await
+            .expect("the fetcher reports a download start");
+        assert!(matches!(got, Some(Event::DownloadStarted { .. })));
+        assert!(
+            rx.try_recv().is_err(),
+            "the fetcher reports starts and progress; the pipeline reports completion"
+        );
         // Refresh forces a download; verify_cache catches a corrupted cache.
         let mut cfg = fast();
         cfg.refresh = true;
