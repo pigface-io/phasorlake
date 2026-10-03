@@ -336,11 +336,38 @@ mod tests {
         assert!(toml.contains("name = \"NEW_THING\""));
     }
 
+    /// A curated table of three columns published as `version`, built
+    /// here so the test does not depend on what the registry holds.
+    fn scada(version: u16) -> TableDef {
+        let cols = ["SETTLEMENTDATE", "DUID", "SCADAVALUE"];
+        let irow = IRow {
+            report_type: "DISPATCH",
+            report_subtype: "UNIT_SCADA",
+            version,
+            columns: &cols,
+        };
+        let mut s = Sampler::new(3);
+        s.observe([
+            b"2024/01/01 00:05:00".as_slice(),
+            b"BW01".as_slice(),
+            b"1.5".as_slice(),
+        ]);
+        let mut t = draft_table(Market::Nem, &irow, &s);
+        t.name = "DISPATCH_UNIT_SCADA".into();
+        t.primary_key = vec!["SETTLEMENTDATE".into(), "DUID".into()];
+        t.dedupe = Dedupe::Pk;
+        for c in &mut t.columns {
+            c.src = vec!["ctl".into()];
+            c.nullable = c.name == "SCADAVALUE";
+        }
+        assert_eq!(validate_table(&t), vec![]);
+        t
+    }
+
     #[test]
     fn extends_a_known_table_with_new_shapes() {
         use nemlake_schema_model::validate::validate_structure;
-        let r = crate::Registry::load_embedded(crate::TypeOptions::default());
-        let t = r.table(r.table_by_name("DISPATCH_UNIT_SCADA").unwrap());
+        let t = &scada(1);
         let row = |version, columns| IRow {
             report_type: "DISPATCH",
             report_subtype: "UNIT_SCADA",
@@ -426,29 +453,19 @@ mod tests {
         assert_eq!(t4.report_pairs.len(), t.report_pairs.len() + 1);
         assert_eq!(validate_structure(&t4), vec![]);
 
-        // A version older than any declared: columns it lists were there
-        // earlier than the table said, and keys it lacks admit null.
-        let price = r.table(r.table_by_name("DISPATCHPRICE").unwrap());
-        let first = price.versions[0].n;
-        assert!(
-            first > SchemaVersion(1),
-            "the fixture table starts above version 1"
-        );
-        let head: Vec<&str> = price.versions[0].columns[..6]
-            .iter()
-            .map(String::as_str)
-            .collect();
-        let old = IRow {
-            report_type: &price.report_pairs[0].0,
-            report_subtype: &price.report_pairs[0].1,
-            version: 1,
-            columns: &head,
-        };
-        let p2 = extend_table(price, &old, &Sampler::new(6)).unwrap();
+        // A version older than any declared: the columns it lists were there
+        // earlier than the table said, and a key it lacks admits null.
+        let late = scada(5);
+        assert!(late.columns.iter().all(|c| c.added_in == SchemaVersion(5)));
+        let head = ["SETTLEMENTDATE", "SCADAVALUE"];
+        let p2 = extend_table(&late, &row(1, &head), &Sampler::new(2)).unwrap();
+        assert_eq!(p2.versions.len(), 2);
         assert_eq!(p2.versions[0].n, SchemaVersion(1));
-        assert_eq!(p2.versions.len(), price.versions.len() + 1);
-        assert_eq!(p2.column(head[5]).unwrap().added_in, SchemaVersion(1));
-        assert_eq!(p2.columns.len(), price.columns.len());
+        assert_eq!(p2.versions[0].columns, head);
+        assert_eq!(p2.column("SCADAVALUE").unwrap().added_in, SchemaVersion(1));
+        assert_eq!(p2.column("DUID").unwrap().added_in, SchemaVersion(5));
+        assert!(p2.column("DUID").unwrap().nullable);
+        assert_eq!(p2.columns.len(), 3);
         assert_eq!(validate_structure(&p2), vec![]);
     }
 }
