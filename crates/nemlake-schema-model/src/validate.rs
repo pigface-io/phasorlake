@@ -1,7 +1,7 @@
 //! The invariants every table file must satisfy. Run at build time over the
 //! committed files, at runtime over user overlays, and in `cargo test`.
 
-use std::collections::{BTreeMap, HashMap, HashSet};
+use std::collections::{BTreeMap, HashSet};
 
 use nemlake_core::Fingerprint;
 
@@ -151,7 +151,9 @@ pub fn validate_table(t: &TableDef) -> Vec<Issue> {
                 t,
                 format!("primary_key names {k}, which is not a column"),
             )),
-            Some(c) if c.nullable => out.push(issue(
+            // A key column refuses nulls wherever it can: only a table with
+            // a published shape that lacks the column may leave it nullable.
+            Some(c) if c.nullable && shapes_without(t, c).is_empty() => out.push(issue(
                 t,
                 format!("primary_key column {k} is nullable; set nullable = false"),
             )),
@@ -170,6 +172,18 @@ pub fn validate_table(t: &TableDef) -> Vec<Issue> {
     for c in &t.columns {
         if !c.nullable && !t.primary_key.contains(&c.name) {
             out.push(issue(t, format!("column {} is non-nullable but not in primary_key; only key columns may refuse nulls", c.name)));
+        }
+        // A file of a shape without the column would have to write a null.
+        if !c.nullable
+            && let Some(shape) = shapes_without(t, c).first()
+        {
+            out.push(issue(
+                t,
+                format!(
+                    "column {} is non-nullable but {shape} does not carry it; set nullable = true",
+                    c.name
+                ),
+            ));
         }
     }
 
@@ -201,7 +215,6 @@ pub fn validate_table(t: &TableDef) -> Vec<Issue> {
     }
 
     let mut prev = None;
-    let mut fps: HashMap<Fingerprint, u16> = HashMap::new();
     for v in &t.versions {
         if let Some(p) = prev
             && v.n <= p
@@ -259,11 +272,8 @@ pub fn validate_table(t: &TableDef) -> Vec<Issue> {
                 ),
             ));
         }
-        if let Some(other) = fps.insert(v.fingerprint, v.n.0)
-            && recomputed == v.fingerprint
-        {
-            out.push(issue(t, format!("version {} has the same columns as version {other}; declare one and alias the other in the registry", v.n)));
-        }
+        // Two versions may have the same columns: AEMO has bumped a version
+        // number without changing the list, and both numbers are in files.
         if let (Some(a), Some(b)) = (v.first_seen, v.last_seen)
             && b < a
         {
@@ -275,9 +285,13 @@ pub fn validate_table(t: &TableDef) -> Vec<Issue> {
         validate_variants(t, v, &mut out);
     }
     for c in &t.columns {
-        if !t.versions.iter().any(|v| v.columns.contains(&c.name))
-            && c.src.iter().all(|s| s != "manual")
-        {
+        let in_a_shape = t.versions.iter().any(|v| {
+            v.columns.contains(&c.name)
+                || v.variants
+                    .iter()
+                    .any(|x| x.columns.iter().any(|n| is_named(c, n)))
+        });
+        if !in_a_shape && c.src.iter().all(|s| s != "manual") {
             out.push(issue(t, format!("column {} appears in no version", c.name)));
         }
         if c.src.iter().any(|s| s == "inferred") {
@@ -336,9 +350,31 @@ pub fn validate_set<'a>(tables: impl IntoIterator<Item = &'a TableDef>) -> Vec<I
     out
 }
 
+/// Whether `name` is `c`'s name or one of its aliases.
+fn is_named(c: &crate::model::ColumnDef, name: &str) -> bool {
+    c.name == name || c.aliases.iter().any(|a| a == name)
+}
+
+/// The versions and variants that do not carry column `c`, described for a
+/// message: `version 3`, `version 3 variant 1`.
+fn shapes_without(t: &TableDef, c: &crate::model::ColumnDef) -> Vec<String> {
+    let mut out = Vec::new();
+    for v in &t.versions {
+        if !v.columns.iter().any(|n| is_named(c, n)) {
+            out.push(format!("version {}", v.n));
+        }
+        for (i, x) in v.variants.iter().enumerate() {
+            if !x.columns.iter().any(|n| is_named(c, n)) {
+                out.push(format!("version {} variant {}", v.n, i + 1));
+            }
+        }
+    }
+    out
+}
+
 /// A variant is another real shape of a version: its columns must be
-/// columns or aliases of the table, carry the primary key, hash to the
-/// declared fingerprint and differ from the version and its other variants.
+/// columns or aliases of the table, hash to the declared fingerprint and
+/// differ from the version and its other variants.
 fn validate_variants(t: &TableDef, v: &crate::model::VersionDef, out: &mut Vec<Issue>) {
     let mut fps: HashSet<Fingerprint> = HashSet::new();
     fps.insert(v.fingerprint);
@@ -359,15 +395,6 @@ fn validate_variants(t: &TableDef, v: &crate::model::VersionDef, out: &mut Vec<I
                         out.push(issue(t, format!("{label} lists column {} twice", def.name)));
                     }
                 }
-            }
-        }
-        for k in &t.primary_key {
-            if !x
-                .columns
-                .iter()
-                .any(|c| t.column(c).is_some_and(|d| &d.name == k))
-            {
-                out.push(issue(t, format!("{label} lacks primary-key column {k}")));
             }
         }
         let recomputed = Fingerprint::of_names(x.columns.iter().map(String::as_str));
@@ -559,9 +586,39 @@ mod tests {
             &with(variant(&["SETTLEMENTDATE", "DUID", "SCADAVALUE", "MW"])),
             "lists column SCADAVALUE twice",
         );
+        // A shape without a key column is allowed only when that column
+        // admits null: old files have no value to give.
+        let short = with(variant(&["SETTLEMENTDATE", "MW"]));
         has(
-            &with(variant(&["SETTLEMENTDATE", "MW"])),
-            "lacks primary-key column DUID",
+            &short,
+            "column DUID is non-nullable but version 1 variant 1 does not carry it",
+        );
+        let mut relaxed = short.clone();
+        relaxed.columns[1].nullable = true;
+        assert!(
+            validate_table(&relaxed).is_empty(),
+            "{:?}",
+            validate_table(&relaxed)
+        );
+        // A column that lives only in a variant is still a column of the table.
+        let mut extra = unit_scada();
+        extra.columns.push(ColumnDef {
+            id: ColumnId(extra.next_column_id),
+            name: "QUALITY".into(),
+            ..extra.columns[2].clone()
+        });
+        extra.next_column_id += 1;
+        has(&extra, "column QUALITY appears in no version");
+        extra.versions[0].variants.push(variant(&[
+            "SETTLEMENTDATE",
+            "DUID",
+            "SCADAVALUE",
+            "QUALITY",
+        ]));
+        assert!(
+            validate_table(&extra).is_empty(),
+            "{:?}",
+            validate_table(&extra)
         );
         has(
             &with(variant(&["SETTLEMENTDATE", "DUID", "SCADAVALUE"])),
@@ -584,7 +641,11 @@ mod tests {
         let mut t = unit_scada();
         t.versions.push(t.versions[0].clone());
         has(&t, "must strictly increase");
-        has(&t, "same columns as version 1");
+        // The same columns under two version numbers is a fact of the feed.
+        let mut t = unit_scada();
+        t.versions.push(t.versions[0].clone());
+        t.versions[1].n = SchemaVersion(2);
+        assert!(validate_table(&t).is_empty(), "{:?}", validate_table(&t));
         let mut t = unit_scada();
         t.versions[0].columns.push("X".into());
         has(&t, "not declared");
