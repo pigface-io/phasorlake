@@ -46,7 +46,7 @@ the file is already in the lake.
 
 Global flags: `--home DIR` (or `NEMLAKE_HOME`), `--json`, `-v`, `--offline`,
 `--jobs N`, `--decimal`. Ingest flags: `--max-bad-rows N`, `--strict`,
-`--fail-fast`, `--no-skip-unknown`.
+`--fail-fast`.
 
 ## How the data is laid out
 
@@ -63,6 +63,14 @@ Global flags: `--home DIR` (or `NEMLAKE_HOME`), `--json`, `-v`, `--offline`,
 Every Parquet file carries the unified lake schema of its table: every column
 AEMO has ever published for it, so files from different versions read as one
 table and a later Iceberg catalogue can adopt the column ids unchanged.
+
+Nothing a file carries is skipped. A table no schema declares is ingested
+from its own header, every column as text, under
+`lake/nem/_unregistered/{report type}.{report subtype}/`; a column a table's
+schema does not have is kept beside the declared ones as text under its own
+name; a column the file lacks is null. Each case is reported, and
+`nemlake schema infer` drafts the schema that would make it a declared
+shape. `--strict` refuses such files instead.
 
 AEMO appends and renames columns without bumping the I-row version, so one
 version can have several real shapes. The registry records each extra shape

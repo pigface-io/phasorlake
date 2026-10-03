@@ -286,6 +286,9 @@ pub enum Status {
         /// Same set, different order.
         reordered: bool,
     },
+    /// No table claims the report pair; the table was derived from the
+    /// file's own header, every column as text.
+    Derived,
 }
 
 impl Status {
@@ -295,6 +298,7 @@ impl Status {
             Self::Exact => "exact",
             Self::Aliased { .. } => "aliased",
             Self::Drift { .. } => "drift",
+            Self::Derived => "derived",
         }
     }
 }
@@ -324,12 +328,25 @@ impl Registry {
                 version: irow.version,
             });
         }
-        let Some(id) = self.table_by_pair(irow.report_type, irow.report_subtype) else {
-            return Err(ResolveError::UnknownTable {
-                report_type: irow.report_type.to_owned(),
-                report_subtype: irow.report_subtype.to_owned(),
-            });
+        let unknown = || ResolveError::UnknownTable {
+            report_type: irow.report_type.to_owned(),
+            report_subtype: irow.report_subtype.to_owned(),
         };
+        let id = match self.table_by_pair(irow.report_type, irow.report_subtype) {
+            Some(id) => id,
+            None if opts.mode == Mode::Strict => return Err(unknown()),
+            // No table claims the pair. The rows are not skipped: the file's
+            // own header says what they are, and that is what is kept.
+            None => self
+                .derive(nemlake_schema_model::Market::Nem, irow)
+                .ok_or_else(unknown)?,
+        };
+        if self.is_derived(id) {
+            if opts.mode == Mode::Strict {
+                return Err(unknown());
+            }
+            return Ok(self.resolve_derived(id, irow));
+        }
         let t = self.table(id);
         let fp = irow.fingerprint();
         let version = SchemaVersion(irow.version);
@@ -523,6 +540,44 @@ impl Registry {
             projection,
             warnings,
         })
+    }
+
+    /// The projection of an I row onto a table derived from the file: every
+    /// column as text. A later block of the same pair with another column
+    /// list keeps its extra columns under their own names.
+    fn resolve_derived(&self, id: TableId, irow: &IRow<'_>) -> Resolved {
+        let t = self.table(id);
+        let market = self.market_of(id);
+        let fp = irow.fingerprint();
+        let names: Vec<&str> = irow.columns.to_vec();
+        let projection = self.dynamic_projection(id, fp, || {
+            Arc::new(Projection::build_file_shape(
+                t,
+                market,
+                self.options(),
+                self.lake_schema(id),
+                &names,
+            ))
+        });
+        let warning = Diagnostic::warning(
+            "schema.unknown_table",
+            Category::Schema,
+            format!(
+                "No table in the registry claims report pair ({}, {}). Its rows are kept as the file gives them, every column as text, under {}. `nemlake schema infer <file> --write` drafts a table for it; ingest again once the draft is adopted.",
+                irow.report_type,
+                irow.report_subtype,
+                self.table_dir(id)
+            ),
+        )
+        .with_table(t.name.clone())
+        .with_version(irow.version);
+        Resolved {
+            table: id,
+            version: SchemaVersion(irow.version),
+            status: Status::Derived,
+            projection,
+            warnings: vec![warning],
+        }
     }
 
     /// Resolves a plain-CSV header row against a dataset's table.
@@ -1003,9 +1058,77 @@ mod tests {
             columns: &cols,
         };
         assert!(matches!(
-            r.resolve(&row, ResolveOptions::default()),
+            r.resolve(&row, ResolveOptions { mode: Mode::Strict }),
             Err(ResolveError::UnknownTable { .. })
         ));
+        assert!(r.table_by_pair("DISPATCH", "NOPE").is_none());
+        // Permissive: the pair gets a table derived from the row itself.
+        let res = r.resolve(&row, ResolveOptions::default()).unwrap();
+        assert_eq!(res.status, Status::Derived);
+        assert_eq!(res.status.label(), "derived");
+        assert!(r.is_derived(res.table));
+        assert_eq!(res.version, SchemaVersion(1));
+        let t = r.table(res.table);
+        assert_eq!(t.name, "DISPATCH_NOPE");
+        assert_eq!(r.table_dir(res.table), "_unregistered/dispatch.nope");
+        assert_eq!(t.columns.len(), 3);
+        assert!(
+            t.columns
+                .iter()
+                .all(|c| c.nullable && matches!(c.ty, ColumnType::Utf8 { .. }))
+        );
+        assert_eq!(res.projection.lake_width(), 3);
+        assert!(
+            res.projection
+                .casts
+                .iter()
+                .all(|c| c.cast == Cast::Utf8 && c.target.is_some())
+        );
+        assert_eq!(res.warnings.len(), 1);
+        assert_eq!(res.warnings[0].code, "schema.unknown_table");
+        assert_eq!(res.warnings[0].severity, nemlake_core::Severity::Warning);
+        // The same pair is the same table for the rest of the run, also in
+        // another shape, whose extra column is kept.
+        assert_eq!(r.table_by_pair("DISPATCH", "NOPE"), Some(res.table));
+        assert_eq!(r.declared_by_pair("DISPATCH", "NOPE"), None);
+        let wider = ["SETTLEMENTDATE", "DUID", "SCADAVALUE", "MORE"];
+        let again = r
+            .resolve(
+                &IRow {
+                    columns: &wider,
+                    version: 2,
+                    ..row
+                },
+                ResolveOptions::default(),
+            )
+            .unwrap();
+        assert_eq!(again.table, res.table);
+        assert_eq!(again.version, SchemaVersion(2));
+        assert_eq!(again.projection.lake_width(), 4);
+        assert_eq!(again.projection.column_name(3), "MORE");
+        // Strict still refuses the pair, derived earlier or not.
+        assert!(matches!(
+            r.resolve(&row, ResolveOptions { mode: Mode::Strict }),
+            Err(ResolveError::UnknownTable { .. })
+        ));
+        // A table without a subtype is named by its type alone.
+        let bare = IRow {
+            report_type: "NOSUBTYPE_TEST",
+            report_subtype: "",
+            version: 1,
+            columns: &cols,
+        };
+        let res = r.resolve(&bare, ResolveOptions::default()).unwrap();
+        assert_eq!(r.table(res.table).name, "NOSUBTYPE_TEST");
+        assert_eq!(r.table_dir(res.table), "_unregistered/nosubtype_test");
+        // The registry's own tables are not derived and keep their directory.
+        let scada = r.table_by_name("DISPATCH_UNIT_SCADA").unwrap();
+        assert!(!r.is_derived(scada));
+        assert_eq!(r.table_dir(scada), "dispatch_unit_scada");
+        assert_eq!(
+            r.tables().count(),
+            r.tables().filter(|(id, _)| !r.is_derived(*id)).count()
+        );
         let row = IRow {
             report_type: "DISPATCH",
             report_subtype: "UNIT_SCADA",

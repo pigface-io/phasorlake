@@ -348,6 +348,57 @@ fn inspect_and_schema_commands() {
     assert!(err.contains("schema."), "{err}");
 }
 
+/// A table and a column nobody declared are ingested all the same, as
+/// text, and reported; only strict mode refuses them.
+#[test]
+fn what_the_registry_does_not_declare_is_kept_not_skipped() {
+    let cli = Cli::new();
+    let csv = cli.home.path().join("PUBLIC_DVD_NOBODY_202403010000.CSV");
+    std::fs::write(
+        &csv,
+        "C,NEMP.WORLD,TEST\nI,NEMLAKE_TEST,NOBODY,1,CONTRACTYEAR,LABEL\nD,NEMLAKE_TEST,NOBODY,1,2024,first\nD,NEMLAKE_TEST,NOBODY,1,2025,second\nI,DISPATCH,UNIT_SCADA,1,SETTLEMENTDATE,DUID,SCADAVALUE,QUALITY\nD,DISPATCH,UNIT_SCADA,1,\"2024/03/01 00:05:00\",BW01,1.5,GOOD\nC,\"END OF REPORT\",7\n",
+    )
+    .unwrap();
+    let csv = csv.to_str().unwrap();
+    let (code, out, err) = cli.code(&["ingest", csv]);
+    assert_eq!(code, 0, "{out}{err}");
+    assert!(out.contains("3 rows (0 quarantined)"), "{out}");
+    assert!(
+        out.contains("schema.unknown_table") && out.contains("schema.unknown_columns"),
+        "{out}"
+    );
+    // The undeclared table is apart from the registry's, under its report pair.
+    let derived = cli
+        .home
+        .path()
+        .join("lake/nem/_unregistered/nemlake_test.nobody/year=2024/month=03");
+    assert_eq!(
+        std::fs::read_dir(&derived).unwrap().count(),
+        1,
+        "{}",
+        derived.display()
+    );
+    // The declared table got its row, the undeclared column with it.
+    let scada = cli
+        .home
+        .path()
+        .join("lake/nem/dispatch_unit_scada/year=2024/month=03");
+    assert_eq!(std::fs::read_dir(&scada).unwrap().count(), 1);
+    let ls = cli.ok(&["--json", "ls"]);
+    assert_eq!(ls.lines().count(), 2, "{ls}");
+    assert!(
+        ls.contains("\"table\":\"NEMLAKE_TEST_NOBODY\"") && ls.contains("\"rows\":2"),
+        "{ls}"
+    );
+
+    // Strict mode refuses the file instead.
+    let strict = cli.home.path().join("PUBLIC_DVD_NOBODY_202404010000.CSV");
+    std::fs::copy(csv, &strict).unwrap();
+    let (code, out, err) = cli.code(&["ingest", strict.to_str().unwrap(), "--strict"]);
+    assert_ne!(code, 0, "{out}{err}");
+    assert!(out.contains("schema.unknown_table"), "{out}");
+}
+
 /// `schema infer` drafts what a file adds; a draft renamed into
 /// `{home}/schemas/` is in effect for every command, without a rebuild.
 #[test]

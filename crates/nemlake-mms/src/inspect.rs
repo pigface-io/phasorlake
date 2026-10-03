@@ -78,7 +78,7 @@ impl Sink for InspectSink<'_> {
         // shape of it does not resolve.
         let table = self
             .registry
-            .table_by_pair(irow.report_type, irow.report_subtype)
+            .declared_by_pair(irow.report_type, irow.report_subtype)
             .map(|id| self.registry.table(id).name.clone());
         let status = match self.registry.resolve(irow, self.opts) {
             Ok(r) => r.status.label().to_owned(),

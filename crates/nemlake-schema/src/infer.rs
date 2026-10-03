@@ -86,7 +86,12 @@ impl Sampler {
 /// until a human curates it, so a draft is written to the drafts directory
 /// and never into the committed registry by accident.
 pub fn draft_table(market: Market, irow: &IRow<'_>, sampler: &Sampler) -> TableDef {
-    let name = format!("{}_{}", irow.report_type, irow.report_subtype);
+    // Some tables publish no subtype: the pair (GENCONDATA, "") is GENCONDATA.
+    let name = if irow.report_subtype.is_empty() {
+        irow.report_type.to_owned()
+    } else {
+        format!("{}_{}", irow.report_type, irow.report_subtype)
+    };
     let columns: Vec<ColumnDef> = irow
         .columns
         .iter()

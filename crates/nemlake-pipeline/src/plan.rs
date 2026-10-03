@@ -21,8 +21,6 @@ pub struct RunOptions {
     pub max_bad_rows: u64,
     /// Stop at the first failure.
     pub fail_fast: bool,
-    /// Skip blocks of unknown tables instead of failing the entry.
-    pub skip_unknown: bool,
     /// List and plan only.
     pub dry_run: bool,
     /// Treat a footer count mismatch as an error.
@@ -39,7 +37,6 @@ impl Default for RunOptions {
             mode: Mode::Permissive,
             max_bad_rows: 0,
             fail_fast: false,
-            skip_unknown: true,
             dry_run: false,
             strict_footer: false,
             batch_rows: nemlake_mms::arrow_sink::DEFAULT_BATCH_ROWS,

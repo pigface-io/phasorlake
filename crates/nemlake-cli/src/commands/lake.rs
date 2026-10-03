@@ -31,7 +31,6 @@ fn options(
         },
         max_bad_rows: args.max_bad_rows.unwrap_or(ctx.config.max_bad_rows),
         fail_fast: args.fail_fast,
-        skip_unknown: !args.no_skip_unknown,
         dry_run,
         strict_footer: args.strict || ctx.config.strict,
         batch_rows: nemlake_mms::arrow_sink::DEFAULT_BATCH_ROWS,

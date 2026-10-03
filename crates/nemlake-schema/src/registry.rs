@@ -71,7 +71,25 @@ pub struct Registry {
     variants: HashMap<(TableId, SchemaVersion, Fingerprint), Arc<Projection>>,
     /// Projections built at run time for drifted or aliased shapes.
     dynamic: Mutex<HashMap<(TableId, Fingerprint), Arc<Projection>>>,
+    /// Tables derived at run time from the header of a file whose report
+    /// pair no table claims. Slots are written once and never moved, so a
+    /// reference to one lives as long as the registry.
+    derived: Vec<OnceLock<Derived>>,
+    /// The report pair of each derived table, in slot order.
+    derived_pairs: Mutex<Vec<(String, String)>>,
 }
+
+/// A table that is not in the registry: its definition, built from an I
+/// row, and the schema its files are written with.
+#[derive(Debug)]
+struct Derived {
+    table: TableDef,
+    lake: SchemaRef,
+}
+
+/// How many tables one run may derive. The whole archive has a few hundred
+/// tables; a file that asks for more than this is not an MMS file.
+const DERIVED_SLOTS: usize = 4096;
 
 static EMBEDDED_F64: OnceLock<Arc<Registry>> = OnceLock::new();
 static EMBEDDED_DECIMAL: OnceLock<Arc<Registry>> = OnceLock::new();
@@ -213,6 +231,10 @@ impl Registry {
             projections,
             variants,
             dynamic: Mutex::new(HashMap::new()),
+            derived: std::iter::repeat_with(OnceLock::new)
+                .take(DERIVED_SLOTS)
+                .collect(),
+            derived_pairs: Mutex::new(Vec::new()),
         }
     }
 
@@ -221,9 +243,84 @@ impl Registry {
         self.opts
     }
 
-    /// The table behind a handle.
+    /// The table behind a handle: one of the registry's, or one derived
+    /// from a file during this run.
     pub fn table(&self, id: TableId) -> &TableDef {
-        &self.tables[id.0 as usize]
+        let i = id.0 as usize;
+        match self.tables.get(i) {
+            Some(t) => t,
+            None => &self.derived_slot(i).table,
+        }
+    }
+
+    fn derived_slot(&self, index: usize) -> &Derived {
+        self.derived[index - self.tables.len()]
+            .get()
+            .expect("a handle beyond the registry's tables names a derived table")
+    }
+
+    /// Whether the table was derived from a file rather than declared in
+    /// the registry.
+    pub fn is_derived(&self, id: TableId) -> bool {
+        id.0 as usize >= self.tables.len()
+    }
+
+    /// The directory, under a market's lake, that a table's files go to. A
+    /// derived table is kept apart under `_unregistered/` and named by its
+    /// report pair, so its text columns never mix with the typed files of a
+    /// table the registry declares, now or later.
+    pub fn table_dir(&self, id: TableId) -> String {
+        let t = self.table(id);
+        if self.is_derived(id) {
+            let (rt, st) = &t.report_pairs[0];
+            let pair = if st.is_empty() {
+                rt.to_ascii_lowercase()
+            } else {
+                format!("{}.{}", rt.to_ascii_lowercase(), st.to_ascii_lowercase())
+            };
+            format!("_unregistered/{pair}")
+        } else {
+            t.dir_name()
+        }
+    }
+
+    /// The table for a report pair no table claims, derived from the I row
+    /// that first showed it: every column of the row, as nullable text,
+    /// which is exactly what the file says and nothing it does not. The
+    /// same pair gives the same table for the rest of the run. `None` when
+    /// more tables were derived than a run has room for.
+    pub fn derive(&self, market: Market, irow: &nemlake_core::IRow<'_>) -> Option<TableId> {
+        let mut pairs = self
+            .derived_pairs
+            .lock()
+            .expect("the derived-table list is never poisoned");
+        if let Some(i) = pairs
+            .iter()
+            .position(|(rt, st)| rt == irow.report_type && st == irow.report_subtype)
+        {
+            return Some(TableId((self.tables.len() + i) as u32));
+        }
+        let slot = pairs.len();
+        if slot >= self.derived.len() {
+            return None;
+        }
+        let mut table = crate::infer::draft_table(market, irow, &crate::infer::Sampler::new(0));
+        table.description =
+            Some("Derived from the file: no table in the registry claims this report pair.".into());
+        table.provenance.note = Some("derived at run time; every column is text".into());
+        let market_def = self.market(market).cloned().unwrap_or(MarketDef {
+            market,
+            utc_offset_secs: if market == Market::Wem {
+                28_800
+            } else {
+                36_000
+            },
+            timestamp_format: nemlake_schema_model::TimestampFormat::AemoSlash,
+        });
+        let lake = lake_schema(&table, &market_def, self.opts);
+        let _ = self.derived[slot].set(Derived { table, lake });
+        pairs.push((irow.report_type.to_owned(), irow.report_subtype.to_owned()));
+        Some(TableId((self.tables.len() + slot) as u32))
     }
 
     /// The handle for a table name.
@@ -234,8 +331,22 @@ impl Registry {
             .or_else(|| self.by_name.get(&name.to_ascii_uppercase()).copied())
     }
 
-    /// The handle for a report pair, without allocating.
+    /// The handle for a report pair, without allocating: a table of the
+    /// registry, or failing that one derived earlier in this run.
     pub fn table_by_pair(&self, report_type: &str, report_subtype: &str) -> Option<TableId> {
+        if let Some(id) = self.by_pair.get(&PairRef(report_type, report_subtype)) {
+            return Some(*id);
+        }
+        self.derived_pairs
+            .lock()
+            .expect("the derived-table list is never poisoned")
+            .iter()
+            .position(|(rt, st)| rt == report_type && st == report_subtype)
+            .map(|i| TableId((self.tables.len() + i) as u32))
+    }
+
+    /// The handle for a report pair the registry itself declares.
+    pub fn declared_by_pair(&self, report_type: &str, report_subtype: &str) -> Option<TableId> {
         self.by_pair
             .get(&PairRef(report_type, report_subtype))
             .copied()
@@ -268,7 +379,11 @@ impl Registry {
 
     /// The unified lake schema of a table.
     pub fn lake_schema(&self, id: TableId) -> &SchemaRef {
-        &self.lake_schemas[id.0 as usize]
+        let i = id.0 as usize;
+        match self.lake_schemas.get(i) {
+            Some(s) => s,
+            None => &self.derived_slot(i).lake,
+        }
     }
 
     /// The precomputed projection of a declared version.

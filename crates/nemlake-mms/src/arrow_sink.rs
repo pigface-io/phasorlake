@@ -58,11 +58,6 @@ pub struct ArrowSink<'r, B: BatchSink> {
     out: B,
     block: Option<Block>,
     parsed: Vec<Parsed>,
-    /// Skip blocks of unknown tables (with a warning) instead of failing the file.
-    skip_unknown: bool,
-    /// Rows skipped because their block was unknown.
-    pub skipped_rows: u64,
-    skipping: bool,
 }
 
 /// Rows per batch by default.
@@ -78,17 +73,7 @@ impl<'r, B: BatchSink> ArrowSink<'r, B> {
             out,
             block: None,
             parsed: Vec::new(),
-            skip_unknown: false,
-            skipped_rows: 0,
-            skipping: false,
         }
-    }
-
-    /// Blocks whose table the registry does not know are skipped with a
-    /// warning instead of failing the file.
-    pub fn skip_unknown(mut self, yes: bool) -> Self {
-        self.skip_unknown = yes;
-        self
     }
 
     /// Takes the inner sink back.
@@ -173,22 +158,7 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
 
     fn header(&mut self, irow: &IRow<'_>, pos: Pos) -> Result<(), SinkError> {
         self.flush()?;
-        self.skipping = false;
-        let resolved = match self.registry.resolve(irow, self.opts) {
-            Ok(r) => r,
-            Err(e @ nemlake_schema::ResolveError::UnknownTable { .. }) if self.skip_unknown => {
-                use nemlake_core::Diagnose as _;
-                let mut d = e.diagnostic();
-                d.severity = nemlake_core::Severity::Warning;
-                d.message = format!("{} The block is skipped.", d.message);
-                d.line = Some(pos.line);
-                self.out.warning(d);
-                self.block = None;
-                self.skipping = true;
-                return Ok(());
-            }
-            Err(e) => return Err(e.into()),
-        };
+        let resolved = self.registry.resolve(irow, self.opts)?;
         for w in &resolved.warnings {
             self.out.warning(w.clone());
         }
@@ -216,11 +186,6 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
 
     #[inline]
     fn row(&mut self, row: &Row<'_>, _pos: Pos) -> Result<(), RowFailure> {
-        // The rows of a block that was skipped go nowhere.
-        if self.skipping {
-            self.skipped_rows += 1;
-            return Ok(());
-        }
         let block = self
             .block
             .as_mut()
@@ -493,13 +458,13 @@ mod tests {
     }
 
     #[test]
-    fn multi_block_file_routes_blocks_and_tolerates_unknown_tables_only_when_skipped() {
+    fn a_block_no_table_claims_is_kept_as_text_unless_strict() {
         let r = reg();
-        // A block no table claims fails the file...
+        // Strict mode refuses what the registry does not declare.
         let e = collect(
             &r,
             with_unknown_block().as_slice(),
-            ResolveOptions::default(),
+            ResolveOptions { mode: Mode::Strict },
             &ScanOptions::default(),
         )
         .unwrap_err();
@@ -512,59 +477,60 @@ mod tests {
             ),
             "{e}"
         );
-        // ...unless unknown blocks are to be skipped: then its rows go
-        // nowhere, a warning says so, and the blocks around it are read.
-        let known = collect(
+        // Otherwise nothing is skipped: the block becomes a table derived
+        // from its own header, every column text, and a warning says so.
+        let (out, stats) = collect(
             &r,
-            fixture("multi_block_dispatchis.csv").as_slice(),
-            ResolveOptions::default(),
-            &ScanOptions::default(),
-        );
-        let mut sink = ArrowSink::new(
-            &r,
-            ResolveOptions::default(),
-            DEFAULT_BATCH_ROWS,
-            CollectBatches::default(),
-        )
-        .skip_unknown(true);
-        crate::scan::scan(
             with_unknown_block().as_slice(),
-            &mut sink,
+            ResolveOptions::default(),
             &ScanOptions::default(),
         )
         .unwrap();
-        assert!(sink.skipped_rows >= 2, "{}", sink.skipped_rows);
-        let out = sink.into_inner().unwrap();
+        assert_eq!(stats.bad_rows, 0);
+        let derived: Vec<_> = out
+            .batches
+            .iter()
+            .filter(|b| r.table(b.table).name == "NEMLAKE_TEST_NEW_THING")
+            .collect();
+        assert_eq!(derived.len(), 1);
+        let b = derived[0];
+        assert!(r.is_derived(b.table));
+        assert_eq!(r.table_dir(b.table), "_unregistered/nemlake_test.new_thing");
+        assert_eq!(b.batch.num_rows(), 2);
+        assert_eq!(b.batch.num_columns(), 2);
+        let text = |col: usize, row: usize| {
+            b.batch
+                .column(col)
+                .as_any()
+                .downcast_ref::<StringArray>()
+                .unwrap()
+                .value(row)
+                .to_owned()
+        };
+        assert_eq!(text(0, 0), "2026/10/01 13:40:00");
+        assert_eq!(text(1, 1), "2.5");
         assert!(
-            out.warnings
-                .iter()
-                .any(|w| w.code == "schema.unknown_table"
-                    && w.message.contains("The block is skipped")),
+            out.warnings.iter().any(|w| w.code == "schema.unknown_table"
+                && w.severity == nemlake_core::Severity::Warning
+                && w.message.contains("_unregistered/nemlake_test.new_thing")),
             "{:?}",
             out.warnings
         );
-        let price_rows = |c: &CollectBatches| -> usize {
-            c.batches
+        // The blocks after it are read as they always were.
+        let price_rows: usize = out
+            .batches
+            .iter()
+            .filter(|b| r.table(b.table).name == "DISPATCHPRICE")
+            .map(|b| b.batch.num_rows())
+            .sum();
+        assert_eq!(price_rows, 3);
+        assert_eq!(
+            stats.rows as usize,
+            out.batches
                 .iter()
-                .filter(|b| r.table(b.table).name == "DISPATCHPRICE")
                 .map(|b| b.batch.num_rows())
-                .sum()
-        };
-        assert_eq!(price_rows(&out), 3);
-        // Every block the registry knows is read the same with or without
-        // the unknown one in the file.
-        if let Ok((all, _)) = &known {
-            assert_eq!(
-                out.batches
-                    .iter()
-                    .map(|b| b.batch.num_rows())
-                    .sum::<usize>(),
-                all.batches
-                    .iter()
-                    .map(|b| b.batch.num_rows())
-                    .sum::<usize>()
-            );
-        }
+                .sum::<usize>()
+        );
     }
 
     #[test]

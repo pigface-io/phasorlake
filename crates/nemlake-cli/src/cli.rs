@@ -174,12 +174,11 @@ pub struct IngestArgs {
     /// Bad rows tolerated per file before it fails (default from config, else 0).
     #[arg(long)]
     pub max_bad_rows: Option<u64>,
-    /// Refuse drift and unknown versions instead of reading them permissively.
+    /// Refuse what the registry does not declare: an unknown table, version
+    /// or column list fails its file. Without this, everything a file
+    /// carries is kept and what is undeclared is reported.
     #[arg(long)]
     pub strict: bool,
-    /// Fail the file on a block whose table is unknown, instead of skipping it.
-    #[arg(long)]
-    pub no_skip_unknown: bool,
     /// Stop at the first failure.
     #[arg(long)]
     pub fail_fast: bool,

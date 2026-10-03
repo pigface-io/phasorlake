@@ -273,7 +273,7 @@ impl BatchSink for LakeSink<'_> {
                 None => {
                     let pk = PartitionKey {
                         market: table.market.to_string(),
-                        table_dir: table.dir_name(),
+                        table_dir: self.registry.table_dir(b.table),
                         partition,
                     };
                     let meta = self.meta(&table.name, b.version.0, b.fingerprint, time_col);
@@ -402,8 +402,7 @@ fn ingest_entry(input: &IngestInput, entry: &str, reader: &mut dyn std::io::Read
     let resolve = ResolveOptions {
         mode: input.options.mode,
     };
-    let mut arrow = ArrowSink::new(&input.registry, resolve, input.options.batch_rows, initial)
-        .skip_unknown(input.options.skip_unknown);
+    let mut arrow = ArrowSink::new(&input.registry, resolve, input.options.batch_rows, initial);
     let mut sink: LakeSink<'_>;
     let scan_opts = ScanOptions {
         max_bad_rows: input.options.max_bad_rows,
