@@ -283,7 +283,7 @@ pub fn sample_reader<R: Read>(
                         if nemlake_core::num::parse_f64(f.as_bytes()).is_err() {
                             b.all_numeric[i] = false;
                         }
-                        if nemlake_core::nemtime::parse_local_seconds(f.as_bytes()).is_err() {
+                        if nemlake_core::nemtime::parse_micros(f.as_bytes(), 0).is_err() {
                             b.all_timestamp[i] = false;
                         }
                     }

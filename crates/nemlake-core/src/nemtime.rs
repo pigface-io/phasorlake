@@ -34,6 +34,9 @@ pub enum TimestampError {
     Minute(u8),
     /// Second outside 0..=59.
     Second(u8),
+    /// A fractional second that is not 1 to 9 digits, or that microseconds
+    /// cannot hold exactly.
+    Fraction,
 }
 
 impl std::fmt::Display for TimestampError {
@@ -52,6 +55,10 @@ impl std::fmt::Display for TimestampError {
             Self::Hour(h) => write!(f, "has hour {h}, which is not between 0 and 23"),
             Self::Minute(m) => write!(f, "has minute {m}, which is not between 0 and 59"),
             Self::Second(s) => write!(f, "has second {s}, which is not between 0 and 59"),
+            Self::Fraction => write!(
+                f,
+                "has a fractional second that is not 1 to 9 digits, or is finer than a microsecond"
+            ),
         }
     }
 }
@@ -175,10 +182,48 @@ pub fn parse_local_seconds(s: &[u8]) -> Result<i64, TimestampError> {
 
 /// Parses an MMS timestamp in a market with the given UTC offset into
 /// microseconds since the Unix epoch, UTC.
+///
+/// Newer tables publish some timestamps with a fractional second
+/// (`2026/07/28 09:29:54.000`). Up to nine digits are read; the lake holds
+/// microseconds, so anything finer must be zeros or the value is refused
+/// rather than rounded.
 #[inline]
 pub fn parse_micros(s: &[u8], offset_secs: i32) -> Result<i64, TimestampError> {
+    // The plain 19-byte form first: it is nearly every value.
+    if s.len() > 19 && s[19] == b'.' {
+        let local = parse_local_seconds(&s[..19])?;
+        let fraction = fraction_micros(&s[20..])?;
+        return Ok((local - i64::from(offset_secs)) * 1_000_000 + fraction);
+    }
     let local = parse_local_seconds(s)?;
     Ok((local - i64::from(offset_secs)) * 1_000_000)
+}
+
+/// The digits after the decimal point of a second, as microseconds.
+fn fraction_micros(digits: &[u8]) -> Result<i64, TimestampError> {
+    if digits.is_empty() || digits.len() > 9 {
+        return Err(TimestampError::Fraction);
+    }
+    let mut micros: i64 = 0;
+    for i in 0..6 {
+        let d = match digits.get(i) {
+            Some(&b) => digit(b).ok_or(TimestampError::Fraction)?,
+            None => 0,
+        };
+        micros = micros * 10 + i64::from(d);
+    }
+    // Finer than a microsecond is only exact when it is nothing.
+    if digits.iter().skip(6).any(|&b| b != b'0') {
+        return Err(TimestampError::Fraction);
+    }
+    Ok(micros)
+}
+
+/// Whether `s` is an MMS timestamp or date, with or without a fractional
+/// second: what a sampler asks of a value.
+#[must_use]
+pub fn is_timestamp(s: &[u8]) -> bool {
+    parse_micros(s, 0).is_ok()
 }
 
 /// Parses `yyyy/mm/dd` (or the date part of a timestamp) as days since the
@@ -235,6 +280,56 @@ mod tests {
         // The same instant is still December in UTC, which is why partitions
         // are computed in market time.
         assert_eq!(local_year_month(micros, 0), (2023, 12));
+    }
+
+    #[test]
+    fn parses_fractional_seconds() {
+        let whole = parse_micros(b"2026/07/28 09:29:54", NEM_OFFSET_SECS).unwrap();
+        assert_eq!(
+            parse_micros(b"2026/07/28 09:29:54.000", NEM_OFFSET_SECS),
+            Ok(whole)
+        );
+        assert_eq!(
+            parse_micros(b"2026/07/28 09:29:54.5", NEM_OFFSET_SECS),
+            Ok(whole + 500_000)
+        );
+        assert_eq!(
+            parse_micros(b"2026/07/28 09:29:54.123456", NEM_OFFSET_SECS),
+            Ok(whole + 123_456)
+        );
+        assert_eq!(
+            parse_micros(b"2026/07/28 09:29:54.123456000", NEM_OFFSET_SECS),
+            Ok(whole + 123_456)
+        );
+        // Before the epoch the fraction still moves time forward.
+        let early = parse_micros(b"1969/12/31 23:59:59", 0).unwrap();
+        assert_eq!(early, -1_000_000);
+        assert_eq!(parse_micros(b"1969/12/31 23:59:59.250", 0), Ok(-750_000));
+        // Finer than a microsecond, no digits, too many, or not digits: refused.
+        for bad in [
+            &b"2026/07/28 09:29:54.1234567"[..],
+            b"2026/07/28 09:29:54.",
+            b"2026/07/28 09:29:54.1234567890",
+            b"2026/07/28 09:29:54.12x",
+        ] {
+            assert_eq!(
+                parse_micros(bad, 0),
+                Err(TimestampError::Fraction),
+                "{}",
+                String::from_utf8_lossy(bad)
+            );
+        }
+        assert!(TimestampError::Fraction.to_string().contains("microsecond"));
+        // Anything else after the seconds is still a length error.
+        assert_eq!(
+            parse_micros(b"2026/07/28 09:29:54Z", 0),
+            Err(TimestampError::Length(20))
+        );
+        assert!(is_timestamp(b"2026/07/28 09:29:54.000"));
+        assert!(is_timestamp(b"2026/07/28 09:29:54"));
+        assert!(is_timestamp(b"2026/07/28"));
+        assert!(!is_timestamp(b"GOOD"));
+        assert!(!is_timestamp(b""));
     }
 
     #[test]

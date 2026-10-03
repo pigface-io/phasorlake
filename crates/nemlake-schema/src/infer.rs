@@ -49,7 +49,7 @@ impl Sampler {
             if nemlake_core::num::parse_f64(f).is_ok() {
                 ev.numeric += 1;
             }
-            if nemlake_core::nemtime::parse_local_seconds(f).is_ok() {
+            if nemlake_core::nemtime::is_timestamp(f) {
                 ev.timestamp += 1;
             }
         }
