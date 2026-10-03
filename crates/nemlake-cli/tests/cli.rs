@@ -227,7 +227,20 @@ fn every_archive_table_ingests_strictly() {
 #[test]
 fn inspect_and_schema_commands() {
     let cli = Cli::new();
-    let multi = fixtures().join("multi_block_dispatchis.csv");
+    // A real multi-block file, with one more block for a report pair no
+    // table claims put in before the footer.
+    let fixture = std::fs::read_to_string(fixtures().join("multi_block_dispatchis.csv")).unwrap();
+    let footer = fixture.rfind("C,\"END OF REPORT\"").unwrap();
+    let multi = cli.home.path().join("multi_block.csv");
+    std::fs::write(
+        &multi,
+        format!(
+            "{}I,NEMLAKE_TEST,NEW_THING,1,WHEN,AMOUNT\nD,NEMLAKE_TEST,NEW_THING,1,\"2026/10/01 13:40:00\",1.5\n{}",
+            &fixture[..footer],
+            &fixture[footer..]
+        ),
+    )
+    .unwrap();
     let (code, out, _) = cli.code(&["inspect", multi.to_str().unwrap()]);
     assert_eq!(code, 5, "unknown tables make inspect exit 5: {out}");
     assert!(
@@ -239,12 +252,12 @@ fn inspect_and_schema_commands() {
     let (code, out, _) = cli.code(&["--json", "inspect", multi.to_str().unwrap(), "--infer"]);
     assert_eq!(code, 5);
     assert!(
-        out.contains("\"drafts\":[{") && out.contains("DISPATCH_LOCAL_PRICE"),
+        out.contains("\"drafts\":[{") && out.contains("NEMLAKE_TEST_NEW_THING"),
         "{out}"
     );
     let (code, out, _) = cli.code(&["inspect", multi.to_str().unwrap(), "--infer"]);
     assert_eq!(code, 5);
-    assert!(out.contains("# draft for DISPATCH_LOCAL_PRICE"), "{out}");
+    assert!(out.contains("# draft for NEMLAKE_TEST_NEW_THING"), "{out}");
     let zip_path = cli.home.path().join("PUBLIC_DVD_REGION_202401010000.zip");
     make_zip(
         &zip_path,

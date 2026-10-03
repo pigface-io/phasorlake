@@ -130,11 +130,20 @@ mod tests {
     #[test]
     fn summarises_multi_block_file() {
         let r = Registry::load_embedded(TypeOptions::default());
-        let text = std::fs::read(format!(
+        let fixture = std::fs::read_to_string(format!(
             "{}/../../testdata/csv/multi_block_dispatchis.csv",
             env!("CARGO_MANIFEST_DIR")
         ))
         .unwrap();
+        // The fixture's blocks, plus one for a report pair no table claims,
+        // put in before the footer.
+        let footer = fixture.rfind("C,\"END OF REPORT\"").unwrap();
+        let text = format!(
+            "{}I,NEMLAKE_TEST,NEW_THING,1,WHEN,AMOUNT\nD,NEMLAKE_TEST,NEW_THING,1,\"2026/10/01 13:40:00\",1.5\nD,NEMLAKE_TEST,NEW_THING,1,\"2026/10/01 13:45:00\",2.5\n{}",
+            &fixture[..footer],
+            &fixture[footer..]
+        );
+        let text = text.into_bytes();
         let mut s = InspectSink::new(&r, ResolveOptions { mode: Mode::Strict }, 100);
         let stats = scan(
             text.as_slice(),
@@ -145,8 +154,8 @@ mod tests {
             },
         )
         .unwrap();
-        assert_eq!(stats.blocks, 7);
-        assert_eq!(s.blocks.len(), 7);
+        assert_eq!(stats.blocks, 8);
+        assert_eq!(s.blocks.len(), 8);
         assert_eq!(s.header.as_ref().unwrap()[1], "NEMP.WORLD");
         let price = s
             .blocks
@@ -159,11 +168,11 @@ mod tests {
         let unknown = s
             .blocks
             .iter()
-            .find(|b| b.report_subtype == "LOCAL_PRICE")
+            .find(|b| b.report_subtype == "NEW_THING")
             .unwrap();
         assert_eq!(unknown.status, "schema.unknown_table");
         assert_eq!(unknown.table, None);
-        assert_eq!(unknown.sampler.rows, 3);
+        assert_eq!(unknown.sampler.rows, 2);
         assert_eq!(
             unknown.sampler.column_type(0),
             nemlake_schema::ColumnType::Timestamp
@@ -182,7 +191,7 @@ mod tests {
             },
             &unknown.sampler,
         );
-        assert_eq!(draft.name, "DISPATCH_LOCAL_PRICE");
+        assert_eq!(draft.name, "NEMLAKE_TEST_NEW_THING");
         // A D row before any I row is an error from the scanner, not the sink.
         let mut s = InspectSink::new(&r, ResolveOptions::default(), 1);
         assert!(scan(b"D,a,b,1,x\n".as_slice(), &mut s, &ScanOptions::default()).is_err());
