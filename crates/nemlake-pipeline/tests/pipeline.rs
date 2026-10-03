@@ -151,6 +151,71 @@ async fn decimal_mode_writes_exact_decimals() {
     assert_eq!(batch.num_rows(), 20);
 }
 
+/// An appended table with no time column of its own is partitioned by the
+/// month of the file its rows came in.
+#[tokio::test]
+async fn a_table_without_a_time_column_is_partitioned_by_its_file_month() {
+    let mut e = env();
+    // Such a table, laid over the embedded registry as a user's would be.
+    let cols = ["CONTRACTYEAR", "WEEKNO"];
+    let irow = nemlake_core::IRow {
+        report_type: "NEMLAKE_TEST",
+        report_subtype: "NOTIME",
+        version: 1,
+        columns: &cols,
+    };
+    let table = nemlake_schema::infer::draft_table(
+        nemlake_schema::Market::Nem,
+        &irow,
+        &nemlake_schema::infer::Sampler::new(2),
+    );
+    assert_eq!(table.time_column, None);
+    let overlay = e.home.root().join("overlay/nem/mms");
+    std::fs::create_dir_all(&overlay).unwrap();
+    std::fs::write(
+        overlay.join("NEMLAKE_TEST_NOTIME.toml"),
+        nemlake_schema::file::write_table(&table),
+    )
+    .unwrap();
+    e.deps.registry = Arc::new(
+        e.deps
+            .registry
+            .with_overlay(&e.home.root().join("overlay"))
+            .unwrap(),
+    );
+    let csv = "C,NEMP.WORLD,TEST\nI,NEMLAKE_TEST,NOTIME,1,CONTRACTYEAR,WEEKNO\nD,NEMLAKE_TEST,NOTIME,1,2024,9\nD,NEMLAKE_TEST,NOTIME,1,2024,10\nC,\"END OF REPORT\",5\n";
+    let dated = e.home.root().join("PUBLIC_DVD_NOTIME_202403010000.CSV");
+    let undated = e.home.root().join("notime.csv");
+    std::fs::write(&dated, csv).unwrap();
+    std::fs::write(&undated, csv).unwrap();
+    let (rep, _) = run_plan(
+        &e,
+        Plan {
+            request: "ingest notime".into(),
+            input: Input::Local(vec![dated, undated]),
+            options: RunOptions::default(),
+        },
+    )
+    .await;
+    assert_eq!(rep.exit_code, 0, "{:?}", rep.report.summary_lines());
+    assert_eq!(rep.summary.rows, 4);
+    let files = walk(&e.home.lake());
+    assert_eq!(files.len(), 2, "{files:?}");
+    assert!(
+        files.iter().any(|f| f.contains(
+            "nem/nemlake_test_notime/year=2024/month=03/public_dvd_notime_202403010000-v1-"
+        )),
+        "{files:?}"
+    );
+    // A file whose name says no month has nowhere better to go.
+    assert!(
+        files
+            .iter()
+            .any(|f| f.contains("__HIVE_DEFAULT_PARTITION__") && f.contains("/notime-v1-")),
+        "{files:?}"
+    );
+}
+
 #[tokio::test]
 async fn local_zip_ingests_idempotently_and_records_manifest() {
     let e = env();

@@ -236,44 +236,81 @@ pub fn merge(inputs: &Inputs<'_>) -> Result<TableDef, MergeError> {
             .dm
             .is_some_and(|d| d.columns.iter().any(|c| c.name == n))
     };
+    // What the committed file already knows about aliases stands, unless a
+    // file now shows both names side by side.
+    if let Some(ex) = inputs.existing {
+        for c in &ex.columns {
+            for a in &c.aliases {
+                if !coexist(&c.name, a) {
+                    renames.entry(c.name.clone()).or_default().push(a.clone());
+                }
+            }
+        }
+    }
     for (v, blocks) in &by_version {
-        let main = main_shape(blocks);
-        for (_, b) in blocks {
-            if b.fingerprint == main.fingerprint || b.columns.len() != main.columns.len() {
-                continue;
+        // Every pair of lists of the version, newest first so the name in
+        // use today is the one that stays canonical.
+        let mut shapes: Vec<(Option<YearMonth>, &SampledBlock)> = Vec::new();
+        for (m, b) in blocks {
+            match shapes
+                .iter_mut()
+                .find(|(_, s)| s.fingerprint == b.fingerprint)
+            {
+                Some((seen, _)) => *seen = max_month(*seen, *m),
+                None => shapes.push((*m, b)),
             }
-            let differing: Vec<(&String, &String)> = main
-                .columns
-                .iter()
-                .zip(&b.columns)
-                .filter(|(x, y)| x != y)
-                .collect();
-            let is_rename = !differing.is_empty()
-                && differing.iter().all(|(x, y)| !coexist(x, y))
-                // Not a reorder: every differing name is new to the other list.
-                && differing
-                    .iter()
-                    .all(|(x, y)| !b.columns.contains(x) && !main.columns.contains(y));
-            if !is_rename {
-                continue;
-            }
-            for (x, y) in differing {
-                let (canon, alias) = if dm_knows(y) && !dm_knows(x) {
-                    (y, x)
-                } else {
-                    (x, y)
-                };
-                // One canonical name per alias, and no chains.
-                if renames.contains_key(alias)
-                    || renames.values().any(|a| a.contains(canon))
-                    || renames.iter().any(|(k, a)| k != canon && a.contains(alias))
-                {
+        }
+        shapes.sort_by(|(ma, a), (mb, b)| mb.cmp(ma).then(a.fingerprint.0.cmp(&b.fingerprint.0)));
+        for (i, (_, newer)) in shapes.iter().enumerate() {
+            for (_, older) in &shapes[i + 1..] {
+                if older.columns.len() != newer.columns.len() {
                     continue;
                 }
-                let e = renames.entry(canon.clone()).or_default();
-                if !e.contains(alias) {
+                let differing: Vec<(&String, &String)> = newer
+                    .columns
+                    .iter()
+                    .zip(&older.columns)
+                    .filter(|(x, y)| x != y)
+                    .collect();
+                let is_rename = !differing.is_empty()
+                    && differing.iter().all(|(x, y)| !coexist(x, y))
+                    // Not a reorder: every differing name is new to the other list.
+                    && differing
+                        .iter()
+                        .all(|(x, y)| !older.columns.contains(x) && !newer.columns.contains(y));
+                if !is_rename {
+                    continue;
+                }
+                for (x, y) in differing {
+                    let known = |canon: &String, alias: &String| {
+                        renames.get(canon).is_some_and(|a| a.contains(alias))
+                    };
+                    if known(x, y) {
+                        notes.push(format!("version {v} names column {x} as {y} in some files; recorded as an alias"));
+                        continue;
+                    }
+                    if known(y, x) {
+                        notes.push(format!("version {v} names column {y} as {x} in some files; recorded as an alias"));
+                        continue;
+                    }
+                    let (canon, alias) = if dm_knows(y) && !dm_knows(x) {
+                        (y, x)
+                    } else {
+                        (x, y)
+                    };
+                    // One canonical name per alias, and no chains.
+                    if renames.contains_key(alias)
+                        || renames
+                            .values()
+                            .any(|a| a.contains(canon) || a.contains(alias))
+                    {
+                        continue;
+                    }
                     notes.push(format!("version {v} names column {canon} as {alias} in some files; recorded as an alias"));
-                    e.push(alias.clone());
+                    renames
+                        .entry(canon.clone())
+                        .or_default()
+                        .push(alias.clone());
                 }
             }
         }
@@ -479,7 +516,10 @@ pub fn merge(inputs: &Inputs<'_>) -> Result<TableDef, MergeError> {
     let mut next_id = inputs.existing.map_or(1, |e| e.next_column_id);
     let mut columns: Vec<ColumnDef> = Vec::with_capacity(column_order.len());
     for cname in &column_order {
-        let existing = inputs.existing.and_then(|e| e.column(cname));
+        // By its own name: an alias of another column is not this column.
+        let existing = inputs
+            .existing
+            .and_then(|e| e.columns.iter().find(|c| c.name == *cname));
         if let Some(ec) = existing
             && ec.curated
         {
@@ -636,15 +676,7 @@ pub fn merge(inputs: &Inputs<'_>) -> Result<TableDef, MergeError> {
         columns.push(ColumnDef {
             id,
             name: cname.clone(),
-            aliases: {
-                let mut a = existing.map(|e| e.aliases.clone()).unwrap_or_default();
-                for r in renames.get(cname).into_iter().flatten() {
-                    if !a.contains(r) {
-                        a.push(r.clone());
-                    }
-                }
-                a
-            },
+            aliases: renames.get(cname).cloned().unwrap_or_default(),
             ty,
             // A key column refuses nulls, unless some published shape of the
             // table lacks it: then old files have no value to give.
@@ -691,9 +723,19 @@ pub fn merge(inputs: &Inputs<'_>) -> Result<TableDef, MergeError> {
                     })
                     .map(|c| c.name.clone())
             })
+            // Any time is better than none: the first timestamp the table has.
+            .or_else(|| {
+                columns
+                    .iter()
+                    .find(|c| matches!(c.ty, ColumnType::Timestamp | ColumnType::Date))
+                    .map(|c| c.name.clone())
+            })
     };
     if time_column.is_none() && !inputs.snapshot {
-        notes.push("no timestamp column found for partitioning; set time_column by hand or mark the table a snapshot".into());
+        notes.push(
+            "no timestamp column; rows are partitioned by the month of the file they came in"
+                .into(),
+        );
     }
     let visibility = match inputs.dm.and_then(|d| d.visibility.as_deref()) {
         Some(v) if v.to_ascii_lowercase().contains("public") => Visibility::Public,
@@ -729,6 +771,9 @@ pub fn merge(inputs: &Inputs<'_>) -> Result<TableDef, MergeError> {
         // only a note a person marked `human:` survives.
         notes.insert(0, human.to_owned());
     }
+    // The same remark can come from several pairs of lists; say it once.
+    let mut said = BTreeSet::new();
+    notes.retain(|n| said.insert(n.clone()));
     if !notes.is_empty() {
         provenance.note = Some(notes.join(" | "));
     }
@@ -1219,6 +1264,145 @@ mod tests {
         assert_eq!(tidy_text("a: \n b\t\n\n"), "a:\n b");
         assert_eq!(tidy_text("\n\nplain"), "plain");
         assert_eq!(tidy_text("  \n"), "");
+    }
+
+    /// A block as the sampler would report it, every column non-null text
+    /// unless named in `timestamps`.
+    fn block(
+        pair: (&str, &str),
+        version: u16,
+        columns: &[&str],
+        timestamps: &[&str],
+    ) -> SampledBlock {
+        let n = columns.len();
+        SampledBlock {
+            report_type: pair.0.into(),
+            report_subtype: pair.1.into(),
+            version,
+            columns: columns.iter().map(|c| (*c).to_owned()).collect(),
+            fingerprint: Fingerprint::of_names(columns.iter().copied()),
+            rows: 1,
+            max_len: vec![3; n],
+            all_null: vec![false; n],
+            all_numeric: vec![false; n],
+            all_timestamp: columns.iter().map(|c| timestamps.contains(c)).collect(),
+            digits: vec![crate::sample::Digits::default(); n],
+        }
+    }
+
+    #[test]
+    fn a_rename_between_two_older_lists_is_still_an_alias() {
+        // Three lists of one version, as P5MIN_CONSTRAINTSOLUTION has: the
+        // newest reorders the columns, and the two older ones differ only in
+        // one name. Comparing each list with the newest alone would miss it.
+        let (ctl, dm, blocks) = load_scada();
+        let pair = ("DISPATCH", "UNIT_SCADA");
+        let newest = block(
+            pair,
+            1,
+            &["SETTLEMENTDATE", "SCADAVALUE", "DUID"],
+            &["SETTLEMENTDATE"],
+        );
+        let renamed = block(
+            pair,
+            1,
+            &["SETTLEMENTDATE", "CONFIDENTIAL_TO", "SCADAVALUE"],
+            &["SETTLEMENTDATE"],
+        );
+        let mut inputs = scada_inputs(&ctl, &dm, &blocks);
+        inputs
+            .samples
+            .push((Some("2026-08".parse().unwrap()), &newest));
+        inputs
+            .samples
+            .push((Some("2022-07".parse().unwrap()), &renamed));
+        let t = merge(&inputs).unwrap();
+        assert_eq!(validate_table(&t), vec![]);
+        let names: Vec<&str> = t.columns.iter().map(|c| c.name.as_str()).collect();
+        assert_eq!(names, ["SETTLEMENTDATE", "SCADAVALUE", "DUID"]);
+        assert_eq!(t.column("DUID").unwrap().aliases, ["CONFIDENTIAL_TO"]);
+        assert_eq!(t.versions.len(), 1);
+        assert_eq!(t.versions[0].columns, newest.columns);
+        assert_eq!(t.versions[0].variants.len(), 2);
+        let mut ids: Vec<u32> = t.columns.iter().map(|c| c.id.0).collect();
+        ids.sort_unstable();
+        ids.dedup();
+        assert_eq!(ids.len(), 3, "every column has its own id");
+
+        // Regenerating over the result changes nothing: the alias the file
+        // already records stands and ids stay where they are.
+        let mut again = scada_inputs(&ctl, &dm, &blocks);
+        again.samples = inputs.samples.clone();
+        again.existing = Some(&t);
+        assert_eq!(merge(&again).unwrap(), t);
+
+        // A file that carries both names side by side shows they are two
+        // columns: the alias goes and the new column gets an id of its own.
+        let both = block(
+            pair,
+            2,
+            &["SETTLEMENTDATE", "DUID", "SCADAVALUE", "CONFIDENTIAL_TO"],
+            &["SETTLEMENTDATE"],
+        );
+        let mut split = scada_inputs(&ctl, &dm, &blocks);
+        split.samples = inputs.samples.clone();
+        split
+            .samples
+            .push((Some("2026-09".parse().unwrap()), &both));
+        split.existing = Some(&t);
+        let t2 = merge(&split).unwrap();
+        assert_eq!(validate_table(&t2), vec![]);
+        assert!(t2.column("DUID").unwrap().aliases.is_empty());
+        let duid = t2.columns.iter().find(|c| c.name == "DUID").unwrap();
+        let conf = t2
+            .columns
+            .iter()
+            .find(|c| c.name == "CONFIDENTIAL_TO")
+            .unwrap();
+        assert_eq!(duid.id, t.column("DUID").unwrap().id);
+        assert_ne!(conf.id, duid.id);
+        assert_eq!(conf.id.0, t.next_column_id);
+    }
+
+    #[test]
+    fn time_column_falls_back_to_any_timestamp_then_to_none() {
+        // No control file, no data model: types come from the rows.
+        let outage = block(
+            ("NETWORK", "OUTAGECONSTRAINTSET"),
+            1,
+            &["OUTAGEID", "STARTINTERVAL"],
+            &["STARTINTERVAL"],
+        );
+        let t = merge(&Inputs {
+            name: "NETWORK_OUTAGECONSTRAINTSET".into(),
+            samples: vec![(None, &outage)],
+            archive_files: vec!["NETWORK_OUTAGECONSTRAINTSET".into()],
+            ..Default::default()
+        })
+        .unwrap();
+        assert_eq!(t.time_column.as_deref(), Some("STARTINTERVAL"));
+        assert_eq!(validate_table(&t), vec![]);
+
+        // A table with no time in it at all is still a valid appended table;
+        // its rows go by the month of the file they came in.
+        let billing = block(("BILLING", "RECON"), 1, &["CONTRACTYEAR", "WEEKNO"], &[]);
+        let t = merge(&Inputs {
+            name: "BILLING_RECON".into(),
+            samples: vec![(None, &billing)],
+            archive_files: vec!["BILLING_RECON".into()],
+            ..Default::default()
+        })
+        .unwrap();
+        assert_eq!(t.time_column, None);
+        assert_eq!(t.load_mode, LoadMode::Append);
+        assert_eq!(validate_table(&t), vec![]);
+        assert!(
+            t.provenance
+                .note
+                .as_deref()
+                .unwrap()
+                .contains("partitioned by the month of the file")
+        );
     }
 
     #[test]

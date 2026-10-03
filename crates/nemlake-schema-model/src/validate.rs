@@ -214,8 +214,10 @@ pub fn validate_structure(t: &TableDef) -> Vec<Issue> {
         }
     }
 
-    match (&t.time_column, t.load_mode) {
-        (Some(tc), _) => match t.column(tc) {
+    // An appended table with no time of its own is partitioned by the
+    // month of the file its rows came in, so no time column is required.
+    if let Some(tc) = &t.time_column {
+        match t.column(tc) {
             None => out.push(issue(t, format!("time_column {tc} is not a column"))),
             Some(c) if !matches!(c.ty, ColumnType::Timestamp | ColumnType::Date) => {
                 out.push(issue(
@@ -227,12 +229,7 @@ pub fn validate_structure(t: &TableDef) -> Vec<Issue> {
                 ));
             }
             _ => {}
-        },
-        (None, LoadMode::Append) => out.push(issue(
-            t,
-            "load_mode is append but time_column is unset; appended tables are partitioned by time",
-        )),
-        (None, LoadMode::Snapshot) => {}
+        }
     }
     if t.load_mode == LoadMode::Snapshot && t.primary_key.is_empty() {
         out.push(issue(
@@ -538,7 +535,7 @@ mod tests {
         t.time_column = Some("X".into());
         has(&t, "time_column X is not a column");
         t.time_column = None;
-        has(&t, "time_column is unset");
+        assert!(validate_table(&t).is_empty(), "{:?}", validate_table(&t));
         let mut t = unit_scada();
         t.load_mode = LoadMode::Snapshot;
         t.time_column = None;

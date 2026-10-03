@@ -253,7 +253,15 @@ impl BatchSink for LakeSink<'_> {
                     table: table.name.clone(),
                     message: e.to_string(),
                 })?,
-            (LoadMode::Append, None) => vec![(Partition::Unknown, b.batch)],
+            // No time of its own: the month of the file is all there is.
+            (LoadMode::Append, None) => vec![(
+                self.period
+                    .map_or(Partition::Unknown, |p| Partition::Month {
+                        year: p.year(),
+                        month: p.month(),
+                    }),
+                b.batch,
+            )],
         };
         for (partition, batch) in parts {
             let key = (b.table, b.version.0, partition);
