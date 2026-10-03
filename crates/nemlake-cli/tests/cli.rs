@@ -447,103 +447,110 @@ fn schema_infer_drafts_and_user_schemas_take_effect() {
     );
 }
 
-/// `cache gc`: leftovers always go; a download goes when the lake already
-/// holds it (`--ingested`) or when it is old (`--older-than`).
+/// Downloads are an archive: listed with how they were requested, checked
+/// against their record, and never removed by any cache command.
 #[test]
-fn cache_gc_removes_what_is_no_longer_needed() {
+fn archive_is_kept_and_cache_commands_only_remove_throwaway_files() {
     let cli = Cli::new();
-    assert!(cli.ok(&["cache", "gc"]).contains("removed 0 file(s)"));
-    // Ingest a local file so the manifest knows its URL and checksum.
-    let csv = cli.home.path().join("PUBLIC_DVD_REGION_202401010000.CSV");
-    std::fs::copy(fixtures().join("REGION_v1_head.csv"), &csv).unwrap();
-    cli.ok(&["ingest", csv.to_str().unwrap()]);
-    let ls = cli.ok(&["--json", "ls"]);
-    let url = ls
-        .split("\"url\":\"")
-        .nth(1)
-        .and_then(|rest| rest.split('"').next())
-        .expect("ls reports the source URL")
-        .to_owned();
-    let sha = nemlake_fetch::cache::sha256_hex(&std::fs::read(&csv).unwrap());
+    assert!(cli.ok(&["archive", "ls"]).contains("0 file(s)"));
+    assert!(cli.ok(&["--json", "archive", "ls"]).is_empty());
+    assert!(cli.ok(&["archive", "verify"]).contains("0 file(s) checked"));
+    assert!(
+        cli.ok(&["cache", "gc"])
+            .contains("removed 0 leftover file(s)")
+    );
+    assert!(
+        cli.ok(&["cache", "clear"])
+            .contains("removed 0 cached listing(s)")
+    );
 
-    // Three downloads in the cache: that file, an unknown recent one, an unknown old one.
-    let cache = cli.home.path().join("cache/nem-mmsdm");
-    std::fs::create_dir_all(&cache).unwrap();
-    let put = |name: &str, url: &str, sha: &str, fetched_at: &str| {
-        std::fs::write(cache.join(name), b"zip bytes").unwrap();
-        std::fs::write(
-            cache.join(format!("{name}.json")),
-            format!(
-                r#"{{"url":"{url}","etag":null,"last_modified":null,"size":9,"sha256":"{sha}","fetched_at":"{fetched_at}","accept_ranges":true}}"#
-            ),
-        )
+    // One archived download, at the path its URL gives it, with its record.
+    let dir = cli.home.path().join("archive/h/DATA");
+    std::fs::create_dir_all(&dir).unwrap();
+    let file = dir.join("a.zip");
+    std::fs::write(&file, b"zip bytes").unwrap();
+    std::fs::write(
+        dir.join("a.zip.json"),
+        format!(
+            r#"{{"url":"https://h/DATA/a.zip","size":9,"sha256":"{}","fetched_at":"2026-10-03T10:00:05Z","request":{{"by":"fetch nem REGION 2024-01..2024-01","tool":"nemlake/0.1.0","source":"nem-mmsdm","started_at":"2026-10-03T10:00:00Z","request_url":"https://h/DATA/a.zip","http_status":200,"attempts":1}}}}"#,
+            nemlake_fetch::cache::sha256_hex(b"zip bytes")
+        ),
+    )
+    .unwrap();
+    let out = cli.ok(&["archive", "ls"]);
+    assert!(out.contains("1 file(s)"), "{out}");
+    assert!(out.contains("fetch nem REGION 2024-01..2024-01"), "{out}");
+    assert!(
+        out.contains("https://h/DATA/a.zip") && out.contains("2026-10-03T10:00:05Z"),
+        "{out}"
+    );
+    let out = cli.ok(&["--json", "archive", "ls"]);
+    assert_eq!(out.lines().count(), 1, "{out}");
+    assert!(
+        out.contains("\"record\"") && out.contains("\"started_at\":\"2026-10-03T10:00:00Z\""),
+        "{out}"
+    );
+    assert!(
+        cli.ok(&["archive", "verify"])
+            .contains("1 file(s) checked, 0 do not match")
+    );
+
+    // Leftovers beside it: a partial download nobody resumed, and a listing.
+    let old = std::time::SystemTime::now() - std::time::Duration::from_secs(30 * 86_400);
+    let part = dir.join("b.zip.part");
+    std::fs::write(&part, b"half").unwrap();
+    std::fs::File::options()
+        .write(true)
+        .open(&part)
+        .unwrap()
+        .set_modified(old)
         .unwrap();
-    };
-    put("aa-ingested.zip", &url, &sha, "2099-01-01T00:00:00Z");
-    put(
-        "bb-recent.zip",
-        "https://h/recent.zip",
-        "00",
-        "2099-01-01T00:00:00Z",
-    );
-    put(
-        "cc-old.zip",
-        "https://h/old.zip",
-        "00",
-        "2020-01-01T00:00:00Z",
-    );
-    assert!(cli.ok(&["cache", "ls"]).contains("3 file(s)"));
+    let listings = cli.home.path().join("cache/listings");
+    std::fs::create_dir_all(&listings).unwrap();
+    std::fs::write(listings.join("abc.html"), b"<pre></pre>").unwrap();
+    std::fs::write(listings.join("abc.html.json"), b"{}").unwrap();
 
-    // Nothing is a leftover, and without a flag no download is touched.
-    assert!(cli.ok(&["cache", "gc"]).contains("removed 0 file(s)"));
-    // A dry run names what would go and removes nothing.
-    let out = cli.ok(&[
-        "cache",
-        "gc",
-        "--ingested",
-        "--older-than",
-        "30",
-        "--dry-run",
-    ]);
+    let out = cli.ok(&["cache", "gc", "--dry-run"]);
+    assert!(out.contains("would remove 1 leftover file(s)"), "{out}");
     assert!(
-        out.contains("would remove 4 file(s)") && out.contains("2 download(s)"),
+        out.contains("b.zip.part") && out.contains("partial download nobody resumed"),
         "{out}"
     );
+    assert!(part.exists());
+    // Kept for a resume while it is young enough.
     assert!(
-        out.contains("aa-ingested.zip") && out.contains("download already in the lake"),
+        cli.ok(&["cache", "gc", "--keep-partial", "60"])
+            .contains("removed 0 leftover")
+    );
+    let out = cli.ok(&["--json", "cache", "gc"]);
+    assert!(
+        out.contains("\"removed\":true") && out.contains("b.zip.part"),
         "{out}"
     );
+    assert!(!part.exists());
     assert!(
-        out.contains("cc-old.zip") && out.contains("download older than asked"),
-        "{out}"
+        cli.ok(&["cache", "clear"])
+            .contains("removed 1 cached listing(s)")
     );
-    assert!(!out.contains("bb-recent.zip"), "{out}");
-    assert!(cli.ok(&["cache", "ls"]).contains("3 file(s)"));
-    // One flag at a time.
-    let out = cli.ok(&["--json", "cache", "gc", "--ingested"]);
-    assert_eq!(out.lines().count(), 2, "{out}");
+    assert!(!listings.join("abc.html").exists());
+
+    // None of that touched the archived file.
+    assert_eq!(std::fs::read(&file).unwrap(), b"zip bytes");
+    assert!(cli.ok(&["archive", "ls"]).contains("1 file(s)"));
+    // A file that changed on disk is found out.
+    std::fs::write(&file, b"zip bytez").unwrap();
+    let (code, out, err) = cli.code(&["archive", "verify"]);
+    assert_eq!(code, 1, "{out}{err}");
+    assert!(out.contains("1 file(s) checked, 1 do not match"), "{out}");
     assert!(
-        out.contains("\"removed\":true") && out.contains("aa-ingested.zip"),
-        "{out}"
+        err.contains("cache.sha256_mismatch") && err.contains("a.zip"),
+        "{err}"
     );
-    assert!(!cache.join("aa-ingested.zip").exists());
-    assert!(!cache.join("aa-ingested.zip.json").exists());
-    assert!(
-        cli.ok(&["cache", "gc", "--older-than", "30"])
-            .contains("removed 2 file(s)")
-    );
-    assert!(cli.ok(&["cache", "ls"]).contains("1 file(s)"));
-    assert!(cache.join("bb-recent.zip").exists());
-    // The lake is untouched and the file still counts as ingested.
-    assert!(cli.ok(&["--json", "ls"]).contains("\"status\":\"ok\""));
 }
 
 #[test]
 fn cache_wem_fetch_and_config() {
     let cli = Cli::new();
-    assert!(cli.ok(&["cache", "ls"]).contains("0 file(s)"));
-    assert!(cli.ok(&["--json", "cache", "ls"]).is_empty());
-    assert!(cli.ok(&["cache", "clear"]).contains("removed 0"));
     // Offline: a fetch that needs the network fails with the offline code and exit 4.
     let (code, out, err) = cli.code(&[
         "--offline",

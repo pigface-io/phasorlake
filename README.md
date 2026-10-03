@@ -40,7 +40,8 @@ the file is already in the lake.
 | `nemlake verify` | every Parquet file the manifest lists exists with its size |
 | `nemlake schema list\|show\|diff\|lineage\|validate` | the registry |
 | `nemlake schema infer <file> [--write]` | draft what a file adds to the registry: a new table, version or variant |
-| `nemlake cache ls\|gc\|clear` | the download cache; `gc` removes leftovers of interrupted work and, with `--ingested` or `--older-than DAYS`, downloads no longer needed |
+| `nemlake archive ls\|verify` | every downloaded file with when and how it was requested; `verify` hashes each one again |
+| `nemlake cache gc\|clear` | throwaway files only: `gc` removes leftovers of interrupted work, `clear` the cached listings; neither touches the archive |
 | `nemlake wem manifest <dataset>` | a WEM dataset's file list (WEM ingestion comes later) |
 
 Global flags: `--home DIR` (or `NEMLAKE_HOME`), `--json`, `-v`, `--offline`,
@@ -53,7 +54,8 @@ Global flags: `--home DIR` (or `NEMLAKE_HOME`), `--json`, `-v`, `--offline`,
 ~/.nemlake/
   lake/nem/{table}/year=YYYY/month=MM/{source}-v{version}-{sha8}.parquet   appended tables, partitioned by market-local month
   lake/nem/{table}/snapshot=YYYYMM/...                                     standing-data tables (REGION, PARTICIPANT, ...)
-  cache/{source}/{hash}-{filename}[.json]                                  downloads with their sidecars
+  archive/{host}/{path of the URL}[.json]                                  every download as the server sent it, with its request record
+  cache/listings/, cache/tmp/                                              listings and scratch files, safe to delete
   quarantine/{table}/{source}.jsonl                                        rows that failed to parse, with the reason
   manifest.sqlite                                                          runs, files, ingests, outputs, diagnostics
 ```
@@ -78,6 +80,32 @@ unit spans 1677-09-21 to 2262-04-11. AEMO writes "no end" as `9999/12/31`
 or `2999/12/31`; such a value is stored as the last instant of the range,
 so `END_DATE > now()` still holds, and each column it happens in is
 reported as `parse.timestamp_clamped` with a count and an example.
+
+## The archive of downloads
+
+Every file nemlake downloads is kept exactly as the server sent it, at the
+path its URL spells out:
+
+```
+~/.nemlake/archive/www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2024/MMSDM_2024_01/MMSDM_Historical_Data_SQLLoader/DATA/
+  PUBLIC_DVD_DISPATCHPRICE_202401010000.zip
+  PUBLIC_DVD_DISPATCHPRICE_202401010000.zip.json
+```
+
+The `.json` beside it records what makes the file traceable: the URL, when
+the request was sent and when the download completed, the nemlake command
+that asked for it, the tool version and user agent, the status and headers
+the server answered with, how many attempts it took and whether one resumed
+an earlier one, the size and sha256 of the bytes, and what the listing said
+about the file. A file read out of a whole-month zip sits under that zip's
+path with `.members` added, and its record names the zip, the member, its
+offset and the CRC-32 it was checked against.
+
+Nothing in nemlake deletes an archived file. When the same URL later
+serves other bytes, the earlier file is kept beside the new one and the
+new record points at it. Everything in the lake can be derived again from
+the archive, so the lake can be rebuilt when the rules for reading a table
+improve. `nemlake archive verify` hashes every file against its record.
 
 ## Your own tables
 

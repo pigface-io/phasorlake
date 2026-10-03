@@ -42,7 +42,12 @@ impl Home {
     pub fn lake(&self) -> PathBuf {
         self.root.join("lake")
     }
-    /// Downloaded files and listings.
+    /// Every downloaded file, untransformed, at a path that mirrors its
+    /// URL, each beside a record of how it was requested. Never cleaned.
+    pub fn archive(&self) -> PathBuf {
+        self.root.join("archive")
+    }
+    /// What can be thrown away: listings and scratch files.
     pub fn cache(&self) -> PathBuf {
         self.root.join("cache")
     }
@@ -75,6 +80,7 @@ impl Home {
     pub fn ensure_dirs(&self) -> std::io::Result<()> {
         for d in [
             self.lake(),
+            self.archive(),
             self.listings(),
             self.tmp(),
             self.quarantine(),
@@ -118,6 +124,7 @@ mod tests {
         h.ensure_dirs().unwrap();
         for p in [
             h.lake(),
+            h.archive(),
             h.cache(),
             h.listings(),
             h.tmp(),

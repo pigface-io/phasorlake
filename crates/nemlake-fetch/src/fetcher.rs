@@ -11,7 +11,7 @@ use sha2::{Digest, Sha256};
 use tokio::io::AsyncWriteExt;
 use tokio::sync::Mutex;
 
-use crate::cache::{DiskCache, Sidecar, hex};
+use crate::cache::{DiskCache, MemberOf, Requested, Sidecar, hex};
 use crate::error::FetchError;
 use crate::remotezip::{self, Inflater, Tail, ZipMember};
 use crate::source::RemoteFile;
@@ -51,6 +51,11 @@ pub struct FetcherConfig {
     pub refresh: bool,
     /// Hash cached files before trusting them.
     pub verify_cache: bool,
+    /// The command on whose behalf files are fetched, recorded with every
+    /// download, e.g. `fetch nem DISPATCHPRICE 2012-01..2012-01`.
+    pub requested_by: String,
+    /// The `User-Agent` the transport sends, recorded with every download.
+    pub user_agent: Option<String>,
 }
 
 impl Default for FetcherConfig {
@@ -62,11 +67,13 @@ impl Default for FetcherConfig {
             min_interval: Duration::from_millis(250),
             refresh: false,
             verify_cache: false,
+            requested_by: String::new(),
+            user_agent: None,
         }
     }
 }
 
-/// Fetches remote files into the cache.
+/// Fetches remote files into the archive.
 pub struct Fetcher {
     transport: Arc<dyn Transport>,
     cache: DiskCache,
@@ -247,14 +254,15 @@ impl Fetcher {
         self.fetch_range(url, ByteRange::Span { start, end }).await
     }
 
-    /// Fetches a remote file into the cache, or returns the cached copy.
-    /// A file that is a member of a remote zip is extracted with a ranged
-    /// request for its bytes alone.
+    /// Fetches a remote file into the archive, or returns the archived
+    /// copy. A file that is a member of a remote zip is extracted with a
+    /// ranged request for its bytes alone. The file is kept exactly as it
+    /// arrived, with a sidecar that records when, how and from where it was
+    /// requested.
     pub async fn fetch(&self, remote: &RemoteFile) -> Result<LocalFile, FetchError> {
         let url = remote.url.as_str();
-        let file_name = remote.file_name();
         if !self.config.refresh
-            && let Some(blob) = self.cache.lookup(remote.source, url, &file_name)?
+            && let Some(blob) = self.cache.lookup(url)?
         {
             let ok = if self.config.verify_cache {
                 self.cache.verify(&blob).is_ok()
@@ -278,7 +286,7 @@ impl Fetcher {
                 url: url.to_owned(),
             });
         }
-        let path = self.cache.path_for(remote.source, url, &file_name);
+        let path = self.cache.path_for(url);
         if let Some(p) = path.parent() {
             std::fs::create_dir_all(p).map_err(|source| FetchError::CacheIo {
                 path: p.display().to_string(),
@@ -287,12 +295,26 @@ impl Fetcher {
         }
         let part = DiskCache::part_path(&path);
         let events = self.events.clone();
-        let (sha256, size, etag, last_modified, accept_ranges) = match &remote.member {
+        // What the request that delivers the file looked like: counted and
+        // noted each time one is sent, so the sidecar can say.
+        let attempts = std::sync::atomic::AtomicU32::new(0);
+        let sent: std::sync::Mutex<(String, Option<String>)> =
+            std::sync::Mutex::new((String::new(), None));
+        let note = |req: HttpRequest| {
+            attempts.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+            *sent.lock().expect("not poisoned") = (
+                now_utc_rfc3339(),
+                req.range.as_ref().map(ByteRange::header_value),
+            );
+            req
+        };
+        let request_url = remote.request_url();
+        let streamed = match &remote.member {
             None => {
                 // An earlier attempt, or an earlier run, may have left part
                 // of the file: ask only for the rest while it is unchanged.
                 self.get_with_retries_by(
-                    || resume_request(url, &part),
+                    || note(resume_request(url, &part)),
                     |resp| {
                         let part = part.clone();
                         let events = events.clone();
@@ -302,8 +324,7 @@ impl Fetcher {
                 .await?
             }
             Some(member) => {
-                let container = remote.request_url();
-                let container = container.as_str();
+                let container = request_url.as_str();
                 let unsupported = |reason: String| FetchError::MemberUnsupported {
                     url: container.to_owned(),
                     member: member.name.clone(),
@@ -320,39 +341,71 @@ impl Fetcher {
                 }
                 let (start, end) = member.request_span(None);
                 let req = HttpRequest::get(container).with_range(ByteRange::Span { start, end });
-                self.get_with_retries(&req, |resp| {
-                    let part = part.clone();
-                    let events = events.clone();
-                    async move {
-                        stream_member_to_file(container, url, resp, &part, member, events).await
-                    }
-                })
+                self.get_with_retries_by(
+                    || note(req.clone()),
+                    |resp| {
+                        let part = part.clone();
+                        let events = events.clone();
+                        async move {
+                            stream_member_to_file(container, url, resp, &part, member, events).await
+                        }
+                    },
+                )
                 .await?
             }
         };
+        // A file of the same URL with other bytes is kept beside the new
+        // one, never overwritten.
+        let supersedes = DiskCache::set_aside(&path, &streamed.sha256)?;
         std::fs::rename(&part, &path).map_err(|source| FetchError::CacheIo {
             path: path.display().to_string(),
             source,
         })?;
         let _ = std::fs::remove_file(part_state_path(&part));
+        let (started_at, range) = sent.into_inner().expect("not poisoned");
         let sidecar = Sidecar {
             url: url.to_owned(),
-            etag: etag.clone(),
-            last_modified: last_modified.clone(),
-            size,
-            sha256: sha256.clone(),
+            etag: streamed.etag.clone(),
+            last_modified: streamed.last_modified.clone(),
+            size: streamed.size,
+            sha256: streamed.sha256.clone(),
             fetched_at: now_utc_rfc3339(),
-            accept_ranges,
+            accept_ranges: streamed.accept_ranges,
+            request: Some(Requested {
+                by: self.config.requested_by.clone(),
+                tool: format!("nemlake/{}", env!("CARGO_PKG_VERSION")),
+                user_agent: self.config.user_agent.clone(),
+                source: remote.source.to_owned(),
+                table: remote.table.clone(),
+                period: remote.period.map(|p| p.to_string()),
+                started_at,
+                request_url: request_url.to_string(),
+                // A 200 is the whole file, whatever range was asked for.
+                range: range.filter(|_| streamed.http_status == 206),
+                http_status: streamed.http_status,
+                attempts: attempts.into_inner(),
+                resumed_from: streamed.resumed_from,
+                member: remote.member.as_ref().map(|m| MemberOf {
+                    name: m.name.clone(),
+                    header_offset: m.header_offset,
+                    compressed_size: m.compressed_size,
+                    method: m.method,
+                    crc32: format!("{:08x}", m.crc32),
+                }),
+                listed_size: remote.size,
+                listed_modified: remote.modified.clone(),
+            }),
+            supersedes,
         };
         DiskCache::write_sidecar(&path, &sidecar)?;
         Ok(LocalFile {
             remote: remote.clone(),
             path,
-            sha256,
-            size,
+            sha256: streamed.sha256,
+            size: streamed.size,
             cached: false,
-            etag,
-            last_modified,
+            etag: streamed.etag,
+            last_modified: streamed.last_modified,
         })
     }
 
@@ -512,7 +565,17 @@ async fn read_all(url: &str, resp: crate::transport::HttpResponse) -> Result<Vec
     Ok(out)
 }
 
-type Streamed = (String, u64, Option<String>, Option<String>, bool);
+/// What a completed download is: its bytes' hash and size, what the server
+/// said, and how the request went.
+struct Streamed {
+    sha256: String,
+    size: u64,
+    etag: Option<String>,
+    last_modified: Option<String>,
+    accept_ranges: bool,
+    http_status: u16,
+    resumed_from: Option<u64>,
+}
 
 /// What is known about a partial download, kept beside the `.part` file so
 /// a later attempt, or a later run, can ask for the rest.
@@ -595,6 +658,8 @@ async fn stream_to_file(
     } else {
         tokio::fs::File::create(part).await.map_err(cache_io)?
     };
+    let resumed_from = resuming.then_some(received);
+    let http_status = resp.status;
     let total = if resuming {
         resp.total_length
             .or_else(|| resp.content_length.map(|n| n + received))
@@ -682,13 +747,15 @@ async fn stream_to_file(
             received,
         });
     }
-    Ok((
-        hex(&hasher.finalize()),
-        received,
-        resp.etag,
-        resp.last_modified,
-        resp.accept_ranges,
-    ))
+    Ok(Streamed {
+        sha256: hex(&hasher.finalize()),
+        size: received,
+        etag: resp.etag,
+        last_modified: resp.last_modified,
+        accept_ranges: resp.accept_ranges,
+        http_status,
+        resumed_from,
+    })
 }
 
 /// Streams the ranged response for one zip member into `part`: skips the
@@ -712,6 +779,7 @@ async fn stream_member_to_file(
         path: part.display().to_string(),
         source,
     };
+    let http_status = resp.status;
     let mut file = tokio::fs::File::create(part).await.map_err(cache_io)?;
     let result = async {
         let mut sha = Sha256::new();
@@ -817,7 +885,15 @@ async fn stream_member_to_file(
     }
     .await;
     match result {
-        Ok((sha256, size)) => Ok((sha256, size, resp.etag, resp.last_modified, true)),
+        Ok((sha256, size)) => Ok(Streamed {
+            sha256,
+            size,
+            etag: resp.etag,
+            last_modified: resp.last_modified,
+            accept_ranges: true,
+            http_status,
+            resumed_from: None,
+        }),
         Err(e) => {
             let _ = tokio::fs::remove_file(part).await;
             Err(e)
@@ -1041,13 +1117,83 @@ mod tests {
             other => panic!("{other}"),
         }
         // What did arrive is kept, with its state, for the next run to resume.
-        let part = DiskCache::part_path(&f.cache().path_for(
-            "nem-mmsdm",
-            "https://h/short.zip",
-            "short.zip",
-        ));
+        let part = DiskCache::part_path(&f.cache().path_for("https://h/short.zip"));
         assert_eq!(std::fs::read(&part).unwrap(), b"abc");
         assert!(part_state_path(&part).is_file());
+    }
+
+    #[tokio::test]
+    async fn the_archive_keeps_every_download_with_how_it_was_requested() {
+        let dir = tempfile::tempdir().unwrap();
+        let url = "https://h/Data_Archive/DATA/a.zip";
+        let t = Arc::new(StaticTransport::default());
+        t.add(url, Canned::ok(b"first"));
+        let mut cfg = fast();
+        cfg.requested_by = "fetch nem REGION 2024-01..2024-01".into();
+        cfg.user_agent = Some("nemlake-test/1".into());
+        let store = || DiskCache::at(dir.path().join("cache"), dir.path().join("archive"));
+        let f = Fetcher::new(Arc::new(t.clone()), store(), cfg.clone());
+        let mut r = remote(url);
+        r.size = Some(5);
+        r.modified = Some("2/13/2024 8:27 AM".into());
+        let local = f.fetch(&r).await.unwrap();
+        // The file sits where its URL says, untouched.
+        assert_eq!(
+            local.path,
+            dir.path().join("archive/h/Data_Archive/DATA/a.zip")
+        );
+        assert_eq!(std::fs::read(&local.path).unwrap(), b"first");
+        let sc = DiskCache::read_sidecar(&local.path).unwrap().unwrap();
+        assert_eq!(sc.url, url);
+        assert_eq!(sc.sha256, crate::cache::sha256_hex(b"first"));
+        assert_eq!(sc.supersedes, None);
+        let req = sc.request.clone().unwrap();
+        assert_eq!(req.by, "fetch nem REGION 2024-01..2024-01");
+        assert_eq!(req.tool, format!("nemlake/{}", env!("CARGO_PKG_VERSION")));
+        assert_eq!(req.user_agent.as_deref(), Some("nemlake-test/1"));
+        assert_eq!(req.source, "nem-mmsdm");
+        assert_eq!(req.table.as_deref(), Some("REGION"));
+        assert_eq!(req.period.as_deref(), Some("2024-01"));
+        assert_eq!(req.request_url, url);
+        assert_eq!(req.range, None);
+        assert_eq!(req.http_status, 200);
+        assert_eq!(req.attempts, 1);
+        assert_eq!(req.resumed_from, None);
+        assert_eq!(req.member, None);
+        assert_eq!(req.listed_size, Some(5));
+        assert_eq!(req.listed_modified.as_deref(), Some("2/13/2024 8:27 AM"));
+        assert!(!req.started_at.is_empty() && req.started_at <= sc.fetched_at);
+
+        // Asked for again, the server sends the same bytes: one file, as before.
+        t.add(url, Canned::ok(b"second version"));
+        cfg.refresh = true;
+        let f = Fetcher::new(Arc::new(t.clone()), store(), cfg);
+        let same = f.fetch(&r).await.unwrap();
+        assert!(!same.cached);
+        assert_eq!(std::fs::read(&same.path).unwrap(), b"first");
+        assert_eq!(f.cache().entries().unwrap().len(), 1);
+        assert_eq!(
+            DiskCache::read_sidecar(&same.path)
+                .unwrap()
+                .unwrap()
+                .supersedes,
+            None
+        );
+        // Asked for once more, the bytes have changed: the old file is kept
+        // beside the new one and the new sidecar points at it.
+        let newer = f.fetch(&r).await.unwrap();
+        assert_eq!(newer.path, local.path);
+        assert_eq!(std::fs::read(&newer.path).unwrap(), b"second version");
+        let sc2 = DiskCache::read_sidecar(&newer.path).unwrap().unwrap();
+        let old = sc2.supersedes.expect("the old file is recorded");
+        assert_eq!(old.sha256, sc.sha256);
+        let kept = newer.path.with_file_name(&old.kept_as);
+        assert_eq!(std::fs::read(&kept).unwrap(), b"first");
+        assert_eq!(
+            DiskCache::read_sidecar(&kept).unwrap().unwrap().sha256,
+            sc.sha256
+        );
+        assert_eq!(f.cache().entries().unwrap().len(), 2);
     }
 
     #[tokio::test]
@@ -1060,8 +1206,7 @@ mod tests {
             c.fail_after = Some(7000);
             c
         };
-        let part_of =
-            |f: &Fetcher| DiskCache::part_path(&f.cache().path_for("nem-mmsdm", url, "big.zip"));
+        let part_of = |f: &Fetcher| DiskCache::part_path(&f.cache().path_for(url));
         let range_of = |t: &StaticTransport, i: usize| t.ranges.lock().unwrap()[i];
 
         // The connection drops after 7000 bytes; the retry asks for the rest only.
@@ -1081,6 +1226,16 @@ mod tests {
         assert_eq!(range_of(&t, 1), Some(ByteRange::From { start: 7000 }));
         assert!(!part_of(&f).exists());
         assert!(!part_state_path(&part_of(&f)).exists());
+        // The sidecar says how the file finally arrived.
+        let req = DiskCache::read_sidecar(&local.path)
+            .unwrap()
+            .unwrap()
+            .request
+            .unwrap();
+        assert_eq!(req.attempts, 2);
+        assert_eq!(req.http_status, 206);
+        assert_eq!(req.resumed_from, Some(7000));
+        assert_eq!(req.range.as_deref(), Some("bytes=7000-"));
 
         // The file changed between the attempts: If-Range makes the server
         // send the new version whole, and that is what lands in the cache.
@@ -1098,6 +1253,15 @@ mod tests {
         assert_eq!(std::fs::read(&local.path).unwrap(), newer);
         assert_eq!(local.sha256, crate::cache::sha256_hex(&newer));
         assert_eq!(range_of(&t, 1), Some(ByteRange::From { start: 7000 }));
+        // The rest was asked for, the whole file came: that is what is recorded.
+        let req = DiskCache::read_sidecar(&local.path)
+            .unwrap()
+            .unwrap()
+            .request
+            .unwrap();
+        assert_eq!((req.attempts, req.http_status), (2, 200));
+        assert_eq!(req.range, None);
+        assert_eq!(req.resumed_from, None);
 
         // A run that gave up leaves the part; the next run picks it up.
         let t = Arc::new(StaticTransport::default());

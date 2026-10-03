@@ -659,10 +659,10 @@ mod tests {
         // The cache keeps the bytes under a name without the #.
         t.add(r.url.as_str(), Canned::ok(b"zip bytes"));
         let local = f.fetch(r).await.unwrap();
-        let cached = local.path.file_name().unwrap().to_str().unwrap().to_owned();
-        assert!(
-            cached.contains("DISPATCHPRICE") && !cached.contains('#'),
-            "{cached}"
+        // The archive keeps the file under its real name, # and all.
+        assert_eq!(
+            local.path.file_name().unwrap().to_str().unwrap(),
+            "PUBLIC_ARCHIVE#DISPATCHPRICE#FILE01#202608010000.zip"
         );
         assert_eq!(local.remote.file_name(), r.file_name());
     }
@@ -826,6 +826,34 @@ mod tests {
                 .unwrap()
                 .ends_with("PUBLIC_DVD_REGION_201201010000.zip")
         );
+        // It is archived under the month zip's own path, and its sidecar says
+        // which member of which zip it is and how it was asked for.
+        assert!(
+            local.path.ends_with(
+                "2012/MMSDM_2012_01.zip.members/01/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_REGION_201201010000.zip"
+            ),
+            "{}",
+            local.path.display()
+        );
+        let sidecar = DiskCache::read_sidecar(&local.path).unwrap().unwrap();
+        assert_eq!(sidecar.url, one[0].url.as_str());
+        let req = sidecar.request.unwrap();
+        assert_eq!(req.request_url, zip_url);
+        assert_eq!(req.http_status, 206);
+        assert!(
+            req.range.as_deref().unwrap().starts_with("bytes="),
+            "{:?}",
+            req.range
+        );
+        assert_eq!(req.listed_size, Some(region.len() as u64));
+        assert_eq!(req.table.as_deref(), Some("REGION"));
+        assert_eq!(req.period.as_deref(), Some("2012-01"));
+        let member = one[0].member.as_ref().unwrap();
+        let of = req.member.unwrap();
+        assert_eq!(of.name, member.name);
+        assert_eq!(of.header_offset, member.header_offset);
+        assert_eq!(of.crc32, format!("{:08x}", member.crc32));
+        assert_eq!(of.method, 8);
         let again = f.fetch(&one[0]).await.unwrap();
         assert!(again.cached);
         assert_eq!(again.sha256, local.sha256);

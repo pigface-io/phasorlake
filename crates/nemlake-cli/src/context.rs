@@ -81,33 +81,40 @@ impl Context {
             .map_err(|e| anyhow::anyhow!("{}", nemlake_core::Diagnose::diagnostic(&e).render()))
     }
 
-    /// A fetcher over the real network, or offline.
+    /// The archive of downloads and the cache of listings under the home.
+    pub fn store(&self) -> DiskCache {
+        DiskCache::at(self.home.cache(), self.home.archive())
+    }
+
+    /// A fetcher over the real network, or offline. `requested_by` is the
+    /// command being run; it is recorded beside every file it downloads.
     pub fn fetcher(
         &self,
-        downloads: Option<usize>,
+        requested_by: &str,
         refresh: bool,
         events: Option<tokio::sync::mpsc::Sender<nemlake_core::event::Event>>,
     ) -> Result<Arc<Fetcher>> {
+        let ua = format!(
+            "nemlake/{} (+https://github.com/g0itb4/nemlake){}",
+            env!("CARGO_PKG_VERSION"),
+            self.config.user_agent_suffix
+        );
         let transport: Arc<dyn Transport> = if self.offline {
             Arc::new(OfflineTransport)
         } else {
-            let ua = format!(
-                "nemlake/{} (+https://github.com/g0itb4/nemlake){}",
-                env!("CARGO_PKG_VERSION"),
-                self.config.user_agent_suffix
-            );
             Arc::new(
                 ReqwestTransport::new(&ua, Duration::from_secs(30), Duration::from_secs(120))
                     .map_err(|e| anyhow::anyhow!("{e}"))?,
             )
         };
-        let _ = downloads;
         let cfg = FetcherConfig {
             refresh,
             min_interval: Duration::from_millis(self.config.request_interval_ms),
+            requested_by: requested_by.to_owned(),
+            user_agent: Some(ua),
             ..Default::default()
         };
-        let mut f = Fetcher::new(transport, DiskCache::new(self.home.cache()), cfg);
+        let mut f = Fetcher::new(transport, self.store(), cfg);
         if let Some(tx) = events {
             f = f.with_events(tx);
         }

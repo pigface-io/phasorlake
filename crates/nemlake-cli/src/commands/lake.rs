@@ -46,7 +46,8 @@ async fn run_plan(
     downloads: Option<usize>,
 ) -> Result<i32> {
     let (tx, rx) = tokio::sync::mpsc::channel(4096);
-    let fetcher = ctx.fetcher(downloads, refresh, Some(tx.clone()))?;
+    let _ = downloads;
+    let fetcher = ctx.fetcher(&plan.request, refresh, Some(tx.clone()))?;
     let (manifest, thread) = ctx.manifest()?;
     let deps = ctx.deps(fetcher, manifest);
     let cancel = CancellationToken::new();

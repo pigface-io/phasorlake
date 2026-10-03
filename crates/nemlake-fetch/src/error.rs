@@ -182,9 +182,9 @@ pub enum FetchError {
         /// Cause.
         message: String,
     },
-    /// The cached bytes do not match the sidecar.
+    /// The archived bytes do not match the sidecar.
     #[error(
-        "The cached file {path} hashes to {observed} but its sidecar records {expected}; it will be downloaded again."
+        "The archived file {path} hashes to {observed} but its sidecar records {expected}; the file changed on disk after it was downloaded."
     )]
     Sha256Mismatch {
         /// Path.
