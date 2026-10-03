@@ -12,3 +12,11 @@ publish.workspace = true
 workspace = true
 
 [dependencies]
+nemlake-core.workspace = true
+postcard.workspace = true
+serde.workspace = true
+thiserror.workspace = true
+toml.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
