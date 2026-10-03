@@ -34,6 +34,7 @@ worker; the async and sync worlds meet once per file.
 | unit and integration | every crate, `cargo test` | `just test`, pre-commit |
 | coverage | `cargo llvm-cov` over the workspace | `just cover` against `coverage.json`, pre-push |
 | schema regeneration | `nemlake-schema-bootstrap regen --check` | `just schema-check`, pre-push |
+| schema compatibility | table files at `origin/main` against the working tree | `just schema-compat`, pre-push |
 | benchmarks | criterion plus `nemlake-bench` | `just bench-fast` pre-push, `just bench` in CI, against `bench/budgets.json` |
 | network | `crates/nemlake-fetch/tests/net.rs` | `just net-test`, weekly in CI |
 
@@ -44,6 +45,13 @@ A coverage floor in `coverage.json` only goes up. A benchmark budget in
 latest measurement when that is better, never the other way. `just budget-check`
 fails when either moved the wrong way against `origin/main`, unless a commit in
 the range explains it with a `coverage-floor:` or `bench-budget:` line.
+
+The registry has the same ratchet. A table file may gain columns, versions
+and variants, widen a type or make a column nullable. It may not delete a
+table, delete or renumber a column, narrow a type, or stop declaring a
+column list it declared before. `just schema-compat` checks that against
+`origin/main`; a break made on purpose is explained with a `schema-break:`
+line in a commit message.
 
 Benchmark categories: `parse` (scanner, typed path, timestamp, float),
 `registry` (resolve, load), `store` (Parquet write, partition split) and

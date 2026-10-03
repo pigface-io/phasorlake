@@ -97,6 +97,10 @@ bench-tighten:
 budget-check base="origin/main":
     cargo run -q -p xtask -- ratchet --base {{ base }}
 
+# fail if a table file changed in a way the lake does not survive
+schema-compat base="origin/main":
+    cargo run -q -p xtask -- schema-compat --base {{ base }}
+
 # ── repository hygiene ───────────────────────────────────────────────────────
 
 # llm/index.md is loaded into every agent session through CLAUDE.md: it stays

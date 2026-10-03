@@ -7,6 +7,7 @@ mod covergate;
 mod errors_doc;
 mod llm_check;
 mod ratchet;
+mod schema_compat;
 
 use std::path::PathBuf;
 use std::process::ExitCode;
@@ -42,6 +43,12 @@ enum Cmd {
         #[arg(long, default_value = "origin/main")]
         base: String,
     },
+    /// Fail if a table file changed in a way the lake does not survive.
+    SchemaCompat {
+        /// The base ref.
+        #[arg(long, default_value = "origin/main")]
+        base: String,
+    },
     /// Check llm/index.md: size, and every path and recipe it names exists.
     LlmCheck,
     /// Regenerate or check docs/errors.md from the diagnostic codes in the source.
@@ -61,6 +68,7 @@ fn main() -> ExitCode {
         Cmd::Covergate { lcov } => covergate::run(&lcov),
         Cmd::Bench { set, tighten } => bench::run(&set, tighten),
         Cmd::Ratchet { base } => ratchet::run(&base),
+        Cmd::SchemaCompat { base } => schema_compat::run(&base),
         Cmd::LlmCheck => llm_check::run(),
         Cmd::ErrorsDoc { write, check } => errors_doc::run(write, check),
     };

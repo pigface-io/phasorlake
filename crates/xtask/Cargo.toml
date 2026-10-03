@@ -16,6 +16,7 @@ name = "xtask"
 path = "src/main.rs"
 
 [dependencies]
+nemlake-schema-model.workspace = true
 anyhow.workspace = true
 clap.workspace = true
 serde.workspace = true

@@ -113,6 +113,15 @@ files = '^(crates/nemlake-(core|mms|schema|schema-model|store)/|bench/budgets\.j
 pass_filenames = false
 
 [[repos.hooks]]
+id = "schema-compat"
+name = "schemas: no breaking change against the base branch"
+language = "system"
+entry = "just schema-compat"
+stages = ["pre-push"]
+files = '^schemas/'
+pass_filenames = false
+
+[[repos.hooks]]
 id = "budget-ratchet"
 name = "bench: no budget loosened, no coverage floor dropped"
 language = "system"

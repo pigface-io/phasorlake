@@ -140,24 +140,27 @@ pub fn breaking_changes(old: &TableDef, new: &TableDef) -> Vec<String> {
             ));
         }
     }
+    // A published column list is a fact: every list the old file declared
+    // for a version, as the version itself or as a variant, must still be
+    // declared for it. Which of them stands for the version may change.
     for ov in &old.versions {
-        match new.version(ov.n) {
-            None => out.push(format!("version {} was deleted", ov.n)),
-            Some(nv) if nv.fingerprint != ov.fingerprint => {
+        let Some(nv) = new.version(ov.n) else {
+            out.push(format!("version {} was deleted", ov.n));
+            continue;
+        };
+        let declared = |fp| nv.fingerprint == fp || nv.variant(fp).is_some();
+        if !declared(ov.fingerprint) {
+            out.push(format!(
+                "version {} no longer declares its column list (fingerprint {}); a published version is a fact",
+                ov.n, ov.fingerprint
+            ));
+        }
+        for x in &ov.variants {
+            if !declared(x.fingerprint) {
                 out.push(format!(
-                    "version {} changed its column list; a published version is a fact",
-                    ov.n
+                    "version {} lost the variant with fingerprint {}; files of that shape would read as drift",
+                    ov.n, x.fingerprint
                 ));
-            }
-            Some(nv) => {
-                for x in &ov.variants {
-                    if nv.variant(x.fingerprint).is_none() {
-                        out.push(format!(
-                            "version {} lost the variant with fingerprint {}; files of that shape would read as drift",
-                            ov.n, x.fingerprint
-                        ));
-                    }
-                }
             }
         }
     }
@@ -394,7 +397,7 @@ mod tests {
         assert!(
             breaking_changes(&new, &b)
                 .iter()
-                .any(|m| m.contains("changed its column list"))
+                .any(|m| m.contains("version 2 no longer declares its column list"))
         );
 
         // Adding a variant is fine; dropping one is breaking.
@@ -413,6 +416,20 @@ mod tests {
                 .iter()
                 .any(|m| m.contains("version 2 lost the variant"))
         );
+        // Which list stands for the version may change, as long as every
+        // list the old file declared is still declared.
+        let mut swapped = with_variant.clone();
+        let v = &mut swapped.versions[1];
+        let variant = v.variants.remove(0);
+        let was = crate::model::VariantDef {
+            columns: std::mem::replace(&mut v.columns, variant.columns),
+            fingerprint: std::mem::replace(&mut v.fingerprint, variant.fingerprint),
+            first_seen: None,
+            last_seen: None,
+        };
+        v.variants.push(was);
+        assert!(breaking_changes(&with_variant, &swapped).is_empty());
+        assert!(breaking_changes(&swapped, &with_variant).is_empty());
 
         let mut b = new.clone();
         b.primary_key.pop();

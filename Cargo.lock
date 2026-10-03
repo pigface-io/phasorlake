@@ -3215,6 +3215,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "clap",
+ "nemlake-schema-model",
  "serde",
  "serde_json",
 ]
