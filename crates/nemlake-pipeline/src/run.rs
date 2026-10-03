@@ -678,7 +678,9 @@ async fn commit(
                 summary.bytes_out += o.bytes;
             }
         }
-        for w in &entry.warnings {
+        // Row errors first, so the exact fault is on record before the
+        // refusal that follows from it.
+        for w in entry.row_errors.iter().chain(&entry.warnings) {
             if let Some(run) = run_id {
                 let _ = deps
                     .manifest
@@ -686,9 +688,15 @@ async fn commit(
                     .await;
             }
             emit(events, Event::Diagnostic(Box::new(w.clone())));
-            report.emit(w.clone());
+            if w.is_error() {
+                summary.errors += 1;
+            } else {
+                summary.warnings += 1;
+            }
+            // A row error never stops a run by itself: the entry's own
+            // error does, when the rows were too many.
+            let _ = report.emit(w.clone());
         }
-        summary.warnings += entry.warnings.len() as u64;
         summary.rows += rows;
         summary.bad_rows += bad_rows;
         let failed_with = entry.error.as_ref().map(|d| d.code.clone());

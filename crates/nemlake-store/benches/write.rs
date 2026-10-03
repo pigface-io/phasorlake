@@ -70,6 +70,7 @@ fn bench(c: &mut Criterion) {
             source_sha256: "abcdef01".into(),
             entry: String::new(),
             time_column: Some(0),
+            part: 1,
             transform: nemlake_store::Transform::default(),
         };
         bencher.iter(|| {

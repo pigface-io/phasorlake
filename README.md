@@ -247,6 +247,24 @@ whether all, some or none succeeded (0, 3, 1), 4 for an offline cache miss, 5
 for a schema that could not be resolved in strict mode. `docs/errors.md` lists
 every code.
 
+Errors and warnings are printed as JSON, one object a line, as they happen
+on stderr and again in the summary and in `nemlake errors`:
+
+```json
+{"code":"parse.integer","category":"parse","severity":"error","message":"Column REGISTEREDCAPACITY: the value 13.55 is a number with a fraction or exponent, but the column is declared a whole number (Int64).","table":"DUDETAIL","version":7,"line":133,"column":"REGISTEREDCAPACITY","expected":"a whole number (Int64)","observed":"13.55","sample":{"text":"D,PARTICIPANT_REGISTRATION,DUDETAIL,7,..."}}
+```
+
+A row that cannot be read is reported with its own error: the column, what
+was declared, what the file has, the line and the row itself. When such rows
+refuse a file (`csv.too_many_bad_rows`), the refusal repeats the first row's
+fault in its message, its `column`, `expected` and `observed`, and its
+`cause`. A failed write carries what the operating system said in `cause`.
+
+A source whose rows spread over more months than a worker may hold open is
+written in parts: `...-p2.parquet`, `...-p3.parquet` beside the first file
+of a month. At most 128 Parquet files are open across all workers, so a run
+stays within the few hundred open files an operating system allows.
+
 ## Measured
 
 On an Apple M-series laptop, debug off: the scanner alone reads 1.5 GiB/s of

@@ -640,6 +640,123 @@ column = "VALUE_TEXT"
     assert_eq!(rep.summary.listed, 2);
 }
 
+/// A source whose rows wander over more months than a worker may hold
+/// open writes each month in parts: a writer is closed to make room and a
+/// further file is started when rows for its month come again. Every row
+/// lands, no two files share a name, and a failed entry leaves nothing.
+#[tokio::test]
+async fn rows_that_wander_over_many_months_are_written_in_parts() {
+    assert_eq!(nemlake_pipeline::ingest_file::open_writers(4), 32);
+    assert_eq!(nemlake_pipeline::ingest_file::open_writers(0), 128);
+    assert_eq!(nemlake_pipeline::ingest_file::open_writers(64), 8);
+
+    let e = env();
+    // Twelve months, visited three times over, with sixteen workers
+    // allowed: eight writers open at once.
+    let wander = |last: &str| {
+        let mut csv = String::from(
+            "C,NEMP.WORLD,TEST\nI,DISPATCH,UNIT_SCADA,1,SETTLEMENTDATE,DUID,SCADAVALUE\n",
+        );
+        for pass in 0..3 {
+            for month in 1..=12 {
+                use std::fmt::Write as _;
+                let _ = writeln!(
+                    csv,
+                    "D,DISPATCH,UNIT_SCADA,1,\"2023/{month:02}/0{} 00:05:00\",U{pass},{month}",
+                    pass + 1
+                );
+            }
+        }
+        csv.push_str(last);
+        csv
+    };
+    let run_it = |name: &str, body: String| {
+        let p = e.home.root().join(name);
+        std::fs::write(&p, body).unwrap();
+        let deps = e.deps.clone();
+        async move {
+            let (tx, _rx) = tokio::sync::mpsc::channel(4096);
+            run(
+                Plan {
+                    request: "ingest wander".into(),
+                    input: Input::Local(vec![p]),
+                    options: RunOptions {
+                        jobs: 16,
+                        // Small batches, so rows reach the writers month
+                        // by month as they would from a large file.
+                        batch_rows: 4,
+                        ..Default::default()
+                    },
+                },
+                deps,
+                tx,
+                CancellationToken::new(),
+            )
+            .await
+        }
+    };
+    let rep = run_it("PUBLIC_DVD_WANDER_202401010000.CSV", wander("")).await;
+    assert_eq!(rep.exit_code, 0, "{:?}", rep.report.summary_lines());
+    assert_eq!(rep.summary.rows, 36);
+    let files = walk(&e.home.lake());
+    assert!(files.len() > 12, "more files than months: {}", files.len());
+    assert!(files.iter().any(|f| f.contains("-p2.parquet")), "{files:?}");
+    assert!(files.iter().all(|f| !f.contains(".tmp-")), "{files:?}");
+    assert_eq!(files.iter().map(|f| parquet_rows(f)).sum::<usize>(), 36);
+    // Each month still holds its three rows, over however many files.
+    for month in 1..=12 {
+        let dir = format!("year=2023/month={month:02}/");
+        let rows: usize = files
+            .iter()
+            .filter(|f| f.contains(&dir))
+            .map(|f| parquet_rows(f))
+            .sum();
+        assert_eq!(rows, 3, "{dir}");
+    }
+    // The manifest lists every part.
+    let ingests = e.deps.manifest.list_ingests(None, false, 10).await.unwrap();
+    assert_eq!(ingests.len(), 1);
+    assert_eq!(ingests[0].outputs.len(), files.len());
+    // The same source again is skipped: every part is still there.
+    let rep = run_it("PUBLIC_DVD_WANDER_202401010000.CSV", wander("")).await;
+    assert_eq!(rep.summary.skipped, 1);
+
+    // An entry refused at its last row leaves no file behind, though
+    // writers were closed and their files finished along the way.
+    let other = env();
+    let p = other.home.root().join("PUBLIC_DVD_WANDER_202401010000.CSV");
+    std::fs::write(&p, wander("D,DISPATCH,UNIT_SCADA,1,\"not a time\",U9,1\n")).unwrap();
+    let (tx, _rx) = tokio::sync::mpsc::channel(4096);
+    let rep = run(
+        Plan {
+            request: "ingest wander".into(),
+            input: Input::Local(vec![p]),
+            options: RunOptions {
+                jobs: 16,
+                batch_rows: 4,
+                ..Default::default()
+            },
+        },
+        other.deps.clone(),
+        tx,
+        CancellationToken::new(),
+    )
+    .await;
+    assert_ne!(rep.exit_code, 0);
+    assert_eq!(walk(&other.home.lake()), Vec::<String>::new());
+    // The refusal names the row's exact fault, and the row's own error
+    // is reported beside it.
+    let refusal = &rep.report.by_code["csv.too_many_bad_rows"].examples[0];
+    assert_eq!(refusal.column.as_deref(), Some("SETTLEMENTDATE"));
+    assert_eq!(refusal.observed.as_deref(), Some("not a time"));
+    assert_eq!(refusal.line, Some(39));
+    assert!(refusal.message.contains("line 39"), "{}", refusal.message);
+    let row = &rep.report.by_code["parse.timestamp"].examples[0];
+    assert!(row.is_error());
+    assert_eq!(row.table.as_deref(), Some("DISPATCH_UNIT_SCADA"));
+    assert!(row.sample.is_some());
+}
+
 /// What the manifest records of a source is enough to name it again.
 #[test]
 fn a_recorded_source_becomes_a_file_to_read() {

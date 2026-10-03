@@ -135,8 +135,63 @@ fn bad_rows_fail_and_are_explained() {
             .contains("parse.timestamp"),
         "{err}"
     );
+    // Every error is printed as a JSON object, as it happens. The row's
+    // own error says which column, what was expected and what was there,
+    // and the refusal that follows repeats it.
+    let printed: Vec<serde_json::Value> = err
+        .lines()
+        .filter(|l| l.starts_with('{'))
+        .map(|l| serde_json::from_str(l).unwrap_or_else(|e| panic!("{e}: {l}")))
+        .collect();
+    let row = printed
+        .iter()
+        .find(|d| d["code"] == "parse.timestamp")
+        .unwrap_or_else(|| panic!("no row error in {err}"));
+    assert_eq!(row["severity"], "error");
+    assert_eq!(row["column"], "SETTLEMENTDATE");
+    assert_eq!(row["observed"], "2024/13/01 00:05:00");
+    assert_eq!(row["expected"], "yyyy/mm/dd hh24:mi:ss");
+    assert_eq!(row["line"], 2);
+    assert_eq!(row["table"], "DISPATCH_UNIT_SCADA");
+    assert!(
+        row["sample"]["text"]
+            .as_str()
+            .unwrap()
+            .contains("2024/13/01")
+    );
+    let refusal = printed
+        .iter()
+        .find(|d| d["code"] == "csv.too_many_bad_rows")
+        .unwrap_or_else(|| panic!("no refusal in {err}"));
+    assert_eq!(refusal["column"], "SETTLEMENTDATE");
+    assert_eq!(refusal["observed"], "2024/13/01 00:05:00");
+    assert!(
+        refusal["message"]
+            .as_str()
+            .unwrap()
+            .contains("The first is line 2"),
+        "{refusal}"
+    );
+    assert!(
+        refusal["cause"][0]
+            .as_str()
+            .unwrap()
+            .ends_with("[parse.timestamp]")
+    );
+    // The summary on stdout gives them as JSON too.
+    assert!(
+        out.contains("error parse.timestamp ×1\n{\"code\":\"parse.timestamp\""),
+        "{out}"
+    );
+    // And so does `errors`, with or without --json: one object a line.
     let errors = cli.ok(&["errors", "--last"]);
     assert!(errors.contains("csv.too_many_bad_rows"), "{errors}");
+    assert!(errors.contains("\"code\":\"parse.timestamp\""), "{errors}");
+    for line in errors.lines() {
+        let v: serde_json::Value =
+            serde_json::from_str(line).unwrap_or_else(|e| panic!("{e}: {line}"));
+        assert!(v["diagnostic"]["code"].is_string(), "{line}");
+    }
     let errors_json = cli.ok(&[
         "--json",
         "errors",

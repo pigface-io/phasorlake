@@ -107,6 +107,11 @@ pub struct FileMeta {
     pub entry: String,
     /// Index of the time column in the schema, when the table has one.
     pub time_column: Option<usize>,
+    /// Which file of this source, shape and partition this is, from 1.
+    /// A source whose rows wander over more partitions than may be open
+    /// at once has an earlier file of a partition closed, and writes a
+    /// further one when rows for it come again.
+    pub part: u32,
     /// The shape that was read and the rules it was read with.
     pub transform: Transform,
 }

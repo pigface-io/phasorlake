@@ -94,6 +94,9 @@ pub fn scan<R: Read, S: Sink>(
     let mut seen_header = false;
     let mut eof = false;
     let mut line_start_offset: u64 = 0;
+    // The first row that could not be read, so a refusal can say exactly
+    // what was wrong with it.
+    let mut first_bad: Option<(u64, Box<RowError>)> = None;
 
     while !eof || filled > 0 {
         // Fill.
@@ -156,10 +159,13 @@ pub fn scan<R: Read, S: Sink>(
                             if sink.bad_row(line, pos, &e) == Flow::Stop {
                                 return Err(ScanError::Stopped { line: pos.line });
                             }
+                            let (first_line, first) = first_bad.get_or_insert((pos.line, e));
                             if stats.bad_rows > opts.max_bad_rows {
                                 return Err(ScanError::TooManyBadRows {
                                     bad: stats.bad_rows,
                                     limit: opts.max_bad_rows,
+                                    line: *first_line,
+                                    first: first.clone(),
                                 });
                             }
                         }
@@ -249,10 +255,13 @@ pub fn scan<R: Read, S: Sink>(
                     if sink.bad_row(line, pos, &err) == Flow::Stop {
                         return Err(ScanError::Stopped { line: pos.line });
                     }
+                    let (first_line, first) = first_bad.get_or_insert((pos.line, Box::new(err)));
                     if stats.bad_rows > opts.max_bad_rows {
                         return Err(ScanError::TooManyBadRows {
                             bad: stats.bad_rows,
                             limit: opts.max_bad_rows,
+                            line: *first_line,
+                            first: first.clone(),
                         });
                     }
                 }
@@ -502,7 +511,15 @@ pub(crate) mod tests {
         )
         .unwrap_err();
         assert!(
-            matches!(e, ScanError::TooManyBadRows { bad: 1, limit: 0 }),
+            matches!(
+                e,
+                ScanError::TooManyBadRows {
+                    bad: 1,
+                    limit: 0,
+                    line: 2,
+                    ..
+                }
+            ),
             "{e}"
         );
         let mut c = Collect {

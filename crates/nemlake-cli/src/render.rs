@@ -66,9 +66,18 @@ pub fn summary_text(s: &Summary, report: &Report) -> String {
         out.push_str(&table(&["source", "code"], &rows));
         out.push('\n');
     }
-    for l in report.summary_lines() {
-        out.push_str(&l);
-        out.push('\n');
+    // Each code with its count, then up to three of its diagnostics, each
+    // a JSON object on a line of its own.
+    for (code, bucket) in &report.by_code {
+        let severity = bucket
+            .examples
+            .first()
+            .map_or(nemlake_core::Severity::Error, |d| d.severity);
+        let _ = writeln!(out, "{severity} {code} ×{}", bucket.count);
+        for d in bucket.examples.iter().take(3) {
+            out.push_str(&diagnostic_text(d));
+            out.push('\n');
+        }
     }
     if !report.by_code.is_empty() {
         out.push('\n');
@@ -90,9 +99,13 @@ pub fn summary_text(s: &Summary, report: &Report) -> String {
     out
 }
 
-/// Renders one diagnostic for humans.
+/// Renders one diagnostic: a JSON object on one line, with every field
+/// the diagnostic has (code, severity, message, where it happened, the
+/// column, what was expected and what was found, a sample, the causes).
+/// Errors are structured data wherever they are printed, so they can be
+/// read by eye and by a program alike.
 pub fn diagnostic_text(d: &Diagnostic) -> String {
-    format!("{} {}", d.severity, d.render())
+    serde_json::to_string(d).unwrap_or_else(|_| d.render())
 }
 
 /// Consumes events: JSON lines in `--json` mode, progress bars otherwise.
@@ -198,7 +211,24 @@ mod tests {
         };
         let text = summary_text(&s, &Report::new());
         assert!(text.contains("1 listed, 1 ingested"));
-        let d = Diagnostic::error("net.offline", nemlake_core::Category::Net, "Offline.");
-        assert!(diagnostic_text(&d).starts_with("error Offline."));
+        let d = Diagnostic::error("net.offline", nemlake_core::Category::Net, "Offline.")
+            .with_column("X")
+            .expected_observed("a whole number (Int64)", "13.55");
+        let line = diagnostic_text(&d);
+        let v: serde_json::Value = serde_json::from_str(&line).unwrap();
+        assert_eq!(v["code"], "net.offline");
+        assert_eq!(v["severity"], "error");
+        assert_eq!(v["message"], "Offline.");
+        assert_eq!(v["column"], "X");
+        assert_eq!(v["expected"], "a whole number (Int64)");
+        assert_eq!(v["observed"], "13.55");
+        assert!(!line.contains('\n'));
+        // The summary names each code with its count and gives the
+        // diagnostics themselves as JSON.
+        let mut report = Report::new();
+        nemlake_core::report::DiagSink::emit(&mut report, d);
+        let text = summary_text(&s, &report);
+        assert!(text.contains("error net.offline ×1\n{"), "{text}");
+        assert!(text.contains("\"observed\":\"13.55\""), "{text}");
     }
 }

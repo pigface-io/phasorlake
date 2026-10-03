@@ -79,6 +79,10 @@ pub struct EntryReport {
     pub results: Vec<IngestResult>,
     /// Warnings raised.
     pub warnings: Vec<Diagnostic>,
+    /// What was wrong with each row that could not be read, the first
+    /// [`ROW_ERRORS_KEPT`] of them: errors when the entry was refused for
+    /// them, warnings when it was accepted without those rows.
+    pub row_errors: Vec<Diagnostic>,
     /// The error that failed the entry, if any.
     pub error: Option<Diagnostic>,
     /// Scanner counts.
@@ -108,6 +112,25 @@ impl FileReport {
     }
 }
 
+/// What tells one open writer from another: table, version, column list
+/// and partition.
+type WriterKey = (TableId, u16, u128, Partition);
+
+/// Parquet writers all the workers of a run may hold open together. An
+/// operating system gives a process a few hundred open files by default
+/// (256 on macOS), and downloads and the manifest need some.
+const OPEN_WRITERS_PER_RUN: usize = 128;
+
+/// How many writers one worker may hold open at once, given how many
+/// workers run: the run's share, and never fewer than eight.
+pub fn open_writers(jobs: usize) -> usize {
+    (OPEN_WRITERS_PER_RUN / jobs.max(1)).max(8)
+}
+
+/// How many row errors of one entry are reported one by one. Every bad
+/// row is in the quarantine file; this bounds what a run prints.
+pub const ROW_ERRORS_KEPT: usize = 20;
+
 /// Routes batches to Parquet writers and quarantines bad rows.
 struct LakeSink<'a> {
     registry: &'a Registry,
@@ -115,7 +138,14 @@ struct LakeSink<'a> {
     /// Open writers by table, version, shape and partition. The shape is
     /// part of the key because two column lists of one version may differ
     /// in the columns they are written with.
-    writers: HashMap<(TableId, u16, u128, Partition), WriterId>,
+    writers: HashMap<WriterKey, (WriterId, u64)>,
+    /// How many files each key has had opened, so a further file of a
+    /// partition gets a name of its own.
+    parts: HashMap<WriterKey, u32>,
+    /// At most this many writers are open at once; see [`open_writers`].
+    max_open: usize,
+    /// Counts batches, to tell which writer was used longest ago.
+    tick: u64,
     results: Vec<IngestResult>,
     current: Option<usize>,
     quarantine: HashMap<String, QuarantineWriter>,
@@ -124,6 +154,7 @@ struct LakeSink<'a> {
     entry: &'a str,
     period: Option<YearMonth>,
     warnings: Vec<Diagnostic>,
+    row_errors: Vec<Diagnostic>,
     fail_fast: bool,
     events: Option<&'a mpsc::Sender<Event>>,
 }
@@ -136,9 +167,11 @@ impl LakeSink<'_> {
         fingerprint: Fingerprint,
         time_column: Option<usize>,
         transform: Transform,
+        part: u32,
     ) -> FileMeta {
         FileMeta {
             transform,
+            part,
             table: table.to_owned(),
             source_stem: entry_stem(self.entry, &self.local.remote.stem()),
             schema_version: version,
@@ -150,24 +183,61 @@ impl LakeSink<'_> {
         }
     }
 
-    fn close_all(&mut self) -> Result<(), nemlake_store::StoreError> {
-        let mut keys: Vec<_> = self.writers.drain().collect();
-        keys.sort_by_key(|(k, _)| (k.0, k.1, k.2, k.3));
-        for ((table_id, version, shape, _), wid) in keys {
-            let written = self.writer.close(wid)?;
-            if let Some(r) = self.results.iter_mut().find(|r| {
-                r.table_id == table_id && r.version == version && r.fingerprint.0 == shape
-            }) {
-                r.outputs.push(written);
-            }
+    /// Finishes one writer and files what it wrote under its result.
+    fn close_one(
+        &mut self,
+        key: WriterKey,
+        wid: WriterId,
+    ) -> Result<(), nemlake_store::StoreError> {
+        let written = self.writer.close(wid)?;
+        let (table_id, version, shape, _) = key;
+        if let Some(r) = self
+            .results
+            .iter_mut()
+            .find(|r| r.table_id == table_id && r.version == version && r.fingerprint.0 == shape)
+        {
+            r.outputs.push(written);
         }
         Ok(())
     }
 
+    /// Finishes the writer that was written to longest ago, to make room
+    /// for another. Its file is complete; rows that come for its partition
+    /// later go to a further file.
+    fn close_least_recent(&mut self) -> Result<(), nemlake_store::StoreError> {
+        let Some((key, wid)) = self
+            .writers
+            .iter()
+            .min_by_key(|(k, (_, used))| (*used, **k))
+            .map(|(k, (w, _))| (*k, *w))
+        else {
+            return Ok(());
+        };
+        self.writers.remove(&key);
+        self.close_one(key, wid)
+    }
+
+    fn close_all(&mut self) -> Result<(), nemlake_store::StoreError> {
+        let mut keys: Vec<_> = self.writers.drain().collect();
+        keys.sort_by_key(|(k, _)| *k);
+        for (key, (wid, _)) in keys {
+            self.close_one(key, wid)?;
+        }
+        Ok(())
+    }
+
+    /// Discards everything the entry wrote: the writers still open, and
+    /// the files of writers closed early to make room. A failed entry
+    /// leaves nothing in the lake.
     fn abort_all(&mut self) {
-        let ids: Vec<WriterId> = self.writers.drain().map(|(_, w)| w).collect();
+        let ids: Vec<WriterId> = self.writers.drain().map(|(_, (w, _))| w).collect();
         for w in ids {
             self.writer.abort(w);
+        }
+        for r in &mut self.results {
+            for o in r.outputs.drain(..) {
+                let _ = std::fs::remove_file(&o.path);
+            }
         }
     }
 
@@ -258,10 +328,7 @@ impl BatchSink for LakeSink<'_> {
                 b.batch,
             )],
             (LoadMode::Append, Some(tc)) => split_by_month(&b.batch, tc, market.utc_offset_secs)
-                .map_err(|e| SinkError::Write {
-                    table: table.name.clone(),
-                    message: e.to_string(),
-                })?,
+                .map_err(|e| SinkError::write(table.name.clone(), &e))?,
             // No time of its own: the month of the file is all there is.
             (LoadMode::Append, None) => vec![(
                 self.period
@@ -273,10 +340,26 @@ impl BatchSink for LakeSink<'_> {
             )],
         };
         for (partition, batch) in parts {
-            let key = (b.table, b.version.0, b.fingerprint.0, partition);
-            let wid = match self.writers.get(&key) {
-                Some(w) => *w,
+            let key: WriterKey = (b.table, b.version.0, b.fingerprint.0, partition);
+            self.tick += 1;
+            let wid = match self.writers.get_mut(&key) {
+                Some((w, used)) => {
+                    *used = self.tick;
+                    *w
+                }
                 None => {
+                    // Every open writer holds a file and a row group in
+                    // memory. A source whose rows wander over hundreds of
+                    // months would hold hundreds of both.
+                    if self.writers.len() >= self.max_open {
+                        self.close_least_recent()
+                            .map_err(|e| SinkError::write(table.name.clone(), &e))?;
+                    }
+                    let part = {
+                        let n = self.parts.entry(key).or_insert(0);
+                        *n += 1;
+                        *n
+                    };
                     let pk = PartitionKey {
                         market: table.market.to_string(),
                         table_dir: self.registry.table_dir(b.table),
@@ -288,23 +371,19 @@ impl BatchSink for LakeSink<'_> {
                         b.fingerprint,
                         time_col,
                         self.results[idx].transform.clone(),
+                        part,
                     );
-                    let w = self.writer.open(&pk, batch.schema(), &meta).map_err(|e| {
-                        SinkError::Write {
-                            table: table.name.clone(),
-                            message: e.to_string(),
-                        }
-                    })?;
-                    self.writers.insert(key, w);
+                    let w = self
+                        .writer
+                        .open(&pk, batch.schema(), &meta)
+                        .map_err(|e| SinkError::write(table.name.clone(), &e))?;
+                    self.writers.insert(key, (w, self.tick));
                     w
                 }
             };
             self.writer
                 .write(wid, &batch)
-                .map_err(|e| SinkError::Write {
-                    table: table.name.clone(),
-                    message: e.to_string(),
-                })?;
+                .map_err(|e| SinkError::write(table.name.clone(), &e))?;
         }
         self.results[idx].rows += rows;
         Ok(())
@@ -332,6 +411,9 @@ impl BatchSink for LakeSink<'_> {
         d.version = version;
         if let Some(i) = self.current {
             self.results[i].bad_rows += 1;
+        }
+        if self.row_errors.len() < ROW_ERRORS_KEPT {
+            self.row_errors.push(d.clone());
         }
         let stem = self.local.remote.stem();
         let q = self
@@ -400,6 +482,9 @@ fn ingest_entry(input: &IngestInput, entry: &str, reader: &mut dyn std::io::Read
         registry: &input.registry,
         writer: ParquetHive::new(&input.lake_root),
         writers: HashMap::new(),
+        parts: HashMap::new(),
+        max_open: open_writers(input.options.jobs),
+        tick: 0,
         results: Vec::new(),
         current: None,
         quarantine: HashMap::new(),
@@ -408,6 +493,7 @@ fn ingest_entry(input: &IngestInput, entry: &str, reader: &mut dyn std::io::Read
         entry,
         period,
         warnings: Vec::new(),
+        row_errors: Vec::new(),
         fail_fast: input.options.fail_fast,
         events: input.events.as_ref(),
     };
@@ -441,6 +527,7 @@ fn ingest_entry(input: &IngestInput, entry: &str, reader: &mut dyn std::io::Read
         entry: entry.to_owned(),
         results: vec![],
         warnings: vec![],
+        row_errors: vec![],
         error: None,
         stats: None,
     };
@@ -492,6 +579,15 @@ fn ingest_entry(input: &IngestInput, entry: &str, reader: &mut dyn std::io::Read
     }
     if let Some(e) = &mut report.error {
         e.fill_from(&ctx);
+    }
+    report.row_errors = std::mem::take(&mut sink.row_errors);
+    for d in &mut report.row_errors {
+        d.fill_from(&ctx);
+        // The entry went into the lake without these rows: they are in
+        // the quarantine file, and the run goes on.
+        if report.error.is_none() {
+            d.severity = nemlake_core::Severity::Warning;
+        }
     }
     report.warnings = std::mem::take(&mut sink.warnings);
     report.results = std::mem::take(&mut sink.results);

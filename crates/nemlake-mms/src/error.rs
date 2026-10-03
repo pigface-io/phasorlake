@@ -60,7 +60,7 @@ pub enum RowError {
         source: TimestampError,
     },
     /// A value is not a number of the column's kind.
-    #[error("Column {column}: the value {value} {source}.")]
+    #[error("Column {column}: the value {value} {}.", number_fault(value, source))]
     Number {
         /// Column.
         column: String,
@@ -90,6 +90,26 @@ pub enum RowError {
     TooShort(usize),
 }
 
+/// What is wrong with `value` as a number of the declared kind, in the
+/// words of what was expected and what was found: a whole number was
+/// declared and the file has a fraction, not just "not an integer".
+fn number_fault(value: &str, source: &NumberError) -> String {
+    let is_number = nemlake_core::num::parse_f64(value.as_bytes()).is_ok();
+    match source {
+        NumberError::Integer if is_number && value.contains(['.', 'e', 'E']) => {
+            "is a number with a fraction or exponent, but the column is declared a whole number (Int64)".to_owned()
+        }
+        NumberError::Integer if is_number => {
+            "is a whole number too large for the column's 64 bits".to_owned()
+        }
+        NumberError::Integer => {
+            "is not a number, but the column is declared a whole number (Int64)".to_owned()
+        }
+        NumberError::Float => "is not a number, but the column is declared a number (Float64)".to_owned(),
+        other => other.to_string(),
+    }
+}
+
 impl Diagnose for RowError {
     fn diagnostic(&self) -> Diagnostic {
         let msg = self.to_string();
@@ -115,17 +135,20 @@ impl Diagnose for RowError {
                 column,
                 value,
                 source,
-            } => Diagnostic::error(
-                match source {
-                    NumberError::Float => "parse.float",
-                    NumberError::Integer => "parse.integer",
-                    _ => "parse.decimal",
-                },
-                Category::Parse,
-                msg,
-            )
-            .with_column(column.clone())
-            .expected_observed("a number", value.clone()),
+            } => {
+                let (code, expected) = match source {
+                    NumberError::Float => ("parse.float", "a number (Float64)".to_owned()),
+                    NumberError::Integer => ("parse.integer", "a whole number (Int64)".to_owned()),
+                    NumberError::DecimalScale { scale, .. } => (
+                        "parse.decimal",
+                        format!("a decimal with at most {scale} fractional digit(s)"),
+                    ),
+                    _ => ("parse.decimal", "a decimal number".to_owned()),
+                };
+                Diagnostic::error(code, Category::Parse, msg)
+                    .with_column(column.clone())
+                    .expected_observed(expected, value.clone())
+            }
             Self::Utf8 { column } => {
                 Diagnostic::error("parse.utf8", Category::Parse, msg).with_column(column.clone())
             }
@@ -176,6 +199,9 @@ pub enum SinkError {
         table: String,
         /// What went wrong.
         message: String,
+        /// The chain of causes under it, outermost first: what the
+        /// operating system or the Parquet writer actually said.
+        cause: Vec<String>,
     },
     /// Building an Arrow array failed; a bug.
     #[error("Building the Arrow batch for table {table} failed: {message}")]
@@ -187,13 +213,35 @@ pub enum SinkError {
     },
 }
 
+impl SinkError {
+    /// A failed write of `table`, with every cause under `err` kept: the
+    /// message of an I/O error is what tells a full disk from a missing
+    /// directory from too many open files.
+    pub fn write(table: impl Into<String>, err: &(dyn std::error::Error + 'static)) -> Self {
+        let mut cause = Vec::new();
+        let mut source = err.source();
+        while let Some(s) = source {
+            cause.push(s.to_string());
+            source = s.source();
+        }
+        Self::Write {
+            table: table.into(),
+            message: err.to_string(),
+            cause,
+        }
+    }
+}
+
 impl Diagnose for SinkError {
     fn diagnostic(&self) -> Diagnostic {
         match self {
             Self::Resolve(e) => e.diagnostic(),
-            Self::Write { table, .. } => {
-                Diagnostic::error("store.write_failed", Category::Store, self.to_string())
-                    .with_table(table.clone())
+            Self::Write { table, cause, .. } => {
+                let mut d =
+                    Diagnostic::error("store.write_failed", Category::Store, self.to_string())
+                        .with_table(table.clone());
+                d.cause.clone_from(cause);
+                d
             }
             Self::Arrow { table, .. } => {
                 Diagnostic::error("internal.arrow", Category::Internal, self.to_string())
@@ -240,12 +288,18 @@ pub enum ScanError {
         message: String,
     },
     /// Too many rows quarantined.
-    #[error("{bad} rows failed to parse, more than the limit of {limit}; the file is refused.")]
+    #[error(
+        "{bad} row(s) could not be read, more than the limit of {limit}, so the file is refused. The first is line {line}: {first}"
+    )]
     TooManyBadRows {
         /// Bad rows seen.
         bad: u64,
         /// Limit.
         limit: u64,
+        /// Line of the first bad row.
+        line: u64,
+        /// What was wrong with the first bad row.
+        first: Box<RowError>,
     },
     /// The sink failed.
     #[error(transparent)]
@@ -265,6 +319,7 @@ impl ScanError {
             Self::LineTooLong { line, .. }
             | Self::DataBeforeHeader { line }
             | Self::BadHeader { line, .. }
+            | Self::TooManyBadRows { line, .. }
             | Self::Stopped { line } => Some(*line),
             _ => None,
         }
@@ -283,9 +338,16 @@ impl Diagnose for ScanError {
                 Diagnostic::error("csv.data_before_header", Category::Csv, msg)
             }
             Self::BadHeader { .. } => Diagnostic::error("csv.header_malformed", Category::Csv, msg),
-            Self::TooManyBadRows { bad, limit } => {
-                Diagnostic::error("csv.too_many_bad_rows", Category::Csv, msg)
-                    .expected_observed(format!("at most {limit}"), bad.to_string())
+            Self::TooManyBadRows { first, .. } => {
+                // The refusal says exactly what the first bad row had
+                // wrong: its column, what was expected and what was there.
+                let row = first.diagnostic();
+                let mut d = Diagnostic::error("csv.too_many_bad_rows", Category::Csv, msg);
+                d.column = row.column;
+                d.expected = row.expected;
+                d.observed = row.observed;
+                d.cause = vec![format!("{} [{}]", row.message, row.code)];
+                d
             }
             Self::Sink(e) => e.diagnostic(),
             Self::Stopped { .. } => Diagnostic::error("csv.stopped_fail_fast", Category::Csv, msg),
@@ -366,6 +428,52 @@ mod tests {
     }
 
     #[test]
+    fn a_number_fault_says_what_was_declared_and_what_was_found() {
+        let fault = |value: &str, source: NumberError| {
+            let e = RowError::Number {
+                column: "N".into(),
+                value: value.into(),
+                source,
+            };
+            (e.to_string(), e.diagnostic())
+        };
+        let (text, d) = fault("13.55", NumberError::Integer);
+        assert_eq!(
+            text,
+            "Column N: the value 13.55 is a number with a fraction or exponent, but the column is declared a whole number (Int64)."
+        );
+        assert_eq!(d.code, "parse.integer");
+        assert_eq!(d.expected.as_deref(), Some("a whole number (Int64)"));
+        assert_eq!(d.observed.as_deref(), Some("13.55"));
+        assert!(
+            fault("1e3", NumberError::Integer)
+                .0
+                .contains("fraction or exponent")
+        );
+        assert!(
+            fault("99999999999999999999", NumberError::Integer)
+                .0
+                .contains("too large for the column's 64 bits")
+        );
+        assert!(
+            fault("abc", NumberError::Integer)
+                .0
+                .contains("is not a number, but the column is declared a whole number")
+        );
+        let (text, d) = fault("abc", NumberError::Float);
+        assert!(text.contains("declared a number (Float64)"), "{text}");
+        assert_eq!(d.expected.as_deref(), Some("a number (Float64)"));
+        let (_, d) = fault("1.234", NumberError::DecimalScale { scale: 2, seen: 3 });
+        assert_eq!(d.code, "parse.decimal");
+        assert_eq!(
+            d.expected.as_deref(),
+            Some("a decimal with at most 2 fractional digit(s)")
+        );
+        let (_, d) = fault("x", NumberError::DecimalShape);
+        assert_eq!(d.expected.as_deref(), Some("a decimal number"));
+    }
+
+    #[test]
     fn scan_error_codes_carry_lines() {
         assert_eq!(
             ScanError::LineTooLong { line: 3, limit: 1 }
@@ -386,13 +494,34 @@ mod tests {
             .code,
             "csv.header_malformed"
         );
-        assert_eq!(
-            ScanError::TooManyBadRows { bad: 5, limit: 0 }
-                .diagnostic()
-                .observed
-                .as_deref(),
-            Some("5")
+        // A refusal says exactly what its first bad row had wrong: which
+        // column, what was declared, what the file has.
+        let refused = ScanError::TooManyBadRows {
+            bad: 1,
+            limit: 0,
+            line: 133,
+            first: Box::new(RowError::Number {
+                column: "REGISTEREDCAPACITY".into(),
+                value: "13.55".into(),
+                source: NumberError::Integer,
+            }),
+        };
+        let d = refused.diagnostic();
+        assert_eq!(d.code, "csv.too_many_bad_rows");
+        assert_eq!(d.line, Some(133));
+        assert_eq!(d.column.as_deref(), Some("REGISTEREDCAPACITY"));
+        assert_eq!(d.expected.as_deref(), Some("a whole number (Int64)"));
+        assert_eq!(d.observed.as_deref(), Some("13.55"));
+        assert!(
+            d.message.contains("line 133")
+                && d.message.contains("REGISTEREDCAPACITY")
+                && d.message.contains("13.55 is a number with a fraction")
+                && d.message.contains("declared a whole number (Int64)"),
+            "{}",
+            d.message
         );
+        assert_eq!(d.cause.len(), 1);
+        assert!(d.cause[0].ends_with("[parse.integer]"), "{:?}", d.cause);
         assert_eq!(
             ScanError::Stopped { line: 9 }.diagnostic().code,
             "csv.stopped_fail_fast"
@@ -403,11 +532,19 @@ mod tests {
         };
         assert_eq!(e.diagnostic().cause, vec!["boom".to_owned()]);
         assert_eq!(e.line(), None);
-        let e = ScanError::Sink(SinkError::Write {
-            table: "T".into(),
-            message: "m".into(),
-        });
-        assert_eq!(e.diagnostic().code, "store.write_failed");
+        // A failed write keeps what the operating system said.
+        #[derive(Debug, thiserror::Error)]
+        #[error("The lake path /x could not be created or written.")]
+        struct Outer(#[source] std::io::Error);
+        let os = std::io::Error::from_raw_os_error(24);
+        let os_text = os.to_string();
+        let e = ScanError::Sink(SinkError::write("T", &Outer(os)));
+        let d = e.diagnostic();
+        assert_eq!(d.code, "store.write_failed");
+        assert_eq!(d.table.as_deref(), Some("T"));
+        assert_eq!(d.cause, vec![os_text.clone()]);
+        assert!(d.render().contains(&os_text), "{}", d.render());
+        assert!(d.message.contains("Writing a batch of table T failed"));
         let e = ScanError::Sink(SinkError::Arrow {
             table: "T".into(),
             message: "m".into(),

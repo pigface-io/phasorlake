@@ -83,9 +83,15 @@ impl ParquetHive {
             sha8
         };
         // The shape's fingerprint keeps two column lists of one version,
-        // from one source, in files of their own.
+        // from one source, in files of their own. A further file of the
+        // same partition is told apart by its part number.
+        let part = if meta.part > 1 {
+            format!("-p{}", meta.part)
+        } else {
+            String::new()
+        };
         format!(
-            "{}-v{}-{:08x}-{sha8}.parquet",
+            "{}-v{}-{:08x}-{sha8}{part}.parquet",
             meta.source_stem, meta.schema_version, meta.fingerprint.0 as u32
         )
     }
@@ -407,6 +413,7 @@ mod tests {
             source_sha256: "abcdef0123456789".into(),
             entry: "Y.CSV".into(),
             time_column: Some(0),
+            part: 1,
             transform: Transform {
                 report_type: "DISPATCH".into(),
                 report_subtype: "UNIT_SCADA".into(),
