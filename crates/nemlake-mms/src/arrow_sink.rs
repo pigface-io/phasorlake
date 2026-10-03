@@ -55,6 +55,11 @@ pub struct ArrowSink<'r, B: BatchSink> {
     out: B,
     block: Option<Block>,
     parsed: Vec<Parsed>,
+    /// Skip blocks of unknown tables (with a warning) instead of failing the file.
+    skip_unknown: bool,
+    /// Rows skipped because their block was unknown.
+    pub skipped_rows: u64,
+    skipping: bool,
 }
 
 /// Rows per batch by default.
@@ -70,6 +75,9 @@ impl<'r, B: BatchSink> ArrowSink<'r, B> {
             out,
             block: None,
             parsed: Vec::new(),
+            skip_unknown: false,
+            skipped_rows: 0,
+            skipping: false,
         }
     }
 
@@ -125,7 +133,22 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
 
     fn header(&mut self, irow: &IRow<'_>, pos: Pos) -> Result<(), SinkError> {
         self.flush()?;
-        let resolved = self.registry.resolve(irow, self.opts)?;
+        self.skipping = false;
+        let resolved = match self.registry.resolve(irow, self.opts) {
+            Ok(r) => r,
+            Err(e @ nemlake_schema::ResolveError::UnknownTable { .. }) if self.skip_unknown => {
+                use nemlake_core::Diagnose as _;
+                let mut d = e.diagnostic();
+                d.severity = nemlake_core::Severity::Warning;
+                d.message = format!("{} The block is skipped.", d.message);
+                d.line = Some(pos.line);
+                self.out.warning(d);
+                self.block = None;
+                self.skipping = true;
+                return Ok(());
+            }
+            Err(e) => return Err(e.into()),
+        };
         for w in &resolved.warnings {
             self.out.warning(w.clone());
         }

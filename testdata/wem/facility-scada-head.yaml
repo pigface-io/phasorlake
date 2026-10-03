@@ -1,0 +1,30 @@
+# Independent Market Operator
+# www.imowa.com.au
+#
+# facility-scada manifest
+# updated: Sat Oct 03 2026 08:00:04Z
+# using base URL: https://data.wa.aemo.com.au/datafiles
+
+- url: "https://data.wa.aemo.com.au/datafiles/facility-scada/facility-scada-2023-10.csv"
+  year: 2023
+  month: 10
+  generatedAt: "Thu Nov 02 2023 11:35:00Z"
+
+- url: "https://data.wa.aemo.com.au/datafiles/facility-scada/facility-scada-2023-09.csv"
+  year: 2023
+  month: 09
+  generatedAt: "Mon Oct 02 2023 11:35:07Z"
+
+- url: "https://data.wa.aemo.com.au/datafiles/facility-scada/facility-scada-2023-08.csv"
+  year: 2023
+  month: 08
+  generatedAt: "Sat Sep 02 2023 11:35:15Z"
+
+- url: "https://data.wa.aemo.com.au/datafiles/facility-scada/facility-scada-2023-07.csv"
+  year: 2023
+  month: 07
+  generatedAt: "Wed Aug 02 2023 11:35:29Z"
+
+- url: "https://data.wa.aemo.com.au/datafiles/facility-scada/facility-scada-2023-06.csv"
+  year: 2023
+  month: 06
