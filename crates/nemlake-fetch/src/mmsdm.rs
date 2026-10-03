@@ -244,8 +244,15 @@ impl MmsdmArchive {
                 });
             }
             for e in entries {
-                let Some((table, _split)) = Self::parse_name(&e.name) else {
-                    continue;
+                // A zip whose name follows neither scheme is still a file
+                // of the month: it is listed, under its own name, and its
+                // tables are whatever its I rows say.
+                let (table, named) = match Self::parse_name(&e.name) {
+                    Some((table, _split)) => (table, true),
+                    None if e.name.to_ascii_lowercase().ends_with(".zip") => {
+                        (e.name.to_ascii_uppercase(), false)
+                    }
+                    None => continue,
                 };
                 let url = dir
                     .join(&e.href)
@@ -260,7 +267,7 @@ impl MmsdmArchive {
                     RemoteFile {
                         url,
                         source: SOURCE_ID,
-                        table: Some(table),
+                        table: named.then(|| table.clone()),
                         period: Some(ym),
                         kind: FileKind::MmsZip,
                         size: e.size,
@@ -462,6 +469,86 @@ mod tests {
             MmsdmArchive::listing_ttl(YearMonth::new(2020, 1).unwrap())
                 > MmsdmArchive::listing_ttl(YearMonth::new(2999, 1).unwrap())
         );
+    }
+
+    /// The big-table directories of the newer scheme put `ALL` in the
+    /// name, and a zip named by neither scheme is still a file of the
+    /// month: both are listed, nothing is passed over in silence.
+    #[tokio::test]
+    async fn every_zip_of_a_month_is_listed_whatever_its_name() {
+        let dir = tempfile::tempdir().unwrap();
+        let t = Arc::new(StaticTransport::default());
+        let a = MmsdmArchive::new("https://h").unwrap();
+        let ym = YearMonth::new(2026, 8).unwrap();
+        let dirs = a.data_dirs(ym).unwrap();
+        let link = |d: &Url, name: &str| {
+            format!(
+                r#" 9/13/2026 8:27 AM 12 <A HREF="{}{}">{name}</A><br>"#,
+                d.path(),
+                name.replace('#', "%23")
+            )
+        };
+        let data = format!(
+            "<pre>{}{}{}</pre>",
+            link(
+                &dirs[0],
+                "PUBLIC_ARCHIVE#P5MIN_REGIONSOLUTION#FILE01#202608010000.zip"
+            ),
+            link(&dirs[0], "SOMETHING_NEW_202608.zip"),
+            link(&dirs[0], "Readme.htm")
+        );
+        let all = format!(
+            "<pre>{}</pre>",
+            link(
+                &dirs[1],
+                "PUBLIC_ARCHIVE#P5MIN_REGIONSOLUTION#ALL#FILE01#202608010000.zip"
+            )
+        );
+        t.add(dirs[0].as_str(), Canned::ok(data.as_bytes()));
+        t.add(dirs[1].as_str(), Canned::ok(all.as_bytes()));
+        t.add(dirs[2].as_str(), Canned::status(404));
+        let f = Fetcher::new(
+            Arc::new(t.clone()),
+            DiskCache::new(dir.path()),
+            FetcherConfig {
+                attempts: 1,
+                min_interval: Duration::ZERO,
+                ..Default::default()
+            },
+        );
+        let list = |tables: &[&str], exclude: &[&str]| {
+            let q = Query {
+                exclude: exclude.iter().map(|s| (*s).to_owned()).collect(),
+                tables: tables.iter().map(|s| (*s).to_owned()).collect(),
+                from: ym,
+                to: ym,
+            };
+            let (a, f) = (&a, &f);
+            async move { a.list(&q, f).await.unwrap() }
+        };
+        let files = list(&[], &[]).await;
+        let names: Vec<String> = files.iter().map(RemoteFile::file_name).collect();
+        assert_eq!(names.len(), 3, "{names:?}");
+        assert!(names.contains(&"SOMETHING_NEW_202608.zip".to_owned()));
+        let odd = files
+            .iter()
+            .find(|r| r.file_name() == "SOMETHING_NEW_202608.zip")
+            .unwrap();
+        assert_eq!(odd.table, None, "its tables are whatever its I rows say");
+        let both: Vec<&RemoteFile> = files
+            .iter()
+            .filter(|r| r.table.as_deref() == Some("P5MIN_REGIONSOLUTION"))
+            .collect();
+        assert_eq!(both.len(), 2, "the DATA file and the ALL file");
+        assert!(
+            both.iter()
+                .any(|r| r.url.path().contains("/P5MIN_ALL_DATA/"))
+        );
+        // By table name: both files of the table, not the odd one.
+        assert_eq!(list(&["P5MIN_REGIONSOLUTION"], &[]).await.len(), 2);
+        // Leaving a table out, and the odd file by its own name.
+        assert_eq!(list(&[], &["P5MIN_REGIONSOLUTION"]).await.len(), 1);
+        assert_eq!(list(&[], &["something_new_202608.zip"]).await.len(), 2);
     }
 
     #[tokio::test]

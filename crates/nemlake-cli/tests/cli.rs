@@ -187,7 +187,7 @@ fn bad_rows_fail_and_are_explained() {
 #[test]
 fn every_archive_table_ingests_strictly() {
     every_head_ingests_strictly("MMSDM_2024_01", 161);
-    every_head_ingests_strictly("MMSDM_2026_08", 297);
+    every_head_ingests_strictly("MMSDM_2026_08", 309);
 }
 
 fn every_head_ingests_strictly(month: &str, at_least: usize) {

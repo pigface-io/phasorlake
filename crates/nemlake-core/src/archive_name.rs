@@ -13,6 +13,7 @@
 //!
 //! ```text
 //! PUBLIC_ARCHIVE#{TABLE}#FILE{NN}#{YYYYMM}010000.zip
+//! PUBLIC_ARCHIVE#{TABLE}#ALL#FILE{NN}#{YYYYMM}010000.zip   in the big-table directories
 //! PUBLIC_ARCHIVE#{TABLE}#FILE{NN}#{YYYYMM}.ctl
 //! ```
 //!
@@ -30,6 +31,11 @@ pub struct ArchiveName {
     pub table: String,
     /// The file number of the `#` scheme (`FILE02` is 2).
     pub file: Option<u8>,
+    /// Whether the name marks the file as one of the big-table
+    /// directories' (`_ALL`, `#ALL#`): every run of a forecast, where the
+    /// file of the same table in `DATA` holds a selection. Not every such
+    /// file is marked; the directory is what tells for sure.
+    pub all: bool,
     /// The archive month.
     pub month: YearMonth,
 }
@@ -75,7 +81,12 @@ pub fn parse(name: &str) -> Option<ArchiveName> {
     if let Some(rest) = stem.strip_prefix("PUBLIC_ARCHIVE#") {
         let mut parts = rest.split('#');
         let table = parts.next().filter(|t| !t.is_empty())?;
-        let file = parts.next()?.strip_prefix("FILE")?.parse::<u8>().ok()?;
+        let mut part = parts.next()?;
+        let all = part == "ALL";
+        if all {
+            part = parts.next()?;
+        }
+        let file = part.strip_prefix("FILE")?.parse::<u8>().ok()?;
         let month = month_of(parts.next()?)?;
         if parts.next().is_some() {
             return None;
@@ -83,12 +94,14 @@ pub fn parse(name: &str) -> Option<ArchiveName> {
         return Some(ArchiveName {
             table: table.to_owned(),
             file: Some(file),
+            all,
             month,
         });
     }
     let rest = stem.strip_prefix("PUBLIC_DVD_")?;
     let (table, stamp) = rest.rsplit_once('_')?;
     let month = month_of(stamp)?;
+    let all = table.ends_with("_ALL");
     let table = table.strip_suffix("_ALL").unwrap_or(table);
     if table.is_empty() {
         return None;
@@ -96,6 +109,7 @@ pub fn parse(name: &str) -> Option<ArchiveName> {
     Some(ArchiveName {
         table: table.to_owned(),
         file: None,
+        all,
         month,
     })
 }
@@ -126,6 +140,7 @@ mod tests {
         let n = parse("PUBLIC_DVD_DISPATCH_UNIT_SCADA_202401010000.zip").unwrap();
         assert_eq!(n.table, "DISPATCH_UNIT_SCADA");
         assert_eq!(n.file, None);
+        assert!(!n.all);
         assert_eq!(n.month, ym(2024, 1));
         assert_eq!(n.split_table(), ("DISPATCH_UNIT_SCADA", None));
         let n = parse("PUBLIC_DVD_BIDPEROFFER1_202401010000.CSV").unwrap();
@@ -133,6 +148,7 @@ mod tests {
         assert_eq!(n.split_table(), ("BIDPEROFFER", Some(1)));
         let n = parse("PUBLIC_DVD_P5MIN_CONSTRAINTSOLUTION4_ALL_202401010000").unwrap();
         assert_eq!(n.table, "P5MIN_CONSTRAINTSOLUTION4");
+        assert!(n.all);
         assert_eq!(n.split_table(), ("P5MIN_CONSTRAINTSOLUTION", Some(4)));
         let n = parse("public_dvd_region_201201.ctl").unwrap();
         assert_eq!((n.table.as_str(), n.month), ("REGION", ym(2012, 1)));
@@ -157,6 +173,14 @@ mod tests {
         assert_eq!(n.table, "P5MIN_CONSTRAINTSOLUTION");
         // In this scheme a trailing digit belongs to the table name.
         assert_eq!(n.file, Some(3));
+        assert!(!n.all);
+        // The big-table directories put ALL between the table and the file.
+        let n = parse("PUBLIC_ARCHIVE%23PREDISPATCHCONSTRAINT%23ALL%23FILE02%23202608010000.zip")
+            .unwrap();
+        assert_eq!(
+            (n.table.as_str(), n.file, n.all, n.month),
+            ("PREDISPATCHCONSTRAINT", Some(2), true, ym(2026, 8))
+        );
     }
 
     #[test]
@@ -179,6 +203,8 @@ mod tests {
             "PUBLIC_ARCHIVE##FILE01#202608010000.zip",
             "PUBLIC_ARCHIVE#X#FILE01#202608010000#more.zip",
             "PUBLIC_ARCHIVE#X#FILE01#2026.zip",
+            "PUBLIC_ARCHIVE#X#ALL#202608010000.zip",
+            "PUBLIC_ARCHIVE#X#ALL",
         ] {
             assert_eq!(parse(bad), None, "{bad}");
         }
