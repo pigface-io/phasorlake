@@ -31,6 +31,50 @@ pub struct SampledBlock {
     pub all_numeric: Vec<bool>,
     /// Columns whose every non-empty sampled value parsed as an MMS timestamp.
     pub all_timestamp: Vec<bool>,
+    /// What the numeric values of each column need to be held exactly.
+    pub digits: Vec<Digits>,
+}
+
+/// The decimal shape of the values sampled in one column.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub struct Digits {
+    /// Most digits before the decimal point, leading zeros not counted.
+    pub integer: u8,
+    /// Most digits after the decimal point, trailing zeros not counted.
+    pub fraction: u8,
+    /// A value was numeric but not a plain decimal (`6E-05`): no
+    /// `NUMBER(p,s)` reading of the text is exact.
+    pub exponent: bool,
+}
+
+impl Digits {
+    /// Folds one value in. Text that is not a number is ignored; the
+    /// `all_numeric` flag already says so.
+    pub fn observe(&mut self, value: &str) {
+        let body = value.trim().trim_start_matches(['+', '-']);
+        if body.is_empty() {
+            return;
+        }
+        let (int, frac) = body.split_once('.').unwrap_or((body, ""));
+        if !int.bytes().chain(frac.bytes()).all(|b| b.is_ascii_digit()) {
+            if nemlake_core::num::parse_f64(value.trim().as_bytes()).is_ok() {
+                self.exponent = true;
+            }
+            return;
+        }
+        let int = int.trim_start_matches('0').len().min(255) as u8;
+        let frac = frac.trim_end_matches('0').len().min(255) as u8;
+        self.integer = self.integer.max(int);
+        self.fraction = self.fraction.max(frac);
+    }
+
+    /// Whether every value seen fits `NUMBER(precision, scale)` exactly.
+    #[must_use]
+    pub fn fits(&self, precision: u8, scale: u8) -> bool {
+        !self.exponent
+            && self.fraction <= scale
+            && u16::from(self.integer) + u16::from(scale) <= u16::from(precision)
+    }
 }
 
 /// Everything sampled from one file.
@@ -221,6 +265,7 @@ pub fn sample_reader<R: Read>(
                     all_null: vec![true; n],
                     all_numeric: vec![true; n],
                     all_timestamp: vec![true; n],
+                    digits: vec![Digits::default(); n],
                 });
             }
             Some(b'D') => {
@@ -234,6 +279,7 @@ pub fn sample_reader<R: Read>(
                     b.max_len[i] = b.max_len[i].max(f.len() as u32);
                     if !f.is_empty() {
                         b.all_null[i] = false;
+                        b.digits[i].observe(f);
                         if nemlake_core::num::parse_f64(f.as_bytes()).is_err() {
                             b.all_numeric[i] = false;
                         }
@@ -460,6 +506,7 @@ mod tests {
         assert_eq!(b.max_len[3], 19);
         assert!(b.all_null.iter().all(|&n| !n));
         assert_eq!(b.all_timestamp, [false, false, false, true]);
+        assert_eq!(b.digits.len(), 4);
         assert_eq!(b.all_numeric, [false, false, false, false]);
     }
 
@@ -592,5 +639,30 @@ mod tests {
         ] {
             assert!(e.diagnostic().code.starts_with("schema."));
         }
+    }
+
+    #[test]
+    fn digits_measure_what_a_decimal_needs() {
+        let mut d = Digits::default();
+        for v in [
+            "-6425.30938268",
+            "0.00000000",
+            "213854.1",
+            "+7",
+            "007.500",
+            "",
+            "text",
+        ] {
+            d.observe(v);
+        }
+        assert_eq!((d.integer, d.fraction, d.exponent), (6, 8, false));
+        assert!(d.fits(16, 8));
+        assert!(!d.fits(16, 6), "eight fractional digits do not fit scale 6");
+        assert!(!d.fits(13, 8), "six integer digits do not fit 13 - 8");
+        assert!(d.fits(14, 8));
+        d.observe("6E-05");
+        assert!(d.exponent);
+        assert!(!d.fits(38, 20));
+        assert!(Digits::default().fits(1, 0), "nothing seen fits anything");
     }
 }

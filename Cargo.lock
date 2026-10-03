@@ -1528,6 +1528,7 @@ name = "nemlake-pipeline"
 version = "0.1.0"
 dependencies = [
  "arrow-array",
+ "arrow-schema",
  "async-trait",
  "futures",
  "nemlake-core",

@@ -43,6 +43,10 @@ struct Env {
 }
 
 fn env() -> Env {
+    env_with(TypeOptions::default())
+}
+
+fn env_with(types: TypeOptions) -> Env {
     let dir = tempfile::tempdir().unwrap();
     let home = Home::at(dir.path().join("home"));
     home.ensure_dirs().unwrap();
@@ -60,7 +64,7 @@ fn env() -> Env {
         },
     );
     let deps = Deps {
-        registry: Registry::load_embedded(TypeOptions::default()),
+        registry: Registry::load_embedded(types),
         fetcher: Arc::new(fetcher),
         manifest,
         home: home.clone(),
@@ -88,6 +92,63 @@ fn parquet_rows(path: &str) -> usize {
     let f = std::fs::File::open(path).unwrap();
     let b = parquet::arrow::arrow_reader::ParquetRecordBatchReaderBuilder::try_new(f).unwrap();
     b.build().unwrap().map(|r| r.unwrap().num_rows()).sum()
+}
+
+/// With decimals on, a NUMBER(p,s) column is written as Decimal128(p,s)
+/// holding exactly the digits AEMO published; the default is Float64.
+#[tokio::test]
+async fn decimal_mode_writes_exact_decimals() {
+    use arrow_array::Array;
+    let csv = fixtures().join("DISPATCHPRICE_v4_head.csv");
+    let read = |e: &Env| {
+        let files = walk(&e.home.lake());
+        assert_eq!(files.len(), 1, "{files:?}");
+        let f = std::fs::File::open(&files[0]).unwrap();
+        let b = parquet::arrow::arrow_reader::ParquetRecordBatchReaderBuilder::try_new(f).unwrap();
+        let schema = b.schema().clone();
+        let batch = b.build().unwrap().next().unwrap().unwrap();
+        (schema, batch)
+    };
+    let plan = || Plan {
+        request: "ingest price".into(),
+        input: Input::Local(vec![csv.clone()]),
+        options: RunOptions::default(),
+    };
+
+    let exact = env_with(TypeOptions { decimal: true });
+    let (rep, _) = run_plan(&exact, plan()).await;
+    assert_eq!(rep.exit_code, 0, "{:?}", rep.report.summary_lines());
+    let (schema, batch) = read(&exact);
+    let rrp = schema.field_with_name("RRP").unwrap();
+    assert_eq!(rrp.data_type(), &arrow_schema::DataType::Decimal128(15, 5));
+    let col = batch
+        .column_by_name("RRP")
+        .unwrap()
+        .as_any()
+        .downcast_ref::<arrow_array::Decimal128Array>()
+        .unwrap();
+    // The first D row of the fixture publishes RRP as 57.98.
+    assert_eq!(col.value_as_string(0), "57.98000");
+    assert_eq!(col.value(0), 5_798_000);
+    assert_eq!(col.null_count(), 0);
+
+    let floats = env();
+    let (rep, _) = run_plan(&floats, plan()).await;
+    assert_eq!(rep.exit_code, 0);
+    let (schema, batch) = read(&floats);
+    assert_eq!(
+        schema.field_with_name("RRP").unwrap().data_type(),
+        &arrow_schema::DataType::Float64
+    );
+    let col = batch
+        .column_by_name("RRP")
+        .unwrap()
+        .as_any()
+        .downcast_ref::<arrow_array::Float64Array>()
+        .unwrap();
+    assert!((col.value(0) - 57.98).abs() < 1e-12);
+    // Both modes carry the same column id, so a reader can line them up.
+    assert_eq!(batch.num_rows(), 20);
 }
 
 #[tokio::test]

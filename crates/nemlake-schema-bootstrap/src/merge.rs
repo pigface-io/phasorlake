@@ -215,6 +215,8 @@ pub fn merge(inputs: &Inputs<'_>) -> Result<TableDef, MergeError> {
     let mut max_len: BTreeMap<String, u32> = BTreeMap::new();
     // (numeric, timestamp, any non-null) evidence per column across every sample.
     let mut evidence: BTreeMap<String, (bool, bool, bool)> = BTreeMap::new();
+    // The decimal shape of each column's sampled values.
+    let mut digits: BTreeMap<String, crate::sample::Digits> = BTreeMap::new();
     // Pass 1: renames. AEMO sometimes renames a column in place without
     // bumping the version: two lists of one version, same length, differing
     // only in names at a few positions. The name the data model knows (or
@@ -303,6 +305,12 @@ pub fn merge(inputs: &Inputs<'_>) -> Result<TableDef, MergeError> {
                 ev.0 &= b.all_numeric[i];
                 ev.1 &= b.all_timestamp[i];
                 ev.2 |= !b.all_null[i];
+                if let Some(seen) = b.digits.get(i) {
+                    let d = digits.entry(c).or_default();
+                    d.integer = d.integer.max(seen.integer);
+                    d.fraction = d.fraction.max(seen.fraction);
+                    d.exponent |= seen.exponent;
+                }
             }
         }
         let months: Vec<YearMonth> = blocks.iter().filter_map(|(m, _)| *m).collect();
@@ -565,6 +573,43 @@ pub fn merge(inputs: &Inputs<'_>) -> Result<TableDef, MergeError> {
             ty = ColumnType::Utf8 {
                 max_len: None,
                 dict,
+            };
+        }
+        // A declared NUMBER(p,s) that real values do not fit cannot be read
+        // as an exact decimal; without precision the column is a float in
+        // every mode. Whether it is numeric at all is the CTL's call.
+        if let ColumnType::Number {
+            precision: Some(p),
+            scale: Some(sc),
+        } = ty
+            && let Some(seen) = digits.get(cname)
+            && !seen.fits(p, sc)
+        {
+            notes.push(if seen.exponent {
+                format!("column {cname}: declared NUMBER({p},{sc}) but a sampled value is in exponent form; precision dropped")
+            } else {
+                format!(
+                    "column {cname}: declared NUMBER({p},{sc}) but a sampled value has {} integer and {} fractional digits; precision dropped",
+                    seen.integer, seen.fraction
+                )
+            });
+            ty = ColumnType::Number {
+                precision: None,
+                scale: None,
+            };
+        }
+        // An integer column whose values carry fractional digits is not one.
+        if ty == ColumnType::Integer
+            && let Some(seen) = digits.get(cname)
+            && (seen.fraction > 0 || seen.exponent || seen.integer > 18)
+        {
+            notes.push(format!(
+                "column {cname}: declared an integer but a sampled value has {} integer and {} fractional digits; read as a number",
+                seen.integer, seen.fraction
+            ));
+            ty = ColumnType::Number {
+                precision: None,
+                scale: None,
             };
         }
         if let ColumnType::Utf8 { max_len, .. } = ty {

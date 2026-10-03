@@ -181,34 +181,47 @@ fn bad_rows_fail_and_are_explained() {
 
 /// The head of every zip of the January 2024 archive: each one must resolve
 /// exactly against the registry (strict mode refuses drift) and every row
-/// must parse into its declared types.
+/// must parse into its declared types, as floats and as exact decimals.
 #[test]
 fn every_archive_table_ingests_strictly() {
-    let cli = Cli::new();
     let heads =
         Path::new(env!("CARGO_MANIFEST_DIR")).join("../../testdata/bootstrap/MMSDM_2024_01/heads");
     let files = std::fs::read_dir(&heads).unwrap().count();
     assert!(files >= 161, "{files} head fixtures");
-    let (code, out, err) = cli.code(&["--json", "ingest", heads.to_str().unwrap(), "--strict"]);
-    assert_eq!(code, 0, "{err}{}", &out[out.len().saturating_sub(2000)..]);
-    let ls = cli.ok(&["--json", "ls", "--limit", "1000"]);
-    let rows: Vec<&str> = ls.lines().collect();
-    assert_eq!(rows.len(), files, "one ingest per head");
-    for r in &rows {
-        assert!(
-            r.contains("\"status\":\"ok\"") && r.contains("\"bad_rows\":0"),
-            "{r}"
+    for mode in [&[][..], &["--decimal"][..]] {
+        let cli = Cli::new();
+        let mut args: Vec<&str> = mode.to_vec();
+        args.extend(["--json", "ingest", heads.to_str().unwrap(), "--strict"]);
+        let (code, out, err) = cli.code(&args);
+        assert_eq!(
+            code,
+            0,
+            "{mode:?}: {err}{}",
+            &out[out.len().saturating_sub(2000)..]
         );
+        let ls = cli.ok(&["--json", "ls", "--limit", "1000"]);
+        let rows: Vec<&str> = ls.lines().collect();
+        assert_eq!(rows.len(), files, "{mode:?}: one ingest per head");
+        for r in &rows {
+            assert!(
+                r.contains("\"status\":\"ok\"") && r.contains("\"bad_rows\":0"),
+                "{mode:?}: {r}"
+            );
+        }
+        let errors = cli.ok(&["--json", "errors", "--limit", "1000"]);
+        assert!(
+            !errors.contains("\"parse."),
+            "{mode:?}: no parse diagnostics: {errors}"
+        );
+        // The only schema diagnostic allowed is the note that a column without
+        // a usable precision is a float in decimal mode.
+        for line in errors.lines().filter(|l| l.contains("\"schema.")) {
+            assert!(
+                !mode.is_empty() && line.contains("schema.decimal_fallback"),
+                "{mode:?}: {line}"
+            );
+        }
     }
-    let errors = cli.ok(&["--json", "errors", "--limit", "1000"]);
-    assert!(
-        !errors.contains("\"schema."),
-        "no schema diagnostics: {errors}"
-    );
-    assert!(
-        !errors.contains("\"parse."),
-        "no parse diagnostics: {errors}"
-    );
 }
 
 #[test]

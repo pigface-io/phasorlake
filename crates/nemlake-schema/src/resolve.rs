@@ -491,19 +491,40 @@ impl Registry {
         if !self.options().decimal {
             return;
         }
-        for c in &t.columns {
-            if decimal_fallback(c.ty, self.options()) {
-                warnings.push(
-                    Diagnostic::warning(
-                        "schema.decimal_fallback",
-                        Category::Schema,
-                        format!("Column {} of table {} has no declared precision and scale, so --decimal falls back to Float64 for it.", c.name, t.name),
-                    )
-                    .with_table(t.name.clone())
-                    .with_column(c.name.clone()),
-                );
-            }
+        // One warning per table, not one per column per file.
+        let floats: Vec<&str> = t
+            .columns
+            .iter()
+            .filter(|c| decimal_fallback(c.ty, self.options()))
+            .map(|c| c.name.as_str())
+            .collect();
+        if floats.is_empty() {
+            return;
         }
+        let shown = floats
+            .iter()
+            .take(8)
+            .copied()
+            .collect::<Vec<_>>()
+            .join(", ");
+        let more = floats.len().saturating_sub(8);
+        warnings.push(
+            Diagnostic::warning(
+                "schema.decimal_fallback",
+                Category::Schema,
+                format!(
+                    "{} column(s) of table {} have no precision and scale that their values fit, so --decimal reads them as Float64: {shown}{}.",
+                    floats.len(),
+                    t.name,
+                    if more > 0 {
+                        format!(" and {more} more")
+                    } else {
+                        String::new()
+                    }
+                ),
+            )
+            .with_table(t.name.clone()),
+        );
     }
 }
 
