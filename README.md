@@ -88,6 +88,10 @@ between requests (`request_interval_ms` in `config.toml`), and when the
 server refuses it (HTTP 403, or 429 through every retry) it sends nothing
 more in that run and reports `net.blocked` for what is left.
 
+A download that breaks keeps what arrived. The next attempt, or the next
+run, asks for the rest with `Range` and `If-Range`, so a file that changed
+in the meantime is fetched whole again instead of being stitched together.
+
 ## Errors
 
 Every error and warning carries a stable code (`csv.field_count_mismatch`,
@@ -110,10 +114,10 @@ numbers may not regress below live in `bench/budgets.json`.
 ## Status
 
 Working today: the NEM monthly archive from July 2009 on, Parquet + manifest,
-and every table of the January 2024 archive (143) in the registry,
-bootstrapped from the control files and the head of every zip. Next: the
-table versions of earlier years, resumable downloads and `--decimal` end to
-end; then live 5-minute feeds and compaction; then WEM and an Iceberg writer.
+every table of the January 2024 archive (143) in the registry, exact decimals
+with `--decimal`, and downloads that resume where they stopped. Next: the
+table versions of earlier years; then live 5-minute feeds and compaction;
+then WEM and an Iceberg writer.
 
 ## Developing
 

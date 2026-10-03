@@ -289,11 +289,16 @@ impl Fetcher {
         let events = self.events.clone();
         let (sha256, size, etag, last_modified, accept_ranges) = match &remote.member {
             None => {
-                self.get_with_retries(&HttpRequest::get(url), |resp| {
-                    let part = part.clone();
-                    let events = events.clone();
-                    async move { stream_to_file(url, resp, &part, events).await }
-                })
+                // An earlier attempt, or an earlier run, may have left part
+                // of the file: ask only for the rest while it is unchanged.
+                self.get_with_retries_by(
+                    || resume_request(url, &part),
+                    |resp| {
+                        let part = part.clone();
+                        let events = events.clone();
+                        async move { stream_to_file(url, resp, &part, events).await }
+                    },
+                )
                 .await?
             }
             Some(member) => {
@@ -329,6 +334,7 @@ impl Fetcher {
             path: path.display().to_string(),
             source,
         })?;
+        let _ = std::fs::remove_file(part_state_path(&part));
         let sidecar = Sidecar {
             url: url.to_owned(),
             etag: etag.clone(),
@@ -361,10 +367,33 @@ impl Fetcher {
         F: Fn(crate::transport::HttpResponse) -> Fut,
         Fut: std::future::Future<Output = Result<T, FetchError>>,
     {
-        let url = req.url.as_str();
-        let want = if req.range.is_some() { 206 } else { 200 };
+        self.get_with_retries_by(|| req.clone(), consume).await
+    }
+
+    /// Like [`Self::get_with_retries`], with the request built anew for each
+    /// attempt, so a download can ask for only what an earlier attempt did
+    /// not deliver. A request with `If-Range` is a resume: a 200 (the file
+    /// changed, here it is whole) is as good as a 206, and a 416 (nothing
+    /// left in that range) makes the next attempt a plain GET.
+    async fn get_with_retries_by<T, M, F, Fut>(&self, make: M, consume: F) -> Result<T, FetchError>
+    where
+        M: Fn() -> HttpRequest,
+        F: Fn(crate::transport::HttpResponse) -> Fut,
+        Fut: std::future::Future<Output = Result<T, FetchError>>,
+    {
+        let mut plain = false;
         let mut last: Option<FetchError> = None;
+        let mut url = String::new();
         for attempt in 0..self.config.attempts.max(1) {
+            let mut req = make();
+            if plain {
+                req.range = None;
+                req.if_range = None;
+            }
+            url.clone_from(&req.url);
+            let url = url.as_str();
+            let resuming = req.if_range.is_some();
+            let ranged = req.range.is_some();
             if attempt > 0 {
                 let exp = self
                     .config
@@ -378,9 +407,14 @@ impl Fetcher {
                 return Err(e);
             }
             self.pace().await;
-            let result = match self.transport.get(req.clone()).await {
+            let result = match self.transport.get(req).await {
                 Err(e) => Err(e),
-                Ok(resp) if resp.status == want => consume(resp).await,
+                Ok(resp)
+                    if (resp.status == 206 && ranged)
+                        || (resp.status == 200 && (!ranged || resuming)) =>
+                {
+                    consume(resp).await
+                }
                 Ok(resp) if resp.status == 403 => {
                     let head = read_head(resp.body, 256).await;
                     let _ = self.blocked.set((403, url.to_owned(), head));
@@ -388,10 +422,21 @@ impl Fetcher {
                 }
                 // A server without range support answers 200 with the whole
                 // file; reading that would defeat the point.
-                Ok(resp) if want == 206 && resp.status == 200 => Err(FetchError::RangeIgnored {
+                Ok(resp) if ranged && resp.status == 200 => Err(FetchError::RangeIgnored {
                     url: url.to_owned(),
                     status: resp.status,
                 }),
+                // The part on disk is already everything, or more than the
+                // file now has: start over without a range.
+                Ok(resp) if resuming && resp.status == 416 => {
+                    plain = true;
+                    last = Some(FetchError::HttpStatus {
+                        url: url.to_owned(),
+                        status: 416,
+                        body_head: read_head(resp.body, 256).await,
+                    });
+                    continue;
+                }
                 Ok(resp) => {
                     let head = read_head(resp.body, 256).await;
                     Err(FetchError::HttpStatus {
@@ -407,6 +452,7 @@ impl Fetcher {
                 Err(e) => return Err(e),
             }
         }
+        let url = url.as_str();
         // Too Many Requests through every retry is the same refusal, stated politely.
         if let Some(FetchError::HttpStatus {
             status: 429,
@@ -468,33 +514,135 @@ async fn read_all(url: &str, resp: crate::transport::HttpResponse) -> Result<Vec
 
 type Streamed = (String, u64, Option<String>, Option<String>, bool);
 
+/// What is known about a partial download, kept beside the `.part` file so
+/// a later attempt, or a later run, can ask for the rest.
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+struct PartState {
+    /// The URL the bytes came from.
+    url: String,
+    /// The ETag, or failing that the Last-Modified, of the version they
+    /// belong to; sent as `If-Range`.
+    validator: String,
+    /// The whole file's length, when the server said.
+    total: Option<u64>,
+}
+
+fn part_state_path(part: &Path) -> PathBuf {
+    let mut s = part.as_os_str().to_owned();
+    s.push(".json");
+    PathBuf::from(s)
+}
+
+/// A strong validator for `If-Range`: the ETag unless it is weak, else the
+/// Last-Modified date.
+fn validator_of(etag: Option<&str>, last_modified: Option<&str>) -> Option<String> {
+    etag.filter(|e| !e.starts_with("W/"))
+        .or(last_modified)
+        .map(str::to_owned)
+}
+
+/// The request for `url` given what `part` already holds: the rest of the
+/// file when a usable partial download is there, else the whole file.
+fn resume_request(url: &str, part: &Path) -> HttpRequest {
+    let plain = HttpRequest::get(url);
+    let Ok(have) = std::fs::metadata(part).map(|m| m.len()) else {
+        return plain;
+    };
+    let state: Option<PartState> = std::fs::read(part_state_path(part))
+        .ok()
+        .and_then(|b| serde_json::from_slice(&b).ok());
+    match state {
+        Some(st) if st.url == url && have > 0 && st.total.is_none_or(|t| have < t) => plain
+            .with_range(ByteRange::From { start: have })
+            .with_if_range(st.validator),
+        _ => plain,
+    }
+}
+
 async fn stream_to_file(
     url: &str,
     resp: crate::transport::HttpResponse,
     part: &Path,
     events: Option<tokio::sync::mpsc::Sender<Event>>,
 ) -> Result<Streamed, FetchError> {
+    let cache_io = |source| FetchError::CacheIo {
+        path: part.display().to_string(),
+        source,
+    };
+    let state_path = part_state_path(part);
+    let mut hasher = Sha256::new();
+    // A 206 continues the part on disk; anything else starts it again.
+    let resuming = resp.status == 206;
+    let mut received: u64 = 0;
+    let mut file = if resuming {
+        let mut existing = tokio::fs::File::open(part).await.map_err(cache_io)?;
+        let mut buf = vec![0u8; 1 << 20];
+        loop {
+            let n = tokio::io::AsyncReadExt::read(&mut existing, &mut buf)
+                .await
+                .map_err(cache_io)?;
+            if n == 0 {
+                break;
+            }
+            hasher.update(&buf[..n]);
+            received += n as u64;
+        }
+        tokio::fs::OpenOptions::new()
+            .append(true)
+            .open(part)
+            .await
+            .map_err(cache_io)?
+    } else {
+        tokio::fs::File::create(part).await.map_err(cache_io)?
+    };
+    let total = if resuming {
+        resp.total_length
+            .or_else(|| resp.content_length.map(|n| n + received))
+    } else {
+        resp.content_length
+    };
+    // Only a server that offers ranges and names the version can be asked
+    // for the rest later; otherwise a broken download starts over.
+    let resumable = if resuming {
+        state_path.is_file()
+    } else {
+        let _ = std::fs::remove_file(&state_path);
+        match validator_of(resp.etag.as_deref(), resp.last_modified.as_deref()) {
+            Some(validator) if resp.accept_ranges => {
+                let state = PartState {
+                    url: url.to_owned(),
+                    validator,
+                    total,
+                };
+                let json = serde_json::to_vec(&state).expect("part state serialises");
+                std::fs::write(&state_path, json).is_ok()
+            }
+            _ => false,
+        }
+    };
     if let Some(tx) = &events {
         let _ = tx.try_send(Event::DownloadStarted {
             url: url.to_owned(),
-            size: resp.content_length,
+            size: total,
         });
     }
-    let mut file = tokio::fs::File::create(part)
-        .await
-        .map_err(|source| FetchError::CacheIo {
-            path: part.display().to_string(),
-            source,
-        })?;
-    let mut hasher = Sha256::new();
-    let mut received: u64 = 0;
+    // What to do with the part when the download breaks: keep it for a
+    // resume when that is possible, else remove it.
+    let abandon = |file: tokio::fs::File| async move {
+        let mut file = file;
+        let _ = file.flush().await;
+        drop(file);
+        if !resumable {
+            let _ = tokio::fs::remove_file(part).await;
+        }
+    };
     let mut body = resp.body;
-    let mut last_event = 0u64;
+    let mut last_event = received;
     while let Some(chunk) = body.next().await {
         let chunk = match chunk {
             Ok(c) => c,
             Err(message) => {
-                let _ = tokio::fs::remove_file(part).await;
+                abandon(file).await;
                 return Err(FetchError::Body {
                     url: url.to_owned(),
                     received,
@@ -504,12 +652,7 @@ async fn stream_to_file(
         };
         hasher.update(&chunk);
         received += chunk.len() as u64;
-        file.write_all(&chunk)
-            .await
-            .map_err(|source| FetchError::CacheIo {
-                path: part.display().to_string(),
-                source,
-            })?;
+        file.write_all(&chunk).await.map_err(cache_io)?;
         if received - last_event >= 4 << 20
             && let Some(tx) = &events
         {
@@ -520,20 +663,19 @@ async fn stream_to_file(
             last_event = received;
         }
     }
-    file.flush().await.map_err(|source| FetchError::CacheIo {
-        path: part.display().to_string(),
-        source,
-    })?;
-    file.sync_all()
-        .await
-        .map_err(|source| FetchError::CacheIo {
-            path: part.display().to_string(),
-            source,
-        })?;
-    if let Some(expected) = resp.content_length
+    file.flush().await.map_err(cache_io)?;
+    file.sync_all().await.map_err(cache_io)?;
+    if let Some(expected) = total
         && expected != received
     {
-        let _ = tokio::fs::remove_file(part).await;
+        if received > expected {
+            // More than the file has: nothing here can be trusted.
+            drop(file);
+            let _ = tokio::fs::remove_file(part).await;
+            let _ = std::fs::remove_file(&state_path);
+        } else {
+            abandon(file).await;
+        }
         return Err(FetchError::ContentLength {
             url: url.to_owned(),
             expected,
@@ -867,7 +1009,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn truncated_and_broken_bodies_are_retried_and_leave_no_part_file() {
+    async fn truncated_and_broken_bodies_are_retried() {
         let dir = tempfile::tempdir().unwrap();
         let t = Arc::new(StaticTransport::default());
         let mut short = Canned::ok(b"abcdef");
@@ -898,6 +1040,144 @@ mod tests {
             )),
             other => panic!("{other}"),
         }
+        // What did arrive is kept, with its state, for the next run to resume.
+        let part = DiskCache::part_path(&f.cache().path_for(
+            "nem-mmsdm",
+            "https://h/short.zip",
+            "short.zip",
+        ));
+        assert_eq!(std::fs::read(&part).unwrap(), b"abc");
+        assert!(part_state_path(&part).is_file());
+    }
+
+    #[tokio::test]
+    async fn interrupted_downloads_resume_where_they_stopped() {
+        let dir = tempfile::tempdir().unwrap();
+        let url = "https://h/big.zip";
+        let body: Vec<u8> = (0..5000u32).flat_map(u32::to_le_bytes).collect();
+        let broken = || {
+            let mut c = Canned::ok(&body);
+            c.fail_after = Some(7000);
+            c
+        };
+        let part_of =
+            |f: &Fetcher| DiskCache::part_path(&f.cache().path_for("nem-mmsdm", url, "big.zip"));
+        let range_of = |t: &StaticTransport, i: usize| t.ranges.lock().unwrap()[i];
+
+        // The connection drops after 7000 bytes; the retry asks for the rest only.
+        let t = Arc::new(StaticTransport::default());
+        t.add(url, broken()).add(url, Canned::ok(&body));
+        let f = Fetcher::new(
+            Arc::new(t.clone()),
+            DiskCache::new(dir.path().join("a")),
+            fast(),
+        );
+        let local = f.fetch(&remote(url)).await.unwrap();
+        assert_eq!(std::fs::read(&local.path).unwrap(), body);
+        assert_eq!(local.size, 20_000);
+        assert_eq!(local.sha256, crate::cache::sha256_hex(&body));
+        assert_eq!(t.request_count(), 2);
+        assert_eq!(range_of(&t, 0), None);
+        assert_eq!(range_of(&t, 1), Some(ByteRange::From { start: 7000 }));
+        assert!(!part_of(&f).exists());
+        assert!(!part_state_path(&part_of(&f)).exists());
+
+        // The file changed between the attempts: If-Range makes the server
+        // send the new version whole, and that is what lands in the cache.
+        let newer: Vec<u8> = body.iter().rev().copied().collect();
+        let mut v2 = Canned::ok(&newer);
+        v2.etag = Some("\"v2\"".into());
+        let t = Arc::new(StaticTransport::default());
+        t.add(url, broken()).add(url, v2);
+        let f = Fetcher::new(
+            Arc::new(t.clone()),
+            DiskCache::new(dir.path().join("b")),
+            fast(),
+        );
+        let local = f.fetch(&remote(url)).await.unwrap();
+        assert_eq!(std::fs::read(&local.path).unwrap(), newer);
+        assert_eq!(local.sha256, crate::cache::sha256_hex(&newer));
+        assert_eq!(range_of(&t, 1), Some(ByteRange::From { start: 7000 }));
+
+        // A run that gave up leaves the part; the next run picks it up.
+        let t = Arc::new(StaticTransport::default());
+        t.add(url, broken()).add(url, Canned::ok(&body));
+        let once = FetcherConfig {
+            attempts: 1,
+            ..fast()
+        };
+        let cache = dir.path().join("c");
+        let f = Fetcher::new(Arc::new(t.clone()), DiskCache::new(&cache), once);
+        assert!(matches!(
+            f.fetch(&remote(url)).await,
+            Err(FetchError::RetriesExhausted { .. })
+        ));
+        assert_eq!(std::fs::metadata(part_of(&f)).unwrap().len(), 7000);
+        let f = Fetcher::new(Arc::new(t.clone()), DiskCache::new(&cache), fast());
+        let local = f.fetch(&remote(url)).await.unwrap();
+        assert_eq!(std::fs::read(&local.path).unwrap(), body);
+        assert_eq!(local.sha256, crate::cache::sha256_hex(&body));
+        assert_eq!(t.request_count(), 2);
+        assert_eq!(range_of(&t, 1), Some(ByteRange::From { start: 7000 }));
+
+        // A part that already holds the whole file, with a state that does
+        // not know the total: the server answers 416 and the download starts
+        // over without a range.
+        let t = Arc::new(StaticTransport::default());
+        t.add(url, Canned::ok(&body));
+        let f = Fetcher::new(
+            Arc::new(t.clone()),
+            DiskCache::new(dir.path().join("d")),
+            fast(),
+        );
+        let part = part_of(&f);
+        std::fs::create_dir_all(part.parent().unwrap()).unwrap();
+        std::fs::write(&part, &body).unwrap();
+        let state = PartState {
+            url: url.to_owned(),
+            validator: "\"etag\"".into(),
+            total: None,
+        };
+        std::fs::write(part_state_path(&part), serde_json::to_vec(&state).unwrap()).unwrap();
+        let local = f.fetch(&remote(url)).await.unwrap();
+        assert_eq!(std::fs::read(&local.path).unwrap(), body);
+        assert_eq!(t.request_count(), 2);
+        assert_eq!(range_of(&t, 0), Some(ByteRange::From { start: 20_000 }));
+        assert_eq!(range_of(&t, 1), None);
+
+        // A state for another URL, or a part with no state, is not resumed.
+        let t = Arc::new(StaticTransport::default());
+        t.add(url, Canned::ok(&body));
+        let f = Fetcher::new(
+            Arc::new(t.clone()),
+            DiskCache::new(dir.path().join("e")),
+            fast(),
+        );
+        let part = part_of(&f);
+        std::fs::create_dir_all(part.parent().unwrap()).unwrap();
+        std::fs::write(&part, b"stale bytes").unwrap();
+        assert_eq!(resume_request(url, &part).range, None);
+        let other = PartState {
+            url: "https://h/other.zip".into(),
+            ..state
+        };
+        std::fs::write(part_state_path(&part), serde_json::to_vec(&other).unwrap()).unwrap();
+        assert_eq!(resume_request(url, &part).range, None);
+        let local = f.fetch(&remote(url)).await.unwrap();
+        assert_eq!(std::fs::read(&local.path).unwrap(), body);
+        assert_eq!(range_of(&t, 0), None);
+
+        // Only a strong validator can vouch for a partial file.
+        assert_eq!(
+            validator_of(Some("\"x\""), Some("date")).as_deref(),
+            Some("\"x\"")
+        );
+        assert_eq!(
+            validator_of(Some("W/\"x\""), Some("date")).as_deref(),
+            Some("date")
+        );
+        assert_eq!(validator_of(Some("W/\"x\""), None), None);
+        assert_eq!(validator_of(None, None), None);
     }
 
     #[tokio::test]
