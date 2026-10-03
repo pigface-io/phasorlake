@@ -7,6 +7,7 @@
 //! knows about Arrow, SQLite, HTTP or tokio, so every other crate can depend
 //! on it without a cycle and the hot path can use it without cost.
 
+pub mod archive_name;
 pub mod clock;
 pub mod config;
 pub mod diag;

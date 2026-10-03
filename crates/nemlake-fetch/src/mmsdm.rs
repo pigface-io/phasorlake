@@ -279,32 +279,22 @@ impl MmsdmArchive {
         Ok(DATA_DIRS.iter().filter_map(|d| root.join(d).ok()).collect())
     }
 
-    /// `PUBLIC_DVD_{TABLE}{split?}_{YYYYMM}010000.zip` → `(TABLE, split)`; the
-    /// `_ALL` suffix of the big-table directories is dropped.
+    /// The table a data zip carries and which of its files it is, for
+    /// either naming scheme (see [`nemlake_core::archive_name`]):
+    /// `PUBLIC_DVD_BIDPEROFFER1_202401010000.zip` and
+    /// `PUBLIC_ARCHIVE#BIDPEROFFER#FILE01#202608010000.zip` are both
+    /// `("BIDPEROFFER", Some(1))`.
     pub fn parse_name(name: &str) -> Option<(String, Option<u8>)> {
-        let stem = name
-            .strip_suffix(".zip")
-            .or_else(|| name.strip_suffix(".ZIP"))?;
-        let rest = stem.strip_prefix("PUBLIC_DVD_")?;
-        let (table, suffix) = rest.rsplit_once('_')?;
-        if suffix.len() != 12 || !suffix.bytes().all(|b| b.is_ascii_digit()) {
+        let lower = name.to_ascii_lowercase();
+        if !lower.ends_with(".zip") {
             return None;
         }
-        let table = table.strip_suffix("_ALL").unwrap_or(table);
-        let digits: String = table
-            .chars()
-            .rev()
-            .take_while(char::is_ascii_digit)
-            .collect();
-        if digits.is_empty() || digits.len() == table.len() {
-            Some((table.to_owned(), None))
-        } else {
-            let base = &table[..table.len() - digits.len()];
-            Some((
-                base.to_owned(),
-                digits.chars().rev().collect::<String>().parse().ok(),
-            ))
+        let parsed = nemlake_core::archive_name::parse(name)?;
+        if parsed.file.is_some() {
+            return Some((parsed.table, parsed.file));
         }
+        let (base, split) = parsed.split_table();
+        Some((base.to_owned(), split))
     }
 
     fn listing_ttl(ym: YearMonth) -> i64 {
@@ -576,6 +566,102 @@ mod tests {
             .await,
             Err(FetchError::ListingParse { .. })
         ));
+    }
+
+    #[tokio::test]
+    async fn lists_the_hash_naming_scheme() {
+        // Recent months name files PUBLIC_ARCHIVE#TABLE#FILEnn#YYYYMM010000.zip;
+        // the listing escapes the # in the link and shows it in the text.
+        let dir = tempfile::tempdir().unwrap();
+        let t = Arc::new(StaticTransport::default());
+        let a = MmsdmArchive::new("https://www.nemweb.com.au").unwrap();
+        let ym = YearMonth::new(2026, 8).unwrap();
+        let dirs = a.data_dirs(ym).unwrap();
+        let link = |name: &str| {
+            format!(
+                r#" 9/9/2026  8:27 AM  1584114 <A HREF="/Data_Archive/Wholesale_Electricity/MMSDM/2026/MMSDM_2026_08/MMSDM_Historical_Data_SQLLoader/DATA/{}">{name}</A><br>"#,
+                name.replace('#', "%23")
+            )
+        };
+        let html = format!(
+            "<pre>{}{}{}{}</pre>",
+            link("PUBLIC_ARCHIVE#BIDOFFERPERIOD#FILE01#202608010000.zip"),
+            link("PUBLIC_ARCHIVE#BIDOFFERPERIOD#FILE02#202608010000.zip"),
+            link("PUBLIC_ARCHIVE#DISPATCHPRICE#FILE01#202608010000.zip"),
+            link("PUBLIC_RUN_SQLLDR_202608.bat")
+        );
+        t.add(dirs[0].as_str(), Canned::ok(html.as_bytes()));
+        t.add(dirs[1].as_str(), Canned::status(404));
+        t.add(dirs[2].as_str(), Canned::status(404));
+        let f = quick(&t, dir.path());
+        let all = a
+            .list(
+                &Query {
+                    tables: vec![],
+                    from: ym,
+                    to: ym,
+                },
+                &f,
+            )
+            .await
+            .unwrap();
+        assert_eq!(all.len(), 3);
+        let bids = a
+            .list(
+                &Query {
+                    tables: vec!["BIDOFFERPERIOD".into()],
+                    from: ym,
+                    to: ym,
+                },
+                &f,
+            )
+            .await
+            .unwrap();
+        assert_eq!(bids.len(), 2, "both files of a split table");
+        let price = a
+            .list(
+                &Query {
+                    tables: vec!["dispatchprice".into()],
+                    from: ym,
+                    to: ym,
+                },
+                &f,
+            )
+            .await
+            .unwrap();
+        assert_eq!(price.len(), 1);
+        let r = &price[0];
+        assert_eq!(r.table.as_deref(), Some("DISPATCHPRICE"));
+        assert!(
+            r.url
+                .path()
+                .ends_with("PUBLIC_ARCHIVE%23DISPATCHPRICE%23FILE01%23202608010000.zip"),
+            "{}",
+            r.url
+        );
+        assert_eq!(r.url.fragment(), None, "the # stays escaped in the path");
+        assert_eq!(
+            r.file_name(),
+            "PUBLIC_ARCHIVE#DISPATCHPRICE#FILE01#202608010000.zip"
+        );
+        assert_eq!(r.stem(), "public_archive_dispatchprice_file01_202608010000");
+        assert_eq!(
+            MmsdmArchive::parse_name("PUBLIC_ARCHIVE#BIDOFFERPERIOD#FILE02#202608010000.zip"),
+            Some(("BIDOFFERPERIOD".into(), Some(2)))
+        );
+        assert_eq!(
+            MmsdmArchive::parse_name("PUBLIC_ARCHIVE#X#FILE01#202608.ctl"),
+            None
+        );
+        // The cache keeps the bytes under a name without the #.
+        t.add(r.url.as_str(), Canned::ok(b"zip bytes"));
+        let local = f.fetch(r).await.unwrap();
+        let cached = local.path.file_name().unwrap().to_str().unwrap().to_owned();
+        assert!(
+            cached.contains("DISPATCHPRICE") && !cached.contains('#'),
+            "{cached}"
+        );
+        assert_eq!(local.remote.file_name(), r.file_name());
     }
 
     /// A whole-month zip as AEMO published them before 2015: per-table zips

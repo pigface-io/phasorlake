@@ -71,7 +71,9 @@ impl RemoteFile {
         url
     }
 
-    /// The last path segment, or the member's file name.
+    /// The last path segment, or the member's file name. `%23` is read as
+    /// `#`: the newer archive names are `PUBLIC_ARCHIVE#TABLE#FILE01#...`
+    /// and a URL has to escape the `#`.
     pub fn file_name(&self) -> String {
         if let Some(m) = &self.member {
             return m.file_name().to_owned();
@@ -79,16 +81,28 @@ impl RemoteFile {
         self.url
             .path_segments()
             .and_then(|mut s| s.next_back())
+            .filter(|s| !s.is_empty())
             .unwrap_or("download")
-            .to_owned()
+            .replace("%23", "#")
     }
 
-    /// The file name without its extension, lower-case: the stem that names
-    /// the Parquet files written from it.
+    /// The file name without its extension, lower-case, with every
+    /// character other than letters, digits, `_`, `-` and `.` turned into
+    /// `_`: the stem that names the Parquet files written from it, safe in
+    /// a path, a glob and a URL.
     pub fn stem(&self) -> String {
         let name = self.file_name();
         let stem = name.rsplit_once('.').map_or(name.as_str(), |(s, _)| s);
-        stem.to_ascii_lowercase()
+        stem.chars()
+            .map(|c| {
+                let c = c.to_ascii_lowercase();
+                if c.is_ascii_alphanumeric() || matches!(c, '_' | '-' | '.') {
+                    c
+                } else {
+                    '_'
+                }
+            })
+            .collect()
     }
 }
 

@@ -336,13 +336,10 @@ impl BatchSink for LakeSink<'_> {
     }
 }
 
-/// The archive month in a `PUBLIC_DVD_{TABLE}_{YYYYMM}010000` stem.
+/// The archive month in the name of an archive file, in either naming
+/// scheme (see [`nemlake_core::archive_name`]).
 pub fn period_from_stem(stem: &str) -> Option<YearMonth> {
-    let (_, suffix) = stem.rsplit_once('_')?;
-    if suffix.len() != 12 || !suffix.bytes().all(|b| b.is_ascii_digit()) {
-        return None;
-    }
-    YearMonth::new(suffix[..4].parse().ok()?, suffix[4..6].parse().ok()?)
+    nemlake_core::archive_name::parse(stem).map(|n| n.month)
 }
 
 fn ingest_entry(input: &IngestInput, entry: &str, reader: &mut dyn std::io::Read) -> EntryReport {
@@ -522,6 +519,10 @@ mod tests {
             YearMonth::new(2024, 1)
         );
         assert_eq!(period_from_stem("REGION_v1_head"), None);
+        assert_eq!(
+            period_from_stem("PUBLIC_ARCHIVE#DISPATCHPRICE#FILE01#202608010000"),
+            YearMonth::new(2026, 8)
+        );
         assert_eq!(period_from_stem("PUBLIC_DVD_REGION_2024010100001"), None);
     }
 }
