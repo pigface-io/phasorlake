@@ -103,7 +103,6 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 | `schema.head_write` | `crates/nemlake-schema-bootstrap/src/remote.rs` |
 | `schema.merge_no_columns` | `crates/nemlake-schema-bootstrap/src/merge.rs` |
 | `schema.merge_no_version` | `crates/nemlake-schema-bootstrap/src/merge.rs` |
-| `schema.merge_version_conflict` | `crates/nemlake-schema-bootstrap/src/merge.rs` |
 | `schema.missing_key` | `crates/nemlake-schema/src/error.rs` |
 | `schema.no_columns` | `crates/nemlake-schema/src/error.rs` |
 | `schema.out_dir` | `crates/nemlake-schema-bootstrap/src/main.rs` |
@@ -162,3 +161,4 @@ No longer raised; kept so the code is never reused.
 | code | was |
 |---|---|
 | `listing.era_unsupported` | months before 2024 could not be listed; every archive month is now readable and a month the archive does not publish is `listing.month_missing` |
+| `schema.merge_version_conflict` | the schema bootstrap refused two different column lists under one version number; each list is now a variant of the version |

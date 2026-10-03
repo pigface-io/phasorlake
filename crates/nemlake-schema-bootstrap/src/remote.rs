@@ -11,6 +11,7 @@
 //! The surviving lines are trimmed to every `C` and `I` row plus the first
 //! `D` rows of each block and written as `{stem}.CSV` fixtures.
 
+use std::collections::{BTreeMap, BTreeSet};
 use std::io::Read;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
@@ -223,9 +224,6 @@ pub struct HeadOptions {
     pub rows: usize,
     /// Bytes requested of each zip.
     pub bytes: u64,
-    /// Minimum gap between two requests. A month is 150 to 250 requests and
-    /// nemweb blocks a client that sends them too fast.
-    pub interval: Duration,
 }
 
 impl Default for HeadOptions {
@@ -233,15 +231,23 @@ impl Default for HeadOptions {
         Self {
             rows: 20,
             bytes: HEAD_BYTES,
-            interval: DEFAULT_INTERVAL,
         }
     }
 }
 
 /// The default gap between requests of the bootstrap tool: two a second.
+/// A month is 150 to 250 requests and nemweb blocks a client that sends
+/// them too fast.
 pub const DEFAULT_INTERVAL: Duration = Duration::from_millis(500);
 
-fn paced_fetcher(transport: Arc<dyn Transport>, cache_root: &Path, interval: Duration) -> Fetcher {
+/// The fetcher every subcommand shares: one request at a time, `interval`
+/// apart, retried where that makes sense, and stopped for good when the
+/// server refuses. Listings and zip indexes are cached under `cache_root`.
+pub fn paced_fetcher(
+    transport: Arc<dyn Transport>,
+    cache_root: &Path,
+    interval: Duration,
+) -> Fetcher {
     Fetcher::new(
         transport,
         DiskCache::new(cache_root),
@@ -254,22 +260,20 @@ fn paced_fetcher(transport: Arc<dyn Transport>, cache_root: &Path, interval: Dur
 
 /// Fetches the head of every archive zip of `month` (every table, all three
 /// data directories, either month layout) and writes them to `dest` with at
-/// most `opts.rows` D rows per block. Listings are cached under `cache_root`.
+/// most `opts.rows` D rows per block.
 pub async fn fetch_heads(
-    transport: Arc<dyn Transport>,
+    fetcher: &Fetcher,
     archive: &MmsdmArchive,
-    cache_root: &Path,
     dest: &HeadDest,
     month: YearMonth,
     opts: HeadOptions,
 ) -> Result<Vec<HeadOutcome>, HeadError> {
-    let fetcher = paced_fetcher(transport, cache_root, opts.interval);
     let query = Query {
         tables: Vec::new(),
         from: month,
         to: month,
     };
-    let remotes = archive.list(&query, &fetcher).await?;
+    let remotes = archive.list(&query, fetcher).await?;
     let write_err = |path: &Path, source| HeadError::Write {
         path: path.display().to_string(),
         source,
@@ -285,7 +289,7 @@ pub async fn fetch_heads(
     for remote in &remotes {
         let name = remote.file_name();
         let stem = name.strip_suffix(".zip").unwrap_or(&name).to_owned();
-        let head = fetch_head(&fetcher, remote, opts).await;
+        let head = fetch_head(fetcher, remote, opts).await;
         heads.push((remote.url.to_string(), stem, head));
     }
     if fetcher.is_blocked() {
@@ -396,33 +400,16 @@ pub fn ctl_table(file_name: &str) -> Option<String> {
     nemlake_core::archive_name::parse(file_name).map(|n| n.table)
 }
 
-/// Downloads the `.ctl` files of `month` into `out`, from the month's `CTL/`
-/// directory or, for a month published only as one zip, out of that zip.
-/// A control file is skipped when `out` or one of the `skip_known`
-/// directories already has one for the same table, so a walk back through
-/// history only collects the tables that later months no longer carry.
-pub async fn fetch_ctls(
-    transport: Arc<dyn Transport>,
+/// How long a whole-month zip's index is trusted; it never changes.
+const ZIP_INDEX_TTL: i64 = 90 * 86_400;
+
+/// The control files of `month`, from its `CTL/` directory or, for a month
+/// published only as one zip, the members of that zip.
+pub async fn list_ctls(
+    fetcher: &Fetcher,
     archive: &MmsdmArchive,
-    cache_root: &Path,
-    out: &Path,
     month: YearMonth,
-    skip_known: &[PathBuf],
-    interval: Duration,
-) -> Result<Vec<PathBuf>, HeadError> {
-    let mut known: std::collections::BTreeSet<String> = std::collections::BTreeSet::new();
-    if !skip_known.is_empty() {
-        for dir in skip_known.iter().map(PathBuf::as_path).chain([out]) {
-            let Ok(rd) = std::fs::read_dir(dir) else {
-                continue;
-            };
-            known.extend(
-                rd.filter_map(Result::ok)
-                    .filter_map(|e| ctl_table(&e.file_name().to_string_lossy())),
-            );
-        }
-    }
-    let fetcher = paced_fetcher(transport, cache_root, interval);
+) -> Result<Vec<RemoteFile>, HeadError> {
     let remote = |url, member| RemoteFile {
         url,
         source: nemlake_fetch::mmsdm::SOURCE_ID,
@@ -434,7 +421,7 @@ pub async fn fetch_ctls(
         member,
     };
     let mut remotes = Vec::new();
-    match archive.month_layout(month, &fetcher).await? {
+    match archive.month_layout(month, fetcher).await? {
         MonthLayout::Directory => {
             let dir = archive
                 .month_root(month)?
@@ -444,7 +431,7 @@ pub async fn fetch_ctls(
                     what: "CTL directory URL",
                     message: e.to_string(),
                 })?;
-            let body = fetcher.fetch_listing(dir.as_str(), 0).await?;
+            let body = fetcher.fetch_listing(dir.as_str(), 86_400).await?;
             for e in listing::parse(&body) {
                 if !e.name.to_ascii_lowercase().ends_with(".ctl") {
                     continue;
@@ -458,7 +445,10 @@ pub async fn fetch_ctls(
             }
         }
         MonthLayout::WholeZip { url, .. } => {
-            for m in fetcher.list_zip_members(url.as_str(), 0).await? {
+            for m in fetcher
+                .list_zip_members(url.as_str(), ZIP_INDEX_TTL)
+                .await?
+            {
                 let lower = m.name.to_ascii_lowercase();
                 if lower.contains("/ctl/") && lower.ends_with(".ctl") {
                     remotes.push(remote(
@@ -469,24 +459,215 @@ pub async fn fetch_ctls(
             }
         }
     }
-    std::fs::create_dir_all(out).map_err(|source| HeadError::Write {
-        path: out.display().to_string(),
+    Ok(remotes)
+}
+
+/// Fetches one control file into `out` under its own name.
+async fn save_ctl(
+    fetcher: &Fetcher,
+    remote: &RemoteFile,
+    out: &Path,
+) -> Result<PathBuf, HeadError> {
+    let write_err = |path: &Path, source| HeadError::Write {
+        path: path.display().to_string(),
         source,
-    })?;
+    };
+    std::fs::create_dir_all(out).map_err(|e| write_err(out, e))?;
+    let local = fetcher.fetch(remote).await?;
+    let path = out.join(remote.file_name());
+    std::fs::copy(&local.path, &path).map_err(|e| write_err(&path, e))?;
+    Ok(path)
+}
+
+/// Downloads the `.ctl` files of `month` into `out`. A control file is
+/// skipped when `out` or one of the `skip_known` directories already has
+/// one for the same table.
+pub async fn fetch_ctls(
+    fetcher: &Fetcher,
+    archive: &MmsdmArchive,
+    out: &Path,
+    month: YearMonth,
+    skip_known: &[PathBuf],
+) -> Result<Vec<PathBuf>, HeadError> {
+    let mut known: BTreeSet<String> = BTreeSet::new();
+    if !skip_known.is_empty() {
+        for dir in skip_known.iter().map(PathBuf::as_path).chain([out]) {
+            let Ok(rd) = std::fs::read_dir(dir) else {
+                continue;
+            };
+            known.extend(
+                rd.filter_map(Result::ok)
+                    .filter_map(|e| ctl_table(&e.file_name().to_string_lossy())),
+            );
+        }
+    }
     let mut written = Vec::new();
-    for r in &remotes {
+    for r in &list_ctls(fetcher, archive, month).await? {
         if ctl_table(&r.file_name()).is_some_and(|t| known.contains(&t)) {
             continue;
         }
-        let local = fetcher.fetch(r).await?;
-        let path = out.join(r.file_name());
-        std::fs::copy(&local.path, &path).map_err(|source| HeadError::Write {
-            path: path.display().to_string(),
-            source,
-        })?;
-        written.push(path);
+        written.push(save_ctl(fetcher, r, out).await?);
     }
     Ok(written)
+}
+
+/// What [`fetch_history_month`] gathered.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct HistoryMonth {
+    /// The bundle of heads, and whether this call fetched it.
+    pub bundle: PathBuf,
+    /// Whether the bundle was fetched now (false: it was already there).
+    pub fetched_bundle: bool,
+    /// Heads in the bundle.
+    pub heads: usize,
+    /// Control files fetched because no control file on hand described
+    /// every column of a head.
+    pub ctls: Vec<PathBuf>,
+}
+
+/// The names under which a control file or a data stem may be looked up:
+/// as written, and without a split digit.
+fn table_keys(table: &str) -> Vec<String> {
+    let upper = table.to_ascii_uppercase();
+    let trimmed = upper.trim_end_matches(|c: char| c.is_ascii_digit());
+    if trimmed.is_empty() || trimmed == upper {
+        vec![upper]
+    } else {
+        vec![trimmed.to_owned(), upper]
+    }
+}
+
+/// The columns every control file under `dirs` loads, keyed by the table it
+/// loads and by the table part of the file it reads.
+fn known_ctl_columns(dirs: &[PathBuf]) -> BTreeMap<String, BTreeSet<String>> {
+    let mut known: BTreeMap<String, BTreeSet<String>> = BTreeMap::new();
+    for dir in dirs {
+        let Ok(rd) = std::fs::read_dir(dir) else {
+            continue;
+        };
+        for path in rd.filter_map(Result::ok).map(|e| e.path()) {
+            if path
+                .extension()
+                .is_none_or(|e| !e.eq_ignore_ascii_case("ctl"))
+            {
+                continue;
+            }
+            let Ok(text) = std::fs::read_to_string(&path) else {
+                continue;
+            };
+            add_ctl_columns(&mut known, &path.display().to_string(), &text);
+        }
+    }
+    known
+}
+
+fn add_ctl_columns(known: &mut BTreeMap<String, BTreeSet<String>>, path: &str, text: &str) {
+    let Ok(ctl) = crate::ctl::parse(path, text) else {
+        return;
+    };
+    let columns: BTreeSet<String> = ctl
+        .data_columns()
+        .map(|c| c.name.to_ascii_uppercase())
+        .collect();
+    let mut keys = table_keys(&ctl.table);
+    if let Some(n) = nemlake_core::archive_name::parse(&ctl.infile) {
+        keys.extend(table_keys(&n.table));
+    }
+    for k in keys {
+        known.entry(k).or_default().extend(columns.iter().cloned());
+    }
+}
+
+/// Gathers what one historical month adds to the registry's inputs:
+///
+/// 1. `{dir}/MMSDM_{YYYY}_{MM}.heads.csv`, the bundle of every head of the
+///    month (kept when it is already there);
+/// 2. into `{dir}/CTL/`, the month's control file for every table whose
+///    head names a column that no control file in `known_ctl_dirs` or
+///    `{dir}/CTL/` loads. The control file of a month describes exactly the
+///    files of that month, so it types the columns later months dropped.
+pub async fn fetch_history_month(
+    fetcher: &Fetcher,
+    archive: &MmsdmArchive,
+    dir: &Path,
+    known_ctl_dirs: &[PathBuf],
+    month: YearMonth,
+    opts: HeadOptions,
+) -> Result<HistoryMonth, HeadError> {
+    let bundle = dir.join(format!(
+        "MMSDM_{}_{:02}.heads.csv",
+        month.year(),
+        month.month()
+    ));
+    let fetched_bundle = !bundle.is_file();
+    if fetched_bundle {
+        let outcomes = fetch_heads(
+            fetcher,
+            archive,
+            &HeadDest::Bundle(bundle.clone()),
+            month,
+            opts,
+        )
+        .await?;
+        if let Some(bad) = outcomes.iter().find_map(|o| o.error.as_deref()) {
+            // Heads that cannot be read are reported, not silently dropped.
+            eprintln!("warning: {bad}");
+        }
+    }
+    let sampled = crate::sample::sample_file(&bundle, 1).map_err(|e| HeadError::Write {
+        path: bundle.display().to_string(),
+        source: std::io::Error::other(e.to_string()),
+    })?;
+    let ctl_dir = dir.join("CTL");
+    let mut dirs: Vec<PathBuf> = known_ctl_dirs.to_vec();
+    dirs.push(ctl_dir.clone());
+    let mut known = known_ctl_columns(&dirs);
+    let covered = |known: &BTreeMap<String, BTreeSet<String>>, table: &str, columns: &[String]| {
+        let mut all: BTreeSet<&String> = BTreeSet::new();
+        for k in table_keys(table) {
+            if let Some(cols) = known.get(&k) {
+                all.extend(cols);
+            }
+        }
+        columns.iter().all(|c| all.contains(c))
+    };
+    let mut remote_ctls: Option<Vec<RemoteFile>> = None;
+    let mut ctls = Vec::new();
+    for file in &sampled {
+        let Some(table) = &file.table else { continue };
+        if file
+            .blocks
+            .iter()
+            .all(|b| covered(&known, table, &b.columns))
+        {
+            continue;
+        }
+        // Only now is the month's list of control files needed.
+        if remote_ctls.is_none() {
+            remote_ctls = Some(list_ctls(fetcher, archive, month).await?);
+        }
+        let wanted = table_keys(table);
+        let Some(remote) = remote_ctls.as_ref().expect("just listed").iter().find(|r| {
+            ctl_table(&r.file_name())
+                .is_some_and(|t| table_keys(&t).iter().any(|k| wanted.contains(k)))
+        }) else {
+            eprintln!(
+                "warning: {month} has no control file for {table}; its new columns stay untyped"
+            );
+            continue;
+        };
+        let path = save_ctl(fetcher, remote, &ctl_dir).await?;
+        if let Ok(text) = std::fs::read_to_string(&path) {
+            add_ctl_columns(&mut known, &path.display().to_string(), &text);
+        }
+        ctls.push(path);
+    }
+    Ok(HistoryMonth {
+        bundle,
+        fetched_bundle,
+        heads: sampled.len(),
+        ctls,
+    })
 }
 
 #[cfg(test)]
@@ -601,15 +782,18 @@ mod tests {
         let archive = MmsdmArchive::new("https://h").unwrap();
         let tmp = tempfile::tempdir().unwrap();
         let month: YearMonth = "2024-01".parse().unwrap();
-        let outcomes = fetch_heads(
+        let fetcher = paced_fetcher(
             Arc::new(Arc::clone(&t)),
-            &archive,
             &tmp.path().join("cache"),
+            Duration::ZERO,
+        );
+        let outcomes = fetch_heads(
+            &fetcher,
+            &archive,
             &HeadDest::Dir(tmp.path().join("heads")),
             month,
             HeadOptions {
                 rows: 1,
-                interval: Duration::ZERO,
                 ..Default::default()
             },
         )
@@ -643,17 +827,9 @@ mod tests {
             "https://h/Data_Archive/Wholesale_Electricity/MMSDM/2024/",
             Canned::ok(br#"<pre> 2/13/2024 8:27 AM &lt;dir&gt; <A HREF="/Data_Archive/Wholesale_Electricity/MMSDM/2024/MMSDM_2024_01/">MMSDM_2024_01</A><br></pre>"#),
         );
-        let ctls = fetch_ctls(
-            Arc::new(t),
-            &archive,
-            &tmp.path().join("cache"),
-            &tmp.path().join("ctl"),
-            month,
-            &[],
-            Duration::ZERO,
-        )
-        .await
-        .unwrap();
+        let ctls = fetch_ctls(&fetcher, &archive, &tmp.path().join("ctl"), month, &[])
+            .await
+            .unwrap();
         assert_eq!(ctls.len(), 1);
         assert_eq!(std::fs::read_to_string(&ctls[0]).unwrap(), "LOAD DATA");
         assert!(ctls[0].ends_with("PUBLIC_DVD_X_202401.ctl"));
@@ -702,16 +878,19 @@ mod tests {
         let archive = MmsdmArchive::new("https://h").unwrap();
         let tmp = tempfile::tempdir().unwrap();
         let month: YearMonth = "2012-01".parse().unwrap();
-        let outcomes = fetch_heads(
+        let fetcher = paced_fetcher(
             Arc::new(Arc::clone(&t)),
-            &archive,
             &tmp.path().join("cache"),
+            Duration::ZERO,
+        );
+        let outcomes = fetch_heads(
+            &fetcher,
+            &archive,
             &HeadDest::Bundle(tmp.path().join("history/MMSDM_2012_01.heads.csv")),
             month,
             HeadOptions {
                 rows: 2,
                 bytes: 4096,
-                interval: Duration::ZERO,
             },
         )
         .await
@@ -729,29 +908,19 @@ mod tests {
         assert_eq!(sampled[0].table.as_deref(), Some("X"));
         assert_eq!(sampled[0].month, Some(month));
         assert_eq!(sampled[0].blocks[0].rows, 2);
-        let ctls = fetch_ctls(
-            Arc::new(t),
-            &archive,
-            &tmp.path().join("cache"),
-            &tmp.path().join("ctl"),
-            month,
-            &[],
-            Duration::ZERO,
-        )
-        .await
-        .unwrap();
+        let ctls = fetch_ctls(&fetcher, &archive, &tmp.path().join("ctl"), month, &[])
+            .await
+            .unwrap();
         assert_eq!(ctls.len(), 1);
         assert!(ctls[0].ends_with("PUBLIC_DVD_X_201201.ctl"));
         assert_eq!(std::fs::read_to_string(&ctls[0]).unwrap(), "LOAD DATA 2012");
         // A table that already has a control file somewhere is not fetched again.
         let again = fetch_ctls(
-            nemweb_like(year, &month_zip),
+            &fetcher,
             &archive,
-            &tmp.path().join("cache2"),
             &tmp.path().join("ctl2"),
             month,
             &[tmp.path().join("ctl")],
-            Duration::ZERO,
         )
         .await
         .unwrap();
@@ -770,15 +939,120 @@ mod tests {
         assert_eq!(ctl_table("readme.txt"), None);
     }
 
-    fn nemweb_like(year: &str, month_zip: &[u8]) -> Arc<dyn Transport> {
+    #[tokio::test]
+    async fn history_month_fetches_only_the_control_files_it_needs() {
         use nemlake_fetch::transport::{Canned, StaticTransport};
+        // A month zip with two tables. KNOWN's head only has columns a
+        // control file on hand already loads; OLD's head has one it lacks.
+        let ctl = |table: &str, cols: &str| {
+            format!(
+                "LOAD DATA\nINFILE 'PUBLIC_DVD_{table}_201201010000.CSV'\nAPPEND INTO TABLE {table}\nWHEN (1:1) = 'D'\nFIELDS TERMINATED BY ','\n(row_type FILLER, report_type FILLER, report_subtype FILLER, report_version FILLER,\n{cols})\n"
+            )
+        };
+        let head = |table: &str, cols: &str| {
+            zip_of(format!("C,x\r\nI,A,{table},1,{cols}\r\nD,A,{table},1,1,2\r\n").as_bytes())
+        };
+        let mut cursor = std::io::Cursor::new(Vec::new());
+        {
+            let mut w = zip::ZipWriter::new(&mut cursor);
+            let opts = zip::write::SimpleFileOptions::default();
+            for (name, bytes) in [
+                (
+                    "01/MMSDM_Historical_Data_SQLLoader/CTL/PUBLIC_DVD_KNOWN_201201.ctl",
+                    ctl("KNOWN", "A FLOAT EXTERNAL, B FLOAT EXTERNAL").into_bytes(),
+                ),
+                (
+                    "01/MMSDM_Historical_Data_SQLLoader/CTL/PUBLIC_DVD_OLD_201201.ctl",
+                    ctl("OLD", "A FLOAT EXTERNAL, GONE FLOAT EXTERNAL").into_bytes(),
+                ),
+                (
+                    "01/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_KNOWN_201201010000.zip",
+                    head("KNOWN", "A,B"),
+                ),
+                (
+                    "01/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_OLD_201201010000.zip",
+                    head("OLD", "A,GONE"),
+                ),
+            ] {
+                w.start_file(name, opts).unwrap();
+                w.write_all(&bytes).unwrap();
+            }
+            w.finish().unwrap();
+        }
+        let month_zip = cursor.into_inner();
+        let year = "https://h/Data_Archive/Wholesale_Electricity/MMSDM/2012/";
         let t = Arc::new(StaticTransport::default());
         t.add(
             year,
             Canned::ok(br#"<pre> 2/21/2012 3:10 PM 1912843433 <A HREF="/Data_Archive/Wholesale_Electricity/MMSDM/2012/MMSDM_2012_01.zip">MMSDM_2012_01.zip</A><br></pre>"#),
         );
-        t.add(&format!("{year}MMSDM_2012_01.zip"), Canned::ok(month_zip));
-        Arc::new(t)
+        t.add(&format!("{year}MMSDM_2012_01.zip"), Canned::ok(&month_zip));
+        let tmp = tempfile::tempdir().unwrap();
+        // The control files on hand: the newer month's, where OLD has no GONE.
+        let newer = tmp.path().join("newer");
+        std::fs::create_dir_all(&newer).unwrap();
+        std::fs::write(
+            newer.join("PUBLIC_DVD_KNOWN_202401.ctl"),
+            ctl(
+                "KNOWN",
+                "A FLOAT EXTERNAL, B FLOAT EXTERNAL, C FLOAT EXTERNAL",
+            ),
+        )
+        .unwrap();
+        std::fs::write(
+            newer.join("PUBLIC_DVD_OLD_202401.ctl"),
+            ctl("OLD", "A FLOAT EXTERNAL"),
+        )
+        .unwrap();
+        let archive = MmsdmArchive::new("https://h").unwrap();
+        let month: YearMonth = "2012-01".parse().unwrap();
+        let fetcher = paced_fetcher(
+            Arc::new(Arc::clone(&t)),
+            &tmp.path().join("cache"),
+            Duration::ZERO,
+        );
+        let dir = tmp.path().join("history");
+        let opts = HeadOptions {
+            rows: 1,
+            bytes: 4096,
+        };
+        let got = fetch_history_month(
+            &fetcher,
+            &archive,
+            &dir,
+            std::slice::from_ref(&newer),
+            month,
+            opts,
+        )
+        .await
+        .unwrap();
+        assert!(got.fetched_bundle);
+        assert_eq!(got.heads, 2);
+        assert_eq!(got.bundle, dir.join("MMSDM_2012_01.heads.csv"));
+        assert_eq!(got.ctls, [dir.join("CTL/PUBLIC_DVD_OLD_201201.ctl")]);
+        assert!(
+            std::fs::read_to_string(&got.ctls[0])
+                .unwrap()
+                .contains("GONE")
+        );
+        // A second pass has everything: no bundle fetch, no control file, no request.
+        let before = t.request_count();
+        let again = fetch_history_month(
+            &fetcher,
+            &archive,
+            &dir,
+            std::slice::from_ref(&newer),
+            month,
+            opts,
+        )
+        .await
+        .unwrap();
+        assert!(!again.fetched_bundle);
+        assert!(again.ctls.is_empty());
+        assert_eq!(t.request_count(), before);
+        assert_eq!(table_keys("BIDPEROFFER1"), ["BIDPEROFFER", "BIDPEROFFER1"]);
+        assert_eq!(table_keys("region"), ["REGION"]);
+        assert_eq!(table_keys("2024"), ["2024"]);
     }
 
     #[tokio::test]
@@ -817,16 +1091,17 @@ mod tests {
         let archive = MmsdmArchive::new("https://h").unwrap();
         let tmp = tempfile::tempdir().unwrap();
         let bundle = tmp.path().join("b.heads.csv");
-        let e = fetch_heads(
+        let fetcher = paced_fetcher(
             Arc::new(Arc::clone(&t)),
-            &archive,
             &tmp.path().join("cache"),
+            Duration::ZERO,
+        );
+        let e = fetch_heads(
+            &fetcher,
+            &archive,
             &HeadDest::Bundle(bundle.clone()),
             "2024-01".parse().unwrap(),
-            HeadOptions {
-                interval: Duration::ZERO,
-                ..Default::default()
-            },
+            HeadOptions::default(),
         )
         .await
         .unwrap_err();

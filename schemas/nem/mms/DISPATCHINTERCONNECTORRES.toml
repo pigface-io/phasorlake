@@ -419,4 +419,4 @@ last_seen = "2024-01"
 ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_DISPATCHINTERCONNECTORRES_202401.ctl"
 data_model = "MMS_127.htm@v5.0.0.1"
 sampled_months = ["2024-01"]
-note = "version 3 was published with 18 columns and later with 22; the longer list is the version and the shorter a variant | version 3 was published with 18 columns and later with 22; the longer list is the version and the shorter a variant"
+note = "version 3 was published with 18 columns and with 22; the longer list is the version and the shorter a variant"

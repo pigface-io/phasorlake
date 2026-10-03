@@ -28,8 +28,10 @@ use crate::sample::SampledBlock;
 pub struct Inputs<'a> {
     /// Data-model name of the table.
     pub name: String,
-    /// The CTL, when the archive has one.
-    pub ctl: Option<&'a CtlFile>,
+    /// The control files that load this table, newest first. A column's
+    /// loader type comes from the first one that lists it, so a column a
+    /// later month dropped is still typed by the month that had it.
+    pub ctls: Vec<&'a CtlFile>,
     /// The data-model entry, when the report has one.
     pub dm: Option<&'a DmTable>,
     /// Every sampled block that belongs to this table, any version.
@@ -55,20 +57,6 @@ pub enum MergeError {
         /// The table.
         table: String,
     },
-    /// Two samples of the same version disagree.
-    #[error(
-        "Table {table} version {version} was sampled with two different column lists ({a} and {b}); AEMO reused a version number, so one must be aliased by hand."
-    )]
-    VersionConflict {
-        /// The table.
-        table: String,
-        /// The version.
-        version: u16,
-        /// First fingerprint.
-        a: Fingerprint,
-        /// Second fingerprint.
-        b: Fingerprint,
-    },
     /// No version could be established.
     #[error(
         "Table {table} has columns but no sampled I row, so no version number can be assigned; sample a real file."
@@ -82,13 +70,10 @@ pub enum MergeError {
 impl Diagnose for MergeError {
     fn diagnostic(&self) -> Diagnostic {
         let table = match self {
-            Self::NoColumns { table }
-            | Self::NoVersion { table }
-            | Self::VersionConflict { table, .. } => table.clone(),
+            Self::NoColumns { table } | Self::NoVersion { table } => table.clone(),
         };
         let code = match self {
             Self::NoColumns { .. } => "schema.merge_no_columns",
-            Self::VersionConflict { .. } => "schema.merge_version_conflict",
             Self::NoVersion { .. } => "schema.merge_no_version",
         };
         Diagnostic::error(code, Category::Schema, self.to_string()).with_table(table)
@@ -177,6 +162,30 @@ fn max_month(a: Option<YearMonth>, b: Option<YearMonth>) -> Option<YearMonth> {
     }
 }
 
+/// Whether every version and variant carries `column`, under its own name
+/// or one of its aliases.
+fn in_every_shape(
+    versions: &[VersionDef],
+    column: &str,
+    renames: &BTreeMap<String, Vec<String>>,
+) -> bool {
+    let is = |c: &String| c == column || renames.get(column).is_some_and(|a| a.contains(c));
+    versions
+        .iter()
+        .all(|v| v.columns.iter().any(is) && v.variants.iter().all(|x| x.columns.iter().any(is)))
+}
+
+/// The list that stands for a version among every list sampled under its
+/// number: the longest, then the one seen latest, then by fingerprint so
+/// the choice never depends on input order.
+fn main_shape<'a>(blocks: &[(Option<YearMonth>, &'a SampledBlock)]) -> &'a SampledBlock {
+    blocks
+        .iter()
+        .max_by_key(|(m, b)| (b.columns.len(), *m, b.fingerprint.0))
+        .map(|(_, b)| *b)
+        .expect("a version has at least one block")
+}
+
 /// A fixed order so regeneration is deterministic: shortest first, then by name.
 fn sort_variants(variants: &mut [VariantDef]) {
     variants.sort_by(|a, b| {
@@ -206,76 +215,80 @@ pub fn merge(inputs: &Inputs<'_>) -> Result<TableDef, MergeError> {
     let mut max_len: BTreeMap<String, u32> = BTreeMap::new();
     // (numeric, timestamp, any non-null) evidence per column across every sample.
     let mut evidence: BTreeMap<String, (bool, bool, bool)> = BTreeMap::new();
-    for (v, blocks) in &by_version {
-        // AEMO sometimes appends columns without bumping the version. When
-        // every sampled list is a prefix of the longest one, the longest is
-        // the version's shape and each shorter list is recorded as a
-        // variant, so files of either shape resolve exactly.
-        let first = blocks
+    // Pass 1: renames. AEMO sometimes renames a column in place without
+    // bumping the version: two lists of one version, same length, differing
+    // only in names at a few positions. The name the data model knows (or
+    // the one in the longer-lived list) stays canonical and the other
+    // becomes an alias, so files with either name feed the same lake column.
+    // A name that is a column in its own right somewhere, beside the other
+    // name, is not an alias: then both are columns and the lists are simply
+    // two shapes.
+    let coexist = |x: &str, y: &str| {
+        inputs
+            .samples
             .iter()
-            .map(|(_, b)| *b)
-            .max_by_key(|b| b.columns.len())
-            .expect("a version has at least one block");
+            .any(|(_, b)| b.columns.iter().any(|c| c == x) && b.columns.iter().any(|c| c == y))
+    };
+    let dm_knows = |n: &str| {
+        inputs
+            .dm
+            .is_some_and(|d| d.columns.iter().any(|c| c.name == n))
+    };
+    for (v, blocks) in &by_version {
+        let main = main_shape(blocks);
         for (_, b) in blocks {
-            if b.fingerprint == first.fingerprint {
+            if b.fingerprint == main.fingerprint || b.columns.len() != main.columns.len() {
                 continue;
             }
-            if first.columns.starts_with(&b.columns) {
-                notes.push(format!(
-                    "version {v} was published with {} columns and later with {}; the longer list is the version and the shorter a variant",
-                    b.columns.len(),
-                    first.columns.len()
-                ));
-                continue;
-            }
-            // Same length, a few positions renamed, and the new names appear
-            // nowhere else: AEMO renamed columns in place. The name the data
-            // model knows (or the first seen) stays canonical, the other
-            // becomes an alias, and files with either name resolve.
-            let differing: Vec<(&String, &String)> = first
+            let differing: Vec<(&String, &String)> = main
                 .columns
                 .iter()
                 .zip(&b.columns)
                 .filter(|(x, y)| x != y)
                 .collect();
-            let is_rename = b.columns.len() == first.columns.len()
-                && !differing.is_empty()
+            let is_rename = !differing.is_empty()
+                && differing.iter().all(|(x, y)| !coexist(x, y))
+                // Not a reorder: every differing name is new to the other list.
                 && differing
                     .iter()
-                    .all(|(x, y)| !b.columns.contains(x) && !first.columns.contains(y));
+                    .all(|(x, y)| !b.columns.contains(x) && !main.columns.contains(y));
             if !is_rename {
-                return Err(MergeError::VersionConflict {
-                    table: name,
-                    version: *v,
-                    a: first.fingerprint,
-                    b: b.fingerprint,
-                });
+                continue;
             }
-            let dm_knows = |n: &str| {
-                inputs
-                    .dm
-                    .is_some_and(|d| d.columns.iter().any(|c| c.name == n))
-            };
             for (x, y) in differing {
                 let (canon, alias) = if dm_knows(y) && !dm_knows(x) {
                     (y, x)
                 } else {
                     (x, y)
                 };
-                notes.push(format!("version {v} names column {canon} as {alias} in some files; recorded as an alias"));
+                // One canonical name per alias, and no chains.
+                if renames.contains_key(alias)
+                    || renames.values().any(|a| a.contains(canon))
+                    || renames.iter().any(|(k, a)| k != canon && a.contains(alias))
+                {
+                    continue;
+                }
                 let e = renames.entry(canon.clone()).or_default();
                 if !e.contains(alias) {
+                    notes.push(format!("version {v} names column {canon} as {alias} in some files; recorded as an alias"));
                     e.push(alias.clone());
                 }
             }
         }
-        let canonical = |c: &String| -> String {
-            renames
-                .iter()
-                .find(|(_, aliases)| aliases.contains(c))
-                .map_or_else(|| c.clone(), |(k, _)| k.clone())
-        };
-        let first_columns: Vec<String> = first.columns.iter().map(canonical).collect();
+    }
+    let canonical = |c: &String| -> String {
+        renames
+            .iter()
+            .find(|(_, aliases)| aliases.contains(c))
+            .map_or_else(|| c.clone(), |(k, _)| k.clone())
+    };
+
+    // Pass 2: one version per number. Its columns are the longest list seen
+    // (AEMO appends columns without bumping the version), latest month on a
+    // tie; every other list seen is a variant, so each resolves exactly.
+    for (v, blocks) in &by_version {
+        let main = main_shape(blocks);
+        let first_columns: Vec<String> = main.columns.iter().map(&canonical).collect();
         for c in &first_columns {
             if seen.insert(c.clone()) {
                 column_order.push(c.clone());
@@ -306,12 +319,37 @@ pub fn merge(inputs: &Inputs<'_>) -> Result<TableDef, MergeError> {
                     x.first_seen = min_month(x.first_seen, *m);
                     x.last_seen = max_month(x.last_seen, *m);
                 }
-                None => variants.push(VariantDef {
-                    columns: b.columns.clone(),
-                    fingerprint: b.fingerprint,
-                    first_seen: *m,
-                    last_seen: *m,
-                }),
+                None => {
+                    if b.fingerprint != main.fingerprint {
+                        let how = if main.columns.starts_with(&b.columns) {
+                            "the longer list is the version and the shorter a variant".to_owned()
+                        } else if b.columns.iter().map(&canonical).collect::<Vec<_>>()
+                            == first_columns
+                        {
+                            "the same columns under other names; a variant".to_owned()
+                        } else {
+                            "the lists differ by more than appended columns; the shorter is a variant".to_owned()
+                        };
+                        notes.push(format!(
+                            "version {v} was published with {} columns and with {}; {how}",
+                            b.columns.len(),
+                            main.columns.len()
+                        ));
+                    }
+                    // A variant may carry columns the version's own list lacks.
+                    for c in &b.columns {
+                        let c = canonical(c);
+                        if seen.insert(c.clone()) {
+                            column_order.push(c);
+                        }
+                    }
+                    variants.push(VariantDef {
+                        columns: b.columns.clone(),
+                        fingerprint: b.fingerprint,
+                        first_seen: *m,
+                        last_seen: *m,
+                    });
+                }
             }
         }
         sort_variants(&mut variants);
@@ -330,9 +368,18 @@ pub fn merge(inputs: &Inputs<'_>) -> Result<TableDef, MergeError> {
         for ev in &ex.versions {
             if !by_version.contains_key(&ev.n.0) {
                 versions.push(ev.clone());
-                for c in &ev.columns {
+                for c in ev
+                    .columns
+                    .iter()
+                    .chain(ev.variants.iter().flat_map(|x| &x.columns))
+                {
+                    // A kept variant may name a column by an alias the
+                    // existing file declares.
+                    let c = ex
+                        .column(c)
+                        .map_or_else(|| canonical(c), |d| d.name.clone());
                     if seen.insert(c.clone()) {
-                        column_order.push(c.clone());
+                        column_order.push(c);
                     }
                 }
             } else if let Some(v) = versions.iter_mut().find(|v| v.n == ev.n) {
@@ -352,7 +399,17 @@ pub fn merge(inputs: &Inputs<'_>) -> Result<TableDef, MergeError> {
                             x.first_seen = min_month(x.first_seen, ex_variant.first_seen);
                             x.last_seen = max_month(x.last_seen, ex_variant.last_seen);
                         }
-                        None => v.variants.push(ex_variant.clone()),
+                        None => {
+                            for c in &ex_variant.columns {
+                                let c = ex
+                                    .column(c)
+                                    .map_or_else(|| canonical(c), |d| d.name.clone());
+                                if seen.insert(c.clone()) {
+                                    column_order.push(c);
+                                }
+                            }
+                            v.variants.push(ex_variant.clone());
+                        }
                     }
                 }
                 sort_variants(&mut v.variants);
@@ -360,20 +417,18 @@ pub fn merge(inputs: &Inputs<'_>) -> Result<TableDef, MergeError> {
         }
         versions.sort_by_key(|v| v.n);
     }
-    let ctl_cols: BTreeMap<String, &LoaderType> = inputs
-        .ctl
-        .map(|c| {
-            c.data_columns()
-                .map(|c| (c.name.to_ascii_uppercase(), &c.ty))
-                .collect()
-        })
-        .unwrap_or_default();
+    let mut ctl_cols: BTreeMap<String, &LoaderType> = BTreeMap::new();
+    for ctl in &inputs.ctls {
+        for c in ctl.data_columns() {
+            ctl_cols.entry(c.name.to_ascii_uppercase()).or_insert(&c.ty);
+        }
+    }
     let dm_cols: BTreeMap<String, &crate::datamodel::DmColumn> = inputs
         .dm
         .map(|d| d.columns.iter().map(|c| (c.name.clone(), c)).collect())
         .unwrap_or_default();
     if column_order.is_empty() {
-        if let Some(c) = inputs.ctl {
+        if let Some(c) = inputs.ctls.first() {
             column_order = c
                 .data_columns()
                 .map(|c| c.name.to_ascii_uppercase())
@@ -546,7 +601,9 @@ pub fn merge(inputs: &Inputs<'_>) -> Result<TableDef, MergeError> {
                 a
             },
             ty,
-            nullable: !primary_key.contains(cname),
+            // A key column refuses nulls, unless some published shape of the
+            // table lacks it: then old files have no value to give.
+            nullable: !(primary_key.contains(cname) && in_every_shape(&versions, cname, &renames)),
             oracle: dm.map(|d| d.oracle.clone()),
             loader: ctl_cols.get(cname).map(|l| l.render()),
             added_in,
@@ -680,7 +737,7 @@ mod tests {
     ) -> Inputs<'a> {
         Inputs {
             name: "DISPATCH_UNIT_SCADA".into(),
-            ctl: Some(ctl),
+            ctls: vec![ctl],
             dm: dm.table("DISPATCH_UNIT_SCADA"),
             samples: blocks
                 .iter()
@@ -840,7 +897,7 @@ mod tests {
             .blocks;
         let t = merge(&Inputs {
             name: "REGION".into(),
-            ctl: Some(&ctl),
+            ctls: vec![&ctl],
             dm: dm.table("REGION"),
             samples: blocks.iter().map(|b| (None, b)).collect(),
             existing: None,
@@ -904,20 +961,33 @@ mod tests {
         let e = merge(&inputs).unwrap_err();
         assert!(matches!(e, MergeError::NoVersion { .. }));
         assert_eq!(e.diagnostic().code, "schema.merge_no_version");
-        // Same version, same length, but the new name also exists elsewhere in
-        // the list: not a clean rename, so it is a conflict.
-        let mut other = blocks[0].clone();
-        other.columns[1] = "SCADAVALUE".into();
-        other.columns[2] = "DUID".into();
-        other.fingerprint = Fingerprint::of_names(other.columns.iter().map(String::as_str));
+        assert_eq!(e.diagnostic().table.as_deref(), Some("DISPATCH_UNIT_SCADA"));
+    }
+
+    #[test]
+    fn other_lists_of_a_version_become_variants_not_errors() {
+        let (ctl, dm, blocks) = load_scada();
+        // Same length with two names swapped: a reorder, not a rename.
+        let mut swapped = blocks[0].clone();
+        swapped.columns[1] = "SCADAVALUE".into();
+        swapped.columns[2] = "DUID".into();
+        swapped.fingerprint = Fingerprint::of_names(swapped.columns.iter().map(String::as_str));
         let mut inputs = scada_inputs(&ctl, &dm, &blocks);
-        inputs.samples.push((None, &other));
-        let e = merge(&inputs).unwrap_err();
+        inputs.samples.push((None, &swapped));
+        let t = merge(&inputs).unwrap();
+        assert_eq!(validate_table(&t), vec![]);
+        assert_eq!(t.versions.len(), 1);
+        assert_eq!(t.versions[0].variants.len(), 1);
         assert!(
-            matches!(e, MergeError::VersionConflict { version: 1, .. }),
-            "{e}"
+            t.columns.iter().all(|c| c.aliases.is_empty()),
+            "no alias from a reorder"
         );
-        // Different length and not a prefix is a conflict too.
+        assert_eq!(t.columns.len(), 3);
+
+        // A longer list that renames one column and appends another: the new
+        // name sits beside nothing it could alias, so both are columns. The
+        // longer list is the version; the shorter one is a variant that
+        // lacks OTHER and MORE, and carries DUID which the version lacks.
         let mut other = blocks[0].clone();
         other.columns[1] = "OTHER".into();
         other.columns.push("MORE".into());
@@ -927,13 +997,70 @@ mod tests {
         other.all_timestamp.push(false);
         other.fingerprint = Fingerprint::of_names(other.columns.iter().map(String::as_str));
         let mut inputs = scada_inputs(&ctl, &dm, &blocks);
-        inputs.samples.push((None, &other));
-        let e = merge(&inputs).unwrap_err();
-        assert!(
-            matches!(e, MergeError::VersionConflict { version: 1, .. }),
-            "{e}"
+        inputs
+            .samples
+            .push((Some("2026-09".parse().unwrap()), &other));
+        let t = merge(&inputs).unwrap();
+        assert_eq!(
+            t.versions[0].columns,
+            ["SETTLEMENTDATE", "OTHER", "SCADAVALUE", "MORE"]
         );
-        assert_eq!(e.diagnostic().table.as_deref(), Some("DISPATCH_UNIT_SCADA"));
+        assert_eq!(t.versions[0].variants.len(), 1);
+        assert_eq!(t.versions[0].variants[0].columns, blocks[0].columns);
+        let names: Vec<&str> = t.columns.iter().map(|c| c.name.as_str()).collect();
+        assert_eq!(
+            names,
+            ["SETTLEMENTDATE", "OTHER", "SCADAVALUE", "MORE", "DUID"]
+        );
+        // DUID is a key the newer list does not carry, so it must admit null.
+        assert!(t.primary_key.contains(&"DUID".to_owned()));
+        assert!(t.column("DUID").unwrap().nullable);
+        assert!(!t.column("SETTLEMENTDATE").unwrap().nullable);
+        assert!(
+            t.provenance
+                .note
+                .as_deref()
+                .unwrap()
+                .contains("differ by more than appended columns"),
+            "{:?}",
+            t.provenance.note
+        );
+        assert_eq!(validate_table(&t), vec![]);
+    }
+
+    #[test]
+    fn a_column_dropped_later_is_typed_by_an_older_control_file() {
+        let (ctl, dm, blocks) = load_scada();
+        let old_ctl = crate::ctl::parse(
+            "old.ctl",
+            "LOAD DATA\nINFILE 'PUBLIC_DVD_DISPATCH_UNIT_SCADA_201201010000.CSV'\nAPPEND INTO TABLE DISPATCH_UNIT_SCADA\nWHEN (1:1) = 'D'\nFIELDS TERMINATED BY ','\n(row_type FILLER, report_type FILLER, report_subtype FILLER, report_version FILLER,\nSETTLEMENTDATE DATE \"yyyy/mm/dd hh24:mi:ss\", DUID CHAR(20), SCADAVALUE CHAR(5), OLDFLAG FLOAT EXTERNAL)\n",
+        )
+        .unwrap();
+        let mut older = blocks[0].clone();
+        older.version = 0;
+        older.columns.push("OLDFLAG".into());
+        older.max_len.push(0);
+        older.all_null.push(true);
+        older.all_numeric.push(true);
+        older.all_timestamp.push(true);
+        older.fingerprint = Fingerprint::of_names(older.columns.iter().map(String::as_str));
+        let mut inputs = scada_inputs(&ctl, &dm, &blocks);
+        inputs.ctls.push(&old_ctl);
+        inputs
+            .samples
+            .push((Some("2012-01".parse().unwrap()), &older));
+        let t = merge(&inputs).unwrap();
+        assert_eq!(validate_table(&t), vec![]);
+        // The newest control file types the columns it knows...
+        assert!(matches!(
+            t.column("SCADAVALUE").unwrap().ty,
+            ColumnType::Number { .. }
+        ));
+        // ...and the older one the column only it has, though no value was sampled.
+        let old = t.column("OLDFLAG").unwrap();
+        assert!(matches!(old.ty, ColumnType::Number { .. }));
+        assert_eq!(old.src, ["ctl", "irow"]);
+        assert_eq!(old.removed_in, Some(SchemaVersion(1)));
     }
 
     #[test]

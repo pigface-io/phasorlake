@@ -90,6 +90,9 @@ enum Cmd {
         /// Milliseconds between two requests; nemweb blocks fast clients.
         #[arg(long, default_value_t = 500)]
         interval_ms: u64,
+        /// Where listings and zip indexes are cached between runs.
+        #[arg(long, default_value = "target/bootstrap-cache")]
+        cache: PathBuf,
         /// Archive base URL.
         #[arg(long, default_value = "https://www.nemweb.com.au")]
         base: String,
@@ -109,14 +112,42 @@ enum Cmd {
         /// Milliseconds between two requests; nemweb blocks fast clients.
         #[arg(long, default_value_t = 500)]
         interval_ms: u64,
+        /// Where listings and zip indexes are cached between runs.
+        #[arg(long, default_value = "target/bootstrap-cache")]
+        cache: PathBuf,
         /// Archive base URL.
         #[arg(long, default_value = "https://www.nemweb.com.au")]
         base: String,
     },
-}
-
-fn tmp_cache() -> PathBuf {
-    std::env::temp_dir().join(format!("nemlake-bootstrap-{}", std::process::id()))
+    /// Gather what historical months add: a bundle of heads per month and
+    /// the control files that type columns later months dropped (network).
+    History {
+        /// Archive months, in the order to visit them; newest first keeps
+        /// the newest control file for each table.
+        #[arg(long, required = true, value_delimiter = ',')]
+        months: Vec<nemlake_core::YearMonth>,
+        /// Output directory: `MMSDM_{YYYY}_{MM}.heads.csv` and `CTL/`.
+        #[arg(long)]
+        dir: PathBuf,
+        /// Directories of control files already on hand; repeatable.
+        #[arg(long)]
+        ctl: Vec<PathBuf>,
+        /// D rows to keep per block.
+        #[arg(long, default_value_t = 1)]
+        rows: usize,
+        /// Bytes to request of each zip.
+        #[arg(long, default_value_t = 65_536)]
+        bytes: u64,
+        /// Milliseconds between two requests; nemweb blocks fast clients.
+        #[arg(long, default_value_t = 1000)]
+        interval_ms: u64,
+        /// Where listings and zip indexes are cached between runs.
+        #[arg(long, default_value = "target/bootstrap-cache")]
+        cache: PathBuf,
+        /// Archive base URL.
+        #[arg(long, default_value = "https://www.nemweb.com.au")]
+        base: String,
+    },
 }
 
 fn run_async<F: std::future::Future>(f: F) -> F::Output {
@@ -199,6 +230,7 @@ fn main() -> ExitCode {
             rows,
             bytes,
             interval_ms,
+            cache,
             base,
         } => {
             use nemlake_schema_bootstrap::remote::{HeadDest, HeadOptions};
@@ -207,24 +239,14 @@ fn main() -> ExitCode {
                 (Some(d), None) => HeadDest::Dir(d),
                 (None, None) => unreachable!("clap requires --out or --bundle"),
             };
-            let opts = HeadOptions {
-                rows,
-                bytes,
-                interval: std::time::Duration::from_millis(interval_ms),
+            let opts = HeadOptions { rows, bytes };
+            let (archive, fetcher) = match network(&base, &cache, interval_ms) {
+                Ok(n) => n,
+                Err(code) => return code,
             };
-            let archive = match nemlake_fetch::MmsdmArchive::new(&base) {
-                Ok(a) => a,
-                Err(e) => return fail(&e.diagnostic()),
-            };
-            let transport = match nemlake_schema_bootstrap::remote::nemweb_transport() {
-                Ok(t) => t,
-                Err(e) => return fail(&e.diagnostic()),
-            };
-            let cache = tmp_cache();
             let result = run_async(nemlake_schema_bootstrap::remote::fetch_heads(
-                transport, &archive, &cache, &dest, month, opts,
+                &fetcher, &archive, &dest, month, opts,
             ));
-            let _ = std::fs::remove_dir_all(&cache);
             match result {
                 Ok(outcomes) => {
                     let mut failed = 0;
@@ -254,27 +276,20 @@ fn main() -> ExitCode {
             out,
             skip_known,
             interval_ms,
+            cache,
             base,
         } => {
-            let archive = match nemlake_fetch::MmsdmArchive::new(&base) {
-                Ok(a) => a,
-                Err(e) => return fail(&e.diagnostic()),
+            let (archive, fetcher) = match network(&base, &cache, interval_ms) {
+                Ok(n) => n,
+                Err(code) => return code,
             };
-            let transport = match nemlake_schema_bootstrap::remote::nemweb_transport() {
-                Ok(t) => t,
-                Err(e) => return fail(&e.diagnostic()),
-            };
-            let cache = tmp_cache();
             let result = run_async(nemlake_schema_bootstrap::remote::fetch_ctls(
-                transport,
+                &fetcher,
                 &archive,
-                &cache,
                 &out,
                 month,
                 &skip_known,
-                std::time::Duration::from_millis(interval_ms),
             ));
-            let _ = std::fs::remove_dir_all(&cache);
             match result {
                 Ok(paths) => {
                     eprintln!("{} CTL file(s) written to {}", paths.len(), out.display());
@@ -283,7 +298,60 @@ fn main() -> ExitCode {
                 Err(e) => fail(&e.diagnostic()),
             }
         }
+        Cmd::History {
+            months,
+            dir,
+            ctl,
+            rows,
+            bytes,
+            interval_ms,
+            cache,
+            base,
+        } => {
+            let (archive, fetcher) = match network(&base, &cache, interval_ms) {
+                Ok(n) => n,
+                Err(code) => return code,
+            };
+            let opts = nemlake_schema_bootstrap::remote::HeadOptions { rows, bytes };
+            for month in months {
+                let result = run_async(nemlake_schema_bootstrap::remote::fetch_history_month(
+                    &fetcher, &archive, &dir, &ctl, month, opts,
+                ));
+                match result {
+                    Ok(m) => eprintln!(
+                        "{month}: {} head(s){}, {} control file(s) fetched",
+                        m.heads,
+                        if m.fetched_bundle {
+                            ""
+                        } else {
+                            " (already here)"
+                        },
+                        m.ctls.len()
+                    ),
+                    // Stop at the first failure: a refusal must not be followed by more requests.
+                    Err(e) => return fail(&e.diagnostic()),
+                }
+            }
+            ExitCode::SUCCESS
+        }
     }
+}
+
+/// The archive and the paced fetcher every network subcommand uses.
+fn network(
+    base: &str,
+    cache: &Path,
+    interval_ms: u64,
+) -> Result<(nemlake_fetch::MmsdmArchive, nemlake_fetch::Fetcher), ExitCode> {
+    let archive = nemlake_fetch::MmsdmArchive::new(base).map_err(|e| fail(&e.diagnostic()))?;
+    let transport =
+        nemlake_schema_bootstrap::remote::nemweb_transport().map_err(|e| fail(&e.diagnostic()))?;
+    let fetcher = nemlake_schema_bootstrap::remote::paced_fetcher(
+        transport,
+        cache,
+        std::time::Duration::from_millis(interval_ms),
+    );
+    Ok((archive, fetcher))
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -304,7 +372,9 @@ fn regen(
         .unwrap_or_default();
 
     // CTLs by the table they load, plus the archive stem each one reads.
-    let mut ctls: BTreeMap<String, (CtlFile, String)> = BTreeMap::new();
+    // Every control file of a table, to be sorted newest month first.
+    let mut ctls: BTreeMap<String, Vec<(Option<nemlake_core::YearMonth>, CtlFile, String)>> =
+        BTreeMap::new();
     let mut by_infile: BTreeMap<String, String> = BTreeMap::new();
     let mut ctl_paths: Vec<PathBuf> = Vec::new();
     for ctl_dir in ctl_dirs {
@@ -351,7 +421,18 @@ fn regen(
             .into_iter()
             .rev()
             .collect::<PathBuf>();
-        ctls.entry(name).or_insert((f, rel.display().to_string()));
+        let month = p
+            .file_name()
+            .and_then(|n| n.to_str())
+            .and_then(nemlake_core::archive_name::parse)
+            .map(|n| n.month);
+        ctls.entry(name)
+            .or_default()
+            .push((month, f, rel.display().to_string()));
+    }
+    for list in ctls.values_mut() {
+        // Stable: files of one month keep directory and name order.
+        list.sort_by_key(|(m, _, _)| std::cmp::Reverse(*m));
     }
 
     // Samples: by archive-stem table when the file name has one, else by
@@ -460,13 +541,15 @@ fn regen(
         }
         let inputs = Inputs {
             name: name.clone(),
-            ctl: ctl.map(|(c, _)| c),
+            ctls: ctl
+                .map(|list| list.iter().map(|(_, c, _)| c).collect())
+                .unwrap_or_default(),
             dm: dm.table(&name),
             samples,
             existing: existing.as_ref(),
             snapshot: snapshots.contains(&name),
             archive_files,
-            ctl_path: ctl.map(|(_, p)| p.clone()),
+            ctl_path: ctl.and_then(|list| list.first()).map(|(_, _, p)| p.clone()),
         };
         let table = match merge(&inputs) {
             Ok(t) => t,

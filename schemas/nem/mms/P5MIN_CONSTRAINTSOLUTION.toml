@@ -248,4 +248,4 @@ last_seen = "2024-01"
 ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_P5MIN_CONSTRAINTSOLUTION1_202401.ctl"
 data_model = "MMS_237.htm@v5.0.0.1"
 sampled_months = ["2024-01"]
-note = "version 6 names column DUID as CONFIDENTIAL_TO in some files; recorded as an alias | version 6 names column DUID as CONFIDENTIAL_TO in some files; recorded as an alias | version 6 names column DUID as CONFIDENTIAL_TO in some files; recorded as an alias | version 6 names column DUID as CONFIDENTIAL_TO in some files; recorded as an alias"
+note = "version 6 names column DUID as CONFIDENTIAL_TO in some files; recorded as an alias | version 6 was published with 12 columns and with 12; the same columns under other names; a variant"
