@@ -75,8 +75,11 @@ columns = [
     "SCADAVALUE",
 ]
 fingerprint = "xxh3:7859bfe42f184b0a796bc2b5f5882e76"
+first_seen = "2024-01"
+last_seen = "2024-01"
 src = "irow"
 
 [provenance]
 ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_DISPATCH_UNIT_SCADA_202401.ctl"
 data_model = "MMS_123.htm@v5.0.0.1"
+sampled_months = ["2024-01"]

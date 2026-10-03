@@ -86,8 +86,11 @@ columns = [
     "LASTCHANGED",
 ]
 fingerprint = "xxh3:8796a7c88c76ad9e0670113a22811c3e"
+first_seen = "2024-01"
+last_seen = "2024-01"
 src = "irow"
 
 [provenance]
 ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_REGION_202401.ctl"
 data_model = "MMS_206.htm@v5.0.0.1"
+sampled_months = ["2024-01"]

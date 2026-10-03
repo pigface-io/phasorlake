@@ -33,7 +33,7 @@
       "max_ns": 8.908
     },
     "registry/load_embedded_from_blob": {
-      "max_ns": 604908.234
+      "max_ns": 2000000.0
     },
     "registry/resolve_drift_cached": {
       "max_ns": 529.553

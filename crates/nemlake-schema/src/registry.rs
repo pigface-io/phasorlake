@@ -51,6 +51,8 @@ pub struct LineageEntry {
     pub last_seen: Option<String>,
     /// Changes since the previous version.
     pub changes: Vec<Change>,
+    /// How many other column lists were published under this version.
+    pub variants: usize,
 }
 
 /// Every table nemlake knows, indexed for the hot path.
@@ -65,6 +67,8 @@ pub struct Registry {
     by_fingerprint: HashMap<Fingerprint, (TableId, SchemaVersion)>,
     lake_schemas: Vec<SchemaRef>,
     projections: HashMap<(TableId, SchemaVersion), Arc<Projection>>,
+    /// Projections of the declared variants of a version, by their fingerprint.
+    variants: HashMap<(TableId, SchemaVersion, Fingerprint), Arc<Projection>>,
     /// Projections built at run time for drifted or aliased shapes.
     dynamic: Mutex<HashMap<(TableId, Fingerprint), Arc<Projection>>>,
 }
@@ -154,6 +158,7 @@ impl Registry {
         let mut by_fingerprint = HashMap::new();
         let mut lake_schemas = Vec::with_capacity(tables.len());
         let mut projections = HashMap::new();
+        let mut variants = HashMap::new();
         for (i, t) in tables.iter().enumerate() {
             let id = TableId(i as u32);
             by_name.insert(t.name.clone(), id);
@@ -183,6 +188,12 @@ impl Registry {
                 let proj = Projection::build(t, &market, opts, &schema, &names)
                     .expect("a validated version projects onto its table");
                 projections.insert((id, v.n), Arc::new(proj));
+                for x in &v.variants {
+                    let names: Vec<&str> = x.columns.iter().map(String::as_str).collect();
+                    let proj = Projection::build(t, &market, opts, &schema, &names)
+                        .expect("a validated variant projects onto its table");
+                    variants.insert((id, v.n, x.fingerprint), Arc::new(proj));
+                }
             }
             lake_schemas.push(schema);
         }
@@ -196,6 +207,7 @@ impl Registry {
             by_fingerprint,
             lake_schemas,
             projections,
+            variants,
             dynamic: Mutex::new(HashMap::new()),
         }
     }
@@ -260,6 +272,16 @@ impl Registry {
         self.projections.get(&(id, version))
     }
 
+    /// The precomputed projection of a declared variant of a version.
+    pub fn variant_projection(
+        &self,
+        id: TableId,
+        version: SchemaVersion,
+        fp: Fingerprint,
+    ) -> Option<&Arc<Projection>> {
+        self.variants.get(&(id, version, fp))
+    }
+
     /// The table and version that published a column list with this fingerprint.
     pub fn by_fingerprint(&self, fp: Fingerprint) -> Option<(TableId, SchemaVersion)> {
         self.by_fingerprint.get(&fp).copied()
@@ -301,6 +323,7 @@ impl Registry {
                 first_seen: v.first_seen.map(|m| m.to_string()),
                 last_seen: v.last_seen.map(|m| m.to_string()),
                 changes,
+                variants: v.variants.len(),
             });
             prev = Some(v.n);
         }

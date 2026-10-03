@@ -16,7 +16,7 @@ use serde::{Deserialize, Serialize};
 use crate::error::SchemaFileError;
 use crate::model::{
     ColumnDef, ColumnId, ColumnType, Dedupe, LoadMode, Market, MarketDef, Provenance,
-    SchemaVersion, SourceKind, TableDef, TimestampFormat, VersionDef, Visibility,
+    SchemaVersion, SourceKind, TableDef, TimestampFormat, VariantDef, VersionDef, Visibility,
 };
 
 /// The format version this crate reads and writes.
@@ -108,6 +108,20 @@ struct VersionFile {
     last_seen: Option<YearMonth>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     src: Option<String>,
+    /// `[[version.variant]]`: other shapes published under this version.
+    #[serde(default, rename = "variant", skip_serializing_if = "Vec::is_empty")]
+    variants: Vec<VariantFile>,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct VariantFile {
+    columns: Vec<String>,
+    fingerprint: Fingerprint,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    first_seen: Option<YearMonth>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    last_seen: Option<YearMonth>,
 }
 
 #[derive(Serialize, Deserialize, Default, PartialEq)]
@@ -257,6 +271,20 @@ fn to_model(path: &Path, f: TableFile) -> Result<TableDef, SchemaFileError> {
         .map(|v| {
             let mut columns = v.columns;
             columns.iter_mut().for_each(|c| norm(c, &mut buf));
+            let variants = v
+                .variants
+                .into_iter()
+                .map(|x| {
+                    let mut columns = x.columns;
+                    columns.iter_mut().for_each(|c| norm(c, &mut buf));
+                    VariantDef {
+                        columns,
+                        fingerprint: x.fingerprint,
+                        first_seen: x.first_seen,
+                        last_seen: x.last_seen,
+                    }
+                })
+                .collect();
             VersionDef {
                 n: SchemaVersion(v.n),
                 columns,
@@ -264,6 +292,7 @@ fn to_model(path: &Path, f: TableFile) -> Result<TableDef, SchemaFileError> {
                 first_seen: v.first_seen,
                 last_seen: v.last_seen,
                 src: v.src,
+                variants,
             }
         })
         .collect();
@@ -369,6 +398,16 @@ fn from_model(t: &TableDef) -> TableFile {
                 first_seen: v.first_seen,
                 last_seen: v.last_seen,
                 src: v.src.clone(),
+                variants: v
+                    .variants
+                    .iter()
+                    .map(|x| VariantFile {
+                        columns: x.columns.clone(),
+                        fingerprint: x.fingerprint,
+                        first_seen: x.first_seen,
+                        last_seen: x.last_seen,
+                    })
+                    .collect(),
             })
             .collect(),
         provenance: ProvenanceFile {
@@ -526,6 +565,7 @@ pub(crate) mod tests {
                 first_seen: Some("2009-07".parse().unwrap()),
                 last_seen: None,
                 src: Some("irow:MMSDM_2024_01".into()),
+                variants: Vec::new(),
             }],
             provenance: Provenance {
                 ctl: Some("x.ctl".into()),
@@ -574,6 +614,31 @@ pub(crate) mod tests {
         let mut bare = unit_scada();
         bare.provenance = Provenance::default();
         assert!(!write_table(&bare).contains("[provenance]"));
+    }
+
+    #[test]
+    fn variants_round_trip_under_their_version() {
+        let mut t = unit_scada();
+        assert!(!write_table(&t).contains("variant"));
+        t.columns[2].aliases.push("MW".into());
+        t.versions[0].variants.push(VariantDef {
+            columns: vec!["SETTLEMENTDATE".into(), "DUID".into(), "MW".into()],
+            fingerprint: Fingerprint::of_names(["SETTLEMENTDATE", "DUID", "MW"]),
+            first_seen: Some("2010-01".parse().unwrap()),
+            last_seen: None,
+        });
+        let text = write_table(&t);
+        assert!(text.contains("[[version.variant]]"), "{text}");
+        let back = parse_table(Path::new("x.toml"), &text).unwrap();
+        assert_eq!(back, t);
+        assert_eq!(write_table(&back), text);
+        // Variant names are normalised like every other name.
+        let lower = text.replace("\"MW\",\n]\nfingerprint", "\"mw\",\n]\nfingerprint");
+        assert_ne!(lower, text);
+        assert_eq!(parse_table(Path::new("x.toml"), &lower).unwrap(), t);
+        // Unknown keys in a variant are rejected.
+        let bad = text.replace("[[version.variant]]", "[[version.variant]]\nnope = 1");
+        assert!(parse_table(Path::new("x.toml"), &bad).is_err());
     }
 
     #[test]

@@ -16,7 +16,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use nemlake_core::{Category, Diagnose, Diagnostic, Fingerprint, YearMonth};
 use nemlake_schema_model::{
     ColumnDef, ColumnId, ColumnType, Dedupe, LoadMode, Market, Provenance, SchemaVersion,
-    SourceKind, TableDef, VersionDef, Visibility,
+    SourceKind, TableDef, VariantDef, VersionDef, Visibility,
 };
 
 use crate::ctl::{CtlFile, LoaderType};
@@ -151,6 +151,42 @@ const TIME_CANDIDATES: [&str; 8] = [
     "LASTCHANGED",
 ];
 
+/// Data-model text as it goes into a schema file: no trailing whitespace on
+/// any line and no blank lines at either end, so the file passes whitespace
+/// hooks unchanged and regenerates byte-identically.
+fn tidy_text(text: &str) -> String {
+    text.lines()
+        .map(str::trim_end)
+        .collect::<Vec<_>>()
+        .join("\n")
+        .trim_matches('\n')
+        .to_owned()
+}
+
+fn min_month(a: Option<YearMonth>, b: Option<YearMonth>) -> Option<YearMonth> {
+    match (a, b) {
+        (Some(a), Some(b)) => Some(a.min(b)),
+        (a, b) => a.or(b),
+    }
+}
+
+fn max_month(a: Option<YearMonth>, b: Option<YearMonth>) -> Option<YearMonth> {
+    match (a, b) {
+        (Some(a), Some(b)) => Some(a.max(b)),
+        (a, b) => a.or(b),
+    }
+}
+
+/// A fixed order so regeneration is deterministic: shortest first, then by name.
+fn sort_variants(variants: &mut [VariantDef]) {
+    variants.sort_by(|a, b| {
+        a.columns
+            .len()
+            .cmp(&b.columns.len())
+            .then_with(|| a.columns.cmp(&b.columns))
+    });
+}
+
 /// Merges the inputs into a table definition.
 pub fn merge(inputs: &Inputs<'_>) -> Result<TableDef, MergeError> {
     let name = inputs.name.clone();
@@ -173,7 +209,8 @@ pub fn merge(inputs: &Inputs<'_>) -> Result<TableDef, MergeError> {
     for (v, blocks) in &by_version {
         // AEMO sometimes appends columns without bumping the version. When
         // every sampled list is a prefix of the longest one, the longest is
-        // the version's shape and shorter files resolve as compatible drift.
+        // the version's shape and each shorter list is recorded as a
+        // variant, so files of either shape resolve exactly.
         let first = blocks
             .iter()
             .map(|(_, b)| *b)
@@ -185,7 +222,7 @@ pub fn merge(inputs: &Inputs<'_>) -> Result<TableDef, MergeError> {
             }
             if first.columns.starts_with(&b.columns) {
                 notes.push(format!(
-                    "version {v} was published with {} columns and later with {}; the longer list is recorded and shorter files read as drift",
+                    "version {v} was published with {} columns and later with {}; the longer list is the version and the shorter a variant",
                     b.columns.len(),
                     first.columns.len()
                 ));
@@ -257,13 +294,35 @@ pub fn merge(inputs: &Inputs<'_>) -> Result<TableDef, MergeError> {
         }
         let months: Vec<YearMonth> = blocks.iter().filter_map(|(m, _)| *m).collect();
         sampled_months.extend(months.iter().copied());
+        // Every other observed shape of this version, exactly as published.
+        let main_fp = Fingerprint::of_names(first_columns.iter().map(String::as_str));
+        let mut variants: Vec<VariantDef> = Vec::new();
+        for (m, b) in blocks {
+            if b.fingerprint == main_fp {
+                continue;
+            }
+            match variants.iter_mut().find(|x| x.fingerprint == b.fingerprint) {
+                Some(x) => {
+                    x.first_seen = min_month(x.first_seen, *m);
+                    x.last_seen = max_month(x.last_seen, *m);
+                }
+                None => variants.push(VariantDef {
+                    columns: b.columns.clone(),
+                    fingerprint: b.fingerprint,
+                    first_seen: *m,
+                    last_seen: *m,
+                }),
+            }
+        }
+        sort_variants(&mut variants);
         versions.push(VersionDef {
             n: SchemaVersion(*v),
-            fingerprint: Fingerprint::of_names(first_columns.iter().map(String::as_str)),
+            fingerprint: main_fp,
             columns: first_columns,
             first_seen: months.iter().min().copied(),
             last_seen: months.iter().max().copied(),
             src: Some("irow".into()),
+            variants,
         });
     }
     // Keep versions the existing file knows but this run did not sample.
@@ -277,14 +336,26 @@ pub fn merge(inputs: &Inputs<'_>) -> Result<TableDef, MergeError> {
                     }
                 }
             } else if let Some(v) = versions.iter_mut().find(|v| v.n == ev.n) {
-                v.first_seen = match (v.first_seen, ev.first_seen) {
-                    (Some(a), Some(b)) => Some(a.min(b)),
-                    (a, b) => a.or(b),
-                };
-                v.last_seen = match (v.last_seen, ev.last_seen) {
-                    (Some(a), Some(b)) => Some(a.max(b)),
-                    (a, b) => a.or(b),
-                };
+                v.first_seen = min_month(v.first_seen, ev.first_seen);
+                v.last_seen = max_month(v.last_seen, ev.last_seen);
+                // A variant is a fact: keep the ones this run did not sample.
+                for ex_variant in &ev.variants {
+                    if ex_variant.fingerprint == v.fingerprint {
+                        continue;
+                    }
+                    match v
+                        .variants
+                        .iter_mut()
+                        .find(|x| x.fingerprint == ex_variant.fingerprint)
+                    {
+                        Some(x) => {
+                            x.first_seen = min_month(x.first_seen, ex_variant.first_seen);
+                            x.last_seen = max_month(x.last_seen, ex_variant.last_seen);
+                        }
+                        None => v.variants.push(ex_variant.clone()),
+                    }
+                }
+                sort_variants(&mut v.variants);
             }
         }
         versions.sort_by_key(|v| v.n);
@@ -480,7 +551,7 @@ pub fn merge(inputs: &Inputs<'_>) -> Result<TableDef, MergeError> {
             loader: ctl_cols.get(cname).map(|l| l.render()),
             added_in,
             removed_in,
-            description: dm.map(|d| d.comment.clone()).filter(|c| !c.is_empty()),
+            description: dm.map(|d| tidy_text(&d.comment)).filter(|c| !c.is_empty()),
             src,
             curated: false,
         });
@@ -567,7 +638,11 @@ pub fn merge(inputs: &Inputs<'_>) -> Result<TableDef, MergeError> {
             .dm
             .map_or_else(|| "UNKNOWN".to_owned(), |d| d.package.clone()),
         visibility,
-        description: inputs.dm.and_then(|d| d.description.clone()),
+        description: inputs
+            .dm
+            .and_then(|d| d.description.as_deref())
+            .map(tidy_text)
+            .filter(|d| !d.is_empty()),
         report_pairs,
         datasets: vec![],
         archive_files: inputs.archive_files.clone(),
@@ -702,6 +777,7 @@ mod tests {
             first_seen: Some("2026-01".parse().unwrap()),
             last_seen: None,
             src: None,
+            variants: Vec::new(),
         });
         existing.versions[0].first_seen = Some("2009-07".parse().unwrap());
         existing.feeds = vec!["Dispatch_SCADA".into()];
@@ -892,8 +968,22 @@ mod tests {
                 .note
                 .as_deref()
                 .unwrap()
-                .contains("read as drift")
+                .contains("the shorter a variant")
         );
+        // The shorter published list is a variant with its own sighting.
+        let variants = &t.versions[0].variants;
+        assert_eq!(variants.len(), 1);
+        assert_eq!(variants[0].columns, blocks[0].columns);
+        assert_eq!(variants[0].fingerprint, blocks[0].fingerprint);
+        assert_eq!(variants[0].first_seen, inputs.samples[0].0);
+
+        // Regenerating over the result with only the long sample keeps the variant.
+        let mut again = scada_inputs(&ctl, &dm, &[]);
+        again.samples = vec![(Some("2026-10".parse().unwrap()), &longer)];
+        again.existing = Some(&t);
+        let t2 = merge(&again).unwrap();
+        assert_eq!(t2.versions[0].variants, t.versions[0].variants);
+        assert_eq!(t2.versions[0].last_seen, Some("2026-10".parse().unwrap()));
         assert_eq!(
             t.column("EXTRA_MW").unwrap().ty,
             ColumnType::Number {
@@ -934,6 +1024,10 @@ mod tests {
         assert_eq!(duid.aliases, ["CONFIDENTIAL_TO"]);
         assert_eq!(t.versions[0].columns[1], "DUID");
         assert!(t.column("CONFIDENTIAL_TO").is_some(), "alias lookup works");
+        // The renamed list is a variant, written with the name as published.
+        assert_eq!(t.versions[0].variants.len(), 1);
+        assert_eq!(t.versions[0].variants[0].columns[1], "CONFIDENTIAL_TO");
+        assert_eq!(t.versions[0].variants[0].fingerprint, renamed.fingerprint);
         assert!(
             t.provenance
                 .note
@@ -946,6 +1040,13 @@ mod tests {
         inputs.samples.insert(0, (None, &renamed));
         let t = merge(&inputs).unwrap();
         assert_eq!(t.versions[0].columns[1], "DUID");
+    }
+
+    #[test]
+    fn tidy_text_strips_line_ends() {
+        assert_eq!(tidy_text("a: \n b\t\n\n"), "a:\n b");
+        assert_eq!(tidy_text("\n\nplain"), "plain");
+        assert_eq!(tidy_text("  \n"), "");
     }
 
     #[test]

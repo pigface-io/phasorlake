@@ -1764,6 +1764,8 @@ columns = [
     "WDR_DISPATCHED",
 ]
 fingerprint = "xxh3:293c20e06d224c39dffafa2f99abda6e"
+first_seen = "2024-01"
+last_seen = "2024-01"
 src = "irow"
 
 [[version]]
@@ -1902,3 +1904,4 @@ src = "irow"
 [provenance]
 ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_DISPATCHREGIONSUM_202401.ctl"
 data_model = "MMS_131.htm@v5.0.0.1"
+sampled_months = ["2024-01"]

@@ -170,7 +170,8 @@ impl Projection {
 /// How the I row matched the registry.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Status {
-    /// Declared version, identical columns.
+    /// Declared version, identical columns (the version's own list or one
+    /// of its declared variants).
     Exact,
     /// Undeclared version whose columns match declared version `matched`.
     Aliased {
@@ -235,22 +236,25 @@ impl Registry {
         let version = SchemaVersion(irow.version);
         let mut warnings = Vec::new();
 
-        // 1. Exact: declared version with the same fingerprint.
-        if let Some(v) = t.version(version)
-            && v.fingerprint == fp
-        {
-            let projection = self
-                .projection(id, version)
-                .expect("declared versions are precomputed")
-                .clone();
-            self.decimal_warnings(t, &mut warnings);
-            return Ok(Resolved {
-                table: id,
-                version,
-                status: Status::Exact,
-                projection,
-                warnings,
-            });
+        // 1. Exact: declared version with the same fingerprint, or one of
+        //    the other shapes AEMO published under that version number.
+        if let Some(v) = t.version(version) {
+            let projection = if v.fingerprint == fp {
+                self.projection(id, version)
+            } else {
+                self.variant_projection(id, version, fp)
+            };
+            if let Some(projection) = projection {
+                let projection = projection.clone();
+                self.decimal_warnings(t, &mut warnings);
+                return Ok(Resolved {
+                    table: id,
+                    version,
+                    status: Status::Exact,
+                    projection,
+                    warnings,
+                });
+            }
         }
 
         // 2. Aliased: undeclared version, but some declared version has these columns.
@@ -804,20 +808,78 @@ mod tests {
     }
 
     #[test]
-    fn alias_resolves_as_compatible_drift() {
+    fn declared_variants_resolve_exactly() {
+        let r = reg();
+        // A rename AEMO made in place: the archive says CONFIDENTIAL_TO where
+        // the live feed says DUID, both as version 5.
+        let id = r.table_by_name("DISPATCHCONSTRAINT").unwrap();
+        let t = r.table(id);
+        let v = t.versions.last().unwrap();
+        let variant = v.variants.first().expect("the table has a variant");
+        assert_ne!(variant.columns, v.columns);
+        let refs: Vec<&str> = variant.columns.iter().map(String::as_str).collect();
+        let row = IRow {
+            report_type: &t.report_pairs[0].0,
+            report_subtype: &t.report_pairs[0].1,
+            version: v.n.0,
+            columns: &refs,
+        };
+        for mode in [Mode::Permissive, Mode::Strict] {
+            let res = r.resolve(&row, ResolveOptions { mode }).unwrap();
+            assert_eq!(res.status, Status::Exact);
+            assert_eq!(res.version, v.n);
+            assert!(res.warnings.is_empty(), "{:?}", res.warnings);
+            assert!(res.projection.casts.iter().all(|c| c.target.is_some()));
+            assert!(res.projection.missing.is_empty());
+        }
+        // The alias column feeds the same lake column as the canonical name.
+        let main = r.projection(id, v.n).unwrap();
+        let res = r.resolve(&row, ResolveOptions::default()).unwrap();
+        let targets = |p: &Projection| p.casts.iter().map(|c| c.target).collect::<Vec<_>>();
+        assert_eq!(targets(&res.projection), targets(main));
+        assert!(Arc::ptr_eq(
+            &res.projection,
+            r.variant_projection(id, v.n, variant.fingerprint).unwrap()
+        ));
+
+        // Columns appended without a version bump: the short list is a variant
+        // and the columns it lacks are written null.
+        let id = r.table_by_name("DISPATCHINTERCONNECTORRES").unwrap();
+        let t = r.table(id);
+        let v = t.versions.last().unwrap();
+        let short = v
+            .variants
+            .iter()
+            .find(|x| x.columns.len() < v.columns.len())
+            .expect("a shorter variant");
+        let refs: Vec<&str> = short.columns.iter().map(String::as_str).collect();
+        let row = IRow {
+            report_type: &t.report_pairs[0].0,
+            report_subtype: &t.report_pairs[0].1,
+            version: v.n.0,
+            columns: &refs,
+        };
+        let res = r
+            .resolve(&row, ResolveOptions { mode: Mode::Strict })
+            .unwrap();
+        assert_eq!(res.status, Status::Exact);
+        assert!(res.warnings.is_empty());
+        assert_eq!(
+            res.projection.missing.len(),
+            v.columns.len() - short.columns.len()
+        );
+    }
+
+    #[test]
+    fn alias_in_an_undeclared_shape_is_compatible_drift() {
         let r = reg();
         let id = r.table_by_name("DISPATCHCONSTRAINT").unwrap();
         let t = r.table(id);
-        let v = &t.versions[0];
-        let cols: Vec<String> = v
-            .columns
-            .iter()
-            .map(|c| {
-                let def = t.column(c).unwrap();
-                def.aliases.first().cloned().unwrap_or_else(|| c.clone())
-            })
-            .collect();
-        assert_ne!(cols, v.columns, "the fixture table has an alias");
+        let v = t.versions.last().unwrap();
+        // The alias shape minus its last column is not declared anywhere.
+        let variant = v.variants.first().unwrap();
+        let mut cols = variant.columns.clone();
+        let dropped = cols.pop().unwrap();
         let refs: Vec<&str> = cols.iter().map(String::as_str).collect();
         let row = IRow {
             report_type: &t.report_pairs[0].0,
@@ -829,12 +891,16 @@ mod tests {
         assert_eq!(
             res.status,
             Status::Drift {
-                missing: vec![],
+                missing: vec![dropped],
                 extra: vec![],
                 reordered: false
             }
         );
         assert!(res.projection.casts.iter().all(|c| c.target.is_some()));
+        assert!(matches!(
+            r.resolve(&row, ResolveOptions { mode: Mode::Strict }),
+            Err(ResolveError::VersionDrift { .. })
+        ));
     }
 
     #[test]

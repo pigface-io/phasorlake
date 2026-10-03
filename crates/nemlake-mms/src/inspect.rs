@@ -155,11 +155,11 @@ mod tests {
         let unknown = s
             .blocks
             .iter()
-            .find(|b| b.report_subtype == "CASE_SOLUTION")
+            .find(|b| b.report_subtype == "LOCAL_PRICE")
             .unwrap();
         assert_eq!(unknown.status, "schema.unknown_table");
         assert_eq!(unknown.table, None);
-        assert_eq!(unknown.sampler.rows, 1);
+        assert_eq!(unknown.sampler.rows, 3);
         assert_eq!(
             unknown.sampler.column_type(0),
             nemlake_schema::ColumnType::Timestamp
@@ -178,7 +178,7 @@ mod tests {
             },
             &unknown.sampler,
         );
-        assert_eq!(draft.name, "DISPATCH_CASE_SOLUTION");
+        assert_eq!(draft.name, "DISPATCH_LOCAL_PRICE");
         // A D row before any I row is an error from the scanner, not the sink.
         let mut s = InspectSink::new(&r, ResolveOptions::default(), 1);
         assert!(scan(b"D,a,b,1,x\n".as_slice(), &mut s, &ScanOptions::default()).is_err());

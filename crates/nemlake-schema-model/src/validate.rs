@@ -272,6 +272,7 @@ pub fn validate_table(t: &TableDef) -> Vec<Issue> {
                 format!("version {} has last_seen {b} before first_seen {a}", v.n),
             ));
         }
+        validate_variants(t, v, &mut out);
     }
     for c in &t.columns {
         if !t.versions.iter().any(|v| v.columns.contains(&c.name))
@@ -333,6 +334,66 @@ pub fn validate_set<'a>(tables: impl IntoIterator<Item = &'a TableDef>) -> Vec<I
         }
     }
     out
+}
+
+/// A variant is another real shape of a version: its columns must be
+/// columns or aliases of the table, carry the primary key, hash to the
+/// declared fingerprint and differ from the version and its other variants.
+fn validate_variants(t: &TableDef, v: &crate::model::VersionDef, out: &mut Vec<Issue>) {
+    let mut fps: HashSet<Fingerprint> = HashSet::new();
+    fps.insert(v.fingerprint);
+    for (i, x) in v.variants.iter().enumerate() {
+        let label = format!("version {} variant {}", v.n, i + 1);
+        if x.columns.is_empty() {
+            out.push(issue(t, format!("{label} has no columns")));
+        }
+        let mut seen = HashSet::new();
+        for c in &x.columns {
+            match t.column(c) {
+                None => out.push(issue(
+                    t,
+                    format!("{label} lists column {c}, which is not a column or alias"),
+                )),
+                Some(def) => {
+                    if !seen.insert(def.id) {
+                        out.push(issue(t, format!("{label} lists column {} twice", def.name)));
+                    }
+                }
+            }
+        }
+        for k in &t.primary_key {
+            if !x
+                .columns
+                .iter()
+                .any(|c| t.column(c).is_some_and(|d| &d.name == k))
+            {
+                out.push(issue(t, format!("{label} lacks primary-key column {k}")));
+            }
+        }
+        let recomputed = Fingerprint::of_names(x.columns.iter().map(String::as_str));
+        if recomputed != x.fingerprint {
+            out.push(issue(
+                t,
+                format!(
+                    "{label} declares fingerprint {} but its columns hash to {recomputed}",
+                    x.fingerprint
+                ),
+            ));
+        } else if !fps.insert(x.fingerprint) {
+            out.push(issue(
+                t,
+                format!("{label} has the same columns as the version or another variant"),
+            ));
+        }
+        if let (Some(a), Some(b)) = (x.first_seen, x.last_seen)
+            && b < a
+        {
+            out.push(issue(
+                t,
+                format!("{label} has last_seen {b} before first_seen {a}"),
+            ));
+        }
+    }
 }
 
 #[cfg(test)]
@@ -462,6 +523,63 @@ mod tests {
     }
 
     #[test]
+    fn variant_issues() {
+        use crate::model::VariantDef;
+        let variant = |cols: &[&str]| VariantDef {
+            columns: cols.iter().map(|c| (*c).to_owned()).collect(),
+            fingerprint: Fingerprint::of_names(cols.iter().copied()),
+            first_seen: None,
+            last_seen: None,
+        };
+        // A valid variant: an alias name in place of the canonical one.
+        let mut t = unit_scada();
+        t.columns[2].aliases.push("MW".into());
+        t.versions[0]
+            .variants
+            .push(variant(&["SETTLEMENTDATE", "DUID", "MW"]));
+        assert!(validate_table(&t).is_empty(), "{:?}", validate_table(&t));
+        // And a shorter list that still carries the key.
+        t.versions[0]
+            .variants
+            .push(variant(&["SETTLEMENTDATE", "DUID"]));
+        assert!(validate_table(&t).is_empty(), "{:?}", validate_table(&t));
+
+        let with = |v: VariantDef| {
+            let mut t = unit_scada();
+            t.columns[2].aliases.push("MW".into());
+            t.versions[0].variants.push(v);
+            t
+        };
+        has(&with(variant(&[])), "variant 1 has no columns");
+        has(
+            &with(variant(&["SETTLEMENTDATE", "DUID", "NOPE"])),
+            "lists column NOPE, which is not a column or alias",
+        );
+        has(
+            &with(variant(&["SETTLEMENTDATE", "DUID", "SCADAVALUE", "MW"])),
+            "lists column SCADAVALUE twice",
+        );
+        has(
+            &with(variant(&["SETTLEMENTDATE", "MW"])),
+            "lacks primary-key column DUID",
+        );
+        has(
+            &with(variant(&["SETTLEMENTDATE", "DUID", "SCADAVALUE"])),
+            "same columns as the version or another variant",
+        );
+        let mut wrong = variant(&["SETTLEMENTDATE", "DUID", "MW"]);
+        wrong.fingerprint = Fingerprint(7);
+        has(&with(wrong), "variant 1 declares fingerprint");
+        let mut dates = variant(&["SETTLEMENTDATE", "DUID", "MW"]);
+        dates.first_seen = Some("2024-02".parse().unwrap());
+        dates.last_seen = Some("2024-01".parse().unwrap());
+        has(
+            &with(dates),
+            "variant 1 has last_seen 2024-01 before first_seen 2024-02",
+        );
+    }
+
+    #[test]
     fn version_issues() {
         let mut t = unit_scada();
         t.versions.push(t.versions[0].clone());
@@ -504,6 +622,7 @@ mod tests {
             first_seen: Some("2024-02".parse().unwrap()),
             last_seen: Some("2024-01".parse().unwrap()),
             src: None,
+            variants: Vec::new(),
         });
         has(&t, "removed_in 2");
         has(&t, "last_seen 2024-01 before first_seen 2024-02");

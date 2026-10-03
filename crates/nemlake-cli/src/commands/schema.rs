@@ -104,6 +104,7 @@ pub fn schema(ctx: &Context, cmd: &SchemaCmd) -> Result<i32> {
                         e.version.to_string(),
                         e.first_seen.clone().unwrap_or_default(),
                         e.last_seen.clone().unwrap_or_default(),
+                        e.variants.to_string(),
                         e.changes
                             .iter()
                             .map(ToString::to_string)
@@ -117,7 +118,10 @@ pub fn schema(ctx: &Context, cmd: &SchemaCmd) -> Result<i32> {
             } else {
                 print!(
                     "{}",
-                    render::table(&["version", "first seen", "last seen", "changes"], &rows)
+                    render::table(
+                        &["version", "first seen", "last seen", "variants", "changes"],
+                        &rows
+                    )
                 );
             }
             Ok(0)

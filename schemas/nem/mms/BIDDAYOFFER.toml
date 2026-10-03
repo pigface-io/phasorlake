@@ -544,8 +544,11 @@ columns = [
     "REFERENCE_ID",
 ]
 fingerprint = "xxh3:f6de39cac54f87d35aa8c4c99e827e9d"
+first_seen = "2024-01"
+last_seen = "2024-01"
 src = "irow"
 
 [provenance]
 ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_BIDDAYOFFER_202401.ctl"
 data_model = "MMS_18.htm@v5.0.0.1"
+sampled_months = ["2024-01"]

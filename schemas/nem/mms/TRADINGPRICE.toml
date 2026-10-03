@@ -512,8 +512,11 @@ columns = [
     "PRICE_STATUS",
 ]
 fingerprint = "xxh3:84accabeb23e6dc1ae3649d74b16031f"
+first_seen = "2024-01"
+last_seen = "2024-01"
 src = "irow"
 
 [provenance]
 ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_TRADINGPRICE_202401.ctl"
 data_model = "MMS_356.htm@v5.0.0.1"
+sampled_months = ["2024-01"]

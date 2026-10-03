@@ -149,7 +149,16 @@ pub fn breaking_changes(old: &TableDef, new: &TableDef) -> Vec<String> {
                     ov.n
                 ));
             }
-            _ => {}
+            Some(nv) => {
+                for x in &ov.variants {
+                    if nv.variant(x.fingerprint).is_none() {
+                        out.push(format!(
+                            "version {} lost the variant with fingerprint {}; files of that shape would read as drift",
+                            ov.n, x.fingerprint
+                        ));
+                    }
+                }
+            }
         }
     }
     if old.primary_key != new.primary_key {
@@ -207,6 +216,7 @@ mod tests {
             first_seen: None,
             last_seen: None,
             src: None,
+            variants: Vec::new(),
         });
         t
     }
@@ -385,6 +395,23 @@ mod tests {
             breaking_changes(&new, &b)
                 .iter()
                 .any(|m| m.contains("changed its column list"))
+        );
+
+        // Adding a variant is fine; dropping one is breaking.
+        let mut with_variant = new.clone();
+        with_variant.versions[1]
+            .variants
+            .push(crate::model::VariantDef {
+                columns: vec!["SETTLEMENTDATE".into(), "DUID".into()],
+                fingerprint: Fingerprint::of_names(["SETTLEMENTDATE", "DUID"]),
+                first_seen: None,
+                last_seen: None,
+            });
+        assert!(breaking_changes(&new, &with_variant).is_empty());
+        assert!(
+            breaking_changes(&with_variant, &new)
+                .iter()
+                .any(|m| m.contains("version 2 lost the variant"))
         );
 
         let mut b = new.clone();

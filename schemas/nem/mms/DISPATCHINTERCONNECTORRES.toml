@@ -386,9 +386,37 @@ columns = [
     "LOCALLY_CONSTRAINED_IMPORT",
 ]
 fingerprint = "xxh3:1fc31b1897f400a41ec715fe8e683c48"
+first_seen = "2024-01"
+last_seen = "2024-01"
 src = "irow"
+
+[[version.variant]]
+columns = [
+    "SETTLEMENTDATE",
+    "RUNNO",
+    "INTERCONNECTORID",
+    "DISPATCHINTERVAL",
+    "INTERVENTION",
+    "METEREDMWFLOW",
+    "MWFLOW",
+    "MWLOSSES",
+    "MARGINALVALUE",
+    "VIOLATIONDEGREE",
+    "LASTCHANGED",
+    "EXPORTLIMIT",
+    "IMPORTLIMIT",
+    "MARGINALLOSS",
+    "EXPORTGENCONID",
+    "IMPORTGENCONID",
+    "FCASEXPORTLIMIT",
+    "FCASIMPORTLIMIT",
+]
+fingerprint = "xxh3:902d744a70dd5961897f05804be176e7"
+first_seen = "2024-01"
+last_seen = "2024-01"
 
 [provenance]
 ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_DISPATCHINTERCONNECTORRES_202401.ctl"
 data_model = "MMS_127.htm@v5.0.0.1"
-note = "version 3 was published with 18 columns and later with 22; the longer list is recorded and shorter files read as drift"
+sampled_months = ["2024-01"]
+note = "version 3 was published with 18 columns and later with 22; the longer list is the version and the shorter a variant | version 3 was published with 18 columns and later with 22; the longer list is the version and the shorter a variant"

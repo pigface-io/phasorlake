@@ -230,6 +230,34 @@ pub struct VersionDef {
     pub last_seen: Option<YearMonth>,
     /// Where the version was observed, e.g. `irow:MMSDM_2024_01`.
     pub src: Option<String>,
+    /// Other column lists published under this same version number.
+    pub variants: Vec<VariantDef>,
+}
+
+/// Another column list AEMO published under an existing version number.
+///
+/// AEMO appends and renames columns without bumping the I-row version, so
+/// one version can have several real shapes. `VersionDef::columns` is the
+/// widest or newest; every other observed shape is a variant and resolves
+/// exactly instead of as drift. Variant columns are written as observed, so
+/// they may use an alias of a column.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct VariantDef {
+    /// Column names in I-row order, as published (aliases allowed).
+    pub columns: Vec<String>,
+    /// Fingerprint of `columns`.
+    pub fingerprint: Fingerprint,
+    /// Earliest archive month seen with this shape.
+    pub first_seen: Option<YearMonth>,
+    /// Latest archive month seen with this shape.
+    pub last_seen: Option<YearMonth>,
+}
+
+impl VersionDef {
+    /// The variant with this fingerprint.
+    pub fn variant(&self, fp: Fingerprint) -> Option<&VariantDef> {
+        self.variants.iter().find(|x| x.fingerprint == fp)
+    }
 }
 
 /// A table: its identity, its unified columns, and every version.

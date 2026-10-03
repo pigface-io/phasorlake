@@ -624,8 +624,11 @@ columns = [
     "LOWER1SECROP",
 ]
 fingerprint = "xxh3:f047df286b6319ab638a5217e67926bc"
+first_seen = "2024-01"
+last_seen = "2024-01"
 src = "irow"
 
 [provenance]
 ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_PREDISPATCHPRICE_D_202401.ctl"
 data_model = "MMS_276.htm@v5.0.0.1"
+sampled_months = ["2024-01"]

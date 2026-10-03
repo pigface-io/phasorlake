@@ -1032,8 +1032,11 @@ columns = [
     "UIGF",
 ]
 fingerprint = "xxh3:a24661e8767cb5101e3eb32d660b8553"
+first_seen = "2024-01"
+last_seen = "2024-01"
 src = "irow"
 
 [provenance]
 ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_DISPATCHLOAD_202401.ctl"
 data_model = "MMS_128.htm@v5.0.0.1"
+sampled_months = ["2024-01"]

@@ -430,8 +430,11 @@ columns = [
     "PASAAVAILABILITY",
 ]
 fingerprint = "xxh3:b55cfbf651bab041a49204d74342a7d6"
+first_seen = "2024-01"
+last_seen = "2024-01"
 src = "irow"
 
 [provenance]
 ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_BIDPEROFFER1_202401.ctl"
 data_model = "MMS_21.htm@v5.0.0.1"
+sampled_months = ["2024-01"]

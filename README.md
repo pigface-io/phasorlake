@@ -61,6 +61,12 @@ Every Parquet file carries the unified lake schema of its table: every column
 AEMO has ever published for it, so files from different versions read as one
 table and a later Iceberg catalogue can adopt the column ids unchanged.
 
+AEMO appends and renames columns without bumping the I-row version, so one
+version can have several real shapes. The registry records each extra shape
+as a `[[version.variant]]` of its version; a file of any declared shape
+resolves exactly, and only a shape nobody has seen before is reported as
+drift.
+
 Types: `DATE` → `Timestamp(us, +10:00)` (NEM time is fixed AEST), `NUMBER(p,s)`
 → `Float64` (or `Decimal128(p, s)` with `--decimal`), `NUMBER(p,0)` → `Int64`,
 `VARCHAR2`/`CHAR` → `Utf8`.
@@ -86,9 +92,11 @@ numbers may not regress below live in `bench/budgets.json`.
 
 ## Status
 
-M0: the NEM monthly archive from 2024 on, 22 tables in the registry, Parquet +
-manifest. Next: every public table and older archive layouts (M1), live
-5-minute feeds and compaction (M2), WEM and an Iceberg writer (M3).
+Working today: the NEM monthly archive from 2024 on, Parquet + manifest, and
+every table of that archive (143) in the registry, bootstrapped from the
+control files and the head of every zip of January 2024. Next: older archive
+layouts, resumable downloads and `--decimal` end to end; then live 5-minute
+feeds and compaction; then WEM and an Iceberg writer.
 
 ## Developing
 

@@ -592,8 +592,57 @@ columns = [
     "UIGF",
 ]
 fingerprint = "xxh3:109787f8dd912abd295af064d3f493e5"
+first_seen = "2024-01"
+last_seen = "2024-01"
+src = "irow"
+
+[[version]]
+n = 5
+columns = [
+    "RUN_DATETIME",
+    "INTERVENTION",
+    "INTERVAL_DATETIME",
+    "DUID",
+    "CONNECTIONPOINTID",
+    "TRADETYPE",
+    "AGCSTATUS",
+    "INITIALMW",
+    "TOTALCLEARED",
+    "RAMPDOWNRATE",
+    "RAMPUPRATE",
+    "LOWER5MIN",
+    "LOWER60SEC",
+    "LOWER6SEC",
+    "RAISE5MIN",
+    "RAISE60SEC",
+    "RAISE6SEC",
+    "LOWERREG",
+    "RAISEREG",
+    "AVAILABILITY",
+    "RAISE6SECFLAGS",
+    "RAISE60SECFLAGS",
+    "RAISE5MINFLAGS",
+    "RAISEREGFLAGS",
+    "LOWER6SECFLAGS",
+    "LOWER60SECFLAGS",
+    "LOWER5MINFLAGS",
+    "LOWERREGFLAGS",
+    "LASTCHANGED",
+    "SEMIDISPATCHCAP",
+    "DISPATCHMODETIME",
+    "LOWER1SEC",
+    "RAISE1SEC",
+    "LOWER1SECFLAGS",
+    "RAISE1SECFLAGS",
+    "CONFORMANCE_MODE",
+    "UIGF",
+]
+fingerprint = "xxh3:7f70fbe1d381f309f5603bf5ab7f24f3"
+first_seen = "2024-01"
+last_seen = "2024-01"
 src = "irow"
 
 [provenance]
 ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_P5MIN_UNITSOLUTION_202401.ctl"
 data_model = "MMS_241.htm@v5.0.0.1"
+sampled_months = ["2024-01"]

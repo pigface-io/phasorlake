@@ -242,9 +242,32 @@ columns = [
     "LHS",
 ]
 fingerprint = "xxh3:1a5b9a08eea9266f1b4bcad160c7c736"
+first_seen = "2024-01"
+last_seen = "2024-01"
 src = "irow"
+
+[[version.variant]]
+columns = [
+    "SETTLEMENTDATE",
+    "RUNNO",
+    "CONSTRAINTID",
+    "DISPATCHINTERVAL",
+    "INTERVENTION",
+    "RHS",
+    "MARGINALVALUE",
+    "VIOLATIONDEGREE",
+    "LASTCHANGED",
+    "CONFIDENTIAL_TO",
+    "GENCONID_EFFECTIVEDATE",
+    "GENCONID_VERSIONNO",
+    "LHS",
+]
+fingerprint = "xxh3:71ba6dc84cd5e236345dcd15e74fda10"
+first_seen = "2024-01"
+last_seen = "2024-01"
 
 [provenance]
 ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_DISPATCHCONSTRAINT_202401.ctl"
 data_model = "MMS_126.htm@v5.0.0.1"
+sampled_months = ["2024-01"]
 note = "version 5 names column DUID as CONFIDENTIAL_TO in some files; recorded as an alias"

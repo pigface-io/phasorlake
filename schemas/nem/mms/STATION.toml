@@ -198,8 +198,11 @@ columns = [
     "CONNECTIONPOINTID",
 ]
 fingerprint = "xxh3:d89f6f929f5570d3a81770b25c823a35"
+first_seen = "2024-01"
+last_seen = "2024-01"
 src = "irow"
 
 [provenance]
 ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_STATION_202401.ctl"
 data_model = "MMS_261.htm@v5.0.0.1"
+sampled_months = ["2024-01"]

@@ -331,8 +331,11 @@ columns = [
     "CO2E_DATA_SOURCE",
 ]
 fingerprint = "xxh3:2af80fcd3a1c7aba06fded4673b7d6ef"
+first_seen = "2024-01"
+last_seen = "2024-01"
 src = "irow"
 
 [provenance]
 ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_GENUNITS_202401.ctl"
 data_model = "MMS_250.htm@v5.0.0.1"
+sampled_months = ["2024-01"]

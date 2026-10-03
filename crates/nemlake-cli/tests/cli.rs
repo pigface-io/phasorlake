@@ -179,6 +179,38 @@ fn bad_rows_fail_and_are_explained() {
     assert!(out.contains("csv.stopped_fail_fast"), "{out}");
 }
 
+/// The head of every zip of the January 2024 archive: each one must resolve
+/// exactly against the registry (strict mode refuses drift) and every row
+/// must parse into its declared types.
+#[test]
+fn every_archive_table_ingests_strictly() {
+    let cli = Cli::new();
+    let heads =
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("../../testdata/bootstrap/MMSDM_2024_01/heads");
+    let files = std::fs::read_dir(&heads).unwrap().count();
+    assert!(files >= 161, "{files} head fixtures");
+    let (code, out, err) = cli.code(&["--json", "ingest", heads.to_str().unwrap(), "--strict"]);
+    assert_eq!(code, 0, "{err}{}", &out[out.len().saturating_sub(2000)..]);
+    let ls = cli.ok(&["--json", "ls", "--limit", "1000"]);
+    let rows: Vec<&str> = ls.lines().collect();
+    assert_eq!(rows.len(), files, "one ingest per head");
+    for r in &rows {
+        assert!(
+            r.contains("\"status\":\"ok\"") && r.contains("\"bad_rows\":0"),
+            "{r}"
+        );
+    }
+    let errors = cli.ok(&["--json", "errors", "--limit", "1000"]);
+    assert!(
+        !errors.contains("\"schema."),
+        "no schema diagnostics: {errors}"
+    );
+    assert!(
+        !errors.contains("\"parse."),
+        "no parse diagnostics: {errors}"
+    );
+}
+
 #[test]
 fn inspect_and_schema_commands() {
     let cli = Cli::new();
@@ -194,12 +226,12 @@ fn inspect_and_schema_commands() {
     let (code, out, _) = cli.code(&["--json", "inspect", multi.to_str().unwrap(), "--infer"]);
     assert_eq!(code, 5);
     assert!(
-        out.contains("\"drafts\":[{") && out.contains("DISPATCH_CASE_SOLUTION"),
+        out.contains("\"drafts\":[{") && out.contains("DISPATCH_LOCAL_PRICE"),
         "{out}"
     );
     let (code, out, _) = cli.code(&["inspect", multi.to_str().unwrap(), "--infer"]);
     assert_eq!(code, 5);
-    assert!(out.contains("# draft for DISPATCH_CASE_SOLUTION"), "{out}");
+    assert!(out.contains("# draft for DISPATCH_LOCAL_PRICE"), "{out}");
     let zip_path = cli.home.path().join("PUBLIC_DVD_REGION_202401010000.zip");
     make_zip(
         &zip_path,

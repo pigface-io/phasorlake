@@ -376,8 +376,11 @@ columns = [
     "ADG_ID",
 ]
 fingerprint = "xxh3:dd72eaee9ed374a1fbec0274f5b0ca70"
+first_seen = "2024-01"
+last_seen = "2024-01"
 src = "irow"
 
 [provenance]
 ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_DUDETAIL_202401.ctl"
 data_model = "MMS_247.htm@v5.0.0.1"
+sampled_months = ["2024-01"]

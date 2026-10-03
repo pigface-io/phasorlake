@@ -1711,8 +1711,11 @@ columns = [
     "SS_WIND_AVAILABILITY",
 ]
 fingerprint = "xxh3:93b8f8afc0f7abdd6cdd5e600aa9c359"
+first_seen = "2024-01"
+last_seen = "2024-01"
 src = "irow"
 
 [provenance]
 ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_PREDISPATCHREGIONSUM_D_202401.ctl"
 data_model = "MMS_278.htm@v5.0.0.1"
+sampled_months = ["2024-01"]
