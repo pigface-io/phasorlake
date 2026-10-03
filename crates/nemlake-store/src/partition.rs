@@ -1,0 +1,237 @@
+//! Splitting a batch by the market-local month of its time column.
+
+use arrow_array::cast::AsArray;
+use arrow_array::types::{Int32Type, TimestampMicrosecondType, UInt32Type};
+use arrow_array::{Array, PrimitiveArray, RecordBatch};
+use arrow_schema::DataType;
+use nemlake_core::nemtime::local_year_month;
+
+use crate::error::StoreError;
+use crate::writer::Partition;
+
+/// Splits `batch` into one batch per month of `time_col` (UTC micros,
+/// partitioned in market time). The common case, every row in one month,
+/// returns the batch itself without copying. Null time values go to
+/// [`Partition::Unknown`].
+pub fn split_by_month(
+    batch: &RecordBatch,
+    time_col: usize,
+    offset_secs: i32,
+) -> Result<Vec<(Partition, RecordBatch)>, StoreError> {
+    let col = batch.column(time_col);
+    let DataType::Timestamp(arrow_schema::TimeUnit::Microsecond, _) = col.data_type() else {
+        return Err(StoreError::PartitionColumnNotTimestamp {
+            column: batch.schema().field(time_col).name().clone(),
+            observed: col.data_type().to_string(),
+        });
+    };
+    let ts: &PrimitiveArray<TimestampMicrosecondType> = col.as_primitive();
+    if batch.num_rows() == 0 {
+        return Ok(vec![]);
+    }
+    let part_of = |i: usize| -> Partition {
+        if ts.is_null(i) {
+            Partition::Unknown
+        } else {
+            let (y, m) = local_year_month(ts.value(i), offset_secs);
+            Partition::Month {
+                year: y,
+                month: m as u8,
+            }
+        }
+    };
+    let first = part_of(0);
+    let mut all_same = true;
+    for i in 1..batch.num_rows() {
+        if part_of(i) != first {
+            all_same = false;
+            break;
+        }
+    }
+    if all_same {
+        return Ok(vec![(first, batch.clone())]);
+    }
+    // Rare: a file spanning months. Group row indexes per partition.
+    let mut groups: Vec<(Partition, Vec<u32>)> = Vec::new();
+    for i in 0..batch.num_rows() {
+        let p = part_of(i);
+        match groups.iter_mut().find(|(gp, _)| *gp == p) {
+            Some((_, idx)) => idx.push(i as u32),
+            None => groups.push((p, vec![i as u32])),
+        }
+    }
+    let mut out = Vec::with_capacity(groups.len());
+    for (p, idx) in groups {
+        let indices = PrimitiveArray::<UInt32Type>::from(idx);
+        let taken = arrow_select::take::take_record_batch(batch, &indices).map_err(|e| {
+            StoreError::Parquet {
+                path: String::new(),
+                message: format!("splitting a batch by month failed: {e}"),
+            }
+        })?;
+        out.push((p, taken));
+    }
+    Ok(out)
+}
+
+/// Minimum and maximum of a timestamp column, ignoring nulls.
+pub fn time_bounds(batch: &RecordBatch, time_col: usize) -> (Option<i64>, Option<i64>) {
+    let col = batch.column(time_col);
+    let Some(ts) = col.as_primitive_opt::<TimestampMicrosecondType>() else {
+        return (None, None);
+    };
+    let mut min = None;
+    let mut max = None;
+    for v in ts.iter().flatten() {
+        min = Some(min.map_or(v, |m: i64| m.min(v)));
+        max = Some(max.map_or(v, |m: i64| m.max(v)));
+    }
+    (min, max)
+}
+
+/// Whether a timestamp column is non-decreasing, so Parquet can declare it sorted.
+pub fn is_sorted(batch: &RecordBatch, time_col: usize) -> bool {
+    let Some(ts) = batch
+        .column(time_col)
+        .as_primitive_opt::<TimestampMicrosecondType>()
+    else {
+        return false;
+    };
+    let mut prev: Option<i64> = None;
+    for v in ts {
+        let Some(v) = v else { return false };
+        if prev.is_some_and(|p| v < p) {
+            return false;
+        }
+        prev = Some(v);
+    }
+    true
+}
+
+/// The `Int32` day-count form is never used for partitioning; kept so the
+/// type import is exercised if a Date32 time column is added later.
+#[allow(dead_code)]
+fn date_days(batch: &RecordBatch, col: usize) -> Option<&PrimitiveArray<Int32Type>> {
+    batch.column(col).as_primitive_opt::<Int32Type>()
+}
+
+#[cfg(test)]
+mod tests {
+    use std::sync::Arc;
+
+    use arrow_array::{Int64Array, TimestampMicrosecondArray};
+    use arrow_schema::{Field, Schema, TimeUnit};
+    use nemlake_core::nemtime::{NEM_OFFSET_SECS, parse_micros};
+
+    use super::*;
+
+    fn batch(times: &[Option<&str>]) -> RecordBatch {
+        let vals: Vec<Option<i64>> = times
+            .iter()
+            .map(|t| t.map(|s| parse_micros(s.as_bytes(), NEM_OFFSET_SECS).unwrap()))
+            .collect();
+        let ts = TimestampMicrosecondArray::from(vals).with_timezone("+10:00");
+        let ids = Int64Array::from((0..times.len() as i64).collect::<Vec<_>>());
+        let schema = Arc::new(Schema::new(vec![
+            Field::new(
+                "SETTLEMENTDATE",
+                DataType::Timestamp(TimeUnit::Microsecond, Some("+10:00".into())),
+                true,
+            ),
+            Field::new("ID", DataType::Int64, false),
+        ]));
+        RecordBatch::try_new(schema, vec![Arc::new(ts), Arc::new(ids)]).unwrap()
+    }
+
+    #[test]
+    fn single_month_is_passed_through() {
+        let b = batch(&[
+            Some("2024/01/01 00:05:00"),
+            Some("2024/01/31 23:55:00"),
+            Some("2024/02/01 00:00:00"),
+        ]);
+        // The last interval of January is labelled 2024/02/01 00:00:00: it is February in market time.
+        let parts = split_by_month(&b, 0, NEM_OFFSET_SECS).unwrap();
+        assert_eq!(parts.len(), 2);
+        assert_eq!(
+            parts[0].0,
+            Partition::Month {
+                year: 2024,
+                month: 1
+            }
+        );
+        assert_eq!(parts[0].1.num_rows(), 2);
+        assert_eq!(
+            parts[1].0,
+            Partition::Month {
+                year: 2024,
+                month: 2
+            }
+        );
+        assert_eq!(parts[1].1.num_rows(), 1);
+        let one = batch(&[Some("2024/01/01 00:05:00"), Some("2024/01/02 00:05:00")]);
+        let parts = split_by_month(&one, 0, NEM_OFFSET_SECS).unwrap();
+        assert_eq!(parts.len(), 1);
+        assert_eq!(parts[0].1.num_rows(), 2);
+        // Market time matters: 2024/01/01 05:00 AEST is 2023-12-31 in UTC.
+        let edge = batch(&[Some("2024/01/01 05:00:00")]);
+        assert_eq!(
+            split_by_month(&edge, 0, NEM_OFFSET_SECS).unwrap()[0].0,
+            Partition::Month {
+                year: 2024,
+                month: 1
+            }
+        );
+        assert_eq!(
+            split_by_month(&edge, 0, 0).unwrap()[0].0,
+            Partition::Month {
+                year: 2023,
+                month: 12
+            }
+        );
+    }
+
+    #[test]
+    fn nulls_go_to_unknown_and_bounds_and_sortedness() {
+        let b = batch(&[
+            Some("2024/01/02 00:00:00"),
+            None,
+            Some("2024/01/01 00:00:00"),
+        ]);
+        let parts = split_by_month(&b, 0, NEM_OFFSET_SECS).unwrap();
+        assert_eq!(parts.len(), 2);
+        assert!(
+            parts
+                .iter()
+                .any(|(p, b)| *p == Partition::Unknown && b.num_rows() == 1)
+        );
+        let (min, max) = time_bounds(&b, 0);
+        assert_eq!(
+            min,
+            Some(parse_micros(b"2024/01/01 00:00:00", NEM_OFFSET_SECS).unwrap())
+        );
+        assert_eq!(
+            max,
+            Some(parse_micros(b"2024/01/02 00:00:00", NEM_OFFSET_SECS).unwrap())
+        );
+        assert!(!is_sorted(&b, 0));
+        let sorted = batch(&[
+            Some("2024/01/01 00:00:00"),
+            Some("2024/01/01 00:00:00"),
+            Some("2024/01/02 00:00:00"),
+        ]);
+        assert!(is_sorted(&sorted, 0));
+        assert!(!is_sorted(&b, 1), "not a timestamp column");
+        assert_eq!(time_bounds(&b, 1), (None, None));
+        let empty = batch(&[]);
+        assert!(
+            split_by_month(&empty, 0, NEM_OFFSET_SECS)
+                .unwrap()
+                .is_empty()
+        );
+        assert!(matches!(
+            split_by_month(&b, 1, NEM_OFFSET_SECS),
+            Err(StoreError::PartitionColumnNotTimestamp { .. })
+        ));
+    }
+}

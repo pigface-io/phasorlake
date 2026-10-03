@@ -1,1 +1,19 @@
-//! Writing the lake: Parquet files, partitions, the SQLite manifest.
+//! Writing the lake.
+//!
+//! Layer L3. [`LakeWriter`] is the port the pipeline writes through;
+//! [`ParquetHive`] is the production adapter (Hive-partitioned Parquet with
+//! atomic rename). [`partition`] splits a batch by the market-local month of
+//! its time column. [`manifest`] is the SQLite record of every file, ingest,
+//! output and diagnostic, owned by one thread and driven through an async
+//! handle so the pipeline awaits it and SQLite sees one writer.
+
+pub mod error;
+pub mod manifest;
+pub mod parquet_hive;
+pub mod partition;
+pub mod writer;
+
+pub use error::StoreError;
+pub use manifest::{Manifest, ManifestHandle};
+pub use parquet_hive::ParquetHive;
+pub use writer::{FileMeta, LakeWriter, Partition, PartitionKey, WriterId, WrittenFile};

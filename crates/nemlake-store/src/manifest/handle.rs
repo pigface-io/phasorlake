@@ -1,0 +1,355 @@
+//! The manifest as an actor: one thread owns the connection, callers await
+//! replies over channels.
+
+use std::path::Path;
+use std::thread::JoinHandle;
+
+use nemlake_core::Diagnostic;
+use tokio::sync::{mpsc, oneshot};
+
+use super::{DiagFilter, FileRecord, IngestEnd, IngestRecord, IngestStart, Manifest, RunRecord};
+use crate::error::ManifestError;
+
+type Reply<T> = oneshot::Sender<Result<T, ManifestError>>;
+
+enum Cmd {
+    BeginRun(String, Reply<i64>),
+    FinishRun(i64, i32, String, Reply<()>),
+    RecordFile(FileRecord, Reply<i64>),
+    IsIngested(String, String, Reply<bool>),
+    FileByUrl(String, Reply<Option<(i64, FileRecord)>>),
+    OutputsOfFile(i64, Reply<Vec<String>>),
+    SupersedeFile(i64, Reply<usize>),
+    BeginIngest(IngestStart, Reply<i64>),
+    FinishIngest(i64, IngestEnd, Reply<()>),
+    AbortRunning(Reply<usize>),
+    RecordDiagnostic(i64, Option<i64>, Box<Diagnostic>, Reply<()>),
+    RecordSchemaSeen(Box<SchemaSeen>, Reply<()>),
+    ListIngests(Option<String>, bool, usize, Reply<Vec<IngestRecord>>),
+    ListDiagnostics(DiagFilter, Reply<Vec<(i64, Option<i64>, Diagnostic)>>),
+    LatestRun(Reply<Option<RunRecord>>),
+    TableTotals(String, Reply<(u64, u64)>),
+}
+
+/// A shape observation.
+#[derive(Debug, Clone)]
+pub struct SchemaSeen {
+    /// Fingerprint text.
+    pub fingerprint: String,
+    /// Table, when resolved.
+    pub table: Option<String>,
+    /// Report type.
+    pub report_type: String,
+    /// Report subtype.
+    pub report_subtype: String,
+    /// Version.
+    pub version: u16,
+    /// Columns.
+    pub columns: Vec<String>,
+    /// Resolution status label.
+    pub status: String,
+    /// File id.
+    pub file_id: Option<i64>,
+}
+
+/// An async handle to the manifest thread. Cloning shares the thread.
+#[derive(Clone)]
+pub struct ManifestHandle {
+    tx: mpsc::Sender<Cmd>,
+}
+
+/// Owns the thread; dropping it after every handle is gone stops the thread.
+pub struct ManifestThread {
+    join: Option<JoinHandle<()>>,
+}
+
+impl Drop for ManifestThread {
+    fn drop(&mut self) {
+        if let Some(j) = self.join.take() {
+            let _ = j.join();
+        }
+    }
+}
+
+impl ManifestHandle {
+    /// Opens the manifest on its own thread.
+    pub fn spawn(path: &Path) -> Result<(Self, ManifestThread), ManifestError> {
+        let manifest = Manifest::open(path)?;
+        Ok(Self::spawn_with(manifest))
+    }
+
+    /// Runs an already-open manifest on its own thread.
+    pub fn spawn_with(mut manifest: Manifest) -> (Self, ManifestThread) {
+        let (tx, mut rx) = mpsc::channel::<Cmd>(256);
+        let join = std::thread::Builder::new()
+            .name("nemlake-manifest".into())
+            .spawn(move || {
+                while let Some(cmd) = rx.blocking_recv() {
+                    match cmd {
+                        Cmd::BeginRun(argv, r) => {
+                            let _ = r.send(manifest.begin_run(&argv));
+                        }
+                        Cmd::FinishRun(id, code, summary, r) => {
+                            let _ = r.send(manifest.finish_run(id, code, &summary));
+                        }
+                        Cmd::RecordFile(f, r) => {
+                            let _ = r.send(manifest.record_file(&f));
+                        }
+                        Cmd::IsIngested(url, sha, r) => {
+                            let _ = r.send(manifest.is_ingested(&url, &sha));
+                        }
+                        Cmd::FileByUrl(url, r) => {
+                            let _ = r.send(manifest.file_by_url(&url));
+                        }
+                        Cmd::OutputsOfFile(id, r) => {
+                            let _ = r.send(manifest.outputs_of_file(id));
+                        }
+                        Cmd::SupersedeFile(id, r) => {
+                            let _ = r.send(manifest.supersede_file(id));
+                        }
+                        Cmd::BeginIngest(s, r) => {
+                            let _ = r.send(manifest.begin_ingest(&s));
+                        }
+                        Cmd::FinishIngest(id, e, r) => {
+                            let _ = r.send(manifest.finish_ingest(id, &e));
+                        }
+                        Cmd::AbortRunning(r) => {
+                            let _ = r.send(manifest.abort_running());
+                        }
+                        Cmd::RecordDiagnostic(run, ingest, d, r) => {
+                            let _ = r.send(manifest.record_diagnostic(run, ingest, &d));
+                        }
+                        Cmd::RecordSchemaSeen(s, r) => {
+                            let _ = r.send(manifest.record_schema_seen(&s));
+                        }
+                        Cmd::ListIngests(table, failed, limit, r) => {
+                            let _ = r.send(manifest.list_ingests(table.as_deref(), failed, limit));
+                        }
+                        Cmd::ListDiagnostics(f, r) => {
+                            let _ = r.send(manifest.list_diagnostics(&f));
+                        }
+                        Cmd::LatestRun(r) => {
+                            let _ = r.send(manifest.latest_run());
+                        }
+                        Cmd::TableTotals(t, r) => {
+                            let _ = r.send(manifest.table_totals(&t));
+                        }
+                    }
+                }
+            })
+            .expect("spawning the manifest thread");
+        (Self { tx }, ManifestThread { join: Some(join) })
+    }
+
+    async fn call<T>(&self, make: impl FnOnce(Reply<T>) -> Cmd) -> Result<T, ManifestError> {
+        let (tx, rx) = oneshot::channel();
+        self.tx
+            .send(make(tx))
+            .await
+            .map_err(|_| ManifestError::Closed)?;
+        rx.await.map_err(|_| ManifestError::Closed)?
+    }
+
+    /// See [`Manifest::begin_run`].
+    pub async fn begin_run(&self, argv: &str) -> Result<i64, ManifestError> {
+        self.call(|r| Cmd::BeginRun(argv.to_owned(), r)).await
+    }
+    /// See [`Manifest::finish_run`].
+    pub async fn finish_run(
+        &self,
+        run_id: i64,
+        exit_code: i32,
+        summary_json: &str,
+    ) -> Result<(), ManifestError> {
+        self.call(|r| Cmd::FinishRun(run_id, exit_code, summary_json.to_owned(), r))
+            .await
+    }
+    /// See [`Manifest::record_file`].
+    pub async fn record_file(&self, f: FileRecord) -> Result<i64, ManifestError> {
+        self.call(|r| Cmd::RecordFile(f, r)).await
+    }
+    /// See [`Manifest::is_ingested`].
+    pub async fn is_ingested(&self, url: &str, sha256: &str) -> Result<bool, ManifestError> {
+        self.call(|r| Cmd::IsIngested(url.to_owned(), sha256.to_owned(), r))
+            .await
+    }
+    /// See [`Manifest::file_by_url`].
+    pub async fn file_by_url(&self, url: &str) -> Result<Option<(i64, FileRecord)>, ManifestError> {
+        self.call(|r| Cmd::FileByUrl(url.to_owned(), r)).await
+    }
+    /// See [`Manifest::outputs_of_file`].
+    pub async fn outputs_of_file(&self, file_id: i64) -> Result<Vec<String>, ManifestError> {
+        self.call(|r| Cmd::OutputsOfFile(file_id, r)).await
+    }
+    /// See [`Manifest::supersede_file`].
+    pub async fn supersede_file(&self, file_id: i64) -> Result<usize, ManifestError> {
+        self.call(|r| Cmd::SupersedeFile(file_id, r)).await
+    }
+    /// See [`Manifest::begin_ingest`].
+    pub async fn begin_ingest(&self, s: IngestStart) -> Result<i64, ManifestError> {
+        self.call(|r| Cmd::BeginIngest(s, r)).await
+    }
+    /// See [`Manifest::finish_ingest`].
+    pub async fn finish_ingest(&self, ingest_id: i64, e: IngestEnd) -> Result<(), ManifestError> {
+        self.call(|r| Cmd::FinishIngest(ingest_id, e, r)).await
+    }
+    /// See [`Manifest::abort_running`].
+    pub async fn abort_running(&self) -> Result<usize, ManifestError> {
+        self.call(Cmd::AbortRunning).await
+    }
+    /// See [`Manifest::record_diagnostic`].
+    pub async fn record_diagnostic(
+        &self,
+        run_id: i64,
+        ingest_id: Option<i64>,
+        d: Diagnostic,
+    ) -> Result<(), ManifestError> {
+        self.call(|r| Cmd::RecordDiagnostic(run_id, ingest_id, Box::new(d), r))
+            .await
+    }
+    /// See [`Manifest::record_schema_seen`].
+    pub async fn record_schema_seen(&self, s: SchemaSeen) -> Result<(), ManifestError> {
+        self.call(|r| Cmd::RecordSchemaSeen(Box::new(s), r)).await
+    }
+    /// See [`Manifest::list_ingests`].
+    pub async fn list_ingests(
+        &self,
+        table: Option<String>,
+        failed_only: bool,
+        limit: usize,
+    ) -> Result<Vec<IngestRecord>, ManifestError> {
+        self.call(|r| Cmd::ListIngests(table, failed_only, limit, r))
+            .await
+    }
+    /// See [`Manifest::list_diagnostics`].
+    pub async fn list_diagnostics(
+        &self,
+        f: DiagFilter,
+    ) -> Result<Vec<(i64, Option<i64>, Diagnostic)>, ManifestError> {
+        self.call(|r| Cmd::ListDiagnostics(f, r)).await
+    }
+    /// See [`Manifest::latest_run`].
+    pub async fn latest_run(&self) -> Result<Option<RunRecord>, ManifestError> {
+        self.call(Cmd::LatestRun).await
+    }
+    /// See [`Manifest::table_totals`].
+    pub async fn table_totals(&self, table: &str) -> Result<(u64, u64), ManifestError> {
+        self.call(|r| Cmd::TableTotals(table.to_owned(), r)).await
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use nemlake_core::Category;
+
+    use super::*;
+    use crate::manifest::IngestStatus;
+
+    #[tokio::test]
+    async fn handle_round_trips_through_the_thread() {
+        let (h, thread) = ManifestHandle::spawn_with(Manifest::in_memory().unwrap());
+        let run = h.begin_run("x").await.unwrap();
+        let fid = h
+            .record_file(FileRecord {
+                source: "s".into(),
+                url: "u".into(),
+                cache_path: "c".into(),
+                sha256: "sha".into(),
+                size: 1,
+                etag: None,
+                last_modified: None,
+            })
+            .await
+            .unwrap();
+        assert_eq!(h.file_by_url("u").await.unwrap().unwrap().0, fid);
+        assert!(!h.is_ingested("u", "sha").await.unwrap());
+        let iid = h
+            .begin_ingest(IngestStart {
+                run_id: run,
+                file_id: fid,
+                entry: "e".into(),
+                table: "T".into(),
+                schema_version: 1,
+                fingerprint: "f".into(),
+            })
+            .await
+            .unwrap();
+        h.record_schema_seen(SchemaSeen {
+            fingerprint: "f".into(),
+            table: Some("T".into()),
+            report_type: "A".into(),
+            report_subtype: "B".into(),
+            version: 1,
+            columns: vec!["X".into()],
+            status: "exact".into(),
+            file_id: Some(fid),
+        })
+        .await
+        .unwrap();
+        h.finish_ingest(
+            iid,
+            IngestEnd {
+                status: IngestStatus::Ok,
+                rows: 2,
+                bad_rows: 0,
+                quarantine_path: None,
+                outputs: vec![],
+                error_code: None,
+            },
+        )
+        .await
+        .unwrap();
+        assert!(h.is_ingested("u", "sha").await.unwrap());
+        h.record_diagnostic(
+            run,
+            Some(iid),
+            Diagnostic::warning("schema.x", Category::Schema, "w"),
+        )
+        .await
+        .unwrap();
+        assert_eq!(
+            h.list_diagnostics(DiagFilter {
+                limit: 5,
+                ..Default::default()
+            })
+            .await
+            .unwrap()
+            .len(),
+            1
+        );
+        assert_eq!(h.list_ingests(None, false, 5).await.unwrap().len(), 1);
+        assert_eq!(h.table_totals("T").await.unwrap(), (2, 0));
+        assert_eq!(h.outputs_of_file(fid).await.unwrap().len(), 0);
+        assert_eq!(h.supersede_file(fid).await.unwrap(), 1);
+        assert_eq!(h.abort_running().await.unwrap(), 0);
+        h.finish_run(run, 0, "{}").await.unwrap();
+        assert_eq!(h.latest_run().await.unwrap().unwrap().exit_code, Some(0));
+        drop(h);
+        drop(thread);
+    }
+
+    #[tokio::test]
+    async fn closed_thread_reports_closed() {
+        let (h, thread) = ManifestHandle::spawn_with(Manifest::in_memory().unwrap());
+        // Make the thread exit by closing the receiver side: only possible by
+        // dropping every sender, so clone a handle, drop the original, then
+        // drop the clone and observe via a fresh send failing.
+        let h2 = h.clone();
+        drop(h);
+        drop(h2);
+        drop(thread);
+        let (tx, _rx) = mpsc::channel::<Cmd>(1);
+        drop(tx);
+        // A handle whose channel is closed reports Closed.
+        let (tx, rx) = mpsc::channel::<Cmd>(1);
+        drop(rx);
+        let dead = ManifestHandle { tx };
+        assert!(matches!(
+            dead.latest_run().await,
+            Err(ManifestError::Closed)
+        ));
+        let d =
+            ManifestHandle::spawn(&tempfile::tempdir().unwrap().path().join("m.sqlite")).unwrap();
+        assert!(d.0.latest_run().await.unwrap().is_none());
+    }
+}
