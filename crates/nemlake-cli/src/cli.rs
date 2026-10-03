@@ -33,6 +33,9 @@ pub struct Cli {
     /// Emit Decimal128 for NUMBER(p,s) columns instead of f64.
     #[arg(long, global = true)]
     pub decimal: bool,
+    /// Use only the tables built into nemlake; ignore `{home}/schemas/`.
+    #[arg(long, global = true)]
+    pub no_user_schemas: bool,
     /// The command.
     #[command(subcommand)]
     pub command: Command,
@@ -203,6 +206,21 @@ pub enum SchemaCmd {
     Validate {
         /// Directory.
         dir: Option<PathBuf>,
+    },
+    /// Draft what a file would add to the registry: a table for a report
+    /// pair nobody declared, a version or a variant for a column list the
+    /// table does not have yet.
+    Infer {
+        /// A zip or CSV.
+        path: PathBuf,
+        /// Write each draft to `{home}/schemas/` as `DRAFT_{TABLE}.toml`
+        /// instead of printing it. A draft is ignored until it is renamed
+        /// to `{TABLE}.toml`.
+        #[arg(long)]
+        write: bool,
+        /// Rows to sample per block for the types of new columns.
+        #[arg(long, default_value_t = 1000)]
+        sample_rows: u64,
     },
 }
 

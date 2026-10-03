@@ -325,6 +325,105 @@ fn inspect_and_schema_commands() {
     assert!(err.contains("schema."), "{err}");
 }
 
+/// `schema infer` drafts what a file adds; a draft renamed into
+/// `{home}/schemas/` is in effect for every command, without a rebuild.
+#[test]
+fn schema_infer_drafts_and_user_schemas_take_effect() {
+    let cli = Cli::new();
+    // Two report pairs no table claims, in one file.
+    let new = cli.home.path().join("new_pairs.csv");
+    std::fs::write(
+        &new,
+        "C,NEMP.WORLD,TEST\nI,NEMLAKE_TEST,FIRST,1,SETTLEMENTDATE,UNIT,VALUE\nD,NEMLAKE_TEST,FIRST,1,\"2024/01/01 00:05:00\",A1,1.5\nI,NEMLAKE_TEST,SECOND,1,SETTLEMENTDATE,FLAG\nD,NEMLAKE_TEST,SECOND,1,\"2024/01/01 00:05:00\",Y\nC,\"END OF REPORT\",6\n",
+    )
+    .unwrap();
+    let new = new.to_str().unwrap();
+    let dir = cli.home.path().join("schemas/nem/mms");
+    let adopt = |table: &str| {
+        std::fs::rename(
+            dir.join(format!("DRAFT_{table}.toml")),
+            dir.join(format!("{table}.toml")),
+        )
+        .unwrap();
+    };
+
+    // Each pair gets a draft.
+    let out = cli.ok(&["schema", "infer", new]);
+    assert!(out.contains("# draft for NEMLAKE_TEST_FIRST"), "{out}");
+    assert!(out.contains("# draft for NEMLAKE_TEST_SECOND"), "{out}");
+    assert!(out.contains("\"inferred\""), "{out}");
+    assert!(!dir.exists(), "printing writes nothing");
+    let out = cli.ok(&["schema", "infer", new, "--write"]);
+    assert!(out.contains("2 draft(s)"), "{out}");
+    assert!(dir.join("DRAFT_NEMLAKE_TEST_FIRST.toml").is_file());
+    assert!(dir.join("DRAFT_NEMLAKE_TEST_SECOND.toml").is_file());
+    // A draft is inert until it is renamed.
+    let (code, out, _) = cli.code(&["inspect", new]);
+    assert_eq!(code, 5, "{out}");
+    adopt("NEMLAKE_TEST_FIRST");
+    adopt("NEMLAKE_TEST_SECOND");
+    let (code, out, err) = cli.code(&["inspect", new]);
+    assert_eq!(code, 0, "{out}{err}");
+    assert!(
+        out.contains("NEMLAKE_TEST_FIRST") && !out.contains("schema.unknown_table"),
+        "{out}"
+    );
+    assert!(
+        cli.ok(&["schema", "infer", new])
+            .contains("nothing to infer")
+    );
+    assert!(cli.ok(&["schema", "list"]).contains("NEMLAKE_TEST_SECOND"));
+    // The file now ingests in strict mode.
+    let (code, out, err) = cli.code(&["ingest", new, "--strict"]);
+    assert_eq!(code, 0, "{out}{err}");
+    let ls = cli.ok(&["--json", "ls", "--limit", "100"]);
+    assert!(ls.contains("\"table\":\"NEMLAKE_TEST_FIRST\""), "{ls}");
+    assert!(ls.contains("\"table\":\"NEMLAKE_TEST_SECOND\""), "{ls}");
+    // Without the user's tables the pairs are unknown again.
+    let (code, _, _) = cli.code(&["--no-user-schemas", "inspect", new]);
+    assert_eq!(code, 5);
+
+    // A known table published under a new version with a new column.
+    let v2 = cli.home.path().join("scada_v2.csv");
+    std::fs::write(
+        &v2,
+        "C,NEMP.WORLD,TEST\nI,DISPATCH,UNIT_SCADA,2,SETTLEMENTDATE,DUID,SCADAVALUE,QUALITY\nD,DISPATCH,UNIT_SCADA,2,\"2024/01/01 00:05:00\",BW01,1.5,GOOD\nC,\"END OF REPORT\",4\n",
+    )
+    .unwrap();
+    let v2 = v2.to_str().unwrap();
+    let (code, out, err) = cli.code(&["ingest", v2, "--strict"]);
+    assert_ne!(
+        code, 0,
+        "an undeclared version is refused in strict mode: {out}{err}"
+    );
+    let out = cli.ok(&["--json", "schema", "infer", v2, "--write"]);
+    assert!(
+        out.contains("\"table\":\"DISPATCH_UNIT_SCADA\"") && out.contains("QUALITY"),
+        "{out}"
+    );
+    assert!(out.contains("\"issues\":[]"), "{out}");
+    adopt("DISPATCH_UNIT_SCADA");
+    let (code, out, err) = cli.code(&["ingest", v2, "--strict"]);
+    assert_eq!(code, 0, "{out}{err}");
+    assert!(
+        cli.ok(&["schema", "lineage", "DISPATCH_UNIT_SCADA"])
+            .contains("QUALITY")
+    );
+
+    // A broken file in the user's directory stops every command, and says how to go on.
+    std::fs::write(dir.join("BROKEN.toml"), "schema_format = 1\nname = 3\n").unwrap();
+    let (code, _, err) = cli.code(&["schema", "list"]);
+    assert_ne!(code, 0);
+    assert!(
+        err.contains("BROKEN.toml") && err.contains("--no-user-schemas"),
+        "{err}"
+    );
+    assert!(
+        cli.ok(&["--no-user-schemas", "schema", "list"])
+            .contains("DISPATCH_UNIT_SCADA")
+    );
+}
+
 /// `cache gc`: leftovers always go; a download goes when the lake already
 /// holds it (`--ingested`) or when it is old (`--older-than`).
 #[test]

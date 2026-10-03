@@ -34,8 +34,35 @@ fn issue(t: &TableDef, message: impl Into<String>) -> Issue {
     }
 }
 
-/// Checks one table in isolation.
+/// Checks one table in isolation: its structure, and that every column
+/// has been curated. This is what the committed registry must pass.
 pub fn validate_table(t: &TableDef) -> Vec<Issue> {
+    let mut out = validate_structure(t);
+    out.extend(uncurated(t));
+    out
+}
+
+/// Columns whose type nobody has confirmed: `src = ["inferred"]`. They may
+/// not be committed to the registry, but a table a user keeps for their
+/// own files may have them.
+pub fn uncurated(t: &TableDef) -> Vec<Issue> {
+    t.columns
+        .iter()
+        .filter(|c| c.src.iter().any(|s| s == "inferred"))
+        .map(|c| {
+            issue(
+                t,
+                format!(
+                    "column {} has src inferred; curate it before committing",
+                    c.name
+                ),
+            )
+        })
+        .collect()
+}
+
+/// Checks that a table is well formed, whoever wrote it.
+pub fn validate_structure(t: &TableDef) -> Vec<Issue> {
     let mut out = Vec::new();
     if t.name.is_empty() {
         out.push(issue(t, "name is empty"));
@@ -293,15 +320,6 @@ pub fn validate_table(t: &TableDef) -> Vec<Issue> {
         });
         if !in_a_shape && c.src.iter().all(|s| s != "manual") {
             out.push(issue(t, format!("column {} appears in no version", c.name)));
-        }
-        if c.src.iter().any(|s| s == "inferred") {
-            out.push(issue(
-                t,
-                format!(
-                    "column {} has src inferred; curate it before committing",
-                    c.name
-                ),
-            ));
         }
     }
     out

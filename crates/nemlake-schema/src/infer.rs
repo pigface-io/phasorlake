@@ -1,9 +1,9 @@
 //! Drafting a table definition for an I row the registry does not know.
 
-use nemlake_core::IRow;
+use nemlake_core::{Fingerprint, IRow};
 use nemlake_schema_model::{
     ColumnDef, ColumnId, ColumnType, Dedupe, LoadMode, Market, Provenance, SchemaVersion,
-    SourceKind, TableDef, VersionDef, Visibility,
+    SourceKind, TableDef, VariantDef, VersionDef, Visibility,
 };
 
 /// Evidence about one column gathered from sampled D rows.
@@ -154,6 +154,113 @@ pub fn draft_table(market: Market, irow: &IRow<'_>, sampler: &Sampler) -> TableD
     }
 }
 
+/// Adds the shape of `irow` to a table the registry already has: a new
+/// version when its number is not declared, a variant when the number is
+/// declared with another column list. Columns the table lacks are added
+/// with a type from `sampler` and `src = ["inferred"]`. Returns `None` when
+/// the shape is already declared.
+///
+/// The result is structurally valid: a column that the new shape lacks
+/// becomes nullable, and a column's `added_in`/`removed_in` are moved so
+/// they still bracket the versions that list it.
+pub fn extend_table(t: &TableDef, irow: &IRow<'_>, sampler: &Sampler) -> Option<TableDef> {
+    let fp = irow.fingerprint();
+    let version = SchemaVersion(irow.version);
+    if let Some(v) = t.version(version)
+        && (v.fingerprint == fp || v.variant(fp).is_some())
+    {
+        return None;
+    }
+    let mut out = t.clone();
+    for (i, name) in irow.columns.iter().enumerate() {
+        if out.column(name).is_some() {
+            continue;
+        }
+        out.columns.push(ColumnDef {
+            id: ColumnId(out.next_column_id),
+            name: (*name).to_owned(),
+            aliases: vec![],
+            ty: if i < sampler.columns.len() {
+                sampler.column_type(i)
+            } else {
+                ColumnType::Utf8 {
+                    max_len: None,
+                    dict: false,
+                }
+            },
+            nullable: true,
+            oracle: None,
+            loader: None,
+            added_in: version,
+            removed_in: None,
+            description: None,
+            src: vec!["inferred".into()],
+            curated: false,
+        });
+        out.next_column_id += 1;
+    }
+    let observed: Vec<String> = irow.columns.iter().map(|c| (*c).to_owned()).collect();
+    // The same list with every alias replaced by its column's name.
+    let canonical: Vec<String> = irow
+        .columns
+        .iter()
+        .map(|c| {
+            out.column(c)
+                .map_or_else(|| (*c).to_owned(), |d| d.name.clone())
+        })
+        .collect();
+    let variant = VariantDef {
+        columns: observed,
+        fingerprint: fp,
+        first_seen: None,
+        last_seen: None,
+    };
+    let new_version = out.version(version).is_none();
+    if new_version {
+        let main_fp = Fingerprint::of_names(canonical.iter().map(String::as_str));
+        out.versions.push(VersionDef {
+            n: version,
+            columns: canonical.clone(),
+            fingerprint: main_fp,
+            first_seen: None,
+            last_seen: None,
+            src: Some("inferred".into()),
+            variants: if main_fp == fp { vec![] } else { vec![variant] },
+        });
+        out.versions.sort_by_key(|v| v.n);
+    } else if let Some(v) = out.versions.iter_mut().find(|v| v.n == version) {
+        v.variants.push(variant);
+    }
+    for c in &mut out.columns {
+        if canonical.contains(&c.name) {
+            if new_version {
+                c.added_in = c.added_in.min(version);
+                if c.removed_in.is_some_and(|r| r <= version) {
+                    c.removed_in = None;
+                }
+            }
+        } else {
+            // Files of this shape have no value for the column.
+            c.nullable = true;
+        }
+    }
+    let pair = (irow.report_type.to_owned(), irow.report_subtype.to_owned());
+    if !out.report_pairs.contains(&pair) {
+        out.report_pairs.push(pair);
+    }
+    let what = if new_version {
+        "version"
+    } else {
+        "variant of version"
+    };
+    let added = format!("{what} {} added by inference", irow.version);
+    out.provenance.note = Some(match out.provenance.note.take() {
+        Some(n) => format!("{n} | {added}"),
+        None => added,
+    });
+    Some(out)
+}
+
 #[cfg(test)]
 mod tests {
     use nemlake_schema_model::validate::validate_table;
@@ -227,5 +334,121 @@ mod tests {
         );
         let toml = nemlake_schema_model::file::write_table(&t2);
         assert!(toml.contains("name = \"NEW_THING\""));
+    }
+
+    #[test]
+    fn extends_a_known_table_with_new_shapes() {
+        use nemlake_schema_model::validate::validate_structure;
+        let r = crate::Registry::load_embedded(crate::TypeOptions::default());
+        let t = r.table(r.table_by_name("DISPATCH_UNIT_SCADA").unwrap());
+        let row = |version, columns| IRow {
+            report_type: "DISPATCH",
+            report_subtype: "UNIT_SCADA",
+            version,
+            columns,
+        };
+        // A shape the table declares needs nothing.
+        let declared = ["SETTLEMENTDATE", "DUID", "SCADAVALUE"];
+        assert!(extend_table(t, &row(1, &declared), &Sampler::new(3)).is_none());
+
+        // A new version with a new column.
+        let wider = ["SETTLEMENTDATE", "DUID", "SCADAVALUE", "QUALITY"];
+        let v2 = row(2, &wider);
+        let mut s = Sampler::new(4);
+        s.observe([
+            b"2024/01/01 00:05:00".as_slice(),
+            b"BW01".as_slice(),
+            b"1.5".as_slice(),
+            b"GOOD".as_slice(),
+        ]);
+        let t2 = extend_table(t, &v2, &s).unwrap();
+        assert_eq!(validate_structure(&t2), vec![]);
+        assert_eq!(t2.versions.len(), 2);
+        assert_eq!(t2.versions[1].n, SchemaVersion(2));
+        assert_eq!(t2.versions[1].columns, wider);
+        assert_eq!(t2.versions[1].fingerprint, v2.fingerprint());
+        assert!(t2.versions[1].variants.is_empty());
+        let q = t2.column("QUALITY").unwrap();
+        assert_eq!(q.id, ColumnId(t.next_column_id));
+        assert_eq!(q.added_in, SchemaVersion(2));
+        assert_eq!(q.src, ["inferred"]);
+        assert!(q.nullable);
+        assert_eq!(
+            q.ty,
+            ColumnType::Utf8 {
+                max_len: Some(4),
+                dict: false
+            }
+        );
+        assert_eq!(t2.next_column_id, t.next_column_id + 1);
+        // Only the new column is uncurated; the rest of the table is untouched.
+        let issues = validate_table(&t2);
+        assert_eq!(issues.len(), 1, "{issues:?}");
+        assert!(issues[0].message.contains("QUALITY has src inferred"));
+        assert_eq!(t2.columns[..3], t.columns[..]);
+        assert!(
+            t2.provenance
+                .note
+                .as_deref()
+                .unwrap()
+                .contains("version 2 added by inference")
+        );
+        // Once added, the same shape needs nothing.
+        assert!(extend_table(&t2, &v2, &s).is_none());
+
+        // The declared version with another list is a variant; a key column
+        // it lacks has to admit null.
+        let short = ["SETTLEMENTDATE", "SCADAVALUE"];
+        let t3 = extend_table(&t2, &row(1, &short), &Sampler::new(2)).unwrap();
+        assert_eq!(t3.versions.len(), 2);
+        assert_eq!(t3.versions[0].variants.len(), 1);
+        assert_eq!(t3.versions[0].variants[0].columns, short);
+        assert!(!t2.column("DUID").unwrap().nullable);
+        assert!(t3.column("DUID").unwrap().nullable);
+        assert!(!t3.column("SETTLEMENTDATE").unwrap().nullable);
+        assert_eq!(validate_structure(&t3), vec![]);
+        assert!(
+            t3.provenance
+                .note
+                .as_deref()
+                .unwrap()
+                .contains("variant of version 1 added by inference")
+        );
+
+        // The same table under another report pair: the pair is recorded.
+        let other = IRow {
+            report_type: "DISPATCH",
+            report_subtype: "UNIT_SCADA_OLD",
+            version: 3,
+            columns: &declared,
+        };
+        let t4 = extend_table(t, &other, &Sampler::new(3)).unwrap();
+        assert_eq!(t4.report_pairs.len(), t.report_pairs.len() + 1);
+        assert_eq!(validate_structure(&t4), vec![]);
+
+        // A version older than any declared: columns it lists were there
+        // earlier than the table said, and keys it lacks admit null.
+        let price = r.table(r.table_by_name("DISPATCHPRICE").unwrap());
+        let first = price.versions[0].n;
+        assert!(
+            first > SchemaVersion(1),
+            "the fixture table starts above version 1"
+        );
+        let head: Vec<&str> = price.versions[0].columns[..6]
+            .iter()
+            .map(String::as_str)
+            .collect();
+        let old = IRow {
+            report_type: &price.report_pairs[0].0,
+            report_subtype: &price.report_pairs[0].1,
+            version: 1,
+            columns: &head,
+        };
+        let p2 = extend_table(price, &old, &Sampler::new(6)).unwrap();
+        assert_eq!(p2.versions[0].n, SchemaVersion(1));
+        assert_eq!(p2.versions.len(), price.versions.len() + 1);
+        assert_eq!(p2.column(head[5]).unwrap().added_in, SchemaVersion(1));
+        assert_eq!(p2.columns.len(), price.columns.len());
+        assert_eq!(validate_structure(&p2), vec![]);
     }
 }

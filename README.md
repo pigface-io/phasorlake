@@ -39,6 +39,7 @@ the file is already in the lake.
 | `nemlake errors [--last] [--table T] [--code C]` | diagnostics recorded by past runs |
 | `nemlake verify` | every Parquet file the manifest lists exists with its size |
 | `nemlake schema list\|show\|diff\|lineage\|validate` | the registry |
+| `nemlake schema infer <file> [--write]` | draft what a file adds to the registry: a new table, version or variant |
 | `nemlake cache ls\|gc\|clear` | the download cache; `gc` removes leftovers of interrupted work and, with `--ingested` or `--older-than DAYS`, downloads no longer needed |
 | `nemlake wem manifest <dataset>` | a WEM dataset's file list (WEM ingestion comes later) |
 
@@ -70,6 +71,17 @@ drift.
 Types: `DATE` → `Timestamp(us, +10:00)` (NEM time is fixed AEST), `NUMBER(p,s)`
 → `Float64` (or `Decimal128(p, s)` with `--decimal`), `NUMBER(p,0)` → `Int64`,
 `VARCHAR2`/`CHAR` → `Utf8`.
+
+## Your own tables
+
+AEMO adds tables and versions faster than releases follow. When a file does
+not resolve, `nemlake schema infer <file> --write` drafts what is missing:
+a table for a report pair nobody declared, or a new version or variant of a
+table that exists, with the types of new columns guessed from the rows. The
+drafts land in `~/.nemlake/schemas/nem/mms/DRAFT_{TABLE}.toml` and do nothing
+until you have looked at them and renamed one to `{TABLE}.toml`. From then
+on every command uses it: a file named after a built-in table replaces it,
+any other adds a table. `--no-user-schemas` runs without them.
 
 ## Which months
 

@@ -47,9 +47,22 @@ impl Context {
         let config_path = cli.config.clone().unwrap_or_else(|| home.config_file());
         let config = Config::load(&config_path)
             .map_err(|e| anyhow::anyhow!("{}", nemlake_core::Diagnose::diagnostic(&e).render()))?;
-        let registry = Registry::load_embedded(TypeOptions {
+        let mut registry = Registry::load_embedded(TypeOptions {
             decimal: cli.decimal || config.decimal,
         });
+        // The user's own tables, when there are any: a file named after a
+        // built-in table replaces it, others are added.
+        let overlay = home.schemas();
+        let has_overlay = !cli.no_user_schemas
+            && std::fs::read_dir(&overlay).is_ok_and(|mut d| d.next().is_some());
+        if has_overlay {
+            registry = Arc::new(registry.with_overlay(&overlay).map_err(|e| {
+                anyhow::anyhow!(
+                    "{} Fix or remove the file, or pass --no-user-schemas to run without your own tables.",
+                    nemlake_core::Diagnose::diagnostic(&e).render()
+                )
+            })?);
+        }
         let progress =
             !cli.no_progress && !cli.json && std::io::IsTerminal::is_terminal(&std::io::stderr());
         Ok(Self {

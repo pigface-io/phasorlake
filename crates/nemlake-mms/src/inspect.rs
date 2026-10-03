@@ -28,7 +28,8 @@ pub struct BlockSummary {
     pub rows: u64,
     /// `exact`, `aliased`, `drift`, or the resolve error's code.
     pub status: String,
-    /// The table the registry mapped it to.
+    /// The table that claims the report pair, whether or not this shape
+    /// of it resolved; `None` when no table does.
     pub table: Option<String>,
     /// Type evidence from the rows, for `--infer`.
     pub sampler: Sampler,
@@ -73,12 +74,15 @@ impl Sink for InspectSink<'_> {
 
     fn header(&mut self, irow: &IRow<'_>, pos: Pos) -> Result<(), SinkError> {
         use nemlake_core::Diagnose as _;
-        let (status, table) = match self.registry.resolve(irow, self.opts) {
-            Ok(r) => (
-                r.status.label().to_owned(),
-                Some(self.registry.table(r.table).name.clone()),
-            ),
-            Err(e) => (e.code().to_string(), None),
+        // The table is known whenever its report pair is, also when this
+        // shape of it does not resolve.
+        let table = self
+            .registry
+            .table_by_pair(irow.report_type, irow.report_subtype)
+            .map(|id| self.registry.table(id).name.clone());
+        let status = match self.registry.resolve(irow, self.opts) {
+            Ok(r) => r.status.label().to_owned(),
+            Err(e) => e.code().to_string(),
         };
         self.blocks.push(BlockSummary {
             line: pos.line,

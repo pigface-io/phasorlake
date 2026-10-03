@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::error::SchemaFileError;
 use crate::model::{Market, MarketDef, TableDef};
-use crate::validate::{Issue, validate_set, validate_table};
+use crate::validate::{Issue, validate_set};
 
 /// Everything in a `schemas/` tree.
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
@@ -72,9 +72,22 @@ impl SchemaSet {
         Ok(set)
     }
 
-    /// Every issue in the set, per table then across tables; empty when valid.
+    /// Every issue in the set, per table then across tables; empty when
+    /// valid. This is the bar for the committed registry.
     pub fn validate(&self) -> Vec<Issue> {
-        let mut out: Vec<Issue> = self.tables.iter().flat_map(validate_table).collect();
+        let mut out = self.validate_structure();
+        out.extend(self.tables.iter().flat_map(crate::validate::uncurated));
+        out
+    }
+
+    /// The issues that make a set unusable, leaving out the demand that
+    /// every column be curated. This is the bar for a user's own tables.
+    pub fn validate_structure(&self) -> Vec<Issue> {
+        let mut out: Vec<Issue> = self
+            .tables
+            .iter()
+            .flat_map(crate::validate::validate_structure)
+            .collect();
         out.extend(validate_set(&self.tables));
         let markets: BTreeMap<Market, &MarketDef> =
             self.markets.iter().map(|m| (m.market, m)).collect();

@@ -114,9 +114,11 @@ impl Registry {
         Ok(Self::from_set(set, opts))
     }
 
-    /// Lays `overlay` (user drafts) over this registry: a table of the same
-    /// name replaces the embedded one, other tables are added. The result is
-    /// validated as a set.
+    /// Lays `overlay` (a user's own tables) over this registry: a table of
+    /// the same name replaces the embedded one, other tables are added.
+    /// Files named `DRAFT_*` are not read. The result is validated as a set
+    /// for structure; unlike the committed registry it may hold columns
+    /// whose type was only inferred.
     pub fn with_overlay(&self, overlay: &Path) -> Result<Registry, SchemaFileError> {
         let over = SchemaSet::read_dir(overlay)?;
         let mut tables: Vec<TableDef> = self
@@ -133,7 +135,9 @@ impl Registry {
             markets.push(m);
         }
         let set = SchemaSet { markets, tables };
-        let issues = set.validate();
+        // A user's own table may keep inferred columns; it must still be
+        // well formed and fit the rest of the registry.
+        let issues = set.validate_structure();
         if let Some(first) = issues.first() {
             return Err(SchemaFileError::Invalid {
                 path: overlay.display().to_string(),
@@ -431,6 +435,31 @@ mod tests {
                 .any(|(t, m)| t == "REGION" && m.contains("deleted")),
             "{breaks:?}"
         );
+        // A user's table may keep an inferred column; a directory that is
+        // to be committed as the registry may not.
+        let mut guessed = n.clone();
+        guessed.name = "GUESSED".into();
+        guessed.report_pairs = vec![("X".into(), "Z".into())];
+        guessed.columns[0].src = vec!["inferred".into()];
+        guessed.columns[0].nullable = false;
+        std::fs::write(
+            over.join("GUESSED.toml"),
+            nemlake_schema_model::file::write_table(&guessed),
+        )
+        .unwrap();
+        let o = r.with_overlay(dir.path()).unwrap();
+        assert!(o.table_by_pair("X", "Z").is_some());
+        std::fs::write(
+            dir.path().join("nem").join("market.toml"),
+            std::fs::read(root.join("nem").join("market.toml")).unwrap(),
+        )
+        .unwrap();
+        let e = Registry::load_dir(dir.path(), TypeOptions::default()).unwrap_err();
+        assert!(e.to_string().contains("src inferred"), "{e}");
+        std::fs::remove_file(over.join("GUESSED.toml")).unwrap();
+        // A draft is not read at all.
+        std::fs::write(over.join("DRAFT_BROKEN.toml"), "not toml at all [").unwrap();
+        assert!(r.with_overlay(dir.path()).is_ok());
         // An invalid overlay is refused.
         std::fs::write(
             over.join("NEWTABLE.toml"),
