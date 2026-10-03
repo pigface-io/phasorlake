@@ -537,6 +537,18 @@ fn table_keys(table: &str) -> Vec<String> {
     }
 }
 
+/// Whether the control file for `ctl_table` describes the data file for
+/// `data_table`: the same name, a split of it, or with `siblings` the
+/// daily `_D` file of the same table.
+fn ctl_serves(ctl_table: &str, data_table: &str, siblings: bool) -> bool {
+    let wanted = table_keys(data_table);
+    let mut have = table_keys(ctl_table);
+    if siblings && let Some(base) = ctl_table.to_ascii_uppercase().strip_suffix("_D") {
+        have.extend(table_keys(base));
+    }
+    have.iter().any(|k| wanted.contains(k))
+}
+
 /// The columns every control file under `dirs` loads, keyed by the table it
 /// loads and by the table part of the file it reads.
 fn known_ctl_columns(dirs: &[PathBuf]) -> BTreeMap<String, BTreeSet<String>> {
@@ -646,11 +658,16 @@ pub async fn fetch_history_month(
         if remote_ctls.is_none() {
             remote_ctls = Some(list_ctls(fetcher, archive, month).await?);
         }
-        let wanted = table_keys(table);
-        let Some(remote) = remote_ctls.as_ref().expect("just listed").iter().find(|r| {
-            ctl_table(&r.file_name())
-                .is_some_and(|t| table_keys(&t).iter().any(|k| wanted.contains(k)))
-        }) else {
+        // The control file of the same file name, else one that loads the
+        // same table from a sibling file: the full predispatch tables ship
+        // without their own and are described by the `_D` one.
+        let remotes = remote_ctls.as_ref().expect("just listed");
+        let found = [false, true].into_iter().find_map(|siblings| {
+            remotes.iter().find(|r| {
+                ctl_table(&r.file_name()).is_some_and(|t| ctl_serves(&t, table, siblings))
+            })
+        });
+        let Some(remote) = found else {
             eprintln!(
                 "warning: {month} has no control file for {table}; its new columns stay untyped"
             );
@@ -1053,6 +1070,20 @@ mod tests {
         assert_eq!(table_keys("BIDPEROFFER1"), ["BIDPEROFFER", "BIDPEROFFER1"]);
         assert_eq!(table_keys("region"), ["REGION"]);
         assert_eq!(table_keys("2024"), ["2024"]);
+        assert!(ctl_serves("BIDPEROFFER", "BIDPEROFFER1", false));
+        assert!(ctl_serves("REGION", "region", false));
+        assert!(!ctl_serves("REGIONAPC", "REGION", true));
+        assert!(!ctl_serves(
+            "PREDISPATCHCONSTRAINT_D",
+            "PREDISPATCHCONSTRAINT1",
+            false
+        ));
+        assert!(ctl_serves(
+            "PREDISPATCHCONSTRAINT_D",
+            "PREDISPATCHCONSTRAINT1",
+            true
+        ));
+        assert!(ctl_serves("PREDISPATCHPRICE_D", "PREDISPATCHPRICE", true));
     }
 
     #[tokio::test]
