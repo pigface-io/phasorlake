@@ -428,6 +428,7 @@ async fn remote_source_downloads_then_serves_from_cache_and_reports_fetch_failur
         kind: FileKind::MmsZip,
         size: None,
         modified: None,
+        member: None,
     };
     let source = Arc::new(OneFile(vec![
         remote("PUBLIC_DVD_TRADINGPRICE_202401010000.zip", "TRADINGPRICE"),

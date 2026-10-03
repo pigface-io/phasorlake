@@ -134,6 +134,7 @@ impl Source for WemDatafiles {
                     kind: FileKind::PlainCsv,
                     size: None,
                     modified: e.generated_at,
+                    member: None,
                 });
             }
         }

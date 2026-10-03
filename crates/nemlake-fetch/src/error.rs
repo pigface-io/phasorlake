@@ -95,13 +95,61 @@ pub enum FetchError {
         /// Nearest names.
         nearest: String,
     },
-    /// A month the resolver has no layout for.
+    /// The archive has neither a directory nor a zip for a month.
     #[error(
-        "The archive layout for {period} is not supported yet; nemlake knows the monthly directory layout from 2024 onward."
+        "The archive listing at {url} has no month {period}; it lists {available}. The archive begins in July 2009 and a month appears some weeks after it ends."
     )]
-    EraUnsupported {
+    MonthMissing {
         /// Period.
         period: String,
+        /// The year listing.
+        url: String,
+        /// The months it does list.
+        available: String,
+    },
+    /// The server ignored a `Range` header.
+    #[error(
+        "The server answered a ranged request for {url} with HTTP {status} instead of 206; reading part of this file is not possible."
+    )]
+    RangeIgnored {
+        /// URL.
+        url: String,
+        /// Status.
+        status: u16,
+    },
+    /// The index of a remote zip could not be read.
+    #[error("The zip at {url} could not be indexed remotely: {message}.")]
+    RemoteZip {
+        /// URL.
+        url: String,
+        /// What is wrong.
+        message: String,
+    },
+    /// A member of a remote zip cannot be extracted by nemlake.
+    #[error("Member {member} of the zip at {url} cannot be extracted: {reason}.")]
+    MemberUnsupported {
+        /// URL.
+        url: String,
+        /// Member name.
+        member: String,
+        /// Why.
+        reason: String,
+    },
+    /// A member of a remote zip did not match its directory entry.
+    #[error(
+        "Member {member} of the zip at {url} has {what} {observed} but the zip's directory records {expected}; the bytes were discarded."
+    )]
+    MemberMismatch {
+        /// URL.
+        url: String,
+        /// Member name.
+        member: String,
+        /// `size` or `crc32`.
+        what: &'static str,
+        /// Recorded.
+        expected: String,
+        /// Computed.
+        observed: String,
     },
     /// The cache directory failed.
     #[error("The cache path {path} could not be read or written.")]
@@ -159,6 +207,7 @@ impl FetchError {
             Self::Connect { .. }
             | Self::Timeout { .. }
             | Self::ContentLength { .. }
+            | Self::MemberMismatch { .. }
             | Self::Body { .. } => true,
             Self::HttpStatus { status, .. } => *status == 429 || *status == 408 || *status >= 500,
             _ => false,
@@ -213,9 +262,33 @@ impl Diagnose for FetchError {
                     .with_url(url.clone())
                     .with_table(table.clone())
             }
-            Self::EraUnsupported { .. } => {
-                Diagnostic::error("listing.era_unsupported", Category::Listing, msg)
+            Self::MonthMissing { url, .. } => {
+                Diagnostic::error("listing.month_missing", Category::Listing, msg)
+                    .with_url(url.clone())
             }
+            Self::RangeIgnored { url, status } => {
+                Diagnostic::error("net.range_ignored", Category::Net, msg)
+                    .with_url(url.clone())
+                    .expected_observed("206", status.to_string())
+            }
+            Self::RemoteZip { url, .. } => {
+                Diagnostic::error("zip.remote_index", Category::Zip, msg).with_url(url.clone())
+            }
+            Self::MemberUnsupported { url, member, .. } => {
+                Diagnostic::error("zip.member_unsupported", Category::Zip, msg)
+                    .with_url(url.clone())
+                    .with_entry(member.clone())
+            }
+            Self::MemberMismatch {
+                url,
+                member,
+                expected,
+                observed,
+                ..
+            } => Diagnostic::error("zip.member_mismatch", Category::Zip, msg)
+                .with_url(url.clone())
+                .with_entry(member.clone())
+                .expected_observed(expected.clone(), observed.clone()),
             Self::CacheIo { path, source } => Diagnostic::error("cache.io", Category::Cache, msg)
                 .with_file(path.clone())
                 .caused_by(source),
@@ -302,7 +375,24 @@ mod tests {
             .is_retryable()
         );
         assert!(!FetchError::Offline { url: "u".into() }.is_retryable());
-        assert!(!FetchError::EraUnsupported { period: "p".into() }.is_retryable());
+        assert!(
+            !FetchError::MonthMissing {
+                period: "p".into(),
+                url: "u".into(),
+                available: "a".into()
+            }
+            .is_retryable()
+        );
+        assert!(
+            FetchError::MemberMismatch {
+                url: "u".into(),
+                member: "m".into(),
+                what: "crc32",
+                expected: "a".into(),
+                observed: "b".into()
+            }
+            .is_retryable()
+        );
         let d = FetchError::HttpStatus {
             url: "u".into(),
             status: 503,
@@ -373,8 +463,44 @@ mod tests {
                 "listing.no_match",
             ),
             (
-                FetchError::EraUnsupported { period: "p".into() },
-                "listing.era_unsupported",
+                FetchError::MonthMissing {
+                    period: "p".into(),
+                    url: "u".into(),
+                    available: "a".into(),
+                },
+                "listing.month_missing",
+            ),
+            (
+                FetchError::RangeIgnored {
+                    url: "u".into(),
+                    status: 200,
+                },
+                "net.range_ignored",
+            ),
+            (
+                FetchError::RemoteZip {
+                    url: "u".into(),
+                    message: "m".into(),
+                },
+                "zip.remote_index",
+            ),
+            (
+                FetchError::MemberUnsupported {
+                    url: "u".into(),
+                    member: "m".into(),
+                    reason: "r".into(),
+                },
+                "zip.member_unsupported",
+            ),
+            (
+                FetchError::MemberMismatch {
+                    url: "u".into(),
+                    member: "m".into(),
+                    what: "size",
+                    expected: "1".into(),
+                    observed: "2".into(),
+                },
+                "zip.member_mismatch",
             ),
             (
                 FetchError::CacheIo {

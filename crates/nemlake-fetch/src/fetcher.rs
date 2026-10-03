@@ -13,8 +13,9 @@ use tokio::sync::Mutex;
 
 use crate::cache::{DiskCache, Sidecar, hex};
 use crate::error::FetchError;
+use crate::remotezip::{self, Inflater, Tail, ZipMember};
 use crate::source::RemoteFile;
-use crate::transport::{HttpRequest, Transport};
+use crate::transport::{ByteRange, HttpRequest, Transport};
 
 /// A file on disk, ready to ingest.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -132,13 +133,96 @@ impl Fetcher {
             });
         }
         let body = self
-            .get_with_retries(url, |resp| async move { read_all(url, resp).await })
+            .get_with_retries(&HttpRequest::get(url), |resp| async move {
+                read_all(url, resp).await
+            })
             .await?;
         self.cache.store_listing(url, &body)?;
         Ok(body)
     }
 
+    /// Reads the index of a remote zip with ranged requests: the names,
+    /// sizes and offsets of its members. The result is cached like a listing.
+    pub async fn list_zip_members(
+        &self,
+        url: &str,
+        max_age_secs: i64,
+    ) -> Result<Vec<ZipMember>, FetchError> {
+        let key = format!("{url}#central-directory");
+        if !self.config.refresh
+            && let Some(body) = self.cache.lookup_listing(&key, max_age_secs)?
+            && let Ok(members) = serde_json::from_slice::<Vec<ZipMember>>(&body)
+        {
+            return Ok(members);
+        }
+        if self.transport.is_offline() {
+            return Err(FetchError::Offline {
+                url: url.to_owned(),
+            });
+        }
+        let bad = |message: String| FetchError::RemoteZip {
+            url: url.to_owned(),
+            message,
+        };
+        let tail_req = HttpRequest::get(url).with_range(ByteRange::Last {
+            len: remotezip::TAIL_BYTES,
+        });
+        let (tail, total) = self
+            .get_with_retries(&tail_req, |resp| async move {
+                let total = resp.total_length;
+                Ok((read_all(url, resp).await?, total))
+            })
+            .await?;
+        let total = total.ok_or_else(|| {
+            bad("the server did not say how long the file is (no Content-Range)".into())
+        })?;
+        let tail_start = total.saturating_sub(tail.len() as u64);
+        let location = match remotezip::parse_tail(&tail, tail_start).map_err(bad)? {
+            Tail::Located(l) => l,
+            Tail::NeedEocd64 { offset } => {
+                let rec = self.get_span(url, offset, offset + 55).await?;
+                remotezip::parse_eocd64(&rec).map_err(bad)?
+            }
+        };
+        if location.offset.saturating_add(location.size) > total {
+            return Err(bad(format!(
+                "its directory is recorded at bytes {}..{} but the file has {total}",
+                location.offset,
+                location.offset.saturating_add(location.size)
+            )));
+        }
+        let directory = if location.size == 0 {
+            Vec::new()
+        } else if location.offset >= tail_start {
+            let from = (location.offset - tail_start) as usize;
+            tail[from..from + location.size as usize].to_vec()
+        } else {
+            self.get_span(url, location.offset, location.offset + location.size - 1)
+                .await?
+        };
+        let members = remotezip::parse_directory(&directory).map_err(bad)?;
+        if members.len() as u64 != location.entries {
+            return Err(bad(format!(
+                "its end record counts {} members but the directory lists {}",
+                location.entries,
+                members.len()
+            )));
+        }
+        let json = serde_json::to_vec(&members).expect("members serialise");
+        self.cache.store_listing(&key, &json)?;
+        Ok(members)
+    }
+
+    /// GETs bytes `start..=end` of `url` into memory.
+    async fn get_span(&self, url: &str, start: u64, end: u64) -> Result<Vec<u8>, FetchError> {
+        let req = HttpRequest::get(url).with_range(ByteRange::Span { start, end });
+        self.get_with_retries(&req, |resp| async move { read_all(url, resp).await })
+            .await
+    }
+
     /// Fetches a remote file into the cache, or returns the cached copy.
+    /// A file that is a member of a remote zip is extracted with a ranged
+    /// request for its bytes alone.
     pub async fn fetch(&self, remote: &RemoteFile) -> Result<LocalFile, FetchError> {
         let url = remote.url.as_str();
         let file_name = remote.file_name();
@@ -176,13 +260,44 @@ impl Fetcher {
         }
         let part = DiskCache::part_path(&path);
         let events = self.events.clone();
-        let (sha256, size, etag, last_modified, accept_ranges) = self
-            .get_with_retries(url, |resp| {
-                let part = part.clone();
-                let events = events.clone();
-                async move { stream_to_file(url, resp, &part, events).await }
-            })
-            .await?;
+        let (sha256, size, etag, last_modified, accept_ranges) = match &remote.member {
+            None => {
+                self.get_with_retries(&HttpRequest::get(url), |resp| {
+                    let part = part.clone();
+                    let events = events.clone();
+                    async move { stream_to_file(url, resp, &part, events).await }
+                })
+                .await?
+            }
+            Some(member) => {
+                let container = remote.request_url();
+                let container = container.as_str();
+                let unsupported = |reason: String| FetchError::MemberUnsupported {
+                    url: container.to_owned(),
+                    member: member.name.clone(),
+                    reason,
+                };
+                if member.flags & 1 != 0 {
+                    return Err(unsupported("it is encrypted".into()));
+                }
+                if member.method != 0 && member.method != 8 {
+                    return Err(unsupported(format!(
+                        "it uses zip compression method {}, and only stored (0) and deflate (8) are read",
+                        member.method
+                    )));
+                }
+                let (start, end) = member.request_span(None);
+                let req = HttpRequest::get(container).with_range(ByteRange::Span { start, end });
+                self.get_with_retries(&req, |resp| {
+                    let part = part.clone();
+                    let events = events.clone();
+                    async move {
+                        stream_member_to_file(container, url, resp, &part, member, events).await
+                    }
+                })
+                .await?
+            }
+        };
         std::fs::rename(&part, &path).map_err(|source| FetchError::CacheIo {
             path: path.display().to_string(),
             source,
@@ -208,12 +323,19 @@ impl Fetcher {
         })
     }
 
-    /// GETs `url` with retries and backoff, handing a 200 response to `consume`.
-    async fn get_with_retries<T, F, Fut>(&self, url: &str, consume: F) -> Result<T, FetchError>
+    /// Sends `req` with retries and backoff, handing the response to
+    /// `consume` when it is a 200, or a 206 for a ranged request.
+    async fn get_with_retries<T, F, Fut>(
+        &self,
+        req: &HttpRequest,
+        consume: F,
+    ) -> Result<T, FetchError>
     where
         F: Fn(crate::transport::HttpResponse) -> Fut,
         Fut: std::future::Future<Output = Result<T, FetchError>>,
     {
+        let url = req.url.as_str();
+        let want = if req.range.is_some() { 206 } else { 200 };
         let mut last: Option<FetchError> = None;
         for attempt in 0..self.config.attempts.max(1) {
             if attempt > 0 {
@@ -225,10 +347,15 @@ impl Fetcher {
                 tokio::time::sleep(exp.min(self.config.max_backoff) + jitter).await;
             }
             self.pace().await;
-            let req = HttpRequest::get(url);
-            let result = match self.transport.get(req).await {
+            let result = match self.transport.get(req.clone()).await {
                 Err(e) => Err(e),
-                Ok(resp) if resp.status == 200 => consume(resp).await,
+                Ok(resp) if resp.status == want => consume(resp).await,
+                // A server without range support answers 200 with the whole
+                // file; reading that would defeat the point.
+                Ok(resp) if want == 206 && resp.status == 200 => Err(FetchError::RangeIgnored {
+                    url: url.to_owned(),
+                    status: resp.status,
+                }),
                 Ok(resp) => {
                     let head = read_head(resp.body, 256).await;
                     Err(FetchError::HttpStatus {
@@ -376,6 +503,140 @@ async fn stream_to_file(
     ))
 }
 
+/// Streams the ranged response for one zip member into `part`: skips the
+/// local file header, inflates the member's data, and checks the result
+/// against the size and CRC-32 the zip's directory recorded.
+async fn stream_member_to_file(
+    container: &str,
+    identity: &str,
+    resp: crate::transport::HttpResponse,
+    part: &Path,
+    member: &ZipMember,
+    events: Option<tokio::sync::mpsc::Sender<Event>>,
+) -> Result<Streamed, FetchError> {
+    if let Some(tx) = &events {
+        let _ = tx.try_send(Event::DownloadStarted {
+            url: identity.to_owned(),
+            size: Some(member.compressed_size),
+        });
+    }
+    let cache_io = |source| FetchError::CacheIo {
+        path: part.display().to_string(),
+        source,
+    };
+    let mut file = tokio::fs::File::create(part).await.map_err(cache_io)?;
+    let result = async {
+        let mut sha = Sha256::new();
+        let mut crc = crc32fast::Hasher::new();
+        let mut inflater = Inflater::new();
+        let mut out: Vec<u8> = Vec::new();
+        let mut header: Vec<u8> = Vec::new();
+        let mut in_data = false;
+        let mut remaining = member.compressed_size;
+        let mut received: u64 = 0;
+        let mut written: u64 = 0;
+        let mut last_event = 0u64;
+        let mut body = resp.body;
+        while remaining > 0 {
+            let Some(chunk) = body.next().await else {
+                break;
+            };
+            let chunk = chunk.map_err(|message| FetchError::Body {
+                url: container.to_owned(),
+                received,
+                message,
+            })?;
+            received += chunk.len() as u64;
+            // The local header comes first; its length is only known once
+            // its 30 fixed bytes have arrived.
+            let data: Vec<u8> = if in_data {
+                chunk
+            } else {
+                header.extend_from_slice(&chunk);
+                let offset = remotezip::local_data_offset(&header).map_err(|message| {
+                    FetchError::RemoteZip {
+                        url: container.to_owned(),
+                        message: format!("member {}: {message}", member.name),
+                    }
+                })?;
+                match offset {
+                    Some(o) if header.len() >= o => {
+                        in_data = true;
+                        header.split_off(o)
+                    }
+                    _ => continue,
+                }
+            };
+            let take = (data.len() as u64).min(remaining) as usize;
+            remaining -= take as u64;
+            out.clear();
+            if member.method == 0 {
+                out.extend_from_slice(&data[..take]);
+            } else {
+                inflater.feed(&data[..take], &mut out).map_err(|message| {
+                    FetchError::RemoteZip {
+                        url: container.to_owned(),
+                        message: format!("member {} does not inflate: {message}", member.name),
+                    }
+                })?;
+            }
+            sha.update(&out);
+            crc.update(&out);
+            written += out.len() as u64;
+            file.write_all(&out).await.map_err(cache_io)?;
+            if received - last_event >= 4 << 20
+                && let Some(tx) = &events
+            {
+                let _ = tx.try_send(Event::DownloadProgress {
+                    url: identity.to_owned(),
+                    bytes: received,
+                });
+                last_event = received;
+            }
+        }
+        if remaining > 0 {
+            return Err(FetchError::ContentLength {
+                url: container.to_owned(),
+                expected: member.compressed_size,
+                received: member.compressed_size - remaining,
+            });
+        }
+        file.flush().await.map_err(cache_io)?;
+        file.sync_all().await.map_err(cache_io)?;
+        let mismatch = |what, expected: String, observed: String| FetchError::MemberMismatch {
+            url: container.to_owned(),
+            member: member.name.clone(),
+            what,
+            expected,
+            observed,
+        };
+        if written != member.uncompressed_size {
+            return Err(mismatch(
+                "size",
+                member.uncompressed_size.to_string(),
+                written.to_string(),
+            ));
+        }
+        let crc = crc.finalize();
+        if crc != member.crc32 {
+            return Err(mismatch(
+                "crc32",
+                format!("{:08x}", member.crc32),
+                format!("{crc:08x}"),
+            ));
+        }
+        Ok((hex(&sha.finalize()), written))
+    }
+    .await;
+    match result {
+        Ok((sha256, size)) => Ok((sha256, size, resp.etag, resp.last_modified, true)),
+        Err(e) => {
+            let _ = tokio::fs::remove_file(part).await;
+            Err(e)
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use nemlake_core::YearMonth;
@@ -394,6 +655,7 @@ mod tests {
             kind: FileKind::MmsZip,
             size: None,
             modified: None,
+            member: None,
         }
     }
 

@@ -71,6 +71,15 @@ Types: `DATE` → `Timestamp(us, +10:00)` (NEM time is fixed AEST), `NUMBER(p,s)
 → `Float64` (or `Decimal128(p, s)` with `--decimal`), `NUMBER(p,0)` → `Int64`,
 `VARCHAR2`/`CHAR` → `Utf8`.
 
+## Which months
+
+The archive begins in July 2009. From 2015 each month is a directory of
+per-table zips and nemlake downloads the ones asked for. Before 2015 a month
+exists only as one zip of 1.4 to 2.1 GB holding those per-table zips;
+nemlake reads that zip's index with ranged requests and downloads only the
+members asked for, checked against the CRC-32 the index records. One table
+of January 2012 is a 12 MB download, not 1.9 GB.
+
 ## Errors
 
 Every error and warning carries a stable code (`csv.field_count_mismatch`,
@@ -92,11 +101,11 @@ numbers may not regress below live in `bench/budgets.json`.
 
 ## Status
 
-Working today: the NEM monthly archive from 2024 on, Parquet + manifest, and
-every table of that archive (143) in the registry, bootstrapped from the
-control files and the head of every zip of January 2024. Next: older archive
-layouts, resumable downloads and `--decimal` end to end; then live 5-minute
-feeds and compaction; then WEM and an Iceberg writer.
+Working today: the NEM monthly archive from July 2009 on, Parquet + manifest,
+and every table of the January 2024 archive (143) in the registry,
+bootstrapped from the control files and the head of every zip. Next: the
+table versions of earlier years, resumable downloads and `--decimal` end to
+end; then live 5-minute feeds and compaction; then WEM and an Iceberg writer.
 
 ## Developing
 

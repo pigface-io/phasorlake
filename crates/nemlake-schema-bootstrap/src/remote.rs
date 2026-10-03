@@ -5,6 +5,9 @@
 //! of downloading the 20-500 MB file, [`fetch_heads`] asks for the first
 //! [`HEAD_BYTES`] of each zip with a `Range` request, parses the first local
 //! file header and inflates the truncated deflate stream as far as it goes.
+//! For a month published only as one whole-month zip the per-table zip is a
+//! member of that zip: the range starts at the member's offset and the head
+//! is inflated twice.
 //! The surviving lines are trimmed to every `C` and `I` row plus the first
 //! `D` rows of each block and written as `{stem}.CSV` fixtures.
 
@@ -16,10 +19,11 @@ use std::time::Duration;
 use futures::StreamExt;
 use nemlake_core::{Category, Diagnose, Diagnostic, YearMonth};
 use nemlake_fetch::listing;
+use nemlake_fetch::mmsdm::MonthLayout;
 use nemlake_fetch::source::Source;
 use nemlake_fetch::{
-    ByteRange, DiskCache, FetchError, Fetcher, FetcherConfig, HttpRequest, MmsdmArchive, Query,
-    ReqwestTransport, Transport,
+    ByteRange, DiskCache, FetchError, Fetcher, FetcherConfig, FileKind, HttpRequest, MmsdmArchive,
+    Query, RemoteFile, ReqwestTransport, Transport,
 };
 
 /// How much of each zip to request. The I row sits in the first few KiB of
@@ -231,7 +235,7 @@ pub async fn fetch_heads(
             let out = out.to_path_buf();
             async move {
                 let url = remote.url.to_string();
-                match fetch_one(transport.as_ref(), &url, &out, max_rows).await {
+                match fetch_one(transport.as_ref(), &remote, &out, max_rows).await {
                     Ok(path) => HeadOutcome {
                         url,
                         path: Some(path),
@@ -253,13 +257,18 @@ pub async fn fetch_heads(
 
 async fn fetch_one(
     transport: &dyn Transport,
-    url: &str,
+    remote: &RemoteFile,
     out: &Path,
     max_rows: usize,
 ) -> Result<PathBuf, HeadError> {
-    let req = HttpRequest::get(url).with_range(ByteRange {
-        start: 0,
-        end: Some(HEAD_BYTES - 1),
+    // A per-table zip that is itself a member of a whole-month zip starts
+    // at the member's local header inside the container.
+    let request_url = remote.request_url();
+    let url = request_url.as_str();
+    let start = remote.member.as_ref().map_or(0, |m| m.header_offset);
+    let req = HttpRequest::get(url).with_range(ByteRange::Span {
+        start,
+        end: start + HEAD_BYTES - 1,
     });
     let resp = transport.get(req).await?;
     if resp.status != 206 && resp.status != 200 {
@@ -283,20 +292,23 @@ async fn fetch_one(
             break;
         }
     }
-    let (_, inflated) = inflate_head(url, &body)?;
+    let identity = remote.url.as_str();
+    let (_, mut inflated) = inflate_head(identity, &body)?;
+    if remote.member.is_some() {
+        // What was inflated is the head of the per-table zip; its first
+        // entry is the CSV.
+        inflated = inflate_head(identity, &inflated)?.1;
+    }
     let trimmed = trim_head(&inflated, max_rows);
     let has_i_row = trimmed.starts_with(b"I,") || trimmed.windows(3).any(|w| w == b"\nI,");
     if !has_i_row {
         return Err(HeadError::NoIRow {
-            url: url.to_owned(),
+            url: identity.to_owned(),
             bytes: inflated.len(),
         });
     }
-    let stem = url
-        .rsplit('/')
-        .next()
-        .and_then(|n| n.strip_suffix(".zip"))
-        .unwrap_or("head");
+    let name = remote.file_name();
+    let stem = name.strip_suffix(".zip").unwrap_or(&name);
     let path = out.join(format!("{stem}.CSV"));
     std::fs::write(&path, &trimmed).map_err(|source| HeadError::Write {
         path: path.display().to_string(),
@@ -305,7 +317,8 @@ async fn fetch_one(
     Ok(path)
 }
 
-/// Lists the CTL directory of `month` and downloads every `.ctl` into `out`.
+/// Downloads every `.ctl` of `month` into `out`, from the month's `CTL/`
+/// directory or, for a month published only as one zip, out of that zip.
 pub async fn fetch_ctls(
     transport: Arc<dyn Transport>,
     archive: &MmsdmArchive,
@@ -318,50 +331,61 @@ pub async fn fetch_ctls(
         DiskCache::new(cache_root),
         FetcherConfig::default(),
     );
-    let dir = archive
-        .month_root(month)?
-        .join("CTL/")
-        .map_err(|e| FetchError::Parse {
-            url: "CTL/".into(),
-            what: "CTL directory URL",
-            message: e.to_string(),
-        })?;
-    let body = fetcher.fetch_listing(dir.as_str(), 0).await?;
+    let remote = |url, member| RemoteFile {
+        url,
+        source: nemlake_fetch::mmsdm::SOURCE_ID,
+        table: None,
+        period: Some(month),
+        kind: FileKind::PlainCsv,
+        size: None,
+        modified: None,
+        member,
+    };
+    let mut remotes = Vec::new();
+    match archive.month_layout(month, &fetcher).await? {
+        MonthLayout::Directory => {
+            let dir = archive
+                .month_root(month)?
+                .join("CTL/")
+                .map_err(|e| FetchError::Parse {
+                    url: "CTL/".into(),
+                    what: "CTL directory URL",
+                    message: e.to_string(),
+                })?;
+            let body = fetcher.fetch_listing(dir.as_str(), 0).await?;
+            for e in listing::parse(&body) {
+                if !e.name.to_ascii_lowercase().ends_with(".ctl") {
+                    continue;
+                }
+                let url = dir.join(&e.href).map_err(|er| FetchError::Parse {
+                    url: e.href.clone(),
+                    what: "listing href",
+                    message: er.to_string(),
+                })?;
+                remotes.push(remote(url, None));
+            }
+        }
+        MonthLayout::WholeZip { url, .. } => {
+            for m in fetcher.list_zip_members(url.as_str(), 0).await? {
+                let lower = m.name.to_ascii_lowercase();
+                if lower.contains("/ctl/") && lower.ends_with(".ctl") {
+                    remotes.push(remote(
+                        RemoteFile::member_url(&url, &m.name),
+                        Some(Box::new(m)),
+                    ));
+                }
+            }
+        }
+    }
     std::fs::create_dir_all(out).map_err(|source| HeadError::Write {
         path: out.display().to_string(),
         source,
     })?;
     let mut written = Vec::new();
-    for e in listing::parse(&body) {
-        if !e.name.to_ascii_lowercase().ends_with(".ctl") {
-            continue;
-        }
-        let url = dir.join(&e.href).map_err(|er| FetchError::Parse {
-            url: e.href.clone(),
-            what: "listing href",
-            message: er.to_string(),
-        })?;
-        let resp = transport.get(HttpRequest::get(url.as_str())).await?;
-        if resp.status != 200 {
-            return Err(FetchError::HttpStatus {
-                url: url.to_string(),
-                status: resp.status,
-                body_head: Vec::new(),
-            }
-            .into());
-        }
-        let mut bytes: Vec<u8> = Vec::new();
-        let mut stream = resp.body;
-        while let Some(chunk) = stream.next().await {
-            let chunk = chunk.map_err(|message| FetchError::Body {
-                url: url.to_string(),
-                received: bytes.len() as u64,
-                message,
-            })?;
-            bytes.extend_from_slice(&chunk);
-        }
-        let path = out.join(&e.name);
-        std::fs::write(&path, &bytes).map_err(|source| HeadError::Write {
+    for r in &remotes {
+        let local = fetcher.fetch(r).await?;
+        let path = out.join(r.file_name());
+        std::fs::copy(&local.path, &path).map_err(|source| HeadError::Write {
             path: path.display().to_string(),
             source,
         })?;
@@ -516,6 +540,11 @@ mod tests {
             "{bad:?}"
         );
 
+        // The CTL fetch asks the year listing how the month is published.
+        t.add(
+            "https://h/Data_Archive/Wholesale_Electricity/MMSDM/2024/",
+            Canned::ok(br#"<pre> 2/13/2024 8:27 AM &lt;dir&gt; <A HREF="/Data_Archive/Wholesale_Electricity/MMSDM/2024/MMSDM_2024_01/">MMSDM_2024_01</A><br></pre>"#),
+        );
         let ctls = fetch_ctls(
             Arc::new(t),
             &archive,
@@ -528,6 +557,81 @@ mod tests {
         assert_eq!(ctls.len(), 1);
         assert_eq!(std::fs::read_to_string(&ctls[0]).unwrap(), "LOAD DATA");
         assert!(ctls[0].ends_with("PUBLIC_DVD_X_202401.ctl"));
+    }
+
+    #[tokio::test]
+    async fn heads_and_ctls_out_of_a_whole_month_zip() {
+        use nemlake_fetch::transport::{Canned, StaticTransport};
+        let mut csv = b"C,x\r\nI,A,X,1,SETTLEMENTDATE,V\r\n".to_vec();
+        for i in 0..50 {
+            csv.extend_from_slice(format!("D,A,X,1,\"2012/01/01 00:00:00\",{i}\r\n").as_bytes());
+        }
+        let inner = zip_of(&csv);
+        let mut cursor = std::io::Cursor::new(Vec::new());
+        {
+            let mut w = zip::ZipWriter::new(&mut cursor);
+            let opts = zip::write::SimpleFileOptions::default();
+            w.start_file(
+                "01/MMSDM_Historical_Data_SQLLoader/CTL/PUBLIC_DVD_X_201201.ctl",
+                opts,
+            )
+            .unwrap();
+            w.write_all(b"LOAD DATA 2012").unwrap();
+            w.start_file(
+                "01/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_X_201201010000.zip",
+                opts,
+            )
+            .unwrap();
+            w.write_all(&inner).unwrap();
+            w.start_file(
+                "01/MMSDM_Historical_Data_SQLLoader/DOCUMENTATION/readme.ctl.txt",
+                opts,
+            )
+            .unwrap();
+            w.write_all(b"not a ctl").unwrap();
+            w.finish().unwrap();
+        }
+        let month_zip = cursor.into_inner();
+        let year = "https://h/Data_Archive/Wholesale_Electricity/MMSDM/2012/";
+        let t = Arc::new(StaticTransport::default());
+        t.add(
+            year,
+            Canned::ok(br#"<pre> 2/21/2012 3:10 PM 1912843433 <A HREF="/Data_Archive/Wholesale_Electricity/MMSDM/2012/MMSDM_2012_01.zip">MMSDM_2012_01.zip</A><br></pre>"#),
+        );
+        t.add(&format!("{year}MMSDM_2012_01.zip"), Canned::ok(&month_zip));
+        let archive = MmsdmArchive::new("https://h").unwrap();
+        let tmp = tempfile::tempdir().unwrap();
+        let month: YearMonth = "2012-01".parse().unwrap();
+        let outcomes = fetch_heads(
+            Arc::new(Arc::clone(&t)),
+            &archive,
+            &tmp.path().join("cache"),
+            &tmp.path().join("heads"),
+            month,
+            2,
+            1,
+        )
+        .await
+        .unwrap();
+        assert_eq!(outcomes.len(), 1, "{outcomes:?}");
+        let path = outcomes[0].path.as_ref().expect("a head was written");
+        assert!(path.ends_with("PUBLIC_DVD_X_201201010000.CSV"));
+        assert_eq!(
+            std::fs::read_to_string(path).unwrap(),
+            "C,x\r\nI,A,X,1,SETTLEMENTDATE,V\r\nD,A,X,1,\"2012/01/01 00:00:00\",0\r\nD,A,X,1,\"2012/01/01 00:00:00\",1\r\n"
+        );
+        let ctls = fetch_ctls(
+            Arc::new(t),
+            &archive,
+            &tmp.path().join("cache"),
+            &tmp.path().join("ctl"),
+            month,
+        )
+        .await
+        .unwrap();
+        assert_eq!(ctls.len(), 1);
+        assert!(ctls[0].ends_with("PUBLIC_DVD_X_201201.ctl"));
+        assert_eq!(std::fs::read_to_string(&ctls[0]).unwrap(), "LOAD DATA 2012");
     }
 
     #[test]

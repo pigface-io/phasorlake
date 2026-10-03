@@ -13,6 +13,22 @@ const CATEGORIES: [&str; 12] = [
     "verify", "internal",
 ];
 
+/// Codes that are no longer raised. A code is a promise to whoever matches
+/// on it, so a retired one stays listed and may never be given a new meaning.
+const RETIRED: [(&str, &str); 1] = [(
+    "listing.era_unsupported",
+    "months before 2024 could not be listed; every archive month is now readable and a month the archive does not publish is `listing.month_missing`",
+)];
+
+/// The retired codes that live code raises again.
+pub fn reused(codes: &BTreeMap<String, String>) -> Vec<&'static str> {
+    RETIRED
+        .iter()
+        .map(|(c, _)| *c)
+        .filter(|c| codes.contains_key(*c))
+        .collect()
+}
+
 /// Every `"category.name"` literal in the `.rs` files under `crates/`, with
 /// the first file that uses it.
 pub fn collect_codes(root: &Path) -> BTreeMap<String, String> {
@@ -126,6 +142,10 @@ pub fn render(codes: &BTreeMap<String, String>) -> String {
         }
         s.push('\n');
     }
+    s.push_str("## Retired\n\nNo longer raised; kept so the code is never reused.\n\n| code | was |\n|---|---|\n");
+    for (code, was) in RETIRED {
+        let _ = writeln!(s, "| `{code}` | {was} |");
+    }
     // Exactly one trailing newline, as the end-of-file hook enforces.
 
     s.trim_end().to_owned() + "\n"
@@ -134,6 +154,14 @@ pub fn render(codes: &BTreeMap<String, String>) -> String {
 pub fn run(write: bool, check: bool) -> Result<bool> {
     let root = crate::repo_root();
     let codes = collect_codes(&root);
+    let again = reused(&codes);
+    if !again.is_empty() {
+        eprintln!(
+            "retired diagnostic code(s) raised again: {}; pick a new code",
+            again.join(", ")
+        );
+        return Ok(false);
+    }
     let text = render(&codes);
     let path = root.join("docs/errors.md");
     let current = std::fs::read_to_string(&path).unwrap_or_default();
@@ -167,6 +195,13 @@ mod tests {
         m.insert("net.offline".to_owned(), "crates/x.rs".to_owned());
         let r = render(&m);
         assert!(r.contains("## net") && r.contains("`net.offline`"));
+        assert!(r.contains("## Retired") && r.contains("`listing.era_unsupported`"));
+        assert!(reused(&m).is_empty());
+        m.insert(
+            "listing.era_unsupported".to_owned(),
+            "crates/y.rs".to_owned(),
+        );
+        assert_eq!(reused(&m), ["listing.era_unsupported"]);
         let codes = collect_codes(&crate::repo_root());
         assert!(codes.contains_key("csv.field_count_mismatch"), "{codes:?}");
         assert!(codes.len() > 40);

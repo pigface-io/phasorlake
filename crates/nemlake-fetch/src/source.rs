@@ -7,6 +7,7 @@ use url::Url;
 
 use crate::error::FetchError;
 use crate::fetcher::Fetcher;
+use crate::remotezip::ZipMember;
 
 /// What the user asked for.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -46,11 +47,35 @@ pub struct RemoteFile {
     pub size: Option<u64>,
     /// Modified time the listing reported, as text.
     pub modified: Option<String>,
+    /// Set when the file is one member of a larger remote zip: `url` is then
+    /// the container's URL with the member name as its fragment, and only
+    /// the member's bytes are downloaded.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub member: Option<Box<ZipMember>>,
 }
 
 impl RemoteFile {
-    /// The last path segment.
+    /// The identity of a member of the zip at `container`: `container#member`.
+    pub fn member_url(container: &Url, member_name: &str) -> Url {
+        let mut url = container.clone();
+        url.set_fragment(Some(member_name));
+        url
+    }
+
+    /// The URL to request: `url` without the member fragment.
+    pub fn request_url(&self) -> Url {
+        let mut url = self.url.clone();
+        if self.member.is_some() {
+            url.set_fragment(None);
+        }
+        url
+    }
+
+    /// The last path segment, or the member's file name.
     pub fn file_name(&self) -> String {
+        if let Some(m) = &self.member {
+            return m.file_name().to_owned();
+        }
         self.url
             .path_segments()
             .and_then(|mut s| s.next_back())
@@ -90,6 +115,7 @@ mod tests {
             kind: FileKind::MmsZip,
             size: None,
             modified: None,
+            member: None,
         };
         assert_eq!(r.file_name(), "PUBLIC_DVD_REGION_202401010000.zip");
         assert_eq!(r.stem(), "public_dvd_region_202401010000");

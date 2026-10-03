@@ -1488,6 +1488,8 @@ name = "nemlake-fetch"
 version = "0.1.0"
 dependencies = [
  "async-trait",
+ "crc32fast",
+ "flate2",
  "futures",
  "memchr",
  "nemlake-core",
@@ -1500,6 +1502,7 @@ dependencies = [
  "thiserror",
  "tokio",
  "url",
+ "zip",
 ]
 
 [[package]]

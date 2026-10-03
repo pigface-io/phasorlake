@@ -74,6 +74,7 @@ nemlake-pipeline = { path = "crates/nemlake-pipeline" }
 # hot path
 memchr = "2.8"
 flate2 = { version = "1", default-features = false, features = ["zlib-rs"] }
+crc32fast = "1"
 fast-float2 = "0.2"
 xxhash-rust = { version = "0.8", features = ["xxh3"] }
 hashbrown = "0.17"

@@ -11,6 +11,7 @@ pub mod error;
 pub mod fetcher;
 pub mod listing;
 pub mod mmsdm;
+pub mod remotezip;
 pub mod source;
 pub mod transport;
 pub mod wem;

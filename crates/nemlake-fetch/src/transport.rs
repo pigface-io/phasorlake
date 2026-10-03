@@ -24,24 +24,58 @@ pub struct HttpRequest {
     pub range: Option<ByteRange>,
 }
 
-/// An inclusive byte range for a partial GET.
+/// The bytes a partial GET asks for.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct ByteRange {
-    /// First byte.
-    pub start: u64,
-    /// Last byte, inclusive; `None` means to the end.
-    pub end: Option<u64>,
+pub enum ByteRange {
+    /// Bytes `start..=end`.
+    Span {
+        /// First byte.
+        start: u64,
+        /// Last byte, inclusive.
+        end: u64,
+    },
+    /// From `start` to the end of the file.
+    From {
+        /// First byte.
+        start: u64,
+    },
+    /// The last `len` bytes of the file.
+    Last {
+        /// How many.
+        len: u64,
+    },
 }
 
 impl ByteRange {
-    /// The header value.
+    /// The `Range` header value.
     #[must_use]
     pub fn header_value(&self) -> String {
-        match self.end {
-            Some(e) => format!("bytes={}-{e}", self.start),
-            None => format!("bytes={}-", self.start),
+        match *self {
+            Self::Span { start, end } => format!("bytes={start}-{end}"),
+            Self::From { start } => format!("bytes={start}-"),
+            Self::Last { len } => format!("bytes=-{len}"),
         }
     }
+
+    /// The half-open slice of a body of `total` bytes this range selects,
+    /// clamped to the body.
+    #[must_use]
+    pub fn slice_of(&self, total: u64) -> (u64, u64) {
+        match *self {
+            Self::Span { start, end } => {
+                let s = start.min(total);
+                (s, end.saturating_add(1).min(total).max(s))
+            }
+            Self::From { start } => (start.min(total), total),
+            Self::Last { len } => (total.saturating_sub(len), total),
+        }
+    }
+}
+
+/// The total length from a `Content-Range: bytes a-b/total` header value.
+#[must_use]
+pub fn content_range_total(value: &str) -> Option<u64> {
+    value.rsplit_once('/')?.1.trim().parse().ok()
 }
 
 impl HttpRequest {
@@ -76,6 +110,8 @@ pub struct HttpResponse {
     pub last_modified: Option<String>,
     /// `Accept-Ranges: bytes`.
     pub accept_ranges: bool,
+    /// The whole file's length, from `Content-Range` on a partial answer.
+    pub total_length: Option<u64>,
     /// The body.
     pub body: BoxStream<'static, Result<Vec<u8>, String>>,
 }
@@ -160,6 +196,9 @@ impl Transport for ReqwestTransport {
             etag: header("etag"),
             last_modified: header("last-modified"),
             accept_ranges: header("accept-ranges").is_some_and(|v| v.eq_ignore_ascii_case("bytes")),
+            total_length: header("content-range")
+                .as_deref()
+                .and_then(content_range_total),
             body: resp
                 .bytes_stream()
                 .map(move |chunk| {
@@ -274,6 +313,7 @@ impl Transport for Arc<StaticTransport> {
                     etag: None,
                     last_modified: None,
                     accept_ranges: false,
+                    total_length: None,
                     body: futures::stream::empty().boxed(),
                 });
             };
@@ -291,14 +331,15 @@ impl Transport for Arc<StaticTransport> {
         }
         // A range over a 200 answer is served as 206 with the slice, as IIS does.
         let mut canned = canned;
+        let mut total_length = None;
         if let Some(range) = req.range
             && canned.status == 200
         {
             let total = canned.body.len() as u64;
-            let start = range.start.min(total) as usize;
-            let end = range.end.map_or(total, |e| (e + 1).min(total)) as usize;
-            canned.body = canned.body[start..end.max(start)].to_vec();
+            let (start, end) = range.slice_of(total);
+            canned.body = canned.body[start as usize..end as usize].to_vec();
             canned.status = 206;
+            total_length = Some(total);
         }
         let len = canned.body.len();
         let content_length = match canned.claimed_length {
@@ -319,6 +360,7 @@ impl Transport for Arc<StaticTransport> {
             etag: canned.etag,
             last_modified: Some("Tue, 13 Feb 2024 08:27:00 GMT".into()),
             accept_ranges: true,
+            total_length,
             body: futures::stream::iter(chunks).boxed(),
         })
     }
@@ -330,61 +372,58 @@ mod tests {
 
     #[tokio::test]
     async fn ranges() {
+        let span = ByteRange::Span { start: 2, end: 4 };
+        assert_eq!(span.header_value(), "bytes=2-4");
+        assert_eq!(ByteRange::From { start: 100 }.header_value(), "bytes=100-");
+        assert_eq!(ByteRange::Last { len: 22 }.header_value(), "bytes=-22");
+        assert_eq!(span.slice_of(10), (2, 5));
+        assert_eq!(span.slice_of(3), (2, 3));
         assert_eq!(
-            ByteRange {
-                start: 0,
-                end: Some(9)
-            }
-            .header_value(),
-            "bytes=0-9"
+            ByteRange::Span { start: 50, end: 60 }.slice_of(10),
+            (10, 10)
         );
-        assert_eq!(
-            ByteRange {
-                start: 100,
-                end: None
-            }
-            .header_value(),
-            "bytes=100-"
-        );
-        let req = HttpRequest::get("https://h/a").with_range(ByteRange {
-            start: 2,
-            end: Some(4),
-        });
+        assert_eq!(ByteRange::From { start: 7 }.slice_of(10), (7, 10));
+        assert_eq!(ByteRange::Last { len: 3 }.slice_of(10), (7, 10));
+        assert_eq!(ByteRange::Last { len: 30 }.slice_of(10), (0, 10));
+        assert_eq!(content_range_total("bytes 0-9/1234"), Some(1234));
+        assert_eq!(content_range_total("bytes 0-9/*"), None);
+        assert_eq!(content_range_total("nonsense"), None);
+
+        let req = HttpRequest::get("https://h/a").with_range(span);
         assert_eq!(req.url, "https://h/a");
-        assert_eq!(
-            req.range,
-            Some(ByteRange {
-                start: 2,
-                end: Some(4)
-            })
-        );
+        assert_eq!(req.range, Some(span));
         let t = Arc::new(StaticTransport::default());
         t.add("https://h/a", Canned::ok(b"0123456789"));
         let body = |r: HttpResponse| async move { r.body.map(Result::unwrap).concat().await };
         let r = t.get(req).await.unwrap();
         assert_eq!(r.status, 206);
         assert_eq!(r.content_length, Some(3));
+        assert_eq!(r.total_length, Some(10));
         assert_eq!(body(r).await, b"234");
-        // An open end reads to the end; a range past the end is empty.
-        let open = HttpRequest::get("https://h/a").with_range(ByteRange {
-            start: 7,
-            end: None,
-        });
-        assert_eq!(body(t.get(open).await.unwrap()).await, b"789");
-        let past = HttpRequest::get("https://h/a").with_range(ByteRange {
-            start: 50,
-            end: Some(60),
-        });
-        let r = t.get(past).await.unwrap();
+        let get = |range| t.get(HttpRequest::get("https://h/a").with_range(range));
+        assert_eq!(
+            body(get(ByteRange::From { start: 7 }).await.unwrap()).await,
+            b"789"
+        );
+        assert_eq!(
+            body(get(ByteRange::Last { len: 2 }).await.unwrap()).await,
+            b"89"
+        );
+        let r = get(ByteRange::Span { start: 50, end: 60 }).await.unwrap();
         assert_eq!(r.status, 206);
         assert!(body(r).await.is_empty());
+        // A plain GET reports no total.
+        assert_eq!(
+            t.get(HttpRequest::get("https://h/a"))
+                .await
+                .unwrap()
+                .total_length,
+            None
+        );
         // A range does not turn an error status into a partial answer.
         t.add("https://h/gone", Canned::status(404));
         let r = t
-            .get(HttpRequest::get("https://h/gone").with_range(ByteRange {
-                start: 0,
-                end: Some(1),
-            }))
+            .get(HttpRequest::get("https://h/gone").with_range(span))
             .await
             .unwrap();
         assert_eq!(r.status, 404);

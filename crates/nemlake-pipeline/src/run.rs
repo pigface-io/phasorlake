@@ -46,6 +46,7 @@ pub fn local_remote(path: &std::path::Path) -> Option<RemoteFile> {
         kind,
         size: std::fs::metadata(&abs).ok().map(|m| m.len()),
         modified: None,
+        member: None,
     })
 }
 

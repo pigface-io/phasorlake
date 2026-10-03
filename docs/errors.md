@@ -19,6 +19,7 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 | `net.content_length_mismatch` | `crates/nemlake-fetch/src/error.rs` |
 | `net.http_status` | `crates/nemlake-fetch/src/error.rs` |
 | `net.offline` | `crates/nemlake-pipeline/src/report.rs` |
+| `net.range_ignored` | `crates/nemlake-fetch/src/error.rs` |
 | `net.retries_exhausted` | `crates/nemlake-fetch/src/error.rs` |
 | `net.timeout` | `crates/nemlake-fetch/src/error.rs` |
 
@@ -26,7 +27,7 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 
 | code | raised in |
 |---|---|
-| `listing.era_unsupported` | `crates/nemlake-fetch/src/error.rs` |
+| `listing.month_missing` | `crates/nemlake-fetch/src/error.rs` |
 | `listing.no_match` | `crates/nemlake-fetch/src/error.rs` |
 | `listing.parse_failed` | `crates/nemlake-fetch/src/error.rs` |
 | `listing.unsupported` | `crates/nemlake-fetch/src/error.rs` |
@@ -44,9 +45,12 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 | code | raised in |
 |---|---|
 | `zip.bad_entry` | `crates/nemlake-mms/src/archive.rs` |
+| `zip.member_mismatch` | `crates/nemlake-fetch/src/error.rs` |
+| `zip.member_unsupported` | `crates/nemlake-fetch/src/error.rs` |
 | `zip.nesting_too_deep` | `crates/nemlake-mms/src/archive.rs` |
 | `zip.no_csv` | `crates/nemlake-mms/src/archive.rs` |
 | `zip.open_failed` | `crates/nemlake-mms/src/archive.rs` |
+| `zip.remote_index` | `crates/nemlake-fetch/src/error.rs` |
 | `zip.spool_failed` | `crates/nemlake-mms/src/archive.rs` |
 
 ## csv
@@ -149,3 +153,11 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 | `internal.diagnostic_json` | `crates/nemlake-store/src/manifest/mod.rs` |
 | `internal.no_such_writer` | `crates/nemlake-store/src/error.rs` |
 | `internal.panic` | `crates/nemlake-pipeline/src/run.rs` |
+
+## Retired
+
+No longer raised; kept so the code is never reused.
+
+| code | was |
+|---|---|
+| `listing.era_unsupported` | months before 2024 could not be listed; every archive month is now readable and a month the archive does not publish is `listing.month_missing` |
