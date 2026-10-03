@@ -7,6 +7,13 @@
 //!
 //! Every table that has a CTL or a sample is (re)written; files are only
 //! touched when their content changes, so a no-op regen leaves git clean.
+//!
+//! `heads` and `ctls` gather the fixtures from nemweb (network):
+//!
+//! ```text
+//! nemlake-schema-bootstrap heads --month 2024-01 --out testdata/bootstrap/MMSDM_2024_01/heads
+//! nemlake-schema-bootstrap ctls  --month 2024-01 --out testdata/bootstrap/MMSDM_2024_01/CTL
+//! ```
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
@@ -61,6 +68,48 @@ enum Cmd {
         #[arg(long)]
         check: bool,
     },
+    /// Fetch the head of every archive zip of a month as `{stem}.CSV` fixtures (network).
+    Heads {
+        /// Archive month.
+        #[arg(long)]
+        month: nemlake_core::YearMonth,
+        /// Output directory.
+        #[arg(long)]
+        out: PathBuf,
+        /// D rows to keep per block.
+        #[arg(long, default_value_t = 20)]
+        rows: usize,
+        /// Concurrent requests.
+        #[arg(long, default_value_t = 6)]
+        parallel: usize,
+        /// Archive base URL.
+        #[arg(long, default_value = "https://www.nemweb.com.au")]
+        base: String,
+    },
+    /// Fetch every CTL of a month (network).
+    Ctls {
+        /// Archive month.
+        #[arg(long)]
+        month: nemlake_core::YearMonth,
+        /// Output directory.
+        #[arg(long)]
+        out: PathBuf,
+        /// Archive base URL.
+        #[arg(long, default_value = "https://www.nemweb.com.au")]
+        base: String,
+    },
+}
+
+fn tmp_cache() -> PathBuf {
+    std::env::temp_dir().join(format!("nemlake-bootstrap-{}", std::process::id()))
+}
+
+fn run_async<F: std::future::Future>(f: F) -> F::Output {
+    tokio::runtime::Builder::new_multi_thread()
+        .enable_all()
+        .build()
+        .expect("tokio runtime")
+        .block_on(f)
 }
 
 #[derive(serde::Deserialize)]
@@ -126,6 +175,71 @@ fn main() -> ExitCode {
                     ExitCode::SUCCESS
                 }
                 Err(d) => fail(&d),
+            }
+        }
+        Cmd::Heads {
+            month,
+            out,
+            rows,
+            parallel,
+            base,
+        } => {
+            let archive = match nemlake_fetch::MmsdmArchive::new(&base) {
+                Ok(a) => a,
+                Err(e) => return fail(&e.diagnostic()),
+            };
+            let transport = match nemlake_schema_bootstrap::remote::nemweb_transport() {
+                Ok(t) => t,
+                Err(e) => return fail(&e.diagnostic()),
+            };
+            let cache = tmp_cache();
+            let result = run_async(nemlake_schema_bootstrap::remote::fetch_heads(
+                transport, &archive, &cache, &out, month, rows, parallel,
+            ));
+            let _ = std::fs::remove_dir_all(&cache);
+            match result {
+                Ok(outcomes) => {
+                    let mut failed = 0;
+                    for o in &outcomes {
+                        match (&o.path, &o.error) {
+                            (Some(p), _) => eprintln!("wrote {}", p.display()),
+                            (None, Some(e)) => {
+                                failed += 1;
+                                eprintln!("failed {}: {e}", o.url);
+                            }
+                            (None, None) => {}
+                        }
+                    }
+                    eprintln!("{} head(s), {failed} failed", outcomes.len());
+                    if failed > 0 {
+                        ExitCode::from(3)
+                    } else {
+                        ExitCode::SUCCESS
+                    }
+                }
+                Err(e) => fail(&e.diagnostic()),
+            }
+        }
+        Cmd::Ctls { month, out, base } => {
+            let archive = match nemlake_fetch::MmsdmArchive::new(&base) {
+                Ok(a) => a,
+                Err(e) => return fail(&e.diagnostic()),
+            };
+            let transport = match nemlake_schema_bootstrap::remote::nemweb_transport() {
+                Ok(t) => t,
+                Err(e) => return fail(&e.diagnostic()),
+            };
+            let cache = tmp_cache();
+            let result = run_async(nemlake_schema_bootstrap::remote::fetch_ctls(
+                transport, &archive, &cache, &out, month,
+            ));
+            let _ = std::fs::remove_dir_all(&cache);
+            match result {
+                Ok(paths) => {
+                    eprintln!("{} CTL file(s) written to {}", paths.len(), out.display());
+                    ExitCode::SUCCESS
+                }
+                Err(e) => fail(&e.diagnostic()),
             }
         }
     }

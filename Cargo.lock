@@ -1561,12 +1561,16 @@ name = "nemlake-schema-bootstrap"
 version = "0.1.0"
 dependencies = [
  "clap",
+ "flate2",
+ "futures",
  "nemlake-core",
+ "nemlake-fetch",
  "nemlake-schema-model",
  "serde",
  "serde_json",
  "tempfile",
  "thiserror",
+ "tokio",
  "toml",
  "zip",
 ]

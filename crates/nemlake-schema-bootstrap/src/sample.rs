@@ -109,9 +109,11 @@ impl Diagnose for SampleError {
 
 /// `PUBLIC_DVD_{TABLE}_{YYYYMM}0000` → `(TABLE, month)`. The `TABLE` may end
 /// in a split digit (`BIDPEROFFER1`), which is kept; the merger strips it.
+/// The `_ALL` suffix of the big-table directories is dropped.
 pub fn table_from_stem(stem: &str) -> Option<(String, YearMonth)> {
     let rest = stem.strip_prefix("PUBLIC_DVD_")?;
     let (table, suffix) = rest.rsplit_once('_')?;
+    let table = table.strip_suffix("_ALL").unwrap_or(table);
     // The suffix is the archive month followed by day and time: 202401010000.
     if suffix.len() != 12
         || !suffix.bytes().all(|b| b.is_ascii_digit())
@@ -358,6 +360,12 @@ mod tests {
                 .unwrap()
                 .0,
             "BIDPEROFFER1"
+        );
+        assert_eq!(
+            table_from_stem("PUBLIC_DVD_P5MIN_CONSTRAINTSOLUTION1_ALL_202401010000")
+                .unwrap()
+                .0,
+            "P5MIN_CONSTRAINTSOLUTION1"
         );
         assert!(table_from_stem("PUBLIC_DISPATCHIS_202610011340_0000000540580033").is_none());
         assert!(table_from_stem("PUBLIC_DVD_X_2024").is_none());

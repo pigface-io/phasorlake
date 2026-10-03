@@ -92,6 +92,10 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 | `schema.file_invalid` | `crates/nemlake-schema-model/src/error.rs` |
 | `schema.file_parse` | `crates/nemlake-schema-model/src/error.rs` |
 | `schema.file_read` | `crates/nemlake-schema-model/src/error.rs` |
+| `schema.head_method` | `crates/nemlake-schema-bootstrap/src/remote.rs` |
+| `schema.head_no_irow` | `crates/nemlake-schema-bootstrap/src/remote.rs` |
+| `schema.head_not_zip` | `crates/nemlake-schema-bootstrap/src/remote.rs` |
+| `schema.head_write` | `crates/nemlake-schema-bootstrap/src/remote.rs` |
 | `schema.merge_no_columns` | `crates/nemlake-schema-bootstrap/src/merge.rs` |
 | `schema.merge_no_version` | `crates/nemlake-schema-bootstrap/src/merge.rs` |
 | `schema.merge_version_conflict` | `crates/nemlake-schema-bootstrap/src/merge.rs` |
