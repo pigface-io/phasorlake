@@ -57,7 +57,11 @@ enum Cmd {
         /// Directories of `.CSV`/`.zip` files to sample I rows from; repeatable.
         #[arg(long, required = true)]
         samples: Vec<PathBuf>,
-        /// Curated list of snapshot tables.
+        /// AEMO's archive README, which lists the standing-data tables.
+        #[arg(long)]
+        readme: PathBuf,
+        /// Standing-data tables the README does not name, each borne out
+        /// by the samples.
         #[arg(
             long,
             default_value = "crates/nemlake-schema-bootstrap/snapshot_tables.toml"
@@ -136,6 +140,25 @@ enum Cmd {
         #[arg(long, default_value = nemlake_schema_bootstrap::dmreport::REPORT_BASE)]
         base: String,
     },
+    /// Fetch the README of a month's archive, which lists the tables AEMO
+    /// publishes as standing data (network: one request).
+    Readme {
+        /// Archive month.
+        #[arg(long)]
+        month: nemlake_core::YearMonth,
+        /// Output directory; the file is `README.txt`.
+        #[arg(long)]
+        out: PathBuf,
+        /// Milliseconds between two requests; nemweb blocks fast clients.
+        #[arg(long, default_value_t = 500)]
+        interval_ms: u64,
+        /// Where listings and zip indexes are cached between runs.
+        #[arg(long, default_value = "target/bootstrap-cache")]
+        cache: PathBuf,
+        /// Archive base URL.
+        #[arg(long, default_value = "https://www.nemweb.com.au")]
+        base: String,
+    },
     /// Gather what historical months add: a bundle of heads per month and
     /// the control files that type columns later months dropped (network).
     History {
@@ -177,7 +200,7 @@ fn run_async<F: std::future::Future>(f: F) -> F::Output {
 
 #[derive(serde::Deserialize)]
 struct SnapshotList {
-    snapshot: Vec<String>,
+    observed: Vec<String>,
 }
 
 fn fail(d: &nemlake_core::Diagnostic) -> ExitCode {
@@ -217,6 +240,7 @@ fn main() -> ExitCode {
             ctl,
             datamodel,
             samples,
+            readme,
             snapshot_list,
             only,
             check,
@@ -226,6 +250,7 @@ fn main() -> ExitCode {
                 &ctl,
                 &datamodel,
                 &samples,
+                &readme,
                 &snapshot_list,
                 &only,
                 check,
@@ -310,6 +335,27 @@ fn main() -> ExitCode {
             match result {
                 Ok(paths) => {
                     eprintln!("{} CTL file(s) written to {}", paths.len(), out.display());
+                    ExitCode::SUCCESS
+                }
+                Err(e) => fail(&e.diagnostic()),
+            }
+        }
+        Cmd::Readme {
+            month,
+            out,
+            interval_ms,
+            cache,
+            base,
+        } => {
+            let (archive, fetcher) = match network(&base, &cache, interval_ms) {
+                Ok(n) => n,
+                Err(code) => return code,
+            };
+            match run_async(nemlake_schema_bootstrap::remote::fetch_readme(
+                &fetcher, &archive, &out, month,
+            )) {
+                Ok(path) => {
+                    eprintln!("README written to {}", path.display());
                     ExitCode::SUCCESS
                 }
                 Err(e) => fail(&e.diagnostic()),
@@ -418,16 +464,54 @@ fn regen(
     ctl_dirs: &[PathBuf],
     datamodel: &Path,
     sample_dirs: &[PathBuf],
+    readme: &Path,
     snapshot_list: &Path,
     only: &[String],
     check: bool,
 ) -> Result<usize, Box<nemlake_core::Diagnostic>> {
     let dm = DataModel::load(datamodel).map_err(|e| Box::new(e.diagnostic()))?;
-    let snapshots: BTreeSet<String> = std::fs::read_to_string(snapshot_list)
-        .ok()
-        .and_then(|t| toml::from_str::<SnapshotList>(&t).ok())
-        .map(|l| l.snapshot.into_iter().collect())
-        .unwrap_or_default();
+    // Standing-data tables: the ones AEMO's README names, and the ones the
+    // samples show to behave the same. A list that cannot be read is an
+    // error, not an empty list: it would turn every such table into one of
+    // monthly rows without a word.
+    let unreadable = |path: &Path, what: &str, cause: &dyn std::fmt::Display| {
+        Box::new(
+            nemlake_core::Diagnostic::error(
+                "schema.standing_list",
+                nemlake_core::Category::Schema,
+                format!("{what} {} could not be read: {cause}", path.display()),
+            )
+            .with_file(path.display().to_string()),
+        )
+    };
+    let readme_text =
+        std::fs::read(readme).map_err(|e| unreadable(readme, "The archive README", &e))?;
+    let mut snapshots: BTreeSet<String> =
+        nemlake_schema_bootstrap::standing::readme_tables(&String::from_utf8_lossy(&readme_text))
+            .into_iter()
+            .collect();
+    if snapshots.is_empty() {
+        return Err(unreadable(
+            readme,
+            "The archive README",
+            &"it lists no standing-data table",
+        ));
+    }
+    let list_text = std::fs::read_to_string(snapshot_list).map_err(|e| {
+        unreadable(
+            snapshot_list,
+            "The list of observed standing-data tables",
+            &e,
+        )
+    })?;
+    let list: SnapshotList = toml::from_str(&list_text).map_err(|e| {
+        unreadable(
+            snapshot_list,
+            "The list of observed standing-data tables",
+            &e,
+        )
+    })?;
+    snapshots.extend(list.observed);
 
     // CTLs by the table they load, plus the archive stem each one reads.
     // Every control file of a table, to be sorted newest month first.

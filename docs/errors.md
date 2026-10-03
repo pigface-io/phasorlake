@@ -114,6 +114,7 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 | `schema.sample_no_csv` | `crates/nemlake-schema-bootstrap/src/sample.rs` |
 | `schema.sample_read` | `crates/nemlake-schema-bootstrap/src/sample.rs` |
 | `schema.sample_zip` | `crates/nemlake-schema-bootstrap/src/sample.rs` |
+| `schema.standing_list` | `crates/nemlake-schema-bootstrap/src/main.rs` |
 | `schema.unknown_columns` | `crates/nemlake-schema/src/resolve.rs` |
 | `schema.unknown_table` | `crates/nemlake-schema/src/error.rs` |
 | `schema.unknown_version` | `crates/nemlake-schema/src/error.rs` |

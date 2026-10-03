@@ -479,7 +479,8 @@ pub async fn list_ctls(
     Ok(remotes)
 }
 
-/// Fetches one control file into `out` under its own name.
+/// Fetches one small file of the archive (a control file, the README)
+/// into `out` under its own name.
 async fn save_ctl(
     fetcher: &Fetcher,
     remote: &RemoteFile,
@@ -494,6 +495,35 @@ async fn save_ctl(
     let path = out.join(remote.file_name());
     std::fs::copy(&local.path, &path).map_err(|e| write_err(&path, e))?;
     Ok(path)
+}
+
+/// Downloads the `README.txt` of `month`'s archive, which lists the tables
+/// AEMO publishes as standing data, into `out`.
+pub async fn fetch_readme(
+    fetcher: &Fetcher,
+    archive: &MmsdmArchive,
+    out: &Path,
+    month: YearMonth,
+) -> Result<PathBuf, HeadError> {
+    let url = archive
+        .month_root(month)?
+        .join("DOCUMENTATION/README.txt")
+        .map_err(|e| FetchError::Parse {
+            url: "DOCUMENTATION/README.txt".into(),
+            what: "README URL",
+            message: e.to_string(),
+        })?;
+    let remote = RemoteFile {
+        url,
+        source: nemlake_fetch::mmsdm::SOURCE_ID,
+        table: None,
+        period: Some(month),
+        kind: FileKind::PlainCsv,
+        size: None,
+        modified: None,
+        member: None,
+    };
+    save_ctl(fetcher, &remote, out).await
 }
 
 /// Downloads the `.ctl` files of `month` into `out`. A control file is
@@ -774,6 +804,41 @@ mod tests {
             inflate_head("u", &bad),
             Err(HeadError::Method { method: 12, .. })
         ));
+    }
+
+    #[tokio::test]
+    async fn the_readme_of_a_month_is_fetched_as_published() {
+        use nemlake_fetch::transport::{Canned, StaticTransport};
+        let url = "https://h/Data_Archive/Wholesale_Electricity/MMSDM/2026/MMSDM_2026_08/MMSDM_Historical_Data_SQLLoader/DOCUMENTATION/README.txt";
+        let body = b"The following tables are the Static/Standing data tables\r\n\r\n\tREGION\r\n";
+        let t = Arc::new(StaticTransport::default());
+        t.add(url, Canned::ok(body));
+        let archive = MmsdmArchive::new("https://h").unwrap();
+        let tmp = tempfile::tempdir().unwrap();
+        let fetcher = paced_fetcher(
+            Arc::new(Arc::clone(&t)),
+            &tmp.path().join("cache"),
+            Duration::ZERO,
+        );
+        let out = tmp.path().join("MMSDM_2026_08");
+        let path = fetch_readme(&fetcher, &archive, &out, "2026-08".parse().unwrap())
+            .await
+            .unwrap();
+        assert_eq!(path, out.join("README.txt"));
+        assert_eq!(std::fs::read(&path).unwrap(), body);
+        assert_eq!(
+            crate::standing::readme_tables(&String::from_utf8_lossy(body)),
+            ["REGION"]
+        );
+        // A month without one is the fetcher's error.
+        let e = fetch_readme(&fetcher, &archive, &out, "2026-07".parse().unwrap())
+            .await
+            .unwrap_err();
+        assert!(
+            e.diagnostic().code.starts_with("net."),
+            "{}",
+            e.diagnostic().code
+        );
     }
 
     #[tokio::test]

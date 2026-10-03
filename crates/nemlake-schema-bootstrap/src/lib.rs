@@ -25,3 +25,4 @@ pub mod dmreport;
 pub mod merge;
 pub mod remote;
 pub mod sample;
+pub mod standing;

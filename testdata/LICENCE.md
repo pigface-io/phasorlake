@@ -6,8 +6,8 @@ data rows per block with their header rows intact and the footer count
 corrected. The heads under `bootstrap/MMSDM_{YYYY}_{MM}/heads/` are the first
 bytes of every zip in the archive of that month (`just schema-fixtures`): the
 `C` header, the `I` row and at most 20 `D` rows, no footer. The control files
-under `bootstrap/MMSDM_{YYYY}_{MM}/CTL/` and the listing under `listings/` are
-copied verbatim from the same archives. The JSON
+under `bootstrap/MMSDM_{YYYY}_{MM}/CTL/`, the `README.txt` beside them and
+the listing under `listings/` are copied verbatim from the same archives. The JSON
 under `bootstrap/datamodel/` is AEMO's MMS Data Model Report as read by
 `just schema-datamodel`; the four pages under `bootstrap/datamodel/pages/`
 are copied verbatim from that report.

@@ -54,7 +54,7 @@ Global flags: `--home DIR` (or `NEMLAKE_HOME`), `--json`, `-v`, `--offline`,
 ```
 ~/.nemlake/
   lake/nem/{table}/year=YYYY/month=MM/{source}-v{version}-{shape8}-{sha8}.parquet   appended tables, partitioned by market-local month
-  lake/nem/{table}/snapshot=YYYYMM/...                                     standing-data tables (REGION, PARTICIPANT, ...)
+  lake/nem/{table}/snapshot=YYYYMM/...                                     standing-data tables (REGION, PARTICIPANT, ...): each month's file is the whole table
   archive/{host}/{path of the URL}[.json]                                  every download as the server sent it, with its request record
   cache/listings/, cache/tmp/                                              listings and scratch files, safe to delete
   quarantine/{table}/{source}.jsonl                                        rows that failed to parse, with the reason

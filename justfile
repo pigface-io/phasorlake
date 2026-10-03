@@ -65,7 +65,7 @@ cover:
 # What the schema files are generated from. The control files of the newest
 # month come first: where two months have one for the same table, the first
 # named wins, so the registry is typed by what AEMO publishes today.
-schema_inputs := "--ctl testdata/bootstrap/MMSDM_2026_08/CTL --ctl testdata/bootstrap/MMSDM_2024_01/CTL --datamodel testdata/bootstrap/datamodel/mms_data_model_v5.0.0.1.json --samples testdata/csv --samples testdata/bootstrap/MMSDM_2024_01/heads --samples testdata/bootstrap/MMSDM_2026_08/heads"
+schema_inputs := "--ctl testdata/bootstrap/MMSDM_2026_08/CTL --ctl testdata/bootstrap/MMSDM_2024_01/CTL --datamodel testdata/bootstrap/datamodel/mms_data_model_v5.0.0.1.json --samples testdata/csv --samples testdata/bootstrap/MMSDM_2024_01/heads --samples testdata/bootstrap/MMSDM_2026_08/heads --readme testdata/bootstrap/MMSDM_2026_08/README.txt"
 
 # the embedded schema files: regenerate from the fixtures and fail on a diff
 schema-check:
@@ -75,10 +75,11 @@ schema-check:
 schema-regen:
     cargo run -q -p nemlake-schema-bootstrap -- regen --schemas schemas {{schema_inputs}}
 
-# refresh the bootstrap fixtures of a month from nemweb: every CTL and the head of every zip (needs the network; one request per interval, nemweb blocks fast clients)
+# refresh the bootstrap fixtures of a month from nemweb: every CTL, the head of every zip and the README (needs the network; one request per interval, nemweb blocks fast clients)
 schema-fixtures month="2024-01" interval_ms="1200":
     cargo run -q -p nemlake-schema-bootstrap -- ctls --month {{month}} --interval-ms {{interval_ms}} --out testdata/bootstrap/MMSDM_{{replace(month, "-", "_")}}/CTL
     cargo run -q -p nemlake-schema-bootstrap -- heads --month {{month}} --interval-ms {{interval_ms}} --out testdata/bootstrap/MMSDM_{{replace(month, "-", "_")}}/heads
+    cargo run -q -p nemlake-schema-bootstrap -- readme --month {{month}} --interval-ms {{interval_ms}} --out testdata/bootstrap/MMSDM_{{replace(month, "-", "_")}}
 
 # read AEMO's MMS Data Model Report into testdata/bootstrap/datamodel/ (needs the network; a few hundred paced requests)
 schema-datamodel interval_ms="1200":
