@@ -156,7 +156,7 @@ pub fn validate_table(t: &TableDef) -> Vec<Issue> {
                 format!("primary_key column {k} is nullable; set nullable = false"),
             )),
             Some(c) if c.removed_in.is_some() => {
-                out.push(issue(t, format!("primary_key column {k} has been removed")))
+                out.push(issue(t, format!("primary_key column {k} has been removed")));
             }
             _ => {}
         }
