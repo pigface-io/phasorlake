@@ -50,7 +50,7 @@ pub async fn dispatch(cli: Cli) -> Result<i32> {
             .await
         }
         Command::Schema { cmd } => schema::schema(&ctx, cmd),
-        Command::Cache { cmd } => misc::cache(&ctx, cmd),
+        Command::Cache { cmd } => misc::cache(&ctx, cmd).await,
         Command::Wem { cmd } => misc::wem(&ctx, cmd).await,
     }
 }

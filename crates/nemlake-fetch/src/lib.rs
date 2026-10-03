@@ -16,7 +16,7 @@ pub mod source;
 pub mod transport;
 pub mod wem;
 
-pub use cache::{CachedBlob, DiskCache, Sidecar};
+pub use cache::{CachedBlob, DiskCache, Leftover, Sidecar};
 pub use error::FetchError;
 pub use fetcher::{Fetcher, FetcherConfig, LocalFile};
 pub use mmsdm::MmsdmArchive;

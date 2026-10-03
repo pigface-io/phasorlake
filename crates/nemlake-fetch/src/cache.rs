@@ -267,6 +267,92 @@ impl DiskCache {
     }
 }
 
+/// A file in the cache that serves no purpose any more.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Leftover {
+    /// The file.
+    pub path: PathBuf,
+    /// Its size.
+    pub bytes: u64,
+    /// Why it is a leftover, for the report.
+    pub why: &'static str,
+}
+
+/// How old a spooled inner zip or an unfinished write must be before it is
+/// taken for abandoned; a running ingest owns younger ones.
+const BUSY_SECS: i64 = 3_600;
+/// No listing or zip index is trusted for longer than this.
+const LISTING_MAX_SECS: i64 = 90 * 86_400;
+
+impl DiskCache {
+    /// Files that no complete download accounts for: partial downloads
+    /// nobody resumed within `part_max_age_secs`, spooled inner zips of
+    /// ingests that are long over, downloads without a sidecar, sidecars
+    /// without a download, and listings past any use.
+    pub fn leftovers(&self, part_max_age_secs: i64) -> Vec<Leftover> {
+        let now = nemlake_core::clock::unix_now();
+        let age = |p: &Path| -> i64 {
+            std::fs::metadata(p)
+                .and_then(|m| m.modified())
+                .ok()
+                .and_then(|t| t.duration_since(std::time::UNIX_EPOCH).ok())
+                .map_or(i64::MAX, |d| now - d.as_secs() as i64)
+        };
+        let mut out = Vec::new();
+        let mut push = |path: PathBuf, why: &'static str| {
+            let bytes = std::fs::metadata(&path).map_or(0, |m| m.len());
+            out.push(Leftover { path, bytes, why });
+        };
+        let mut stack = vec![(self.root.clone(), "")];
+        while let Some((dir, kind)) = stack.pop() {
+            let Ok(rd) = std::fs::read_dir(&dir) else {
+                continue;
+            };
+            for p in rd.filter_map(Result::ok).map(|e| e.path()) {
+                if p.is_dir() {
+                    let kind = match (kind, p.file_name().and_then(|n| n.to_str())) {
+                        ("", Some("listings")) => "listings",
+                        ("", Some("tmp")) => "tmp",
+                        (k, _) => k,
+                    };
+                    stack.push((p, kind));
+                    continue;
+                }
+                let name = p.file_name().and_then(|n| n.to_str()).unwrap_or("");
+                match kind {
+                    "tmp" => {
+                        if age(&p) > BUSY_SECS {
+                            push(p, "spooled file of a finished ingest");
+                        }
+                    }
+                    "listings" => {
+                        if age(&p) > LISTING_MAX_SECS {
+                            push(p, "listing too old to be used");
+                        }
+                    }
+                    _ if name.ends_with(".part") || name.ends_with(".part.json") => {
+                        if age(&p) > part_max_age_secs {
+                            push(p, "partial download nobody resumed");
+                        }
+                    }
+                    _ if name.ends_with(".json") => {
+                        if !p.with_extension("").is_file() && age(&p) > BUSY_SECS {
+                            push(p, "sidecar without its download");
+                        }
+                    }
+                    _ => {
+                        if !Self::sidecar_path(&p).is_file() && age(&p) > BUSY_SECS {
+                            push(p, "download without its sidecar");
+                        }
+                    }
+                }
+            }
+        }
+        out.sort_by(|a, b| a.path.cmp(&b.path));
+        out
+    }
+}
+
 fn sanitize(name: &str) -> String {
     name.chars()
         .map(|c| {
@@ -290,6 +376,100 @@ pub fn parse_rfc3339_secs(s: &str) -> Option<i64> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// Writes `bytes` to `path` and backdates it by `age_secs`.
+    fn aged(path: &Path, bytes: &[u8], age_secs: u64) {
+        std::fs::create_dir_all(path.parent().unwrap()).unwrap();
+        std::fs::write(path, bytes).unwrap();
+        let when = std::time::SystemTime::now() - std::time::Duration::from_secs(age_secs);
+        std::fs::File::options()
+            .write(true)
+            .open(path)
+            .unwrap()
+            .set_modified(when)
+            .unwrap();
+    }
+
+    #[test]
+    fn leftovers_are_what_no_complete_download_accounts_for() {
+        let dir = tempfile::tempdir().unwrap();
+        let c = DiskCache::new(dir.path());
+        let day = 86_400;
+        let src = dir.path().join("nem-mmsdm");
+        // A complete download, old: never a leftover.
+        aged(&src.join("aa-good.zip"), b"zip", 400 * day);
+        aged(&src.join("aa-good.zip.json"), b"{}", 400 * day);
+        // Partial downloads: one abandoned, one still young enough to resume.
+        aged(&src.join("bb-old.zip.part"), b"12345", 10 * day);
+        aged(&src.join("bb-old.zip.part.json"), b"{}", 10 * day);
+        aged(&src.join("cc-new.zip.part"), b"1", 2 * day);
+        aged(&src.join("cc-new.zip.part.json"), b"{}", 2 * day);
+        // A download whose sidecar is gone, and a sidecar whose download is gone.
+        aged(&src.join("dd-bare.zip"), b"1234567", 2 * day);
+        aged(&src.join("ee-lost.zip.json"), b"{}", 2 * day);
+        // The same two shapes, minutes old: a fetch may be between its two writes.
+        aged(&src.join("ff-busy.zip"), b"1", 60);
+        aged(&src.join("gg-busy.zip.json"), b"{}", 60);
+        // Spooled inner zips: an old one, and one an ingest may still read.
+        aged(&dir.path().join("tmp/spool-1.zip"), b"123", 2 * day);
+        aged(&dir.path().join("tmp/spool-2.zip"), b"123", 60);
+        // Listings: one past any time-to-live, one current.
+        aged(&dir.path().join("listings/old"), b"<pre>", 100 * day);
+        aged(&dir.path().join("listings/old.json"), b"{}", 100 * day);
+        aged(&dir.path().join("listings/new"), b"<pre>", day);
+
+        let names = |max_age: i64| -> Vec<(String, &'static str)> {
+            c.leftovers(max_age)
+                .into_iter()
+                .map(|l| {
+                    (
+                        l.path
+                            .strip_prefix(dir.path())
+                            .unwrap()
+                            .to_string_lossy()
+                            .replace('\\', "/"),
+                        l.why,
+                    )
+                })
+                .collect()
+        };
+        let week = names(7 * i64::from(day as u32));
+        let paths: Vec<&str> = week.iter().map(|(p, _)| p.as_str()).collect();
+        assert_eq!(
+            paths,
+            [
+                "listings/old",
+                "listings/old.json",
+                "nem-mmsdm/bb-old.zip.part",
+                "nem-mmsdm/bb-old.zip.part.json",
+                "nem-mmsdm/dd-bare.zip",
+                "nem-mmsdm/ee-lost.zip.json",
+                "tmp/spool-1.zip",
+            ]
+        );
+        assert_eq!(week[2].1, "partial download nobody resumed");
+        assert_eq!(week[4].1, "download without its sidecar");
+        assert_eq!(week[5].1, "sidecar without its download");
+        assert_eq!(week[6].1, "spooled file of a finished ingest");
+        assert_eq!(week[0].1, "listing too old to be used");
+        // A shorter grace takes the younger partial download too.
+        let hour = names(3_600);
+        assert!(hour.iter().any(|(p, _)| p == "nem-mmsdm/cc-new.zip.part"));
+        assert!(
+            hour.iter()
+                .any(|(p, _)| p == "nem-mmsdm/cc-new.zip.part.json")
+        );
+        assert_eq!(hour.len(), week.len() + 2);
+        // Sizes are reported, and an empty cache has nothing.
+        let sized = c.leftovers(7 * i64::from(day as u32));
+        assert_eq!(sized[2].bytes, 5);
+        assert_eq!(sized[4].bytes, 7);
+        assert!(
+            DiskCache::new(dir.path().join("nowhere"))
+                .leftovers(0)
+                .is_empty()
+        );
+    }
 
     #[test]
     fn paths_and_lookup() {

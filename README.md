@@ -39,7 +39,7 @@ the file is already in the lake.
 | `nemlake errors [--last] [--table T] [--code C]` | diagnostics recorded by past runs |
 | `nemlake verify` | every Parquet file the manifest lists exists with its size |
 | `nemlake schema list\|show\|diff\|lineage\|validate` | the registry |
-| `nemlake cache ls\|clear` | the download cache |
+| `nemlake cache ls\|gc\|clear` | the download cache; `gc` removes leftovers of interrupted work and, with `--ingested` or `--older-than DAYS`, downloads no longer needed |
 | `nemlake wem manifest <dataset>` | a WEM dataset's file list (WEM ingestion comes later) |
 
 Global flags: `--home DIR` (or `NEMLAKE_HOME`), `--json`, `-v`, `--offline`,

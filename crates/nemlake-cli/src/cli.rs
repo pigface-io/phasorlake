@@ -213,6 +213,23 @@ pub enum CacheCmd {
     Ls,
     /// Remove every cached download and listing.
     Clear,
+    /// Remove what is no longer needed: leftovers of interrupted work
+    /// always, and downloads by the two flags.
+    Gc {
+        /// Also remove downloads whose every block is in the lake. The
+        /// same request run again downloads them again to compare.
+        #[arg(long)]
+        ingested: bool,
+        /// Also remove downloads fetched more than this many days ago.
+        #[arg(long, value_name = "DAYS")]
+        older_than: Option<u64>,
+        /// Partial downloads are kept for a resume for this many days.
+        #[arg(long, value_name = "DAYS", default_value_t = 7)]
+        keep_partial: u64,
+        /// List what would be removed and remove nothing.
+        #[arg(long)]
+        dry_run: bool,
+    },
 }
 
 /// WEM commands.
