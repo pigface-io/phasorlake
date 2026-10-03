@@ -179,16 +179,22 @@ pub fn scan<R: Read, S: Sink>(
                     let report_type = row
                         .str(1)
                         .and_then(|s| normalize_name(s, &mut name_buf).map(str::to_owned));
-                    let report_subtype = row
-                        .str(2)
-                        .and_then(|s| normalize_name(s, &mut name_buf).map(str::to_owned));
+                    // Some standing-data tables publish no subtype:
+                    // `I,GENCONDATA,,6,...`. An empty subtype is a name.
+                    let report_subtype = row.str(2).and_then(|s| {
+                        if s.trim().is_empty() {
+                            Some(String::new())
+                        } else {
+                            normalize_name(s, &mut name_buf).map(str::to_owned)
+                        }
+                    });
                     let version = row.str(3).and_then(|s| s.trim().parse::<u16>().ok());
                     let (Some(report_type), Some(report_subtype), Some(version)) =
                         (report_type, report_subtype, version)
                     else {
                         return Err(ScanError::BadHeader {
                             line: pos.line,
-                            message: "the report type, subtype or version field is empty or not a small integer".into(),
+                            message: "the report type is empty, the subtype is not a name, or the version is not a small integer".into(),
                         });
                     };
                     names.clear();
@@ -440,6 +446,31 @@ pub(crate) mod tests {
         );
         assert_eq!(stats.lines, 4);
         assert!(!stats.footer_mismatch());
+    }
+
+    #[test]
+    fn empty_subtype_is_a_name() {
+        // Standing-data tables such as GENCONDATA publish no subtype.
+        let mut c = Collect::default();
+        let stats = scan(
+            b"I,GENCONDATA,,6,GENCONID\nD,GENCONDATA,,6,X1\n".as_slice(),
+            &mut c,
+            &ScanOptions::default(),
+        )
+        .unwrap();
+        assert_eq!(c.headers[0].0, "GENCONDATA");
+        assert_eq!(c.headers[0].1, "");
+        assert_eq!(c.headers[0].2, 6);
+        assert_eq!(stats.lines, 2);
+        // A quoted empty subtype is the same thing.
+        let mut c = Collect::default();
+        scan(
+            b"I,GENCONDATA,\"\",6,GENCONID\n".as_slice(),
+            &mut c,
+            &ScanOptions::default(),
+        )
+        .unwrap();
+        assert_eq!(c.headers[0].1, "");
     }
 
     #[test]
