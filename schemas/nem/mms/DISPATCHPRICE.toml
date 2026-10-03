@@ -29,7 +29,7 @@ name = "SETTLEMENTDATE"
 type = "timestamp"
 nullable = false
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 4
 description = "Market date and time starting at 04:05"
 src = [
@@ -182,7 +182,7 @@ id = 11
 name = "LASTCHANGED"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 4
 description = "Last date and time record changed"
 src = [
@@ -818,123 +818,139 @@ src = [
 ]
 
 [[column]]
-id = 55
-name = "RAISE1SECRRP"
-type = "number"
-added_in = 5
-src = [
-    "irow",
-    "sampled",
-]
-
-[[column]]
-id = 56
-name = "RAISE1SECROP"
-type = "number"
-added_in = 5
-src = [
-    "irow",
-    "sampled",
-]
-
-[[column]]
-id = 57
-name = "RAISE1SECAPCFLAG"
-type = "number"
-added_in = 5
-src = [
-    "irow",
-    "sampled",
-]
-
-[[column]]
-id = 58
-name = "LOWER1SECRRP"
-type = "number"
-added_in = 5
-src = [
-    "irow",
-    "sampled",
-]
-
-[[column]]
-id = 59
-name = "LOWER1SECROP"
-type = "number"
-added_in = 5
-src = [
-    "irow",
-    "sampled",
-]
-
-[[column]]
-id = 60
-name = "LOWER1SECAPCFLAG"
-type = "number"
-added_in = 5
-src = [
-    "irow",
-    "sampled",
-]
-
-[[column]]
-id = 61
-name = "PRE_AP_RAISE1_PRICE"
-type = "number"
-added_in = 5
-src = [
-    "irow",
-    "sampled",
-]
-
-[[column]]
-id = 62
-name = "PRE_AP_LOWER1_PRICE"
-type = "number"
-added_in = 5
-src = [
-    "irow",
-    "sampled",
-]
-
-[[column]]
-id = 63
-name = "CUMUL_PRE_AP_RAISE1_PRICE"
-type = "number"
-added_in = 5
-src = [
-    "irow",
-    "sampled",
-]
-
-[[column]]
-id = 64
-name = "CUMUL_PRE_AP_LOWER1_PRICE"
-type = "number"
-added_in = 5
-src = [
-    "irow",
-    "sampled",
-]
-
-[[column]]
 id = 65
 name = "OCD_STATUS"
 type = "utf8"
+max_len = 14
+dict = true
+loader = "CHAR(14)"
 added_in = 5
 src = [
+    "ctl",
     "irow",
-    "sampled",
 ]
 
 [[column]]
 id = 66
 name = "MII_STATUS"
 type = "utf8"
+max_len = 21
+dict = true
+loader = "CHAR(21)"
 added_in = 5
 src = [
+    "ctl",
     "irow",
-    "sampled",
+]
+
+[[column]]
+id = 55
+name = "RAISE1SECRRP"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 5
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 56
+name = "RAISE1SECROP"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 5
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 57
+name = "RAISE1SECAPCFLAG"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 5
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 58
+name = "LOWER1SECRRP"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 5
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 59
+name = "LOWER1SECROP"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 5
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 60
+name = "LOWER1SECAPCFLAG"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 5
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 61
+name = "PRE_AP_RAISE1_PRICE"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 5
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 62
+name = "PRE_AP_LOWER1_PRICE"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 5
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 63
+name = "CUMUL_PRE_AP_RAISE1_PRICE"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 5
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 64
+name = "CUMUL_PRE_AP_LOWER1_PRICE"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 5
+src = [
+    "ctl",
+    "irow",
 ]
 
 [[version]]
@@ -1048,6 +1064,80 @@ columns = [
     "PRE_AP_LOWER60_PRICE",
     "PRE_AP_LOWER5MIN_PRICE",
     "PRE_AP_LOWERREG_PRICE",
+    "CUMUL_PRE_AP_ENERGY_PRICE",
+    "CUMUL_PRE_AP_RAISE6_PRICE",
+    "CUMUL_PRE_AP_RAISE60_PRICE",
+    "CUMUL_PRE_AP_RAISE5MIN_PRICE",
+    "CUMUL_PRE_AP_RAISEREG_PRICE",
+    "CUMUL_PRE_AP_LOWER6_PRICE",
+    "CUMUL_PRE_AP_LOWER60_PRICE",
+    "CUMUL_PRE_AP_LOWER5MIN_PRICE",
+    "CUMUL_PRE_AP_LOWERREG_PRICE",
+    "OCD_STATUS",
+    "MII_STATUS",
+    "RAISE1SECRRP",
+    "RAISE1SECROP",
+    "RAISE1SECAPCFLAG",
+    "LOWER1SECRRP",
+    "LOWER1SECROP",
+    "LOWER1SECAPCFLAG",
+    "PRE_AP_RAISE1_PRICE",
+    "PRE_AP_LOWER1_PRICE",
+    "CUMUL_PRE_AP_RAISE1_PRICE",
+    "CUMUL_PRE_AP_LOWER1_PRICE",
+]
+fingerprint = "xxh3:9f394ec4a77f2d2452720619c25e62ce"
+first_seen = "2026-08"
+last_seen = "2026-08"
+src = "irow"
+
+[[version.variant]]
+columns = [
+    "SETTLEMENTDATE",
+    "RUNNO",
+    "REGIONID",
+    "DISPATCHINTERVAL",
+    "INTERVENTION",
+    "RRP",
+    "EEP",
+    "ROP",
+    "APCFLAG",
+    "MARKETSUSPENDEDFLAG",
+    "LASTCHANGED",
+    "RAISE6SECRRP",
+    "RAISE6SECROP",
+    "RAISE6SECAPCFLAG",
+    "RAISE60SECRRP",
+    "RAISE60SECROP",
+    "RAISE60SECAPCFLAG",
+    "RAISE5MINRRP",
+    "RAISE5MINROP",
+    "RAISE5MINAPCFLAG",
+    "RAISEREGRRP",
+    "RAISEREGROP",
+    "RAISEREGAPCFLAG",
+    "LOWER6SECRRP",
+    "LOWER6SECROP",
+    "LOWER6SECAPCFLAG",
+    "LOWER60SECRRP",
+    "LOWER60SECROP",
+    "LOWER60SECAPCFLAG",
+    "LOWER5MINRRP",
+    "LOWER5MINROP",
+    "LOWER5MINAPCFLAG",
+    "LOWERREGRRP",
+    "LOWERREGROP",
+    "LOWERREGAPCFLAG",
+    "PRICE_STATUS",
+    "PRE_AP_ENERGY_PRICE",
+    "PRE_AP_RAISE6_PRICE",
+    "PRE_AP_RAISE60_PRICE",
+    "PRE_AP_RAISE5MIN_PRICE",
+    "PRE_AP_RAISEREG_PRICE",
+    "PRE_AP_LOWER6_PRICE",
+    "PRE_AP_LOWER60_PRICE",
+    "PRE_AP_LOWER5MIN_PRICE",
+    "PRE_AP_LOWERREG_PRICE",
     "RAISE1SECRRP",
     "RAISE1SECROP",
     "RAISE1SECAPCFLAG",
@@ -1071,10 +1161,12 @@ columns = [
     "MII_STATUS",
 ]
 fingerprint = "xxh3:9cb1d53c1f5833f2772a53df63dd5682"
-src = "irow"
 
 [provenance]
-ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_DISPATCHPRICE_202401.ctl"
+ctl = "MMSDM_2026_08/CTL/PUBLIC_ARCHIVE#DISPATCHPRICE#FILE01#202608.ctl"
 data_model = "MMS_130.htm@v5.0.0.1"
-sampled_months = ["2024-01"]
-note = "column CUMUL_PRE_AP_ENERGY_PRICE: declared NUMBER(15,5) but a sampled value has 6 integer and 24 fractional digits; precision dropped"
+sampled_months = [
+    "2024-01",
+    "2026-08",
+]
+note = "version 5 was published with 66 columns and with 66; the lists differ by more than appended columns; the shorter is a variant | column CUMUL_PRE_AP_ENERGY_PRICE: declared NUMBER(15,5) but a sampled value has 6 integer and 24 fractional digits; precision dropped"

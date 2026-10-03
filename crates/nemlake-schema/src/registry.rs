@@ -250,6 +250,9 @@ impl Registry {
                     .expect("a validated version projects onto its table");
                 projections.insert((id, v.n), Arc::new(proj));
                 for x in &v.variants {
+                    // A variant's list under an undeclared version number
+                    // is found by its fingerprint like a version's own.
+                    by_fingerprint.entry(x.fingerprint).or_insert((id, v.n));
                     let names: Vec<&str> = x.columns.iter().map(String::as_str).collect();
                     let proj = Projection::build(t, &market, opts, &schema, &names)
                         .expect("a validated variant projects onto its table");
@@ -532,7 +535,7 @@ mod tests {
         assert_eq!(r.table_by_pair("DISPATCH", "NOPE"), None);
         assert_eq!(r.table(id).name, "DISPATCH_UNIT_SCADA");
         assert_eq!(r.market_of(id).arrow_tz(), "+10:00");
-        assert_eq!(r.lake_schema(id).fields().len(), 3);
+        assert_eq!(r.lake_schema(id).fields().len(), 4);
         let v = r.table(id).versions[0].n;
         assert!(r.projection(id, v).is_some());
         assert_eq!(

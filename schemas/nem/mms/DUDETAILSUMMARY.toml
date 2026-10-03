@@ -17,7 +17,7 @@ primary_key = [
     "DUID",
     "START_DATE",
 ]
-next_column_id = 22
+next_column_id = 30
 
 [[column]]
 id = 1
@@ -42,7 +42,7 @@ name = "START_DATE"
 type = "timestamp"
 nullable = false
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 6
 description = "Start date for effective record"
 src = [
@@ -56,7 +56,7 @@ id = 3
 name = "END_DATE"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 6
 description = "End date for effective record"
 src = [
@@ -150,7 +150,7 @@ id = 9
 name = "LASTCHANGED"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 6
 description = "Last date and time record changed"
 src = [
@@ -342,6 +342,96 @@ src = [
     "irow",
 ]
 
+[[column]]
+id = 22
+name = "ADG_ID"
+type = "utf8"
+max_len = 20
+dict = true
+loader = "CHAR(20)"
+added_in = 7
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 23
+name = "LOAD_MINIMUM_ENERGY_PRICE"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 7
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 24
+name = "LOAD_MAXIMUM_ENERGY_PRICE"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 7
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 25
+name = "LOAD_MIN_RAMP_RATE_UP"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 7
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 26
+name = "LOAD_MIN_RAMP_RATE_DOWN"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 7
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 27
+name = "LOAD_MAX_RAMP_RATE_UP"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 7
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 28
+name = "LOAD_MAX_RAMP_RATE_DOWN"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 7
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 29
+name = "SECONDARY_TLF"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 7
+src = [
+    "ctl",
+    "irow",
+]
+
 [[version]]
 n = 6
 columns = [
@@ -372,7 +462,48 @@ first_seen = "2024-01"
 last_seen = "2024-01"
 src = "irow"
 
+[[version]]
+n = 7
+columns = [
+    "DUID",
+    "START_DATE",
+    "END_DATE",
+    "DISPATCHTYPE",
+    "CONNECTIONPOINTID",
+    "REGIONID",
+    "STATIONID",
+    "PARTICIPANTID",
+    "LASTCHANGED",
+    "TRANSMISSIONLOSSFACTOR",
+    "STARTTYPE",
+    "DISTRIBUTIONLOSSFACTOR",
+    "MINIMUM_ENERGY_PRICE",
+    "MAXIMUM_ENERGY_PRICE",
+    "SCHEDULE_TYPE",
+    "MIN_RAMP_RATE_UP",
+    "MIN_RAMP_RATE_DOWN",
+    "MAX_RAMP_RATE_UP",
+    "MAX_RAMP_RATE_DOWN",
+    "IS_AGGREGATED",
+    "DISPATCHSUBTYPE",
+    "ADG_ID",
+    "LOAD_MINIMUM_ENERGY_PRICE",
+    "LOAD_MAXIMUM_ENERGY_PRICE",
+    "LOAD_MIN_RAMP_RATE_UP",
+    "LOAD_MIN_RAMP_RATE_DOWN",
+    "LOAD_MAX_RAMP_RATE_UP",
+    "LOAD_MAX_RAMP_RATE_DOWN",
+    "SECONDARY_TLF",
+]
+fingerprint = "xxh3:dab355b8e7b119519712d6513b19a231"
+first_seen = "2026-08"
+last_seen = "2026-08"
+src = "irow"
+
 [provenance]
-ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_DUDETAILSUMMARY_202401.ctl"
+ctl = "MMSDM_2026_08/CTL/PUBLIC_ARCHIVE#DUDETAILSUMMARY#FILE01#202608.ctl"
 data_model = "MMS_248.htm@v5.0.0.1"
-sampled_months = ["2024-01"]
+sampled_months = [
+    "2024-01",
+    "2026-08",
+]

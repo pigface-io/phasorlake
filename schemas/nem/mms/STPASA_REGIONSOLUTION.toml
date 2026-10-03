@@ -28,7 +28,7 @@ name = "RUN_DATETIME"
 type = "timestamp"
 nullable = false
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 6
 description = "Unique Timestamp Identifier for this study"
 src = [
@@ -43,7 +43,7 @@ name = "INTERVAL_DATETIME"
 type = "timestamp"
 nullable = false
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 6
 description = "The unique identifier for the interval within this study"
 src = [
@@ -338,7 +338,7 @@ id = 21
 name = "LASTCHANGED"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 6
 description = "Last changed date of this record"
 src = [
@@ -769,7 +769,64 @@ first_seen = "2024-01"
 last_seen = "2024-01"
 src = "irow"
 
+[[version]]
+n = 7
+columns = [
+    "RUN_DATETIME",
+    "INTERVAL_DATETIME",
+    "REGIONID",
+    "DEMAND10",
+    "DEMAND50",
+    "DEMAND90",
+    "RESERVEREQ",
+    "CAPACITYREQ",
+    "ENERGYREQDEMAND50",
+    "UNCONSTRAINEDCAPACITY",
+    "CONSTRAINEDCAPACITY",
+    "NETINTERCHANGEUNDERSCARCITY",
+    "SURPLUSCAPACITY",
+    "SURPLUSRESERVE",
+    "RESERVECONDITION",
+    "MAXSURPLUSRESERVE",
+    "MAXSPARECAPACITY",
+    "LORCONDITION",
+    "AGGREGATECAPACITYAVAILABLE",
+    "AGGREGATESCHEDULEDLOAD",
+    "LASTCHANGED",
+    "AGGREGATEPASAAVAILABILITY",
+    "RUNTYPE",
+    "ENERGYREQDEMAND10",
+    "CALCULATEDLOR1LEVEL",
+    "CALCULATEDLOR2LEVEL",
+    "MSRNETINTERCHANGEUNDERSCARCITY",
+    "LORNETINTERCHANGEUNDERSCARCITY",
+    "TOTALINTERMITTENTGENERATION",
+    "DEMAND_AND_NONSCHEDGEN",
+    "UIGF",
+    "SEMISCHEDULEDCAPACITY",
+    "LOR_SEMISCHEDULEDCAPACITY",
+    "LCR",
+    "LCR2",
+    "FUM",
+    "SS_SOLAR_UIGF",
+    "SS_WIND_UIGF",
+    "SS_SOLAR_CAPACITY",
+    "SS_WIND_CAPACITY",
+    "SS_SOLAR_CLEARED",
+    "SS_WIND_CLEARED",
+    "WDR_AVAILABLE",
+    "WDR_PASAAVAILABLE",
+    "WDR_CAPACITY",
+]
+fingerprint = "xxh3:efc8508ccb4cdf7fd3502e148dc30c17"
+first_seen = "2026-08"
+last_seen = "2026-08"
+src = "irow"
+
 [provenance]
-ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_STPASA_REGIONSOLUTION_202401.ctl"
+ctl = "MMSDM_2026_08/CTL/PUBLIC_ARCHIVE#STPASA_REGIONSOLUTION#FILE01#202608.ctl"
 data_model = "MMS_351.htm@v5.0.0.1"
-sampled_months = ["2024-01"]
+sampled_months = [
+    "2024-01",
+    "2026-08",
+]

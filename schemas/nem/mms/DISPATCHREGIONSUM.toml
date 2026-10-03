@@ -21,7 +21,7 @@ primary_key = [
     "INTERVENTION",
 ]
 time_column = "SETTLEMENTDATE"
-next_column_id = 127
+next_column_id = 128
 
 [[column]]
 id = 1
@@ -29,7 +29,7 @@ name = "SETTLEMENTDATE"
 type = "timestamp"
 nullable = false
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 5
 description = "Market date and time starting at 04:05"
 src = [
@@ -969,7 +969,7 @@ src = [
 id = 64
 name = "LASTCHANGED"
 type = "timestamp"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 5
 src = [
     "ctl",
@@ -1527,123 +1527,146 @@ src = [
 ]
 
 [[column]]
-id = 115
-name = "RAISE1SECLOCALDISPATCH"
-type = "number"
-added_in = 9
-src = [
-    "irow",
-    "sampled",
-]
-
-[[column]]
-id = 116
-name = "LOWER1SECLOCALDISPATCH"
-type = "number"
-added_in = 9
-src = [
-    "irow",
-    "sampled",
-]
-
-[[column]]
-id = 117
-name = "RAISE1SECACTUALAVAILABILITY"
-type = "number"
-added_in = 9
-src = [
-    "irow",
-    "sampled",
-]
-
-[[column]]
-id = 118
-name = "LOWER1SECACTUALAVAILABILITY"
-type = "number"
-added_in = 9
-src = [
-    "irow",
-    "sampled",
-]
-
-[[column]]
 id = 119
 name = "SS_SOLAR_AVAILABILITY"
 type = "number"
+loader = "FLOAT EXTERNAL"
 added_in = 9
 src = [
+    "ctl",
     "irow",
-    "sampled",
 ]
 
 [[column]]
 id = 120
 name = "SS_WIND_AVAILABILITY"
 type = "number"
+loader = "FLOAT EXTERNAL"
 added_in = 9
 src = [
+    "ctl",
     "irow",
-    "sampled",
+]
+
+[[column]]
+id = 115
+name = "RAISE1SECLOCALDISPATCH"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 9
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 116
+name = "LOWER1SECLOCALDISPATCH"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 9
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 117
+name = "RAISE1SECACTUALAVAILABILITY"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 9
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 118
+name = "LOWER1SECACTUALAVAILABILITY"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 9
+src = [
+    "ctl",
+    "irow",
 ]
 
 [[column]]
 id = 121
 name = "BDU_ENERGY_STORAGE"
 type = "number"
+loader = "FLOAT EXTERNAL"
 added_in = 9
 src = [
+    "ctl",
     "irow",
-    "sampled",
 ]
 
 [[column]]
 id = 122
 name = "BDU_MIN_AVAIL"
 type = "number"
+loader = "FLOAT EXTERNAL"
 added_in = 9
 src = [
+    "ctl",
     "irow",
-    "sampled",
 ]
 
 [[column]]
 id = 123
 name = "BDU_MAX_AVAIL"
 type = "number"
+loader = "FLOAT EXTERNAL"
 added_in = 9
 src = [
+    "ctl",
     "irow",
-    "sampled",
 ]
 
 [[column]]
 id = 124
 name = "BDU_CLEAREDMW_GEN"
 type = "number"
+loader = "FLOAT EXTERNAL"
 added_in = 9
 src = [
+    "ctl",
     "irow",
-    "sampled",
 ]
 
 [[column]]
 id = 125
 name = "BDU_CLEAREDMW_LOAD"
 type = "number"
+loader = "FLOAT EXTERNAL"
 added_in = 9
 src = [
+    "ctl",
     "irow",
-    "sampled",
 ]
 
 [[column]]
 id = 126
 name = "BDU_INITIAL_ENERGY_STORAGE"
 type = "number"
+loader = "FLOAT EXTERNAL"
 added_in = 9
 src = [
+    "ctl",
     "irow",
-    "sampled",
+]
+
+[[column]]
+id = 127
+name = "DECGEN_INITIAL_ENERGY_STORAGE"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 9
+src = [
+    "ctl",
+    "irow",
 ]
 
 [[version]]
@@ -1886,6 +1909,141 @@ columns = [
     "WDR_INITIALMW",
     "WDR_AVAILABLE",
     "WDR_DISPATCHED",
+    "SS_SOLAR_AVAILABILITY",
+    "SS_WIND_AVAILABILITY",
+    "RAISE1SECLOCALDISPATCH",
+    "LOWER1SECLOCALDISPATCH",
+    "RAISE1SECACTUALAVAILABILITY",
+    "LOWER1SECACTUALAVAILABILITY",
+    "BDU_ENERGY_STORAGE",
+    "BDU_MIN_AVAIL",
+    "BDU_MAX_AVAIL",
+    "BDU_CLEAREDMW_GEN",
+    "BDU_CLEAREDMW_LOAD",
+    "BDU_INITIAL_ENERGY_STORAGE",
+    "DECGEN_INITIAL_ENERGY_STORAGE",
+]
+fingerprint = "xxh3:b3ecc20ecb9a1dcbc398afdb4d5a104f"
+first_seen = "2026-08"
+last_seen = "2026-08"
+src = "irow"
+
+[[version.variant]]
+columns = [
+    "SETTLEMENTDATE",
+    "RUNNO",
+    "REGIONID",
+    "DISPATCHINTERVAL",
+    "INTERVENTION",
+    "TOTALDEMAND",
+    "AVAILABLEGENERATION",
+    "AVAILABLELOAD",
+    "DEMANDFORECAST",
+    "DISPATCHABLEGENERATION",
+    "DISPATCHABLELOAD",
+    "NETINTERCHANGE",
+    "EXCESSGENERATION",
+    "LOWER5MINDISPATCH",
+    "LOWER5MINIMPORT",
+    "LOWER5MINLOCALDISPATCH",
+    "LOWER5MINLOCALPRICE",
+    "LOWER5MINLOCALREQ",
+    "LOWER5MINPRICE",
+    "LOWER5MINREQ",
+    "LOWER5MINSUPPLYPRICE",
+    "LOWER60SECDISPATCH",
+    "LOWER60SECIMPORT",
+    "LOWER60SECLOCALDISPATCH",
+    "LOWER60SECLOCALPRICE",
+    "LOWER60SECLOCALREQ",
+    "LOWER60SECPRICE",
+    "LOWER60SECREQ",
+    "LOWER60SECSUPPLYPRICE",
+    "LOWER6SECDISPATCH",
+    "LOWER6SECIMPORT",
+    "LOWER6SECLOCALDISPATCH",
+    "LOWER6SECLOCALPRICE",
+    "LOWER6SECLOCALREQ",
+    "LOWER6SECPRICE",
+    "LOWER6SECREQ",
+    "LOWER6SECSUPPLYPRICE",
+    "RAISE5MINDISPATCH",
+    "RAISE5MINIMPORT",
+    "RAISE5MINLOCALDISPATCH",
+    "RAISE5MINLOCALPRICE",
+    "RAISE5MINLOCALREQ",
+    "RAISE5MINPRICE",
+    "RAISE5MINREQ",
+    "RAISE5MINSUPPLYPRICE",
+    "RAISE60SECDISPATCH",
+    "RAISE60SECIMPORT",
+    "RAISE60SECLOCALDISPATCH",
+    "RAISE60SECLOCALPRICE",
+    "RAISE60SECLOCALREQ",
+    "RAISE60SECPRICE",
+    "RAISE60SECREQ",
+    "RAISE60SECSUPPLYPRICE",
+    "RAISE6SECDISPATCH",
+    "RAISE6SECIMPORT",
+    "RAISE6SECLOCALDISPATCH",
+    "RAISE6SECLOCALPRICE",
+    "RAISE6SECLOCALREQ",
+    "RAISE6SECPRICE",
+    "RAISE6SECREQ",
+    "RAISE6SECSUPPLYPRICE",
+    "AGGEGATEDISPATCHERROR",
+    "AGGREGATEDISPATCHERROR",
+    "LASTCHANGED",
+    "INITIALSUPPLY",
+    "CLEAREDSUPPLY",
+    "LOWERREGIMPORT",
+    "LOWERREGLOCALDISPATCH",
+    "LOWERREGLOCALREQ",
+    "LOWERREGREQ",
+    "RAISEREGIMPORT",
+    "RAISEREGLOCALDISPATCH",
+    "RAISEREGLOCALREQ",
+    "RAISEREGREQ",
+    "RAISE5MINLOCALVIOLATION",
+    "RAISEREGLOCALVIOLATION",
+    "RAISE60SECLOCALVIOLATION",
+    "RAISE6SECLOCALVIOLATION",
+    "LOWER5MINLOCALVIOLATION",
+    "LOWERREGLOCALVIOLATION",
+    "LOWER60SECLOCALVIOLATION",
+    "LOWER6SECLOCALVIOLATION",
+    "RAISE5MINVIOLATION",
+    "RAISEREGVIOLATION",
+    "RAISE60SECVIOLATION",
+    "RAISE6SECVIOLATION",
+    "LOWER5MINVIOLATION",
+    "LOWERREGVIOLATION",
+    "LOWER60SECVIOLATION",
+    "LOWER6SECVIOLATION",
+    "RAISE6SECACTUALAVAILABILITY",
+    "RAISE60SECACTUALAVAILABILITY",
+    "RAISE5MINACTUALAVAILABILITY",
+    "RAISEREGACTUALAVAILABILITY",
+    "LOWER6SECACTUALAVAILABILITY",
+    "LOWER60SECACTUALAVAILABILITY",
+    "LOWER5MINACTUALAVAILABILITY",
+    "LOWERREGACTUALAVAILABILITY",
+    "LORSURPLUS",
+    "LRCSURPLUS",
+    "TOTALINTERMITTENTGENERATION",
+    "DEMAND_AND_NONSCHEDGEN",
+    "UIGF",
+    "SEMISCHEDULE_CLEAREDMW",
+    "SEMISCHEDULE_COMPLIANCEMW",
+    "SS_SOLAR_UIGF",
+    "SS_WIND_UIGF",
+    "SS_SOLAR_CLEAREDMW",
+    "SS_WIND_CLEAREDMW",
+    "SS_SOLAR_COMPLIANCEMW",
+    "SS_WIND_COMPLIANCEMW",
+    "WDR_INITIALMW",
+    "WDR_AVAILABLE",
+    "WDR_DISPATCHED",
     "RAISE1SECLOCALDISPATCH",
     "LOWER1SECLOCALDISPATCH",
     "RAISE1SECACTUALAVAILABILITY",
@@ -1900,9 +2058,12 @@ columns = [
     "BDU_INITIAL_ENERGY_STORAGE",
 ]
 fingerprint = "xxh3:709c3b421c56a346d95224342cbceac3"
-src = "irow"
 
 [provenance]
-ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_DISPATCHREGIONSUM_202401.ctl"
+ctl = "MMSDM_2026_08/CTL/PUBLIC_ARCHIVE#DISPATCHREGIONSUM#FILE01#202608.ctl"
 data_model = "MMS_131.htm@v5.0.0.1"
-sampled_months = ["2024-01"]
+sampled_months = [
+    "2024-01",
+    "2026-08",
+]
+note = "version 9 was published with 126 columns and with 127; the lists differ by more than appended columns; the shorter is a variant"

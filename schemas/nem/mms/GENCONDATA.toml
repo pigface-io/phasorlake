@@ -8,10 +8,16 @@ visibility = "public"
 description = """
 GENCONDATA sets out the generic constraints contained within a generic constraint set invoked in PASA, predispatch and dispatch.
 Fields enable selective application of invoked constraints in the Dispatch, Predispatch, ST PASA or MT PASA processes."""
-report_pairs = [[
+report_pairs = [
+    [
     "GENCONDATA",
     "",
-]]
+],
+    [
+    "GENCONDATA",
+    "NULL",
+],
+]
 archive_files = ["GENCONDATA"]
 load_mode = "snapshot"
 dedupe = "pk_lastchanged"
@@ -20,7 +26,7 @@ primary_key = [
     "VERSIONNO",
     "GENCONID",
 ]
-next_column_id = 27
+next_column_id = 30
 
 [[column]]
 id = 1
@@ -28,7 +34,7 @@ name = "EFFECTIVEDATE"
 type = "timestamp"
 nullable = false
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 6
 description = "Effective date of this constraint"
 src = [
@@ -152,7 +158,7 @@ id = 9
 name = "AUTHORISEDDATE"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 6
 description = "Date record authorised"
 src = [
@@ -197,7 +203,7 @@ id = 12
 name = "LASTCHANGED"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 6
 description = "Last date and time record changed"
 src = [
@@ -412,6 +418,43 @@ src = [
     "irow",
 ]
 
+[[column]]
+id = 27
+name = "SYSTEMSECURITY"
+type = "utf8"
+max_len = 1
+loader = "CHAR(1)"
+added_in = 7
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 28
+name = "SSM_REGIONID"
+type = "utf8"
+max_len = 20
+dict = true
+loader = "CHAR(20)"
+added_in = 7
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 29
+name = "SSM_GROUPID"
+type = "utf8"
+max_len = 40
+loader = "CHAR(40)"
+added_in = 7
+src = [
+    "ctl",
+    "irow",
+]
+
 [[version]]
 n = 6
 columns = [
@@ -447,7 +490,48 @@ first_seen = "2024-01"
 last_seen = "2024-01"
 src = "irow"
 
+[[version]]
+n = 7
+columns = [
+    "EFFECTIVEDATE",
+    "VERSIONNO",
+    "GENCONID",
+    "CONSTRAINTTYPE",
+    "CONSTRAINTVALUE",
+    "DESCRIPTION",
+    "STATUS",
+    "GENERICCONSTRAINTWEIGHT",
+    "AUTHORISEDDATE",
+    "AUTHORISEDBY",
+    "DYNAMICRHS",
+    "LASTCHANGED",
+    "DISPATCH",
+    "PREDISPATCH",
+    "STPASA",
+    "MTPASA",
+    "ADDITIONALNOTES",
+    "P5MIN_SCOPE_OVERRIDE",
+    "LRC",
+    "LOR",
+    "IMPACT",
+    "SOURCE",
+    "LIMITTYPE",
+    "REASON",
+    "MODIFICATIONS",
+    "FORCE_SCADA",
+    "SYSTEMSECURITY",
+    "SSM_REGIONID",
+    "SSM_GROUPID",
+]
+fingerprint = "xxh3:f5d1f1a5b1cceaad2235a35621f49e37"
+first_seen = "2026-08"
+last_seen = "2026-08"
+src = "irow"
+
 [provenance]
-ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_GENCONDATA_202401.ctl"
+ctl = "MMSDM_2026_08/CTL/PUBLIC_ARCHIVE#GENCONDATA#FILE01#202608.ctl"
 data_model = "MMS_152.htm@v5.0.0.1"
-sampled_months = ["2024-01"]
+sampled_months = [
+    "2024-01",
+    "2026-08",
+]

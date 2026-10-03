@@ -20,7 +20,7 @@ primary_key = [
     "OFFERDATE",
 ]
 time_column = "SETTLEMENTDATE"
-next_column_id = 32
+next_column_id = 34
 
 [[column]]
 id = 1
@@ -62,7 +62,7 @@ name = "SETTLEMENTDATE"
 type = "timestamp"
 nullable = false
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 1
 description = "Market date for applying the bid"
 src = [
@@ -409,7 +409,7 @@ id = 25
 name = "LASTCHANGED"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 1
 description = "Last date and time record changed"
 src = [
@@ -509,6 +509,34 @@ src = [
     "irow",
 ]
 
+[[column]]
+id = 32
+name = "DIRECTION"
+type = "utf8"
+max_len = 20
+loader = "CHAR(20)"
+added_in = 2
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 33
+name = "MR_FACTOR"
+type = "number"
+precision = 16
+scale = 6
+oracle = "NUMBER(16,6)"
+loader = "FLOAT EXTERNAL"
+added_in = 2
+description = "Mandatory Restriction Offer Factor"
+src = [
+    "ctl",
+    "dm",
+    "irow",
+]
+
 [[version]]
 n = 1
 columns = [
@@ -549,7 +577,52 @@ first_seen = "2024-01"
 last_seen = "2024-01"
 src = "irow"
 
+[[version]]
+n = 2
+columns = [
+    "DUID",
+    "BIDTYPE",
+    "SETTLEMENTDATE",
+    "OFFERDATE",
+    "DIRECTION",
+    "VERSIONNO",
+    "PARTICIPANTID",
+    "DAILYENERGYCONSTRAINT",
+    "REBIDEXPLANATION",
+    "PRICEBAND1",
+    "PRICEBAND2",
+    "PRICEBAND3",
+    "PRICEBAND4",
+    "PRICEBAND5",
+    "PRICEBAND6",
+    "PRICEBAND7",
+    "PRICEBAND8",
+    "PRICEBAND9",
+    "PRICEBAND10",
+    "MINIMUMLOAD",
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "NORMALSTATUS",
+    "LASTCHANGED",
+    "MR_FACTOR",
+    "ENTRYTYPE",
+    "REBID_EVENT_TIME",
+    "REBID_AWARE_TIME",
+    "REBID_DECISION_TIME",
+    "REBID_CATEGORY",
+    "REFERENCE_ID",
+]
+fingerprint = "xxh3:7f0e07c782f4168a3a1566491ad5645b"
+first_seen = "2026-08"
+last_seen = "2026-08"
+src = "irow"
+
 [provenance]
-ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_BIDDAYOFFER_202401.ctl"
+ctl = "MMSDM_2026_08/CTL/PUBLIC_ARCHIVE#BIDDAYOFFER#FILE01#202608.ctl"
 data_model = "MMS_18.htm@v5.0.0.1"
-sampled_months = ["2024-01"]
+sampled_months = [
+    "2024-01",
+    "2026-08",
+]

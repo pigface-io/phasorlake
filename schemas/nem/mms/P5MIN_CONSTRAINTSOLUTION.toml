@@ -29,23 +29,9 @@ name = "RUN_DATETIME"
 type = "timestamp"
 nullable = false
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 6
 description = "Unique Timestamp Identifier for this study"
-src = [
-    "ctl",
-    "dm",
-    "irow",
-]
-
-[[column]]
-id = 2
-name = "INTERVENTION"
-type = "integer"
-oracle = "Number(2,0)"
-loader = "FLOAT EXTERNAL"
-added_in = 6
-description = "Flag to indicate if this result set was sourced from the pricing run (INTERVENTION=0) or the physical run(INTERVENTION=1). In the event there is not intervention in the market, both pricing and physical runs correspond to INTERVENTION=0)"
 src = [
     "ctl",
     "dm",
@@ -58,7 +44,7 @@ name = "INTERVAL_DATETIME"
 type = "timestamp"
 nullable = false
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 6
 description = "The unique identifier for the interval within this study"
 src = [
@@ -137,7 +123,7 @@ id = 8
 name = "LASTCHANGED"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 6
 description = "Last date and time record changed"
 src = [
@@ -153,9 +139,11 @@ type = "utf8"
 max_len = 20
 dict = true
 oracle = "VARCHAR2(20)"
+loader = "CHAR(20)"
 added_in = 6
 description = "DUID to which the Constraint is confidential. Null denotes non-confidential"
 src = [
+    "ctl",
     "dm",
     "irow",
 ]
@@ -165,7 +153,7 @@ id = 10
 name = "GENCONID_EFFECTIVEDATE"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 6
 description = "Effective date of the Generic Constraint (ConstraintID). This field is used to track the version of this generic constraint applied in this dispatch interval"
 src = [
@@ -207,6 +195,20 @@ src = [
 ]
 
 [[column]]
+id = 2
+name = "INTERVENTION"
+type = "integer"
+oracle = "Number(2,0)"
+loader = "FLOAT EXTERNAL"
+added_in = 6
+description = "Flag to indicate if this result set was sourced from the pricing run (INTERVENTION=0) or the physical run(INTERVENTION=1). In the event there is not intervention in the market, both pricing and physical runs correspond to INTERVENTION=0)"
+src = [
+    "ctl",
+    "dm",
+    "irow",
+]
+
+[[column]]
 id = 13
 name = "CONFIDENTIAL_TO"
 type = "utf8"
@@ -220,7 +222,6 @@ src = [
 n = 6
 columns = [
     "RUN_DATETIME",
-    "INTERVENTION",
     "INTERVAL_DATETIME",
     "CONSTRAINTID",
     "RHS",
@@ -231,10 +232,11 @@ columns = [
     "GENCONID_EFFECTIVEDATE",
     "GENCONID_VERSIONNO",
     "LHS",
+    "INTERVENTION",
 ]
-fingerprint = "xxh3:b0127822d1aed926306fb43a4b76932d"
+fingerprint = "xxh3:23ddff38203027697fc6153731796c8b"
 first_seen = "2024-01"
-last_seen = "2024-01"
+last_seen = "2026-08"
 src = "irow"
 
 [[version.variant]]
@@ -256,8 +258,30 @@ fingerprint = "xxh3:a320994283038a45cfe140baa21533a9"
 first_seen = "2024-01"
 last_seen = "2024-01"
 
+[[version.variant]]
+columns = [
+    "RUN_DATETIME",
+    "INTERVENTION",
+    "INTERVAL_DATETIME",
+    "CONSTRAINTID",
+    "RHS",
+    "MARGINALVALUE",
+    "VIOLATIONDEGREE",
+    "LASTCHANGED",
+    "DUID",
+    "GENCONID_EFFECTIVEDATE",
+    "GENCONID_VERSIONNO",
+    "LHS",
+]
+fingerprint = "xxh3:b0127822d1aed926306fb43a4b76932d"
+first_seen = "2024-01"
+last_seen = "2024-01"
+
 [provenance]
-ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_P5MIN_CONSTRAINTSOLUTION1_202401.ctl"
+ctl = "MMSDM_2026_08/CTL/PUBLIC_ARCHIVE#P5MIN_CONSTRAINTSOLUTION#FILE01#202608.ctl"
 data_model = "MMS_237.htm@v5.0.0.1"
-sampled_months = ["2024-01"]
+sampled_months = [
+    "2024-01",
+    "2026-08",
+]
 note = "version 6 was published with 12 columns and with 12; the lists differ by more than appended columns; the shorter is a variant"

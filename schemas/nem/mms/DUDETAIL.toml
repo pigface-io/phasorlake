@@ -18,7 +18,7 @@ primary_key = [
     "EFFECTIVEDATE",
     "VERSIONNO",
 ]
-next_column_id = 23
+next_column_id = 35
 
 [[column]]
 id = 1
@@ -43,7 +43,7 @@ name = "EFFECTIVEDATE"
 type = "timestamp"
 nullable = false
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 4
 description = "Effective calendar date of record"
 src = [
@@ -241,7 +241,7 @@ id = 15
 name = "AUTHORISEDDATE"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 4
 description = "Date record authorised"
 src = [
@@ -255,7 +255,7 @@ id = 16
 name = "LASTCHANGED"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 4
 description = "Last date and time record changed"
 src = [
@@ -350,6 +350,138 @@ src = [
     "irow",
 ]
 
+[[column]]
+id = 23
+name = "MINCAPACITY"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 7
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 24
+name = "REGISTEREDMINCAPACITY"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 7
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 25
+name = "MAXRATEOFCHANGEUP_LOAD"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 7
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 26
+name = "MAXRATEOFCHANGEDOWN_LOAD"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 7
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 27
+name = "MAXSTORAGECAPACITY"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 7
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 28
+name = "STORAGEIMPORTEFFICIENCYFACTOR"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 7
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 29
+name = "STORAGEEXPORTEFFICIENCYFACTOR"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 7
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 30
+name = "MIN_RAMP_RATE_UP"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 7
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 31
+name = "MIN_RAMP_RATE_DOWN"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 7
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 32
+name = "LOAD_MIN_RAMP_RATE_UP"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 7
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 33
+name = "LOAD_MIN_RAMP_RATE_DOWN"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 7
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 34
+name = "AGGREGATED"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 7
+src = [
+    "ctl",
+    "irow",
+]
+
 [[version]]
 n = 4
 columns = [
@@ -381,7 +513,53 @@ first_seen = "2024-01"
 last_seen = "2024-01"
 src = "irow"
 
+[[version]]
+n = 7
+columns = [
+    "EFFECTIVEDATE",
+    "DUID",
+    "VERSIONNO",
+    "CONNECTIONPOINTID",
+    "VOLTLEVEL",
+    "REGISTEREDCAPACITY",
+    "AGCCAPABILITY",
+    "DISPATCHTYPE",
+    "MAXCAPACITY",
+    "STARTTYPE",
+    "NORMALLYONFLAG",
+    "PHYSICALDETAILSFLAG",
+    "SPINNINGRESERVEFLAG",
+    "AUTHORISEDBY",
+    "AUTHORISEDDATE",
+    "LASTCHANGED",
+    "INTERMITTENTFLAG",
+    "SEMISCHEDULE_FLAG",
+    "MAXRATEOFCHANGEUP",
+    "MAXRATEOFCHANGEDOWN",
+    "DISPATCHSUBTYPE",
+    "ADG_ID",
+    "MINCAPACITY",
+    "REGISTEREDMINCAPACITY",
+    "MAXRATEOFCHANGEUP_LOAD",
+    "MAXRATEOFCHANGEDOWN_LOAD",
+    "MAXSTORAGECAPACITY",
+    "STORAGEIMPORTEFFICIENCYFACTOR",
+    "STORAGEEXPORTEFFICIENCYFACTOR",
+    "MIN_RAMP_RATE_UP",
+    "MIN_RAMP_RATE_DOWN",
+    "LOAD_MIN_RAMP_RATE_UP",
+    "LOAD_MIN_RAMP_RATE_DOWN",
+    "AGGREGATED",
+]
+fingerprint = "xxh3:11018f2daffb9f94f78d9baf27a398d2"
+first_seen = "2026-08"
+last_seen = "2026-08"
+src = "irow"
+
 [provenance]
-ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_DUDETAIL_202401.ctl"
+ctl = "MMSDM_2026_08/CTL/PUBLIC_ARCHIVE#DUDETAIL#FILE01#202608.ctl"
 data_model = "MMS_247.htm@v5.0.0.1"
-sampled_months = ["2024-01"]
+sampled_months = [
+    "2024-01",
+    "2026-08",
+]

@@ -14,7 +14,7 @@ archive_files = ["MARKETFEE"]
 load_mode = "snapshot"
 dedupe = "pk_lastchanged"
 primary_key = ["MARKETFEEID"]
-next_column_id = 9
+next_column_id = 11
 
 [[column]]
 id = 1
@@ -84,7 +84,7 @@ id = 5
 name = "LASTCHANGED"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 1
 description = "Last date and time record changed"
 src = [
@@ -135,6 +135,32 @@ src = [
     "irow",
 ]
 
+[[column]]
+id = 9
+name = "METER_TYPE"
+type = "utf8"
+max_len = 20
+dict = true
+loader = "CHAR(20)"
+added_in = 2
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 10
+name = "METER_SUBTYPE"
+type = "utf8"
+max_len = 20
+dict = true
+loader = "CHAR(20)"
+added_in = 2
+src = [
+    "ctl",
+    "irow",
+]
+
 [[version]]
 n = 1
 columns = [
@@ -152,7 +178,29 @@ first_seen = "2024-01"
 last_seen = "2024-01"
 src = "irow"
 
+[[version]]
+n = 2
+columns = [
+    "MARKETFEEID",
+    "MARKETFEEPERIOD",
+    "MARKETFEETYPE",
+    "DESCRIPTION",
+    "LASTCHANGED",
+    "GL_TCODE",
+    "GL_FINANCIALCODE",
+    "FEE_CLASS",
+    "METER_TYPE",
+    "METER_SUBTYPE",
+]
+fingerprint = "xxh3:bc85083646b44cd4ce458dab6757ae20"
+first_seen = "2026-08"
+last_seen = "2026-08"
+src = "irow"
+
 [provenance]
-ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_MARKETFEE_202401.ctl"
+ctl = "MMSDM_2026_08/CTL/PUBLIC_ARCHIVE#MARKETFEE#FILE01#202608.ctl"
 data_model = "MMS_292.htm@v5.0.0.1"
-sampled_months = ["2024-01"]
+sampled_months = [
+    "2024-01",
+    "2026-08",
+]

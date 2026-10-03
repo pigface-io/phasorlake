@@ -12,7 +12,10 @@ report_pairs = [[
     "PREDISPATCH",
     "CONSTRAINT_SOLUTION",
 ]]
-archive_files = ["PREDISPATCHCONSTRAINT_D"]
+archive_files = [
+    "PREDISPATCHCONSTRAINT",
+    "PREDISPATCHCONSTRAINT_D",
+]
 load_mode = "append"
 dedupe = "pk_lastchanged"
 primary_key = [
@@ -20,7 +23,7 @@ primary_key = [
     "DATETIME",
 ]
 time_column = "DATETIME"
-next_column_id = 15
+next_column_id = 16
 
 [[column]]
 id = 1
@@ -151,7 +154,7 @@ id = 9
 name = "LASTCHANGED"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 5
 description = "Last date and time record changed"
 src = [
@@ -166,7 +169,7 @@ name = "DATETIME"
 type = "timestamp"
 nullable = false
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 5
 description = "Period date and time"
 src = [
@@ -176,13 +179,19 @@ src = [
 ]
 
 [[column]]
-id = 11
-name = "CONFIDENTIAL_TO"
+id = 15
+name = "DUID"
 type = "utf8"
+max_len = 20
+dict = true
+oracle = "VARCHAR2(20)"
+loader = "CHAR(20)"
 added_in = 5
+description = "DUID to which the Constraint is confidential. Null denotes non-confidential"
 src = [
+    "ctl",
+    "dm",
     "irow",
-    "sampled",
 ]
 
 [[column]]
@@ -190,7 +199,7 @@ id = 12
 name = "GENCONID_EFFECTIVEDATE"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 5
 description = "Effective date of the Generic Constraint (ConstraintID). This field is used to track the version of this generic constraint applied in this dispatch interval"
 src = [
@@ -231,8 +240,40 @@ src = [
     "irow",
 ]
 
+[[column]]
+id = 11
+name = "CONFIDENTIAL_TO"
+type = "utf8"
+added_in = 5
+src = [
+    "irow",
+    "sampled",
+]
+
 [[version]]
 n = 5
+columns = [
+    "PREDISPATCHSEQNO",
+    "RUNNO",
+    "CONSTRAINTID",
+    "PERIODID",
+    "INTERVENTION",
+    "RHS",
+    "MARGINALVALUE",
+    "VIOLATIONDEGREE",
+    "LASTCHANGED",
+    "DATETIME",
+    "DUID",
+    "GENCONID_EFFECTIVEDATE",
+    "GENCONID_VERSIONNO",
+    "LHS",
+]
+fingerprint = "xxh3:ceee53699650f902e5ae755a9804ab9c"
+first_seen = "2024-01"
+last_seen = "2026-08"
+src = "irow"
+
+[[version.variant]]
 columns = [
     "PREDISPATCHSEQNO",
     "RUNNO",
@@ -252,9 +293,12 @@ columns = [
 fingerprint = "xxh3:fa1681f6d0ebf1e032bf7dbd0043cd22"
 first_seen = "2024-01"
 last_seen = "2024-01"
-src = "irow"
 
 [provenance]
-ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_PREDISPATCHCONSTRAINT_D_202401.ctl"
+ctl = "MMSDM_2026_08/CTL/PUBLIC_ARCHIVE#PREDISPATCHCONSTRAINT#FILE01#202608.ctl"
 data_model = "MMS_271.htm@v5.0.0.1"
-sampled_months = ["2024-01"]
+sampled_months = [
+    "2024-01",
+    "2026-08",
+]
+note = "version 5 was published with 14 columns and with 14; the lists differ by more than appended columns; the shorter is a variant"

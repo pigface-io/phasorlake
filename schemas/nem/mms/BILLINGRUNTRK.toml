@@ -19,7 +19,7 @@ primary_key = [
     "BILLRUNNO",
 ]
 time_column = "LASTCHANGED"
-next_column_id = 17
+next_column_id = 18
 
 [[column]]
 id = 1
@@ -102,7 +102,7 @@ id = 6
 name = "AUTHORISEDDATE"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 5
 description = "null, since not used"
 src = [
@@ -131,7 +131,7 @@ id = 8
 name = "POSTDATE"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 5
 description = "When the results were posted"
 src = [
@@ -160,7 +160,7 @@ id = 10
 name = "LASTCHANGED"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 5
 description = "Last date and time record changed"
 src = [
@@ -174,7 +174,7 @@ id = 11
 name = "RECEIPTPOSTDATE"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 5
 description = "null, since not used"
 src = [
@@ -203,7 +203,7 @@ id = 13
 name = "PAYMENTPOSTDATE"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 5
 description = "When the payment was posted"
 src = [
@@ -259,6 +259,17 @@ src = [
     "irow",
 ]
 
+[[column]]
+id = 17
+name = "REVISIONINDEX"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 6
+src = [
+    "ctl",
+    "irow",
+]
+
 [[version]]
 n = 5
 columns = [
@@ -284,7 +295,36 @@ first_seen = "2024-01"
 last_seen = "2024-01"
 src = "irow"
 
+[[version]]
+n = 6
+columns = [
+    "CONTRACTYEAR",
+    "WEEKNO",
+    "BILLRUNNO",
+    "STATUS",
+    "ADJ_CLEARED",
+    "AUTHORISEDDATE",
+    "AUTHORISEDBY",
+    "POSTDATE",
+    "POSTBY",
+    "LASTCHANGED",
+    "RECEIPTPOSTDATE",
+    "RECEIPTPOSTBY",
+    "PAYMENTPOSTDATE",
+    "PAYMENTPOSTBY",
+    "SHORTFALL",
+    "MAKEUP",
+    "REVISIONINDEX",
+]
+fingerprint = "xxh3:ff73d5c0600a4d6752cf9d86e083824a"
+first_seen = "2026-08"
+last_seen = "2026-08"
+src = "irow"
+
 [provenance]
-ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_BILLINGRUNTRK_202401.ctl"
+ctl = "MMSDM_2026_08/CTL/PUBLIC_ARCHIVE#BILLINGRUNTRK#FILE01#202608.ctl"
 data_model = "MMS_89.htm@v5.0.0.1"
-sampled_months = ["2024-01"]
+sampled_months = [
+    "2024-01",
+    "2026-08",
+]

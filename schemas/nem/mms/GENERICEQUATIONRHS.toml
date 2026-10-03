@@ -6,10 +6,16 @@ name = "GENERICEQUATIONRHS"
 package = "GENERIC_CONSTRAINT"
 visibility = "public"
 description = "GENERICEQUATIONRHS stores the formulation of commonly used Generic Constraint Right Hand Side Equations referenced from Generic Constraint Right Hand Side definitions stored in GENERICCONSTRAINTRHS. The Generic Equation definitions are versioned and the latest effective version is applied to the dispatch process."
-report_pairs = [[
+report_pairs = [
+    [
     "GEQRHS",
     "",
-]]
+],
+    [
+    "GEQRHS",
+    "NULL",
+],
+]
 archive_files = ["GENERICEQUATIONRHS"]
 load_mode = "snapshot"
 dedupe = "pk_lastchanged"
@@ -44,7 +50,7 @@ name = "EFFECTIVEDATE"
 type = "timestamp"
 nullable = false
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 1
 description = "Effective date of this record"
 src = [
@@ -226,7 +232,7 @@ id = 14
 name = "LASTCHANGED"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 1
 description = "Last date and time record changed"
 src = [
@@ -255,10 +261,13 @@ columns = [
 ]
 fingerprint = "xxh3:6845122d815555a1b7189e4edf216470"
 first_seen = "2024-01"
-last_seen = "2024-01"
+last_seen = "2026-08"
 src = "irow"
 
 [provenance]
-ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_GENERICEQUATIONRHS_202401.ctl"
+ctl = "MMSDM_2026_08/CTL/PUBLIC_ARCHIVE#GENERICEQUATIONRHS#FILE01#202608.ctl"
 data_model = "MMS_158.htm@v5.0.0.1"
-sampled_months = ["2024-01"]
+sampled_months = [
+    "2024-01",
+    "2026-08",
+]

@@ -10,7 +10,10 @@ report_pairs = [[
     "BIDS",
     "BIDOFFERPERIOD",
 ]]
-archive_files = ["BIDPEROFFER"]
+archive_files = [
+    "BIDOFFERPERIOD",
+    "BIDPEROFFER",
+]
 load_mode = "append"
 dedupe = "pk"
 primary_key = [
@@ -21,7 +24,7 @@ primary_key = [
     "PERIODID",
 ]
 time_column = "TRADINGDATE"
-next_column_id = 25
+next_column_id = 29
 
 [[column]]
 id = 1
@@ -63,7 +66,7 @@ name = "TRADINGDATE"
 type = "timestamp"
 nullable = false
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 1
 description = "The trading date this bid is for"
 src = [
@@ -402,6 +405,51 @@ src = [
     "irow",
 ]
 
+[[column]]
+id = 25
+name = "DIRECTION"
+type = "utf8"
+max_len = 20
+loader = "CHAR(20)"
+added_in = 3
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 26
+name = "ENERGYLIMIT"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 3
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 27
+name = "PERIODIDTO"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 3
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 28
+name = "RECALL_PERIOD"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 3
+src = [
+    "ctl",
+    "irow",
+]
+
 [[version]]
 n = 1
 columns = [
@@ -435,7 +483,47 @@ first_seen = "2024-01"
 last_seen = "2024-01"
 src = "irow"
 
+[[version]]
+n = 3
+columns = [
+    "DUID",
+    "BIDTYPE",
+    "TRADINGDATE",
+    "OFFERDATETIME",
+    "DIRECTION",
+    "PERIODID",
+    "MAXAVAIL",
+    "FIXEDLOAD",
+    "RAMPUPRATE",
+    "RAMPDOWNRATE",
+    "ENABLEMENTMIN",
+    "ENABLEMENTMAX",
+    "LOWBREAKPOINT",
+    "HIGHBREAKPOINT",
+    "BANDAVAIL1",
+    "BANDAVAIL2",
+    "BANDAVAIL3",
+    "BANDAVAIL4",
+    "BANDAVAIL5",
+    "BANDAVAIL6",
+    "BANDAVAIL7",
+    "BANDAVAIL8",
+    "BANDAVAIL9",
+    "BANDAVAIL10",
+    "PASAAVAILABILITY",
+    "ENERGYLIMIT",
+    "PERIODIDTO",
+    "RECALL_PERIOD",
+]
+fingerprint = "xxh3:c99490a07f891c71a02c6cf629be62ee"
+first_seen = "2026-08"
+last_seen = "2026-08"
+src = "irow"
+
 [provenance]
-ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_BIDPEROFFER1_202401.ctl"
+ctl = "MMSDM_2026_08/CTL/PUBLIC_ARCHIVE#BIDOFFERPERIOD#FILE01#202608.ctl"
 data_model = "MMS_21.htm@v5.0.0.1"
-sampled_months = ["2024-01"]
+sampled_months = [
+    "2024-01",
+    "2026-08",
+]

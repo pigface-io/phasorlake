@@ -39,7 +39,7 @@ id = 2
 name = "AUCTIONDATE"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 1
 description = "Auction date"
 src = [
@@ -53,7 +53,7 @@ id = 3
 name = "NOTIFYDATE"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 1
 src = [
     "ctl",
@@ -66,7 +66,7 @@ id = 4
 name = "STARTDATE"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 1
 description = "Open date for bidding"
 src = [
@@ -80,7 +80,7 @@ id = 5
 name = "ENDDATE"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 1
 description = "Close date for bidding"
 src = [
@@ -109,7 +109,7 @@ id = 7
 name = "AUTHORISEDDATE"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 1
 src = [
     "ctl",
@@ -136,7 +136,7 @@ id = 9
 name = "LASTCHANGED"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 1
 src = [
     "ctl",
@@ -159,10 +159,13 @@ columns = [
 ]
 fingerprint = "xxh3:4c9a26e8c8b9719b67d13be3ab54db66"
 first_seen = "2024-01"
-last_seen = "2024-01"
+last_seen = "2026-08"
 src = "irow"
 
 [provenance]
-ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_AUCTION_202401.ctl"
+ctl = "MMSDM_2026_08/CTL/PUBLIC_ARCHIVE#AUCTION#FILE01#202608.ctl"
 data_model = "MMS_163.htm@v5.0.0.1"
-sampled_months = ["2024-01"]
+sampled_months = [
+    "2024-01",
+    "2026-08",
+]

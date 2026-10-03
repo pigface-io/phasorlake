@@ -27,7 +27,7 @@ name = "VERSION_DATETIME"
 type = "timestamp"
 nullable = false
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 1
 description = "Date time this forecast was produced"
 src = [
@@ -59,7 +59,7 @@ name = "INTERVAL_DATETIME"
 type = "timestamp"
 nullable = false
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 1
 description = "The forecast half-hour interval (time ending)"
 src = [
@@ -137,7 +137,7 @@ id = 8
 name = "LASTCHANGED"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 1
 description = "Last date and time record changed"
 src = [
@@ -160,10 +160,13 @@ columns = [
 ]
 fingerprint = "xxh3:4a7d93b23f1aceead460d591c043cb11"
 first_seen = "2024-01"
-last_seen = "2024-01"
+last_seen = "2026-08"
 src = "irow"
 
 [provenance]
-ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_ROOFTOP_PV_FORECAST_202401.ctl"
+ctl = "MMSDM_2026_08/CTL/PUBLIC_ARCHIVE#ROOFTOP_PV_FORECAST#FILE01#202608.ctl"
 data_model = "MMS_112.htm@v5.0.0.1"
-sampled_months = ["2024-01"]
+sampled_months = [
+    "2024-01",
+    "2026-08",
+]

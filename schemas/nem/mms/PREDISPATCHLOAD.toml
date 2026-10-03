@@ -10,7 +10,10 @@ report_pairs = [[
     "PREDISPATCH",
     "UNIT_SOLUTION",
 ]]
-archive_files = ["PREDISPATCHLOAD_D"]
+archive_files = [
+    "PREDISPATCHLOAD",
+    "PREDISPATCHLOAD_D",
+]
 load_mode = "append"
 dedupe = "pk_lastchanged"
 primary_key = [
@@ -18,7 +21,7 @@ primary_key = [
     "DATETIME",
 ]
 time_column = "DATETIME"
-next_column_id = 60
+next_column_id = 66
 
 [[column]]
 id = 1
@@ -479,7 +482,7 @@ id = 30
 name = "LASTCHANGED"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 2
 description = "Last date and time record changed"
 src = [
@@ -494,7 +497,7 @@ name = "DATETIME"
 type = "timestamp"
 nullable = false
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 2
 description = "Period date and time"
 src = [
@@ -890,6 +893,72 @@ src = [
     "irow",
 ]
 
+[[column]]
+id = 60
+name = "INITIAL_ENERGY_STORAGE"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 5
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 61
+name = "ENERGY_STORAGE"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 5
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 62
+name = "ENERGY_STORAGE_MIN"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 5
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 63
+name = "ENERGY_STORAGE_MAX"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 5
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 64
+name = "MIN_AVAILABILITY"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 5
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 65
+name = "ELEMENT_CAP"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 5
+src = [
+    "ctl",
+    "irow",
+]
+
 [[version]]
 n = 2
 columns = [
@@ -958,7 +1027,84 @@ first_seen = "2024-01"
 last_seen = "2024-01"
 src = "irow"
 
+[[version]]
+n = 5
+columns = [
+    "PREDISPATCHSEQNO",
+    "RUNNO",
+    "DUID",
+    "TRADETYPE",
+    "PERIODID",
+    "INTERVENTION",
+    "CONNECTIONPOINTID",
+    "AGCSTATUS",
+    "DISPATCHMODE",
+    "INITIALMW",
+    "TOTALCLEARED",
+    "LOWER5MIN",
+    "LOWER60SEC",
+    "LOWER6SEC",
+    "RAISE5MIN",
+    "RAISE60SEC",
+    "RAISE6SEC",
+    "RAMPDOWNRATE",
+    "RAMPUPRATE",
+    "DOWNEPF",
+    "UPEPF",
+    "MARGINAL5MINVALUE",
+    "MARGINAL60SECVALUE",
+    "MARGINAL6SECVALUE",
+    "MARGINALVALUE",
+    "VIOLATION5MINDEGREE",
+    "VIOLATION60SECDEGREE",
+    "VIOLATION6SECDEGREE",
+    "VIOLATIONDEGREE",
+    "LASTCHANGED",
+    "DATETIME",
+    "LOWERREG",
+    "RAISEREG",
+    "AVAILABILITY",
+    "RAISE6SECFLAGS",
+    "RAISE60SECFLAGS",
+    "RAISE5MINFLAGS",
+    "RAISEREGFLAGS",
+    "LOWER6SECFLAGS",
+    "LOWER60SECFLAGS",
+    "LOWER5MINFLAGS",
+    "LOWERREGFLAGS",
+    "RAISE6SECACTUALAVAILABILITY",
+    "RAISE60SECACTUALAVAILABILITY",
+    "RAISE5MINACTUALAVAILABILITY",
+    "RAISEREGACTUALAVAILABILITY",
+    "LOWER6SECACTUALAVAILABILITY",
+    "LOWER60SECACTUALAVAILABILITY",
+    "LOWER5MINACTUALAVAILABILITY",
+    "LOWERREGACTUALAVAILABILITY",
+    "SEMIDISPATCHCAP",
+    "CONFORMANCE_MODE",
+    "UIGF",
+    "RAISE1SEC",
+    "RAISE1SECFLAGS",
+    "LOWER1SEC",
+    "LOWER1SECFLAGS",
+    "RAISE1SECACTUALAVAILABILITY",
+    "LOWER1SECACTUALAVAILABILITY",
+    "INITIAL_ENERGY_STORAGE",
+    "ENERGY_STORAGE",
+    "ENERGY_STORAGE_MIN",
+    "ENERGY_STORAGE_MAX",
+    "MIN_AVAILABILITY",
+    "ELEMENT_CAP",
+]
+fingerprint = "xxh3:6f69fa71196edb80cf46edce1eecfc6b"
+first_seen = "2026-08"
+last_seen = "2026-08"
+src = "irow"
+
 [provenance]
-ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_PREDISPATCHLOAD_D_202401.ctl"
+ctl = "MMSDM_2026_08/CTL/PUBLIC_ARCHIVE#PREDISPATCHLOAD#FILE01#202608.ctl"
 data_model = "MMS_274.htm@v5.0.0.1"
-sampled_months = ["2024-01"]
+sampled_months = [
+    "2024-01",
+    "2026-08",
+]

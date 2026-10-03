@@ -29,7 +29,7 @@ name = "SETTLEMENTDATE"
 type = "timestamp"
 nullable = false
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 3
 description = "Market date starting at 04:05"
 src = [
@@ -187,7 +187,7 @@ id = 11
 name = "LASTCHANGED"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 3
 description = "Last changed."
 src = [
@@ -315,9 +315,11 @@ type = "number"
 precision = 10
 scale = 2
 oracle = "NUMBER(10,2)"
+loader = "FLOAT EXTERNAL"
 added_in = 3
 description = "Aggregate Constraint contribution cost of this Interconnector: Sum(MarginalValue x Factor) for all relevant Constraints, for Export (Factor >= 0)"
 src = [
+    "ctl",
     "dm",
     "irow",
 ]
@@ -327,9 +329,11 @@ id = 20
 name = "LOCALLY_CONSTRAINED_EXPORT"
 type = "integer"
 oracle = "NUMBER(1,0)"
+loader = "FLOAT EXTERNAL"
 added_in = 3
 description = "Key for Local_Price_Adjustment_Export: 2 = at least one Outage Constraint; 1 = at least 1 System Normal Constraint (and no Outage Constraint); 0 = No System Normal or Outage Constraints"
 src = [
+    "ctl",
     "dm",
     "irow",
 ]
@@ -341,9 +345,11 @@ type = "number"
 precision = 10
 scale = 2
 oracle = "NUMBER(10,2)"
+loader = "FLOAT EXTERNAL"
 added_in = 3
 description = "Aggregate Constraint contribution cost of this Interconnector: Sum(MarginalValue x Factor) for all relevant Constraints, for Import (Factor >= 0)"
 src = [
+    "ctl",
     "dm",
     "irow",
 ]
@@ -353,9 +359,11 @@ id = 22
 name = "LOCALLY_CONSTRAINED_IMPORT"
 type = "integer"
 oracle = "NUMBER(1,0)"
+loader = "FLOAT EXTERNAL"
 added_in = 3
 description = "Key for Local_Price_Adjustment_Import: 2 = at least one Outage Constraint; 1 = at least 1 System Normal Constraint (and no Outage Constraint); 0 = No System Normal or Outage Constraints"
 src = [
+    "ctl",
     "dm",
     "irow",
 ]
@@ -388,7 +396,7 @@ columns = [
 ]
 fingerprint = "xxh3:1fc31b1897f400a41ec715fe8e683c48"
 first_seen = "2024-01"
-last_seen = "2024-01"
+last_seen = "2026-08"
 src = "irow"
 
 [[version.variant]]
@@ -417,7 +425,10 @@ first_seen = "2024-01"
 last_seen = "2024-01"
 
 [provenance]
-ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_DISPATCHINTERCONNECTORRES_202401.ctl"
+ctl = "MMSDM_2026_08/CTL/PUBLIC_ARCHIVE#DISPATCHINTERCONNECTORRES#FILE01#202608.ctl"
 data_model = "MMS_127.htm@v5.0.0.1"
-sampled_months = ["2024-01"]
+sampled_months = [
+    "2024-01",
+    "2026-08",
+]
 note = "version 3 was published with 18 columns and with 22; the longer list is the version and the shorter a variant"

@@ -8,10 +8,16 @@ visibility = "public"
 description = """
 GENERICCONSTRAINTRHS sets out details of generic constraint Right Hand Side (RHS) formulations for dispatch (DS), predispatch (PD) and Short Term PASA (ST). GENERICCONSTRAINTRHS also includes general expressions (EQ) used in the dispatch, predispatch and PASA time frames.
 GENERICCONSTRAINTRHS replaces data previously available via the "Constraint Library” Excel spreadsheet."""
-report_pairs = [[
+report_pairs = [
+    [
     "GCRHS",
     "",
-]]
+],
+    [
+    "GCRHS",
+    "NULL",
+],
+]
 archive_files = ["GENERICCONSTRAINTRHS"]
 load_mode = "snapshot"
 dedupe = "pk_lastchanged"
@@ -47,7 +53,7 @@ name = "EFFECTIVEDATE"
 type = "timestamp"
 nullable = false
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 1
 description = "Effective date of this record"
 src = [
@@ -247,7 +253,7 @@ id = 15
 name = "LASTCHANGED"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 1
 description = "Last date and time record changed"
 src = [
@@ -277,10 +283,13 @@ columns = [
 ]
 fingerprint = "xxh3:8c678195328daf92bf3485fad962148e"
 first_seen = "2024-01"
-last_seen = "2024-01"
+last_seen = "2026-08"
 src = "irow"
 
 [provenance]
-ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_GENERICCONSTRAINTRHS_202401.ctl"
+ctl = "MMSDM_2026_08/CTL/PUBLIC_ARCHIVE#GENERICCONSTRAINTRHS#FILE01#202608.ctl"
 data_model = "MMS_156.htm@v5.0.0.1"
-sampled_months = ["2024-01"]
+sampled_months = [
+    "2024-01",
+    "2026-08",
+]

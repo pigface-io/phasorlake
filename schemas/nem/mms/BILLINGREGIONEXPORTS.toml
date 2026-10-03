@@ -164,7 +164,7 @@ id = 10
 name = "LASTCHANGED"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 5
 description = "Last date and time record changed"
 src = [
@@ -189,11 +189,14 @@ columns = [
 ]
 fingerprint = "xxh3:46f2b3488fe3d7b1f4ae8045667e8ab3"
 first_seen = "2024-01"
-last_seen = "2024-01"
+last_seen = "2026-08"
 src = "irow"
 
 [provenance]
-ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_BILLINGREGIONEXPORTS_202401.ctl"
+ctl = "MMSDM_2026_08/CTL/PUBLIC_ARCHIVE#BILLINGREGIONEXPORTS#FILE01#202608.ctl"
 data_model = "MMS_86.htm@v5.0.0.1"
-sampled_months = ["2024-01"]
-note = "column ENERGY: declared NUMBER(16,6) but a sampled value has 5 integer and 8 fractional digits; precision dropped | column VALUE: declared NUMBER(15,5) but a sampled value has 6 integer and 8 fractional digits; precision dropped | column SURPLUSVALUE: declared NUMBER(15,5) but a sampled value has 6 integer and 8 fractional digits; precision dropped"
+sampled_months = [
+    "2024-01",
+    "2026-08",
+]
+note = "column ENERGY: declared NUMBER(16,6) but a sampled value has 5 integer and 8 fractional digits; precision dropped | column VALUE: declared NUMBER(15,5) but a sampled value has 7 integer and 8 fractional digits; precision dropped | column SURPLUSVALUE: declared NUMBER(15,5) but a sampled value has 6 integer and 8 fractional digits; precision dropped"

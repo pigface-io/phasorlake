@@ -20,7 +20,7 @@ primary_key = [
     "CONSTRAINTID",
 ]
 time_column = "SETTLEMENTDATE"
-next_column_id = 10
+next_column_id = 26
 
 [[column]]
 id = 1
@@ -28,7 +28,7 @@ name = "SETTLEMENTDATE"
 type = "timestamp"
 nullable = false
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 1
 description = "Settlement Date"
 src = [
@@ -58,7 +58,7 @@ name = "INTERVAL_DATETIME"
 type = "timestamp"
 nullable = false
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 1
 description = "Dispatch Interval Date Time"
 src = [
@@ -153,12 +153,188 @@ id = 9
 name = "LASTCHANGED"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 1
 description = "Last date and time record changed"
 src = [
     "ctl",
     "dm",
+    "irow",
+]
+
+[[column]]
+id = 10
+name = "USESUBSTITUTEDEMAND"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 3
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 11
+name = "REQUIREMENTDEMAND"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 3
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 12
+name = "FPP_AMOUNT"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 3
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 13
+name = "FPP_RESIDUAL_AMOUNT"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 3
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 14
+name = "USED_AMOUNT"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 3
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 15
+name = "USED_RESIDUAL_AMOUNT"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 3
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 16
+name = "UNUSED_AMOUNT"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 3
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 17
+name = "UNUSED_RESIDUAL_AMOUNT"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 3
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 18
+name = "P_REGULATION"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 3
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 19
+name = "TSFCAS"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 3
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 20
+name = "RCR"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 3
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 21
+name = "USAGE_VALUE"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 3
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 22
+name = "RCF"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 3
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 23
+name = "NRCF"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 3
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 24
+name = "DRCF"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 3
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 25
+name = "RESIDUALTOTAL_MWH"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 3
+src = [
+    "ctl",
     "irow",
 ]
 
@@ -180,7 +356,44 @@ first_seen = "2024-01"
 last_seen = "2024-01"
 src = "irow"
 
+[[version]]
+n = 3
+columns = [
+    "SETTLEMENTDATE",
+    "VERSIONNO",
+    "INTERVAL_DATETIME",
+    "CONSTRAINTID",
+    "CMPF",
+    "CRMPF",
+    "RECOVERY_FACTOR_CMPF",
+    "RECOVERY_FACTOR_CRMPF",
+    "LASTCHANGED",
+    "USESUBSTITUTEDEMAND",
+    "REQUIREMENTDEMAND",
+    "FPP_AMOUNT",
+    "FPP_RESIDUAL_AMOUNT",
+    "USED_AMOUNT",
+    "USED_RESIDUAL_AMOUNT",
+    "UNUSED_AMOUNT",
+    "UNUSED_RESIDUAL_AMOUNT",
+    "P_REGULATION",
+    "TSFCAS",
+    "RCR",
+    "USAGE_VALUE",
+    "RCF",
+    "NRCF",
+    "DRCF",
+    "RESIDUALTOTAL_MWH",
+]
+fingerprint = "xxh3:b10322f8c21b370e49be42c071c9cf81"
+first_seen = "2026-08"
+last_seen = "2026-08"
+src = "irow"
+
 [provenance]
-ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_SET_FCAS_REGULATION_TRK_202401.ctl"
+ctl = "MMSDM_2026_08/CTL/PUBLIC_ARCHIVE#SET_FCAS_REGULATION_TRK#FILE01#202608.ctl"
 data_model = "MMS_307.htm@v5.0.0.1"
-sampled_months = ["2024-01"]
+sampled_months = [
+    "2024-01",
+    "2026-08",
+]

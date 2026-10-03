@@ -179,15 +179,24 @@ fn bad_rows_fail_and_are_explained() {
     assert!(out.contains("csv.stopped_fail_fast"), "{out}");
 }
 
-/// The head of every zip of the January 2024 archive: each one must resolve
-/// exactly against the registry (strict mode refuses drift) and every row
-/// must parse into its declared types, as floats and as exact decimals.
+/// The head of every zip of the months the registry is built from, the
+/// anchor (August 2026) and an earlier one (January 2024): each one must
+/// resolve exactly against the registry (strict mode refuses drift) and
+/// every row must parse into its declared types, as floats and as exact
+/// decimals.
 #[test]
 fn every_archive_table_ingests_strictly() {
-    let heads =
-        Path::new(env!("CARGO_MANIFEST_DIR")).join("../../testdata/bootstrap/MMSDM_2024_01/heads");
+    every_head_ingests_strictly("MMSDM_2024_01", 161);
+    every_head_ingests_strictly("MMSDM_2026_08", 297);
+}
+
+fn every_head_ingests_strictly(month: &str, at_least: usize) {
+    let heads = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../../testdata/bootstrap")
+        .join(month)
+        .join("heads");
     let files = std::fs::read_dir(&heads).unwrap().count();
-    assert!(files >= 161, "{files} head fixtures");
+    assert!(files >= at_least, "{files} head fixtures of {month}");
     for mode in [&[][..], &["--decimal"][..]] {
         let cli = Cli::new();
         let mut args: Vec<&str> = mode.to_vec();
@@ -211,7 +220,7 @@ fn every_archive_table_ingests_strictly() {
         let errors = cli.ok(&["--json", "errors", "--limit", "1000"]);
         // No row fails to parse. The one parse diagnostic allowed is the
         // warning that a "no end" date beyond the nanosecond range was
-        // clamped, which the standing data of this month does contain.
+        // clamped, which the standing data of each month does contain.
         for line in errors.lines().filter(|l| l.contains("\"parse.")) {
             assert!(
                 line.contains("parse.timestamp_clamped")
@@ -220,7 +229,9 @@ fn every_archive_table_ingests_strictly() {
             );
         }
         assert!(
-            errors.contains("parse.timestamp_clamped") && errors.contains("2999/12/31 00:00:00"),
+            errors.contains("parse.timestamp_clamped")
+                && (errors.contains("2999/12/31 00:00:00")
+                    || errors.contains("9999/12/31 00:00:00")),
             "{mode:?}: the clamp is reported: {errors}"
         );
         // The only schema diagnostic allowed is the note that a column without

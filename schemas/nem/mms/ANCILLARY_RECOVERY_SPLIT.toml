@@ -20,7 +20,7 @@ primary_key = [
     "PAYMENTTYPE",
 ]
 time_column = "EFFECTIVEDATE"
-next_column_id = 7
+next_column_id = 8
 
 [[column]]
 id = 1
@@ -28,7 +28,7 @@ name = "EFFECTIVEDATE"
 type = "timestamp"
 nullable = false
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 1
 description = "Calendar settlement date record becomes effective."
 src = [
@@ -106,12 +106,23 @@ id = 6
 name = "LASTCHANGED"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 1
 description = "Last date and time record changed"
 src = [
     "ctl",
     "dm",
+    "irow",
+]
+
+[[column]]
+id = 7
+name = "ACE_PORTION"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 2
+src = [
+    "ctl",
     "irow",
 ]
 
@@ -130,7 +141,26 @@ first_seen = "2024-01"
 last_seen = "2024-01"
 src = "irow"
 
+[[version]]
+n = 2
+columns = [
+    "EFFECTIVEDATE",
+    "VERSIONNO",
+    "SERVICE",
+    "PAYMENTTYPE",
+    "CUSTOMER_PORTION",
+    "LASTCHANGED",
+    "ACE_PORTION",
+]
+fingerprint = "xxh3:3a0d38a7c23bcc89c638734e5c5c772a"
+first_seen = "2026-08"
+last_seen = "2026-08"
+src = "irow"
+
 [provenance]
-ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_ANCILLARY_RECOVERY_SPLIT_202401.ctl"
+ctl = "MMSDM_2026_08/CTL/PUBLIC_ARCHIVE#ANCILLARY_RECOVERY_SPLIT#FILE01#202608.ctl"
 data_model = "MMS_287.htm@v5.0.0.1"
-sampled_months = ["2024-01"]
+sampled_months = [
+    "2024-01",
+    "2026-08",
+]

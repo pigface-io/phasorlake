@@ -21,7 +21,7 @@ primary_key = [
     "PERIODID",
 ]
 time_column = "SETTLEMENTDATE"
-next_column_id = 10
+next_column_id = 15
 
 [[column]]
 id = 1
@@ -29,7 +29,7 @@ name = "SETTLEMENTDATE"
 type = "timestamp"
 nullable = false
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 5
 description = "Settlement Date of trading interval"
 src = [
@@ -151,12 +151,67 @@ id = 9
 name = "LASTCHANGED"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 5
 description = "Last Date record changed"
 src = [
     "ctl",
     "dm",
+    "irow",
+]
+
+[[column]]
+id = 10
+name = "REGION_ACE_MWH"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 6
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 11
+name = "REGION_ASOE_MWH"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 6
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 12
+name = "REGIONRECOVERYAMOUNT_ACE"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 6
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 13
+name = "REGIONRECOVERYAMOUNT_ASOE"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 6
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 14
+name = "REGIONRECOVERYAMOUNT"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 6
+src = [
+    "ctl",
     "irow",
 ]
 
@@ -178,8 +233,34 @@ first_seen = "2024-01"
 last_seen = "2024-01"
 src = "irow"
 
+[[version]]
+n = 6
+columns = [
+    "SETTLEMENTDATE",
+    "VERSIONNO",
+    "BIDTYPE",
+    "REGIONID",
+    "PERIODID",
+    "GENERATORREGIONENERGY",
+    "CUSTOMERREGIONENERGY",
+    "REGIONRECOVERY",
+    "LASTCHANGED",
+    "REGION_ACE_MWH",
+    "REGION_ASOE_MWH",
+    "REGIONRECOVERYAMOUNT_ACE",
+    "REGIONRECOVERYAMOUNT_ASOE",
+    "REGIONRECOVERYAMOUNT",
+]
+fingerprint = "xxh3:d03f5f473f53dad71027b34d43db90fd"
+first_seen = "2026-08"
+last_seen = "2026-08"
+src = "irow"
+
 [provenance]
-ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_SETFCASREGIONRECOVERY_202401.ctl"
+ctl = "MMSDM_2026_08/CTL/PUBLIC_ARCHIVE#SETFCASREGIONRECOVERY#FILE01#202608.ctl"
 data_model = "MMS_318.htm@v5.0.0.1"
-sampled_months = ["2024-01"]
+sampled_months = [
+    "2024-01",
+    "2026-08",
+]
 note = "column GENERATORREGIONENERGY: declared NUMBER(16,6) but a sampled value has 3 integer and 8 fractional digits; precision dropped | column CUSTOMERREGIONENERGY: declared NUMBER(16,6) but a sampled value has 3 integer and 8 fractional digits; precision dropped"

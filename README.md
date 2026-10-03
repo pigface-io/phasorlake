@@ -166,6 +166,14 @@ of January 2012 is a 12 MB download, not 1.9 GB.
 File names changed along the way, from `PUBLIC_DVD_{TABLE}_{YYYYMM}010000.zip`
 to `PUBLIC_ARCHIVE#{TABLE}#FILE{NN}#{YYYYMM}010000.zip`; both are read.
 
+The registry is anchored on what AEMO publishes today: its tables, column
+ids and types come from the newest month it was built from (August 2026),
+and the shapes of an earlier month (January 2024) are declared against
+that anchor. Every file of those two months resolves exactly. A file of
+another month resolves exactly where its shape is one of theirs, which
+most are; a shape nobody has declared is still ingested whole, as
+described above, and `nemlake schema infer` drafts its declaration.
+
 AEMO's web server blocks a client that asks too fast. nemlake leaves 250 ms
 between requests (`request_interval_ms` in `config.toml`), and when the
 server refuses it (HTTP 403, or 429 through every retry) it sends nothing
@@ -197,10 +205,11 @@ numbers may not regress below live in `bench/budgets.json`.
 ## Status
 
 Working today: the NEM monthly archive from July 2009 on, Parquet + manifest,
-every table of the January 2024 archive (143) in the registry, exact decimals
-with `--decimal`, and downloads that resume where they stopped. Next: the
-table versions of earlier years; then live 5-minute feeds and compaction;
-then WEM and an Iceberg writer.
+every table of the August 2026 and January 2024 archives (241) in the
+registry, exact decimals with `--decimal`, downloads that resume where they
+stopped, and a lake that can be read again from the archive when the rules
+change. Next: the shapes of earlier years as declared variants; then live
+5-minute feeds and compaction; then WEM and an Iceberg writer.
 
 ## Developing
 

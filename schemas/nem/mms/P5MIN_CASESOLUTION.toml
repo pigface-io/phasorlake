@@ -25,23 +25,9 @@ name = "RUN_DATETIME"
 type = "timestamp"
 nullable = false
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 2
 description = "Unique Timestamp Identifier for this study"
-src = [
-    "ctl",
-    "dm",
-    "irow",
-]
-
-[[column]]
-id = 2
-name = "INTERVENTION"
-type = "integer"
-oracle = "Number(2,0)"
-loader = "FLOAT EXTERNAL"
-added_in = 2
-description = "Flag to indicate if this Predispatch case includes an intervention pricing run: 0 = case does not include an intervention pricing run, 1 = case does include an intervention pricing run. This field has a default value of 0 and is not nullable"
 src = [
     "ctl",
     "dm",
@@ -306,7 +292,7 @@ id = 19
 name = "LASTCHANGED"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 2
 description = "Last changed date and time of this record"
 src = [
@@ -315,8 +301,49 @@ src = [
     "irow",
 ]
 
+[[column]]
+id = 2
+name = "INTERVENTION"
+type = "integer"
+oracle = "Number(2,0)"
+loader = "FLOAT EXTERNAL"
+added_in = 2
+description = "Flag to indicate if this Predispatch case includes an intervention pricing run: 0 = case does not include an intervention pricing run, 1 = case does include an intervention pricing run. This field has a default value of 0 and is not nullable"
+src = [
+    "ctl",
+    "dm",
+    "irow",
+]
+
 [[version]]
 n = 2
+columns = [
+    "RUN_DATETIME",
+    "STARTINTERVAL_DATETIME",
+    "TOTALOBJECTIVE",
+    "NONPHYSICALLOSSES",
+    "TOTALAREAGENVIOLATION",
+    "TOTALINTERCONNECTORVIOLATION",
+    "TOTALGENERICVIOLATION",
+    "TOTALRAMPRATEVIOLATION",
+    "TOTALUNITMWCAPACITYVIOLATION",
+    "TOTAL5MINVIOLATION",
+    "TOTALREGVIOLATION",
+    "TOTAL6SECVIOLATION",
+    "TOTAL60SECVIOLATION",
+    "TOTALENERGYCONSTRVIOLATION",
+    "TOTALENERGYOFFERVIOLATION",
+    "TOTALASPROFILEVIOLATION",
+    "TOTALFASTSTARTVIOLATION",
+    "LASTCHANGED",
+    "INTERVENTION",
+]
+fingerprint = "xxh3:c64133ec6807cbdb6c254099b7a97a7a"
+first_seen = "2024-01"
+last_seen = "2026-08"
+src = "irow"
+
+[[version.variant]]
 columns = [
     "RUN_DATETIME",
     "INTERVENTION",
@@ -341,9 +368,12 @@ columns = [
 fingerprint = "xxh3:711c768a7eb561845c37c2c3547b6582"
 first_seen = "2024-01"
 last_seen = "2024-01"
-src = "irow"
 
 [provenance]
-ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_P5MIN_CASESOLUTION_202401.ctl"
+ctl = "MMSDM_2026_08/CTL/PUBLIC_ARCHIVE#P5MIN_CASESOLUTION#FILE01#202608.ctl"
 data_model = "MMS_236.htm@v5.0.0.1"
-sampled_months = ["2024-01"]
+sampled_months = [
+    "2024-01",
+    "2026-08",
+]
+note = "version 2 was published with 19 columns and with 19; the lists differ by more than appended columns; the shorter is a variant"

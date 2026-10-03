@@ -9,7 +9,10 @@ report_pairs = [[
     "P5MIN",
     "SCENARIODEMAND",
 ]]
-archive_files = ["P5MINSCENARIODEMAND"]
+archive_files = [
+    "P5MINSCENARIODEMAND",
+    "P5MIN_SCENARIODEMAND",
+]
 load_mode = "append"
 dedupe = "none"
 time_column = "EFFECTIVEDATE"
@@ -19,7 +22,7 @@ next_column_id = 6
 id = 1
 name = "EFFECTIVEDATE"
 type = "timestamp"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 1
 src = [
     "ctl",
@@ -30,7 +33,7 @@ src = [
 id = 2
 name = "VERSION_DATETIME"
 type = "timestamp"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 1
 src = [
     "ctl",
@@ -83,9 +86,12 @@ columns = [
 ]
 fingerprint = "xxh3:9b4025cc1edbeb0b67f466a501d979a9"
 first_seen = "2024-01"
-last_seen = "2024-01"
+last_seen = "2026-08"
 src = "irow"
 
 [provenance]
-ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_P5MINSCENARIODEMAND_202401.ctl"
-sampled_months = ["2024-01"]
+ctl = "MMSDM_2026_08/CTL/PUBLIC_ARCHIVE#P5MIN_SCENARIODEMAND#FILE01#202608.ctl"
+sampled_months = [
+    "2024-01",
+    "2026-08",
+]

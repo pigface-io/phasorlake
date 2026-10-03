@@ -19,7 +19,7 @@ primary_key = [
     "REGIONID",
 ]
 time_column = "SETTLEMENTDATE"
-next_column_id = 11
+next_column_id = 13
 
 [[column]]
 id = 1
@@ -27,7 +27,7 @@ name = "SETTLEMENTDATE"
 type = "timestamp"
 nullable = false
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 5
 description = "Settlement Date"
 src = [
@@ -160,12 +160,34 @@ id = 10
 name = "LASTCHANGED"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 5
 description = "Last date and time record changed"
 src = [
     "ctl",
     "dm",
+    "irow",
+]
+
+[[column]]
+id = 11
+name = "ACE_AMOUNT"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 6
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 12
+name = "ASOE_AMOUNT"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 6
+src = [
+    "ctl",
     "irow",
 ]
 
@@ -188,8 +210,32 @@ first_seen = "2024-01"
 last_seen = "2024-01"
 src = "irow"
 
+[[version]]
+n = 6
+columns = [
+    "SETTLEMENTDATE",
+    "RUNNO",
+    "PERIODID",
+    "REGIONID",
+    "EP",
+    "EC",
+    "RRP",
+    "EXP",
+    "IRSS",
+    "LASTCHANGED",
+    "ACE_AMOUNT",
+    "ASOE_AMOUNT",
+]
+fingerprint = "xxh3:2af1a925ae710114f43833e70ab88737"
+first_seen = "2026-08"
+last_seen = "2026-08"
+src = "irow"
+
 [provenance]
-ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_SETINTRAREGIONRESIDUES_202401.ctl"
+ctl = "MMSDM_2026_08/CTL/PUBLIC_ARCHIVE#SETINTRAREGIONRESIDUES#FILE01#202608.ctl"
 data_model = "MMS_323.htm@v5.0.0.1"
-sampled_months = ["2024-01"]
-note = "column EP: declared NUMBER(15,5) but a sampled value has 5 integer and 8 fractional digits; precision dropped | column EC: declared NUMBER(15,5) but a sampled value has 5 integer and 8 fractional digits; precision dropped | column EXP: declared NUMBER(15,5) but a sampled value has 2 integer and 8 fractional digits; precision dropped | column IRSS: declared NUMBER(15,5) but a sampled value has 3 integer and 8 fractional digits; precision dropped"
+sampled_months = [
+    "2024-01",
+    "2026-08",
+]
+note = "column EP: declared NUMBER(15,5) but a sampled value has 5 integer and 8 fractional digits; precision dropped | column EC: declared NUMBER(15,5) but a sampled value has 5 integer and 8 fractional digits; precision dropped | column EXP: declared NUMBER(15,5) but a sampled value has 3 integer and 8 fractional digits; precision dropped | column IRSS: declared NUMBER(15,5) but a sampled value has 4 integer and 8 fractional digits; precision dropped"

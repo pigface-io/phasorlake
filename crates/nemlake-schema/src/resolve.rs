@@ -404,7 +404,8 @@ impl Registry {
             && other_id == id
         {
             let projection = self
-                .projection(id, matched)
+                .variant_projection(id, matched, fp)
+                .or_else(|| self.projection(id, matched))
                 .expect("declared versions are precomputed")
                 .clone();
             warnings.push(
@@ -760,7 +761,7 @@ mod tests {
     }
 
     fn scada_cols() -> Vec<&'static str> {
-        vec!["SETTLEMENTDATE", "DUID", "SCADAVALUE"]
+        vec!["SETTLEMENTDATE", "DUID", "SCADAVALUE", "LASTCHANGED"]
     }
 
     #[test]
@@ -778,7 +779,7 @@ mod tests {
         assert_eq!(res.status.label(), "exact");
         assert!(res.warnings.is_empty());
         let p = &res.projection;
-        assert_eq!(p.casts.len(), 3);
+        assert_eq!(p.casts.len(), 4);
         assert_eq!(
             p.casts[0],
             ColumnCast {
@@ -805,10 +806,20 @@ mod tests {
                 nullable: true
             }
         );
+        assert_eq!(
+            p.casts[3],
+            ColumnCast {
+                target: Some(3),
+                cast: Cast::TimestampNanos {
+                    offset_secs: 36_000
+                },
+                nullable: true
+            }
+        );
         assert!(p.missing.is_empty());
         assert_eq!(p.primary_key, [0, 1]);
         assert_eq!(p.time_column, Some(0));
-        assert_eq!(p.lake_width(), 3);
+        assert_eq!(p.lake_width(), 4);
         // Strict mode accepts exact matches too, and the same Arc is returned.
         let again = r
             .resolve(&row, ResolveOptions { mode: Mode::Strict })
@@ -891,6 +902,33 @@ mod tests {
         assert_eq!(res.version, SchemaVersion(1));
         assert_eq!(res.warnings[0].code, "schema.version_aliased");
         assert_eq!(res.warnings[0].version, Some(9));
+        assert!(Arc::ptr_eq(
+            &res.projection,
+            r.projection(res.table, SchemaVersion(1)).unwrap()
+        ));
+        // The columns of a declared variant, under an undeclared version
+        // number, are that variant.
+        let short = &cols[..3];
+        let row = IRow {
+            columns: short,
+            ..row
+        };
+        let res = r
+            .resolve(&row, ResolveOptions { mode: Mode::Strict })
+            .unwrap();
+        assert_eq!(
+            res.status,
+            Status::Aliased {
+                matched: SchemaVersion(1)
+            }
+        );
+        assert_eq!(res.projection.casts.len(), 3);
+        assert_eq!(res.projection.missing, [3]);
+        assert!(Arc::ptr_eq(
+            &res.projection,
+            r.variant_projection(res.table, SchemaVersion(1), row.fingerprint())
+                .unwrap()
+        ));
     }
 
     #[test]
@@ -907,18 +945,18 @@ mod tests {
         assert_eq!(
             res.status,
             Status::Drift {
-                missing: vec!["SCADAVALUE".into()],
+                missing: vec!["SCADAVALUE".into(), "LASTCHANGED".into()],
                 extra: vec![],
                 reordered: false
             }
         );
         assert_eq!(res.status.label(), "drift");
-        assert_eq!(res.projection.missing, [2]);
+        assert_eq!(res.projection.missing, [2, 3]);
         assert_eq!(res.projection.casts.len(), 2);
         assert_eq!(res.warnings[0].code, "schema.compatible_drift");
         assert_eq!(
             res.warnings[0].expected.as_deref(),
-            Some("SETTLEMENTDATE,DUID,SCADAVALUE")
+            Some("SETTLEMENTDATE,DUID,SCADAVALUE,LASTCHANGED")
         );
         // The dynamic projection is cached.
         let again = r.resolve(&row, ResolveOptions::default()).unwrap();
@@ -930,7 +968,7 @@ mod tests {
             matches!(
                 e,
                 ResolveError::VersionDrift {
-                    declared: 3,
+                    declared: 4,
                     observed: 2,
                     ..
                 }
@@ -942,7 +980,13 @@ mod tests {
     #[test]
     fn unknown_column_is_kept_as_text_and_reorder_detected() {
         let r = reg();
-        let cols = vec!["DUID", "SETTLEMENTDATE", "SCADAVALUE", "QUALITY"];
+        let cols = vec![
+            "DUID",
+            "SETTLEMENTDATE",
+            "SCADAVALUE",
+            "LASTCHANGED",
+            "QUALITY",
+        ];
         let row = IRow {
             report_type: "DISPATCH",
             report_subtype: "UNIT_SCADA",
@@ -967,15 +1011,15 @@ mod tests {
         // The column the table does not have is kept: one more column, text,
         // nullable, under its own name and marked as coming from the file.
         assert_eq!(
-            res.projection.casts[3],
+            res.projection.casts[4],
             ColumnCast {
-                target: Some(3),
+                target: Some(4),
                 cast: Cast::Utf8,
                 nullable: true
             }
         );
-        assert_eq!(res.projection.lake_width(), 4);
-        let extra = res.projection.arrow.field(3);
+        assert_eq!(res.projection.lake_width(), 5);
+        let extra = res.projection.arrow.field(4);
         assert_eq!(extra.name(), "QUALITY");
         assert_eq!(extra.data_type(), &arrow_schema::DataType::Utf8);
         assert!(extra.is_nullable());
@@ -983,11 +1027,11 @@ mod tests {
             extra.metadata().get("nemlake:source").map(String::as_str),
             Some("file")
         );
-        assert_eq!(res.projection.column_name(3), "QUALITY");
+        assert_eq!(res.projection.column_name(4), "QUALITY");
         // The table's own columns are as the lake has them.
         let lake = r.lake_schema(res.table);
-        assert_eq!(lake.fields().len(), 3);
-        assert_eq!(res.projection.arrow.fields()[..3], lake.fields()[..]);
+        assert_eq!(lake.fields().len(), 4);
+        assert_eq!(res.projection.arrow.fields()[..4], lake.fields()[..]);
         assert_eq!(res.warnings[0].code, "schema.unknown_columns");
         assert!(res.warnings[0].message.contains("order differs"));
         assert!(res.warnings[0].message.contains("kept as text"));
@@ -1007,6 +1051,7 @@ mod tests {
                 "SETTLEMENTDATE",
                 "DUID",
                 "SCADAVALUE",
+                "LASTCHANGED",
                 "X",
                 "X__2",
                 "DUID__2"
@@ -1066,7 +1111,7 @@ mod tests {
         // which this shape's schema allows though the lake's does not.
         let res = r.resolve(&row, ResolveOptions::default()).unwrap();
         assert!(matches!(res.status, Status::Drift { .. }));
-        assert_eq!(res.projection.missing, [1]);
+        assert_eq!(res.projection.missing, [1, 3]);
         assert!(res.projection.arrow.field(1).is_nullable());
         assert!(!r.lake_schema(res.table).field(1).is_nullable());
         assert!(!res.projection.arrow.field(0).is_nullable());
@@ -1082,7 +1127,7 @@ mod tests {
     #[test]
     fn unknown_table_and_no_columns() {
         let r = reg();
-        let cols = scada_cols();
+        let cols = vec!["SETTLEMENTDATE", "DUID", "SCADAVALUE"];
         let row = IRow {
             report_type: "DISPATCH",
             report_subtype: "NOPE",
@@ -1103,7 +1148,7 @@ mod tests {
         let t = r.table(res.table);
         assert_eq!(t.name, "DISPATCH_NOPE");
         assert_eq!(r.table_dir(res.table), "_unregistered/dispatch.nope");
-        assert_eq!(t.columns.len(), 3);
+        assert_eq!(t.columns.len(), cols.len());
         assert!(
             t.columns
                 .iter()

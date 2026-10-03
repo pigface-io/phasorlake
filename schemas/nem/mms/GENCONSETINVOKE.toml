@@ -19,26 +19,11 @@ primary_key = ["INVOCATION_ID"]
 next_column_id = 15
 
 [[column]]
-id = 1
-name = "INVOCATION_ID"
-type = "integer"
-nullable = false
-oracle = "NUMBER(9)"
-loader = "FLOAT EXTERNAL"
-added_in = 2
-description = "Abstract unique identifier for the record. Allows Invocations to be modified without affecting PK values"
-src = [
-    "ctl",
-    "dm",
-    "irow",
-]
-
-[[column]]
 id = 2
 name = "STARTDATE"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 2
 description = "Market date of start"
 src = [
@@ -82,7 +67,7 @@ id = 5
 name = "ENDDATE"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 2
 description = "Market date end"
 src = [
@@ -171,7 +156,7 @@ id = 11
 name = "LASTCHANGED"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 2
 description = "Last date and time record changed"
 src = [
@@ -185,7 +170,7 @@ id = 12
 name = "STARTINTERVALDATETIME"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 2
 description = "The settlement date and time corresponding to the first interval to which the constraint set is to be applied."
 src = [
@@ -199,7 +184,7 @@ id = 13
 name = "ENDINTERVALDATETIME"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 2
 description = "The settlement date and time corresponding to the last interval to which the constraint set is to be applied."
 src = [
@@ -223,8 +208,45 @@ src = [
     "irow",
 ]
 
+[[column]]
+id = 1
+name = "INVOCATION_ID"
+type = "integer"
+nullable = false
+oracle = "NUMBER(9)"
+loader = "FLOAT EXTERNAL"
+added_in = 2
+description = "Abstract unique identifier for the record. Allows Invocations to be modified without affecting PK values"
+src = [
+    "ctl",
+    "dm",
+    "irow",
+]
+
 [[version]]
 n = 2
+columns = [
+    "STARTDATE",
+    "STARTPERIOD",
+    "GENCONSETID",
+    "ENDDATE",
+    "ENDPERIOD",
+    "STARTAUTHORISEDBY",
+    "ENDAUTHORISEDBY",
+    "INTERVENTION",
+    "ASCONSTRAINTTYPE",
+    "LASTCHANGED",
+    "STARTINTERVALDATETIME",
+    "ENDINTERVALDATETIME",
+    "SYSTEMNORMAL",
+    "INVOCATION_ID",
+]
+fingerprint = "xxh3:27b119bb013d6a129f80166049345c92"
+first_seen = "2024-01"
+last_seen = "2026-08"
+src = "irow"
+
+[[version.variant]]
 columns = [
     "INVOCATION_ID",
     "STARTDATE",
@@ -244,9 +266,12 @@ columns = [
 fingerprint = "xxh3:a9a2d9671d262cf97cf257ddd042869d"
 first_seen = "2024-01"
 last_seen = "2024-01"
-src = "irow"
 
 [provenance]
-ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_GENCONSETINVOKE_202401.ctl"
+ctl = "MMSDM_2026_08/CTL/PUBLIC_ARCHIVE#GENCONSETINVOKE#FILE01#202608.ctl"
 data_model = "MMS_154.htm@v5.0.0.1"
-sampled_months = ["2024-01"]
+sampled_months = [
+    "2024-01",
+    "2026-08",
+]
+note = "version 2 was published with 14 columns and with 14; the lists differ by more than appended columns; the shorter is a variant"

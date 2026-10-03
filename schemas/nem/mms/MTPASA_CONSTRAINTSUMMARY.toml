@@ -31,7 +31,7 @@ name = "RUN_DATETIME"
 type = "timestamp"
 nullable = false
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 1
 description = "Date processing of the run begins."
 src = [
@@ -95,7 +95,7 @@ name = "DAY"
 type = "timestamp"
 nullable = false
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 1
 description = "Day this result is for"
 src = [
@@ -122,27 +122,11 @@ src = [
 ]
 
 [[column]]
-id = 7
-name = "AGGREGATION_PERIOD"
-type = "utf8"
-max_len = 20
-nullable = false
-oracle = "VARCHAR2(20)"
-loader = "CHAR(20)"
-added_in = 1
-description = "Period data is aggregated over. Values are PEAK, SHOULDER, OFFPEAK. PEAK = 14:00-19:59, SHOULDER = 07:00-13:59 and 20:00-21:59, OFFPEAK = 22:00-06:59"
-src = [
-    "ctl",
-    "dm",
-    "irow",
-]
-
-[[column]]
 id = 8
 name = "EFFECTIVEDATE"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 1
 description = "The effective date of the constraint used"
 src = [
@@ -159,6 +143,22 @@ oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 1
 description = "The version of the constraintID"
+src = [
+    "ctl",
+    "dm",
+    "irow",
+]
+
+[[column]]
+id = 7
+name = "AGGREGATION_PERIOD"
+type = "utf8"
+max_len = 20
+nullable = false
+oracle = "VARCHAR2(20)"
+loader = "CHAR(20)"
+added_in = 1
+description = "Period data is aggregated over. Values are PEAK, SHOULDER, OFFPEAK. PEAK = 14:00-19:59, SHOULDER = 07:00-13:59 and 20:00-21:59, OFFPEAK = 22:00-06:59"
 src = [
     "ctl",
     "dm",
@@ -186,7 +186,7 @@ id = 11
 name = "LASTCHANGED"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 1
 description = "Last date and time record changed"
 src = [
@@ -204,6 +204,25 @@ columns = [
     "DEMAND_POE_TYPE",
     "DAY",
     "CONSTRAINTID",
+    "EFFECTIVEDATE",
+    "VERSIONNO",
+    "AGGREGATION_PERIOD",
+    "CONSTRAINTHOURSBINDING",
+    "LASTCHANGED",
+]
+fingerprint = "xxh3:6c401bc57fee59432f3831efa1f6ae1a"
+first_seen = "2024-01"
+last_seen = "2026-08"
+src = "irow"
+
+[[version.variant]]
+columns = [
+    "RUN_DATETIME",
+    "RUN_NO",
+    "RUNTYPE",
+    "DEMAND_POE_TYPE",
+    "DAY",
+    "CONSTRAINTID",
     "AGGREGATION_PERIOD",
     "EFFECTIVEDATE",
     "VERSIONNO",
@@ -213,9 +232,12 @@ columns = [
 fingerprint = "xxh3:7a2c2f2311582714d103e75f47caa7e9"
 first_seen = "2024-01"
 last_seen = "2024-01"
-src = "irow"
 
 [provenance]
-ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_MTPASA_CONSTRAINTSUMMARY_202401.ctl"
+ctl = "MMSDM_2026_08/CTL/PUBLIC_ARCHIVE#MTPASA_CONSTRAINTSUMMARY#FILE01#202608.ctl"
 data_model = "MMS_226.htm@v5.0.0.1"
-sampled_months = ["2024-01"]
+sampled_months = [
+    "2024-01",
+    "2026-08",
+]
+note = "version 1 was published with 11 columns and with 11; the lists differ by more than appended columns; the shorter is a variant"

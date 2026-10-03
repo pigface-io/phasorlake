@@ -6,10 +6,16 @@ name = "GENCONSET"
 package = "GENERIC_CONSTRAINT"
 visibility = "public"
 description = "GENCONSET sets out generic constraint sets that are invoked and revoked, and may contain many generic constraints (GENCONDATA)."
-report_pairs = [[
+report_pairs = [
+    [
     "GENCONSET",
     "",
-]]
+],
+    [
+    "GENCONSET",
+    "NULL",
+],
+]
 archive_files = ["GENCONSET"]
 load_mode = "snapshot"
 dedupe = "pk_lastchanged"
@@ -44,7 +50,7 @@ name = "EFFECTIVEDATE"
 type = "timestamp"
 nullable = false
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 1
 description = "Date this record becomes effective"
 src = [
@@ -90,7 +96,7 @@ id = 5
 name = "GENCONEFFDATE"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 1
 description = "Since market start in 1998 these fields have not been used and any data that has been populated in the fields should be ignored"
 src = [
@@ -118,7 +124,7 @@ id = 7
 name = "LASTCHANGED"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 1
 description = "Last date and time record changed"
 src = [
@@ -140,10 +146,13 @@ columns = [
 ]
 fingerprint = "xxh3:3d25f4c1eef0241a6fb82002783e99d6"
 first_seen = "2024-01"
-last_seen = "2024-01"
+last_seen = "2026-08"
 src = "irow"
 
 [provenance]
-ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_GENCONSET_202401.ctl"
+ctl = "MMSDM_2026_08/CTL/PUBLIC_ARCHIVE#GENCONSET#FILE01#202608.ctl"
 data_model = "MMS_153.htm@v5.0.0.1"
-sampled_months = ["2024-01"]
+sampled_months = [
+    "2024-01",
+    "2026-08",
+]

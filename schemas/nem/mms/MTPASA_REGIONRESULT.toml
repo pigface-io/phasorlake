@@ -22,7 +22,7 @@ primary_key = [
     "REGIONID",
 ]
 time_column = "RUN_DATETIME"
-next_column_id = 32
+next_column_id = 40
 
 [[column]]
 id = 1
@@ -30,7 +30,7 @@ name = "RUN_DATETIME"
 type = "timestamp"
 nullable = false
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 2
 description = "Date processing of the run begins."
 src = [
@@ -94,7 +94,7 @@ name = "DAY"
 type = "timestamp"
 nullable = false
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 2
 description = "Day this result is for"
 src = [
@@ -459,12 +459,115 @@ id = 28
 name = "LASTCHANGED"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 2
 description = "Last date and time record changed"
 src = [
     "ctl",
     "dm",
+    "irow",
+]
+
+[[column]]
+id = 32
+name = "TOTALSEMISCHEDULEGEN90"
+type = "number"
+precision = 12
+scale = 2
+oracle = "NUMBER(12,2)"
+loader = "FLOAT EXTERNAL"
+added_in = 2
+description = "The 90% percentile for semi-scheduled generation across iterations and reference years (MW)"
+src = [
+    "ctl",
+    "dm",
+    "irow",
+]
+
+[[column]]
+id = 33
+name = "TOTALSEMISCHEDULEGEN50"
+type = "number"
+precision = 12
+scale = 2
+oracle = "NUMBER(12,2)"
+loader = "FLOAT EXTERNAL"
+added_in = 2
+description = "The 50% percentile for semi-scheduled generation across iterations and reference years (MW)"
+src = [
+    "ctl",
+    "dm",
+    "irow",
+]
+
+[[column]]
+id = 34
+name = "TOTALSEMISCHEDULEGEN10"
+type = "number"
+precision = 12
+scale = 2
+oracle = "NUMBER(12,2)"
+loader = "FLOAT EXTERNAL"
+added_in = 2
+description = "The 10% percentile for semi-scheduled generation across iterations and reference years (MW)"
+src = [
+    "ctl",
+    "dm",
+    "irow",
+]
+
+[[column]]
+id = 35
+name = "TOTALAVAILABLEGENMIN"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 2
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 36
+name = "TOTALAVAILABLEGEN10"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 2
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 37
+name = "TOTALAVAILABLEGEN50"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 2
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 38
+name = "TOTALAVAILABLEGEN90"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 2
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 39
+name = "TOTALAVAILABLEGENMAX"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 2
+src = [
+    "ctl",
     "irow",
 ]
 
@@ -529,6 +632,50 @@ columns = [
     "DEMANDSIDEPARTICIPATION50",
     "DEMANDSIDEPARTICIPATION10",
     "LASTCHANGED",
+    "TOTALSEMISCHEDULEGEN90",
+    "TOTALSEMISCHEDULEGEN50",
+    "TOTALSEMISCHEDULEGEN10",
+    "TOTALAVAILABLEGENMIN",
+    "TOTALAVAILABLEGEN10",
+    "TOTALAVAILABLEGEN50",
+    "TOTALAVAILABLEGEN90",
+    "TOTALAVAILABLEGENMAX",
+]
+fingerprint = "xxh3:2bef7672bfa3e5f108c9bb2d24647fc9"
+first_seen = "2024-01"
+last_seen = "2026-08"
+src = "irow"
+
+[[version.variant]]
+columns = [
+    "RUN_DATETIME",
+    "RUN_NO",
+    "RUNTYPE",
+    "DEMAND_POE_TYPE",
+    "DAY",
+    "REGIONID",
+    "PERIODID",
+    "DEMAND",
+    "AGGREGATEINSTALLEDCAPACITY",
+    "NUMBEROFITERATIONS",
+    "USE_NUMBEROFITERATIONS",
+    "USE_MAX",
+    "USE_UPPERQUARTILE",
+    "USE_MEDIAN",
+    "USE_LOWERQUARTILE",
+    "USE_MIN",
+    "USE_AVERAGE",
+    "USE_EVENT_AVERAGE",
+    "TOTALSCHEDULEDGEN90",
+    "TOTALSCHEDULEDGEN50",
+    "TOTALSCHEDULEDGEN10",
+    "TOTALINTERMITTENTGEN90",
+    "TOTALINTERMITTENTGEN50",
+    "TOTALINTERMITTENTGEN10",
+    "DEMANDSIDEPARTICIPATION90",
+    "DEMANDSIDEPARTICIPATION50",
+    "DEMANDSIDEPARTICIPATION10",
+    "LASTCHANGED",
     "TOTALSEMISCHEDULEDGEN90",
     "TOTALSEMISCHEDULEDGEN50",
     "TOTALSEMISCHEDULEDGEN10",
@@ -536,9 +683,12 @@ columns = [
 fingerprint = "xxh3:8910155733f491904b68235a6f21e038"
 first_seen = "2024-01"
 last_seen = "2024-01"
-src = "irow"
 
 [provenance]
-ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_MTPASA_REGIONRESULT_202401.ctl"
+ctl = "MMSDM_2026_08/CTL/PUBLIC_ARCHIVE#MTPASA_REGIONRESULT#FILE01#202608.ctl"
 data_model = "MMS_232.htm@v5.0.0.1"
-sampled_months = ["2024-01"]
+sampled_months = [
+    "2024-01",
+    "2026-08",
+]
+note = "version 2 was published with 31 columns and with 36; the lists differ by more than appended columns; the shorter is a variant"

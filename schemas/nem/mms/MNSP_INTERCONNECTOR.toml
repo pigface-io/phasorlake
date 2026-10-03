@@ -43,7 +43,7 @@ name = "EFFECTIVEDATE"
 type = "timestamp"
 nullable = false
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 2
 description = "Date when Interconnector becomes effective"
 src = [
@@ -180,7 +180,7 @@ id = 11
 name = "AUTHORISEDDATE"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 2
 description = "Date of authorisation. Nominal date but required to enable Interconnector."
 src = [
@@ -209,7 +209,7 @@ id = 13
 name = "LASTCHANGED"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 2
 description = "Last date and time record changed"
 src = [
@@ -271,10 +271,13 @@ columns = [
 ]
 fingerprint = "xxh3:dc25392d0ffe8315f182d35261130eb4"
 first_seen = "2024-01"
-last_seen = "2024-01"
+last_seen = "2026-08"
 src = "irow"
 
 [provenance]
-ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_MNSP_INTERCONNECTOR_202401.ctl"
+ctl = "MMSDM_2026_08/CTL/PUBLIC_ARCHIVE#MNSP_INTERCONNECTOR#FILE01#202608.ctl"
 data_model = "MMS_252.htm@v5.0.0.1"
-sampled_months = ["2024-01"]
+sampled_months = [
+    "2024-01",
+    "2026-08",
+]

@@ -386,7 +386,9 @@ mod tests {
         assert_eq!(out.batches.len(), 1);
         let b = &out.batches[0].batch;
         assert_eq!(b.num_rows(), 20);
-        assert_eq!(b.num_columns(), 3);
+        // The file's three columns, and the one a later month added, null.
+        assert_eq!(b.num_columns(), 4);
+        assert_eq!(b.column(3).null_count(), 20);
         let ts = b
             .column(0)
             .as_any()
@@ -624,10 +626,10 @@ mod tests {
         assert_eq!(out.warnings[0].code, "schema.unknown_columns");
         // The column the table does not have is kept, as text.
         let batch = &out.batches[0].batch;
-        assert_eq!(batch.num_columns(), 4);
-        assert_eq!(batch.schema().field(3).name(), "EXTRA");
+        assert_eq!(batch.num_columns(), 5);
+        assert_eq!(batch.schema().field(4).name(), "EXTRA");
         let extra = batch
-            .column(3)
+            .column(4)
             .as_any()
             .downcast_ref::<StringArray>()
             .unwrap();

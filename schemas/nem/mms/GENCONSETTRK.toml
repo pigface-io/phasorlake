@@ -6,10 +6,16 @@ name = "GENCONSETTRK"
 package = "GENERIC_CONSTRAINT"
 visibility = "public"
 description = "GENCONSETTRK assists in determining the correct version of a generic constraint set that has been invoked in GENCONSETINVOKE."
-report_pairs = [[
+report_pairs = [
+    [
     "GENCONSETTRK",
     "",
-]]
+],
+    [
+    "GENCONSETTRK",
+    "NULL",
+],
+]
 archive_files = ["GENCONSETTRK"]
 load_mode = "snapshot"
 dedupe = "pk_lastchanged"
@@ -43,7 +49,7 @@ name = "EFFECTIVEDATE"
 type = "timestamp"
 nullable = false
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 2
 description = "Date this record becomes effective"
 src = [
@@ -101,7 +107,7 @@ id = 6
 name = "AUTHORISEDDATE"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 2
 description = "The date and time of authorising the constraint set"
 src = [
@@ -115,9 +121,24 @@ id = 7
 name = "LASTCHANGED"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 2
 description = "Last date and time record changed"
+src = [
+    "ctl",
+    "dm",
+    "irow",
+]
+
+[[column]]
+id = 10
+name = "SYSTEMNORMAL"
+type = "utf8"
+max_len = 1
+oracle = "VARCHAR2(1)"
+loader = "CHAR(1)"
+added_in = 2
+description = "Not used as of 2005 End of Year Release [was Flag to indicate if the constraint set is a system normal (1) or and an outage set (0)]"
 src = [
     "ctl",
     "dm",
@@ -154,21 +175,6 @@ src = [
 ]
 
 [[column]]
-id = 10
-name = "SYSTEMNORMAL"
-type = "utf8"
-max_len = 1
-oracle = "VARCHAR2(1)"
-loader = "CHAR(1)"
-added_in = 2
-description = "Not used as of 2005 End of Year Release [was Flag to indicate if the constraint set is a system normal (1) or and an outage set (0)]"
-src = [
-    "ctl",
-    "dm",
-    "irow",
-]
-
-[[column]]
 id = 11
 name = "OUTAGE"
 type = "utf8"
@@ -192,6 +198,25 @@ columns = [
     "AUTHORISEDBY",
     "AUTHORISEDDATE",
     "LASTCHANGED",
+    "SYSTEMNORMAL",
+    "COVERAGE",
+    "MODIFICATIONS",
+    "OUTAGE",
+]
+fingerprint = "xxh3:80cfbb46246d7e06381fb8990d0fe51e"
+first_seen = "2024-01"
+last_seen = "2026-08"
+src = "irow"
+
+[[version.variant]]
+columns = [
+    "GENCONSETID",
+    "EFFECTIVEDATE",
+    "VERSIONNO",
+    "DESCRIPTION",
+    "AUTHORISEDBY",
+    "AUTHORISEDDATE",
+    "LASTCHANGED",
     "COVERAGE",
     "MODIFICATIONS",
     "SYSTEMNORMAL",
@@ -200,9 +225,12 @@ columns = [
 fingerprint = "xxh3:cebca3a8975759534aa0854f6da5e2c9"
 first_seen = "2024-01"
 last_seen = "2024-01"
-src = "irow"
 
 [provenance]
-ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_GENCONSETTRK_202401.ctl"
+ctl = "MMSDM_2026_08/CTL/PUBLIC_ARCHIVE#GENCONSETTRK#FILE01#202608.ctl"
 data_model = "MMS_155.htm@v5.0.0.1"
-sampled_months = ["2024-01"]
+sampled_months = [
+    "2024-01",
+    "2026-08",
+]
+note = "version 2 was published with 11 columns and with 11; the lists differ by more than appended columns; the shorter is a variant"

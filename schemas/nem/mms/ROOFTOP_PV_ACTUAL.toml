@@ -27,7 +27,7 @@ name = "INTERVAL_DATETIME"
 type = "timestamp"
 nullable = false
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 2
 description = "The forecast half-hour interval (time ending)"
 src = [
@@ -70,15 +70,13 @@ src = [
 ]
 
 [[column]]
-id = 4
-name = "QI"
-type = "number"
-precision = 2
-scale = 1
-oracle = "NUMBER(2,1)"
-loader = "FLOAT EXTERNAL"
+id = 6
+name = "LASTCHANGED"
+type = "timestamp"
+oracle = "DATE"
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 2
-description = "Quality indicator. Represents the quality of the estimate."
+description = "Last date and time record changed"
 src = [
     "ctl",
     "dm",
@@ -103,13 +101,15 @@ src = [
 ]
 
 [[column]]
-id = 6
-name = "LASTCHANGED"
-type = "timestamp"
-oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+id = 4
+name = "QI"
+type = "number"
+precision = 2
+scale = 1
+oracle = "NUMBER(2,1)"
+loader = "FLOAT EXTERNAL"
 added_in = 2
-description = "Last date and time record changed"
+description = "Quality indicator. Represents the quality of the estimate."
 src = [
     "ctl",
     "dm",
@@ -122,6 +122,20 @@ columns = [
     "INTERVAL_DATETIME",
     "REGIONID",
     "POWER",
+    "LASTCHANGED",
+    "TYPE",
+    "QI",
+]
+fingerprint = "xxh3:3ec3e621c0f44d4f9e0db8776c6e3cda"
+first_seen = "2024-01"
+last_seen = "2026-08"
+src = "irow"
+
+[[version.variant]]
+columns = [
+    "INTERVAL_DATETIME",
+    "REGIONID",
+    "POWER",
     "QI",
     "TYPE",
     "LASTCHANGED",
@@ -129,9 +143,12 @@ columns = [
 fingerprint = "xxh3:b3f8d9ed130907877f512656c31c8b83"
 first_seen = "2024-01"
 last_seen = "2024-01"
-src = "irow"
 
 [provenance]
-ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_ROOFTOP_PV_ACTUAL_202401.ctl"
+ctl = "MMSDM_2026_08/CTL/PUBLIC_ARCHIVE#ROOFTOP_PV_ACTUAL#FILE01#202608.ctl"
 data_model = "MMS_111.htm@v5.0.0.1"
-sampled_months = ["2024-01"]
+sampled_months = [
+    "2024-01",
+    "2026-08",
+]
+note = "version 2 was published with 6 columns and with 6; the lists differ by more than appended columns; the shorter is a variant"

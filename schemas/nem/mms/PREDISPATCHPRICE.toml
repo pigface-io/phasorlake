@@ -10,7 +10,10 @@ report_pairs = [[
     "PREDISPATCH",
     "REGION_PRICES",
 ]]
-archive_files = ["PREDISPATCHPRICE_D"]
+archive_files = [
+    "PREDISPATCHPRICE",
+    "PREDISPATCHPRICE_D",
+]
 load_mode = "append"
 dedupe = "pk_lastchanged"
 primary_key = [
@@ -389,7 +392,7 @@ id = 24
 name = "LASTCHANGED"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 1
 description = "Last date and time record changed"
 src = [
@@ -404,7 +407,7 @@ name = "DATETIME"
 type = "timestamp"
 nullable = false
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 1
 description = "Period date and time"
 src = [
@@ -557,6 +560,7 @@ id = 35
 name = "RAISE1SECROP"
 type = "number"
 added_in = 1
+removed_in = 2
 src = [
     "irow",
     "sampled",
@@ -578,6 +582,7 @@ id = 37
 name = "LOWER1SECROP"
 type = "number"
 added_in = 1
+removed_in = 2
 src = [
     "irow",
     "sampled",
@@ -629,7 +634,54 @@ first_seen = "2024-01"
 last_seen = "2024-01"
 src = "irow"
 
+[[version]]
+n = 2
+columns = [
+    "PREDISPATCHSEQNO",
+    "RUNNO",
+    "REGIONID",
+    "PERIODID",
+    "INTERVENTION",
+    "RRP",
+    "EEP",
+    "RRP1",
+    "EEP1",
+    "RRP2",
+    "EEP2",
+    "RRP3",
+    "EEP3",
+    "RRP4",
+    "EEP4",
+    "RRP5",
+    "EEP5",
+    "RRP6",
+    "EEP6",
+    "RRP7",
+    "EEP7",
+    "RRP8",
+    "EEP8",
+    "LASTCHANGED",
+    "DATETIME",
+    "RAISE6SECRRP",
+    "RAISE60SECRRP",
+    "RAISE5MINRRP",
+    "RAISEREGRRP",
+    "LOWER6SECRRP",
+    "LOWER60SECRRP",
+    "LOWER5MINRRP",
+    "LOWERREGRRP",
+    "RAISE1SECRRP",
+    "LOWER1SECRRP",
+]
+fingerprint = "xxh3:a9915e3f5ba3cb96dd979a77fb0ab755"
+first_seen = "2026-08"
+last_seen = "2026-08"
+src = "irow"
+
 [provenance]
-ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_PREDISPATCHPRICE_D_202401.ctl"
+ctl = "MMSDM_2026_08/CTL/PUBLIC_ARCHIVE#PREDISPATCHPRICE#FILE01#202608.ctl"
 data_model = "MMS_276.htm@v5.0.0.1"
-sampled_months = ["2024-01"]
+sampled_months = [
+    "2024-01",
+    "2026-08",
+]

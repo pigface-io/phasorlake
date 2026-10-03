@@ -20,7 +20,7 @@ primary_key = [
     "REGIONID",
 ]
 time_column = "LASTCHANGED"
-next_column_id = 17
+next_column_id = 19
 
 [[column]]
 id = 1
@@ -253,12 +253,34 @@ id = 16
 name = "LASTCHANGED"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 5
 description = "Last date and time record changed"
 src = [
     "ctl",
     "dm",
+    "irow",
+]
+
+[[column]]
+id = 17
+name = "WDRSQ"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 6
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 18
+name = "WDRTA"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 6
+src = [
+    "ctl",
     "irow",
 ]
 
@@ -287,8 +309,38 @@ first_seen = "2024-01"
 last_seen = "2024-01"
 src = "irow"
 
+[[version]]
+n = 6
+columns = [
+    "CONTRACTYEAR",
+    "WEEKNO",
+    "BILLRUNNO",
+    "REGIONID",
+    "ENERGYOUT",
+    "VALUEOUT",
+    "ENERGYPURCHASED",
+    "VALUEPURCHASED",
+    "EXCESSGEN",
+    "RESERVETRADING",
+    "INTCOMPO",
+    "ADMINPRICECOMPO",
+    "SETTSURPLUS",
+    "ASPAYMENT",
+    "POOLFEES",
+    "LASTCHANGED",
+    "WDRSQ",
+    "WDRTA",
+]
+fingerprint = "xxh3:85dd2146069ae311a98c7cbc1661f5b8"
+first_seen = "2026-08"
+last_seen = "2026-08"
+src = "irow"
+
 [provenance]
-ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_BILLINGREGIONFIGURES_202401.ctl"
+ctl = "MMSDM_2026_08/CTL/PUBLIC_ARCHIVE#BILLINGREGIONFIGURES#FILE01#202608.ctl"
 data_model = "MMS_87.htm@v5.0.0.1"
-sampled_months = ["2024-01"]
-note = "column ENERGYOUT: declared NUMBER(16,6) but a sampled value has 6 integer and 8 fractional digits; precision dropped | column VALUEOUT: declared NUMBER(16,6) but a sampled value has 7 integer and 8 fractional digits; precision dropped | column ENERGYPURCHASED: declared NUMBER(16,6) but a sampled value has 6 integer and 8 fractional digits; precision dropped | column VALUEPURCHASED: declared NUMBER(16,6) but a sampled value has 7 integer and 8 fractional digits; precision dropped | column SETTSURPLUS: declared NUMBER(16,6) but a sampled value has 6 integer and 8 fractional digits; precision dropped | column ASPAYMENT: declared NUMBER(16,6) but a sampled value has 6 integer and 8 fractional digits; precision dropped"
+sampled_months = [
+    "2024-01",
+    "2026-08",
+]
+note = "column ENERGYOUT: declared NUMBER(16,6) but a sampled value has 6 integer and 8 fractional digits; precision dropped | column VALUEOUT: declared NUMBER(16,6) but a sampled value has 8 integer and 8 fractional digits; precision dropped | column ENERGYPURCHASED: declared NUMBER(16,6) but a sampled value has 6 integer and 8 fractional digits; precision dropped | column VALUEPURCHASED: declared NUMBER(16,6) but a sampled value has 8 integer and 8 fractional digits; precision dropped | column SETTSURPLUS: declared NUMBER(16,6) but a sampled value has 7 integer and 8 fractional digits; precision dropped | column ASPAYMENT: declared NUMBER(16,6) but a sampled value has 6 integer and 8 fractional digits; precision dropped"

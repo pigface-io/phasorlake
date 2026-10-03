@@ -14,7 +14,7 @@ archive_files = ["GENUNITS"]
 load_mode = "snapshot"
 dedupe = "pk_lastchanged"
 primary_key = ["GENSETID"]
-next_column_id = 20
+next_column_id = 23
 
 [[column]]
 id = 1
@@ -253,7 +253,7 @@ id = 16
 name = "LASTCHANGED"
 type = "timestamp"
 oracle = "DATE"
-loader = 'DATE "yyyy/mm/dd hh24:mi:ss"'
+loader = 'DATE "YYYY/MM/DD HH24:MI:SS"'
 added_in = 2
 description = "Last date and time record changed"
 src = [
@@ -308,6 +308,39 @@ src = [
     "irow",
 ]
 
+[[column]]
+id = 20
+name = "MINCAPACITY"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 3
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 21
+name = "REGISTEREDMINCAPACITY"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 3
+src = [
+    "ctl",
+    "irow",
+]
+
+[[column]]
+id = 22
+name = "MAXSTORAGECAPACITY"
+type = "number"
+loader = "FLOAT EXTERNAL"
+added_in = 3
+src = [
+    "ctl",
+    "irow",
+]
+
 [[version]]
 n = 2
 columns = [
@@ -336,7 +369,41 @@ first_seen = "2024-01"
 last_seen = "2024-01"
 src = "irow"
 
+[[version]]
+n = 3
+columns = [
+    "GENSETID",
+    "STATIONID",
+    "SETLOSSFACTOR",
+    "CDINDICATOR",
+    "AGCFLAG",
+    "SPINNINGFLAG",
+    "VOLTLEVEL",
+    "REGISTEREDCAPACITY",
+    "DISPATCHTYPE",
+    "STARTTYPE",
+    "MKTGENERATORIND",
+    "NORMALSTATUS",
+    "MAXCAPACITY",
+    "GENSETTYPE",
+    "GENSETNAME",
+    "LASTCHANGED",
+    "CO2E_EMISSIONS_FACTOR",
+    "CO2E_ENERGY_SOURCE",
+    "CO2E_DATA_SOURCE",
+    "MINCAPACITY",
+    "REGISTEREDMINCAPACITY",
+    "MAXSTORAGECAPACITY",
+]
+fingerprint = "xxh3:7300e7c10eba9872aeadb84ec6208798"
+first_seen = "2026-08"
+last_seen = "2026-08"
+src = "irow"
+
 [provenance]
-ctl = "MMSDM_2024_01/CTL/PUBLIC_DVD_GENUNITS_202401.ctl"
+ctl = "MMSDM_2026_08/CTL/PUBLIC_ARCHIVE#GENUNITS#FILE01#202608.ctl"
 data_model = "MMS_250.htm@v5.0.0.1"
-sampled_months = ["2024-01"]
+sampled_months = [
+    "2024-01",
+    "2026-08",
+]
