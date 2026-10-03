@@ -88,11 +88,14 @@ pub enum ConfigError {
 impl Diagnose for ConfigError {
     fn diagnostic(&self) -> Diagnostic {
         match self {
-            Self::Read { path, source } => Diagnostic::error("config.read", Category::Config, self.to_string())
-                .with_file(path.clone())
-                .caused_by(source),
+            Self::Read { path, source } => {
+                Diagnostic::error("config.read", Category::Config, self.to_string())
+                    .with_file(path.clone())
+                    .caused_by(source)
+            }
             Self::Parse { path, line, .. } => {
-                let mut d = Diagnostic::error("config.parse", Category::Config, self.to_string()).with_file(path.clone());
+                let mut d = Diagnostic::error("config.parse", Category::Config, self.to_string())
+                    .with_file(path.clone());
                 if let Some(l) = line {
                     d.line = Some(*l);
                 }
@@ -108,12 +111,19 @@ impl Config {
         let text = match std::fs::read_to_string(path) {
             Ok(t) => t,
             Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Ok(Self::default()),
-            Err(source) => return Err(ConfigError::Read { path: path.display().to_string(), source }),
+            Err(source) => {
+                return Err(ConfigError::Read {
+                    path: path.display().to_string(),
+                    source,
+                });
+            }
         };
         Self::parse(&text).map_err(|e| ConfigError::Parse {
             path: path.display().to_string(),
             message: e.message().to_owned(),
-            line: e.span().map(|span| u64::try_from(text[..span.start].matches('\n').count()).unwrap_or(0) + 1),
+            line: e.span().map(|span| {
+                u64::try_from(text[..span.start].matches('\n').count()).unwrap_or(0) + 1
+            }),
         })
     }
 
@@ -140,7 +150,8 @@ mod tests {
         let c = Config::parse("").unwrap();
         assert_eq!(c, Config::default());
         assert_eq!(c.downloads, 4);
-        let c = Config::parse("jobs = 3\n[sources]\nnem_base_url = \"http://localhost:1\"\n").unwrap();
+        let c =
+            Config::parse("jobs = 3\n[sources]\nnem_base_url = \"http://localhost:1\"\n").unwrap();
         assert_eq!(c.jobs, 3);
         assert_eq!(c.effective_jobs(), 3);
         assert_eq!(c.sources.nem_base_url, "http://localhost:1");
@@ -163,7 +174,10 @@ mod tests {
     #[test]
     fn missing_file_is_default_and_unreadable_is_error() {
         let dir = tempfile::tempdir().unwrap();
-        assert_eq!(Config::load(&dir.path().join("none.toml")).unwrap(), Config::default());
+        assert_eq!(
+            Config::load(&dir.path().join("none.toml")).unwrap(),
+            Config::default()
+        );
         // A directory where a file is expected is a read error, not a parse error.
         let e = Config::load(dir.path()).unwrap_err();
         assert_eq!(e.diagnostic().code, "config.read");

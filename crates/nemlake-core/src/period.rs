@@ -45,9 +45,15 @@ impl YearMonth {
     /// The month after this one.
     pub const fn next(self) -> Self {
         if self.month == 12 {
-            Self { year: self.year + 1, month: 1 }
+            Self {
+                year: self.year + 1,
+                month: 1,
+            }
         } else {
-            Self { year: self.year, month: self.month + 1 }
+            Self {
+                year: self.year,
+                month: self.month + 1,
+            }
         }
     }
 
@@ -92,7 +98,11 @@ impl FromStr for YearMonth {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let shape = || YearMonthError::Shape(s.to_owned());
         let (y, m) = s.split_once('-').ok_or_else(shape)?;
-        if y.len() != 4 || m.len() != 2 || !y.bytes().all(|b| b.is_ascii_digit()) || !m.bytes().all(|b| b.is_ascii_digit()) {
+        if y.len() != 4
+            || m.len() != 2
+            || !y.bytes().all(|b| b.is_ascii_digit())
+            || !m.bytes().all(|b| b.is_ascii_digit())
+        {
             return Err(shape());
         }
         let year: i32 = y.parse().map_err(|_| shape())?;
@@ -129,8 +139,13 @@ mod tests {
 
     #[test]
     fn rejects_bad_shapes() {
-        for bad in ["2024-1", "202401", "2024/01", "abcd-01", "2024-13", "2024-00", ""] {
-            assert!(bad.parse::<YearMonth>().is_err(), "{bad} should be rejected");
+        for bad in [
+            "2024-1", "202401", "2024/01", "abcd-01", "2024-13", "2024-00", "",
+        ] {
+            assert!(
+                bad.parse::<YearMonth>().is_err(),
+                "{bad} should be rejected"
+            );
         }
         assert_eq!(
             "2024-13".parse::<YearMonth>().unwrap_err(),

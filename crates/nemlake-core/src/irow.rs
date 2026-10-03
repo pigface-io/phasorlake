@@ -36,7 +36,9 @@ impl IRow<'_> {
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 pub enum IRowError {
     /// Fewer than four fields.
-    #[error("the I row has {0} fields; it needs a report type, a subtype, a version and at least one column")]
+    #[error(
+        "the I row has {0} fields; it needs a report type, a subtype, a version and at least one column"
+    )]
     TooShort(usize),
     /// Field 3 is not a small integer.
     #[error("the I row's version field {0:?} is not an integer between 0 and 65535")]
@@ -59,13 +61,19 @@ pub enum IRowError {
 /// Writes into `buf`, which the caller reuses, so the hot path allocates once
 /// per row at most.
 pub fn normalize_name<'b>(raw: &str, buf: &'b mut String) -> Option<&'b str> {
-    let s = raw.strip_prefix('\u{feff}').unwrap_or(raw).trim_matches([' ', '\t', '\r']);
+    let s = raw
+        .strip_prefix('\u{feff}')
+        .unwrap_or(raw)
+        .trim_matches([' ', '\t', '\r']);
     let s = match (s.strip_prefix('"'), s.len() >= 2) {
         (Some(inner), true) => inner.strip_suffix('"').unwrap_or(s),
         _ => s,
     }
     .trim_matches([' ', '\t']);
-    if s.is_empty() || s.bytes().any(|b| b.is_ascii_control() || b == b',' || b == b'"') {
+    if s.is_empty()
+        || s.bytes()
+            .any(|b| b.is_ascii_control() || b == b',' || b == b'"')
+    {
         return None;
     }
     buf.clear();
@@ -84,7 +92,9 @@ pub fn normalize_name<'b>(raw: &str, buf: &'b mut String) -> Option<&'b str> {
 
 /// Parses the version field of an `I` or `D` row.
 pub fn parse_version(raw: &str) -> Result<u16, IRowError> {
-    raw.trim().parse().map_err(|_| IRowError::Version(raw.to_owned()))
+    raw.trim()
+        .parse()
+        .map_err(|_| IRowError::Version(raw.to_owned()))
 }
 
 /// A 128-bit identity of an ordered column list.
@@ -129,11 +139,15 @@ impl std::str::FromStr for Fingerprint {
     type Err = FingerprintError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let hex = s.strip_prefix("xxh3:").ok_or_else(|| FingerprintError(s.to_owned()))?;
+        let hex = s
+            .strip_prefix("xxh3:")
+            .ok_or_else(|| FingerprintError(s.to_owned()))?;
         if hex.len() != 32 {
             return Err(FingerprintError(s.to_owned()));
         }
-        u128::from_str_radix(hex, 16).map(Self).map_err(|_| FingerprintError(s.to_owned()))
+        u128::from_str_radix(hex, 16)
+            .map(Self)
+            .map_err(|_| FingerprintError(s.to_owned()))
     }
 }
 
@@ -189,7 +203,11 @@ mod tests {
         assert_eq!(format!("{a:?}"), format!("Fingerprint({a})"));
         assert!("abc".parse::<Fingerprint>().is_err());
         assert!("xxh3:zz".parse::<Fingerprint>().is_err());
-        assert!("xxh3:zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz".parse::<Fingerprint>().is_err());
+        assert!(
+            "xxh3:zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"
+                .parse::<Fingerprint>()
+                .is_err()
+        );
         let json = serde_json::to_string(&a).unwrap();
         assert_eq!(serde_json::from_str::<Fingerprint>(&json).unwrap(), a);
     }
@@ -197,12 +215,20 @@ mod tests {
     #[test]
     fn irow_fingerprint_and_version() {
         let cols = ["SETTLEMENTDATE", "DUID", "SCADAVALUE"];
-        let row = IRow { report_type: "DISPATCH", report_subtype: "UNIT_SCADA", version: 1, columns: &cols };
+        let row = IRow {
+            report_type: "DISPATCH",
+            report_subtype: "UNIT_SCADA",
+            version: 1,
+            columns: &cols,
+        };
         assert_eq!(row.fingerprint(), Fingerprint::of_names(cols));
         assert_eq!(parse_version(" 4 ").unwrap(), 4);
         assert!(matches!(parse_version("x"), Err(IRowError::Version(_))));
         assert!(matches!(parse_version("70000"), Err(IRowError::Version(_))));
-        let e = IRowError::Name { index: 5, raw: String::new() };
+        let e = IRowError::Name {
+            index: 5,
+            raw: String::new(),
+        };
         assert!(e.to_string().contains("field 5"));
         assert!(IRowError::TooShort(2).to_string().contains('2'));
     }

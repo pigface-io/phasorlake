@@ -62,7 +62,16 @@ pub fn is_widening(from: ColumnType, to: ColumnType) -> bool {
     use ColumnType::{Boolean, Date, Integer, Number, Timestamp, Utf8};
     match (from, to) {
         (Integer, Integer | Number { .. }) => true,
-        (Number { precision: p0, scale: s0 }, Number { precision: p1, scale: s1 }) => match (p0, s0, p1, s1) {
+        (
+            Number {
+                precision: p0,
+                scale: s0,
+            },
+            Number {
+                precision: p1,
+                scale: s1,
+            },
+        ) => match (p0, s0, p1, s1) {
             (_, _, None, None) => true,
             (Some(p0), Some(s0), Some(p1), Some(s1)) => p1 - s1 >= p0 - s0 && s1 >= s0,
             (None, None, Some(_), Some(_)) => false,
@@ -83,12 +92,18 @@ pub fn is_widening(from: ColumnType, to: ColumnType) -> bool {
 pub fn breaking_changes(old: &TableDef, new: &TableDef) -> Vec<String> {
     let mut out = Vec::new();
     if new.next_column_id < old.next_column_id {
-        out.push(format!("next_column_id went from {} to {}", old.next_column_id, new.next_column_id));
+        out.push(format!(
+            "next_column_id went from {} to {}",
+            old.next_column_id, new.next_column_id
+        ));
     }
     let new_by_id: BTreeMap<_, _> = new.columns.iter().map(|c| (c.id, c)).collect();
     for oc in &old.columns {
         match new_by_id.get(&oc.id) {
-            None => out.push(format!("column {} (id {}) was deleted; mark it removed_in instead", oc.name, oc.id)),
+            None => out.push(format!(
+                "column {} (id {}) was deleted; mark it removed_in instead",
+                oc.name, oc.id
+            )),
             Some(nc) => {
                 if nc.name != oc.name && !nc.aliases.contains(&oc.name) {
                     out.push(format!(
@@ -97,7 +112,10 @@ pub fn breaking_changes(old: &TableDef, new: &TableDef) -> Vec<String> {
                     ));
                 }
                 if !is_widening(oc.ty, nc.ty) {
-                    out.push(format!("column {} changed type from {:?} to {:?}, which is not a widening", oc.name, oc.ty, nc.ty));
+                    out.push(format!(
+                        "column {} changed type from {:?} to {:?}, which is not a widening",
+                        oc.name, oc.ty, nc.ty
+                    ));
                 }
                 if oc.nullable && !nc.nullable {
                     out.push(format!("column {} became non-nullable", oc.name));
@@ -105,30 +123,52 @@ pub fn breaking_changes(old: &TableDef, new: &TableDef) -> Vec<String> {
             }
         }
     }
-    let mut old_names: Vec<_> = old.columns.iter().map(|c| (c.name.as_str(), c.id)).collect();
+    let mut old_names: Vec<_> = old
+        .columns
+        .iter()
+        .map(|c| (c.name.as_str(), c.id))
+        .collect();
     old_names.sort_unstable();
     for nc in &new.columns {
-        if let Some((_, old_id)) = old_names.iter().find(|(n, id)| *n == nc.name && *id != nc.id) {
-            out.push(format!("column {} moved from id {} to id {}", nc.name, old_id, nc.id));
+        if let Some((_, old_id)) = old_names
+            .iter()
+            .find(|(n, id)| *n == nc.name && *id != nc.id)
+        {
+            out.push(format!(
+                "column {} moved from id {} to id {}",
+                nc.name, old_id, nc.id
+            ));
         }
     }
     for ov in &old.versions {
         match new.version(ov.n) {
             None => out.push(format!("version {} was deleted", ov.n)),
             Some(nv) if nv.fingerprint != ov.fingerprint => {
-                out.push(format!("version {} changed its column list; a published version is a fact", ov.n));
+                out.push(format!(
+                    "version {} changed its column list; a published version is a fact",
+                    ov.n
+                ));
             }
             _ => {}
         }
     }
     if old.primary_key != new.primary_key {
-        out.push(format!("primary_key changed from {:?} to {:?}", old.primary_key, new.primary_key));
+        out.push(format!(
+            "primary_key changed from {:?} to {:?}",
+            old.primary_key, new.primary_key
+        ));
     }
     if old.load_mode != new.load_mode {
-        out.push(format!("load_mode changed from {:?} to {:?}", old.load_mode, new.load_mode));
+        out.push(format!(
+            "load_mode changed from {:?} to {:?}",
+            old.load_mode, new.load_mode
+        ));
     }
     if old.time_column != new.time_column {
-        out.push(format!("time_column changed from {:?} to {:?}", old.time_column, new.time_column));
+        out.push(format!(
+            "time_column changed from {:?} to {:?}",
+            old.time_column, new.time_column
+        ));
     }
     out
 }
@@ -185,10 +225,18 @@ mod tests {
         // Pure reorder.
         let mut t2 = t.clone();
         t2.versions[1].columns = vec!["DUID".into(), "SETTLEMENTDATE".into(), "SCADAVALUE".into()];
-        assert_eq!(diff_versions(&t2, SchemaVersion(1), SchemaVersion(2)).unwrap(), vec![Change::Reordered]);
+        assert_eq!(
+            diff_versions(&t2, SchemaVersion(1), SchemaVersion(2)).unwrap(),
+            vec![Change::Reordered]
+        );
         // Add plus reorder of the shared part.
         let mut t3 = t.clone();
-        t3.versions[1].columns = vec!["DUID".into(), "SETTLEMENTDATE".into(), "SCADAVALUE".into(), "X".into()];
+        t3.versions[1].columns = vec![
+            "DUID".into(),
+            "SETTLEMENTDATE".into(),
+            "SCADAVALUE".into(),
+            "X".into(),
+        ];
         let d = diff_versions(&t3, SchemaVersion(1), SchemaVersion(2)).unwrap();
         assert!(d.contains(&Change::Reordered) && d.contains(&Change::Added("X".into())));
     }
@@ -196,7 +244,10 @@ mod tests {
     #[test]
     fn widening_table() {
         use ColumnType::*;
-        let n = |p, s| Number { precision: p, scale: s };
+        let n = |p, s| Number {
+            precision: p,
+            scale: s,
+        };
         assert!(is_widening(Integer, Integer));
         assert!(is_widening(Integer, n(Some(15), Some(5))));
         assert!(is_widening(n(Some(10), Some(2)), n(Some(15), Some(5))));
@@ -206,15 +257,63 @@ mod tests {
         assert!(is_widening(n(Some(10), None), n(Some(12), None)));
         assert!(!is_widening(n(Some(12), None), n(Some(10), None)));
         assert!(!is_widening(n(Some(10), Some(2)), n(Some(10), Some(3)))); // integer digits shrink
-        assert!(is_widening(Utf8 { max_len: Some(10), dict: false }, Utf8 { max_len: Some(20), dict: true }));
-        assert!(!is_widening(Utf8 { max_len: Some(20), dict: false }, Utf8 { max_len: Some(10), dict: false }));
-        assert!(is_widening(Utf8 { max_len: Some(20), dict: false }, Utf8 { max_len: None, dict: false }));
-        assert!(!is_widening(Utf8 { max_len: None, dict: false }, Utf8 { max_len: Some(1), dict: false }));
+        assert!(is_widening(
+            Utf8 {
+                max_len: Some(10),
+                dict: false
+            },
+            Utf8 {
+                max_len: Some(20),
+                dict: true
+            }
+        ));
+        assert!(!is_widening(
+            Utf8 {
+                max_len: Some(20),
+                dict: false
+            },
+            Utf8 {
+                max_len: Some(10),
+                dict: false
+            }
+        ));
+        assert!(is_widening(
+            Utf8 {
+                max_len: Some(20),
+                dict: false
+            },
+            Utf8 {
+                max_len: None,
+                dict: false
+            }
+        ));
+        assert!(!is_widening(
+            Utf8 {
+                max_len: None,
+                dict: false
+            },
+            Utf8 {
+                max_len: Some(1),
+                dict: false
+            }
+        ));
         assert!(is_widening(Date, Timestamp));
         assert!(!is_widening(Timestamp, Date));
-        assert!(!is_widening(Utf8 { max_len: None, dict: false }, Integer));
+        assert!(!is_widening(
+            Utf8 {
+                max_len: None,
+                dict: false
+            },
+            Integer
+        ));
         assert!(is_widening(Boolean, Boolean));
-        assert!(!is_widening(Number { precision: None, scale: None }, Integer));
+        assert!(!is_widening(
+            Number {
+                precision: None,
+                scale: None
+            },
+            Integer
+        ));
     }
 
     #[test]
@@ -229,36 +328,64 @@ mod tests {
 
         let mut b = new.clone();
         b.columns.remove(3);
-        assert!(breaking_changes(&new, &b).iter().any(|m| m.contains("deleted")));
+        assert!(
+            breaking_changes(&new, &b)
+                .iter()
+                .any(|m| m.contains("deleted"))
+        );
 
         let mut b = new.clone();
         b.columns[3].name = "LAST_CHANGED".into();
-        assert!(breaking_changes(&new, &b).iter().any(|m| m.contains("renamed")));
+        assert!(
+            breaking_changes(&new, &b)
+                .iter()
+                .any(|m| m.contains("renamed"))
+        );
         b.columns[3].aliases.push("LASTCHANGED".into());
         assert!(breaking_changes(&new, &b).is_empty());
 
         let mut b = new.clone();
         b.columns[2].ty = ColumnType::Integer;
-        assert!(breaking_changes(&new, &b).iter().any(|m| m.contains("not a widening")));
+        assert!(
+            breaking_changes(&new, &b)
+                .iter()
+                .any(|m| m.contains("not a widening"))
+        );
 
         let mut b = new.clone();
         b.columns[2].nullable = false;
-        assert!(breaking_changes(&new, &b).iter().any(|m| m.contains("non-nullable")));
+        assert!(
+            breaking_changes(&new, &b)
+                .iter()
+                .any(|m| m.contains("non-nullable"))
+        );
 
         let mut b = new.clone();
         b.columns[3].id = ColumnId(7);
         b.columns[3].name = "OTHER".into();
-        b.columns.push(ColumnDef { id: ColumnId(8), name: "LASTCHANGED".into(), ..new.columns[3].clone() });
+        b.columns.push(ColumnDef {
+            id: ColumnId(8),
+            name: "LASTCHANGED".into(),
+            ..new.columns[3].clone()
+        });
         let msgs = breaking_changes(&new, &b);
         assert!(msgs.iter().any(|m| m.contains("moved from id")), "{msgs:?}");
 
         let mut b = new.clone();
         b.versions.pop();
-        assert!(breaking_changes(&new, &b).iter().any(|m| m.contains("version 2 was deleted")));
+        assert!(
+            breaking_changes(&new, &b)
+                .iter()
+                .any(|m| m.contains("version 2 was deleted"))
+        );
 
         let mut b = new.clone();
         b.versions[1].fingerprint = Fingerprint(1);
-        assert!(breaking_changes(&new, &b).iter().any(|m| m.contains("changed its column list")));
+        assert!(
+            breaking_changes(&new, &b)
+                .iter()
+                .any(|m| m.contains("changed its column list"))
+        );
 
         let mut b = new.clone();
         b.primary_key.pop();

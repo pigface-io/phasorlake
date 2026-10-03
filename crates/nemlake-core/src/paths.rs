@@ -20,7 +20,11 @@ impl Home {
 
     /// Resolves the home: the explicit flag, then `NEMLAKE_HOME`, then
     /// `~/.nemlake` under the user's home directory.
-    pub fn resolve(flag: Option<&Path>, env: Option<&str>, user_home: Option<&Path>) -> Option<Self> {
+    pub fn resolve(
+        flag: Option<&Path>,
+        env: Option<&str>,
+        user_home: Option<&Path>,
+    ) -> Option<Self> {
         if let Some(p) = flag {
             return Some(Self::at(p));
         }
@@ -69,7 +73,13 @@ impl Home {
 
     /// Creates every directory of the layout.
     pub fn ensure_dirs(&self) -> std::io::Result<()> {
-        for d in [self.lake(), self.listings(), self.tmp(), self.quarantine(), self.schemas()] {
+        for d in [
+            self.lake(),
+            self.listings(),
+            self.tmp(),
+            self.quarantine(),
+            self.schemas(),
+        ] {
             std::fs::create_dir_all(d)?;
         }
         Ok(())
@@ -84,9 +94,20 @@ mod tests {
     fn precedence() {
         let flag = Path::new("/f");
         let home = Path::new("/u");
-        assert_eq!(Home::resolve(Some(flag), Some("/e"), Some(home)).unwrap().root(), flag);
-        assert_eq!(Home::resolve(None, Some("/e"), Some(home)).unwrap().root(), Path::new("/e"));
-        assert_eq!(Home::resolve(None, Some(""), Some(home)).unwrap().root(), Path::new("/u/.nemlake"));
+        assert_eq!(
+            Home::resolve(Some(flag), Some("/e"), Some(home))
+                .unwrap()
+                .root(),
+            flag
+        );
+        assert_eq!(
+            Home::resolve(None, Some("/e"), Some(home)).unwrap().root(),
+            Path::new("/e")
+        );
+        assert_eq!(
+            Home::resolve(None, Some(""), Some(home)).unwrap().root(),
+            Path::new("/u/.nemlake")
+        );
         assert_eq!(Home::resolve(None, None, None), None);
     }
 
@@ -95,7 +116,14 @@ mod tests {
         let dir = tempfile::tempdir().unwrap();
         let h = Home::at(dir.path());
         h.ensure_dirs().unwrap();
-        for p in [h.lake(), h.cache(), h.listings(), h.tmp(), h.quarantine(), h.schemas()] {
+        for p in [
+            h.lake(),
+            h.cache(),
+            h.listings(),
+            h.tmp(),
+            h.quarantine(),
+            h.schemas(),
+        ] {
             assert!(p.is_dir(), "{}", p.display());
         }
         assert_eq!(h.manifest(), dir.path().join("manifest.sqlite"));

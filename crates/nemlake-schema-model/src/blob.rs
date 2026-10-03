@@ -27,7 +27,10 @@ impl SchemaSet {
     pub fn read_dir(root: &Path) -> Result<Self, SchemaFileError> {
         let mut set = Self::default();
         let mut market_dirs: Vec<_> = std::fs::read_dir(root)
-            .map_err(|source| SchemaFileError::Read { path: root.display().to_string(), source })?
+            .map_err(|source| SchemaFileError::Read {
+                path: root.display().to_string(),
+                source,
+            })?
             .filter_map(Result::ok)
             .map(|e| e.path())
             .filter(|p| p.is_dir())
@@ -41,7 +44,10 @@ impl SchemaSet {
             let mut stack = vec![dir];
             while let Some(d) = stack.pop() {
                 let mut entries: Vec<_> = std::fs::read_dir(&d)
-                    .map_err(|source| SchemaFileError::Read { path: d.display().to_string(), source })?
+                    .map_err(|source| SchemaFileError::Read {
+                        path: d.display().to_string(),
+                        source,
+                    })?
                     .filter_map(Result::ok)
                     .map(|e| e.path())
                     .collect();
@@ -70,7 +76,8 @@ impl SchemaSet {
     pub fn validate(&self) -> Vec<Issue> {
         let mut out: Vec<Issue> = self.tables.iter().flat_map(validate_table).collect();
         out.extend(validate_set(&self.tables));
-        let markets: BTreeMap<Market, &MarketDef> = self.markets.iter().map(|m| (m.market, m)).collect();
+        let markets: BTreeMap<Market, &MarketDef> =
+            self.markets.iter().map(|m| (m.market, m)).collect();
         for t in &self.tables {
             if !markets.contains_key(&t.market) {
                 out.push(Issue {
@@ -80,7 +87,10 @@ impl SchemaSet {
             }
         }
         if markets.len() != self.markets.len() {
-            out.push(Issue { table: String::new(), message: "a market is defined twice".into() });
+            out.push(Issue {
+                table: String::new(),
+                message: "a market is defined twice".into(),
+            });
         }
         out
     }
@@ -109,7 +119,11 @@ mod tests {
     use crate::model::TimestampFormat;
 
     fn nem() -> MarketDef {
-        MarketDef { market: Market::Nem, utc_offset_secs: 36_000, timestamp_format: TimestampFormat::AemoSlash }
+        MarketDef {
+            market: Market::Nem,
+            utc_offset_secs: 36_000,
+            timestamp_format: TimestampFormat::AemoSlash,
+        }
     }
 
     #[test]
@@ -117,8 +131,16 @@ mod tests {
         let dir = tempfile::tempdir().unwrap();
         let nem_dir = dir.path().join("nem").join("mms");
         std::fs::create_dir_all(&nem_dir).unwrap();
-        std::fs::write(dir.path().join("nem").join("market.toml"), write_market(&nem())).unwrap();
-        std::fs::write(nem_dir.join("DISPATCH_UNIT_SCADA.toml"), write_table(&unit_scada())).unwrap();
+        std::fs::write(
+            dir.path().join("nem").join("market.toml"),
+            write_market(&nem()),
+        )
+        .unwrap();
+        std::fs::write(
+            nem_dir.join("DISPATCH_UNIT_SCADA.toml"),
+            write_table(&unit_scada()),
+        )
+        .unwrap();
         std::fs::write(nem_dir.join("DRAFT_X.toml"), "garbage").unwrap();
         std::fs::write(nem_dir.join("_conflicts.toml"), "garbage").unwrap();
         std::fs::write(nem_dir.join("notes.md"), "text").unwrap();
@@ -136,10 +158,24 @@ mod tests {
 
     #[test]
     fn missing_market_and_duplicate_market_are_issues() {
-        let set = SchemaSet { markets: vec![], tables: vec![unit_scada()] };
-        assert!(set.validate().iter().any(|i| i.message.contains("no market.toml")));
-        let set = SchemaSet { markets: vec![nem(), nem()], tables: vec![] };
-        assert!(set.validate().iter().any(|i| i.message.contains("defined twice")));
+        let set = SchemaSet {
+            markets: vec![],
+            tables: vec![unit_scada()],
+        };
+        assert!(
+            set.validate()
+                .iter()
+                .any(|i| i.message.contains("no market.toml"))
+        );
+        let set = SchemaSet {
+            markets: vec![nem(), nem()],
+            tables: vec![],
+        };
+        assert!(
+            set.validate()
+                .iter()
+                .any(|i| i.message.contains("defined twice"))
+        );
     }
 
     #[test]
@@ -149,6 +185,9 @@ mod tests {
         let bad = dir.path().join("nem");
         std::fs::create_dir_all(&bad).unwrap();
         std::fs::write(bad.join("T.toml"), "nope = 1").unwrap();
-        assert!(matches!(SchemaSet::read_dir(dir.path()), Err(SchemaFileError::Parse { .. })));
+        assert!(matches!(
+            SchemaSet::read_dir(dir.path()),
+            Err(SchemaFileError::Parse { .. })
+        ));
     }
 }

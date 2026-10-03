@@ -19,6 +19,6 @@ pub mod validate;
 
 pub use error::SchemaFileError;
 pub use model::{
-    ColumnDef, ColumnId, ColumnType, Dedupe, LoadMode, Market, MarketDef, Provenance, SchemaVersion, SourceKind,
-    TableDef, TimestampFormat, VersionDef, Visibility,
+    ColumnDef, ColumnId, ColumnType, Dedupe, LoadMode, Market, MarketDef, Provenance,
+    SchemaVersion, SourceKind, TableDef, TimestampFormat, VersionDef, Visibility,
 };

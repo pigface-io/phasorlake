@@ -95,7 +95,10 @@ impl Report {
 
     /// A report that stops at the first error.
     pub fn fail_fast() -> Self {
-        Self { fail_fast: true, ..Self::default() }
+        Self {
+            fail_fast: true,
+            ..Self::default()
+        }
     }
 
     /// Records a finished source.
@@ -105,12 +108,20 @@ impl Report {
 
     /// Total errors.
     pub fn error_count(&self) -> u64 {
-        self.by_code.values().filter(|b| b.examples.first().is_some_and(Diagnostic::is_error)).map(|b| b.count).sum()
+        self.by_code
+            .values()
+            .filter(|b| b.examples.first().is_some_and(Diagnostic::is_error))
+            .map(|b| b.count)
+            .sum()
     }
 
     /// Total warnings (deduplicated repeats counted once each).
     pub fn warning_count(&self) -> u64 {
-        self.by_code.values().filter(|b| b.examples.first().is_some_and(|d| !d.is_error())).map(|b| b.count).sum()
+        self.by_code
+            .values()
+            .filter(|b| b.examples.first().is_some_and(|d| !d.is_error()))
+            .map(|b| b.count)
+            .sum()
     }
 
     /// Whether `Flow::Stop` was returned at some point.
@@ -120,17 +131,25 @@ impl Report {
 
     /// Sources that failed.
     pub fn failed(&self) -> impl Iterator<Item = &SourceOutcome> {
-        self.per_source.iter().filter(|s| s.status == SourceStatus::Failed)
+        self.per_source
+            .iter()
+            .filter(|s| s.status == SourceStatus::Failed)
     }
 
     /// Sources that succeeded.
     pub fn succeeded(&self) -> usize {
-        self.per_source.iter().filter(|s| s.status == SourceStatus::Ok).count()
+        self.per_source
+            .iter()
+            .filter(|s| s.status == SourceStatus::Ok)
+            .count()
     }
 
     /// Sources that were skipped as already ingested.
     pub fn skipped(&self) -> usize {
-        self.per_source.iter().filter(|s| s.status == SourceStatus::Skipped).count()
+        self.per_source
+            .iter()
+            .filter(|s| s.status == SourceStatus::Skipped)
+            .count()
     }
 
     /// The key under which a warning is deduplicated: the same code for the
@@ -151,7 +170,10 @@ impl Report {
     pub fn summary_lines(&self) -> Vec<String> {
         let mut out = Vec::new();
         for (code, bucket) in &self.by_code {
-            let sev = bucket.examples.first().map_or(Severity::Error, |d| d.severity);
+            let sev = bucket
+                .examples
+                .first()
+                .map_or(Severity::Error, |d| d.severity);
             out.push(format!("{sev} {code} ×{}", bucket.count));
             for d in bucket.examples.iter().take(3) {
                 out.push(format!("    {}", d.render()));
@@ -208,7 +230,10 @@ mod tests {
     }
 
     fn warn(code: &'static str, table: &str, file: &str) -> Diagnostic {
-        Diagnostic::warning(code, Category::Schema, "Drift.").with_table(table).with_version(2).with_file(file)
+        Diagnostic::warning(code, Category::Schema, "Drift.")
+            .with_table(table)
+            .with_version(2)
+            .with_file(file)
     }
 
     #[test]
@@ -263,7 +288,10 @@ mod tests {
         };
         r.finish_source(mk(SourceStatus::Ok, None));
         r.finish_source(mk(SourceStatus::Skipped, None));
-        r.finish_source(mk(SourceStatus::Failed, Some(Code::Borrowed("zip.bad_entry"))));
+        r.finish_source(mk(
+            SourceStatus::Failed,
+            Some(Code::Borrowed("zip.bad_entry")),
+        ));
         r.finish_source(mk(SourceStatus::NotAttempted, None));
         assert_eq!(r.succeeded(), 1);
         assert_eq!(r.skipped(), 1);

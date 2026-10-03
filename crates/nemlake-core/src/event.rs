@@ -115,7 +115,11 @@ mod tests {
         assert_eq!(s, r#"{"event":"listed","files":3}"#);
         let back: Event = serde_json::from_str(&s).unwrap();
         assert_eq!(back, e);
-        let sum = Summary { bytes_in: 2_000_000, elapsed_ms: 1000, ..Default::default() };
+        let sum = Summary {
+            bytes_in: 2_000_000,
+            elapsed_ms: 1000,
+            ..Default::default()
+        };
         assert!((sum.mb_per_s() - 2.0).abs() < 1e-9);
         assert_eq!(Summary::default().mb_per_s(), 0.0);
         let s = serde_json::to_string(&Event::Summary(Box::new(sum))).unwrap();

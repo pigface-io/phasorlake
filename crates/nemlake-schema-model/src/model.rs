@@ -279,12 +279,16 @@ pub struct TableDef {
 impl TableDef {
     /// The column with this canonical name or alias.
     pub fn column(&self, name: &str) -> Option<&ColumnDef> {
-        self.columns.iter().find(|c| c.name == name || c.aliases.iter().any(|a| a == name))
+        self.columns
+            .iter()
+            .find(|c| c.name == name || c.aliases.iter().any(|a| a == name))
     }
 
     /// Index into `columns` of this name or alias.
     pub fn column_index(&self, name: &str) -> Option<usize> {
-        self.columns.iter().position(|c| c.name == name || c.aliases.iter().any(|a| a == name))
+        self.columns
+            .iter()
+            .position(|c| c.name == name || c.aliases.iter().any(|a| a == name))
     }
 
     /// The version definition for `n`.
@@ -299,7 +303,11 @@ impl TableDef {
 
     /// The highest declared version not above `n`, else the lowest.
     pub fn nearest_version(&self, n: SchemaVersion) -> Option<&VersionDef> {
-        self.versions.iter().rev().find(|v| v.n <= n).or_else(|| self.versions.first())
+        self.versions
+            .iter()
+            .rev()
+            .find(|v| v.n <= n)
+            .or_else(|| self.versions.first())
     }
 
     /// Lower-case name for directory paths.
@@ -314,11 +322,23 @@ mod tests {
 
     #[test]
     fn market_tz() {
-        let m = MarketDef { market: Market::Nem, utc_offset_secs: 36_000, timestamp_format: TimestampFormat::AemoSlash };
+        let m = MarketDef {
+            market: Market::Nem,
+            utc_offset_secs: 36_000,
+            timestamp_format: TimestampFormat::AemoSlash,
+        };
         assert_eq!(m.arrow_tz(), "+10:00");
-        let w = MarketDef { market: Market::Wem, utc_offset_secs: 28_800, timestamp_format: TimestampFormat::Iso8601 };
+        let w = MarketDef {
+            market: Market::Wem,
+            utc_offset_secs: 28_800,
+            timestamp_format: TimestampFormat::Iso8601,
+        };
         assert_eq!(w.arrow_tz(), "+08:00");
-        let neg = MarketDef { market: Market::Wem, utc_offset_secs: -(5 * 3600 + 1800), timestamp_format: TimestampFormat::default() };
+        let neg = MarketDef {
+            market: Market::Wem,
+            utc_offset_secs: -(5 * 3600 + 1800),
+            timestamp_format: TimestampFormat::default(),
+        };
         assert_eq!(neg.arrow_tz(), "-05:30");
         assert_eq!(Market::Nem.to_string(), "nem");
         assert_eq!(Market::Wem.as_str(), "wem");

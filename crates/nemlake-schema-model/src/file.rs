@@ -15,8 +15,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::error::SchemaFileError;
 use crate::model::{
-    ColumnDef, ColumnId, ColumnType, Dedupe, LoadMode, Market, MarketDef, Provenance, SchemaVersion, SourceKind,
-    TableDef, TimestampFormat, VersionDef, Visibility,
+    ColumnDef, ColumnId, ColumnType, Dedupe, LoadMode, Market, MarketDef, Provenance,
+    SchemaVersion, SourceKind, TableDef, TimestampFormat, VersionDef, Visibility,
 };
 
 /// The format version this crate reads and writes.
@@ -142,30 +142,49 @@ fn parse_err(path: &Path, text: &str, e: &toml::de::Error) -> SchemaFileError {
     SchemaFileError::Parse {
         path: path.display().to_string(),
         message: e.message().to_owned(),
-        line: e.span().map(|s| text[..s.start.min(text.len())].matches('\n').count() as u64 + 1),
+        line: e
+            .span()
+            .map(|s| text[..s.start.min(text.len())].matches('\n').count() as u64 + 1),
     }
 }
 
 fn invalid(path: &Path, table: &str, message: impl Into<String>) -> SchemaFileError {
-    SchemaFileError::Invalid { path: path.display().to_string(), table: table.to_owned(), message: message.into() }
+    SchemaFileError::Invalid {
+        path: path.display().to_string(),
+        table: table.to_owned(),
+        message: message.into(),
+    }
 }
 
 fn column_type(path: &Path, table: &str, c: &ColumnFile) -> Result<ColumnType, SchemaFileError> {
     let bad_key = |key: &str| {
-        invalid(path, table, format!("column {} has type {} but sets {key}, which belongs to another type", c.name, c.ty))
+        invalid(
+            path,
+            table,
+            format!(
+                "column {} has type {} but sets {key}, which belongs to another type",
+                c.name, c.ty
+            ),
+        )
     };
     let ty = match c.ty.as_str() {
         "utf8" => {
             if c.precision.is_some() || c.scale.is_some() {
                 return Err(bad_key("precision/scale"));
             }
-            ColumnType::Utf8 { max_len: c.max_len, dict: c.dict }
+            ColumnType::Utf8 {
+                max_len: c.max_len,
+                dict: c.dict,
+            }
         }
         "number" => {
             if c.max_len.is_some() || c.dict {
                 return Err(bad_key("max_len/dict"));
             }
-            ColumnType::Number { precision: c.precision, scale: c.scale }
+            ColumnType::Number {
+                precision: c.precision,
+                scale: c.scale,
+            }
         }
         "integer" => ColumnType::Integer,
         "timestamp" => ColumnType::Timestamp,
@@ -175,7 +194,10 @@ fn column_type(path: &Path, table: &str, c: &ColumnFile) -> Result<ColumnType, S
             return Err(invalid(
                 path,
                 table,
-                format!("column {} has unknown type {other:?}; one of utf8, number, integer, timestamp, date, boolean", c.name),
+                format!(
+                    "column {} has unknown type {other:?}; one of utf8, number, integer, timestamp, date, boolean",
+                    c.name
+                ),
             ));
         }
     };
@@ -197,7 +219,14 @@ fn norm(s: &mut String, buf: &mut String) {
 
 fn to_model(path: &Path, f: TableFile) -> Result<TableDef, SchemaFileError> {
     if f.schema_format != SCHEMA_FORMAT {
-        return Err(invalid(path, &f.name, format!("schema_format is {} but this nemlake reads {SCHEMA_FORMAT}", f.schema_format)));
+        return Err(invalid(
+            path,
+            &f.name,
+            format!(
+                "schema_format is {} but this nemlake reads {SCHEMA_FORMAT}",
+                f.schema_format
+            ),
+        ));
     }
     let mut buf = String::new();
     let mut columns = Vec::with_capacity(f.columns.len());
@@ -302,7 +331,9 @@ fn from_model(t: &TableDef) -> TableFile {
             .map(|c| {
                 let (ty, max_len, dict, precision, scale) = match c.ty {
                     ColumnType::Utf8 { max_len, dict } => ("utf8", max_len, dict, None, None),
-                    ColumnType::Number { precision, scale } => ("number", None, false, precision, scale),
+                    ColumnType::Number { precision, scale } => {
+                        ("number", None, false, precision, scale)
+                    }
                     ColumnType::Integer => ("integer", None, false, None, None),
                     ColumnType::Timestamp => ("timestamp", None, false, None, None),
                     ColumnType::Date => ("date", None, false, None, None),
@@ -359,30 +390,47 @@ pub fn parse_table(path: &Path, text: &str) -> Result<TableDef, SchemaFileError>
 
 /// Reads and parses a table file.
 pub fn read_table(path: &Path) -> Result<TableDef, SchemaFileError> {
-    let text = std::fs::read_to_string(path)
-        .map_err(|source| SchemaFileError::Read { path: path.display().to_string(), source })?;
+    let text = std::fs::read_to_string(path).map_err(|source| SchemaFileError::Read {
+        path: path.display().to_string(),
+        source,
+    })?;
     parse_table(path, &text)
 }
 
 /// Renders a table as TOML, deterministically.
 pub fn write_table(t: &TableDef) -> String {
     let body = toml::to_string_pretty(&from_model(t)).expect("a TableDef always serialises");
-    format!("# Generated by `nemlake-schema-bootstrap regen`; hand edits go in fields marked `curated = true`.\n{body}")
+    format!(
+        "# Generated by `nemlake-schema-bootstrap regen`; hand edits go in fields marked `curated = true`.\n{body}"
+    )
 }
 
 /// Parses a market file's text.
 pub fn parse_market(path: &Path, text: &str) -> Result<MarketDef, SchemaFileError> {
     let f: MarketFile = toml::from_str(text).map_err(|e| parse_err(path, text, &e))?;
     if f.schema_format != SCHEMA_FORMAT {
-        return Err(invalid(path, f.market.as_str(), format!("schema_format is {} but this nemlake reads {SCHEMA_FORMAT}", f.schema_format)));
+        return Err(invalid(
+            path,
+            f.market.as_str(),
+            format!(
+                "schema_format is {} but this nemlake reads {SCHEMA_FORMAT}",
+                f.schema_format
+            ),
+        ));
     }
-    Ok(MarketDef { market: f.market, utc_offset_secs: f.utc_offset_secs, timestamp_format: f.timestamp_format })
+    Ok(MarketDef {
+        market: f.market,
+        utc_offset_secs: f.utc_offset_secs,
+        timestamp_format: f.timestamp_format,
+    })
 }
 
 /// Reads and parses a market file.
 pub fn read_market(path: &Path) -> Result<MarketDef, SchemaFileError> {
-    let text = std::fs::read_to_string(path)
-        .map_err(|source| SchemaFileError::Read { path: path.display().to_string(), source })?;
+    let text = std::fs::read_to_string(path).map_err(|source| SchemaFileError::Read {
+        path: path.display().to_string(),
+        source,
+    })?;
     parse_market(path, &text)
 }
 
@@ -440,7 +488,10 @@ pub(crate) mod tests {
                     id: ColumnId(2),
                     name: "DUID".into(),
                     aliases: vec![],
-                    ty: ColumnType::Utf8 { max_len: Some(20), dict: true },
+                    ty: ColumnType::Utf8 {
+                        max_len: Some(20),
+                        dict: true,
+                    },
                     nullable: false,
                     oracle: Some("VARCHAR2(20)".into()),
                     loader: Some("CHAR(20)".into()),
@@ -454,7 +505,10 @@ pub(crate) mod tests {
                     id: ColumnId(3),
                     name: "SCADAVALUE".into(),
                     aliases: vec![],
-                    ty: ColumnType::Number { precision: Some(15), scale: Some(5) },
+                    ty: ColumnType::Number {
+                        precision: Some(15),
+                        scale: Some(5),
+                    },
                     nullable: true,
                     oracle: Some("NUMBER(15,5)".into()),
                     loader: Some("FLOAT EXTERNAL".into()),
@@ -473,7 +527,10 @@ pub(crate) mod tests {
                 last_seen: None,
                 src: Some("irow:MMSDM_2024_01".into()),
             }],
-            provenance: Provenance { ctl: Some("x.ctl".into()), ..Default::default() },
+            provenance: Provenance {
+                ctl: Some("x.ctl".into()),
+                ..Default::default()
+            },
         }
     }
 
@@ -484,14 +541,31 @@ pub(crate) mod tests {
         assert!(text.contains("[[column]]"), "{text}");
         assert!(text.contains("type = \"number\""), "{text}");
         assert!(text.contains("precision = 15"), "{text}");
-        assert!(text.contains("report_pairs = [[") && text.contains("\"UNIT_SCADA\","), "{text}");
-        assert!(!text.contains("nullable = true"), "default nullable must be omitted: {text}");
+        assert!(
+            text.contains("report_pairs = [[") && text.contains("\"UNIT_SCADA\","),
+            "{text}"
+        );
+        assert!(
+            !text.contains("nullable = true"),
+            "default nullable must be omitted: {text}"
+        );
         let back = parse_table(Path::new("x.toml"), &text).unwrap();
         assert_eq!(back, t);
         assert_eq!(write_table(&back), text);
         // Every type renders and reads back.
         let mut all = unit_scada();
-        for (i, ty) in [ColumnType::Integer, ColumnType::Date, ColumnType::Boolean, ColumnType::Utf8 { max_len: None, dict: false }].into_iter().enumerate() {
+        for (i, ty) in [
+            ColumnType::Integer,
+            ColumnType::Date,
+            ColumnType::Boolean,
+            ColumnType::Utf8 {
+                max_len: None,
+                dict: false,
+            },
+        ]
+        .into_iter()
+        .enumerate()
+        {
             all.columns[i % 3].ty = ty;
             let back = parse_table(Path::new("x.toml"), &write_table(&all)).unwrap();
             assert_eq!(back.columns[i % 3].ty, ty);
@@ -532,14 +606,21 @@ pub(crate) mod tests {
         let e = parse_table(Path::new("x.toml"), &text).unwrap_err();
         assert!(e.to_string().contains("schema_format is 9"), "{e}");
         let e = parse_table(Path::new("x.toml"), "schema_format = 1\nname = 3\n").unwrap_err();
-        assert!(matches!(e, SchemaFileError::Parse { line: Some(2), .. }), "{e:?}");
+        assert!(
+            matches!(e, SchemaFileError::Parse { line: Some(2), .. }),
+            "{e:?}"
+        );
         let text = write_table(&unit_scada()).replace("type = \"number\"", "type = \"float\"");
         let e = parse_table(Path::new("x.toml"), &text).unwrap_err();
         assert!(e.to_string().contains("unknown type \"float\""), "{e}");
-        let text = write_table(&unit_scada()).replace("type = \"timestamp\"", "type = \"timestamp\"\nprecision = 3");
+        let text = write_table(&unit_scada()).replace(
+            "type = \"timestamp\"",
+            "type = \"timestamp\"\nprecision = 3",
+        );
         let e = parse_table(Path::new("x.toml"), &text).unwrap_err();
         assert!(e.to_string().contains("belongs to another type"), "{e}");
-        let text = write_table(&unit_scada()).replace("type = \"number\"", "type = \"number\"\nmax_len = 3");
+        let text = write_table(&unit_scada())
+            .replace("type = \"number\"", "type = \"number\"\nmax_len = 3");
         assert!(parse_table(Path::new("x.toml"), &text).is_err());
         let text = write_table(&unit_scada()).replace("dict = true", "dict = true\nscale = 1");
         assert!(parse_table(Path::new("x.toml"), &text).is_err());
@@ -547,13 +628,23 @@ pub(crate) mod tests {
 
     #[test]
     fn market_file() {
-        let m = MarketDef { market: Market::Nem, utc_offset_secs: 36_000, timestamp_format: TimestampFormat::AemoSlash };
+        let m = MarketDef {
+            market: Market::Nem,
+            utc_offset_secs: 36_000,
+            timestamp_format: TimestampFormat::AemoSlash,
+        };
         let text = write_market(&m);
         assert!(text.contains("market = \"nem\""), "{text}");
         assert_eq!(parse_market(Path::new("m.toml"), &text).unwrap(), m);
         let bad = text.replace("schema_format = 1", "schema_format = 2");
         assert!(parse_market(Path::new("m.toml"), &bad).is_err());
-        assert!(parse_market(Path::new("m.toml"), "schema_format = 1\nmarket = \"mars\"\n").is_err());
+        assert!(
+            parse_market(
+                Path::new("m.toml"),
+                "schema_format = 1\nmarket = \"mars\"\n"
+            )
+            .is_err()
+        );
     }
 
     #[test]
@@ -562,9 +653,16 @@ pub(crate) mod tests {
         let p = dir.path().join("T.toml");
         std::fs::write(&p, write_table(&unit_scada())).unwrap();
         assert_eq!(read_table(&p).unwrap(), unit_scada());
-        assert!(matches!(read_table(&dir.path().join("none.toml")), Err(SchemaFileError::Read { .. })));
+        assert!(matches!(
+            read_table(&dir.path().join("none.toml")),
+            Err(SchemaFileError::Read { .. })
+        ));
         let mp = dir.path().join("market.toml");
-        let m = MarketDef { market: Market::Wem, utc_offset_secs: 28_800, timestamp_format: TimestampFormat::Iso8601 };
+        let m = MarketDef {
+            market: Market::Wem,
+            utc_offset_secs: 28_800,
+            timestamp_format: TimestampFormat::Iso8601,
+        };
         std::fs::write(&mp, write_market(&m)).unwrap();
         assert_eq!(read_market(&mp).unwrap(), m);
         assert!(read_market(&dir.path().join("none.toml")).is_err());

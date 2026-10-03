@@ -62,21 +62,32 @@ impl Diagnose for SchemaFileError {
         let msg = self.to_string();
         match self {
             Self::Read { path, source } => {
-                Diagnostic::error("schema.file_read", Category::Schema, msg).with_file(path.clone()).caused_by(source)
+                Diagnostic::error("schema.file_read", Category::Schema, msg)
+                    .with_file(path.clone())
+                    .caused_by(source)
             }
             Self::Parse { path, line, .. } => {
-                let mut d = Diagnostic::error("schema.file_parse", Category::Schema, msg).with_file(path.clone());
+                let mut d = Diagnostic::error("schema.file_parse", Category::Schema, msg)
+                    .with_file(path.clone());
                 d.line = *line;
                 d
             }
             Self::Invalid { path, table, .. } => {
-                Diagnostic::error("schema.file_invalid", Category::Schema, msg).with_file(path.clone()).with_table(table.clone())
+                Diagnostic::error("schema.file_invalid", Category::Schema, msg)
+                    .with_file(path.clone())
+                    .with_table(table.clone())
             }
-            Self::Conflict { a, .. } => Diagnostic::error("schema.file_conflict", Category::Schema, msg).with_file(a.clone()),
+            Self::Conflict { a, .. } => {
+                Diagnostic::error("schema.file_conflict", Category::Schema, msg)
+                    .with_file(a.clone())
+            }
             Self::Breaking { table, .. } => {
-                Diagnostic::error("schema.breaking_change", Category::Schema, msg).with_table(table.clone())
+                Diagnostic::error("schema.breaking_change", Category::Schema, msg)
+                    .with_table(table.clone())
             }
-            Self::Blob(e) => Diagnostic::error("schema.blob_corrupt", Category::Schema, msg).caused_by(e),
+            Self::Blob(e) => {
+                Diagnostic::error("schema.blob_corrupt", Category::Schema, msg).caused_by(e)
+            }
         }
     }
 }
@@ -87,18 +98,36 @@ mod tests {
 
     #[test]
     fn codes() {
-        let e = SchemaFileError::Invalid { path: "p".into(), table: "T".into(), message: "m".into() };
+        let e = SchemaFileError::Invalid {
+            path: "p".into(),
+            table: "T".into(),
+            message: "m".into(),
+        };
         let d = e.diagnostic();
         assert_eq!(d.code, "schema.file_invalid");
         assert_eq!(d.table.as_deref(), Some("T"));
         assert!(d.message.contains("T is invalid: m"));
-        let e = SchemaFileError::Parse { path: "p".into(), message: "m".into(), line: Some(4) };
+        let e = SchemaFileError::Parse {
+            path: "p".into(),
+            message: "m".into(),
+            line: Some(4),
+        };
         assert_eq!(e.diagnostic().line, Some(4));
-        let e = SchemaFileError::Conflict { a: "a".into(), b: "b".into(), message: "m".into() };
+        let e = SchemaFileError::Conflict {
+            a: "a".into(),
+            b: "b".into(),
+            message: "m".into(),
+        };
         assert_eq!(e.diagnostic().code, "schema.file_conflict");
-        let e = SchemaFileError::Breaking { table: "T".into(), message: "m".into() };
+        let e = SchemaFileError::Breaking {
+            table: "T".into(),
+            message: "m".into(),
+        };
         assert_eq!(e.diagnostic().code, "schema.breaking_change");
-        let e = SchemaFileError::Read { path: "p".into(), source: std::io::Error::other("x") };
+        let e = SchemaFileError::Read {
+            path: "p".into(),
+            source: std::io::Error::other("x"),
+        };
         assert_eq!(e.diagnostic().cause, vec!["x".to_owned()]);
         let e = SchemaFileError::Blob(postcard::Error::DeserializeUnexpectedEnd);
         assert_eq!(e.diagnostic().code, "schema.blob_corrupt");

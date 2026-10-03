@@ -39,8 +39,14 @@ pub enum TimestampError {
 impl std::fmt::Display for TimestampError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::Length(n) => write!(f, "has {n} bytes; a timestamp is 19 bytes (yyyy/mm/dd hh:mm:ss) or a date 10 bytes"),
-            Self::Shape => write!(f, "does not have digits and separators in the places of yyyy/mm/dd hh:mm:ss"),
+            Self::Length(n) => write!(
+                f,
+                "has {n} bytes; a timestamp is 19 bytes (yyyy/mm/dd hh:mm:ss) or a date 10 bytes"
+            ),
+            Self::Shape => write!(
+                f,
+                "does not have digits and separators in the places of yyyy/mm/dd hh:mm:ss"
+            ),
             Self::Month(m) => write!(f, "has month {m}, which is not between 1 and 12"),
             Self::Day(d) => write!(f, "has day {d}, which is not a day of that month"),
             Self::Hour(h) => write!(f, "has hour {h}, which is not between 0 and 23"),
@@ -197,7 +203,12 @@ pub fn format_local(micros_utc: i64, offset_secs: i32) -> String {
     let days = local.div_euclid(MICROS_PER_DAY);
     let rem = local.rem_euclid(MICROS_PER_DAY) / 1_000_000;
     let (y, m, d) = civil_from_days(days);
-    format!("{y:04}/{m:02}/{d:02} {:02}:{:02}:{:02}", rem / 3600, (rem / 60) % 60, rem % 60)
+    format!(
+        "{y:04}/{m:02}/{d:02} {:02}:{:02}:{:02}",
+        rem / 3600,
+        (rem / 60) % 60,
+        rem % 60
+    )
 }
 
 #[cfg(test)]
@@ -235,17 +246,47 @@ mod tests {
 
     #[test]
     fn rejects_invalid() {
-        assert_eq!(parse_local_seconds(b"2023/02/29"), Err(TimestampError::Day(29)));
-        assert_eq!(parse_local_seconds(b"2024/13/01 00:00:00"), Err(TimestampError::Month(13)));
-        assert_eq!(parse_local_seconds(b"2024/01/00 00:00:00"), Err(TimestampError::Day(0)));
-        assert_eq!(parse_local_seconds(b"2024/01/01 24:00:00"), Err(TimestampError::Hour(24)));
-        assert_eq!(parse_local_seconds(b"2024/01/01 00:60:00"), Err(TimestampError::Minute(60)));
-        assert_eq!(parse_local_seconds(b"2024/01/01 00:00:61"), Err(TimestampError::Second(61)));
-        assert_eq!(parse_local_seconds(b"2024-01-01 00:00:00"), Err(TimestampError::Shape));
-        assert_eq!(parse_local_seconds(b"2024/01/01T00:00:00"), Err(TimestampError::Shape));
-        assert_eq!(parse_local_seconds(b"2024/01/01 00:00"), Err(TimestampError::Length(16)));
+        assert_eq!(
+            parse_local_seconds(b"2023/02/29"),
+            Err(TimestampError::Day(29))
+        );
+        assert_eq!(
+            parse_local_seconds(b"2024/13/01 00:00:00"),
+            Err(TimestampError::Month(13))
+        );
+        assert_eq!(
+            parse_local_seconds(b"2024/01/00 00:00:00"),
+            Err(TimestampError::Day(0))
+        );
+        assert_eq!(
+            parse_local_seconds(b"2024/01/01 24:00:00"),
+            Err(TimestampError::Hour(24))
+        );
+        assert_eq!(
+            parse_local_seconds(b"2024/01/01 00:60:00"),
+            Err(TimestampError::Minute(60))
+        );
+        assert_eq!(
+            parse_local_seconds(b"2024/01/01 00:00:61"),
+            Err(TimestampError::Second(61))
+        );
+        assert_eq!(
+            parse_local_seconds(b"2024-01-01 00:00:00"),
+            Err(TimestampError::Shape)
+        );
+        assert_eq!(
+            parse_local_seconds(b"2024/01/01T00:00:00"),
+            Err(TimestampError::Shape)
+        );
+        assert_eq!(
+            parse_local_seconds(b"2024/01/01 00:00"),
+            Err(TimestampError::Length(16))
+        );
         assert_eq!(parse_local_seconds(b""), Err(TimestampError::Length(0)));
-        assert_eq!(parse_local_seconds(b"2O24/01/01"), Err(TimestampError::Shape));
+        assert_eq!(
+            parse_local_seconds(b"2O24/01/01"),
+            Err(TimestampError::Shape)
+        );
         assert!(TimestampError::Day(31).to_string().contains("31"));
         for e in [
             TimestampError::Length(3),

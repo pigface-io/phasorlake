@@ -26,11 +26,19 @@ impl std::fmt::Display for NumberError {
         match self {
             Self::Float => write!(f, "is not a floating-point number"),
             Self::Integer => write!(f, "is not an integer that fits in 64 bits"),
-            Self::DecimalShape => write!(f, "is not a decimal number of digits with at most one point"),
+            Self::DecimalShape => write!(
+                f,
+                "is not a decimal number of digits with at most one point"
+            ),
             Self::DecimalScale { scale, seen } => {
-                write!(f, "has {seen} fractional digits but the column allows {scale}")
+                write!(
+                    f,
+                    "has {seen} fractional digits but the column allows {scale}"
+                )
             }
-            Self::DecimalOverflow => write!(f, "has more digits than the column's precision allows"),
+            Self::DecimalOverflow => {
+                write!(f, "has more digits than the column's precision allows")
+            }
         }
     }
 }
@@ -71,7 +79,10 @@ pub fn parse_i64(s: &[u8]) -> Result<i64, NumberError> {
         if d >= 10 {
             return Err(NumberError::Integer);
         }
-        v = v.checked_mul(10).and_then(|v| v.checked_add(i64::from(d))).ok_or(NumberError::Integer)?;
+        v = v
+            .checked_mul(10)
+            .and_then(|v| v.checked_add(i64::from(d)))
+            .ok_or(NumberError::Integer)?;
     }
     if let Some(frac) = frac
         && !frac.iter().all(|&b| b == b'0')
@@ -104,7 +115,10 @@ pub fn parse_decimal(s: &[u8], precision: u8, scale: u8) -> Result<i128, NumberE
         // Trailing zeros beyond the scale carry no information; only
         // significant extra digits are an error.
         if frac[usize::from(scale)..].iter().any(|&b| b != b'0') {
-            return Err(NumberError::DecimalScale { scale, seen: frac.len().min(255) as u8 });
+            return Err(NumberError::DecimalScale {
+                scale,
+                seen: frac.len().min(255) as u8,
+            });
         }
     }
     let frac = &frac[..frac.len().min(usize::from(scale))];
@@ -140,7 +154,10 @@ mod tests {
         assert_eq!(parse_f64(b"6E-05").unwrap(), 6e-5);
         assert_eq!(parse_f64(b"-0.5").unwrap(), -0.5);
         assert_eq!(parse_f64(b"+1").unwrap(), 1.0);
-        assert_eq!(parse_f64(b"13878.2169050000000000000000").unwrap(), 13_878.216_905);
+        assert_eq!(
+            parse_f64(b"13878.2169050000000000000000").unwrap(),
+            13_878.216_905
+        );
         assert_eq!(parse_f64(b""), Err(NumberError::Float));
         assert_eq!(parse_f64(b"abc"), Err(NumberError::Float));
         assert_eq!(parse_f64(b"1.0x"), Err(NumberError::Float));
@@ -156,7 +173,10 @@ mod tests {
         assert_eq!(parse_i64(b""), Err(NumberError::Integer));
         assert_eq!(parse_i64(b"-"), Err(NumberError::Integer));
         assert_eq!(parse_i64(b"1e3"), Err(NumberError::Integer));
-        assert_eq!(parse_i64(b"99999999999999999999"), Err(NumberError::Integer));
+        assert_eq!(
+            parse_i64(b"99999999999999999999"),
+            Err(NumberError::Integer)
+        );
     }
 
     #[test]
@@ -167,11 +187,17 @@ mod tests {
         assert_eq!(parse_decimal(b".5", 15, 1).unwrap(), 5);
         assert_eq!(parse_decimal(b"5.", 15, 1).unwrap(), 50);
         assert_eq!(parse_decimal(b"1.2300", 15, 2).unwrap(), 123);
-        assert_eq!(parse_decimal(b"1.234", 15, 2), Err(NumberError::DecimalScale { scale: 2, seen: 3 }));
+        assert_eq!(
+            parse_decimal(b"1.234", 15, 2),
+            Err(NumberError::DecimalScale { scale: 2, seen: 3 })
+        );
         assert_eq!(parse_decimal(b"", 15, 2), Err(NumberError::DecimalShape));
         assert_eq!(parse_decimal(b".", 15, 2), Err(NumberError::DecimalShape));
         assert_eq!(parse_decimal(b"1e5", 15, 2), Err(NumberError::DecimalShape));
-        assert_eq!(parse_decimal(b"1234", 5, 2), Err(NumberError::DecimalOverflow));
+        assert_eq!(
+            parse_decimal(b"1234", 5, 2),
+            Err(NumberError::DecimalOverflow)
+        );
         assert_eq!(parse_decimal(b"123", 5, 2).unwrap(), 12_300);
         assert_eq!(parse_decimal(b"0.00", 5, 2).unwrap(), 0);
         for e in [

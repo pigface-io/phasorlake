@@ -144,7 +144,11 @@ impl Sample {
                 c => text.push(c),
             }
         }
-        Self { text, truncated, original_len: raw.len() }
+        Self {
+            text,
+            truncated,
+            original_len: raw.len(),
+        }
     }
 }
 
@@ -216,9 +220,15 @@ pub struct Diagnostic {
 
 impl Diagnostic {
     /// Starts a diagnostic with the three things every one has.
-    pub fn new(code: &'static str, category: Category, severity: Severity, message: impl Into<String>) -> Self {
+    pub fn new(
+        code: &'static str,
+        category: Category,
+        severity: Severity,
+        message: impl Into<String>,
+    ) -> Self {
         debug_assert!(
-            code.starts_with(category.as_str()) && code.as_bytes().get(category.as_str().len()) == Some(&b'.'),
+            code.starts_with(category.as_str())
+                && code.as_bytes().get(category.as_str().len()) == Some(&b'.'),
             "code {code} must start with {}.",
             category.as_str()
         );
@@ -295,7 +305,11 @@ impl Diagnostic {
         self
     }
     /// Sets expected and observed.
-    pub fn expected_observed(mut self, expected: impl Into<String>, observed: impl Into<String>) -> Self {
+    pub fn expected_observed(
+        mut self,
+        expected: impl Into<String>,
+        observed: impl Into<String>,
+    ) -> Self {
         self.expected = Some(expected.into());
         self.observed = Some(observed.into());
         self
@@ -486,7 +500,10 @@ pub struct Located<E> {
 impl<E: Diagnose> Located<E> {
     /// Wraps an error with empty context.
     pub fn new(inner: E) -> Self {
-        Self { inner, ctx: Box::default() }
+        Self {
+            inner,
+            ctx: Box::default(),
+        }
     }
 
     /// Fills unset context fields from `ctx`.
@@ -564,18 +581,22 @@ mod tests {
     #[test]
     fn render_includes_every_field() {
         let io = std::io::Error::other("disk gone");
-        let d = Diagnostic::error("csv.field_count_mismatch", Category::Csv, "The row has 8 fields but the I row declared 7.")
-            .with_request("fetch nem DISPATCH_UNIT_SCADA 2024-01..2024-01")
-            .with_url("https://nemweb.com.au/x.zip")
-            .with_file("/cache/x.zip")
-            .with_entry("X.CSV")
-            .with_table("DISPATCH_UNIT_SCADA")
-            .with_version(1)
-            .at(48213, 2_097_153)
-            .with_column("SCADAVALUE")
-            .expected_observed("7 fields", "8 fields")
-            .with_sample(b"D,DISPATCH,UNIT_SCADA,1,x")
-            .caused_by(&io);
+        let d = Diagnostic::error(
+            "csv.field_count_mismatch",
+            Category::Csv,
+            "The row has 8 fields but the I row declared 7.",
+        )
+        .with_request("fetch nem DISPATCH_UNIT_SCADA 2024-01..2024-01")
+        .with_url("https://nemweb.com.au/x.zip")
+        .with_file("/cache/x.zip")
+        .with_entry("X.CSV")
+        .with_table("DISPATCH_UNIT_SCADA")
+        .with_version(1)
+        .at(48213, 2_097_153)
+        .with_column("SCADAVALUE")
+        .expected_observed("7 fields", "8 fields")
+        .with_sample(b"D,DISPATCH,UNIT_SCADA,1,x")
+        .caused_by(&io);
         let r = d.render();
         for needle in [
             "[csv.field_count_mismatch]",
@@ -630,7 +651,9 @@ mod tests {
     struct Inner;
     impl Diagnose for Inner {
         fn diagnostic(&self) -> Diagnostic {
-            Diagnostic::error("parse.timestamp", Category::Parse, "Bad.").with_entry("INNER.CSV").at(7, 70)
+            Diagnostic::error("parse.timestamp", Category::Parse, "Bad.")
+                .with_entry("INNER.CSV")
+                .at(7, 70)
         }
     }
 
@@ -655,7 +678,11 @@ mod tests {
         assert_eq!(located.code(), "parse.timestamp");
         assert!(located.to_string().contains("entry b.zip!INNER.CSV"));
         // A second, outer-most layer adds the URL and keeps everything else.
-        let outermost = Context { url: Some("https://h/a.zip".into()), request: Some("other".into()), ..Default::default() };
+        let outermost = Context {
+            url: Some("https://h/a.zip".into()),
+            request: Some("other".into()),
+            ..Default::default()
+        };
         let r2: Result<(), Located<Inner>> = Err(located);
         let d2 = r2.relocated(&outermost).unwrap_err().diagnostic();
         assert_eq!(d2.url.as_deref(), Some("https://h/a.zip"));
@@ -665,7 +692,12 @@ mod tests {
         let again = Located::new(Inner).at(&outer).at(&outer).diagnostic();
         assert_eq!(again.entry.as_deref(), Some("b.zip!INNER.CSV"));
         let _ = format!("{:?}", Located::new(Inner));
-        assert_eq!(Diagnostic::error("net.x", Category::Net, "m").diagnostic().code, "net.x");
+        assert_eq!(
+            Diagnostic::error("net.x", Category::Net, "m")
+                .diagnostic()
+                .code,
+            "net.x"
+        );
     }
 
     #[test]
