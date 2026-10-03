@@ -15,4 +15,4 @@ pub mod run;
 
 pub use plan::{Deps, Input, Plan, RunOptions};
 pub use report::{RunReport, exit_code};
-pub use run::run;
+pub use run::{recorded_remote, rules_current, run};

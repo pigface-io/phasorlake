@@ -399,6 +399,91 @@ fn what_the_registry_does_not_declare_is_kept_not_skipped() {
     assert!(out.contains("schema.unknown_table"), "{out}");
 }
 
+/// A table nobody declared is kept as text; once a schema for it is
+/// adopted, `reingest` reads the source again from disk and the lake
+/// follows: typed files in the table's own directory, the text ones gone.
+#[test]
+fn reingest_brings_the_lake_up_to_the_rules() {
+    let cli = Cli::new();
+    let csv = cli.home.path().join("PUBLIC_DVD_FOLLOWS_202403010000.CSV");
+    std::fs::write(
+        &csv,
+        "C,NEMP.WORLD,TEST\nI,NEMLAKE_TEST,FOLLOWS,1,SETTLEMENTDATE,UNIT,VALUE\nD,NEMLAKE_TEST,FOLLOWS,1,\"2024/03/01 00:05:00\",A1,1.5\nD,NEMLAKE_TEST,FOLLOWS,1,\"2024/03/01 00:10:00\",A1,2.5\nC,\"END OF REPORT\",5\n",
+    )
+    .unwrap();
+    let csv_arg = csv.to_str().unwrap();
+    let lake = cli.home.path().join("lake");
+    let parquet = || -> Vec<String> {
+        walk(&lake)
+            .into_iter()
+            .map(|p| p.display().to_string())
+            .filter(|p| p.ends_with(".parquet"))
+            .collect()
+    };
+
+    let (code, out, err) = cli.code(&["ingest", csv_arg]);
+    assert_eq!(code, 0, "{out}{err}");
+    let before = parquet();
+    assert_eq!(before.len(), 1, "{before:?}");
+    assert!(
+        before[0].contains("nem/_unregistered/nemlake_test.follows/"),
+        "{before:?}"
+    );
+    let ls = cli.ok(&["--json", "ls"]);
+    assert!(ls.contains("\"schema_source\":\"file\""), "{ls}");
+    assert!(ls.contains("\"resolution\":\"derived\""), "{ls}");
+    assert!(ls.contains("\"rules\":\"rules:"), "{ls}");
+    assert!(
+        ls.contains("\"source_columns\":[\"SETTLEMENTDATE\",\"UNIT\",\"VALUE\"]"),
+        "{ls}"
+    );
+    // Nothing is behind yet.
+    let out = cli.ok(&["reingest"]);
+    assert!(out.contains("0 listed"), "{out}");
+
+    // Adopt a schema for the table: the source is now behind the rules.
+    cli.ok(&["schema", "infer", csv_arg, "--write"]);
+    let dir = cli.home.path().join("schemas/nem/mms");
+    std::fs::rename(
+        dir.join("DRAFT_NEMLAKE_TEST_FOLLOWS.toml"),
+        dir.join("NEMLAKE_TEST_FOLLOWS.toml"),
+    )
+    .unwrap();
+    let out = cli.ok(&["reingest", "--dry-run"]);
+    assert!(
+        out.contains("1 listed") && out.contains("PUBLIC_DVD_FOLLOWS"),
+        "{out}"
+    );
+    assert_eq!(parquet(), before, "a dry run writes nothing");
+    let (code, out, err) = cli.code(&["reingest"]);
+    assert_eq!(code, 0, "{out}{err}");
+    assert!(out.contains("1 listed, 1 ingested"), "{out}");
+    assert!(out.contains("manifest.rules_changed"), "{out}");
+    let after = parquet();
+    assert_eq!(after.len(), 1, "{after:?}");
+    assert!(after[0].contains("nem/nemlake_test_follows/"), "{after:?}");
+    assert!(
+        !lake.join("nem/_unregistered").exists(),
+        "the directory the text files were in is gone with them"
+    );
+    let ls = cli.ok(&["--json", "ls"]);
+    assert_eq!(ls.lines().count(), 1, "{ls}");
+    assert!(ls.contains("\"schema_source\":\"user\""), "{ls}");
+    assert!(ls.contains("\"resolution\":\"exact\""), "{ls}");
+    assert!(cli.ok(&["verify"]).contains("no problems"));
+    // Up to date again; an ordinary ingest of the same file is skipped.
+    assert!(cli.ok(&["reingest"]).contains("0 listed"));
+    assert!(cli.ok(&["ingest", csv_arg]).contains("1 skipped"));
+
+    // Without the user's table the rules are the old ones, and the source
+    // is no longer there to read.
+    std::fs::remove_file(&csv).unwrap();
+    let (code, out, err) = cli.code(&["--no-user-schemas", "reingest"]);
+    assert_ne!(code, 0, "{out}{err}");
+    assert!(out.contains("cache.source_missing"), "{out}");
+    assert_eq!(parquet(), after, "what is in the lake stays");
+}
+
 /// `schema infer` drafts what a file adds; a draft renamed into
 /// `{home}/schemas/` is in effect for every command, without a rebuild.
 #[test]

@@ -78,6 +78,17 @@ impl RemoteFile {
         if let Some(m) = &self.member {
             return m.file_name().to_owned();
         }
+        // The identity of a member is `container#member`; when only the
+        // identity is known (a source read again from the archive), the
+        // member's name is the end of the fragment.
+        if let Some(name) = self
+            .url
+            .fragment()
+            .and_then(|f| f.rsplit('/').next())
+            .filter(|n| !n.is_empty())
+        {
+            return name.to_owned();
+        }
         self.url
             .path_segments()
             .and_then(|mut s| s.next_back())
@@ -138,5 +149,13 @@ mod tests {
             ..r
         };
         assert_eq!(r2.stem(), "noext");
+        // A member known only by its identity keeps the member's name.
+        let r3 = RemoteFile {
+            url: Url::parse("https://h/MMSDM_2012_01.zip#DATA/PUBLIC_DVD_REGION_201201010000.zip")
+                .unwrap(),
+            ..r2
+        };
+        assert_eq!(r3.file_name(), "PUBLIC_DVD_REGION_201201010000.zip");
+        assert_eq!(r3.stem(), "public_dvd_region_201201010000");
     }
 }

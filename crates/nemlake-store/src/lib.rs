@@ -16,4 +16,4 @@ pub mod writer;
 pub use error::StoreError;
 pub use manifest::{Manifest, ManifestHandle, ManifestThread};
 pub use parquet_hive::ParquetHive;
-pub use writer::{FileMeta, LakeWriter, Partition, PartitionKey, WriterId, WrittenFile};
+pub use writer::{FileMeta, LakeWriter, Partition, PartitionKey, Transform, WriterId, WrittenFile};

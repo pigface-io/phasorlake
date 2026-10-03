@@ -55,6 +55,11 @@ pub enum Input {
     },
     /// Local zips or CSVs.
     Local(Vec<PathBuf>),
+    /// Every source the manifest has recorded that is not wholly in the
+    /// lake by the current rules: its rules have changed since it was
+    /// read, an earlier read failed, or a Parquet file is gone. Each is
+    /// read again from where it is kept on disk; nothing is downloaded.
+    Stale,
 }
 
 /// A run.

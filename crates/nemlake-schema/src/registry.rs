@@ -55,12 +55,43 @@ pub struct LineageEntry {
     pub variants: usize,
 }
 
+/// Where the definition of a table came from.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum SchemaSource {
+    /// The registry nemlake was built with, or a schemas directory loaded
+    /// in its place.
+    Registry,
+    /// A user's own table file, laid over the registry.
+    User,
+    /// The file being read: no table claimed its report pair.
+    File,
+}
+
+impl SchemaSource {
+    /// One word for manifests and Parquet footers.
+    pub const fn label(self) -> &'static str {
+        match self {
+            Self::Registry => "registry",
+            Self::User => "user",
+            Self::File => "file",
+        }
+    }
+}
+
+impl std::fmt::Display for SchemaSource {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.label())
+    }
+}
+
 /// Every table nemlake knows, indexed for the hot path.
 #[derive(Debug)]
 pub struct Registry {
     opts: TypeOptions,
     markets: Vec<MarketDef>,
     tables: Vec<TableDef>,
+    /// Whether each table came from a user's overlay.
+    from_user: Vec<bool>,
     by_name: HashMap<String, TableId>,
     by_pair: hashbrown::HashMap<PairKey, TableId>,
     by_dataset: HashMap<String, TableId>,
@@ -145,6 +176,7 @@ impl Registry {
             .filter(|t| !over.tables.iter().any(|o| o.name == t.name))
             .cloned()
             .collect();
+        let theirs: Vec<String> = over.tables.iter().map(|t| t.name.clone()).collect();
         tables.extend(over.tables);
         tables.sort_by(|a, b| a.name.cmp(&b.name));
         let mut markets = self.markets.clone();
@@ -167,7 +199,13 @@ impl Registry {
                 ),
             });
         }
-        Ok(Self::from_set(set, self.opts))
+        let mut registry = Self::from_set(set, self.opts);
+        registry.from_user = registry
+            .tables
+            .iter()
+            .map(|t| theirs.contains(&t.name))
+            .collect();
+        Ok(registry)
     }
 
     /// Builds the indexes. The set must already be valid.
@@ -222,6 +260,7 @@ impl Registry {
         Self {
             opts,
             markets,
+            from_user: vec![false; tables.len()],
             tables,
             by_name,
             by_pair,
@@ -263,6 +302,15 @@ impl Registry {
     /// the registry.
     pub fn is_derived(&self, id: TableId) -> bool {
         id.0 as usize >= self.tables.len()
+    }
+
+    /// Where the definition of a table came from.
+    pub fn schema_source(&self, id: TableId) -> SchemaSource {
+        match self.from_user.get(id.0 as usize) {
+            Some(true) => SchemaSource::User,
+            Some(false) => SchemaSource::Registry,
+            None => SchemaSource::File,
+        }
     }
 
     /// The directory, under a market's lake, that a table's files go to. A

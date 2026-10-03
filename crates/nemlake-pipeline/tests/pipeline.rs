@@ -305,6 +305,197 @@ async fn local_zip_ingests_idempotently_and_records_manifest() {
     );
 }
 
+fn footer(path: &str, key: &str) -> String {
+    let f = std::fs::File::open(path).unwrap();
+    let b = parquet::arrow::arrow_reader::ParquetRecordBatchReaderBuilder::try_new(f).unwrap();
+    b.metadata()
+        .file_metadata()
+        .key_value_metadata()
+        .and_then(|kv| kv.iter().find(|k| k.key == key))
+        .and_then(|k| k.value.clone())
+        .unwrap_or_default()
+}
+
+/// Every output records the shape it was read from and the rules it was
+/// read by. A source already in the lake is skipped while those rules
+/// hold, and read again, from disk, once they have changed.
+#[tokio::test]
+async fn a_source_is_read_again_when_its_rules_change() {
+    let e = env();
+    let csv = e
+        .home
+        .root()
+        .join("PUBLIC_DVD_DISPATCHPRICE_202401010000.CSV");
+    std::fs::copy(fixtures().join("DISPATCHPRICE_v4_head.csv"), &csv).unwrap();
+    let floats = e.deps.clone();
+    let decimals = Deps {
+        registry: Registry::load_embedded(TypeOptions { decimal: true }),
+        ..e.deps.clone()
+    };
+    let go = |deps: &Deps, input: Input, dry_run: bool| {
+        let deps = deps.clone();
+        async move {
+            let (tx, _rx) = tokio::sync::mpsc::channel(4096);
+            run(
+                Plan {
+                    request: "test".into(),
+                    input,
+                    options: RunOptions {
+                        dry_run,
+                        ..Default::default()
+                    },
+                },
+                deps,
+                tx,
+                CancellationToken::new(),
+            )
+            .await
+        }
+    };
+    let local = || Input::Local(vec![csv.clone()]);
+
+    // First read: the transform is in the manifest and in the footer.
+    let rep = go(&floats, local(), false).await;
+    assert_eq!(rep.exit_code, 0, "{:?}", rep.report.summary_lines());
+    let ingests = e.deps.manifest.list_ingests(None, false, 10).await.unwrap();
+    assert_eq!(ingests.len(), 1);
+    let first = ingests[0].transform.clone();
+    assert!(
+        first.rules.starts_with("rules:") && first.rules.len() == 38,
+        "{first:?}"
+    );
+    assert_eq!(first.schema_source, "registry");
+    assert_eq!(first.resolution, "exact");
+    assert_eq!(
+        (first.report_type.as_str(), first.report_subtype.as_str()),
+        ("DISPATCH", "PRICE")
+    );
+    assert_eq!(first.source_version, 4);
+    assert_eq!(first.source_columns[0], "SETTLEMENTDATE");
+    let files = walk(&e.home.lake());
+    assert_eq!(files.len(), 1);
+    assert_eq!(footer(&files[0], "nemlake.rules"), first.rules);
+    assert_eq!(footer(&files[0], "nemlake.schema_source"), "registry");
+    assert_eq!(footer(&files[0], "nemlake.resolution"), "exact");
+    assert_eq!(footer(&files[0], "nemlake.report_type"), "DISPATCH");
+    assert_eq!(footer(&files[0], "nemlake.report_subtype"), "PRICE");
+    assert_eq!(footer(&files[0], "nemlake.source_version"), "4");
+    assert_eq!(
+        footer(&files[0], "nemlake.source_columns"),
+        first.source_columns.join(",")
+    );
+
+    // Same rules: skipped, and nothing is behind.
+    let rep = go(&floats, local(), false).await;
+    assert_eq!((rep.summary.skipped, rep.summary.ingested), (1, 0));
+    let rep = go(&floats, Input::Stale, false).await;
+    assert_eq!(rep.summary.listed, 0);
+    assert_eq!(rep.exit_code, 0);
+
+    // Other rules (decimal types): the same source is read again and its
+    // Parquet file replaced, not duplicated.
+    let rep = go(&decimals, Input::Stale, true).await;
+    assert_eq!(rep.summary.listed, 1, "a dry run lists what is behind");
+    assert_eq!(rep.listed[0].url.scheme(), "file");
+    assert_eq!(
+        footer(&files[0], "nemlake.rules"),
+        first.rules,
+        "and writes nothing"
+    );
+    let rep = go(&decimals, local(), false).await;
+    assert_eq!(rep.exit_code, 0, "{:?}", rep.report.summary_lines());
+    assert_eq!((rep.summary.skipped, rep.summary.ingested), (0, 1));
+    assert!(
+        rep.report.by_code.contains_key("manifest.rules_changed"),
+        "{:?}",
+        rep.report.by_code.keys()
+    );
+    let ingests = e.deps.manifest.list_ingests(None, false, 10).await.unwrap();
+    assert_eq!(ingests.len(), 1);
+    let second = ingests[0].transform.clone();
+    assert_ne!(second.rules, first.rules);
+    assert_eq!(second.source_columns, first.source_columns);
+    assert_eq!(walk(&e.home.lake()), files);
+    assert_eq!(footer(&files[0], "nemlake.rules"), second.rules);
+    let rep = go(&decimals, Input::Stale, false).await;
+    assert_eq!(rep.summary.listed, 0);
+
+    // Back to the first rules through the manifest alone: the same hash
+    // as the first read gave.
+    let rep = go(&floats, Input::Stale, false).await;
+    assert_eq!(rep.exit_code, 0, "{:?}", rep.report.summary_lines());
+    assert_eq!((rep.summary.listed, rep.summary.ingested), (1, 1));
+    assert!(rep.report.by_code.contains_key("manifest.rules_changed"));
+    let ingests = e.deps.manifest.list_ingests(None, false, 10).await.unwrap();
+    assert_eq!(ingests[0].transform, first);
+    assert_eq!(footer(&files[0], "nemlake.rules"), first.rules);
+
+    // A source that is gone cannot be read again, and the run says so.
+    std::fs::remove_file(&csv).unwrap();
+    let rep = go(&decimals, Input::Stale, false).await;
+    assert_eq!(rep.summary.listed, 1);
+    assert_eq!(rep.summary.failed, 1);
+    assert!(
+        rep.report.by_code.contains_key("cache.source_missing"),
+        "{:?}",
+        rep.report.by_code.keys()
+    );
+    assert_eq!(walk(&e.home.lake()), files, "what is in the lake stays");
+}
+
+/// What the manifest records of a source is enough to name it again.
+#[test]
+fn a_recorded_source_becomes_a_file_to_read() {
+    use nemlake_store::manifest::{FileRecord, IngestShape};
+    let rec = |source: &str, url: &str, path: &str| FileRecord {
+        source: source.into(),
+        url: url.into(),
+        cache_path: path.into(),
+        sha256: "s".into(),
+        size: 1,
+        etag: None,
+        last_modified: None,
+    };
+    let member = nemlake_pipeline::recorded_remote(&rec(
+        "nem-mmsdm",
+        "https://h/MMSDM_2012_01.zip#DATA/PUBLIC_DVD_REGION_201201010000.zip",
+        "/archive/h/MMSDM_2012_01.zip.members/PUBLIC_DVD_REGION_201201010000.zip",
+    ))
+    .unwrap();
+    assert_eq!(member.source, "nem-mmsdm");
+    assert_eq!(member.stem(), "public_dvd_region_201201010000");
+    assert_eq!(member.table.as_deref(), Some("REGION"));
+    assert_eq!(member.period.unwrap().to_string(), "2012-01");
+    assert_eq!(member.kind, FileKind::MmsZip);
+    let wem =
+        nemlake_pipeline::recorded_remote(&rec("wem-datafiles", "https://w/a.csv", "/a/a.csv"))
+            .unwrap();
+    assert_eq!(
+        (wem.source, wem.kind),
+        ("wem-datafiles", FileKind::PlainCsv)
+    );
+    let local =
+        nemlake_pipeline::recorded_remote(&rec("other", "file:///x/a.csv", "/x/a.csv")).unwrap();
+    assert_eq!(local.source, "local");
+    assert!(nemlake_pipeline::recorded_remote(&rec("local", "not a url", "/x/a.csv")).is_none());
+
+    // An ingest recorded before rules were is never current.
+    let reg = Registry::load_embedded(TypeOptions::default());
+    let old = IngestShape {
+        table: "T".into(),
+        transform: Default::default(),
+    };
+    assert!(!nemlake_pipeline::rules_current(
+        &reg,
+        std::slice::from_ref(&old)
+    ));
+    assert!(nemlake_pipeline::rules_current(&reg, &[]));
+    // Nor is one whose shape no longer resolves.
+    let mut broken = old;
+    broken.transform.rules = "rules:0".into();
+    assert!(!nemlake_pipeline::rules_current(&reg, &[broken]));
+}
+
 #[tokio::test]
 async fn multi_entry_zip_with_bad_file_is_partial_and_everything_is_attempted() {
     let e = env();

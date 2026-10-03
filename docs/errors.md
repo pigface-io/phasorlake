@@ -40,6 +40,7 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 | `cache.io` | `crates/nemlake-fetch/src/error.rs` |
 | `cache.sha256_mismatch` | `crates/nemlake-fetch/src/error.rs` |
 | `cache.sidecar_corrupt` | `crates/nemlake-fetch/src/error.rs` |
+| `cache.source_missing` | `crates/nemlake-pipeline/src/run.rs` |
 
 ## zip
 
@@ -137,6 +138,7 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 | `manifest.closed` | `crates/nemlake-store/src/error.rs` |
 | `manifest.migration_failed` | `crates/nemlake-store/src/error.rs` |
 | `manifest.not_found` | `crates/nemlake-store/src/error.rs` |
+| `manifest.rules_changed` | `crates/nemlake-pipeline/src/run.rs` |
 | `manifest.superseded` | `crates/nemlake-pipeline/src/run.rs` |
 
 ## verify

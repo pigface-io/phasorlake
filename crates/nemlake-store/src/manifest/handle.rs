@@ -7,7 +7,9 @@ use std::thread::JoinHandle;
 use nemlake_core::Diagnostic;
 use tokio::sync::{mpsc, oneshot};
 
-use super::{DiagFilter, FileRecord, IngestEnd, IngestRecord, IngestStart, Manifest, RunRecord};
+use super::{
+    DiagFilter, FileRecord, IngestEnd, IngestRecord, IngestShape, IngestStart, Manifest, RunRecord,
+};
 use crate::error::ManifestError;
 
 type Reply<T> = oneshot::Sender<Result<T, ManifestError>>;
@@ -16,7 +18,8 @@ enum Cmd {
     BeginRun(String, Reply<i64>),
     FinishRun(i64, i32, String, Reply<()>),
     RecordFile(FileRecord, Reply<i64>),
-    IsIngested(String, String, Reply<bool>),
+    IngestedShapes(String, String, Reply<Option<Vec<IngestShape>>>),
+    ListFiles(Reply<Vec<FileRecord>>),
     FileByUrl(String, Reply<Option<(i64, FileRecord)>>),
     OutputsOfFile(i64, Reply<Vec<String>>),
     SupersedeFile(i64, Reply<usize>),
@@ -98,8 +101,11 @@ impl ManifestHandle {
                         Cmd::RecordFile(f, r) => {
                             let _ = r.send(manifest.record_file(&f));
                         }
-                        Cmd::IsIngested(url, sha, r) => {
-                            let _ = r.send(manifest.is_ingested(&url, &sha));
+                        Cmd::IngestedShapes(url, sha, r) => {
+                            let _ = r.send(manifest.ingested_shapes(&url, &sha));
+                        }
+                        Cmd::ListFiles(r) => {
+                            let _ = r.send(manifest.list_files());
                         }
                         Cmd::FileByUrl(url, r) => {
                             let _ = r.send(manifest.file_by_url(&url));
@@ -171,10 +177,18 @@ impl ManifestHandle {
     pub async fn record_file(&self, f: FileRecord) -> Result<i64, ManifestError> {
         self.call(|r| Cmd::RecordFile(f, r)).await
     }
-    /// See [`Manifest::is_ingested`].
-    pub async fn is_ingested(&self, url: &str, sha256: &str) -> Result<bool, ManifestError> {
-        self.call(|r| Cmd::IsIngested(url.to_owned(), sha256.to_owned(), r))
+    /// See [`Manifest::ingested_shapes`].
+    pub async fn ingested_shapes(
+        &self,
+        url: &str,
+        sha256: &str,
+    ) -> Result<Option<Vec<IngestShape>>, ManifestError> {
+        self.call(|r| Cmd::IngestedShapes(url.to_owned(), sha256.to_owned(), r))
             .await
+    }
+    /// See [`Manifest::list_files`].
+    pub async fn list_files(&self) -> Result<Vec<FileRecord>, ManifestError> {
+        self.call(Cmd::ListFiles).await
     }
     /// See [`Manifest::file_by_url`].
     pub async fn file_by_url(&self, url: &str) -> Result<Option<(i64, FileRecord)>, ManifestError> {
@@ -265,7 +279,8 @@ mod tests {
             .await
             .unwrap();
         assert_eq!(h.file_by_url("u").await.unwrap().unwrap().0, fid);
-        assert!(!h.is_ingested("u", "sha").await.unwrap());
+        assert!(h.ingested_shapes("u", "sha").await.unwrap().is_none());
+        assert_eq!(h.list_files().await.unwrap().len(), 1);
         let iid = h
             .begin_ingest(IngestStart {
                 run_id: run,
@@ -274,6 +289,10 @@ mod tests {
                 table: "T".into(),
                 schema_version: 1,
                 fingerprint: "f".into(),
+                transform: crate::writer::Transform {
+                    rules: "rules:1".into(),
+                    ..Default::default()
+                },
             })
             .await
             .unwrap();
@@ -302,7 +321,10 @@ mod tests {
         )
         .await
         .unwrap();
-        assert!(h.is_ingested("u", "sha").await.unwrap());
+        let shapes = h.ingested_shapes("u", "sha").await.unwrap().unwrap();
+        assert_eq!(shapes.len(), 1);
+        assert_eq!(shapes[0].table, "T");
+        assert_eq!(shapes[0].transform.rules, "rules:1");
         h.record_diagnostic(
             run,
             Some(iid),

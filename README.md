@@ -34,6 +34,7 @@ the file is already in the lake.
 |---|---|
 | `nemlake fetch nem --table T[,T] --from YYYY-MM [--to YYYY-MM]` | list the archive, download, ingest |
 | `nemlake ingest <zip\|csv\|dir>...` | ingest local files, no network |
+| `nemlake reingest [--dry-run]` | read again, from disk, every source whose lake files are behind the current rules; no network |
 | `nemlake inspect <file> [--infer]` | every block in a file, its version and how the registry resolves it; draft a schema for unknown ones |
 | `nemlake ls [--table T] [--failed] [--runs]` | what the manifest knows |
 | `nemlake errors [--last] [--table T] [--code C]` | diagnostics recorded by past runs |
@@ -52,7 +53,7 @@ Global flags: `--home DIR` (or `NEMLAKE_HOME`), `--json`, `-v`, `--offline`,
 
 ```
 ~/.nemlake/
-  lake/nem/{table}/year=YYYY/month=MM/{source}-v{version}-{sha8}.parquet   appended tables, partitioned by market-local month
+  lake/nem/{table}/year=YYYY/month=MM/{source}-v{version}-{shape8}-{sha8}.parquet   appended tables, partitioned by market-local month
   lake/nem/{table}/snapshot=YYYYMM/...                                     standing-data tables (REGION, PARTICIPANT, ...)
   archive/{host}/{path of the URL}[.json]                                  every download as the server sent it, with its request record
   cache/listings/, cache/tmp/                                              listings and scratch files, safe to delete
@@ -89,6 +90,30 @@ or `2999/12/31`; such a value is stored as the last instant of the range,
 so `END_DATE > now()` still holds, and each column it happens in is
 reported as `parse.timestamp_clamped` with a count and an example.
 
+## How a file was made
+
+A Parquet file is a function of three things: the bytes of its source, the
+shape of the block it was read from, and the rules the shape was read by.
+All three are written into the file's footer and into the manifest:
+
+| footer key | what it says |
+|---|---|
+| `nemlake.source_url`, `nemlake.source_sha256`, `nemlake.entry` | the source: where it came from, its hash, the CSV inside it |
+| `nemlake.report_type`, `nemlake.report_subtype`, `nemlake.source_version`, `nemlake.source_columns`, `nemlake.fingerprint` | the shape: the block's I row as AEMO published it |
+| `nemlake.rules` | a hash of the rules: the lake columns and their types, which field feeds which column and how it is parsed, the partitioning, the directory |
+| `nemlake.schema_source` | where the table's definition came from: `registry` (built in), `user` (your own table file), `file` (nobody declared it, so the file's own header) |
+| `nemlake.resolution`, `nemlake.table`, `nemlake.schema_version` | how the shape matched the definition: `exact`, `aliased`, `drift` or `derived`, and as which table and version |
+
+The rules hash changes when the output would: a column gets another type,
+a table gets a schema where it had none, `--decimal` is turned on. It does
+not change when a description is edited. A source whose recorded hash is
+no longer what the current rules give is behind: the next `fetch` or
+`ingest` that covers it reads it again instead of skipping it, and
+`nemlake reingest` does that for every source in the manifest, straight
+from the archive. The Parquet files the earlier read wrote are replaced,
+and the run reports each such source as `manifest.rules_changed`.
+`nemlake reingest --dry-run` lists what is behind and changes nothing.
+
 ## The archive of downloads
 
 Every file nemlake downloads is kept exactly as the server sent it, at the
@@ -112,8 +137,9 @@ offset and the CRC-32 it was checked against.
 Nothing in nemlake deletes an archived file. When the same URL later
 serves other bytes, the earlier file is kept beside the new one and the
 new record points at it. Everything in the lake can be derived again from
-the archive, so the lake can be rebuilt when the rules for reading a table
-improve. `nemlake archive verify` hashes every file against its record.
+the archive, which is what `nemlake reingest` does when the rules for
+reading a table improve. `nemlake archive verify` hashes every file
+against its record.
 
 ## Your own tables
 
@@ -124,7 +150,9 @@ table that exists, with the types of new columns guessed from the rows. The
 drafts land in `~/.nemlake/schemas/nem/mms/DRAFT_{TABLE}.toml` and do nothing
 until you have looked at them and renamed one to `{TABLE}.toml`. From then
 on every command uses it: a file named after a built-in table replaces it,
-any other adds a table. `--no-user-schemas` runs without them.
+any other adds a table. `--no-user-schemas` runs without them. What was
+ingested before the table file existed is brought up to it by
+`nemlake reingest`.
 
 ## Which months
 

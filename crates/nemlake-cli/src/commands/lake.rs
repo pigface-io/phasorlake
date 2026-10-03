@@ -191,6 +191,17 @@ pub async fn ingest(cli: &Cli, ctx: &Context, paths: &[PathBuf], args: &IngestAr
     run_plan(cli, ctx, plan, false, None).await
 }
 
+/// `nemlake reingest`: every recorded source whose lake files are behind
+/// the current rules, read again from where it is kept.
+pub async fn reingest(cli: &Cli, ctx: &Context, dry_run: bool, args: &IngestArgs) -> Result<i32> {
+    let plan = Plan {
+        request: "reingest".to_owned(),
+        input: Input::Stale,
+        options: options(cli, ctx, args, None, dry_run),
+    };
+    run_plan(cli, ctx, plan, false, None).await
+}
+
 /// `nemlake verify`: every output the manifest lists exists with its size.
 pub async fn verify(ctx: &Context, table: Option<&str>) -> Result<i32> {
     let (manifest, thread) = ctx.manifest()?;

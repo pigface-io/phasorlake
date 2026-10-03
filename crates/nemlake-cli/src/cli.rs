@@ -59,6 +59,18 @@ pub enum Command {
         #[command(flatten)]
         ingest: IngestArgs,
     },
+    /// Read again, from disk, every source whose lake files are behind:
+    /// written by rules that have changed since (a table file added or
+    /// edited, another type mode), left unfinished by a failed run, or
+    /// gone. No network.
+    Reingest {
+        /// List the sources that would be read again and stop.
+        #[arg(long)]
+        dry_run: bool,
+        /// Ingest flags.
+        #[command(flatten)]
+        ingest: IngestArgs,
+    },
     /// Show a file's blocks, versions, columns and how the registry resolves them.
     Inspect {
         /// A zip or CSV.
@@ -324,5 +336,7 @@ mod tests {
                 ..
             }
         ));
+        let c = Cli::try_parse_from(["nemlake", "reingest", "--dry-run"]).unwrap();
+        assert!(matches!(c.command, Command::Reingest { dry_run: true, .. }));
     }
 }

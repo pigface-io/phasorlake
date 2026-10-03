@@ -60,6 +60,30 @@ pub struct PartitionKey {
     pub partition: Partition,
 }
 
+/// How the rows of a file came to be: the shape that was read and the rules
+/// it was read with. Recorded in the footer of every Parquet file and with
+/// every ingest in the manifest, so the path from an archived source to a
+/// lake file can be read back and checked.
+#[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize)]
+pub struct Transform {
+    /// Report type of the block's I row.
+    pub report_type: String,
+    /// Report subtype of the block's I row.
+    pub report_subtype: String,
+    /// Version the I row was published with.
+    pub source_version: u16,
+    /// Columns of the I row, in order.
+    pub source_columns: Vec<String>,
+    /// Hash of the rules the shape was read with (`rules:<32 hex digits>`).
+    /// Empty for an ingest recorded before rules were.
+    pub rules: String,
+    /// Where the table's definition came from: `registry`, `user`, `file`.
+    pub schema_source: String,
+    /// How the shape matched the definition: `exact`, `aliased`, `drift`,
+    /// `derived`.
+    pub resolution: String,
+}
+
 /// What a writer records about the file it writes.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct FileMeta {
@@ -79,6 +103,8 @@ pub struct FileMeta {
     pub entry: String,
     /// Index of the time column in the schema, when the table has one.
     pub time_column: Option<usize>,
+    /// The shape that was read and the rules it was read with.
+    pub transform: Transform,
 }
 
 /// Handle to an open writer.

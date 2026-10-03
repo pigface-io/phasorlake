@@ -18,7 +18,7 @@ use nemlake_mms::{RowError, SinkError};
 use nemlake_schema::{LoadMode, Registry, ResolveOptions, Resolved, TableId};
 use nemlake_store::partition::split_by_month;
 use nemlake_store::{
-    FileMeta, LakeWriter, ParquetHive, Partition, PartitionKey, WriterId, WrittenFile,
+    FileMeta, LakeWriter, ParquetHive, Partition, PartitionKey, Transform, WriterId, WrittenFile,
 };
 use tokio::sync::mpsc;
 
@@ -42,9 +42,12 @@ pub struct IngestInput {
     pub request: String,
     /// Events.
     pub events: Option<mpsc::Sender<Event>>,
+    /// The file is in the lake already, written by rules that have changed
+    /// since; it is being read again.
+    pub rules_changed: bool,
 }
 
-/// One (table, version) within one entry.
+/// One shape (table, version, column list) within one entry.
 #[derive(Debug, Clone)]
 pub struct IngestResult {
     /// Table.
@@ -55,16 +58,8 @@ pub struct IngestResult {
     pub version: u16,
     /// Observed I-row fingerprint.
     pub fingerprint: Fingerprint,
-    /// Resolution status label.
-    pub status: &'static str,
-    /// Report type.
-    pub report_type: String,
-    /// Report subtype.
-    pub report_subtype: String,
-    /// Observed version.
-    pub observed_version: u16,
-    /// Observed columns.
-    pub columns: Vec<String>,
+    /// The shape that was read and the rules it was read with.
+    pub transform: Transform,
     /// Rows written.
     pub rows: u64,
     /// Rows quarantined.
@@ -101,6 +96,9 @@ pub struct FileReport {
     pub file_error: Option<Diagnostic>,
     /// Entries that were not CSVs or zips.
     pub skipped_entries: Vec<String>,
+    /// The file was read again because the rules it had been written by
+    /// have changed.
+    pub rules_changed: bool,
 }
 
 impl FileReport {
@@ -137,8 +135,10 @@ impl LakeSink<'_> {
         version: u16,
         fingerprint: Fingerprint,
         time_column: Option<usize>,
+        transform: Transform,
     ) -> FileMeta {
         FileMeta {
+            transform,
             table: table.to_owned(),
             source_stem: entry_stem(self.entry, &self.local.remote.stem()),
             schema_version: version,
@@ -153,13 +153,11 @@ impl LakeSink<'_> {
     fn close_all(&mut self) -> Result<(), nemlake_store::StoreError> {
         let mut keys: Vec<_> = self.writers.drain().collect();
         keys.sort_by_key(|(k, _)| (k.0, k.1, k.2, k.3));
-        for ((table_id, version, _, _), wid) in keys {
+        for ((table_id, version, shape, _), wid) in keys {
             let written = self.writer.close(wid)?;
-            if let Some(r) = self
-                .results
-                .iter_mut()
-                .find(|r| r.table_id == table_id && r.version == version)
-            {
+            if let Some(r) = self.results.iter_mut().find(|r| {
+                r.table_id == table_id && r.version == version && r.fingerprint.0 == shape
+            }) {
                 r.outputs.push(written);
             }
         }
@@ -188,23 +186,30 @@ impl LakeSink<'_> {
 impl BatchSink for LakeSink<'_> {
     fn block_started(&mut self, irow: &IRow<'_>, resolved: &Resolved, _pos: Pos) {
         let table = self.registry.table(resolved.table);
-        let idx = match self
-            .results
-            .iter()
-            .position(|r| r.table_id == resolved.table && r.version == resolved.version.0)
-        {
+        let fingerprint = irow.fingerprint();
+        // Two column lists of one version are two shapes, read by two sets
+        // of rules: each is a result of its own.
+        let idx = match self.results.iter().position(|r| {
+            r.table_id == resolved.table
+                && r.version == resolved.version.0
+                && r.fingerprint == fingerprint
+        }) {
             Some(i) => i,
             None => {
                 self.results.push(IngestResult {
                     table: table.name.clone(),
                     table_id: resolved.table,
                     version: resolved.version.0,
-                    fingerprint: irow.fingerprint(),
-                    status: resolved.status.label(),
-                    report_type: irow.report_type.to_owned(),
-                    report_subtype: irow.report_subtype.to_owned(),
-                    observed_version: irow.version,
-                    columns: irow.columns.iter().map(|c| (*c).to_owned()).collect(),
+                    fingerprint,
+                    transform: Transform {
+                        report_type: irow.report_type.to_owned(),
+                        report_subtype: irow.report_subtype.to_owned(),
+                        source_version: irow.version,
+                        source_columns: irow.columns.iter().map(|c| (*c).to_owned()).collect(),
+                        rules: resolved.rules().to_string(),
+                        schema_source: resolved.source.label().to_owned(),
+                        resolution: resolved.status.label().to_owned(),
+                    },
                     rows: 0,
                     bad_rows: 0,
                     outputs: vec![],
@@ -276,7 +281,13 @@ impl BatchSink for LakeSink<'_> {
                         table_dir: self.registry.table_dir(b.table),
                         partition,
                     };
-                    let meta = self.meta(&table.name, b.version.0, b.fingerprint, time_col);
+                    let meta = self.meta(
+                        &table.name,
+                        b.version.0,
+                        b.fingerprint,
+                        time_col,
+                        self.results[idx].transform.clone(),
+                    );
                     let w = self.writer.open(&pk, batch.schema(), &meta).map_err(|e| {
                         SinkError::Write {
                             table: table.name.clone(),
@@ -536,6 +547,7 @@ pub fn ingest_file(input: IngestInput) -> FileReport {
         }
     }
     FileReport {
+        rules_changed: input.rules_changed,
         local: input.local,
         entries,
         file_error,

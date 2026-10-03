@@ -18,6 +18,7 @@ pub async fn dispatch(cli: Cli) -> Result<i32> {
     match &cli.command {
         Command::Fetch { market } => lake::fetch(&cli, &ctx, market).await,
         Command::Ingest { paths, ingest } => lake::ingest(&cli, &ctx, paths, ingest).await,
+        Command::Reingest { dry_run, ingest } => lake::reingest(&cli, &ctx, *dry_run, ingest).await,
         Command::Verify { table } => lake::verify(&ctx, table.as_deref()).await,
         Command::Inspect {
             path,

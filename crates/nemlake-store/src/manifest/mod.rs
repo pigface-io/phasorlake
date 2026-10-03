@@ -16,11 +16,17 @@ use rusqlite::{Connection, OptionalExtension, params};
 use serde::{Deserialize, Serialize};
 
 use crate::error::ManifestError;
-use crate::writer::WrittenFile;
+use crate::writer::{Transform, WrittenFile};
 
 pub use handle::{ManifestHandle, ManifestThread};
 
-const MIGRATIONS: &[(&str, &str)] = &[("0001_init", include_str!("migrations/0001_init.sql"))];
+const MIGRATIONS: &[(&str, &str)] = &[
+    ("0001_init", include_str!("migrations/0001_init.sql")),
+    (
+        "0002_transform",
+        include_str!("migrations/0002_transform.sql"),
+    ),
+];
 
 /// A row of `files`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -94,6 +100,8 @@ pub struct IngestStart {
     pub schema_version: u16,
     /// Fingerprint text.
     pub fingerprint: String,
+    /// The shape that was read and the rules it was read with.
+    pub transform: Transform,
 }
 
 /// The end of an ingest.
@@ -128,6 +136,12 @@ pub struct IngestRecord {
     pub table: String,
     /// Version.
     pub schema_version: u16,
+    /// Fingerprint of the shape that was read.
+    #[serde(default)]
+    pub fingerprint: String,
+    /// The shape that was read and the rules it was read with.
+    #[serde(default)]
+    pub transform: Transform,
     /// Status.
     pub status: IngestStatus,
     /// Rows.
@@ -261,9 +275,23 @@ impl Manifest {
             |r| r.get::<_, i64>(0),
         ))? > 0;
         let mut at = if has_meta { self.version()? } else { 0 };
+        if at as usize >= MIGRATIONS.len() {
+            return Ok(());
+        }
+        // A migration that rebuilds a table drops the old one, and with
+        // foreign keys on that would take the rows that point at it. The
+        // setting cannot change inside a transaction, so it is off for the
+        // whole pass and back on after it.
+        self.exec_batch("PRAGMA foreign_keys = OFF;")?;
+        let migrated = self.apply_migrations(&mut at);
+        self.exec_batch("PRAGMA foreign_keys = ON;")?;
+        migrated
+    }
+
+    fn apply_migrations(&mut self, at: &mut u32) -> Result<(), ManifestError> {
         for (i, (name, sql)) in MIGRATIONS.iter().enumerate() {
             let n = i as u32 + 1;
-            if n <= at {
+            if n <= *at {
                 continue;
             }
             let script = format!(
@@ -273,12 +301,12 @@ impl Manifest {
                 let _ = self.conn.execute_batch("ROLLBACK;");
                 return Err(ManifestError::Migration {
                     path: self.path.clone(),
-                    at,
+                    at: *at,
                     failed: (*name).to_owned(),
                     message: e.to_string(),
                 });
             }
-            at = n;
+            *at = n;
         }
         Ok(())
     }
@@ -371,32 +399,75 @@ impl Manifest {
         self.sql(r)
     }
 
-    /// Whether a source with this URL and sha256 has every ingest `ok` and
-    /// every output still on disk, so it can be skipped.
-    pub fn is_ingested(&self, url: &str, sha256: &str) -> Result<bool, ManifestError> {
+    /// Every file the manifest has recorded, in the order they were first
+    /// seen.
+    pub fn list_files(&self) -> Result<Vec<FileRecord>, ManifestError> {
+        let mut stmt = self.sql(self.conn.prepare(
+            "SELECT source, url, cache_path, sha256, size, etag, last_modified FROM files ORDER BY id",
+        ))?;
+        self.sql(
+            stmt.query_map([], |r| {
+                Ok(FileRecord {
+                    source: r.get(0)?,
+                    url: r.get(1)?,
+                    cache_path: r.get(2)?,
+                    sha256: r.get(3)?,
+                    size: r.get::<_, i64>(4)? as u64,
+                    etag: r.get(5)?,
+                    last_modified: r.get(6)?,
+                })
+            })
+            .and_then(Iterator::collect),
+        )
+    }
+
+    /// What was read from a source with this URL and sha256, when it is
+    /// wholly in the lake: every ingest `ok` and every output still on
+    /// disk. `None` when it is not (never ingested, changed since, failed,
+    /// interrupted, or a Parquet file gone), so it must be read again.
+    ///
+    /// The caller decides whether the transforms are still the ones the
+    /// current rules give; if they are, the source can be skipped. Ingests
+    /// an earlier version of the source left behind do not count.
+    pub fn ingested_shapes(
+        &self,
+        url: &str,
+        sha256: &str,
+    ) -> Result<Option<Vec<IngestShape>>, ManifestError> {
         let Some((file_id, rec)) = self.file_by_url(url)? else {
-            return Ok(false);
+            return Ok(None);
         };
         if rec.sha256 != sha256 {
-            return Ok(false);
+            return Ok(None);
         }
-        let mut stmt = self.sql(
-            self.conn
-                .prepare("SELECT id, status FROM ingests WHERE file_id = ?1"),
+        let mut stmt = self.sql(self.conn.prepare(
+            "SELECT status, table_name, report_type, report_subtype, source_version, source_columns, rules, schema_source, resolution
+             FROM ingests WHERE file_id = ?1 AND status != 'superseded' ORDER BY id",
+        ))?;
+        let rows: Vec<(String, IngestShape)> = self.sql(
+            stmt.query_map([file_id], |r| {
+                Ok((
+                    r.get(0)?,
+                    IngestShape {
+                        table: r.get(1)?,
+                        transform: transform_from_row(r, 2)?,
+                    },
+                ))
+            })
+            .and_then(Iterator::collect),
         )?;
-        let rows: Vec<(i64, String)> = self.sql(
-            stmt.query_map([file_id], |r| Ok((r.get(0)?, r.get(1)?)))
-                .and_then(Iterator::collect),
-        )?;
-        if rows.is_empty() || rows.iter().any(|(_, s)| s != "ok") {
-            return Ok(false);
+        if rows.is_empty() || rows.iter().any(|(s, _)| s != "ok") {
+            return Ok(None);
         }
         let mut stmt = self.sql(self.conn.prepare("SELECT o.parquet_path FROM outputs o JOIN ingests i ON o.ingest_id = i.id WHERE i.file_id = ?1"))?;
         let paths: Vec<String> = self.sql(
             stmt.query_map([file_id], |r| r.get(0))
                 .and_then(Iterator::collect),
         )?;
-        Ok(paths.iter().all(|p| Path::new(p).is_file()))
+        if !paths.iter().all(|p| Path::new(p).is_file()) {
+            return Ok(None);
+        }
+        Ok(Some(rows.into_iter().map(|(_, s)| s).collect()))
     }
 
     /// Paths of every output a file's ingests wrote, for superseding.
@@ -423,14 +494,31 @@ impl Manifest {
     /// Starts an ingest; a previous row for the same key is replaced.
     pub fn begin_ingest(&mut self, s: &IngestStart) -> Result<i64, ManifestError> {
         let r = self.conn.execute(
-            "DELETE FROM ingests WHERE file_id = ?1 AND entry = ?2 AND table_name = ?3 AND schema_version = ?4",
-            params![s.file_id, s.entry, s.table, i64::from(s.schema_version)],
+            "DELETE FROM ingests WHERE file_id = ?1 AND entry = ?2 AND table_name = ?3 AND schema_version = ?4 AND fingerprint = ?5",
+            params![s.file_id, s.entry, s.table, i64::from(s.schema_version), s.fingerprint],
         );
         self.sql(r)?;
+        let t = &s.transform;
         let r = self.conn.execute(
-            "INSERT INTO ingests (run_id, file_id, entry, table_name, schema_version, fingerprint, status, started_at)
-             VALUES (?1, ?2, ?3, ?4, ?5, ?6, 'running', ?7)",
-            params![s.run_id, s.file_id, s.entry, s.table, i64::from(s.schema_version), s.fingerprint, now()],
+            "INSERT INTO ingests (run_id, file_id, entry, table_name, schema_version, fingerprint, status, started_at,
+                                  report_type, report_subtype, source_version, source_columns, rules, schema_source, resolution)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, 'running', ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14)",
+            params![
+                s.run_id,
+                s.file_id,
+                s.entry,
+                s.table,
+                i64::from(s.schema_version),
+                s.fingerprint,
+                now(),
+                t.report_type,
+                t.report_subtype,
+                i64::from(t.source_version),
+                t.source_columns.join(","),
+                t.rules,
+                t.schema_source,
+                t.resolution
+            ],
         );
         self.sql(r)?;
         Ok(self.conn.last_insert_rowid())
@@ -528,7 +616,8 @@ impl Manifest {
         limit: usize,
     ) -> Result<Vec<IngestRecord>, ManifestError> {
         let sql = format!(
-            "SELECT i.id, i.run_id, f.url, i.entry, i.table_name, i.schema_version, i.status, i.rows, i.bad_rows, i.started_at, i.finished_at, i.error_code
+            "SELECT i.id, i.run_id, f.url, i.entry, i.table_name, i.schema_version, i.status, i.rows, i.bad_rows, i.started_at, i.finished_at, i.error_code,
+                    i.fingerprint, i.report_type, i.report_subtype, i.source_version, i.source_columns, i.rules, i.schema_source, i.resolution
              FROM ingests i JOIN files f ON i.file_id = f.id
              WHERE (?1 IS NULL OR i.table_name = ?1) AND (?2 = 0 OR i.status = 'failed')
              ORDER BY i.id DESC LIMIT {}",
@@ -544,6 +633,8 @@ impl Manifest {
                     entry: r.get(3)?,
                     table: r.get(4)?,
                     schema_version: r.get::<_, i64>(5)? as u16,
+                    fingerprint: r.get(12)?,
+                    transform: transform_from_row(r, 13)?,
                     status: IngestStatus::parse(&r.get::<_, String>(6)?),
                     rows: r.get::<_, i64>(7)? as u64,
                     bad_rows: r.get::<_, i64>(8)? as u64,
@@ -617,6 +708,35 @@ impl Manifest {
     }
 }
 
+/// One ingest of a source: the table it went to and its transform.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct IngestShape {
+    /// Table.
+    pub table: String,
+    /// The shape that was read and the rules it was read with.
+    pub transform: Transform,
+}
+
+/// Reads the seven transform columns of an `ingests` row, starting at `at`:
+/// report type, report subtype, source version, source columns, rules,
+/// schema source, resolution.
+fn transform_from_row(r: &rusqlite::Row<'_>, at: usize) -> rusqlite::Result<Transform> {
+    let columns: String = r.get(at + 3)?;
+    Ok(Transform {
+        report_type: r.get(at)?,
+        report_subtype: r.get(at + 1)?,
+        source_version: r.get::<_, i64>(at + 2)? as u16,
+        source_columns: if columns.is_empty() {
+            vec![]
+        } else {
+            columns.split(',').map(str::to_owned).collect()
+        },
+        rules: r.get(at + 4)?,
+        schema_source: r.get(at + 5)?,
+        resolution: r.get(at + 6)?,
+    })
+}
+
 fn parse_partition(seg: &str) -> crate::writer::Partition {
     use crate::writer::Partition;
     if let Some(rest) = seg.strip_prefix("snapshot=")
@@ -642,6 +762,18 @@ mod tests {
     use super::*;
     use crate::writer::Partition;
 
+    fn transform() -> Transform {
+        Transform {
+            report_type: "A".into(),
+            report_subtype: "B".into(),
+            source_version: 3,
+            source_columns: vec!["X".into(), "Y".into()],
+            rules: "rules:1".into(),
+            schema_source: "registry".into(),
+            resolution: "exact".into(),
+        }
+    }
+
     fn file(url: &str, sha: &str) -> FileRecord {
         FileRecord {
             source: "nem-mmsdm".into(),
@@ -659,11 +791,11 @@ mod tests {
         let dir = tempfile::tempdir().unwrap();
         let p = dir.path().join("sub").join("manifest.sqlite");
         let m = Manifest::open(&p).unwrap();
-        assert_eq!(m.version().unwrap(), 1);
+        assert_eq!(m.version().unwrap(), MIGRATIONS.len() as u32);
         // Reopening does not re-run migrations.
         drop(m);
         let mut m = Manifest::open(&p).unwrap();
-        assert_eq!(m.version().unwrap(), 1);
+        assert_eq!(m.version().unwrap(), MIGRATIONS.len() as u32);
         let run = m.begin_run("fetch nem --table X").unwrap();
         assert_eq!(m.latest_run().unwrap().unwrap().id, run);
         let fid = m.record_file(&file("https://h/a.zip", "aaa")).unwrap();
@@ -675,9 +807,17 @@ mod tests {
         );
         assert!(m.file_by_url("https://h/none").unwrap().is_none());
         assert!(
-            !m.is_ingested("https://h/a.zip", "bbb").unwrap(),
+            m.ingested_shapes("https://h/a.zip", "bbb")
+                .unwrap()
+                .is_none(),
             "no ingests yet"
         );
+        assert!(
+            m.ingested_shapes("https://h/none", "bbb")
+                .unwrap()
+                .is_none()
+        );
+        assert_eq!(m.list_files().unwrap(), [file("https://h/a.zip", "bbb")]);
         let out_path = dir.path().join("out.parquet");
         std::fs::write(&out_path, b"x").unwrap();
         let start = IngestStart {
@@ -687,9 +827,15 @@ mod tests {
             table: "T".into(),
             schema_version: 1,
             fingerprint: "xxh3:1".into(),
+            transform: transform(),
         };
         let iid = m.begin_ingest(&start).unwrap();
-        assert!(!m.is_ingested("https://h/a.zip", "bbb").unwrap(), "running");
+        assert!(
+            m.ingested_shapes("https://h/a.zip", "bbb")
+                .unwrap()
+                .is_none(),
+            "running"
+        );
         let outputs = vec![WrittenFile {
             path: out_path.display().to_string(),
             partition: Partition::Month {
@@ -714,13 +860,47 @@ mod tests {
             },
         )
         .unwrap();
-        assert!(m.is_ingested("https://h/a.zip", "bbb").unwrap());
+        assert_eq!(
+            m.ingested_shapes("https://h/a.zip", "bbb").unwrap(),
+            Some(vec![IngestShape {
+                table: "T".into(),
+                transform: transform()
+            }])
+        );
         assert!(
-            !m.is_ingested("https://h/a.zip", "ccc").unwrap(),
+            m.ingested_shapes("https://h/a.zip", "ccc")
+                .unwrap()
+                .is_none(),
             "sha changed"
         );
         let recs = m.list_ingests(None, false, 10).unwrap();
         assert_eq!(recs.len(), 1);
+        assert_eq!(recs[0].fingerprint, "xxh3:1");
+        assert_eq!(recs[0].transform, transform());
+        // Another column list of the same version is an ingest of its own.
+        let other = m
+            .begin_ingest(&IngestStart {
+                fingerprint: "xxh3:2".into(),
+                ..start.clone()
+            })
+            .unwrap();
+        assert_eq!(m.list_ingests(None, false, 10).unwrap().len(), 2);
+        assert!(
+            m.ingested_shapes("https://h/a.zip", "bbb")
+                .unwrap()
+                .is_none(),
+            "one of its ingests is still running"
+        );
+        let r = m.conn.execute("DELETE FROM ingests WHERE id = ?1", [other]);
+        assert_eq!(r.unwrap(), 1);
+        // A Parquet file that is gone makes the source one to read again.
+        std::fs::remove_file(&out_path).unwrap();
+        assert!(
+            m.ingested_shapes("https://h/a.zip", "bbb")
+                .unwrap()
+                .is_none()
+        );
+        std::fs::write(&out_path, b"x").unwrap();
         assert_eq!(recs[0].status, IngestStatus::Ok);
         assert_eq!(recs[0].outputs, outputs);
         assert_eq!(recs[0].bad_rows, 1);
@@ -749,7 +929,11 @@ mod tests {
         let failed = m.list_ingests(None, true, 10).unwrap();
         assert_eq!(failed.len(), 1);
         assert_eq!(failed[0].error_code.as_deref(), Some("zip.bad_entry"));
-        assert!(!m.is_ingested("https://h/a.zip", "bbb").unwrap());
+        assert!(
+            m.ingested_shapes("https://h/a.zip", "bbb")
+                .unwrap()
+                .is_none()
+        );
         // Diagnostics.
         let d = Diagnostic::error("zip.bad_entry", Category::Zip, "Bad.")
             .with_table("T")
@@ -854,6 +1038,32 @@ mod tests {
             m.list_ingests(None, false, 10).unwrap()[0].status,
             IngestStatus::Superseded
         );
+        // What a superseded source left behind does not hold back the
+        // source that replaced it.
+        let fresh = m
+            .begin_ingest(&IngestStart {
+                entry: "C.CSV".into(),
+                ..start.clone()
+            })
+            .unwrap();
+        m.finish_ingest(
+            fresh,
+            &IngestEnd {
+                status: IngestStatus::Ok,
+                rows: 1,
+                bad_rows: 0,
+                quarantine_path: None,
+                outputs: vec![],
+                error_code: None,
+            },
+        )
+        .unwrap();
+        assert_eq!(
+            m.ingested_shapes("https://h/a.zip", "bbb")
+                .unwrap()
+                .map(|s| s.len()),
+            Some(1)
+        );
         // Run end.
         m.finish_run(run, 3, "{}").unwrap();
         let r = m.latest_run().unwrap().unwrap();
@@ -882,7 +1092,7 @@ mod tests {
     #[test]
     fn in_memory_and_partition_parse_and_errors() {
         let mut m = Manifest::in_memory().unwrap();
-        assert_eq!(m.version().unwrap(), 1);
+        assert_eq!(m.version().unwrap(), MIGRATIONS.len() as u32);
         assert!(m.latest_run().unwrap().is_none());
         assert_eq!(m.abort_running().unwrap(), 0);
         assert_eq!(
@@ -920,9 +1130,91 @@ mod tests {
                 entry: String::new(),
                 table: String::new(),
                 schema_version: 0,
-                fingerprint: String::new()
+                fingerprint: String::new(),
+                transform: Transform::default(),
             })
             .is_err()
         );
+    }
+
+    /// A manifest written before ingests recorded their transform keeps
+    /// every row, output and diagnostic through the rebuild of `ingests`,
+    /// and its ingests read as ones whose rules are not known.
+    #[test]
+    fn an_older_manifest_is_migrated_in_place() {
+        let dir = tempfile::tempdir().unwrap();
+        let p = dir.path().join("manifest.sqlite");
+        let out = dir.path().join("out.parquet");
+        std::fs::write(&out, b"x").unwrap();
+        {
+            let conn = Connection::open(&p).unwrap();
+            conn.execute_batch(&format!(
+                "PRAGMA foreign_keys = ON; BEGIN; {}; INSERT INTO meta(key, value) VALUES ('migration', '1');
+                 INSERT INTO runs (id, argv, started_at, version) VALUES (1, 'ingest x', 't', '0');
+                 INSERT INTO files (id, source, url, cache_path, sha256, size, fetched_at) VALUES (1, 'local', 'file:///x.csv', '/x.csv', 'sha', 1, 't');
+                 INSERT INTO ingests (id, run_id, file_id, entry, table_name, schema_version, fingerprint, status, rows, started_at)
+                     VALUES (7, 1, 1, 'x.csv', 'T', 2, 'xxh3:9', 'ok', 5, 't');
+                 INSERT INTO outputs (ingest_id, parquet_path, partition, rows, bytes) VALUES (7, '{}', 'year=2024/month=01', 5, 1);
+                 INSERT INTO diagnostics (run_id, ingest_id, severity, code, category, message, json, created_at)
+                     VALUES (1, 7, 'warning', 'schema.x', 'schema', 'w', '{{}}', 't');
+                 COMMIT;",
+                MIGRATIONS[0].1,
+                out.display()
+            ))
+            .unwrap();
+        }
+        let m = Manifest::open(&p).unwrap();
+        assert_eq!(m.version().unwrap(), MIGRATIONS.len() as u32);
+        let recs = m.list_ingests(None, false, 10).unwrap();
+        assert_eq!(recs.len(), 1);
+        assert_eq!(
+            (recs[0].id, recs[0].rows, recs[0].schema_version),
+            (7, 5, 2)
+        );
+        assert_eq!(recs[0].fingerprint, "xxh3:9");
+        assert_eq!(recs[0].outputs.len(), 1, "outputs survive the rebuild");
+        assert_eq!(recs[0].transform, Transform::default());
+        let kept: i64 = m
+            .conn
+            .query_row(
+                "SELECT count(*) FROM diagnostics WHERE ingest_id = 7",
+                [],
+                |r| r.get(0),
+            )
+            .unwrap();
+        assert_eq!(kept, 1, "diagnostics still point at their ingest");
+        // The source is wholly in the lake, by rules nobody recorded.
+        let shapes = m.ingested_shapes("file:///x.csv", "sha").unwrap().unwrap();
+        assert_eq!(shapes[0].transform.rules, "");
+        assert!(shapes[0].transform.source_columns.is_empty());
+        // Foreign keys are back on: an ingest that goes takes its outputs.
+        m.conn
+            .execute("DELETE FROM ingests WHERE id = 7", [])
+            .unwrap();
+        assert!(m.outputs_of_file(1).unwrap().is_empty());
+    }
+
+    /// A migration that fails leaves the manifest as it was and says which
+    /// one failed.
+    #[test]
+    fn a_failed_migration_is_reported() {
+        let dir = tempfile::tempdir().unwrap();
+        let p = dir.path().join("manifest.sqlite");
+        {
+            // Claims to be at migration 1 but has no `ingests` to rebuild.
+            let conn = Connection::open(&p).unwrap();
+            conn.execute_batch(
+                "CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT NOT NULL);
+                 INSERT INTO meta(key, value) VALUES ('migration', '1');",
+            )
+            .unwrap();
+        }
+        match Manifest::open(&p) {
+            Err(ManifestError::Migration { at, failed, .. }) => {
+                assert_eq!(at, 1);
+                assert_eq!(failed, "0002_transform");
+            }
+            other => panic!("{:?}", other.map(|_| ())),
+        }
     }
 }

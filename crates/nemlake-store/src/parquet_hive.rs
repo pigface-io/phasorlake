@@ -116,6 +116,32 @@ impl ParquetHive {
                     meta.source_sha256.clone(),
                 ),
                 KeyValue::new("nemlake.entry".to_owned(), meta.entry.clone()),
+                // The transform: what was read, and by which rules.
+                KeyValue::new(
+                    "nemlake.report_type".to_owned(),
+                    meta.transform.report_type.clone(),
+                ),
+                KeyValue::new(
+                    "nemlake.report_subtype".to_owned(),
+                    meta.transform.report_subtype.clone(),
+                ),
+                KeyValue::new(
+                    "nemlake.source_version".to_owned(),
+                    meta.transform.source_version.to_string(),
+                ),
+                KeyValue::new(
+                    "nemlake.source_columns".to_owned(),
+                    meta.transform.source_columns.join(","),
+                ),
+                KeyValue::new("nemlake.rules".to_owned(), meta.transform.rules.clone()),
+                KeyValue::new(
+                    "nemlake.schema_source".to_owned(),
+                    meta.transform.schema_source.clone(),
+                ),
+                KeyValue::new(
+                    "nemlake.resolution".to_owned(),
+                    meta.transform.resolution.clone(),
+                ),
             ]));
         // Measures never benefit from dictionaries; ids do.
         for f in schema.fields() {
@@ -337,7 +363,7 @@ mod tests {
     use parquet::arrow::arrow_reader::ParquetRecordBatchReaderBuilder;
 
     use super::*;
-    use crate::writer::Partition;
+    use crate::writer::{Partition, Transform};
 
     fn schema() -> SchemaRef {
         Arc::new(Schema::new(vec![
@@ -377,6 +403,15 @@ mod tests {
             source_sha256: "abcdef0123456789".into(),
             entry: "Y.CSV".into(),
             time_column: Some(0),
+            transform: Transform {
+                report_type: "DISPATCH".into(),
+                report_subtype: "UNIT_SCADA".into(),
+                source_version: 1,
+                source_columns: vec!["SETTLEMENTDATE".into(), "DUID".into()],
+                rules: "rules:00000000000000000000000000000abc".into(),
+                schema_source: "registry".into(),
+                resolution: "exact".into(),
+            },
         }
     }
 
@@ -455,6 +490,22 @@ mod tests {
                     && k.value.as_deref() == Some("DISPATCH_UNIT_SCADA"))
         );
         assert!(kv.iter().any(|k| k.key == "nemlake.source_sha256"));
+        let value = |key: &str| {
+            kv.iter()
+                .find(|k| k.key == key)
+                .and_then(|k| k.value.clone())
+                .unwrap_or_default()
+        };
+        assert_eq!(value("nemlake.report_type"), "DISPATCH");
+        assert_eq!(value("nemlake.report_subtype"), "UNIT_SCADA");
+        assert_eq!(value("nemlake.source_version"), "1");
+        assert_eq!(value("nemlake.source_columns"), "SETTLEMENTDATE,DUID");
+        assert_eq!(
+            value("nemlake.rules"),
+            "rules:00000000000000000000000000000abc"
+        );
+        assert_eq!(value("nemlake.schema_source"), "registry");
+        assert_eq!(value("nemlake.resolution"), "exact");
         assert!(f.sorted);
         let batches: Vec<RecordBatch> = b.build().unwrap().map(Result::unwrap).collect();
         assert_eq!(batches.iter().map(RecordBatch::num_rows).sum::<usize>(), 3);

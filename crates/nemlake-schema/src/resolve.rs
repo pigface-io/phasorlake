@@ -9,7 +9,8 @@ use nemlake_schema_model::{ColumnType, MarketDef, SchemaVersion, TableDef};
 
 use crate::arrow::{data_type, decimal_fallback};
 use crate::error::ResolveError;
-use crate::registry::{Registry, TableId, TypeOptions};
+use crate::registry::{Registry, SchemaSource, TableId, TypeOptions};
+use crate::rules::RulesHash;
 
 /// Strictness of resolution.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
@@ -102,6 +103,8 @@ pub struct Projection {
     pub primary_key: Vec<u16>,
     /// Lake column index of the partition column.
     pub time_column: Option<u16>,
+    /// The identity of these rules: see [`crate::rules`].
+    pub rules: RulesHash,
 }
 
 impl Projection {
@@ -137,13 +140,13 @@ impl Projection {
                 }),
             }
         }
-        let missing = supplied
+        let missing: Vec<u16> = supplied
             .iter()
             .enumerate()
             .filter(|(_, s)| !**s)
             .map(|(i, _)| i as u16)
             .collect();
-        let primary_key = t
+        let primary_key: Vec<u16> = t
             .primary_key
             .iter()
             .filter_map(|k| t.column_index(k))
@@ -154,12 +157,22 @@ impl Projection {
             .as_deref()
             .and_then(|c| t.column_index(c))
             .map(|i| i as u16);
+        let rules = crate::rules::hash(
+            t,
+            &t.dir_name(),
+            arrow,
+            &casts,
+            &missing,
+            &primary_key,
+            time_column,
+        );
         Ok(Self {
             arrow: arrow.clone(),
             casts,
             missing,
             primary_key,
             time_column,
+            rules,
         })
     }
 
@@ -171,12 +184,14 @@ impl Projection {
     /// table is added at the end as a nullable text column, marked as coming
     /// from the file, and a column the shape lacks is made nullable where
     /// the lake says it is not, since these files have no value for it.
+    /// `dir` is the directory the table's files go to.
     pub fn build_file_shape(
         t: &TableDef,
         market: &MarketDef,
         opts: TypeOptions,
         lake: &SchemaRef,
         names: &[&str],
+        dir: &str,
     ) -> Self {
         let lake_width = lake.fields().len();
         let mut fields: Vec<arrow_schema::Field> =
@@ -231,7 +246,7 @@ impl Projection {
                 *f = f.clone().with_nullable(true);
             }
         }
-        let primary_key = t
+        let primary_key: Vec<u16> = t
             .primary_key
             .iter()
             .filter_map(|k| t.column_index(k))
@@ -242,15 +257,15 @@ impl Projection {
             .as_deref()
             .and_then(|c| t.column_index(c))
             .map(|i| i as u16);
+        let arrow = arrow_schema::Schema::new_with_metadata(fields, lake.metadata().clone());
+        let rules = crate::rules::hash(t, dir, &arrow, &casts, &missing, &primary_key, time_column);
         Self {
-            arrow: std::sync::Arc::new(arrow_schema::Schema::new_with_metadata(
-                fields,
-                lake.metadata().clone(),
-            )),
+            arrow: std::sync::Arc::new(arrow),
             casts,
             missing,
             primary_key,
             time_column,
+            rules,
         }
     }
 
@@ -314,8 +329,17 @@ pub struct Resolved {
     pub status: Status,
     /// The projection to parse with.
     pub projection: Arc<Projection>,
+    /// Where the table's definition came from.
+    pub source: SchemaSource,
     /// Warnings raised while resolving (drift, decimal fallback).
     pub warnings: Vec<Diagnostic>,
+}
+
+impl Resolved {
+    /// The identity of the rules this shape is read with.
+    pub fn rules(&self) -> RulesHash {
+        self.projection.rules
+    }
 }
 
 impl Registry {
@@ -368,6 +392,7 @@ impl Registry {
                     version,
                     status: Status::Exact,
                     projection,
+                    source: self.schema_source(id),
                     warnings,
                 });
             }
@@ -400,6 +425,7 @@ impl Registry {
                 version: matched,
                 status: Status::Aliased { matched },
                 projection,
+                source: self.schema_source(id),
                 warnings,
             });
         }
@@ -488,6 +514,7 @@ impl Registry {
                 self.options(),
                 self.lake_schema(id),
                 &observed,
+                &self.table_dir(id),
             ))
         });
         let mut d = Diagnostic::warning(
@@ -538,6 +565,7 @@ impl Registry {
                 reordered,
             },
             projection,
+            source: self.schema_source(id),
             warnings,
         })
     }
@@ -557,6 +585,7 @@ impl Registry {
                 self.options(),
                 self.lake_schema(id),
                 &names,
+                &self.table_dir(id),
             ))
         });
         let warning = Diagnostic::warning(
@@ -576,6 +605,7 @@ impl Registry {
             version: SchemaVersion(irow.version),
             status: Status::Derived,
             projection,
+            source: self.schema_source(id),
             warnings: vec![warning],
         }
     }
@@ -614,6 +644,7 @@ impl Registry {
                 version: v.n,
                 status: Status::Exact,
                 projection,
+                source: self.schema_source(id),
                 warnings: vec![],
             });
         }
@@ -665,6 +696,7 @@ impl Registry {
                 reordered: false,
             },
             projection,
+            source: self.schema_source(id),
             warnings: vec![],
         })
     }

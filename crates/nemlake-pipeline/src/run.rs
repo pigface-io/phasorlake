@@ -9,7 +9,10 @@ use nemlake_core::report::{DiagSink, Flow, Report, SourceOutcome, SourceStatus};
 use nemlake_core::{Category, Diagnostic};
 use nemlake_fetch::cache::sha256_hex;
 use nemlake_fetch::{FileKind, LocalFile, RemoteFile};
-use nemlake_store::manifest::{FileRecord, IngestEnd, IngestStart, IngestStatus, SchemaSeen};
+use nemlake_schema::{Mode, Registry, ResolveOptions};
+use nemlake_store::manifest::{
+    FileRecord, IngestEnd, IngestShape, IngestStart, IngestStatus, SchemaSeen,
+};
 use tokio::sync::mpsc;
 use tokio_util::sync::CancellationToken;
 use url::Url;
@@ -64,6 +67,58 @@ pub fn local_file(remote: RemoteFile, path: &std::path::Path) -> std::io::Result
     })
 }
 
+/// A source the manifest has recorded, as the file to read it from again.
+/// `None` when its URL does not parse or its path names no file.
+pub fn recorded_remote(rec: &FileRecord) -> Option<RemoteFile> {
+    let mut remote = local_remote(std::path::Path::new(&rec.cache_path))?;
+    remote.url = Url::parse(&rec.url).ok()?;
+    remote.source = match rec.source.as_str() {
+        nemlake_fetch::mmsdm::SOURCE_ID => nemlake_fetch::mmsdm::SOURCE_ID,
+        nemlake_fetch::wem::SOURCE_ID => nemlake_fetch::wem::SOURCE_ID,
+        _ => "local",
+    };
+    Some(remote)
+}
+
+/// Whether every shape that was read from a source would be read by the
+/// same rules today. The answer comes from the recorded shapes alone; the
+/// source is not opened.
+///
+/// Strictness is not part of the question: a shape the registry would
+/// refuse in strict mode is current when the permissive rules that wrote it
+/// have not changed.
+pub fn rules_current(registry: &Registry, shapes: &[IngestShape]) -> bool {
+    shapes.iter().all(|s| {
+        let t = &s.transform;
+        if t.rules.is_empty() {
+            return false;
+        }
+        let columns: Vec<&str> = t.source_columns.iter().map(String::as_str).collect();
+        let irow = nemlake_core::IRow {
+            report_type: &t.report_type,
+            report_subtype: &t.report_subtype,
+            version: t.source_version,
+            columns: &columns,
+        };
+        registry
+            .resolve(
+                &irow,
+                ResolveOptions {
+                    mode: Mode::Permissive,
+                },
+            )
+            .is_ok_and(|r| r.rules().to_string() == t.rules)
+    })
+}
+
+/// A file to fetch or read: where it is, and for a file already on disk
+/// its path and what the manifest knows of it.
+struct Listed {
+    remote: RemoteFile,
+    path: Option<std::path::PathBuf>,
+    known: Option<FileRecord>,
+}
+
 enum Fetched {
     Ok(LocalFile),
     Failed(RemoteFile, Box<Diagnostic>),
@@ -100,9 +155,16 @@ pub async fn run(
     let _ = nemlake_store::parquet_hive::sweep_tmp(&deps.home.lake());
 
     // 1. List.
-    let listed: Vec<(RemoteFile, Option<std::path::PathBuf>)> = match &plan.input {
+    let listed: Vec<Listed> = match &plan.input {
         Input::Remote { source, query } => match source.list(query, &deps.fetcher).await {
-            Ok(files) => files.into_iter().map(|f| (f, None)).collect(),
+            Ok(files) => files
+                .into_iter()
+                .map(|remote| Listed {
+                    remote,
+                    path: None,
+                    known: None,
+                })
+                .collect(),
             Err(e) => {
                 let d = e.diagnostic().with_request(request.clone());
                 emit(&events, Event::Diagnostic(Box::new(d.clone())));
@@ -129,7 +191,11 @@ pub async fn run(
             let mut out = Vec::new();
             for p in paths {
                 match local_remote(p) {
-                    Some(r) => out.push((r, Some(p.clone()))),
+                    Some(remote) => out.push(Listed {
+                        remote,
+                        path: Some(p.clone()),
+                        known: None,
+                    }),
                     None => {
                         let d = Diagnostic::error(
                             "config.bad_path",
@@ -145,6 +211,39 @@ pub async fn run(
             }
             out
         }
+        Input::Stale => {
+            let files = match deps.manifest.list_files().await {
+                Ok(files) => files,
+                Err(e) => {
+                    let d = e.diagnostic().with_request(request.clone());
+                    emit(&events, Event::Diagnostic(Box::new(d.clone())));
+                    report.emit(d);
+                    vec![]
+                }
+            };
+            let mut out = Vec::new();
+            for rec in files {
+                // Decided from the manifest alone: a source that is wholly
+                // in the lake by the current rules is not even hashed.
+                let shapes = deps
+                    .manifest
+                    .ingested_shapes(&rec.url, &rec.sha256)
+                    .await
+                    .ok()
+                    .flatten();
+                if shapes.is_some_and(|s| rules_current(&deps.registry, &s)) {
+                    continue;
+                }
+                if let Some(remote) = recorded_remote(&rec) {
+                    out.push(Listed {
+                        remote,
+                        path: Some(std::path::PathBuf::from(&rec.cache_path)),
+                        known: Some(rec),
+                    });
+                }
+            }
+            out
+        }
     };
     summary.listed = listed.len();
     emit(
@@ -153,7 +252,7 @@ pub async fn run(
             files: listed.len(),
         },
     );
-    let remotes: Vec<RemoteFile> = listed.iter().map(|(r, _)| r.clone()).collect();
+    let remotes: Vec<RemoteFile> = listed.iter().map(|l| l.remote.clone()).collect();
     if plan.options.dry_run {
         return finish(deps, run_id, report, summary, remotes, 0, started, &events).await;
     }
@@ -162,14 +261,38 @@ pub async fn run(
     let fetcher = deps.fetcher.clone();
     let req = request.clone();
     let fetched = futures::stream::iter(listed)
-        .map(|(remote, local_path)| {
+        .map(|Listed { remote, path, known }| {
             let fetcher = fetcher.clone();
             let req = req.clone();
             async move {
-                match local_path {
-                    Some(p) => match local_file(remote.clone(), &p) {
-                        Ok(l) => Fetched::Ok(l),
-                        Err(e) => Fetched::Failed(
+                match path {
+                    Some(p) => match (local_file(remote.clone(), &p), known) {
+                        // What the server said of a recorded source stays
+                        // with it when it is read again.
+                        (Ok(l), Some(known)) => Fetched::Ok(LocalFile {
+                            etag: known.etag,
+                            last_modified: known.last_modified,
+                            ..l
+                        }),
+                        (Ok(l), None) => Fetched::Ok(l),
+                        (Err(e), Some(_)) => Fetched::Failed(
+                            remote.clone(),
+                            Box::new(
+                                Diagnostic::error(
+                                    "cache.source_missing",
+                                    Category::Cache,
+                                    format!(
+                                        "{} was ingested from {}, which can no longer be read, so it cannot be read again from disk. Fetch or ingest it again.",
+                                        remote.url,
+                                        p.display()
+                                    ),
+                                )
+                                .with_file(p.display().to_string())
+                                .with_request(req)
+                                .caused_by(&e),
+                            ),
+                        ),
+                        (Err(e), None) => Fetched::Failed(
                             remote.clone(),
                             Box::new(
                                 Diagnostic::error(
@@ -223,12 +346,19 @@ pub async fn run(
                                 bytes: local.size,
                             },
                         );
+                        // In the lake already, by rules that still hold:
+                        // nothing to do. By rules that have changed: read
+                        // it again.
+                        let mut rules_changed = false;
                         match manifest
-                            .is_ingested(local.remote.url.as_str(), &local.sha256)
+                            .ingested_shapes(local.remote.url.as_str(), &local.sha256)
                             .await
                         {
-                            Ok(true) => return Step::Skipped(Box::new(local)),
-                            Ok(false) => {}
+                            Ok(Some(shapes)) if rules_current(&registry, &shapes) => {
+                                return Step::Skipped(Box::new(local));
+                            }
+                            Ok(Some(_)) => rules_changed = true,
+                            Ok(None) => {}
                             Err(e) => {
                                 return Step::FetchFailed(
                                     local.remote.clone(),
@@ -251,6 +381,7 @@ pub async fn run(
                             options,
                             request: req.clone(),
                             events: Some(ev.clone()),
+                            rules_changed,
                         };
                         match tokio::task::spawn_blocking(move || ingest_file(input)).await {
                             Ok(rep) => Step::Ingested(Box::new(rep)),
@@ -344,6 +475,20 @@ pub async fn run(
     .await
 }
 
+/// Removes a Parquet file an earlier read wrote, and each directory above
+/// it that is left empty, up to the lake's root.
+fn remove_output(path: &std::path::Path, lake: &std::path::Path) {
+    let _ = std::fs::remove_file(path);
+    let mut dir = path.parent();
+    while let Some(d) = dir {
+        // `remove_dir` refuses a directory that still holds something.
+        if d == lake || !d.starts_with(lake) || std::fs::remove_dir(d).is_err() {
+            break;
+        }
+        dir = d.parent();
+    }
+}
+
 enum Step {
     FetchFailed(RemoteFile, Box<Diagnostic>),
     Skipped(Box<LocalFile>),
@@ -396,24 +541,52 @@ async fn commit(
             None
         }
     };
-    // A changed source: forget the previous outputs.
-    if let (Some(fid), Some(run), Some((_, prev))) = (file_id, run_id, previous)
-        && prev.sha256 != local.sha256
-    {
+    // A changed source, or changed rules: what the earlier read wrote is
+    // replaced by what this one wrote. A file this read wrote again under
+    // the same name is already the new one and stays.
+    let source_changed = previous
+        .as_ref()
+        .is_some_and(|(_, prev)| prev.sha256 != local.sha256);
+    if let (Some(fid), Some(run), true) = (
+        file_id,
+        run_id,
+        previous.is_some() && (source_changed || rep.rules_changed),
+    ) {
+        let written: Vec<&str> = rep
+            .entries
+            .iter()
+            .flat_map(|e| &e.results)
+            .flat_map(|r| &r.outputs)
+            .map(|o| o.path.as_str())
+            .collect();
         let old = deps.manifest.outputs_of_file(fid).await.unwrap_or_default();
-        for p in &old {
-            let _ = std::fs::remove_file(p);
+        let lake = deps.home.lake();
+        for p in old.iter().filter(|p| !written.contains(&p.as_str())) {
+            remove_output(std::path::Path::new(p), &lake);
         }
         let _ = deps.manifest.supersede_file(fid).await;
-        let d = Diagnostic::warning(
-            "manifest.superseded",
-            Category::Manifest,
-            format!(
-                "{} changed since it was last ingested; {} earlier Parquet file(s) were replaced.",
-                local.remote.url,
-                old.len()
-            ),
-        )
+        let d = if source_changed {
+            Diagnostic::warning(
+                "manifest.superseded",
+                Category::Manifest,
+                format!(
+                    "{} changed since it was last ingested; {} earlier Parquet file(s) were replaced.",
+                    local.remote.url,
+                    old.len()
+                ),
+            )
+        } else {
+            Diagnostic::warning(
+                "manifest.rules_changed",
+                Category::Manifest,
+                format!(
+                    "The rules {} was ingested by have changed, so it was read again from {}; {} earlier Parquet file(s) were replaced.",
+                    local.remote.url,
+                    local.path.display(),
+                    old.len()
+                ),
+            )
+        }
         .with_url(local.remote.url.to_string());
         let _ = deps.manifest.record_diagnostic(run, None, d.clone()).await;
         emit(events, Event::Diagnostic(Box::new(d.clone())));
@@ -463,6 +636,7 @@ async fn commit(
                     table: r.table.clone(),
                     schema_version: r.version,
                     fingerprint: r.fingerprint.to_string(),
+                    transform: r.transform.clone(),
                 };
                 match deps.manifest.begin_ingest(start).await {
                     Ok(iid) => {
@@ -488,11 +662,11 @@ async fn commit(
                     .record_schema_seen(SchemaSeen {
                         fingerprint: r.fingerprint.to_string(),
                         table: Some(r.table.clone()),
-                        report_type: r.report_type.clone(),
-                        report_subtype: r.report_subtype.clone(),
-                        version: r.observed_version,
-                        columns: r.columns.clone(),
-                        status: r.status.to_owned(),
+                        report_type: r.transform.report_type.clone(),
+                        report_subtype: r.transform.report_subtype.clone(),
+                        version: r.transform.source_version,
+                        columns: r.transform.source_columns.clone(),
+                        status: r.transform.resolution.clone(),
                         file_id: Some(fid),
                     })
                     .await;
