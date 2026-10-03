@@ -189,6 +189,11 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
 
     #[inline]
     fn row(&mut self, row: &Row<'_>, _pos: Pos) -> Result<(), RowFailure> {
+        // The rows of a block that was skipped go nowhere.
+        if self.skipping {
+            self.skipped_rows += 1;
+            return Ok(());
+        }
         let block = self
             .block
             .as_mut()
@@ -436,13 +441,26 @@ mod tests {
         assert!(tables >= 20);
     }
 
+    /// The multi-block fixture with one more block put in first, right
+    /// after the file header: a block for a report pair no table claims.
+    fn with_unknown_block() -> Vec<u8> {
+        let text = String::from_utf8(fixture("multi_block_dispatchis.csv")).unwrap();
+        let after_header = text.find('\n').unwrap() + 1;
+        format!(
+            "{}I,NEMLAKE_TEST,NEW_THING,1,WHEN,AMOUNT\nD,NEMLAKE_TEST,NEW_THING,1,\"2026/10/01 13:40:00\",1.5\nD,NEMLAKE_TEST,NEW_THING,1,\"2026/10/01 13:45:00\",2.5\n{}",
+            &text[..after_header],
+            &text[after_header..]
+        )
+        .into_bytes()
+    }
+
     #[test]
     fn multi_block_file_routes_blocks_and_tolerates_unknown_tables_only_when_skipped() {
         let r = reg();
-        // The live file has three report pairs the registry does not know yet.
+        // A block no table claims fails the file...
         let e = collect(
             &r,
-            fixture("multi_block_dispatchis.csv").as_slice(),
+            with_unknown_block().as_slice(),
             ResolveOptions::default(),
             &ScanOptions::default(),
         )
@@ -456,6 +474,59 @@ mod tests {
             ),
             "{e}"
         );
+        // ...unless unknown blocks are to be skipped: then its rows go
+        // nowhere, a warning says so, and the blocks around it are read.
+        let known = collect(
+            &r,
+            fixture("multi_block_dispatchis.csv").as_slice(),
+            ResolveOptions::default(),
+            &ScanOptions::default(),
+        );
+        let mut sink = ArrowSink::new(
+            &r,
+            ResolveOptions::default(),
+            DEFAULT_BATCH_ROWS,
+            CollectBatches::default(),
+        )
+        .skip_unknown(true);
+        crate::scan::scan(
+            with_unknown_block().as_slice(),
+            &mut sink,
+            &ScanOptions::default(),
+        )
+        .unwrap();
+        assert!(sink.skipped_rows >= 2, "{}", sink.skipped_rows);
+        let out = sink.into_inner().unwrap();
+        assert!(
+            out.warnings
+                .iter()
+                .any(|w| w.code == "schema.unknown_table"
+                    && w.message.contains("The block is skipped")),
+            "{:?}",
+            out.warnings
+        );
+        let price_rows = |c: &CollectBatches| -> usize {
+            c.batches
+                .iter()
+                .filter(|b| r.table(b.table).name == "DISPATCHPRICE")
+                .map(|b| b.batch.num_rows())
+                .sum()
+        };
+        assert_eq!(price_rows(&out), 3);
+        // Every block the registry knows is read the same with or without
+        // the unknown one in the file.
+        if let Ok((all, _)) = &known {
+            assert_eq!(
+                out.batches
+                    .iter()
+                    .map(|b| b.batch.num_rows())
+                    .sum::<usize>(),
+                all.batches
+                    .iter()
+                    .map(|b| b.batch.num_rows())
+                    .sum::<usize>()
+            );
+        }
     }
 
     #[test]
