@@ -1,0 +1,14 @@
+[package]
+name = "nemlake-pipeline"
+description = "Orchestration of list, fetch, ingest and commit as tokio streams."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]

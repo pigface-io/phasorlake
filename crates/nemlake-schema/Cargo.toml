@@ -1,0 +1,14 @@
+[package]
+name = "nemlake-schema"
+description = "The nemlake schema registry: resolves MMS I rows to typed Arrow schemas and casts."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]

@@ -1,0 +1,133 @@
+# nemlake: AEMO market data into a local Parquet lake.
+#
+# Layers, dependencies pointing down only:
+#   cli -> pipeline -> {fetch, mms, store} -> schema -> schema-model -> core
+# The bootstrap, bench and xtask crates are tooling and are not default members,
+# so `cargo build` compiles only what ships.
+[workspace]
+resolver = "3"
+members = [
+    "crates/nemlake-core",
+    "crates/nemlake-schema-model",
+    "crates/nemlake-schema",
+    "crates/nemlake-schema-bootstrap",
+    "crates/nemlake-mms",
+    "crates/nemlake-fetch",
+    "crates/nemlake-store",
+    "crates/nemlake-pipeline",
+    "crates/nemlake-cli",
+    "crates/nemlake-bench",
+    "crates/xtask",
+]
+default-members = [
+    "crates/nemlake-core",
+    "crates/nemlake-schema-model",
+    "crates/nemlake-schema",
+    "crates/nemlake-mms",
+    "crates/nemlake-fetch",
+    "crates/nemlake-store",
+    "crates/nemlake-pipeline",
+    "crates/nemlake-cli",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.97"
+license = "Apache-2.0"
+repository = "https://github.com/g0itb4/nemlake"
+publish = false
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+missing_docs = "warn"
+
+[workspace.lints.clippy]
+all = { level = "deny", priority = -1 }
+# A curated slice of the pedantic group: the lints that catch real mistakes or
+# needless work, without the ones that only argue about prose and casts.
+needless_pass_by_value = "deny"
+semicolon_if_nothing_returned = "deny"
+redundant_closure_for_method_calls = "deny"
+inefficient_to_string = "deny"
+implicit_clone = "deny"
+manual_let_else = "deny"
+unnested_or_patterns = "deny"
+map_unwrap_or = "deny"
+large_types_passed_by_value = "deny"
+ref_option = "deny"
+format_push_string = "deny"
+unreadable_literal = "deny"
+cloned_instead_of_copied = "deny"
+explicit_iter_loop = "deny"
+uninlined_format_args = "deny"
+
+[workspace.dependencies]
+nemlake-core = { path = "crates/nemlake-core" }
+nemlake-schema-model = { path = "crates/nemlake-schema-model" }
+nemlake-schema = { path = "crates/nemlake-schema" }
+nemlake-mms = { path = "crates/nemlake-mms" }
+nemlake-fetch = { path = "crates/nemlake-fetch" }
+nemlake-store = { path = "crates/nemlake-store" }
+nemlake-pipeline = { path = "crates/nemlake-pipeline" }
+
+# hot path
+memchr = "2.8"
+fast-float2 = "0.2"
+xxhash-rust = { version = "0.8", features = ["xxh3"] }
+hashbrown = "0.17"
+# columnar
+arrow = { version = "60", default-features = false }
+arrow-array = "60"
+arrow-schema = "60"
+arrow-select = "60"
+parquet = { version = "60", default-features = false, features = ["arrow", "zstd", "snap"] }
+# archive
+zip = { version = "8", default-features = false, features = ["deflate-flate2-zlib-rs"] }
+# serialisation
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+toml = "1"
+postcard = { version = "1", features = ["use-std"] }
+serde_yaml_ng = "0.10"
+# async + network
+tokio = { version = "1.53", features = ["rt-multi-thread", "sync", "fs", "time", "signal", "macros"] }
+tokio-util = { version = "0.7", features = ["rt"] }
+futures = "0.3"
+async-trait = "0.1"
+reqwest = { version = "0.13", default-features = false, features = ["rustls", "stream", "http2"] }
+url = { version = "2", features = ["serde"] }
+httpdate = "1"
+sha2 = "0.11"
+# storage
+rusqlite = { version = "0.40", features = ["bundled"] }
+# errors, logging, cli
+thiserror = "2"
+anyhow = "1"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+clap = { version = "4.6", features = ["derive", "env", "wrap_help"] }
+indicatif = "0.18"
+jiff = "0.2"
+directories = "6"
+# dev
+criterion = { version = "0.8", default-features = false }
+proptest = "1"
+csv = "1"
+wiremock = "0.6"
+insta = { version = "1", features = ["json"] }
+tempfile = "3"
+peak_alloc = "0.3"
+stats_alloc = "0.1"
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+# Line tables keep `samply` and panic locations useful; symbols are small.
+debug = "line-tables-only"
+# A worker panic must not take the run down: the pipeline catches it per file.
+panic = "unwind"
+
+[profile.bench]
+inherits = "release"

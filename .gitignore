@@ -1,0 +1,6 @@
+/target
+/coverage
+/bin
+*.part
+*.tmp-*
+/schemas/**/DRAFT_*.toml
