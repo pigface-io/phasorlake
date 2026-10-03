@@ -82,9 +82,11 @@ impl ParquetHive {
         } else {
             sha8
         };
+        // The shape's fingerprint keeps two column lists of one version,
+        // from one source, in files of their own.
         format!(
-            "{}-v{}-{sha8}.parquet",
-            meta.source_stem, meta.schema_version
+            "{}-v{}-{:08x}-{sha8}.parquet",
+            meta.source_stem, meta.schema_version, meta.fingerprint.0 as u32
         )
     }
 
@@ -437,7 +439,7 @@ mod tests {
         );
         assert!(
             f.path.ends_with(
-                "year=2024/month=01/public_dvd_dispatch_unit_scada_202401010000-v1-abcdef01.parquet"
+                "year=2024/month=01/public_dvd_dispatch_unit_scada_202401010000-v1-00000007-abcdef01.parquet"
             ),
             "{}",
             f.path
@@ -541,7 +543,12 @@ mod tests {
             .unwrap();
         let f = w.close(id).unwrap();
         assert!(f.path.contains("snapshot=202401/"));
-        assert!(f.path.ends_with("-v1-00000007.parquet"), "{}", f.path);
+        // With no source hash the shape's fingerprint stands in for it too.
+        assert!(
+            f.path.ends_with("-v1-00000007-00000007.parquet"),
+            "{}",
+            f.path
+        );
         assert_eq!(f.min_time, None);
         assert!(!f.sorted, "no time column, no claim");
         // Unwritable root.

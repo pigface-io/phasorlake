@@ -16,7 +16,7 @@ use crate::registry::{Registry, TableId, TypeOptions};
 pub enum Mode {
     /// Only exact and aliased matches; drift and unknown tables are errors.
     Strict,
-    /// Compatible drift is a warning, unknown columns are dropped with a
+    /// Compatible drift is a warning, unknown columns are kept as text with a
     /// warning, unknown tables are inferred.
     #[default]
     Permissive,
@@ -105,9 +105,11 @@ pub struct Projection {
 }
 
 impl Projection {
-    /// Builds the projection of `names` (normalised I-row columns) onto `t`.
-    /// Names that are not columns or aliases of `t` are dropped (`target:
-    /// None`); the caller decides whether that is allowed.
+    /// Builds the projection of a declared column list (normalised I-row
+    /// columns) onto `t`, with the table's lake schema. Every name of a
+    /// declared list is a column or alias of `t`; an undeclared list goes
+    /// through [`Projection::build_file_shape`], which keeps what this one
+    /// would have no place for.
     pub fn build(
         t: &TableDef,
         market: &MarketDef,
@@ -161,9 +163,106 @@ impl Projection {
         })
     }
 
-    /// Number of lake columns.
+    /// Builds the projection of a column list the registry has not
+    /// declared, losing nothing the file carries.
+    ///
+    /// The schema is the table's lake schema with two changes that hold for
+    /// files of this shape only: every name that is not a column of the
+    /// table is added at the end as a nullable text column, marked as coming
+    /// from the file, and a column the shape lacks is made nullable where
+    /// the lake says it is not, since these files have no value for it.
+    pub fn build_file_shape(
+        t: &TableDef,
+        market: &MarketDef,
+        opts: TypeOptions,
+        lake: &SchemaRef,
+        names: &[&str],
+    ) -> Self {
+        let lake_width = lake.fields().len();
+        let mut fields: Vec<arrow_schema::Field> =
+            lake.fields().iter().map(|f| f.as_ref().clone()).collect();
+        let mut casts = Vec::with_capacity(names.len());
+        let mut supplied = vec![false; lake_width];
+        let mut extra: Vec<String> = Vec::new();
+        for n in names {
+            match t.column_index(n).filter(|&i| !supplied[i]) {
+                Some(i) => {
+                    let c = &t.columns[i];
+                    supplied[i] = true;
+                    casts.push(ColumnCast {
+                        target: Some(i as u16),
+                        cast: Cast::for_type(c.ty, market, opts),
+                        nullable: c.nullable,
+                    });
+                }
+                None => {
+                    // A name the file repeats, or one that collides with what
+                    // is already there, is told apart by a suffix.
+                    let mut name = (*n).to_owned();
+                    let mut k = 2;
+                    while extra.contains(&name) || t.column_index(&name).is_some() {
+                        name = format!("{n}__{k}");
+                        k += 1;
+                    }
+                    casts.push(ColumnCast {
+                        target: Some((lake_width + extra.len()) as u16),
+                        cast: Cast::Utf8,
+                        nullable: true,
+                    });
+                    let from_file: std::collections::HashMap<String, String> =
+                        [("nemlake:source".to_owned(), "file".to_owned())].into();
+                    fields.push(
+                        arrow_schema::Field::new(&name, arrow_schema::DataType::Utf8, true)
+                            .with_metadata(from_file),
+                    );
+                    extra.push(name);
+                }
+            }
+        }
+        let missing: Vec<u16> = supplied
+            .iter()
+            .enumerate()
+            .filter(|(_, s)| !**s)
+            .map(|(i, _)| i as u16)
+            .collect();
+        for &m in &missing {
+            let f = &mut fields[m as usize];
+            if !f.is_nullable() {
+                *f = f.clone().with_nullable(true);
+            }
+        }
+        let primary_key = t
+            .primary_key
+            .iter()
+            .filter_map(|k| t.column_index(k))
+            .map(|i| i as u16)
+            .collect();
+        let time_column = t
+            .time_column
+            .as_deref()
+            .and_then(|c| t.column_index(c))
+            .map(|i| i as u16);
+        Self {
+            arrow: std::sync::Arc::new(arrow_schema::Schema::new_with_metadata(
+                fields,
+                lake.metadata().clone(),
+            )),
+            casts,
+            missing,
+            primary_key,
+            time_column,
+        }
+    }
+
+    /// Number of columns files of this shape are written with: the lake's,
+    /// plus any the file carries beyond them.
     pub fn lake_width(&self) -> usize {
         self.arrow.fields().len()
+    }
+
+    /// The name of the column at `index` of this projection's schema.
+    pub fn column_name(&self, index: usize) -> &str {
+        self.arrow.field(index).name()
     }
 }
 
@@ -182,7 +281,7 @@ pub enum Status {
     Drift {
         /// Declared columns the I row lacks (written null).
         missing: Vec<String>,
-        /// I-row columns the registry does not know (dropped).
+        /// I-row columns the registry does not know (kept as text).
         extra: Vec<String>,
         /// Same set, different order.
         reordered: bool,
@@ -339,16 +438,19 @@ impl Registry {
             .collect();
         let reordered = base_present != canon_present;
 
-        for k in &t.primary_key {
-            if !canonical.contains(&k.as_str()) {
+        let missing_keys: Vec<&String> = t
+            .primary_key
+            .iter()
+            .filter(|k| !canonical.contains(&k.as_str()))
+            .collect();
+        if opts.mode == Mode::Strict {
+            if let Some(k) = missing_keys.first() {
                 return Err(ResolveError::MissingKey {
                     table: t.name.clone(),
                     version: base.n.0,
-                    column: k.clone(),
+                    column: (*k).clone(),
                 });
             }
-        }
-        if opts.mode == Mode::Strict {
             return Err(ResolveError::VersionDrift {
                 table: t.name.clone(),
                 version: base.n.0,
@@ -358,18 +460,24 @@ impl Registry {
                 extra,
             });
         }
+        // Permissive: nothing the file carries is lost. Declared columns go
+        // to their lake columns, the rest are kept as text under their own
+        // names, and what the file lacks is null.
         let market = self.market_of(id);
         let projection = self.dynamic_projection(id, fp, || {
-            Arc::new(
-                Projection::build(t, market, self.options(), self.lake_schema(id), &observed)
-                    .expect("drift projection builds from known columns"),
-            )
+            Arc::new(Projection::build_file_shape(
+                t,
+                market,
+                self.options(),
+                self.lake_schema(id),
+                &observed,
+            ))
         });
         let mut d = Diagnostic::warning(
             if extra.is_empty() { "schema.compatible_drift" } else { "schema.unknown_columns" },
             Category::Schema,
             format!(
-                "Table {} version {} declares {} columns but this file has {}: {} missing (written null), {} unknown (dropped){}.",
+                "Table {} version {} declares {} columns but this file has {}: {} missing (written null), {} unknown (kept as text under their own names){}. `nemlake schema infer` drafts a table file that declares this shape.",
                 t.name,
                 base.n,
                 base.columns.len(),
@@ -384,6 +492,25 @@ impl Registry {
         d.expected = Some(base.columns.join(","));
         d.observed = Some(observed.join(","));
         warnings.push(d);
+        if !missing_keys.is_empty() {
+            warnings.push(
+                Diagnostic::warning(
+                    "schema.missing_key",
+                    Category::Schema,
+                    format!(
+                        "This file of table {} lacks primary-key column(s) {}; its rows are kept with those columns null, and cannot be told apart by key.",
+                        t.name,
+                        missing_keys
+                            .iter()
+                            .map(|k| k.as_str())
+                            .collect::<Vec<_>>()
+                            .join(", ")
+                    ),
+                )
+                .with_table(t.name.clone())
+                .with_version(irow.version),
+            );
+        }
         self.decimal_warnings(t, &mut warnings);
         Ok(Resolved {
             table: id,
@@ -726,7 +853,7 @@ mod tests {
     }
 
     #[test]
-    fn unknown_column_is_dropped_with_warning_and_reorder_detected() {
+    fn unknown_column_is_kept_as_text_and_reorder_detected() {
         let r = reg();
         let cols = vec!["DUID", "SETTLEMENTDATE", "SCADAVALUE", "QUALITY"];
         let row = IRow {
@@ -750,9 +877,55 @@ mod tests {
         }
         assert_eq!(res.projection.casts[0].target, Some(1));
         assert_eq!(res.projection.casts[1].target, Some(0));
-        assert_eq!(res.projection.casts[3].target, None);
+        // The column the table does not have is kept: one more column, text,
+        // nullable, under its own name and marked as coming from the file.
+        assert_eq!(
+            res.projection.casts[3],
+            ColumnCast {
+                target: Some(3),
+                cast: Cast::Utf8,
+                nullable: true
+            }
+        );
+        assert_eq!(res.projection.lake_width(), 4);
+        let extra = res.projection.arrow.field(3);
+        assert_eq!(extra.name(), "QUALITY");
+        assert_eq!(extra.data_type(), &arrow_schema::DataType::Utf8);
+        assert!(extra.is_nullable());
+        assert_eq!(
+            extra.metadata().get("nemlake:source").map(String::as_str),
+            Some("file")
+        );
+        assert_eq!(res.projection.column_name(3), "QUALITY");
+        // The table's own columns are as the lake has them.
+        let lake = r.lake_schema(res.table);
+        assert_eq!(lake.fields().len(), 3);
+        assert_eq!(res.projection.arrow.fields()[..3], lake.fields()[..]);
         assert_eq!(res.warnings[0].code, "schema.unknown_columns");
         assert!(res.warnings[0].message.contains("order differs"));
+        assert!(res.warnings[0].message.contains("kept as text"));
+        // A name the file repeats is kept too, told apart by a suffix.
+        let twice = vec!["SETTLEMENTDATE", "DUID", "SCADAVALUE", "X", "X", "DUID"];
+        let row = IRow {
+            columns: &twice,
+            ..row
+        };
+        let res = r.resolve(&row, ResolveOptions::default()).unwrap();
+        let names: Vec<&str> = (0..res.projection.lake_width())
+            .map(|i| res.projection.column_name(i))
+            .collect();
+        assert_eq!(
+            names,
+            [
+                "SETTLEMENTDATE",
+                "DUID",
+                "SCADAVALUE",
+                "X",
+                "X__2",
+                "DUID__2"
+            ]
+        );
+        assert!(res.projection.casts.iter().all(|c| c.target.is_some()));
     }
 
     #[test]
@@ -782,7 +955,7 @@ mod tests {
     }
 
     #[test]
-    fn missing_primary_key_is_always_an_error() {
+    fn a_file_without_a_key_column_is_kept_unless_strict() {
         let r = reg();
         let cols = vec!["SETTLEMENTDATE", "SCADAVALUE"];
         let row = IRow {
@@ -791,7 +964,9 @@ mod tests {
             version: 1,
             columns: &cols,
         };
-        let e = r.resolve(&row, ResolveOptions::default()).unwrap_err();
+        let e = r
+            .resolve(&row, ResolveOptions { mode: Mode::Strict })
+            .unwrap_err();
         assert_eq!(
             e,
             ResolveError::MissingKey {
@@ -799,6 +974,21 @@ mod tests {
                 version: 1,
                 column: "DUID".into()
             }
+        );
+        // Permissive: the rows are kept, the key column is null for them,
+        // which this shape's schema allows though the lake's does not.
+        let res = r.resolve(&row, ResolveOptions::default()).unwrap();
+        assert!(matches!(res.status, Status::Drift { .. }));
+        assert_eq!(res.projection.missing, [1]);
+        assert!(res.projection.arrow.field(1).is_nullable());
+        assert!(!r.lake_schema(res.table).field(1).is_nullable());
+        assert!(!res.projection.arrow.field(0).is_nullable());
+        assert!(
+            res.warnings
+                .iter()
+                .any(|w| w.code == "schema.missing_key" && w.message.contains("DUID")),
+            "{:?}",
+            res.warnings
         );
     }
 

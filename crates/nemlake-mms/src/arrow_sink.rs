@@ -134,7 +134,7 @@ impl<'r, B: BatchSink> ArrowSink<'r, B> {
             if *count == 0 {
                 continue;
             }
-            let column = &table.columns[i].name;
+            let column = schema.field(i).name();
             let mut d = Diagnostic::warning(
                 "parse.timestamp_clamped",
                 Category::Parse,
@@ -253,13 +253,12 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
             }
             .into());
         }
-        let table = self.registry.table(block.resolved.table);
         // Pass 1: parse every field; nothing is appended until all succeed.
         self.parsed.fill(Parsed::Null);
         for (i, c) in casts.iter().enumerate() {
             let Some(target) = c.target else { continue };
             let bytes = row.get(PREFIX_FIELDS + i).unwrap_or(b"");
-            let column = &table.columns[target as usize].name;
+            let column = block.resolved.projection.column_name(target as usize);
             let parsed = parse_field(
                 c.cast,
                 c.nullable,
@@ -276,11 +275,13 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
             }
             self.parsed[target as usize] = parsed;
         }
+        // A column the file does not carry is null; the projection's schema
+        // says whether files of this shape may leave it so.
         for &m in &block.resolved.projection.missing {
-            let col = &table.columns[m as usize];
-            if !col.nullable {
+            let field = block.resolved.projection.arrow.field(m as usize);
+            if !field.is_nullable() {
                 return Err(RowError::NullNotAllowed {
-                    column: col.name.clone(),
+                    column: field.name().clone(),
                 }
                 .into());
             }
@@ -655,11 +656,29 @@ mod tests {
         assert_eq!(stats.rows, 1);
         assert_eq!(out.blocks[0].2, "drift");
         assert_eq!(out.warnings[0].code, "schema.unknown_columns");
-        assert_eq!(
-            out.batches[0].batch.num_columns(),
-            3,
-            "unknown column dropped"
-        );
+        // The column the table does not have is kept, as text.
+        let batch = &out.batches[0].batch;
+        assert_eq!(batch.num_columns(), 4);
+        assert_eq!(batch.schema().field(3).name(), "EXTRA");
+        let extra = batch
+            .column(3)
+            .as_any()
+            .downcast_ref::<StringArray>()
+            .unwrap();
+        assert_eq!(extra.value(0), "z");
+        // A file that lacks a key column is kept too, the key null.
+        let keyless = b"I,DISPATCH,UNIT_SCADA,1,SETTLEMENTDATE,SCADAVALUE\nD,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",1\n";
+        let (out, stats) = collect(
+            &r,
+            keyless.as_slice(),
+            ResolveOptions::default(),
+            &ScanOptions::default(),
+        )
+        .unwrap();
+        assert_eq!(stats.rows, 1);
+        assert_eq!(stats.bad_rows, 0);
+        assert_eq!(out.batches[0].batch.column(1).null_count(), 1);
+        assert!(out.warnings.iter().any(|w| w.code == "schema.missing_key"));
         // Decimal mode.
         let dec = Registry::load_embedded(TypeOptions { decimal: true });
         let (out, _) = collect(

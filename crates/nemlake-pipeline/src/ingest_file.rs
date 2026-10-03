@@ -114,7 +114,10 @@ impl FileReport {
 struct LakeSink<'a> {
     registry: &'a Registry,
     writer: ParquetHive,
-    writers: HashMap<(TableId, u16, Partition), WriterId>,
+    /// Open writers by table, version, shape and partition. The shape is
+    /// part of the key because two column lists of one version may differ
+    /// in the columns they are written with.
+    writers: HashMap<(TableId, u16, u128, Partition), WriterId>,
     results: Vec<IngestResult>,
     current: Option<usize>,
     quarantine: HashMap<String, QuarantineWriter>,
@@ -137,7 +140,7 @@ impl LakeSink<'_> {
     ) -> FileMeta {
         FileMeta {
             table: table.to_owned(),
-            source_stem: self.local.remote.stem(),
+            source_stem: entry_stem(self.entry, &self.local.remote.stem()),
             schema_version: version,
             fingerprint,
             source_url: self.local.remote.url.to_string(),
@@ -149,8 +152,8 @@ impl LakeSink<'_> {
 
     fn close_all(&mut self) -> Result<(), nemlake_store::StoreError> {
         let mut keys: Vec<_> = self.writers.drain().collect();
-        keys.sort_by_key(|(k, _)| (k.0, k.1, k.2));
-        for ((table_id, version, _), wid) in keys {
+        keys.sort_by_key(|(k, _)| (k.0, k.1, k.2, k.3));
+        for ((table_id, version, _, _), wid) in keys {
             let written = self.writer.close(wid)?;
             if let Some(r) = self
                 .results
@@ -264,7 +267,7 @@ impl BatchSink for LakeSink<'_> {
             )],
         };
         for (partition, batch) in parts {
-            let key = (b.table, b.version.0, partition);
+            let key = (b.table, b.version.0, b.fingerprint.0, partition);
             let wid = match self.writers.get(&key) {
                 Some(w) => *w,
                 None => {
@@ -341,6 +344,31 @@ impl BatchSink for LakeSink<'_> {
         } else {
             Flow::Continue
         }
+    }
+}
+
+/// The stem that names the Parquet files written from one entry of a
+/// source: the entry's own file name without its extension, lower-case and
+/// made safe for a path, so two CSVs of one zip never write the same file.
+/// A source that is itself the entry gives the source's stem.
+fn entry_stem(entry: &str, source_stem: &str) -> String {
+    let name = entry.rsplit(['!', '/']).next().unwrap_or(entry);
+    let stem = name.rsplit_once('.').map_or(name, |(s, _)| s);
+    let stem: String = stem
+        .chars()
+        .map(|c| {
+            let c = c.to_ascii_lowercase();
+            if c.is_ascii_alphanumeric() || matches!(c, '_' | '-' | '.') {
+                c
+            } else {
+                '_'
+            }
+        })
+        .collect();
+    if stem.is_empty() {
+        source_stem.to_owned()
+    } else {
+        stem
     }
 }
 
