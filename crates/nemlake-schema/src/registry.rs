@@ -96,10 +96,11 @@ pub struct Registry {
     by_pair: hashbrown::HashMap<PairKey, TableId>,
     by_dataset: HashMap<String, TableId>,
     by_fingerprint: HashMap<Fingerprint, (TableId, SchemaVersion)>,
-    lake_schemas: Vec<SchemaRef>,
-    projections: HashMap<(TableId, SchemaVersion), Arc<Projection>>,
-    /// Projections of the declared variants of a version, by their fingerprint.
-    variants: HashMap<(TableId, SchemaVersion, Fingerprint), Arc<Projection>>,
+    /// The lake schema and the projections of each table, built the first
+    /// time the table is used. A run reads a handful of tables; building
+    /// them for every table the registry knows would cost each run the
+    /// memory and the time of all of them.
+    shapes: Vec<OnceLock<TableShapes>>,
     /// Projections built at run time for drifted or aliased shapes.
     dynamic: Mutex<HashMap<(TableId, Fingerprint), Arc<Projection>>>,
     /// Tables derived at run time from the header of a file whose report
@@ -109,6 +110,24 @@ pub struct Registry {
     derived: Vec<OnceLock<Box<Derived>>>,
     /// The report pair of each derived table, in slot order.
     derived_pairs: Mutex<Vec<(String, String)>>,
+}
+
+/// What the files of one table are written with.
+#[derive(Debug)]
+struct TableShapes {
+    /// The unified lake schema.
+    lake: SchemaRef,
+    /// One entry per declared version, in the table's order.
+    versions: Vec<VersionShapes>,
+}
+
+/// The projections of one declared version: of its own column list and of
+/// each other list published under its number.
+#[derive(Debug)]
+struct VersionShapes {
+    n: SchemaVersion,
+    own: Arc<Projection>,
+    variants: Vec<(Fingerprint, Arc<Projection>)>,
 }
 
 /// A table that is not in the registry: its definition, built from an I
@@ -122,6 +141,20 @@ struct Derived {
 /// How many tables one run may derive. The whole archive has a few hundred
 /// tables; a file that asks for more than this is not an MMS file.
 const DERIVED_SLOTS: usize = 4096;
+
+/// The definition of a market no file defines: fixed market time, AEMO's
+/// timestamp format.
+fn default_market(market: Market) -> MarketDef {
+    MarketDef {
+        market,
+        utc_offset_secs: if market == Market::Wem {
+            28_800
+        } else {
+            36_000
+        },
+        timestamp_format: nemlake_schema_model::TimestampFormat::AemoSlash,
+    }
+}
 
 static EMBEDDED_F64: OnceLock<Arc<Registry>> = OnceLock::new();
 static EMBEDDED_DECIMAL: OnceLock<Arc<Registry>> = OnceLock::new();
@@ -211,15 +244,12 @@ impl Registry {
 
     /// Builds the indexes. The set must already be valid.
     pub fn from_set(set: SchemaSet, opts: TypeOptions) -> Self {
-        let markets = set.markets;
+        let mut markets = set.markets;
         let tables = set.tables;
         let mut by_name = HashMap::with_capacity(tables.len());
         let mut by_pair = hashbrown::HashMap::with_capacity(tables.len());
         let mut by_dataset = HashMap::new();
         let mut by_fingerprint = HashMap::new();
-        let mut lake_schemas = Vec::with_capacity(tables.len());
-        let mut projections = HashMap::new();
-        let mut variants = HashMap::new();
         for (i, t) in tables.iter().enumerate() {
             let id = TableId(i as u32);
             by_name.insert(t.name.clone(), id);
@@ -229,56 +259,70 @@ impl Registry {
             for d in &t.datasets {
                 by_dataset.insert(d.clone(), id);
             }
-            let market = markets
-                .iter()
-                .find(|m| m.market == t.market)
-                .cloned()
-                .unwrap_or(MarketDef {
-                    market: t.market,
-                    utc_offset_secs: if t.market == Market::Wem {
-                        28_800
-                    } else {
-                        36_000
-                    },
-                    timestamp_format: nemlake_schema_model::TimestampFormat::AemoSlash,
-                });
-            let schema = lake_schema(t, &market, opts);
+            // A market no file defines gets the definition its name implies.
+            if !markets.iter().any(|m| m.market == t.market) {
+                markets.push(default_market(t.market));
+            }
             for v in &t.versions {
                 by_fingerprint.entry(v.fingerprint).or_insert((id, v.n));
-                let names: Vec<&str> = v.columns.iter().map(String::as_str).collect();
-                let proj = Projection::build(t, &market, opts, &schema, &names)
-                    .expect("a validated version projects onto its table");
-                projections.insert((id, v.n), Arc::new(proj));
                 for x in &v.variants {
                     // A variant's list under an undeclared version number
                     // is found by its fingerprint like a version's own.
                     by_fingerprint.entry(x.fingerprint).or_insert((id, v.n));
-                    let names: Vec<&str> = x.columns.iter().map(String::as_str).collect();
-                    let proj = Projection::build(t, &market, opts, &schema, &names)
-                        .expect("a validated variant projects onto its table");
-                    variants.insert((id, v.n, x.fingerprint), Arc::new(proj));
                 }
             }
-            lake_schemas.push(schema);
         }
         Self {
             opts,
             markets,
             from_user: vec![false; tables.len()],
+            shapes: std::iter::repeat_with(OnceLock::new)
+                .take(tables.len())
+                .collect(),
             tables,
             by_name,
             by_pair,
             by_dataset,
             by_fingerprint,
-            lake_schemas,
-            projections,
-            variants,
             dynamic: Mutex::new(HashMap::new()),
             derived: std::iter::repeat_with(OnceLock::new)
                 .take(DERIVED_SLOTS)
                 .collect(),
             derived_pairs: Mutex::new(Vec::new()),
         }
+    }
+
+    /// The lake schema and projections of a table of the registry, built
+    /// on first use.
+    fn shapes(&self, index: usize) -> &TableShapes {
+        self.shapes[index].get_or_init(|| {
+            let t = &self.tables[index];
+            let market = self
+                .market(t.market)
+                .expect("every table's market has a definition");
+            let lake = lake_schema(t, market, self.opts);
+            let project = |columns: &[String]| {
+                let names: Vec<&str> = columns.iter().map(String::as_str).collect();
+                Arc::new(
+                    Projection::build(t, market, self.opts, &lake, &names)
+                        .expect("a validated column list projects onto its table"),
+                )
+            };
+            let versions = t
+                .versions
+                .iter()
+                .map(|v| VersionShapes {
+                    n: v.n,
+                    own: project(&v.columns),
+                    variants: v
+                        .variants
+                        .iter()
+                        .map(|x| (x.fingerprint, project(&x.columns)))
+                        .collect(),
+                })
+                .collect();
+            TableShapes { lake, versions }
+        })
     }
 
     /// The type options this registry was built with.
@@ -360,15 +404,10 @@ impl Registry {
         table.description =
             Some("Derived from the file: no table in the registry claims this report pair.".into());
         table.provenance.note = Some("derived at run time; every column is text".into());
-        let market_def = self.market(market).cloned().unwrap_or(MarketDef {
-            market,
-            utc_offset_secs: if market == Market::Wem {
-                28_800
-            } else {
-                36_000
-            },
-            timestamp_format: nemlake_schema_model::TimestampFormat::AemoSlash,
-        });
+        let market_def = self
+            .market(market)
+            .cloned()
+            .unwrap_or_else(|| default_market(market));
         let lake = lake_schema(&table, &market_def, self.opts);
         let _ = self.derived[slot].set(Box::new(Derived { table, lake }));
         pairs.push((irow.report_type.to_owned(), irow.report_subtype.to_owned()));
@@ -432,25 +471,38 @@ impl Registry {
     /// The unified lake schema of a table.
     pub fn lake_schema(&self, id: TableId) -> &SchemaRef {
         let i = id.0 as usize;
-        match self.lake_schemas.get(i) {
-            Some(s) => s,
-            None => &self.derived_slot(i).lake,
+        if i < self.tables.len() {
+            &self.shapes(i).lake
+        } else {
+            &self.derived_slot(i).lake
         }
     }
 
-    /// The precomputed projection of a declared version.
-    pub fn projection(&self, id: TableId, version: SchemaVersion) -> Option<&Arc<Projection>> {
-        self.projections.get(&(id, version))
+    fn version_shapes(&self, id: TableId, version: SchemaVersion) -> Option<&VersionShapes> {
+        let i = id.0 as usize;
+        if i >= self.tables.len() {
+            return None;
+        }
+        self.shapes(i).versions.iter().find(|v| v.n == version)
     }
 
-    /// The precomputed projection of a declared variant of a version.
+    /// The projection of a declared version's own column list.
+    pub fn projection(&self, id: TableId, version: SchemaVersion) -> Option<&Arc<Projection>> {
+        self.version_shapes(id, version).map(|v| &v.own)
+    }
+
+    /// The projection of a declared variant of a version.
     pub fn variant_projection(
         &self,
         id: TableId,
         version: SchemaVersion,
         fp: Fingerprint,
     ) -> Option<&Arc<Projection>> {
-        self.variants.get(&(id, version, fp))
+        self.version_shapes(id, version)?
+            .variants
+            .iter()
+            .find(|(f, _)| *f == fp)
+            .map(|(_, p)| p)
     }
 
     /// The table and version that published a column list with this fingerprint.
