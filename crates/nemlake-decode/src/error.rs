@@ -3,7 +3,6 @@
 use nemlake_core::nemtime::TimestampError;
 use nemlake_core::num::NumberError;
 use nemlake_core::{Category, Diagnose, Diagnostic};
-use nemlake_registry::ResolveError;
 
 /// Where in the file something happened.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
@@ -180,6 +179,12 @@ impl From<RowError> for RowFailure {
     }
 }
 
+impl From<Box<RowError>> for RowFailure {
+    fn from(e: Box<RowError>) -> Self {
+        Self::Row(e)
+    }
+}
+
 impl From<SinkError> for RowFailure {
     fn from(e: SinkError) -> Self {
         Self::Sink(Box::new(e))
@@ -189,9 +194,10 @@ impl From<SinkError> for RowFailure {
 /// A failure of the thing rows are delivered to; ends the scan.
 #[derive(Debug, thiserror::Error)]
 pub enum SinkError {
-    /// The I row did not resolve.
-    #[error(transparent)]
-    Resolve(#[from] ResolveError),
+    /// The sink refused the block its I row opens, for example because the
+    /// shape did not resolve in strict mode; the diagnostic says why.
+    #[error("{}", .0.message)]
+    Refused(Box<Diagnostic>),
     /// Writing a batch failed.
     #[error("Writing a batch of table {table} failed: {message}")]
     Write {
@@ -235,7 +241,7 @@ impl SinkError {
 impl Diagnose for SinkError {
     fn diagnostic(&self) -> Diagnostic {
         match self {
-            Self::Resolve(e) => e.diagnostic(),
+            Self::Refused(d) => (**d).clone(),
             Self::Write { table, cause, .. } => {
                 let mut d =
                     Diagnostic::error("store.write_failed", Category::Store, self.to_string())
@@ -550,10 +556,12 @@ mod tests {
             message: "m".into(),
         });
         assert_eq!(e.diagnostic().code, "internal.arrow");
-        let e = SinkError::Resolve(ResolveError::UnknownTable {
-            report_type: "A".into(),
-            report_subtype: "B".into(),
-        });
+        let e = SinkError::Refused(Box::new(Diagnostic::error(
+            "schema.unknown_table",
+            Category::Schema,
+            "No table.",
+        )));
         assert_eq!(e.diagnostic().code, "schema.unknown_table");
+        assert_eq!(e.to_string(), "No table.");
     }
 }

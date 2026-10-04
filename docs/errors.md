@@ -80,7 +80,7 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 | `parse.integer` | `crates/nemlake-decode/src/error.rs` |
 | `parse.null_not_allowed` | `crates/nemlake-decode/src/error.rs` |
 | `parse.timestamp` | `crates/nemlake-decode/src/error.rs` |
-| `parse.timestamp_clamped` | `crates/nemlake-decode/src/arrow_sink.rs` |
+| `parse.timestamp_clamped` | `crates/nemlake-conform/src/arrow_sink.rs` |
 | `parse.utf8` | `crates/nemlake-decode/src/error.rs` |
 
 ## schema

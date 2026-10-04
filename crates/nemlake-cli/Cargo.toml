@@ -19,6 +19,7 @@ path = "src/main.rs"
 nemlake-core.workspace = true
 nemlake-registry.workspace = true
 nemlake-decode.workspace = true
+nemlake-conform.workspace = true
 nemlake-acquire.workspace = true
 nemlake-writer.workspace = true
 nemlake-pipeline.workspace = true

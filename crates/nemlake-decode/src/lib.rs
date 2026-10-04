@@ -8,21 +8,19 @@
 //! ```
 //!
 //! Layer L2, synchronous and allocation-free per row. [`scan()`] splits bytes
-//! into rows and drives a [`Sink`]; [`ArrowSink`] resolves each block through
-//! the registry and builds typed `RecordBatch`es; [`archive`] walks zips,
-//! including zips inside zips; [`inspect`] summarises a file without
-//! building anything.
+//! into rows and drives a [`Sink`]: each I row reaches it as the block's
+//! shape (report pair, version, ordered column names), each D row as its
+//! fields, untyped. [`archive`] walks zips, including zips inside zips.
+//!
+//! Decode knows no registry: what a shape means, and how its text becomes
+//! typed columns, is `nemlake-conform`'s business.
 
 pub mod archive;
-pub mod arrow_sink;
-pub mod builders;
 pub mod error;
 pub mod fields;
-pub mod inspect;
 pub mod quarantine;
 pub mod scan;
 
-pub use arrow_sink::{ArrowSink, BlockBatch};
 pub use error::{RowError, RowFailure, ScanError, SinkError};
-pub use fields::Row;
+pub use fields::{PREFIX_FIELDS, Row};
 pub use scan::{Pos, ScanOptions, ScanStats, Sink, scan};

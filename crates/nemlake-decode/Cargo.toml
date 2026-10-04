@@ -1,6 +1,6 @@
 [package]
 name = "nemlake-decode"
-description = "The MMS C/I/D row format: scanner, typed Arrow sink, zip walking."
+description = "The MMS C/I/D row format: scanner, field splitter, zip walking. Knows no registry."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -13,20 +13,10 @@ workspace = true
 
 [dependencies]
 nemlake-core.workspace = true
-nemlake-registry.workspace = true
-arrow-array.workspace = true
-arrow-schema.workspace = true
 memchr.workspace = true
 serde_json.workspace = true
 thiserror.workspace = true
 zip.workspace = true
 
 [dev-dependencies]
-criterion.workspace = true
-csv.workspace = true
-proptest.workspace = true
 tempfile.workspace = true
-
-[[bench]]
-name = "scan"
-harness = false

@@ -1,7 +1,8 @@
 # nemlake: AEMO market data into a local Parquet lake.
 #
 # Layers, dependencies pointing down only:
-#   cli -> pipeline -> {acquire, decode, writer} -> registry -> core
+#   cli -> pipeline -> {acquire, conform, writer}; conform -> {decode, registry};
+#   decode -> core; registry -> core. Decode never sees the registry.
 # The census, bench and xtask crates are tooling and are not default members,
 # so `cargo build` compiles only what ships.
 [workspace]
@@ -11,6 +12,7 @@ members = [
     "crates/nemlake-registry",
     "crates/nemlake-census",
     "crates/nemlake-decode",
+    "crates/nemlake-conform",
     "crates/nemlake-acquire",
     "crates/nemlake-writer",
     "crates/nemlake-pipeline",
@@ -22,6 +24,7 @@ default-members = [
     "crates/nemlake-core",
     "crates/nemlake-registry",
     "crates/nemlake-decode",
+    "crates/nemlake-conform",
     "crates/nemlake-acquire",
     "crates/nemlake-writer",
     "crates/nemlake-pipeline",
@@ -64,6 +67,7 @@ uninlined_format_args = "deny"
 nemlake-core = { path = "crates/nemlake-core" }
 nemlake-registry = { path = "crates/nemlake-registry" }
 nemlake-decode = { path = "crates/nemlake-decode" }
+nemlake-conform = { path = "crates/nemlake-conform" }
 nemlake-acquire = { path = "crates/nemlake-acquire" }
 nemlake-writer = { path = "crates/nemlake-writer" }
 nemlake-pipeline = { path = "crates/nemlake-pipeline" }

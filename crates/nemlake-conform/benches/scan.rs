@@ -5,8 +5,8 @@ use std::fmt::Write as _;
 use std::hint::black_box;
 
 use criterion::{Criterion, Throughput, criterion_group, criterion_main};
+use nemlake_conform::arrow_sink::{ArrowSink, BatchSink, BlockBatch};
 use nemlake_core::IRow;
-use nemlake_decode::arrow_sink::{ArrowSink, BatchSink, BlockBatch};
 use nemlake_decode::scan::{Flow, Pos, ScanOptions, Sink, scan};
 use nemlake_decode::{Row, RowError, RowFailure, SinkError};
 use nemlake_registry::{Registry, ResolveOptions, TypeOptions};

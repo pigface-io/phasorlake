@@ -16,6 +16,7 @@ arrow-array.workspace = true
 nemlake-core.workspace = true
 nemlake-registry.workspace = true
 nemlake-decode.workspace = true
+nemlake-conform.workspace = true
 nemlake-acquire.workspace = true
 nemlake-writer.workspace = true
 futures.workspace = true

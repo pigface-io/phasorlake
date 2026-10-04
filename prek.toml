@@ -109,7 +109,7 @@ name = "bench: the fast set, held to bench/budgets.json"
 language = "system"
 entry = "just bench-fast"
 stages = ["pre-push"]
-files = '^(crates/nemlake-(core|decode|registry|writer)/|bench/budgets\.json$)'
+files = '^(crates/nemlake-(core|decode|conform|registry|writer)/|bench/budgets\.json$)'
 pass_filenames = false
 
 [[repos.hooks]]

@@ -39,7 +39,7 @@ impl Default for RunOptions {
             fail_fast: false,
             dry_run: false,
             strict_footer: false,
-            batch_rows: nemlake_decode::arrow_sink::DEFAULT_BATCH_ROWS,
+            batch_rows: nemlake_conform::arrow_sink::DEFAULT_BATCH_ROWS,
         }
     }
 }

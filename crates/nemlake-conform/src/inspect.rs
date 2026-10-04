@@ -4,10 +4,10 @@ use nemlake_core::{Fingerprint, IRow};
 use nemlake_registry::infer::Sampler;
 use nemlake_registry::{Registry, ResolveOptions};
 
-use crate::arrow_sink::PREFIX_FIELDS;
-use crate::error::{RowError, RowFailure, SinkError};
-use crate::fields::Row;
-use crate::scan::{Flow, Pos, Sink};
+use nemlake_decode::PREFIX_FIELDS;
+use nemlake_decode::error::{RowError, RowFailure, SinkError};
+use nemlake_decode::fields::Row;
+use nemlake_decode::scan::{Flow, Pos, Sink};
 
 /// One block as seen in the file.
 #[derive(Debug, Clone)]
@@ -125,7 +125,7 @@ mod tests {
     use nemlake_registry::{Mode, TypeOptions};
 
     use super::*;
-    use crate::scan::{ScanOptions, scan};
+    use nemlake_decode::scan::{ScanOptions, scan};
 
     #[test]
     fn summarises_multi_block_file() {
@@ -196,7 +196,7 @@ mod tests {
         let mut s = InspectSink::new(&r, ResolveOptions::default(), 1);
         assert!(scan(b"D,a,b,1,x\n".as_slice(), &mut s, &ScanOptions::default()).is_err());
         let r = s.row(
-            &crate::fields::Splitter::default().split(b"D,a"),
+            &nemlake_decode::fields::Splitter::default().split(b"D,a"),
             Pos::default(),
         );
         assert!(matches!(r, Err(RowFailure::Row(e)) if *e == RowError::TooShort(0)));

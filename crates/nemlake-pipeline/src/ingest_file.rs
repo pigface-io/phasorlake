@@ -8,10 +8,10 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 use nemlake_acquire::LocalFile;
+use nemlake_conform::arrow_sink::{ArrowSink, BatchSink, BlockBatch};
 use nemlake_core::event::Event;
 use nemlake_core::{Category, Diagnose, Diagnostic, Fingerprint, IRow, YearMonth};
 use nemlake_decode::archive::{WalkError, walk_csv_entries};
-use nemlake_decode::arrow_sink::{ArrowSink, BatchSink, BlockBatch};
 use nemlake_decode::quarantine::QuarantineWriter;
 use nemlake_decode::scan::{Flow, Pos, ScanOptions, ScanStats, scan};
 use nemlake_decode::{RowError, SinkError};

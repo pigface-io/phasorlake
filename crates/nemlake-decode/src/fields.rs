@@ -8,6 +8,10 @@
 
 use memchr::{memchr, memchr_iter};
 
+/// Fields AEMO always writes before the data: `D`, report type, subtype,
+/// version.
+pub const PREFIX_FIELDS: usize = 4;
+
 /// Where a field's bytes live.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Span {

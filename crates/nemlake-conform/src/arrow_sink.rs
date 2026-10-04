@@ -1,16 +1,15 @@
 //! The sink that turns blocks into typed `RecordBatch`es.
 
 use arrow_array::RecordBatch;
-use nemlake_core::{Category, Diagnostic, Fingerprint, IRow};
+use nemlake_core::{Category, Diagnose as _, Diagnostic, Fingerprint, IRow};
 use nemlake_registry::{Registry, ResolveOptions, Resolved, SchemaVersion, TableId};
 
-use crate::builders::{ColumnBuilder, Parsed, parse_field};
-use crate::error::{RowError, RowFailure, SinkError};
-use crate::fields::Row;
-use crate::scan::{Flow, Pos, Sink};
+use nemlake_decode::PREFIX_FIELDS;
+use nemlake_decode::error::{RowError, RowFailure, SinkError};
+use nemlake_decode::fields::Row;
+use nemlake_decode::scan::{Flow, Pos, Sink};
 
-/// Rows AEMO always writes before the data: `D`, report type, subtype, version.
-pub const PREFIX_FIELDS: usize = 4;
+use crate::builders::{ColumnBuilder, Parsed, parse_field};
 
 /// A batch of rows from one block.
 #[derive(Debug)]
@@ -170,7 +169,10 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
 
     fn header(&mut self, irow: &IRow<'_>, pos: Pos) -> Result<(), SinkError> {
         self.flush()?;
-        let resolved = self.registry.resolve_in(irow, self.opts, self.period)?;
+        let resolved = self
+            .registry
+            .resolve_in(irow, self.opts, self.period)
+            .map_err(|e| SinkError::Refused(Box::new(e.diagnostic())))?;
         for w in &resolved.warnings {
             self.out.warning(w.clone());
         }
@@ -328,7 +330,6 @@ impl BatchSink for CollectBatches {
             .push((String::new(), resolved.version.0, resolved.status.label()));
     }
     fn bad_row(&mut self, raw: &[u8], pos: Pos, err: &RowError) -> Flow {
-        use nemlake_core::Diagnose as _;
         self.bad.push((
             pos.line,
             raw.to_vec(),
@@ -349,15 +350,15 @@ pub fn collect<R: std::io::Read>(
     registry: &Registry,
     reader: R,
     opts: ResolveOptions,
-    scan_opts: &crate::scan::ScanOptions,
-) -> Result<(CollectBatches, crate::scan::ScanStats), crate::error::ScanError> {
+    scan_opts: &nemlake_decode::scan::ScanOptions,
+) -> Result<(CollectBatches, nemlake_decode::scan::ScanStats), nemlake_decode::error::ScanError> {
     let mut sink = ArrowSink::new(
         registry,
         opts,
         DEFAULT_BATCH_ROWS,
         CollectBatches::default(),
     );
-    let stats = crate::scan::scan(reader, &mut sink, scan_opts)?;
+    let stats = nemlake_decode::scan::scan(reader, &mut sink, scan_opts)?;
     let out = sink.into_inner()?;
     Ok((out, stats))
 }
@@ -370,7 +371,7 @@ mod tests {
     use nemlake_registry::{Mode, TypeOptions};
 
     use super::*;
-    use crate::scan::ScanOptions;
+    use nemlake_decode::scan::ScanOptions;
 
     fn fixture(name: &str) -> Vec<u8> {
         std::fs::read(format!(
@@ -484,10 +485,9 @@ mod tests {
         .unwrap_err();
         assert!(
             matches!(
-                e,
-                crate::error::ScanError::Sink(SinkError::Resolve(
-                    nemlake_registry::ResolveError::UnknownTable { .. }
-                ))
+                &e,
+                nemlake_decode::error::ScanError::Sink(SinkError::Refused(d))
+                    if d.code == "schema.unknown_table"
             ),
             "{e}"
         );
@@ -742,7 +742,7 @@ D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",H,2\n";
                 ..Default::default()
             },
         );
-        let e = crate::scan::scan(
+        let e = nemlake_decode::scan::scan(
             rows.as_slice(),
             &mut sink,
             &ScanOptions {
@@ -751,7 +751,10 @@ D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",H,2\n";
             },
         )
         .unwrap_err();
-        assert!(matches!(e, crate::error::ScanError::Stopped { line: 3 }));
+        assert!(matches!(
+            e,
+            nemlake_decode::error::ScanError::Stopped { line: 3 }
+        ));
         assert_eq!(sink.inner().bad.len(), 1);
         sink.inner_mut().bad.clear();
     }
@@ -761,7 +764,8 @@ D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",H,2\n";
         let r = reg();
         let text = fixture("DISPATCHPRICE_v4_head.csv");
         let mut sink = ArrowSink::new(&r, ResolveOptions::default(), 7, CollectBatches::default());
-        let stats = crate::scan::scan(text.as_slice(), &mut sink, &ScanOptions::default()).unwrap();
+        let stats = nemlake_decode::scan::scan(text.as_slice(), &mut sink, &ScanOptions::default())
+            .unwrap();
         let out = sink.into_inner().unwrap();
         assert_eq!(stats.rows, 20);
         assert_eq!(out.batches.len(), 3);

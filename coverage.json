@@ -11,6 +11,7 @@
     "crates/nemlake-registry/src/file_model": 90,
     "crates/nemlake-census/src": 80,
     "crates/nemlake-decode/src": 90,
+    "crates/nemlake-conform/src": 90,
     "crates/nemlake-acquire/src": 85,
     "crates/nemlake-writer/src": 85,
     "crates/nemlake-pipeline/src": 75,

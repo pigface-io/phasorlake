@@ -3,9 +3,9 @@
 use std::path::Path;
 
 use anyhow::Result;
+use nemlake_conform::inspect::{BlockSummary, InspectSink};
 use nemlake_core::{Diagnose, IRow};
 use nemlake_decode::archive::walk_csv_entries;
-use nemlake_decode::inspect::{BlockSummary, InspectSink};
 use nemlake_decode::scan::{ScanOptions, scan};
 use nemlake_registry::{Mode, ResolveOptions};
 

@@ -33,7 +33,7 @@ fn options(
         fail_fast: args.fail_fast,
         dry_run,
         strict_footer: args.strict || ctx.config.strict,
-        batch_rows: nemlake_decode::arrow_sink::DEFAULT_BATCH_ROWS,
+        batch_rows: nemlake_conform::arrow_sink::DEFAULT_BATCH_ROWS,
     }
 }
 

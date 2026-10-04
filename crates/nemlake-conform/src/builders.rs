@@ -9,7 +9,7 @@ use arrow_schema::DataType;
 use nemlake_core::{nemtime, num};
 use nemlake_registry::Cast;
 
-use crate::error::RowError;
+use nemlake_decode::error::RowError;
 
 /// A value parsed from a field, before it is appended. Holding parsed values
 /// for a whole row before appending any means a bad field never leaves a
@@ -41,48 +41,48 @@ pub fn parse_field(
     index: u16,
     column: &str,
     bytes: &[u8],
-) -> Result<Parsed, RowError> {
+) -> Result<Parsed, Box<RowError>> {
     if bytes.is_empty() {
         return if nullable {
             Ok(Parsed::Null)
         } else {
-            Err(RowError::NullNotAllowed {
+            Err(Box::new(RowError::NullNotAllowed {
                 column: column.to_owned(),
-            })
+            }))
         };
     }
     let text = || String::from_utf8_lossy(bytes).into_owned();
     match cast {
         Cast::Utf8 => {
             if std::str::from_utf8(bytes).is_err() {
-                return Err(RowError::Utf8 {
+                return Err(Box::new(RowError::Utf8 {
                     column: column.to_owned(),
-                });
+                }));
             }
             Ok(Parsed::Str(index))
         }
-        Cast::Float64 => {
-            num::parse_f64(bytes)
-                .map(Parsed::F64)
-                .map_err(|source| RowError::Number {
+        Cast::Float64 => num::parse_f64(bytes).map(Parsed::F64).map_err(|source| {
+            Box::new(RowError::Number {
+                column: column.to_owned(),
+                value: text(),
+                source,
+            })
+        }),
+        Cast::Int64 => num::parse_i64(bytes).map(Parsed::I64).map_err(|source| {
+            Box::new(RowError::Number {
+                column: column.to_owned(),
+                value: text(),
+                source,
+            })
+        }),
+        Cast::Decimal128 { precision, scale } => num::parse_decimal(bytes, precision, scale)
+            .map(Parsed::I128)
+            .map_err(|source| {
+                Box::new(RowError::Number {
                     column: column.to_owned(),
                     value: text(),
                     source,
                 })
-        }
-        Cast::Int64 => num::parse_i64(bytes)
-            .map(Parsed::I64)
-            .map_err(|source| RowError::Number {
-                column: column.to_owned(),
-                value: text(),
-                source,
-            }),
-        Cast::Decimal128 { precision, scale } => num::parse_decimal(bytes, precision, scale)
-            .map(Parsed::I128)
-            .map_err(|source| RowError::Number {
-                column: column.to_owned(),
-                value: text(),
-                source,
             }),
         Cast::TimestampNanos { offset_secs } => nemtime::parse_nanos(bytes, offset_secs)
             .map(|(nanos, clamped)| {
@@ -92,25 +92,29 @@ pub fn parse_field(
                     Parsed::I64(nanos)
                 }
             })
-            .map_err(|source| RowError::Timestamp {
-                column: column.to_owned(),
-                value: text(),
-                source,
+            .map_err(|source| {
+                Box::new(RowError::Timestamp {
+                    column: column.to_owned(),
+                    value: text(),
+                    source,
+                })
             }),
         Cast::Date32 => nemtime::parse_days(bytes)
             .map(|d| Parsed::I64(i64::from(d)))
-            .map_err(|source| RowError::Timestamp {
-                column: column.to_owned(),
-                value: text(),
-                source,
+            .map_err(|source| {
+                Box::new(RowError::Timestamp {
+                    column: column.to_owned(),
+                    value: text(),
+                    source,
+                })
             }),
         Cast::Boolean => match bytes {
             b"true" | b"TRUE" | b"True" | b"Y" | b"y" | b"1" | b"T" => Ok(Parsed::Bool(true)),
             b"false" | b"FALSE" | b"False" | b"N" | b"n" | b"0" | b"F" => Ok(Parsed::Bool(false)),
-            _ => Err(RowError::Boolean {
+            _ => Err(Box::new(RowError::Boolean {
                 column: column.to_owned(),
                 value: text(),
-            }),
+            })),
         },
     }
 }
@@ -227,51 +231,58 @@ mod tests {
 
     use super::*;
 
+    /// [`super::parse_field`] with the error unboxed, to match on.
+    macro_rules! parse_field {
+        ($($arg:expr),* $(,)?) => {
+            super::parse_field($($arg),*).map_err(|e| *e)
+        };
+    }
+
     #[test]
     fn parses_every_cast() {
         let ts = Cast::TimestampNanos {
             offset_secs: 36_000,
         };
         assert!(matches!(
-            parse_field(ts, true, 0, "T", b"2024/01/01 00:05:00"),
+            parse_field!(ts, true, 0, "T", b"2024/01/01 00:05:00"),
             Ok(Parsed::I64(_))
         ));
         assert!(matches!(
-            parse_field(ts, true, 0, "T", b"nope"),
+            parse_field!(ts, true, 0, "T", b"nope"),
             Err(RowError::Timestamp { .. })
         ));
         // A far-future "no end" date is kept, clamped and marked as such.
         assert_eq!(
-            parse_field(ts, true, 0, "T", b"9999/12/31 00:00:00"),
+            parse_field!(ts, true, 0, "T", b"9999/12/31 00:00:00"),
             Ok(Parsed::Clamped(i64::MAX))
         );
         assert!(matches!(
-            parse_field(ts, true, 0, "T", b"2026/07/28 09:29:54.000000001"),
+            parse_field!(ts, true, 0, "T", b"2026/07/28 09:29:54.000000001"),
             Ok(Parsed::I64(n)) if n % 1_000_000_000 == 1
         ));
-        assert_eq!(parse_field(ts, true, 0, "T", b""), Ok(Parsed::Null));
+        assert_eq!(parse_field!(ts, true, 0, "T", b""), Ok(Parsed::Null));
         assert!(matches!(
-            parse_field(ts, false, 0, "T", b""),
+            parse_field!(ts, false, 0, "T", b""),
             Err(RowError::NullNotAllowed { .. })
         ));
         assert_eq!(
-            parse_field(Cast::Float64, true, 0, "F", b"1.5"),
+            parse_field!(Cast::Float64, true, 0, "F", b"1.5"),
             Ok(Parsed::F64(1.5))
         );
         assert!(matches!(
-            parse_field(Cast::Float64, true, 0, "F", b"x"),
+            parse_field!(Cast::Float64, true, 0, "F", b"x"),
             Err(RowError::Number {
                 source: num::NumberError::Float,
                 ..
             })
         ));
         assert_eq!(
-            parse_field(Cast::Int64, true, 0, "I", b"42"),
+            parse_field!(Cast::Int64, true, 0, "I", b"42"),
             Ok(Parsed::I64(42))
         );
-        assert!(parse_field(Cast::Int64, true, 0, "I", b"4.2").is_err());
+        assert!(parse_field!(Cast::Int64, true, 0, "I", b"4.2").is_err());
         assert_eq!(
-            parse_field(
+            parse_field!(
                 Cast::Decimal128 {
                     precision: 10,
                     scale: 2
@@ -284,7 +295,7 @@ mod tests {
             Ok(Parsed::I128(150))
         );
         assert!(
-            parse_field(
+            parse_field!(
                 Cast::Decimal128 {
                     precision: 10,
                     scale: 2
@@ -297,31 +308,31 @@ mod tests {
             .is_err()
         );
         assert_eq!(
-            parse_field(Cast::Date32, true, 0, "D", b"1970/01/03"),
+            parse_field!(Cast::Date32, true, 0, "D", b"1970/01/03"),
             Ok(Parsed::I64(2))
         );
-        assert!(parse_field(Cast::Date32, true, 0, "D", b"x").is_err());
+        assert!(parse_field!(Cast::Date32, true, 0, "D", b"x").is_err());
         assert_eq!(
-            parse_field(Cast::Utf8, true, 3, "S", b"abc"),
+            parse_field!(Cast::Utf8, true, 3, "S", b"abc"),
             Ok(Parsed::Str(3))
         );
         assert!(matches!(
-            parse_field(Cast::Utf8, true, 3, "S", b"\xff"),
+            parse_field!(Cast::Utf8, true, 3, "S", b"\xff"),
             Err(RowError::Utf8 { .. })
         ));
         for t in [&b"true"[..], b"Y", b"1", b"T"] {
             assert_eq!(
-                parse_field(Cast::Boolean, true, 0, "B", t),
+                parse_field!(Cast::Boolean, true, 0, "B", t),
                 Ok(Parsed::Bool(true))
             );
         }
         for f in [&b"false"[..], b"N", b"0", b"F"] {
             assert_eq!(
-                parse_field(Cast::Boolean, true, 0, "B", f),
+                parse_field!(Cast::Boolean, true, 0, "B", f),
                 Ok(Parsed::Bool(false))
             );
         }
-        assert!(parse_field(Cast::Boolean, true, 0, "B", b"maybe").is_err());
+        assert!(parse_field!(Cast::Boolean, true, 0, "B", b"maybe").is_err());
     }
 
     #[test]

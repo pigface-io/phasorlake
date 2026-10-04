@@ -12,9 +12,10 @@ of both stages on every file, which is exactly what CI runs.
 crates/nemlake-core          L0  vocabulary: identifiers, time, numbers, diagnostics. No I/O.
 crates/nemlake-registry      L1  the table model (file_model) and the registry: build.rs validates schemas/, resolve() on the hot path
 crates/nemlake-census            tooling that regenerates schemas/ from testdata/
-crates/nemlake-decode    L2  the MMS row format: scanner, typed Arrow sink, zips
-crates/nemlake-acquire   L3  sources, HTTP transport, cache (async)
-crates/nemlake-writer    L3  Parquet writer, partitioner, SQLite manifest actor
+crates/nemlake-decode        L2  the MMS row format: scanner, field splitter, zips; no registry
+crates/nemlake-conform       L2  resolves blocks through the registry, casts to typed Arrow batches
+crates/nemlake-acquire       L3  sources, HTTP transport, cache (async)
+crates/nemlake-writer        L3  Parquet writer, partitioner, SQLite manifest actor
 crates/nemlake-pipeline      L4  list → fetch → ingest → commit as tokio streams
 crates/nemlake-cli           L5  the command: flags, rendering, exit codes
 crates/nemlake-bench             end-to-end benchmark harness
