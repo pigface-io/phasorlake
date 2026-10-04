@@ -89,7 +89,7 @@ src = [
 [[column]]
 id = 5
 name = "FORECAST_PRIORITY"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(10,0)"
 loader = "FLOAT EXTERNAL"
@@ -177,7 +177,7 @@ src = [
 [[column]]
 id = 11
 name = "SUPPRESSED_AEMO"
-type = "integer"
+type = "number"
 oracle = "NUMBER(1,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 1
@@ -191,7 +191,7 @@ src = [
 [[column]]
 id = 12
 name = "SUPPRESSED_PARTICIPANT"
-type = "integer"
+type = "number"
 oracle = "NUMBER(1,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 1

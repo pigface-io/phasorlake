@@ -22,7 +22,7 @@ next_column_id = 6
 [[column]]
 id = 1
 name = "MARKETFEEVERSIONNO"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"

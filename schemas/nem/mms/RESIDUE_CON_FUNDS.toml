@@ -75,7 +75,7 @@ src = [
 [[column]]
 id = 4
 name = "DEFAULTUNITS"
-type = "integer"
+type = "number"
 oracle = "NUMBER(5,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 1
@@ -89,7 +89,7 @@ src = [
 [[column]]
 id = 5
 name = "ROLLOVERUNITS"
-type = "integer"
+type = "number"
 oracle = "NUMBER(5,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 1
@@ -103,7 +103,7 @@ src = [
 [[column]]
 id = 6
 name = "REALLOCATEDUNITS"
-type = "integer"
+type = "number"
 oracle = "NUMBER(5,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 1
@@ -117,7 +117,7 @@ src = [
 [[column]]
 id = 7
 name = "UNITSOFFERED"
-type = "integer"
+type = "number"
 oracle = "NUMBER(5,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 1

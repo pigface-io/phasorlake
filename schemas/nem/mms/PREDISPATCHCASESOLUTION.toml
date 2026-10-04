@@ -39,7 +39,7 @@ src = [
 [[column]]
 id = 2
 name = "RUNNO"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
@@ -54,7 +54,7 @@ src = [
 [[column]]
 id = 3
 name = "SOLUTIONSTATUS"
-type = "integer"
+type = "number"
 oracle = "NUMBER(2,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 1
@@ -83,7 +83,7 @@ src = [
 [[column]]
 id = 5
 name = "NONPHYSICALLOSSES"
-type = "integer"
+type = "number"
 oracle = "NUMBER(1,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 1
@@ -319,7 +319,7 @@ src = [
 [[column]]
 id = 20
 name = "INTERVENTION"
-type = "integer"
+type = "number"
 oracle = "NUMBER(2,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 1

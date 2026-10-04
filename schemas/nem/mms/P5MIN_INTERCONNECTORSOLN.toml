@@ -153,7 +153,7 @@ src = [
 [[column]]
 id = 10
 name = "MNSP"
-type = "integer"
+type = "number"
 oracle = "NUMBER(1,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 4
@@ -309,7 +309,7 @@ src = [
 [[column]]
 id = 20
 name = "LOCALLY_CONSTRAINED_EXPORT"
-type = "integer"
+type = "number"
 oracle = "NUMBER(1,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 4
@@ -339,7 +339,7 @@ src = [
 [[column]]
 id = 22
 name = "LOCALLY_CONSTRAINED_IMPORT"
-type = "integer"
+type = "number"
 oracle = "NUMBER(1,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 4
@@ -353,7 +353,7 @@ src = [
 [[column]]
 id = 2
 name = "INTERVENTION"
-type = "integer"
+type = "number"
 oracle = "Number(2,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 4

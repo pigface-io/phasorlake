@@ -87,7 +87,7 @@ src = [
 [[column]]
 id = 5
 name = "PERIODID"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
@@ -102,7 +102,7 @@ src = [
 [[column]]
 id = 6
 name = "VERSIONNO"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
@@ -117,7 +117,7 @@ src = [
 [[column]]
 id = 7
 name = "RESDEMAND"
-type = "integer"
+type = "number"
 oracle = "NUMBER(10,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 1
@@ -131,7 +131,7 @@ src = [
 [[column]]
 id = 8
 name = "DEMAND90PROBABILITY"
-type = "integer"
+type = "number"
 oracle = "NUMBER(10,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 1
@@ -145,7 +145,7 @@ src = [
 [[column]]
 id = 9
 name = "DEMAND10PROBABILITY"
-type = "integer"
+type = "number"
 oracle = "NUMBER(10,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 1
@@ -173,7 +173,7 @@ src = [
 [[column]]
 id = 11
 name = "MR_SCHEDULE"
-type = "integer"
+type = "number"
 oracle = "NUMBER(6,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 1

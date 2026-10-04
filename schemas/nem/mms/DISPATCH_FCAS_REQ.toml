@@ -42,7 +42,7 @@ src = [
 [[column]]
 id = 2
 name = "RUNNO"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
@@ -57,7 +57,7 @@ src = [
 [[column]]
 id = 3
 name = "INTERVENTION"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(2,0)"
 loader = "FLOAT EXTERNAL"
@@ -136,7 +136,7 @@ src = [
 [[column]]
 id = 8
 name = "GENCONVERSIONNO"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 2

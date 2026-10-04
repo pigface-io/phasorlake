@@ -41,7 +41,7 @@ src = [
 [[column]]
 id = 2
 name = "INTERVENTION"
-type = "integer"
+type = "number"
 oracle = "Number(2,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 4
@@ -103,7 +103,7 @@ src = [
 [[column]]
 id = 6
 name = "TRADETYPE"
-type = "integer"
+type = "number"
 oracle = "NUMBER(2,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 4
@@ -117,7 +117,7 @@ src = [
 [[column]]
 id = 7
 name = "AGCSTATUS"
-type = "integer"
+type = "number"
 oracle = "NUMBER(2,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 4
@@ -339,7 +339,7 @@ src = [
 [[column]]
 id = 21
 name = "RAISE6SECFLAGS"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 4
@@ -353,7 +353,7 @@ src = [
 [[column]]
 id = 22
 name = "RAISE60SECFLAGS"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 4
@@ -367,7 +367,7 @@ src = [
 [[column]]
 id = 23
 name = "RAISE5MINFLAGS"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 4
@@ -381,7 +381,7 @@ src = [
 [[column]]
 id = 24
 name = "RAISEREGFLAGS"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 4
@@ -395,7 +395,7 @@ src = [
 [[column]]
 id = 25
 name = "LOWER6SECFLAGS"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 4
@@ -409,7 +409,7 @@ src = [
 [[column]]
 id = 26
 name = "LOWER60SECFLAGS"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 4
@@ -423,7 +423,7 @@ src = [
 [[column]]
 id = 27
 name = "LOWER5MINFLAGS"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 4
@@ -437,7 +437,7 @@ src = [
 [[column]]
 id = 28
 name = "LOWERREGFLAGS"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 4
@@ -465,7 +465,7 @@ src = [
 [[column]]
 id = 30
 name = "SEMIDISPATCHCAP"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 4

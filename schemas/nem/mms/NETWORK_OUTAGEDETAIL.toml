@@ -26,7 +26,7 @@ next_column_id = 20
 [[column]]
 id = 1
 name = "OUTAGEID"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(15,0)"
 loader = "FLOAT EXTERNAL"
@@ -178,7 +178,7 @@ src = [
 [[column]]
 id = 10
 name = "RESUBMITOUTAGEID"
-type = "integer"
+type = "number"
 oracle = "NUMBER(15,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 4
@@ -192,7 +192,7 @@ src = [
 [[column]]
 id = 11
 name = "RECALLTIMEDAY"
-type = "integer"
+type = "number"
 oracle = "NUMBER(10,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 4
@@ -206,7 +206,7 @@ src = [
 [[column]]
 id = 12
 name = "RECALLTIMENIGHT"
-type = "integer"
+type = "number"
 oracle = "NUMBER(10,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 4
@@ -249,7 +249,7 @@ src = [
 [[column]]
 id = 15
 name = "ISSECONDARY"
-type = "integer"
+type = "number"
 oracle = "NUMBER(1,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 4

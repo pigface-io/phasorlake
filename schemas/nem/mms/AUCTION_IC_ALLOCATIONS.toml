@@ -26,7 +26,7 @@ next_column_id = 13
 [[column]]
 id = 1
 name = "CONTRACTYEAR"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(4,0)"
 loader = "FLOAT EXTERNAL"
@@ -41,7 +41,7 @@ src = [
 [[column]]
 id = 2
 name = "QUARTER"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(1,0)"
 loader = "FLOAT EXTERNAL"
@@ -56,7 +56,7 @@ src = [
 [[column]]
 id = 3
 name = "VERSIONNO"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
@@ -105,7 +105,7 @@ src = [
 [[column]]
 id = 6
 name = "MAXIMUMUNITS"
-type = "integer"
+type = "number"
 oracle = "NUMBER(5,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 2

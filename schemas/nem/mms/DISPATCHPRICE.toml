@@ -41,7 +41,7 @@ src = [
 [[column]]
 id = 2
 name = "RUNNO"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
@@ -89,7 +89,7 @@ src = [
 [[column]]
 id = 5
 name = "INTERVENTION"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(2,0)"
 loader = "FLOAT EXTERNAL"
@@ -152,7 +152,7 @@ src = [
 [[column]]
 id = 9
 name = "APCFLAG"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 4
@@ -166,7 +166,7 @@ src = [
 [[column]]
 id = 10
 name = "MARKETSUSPENDEDFLAG"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 4
@@ -224,7 +224,7 @@ src = [
 [[column]]
 id = 14
 name = "RAISE6SECAPCFLAG"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 4
@@ -267,7 +267,7 @@ src = [
 [[column]]
 id = 17
 name = "RAISE60SECAPCFLAG"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 4
@@ -310,7 +310,7 @@ src = [
 [[column]]
 id = 20
 name = "RAISE5MINAPCFLAG"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 4
@@ -353,7 +353,7 @@ src = [
 [[column]]
 id = 23
 name = "RAISEREGAPCFLAG"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 4
@@ -396,7 +396,7 @@ src = [
 [[column]]
 id = 26
 name = "LOWER6SECAPCFLAG"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 4
@@ -439,7 +439,7 @@ src = [
 [[column]]
 id = 29
 name = "LOWER60SECAPCFLAG"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 4
@@ -482,7 +482,7 @@ src = [
 [[column]]
 id = 32
 name = "LOWER5MINAPCFLAG"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 4
@@ -525,7 +525,7 @@ src = [
 [[column]]
 id = 35
 name = "LOWERREGAPCFLAG"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 4

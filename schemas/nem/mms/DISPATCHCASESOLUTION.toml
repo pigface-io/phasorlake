@@ -38,7 +38,7 @@ src = [
 [[column]]
 id = 2
 name = "RUNNO"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
@@ -53,7 +53,7 @@ src = [
 [[column]]
 id = 3
 name = "INTERVENTION"
-type = "integer"
+type = "number"
 oracle = "NUMBER(2,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 2
@@ -86,7 +86,7 @@ src = [
 [[column]]
 id = 5
 name = "SOLUTIONSTATUS"
-type = "integer"
+type = "number"
 oracle = "NUMBER(2,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 2
@@ -118,7 +118,7 @@ src = [
 [[column]]
 id = 7
 name = "NONPHYSICALLOSSES"
-type = "integer"
+type = "number"
 oracle = "NUMBER(1,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 2
@@ -354,7 +354,7 @@ src = [
 [[column]]
 id = 22
 name = "SWITCHRUNINITIALSTATUS"
-type = "integer"
+type = "number"
 oracle = "NUMBER(1,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 2
@@ -368,7 +368,7 @@ src = [
 [[column]]
 id = 23
 name = "SWITCHRUNBESTSTATUS"
-type = "integer"
+type = "number"
 oracle = "NUMBER(1,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 2
@@ -382,7 +382,7 @@ src = [
 [[column]]
 id = 24
 name = "SWITCHRUNBESTSTATUS_INT"
-type = "integer"
+type = "number"
 oracle = "NUMBER(1,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 2

@@ -36,7 +36,7 @@ src = [
 [[column]]
 id = 3
 name = "STARTPERIOD"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 2
@@ -80,7 +80,7 @@ src = [
 [[column]]
 id = 6
 name = "ENDPERIOD"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 2
@@ -212,7 +212,7 @@ src = [
 [[column]]
 id = 1
 name = "INVOCATION_ID"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(9)"
 loader = "FLOAT EXTERNAL"

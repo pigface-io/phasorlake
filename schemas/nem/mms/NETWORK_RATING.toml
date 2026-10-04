@@ -164,7 +164,7 @@ src = [
 [[column]]
 id = 9
 name = "ISDYNAMIC"
-type = "integer"
+type = "number"
 oracle = "NUMBER(1,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 1

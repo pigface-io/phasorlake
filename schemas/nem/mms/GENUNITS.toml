@@ -116,7 +116,7 @@ src = [
 [[column]]
 id = 7
 name = "VOLTLEVEL"
-type = "integer"
+type = "number"
 oracle = "NUMBER(6,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 2
@@ -130,7 +130,7 @@ src = [
 [[column]]
 id = 8
 name = "REGISTEREDCAPACITY"
-type = "integer"
+type = "number"
 oracle = "NUMBER(6,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 2
@@ -207,7 +207,7 @@ src = [
 [[column]]
 id = 13
 name = "MAXCAPACITY"
-type = "integer"
+type = "number"
 oracle = "NUMBER(6,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 2

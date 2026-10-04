@@ -166,8 +166,6 @@ src = [
 id = 11
 name = "GENCONID_VERSIONNO"
 type = "number"
-precision = 22
-scale = 0
 oracle = "NUMBER(22,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 6
@@ -197,7 +195,7 @@ src = [
 [[column]]
 id = 2
 name = "INTERVENTION"
-type = "integer"
+type = "number"
 oracle = "Number(2,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 6

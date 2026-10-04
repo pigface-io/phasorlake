@@ -41,7 +41,7 @@ src = [
 [[column]]
 id = 2
 name = "RUNNO"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 1
@@ -88,7 +88,7 @@ src = [
 [[column]]
 id = 5
 name = "INTERVENTION"
-type = "integer"
+type = "number"
 oracle = "NUMBER(2,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 1
@@ -691,7 +691,7 @@ src = [
 [[column]]
 id = 43
 name = "INTERVENTION_ACTIVE"
-type = "integer"
+type = "number"
 oracle = "NUMBER(1,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 1

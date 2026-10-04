@@ -71,7 +71,7 @@ src = [
 [[column]]
 id = 4
 name = "PASAAVAILABILITY_SCHEDULED"
-type = "integer"
+type = "number"
 oracle = "NUMBER(12,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 4
@@ -99,7 +99,7 @@ src = [
 [[column]]
 id = 6
 name = "ENERGYUNCONSTRAINEDCAPACITY"
-type = "integer"
+type = "number"
 oracle = "NUMBER(12,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 4
@@ -113,7 +113,7 @@ src = [
 [[column]]
 id = 7
 name = "ENERGYCONSTRAINEDCAPACITY"
-type = "integer"
+type = "number"
 oracle = "NUMBER(12,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 4

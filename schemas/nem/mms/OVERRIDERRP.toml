@@ -55,7 +55,7 @@ src = [
 [[column]]
 id = 3
 name = "STARTPERIOD"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
@@ -84,7 +84,7 @@ src = [
 [[column]]
 id = 5
 name = "ENDPERIOD"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 1
@@ -98,7 +98,7 @@ src = [
 [[column]]
 id = 6
 name = "RRP"
-type = "integer"
+type = "number"
 oracle = "NUMBER(15,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 1

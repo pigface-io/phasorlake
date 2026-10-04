@@ -5,6 +5,14 @@
 //!   that knows what AEMO actually publishes);
 //! - type class: the CTL loader type (reflects the current file), with the
 //!   data model's precision, scale and length when they agree on class;
+//! - whole numbers: never generated. Every numeric column is a number
+//!   (`Float64`, or a decimal where precision and scale are known and not
+//!   zero-scale). AEMO's control files load every numeric column as
+//!   `FLOAT EXTERNAL`; the data model's `NUMBER(p,0)` is contradicted by
+//!   the data (13.55 in a `NUMBER(6,0)` column); and `Float64` holds any
+//!   whole number of up to 15 digits exactly, which is wider than any
+//!   column the data model declares. A column is a whole number only by a
+//!   `curated` edit.
 //! - primary key, package, visibility, description: the data model;
 //! - snapshot-or-append: the curated list;
 //! - ids and anything marked `curated`: the existing file.
@@ -551,15 +559,10 @@ pub fn merge(inputs: &Inputs<'_>) -> Result<TableDef, MergeError> {
                 scale: None,
             };
         }
-        // An integer column whose values carry fractional digits is not one.
-        if ty == ColumnType::Integer
-            && let Some(seen) = digits.get(cname)
-            && (seen.fraction > 0 || seen.exponent || seen.integer > 18)
-        {
-            notes.push(format!(
-                "column {cname}: declared an integer but a sampled value has {} integer and {} fractional digits; read as a number",
-                seen.integer, seen.fraction
-            ));
+        // No whole numbers by default; see the module documentation. The
+        // declared precision goes with it: a scale of 0 is exactly what
+        // the data contradicts, so it cannot be a decimal either.
+        if ty == ColumnType::Integer || matches!(ty, ColumnType::Number { scale: Some(0), .. }) {
             ty = ColumnType::Number {
                 precision: None,
                 scale: None,

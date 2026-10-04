@@ -55,7 +55,7 @@ src = [
 [[column]]
 id = 3
 name = "VERSIONNO"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
@@ -101,7 +101,7 @@ src = [
 [[column]]
 id = 6
 name = "REGISTEREDCAPACITY"
-type = "integer"
+type = "number"
 oracle = "NUMBER(6,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 4
@@ -146,7 +146,7 @@ src = [
 [[column]]
 id = 9
 name = "MAXCAPACITY"
-type = "integer"
+type = "number"
 oracle = "NUMBER(6,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 4
@@ -299,7 +299,7 @@ src = [
 [[column]]
 id = 19
 name = "MAXRATEOFCHANGEUP"
-type = "integer"
+type = "number"
 oracle = "Number(6,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 4
@@ -313,7 +313,7 @@ src = [
 [[column]]
 id = 20
 name = "MAXRATEOFCHANGEDOWN"
-type = "integer"
+type = "number"
 oracle = "Number(6,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 4

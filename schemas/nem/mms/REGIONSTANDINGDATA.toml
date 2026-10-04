@@ -38,7 +38,7 @@ src = [
 [[column]]
 id = 2
 name = "VERSIONNO"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
@@ -102,7 +102,7 @@ src = [
 [[column]]
 id = 6
 name = "PEAKTRADINGPERIOD"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 1

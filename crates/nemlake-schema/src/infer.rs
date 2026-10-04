@@ -201,6 +201,15 @@ pub fn apply_ctl(
         let Some(declared) = loader.ty.column_type() else {
             continue;
         };
+        // A whole number is never drafted: AEMO's data contradicts declared
+        // whole numbers, and a number holds every whole value exactly.
+        let declared = match declared {
+            ColumnType::Integer => ColumnType::Number {
+                precision: None,
+                scale: None,
+            },
+            other => other,
+        };
         let evidence = irow
             .columns
             .iter()
@@ -208,8 +217,7 @@ pub fn apply_ctl(
             .and_then(|i| sampler.columns.get(i));
         let fits = evidence.is_none_or(|ev| match declared {
             ColumnType::Utf8 { .. } => true,
-            ColumnType::Number { .. } => ev.numeric == ev.non_null,
-            ColumnType::Integer => ev.integer == ev.non_null,
+            ColumnType::Number { .. } | ColumnType::Integer => ev.numeric == ev.non_null,
             ColumnType::Timestamp => ev.timestamp == ev.non_null,
             // A day without a time, or a flag: the sampler cannot vouch
             // for either, so only an empty sample lets them through.
@@ -432,10 +440,13 @@ STAMP CHAR(30))
             Some("DATE \"yyyy/mm/dd hh24:mi:ss\"")
         );
         assert!(matches!(col("AMOUNT").ty, ColumnType::Number { .. }));
-        assert_eq!(col("HOWMANY").ty, ColumnType::Integer);
-        // A whole number was declared and 2.5 was published: a number.
+        // INTEGER EXTERNAL is drafted as a number all the same.
+        assert!(matches!(col("HOWMANY").ty, ColumnType::Number { .. }));
+        // A whole number was declared and 2.5 was published: a number,
+        // which is what the control file is read as anyway.
         assert!(matches!(col("PARTS").ty, ColumnType::Number { .. }));
-        assert_eq!(col("PARTS").src, ["inferred"]);
+        assert_eq!(col("PARTS").src, ["ctl", "sampled"]);
+        assert_eq!(col("PARTS").loader.as_deref(), Some("INTEGER EXTERNAL"));
         // Text takes the declared length, or the longest value if longer.
         assert_eq!(
             col("LABEL").ty,
@@ -465,13 +476,12 @@ STAMP CHAR(30))
         // A column the control file does not name stays a guess.
         assert_eq!(col("BESIDE").src, ["inferred"]);
         assert!(col("BESIDE").loader.is_none());
-        assert_eq!(notes.len(), 3, "{notes:?}");
-        assert!(notes[0].contains("PARTS") && notes[0].contains("INTEGER EXTERNAL"));
-        assert!(notes[1].contains("CODE") && notes[1].contains("FLOAT EXTERNAL"));
-        assert!(notes[2].contains("DAY"));
+        assert_eq!(notes.len(), 2, "{notes:?}");
+        assert!(notes[0].contains("CODE") && notes[0].contains("FLOAT EXTERNAL"));
+        assert!(notes[1].contains("DAY"));
         // Applying it again changes nothing: decided columns are left alone.
         let before = t.clone();
-        assert_eq!(apply_ctl(&mut t, &irow, &s, &ctl).len(), 3);
+        assert_eq!(apply_ctl(&mut t, &irow, &s, &ctl).len(), 2);
         assert_eq!(t, before);
         // A draft with no time column gets the first timestamp.
         let mut t2 = draft_table(Market::Nem, &irow, &Sampler::new(0));

@@ -44,7 +44,7 @@ src = [
 [[column]]
 id = 2
 name = "RUN_NO"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(4)"
 loader = "FLOAT EXTERNAL"
@@ -141,7 +141,7 @@ src = [
 [[column]]
 id = 8
 name = "USE_ITERATION_ID"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(5)"
 loader = "FLOAT EXTERNAL"

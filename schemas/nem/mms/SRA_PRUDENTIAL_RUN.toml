@@ -38,7 +38,7 @@ src = [
 [[column]]
 id = 2
 name = "PRUDENTIAL_RUNNO"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(8)"
 loader = "FLOAT EXTERNAL"

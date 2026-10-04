@@ -24,7 +24,7 @@ next_column_id = 10
 [[column]]
 id = 1
 name = "SRA_YEAR"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(4)"
 loader = "FLOAT EXTERNAL"
@@ -39,7 +39,7 @@ src = [
 [[column]]
 id = 2
 name = "SRA_QUARTER"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(3)"
 loader = "FLOAT EXTERNAL"
@@ -54,7 +54,7 @@ src = [
 [[column]]
 id = 3
 name = "SRA_RUNNO"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(3)"
 loader = "FLOAT EXTERNAL"
@@ -113,7 +113,7 @@ src = [
 [[column]]
 id = 7
 name = "INTEREST_VERSIONNO"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3)"
 loader = "FLOAT EXTERNAL"
 added_in = 1
@@ -127,7 +127,7 @@ src = [
 [[column]]
 id = 8
 name = "MAKEUP_VERSIONNO"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3)"
 loader = "FLOAT EXTERNAL"
 added_in = 1

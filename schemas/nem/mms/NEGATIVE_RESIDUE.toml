@@ -71,7 +71,7 @@ src = [
 [[column]]
 id = 4
 name = "NRM_ACTIVATED_FLAG"
-type = "integer"
+type = "number"
 oracle = "number(1,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 2
@@ -207,7 +207,7 @@ src = [
 [[column]]
 id = 13
 name = "DI_NOTBINDING_COUNT"
-type = "integer"
+type = "number"
 oracle = "number(2,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 2
@@ -221,7 +221,7 @@ src = [
 [[column]]
 id = 14
 name = "DI_VIOLATED_COUNT"
-type = "integer"
+type = "number"
 oracle = "number(2,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 2
@@ -235,7 +235,7 @@ src = [
 [[column]]
 id = 15
 name = "NRMCONSTRAINT_BLOCKED_FLAG"
-type = "integer"
+type = "number"
 oracle = "number(1,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 2

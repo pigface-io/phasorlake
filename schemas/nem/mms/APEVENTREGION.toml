@@ -24,8 +24,6 @@ next_column_id = 15
 id = 1
 name = "APEVENTID"
 type = "number"
-precision = 22
-scale = 0
 nullable = false
 oracle = "NUMBER(22,0)"
 loader = "FLOAT EXTERNAL"
@@ -71,7 +69,7 @@ src = [
 [[column]]
 id = 4
 name = "ENERGYAPFLAG"
-type = "integer"
+type = "number"
 oracle = "NUMBER(1,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 2
@@ -85,7 +83,7 @@ src = [
 [[column]]
 id = 5
 name = "RAISE6SECAPFLAG"
-type = "integer"
+type = "number"
 oracle = "NUMBER(1,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 2
@@ -99,7 +97,7 @@ src = [
 [[column]]
 id = 6
 name = "RAISE60SECAPFLAG"
-type = "integer"
+type = "number"
 oracle = "NUMBER(1,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 2
@@ -113,7 +111,7 @@ src = [
 [[column]]
 id = 7
 name = "RAISE5MINAPFLAG"
-type = "integer"
+type = "number"
 oracle = "NUMBER(1,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 2
@@ -127,7 +125,7 @@ src = [
 [[column]]
 id = 8
 name = "RAISEREGAPFLAG"
-type = "integer"
+type = "number"
 oracle = "NUMBER(1,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 2
@@ -141,7 +139,7 @@ src = [
 [[column]]
 id = 9
 name = "LOWER6SECAPFLAG"
-type = "integer"
+type = "number"
 oracle = "NUMBER(1,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 2
@@ -155,7 +153,7 @@ src = [
 [[column]]
 id = 10
 name = "LOWER60SECAPFLAG"
-type = "integer"
+type = "number"
 oracle = "NUMBER(1,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 2
@@ -173,7 +171,7 @@ src = [
 [[column]]
 id = 11
 name = "LOWER5MINAPFLAG"
-type = "integer"
+type = "number"
 oracle = "NUMBER(1,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 2
@@ -187,7 +185,7 @@ src = [
 [[column]]
 id = 12
 name = "LOWERREGAPFLAG"
-type = "integer"
+type = "number"
 oracle = "NUMBER(1,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 2

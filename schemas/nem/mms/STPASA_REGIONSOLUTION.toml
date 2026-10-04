@@ -168,7 +168,7 @@ src = [
 [[column]]
 id = 10
 name = "UNCONSTRAINEDCAPACITY"
-type = "integer"
+type = "number"
 oracle = "NUMBER(12,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 6
@@ -182,7 +182,7 @@ src = [
 [[column]]
 id = 11
 name = "CONSTRAINEDCAPACITY"
-type = "integer"
+type = "number"
 oracle = "NUMBER(12,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 6
@@ -244,7 +244,7 @@ src = [
 [[column]]
 id = 15
 name = "RESERVECONDITION"
-type = "integer"
+type = "number"
 oracle = "NUMBER(1,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 6
@@ -290,7 +290,7 @@ src = [
 [[column]]
 id = 18
 name = "LORCONDITION"
-type = "integer"
+type = "number"
 oracle = "NUMBER(1,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 6
@@ -350,7 +350,7 @@ src = [
 [[column]]
 id = 22
 name = "AGGREGATEPASAAVAILABILITY"
-type = "integer"
+type = "number"
 oracle = "NUMBER(12,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 6

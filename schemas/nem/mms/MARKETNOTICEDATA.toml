@@ -20,7 +20,7 @@ next_column_id = 8
 [[column]]
 id = 1
 name = "NOTICEID"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(10,0)"
 loader = "FLOAT EXTERNAL"

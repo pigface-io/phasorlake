@@ -81,7 +81,11 @@ drift.
 
 Types: `DATE` and `TIMESTAMP` → `Timestamp(ns, +10:00)` (NEM time is fixed
 AEST), `NUMBER(p,s)` → `Float64` (or `Decimal128(p, s)` with `--decimal`),
-`NUMBER(p,0)` → `Int64`, `VARCHAR2`/`CHAR` → `Utf8`.
+`VARCHAR2`/`CHAR` → `Utf8`. Whole numbers are `Float64` too: AEMO's control
+files load every numeric column as `FLOAT EXTERNAL`, its data puts fractions
+in columns the data model declares `NUMBER(p,0)`, and `Float64` holds every
+whole number of up to 15 digits exactly. A column is `Int64` only where a
+table file says so by hand (`type = "integer"`, `curated = true`).
 
 Every timestamp in the lake is nanoseconds since the epoch in UTC, one unit
 with no exceptions, and a fractional second is kept to the last digit. That

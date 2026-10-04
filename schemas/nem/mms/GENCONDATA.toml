@@ -47,7 +47,7 @@ src = [
 [[column]]
 id = 2
 name = "VERSIONNO"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
@@ -408,7 +408,7 @@ src = [
 [[column]]
 id = 26
 name = "FORCE_SCADA"
-type = "integer"
+type = "number"
 oracle = "NUMBER(1,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 6

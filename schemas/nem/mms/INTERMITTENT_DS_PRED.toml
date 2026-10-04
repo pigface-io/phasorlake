@@ -105,7 +105,7 @@ src = [
 [[column]]
 id = 6
 name = "FORECAST_PRIORITY"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(10,0)"
 loader = "FLOAT EXTERNAL"

@@ -41,7 +41,7 @@ src = [
 [[column]]
 id = 2
 name = "RUNNO"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
@@ -56,7 +56,7 @@ src = [
 [[column]]
 id = 3
 name = "INTERVENTION"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(2,0)"
 loader = "FLOAT EXTERNAL"
@@ -106,8 +106,6 @@ src = [
 id = 6
 name = "DISPATCHINTERVAL"
 type = "number"
-precision = 22
-scale = 0
 oracle = "NUMBER(22,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 1

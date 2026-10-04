@@ -70,7 +70,7 @@ src = [
 [[column]]
 id = 4
 name = "VERSIONNO"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
@@ -223,7 +223,7 @@ src = [
 [[column]]
 id = 14
 name = "IMPORTLIMIT"
-type = "integer"
+type = "number"
 oracle = "NUMBER(6,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 1
@@ -237,7 +237,7 @@ src = [
 [[column]]
 id = 15
 name = "EXPORTLIMIT"
-type = "integer"
+type = "number"
 oracle = "NUMBER(6,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 1
@@ -329,7 +329,7 @@ src = [
 [[column]]
 id = 21
 name = "FCASSUPPORTUNAVAILABLE"
-type = "integer"
+type = "number"
 oracle = "NUMBER(1,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 1

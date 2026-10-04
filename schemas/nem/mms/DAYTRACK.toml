@@ -70,7 +70,7 @@ src = [
 [[column]]
 id = 4
 name = "EXANTERUNNO"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 6
@@ -100,7 +100,7 @@ src = [
 [[column]]
 id = 6
 name = "EXPOSTRUNNO"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
@@ -129,7 +129,7 @@ src = [
 [[column]]
 id = 8
 name = "SETTLEMENTINTERVALLENGTH"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 7

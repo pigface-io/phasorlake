@@ -133,7 +133,7 @@ src = [
 [[column]]
 id = 8
 name = "TARGET"
-type = "integer"
+type = "number"
 oracle = "number(15,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 2
@@ -147,7 +147,7 @@ src = [
 [[column]]
 id = 9
 name = "CONFORMING"
-type = "integer"
+type = "number"
 oracle = "number(1,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 2
@@ -190,7 +190,7 @@ src = [
 [[column]]
 id = 12
 name = "INSTRUCTION_SEQUENCE"
-type = "integer"
+type = "number"
 oracle = "number(4,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 2

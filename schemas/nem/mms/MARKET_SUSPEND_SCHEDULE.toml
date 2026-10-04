@@ -74,7 +74,7 @@ src = [
 [[column]]
 id = 4
 name = "PERIODID"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"

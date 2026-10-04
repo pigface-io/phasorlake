@@ -63,7 +63,7 @@ src = [
 [[column]]
 id = 3
 name = "VERSIONNO"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
@@ -78,7 +78,7 @@ src = [
 [[column]]
 id = 4
 name = "TERMID"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
@@ -93,7 +93,7 @@ src = [
 [[column]]
 id = 5
 name = "GROUPID"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 1

@@ -48,7 +48,7 @@ src = [
 [[column]]
 id = 3
 name = "STARTPERIOD"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 1
@@ -74,7 +74,7 @@ src = [
 [[column]]
 id = 5
 name = "ENDPERIOD"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 1

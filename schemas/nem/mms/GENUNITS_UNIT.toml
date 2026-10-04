@@ -57,7 +57,7 @@ src = [
 [[column]]
 id = 3
 name = "VERSIONNO"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(6,0)"
 loader = "FLOAT EXTERNAL"
@@ -88,7 +88,7 @@ src = [
 [[column]]
 id = 5
 name = "UNIT_COUNT"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 2
@@ -134,7 +134,7 @@ src = [
 [[column]]
 id = 8
 name = "AGGREGATION_FLAG"
-type = "integer"
+type = "number"
 oracle = "NUMBER(1,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 2

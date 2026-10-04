@@ -93,7 +93,7 @@ src = [
 [[column]]
 id = 5
 name = "PERIODID"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
@@ -140,7 +140,7 @@ src = [
 [[column]]
 id = 8
 name = "RAMPUPRATE"
-type = "integer"
+type = "number"
 oracle = "NUMBER(6)"
 loader = "FLOAT EXTERNAL"
 added_in = 1
@@ -154,7 +154,7 @@ src = [
 [[column]]
 id = 9
 name = "RAMPDOWNRATE"
-type = "integer"
+type = "number"
 oracle = "NUMBER(6)"
 loader = "FLOAT EXTERNAL"
 added_in = 1

@@ -90,7 +90,7 @@ src = [
 [[column]]
 id = 5
 name = "PERIODID"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
@@ -105,7 +105,7 @@ src = [
 [[column]]
 id = 6
 name = "ELEMENTS_UNAVAILABLE"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 2

@@ -54,7 +54,7 @@ src = [
 [[column]]
 id = 3
 name = "VERSIONNO"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
@@ -69,7 +69,7 @@ src = [
 [[column]]
 id = 4
 name = "PERIODID"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(4,0)"
 loader = "FLOAT EXTERNAL"

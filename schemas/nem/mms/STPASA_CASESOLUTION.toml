@@ -50,7 +50,7 @@ src = [
 [[column]]
 id = 3
 name = "RESERVECONDITION"
-type = "integer"
+type = "number"
 oracle = "NUMBER(1,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 3
@@ -64,7 +64,7 @@ src = [
 [[column]]
 id = 4
 name = "LORCONDITION"
-type = "integer"
+type = "number"
 oracle = "NUMBER(1,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 3
@@ -265,7 +265,7 @@ src = [
 [[column]]
 id = 17
 name = "LORUIGFOPTION"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 3
@@ -279,7 +279,7 @@ src = [
 [[column]]
 id = 18
 name = "RELIABILITYLRCUIGFOPTION"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 3
@@ -293,7 +293,7 @@ src = [
 [[column]]
 id = 19
 name = "OUTAGELRCUIGFOPTION"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 3

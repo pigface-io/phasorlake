@@ -40,7 +40,7 @@ src = [
 [[column]]
 id = 2
 name = "RUNNO"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
@@ -72,7 +72,7 @@ src = [
 [[column]]
 id = 4
 name = "TRADETYPE"
-type = "integer"
+type = "number"
 oracle = "NUMBER(2,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 3
@@ -87,8 +87,6 @@ src = [
 id = 5
 name = "DISPATCHINTERVAL"
 type = "number"
-precision = 22
-scale = 0
 oracle = "NUMBER(22,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 3
@@ -102,7 +100,7 @@ src = [
 [[column]]
 id = 6
 name = "INTERVENTION"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(2,0)"
 loader = "FLOAT EXTERNAL"
@@ -133,7 +131,7 @@ src = [
 [[column]]
 id = 8
 name = "DISPATCHMODE"
-type = "integer"
+type = "number"
 oracle = "NUMBER(2,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 3
@@ -147,7 +145,7 @@ src = [
 [[column]]
 id = 9
 name = "AGCSTATUS"
-type = "integer"
+type = "number"
 oracle = "NUMBER(2,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 3
@@ -546,7 +544,7 @@ src = [
 [[column]]
 id = 34
 name = "RAISE6SECFLAGS"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 3
@@ -560,7 +558,7 @@ src = [
 [[column]]
 id = 35
 name = "RAISE60SECFLAGS"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 3
@@ -574,7 +572,7 @@ src = [
 [[column]]
 id = 36
 name = "RAISE5MINFLAGS"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 3
@@ -587,7 +585,7 @@ src = [
 [[column]]
 id = 37
 name = "RAISEREGFLAGS"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 3
@@ -601,7 +599,7 @@ src = [
 [[column]]
 id = 38
 name = "LOWER6SECFLAGS"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 3
@@ -615,7 +613,7 @@ src = [
 [[column]]
 id = 39
 name = "LOWER60SECFLAGS"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 3
@@ -629,7 +627,7 @@ src = [
 [[column]]
 id = 40
 name = "LOWER5MINFLAGS"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 3
@@ -643,7 +641,7 @@ src = [
 [[column]]
 id = 41
 name = "LOWERREGFLAGS"
-type = "integer"
+type = "number"
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 3

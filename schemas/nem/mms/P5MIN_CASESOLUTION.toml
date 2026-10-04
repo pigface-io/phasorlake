@@ -68,7 +68,7 @@ src = [
 [[column]]
 id = 5
 name = "NONPHYSICALLOSSES"
-type = "integer"
+type = "number"
 oracle = "NUMBER(1,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 2
@@ -304,7 +304,7 @@ src = [
 [[column]]
 id = 2
 name = "INTERVENTION"
-type = "integer"
+type = "number"
 oracle = "Number(2,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 2

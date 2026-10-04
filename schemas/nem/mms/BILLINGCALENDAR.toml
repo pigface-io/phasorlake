@@ -22,7 +22,7 @@ next_column_id = 12
 [[column]]
 id = 1
 name = "CONTRACTYEAR"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(4,0)"
 loader = "FLOAT EXTERNAL"
@@ -37,7 +37,7 @@ src = [
 [[column]]
 id = 2
 name = "WEEKNO"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"

@@ -55,7 +55,7 @@ src = [
 [[column]]
 id = 3
 name = "OPERATIONAL_DEMAND"
-type = "integer"
+type = "number"
 oracle = "number(10,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 3

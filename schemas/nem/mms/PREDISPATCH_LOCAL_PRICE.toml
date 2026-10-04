@@ -102,7 +102,7 @@ src = [
 [[column]]
 id = 6
 name = "LOCALLY_CONSTRAINED"
-type = "integer"
+type = "number"
 oracle = "NUMBER(1,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 1

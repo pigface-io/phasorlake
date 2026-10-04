@@ -23,7 +23,7 @@ next_column_id = 5
 [[column]]
 id = 1
 name = "OUTAGEID"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(15,0)"
 loader = "FLOAT EXTERNAL"

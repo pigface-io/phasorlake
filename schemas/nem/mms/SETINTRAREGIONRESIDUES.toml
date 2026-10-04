@@ -39,7 +39,7 @@ src = [
 [[column]]
 id = 2
 name = "RUNNO"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(3)"
 loader = "FLOAT EXTERNAL"
@@ -54,7 +54,7 @@ src = [
 [[column]]
 id = 3
 name = "PERIODID"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(3)"
 loader = "FLOAT EXTERNAL"

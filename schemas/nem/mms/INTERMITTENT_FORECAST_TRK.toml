@@ -70,7 +70,7 @@ src = [
 [[column]]
 id = 4
 name = "FORECAST_PRIORITY"
-type = "integer"
+type = "number"
 oracle = "NUMBER(10,0)"
 loader = "FLOAT EXTERNAL"
 added_in = 1

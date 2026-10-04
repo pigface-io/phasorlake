@@ -25,7 +25,7 @@ next_column_id = 8
 [[column]]
 id = 1
 name = "CASE_ID"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(15,0)"
 loader = "FLOAT EXTERNAL"
@@ -72,7 +72,7 @@ src = [
 [[column]]
 id = 4
 name = "PERIODID"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(3,0)"
 loader = "FLOAT EXTERNAL"

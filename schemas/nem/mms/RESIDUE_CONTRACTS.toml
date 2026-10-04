@@ -24,7 +24,7 @@ next_column_id = 19
 [[column]]
 id = 1
 name = "CONTRACTYEAR"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(4,0)"
 loader = "FLOAT EXTERNAL"
@@ -39,7 +39,7 @@ src = [
 [[column]]
 id = 2
 name = "QUARTER"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(1,0)"
 loader = "FLOAT EXTERNAL"
@@ -54,7 +54,7 @@ src = [
 [[column]]
 id = 3
 name = "TRANCHE"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(2,0)"
 loader = "FLOAT EXTERNAL"

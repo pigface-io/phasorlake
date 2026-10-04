@@ -39,7 +39,7 @@ src = [
 [[column]]
 id = 2
 name = "VERSIONNO"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(3)"
 loader = "FLOAT EXTERNAL"
@@ -54,7 +54,7 @@ src = [
 [[column]]
 id = 3
 name = "SCENARIO"
-type = "integer"
+type = "number"
 nullable = false
 oracle = "NUMBER(2)"
 loader = "FLOAT EXTERNAL"
@@ -86,7 +86,7 @@ src = [
 [[column]]
 id = 5
 name = "DELTAMW"
-type = "integer"
+type = "number"
 oracle = "NUMBER(4)"
 loader = "FLOAT EXTERNAL"
 added_in = 1
