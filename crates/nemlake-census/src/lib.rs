@@ -13,10 +13,14 @@
 //! head of every archive zip (a Range GET of its first bytes, inflated) so the
 //! I rows and a few D rows of each table can be committed as small fixtures.
 //!
+//! [`census`] records which shape every file of every month had, as
+//! metadata under `schemas/nem/census/` and `schemas/nem/shapes/`.
+//!
 //! [`merge`] combines them with a fixed precedence and preserves anything a
 //! human marked `curated = true` in the existing file. The output is
 //! deterministic so CI can regenerate and diff.
 
+pub mod census;
 pub mod datamodel;
 pub mod dmreport;
 pub mod merge;

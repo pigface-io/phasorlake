@@ -91,6 +91,8 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 |---|---|
 | `schema.blob_corrupt` | `crates/nemlake-registry/src/file_model/error.rs` |
 | `schema.breaking_change` | `crates/nemlake-registry/src/file_model/error.rs` |
+| `schema.census_unreadable` | `crates/nemlake-census/src/census.rs` |
+| `schema.census_write` | `crates/nemlake-census/src/census.rs` |
 | `schema.compatible_drift` | `crates/nemlake-registry/src/resolve.rs` |
 | `schema.ctl_dir` | `crates/nemlake-census/src/main.rs` |
 | `schema.ctl_read` | `crates/nemlake-census/src/main.rs` |

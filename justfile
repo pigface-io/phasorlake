@@ -81,6 +81,10 @@ schema-fixtures month="2024-01" interval_ms="1200":
     cargo run -q -p nemlake-census -- heads --month {{month}} --interval-ms {{interval_ms}} --out testdata/bootstrap/MMSDM_{{replace(month, "-", "_")}}/heads
     cargo run -q -p nemlake-census -- readme --month {{month}} --interval-ms {{interval_ms}} --out testdata/bootstrap/MMSDM_{{replace(month, "-", "_")}}
 
+# record which shape every file of each month had, into schemas/nem/census/ and schemas/nem/shapes/ (reads the head of each zip: from the archive when it is there, else one paced request each)
+census from to=from *args:
+    cargo run --release -q -p nemlake-cli -- schema census --from {{from}} --to {{to}} "${@:3}"
+
 # read AEMO's MMS Data Model Report into testdata/bootstrap/datamodel/ (needs the network; a few hundred paced requests)
 schema-datamodel interval_ms="1200":
     cargo run -q -p nemlake-census -- datamodel --interval-ms {{interval_ms}} --out testdata/bootstrap/datamodel

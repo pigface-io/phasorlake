@@ -19,11 +19,27 @@ pub struct SchemaSet {
     pub tables: Vec<TableDef>,
 }
 
+/// Directories under a market that hold the census's metadata, not table
+/// files: which shape each file of a month had, and every shape of a table.
+pub const CENSUS_DIRS: [&str; 2] = ["census", "shapes"];
+
+/// Whether `path` (relative to `schemas/`, `/`-separated) is a table file.
+pub fn is_table_path(path: &str) -> bool {
+    let mut segments: Vec<&str> = path.split('/').collect();
+    let name = segments.pop().unwrap_or(path);
+    name.ends_with(".toml")
+        && name != "market.toml"
+        && !name.starts_with('_')
+        && !name.starts_with("DRAFT_")
+        && !segments.iter().any(|s| CENSUS_DIRS.contains(s))
+}
+
 impl SchemaSet {
     /// Reads `schemas/{market}/market.toml` and `schemas/{market}/**/*.toml`.
     ///
     /// Files whose name starts with `_` or `DRAFT_` are skipped: they are
-    /// conflict reports and uncommitted drafts.
+    /// conflict reports and uncommitted drafts. So are the census's
+    /// directories ([`CENSUS_DIRS`]).
     pub fn read_dir(root: &Path) -> Result<Self, SchemaFileError> {
         let mut set = Self::default();
         let mut market_dirs: Vec<_> = std::fs::read_dir(root)
@@ -54,7 +70,13 @@ impl SchemaSet {
                 entries.sort();
                 for p in entries {
                     if p.is_dir() {
-                        stack.push(p);
+                        let census = p
+                            .file_name()
+                            .and_then(|n| n.to_str())
+                            .is_some_and(|n| CENSUS_DIRS.contains(&n));
+                        if !census {
+                            stack.push(p);
+                        }
                         continue;
                     }
                     let name = p.file_name().and_then(|n| n.to_str()).unwrap_or("");
@@ -161,6 +183,14 @@ mod tests {
         std::fs::write(nem_dir.join("DRAFT_X.toml"), "garbage").unwrap();
         std::fs::write(nem_dir.join("_conflicts.toml"), "garbage").unwrap();
         std::fs::write(nem_dir.join("notes.md"), "text").unwrap();
+        for d in CENSUS_DIRS {
+            let census = dir.path().join("nem").join(d);
+            std::fs::create_dir_all(&census).unwrap();
+            std::fs::write(census.join("2026-08.toml"), "\"A.zip\" = \"0\"").unwrap();
+        }
+        assert!(is_table_path("nem/mms/REGION.toml"));
+        assert!(!is_table_path("nem/census/2026-08.toml"));
+        assert!(!is_table_path("nem/shapes/REGION.toml"));
         let set = SchemaSet::read_dir(dir.path()).unwrap();
         assert_eq!(set.tables.len(), 1);
         assert_eq!(set.markets, vec![nem()]);

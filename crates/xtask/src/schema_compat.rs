@@ -26,15 +26,6 @@ fn git(args: &[&str]) -> Result<Option<String>> {
         .then(|| String::from_utf8_lossy(&out.stdout).into_owned()))
 }
 
-/// Whether a path under `schemas/` is a table file the registry reads.
-fn is_table_file(path: &str) -> bool {
-    let name = path.rsplit('/').next().unwrap_or(path);
-    name.ends_with(".toml")
-        && name != "market.toml"
-        && !name.starts_with('_')
-        && !name.starts_with("DRAFT_")
-}
-
 /// Every breaking change from `old` tables to `new` ones, as
 /// `(table, what)`.
 pub fn breaks(old: &[TableDef], new: &[TableDef]) -> Vec<(String, String)> {
@@ -61,7 +52,10 @@ pub fn run(base: &str) -> Result<bool> {
         return Ok(true);
     };
     let mut old = Vec::new();
-    for path in listing.lines().filter(|p| is_table_file(p)) {
+    for path in listing
+        .lines()
+        .filter(|p| nemlake_registry::file_model::blob::is_table_path(p))
+    {
         let text = git(&["show", &format!("{base}:{path}")])?
             .with_context(|| format!("reading {path} at {base}"))?;
         let table = parse_table(Path::new(path), &text)
@@ -107,11 +101,21 @@ mod tests {
 
     #[test]
     fn table_files_and_breaks() {
-        assert!(is_table_file("schemas/nem/mms/REGION.toml"));
-        assert!(!is_table_file("schemas/nem/market.toml"));
-        assert!(!is_table_file("schemas/nem/mms/DRAFT_X.toml"));
-        assert!(!is_table_file("schemas/nem/mms/_conflicts.md"));
-        assert!(!is_table_file("schemas/nem/mms/_notes.toml"));
+        assert!(nemlake_registry::file_model::blob::is_table_path(
+            "schemas/nem/mms/REGION.toml"
+        ));
+        assert!(!nemlake_registry::file_model::blob::is_table_path(
+            "schemas/nem/market.toml"
+        ));
+        assert!(!nemlake_registry::file_model::blob::is_table_path(
+            "schemas/nem/mms/DRAFT_X.toml"
+        ));
+        assert!(!nemlake_registry::file_model::blob::is_table_path(
+            "schemas/nem/mms/_conflicts.md"
+        ));
+        assert!(!nemlake_registry::file_model::blob::is_table_path(
+            "schemas/nem/mms/_notes.toml"
+        ));
 
         let now = SchemaSet::read_dir(&crate::repo_root().join("schemas"))
             .unwrap()

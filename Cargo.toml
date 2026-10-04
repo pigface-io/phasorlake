@@ -3,8 +3,9 @@
 # Layers, dependencies pointing down only:
 #   cli -> pipeline -> {acquire, conform, writer}; conform -> {decode, registry};
 #   decode -> core; registry -> core. Decode never sees the registry.
-# The census, bench and xtask crates are tooling and are not default members,
-# so `cargo build` compiles only what ships.
+# The bench and xtask crates are tooling and are not default members, so
+# `cargo build` compiles only what ships. The census crate ships: the command
+# takes the census with it, and its binary regenerates schemas/.
 [workspace]
 resolver = "3"
 members = [
@@ -23,6 +24,7 @@ members = [
 default-members = [
     "crates/nemlake-core",
     "crates/nemlake-registry",
+    "crates/nemlake-census",
     "crates/nemlake-decode",
     "crates/nemlake-conform",
     "crates/nemlake-acquire",
@@ -68,6 +70,7 @@ nemlake-core = { path = "crates/nemlake-core" }
 nemlake-registry = { path = "crates/nemlake-registry" }
 nemlake-decode = { path = "crates/nemlake-decode" }
 nemlake-conform = { path = "crates/nemlake-conform" }
+nemlake-census = { path = "crates/nemlake-census" }
 nemlake-acquire = { path = "crates/nemlake-acquire" }
 nemlake-writer = { path = "crates/nemlake-writer" }
 nemlake-pipeline = { path = "crates/nemlake-pipeline" }

@@ -11,7 +11,7 @@ use sha2::{Digest, Sha256};
 use tokio::io::AsyncWriteExt;
 use tokio::sync::Mutex;
 
-use crate::cache::{DiskCache, MemberOf, Requested, Sidecar, hex};
+use crate::cache::{DiskCache, MemberOf, Requested, Sidecar, hex, sha256_hex};
 use crate::error::FetchError;
 use crate::remotezip::{self, Inflater, Tail, ZipMember};
 use crate::source::RemoteFile;
@@ -407,6 +407,99 @@ impl Fetcher {
             etag: streamed.etag,
             last_modified: streamed.last_modified,
         })
+    }
+
+    /// The first `len` bytes of a remote file (for a member of a remote
+    /// zip, of the member's own bytes), from the archive when it can:
+    /// the whole archived file, else the same head archived by an earlier
+    /// call. Otherwise one ranged request fetches it, and the bytes are
+    /// archived beside where the whole file would be, as
+    /// `{path}.head-{len}` with a request record like every download's.
+    /// Fewer bytes come back when the file is shorter.
+    pub async fn fetch_head(&self, remote: &RemoteFile, len: u64) -> Result<Vec<u8>, FetchError> {
+        let url = remote.url.as_str();
+        let len = len.max(1);
+        let io = |path: &Path, source| FetchError::CacheIo {
+            path: path.display().to_string(),
+            source,
+        };
+        if let Some(blob) = self.cache.lookup(url)? {
+            use std::io::Read as _;
+            let f = std::fs::File::open(&blob.path).map_err(|e| io(&blob.path, e))?;
+            let mut out = Vec::new();
+            f.take(len)
+                .read_to_end(&mut out)
+                .map_err(|e| io(&blob.path, e))?;
+            return Ok(out);
+        }
+        let mut name = self.cache.path_for(url).into_os_string();
+        name.push(format!(".head-{len}"));
+        let path = PathBuf::from(name);
+        if !self.config.refresh
+            && let Some(sidecar) = DiskCache::read_sidecar(&path)?
+            && sidecar.url == url
+            && let Ok(bytes) = std::fs::read(&path)
+            && bytes.len() as u64 == sidecar.size
+        {
+            return Ok(bytes);
+        }
+        if self.transport.is_offline() {
+            return Err(FetchError::Offline {
+                url: url.to_owned(),
+            });
+        }
+        let request_url = remote.request_url();
+        let start = remote.member.as_ref().map_or(0, |m| m.header_offset);
+        let range = ByteRange::Span {
+            start,
+            end: start + len - 1,
+        };
+        let attempts = std::sync::atomic::AtomicU32::new(0);
+        let started_at = now_utc_rfc3339();
+        let (body, status) = self
+            .get_with_retries_by(
+                || {
+                    attempts.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                    HttpRequest::get(request_url.as_str()).with_range(range)
+                },
+                |resp| async move {
+                    let status = resp.status;
+                    Ok((read_all(url, resp).await?, status))
+                },
+            )
+            .await?;
+        if let Some(p) = path.parent() {
+            std::fs::create_dir_all(p).map_err(|e| io(p, e))?;
+        }
+        let part = DiskCache::part_path(&path);
+        std::fs::write(&part, &body).map_err(|e| io(&part, e))?;
+        std::fs::rename(&part, &path).map_err(|e| io(&path, e))?;
+        let mut sidecar = Sidecar::bare(url, body.len() as u64, sha256_hex(&body));
+        sidecar.request = Some(Requested {
+            by: self.config.requested_by.clone(),
+            tool: format!("nemlake/{}", env!("CARGO_PKG_VERSION")),
+            user_agent: self.config.user_agent.clone(),
+            source: remote.source.to_owned(),
+            table: remote.table.clone(),
+            period: remote.period.map(|p| p.to_string()),
+            started_at,
+            request_url: request_url.to_string(),
+            range: Some(range.header_value()),
+            http_status: status,
+            attempts: attempts.into_inner(),
+            resumed_from: None,
+            member: remote.member.as_ref().map(|m| MemberOf {
+                name: m.name.clone(),
+                header_offset: m.header_offset,
+                compressed_size: m.compressed_size,
+                method: m.method,
+                crc32: format!("{:08x}", m.crc32),
+            }),
+            listed_size: remote.size,
+            listed_modified: remote.modified.clone(),
+        });
+        DiskCache::write_sidecar(&path, &sidecar)?;
+        Ok(body)
     }
 
     /// Sends `req` with retries and backoff, handing the response to
@@ -931,6 +1024,101 @@ mod tests {
             min_interval: Duration::ZERO,
             ..Default::default()
         }
+    }
+
+    #[tokio::test]
+    async fn a_head_comes_from_the_archive_or_is_archived() {
+        let dir = tempfile::tempdir().unwrap();
+        let t = Arc::new(StaticTransport::default());
+        let body: Vec<u8> = (0..100u8).collect();
+        t.add("https://h/a.zip", Canned::ok(&body));
+        let mut cfg = fast();
+        cfg.requested_by = "schema census".into();
+        let f = Fetcher::new(Arc::new(t.clone()), DiskCache::new(dir.path()), cfg);
+        // Not archived: one ranged request, kept with its record.
+        let head = f.fetch_head(&remote("https://h/a.zip"), 10).await.unwrap();
+        assert_eq!(head, body[..10]);
+        assert_eq!(
+            t.ranges.lock().unwrap()[0],
+            Some(ByteRange::Span { start: 0, end: 9 })
+        );
+        let kept = PathBuf::from(format!(
+            "{}.head-10",
+            f.cache().path_for("https://h/a.zip").display()
+        ));
+        assert_eq!(std::fs::read(&kept).unwrap(), body[..10]);
+        let req = DiskCache::read_sidecar(&kept)
+            .unwrap()
+            .unwrap()
+            .request
+            .unwrap();
+        assert_eq!(req.range.as_deref(), Some("bytes=0-9"));
+        assert_eq!(req.http_status, 206);
+        assert_eq!(req.attempts, 1);
+        assert_eq!(req.by, "schema census");
+        // The same head again comes from the archive, also offline.
+        let offline = Fetcher::new(
+            Arc::new(OfflineTransport),
+            DiskCache::new(dir.path()),
+            fast(),
+        );
+        assert_eq!(
+            offline
+                .fetch_head(&remote("https://h/a.zip"), 10)
+                .await
+                .unwrap(),
+            body[..10]
+        );
+        assert!(matches!(
+            offline.fetch_head(&remote("https://h/a.zip"), 20).await,
+            Err(FetchError::Offline { .. })
+        ));
+        // A file archived whole answers any head, short ones included.
+        f.fetch(&remote("https://h/a.zip")).await.unwrap();
+        let requests = t.request_count();
+        assert_eq!(
+            offline
+                .fetch_head(&remote("https://h/a.zip"), 20)
+                .await
+                .unwrap(),
+            body[..20]
+        );
+        assert_eq!(
+            offline
+                .fetch_head(&remote("https://h/a.zip"), 500)
+                .await
+                .unwrap(),
+            body
+        );
+        assert_eq!(t.request_count(), requests);
+        // A member's head starts at its local header in the container.
+        let m = remote("https://h/month.zip#DATA/inner.zip");
+        let m = RemoteFile {
+            member: Some(Box::new(ZipMember {
+                name: "DATA/inner.zip".into(),
+                method: 0,
+                crc32: 0,
+                compressed_size: 5,
+                uncompressed_size: 5,
+                header_offset: 40,
+                name_and_extra: 0,
+                flags: 0,
+            })),
+            ..m
+        };
+        t.add("https://h/month.zip", Canned::ok(&body));
+        assert_eq!(f.fetch_head(&m, 5).await.unwrap(), body[40..45]);
+        let kept = PathBuf::from(format!(
+            "{}.head-5",
+            f.cache().path_for(m.url.as_str()).display()
+        ));
+        let req = DiskCache::read_sidecar(&kept)
+            .unwrap()
+            .unwrap()
+            .request
+            .unwrap();
+        assert_eq!(req.request_url, "https://h/month.zip");
+        assert_eq!(req.member.unwrap().header_offset, 40);
     }
 
     #[tokio::test]

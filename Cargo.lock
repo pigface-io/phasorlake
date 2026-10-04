@@ -1460,6 +1460,7 @@ dependencies = [
  "thiserror",
  "tokio",
  "toml",
+ "url",
  "zip",
 ]
 
@@ -1471,6 +1472,7 @@ dependencies = [
  "clap",
  "indicatif",
  "nemlake-acquire",
+ "nemlake-census",
  "nemlake-conform",
  "nemlake-core",
  "nemlake-decode",

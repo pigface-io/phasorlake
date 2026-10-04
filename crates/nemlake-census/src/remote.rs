@@ -21,8 +21,8 @@ use nemlake_acquire::listing;
 use nemlake_acquire::mmsdm::MonthLayout;
 use nemlake_acquire::source::Source;
 use nemlake_acquire::{
-    ByteRange, DiskCache, FetchError, Fetcher, FetcherConfig, FileKind, MmsdmArchive, Query,
-    RemoteFile, ReqwestTransport, Transport,
+    DiskCache, FetchError, Fetcher, FetcherConfig, FileKind, MmsdmArchive, Query, RemoteFile,
+    ReqwestTransport, Transport,
 };
 use nemlake_core::{Category, Diagnose, Diagnostic, YearMonth};
 
@@ -377,19 +377,9 @@ async fn fetch_head(
     opts: HeadOptions,
 ) -> Result<Vec<u8>, HeadError> {
     // A per-table zip that is itself a member of a whole-month zip starts
-    // at the member's local header inside the container.
-    let request_url = remote.request_url();
-    let start = remote.member.as_ref().map_or(0, |m| m.header_offset);
-    let want = opts.bytes.max(1024);
-    let body = fetcher
-        .fetch_range(
-            request_url.as_str(),
-            ByteRange::Span {
-                start,
-                end: start + want - 1,
-            },
-        )
-        .await?;
+    // at the member's local header inside the container; the fetcher
+    // reads it from the archive when it can, and archives what it fetches.
+    let body = fetcher.fetch_head(remote, opts.bytes.max(1024)).await?;
     let identity = remote.url.as_str();
     let (_, mut inflated) = inflate_head(identity, &body)?;
     if remote.member.is_some() {
@@ -588,7 +578,7 @@ fn table_keys(table: &str) -> Vec<String> {
 /// Whether the control file for `ctl_table` describes the data file for
 /// `data_table`: the same name, a split of it, or with `siblings` the
 /// daily `_D` file of the same table.
-fn ctl_serves(ctl_table: &str, data_table: &str, siblings: bool) -> bool {
+pub(crate) fn ctl_serves(ctl_table: &str, data_table: &str, siblings: bool) -> bool {
     let wanted = table_keys(data_table);
     let mut have = table_keys(ctl_table);
     if siblings && let Some(base) = ctl_table.to_ascii_uppercase().strip_suffix("_D") {

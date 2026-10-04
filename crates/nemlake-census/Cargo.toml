@@ -30,3 +30,4 @@ zip.workspace = true
 
 [dev-dependencies]
 tempfile.workspace = true
+url.workspace = true

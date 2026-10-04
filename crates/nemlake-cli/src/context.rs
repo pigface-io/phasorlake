@@ -94,6 +94,22 @@ impl Context {
         refresh: bool,
         events: Option<tokio::sync::mpsc::Sender<nemlake_core::event::Event>>,
     ) -> Result<Arc<Fetcher>> {
+        self.paced_fetcher(
+            requested_by,
+            refresh,
+            Duration::from_millis(self.config.request_interval_ms),
+            events,
+        )
+    }
+
+    /// As [`Context::fetcher`], with requests at least `interval` apart.
+    pub fn paced_fetcher(
+        &self,
+        requested_by: &str,
+        refresh: bool,
+        interval: Duration,
+        events: Option<tokio::sync::mpsc::Sender<nemlake_core::event::Event>>,
+    ) -> Result<Arc<Fetcher>> {
         let ua = format!(
             "nemlake/{} (+https://github.com/g0itb4/nemlake){}",
             env!("CARGO_PKG_VERSION"),
@@ -109,7 +125,7 @@ impl Context {
         };
         let cfg = FetcherConfig {
             refresh,
-            min_interval: Duration::from_millis(self.config.request_interval_ms),
+            min_interval: interval,
             requested_by: requested_by.to_owned(),
             user_agent: Some(ua),
             ..Default::default()

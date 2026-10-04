@@ -40,6 +40,7 @@ the file is already in the lake.
 | `nemlake errors [--last] [--table T] [--code C]` | diagnostics recorded by past runs |
 | `nemlake verify` | every Parquet file the manifest lists exists with its size |
 | `nemlake schema list\|show\|diff\|lineage\|validate` | the registry |
+| `nemlake schema census --from YYYY-MM [--to YYYY-MM] [--refresh] [--ctl DIR]` | record which shape (report pair, columns, control-file types, as a content-addressed id) every file of each month had, into `schemas/nem/census/` and `schemas/nem/shapes/`; reads only the head of each zip, from the archive when it is there |
 | `nemlake schema plan <type> <subtype> <version> --columns A,B,C [--month YYYY-MM]` | the conformance plan a shape is read with, as JSON: where each file column goes, its cast, what is written null |
 | `nemlake schema infer <file> [--write] [--ctl FILE]` | draft what a file adds to the registry: a new table, version or variant; `--ctl` types it from AEMO's control file for the table |
 | `nemlake archive ls\|verify` | every downloaded file with when and how it was requested; `verify` hashes each one again |

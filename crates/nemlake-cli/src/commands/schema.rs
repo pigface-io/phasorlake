@@ -11,7 +11,7 @@ use crate::context::Context;
 use crate::render;
 
 /// `nemlake schema ...`
-pub fn schema(ctx: &Context, cmd: &SchemaCmd) -> Result<i32> {
+pub async fn schema(ctx: &Context, cmd: &SchemaCmd) -> Result<i32> {
     let r = &ctx.registry;
     match cmd {
         SchemaCmd::List => {
@@ -139,6 +139,28 @@ pub fn schema(ctx: &Context, cmd: &SchemaCmd) -> Result<i32> {
             columns,
             month,
         } => plan(r, report_type, report_subtype, *version, columns, *month),
+        SchemaCmd::Census {
+            from,
+            to,
+            refresh,
+            ctl,
+            schemas,
+            interval_ms,
+        } => {
+            let to = to.unwrap_or(*from);
+            if ctl.is_some() && to != *from {
+                anyhow::bail!(
+                    "--ctl gives the control files of one month; take the census of {from} to {to} without it, or one month at a time."
+                );
+            }
+            let fetcher = ctx.paced_fetcher(
+                &format!("schema census --from {from} --to {to}"),
+                false,
+                std::time::Duration::from_millis(*interval_ms),
+                None,
+            )?;
+            census(ctx, &fetcher, *from, to, *refresh, ctl.as_deref(), schemas).await
+        }
         SchemaCmd::Validate { dir } => match dir {
             None => {
                 println!(
@@ -172,6 +194,68 @@ pub fn schema(ctx: &Context, cmd: &SchemaCmd) -> Result<i32> {
             },
         },
     }
+}
+
+/// `nemlake schema census`: one month after another, each recorded once
+/// its census is complete.
+async fn census(
+    ctx: &Context,
+    fetcher: &nemlake_acquire::Fetcher,
+    from: nemlake_core::YearMonth,
+    to: nemlake_core::YearMonth,
+    refresh: bool,
+    ctl: Option<&Path>,
+    schemas: &Path,
+) -> Result<i32> {
+    use nemlake_census::census::{HeadPolicy, census_month, census_path, record};
+    let archive = nemlake_acquire::MmsdmArchive::new(&ctx.config.sources.nem_base_url)
+        .map_err(|e| anyhow::anyhow!("{}", e.diagnostic().render()))?;
+    let mut code = 0;
+    for month in from.range_inclusive(to) {
+        if !refresh && census_path(schemas, month).is_file() {
+            println!("{month}: recorded already");
+            continue;
+        }
+        let taken = census_month(
+            fetcher,
+            &archive,
+            &ctx.registry,
+            month,
+            ctl,
+            HeadPolicy::default(),
+        )
+        .await;
+        let census = match taken {
+            Ok(c) => c,
+            Err(e) => {
+                eprintln!("{}", render::diagnostic_text(&e.diagnostic()));
+                return Ok(1);
+            }
+        };
+        for d in &census.problems {
+            eprintln!("{}", render::diagnostic_text(d));
+            code = 3;
+        }
+        let added = record(schemas, &ctx.registry, &census)
+            .map_err(|e| anyhow::anyhow!("{}", e.diagnostic().render()))?;
+        let blocks: usize = census.files.values().map(Vec::len).sum();
+        if ctx.json {
+            render::json_line(&serde_json::json!({
+                "month": month.to_string(),
+                "files": census.files.len(),
+                "blocks": blocks,
+                "new_shapes": added,
+                "problems": census.problems.len(),
+            }));
+        } else {
+            println!(
+                "{month}: {} files, {blocks} blocks, {added} new shape(s), {} file(s) unread",
+                census.files.len(),
+                census.problems.len()
+            );
+        }
+    }
+    Ok(code)
 }
 
 /// `nemlake schema plan <type> <subtype> <version> --columns ...`: the plan
