@@ -125,6 +125,7 @@ struct RouteIdentity<'a> {
     field_id: Option<u32>,
     data_type: Option<&'a str>,
     nullable_out: Option<bool>,
+    raw: Option<&'a str>,
     cast: Cast,
     nullable: bool,
     origin: Origin,
@@ -165,6 +166,7 @@ impl PlanHash {
                         field_id: r.target_field_id,
                         data_type: field.map(|f| f.data_type.as_str()),
                         nullable_out: field.map(|f| f.nullable),
+                        raw: r.raw_target.map(name),
                         cast: r.cast,
                         nullable: r.nullable,
                         origin: r.origin,
@@ -190,6 +192,11 @@ pub struct ColumnRoute {
     pub target_name: Option<String>,
     /// Stable id of that field; `None` for a column of the file only.
     pub target_field_id: Option<u32>,
+    /// The output field that keeps, as text, a value of this column that
+    /// does not fit its type: the table's declared `{column}__raw`. `None`
+    /// when the table declares none; such a value then goes to a raw
+    /// column of the batch alone.
+    pub raw_target: Option<u16>,
     /// How its text is parsed.
     pub cast: Cast,
     /// Whether an empty field is allowed (null) or a fault.
@@ -265,14 +272,22 @@ impl<'a> Draft<'a> {
 
     /// File column `name` feeds lake column `i`.
     fn route_to_column(&mut self, name: &str, i: usize, origin: Origin) {
-        let c = &self.t.columns[i];
+        let t = self.t;
+        let c = &t.columns[i];
         self.supplied[i] = true;
+        let raw_name = format!("{}__raw", c.name);
+        let raw_target = t
+            .columns
+            .iter()
+            .position(|r| r.name == raw_name && r.src.iter().any(|s| s == "raw"))
+            .map(|r| r as u16);
         self.routes.push(ColumnRoute {
             source_name: name.to_owned(),
             source_index: self.routes.len() as u16,
             target: Some(i as u16),
             target_name: Some(c.name.clone()),
             target_field_id: Some(c.id.0),
+            raw_target,
             cast: Cast::for_type(c.ty, self.market, self.opts),
             nullable: c.nullable,
             origin,
@@ -287,6 +302,7 @@ impl<'a> Draft<'a> {
             target: Some(i as u16),
             target_name: Some(as_name.to_owned()),
             target_field_id: None,
+            raw_target: None,
             cast: Cast::Utf8,
             nullable: true,
             origin: Origin::FileExtra,
@@ -300,6 +316,7 @@ impl<'a> Draft<'a> {
             target: None,
             target_name: None,
             target_field_id: None,
+            raw_target: None,
             cast: Cast::Utf8,
             nullable: true,
             origin: Origin::Dropped,
@@ -574,6 +591,41 @@ mod tests {
         let plan = wider.resolve(&scada(&old), opts).unwrap().plan;
         assert_eq!(plan.lake_width(), 5);
         assert_eq!(plan.missing, [4]);
+    }
+
+    /// A widening, Date to Timestamp say, is not something a later
+    /// Iceberg table promotes in its metadata: the plan of every shape that
+    /// carries the column changes, so its files are written again.
+    #[test]
+    fn a_widening_restales_the_shapes_that_carry_the_column() {
+        use crate::file_model::blob::SchemaSet;
+        use crate::file_model::{ColumnType, compat::is_widening};
+        let reg = Registry::load_embedded(TypeOptions::default());
+        let mut t = reg
+            .table(reg.table_by_name("DISPATCH_UNIT_SCADA").unwrap())
+            .clone();
+        let with = |t: &crate::file_model::TableDef| {
+            Registry::from_set(
+                SchemaSet {
+                    markets: vec![],
+                    tables: vec![t.clone()],
+                    ..Default::default()
+                },
+                TypeOptions::default(),
+            )
+        };
+        let last = t.column_index("LASTCHANGED").unwrap();
+        t.columns[last].ty = ColumnType::Date;
+        let dated = with(&t);
+        t.columns[last].ty = ColumnType::Timestamp;
+        let timed = with(&t);
+        assert!(is_widening(ColumnType::Date, ColumnType::Timestamp));
+        let opts = ResolveOptions::default();
+        let carrying = ["SETTLEMENTDATE", "DUID", "SCADAVALUE", "LASTCHANGED"];
+        let without = ["SETTLEMENTDATE", "DUID", "SCADAVALUE"];
+        let hash = |r: &Registry, cols: &[&str]| r.resolve(&scada(cols), opts).unwrap().plan_hash();
+        assert_ne!(hash(&dated, &carrying), hash(&timed, &carrying));
+        assert_eq!(hash(&dated, &without), hash(&timed, &without));
     }
 
     #[test]

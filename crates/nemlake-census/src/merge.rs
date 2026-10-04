@@ -59,6 +59,71 @@ pub struct Inputs<'a> {
     pub census: Vec<&'a ShapeEntry>,
 }
 
+/// Declares what the census saw that the table has no column for, so that
+/// every file's schema is a subset of the table's with matching ids:
+///
+/// - a column of a shape that no column or alias names, and no rule takes,
+///   as nullable text (`src = ["file"]`);
+/// - for a column some month's control file loads as a class that does not
+///   widen into its type (a text column takes any), the column
+///   `{name}__raw` (`src = ["raw"]`) that keeps such values as text.
+///
+/// Ids are allocated in the order the census lists shapes and columns, and
+/// never reused.
+fn census_columns(inputs: &Inputs<'_>, columns: &mut Vec<ColumnDef>, next_id: &mut u32) {
+    let ruled: BTreeSet<&str> = inputs
+        .existing
+        .iter()
+        .flat_map(|e| &e.rules)
+        .flat_map(|r| &r.columns)
+        .map(|c| c.source.as_str())
+        .collect();
+    let text = ColumnType::Utf8 {
+        max_len: None,
+        dict: false,
+    };
+    let mut add = |columns: &mut Vec<ColumnDef>, name: String, version: u16, src: &str| {
+        columns.push(ColumnDef {
+            id: ColumnId(*next_id),
+            name,
+            aliases: vec![],
+            ty: text,
+            nullable: true,
+            oracle: None,
+            loader: None,
+            added_in: SchemaVersion(version),
+            removed_in: None,
+            description: None,
+            src: vec![src.to_owned()],
+            curated: false,
+        });
+        *next_id += 1;
+    };
+    for e in &inputs.census {
+        for (name, class) in &e.columns {
+            let named = columns
+                .iter()
+                .find(|c| c.name == *name || c.aliases.contains(name));
+            match named {
+                None if !ruled.contains(name.as_str()) => {
+                    add(columns, name.clone(), e.version, "file");
+                }
+                // Text holds any value, so a text column needs no raw one.
+                Some(c)
+                    if !nemlake_registry::file_model::compat::class_fits(*class, c.ty)
+                        && !matches!(c.ty, ColumnType::Utf8 { .. }) =>
+                {
+                    let raw = format!("{}__raw", c.name);
+                    if !columns.iter().any(|x| x.name == raw) {
+                        add(columns, raw, e.version, "raw");
+                    }
+                }
+                _ => {}
+            }
+        }
+    }
+}
+
 /// Why a table could not be merged.
 #[derive(Debug, thiserror::Error, PartialEq, Eq)]
 pub enum MergeError {
@@ -625,15 +690,21 @@ pub fn merge(inputs: &Inputs<'_>) -> Result<TableDef, MergeError> {
         });
     }
 
-    // A column a person declared by hand (the target of a rule, say) is in
-    // no sampled list. It stays as written.
+    // A column a person declared by hand (the target of a rule, say), and
+    // one an earlier regeneration declared from the census, is in no
+    // sampled list. It stays as written, with its id.
     if let Some(ex) = inputs.existing {
         for c in &ex.columns {
-            if c.src.iter().any(|s| s == "manual") && !columns.iter().any(|x| x.name == c.name) {
+            let kept = c
+                .src
+                .iter()
+                .any(|s| matches!(s.as_str(), "manual" | "file" | "raw"));
+            if kept && !columns.iter().any(|x| x.name == c.name) {
                 columns.push(c.clone());
             }
         }
     }
+    census_columns(inputs, &mut columns, &mut next_id);
 
     // 4. Table-level facts.
     let has_lastchanged = column_order.iter().any(|c| c == "LASTCHANGED");
@@ -1354,6 +1425,54 @@ mod tests {
         assert_eq!(t.versions[0].first_seen, Some("2009-07".parse().unwrap()));
         assert_eq!(t.versions[0].last_seen, Some("2026-08".parse().unwrap()));
         assert_eq!(t.versions[0].variants, plain.versions[0].variants);
+    }
+
+    /// What the census saw that the table has no column for is declared:
+    /// a column of the file as text, the raw text of a column whose
+    /// control-file class does not fit it. A second regeneration keeps both
+    /// with their ids.
+    #[test]
+    fn census_columns_are_declared_and_kept() {
+        use nemlake_core::{ShapeId, TypeClass};
+        let (ctl, dm, blocks) = load_scada();
+        let plain = merge(&scada_inputs(&ctl, &dm, &blocks)).unwrap();
+        let shape = ShapeEntry {
+            id: ShapeId(1),
+            report_type: "DISPATCH".into(),
+            report_subtype: "UNIT_SCADA".into(),
+            version: 1,
+            first_seen: "2012-01".parse().unwrap(),
+            last_seen: "2012-03".parse().unwrap(),
+            columns: vec![
+                ("SETTLEMENTDATE".into(), TypeClass::Timestamp),
+                ("DUID".into(), TypeClass::Number),
+                ("SCADAVALUE".into(), TypeClass::Varchar),
+                ("QUALITY".into(), TypeClass::Varchar),
+            ],
+        };
+        let mut inputs = scada_inputs(&ctl, &dm, &blocks);
+        inputs.census = vec![&shape];
+        let t = merge(&inputs).unwrap();
+        assert_eq!(validate_table(&t), vec![]);
+        let added: Vec<(&str, u32, &str)> = t.columns[plain.columns.len()..]
+            .iter()
+            .map(|c| (c.name.as_str(), c.id.0, c.src[0].as_str()))
+            .collect();
+        let next = plain.next_column_id;
+        assert_eq!(
+            added,
+            [
+                ("SCADAVALUE__raw", next, "raw"),
+                ("QUALITY", next + 1, "file")
+            ],
+            "DUID is text, which takes a number"
+        );
+        assert_eq!(t.next_column_id, next + 2);
+        // Again over its own output, with or without the census: the same.
+        inputs.existing = Some(&t);
+        assert_eq!(merge(&inputs).unwrap(), t);
+        inputs.census = vec![];
+        assert_eq!(merge(&inputs).unwrap().columns, t.columns);
     }
 
     #[test]

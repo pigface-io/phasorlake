@@ -90,9 +90,11 @@ whole number of up to 15 digits exactly. A column is `Int64` only where a
 table file says so by hand (`type = "integer"`, `curated = true`).
 
 Every timestamp in the lake is nanoseconds since the epoch in UTC, one unit
-with no exceptions, and a fractional second is kept to the last digit. That
-unit spans 1677-09-21 to 2262-04-11. AEMO writes "no end" as `9999/12/31`
-or `2999/12/31`; such a value is stored as the last instant of the range,
+with no exceptions, and a fractional second is kept to the last digit, so a
+later Iceberg table of the lake is format V3, the first with `timestamp_ns`
+(see `docs/iceberg.md`). That unit spans 1677-09-21 to 2262-04-11. AEMO
+writes "no end" as `9999/12/31` or `2999/12/31`; such a value is stored as
+the last instant of the range,
 so `END_DATE > now()` still holds, and each column it happens in is
 reported as `parse.timestamp_clamped` with a count and an example.
 

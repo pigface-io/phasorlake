@@ -58,6 +58,13 @@ pub fn diff_versions(t: &TableDef, from: SchemaVersion, to: SchemaVersion) -> Op
 
 /// Whether `to` is a type the lake may widen `from` into without rewriting
 /// old files: the same class, never narrower.
+///
+/// For a later Iceberg table this is not the same as a metadata-only type
+/// promotion: Iceberg promotes int to long, float to double and decimals
+/// to a larger precision, but not a date to a timestamp, nor a float to a
+/// decimal. Any widening here changes the plan of every shape that carries
+/// the column, so `nemlake reingest` rewrites its files rather than relying
+/// on a reader to promote old ones.
 pub fn is_widening(from: ColumnType, to: ColumnType) -> bool {
     use ColumnType::{Boolean, Date, Integer, Number, Timestamp, Utf8};
     match (from, to) {
@@ -85,6 +92,36 @@ pub fn is_widening(from: ColumnType, to: ColumnType) -> bool {
         (Timestamp, Timestamp) | (Date, Date | Timestamp) | (Boolean, Boolean) => true,
         _ => false,
     }
+}
+
+/// Whether a value a control file loads as `observed` fits a column
+/// declared `declared`: the class widens into the declared type's class.
+/// Lengths and precisions are left aside, which a class says nothing of;
+/// an unknown class says nothing either way and fits.
+pub fn class_fits(observed: nemlake_core::TypeClass, declared: ColumnType) -> bool {
+    use nemlake_core::TypeClass;
+    let text = ColumnType::Utf8 {
+        max_len: None,
+        dict: false,
+    };
+    let number = ColumnType::Number {
+        precision: None,
+        scale: None,
+    };
+    let from = match observed {
+        TypeClass::Varchar => text,
+        TypeClass::Number => number,
+        TypeClass::Integer => ColumnType::Integer,
+        TypeClass::Date => ColumnType::Date,
+        TypeClass::Timestamp => ColumnType::Timestamp,
+        TypeClass::Unknown => return true,
+    };
+    let to = match declared {
+        ColumnType::Utf8 { .. } => text,
+        ColumnType::Number { .. } => number,
+        other => other,
+    };
+    is_widening(from, to)
 }
 
 /// Changes to a table between two revisions of its schema file that would
@@ -327,6 +364,71 @@ mod tests {
             },
             Integer
         ));
+    }
+
+    #[test]
+    fn a_class_fits_what_it_widens_into() {
+        use nemlake_core::TypeClass;
+        let number = ColumnType::Number {
+            precision: Some(10),
+            scale: Some(2),
+        };
+        let text = ColumnType::Utf8 {
+            max_len: Some(5),
+            dict: true,
+        };
+        assert!(class_fits(TypeClass::Number, number));
+        assert!(class_fits(TypeClass::Integer, number));
+        assert!(class_fits(TypeClass::Varchar, text));
+        assert!(class_fits(TypeClass::Date, ColumnType::Timestamp));
+        assert!(class_fits(TypeClass::Unknown, ColumnType::Boolean));
+        assert!(!class_fits(TypeClass::Varchar, number));
+        assert!(!class_fits(TypeClass::Number, text));
+        assert!(!class_fits(TypeClass::Timestamp, ColumnType::Date));
+    }
+
+    /// A column the census declared, of the file or of kept text, has an
+    /// id like any other: giving it to another column is breaking.
+    #[test]
+    fn census_columns_keep_their_ids() {
+        let mut old = unit_scada();
+        let id = ColumnId(old.next_column_id);
+        old.columns.push(ColumnDef {
+            id,
+            name: "SCADAVALUE__raw".into(),
+            aliases: vec![],
+            ty: ColumnType::Utf8 {
+                max_len: None,
+                dict: false,
+            },
+            nullable: true,
+            oracle: None,
+            loader: None,
+            added_in: SchemaVersion(1),
+            removed_in: None,
+            description: None,
+            src: vec!["raw".into()],
+            curated: false,
+        });
+        old.next_column_id += 1;
+        let mut new = old.clone();
+        let reused = new.columns.last_mut().unwrap();
+        reused.name = "QUALITY".into();
+        reused.src = vec!["file".into()];
+        assert!(
+            breaking_changes(&old, &new)
+                .iter()
+                .any(|m| m.contains("renamed")),
+            "{:?}",
+            breaking_changes(&old, &new)
+        );
+        let mut gone = old.clone();
+        gone.columns.pop();
+        assert!(
+            breaking_changes(&old, &gone)
+                .iter()
+                .any(|m| m.contains("deleted"))
+        );
     }
 
     #[test]

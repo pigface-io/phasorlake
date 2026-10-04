@@ -37,3 +37,4 @@ Each entry names where a thing starts. Read those files before you edit.
 - `README.md`: what it is, quick start, the lake layout, type mapping, measured results.
 - `CONTRIBUTING.md`: commands, layering, test tiers, how budgets and floors move.
 - `docs/errors.md`: every diagnostic code.
+- `docs/iceberg.md`: why timestamps make the Iceberg target format V3, and how field ids stay stable.

@@ -316,8 +316,34 @@ pub fn validate_structure(t: &TableDef) -> Vec<Issue> {
                     .iter()
                     .any(|x| x.columns.iter().any(|n| is_named(c, n)))
         });
-        if !in_a_shape && c.src.iter().all(|s| s != "manual") {
+        // A column declared by hand, one the census saw beside the
+        // declared ones (`file`) or the text of values that did not fit a
+        // column (`raw`) need be in no version's list.
+        let outside = ["manual", "file", "raw"];
+        if !in_a_shape && c.src.iter().all(|s| !outside.contains(&s.as_str())) {
             out.push(issue(t, format!("column {} appears in no version", c.name)));
+        }
+        let text = matches!(c.ty, ColumnType::Utf8 { .. }) && c.nullable;
+        if c.src.iter().any(|s| s == "file") && !text {
+            out.push(issue(
+                t,
+                format!(
+                    "column {} has src file, which is kept as nullable text",
+                    c.name
+                ),
+            ));
+        }
+        if c.src.iter().any(|s| s == "raw") {
+            let base = c.name.strip_suffix("__raw");
+            if base.is_none_or(|b| t.column(b).is_none()) || !text {
+                out.push(issue(
+                    t,
+                    format!(
+                        "column {} has src raw: it is the nullable text {{column}}__raw of a declared column",
+                        c.name
+                    ),
+                ));
+            }
         }
     }
     out
@@ -786,6 +812,52 @@ mod tests {
             !msgs(&t).iter().any(|m| m.contains("FUTURE")),
             "{:?}",
             msgs(&t)
+        );
+    }
+
+    #[test]
+    fn census_columns_are_nullable_text() {
+        use crate::file_model::model::ColumnDef;
+        let column = |name: &str, src: &str, nullable: bool| ColumnDef {
+            id: ColumnId(90),
+            name: name.into(),
+            aliases: vec![],
+            ty: ColumnType::Utf8 {
+                max_len: None,
+                dict: false,
+            },
+            nullable,
+            oracle: None,
+            loader: None,
+            added_in: SchemaVersion(1),
+            removed_in: None,
+            description: None,
+            src: vec![src.into()],
+            curated: false,
+        };
+        let with = |c: ColumnDef| {
+            let mut t = unit_scada();
+            t.next_column_id = 91;
+            t.columns.push(c);
+            t
+        };
+        assert_eq!(
+            validate_table(&with(column("QUALITY", "file", true))),
+            vec![]
+        );
+        assert_eq!(
+            validate_table(&with(column("SCADAVALUE__raw", "raw", true))),
+            vec![]
+        );
+        has(
+            &with(column("QUALITY", "file", false)),
+            "src file, which is kept as nullable text",
+        );
+        has(&with(column("NOWHERE__raw", "raw", true)), "has src raw");
+        has(&with(column("SCADAVALUE_RAW", "raw", true)), "has src raw");
+        has(
+            &with(column("QUALITY", "ctl", true)),
+            "appears in no version",
         );
     }
 

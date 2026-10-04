@@ -939,6 +939,89 @@ C,\"END OF REPORT\",9\n";
     assert_eq!(texts(&second, "DUID")[1], None);
 }
 
+/// A column the census saw beside the declared ones is declared by the
+/// regeneration with an id of its own; the Parquet file of a shape that
+/// carries it holds it under that id, like every declared column.
+#[tokio::test]
+async fn a_census_column_is_written_with_its_field_id() {
+    let mut e = env();
+    let registry = e.deps.registry.clone();
+    let mut table = registry
+        .table(registry.table_by_name("DISPATCH_UNIT_SCADA").unwrap())
+        .clone();
+    let id = table.next_column_id;
+    table.columns.push(nemlake_registry::ColumnDef {
+        id: nemlake_registry::file_model::ColumnId(id),
+        name: "QUALITY".into(),
+        aliases: vec![],
+        ty: nemlake_registry::ColumnType::Utf8 {
+            max_len: None,
+            dict: false,
+        },
+        nullable: true,
+        oracle: None,
+        loader: None,
+        added_in: nemlake_registry::SchemaVersion(1),
+        removed_in: None,
+        description: None,
+        src: vec!["file".into()],
+        curated: false,
+    });
+    table.next_column_id += 1;
+    let overlay = e.home.root().join("overlay/nem/mms");
+    std::fs::create_dir_all(&overlay).unwrap();
+    std::fs::write(
+        overlay.join("DISPATCH_UNIT_SCADA.toml"),
+        nemlake_registry::file_model::file::write_table(&table),
+    )
+    .unwrap();
+    e.deps.registry = Arc::new(
+        registry
+            .with_overlay(&e.home.root().join("overlay"))
+            .unwrap(),
+    );
+    let p = e
+        .home
+        .root()
+        .join("PUBLIC_DVD_DISPATCH_UNIT_SCADA_201201010000.CSV");
+    std::fs::write(
+        &p,
+        "I,DISPATCH,UNIT_SCADA,1,SETTLEMENTDATE,DUID,SCADAVALUE,QUALITY\nD,DISPATCH,UNIT_SCADA,1,\"2012/01/01 00:05:00\",A,1,GOOD\n",
+    )
+    .unwrap();
+    let (rep, _) = run_plan(
+        &e,
+        Plan {
+            request: "ingest".into(),
+            input: Input::Local(vec![p]),
+            options: RunOptions::default(),
+        },
+    )
+    .await;
+    assert_eq!(rep.exit_code, 0, "{:?}", rep.report.summary_lines());
+    let files = walk(&e.home.lake());
+    let b = parquet_batch(&files[0]);
+    let schema = b.schema();
+    let quality = schema.field_with_name("QUALITY").unwrap();
+    assert_eq!(
+        quality
+            .metadata()
+            .get("PARQUET:field_id")
+            .map(String::as_str),
+        Some(id.to_string().as_str())
+    );
+    assert!(!quality.metadata().contains_key("nemlake:source"));
+    assert_eq!(texts(&b, "QUALITY"), [Some("GOOD".to_owned())]);
+    // Every column of the file has an id.
+    assert!(
+        schema
+            .fields()
+            .iter()
+            .all(|f| f.metadata().contains_key("PARQUET:field_id")),
+        "{schema:?}"
+    );
+}
+
 /// A source read again leaves no quarantine file of an earlier read behind.
 #[tokio::test]
 async fn reading_a_source_again_removes_its_old_quarantine() {

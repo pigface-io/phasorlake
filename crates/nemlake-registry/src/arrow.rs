@@ -12,6 +12,9 @@ use crate::registry::TypeOptions;
 pub const FIELD_ID_KEY: &str = "PARQUET:field_id";
 /// The Oracle type the column was declared with, for provenance.
 pub const ORACLE_KEY: &str = "nemlake:oracle";
+/// On a column of values kept as text: the id (or, for a column of the
+/// file only, the name) of the column whose values it holds.
+pub const RAW_OF_KEY: &str = "nemlake:raw-of";
 
 /// The Arrow type for a column under the given options.
 ///
@@ -55,7 +58,27 @@ pub fn field(c: &ColumnDef, market: &MarketDef, opts: TypeOptions) -> Field {
 /// order. Files of every version share it; a version that lacks a column
 /// writes nulls.
 pub fn lake_schema(t: &TableDef, market: &MarketDef, opts: TypeOptions) -> SchemaRef {
-    let fields: Vec<Field> = t.columns.iter().map(|c| field(c, market, opts)).collect();
+    let fields: Vec<Field> = t
+        .columns
+        .iter()
+        .map(|c| {
+            let f = field(c, market, opts);
+            // A raw column says whose values it holds, by that column's id.
+            match c.src.iter().any(|s| s == "raw").then(|| {
+                c.name
+                    .strip_suffix("__raw")
+                    .and_then(|b| t.column(b))
+                    .map(|b| b.id.0.to_string())
+            }) {
+                Some(Some(of)) => {
+                    let mut md = f.metadata().clone();
+                    md.insert(RAW_OF_KEY.to_owned(), of);
+                    f.with_metadata(md)
+                }
+                _ => f,
+            }
+        })
+        .collect();
     let mut md = HashMap::new();
     md.insert("nemlake:table".to_owned(), t.name.clone());
     md.insert("nemlake:market".to_owned(), t.market.to_string());

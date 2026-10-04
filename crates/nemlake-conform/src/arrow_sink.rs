@@ -16,6 +16,7 @@ use nemlake_decode::PREFIX_FIELDS;
 use nemlake_decode::error::{RowError, RowFailure, SinkError};
 use nemlake_decode::fields::Row;
 use nemlake_decode::scan::{Flow, Pos, Sink};
+use nemlake_registry::arrow::RAW_OF_KEY;
 
 use crate::builders::{ColumnBuilder, Fault, Parsed, parse_field};
 
@@ -54,6 +55,8 @@ struct Step {
     field: u16,
     /// Output column.
     target: u16,
+    /// The table's declared raw column for it, if any.
+    raw: Option<u16>,
     cast: Cast,
     nullable: bool,
 }
@@ -63,8 +66,12 @@ struct Step {
 struct RawColumn {
     /// The output column whose values these are.
     target: u16,
-    /// One entry per row of the batch: the text, or null where the value fit.
-    text: StringBuilder,
+    /// The raw column's name.
+    name: String,
+    /// One entry per row of the batch: the text, or null where the value
+    /// fit. `None` when the table declares the raw column: the text is
+    /// then appended to it like any other value.
+    text: Option<StringBuilder>,
     /// How many values were kept so.
     count: u64,
     /// The first of them: its text, its line and the fault.
@@ -131,16 +138,12 @@ pub struct ArrowSink<'r, B: BatchSink> {
     block: Option<Block>,
     parsed: Vec<Parsed>,
     /// The values of the current row that did not fit: output column,
-    /// field position and fault.
-    misfits: Vec<(u16, u16, Fault)>,
+    /// field position, fault, and whether the declared raw column took it.
+    misfits: Vec<(u16, u16, Fault, bool)>,
 }
 
 /// Rows per batch by default.
 pub const DEFAULT_BATCH_ROWS: usize = 65_536;
-
-/// Field metadata of a raw column: the id (or, for a column of the file
-/// only, the name) of the column whose values it holds.
-pub const RAW_OF_KEY: &str = "nemlake:raw-of";
 
 /// What a column of `ty` expects, in words.
 fn expected(ty: &DataType) -> String {
@@ -270,7 +273,7 @@ impl<'r, B: BatchSink> ArrowSink<'r, B> {
             tally.count = 0;
         }
         // Values that did not fit their column's type: the text beside it.
-        for mut raw in block.raws.drain(..) {
+        for raw in block.raws.drain(..) {
             // The column is null where its value did not fit.
             let i = raw.target as usize;
             fields[i] = fields[i].clone().with_nullable(true);
@@ -282,23 +285,25 @@ impl<'r, B: BatchSink> ArrowSink<'r, B> {
                 "parse.value_kept_raw",
                 column,
                 format!(
-                    "{} value(s) of column {column} in table {} do not fit its type; each row is kept with the column null and the text in column {column}__raw. The first is line {line}: {fault_text}",
-                    raw.count, table.name
+                    "{} value(s) of column {column} in table {} do not fit its type; each row is kept with the column null and the text in column {}. The first is line {line}: {fault_text}",
+                    raw.count, table.name, raw.name
                 ),
             );
             d.line = Some(line);
             d.expected = Some(expected(target.data_type()));
             d.observed = Some(sample);
             self.out.warning(d);
+            let Some(mut text) = raw.text else {
+                continue;
+            };
             let of = target
                 .metadata()
                 .get(nemlake_registry::arrow::FIELD_ID_KEY)
                 .cloned()
                 .unwrap_or_else(|| column.clone());
             let md: HashMap<String, String> = [(RAW_OF_KEY.to_owned(), of)].into();
-            fields
-                .push(Field::new(format!("{column}__raw"), DataType::Utf8, true).with_metadata(md));
-            arrays.push(Arc::new(raw.text.finish()));
+            fields.push(Field::new(raw.name, DataType::Utf8, true).with_metadata(md));
+            arrays.push(Arc::new(text.finish()));
         }
         let schema = Arc::new(Schema::new_with_metadata(
             fields,
@@ -352,6 +357,7 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
                 Some(Step {
                     field: (PREFIX_FIELDS + usize::from(r.source_index)) as u16,
                     target: r.target?,
+                    raw: r.raw_target,
                     cast: r.cast,
                     nullable: r.nullable,
                 })
@@ -439,7 +445,16 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
                 Ok(p) => p,
                 Err(fault) if strict => return Err(refuse(block, target, c.field, fault)),
                 Err(fault) => {
-                    self.misfits.push((target, c.field, fault));
+                    // The table's own raw column takes the text, when it
+                    // has one and the text is text.
+                    let declared = match c.raw {
+                        Some(r) if fault != Fault::Null && std::str::from_utf8(bytes).is_ok() => {
+                            self.parsed[r as usize] = Parsed::Str(c.field);
+                            true
+                        }
+                        _ => false,
+                    };
+                    self.misfits.push((target, c.field, fault, declared));
                     Parsed::Null
                 }
             };
@@ -511,40 +526,56 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
 /// allowed is a kept null; any other value goes, as text, to its column's
 /// raw column, which is started (null for the rows before) on its first
 /// value. Every raw column gets one entry for the row.
-fn keep_misfits(block: &mut Block, misfits: &[(u16, u16, Fault)], row: &Row<'_>, line: u64) {
+fn keep_misfits(block: &mut Block, misfits: &[(u16, u16, Fault, bool)], row: &Row<'_>, line: u64) {
     let rows_before = block.rows;
-    let mut kept = 0;
-    for &(target, field, fault) in misfits {
+    for &(target, field, fault, declared) in misfits {
         let bytes = row.get(usize::from(field)).unwrap_or(b"");
         if fault == Fault::Null {
             block.nulls_kept[target as usize].note(String::new, line);
             continue;
         }
         let text = String::from_utf8_lossy(bytes);
-        let raw = match block.raws.iter().position(|r| r.target == target) {
+        let raw = match block
+            .raws
+            .iter()
+            .position(|r| r.target == target && r.text.is_none() == declared)
+        {
             Some(i) => &mut block.raws[i],
             None => {
-                let mut b = StringBuilder::new();
-                b.append_nulls(rows_before);
+                let plan = &block.resolved.plan;
+                let column = plan.column_name(target as usize);
+                let mut name = format!("{column}__raw");
+                // A value the declared raw column cannot take as text goes
+                // beside it.
+                if !declared && plan.fields.iter().any(|f| f.name == name) {
+                    name.push_str("__2");
+                }
+                let text_column = (!declared).then(|| {
+                    let mut b = StringBuilder::new();
+                    b.append_nulls(rows_before);
+                    b
+                });
                 block.raws.push(RawColumn {
                     target,
-                    text: b,
+                    name,
+                    text: text_column,
                     count: 0,
                     first: (text.clone().into_owned(), line, fault),
                 });
                 block.raws.last_mut().expect("just pushed")
             }
         };
-        raw.text.append_value(&text);
+        if let Some(b) = &mut raw.text {
+            b.append_value(&text);
+        }
         raw.count += 1;
-        kept += 1;
     }
-    // Raw columns without a value in this row are null for it.
-    if block.raws.len() > kept {
-        for raw in &mut block.raws {
-            if raw.text.len() == rows_before {
-                raw.text.append_null();
-            }
+    // Raw columns of the batch without a value in this row are null for it.
+    for raw in &mut block.raws {
+        if let Some(b) = &mut raw.text
+            && b.len() == rows_before
+        {
+            b.append_null();
         }
     }
 }
@@ -1097,6 +1128,108 @@ D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",E,2\n";
         );
         assert_eq!(out.warnings[0].column.as_deref(), Some("DUID"));
         assert_eq!(out.warnings[0].line, Some(5));
+    }
+
+    /// A table that declares `{column}__raw` gets the text there, under
+    /// the column's own id, and no column of the batch alone.
+    #[test]
+    fn a_declared_raw_column_takes_the_text() {
+        use nemlake_registry::file_model::blob::SchemaSet;
+        use nemlake_registry::file_model::{ColumnDef, ColumnId, ColumnType};
+        let embedded = reg();
+        let mut t = embedded
+            .table(embedded.table_by_name("DISPATCH_UNIT_SCADA").unwrap())
+            .clone();
+        t.columns.push(ColumnDef {
+            id: ColumnId(t.next_column_id),
+            name: "SCADAVALUE__raw".into(),
+            aliases: vec![],
+            ty: ColumnType::Utf8 {
+                max_len: None,
+                dict: false,
+            },
+            nullable: true,
+            oracle: None,
+            loader: None,
+            added_in: SchemaVersion(1),
+            removed_in: None,
+            description: None,
+            src: vec!["raw".into()],
+            curated: true,
+        });
+        t.next_column_id += 1;
+        assert!(nemlake_registry::file_model::validate::validate_table(&t).is_empty());
+        let r = Registry::from_set(
+            SchemaSet {
+                markets: vec![],
+                tables: vec![t],
+                ..Default::default()
+            },
+            TypeOptions::default(),
+        );
+        let (out, stats) = collect(
+            &r,
+            MISFITS,
+            ResolveOptions::default(),
+            &ScanOptions::default(),
+        )
+        .unwrap();
+        assert_eq!(stats.rows, 6);
+        let b = &out.batches[0].batch;
+        let names: Vec<_> = b
+            .schema()
+            .fields()
+            .iter()
+            .map(|f| f.name().clone())
+            .collect();
+        assert_eq!(
+            names,
+            [
+                "SETTLEMENTDATE",
+                "DUID",
+                "SCADAVALUE",
+                "LASTCHANGED",
+                "SCADAVALUE__raw",
+                "SETTLEMENTDATE__raw"
+            ]
+        );
+        let raw = b.column(4).as_any().downcast_ref::<StringArray>().unwrap();
+        assert_eq!(raw.value(2), "notanumber");
+        assert_eq!(raw.value(4), "also bad");
+        assert_eq!(raw.null_count(), 4);
+        let field = b.schema().field(4).clone();
+        assert_eq!(
+            field.metadata()[RAW_OF_KEY],
+            b.schema().field(2).metadata()[nemlake_registry::arrow::FIELD_ID_KEY]
+        );
+        assert!(
+            field
+                .metadata()
+                .contains_key(nemlake_registry::arrow::FIELD_ID_KEY)
+        );
+        assert!(b.schema().field(2).is_nullable());
+        let scada = out
+            .warnings
+            .iter()
+            .find(|w| w.code == "parse.value_kept_raw" && w.column.as_deref() == Some("SCADAVALUE"))
+            .unwrap();
+        assert!(
+            scada.message.contains("in column SCADAVALUE__raw"),
+            "{}",
+            scada.message
+        );
+        // Text that is not UTF-8 cannot go there; it goes beside it.
+        let bad = b"I,DISPATCH,UNIT_SCADA,1,SETTLEMENTDATE,DUID,SCADAVALUE\nD,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",A,\xff\n";
+        let (out, _) = collect(
+            &r,
+            bad.as_slice(),
+            ResolveOptions::default(),
+            &ScanOptions::default(),
+        )
+        .unwrap();
+        let b = &out.batches[0].batch;
+        assert_eq!(b.schema().field(5).name(), "SCADAVALUE__raw__2");
+        assert!(b.column(4).is_null(0));
     }
 
     #[test]

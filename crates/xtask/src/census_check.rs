@@ -16,43 +16,9 @@ use std::path::Path;
 use anyhow::{Context as _, Result};
 use nemlake_census::census::{census_dir, read_month};
 use nemlake_core::{Category, Diagnostic, IRow, ShapeId, TypeClass, YearMonth};
-use nemlake_registry::file_model::compat::is_widening;
+use nemlake_registry::file_model::compat::class_fits;
 use nemlake_registry::file_model::shapes::ShapeEntry;
 use nemlake_registry::{ColumnType, Mode, Origin, Registry, ResolveOptions, Status, TypeOptions};
-
-/// The type a column of a class is at least, with no length or precision.
-fn class_type(c: TypeClass) -> Option<ColumnType> {
-    Some(match c {
-        TypeClass::Varchar => ColumnType::Utf8 {
-            max_len: None,
-            dict: false,
-        },
-        TypeClass::Number => ColumnType::Number {
-            precision: None,
-            scale: None,
-        },
-        TypeClass::Integer => ColumnType::Integer,
-        TypeClass::Date => ColumnType::Date,
-        TypeClass::Timestamp => ColumnType::Timestamp,
-        TypeClass::Unknown => return None,
-    })
-}
-
-/// A declared type as its class: lengths and precisions are not what a
-/// control file's class says anything about.
-fn as_class(ty: ColumnType) -> ColumnType {
-    match ty {
-        ColumnType::Utf8 { .. } => ColumnType::Utf8 {
-            max_len: None,
-            dict: false,
-        },
-        ColumnType::Number { .. } => ColumnType::Number {
-            precision: None,
-            scale: None,
-        },
-        other => other,
-    }
-}
 
 /// The name of a declared type's class, as a table file writes it.
 fn type_name(ty: ColumnType) -> &'static str {
@@ -179,14 +145,11 @@ pub fn check(
                 if !matches!(route.origin, Origin::Declared | Origin::Rule) {
                     continue;
                 }
-                let (Some(target), Some(observed)) = (&route.target_name, class_type(*class))
-                else {
+                let Some(anchor) = route.target_name.as_deref().and_then(|n| t.column(n)) else {
                     continue;
                 };
-                let Some(anchor) = t.column(target) else {
-                    continue;
-                };
-                if !is_widening(observed, as_class(anchor.ty)) {
+                let target = &anchor.name;
+                if !class_fits(*class, anchor.ty) {
                     regressions
                         .entry((t.name.clone(), target.clone(), *class))
                         .or_default()
