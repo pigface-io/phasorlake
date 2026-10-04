@@ -1,7 +1,7 @@
 //! Splitting a batch by the market-local month of its time column.
 
 use arrow_array::cast::AsArray;
-use arrow_array::types::{Int32Type, TimestampNanosecondType, UInt32Type};
+use arrow_array::types::{TimestampNanosecondType, UInt32Type};
 use arrow_array::{Array, PrimitiveArray, RecordBatch};
 use arrow_schema::DataType;
 use nemlake_core::nemtime::local_year_month;
@@ -106,13 +106,6 @@ pub fn is_sorted(batch: &RecordBatch, time_col: usize) -> bool {
         prev = Some(v);
     }
     true
-}
-
-/// The `Int32` day-count form is never used for partitioning; kept so the
-/// type import is exercised if a Date32 time column is added later.
-#[allow(dead_code)]
-fn date_days(batch: &RecordBatch, col: usize) -> Option<&PrimitiveArray<Int32Type>> {
-    batch.column(col).as_primitive_opt::<Int32Type>()
 }
 
 #[cfg(test)]
