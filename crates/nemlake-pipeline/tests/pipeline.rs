@@ -13,7 +13,7 @@ use nemlake_acquire::{FetchError, Fetcher, FetcherConfig, FileKind, Query, Remot
 use nemlake_core::event::Event;
 use nemlake_core::paths::Home;
 use nemlake_pipeline::{Deps, Input, Plan, RunOptions, run};
-use nemlake_registry::{Registry, TypeOptions};
+use nemlake_registry::{Mode, Registry, TypeOptions};
 use nemlake_writer::manifest::DiagFilter;
 use nemlake_writer::{Manifest, ManifestHandle, ManifestThread};
 use tokio_util::sync::CancellationToken;
@@ -725,7 +725,11 @@ async fn rows_that_wander_over_many_months_are_written_in_parts() {
     // writers were closed and their files finished along the way.
     let other = env();
     let p = other.home.root().join("PUBLIC_DVD_WANDER_202401010000.CSV");
-    std::fs::write(&p, wander("D,DISPATCH,UNIT_SCADA,1,\"not a time\",U9,1\n")).unwrap();
+    std::fs::write(
+        &p,
+        wander("D,DISPATCH,UNIT_SCADA,1,\"2023/01/01 00:05:00\",U9,1,extra\n"),
+    )
+    .unwrap();
     let (tx, _rx) = tokio::sync::mpsc::channel(4096);
     let rep = run(
         Plan {
@@ -747,14 +751,229 @@ async fn rows_that_wander_over_many_months_are_written_in_parts() {
     // The refusal names the row's exact fault, and the row's own error
     // is reported beside it.
     let refusal = &rep.report.by_code["csv.too_many_bad_rows"].examples[0];
-    assert_eq!(refusal.column.as_deref(), Some("SETTLEMENTDATE"));
-    assert_eq!(refusal.observed.as_deref(), Some("not a time"));
+    assert_eq!(refusal.observed.as_deref(), Some("4 fields"));
     assert_eq!(refusal.line, Some(39));
     assert!(refusal.message.contains("line 39"), "{}", refusal.message);
-    let row = &rep.report.by_code["parse.timestamp"].examples[0];
+    let row = &rep.report.by_code["csv.field_count_mismatch"].examples[0];
     assert!(row.is_error());
     assert_eq!(row.table.as_deref(), Some("DISPATCH_UNIT_SCADA"));
     assert!(row.sample.is_some());
+}
+
+/// Reads every row of a Parquet file as one batch.
+fn parquet_batch(path: &str) -> arrow_array::RecordBatch {
+    let f = std::fs::File::open(path).unwrap();
+    let b = parquet::arrow::arrow_reader::ParquetRecordBatchReaderBuilder::try_new(f).unwrap();
+    let schema = b.schema().clone();
+    let batches: Vec<_> = b.build().unwrap().map(Result::unwrap).collect();
+    arrow_select::concat::concat_batches(&schema, &batches).unwrap()
+}
+
+/// The text of a column of strings, null as `None`.
+fn texts(b: &arrow_array::RecordBatch, name: &str) -> Vec<Option<String>> {
+    use arrow_array::Array as _;
+    let a = b
+        .column_by_name(name)
+        .unwrap_or_else(|| panic!("no column {name} in {:?}", b.schema()))
+        .as_any()
+        .downcast_ref::<arrow_array::StringArray>()
+        .unwrap();
+    (0..a.len())
+        .map(|i| (!a.is_null(i)).then(|| a.value(i).to_owned()))
+        .collect()
+}
+
+/// The August 2026 head of DUDETAIL, its first REGISTEREDCAPACITY (declared
+/// NUMBER(6,0)) changed from 500 to 13.55, zipped as an archive file.
+fn dudetail_with_a_fraction(e: &Env) -> PathBuf {
+    let head =
+        std::fs::read_to_string(fixtures().join(
+            "../bootstrap/MMSDM_2026_08/heads/PUBLIC_ARCHIVE#DUDETAIL#FILE01#202608010000.CSV",
+        ))
+        .unwrap();
+    let edited = head.replacen("LD01,1,NLDP1,330,500,", "LD01,1,NLDP1,330,13.55,", 1);
+    assert_ne!(edited, head);
+    let zip_path = e.home.root().join("PUBLIC_DVD_DUDETAIL_202608010000.zip");
+    make_zip(
+        &zip_path,
+        &[("PUBLIC_DVD_DUDETAIL_202608010000.CSV", edited.as_bytes())],
+    );
+    zip_path
+}
+
+/// A value its column's type cannot hold keeps its row: the column is null
+/// there and the text is beside it, in a column of its own.
+#[tokio::test]
+async fn a_value_that_does_not_fit_keeps_its_row_with_the_text_beside_it() {
+    let mut e = env_with(TypeOptions { decimal: true });
+    // DUDETAIL as a user's table file might have it: REGISTEREDCAPACITY a
+    // whole number of at most six digits, as AEMO's NUMBER(6,0) says.
+    let registry = e.deps.registry.clone();
+    let mut table = registry
+        .table(registry.table_by_name("DUDETAIL").unwrap())
+        .clone();
+    let cap = table
+        .columns
+        .iter_mut()
+        .find(|c| c.name == "REGISTEREDCAPACITY")
+        .unwrap();
+    cap.ty = nemlake_registry::ColumnType::Number {
+        precision: Some(6),
+        scale: Some(0),
+    };
+    let overlay = e.home.root().join("overlay/nem/mms");
+    std::fs::create_dir_all(&overlay).unwrap();
+    std::fs::write(
+        overlay.join("DUDETAIL.toml"),
+        nemlake_registry::file_model::file::write_table(&table),
+    )
+    .unwrap();
+    e.deps.registry = Arc::new(
+        registry
+            .with_overlay(&e.home.root().join("overlay"))
+            .unwrap(),
+    );
+    let zip_path = dudetail_with_a_fraction(&e);
+    let plan = |strict: bool| Plan {
+        request: "ingest dudetail".into(),
+        input: Input::Local(vec![zip_path.clone()]),
+        options: RunOptions {
+            mode: if strict {
+                Mode::Strict
+            } else {
+                Mode::Permissive
+            },
+            ..Default::default()
+        },
+    };
+    // Strict mode refuses the file, naming the column and the line.
+    let (rep, _) = run_plan(&e, plan(true)).await;
+    assert_eq!(rep.exit_code, 1, "{:?}", rep.report.summary_lines());
+    let refusal = &rep.report.by_code["parse.decimal"].examples[0];
+    assert!(refusal.is_error());
+    assert_eq!(refusal.column.as_deref(), Some("REGISTEREDCAPACITY"));
+    assert_eq!(refusal.table.as_deref(), Some("DUDETAIL"));
+    assert_eq!(refusal.line, Some(3));
+    assert_eq!(refusal.observed.as_deref(), Some("13.55"));
+    assert!(walk(&e.home.lake()).is_empty());
+    // Otherwise every row is kept.
+    let (rep, _) = run_plan(&e, plan(false)).await;
+    assert_eq!(rep.exit_code, 0, "{:?}", rep.report.summary_lines());
+    assert_eq!(rep.summary.rows, 20);
+    assert_eq!(rep.summary.bad_rows, 0);
+    let kept = &rep.report.by_code["parse.value_kept_raw"];
+    assert_eq!(kept.count, 1);
+    assert_eq!(
+        kept.examples[0].column.as_deref(),
+        Some("REGISTEREDCAPACITY")
+    );
+    assert_eq!(kept.examples[0].line, Some(3));
+    let files = walk(&e.home.lake());
+    assert_eq!(files.len(), 1, "{files:?}");
+    let b = parquet_batch(&files[0]);
+    assert_eq!(b.num_rows(), 20);
+    let cap = b.column_by_name("REGISTEREDCAPACITY").unwrap();
+    assert!(matches!(
+        cap.data_type(),
+        arrow_schema::DataType::Decimal128(6, 0)
+    ));
+    assert!(cap.is_null(0));
+    assert_eq!(cap.null_count(), 1);
+    let raw = texts(&b, "REGISTEREDCAPACITY__raw");
+    assert_eq!(raw[0].as_deref(), Some("13.55"));
+    assert!(raw[1..].iter().all(Option::is_none));
+    assert!(walk(&e.home.quarantine()).is_empty());
+}
+
+/// A partition whose later batches carry a column of kept text, or a null
+/// where the lake allows none, goes on in a further file that has room
+/// for them; earlier batches keep their own file, later ones get nulls.
+#[tokio::test]
+async fn batches_that_need_more_columns_go_on_in_a_further_file() {
+    let e = env();
+    let csv = "C,NEMP.WORLD,TEST\nI,DISPATCH,UNIT_SCADA,1,SETTLEMENTDATE,DUID,SCADAVALUE\n\
+D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",A,1\n\
+D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:10:00\",B,2\n\
+D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:15:00\",C,lots\n\
+D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:20:00\",,4\n\
+D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:25:00\",E,5\n\
+D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:30:00\",F,6\n\
+C,\"END OF REPORT\",9\n";
+    let p = e
+        .home
+        .root()
+        .join("PUBLIC_DVD_DISPATCH_UNIT_SCADA_202401010000.CSV");
+    std::fs::write(&p, csv).unwrap();
+    let (tx, _rx) = tokio::sync::mpsc::channel(4096);
+    let rep = run(
+        Plan {
+            request: "ingest".into(),
+            input: Input::Local(vec![p]),
+            options: RunOptions {
+                batch_rows: 2,
+                ..Default::default()
+            },
+        },
+        e.deps.clone(),
+        tx,
+        CancellationToken::new(),
+    )
+    .await;
+    assert_eq!(rep.exit_code, 0, "{:?}", rep.report.summary_lines());
+    assert_eq!(rep.summary.rows, 6);
+    let files = walk(&e.home.lake());
+    assert_eq!(files.len(), 2, "{files:?}");
+    let second_name = files.iter().find(|f| f.ends_with("-p2.parquet")).unwrap();
+    let first = parquet_batch(files.iter().find(|f| *f != second_name).unwrap());
+    let second = parquet_batch(second_name);
+    assert_eq!(first.num_rows(), 2);
+    assert_eq!(first.num_columns(), 4);
+    assert!(!first.schema().field(1).is_nullable());
+    assert_eq!(second.num_rows(), 4);
+    assert_eq!(second.num_columns(), 5);
+    assert!(second.schema().field(1).is_nullable());
+    assert_eq!(
+        texts(&second, "SCADAVALUE__raw"),
+        [Some("lots".to_owned()), None, None, None]
+    );
+    assert_eq!(texts(&second, "DUID")[1], None);
+}
+
+/// A source read again leaves no quarantine file of an earlier read behind.
+#[tokio::test]
+async fn reading_a_source_again_removes_its_old_quarantine() {
+    let e = env();
+    let p = e
+        .home
+        .root()
+        .join("PUBLIC_DVD_DISPATCH_UNIT_SCADA_202401010000.CSV");
+    let write = |extra: &str| {
+        std::fs::write(
+            &p,
+            format!("I,DISPATCH,UNIT_SCADA,1,SETTLEMENTDATE,DUID,SCADAVALUE\nD,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",A,1{extra}\nD,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:10:00\",B,2\n"),
+        )
+        .unwrap();
+    };
+    let plan = || Plan {
+        request: "ingest".into(),
+        input: Input::Local(vec![p.clone()]),
+        options: RunOptions {
+            max_bad_rows: 5,
+            ..Default::default()
+        },
+    };
+    write(",extra");
+    let (rep, _) = run_plan(&e, plan()).await;
+    assert_eq!(rep.exit_code, 0, "{:?}", rep.report.summary_lines());
+    assert_eq!(rep.summary.bad_rows, 1);
+    assert_eq!(walk(&e.home.quarantine()).len(), 1);
+    // The source changes and has no bad row any more.
+    write("");
+    let (rep, _) = run_plan(&e, plan()).await;
+    assert_eq!(rep.exit_code, 0, "{:?}", rep.report.summary_lines());
+    assert!(rep.report.by_code.contains_key("manifest.superseded"));
+    assert_eq!(rep.summary.bad_rows, 0);
+    assert!(walk(&e.home.quarantine()).is_empty());
 }
 
 /// What the manifest records of a source is enough to name it again.
@@ -814,7 +1033,7 @@ fn a_recorded_source_becomes_a_file_to_read() {
 async fn multi_entry_zip_with_bad_file_is_partial_and_everything_is_attempted() {
     let e = env();
     let good = std::fs::read(fixtures().join("REGION_v1_head.csv")).unwrap();
-    let bad_rows = b"I,DISPATCH,UNIT_SCADA,1,SETTLEMENTDATE,DUID,SCADAVALUE\r\nD,DISPATCH,UNIT_SCADA,1,\"2024/13/01 00:05:00\",A,1\r\nD,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",B,1\r\nC,\"END OF REPORT\",4\r\n";
+    let bad_rows = b"I,DISPATCH,UNIT_SCADA,1,SETTLEMENTDATE,DUID,SCADAVALUE\r\nD,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",A,1,extra\r\nD,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",B,1\r\nC,\"END OF REPORT\",4\r\n";
     let zip_path = e.home.root().join("PUBLIC_DVD_MIXED_202401010000.zip");
     make_zip(
         &zip_path,
@@ -861,7 +1080,7 @@ async fn multi_entry_zip_with_bad_file_is_partial_and_everything_is_attempted() 
     assert_eq!(q.len(), 1, "{q:?}");
     let qtext = std::fs::read_to_string(&q[0]).unwrap();
     assert!(
-        qtext.contains("parse.timestamp") && qtext.contains("2024/13/01"),
+        qtext.contains("csv.field_count_mismatch") && qtext.contains("extra"),
         "{qtext}"
     );
     // REGION is a snapshot table: partitioned by archive month.

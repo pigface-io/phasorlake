@@ -33,57 +33,75 @@ pub enum Parsed {
     Bool(bool),
 }
 
+/// Why a field could not be given its column's type. Small and `Copy`: a
+/// fault is rare, but the parse result is checked for every field.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Fault {
+    /// The field is empty and the column does not allow nulls.
+    Null,
+    /// The text is not a timestamp or date.
+    Timestamp(nemtime::TimestampError),
+    /// The text is not a number of the column's kind.
+    Number(num::NumberError),
+    /// The bytes are not UTF-8.
+    Utf8,
+    /// The text is not a boolean.
+    Boolean,
+}
+
+impl Fault {
+    /// The fault as a row error, which says it in full: the column, the
+    /// value, what was expected.
+    pub fn row_error(self, column: &str, bytes: &[u8]) -> RowError {
+        let column = column.to_owned();
+        let value = || String::from_utf8_lossy(bytes).into_owned();
+        match self {
+            Self::Null => RowError::NullNotAllowed { column },
+            Self::Timestamp(source) => RowError::Timestamp {
+                column,
+                value: value(),
+                source,
+            },
+            Self::Number(source) => RowError::Number {
+                column,
+                value: value(),
+                source,
+            },
+            Self::Utf8 => RowError::Utf8 { column },
+            Self::Boolean => RowError::Boolean {
+                column,
+                value: value(),
+            },
+        }
+    }
+}
+
 /// Parses one field according to its cast.
 #[inline]
-pub fn parse_field(
-    cast: Cast,
-    nullable: bool,
-    index: u16,
-    column: &str,
-    bytes: &[u8],
-) -> Result<Parsed, Box<RowError>> {
+pub fn parse_field(cast: Cast, nullable: bool, index: u16, bytes: &[u8]) -> Result<Parsed, Fault> {
     if bytes.is_empty() {
         return if nullable {
             Ok(Parsed::Null)
         } else {
-            Err(Box::new(RowError::NullNotAllowed {
-                column: column.to_owned(),
-            }))
+            Err(Fault::Null)
         };
     }
-    let text = || String::from_utf8_lossy(bytes).into_owned();
     match cast {
         Cast::Utf8 => {
             if std::str::from_utf8(bytes).is_err() {
-                return Err(Box::new(RowError::Utf8 {
-                    column: column.to_owned(),
-                }));
+                return Err(Fault::Utf8);
             }
             Ok(Parsed::Str(index))
         }
-        Cast::Float64 => num::parse_f64(bytes).map(Parsed::F64).map_err(|source| {
-            Box::new(RowError::Number {
-                column: column.to_owned(),
-                value: text(),
-                source,
-            })
-        }),
-        Cast::Int64 => num::parse_i64(bytes).map(Parsed::I64).map_err(|source| {
-            Box::new(RowError::Number {
-                column: column.to_owned(),
-                value: text(),
-                source,
-            })
-        }),
+        Cast::Float64 => num::parse_f64(bytes)
+            .map(Parsed::F64)
+            .map_err(Fault::Number),
+        Cast::Int64 => num::parse_i64(bytes)
+            .map(Parsed::I64)
+            .map_err(Fault::Number),
         Cast::Decimal128 { precision, scale } => num::parse_decimal(bytes, precision, scale)
             .map(Parsed::I128)
-            .map_err(|source| {
-                Box::new(RowError::Number {
-                    column: column.to_owned(),
-                    value: text(),
-                    source,
-                })
-            }),
+            .map_err(Fault::Number),
         Cast::TimestampNanos { offset_secs } => nemtime::parse_nanos(bytes, offset_secs)
             .map(|(nanos, clamped)| {
                 if clamped {
@@ -92,29 +110,14 @@ pub fn parse_field(
                     Parsed::I64(nanos)
                 }
             })
-            .map_err(|source| {
-                Box::new(RowError::Timestamp {
-                    column: column.to_owned(),
-                    value: text(),
-                    source,
-                })
-            }),
+            .map_err(Fault::Timestamp),
         Cast::Date32 => nemtime::parse_days(bytes)
             .map(|d| Parsed::I64(i64::from(d)))
-            .map_err(|source| {
-                Box::new(RowError::Timestamp {
-                    column: column.to_owned(),
-                    value: text(),
-                    source,
-                })
-            }),
+            .map_err(Fault::Timestamp),
         Cast::Boolean => match bytes {
             b"true" | b"TRUE" | b"True" | b"Y" | b"y" | b"1" | b"T" => Ok(Parsed::Bool(true)),
             b"false" | b"FALSE" | b"False" | b"N" | b"n" | b"0" | b"F" => Ok(Parsed::Bool(false)),
-            _ => Err(Box::new(RowError::Boolean {
-                column: column.to_owned(),
-                value: text(),
-            })),
+            _ => Err(Fault::Boolean),
         },
     }
 }
@@ -231,10 +234,22 @@ mod tests {
 
     use super::*;
 
-    /// [`super::parse_field`] with the error unboxed, to match on.
+    /// [`super::parse_field`] as the row error a fault becomes.
+    fn parse_field(
+        cast: Cast,
+        nullable: bool,
+        index: u16,
+        column: &str,
+        bytes: &[u8],
+    ) -> Result<Parsed, Box<RowError>> {
+        super::parse_field(cast, nullable, index, bytes)
+            .map_err(|f| Box::new(f.row_error(column, bytes)))
+    }
+
+    /// The same, unboxed, to match on.
     macro_rules! parse_field {
         ($($arg:expr),* $(,)?) => {
-            super::parse_field($($arg),*).map_err(|e| *e)
+            parse_field($($arg),*).map_err(|e| *e)
         };
     }
 

@@ -123,7 +123,7 @@ fn ingest_ls_errors_verify_round_trip() {
 fn bad_rows_fail_and_are_explained() {
     let cli = Cli::new();
     let bad = cli.home.path().join("bad.csv");
-    std::fs::write(&bad, b"I,DISPATCH,UNIT_SCADA,1,SETTLEMENTDATE,DUID,SCADAVALUE\r\nD,DISPATCH,UNIT_SCADA,1,\"2024/13/01 00:05:00\",A,1\r\nD,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",B,1\r\nC,\"END OF REPORT\",4\r\n").unwrap();
+    std::fs::write(&bad, b"I,DISPATCH,UNIT_SCADA,1,SETTLEMENTDATE,DUID,SCADAVALUE\r\nD,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",A,1,extra\r\nD,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",B,1\r\nC,\"END OF REPORT\",4\r\n").unwrap();
     let (code, out, err) = cli.code(&["ingest", bad.to_str().unwrap()]);
     assert_eq!(code, 1, "{out}{err}");
     assert!(out.contains("csv.too_many_bad_rows"), "{out}");
@@ -132,12 +132,12 @@ fn bad_rows_fail_and_are_explained() {
     assert!(
         std::fs::read_to_string(&quarantine[0])
             .unwrap()
-            .contains("parse.timestamp"),
+            .contains("csv.field_count_mismatch"),
         "{err}"
     );
     // Every error is printed as a JSON object, as it happens. The row's
-    // own error says which column, what was expected and what was there,
-    // and the refusal that follows repeats it.
+    // own error says what was expected and what was there, and the
+    // refusal that follows repeats it.
     let printed: Vec<serde_json::Value> = err
         .lines()
         .filter(|l| l.starts_with('{'))
@@ -145,26 +145,19 @@ fn bad_rows_fail_and_are_explained() {
         .collect();
     let row = printed
         .iter()
-        .find(|d| d["code"] == "parse.timestamp")
+        .find(|d| d["code"] == "csv.field_count_mismatch")
         .unwrap_or_else(|| panic!("no row error in {err}"));
     assert_eq!(row["severity"], "error");
-    assert_eq!(row["column"], "SETTLEMENTDATE");
-    assert_eq!(row["observed"], "2024/13/01 00:05:00");
-    assert_eq!(row["expected"], "yyyy/mm/dd hh24:mi:ss");
+    assert_eq!(row["observed"], "4 fields");
+    assert_eq!(row["expected"], "3 fields");
     assert_eq!(row["line"], 2);
     assert_eq!(row["table"], "DISPATCH_UNIT_SCADA");
-    assert!(
-        row["sample"]["text"]
-            .as_str()
-            .unwrap()
-            .contains("2024/13/01")
-    );
+    assert!(row["sample"]["text"].as_str().unwrap().contains("extra"));
     let refusal = printed
         .iter()
         .find(|d| d["code"] == "csv.too_many_bad_rows")
         .unwrap_or_else(|| panic!("no refusal in {err}"));
-    assert_eq!(refusal["column"], "SETTLEMENTDATE");
-    assert_eq!(refusal["observed"], "2024/13/01 00:05:00");
+    assert_eq!(refusal["observed"], "4 fields");
     assert!(
         refusal["message"]
             .as_str()
@@ -176,17 +169,20 @@ fn bad_rows_fail_and_are_explained() {
         refusal["cause"][0]
             .as_str()
             .unwrap()
-            .ends_with("[parse.timestamp]")
+            .ends_with("[csv.field_count_mismatch]")
     );
     // The summary on stdout gives them as JSON too.
     assert!(
-        out.contains("error parse.timestamp ×1\n{\"code\":\"parse.timestamp\""),
+        out.contains("error csv.field_count_mismatch ×1\n{\"code\":\"csv.field_count_mismatch\""),
         "{out}"
     );
     // And so does `errors`, with or without --json: one object a line.
     let errors = cli.ok(&["errors", "--last"]);
     assert!(errors.contains("csv.too_many_bad_rows"), "{errors}");
-    assert!(errors.contains("\"code\":\"parse.timestamp\""), "{errors}");
+    assert!(
+        errors.contains("\"code\":\"csv.field_count_mismatch\""),
+        "{errors}"
+    );
     for line in errors.lines() {
         let v: serde_json::Value =
             serde_json::from_str(line).unwrap_or_else(|e| panic!("{e}: {line}"));
@@ -216,6 +212,30 @@ fn bad_rows_fail_and_are_explained() {
     ]);
     assert_eq!(code, 0, "{out}");
     assert!(out.contains("\"type\":\"run\""), "{out}");
+    // A value that does not fit its column keeps its row; strict mode
+    // refuses the file for it, saying which column and line.
+    let misfit = cli.home.path().join("misfit.csv");
+    std::fs::write(&misfit, b"I,DISPATCH,UNIT_SCADA,1,SETTLEMENTDATE,DUID,SCADAVALUE\r\nD,DISPATCH,UNIT_SCADA,1,\"2024/13/01 00:05:00\",A,1\r\nD,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",B,1\r\nC,\"END OF REPORT\",4\r\n").unwrap();
+    let cli3 = Cli::new();
+    let (code, out, err) = cli3.code(&["ingest", misfit.to_str().unwrap()]);
+    assert_eq!(code, 0, "{out}{err}");
+    assert!(out.contains("2 rows (0 quarantined)"), "{out}");
+    assert!(out.contains("warning parse.value_kept_raw ×1"), "{out}");
+    let (code, out, err) = cli3.code(&["ingest", misfit.to_str().unwrap(), "--strict"]);
+    assert_eq!(code, 0, "already ingested: {out}{err}");
+    let cli4 = Cli::new();
+    let (code, out, err) = cli4.code(&["ingest", misfit.to_str().unwrap(), "--strict"]);
+    assert_eq!(code, 1, "{out}{err}");
+    let refusal: serde_json::Value = err
+        .lines()
+        .filter(|l| l.starts_with('{'))
+        .map(|l| serde_json::from_str::<serde_json::Value>(l).unwrap())
+        .find(|d| d["code"] == "parse.timestamp")
+        .unwrap_or_else(|| panic!("no refusal in {err}"));
+    assert_eq!(refusal["severity"], "error");
+    assert_eq!(refusal["column"], "SETTLEMENTDATE");
+    assert_eq!(refusal["line"], 2);
+    assert_eq!(refusal["observed"], "2024/13/01 00:05:00");
     // Strict mode refuses a footer mismatch; fail-fast stops at the first bad row.
     let strict = cli.home.path().join("strict.csv");
     std::fs::write(&strict, b"I,DISPATCH,UNIT_SCADA,1,SETTLEMENTDATE,DUID,SCADAVALUE\r\nD,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",B,1\r\nC,\"END OF REPORT\",99\r\n").unwrap();
@@ -673,10 +693,14 @@ fn a_hand_written_rule_brings_in_the_files_of_an_interval() {
     std::fs::rename(dir.join("DRAFT_NEMLAKE_TEST_RULED.toml"), &table).unwrap();
     let (code, out, err) = cli.code(&["ingest", &new]);
     assert_eq!(code, 0, "{out}{err}");
-    // The 2010 file does not fit it: its row cannot be read.
-    let (code, out, _) = cli.code(&["ingest", &old]);
+    // The 2010 file does not fit it: strict mode refuses it, and otherwise
+    // its value is kept only as text beside a null.
+    let (code, out, _) = cli.code(&["ingest", &old, "--strict"]);
     assert_ne!(code, 0, "{out}");
-    assert!(out.contains("csv.too_many_bad_rows"), "{out}");
+    assert!(out.contains("parse.float"), "{out}");
+    let (code, out, _) = cli.code(&["ingest", &old]);
+    assert_eq!(code, 0, "{out}");
+    assert!(out.contains("parse.value_kept_raw"), "{out}");
 
     // A column to keep the old values as published, and a rule that sends
     // them there for the files up to 2011-12.
@@ -691,8 +715,8 @@ fn a_hand_written_rule_brings_in_the_files_of_an_interval() {
         cli.ok(&["schema", "show", "NEMLAKE_TEST_RULED"])
             .contains("VALUE_AS_PUBLISHED")
     );
-    // The table changed, so the 2024 file is behind (it gains a column)
-    // and the 2010 file, which failed, is still to be read.
+    // The table changed, so the 2024 file is behind (it gains a column),
+    // and so is the 2010 file, whose value now has a column to go to.
     let out = cli.ok(&["reingest", "--dry-run"]);
     assert!(out.contains("2 listed"), "{out}");
     let (code, out, err) = cli.code(&["reingest"]);

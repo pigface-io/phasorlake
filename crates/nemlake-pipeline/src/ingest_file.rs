@@ -7,6 +7,8 @@ use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
+use arrow_array::RecordBatch;
+use arrow_schema::{ArrowError, Field, Schema, SchemaRef};
 use nemlake_acquire::LocalFile;
 use nemlake_conform::arrow_sink::{ArrowSink, BatchSink, BlockBatch};
 use nemlake_core::event::Event;
@@ -131,6 +133,54 @@ pub fn open_writers(jobs: usize) -> usize {
 /// row is in the quarantine file; this bounds what a run prints.
 pub const ROW_ERRORS_KEPT: usize = 20;
 
+/// A writer that is open: its id, when it was last written to (in
+/// batches), and the schema of its file.
+struct OpenWriter {
+    id: WriterId,
+    used: u64,
+    schema: SchemaRef,
+}
+
+/// The schema a file must have to take `batch` as well as what it took so
+/// far, when `file` is not it: `file`'s columns, nullable where either is,
+/// then the columns only `batch` has (a column of values kept as text
+/// appears in the batches that need it). `None` when `file` takes `batch`.
+fn widened(file: &Schema, batch: &Schema) -> Option<Schema> {
+    let mut fields: Vec<Field> = file.fields().iter().map(|f| f.as_ref().clone()).collect();
+    let mut wider = false;
+    for b in batch.fields() {
+        match fields.iter_mut().find(|f| f.name() == b.name()) {
+            Some(f) if b.is_nullable() && !f.is_nullable() => {
+                *f = f.clone().with_nullable(true);
+                wider = true;
+            }
+            Some(_) => {}
+            None => {
+                fields.push(b.as_ref().clone());
+                wider = true;
+            }
+        }
+    }
+    wider.then(|| Schema::new_with_metadata(fields, file.metadata().clone()))
+}
+
+/// `batch` in `schema`, which has every column of `batch` and maybe more:
+/// those are null.
+fn fitted(batch: &RecordBatch, schema: &SchemaRef) -> Result<RecordBatch, ArrowError> {
+    if batch.schema().fields() == schema.fields() {
+        return Ok(batch.clone());
+    }
+    let columns = schema
+        .fields()
+        .iter()
+        .map(|f| match batch.schema().index_of(f.name()) {
+            Ok(i) => batch.column(i).clone(),
+            Err(_) => arrow_array::new_null_array(f.data_type(), batch.num_rows()),
+        })
+        .collect();
+    RecordBatch::try_new(schema.clone(), columns)
+}
+
 /// Routes batches to Parquet writers and quarantines bad rows.
 struct LakeSink<'a> {
     registry: &'a Registry,
@@ -138,10 +188,13 @@ struct LakeSink<'a> {
     /// Open writers by table, version, shape and partition. The shape is
     /// part of the key because two column lists of one version may differ
     /// in the columns they are written with.
-    writers: HashMap<WriterKey, (WriterId, u64)>,
+    writers: HashMap<WriterKey, OpenWriter>,
     /// How many files each key has had opened, so a further file of a
     /// partition gets a name of its own.
     parts: HashMap<WriterKey, u32>,
+    /// The schema a key's next file starts with, when its last file was
+    /// finished for being too narrow.
+    next_schema: HashMap<WriterKey, SchemaRef>,
     /// At most this many writers are open at once; see [`open_writers`].
     max_open: usize,
     /// Counts batches, to tell which writer was used longest ago.
@@ -208,8 +261,8 @@ impl LakeSink<'_> {
         let Some((key, wid)) = self
             .writers
             .iter()
-            .min_by_key(|(k, (_, used))| (*used, **k))
-            .map(|(k, (w, _))| (*k, *w))
+            .min_by_key(|(k, w)| (w.used, **k))
+            .map(|(k, w)| (*k, w.id))
         else {
             return Ok(());
         };
@@ -220,8 +273,8 @@ impl LakeSink<'_> {
     fn close_all(&mut self) -> Result<(), nemlake_writer::StoreError> {
         let mut keys: Vec<_> = self.writers.drain().collect();
         keys.sort_by_key(|(k, _)| *k);
-        for (key, (wid, _)) in keys {
-            self.close_one(key, wid)?;
+        for (key, w) in keys {
+            self.close_one(key, w.id)?;
         }
         Ok(())
     }
@@ -230,7 +283,7 @@ impl LakeSink<'_> {
     /// the files of writers closed early to make room. A failed entry
     /// leaves nothing in the lake.
     fn abort_all(&mut self) {
-        let ids: Vec<WriterId> = self.writers.drain().map(|(_, (w, _))| w).collect();
+        let ids: Vec<WriterId> = self.writers.drain().map(|(_, w)| w.id).collect();
         for w in ids {
             self.writer.abort(w);
         }
@@ -332,18 +385,35 @@ impl BatchSink for LakeSink<'_> {
         for (partition, batch) in parts {
             let key: WriterKey = (b.table, b.version.0, b.fingerprint.0, partition);
             self.tick += 1;
-            let wid = match self.writers.get_mut(&key) {
-                Some((w, used)) => {
-                    *used = self.tick;
-                    *w
-                }
+            let fail =
+                |e: &(dyn std::error::Error + 'static)| SinkError::write(table.name.clone(), e);
+            // A batch with a column, or a null, its file has no room for
+            // finishes that file; the partition goes on in a further one
+            // whose schema takes both.
+            let open = match self.writers.get_mut(&key) {
+                Some(w) => match widened(&w.schema, &batch.schema()) {
+                    None => {
+                        w.used = self.tick;
+                        Some((w.id, w.schema.clone()))
+                    }
+                    Some(wider) => {
+                        let id = w.id;
+                        self.writers.remove(&key);
+                        self.close_one(key, id).map_err(|e| fail(&e))?;
+                        self.next_schema.insert(key, Arc::new(wider));
+                        None
+                    }
+                },
+                None => None,
+            };
+            let (wid, schema) = match open {
+                Some(o) => o,
                 None => {
                     // Every open writer holds a file and a row group in
                     // memory. A source whose rows wander over hundreds of
                     // months would hold hundreds of both.
                     if self.writers.len() >= self.max_open {
-                        self.close_least_recent()
-                            .map_err(|e| SinkError::write(table.name.clone(), &e))?;
+                        self.close_least_recent().map_err(|e| fail(&e))?;
                     }
                     let part = {
                         let n = self.parts.entry(key).or_insert(0);
@@ -363,17 +433,29 @@ impl BatchSink for LakeSink<'_> {
                         self.results[idx].transform.clone(),
                         part,
                     );
-                    let w = self
+                    // A further file of a key starts as wide as the one
+                    // before it ended.
+                    let schema = match self.next_schema.remove(&key) {
+                        Some(s) => widened(&s, &batch.schema()).map_or(s, Arc::new),
+                        None => batch.schema(),
+                    };
+                    let id = self
                         .writer
-                        .open(&pk, batch.schema(), &meta)
-                        .map_err(|e| SinkError::write(table.name.clone(), &e))?;
-                    self.writers.insert(key, (w, self.tick));
-                    w
+                        .open(&pk, schema.clone(), &meta)
+                        .map_err(|e| fail(&e))?;
+                    self.writers.insert(
+                        key,
+                        OpenWriter {
+                            id,
+                            used: self.tick,
+                            schema: schema.clone(),
+                        },
+                    );
+                    (id, schema)
                 }
             };
-            self.writer
-                .write(wid, &batch)
-                .map_err(|e| SinkError::write(table.name.clone(), &e))?;
+            let batch = fitted(&batch, &schema).map_err(|e| fail(&e))?;
+            self.writer.write(wid, &batch).map_err(|e| fail(&e))?;
         }
         self.results[idx].rows += rows;
         Ok(())
@@ -473,6 +555,7 @@ fn ingest_entry(input: &IngestInput, entry: &str, reader: &mut dyn std::io::Read
         writer: ParquetHive::new(&input.lake_root),
         writers: HashMap::new(),
         parts: HashMap::new(),
+        next_schema: HashMap::new(),
         max_open: open_writers(input.options.jobs),
         tick: 0,
         results: Vec::new(),

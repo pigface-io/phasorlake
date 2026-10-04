@@ -567,6 +567,25 @@ async fn commit(
         for p in old.iter().filter(|p| !written.contains(&p.as_str())) {
             remove_output(std::path::Path::new(p), &lake);
         }
+        // So are the rows it quarantined: this read quarantined its own,
+        // under the same names where it had any.
+        let quarantined: Vec<&str> = rep
+            .entries
+            .iter()
+            .flat_map(|e| &e.results)
+            .filter_map(|r| r.quarantine_path.as_deref())
+            .collect();
+        let old_quarantine = deps
+            .manifest
+            .quarantine_of_file(fid)
+            .await
+            .unwrap_or_default();
+        for p in old_quarantine
+            .iter()
+            .filter(|p| !quarantined.contains(&p.as_str()))
+        {
+            let _ = std::fs::remove_file(p);
+        }
         let _ = deps.manifest.supersede_file(fid).await;
         let d = if source_changed {
             Diagnostic::warning(

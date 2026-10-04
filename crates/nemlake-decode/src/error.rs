@@ -13,7 +13,10 @@ pub struct Pos {
     pub byte_offset: u64,
 }
 
-/// A row that could not be used; the row is quarantined and the scan goes on.
+/// What is wrong with a row. A row of the wrong structure for its block
+/// (field count, prefix, too short) is quarantined and the scan goes on; a
+/// value that does not fit its column is kept by the sink, and these
+/// variants say so in full when strict mode refuses the file for it.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 pub enum RowError {
     /// More non-empty fields than the I row declared.

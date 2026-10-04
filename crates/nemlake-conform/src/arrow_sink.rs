@@ -2,10 +2,14 @@
 
 use std::sync::Arc;
 
-use arrow_array::RecordBatch;
+use std::collections::HashMap;
+
+use arrow_array::builder::{ArrayBuilder, StringBuilder};
+use arrow_array::{ArrayRef, RecordBatch};
+use arrow_schema::{DataType, Field, Schema};
 use nemlake_core::{Category, Diagnose as _, Diagnostic, Fingerprint, IRow};
 use nemlake_registry::{
-    Cast, ConformancePlan, Registry, ResolveOptions, Resolved, SchemaVersion, TableId,
+    Cast, ConformancePlan, Mode, Registry, ResolveOptions, Resolved, SchemaVersion, TableId,
 };
 
 use nemlake_decode::PREFIX_FIELDS;
@@ -13,7 +17,7 @@ use nemlake_decode::error::{RowError, RowFailure, SinkError};
 use nemlake_decode::fields::Row;
 use nemlake_decode::scan::{Flow, Pos, Sink};
 
-use crate::builders::{ColumnBuilder, Parsed, parse_field};
+use crate::builders::{ColumnBuilder, Fault, Parsed, parse_field};
 
 /// A batch of rows from one block.
 #[derive(Debug)]
@@ -54,22 +58,68 @@ struct Step {
     nullable: bool,
 }
 
+/// Values of one output column that did not fit its type since the last
+/// flush, kept as text in a column of their own.
+struct RawColumn {
+    /// The output column whose values these are.
+    target: u16,
+    /// One entry per row of the batch: the text, or null where the value fit.
+    text: StringBuilder,
+    /// How many values were kept so.
+    count: u64,
+    /// The first of them: its text, its line and the fault.
+    first: (String, u64, Fault),
+}
+
+/// What is noted of a column per flush: how often, and the first instance.
+#[derive(Default)]
+struct Tally {
+    count: u64,
+    first: Option<(String, u64)>,
+}
+
+impl Tally {
+    fn note(&mut self, sample: impl FnOnce() -> String, line: u64) {
+        self.count += 1;
+        if self.first.is_none() {
+            self.first = Some((sample(), line));
+        }
+    }
+}
+
 struct Block {
     resolved: Resolved,
     /// The plan's routes that feed a column, in file order.
     steps: Vec<Step>,
+    /// Output columns that no file column feeds and that do not allow
+    /// nulls: every row leaves them null all the same.
+    missing_required: Vec<u16>,
     fingerprint: Fingerprint,
     builders: Vec<ColumnBuilder>,
     report_type: String,
     report_subtype: String,
     version_text: String,
     rows: usize,
-    /// Per lake column: how many timestamps were clamped since the last
-    /// flush, and the first such value as text.
-    clamped: Vec<(u64, Option<String>)>,
+    /// Per output column: timestamps clamped since the last flush.
+    clamped: Vec<Tally>,
+    /// Per output column: nulls kept in a column that does not allow
+    /// them since the last flush. Such a column is nullable in the batch.
+    nulls_kept: Vec<Tally>,
+    /// Columns with values kept as text since the last flush, in the order
+    /// they first had one.
+    raws: Vec<RawColumn>,
 }
 
 /// Builds typed batches from MMS rows through the registry.
+///
+/// A row is never refused for one of its values. A value that does not fit
+/// its column's type leaves the column null in that row, and its text is
+/// kept in a column of its own, `{column}__raw`, which exists only in the
+/// batches that need it; an empty value in a column that does not allow
+/// nulls is kept as a null. Each is reported once per column per batch
+/// (`parse.value_kept_raw`, `parse.null_kept`). In strict mode either
+/// refuses the file instead. Only a row whose structure is wrong for its
+/// block (too many fields, another block's prefix) is quarantined.
 pub struct ArrowSink<'r, B: BatchSink> {
     registry: &'r Registry,
     opts: ResolveOptions,
@@ -80,10 +130,30 @@ pub struct ArrowSink<'r, B: BatchSink> {
     out: B,
     block: Option<Block>,
     parsed: Vec<Parsed>,
+    /// The values of the current row that did not fit: output column,
+    /// field position and fault.
+    misfits: Vec<(u16, u16, Fault)>,
 }
 
 /// Rows per batch by default.
 pub const DEFAULT_BATCH_ROWS: usize = 65_536;
+
+/// Field metadata of a raw column: the id (or, for a column of the file
+/// only, the name) of the column whose values it holds.
+pub const RAW_OF_KEY: &str = "nemlake:raw-of";
+
+/// What a column of `ty` expects, in words.
+fn expected(ty: &DataType) -> String {
+    match ty {
+        DataType::Float64 => "a number (Float64)".into(),
+        DataType::Int64 => "a whole number (Int64)".into(),
+        DataType::Decimal128(p, s) => format!("a decimal number that fits Decimal128({p}, {s})"),
+        DataType::Timestamp(..) => "a timestamp yyyy/mm/dd hh24:mi:ss".into(),
+        DataType::Date32 => "a date yyyy/mm/dd".into(),
+        DataType::Boolean => "a boolean".into(),
+        _ => "UTF-8 text".into(),
+    }
+}
 
 impl<'r, B: BatchSink> ArrowSink<'r, B> {
     /// A sink resolving against `registry`, flushing every `batch_rows` rows.
@@ -96,6 +166,7 @@ impl<'r, B: BatchSink> ArrowSink<'r, B> {
             out,
             block: None,
             parsed: Vec::new(),
+            misfits: Vec::new(),
         }
     }
 
@@ -137,36 +208,102 @@ impl<'r, B: BatchSink> ArrowSink<'r, B> {
         if block.rows == 0 {
             return Ok(());
         }
-        let schema = block.resolved.plan.arrow.clone();
-        let arrays: Vec<_> = block
+        let plan = &block.resolved.plan;
+        let table = self.registry.table(block.resolved.table);
+        let warn = |code: &'static str, column: &str, message: String| {
+            Diagnostic::warning(code, Category::Parse, message)
+                .with_table(table.name.clone())
+                .with_version(block.resolved.version.0)
+                .with_column(column.to_owned())
+        };
+        let mut fields: Vec<Field> = plan
+            .arrow
+            .fields()
+            .iter()
+            .map(|f| f.as_ref().clone())
+            .collect();
+        let mut arrays: Vec<ArrayRef> = block
             .builders
             .iter_mut()
             .map(ColumnBuilder::finish)
             .collect();
-        let table = self.registry.table(block.resolved.table);
         // Timestamps beyond the nanosecond range were stored at its nearest
         // end; say so once per column, with how many and an example.
-        for (i, (count, sample)) in block.clamped.iter_mut().enumerate() {
-            if *count == 0 {
+        for (i, tally) in block.clamped.iter_mut().enumerate() {
+            let Some((sample, _)) = tally.first.take() else {
                 continue;
-            }
-            let column = schema.field(i).name();
-            let mut d = Diagnostic::warning(
+            };
+            let column = fields[i].name();
+            let mut d = warn(
                 "parse.timestamp_clamped",
-                Category::Parse,
+                column,
                 format!(
-                    "{count} value(s) of column {column} in table {} lie beyond what nanoseconds hold (1677-09-21 to 2262-04-11) and were stored as the nearest end of that range. AEMO writes such dates to mean no end or no start; the downloaded file keeps the original.",
-                    table.name
+                    "{} value(s) of column {column} in table {} lie beyond what nanoseconds hold (1677-09-21 to 2262-04-11) and were stored as the nearest end of that range. AEMO writes such dates to mean no end or no start; the downloaded file keeps the original.",
+                    tally.count, table.name
                 ),
-            )
-            .with_table(table.name.clone())
-            .with_version(block.resolved.version.0)
-            .with_column(column.clone());
-            d.observed = sample.take();
+            );
+            d.observed = Some(sample);
             d.expected = Some("1677-09-21 to 2262-04-11".into());
             self.out.warning(d);
-            *count = 0;
+            tally.count = 0;
         }
+        // A column that does not allow nulls, with nulls kept in it, allows
+        // them in this batch.
+        for (i, tally) in block.nulls_kept.iter_mut().enumerate() {
+            let Some((_, line)) = tally.first.take() else {
+                continue;
+            };
+            let column = fields[i].name().clone();
+            let mut d = warn(
+                "parse.null_kept",
+                &column,
+                format!(
+                    "{} row(s) of table {} have no value for column {column}, which does not allow nulls; the rows are kept with the column null. The first is line {line}.",
+                    tally.count, table.name
+                ),
+            );
+            d.line = Some(line);
+            d.expected = Some("a value".into());
+            d.observed = Some(String::new());
+            self.out.warning(d);
+            fields[i] = fields[i].clone().with_nullable(true);
+            tally.count = 0;
+        }
+        // Values that did not fit their column's type: the text beside it.
+        for mut raw in block.raws.drain(..) {
+            // The column is null where its value did not fit.
+            let i = raw.target as usize;
+            fields[i] = fields[i].clone().with_nullable(true);
+            let target = fields[i].clone();
+            let column = target.name();
+            let (sample, line, fault) = raw.first;
+            let fault_text = fault.row_error(column, sample.as_bytes()).to_string();
+            let mut d = warn(
+                "parse.value_kept_raw",
+                column,
+                format!(
+                    "{} value(s) of column {column} in table {} do not fit its type; each row is kept with the column null and the text in column {column}__raw. The first is line {line}: {fault_text}",
+                    raw.count, table.name
+                ),
+            );
+            d.line = Some(line);
+            d.expected = Some(expected(target.data_type()));
+            d.observed = Some(sample);
+            self.out.warning(d);
+            let of = target
+                .metadata()
+                .get(nemlake_registry::arrow::FIELD_ID_KEY)
+                .cloned()
+                .unwrap_or_else(|| column.clone());
+            let md: HashMap<String, String> = [(RAW_OF_KEY.to_owned(), of)].into();
+            fields
+                .push(Field::new(format!("{column}__raw"), DataType::Utf8, true).with_metadata(md));
+            arrays.push(Arc::new(raw.text.finish()));
+        }
+        let schema = Arc::new(Schema::new_with_metadata(
+            fields,
+            plan.arrow.metadata().clone(),
+        ));
         let batch = RecordBatch::try_new(schema, arrays).map_err(|e| SinkError::Arrow {
             table: table.name.clone(),
             message: e.to_string(),
@@ -199,13 +336,14 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
         }
         self.out.block_started(irow, &resolved, pos);
         let schema = &resolved.plan.arrow;
+        let width = schema.fields().len();
         let builders = schema
             .fields()
             .iter()
             .map(|f| ColumnBuilder::new(f.data_type(), self.batch_rows.min(8192)))
             .collect();
         self.parsed.clear();
-        self.parsed.resize(schema.fields().len(), Parsed::Null);
+        self.parsed.resize(width, Parsed::Null);
         let steps = resolved
             .plan
             .routes
@@ -219,22 +357,32 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
                 })
             })
             .collect();
+        let missing_required = resolved
+            .plan
+            .missing
+            .iter()
+            .copied()
+            .filter(|&m| !schema.field(m as usize).is_nullable())
+            .collect();
         self.block = Some(Block {
             steps,
+            missing_required,
             fingerprint: irow.fingerprint(),
             builders,
             report_type: irow.report_type.to_owned(),
             report_subtype: irow.report_subtype.to_owned(),
             version_text: irow.version.to_string(),
             rows: 0,
-            clamped: vec![(0, None); schema.fields().len()],
+            clamped: std::iter::repeat_with(Tally::default).take(width).collect(),
+            nulls_kept: std::iter::repeat_with(Tally::default).take(width).collect(),
+            raws: Vec::new(),
             resolved,
         });
         Ok(())
     }
 
     #[inline]
-    fn row(&mut self, row: &Row<'_>, _pos: Pos) -> Result<(), RowFailure> {
+    fn row(&mut self, row: &Row<'_>, pos: Pos) -> Result<(), RowFailure> {
         let block = self
             .block
             .as_mut()
@@ -266,31 +414,57 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
             }
             .into());
         }
-        // Pass 1: parse every field; nothing is appended until all succeed.
+        let strict = self.opts.mode == Mode::Strict;
+        // A field that does not fit is a value fault, not a row fault: the
+        // row is kept. Strict mode refuses the file at the first one.
+        let refuse = |block: &Block, target: u16, field: u16, fault: Fault| {
+            let column = block.resolved.plan.arrow.field(target as usize).name();
+            let bytes = row.get(usize::from(field)).unwrap_or(b"");
+            let d = fault
+                .row_error(column, bytes)
+                .diagnostic()
+                .at(pos.line, pos.byte_offset)
+                .with_sample(bytes)
+                .with_table(block.resolved.plan.table.clone())
+                .with_version(block.resolved.version.0);
+            RowFailure::from(SinkError::Refused(Box::new(d)))
+        };
+        // Pass 1: parse every field; nothing is appended until all are read.
         self.parsed.fill(Parsed::Null);
+        self.misfits.clear();
         for c in &block.steps {
             let target = c.target;
             let bytes = row.get(usize::from(c.field)).unwrap_or(b"");
-            let column = block.resolved.plan.arrow.field(target as usize).name();
-            let parsed = parse_field(c.cast, c.nullable, c.field, column, bytes)?;
-            if matches!(parsed, Parsed::Clamped(_)) {
-                let seen = &mut block.clamped[target as usize];
-                seen.0 += 1;
-                if seen.1.is_none() {
-                    seen.1 = Some(String::from_utf8_lossy(bytes).into_owned());
+            let parsed = match parse_field(c.cast, c.nullable, c.field, bytes) {
+                Ok(p) => p,
+                Err(fault) if strict => return Err(refuse(block, target, c.field, fault)),
+                Err(fault) => {
+                    self.misfits.push((target, c.field, fault));
+                    Parsed::Null
                 }
+            };
+            if matches!(parsed, Parsed::Clamped(_)) {
+                block.clamped[target as usize]
+                    .note(|| String::from_utf8_lossy(bytes).into_owned(), pos.line);
             }
             self.parsed[target as usize] = parsed;
         }
-        // A column the file does not carry is null; the plan's schema
-        // says whether files of this shape may leave it so.
-        for &m in &block.resolved.plan.missing {
-            let field = block.resolved.plan.arrow.field(m as usize);
-            if !field.is_nullable() {
-                return Err(RowError::NullNotAllowed {
-                    column: field.name().clone(),
+        // A column the file does not carry is null, also where the lake
+        // does not allow it.
+        if let Some(&m) = block.missing_required.first() {
+            if strict {
+                let column = block.resolved.plan.arrow.field(m as usize).name();
+                let d = RowError::NullNotAllowed {
+                    column: column.clone(),
                 }
-                .into());
+                .diagnostic()
+                .at(pos.line, pos.byte_offset)
+                .with_table(block.resolved.plan.table.clone())
+                .with_version(block.resolved.version.0);
+                return Err(SinkError::Refused(Box::new(d)).into());
+            }
+            for &m in &block.missing_required {
+                block.nulls_kept[m as usize].note(String::new, pos.line);
             }
         }
         // Pass 2: append.
@@ -308,6 +482,9 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
                 }
                 other => b.append(*other, |_| b""),
             }
+        }
+        if !self.misfits.is_empty() || !block.raws.is_empty() {
+            keep_misfits(block, &self.misfits, row, pos.line);
         }
         block.rows += 1;
         if block.rows >= self.batch_rows {
@@ -327,6 +504,48 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
         _pos: Pos,
     ) -> Result<(), SinkError> {
         self.flush()
+    }
+}
+
+/// Records the current row's misfits: an empty value where nulls are not
+/// allowed is a kept null; any other value goes, as text, to its column's
+/// raw column, which is started (null for the rows before) on its first
+/// value. Every raw column gets one entry for the row.
+fn keep_misfits(block: &mut Block, misfits: &[(u16, u16, Fault)], row: &Row<'_>, line: u64) {
+    let rows_before = block.rows;
+    let mut kept = 0;
+    for &(target, field, fault) in misfits {
+        let bytes = row.get(usize::from(field)).unwrap_or(b"");
+        if fault == Fault::Null {
+            block.nulls_kept[target as usize].note(String::new, line);
+            continue;
+        }
+        let text = String::from_utf8_lossy(bytes);
+        let raw = match block.raws.iter().position(|r| r.target == target) {
+            Some(i) => &mut block.raws[i],
+            None => {
+                let mut b = StringBuilder::new();
+                b.append_nulls(rows_before);
+                block.raws.push(RawColumn {
+                    target,
+                    text: b,
+                    count: 0,
+                    first: (text.clone().into_owned(), line, fault),
+                });
+                block.raws.last_mut().expect("just pushed")
+            }
+        };
+        raw.text.append_value(&text);
+        raw.count += 1;
+        kept += 1;
+    }
+    // Raw columns without a value in this row are null for it.
+    if block.raws.len() > kept {
+        for raw in &mut block.raws {
+            if raw.text.len() == rows_before {
+                raw.text.append_null();
+            }
+        }
     }
 }
 
@@ -701,13 +920,10 @@ mod tests {
     }
 
     #[test]
-    fn bad_rows_are_quarantined_not_appended() {
+    fn only_rows_of_the_wrong_structure_are_quarantined() {
         let r = reg();
         let rows = b"I,DISPATCH,UNIT_SCADA,1,SETTLEMENTDATE,DUID,SCADAVALUE\n\
 D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",A,1\n\
-D,DISPATCH,UNIT_SCADA,1,\"2024/13/01 00:05:00\",B,1\n\
-D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",C,notanumber\n\
-D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",,1\n\
 D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",D,1,extra\n\
 D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",E,1,,\n\
 D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",F\n\
@@ -728,29 +944,18 @@ D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",H,2\n";
             stats.rows, 4,
             "A, E (trailing empties), F (short row → null), H"
         );
-        assert_eq!(stats.bad_rows, 6);
+        assert_eq!(stats.bad_rows, 3);
         let codes: Vec<_> = out.bad.iter().map(|(_, _, d)| d.code.to_string()).collect();
         assert_eq!(
             codes,
             [
-                "parse.timestamp",
-                "parse.float",
-                "parse.null_not_allowed",
                 "csv.field_count_mismatch",
                 "csv.block_mismatch",
                 "csv.row_too_short"
             ]
         );
         assert_eq!(out.bad[0].0, 3);
-        assert!(
-            out.bad[0]
-                .2
-                .sample
-                .as_ref()
-                .unwrap()
-                .text
-                .contains("2024/13/01")
-        );
+        assert!(out.bad[0].2.sample.as_ref().unwrap().text.contains("extra"));
         let b = &out.batches[0].batch;
         assert_eq!(b.num_rows(), 4);
         assert_eq!(
@@ -783,6 +988,169 @@ D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",H,2\n";
         ));
         assert_eq!(sink.inner().bad.len(), 1);
         sink.inner_mut().bad.clear();
+    }
+
+    const MISFITS: &[u8] = b"I,DISPATCH,UNIT_SCADA,1,SETTLEMENTDATE,DUID,SCADAVALUE\n\
+D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",A,1\n\
+D,DISPATCH,UNIT_SCADA,1,\"2024/13/01 00:05:00\",B,1\n\
+D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",C,notanumber\n\
+D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",,1\n\
+D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",D,also bad\n\
+D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",E,2\n";
+
+    #[test]
+    fn a_value_that_does_not_fit_keeps_its_row_and_its_text() {
+        let r = reg();
+        let (out, stats) = collect(
+            &r,
+            MISFITS,
+            ResolveOptions::default(),
+            &ScanOptions::default(),
+        )
+        .unwrap();
+        assert_eq!(stats.rows, 6);
+        assert_eq!(stats.bad_rows, 0);
+        assert!(out.bad.is_empty());
+        let b = &out.batches[0].batch;
+        assert_eq!(b.num_rows(), 6);
+        // The four declared columns, then the raw text of the two whose
+        // values did not fit, in the order they first failed.
+        let names: Vec<_> = b
+            .schema()
+            .fields()
+            .iter()
+            .map(|f| f.name().clone())
+            .collect();
+        assert_eq!(
+            names,
+            [
+                "SETTLEMENTDATE",
+                "DUID",
+                "SCADAVALUE",
+                "LASTCHANGED",
+                "SETTLEMENTDATE__raw",
+                "SCADAVALUE__raw"
+            ]
+        );
+        let text = |col: usize| {
+            let a = b
+                .column(col)
+                .as_any()
+                .downcast_ref::<StringArray>()
+                .unwrap();
+            (0..a.len())
+                .map(|i| (!a.is_null(i)).then(|| a.value(i).to_owned()))
+                .collect::<Vec<_>>()
+        };
+        assert_eq!(
+            text(4),
+            [
+                None,
+                Some("2024/13/01 00:05:00".into()),
+                None,
+                None,
+                None,
+                None
+            ]
+        );
+        assert_eq!(
+            text(5),
+            [
+                None,
+                None,
+                Some("notanumber".into()),
+                None,
+                Some("also bad".into()),
+                None
+            ]
+        );
+        assert_eq!(
+            b.schema().field(5).metadata()[RAW_OF_KEY],
+            b.schema().field(2).metadata()[nemlake_registry::arrow::FIELD_ID_KEY]
+        );
+        // The typed columns are null where the value did not fit, and the
+        // key column allows it in this batch.
+        assert!(b.column(0).is_null(1));
+        assert!(b.schema().field(0).is_nullable());
+        assert!(b.column(1).is_null(3));
+        assert!(b.schema().field(1).is_nullable());
+        assert_eq!(b.column(2).null_count(), 2);
+        // One warning per column, with how many and the first.
+        let codes: Vec<_> = out.warnings.iter().map(|w| w.code.to_string()).collect();
+        assert_eq!(
+            codes,
+            [
+                "parse.null_kept",
+                "parse.value_kept_raw",
+                "parse.value_kept_raw"
+            ]
+        );
+        let scada = &out.warnings[2];
+        assert_eq!(scada.column.as_deref(), Some("SCADAVALUE"));
+        assert_eq!(scada.line, Some(4));
+        assert_eq!(scada.observed.as_deref(), Some("notanumber"));
+        assert_eq!(scada.expected.as_deref(), Some("a number (Float64)"));
+        assert!(
+            scada.message.starts_with("2 value(s) of column SCADAVALUE"),
+            "{}",
+            scada.message
+        );
+        assert_eq!(out.warnings[0].column.as_deref(), Some("DUID"));
+        assert_eq!(out.warnings[0].line, Some(5));
+    }
+
+    #[test]
+    fn raw_columns_exist_only_in_the_batches_that_need_them() {
+        let r = reg();
+        let mut sink = ArrowSink::new(&r, ResolveOptions::default(), 2, CollectBatches::default());
+        nemlake_decode::scan::scan(MISFITS, &mut sink, &ScanOptions::default()).unwrap();
+        let out = sink.into_inner().unwrap();
+        let widths: Vec<_> = out.batches.iter().map(|b| b.batch.num_columns()).collect();
+        // Rows A,B: a bad date. C,D: a bad number and an empty key. Bad
+        // number, then E: a bad number only.
+        assert_eq!(widths, [5, 5, 5]);
+        assert_eq!(
+            out.batches[0].batch.schema().field(4).name(),
+            "SETTLEMENTDATE__raw"
+        );
+        assert_eq!(
+            out.batches[1].batch.schema().field(4).name(),
+            "SCADAVALUE__raw"
+        );
+        assert!(out.batches[1].batch.schema().field(1).is_nullable());
+        assert!(!out.batches[2].batch.schema().field(1).is_nullable());
+        let tail = b"I,DISPATCH,UNIT_SCADA,1,SETTLEMENTDATE,DUID,SCADAVALUE\n\
+D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",A,1\n";
+        let (out, _) = collect(
+            &r,
+            tail.as_slice(),
+            ResolveOptions::default(),
+            &ScanOptions::default(),
+        )
+        .unwrap();
+        assert_eq!(out.batches[0].batch.num_columns(), 4);
+        assert!(out.warnings.is_empty());
+    }
+
+    #[test]
+    fn strict_mode_refuses_a_value_that_does_not_fit() {
+        let r = reg();
+        let strict = ResolveOptions { mode: Mode::Strict };
+        let e = collect(&r, MISFITS, strict, &ScanOptions::default()).unwrap_err();
+        let d = e.diagnostic();
+        assert_eq!(d.code, "parse.timestamp");
+        assert_eq!(d.column.as_deref(), Some("SETTLEMENTDATE"));
+        assert_eq!(d.line, Some(3));
+        assert_eq!(d.observed.as_deref(), Some("2024/13/01 00:05:00"));
+        // An empty key is refused too.
+        let empty = b"I,DISPATCH,UNIT_SCADA,1,SETTLEMENTDATE,DUID,SCADAVALUE\n\
+D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",,1\n";
+        let d = collect(&r, empty.as_slice(), strict, &ScanOptions::default())
+            .unwrap_err()
+            .diagnostic();
+        assert_eq!(d.code, "parse.null_not_allowed");
+        assert_eq!(d.column.as_deref(), Some("DUID"));
+        assert_eq!(d.line, Some(2));
     }
 
     #[test]

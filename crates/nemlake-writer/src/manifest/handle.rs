@@ -22,6 +22,7 @@ enum Cmd {
     ListFiles(Reply<Vec<FileRecord>>),
     FileByUrl(String, Reply<Option<(i64, FileRecord)>>),
     OutputsOfFile(i64, Reply<Vec<String>>),
+    QuarantineOfFile(i64, Reply<Vec<String>>),
     SupersedeFile(i64, Reply<usize>),
     BeginIngest(IngestStart, Reply<i64>),
     FinishIngest(i64, IngestEnd, Reply<()>),
@@ -113,6 +114,9 @@ impl ManifestHandle {
                         Cmd::OutputsOfFile(id, r) => {
                             let _ = r.send(manifest.outputs_of_file(id));
                         }
+                        Cmd::QuarantineOfFile(id, r) => {
+                            let _ = r.send(manifest.quarantine_of_file(id));
+                        }
                         Cmd::SupersedeFile(id, r) => {
                             let _ = r.send(manifest.supersede_file(id));
                         }
@@ -197,6 +201,10 @@ impl ManifestHandle {
     /// See [`Manifest::outputs_of_file`].
     pub async fn outputs_of_file(&self, file_id: i64) -> Result<Vec<String>, ManifestError> {
         self.call(|r| Cmd::OutputsOfFile(file_id, r)).await
+    }
+    /// See [`Manifest::quarantine_of_file`].
+    pub async fn quarantine_of_file(&self, file_id: i64) -> Result<Vec<String>, ManifestError> {
+        self.call(|r| Cmd::QuarantineOfFile(file_id, r)).await
     }
     /// See [`Manifest::supersede_file`].
     pub async fn supersede_file(&self, file_id: i64) -> Result<usize, ManifestError> {
@@ -345,6 +353,7 @@ mod tests {
         assert_eq!(h.list_ingests(None, false, 5).await.unwrap().len(), 1);
         assert_eq!(h.table_totals("T").await.unwrap(), (2, 0));
         assert_eq!(h.outputs_of_file(fid).await.unwrap().len(), 0);
+        assert!(h.quarantine_of_file(fid).await.unwrap().is_empty());
         assert_eq!(h.supersede_file(fid).await.unwrap(), 1);
         assert_eq!(h.abort_running().await.unwrap(), 0);
         h.finish_run(run, 0, "{}").await.unwrap();

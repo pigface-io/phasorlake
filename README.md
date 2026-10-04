@@ -58,7 +58,7 @@ Global flags: `--home DIR` (or `NEMLAKE_HOME`), `--json`, `-v`, `--offline`,
   lake/nem/{table}/snapshot=YYYYMM/...                                     standing-data tables (REGION, PARTICIPANT, ...): each month's file is the whole table
   archive/{host}/{path of the URL}[.json]                                  every download as the server sent it, with its request record
   cache/listings/, cache/tmp/                                              listings and scratch files, safe to delete
-  quarantine/{table}/{source}.jsonl                                        rows that failed to parse, with the reason
+  quarantine/{table}/{source}.jsonl                                        rows whose structure was wrong for their block, with the reason
   manifest.sqlite                                                          runs, files, ingests, outputs, diagnostics
 ```
 
@@ -94,6 +94,15 @@ unit spans 1677-09-21 to 2262-04-11. AEMO writes "no end" as `9999/12/31`
 or `2999/12/31`; such a value is stored as the last instant of the range,
 so `END_DATE > now()` still holds, and each column it happens in is
 reported as `parse.timestamp_clamped` with a count and an example.
+
+No row is dropped for one of its values. A value its column's type cannot
+hold (a fraction where `--decimal` gives `Decimal128(6, 0)`, a month 13)
+leaves the column null in that row and is kept, as published, in a text
+column beside it named `{column}__raw`, which exists only in the files that
+need it (`parse.value_kept_raw`). An empty value in a column that does not
+allow nulls is kept as a null (`parse.null_kept`). `--strict` refuses the
+file at the first of either. Only a row whose structure is wrong for its
+block, such as more fields than the I row declares, goes to the quarantine.
 
 ## How a file was made
 

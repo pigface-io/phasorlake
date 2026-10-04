@@ -78,10 +78,12 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 | `parse.decimal` | `crates/nemlake-decode/src/error.rs` |
 | `parse.float` | `crates/nemlake-decode/src/error.rs` |
 | `parse.integer` | `crates/nemlake-decode/src/error.rs` |
+| `parse.null_kept` | `crates/nemlake-conform/src/arrow_sink.rs` |
 | `parse.null_not_allowed` | `crates/nemlake-decode/src/error.rs` |
 | `parse.timestamp` | `crates/nemlake-decode/src/error.rs` |
 | `parse.timestamp_clamped` | `crates/nemlake-conform/src/arrow_sink.rs` |
 | `parse.utf8` | `crates/nemlake-decode/src/error.rs` |
+| `parse.value_kept_raw` | `crates/nemlake-conform/src/arrow_sink.rs` |
 
 ## schema
 
