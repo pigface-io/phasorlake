@@ -68,6 +68,19 @@ impl LoaderType {
         })
     }
 
+    /// The class of type the loader type loads, for a shape's canonical
+    /// form; `None` for a filler.
+    pub fn type_class(&self) -> Option<nemlake_core::TypeClass> {
+        use nemlake_core::TypeClass;
+        Some(match self.column_type()? {
+            ColumnType::Utf8 { .. } | ColumnType::Boolean => TypeClass::Varchar,
+            ColumnType::Number { .. } => TypeClass::Number,
+            ColumnType::Integer => TypeClass::Integer,
+            ColumnType::Date => TypeClass::Date,
+            ColumnType::Timestamp => TypeClass::Timestamp,
+        })
+    }
+
     /// The type as written in a CTL, for the `loader` field of a schema.
     pub fn render(&self) -> String {
         match self {
@@ -518,6 +531,29 @@ SCADAVALUE FLOAT EXTERNAL)
         assert_eq!(LoaderType::Timestamp(None).render(), "TIMESTAMP");
         assert_eq!(LoaderType::IntegerExternal.render(), "INTEGER EXTERNAL");
         assert_eq!(LoaderType::DecimalExternal.render(), "DECIMAL EXTERNAL");
+        use nemlake_core::TypeClass;
+        let classes: Vec<_> = f.columns.iter().map(|c| c.ty.type_class()).collect();
+        assert_eq!(
+            classes[4..],
+            [
+                Some(TypeClass::Timestamp),
+                Some(TypeClass::Varchar),
+                Some(TypeClass::Number)
+            ]
+        );
+        assert_eq!(classes[0], None);
+        assert_eq!(
+            LoaderType::Date("yyyy/mm/dd".into()).type_class(),
+            Some(TypeClass::Date)
+        );
+        assert_eq!(
+            LoaderType::IntegerExternal.type_class(),
+            Some(TypeClass::Integer)
+        );
+        assert_eq!(
+            LoaderType::DecimalExternal.type_class(),
+            Some(TypeClass::Number)
+        );
     }
 
     #[test]
