@@ -16,7 +16,6 @@ use serde::Serialize;
 use crate::arrow::FIELD_ID_KEY;
 use crate::file_model::{ColumnType, LoadMode, Market, MarketDef, TableDef};
 use crate::registry::TypeOptions;
-use crate::rules::RulesHash;
 
 /// How a field is parsed into its lake column.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
@@ -84,6 +83,100 @@ pub enum Origin {
     Dropped,
 }
 
+/// The generation of the conversions the code itself performs: how a
+/// timestamp, a number or a date is read, how a partition is chosen, how a
+/// value that does not fit is kept. Raise it when the same plan would be
+/// written differently by a newer nemlake, so that lakes written by the
+/// older one are known to be behind.
+pub const PLAN_FORMAT: u32 = 2;
+
+/// The identity of a plan: everything that decides what files of its shape
+/// are written as, and nothing else. It is recorded with every Parquet file
+/// and every ingest, so a file says which plan made it, and an ingest whose
+/// plan has changed since can be found and done again from the archived
+/// source.
+///
+/// It covers the table, market, directory and load mode, the key and time
+/// columns by name, and each route: the file column, the lake column it
+/// feeds with that column's id, type and nullability, the cast and why it
+/// goes there. It does not cover the lake columns the shape does not carry,
+/// so declaring a column restales only the shapes that carry it, nor a
+/// description or provenance note.
+#[derive(Clone, Copy, PartialEq, Eq, Hash)]
+pub struct PlanHash(pub u128);
+
+impl std::fmt::Debug for PlanHash {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self}")
+    }
+}
+
+impl std::fmt::Display for PlanHash {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "plan:{:032x}", self.0)
+    }
+}
+
+/// What a route contributes to its plan's identity.
+#[derive(Serialize)]
+struct RouteIdentity<'a> {
+    source: &'a str,
+    target: Option<&'a str>,
+    field_id: Option<u32>,
+    data_type: Option<&'a str>,
+    nullable_out: Option<bool>,
+    cast: Cast,
+    nullable: bool,
+    origin: Origin,
+}
+
+/// What [`PlanHash`] is the hash of.
+#[derive(Serialize)]
+struct PlanIdentity<'a> {
+    format: u32,
+    table: &'a str,
+    market: Market,
+    directory: &'a str,
+    load_mode: LoadMode,
+    key: Vec<&'a str>,
+    time: Option<&'a str>,
+    routes: Vec<RouteIdentity<'a>>,
+}
+
+impl PlanHash {
+    fn of(plan: &ConformancePlan) -> Self {
+        let name = |i: u16| plan.fields[usize::from(i)].name.as_str();
+        let identity = PlanIdentity {
+            format: PLAN_FORMAT,
+            table: &plan.table,
+            market: plan.market,
+            directory: &plan.directory,
+            load_mode: plan.load_mode,
+            key: plan.key_columns.iter().map(|&k| name(k)).collect(),
+            time: plan.time_column.map(name),
+            routes: plan
+                .routes
+                .iter()
+                .map(|r| {
+                    let field = r.target.map(|t| &plan.fields[usize::from(t)]);
+                    RouteIdentity {
+                        source: &r.source_name,
+                        target: field.map(|f| f.name.as_str()),
+                        field_id: r.target_field_id,
+                        data_type: field.map(|f| f.data_type.as_str()),
+                        nullable_out: field.map(|f| f.nullable),
+                        cast: r.cast,
+                        nullable: r.nullable,
+                        origin: r.origin,
+                    }
+                })
+                .collect(),
+        };
+        let bytes = postcard::to_stdvec(&identity).expect("a plan's identity serialises");
+        Self(xxhash_rust::xxh3::xxh3_128(&bytes))
+    }
+}
+
 /// One column of the file and where it goes.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct ColumnRoute {
@@ -145,9 +238,9 @@ pub struct ConformancePlan {
     /// The output schema, as Arrow builds batches with it.
     #[serde(skip)]
     pub arrow: SchemaRef,
-    /// The identity of these rules: see [`crate::rules`].
+    /// The identity of the plan: see [`PlanHash`].
     #[serde(skip)]
-    pub rules: RulesHash,
+    pub hash: PlanHash,
 }
 
 /// The parts of a plan before its schema and hash are fixed.
@@ -233,15 +326,6 @@ impl<'a> Draft<'a> {
             .as_deref()
             .and_then(|c| t.column_index(c))
             .map(|i| i as u16);
-        let rules = crate::rules::hash(
-            t,
-            dir,
-            &arrow,
-            &self.routes,
-            &missing,
-            &key_columns,
-            time_column,
-        );
         let lake_width = t.columns.len();
         let fields = arrow
             .fields()
@@ -259,7 +343,7 @@ impl<'a> Draft<'a> {
                 },
             })
             .collect();
-        ConformancePlan {
+        let mut plan = ConformancePlan {
             table: t.name.clone(),
             market: t.market,
             directory: dir.to_owned(),
@@ -270,8 +354,10 @@ impl<'a> Draft<'a> {
             routes: self.routes,
             missing,
             arrow,
-            rules,
-        }
+            hash: PlanHash(0),
+        };
+        plan.hash = PlanHash::of(&plan);
+        plan
     }
 }
 
@@ -386,6 +472,109 @@ mod tests {
     use super::*;
     use crate::registry::Registry;
     use crate::resolve::ResolveOptions;
+
+    fn scada<'a>(columns: &'a [&'a str]) -> nemlake_core::IRow<'a> {
+        nemlake_core::IRow {
+            report_type: "DISPATCH",
+            report_subtype: "UNIT_SCADA",
+            version: 1,
+            columns,
+        }
+    }
+
+    /// The hash is the same for the same shape and plan, and differs when
+    /// the shape, the type mode or the table differs.
+    #[test]
+    fn the_hash_follows_what_decides_the_output() {
+        let reg = Registry::load_embedded(TypeOptions::default());
+        let opts = ResolveOptions::default();
+        let declared = ["SETTLEMENTDATE", "DUID", "SCADAVALUE", "LASTCHANGED"];
+        let a = reg.resolve(&scada(&declared), opts).unwrap();
+        let again = reg.resolve(&scada(&declared), opts).unwrap();
+        assert_eq!(a.plan_hash(), again.plan_hash());
+        let h = a.plan_hash();
+        assert_eq!(h.to_string(), format!("plan:{:032x}", h.0));
+        assert_eq!(format!("{h:?}"), h.to_string());
+        // Another column list of the same table is another plan.
+        let fewer = ["SETTLEMENTDATE", "DUID", "SCADAVALUE"];
+        let b = reg.resolve(&scada(&fewer), opts).unwrap();
+        assert_ne!(a.plan_hash(), b.plan_hash());
+        let extra = ["SETTLEMENTDATE", "DUID", "SCADAVALUE", "NOBODY_KNOWS"];
+        let c = reg.resolve(&scada(&extra), opts).unwrap();
+        assert_ne!(a.plan_hash(), c.plan_hash());
+        assert_ne!(b.plan_hash(), c.plan_hash());
+        // Decimal mode writes other types.
+        let dec = Registry::load_embedded(TypeOptions { decimal: true });
+        let d = dec.resolve(&scada(&declared), opts).unwrap();
+        assert_ne!(a.plan_hash(), d.plan_hash());
+        // A table derived from the file has a plan of its own, and the same
+        // one in another registry that derives it again.
+        let cols = ["A", "B"];
+        let unknown = nemlake_core::IRow {
+            report_type: "PLAN_TEST",
+            report_subtype: "NOBODY",
+            version: 1,
+            columns: &cols,
+        };
+        let e = reg.resolve(&unknown, opts).unwrap();
+        assert_ne!(e.plan_hash(), a.plan_hash());
+        let f = dec.resolve(&unknown, opts).unwrap();
+        assert_eq!(e.plan_hash(), f.plan_hash());
+    }
+
+    /// Declaring a column restales only the shapes that carry it.
+    #[test]
+    fn a_new_column_restales_only_the_shapes_that_carry_it() {
+        use crate::file_model::blob::SchemaSet;
+        use crate::file_model::{ColumnDef, ColumnId, ColumnType, SchemaVersion};
+        let reg = Registry::load_embedded(TypeOptions::default());
+        let mut t = reg
+            .table(reg.table_by_name("DISPATCH_UNIT_SCADA").unwrap())
+            .clone();
+        t.columns.push(ColumnDef {
+            id: ColumnId(t.next_column_id),
+            name: "QUALITY".into(),
+            aliases: vec![],
+            ty: ColumnType::Utf8 {
+                max_len: None,
+                dict: false,
+            },
+            nullable: true,
+            oracle: None,
+            loader: None,
+            added_in: SchemaVersion(1),
+            removed_in: None,
+            description: None,
+            src: vec!["manual".into()],
+            curated: true,
+        });
+        t.next_column_id += 1;
+        let wider = Registry::from_set(
+            SchemaSet {
+                markets: vec![],
+                tables: vec![t],
+                ..Default::default()
+            },
+            TypeOptions::default(),
+        );
+        let opts = ResolveOptions::default();
+        let old = ["SETTLEMENTDATE", "DUID", "SCADAVALUE", "LASTCHANGED"];
+        let carrying = [
+            "SETTLEMENTDATE",
+            "DUID",
+            "SCADAVALUE",
+            "LASTCHANGED",
+            "QUALITY",
+        ];
+        let hash = |r: &Registry, cols: &[&str]| r.resolve(&scada(cols), opts).unwrap().plan_hash();
+        assert_eq!(hash(&reg, &old), hash(&wider, &old), "fresh");
+        assert_ne!(hash(&reg, &carrying), hash(&wider, &carrying), "stale");
+        // The plan of the old shape has the new column all the same,
+        // written null; it is not part of what the shape is read by.
+        let plan = wider.resolve(&scada(&old), opts).unwrap().plan;
+        assert_eq!(plan.lake_width(), 5);
+        assert_eq!(plan.missing, [4]);
+    }
 
     #[test]
     fn a_declared_shape_plans_every_column_and_encodes_stably() {

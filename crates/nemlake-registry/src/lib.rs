@@ -19,13 +19,11 @@ pub mod infer;
 pub mod plan;
 pub mod registry;
 pub mod resolve;
-pub mod rules;
 
 pub use crate::file_model::{
     ColumnDef, ColumnType, LoadMode, Market, RuleColumn, RuleDef, SchemaVersion, TableDef,
 };
 pub use error::ResolveError;
-pub use plan::{Cast, ColumnRoute, ConformancePlan, Origin, PlanField};
+pub use plan::{Cast, ColumnRoute, ConformancePlan, Origin, PLAN_FORMAT, PlanField, PlanHash};
 pub use registry::{LineageEntry, Registry, SchemaSource, TableId, TypeOptions};
 pub use resolve::{Mode, ResolveOptions, Resolved, Status};
-pub use rules::{RULES_FORMAT, RulesHash};

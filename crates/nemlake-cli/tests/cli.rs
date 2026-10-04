@@ -584,7 +584,7 @@ fn reingest_brings_the_lake_up_to_the_rules() {
     let ls = cli.ok(&["--json", "ls"]);
     assert!(ls.contains("\"schema_source\":\"file\""), "{ls}");
     assert!(ls.contains("\"resolution\":\"derived\""), "{ls}");
-    assert!(ls.contains("\"rules\":\"rules:"), "{ls}");
+    assert!(ls.contains("\"plan_hash\":\"plan:"), "{ls}");
     assert!(
         ls.contains("\"source_columns\":[\"SETTLEMENTDATE\",\"UNIT\",\"VALUE\"]"),
         "{ls}"
@@ -756,14 +756,18 @@ fn a_hand_written_rule_brings_in_the_files_of_an_interval() {
         cli.ok(&["schema", "show", "NEMLAKE_TEST_RULED"])
             .contains("VALUE_AS_PUBLISHED")
     );
-    // The table changed, so the 2024 file is behind (it gains a column),
-    // and so is the 2010 file, whose value now has a column to go to.
+    // Only the 2010 file is behind: its value now has a column to go to.
+    // The 2024 file's shape does not carry the new column, so the plan it
+    // is read by has not changed.
     let out = cli.ok(&["reingest", "--dry-run"]);
-    assert!(out.contains("2 listed"), "{out}");
+    assert!(
+        out.contains("1 listed") && out.contains("RULED_201003"),
+        "{out}"
+    );
     let (code, out, err) = cli.code(&["reingest"]);
     assert_eq!(code, 0, "{out}{err}");
     assert!(
-        out.contains("2 ingested") && out.contains("(0 quarantined)"),
+        out.contains("1 ingested") && out.contains("(0 quarantined)"),
         "{out}"
     );
     let ls = cli.ok(&["--json", "ls"]);

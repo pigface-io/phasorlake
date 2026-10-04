@@ -78,14 +78,19 @@ pub struct Transform {
     /// bounded by months, so it is part of what was read by which rules.
     #[serde(default)]
     pub source_period: Option<String>,
-    /// Hash of the rules the shape was read with (`rules:<32 hex digits>`).
-    /// Empty for an ingest recorded before rules were.
-    pub rules: String,
+    /// Hash of the conformance plan the shape was read with
+    /// (`plan:<32 hex digits>`). Empty, or an older kind of hash, for an
+    /// ingest recorded before plans were.
+    pub plan_hash: String,
     /// Where the table's definition came from: `registry`, `user`, `file`.
     pub schema_source: String,
     /// How the shape matched the definition: `exact`, `aliased`, `drift`,
     /// `derived`; with `+rule` when a hand-written rule routed a column.
     pub resolution: String,
+    /// The ids the census gives the shape, comma-separated, when it has
+    /// seen it.
+    #[serde(default)]
+    pub shape_id: Option<String>,
 }
 
 /// What a writer records about the file it writes.

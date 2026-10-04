@@ -20,6 +20,7 @@ postcard.workspace = true
 serde.workspace = true
 thiserror.workspace = true
 toml.workspace = true
+xxhash-rust.workspace = true
 
 # build.rs compiles `src/file_model` itself to validate and pack `schemas/`.
 [build-dependencies]

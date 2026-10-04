@@ -30,6 +30,10 @@ const MIGRATIONS: &[(&str, &str)] = &[
         "0003_source_period",
         include_str!("migrations/0003_source_period.sql"),
     ),
+    (
+        "0004_plan_hash",
+        include_str!("migrations/0004_plan_hash.sql"),
+    ),
 ];
 
 /// A row of `files`.
@@ -445,7 +449,7 @@ impl Manifest {
             return Ok(None);
         }
         let mut stmt = self.sql(self.conn.prepare(
-            "SELECT status, table_name, report_type, report_subtype, source_version, source_columns, rules, schema_source, resolution, source_period
+            "SELECT status, table_name, report_type, report_subtype, source_version, source_columns, plan_hash, schema_source, resolution, source_period, shape_id
              FROM ingests WHERE file_id = ?1 AND status != 'superseded' ORDER BY id",
         ))?;
         let rows: Vec<(String, IngestShape)> = self.sql(
@@ -515,8 +519,8 @@ impl Manifest {
         let t = &s.transform;
         let r = self.conn.execute(
             "INSERT INTO ingests (run_id, file_id, entry, table_name, schema_version, fingerprint, status, started_at,
-                                  report_type, report_subtype, source_version, source_columns, rules, schema_source, resolution, source_period)
-             VALUES (?1, ?2, ?3, ?4, ?5, ?6, 'running', ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15)",
+                                  report_type, report_subtype, source_version, source_columns, plan_hash, schema_source, resolution, source_period, shape_id)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, 'running', ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16)",
             params![
                 s.run_id,
                 s.file_id,
@@ -529,10 +533,11 @@ impl Manifest {
                 t.report_subtype,
                 i64::from(t.source_version),
                 t.source_columns.join(","),
-                t.rules,
+                t.plan_hash,
                 t.schema_source,
                 t.resolution,
-                t.source_period
+                t.source_period,
+                t.shape_id
             ],
         );
         self.sql(r)?;
@@ -632,7 +637,7 @@ impl Manifest {
     ) -> Result<Vec<IngestRecord>, ManifestError> {
         let sql = format!(
             "SELECT i.id, i.run_id, f.url, i.entry, i.table_name, i.schema_version, i.status, i.rows, i.bad_rows, i.started_at, i.finished_at, i.error_code,
-                    i.fingerprint, i.report_type, i.report_subtype, i.source_version, i.source_columns, i.rules, i.schema_source, i.resolution, i.source_period
+                    i.fingerprint, i.report_type, i.report_subtype, i.source_version, i.source_columns, i.plan_hash, i.schema_source, i.resolution, i.source_period, i.shape_id
              FROM ingests i JOIN files f ON i.file_id = f.id
              WHERE (?1 IS NULL OR i.table_name = ?1) AND (?2 = 0 OR i.status = 'failed')
              ORDER BY i.id DESC LIMIT {}",
@@ -732,9 +737,9 @@ pub struct IngestShape {
     pub transform: Transform,
 }
 
-/// Reads the eight transform columns of an `ingests` row, starting at
+/// Reads the nine transform columns of an `ingests` row, starting at
 /// `at`: report type, report subtype, source version, source columns,
-/// rules, schema source, resolution, source period.
+/// plan hash, schema source, resolution, source period, shape id.
 fn transform_from_row(r: &rusqlite::Row<'_>, at: usize) -> rusqlite::Result<Transform> {
     let columns: String = r.get(at + 3)?;
     Ok(Transform {
@@ -746,10 +751,11 @@ fn transform_from_row(r: &rusqlite::Row<'_>, at: usize) -> rusqlite::Result<Tran
         } else {
             columns.split(',').map(str::to_owned).collect()
         },
-        rules: r.get(at + 4)?,
+        plan_hash: r.get(at + 4)?,
         schema_source: r.get(at + 5)?,
         resolution: r.get(at + 6)?,
         source_period: r.get(at + 7)?,
+        shape_id: r.get(at + 8)?,
     })
 }
 
@@ -785,9 +791,10 @@ mod tests {
             source_version: 3,
             source_columns: vec!["X".into(), "Y".into()],
             source_period: Some("2024-01".into()),
-            rules: "rules:1".into(),
+            plan_hash: "plan:1".into(),
             schema_source: "registry".into(),
             resolution: "exact".into(),
+            shape_id: Some("0123456789abcdef".into()),
         }
     }
 
@@ -1204,13 +1211,66 @@ mod tests {
         assert_eq!(kept, 1, "diagnostics still point at their ingest");
         // The source is wholly in the lake, by rules nobody recorded.
         let shapes = m.ingested_shapes("file:///x.csv", "sha").unwrap().unwrap();
-        assert_eq!(shapes[0].transform.rules, "");
+        assert_eq!(shapes[0].transform.plan_hash, "");
         assert!(shapes[0].transform.source_columns.is_empty());
         // Foreign keys are back on: an ingest that goes takes its outputs.
         m.conn
             .execute("DELETE FROM ingests WHERE id = 7", [])
             .unwrap();
         assert!(m.outputs_of_file(1).unwrap().is_empty());
+    }
+
+    /// A manifest at migration 3 records rules hashes; after the move to
+    /// plan hashes they are kept as they were, so they match no plan and
+    /// every such source is read again, and no shape id is known.
+    #[test]
+    fn a_manifest_of_rules_hashes_moves_to_plan_hashes() {
+        let dir = tempfile::tempdir().unwrap();
+        let p = dir.path().join("manifest.sqlite");
+        {
+            let conn = Connection::open(&p).unwrap();
+            let mut batch = String::from("PRAGMA foreign_keys = OFF; BEGIN;");
+            for (_, sql) in &MIGRATIONS[..3] {
+                batch.push_str(sql);
+            }
+            batch.push_str(
+                "INSERT INTO meta(key, value) VALUES ('migration', '3');
+                 INSERT INTO runs (id, argv, started_at, version) VALUES (1, 'ingest x', 't', '0');
+                 INSERT INTO files (id, source, url, cache_path, sha256, size, fetched_at) VALUES (1, 'local', 'file:///x.csv', '/x.csv', 'sha', 1, 't');
+                 INSERT INTO ingests (id, run_id, file_id, entry, table_name, schema_version, fingerprint, status, rows, started_at,
+                                      report_type, report_subtype, source_version, source_columns, rules, schema_source, resolution, source_period)
+                     VALUES (7, 1, 1, 'x.csv', 'T', 1, 'xxh3:9', 'ok', 5, 't', 'A', 'B', 1, 'X,Y', 'rules:abc', 'registry', 'exact', '2024-01');
+                 COMMIT;",
+            );
+            conn.execute_batch(&batch).unwrap();
+        }
+        let mut m = Manifest::open(&p).unwrap();
+        assert_eq!(m.version().unwrap(), MIGRATIONS.len() as u32);
+        let shapes = m.ingested_shapes("file:///x.csv", "sha").unwrap().unwrap();
+        let t = &shapes[0].transform;
+        assert_eq!(t.plan_hash, "rules:abc");
+        assert_eq!(t.shape_id, None);
+        assert_eq!(t.source_columns, ["X", "Y"]);
+        assert_eq!(t.source_period.as_deref(), Some("2024-01"));
+        // A new ingest records both.
+        let iid = m
+            .begin_ingest(&IngestStart {
+                run_id: 1,
+                file_id: 1,
+                entry: "y.csv".into(),
+                table: "T".into(),
+                schema_version: 1,
+                fingerprint: "xxh3:9".into(),
+                transform: transform(),
+            })
+            .unwrap();
+        let rec = m
+            .list_ingests(None, false, 10)
+            .unwrap()
+            .into_iter()
+            .find(|r| r.id == iid)
+            .unwrap();
+        assert_eq!(rec.transform, transform());
     }
 
     /// A migration that fails leaves the manifest as it was and says which

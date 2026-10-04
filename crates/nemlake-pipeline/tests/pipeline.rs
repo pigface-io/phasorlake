@@ -361,7 +361,7 @@ async fn a_source_is_read_again_when_its_rules_change() {
     assert_eq!(ingests.len(), 1);
     let first = ingests[0].transform.clone();
     assert!(
-        first.rules.starts_with("rules:") && first.rules.len() == 38,
+        first.plan_hash.starts_with("plan:") && first.plan_hash.len() == 37,
         "{first:?}"
     );
     assert_eq!(first.schema_source, "registry");
@@ -374,7 +374,7 @@ async fn a_source_is_read_again_when_its_rules_change() {
     assert_eq!(first.source_columns[0], "SETTLEMENTDATE");
     let files = walk(&e.home.lake());
     assert_eq!(files.len(), 1);
-    assert_eq!(footer(&files[0], "nemlake.rules"), first.rules);
+    assert_eq!(footer(&files[0], "nemlake.plan"), first.plan_hash);
     assert_eq!(footer(&files[0], "nemlake.schema_source"), "registry");
     assert_eq!(footer(&files[0], "nemlake.resolution"), "exact");
     assert_eq!(footer(&files[0], "nemlake.report_type"), "DISPATCH");
@@ -398,8 +398,8 @@ async fn a_source_is_read_again_when_its_rules_change() {
     assert_eq!(rep.summary.listed, 1, "a dry run lists what is behind");
     assert_eq!(rep.listed[0].url.scheme(), "file");
     assert_eq!(
-        footer(&files[0], "nemlake.rules"),
-        first.rules,
+        footer(&files[0], "nemlake.plan"),
+        first.plan_hash,
         "and writes nothing"
     );
     let rep = go(&decimals, local(), false).await;
@@ -413,10 +413,10 @@ async fn a_source_is_read_again_when_its_rules_change() {
     let ingests = e.deps.manifest.list_ingests(None, false, 10).await.unwrap();
     assert_eq!(ingests.len(), 1);
     let second = ingests[0].transform.clone();
-    assert_ne!(second.rules, first.rules);
+    assert_ne!(second.plan_hash, first.plan_hash);
     assert_eq!(second.source_columns, first.source_columns);
     assert_eq!(walk(&e.home.lake()), files);
-    assert_eq!(footer(&files[0], "nemlake.rules"), second.rules);
+    assert_eq!(footer(&files[0], "nemlake.plan"), second.plan_hash);
     let rep = go(&decimals, Input::Stale, false).await;
     assert_eq!(rep.summary.listed, 0);
 
@@ -428,7 +428,7 @@ async fn a_source_is_read_again_when_its_rules_change() {
     assert!(rep.report.by_code.contains_key("manifest.rules_changed"));
     let ingests = e.deps.manifest.list_ingests(None, false, 10).await.unwrap();
     assert_eq!(ingests[0].transform, first);
-    assert_eq!(footer(&files[0], "nemlake.rules"), first.rules);
+    assert_eq!(footer(&files[0], "nemlake.plan"), first.plan_hash);
 
     // A source that is gone cannot be read again, and the run says so.
     std::fs::remove_file(&csv).unwrap();
@@ -588,14 +588,14 @@ column = "VALUE_TEXT"
     assert_eq!(text.value(0), "1.5 MW");
     assert_eq!(footer(&path, "nemlake.resolution"), "exact+rule");
     assert_eq!(footer(&path, "nemlake.source_period"), "2010-03");
-    let old_rules = footer(&path, "nemlake.rules");
+    let old_rules = footer(&path, "nemlake.plan");
     // 2024: outside it. The value is a number.
     let (path, number, text) = read("year=2024");
     assert!((number.value(0) - 2.5).abs() < 1e-12);
     assert!(text.is_null(0));
     assert_eq!(footer(&path, "nemlake.resolution"), "exact");
     assert_eq!(footer(&path, "nemlake.source_period"), "2024-03");
-    assert_ne!(footer(&path, "nemlake.rules"), old_rules);
+    assert_ne!(footer(&path, "nemlake.plan"), old_rules);
 
     // The manifest has the same, and with it both sources are current.
     let ingests = deps.manifest.list_ingests(None, false, 10).await.unwrap();
@@ -1018,15 +1018,15 @@ fn a_recorded_source_becomes_a_file_to_read() {
         table: "T".into(),
         transform: Default::default(),
     };
-    assert!(!nemlake_pipeline::rules_current(
+    assert!(!nemlake_pipeline::plans_current(
         &reg,
         std::slice::from_ref(&old)
     ));
-    assert!(nemlake_pipeline::rules_current(&reg, &[]));
+    assert!(nemlake_pipeline::plans_current(&reg, &[]));
     // Nor is one whose shape no longer resolves.
     let mut broken = old;
-    broken.transform.rules = "rules:0".into();
-    assert!(!nemlake_pipeline::rules_current(&reg, &[broken]));
+    broken.transform.plan_hash = "plan:0".into();
+    assert!(!nemlake_pipeline::plans_current(&reg, &[broken]));
 }
 
 #[tokio::test]

@@ -116,14 +116,18 @@ All three are written into the file's footer and into the manifest:
 | `nemlake.source_url`, `nemlake.source_sha256`, `nemlake.entry` | the source: where it came from, its hash, the CSV inside it |
 | `nemlake.report_type`, `nemlake.report_subtype`, `nemlake.source_version`, `nemlake.source_columns`, `nemlake.fingerprint` | the shape: the block's I row as AEMO published it |
 | `nemlake.source_period` | the month of the source, which rules for an interval are chosen by |
-| `nemlake.rules` | a hash of the rules: the lake columns and their types, which field feeds which column and how it is parsed, the partitioning, the directory |
+| `nemlake.plan` | the hash of the conformance plan the shape was read by: which file column feeds which lake column, that column's id, type and nullability, how the value is parsed, the key and time columns, the load mode, the directory |
+| `nemlake.shape_id` | the ids the census gives the shape (`nemlake schema census`), when it has seen it |
 | `nemlake.schema_source` | where the table's definition came from: `registry` (built in), `user` (your own table file), `file` (nobody declared it, so the file's own header) |
 | `nemlake.resolution`, `nemlake.table`, `nemlake.schema_version` | how the shape matched the definition: `exact`, `aliased`, `drift` or `derived`, and as which table and version |
 
-The rules hash changes when the output would: a column gets another type,
-a table gets a schema where it had none, `--decimal` is turned on. It does
-not change when a description is edited. A source whose recorded hash is
-no longer what the current rules give is behind: the next `fetch` or
+The plan hash changes when the output of that shape would: a column it
+carries gets another type, a table gets a schema where it had none,
+`--decimal` is turned on, a rule routes one of its columns. It does not
+change when a description is edited, nor when the table gains a column the
+shape does not carry: its files simply lack that column, which reads as
+null. A source whose recorded hash is no longer what the current rules
+give is behind: the next `fetch` or
 `ingest` that covers it reads it again instead of skipping it, and
 `nemlake reingest` does that for every source in the manifest, straight
 from the archive. The Parquet files the earlier read wrote are replaced,
@@ -227,7 +231,7 @@ and the column it would feed, both are kept and the run reports
 
 Which rules read a file is on record: the `nemlake.resolution` of a file a
 rule touched ends in `+rule`, `nemlake.source_period` is the month the
-rules were chosen by, and the rules hash differs from that of a file read
+rules were chosen by, and the plan hash differs from that of a file read
 without them. Edit a rule and `nemlake reingest` reads again exactly the
 sources it affects.
 

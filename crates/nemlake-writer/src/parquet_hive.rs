@@ -122,7 +122,7 @@ impl ParquetHive {
                     meta.source_sha256.clone(),
                 ),
                 KeyValue::new("nemlake.entry".to_owned(), meta.entry.clone()),
-                // The transform: what was read, and by which rules.
+                // The transform: what was read, and by which plan.
                 KeyValue::new(
                     "nemlake.report_type".to_owned(),
                     meta.transform.report_type.clone(),
@@ -143,7 +143,7 @@ impl ParquetHive {
                     "nemlake.source_period".to_owned(),
                     meta.transform.source_period.clone().unwrap_or_default(),
                 ),
-                KeyValue::new("nemlake.rules".to_owned(), meta.transform.rules.clone()),
+                KeyValue::new("nemlake.plan".to_owned(), meta.transform.plan_hash.clone()),
                 KeyValue::new(
                     "nemlake.schema_source".to_owned(),
                     meta.transform.schema_source.clone(),
@@ -151,6 +151,10 @@ impl ParquetHive {
                 KeyValue::new(
                     "nemlake.resolution".to_owned(),
                     meta.transform.resolution.clone(),
+                ),
+                KeyValue::new(
+                    "nemlake.shape_id".to_owned(),
+                    meta.transform.shape_id.clone().unwrap_or_default(),
                 ),
             ]));
         // Measures never benefit from dictionaries; ids do.
@@ -420,7 +424,8 @@ mod tests {
                 source_version: 1,
                 source_columns: vec!["SETTLEMENTDATE".into(), "DUID".into()],
                 source_period: Some("2024-01".into()),
-                rules: "rules:00000000000000000000000000000abc".into(),
+                plan_hash: "plan:00000000000000000000000000000abc".into(),
+                shape_id: Some("0123456789abcdef".into()),
                 schema_source: "registry".into(),
                 resolution: "exact".into(),
             },
@@ -514,9 +519,10 @@ mod tests {
         assert_eq!(value("nemlake.source_columns"), "SETTLEMENTDATE,DUID");
         assert_eq!(value("nemlake.source_period"), "2024-01");
         assert_eq!(
-            value("nemlake.rules"),
-            "rules:00000000000000000000000000000abc"
+            value("nemlake.plan"),
+            "plan:00000000000000000000000000000abc"
         );
+        assert_eq!(value("nemlake.shape_id"), "0123456789abcdef");
         assert_eq!(value("nemlake.schema_source"), "registry");
         assert_eq!(value("nemlake.resolution"), "exact");
         assert!(f.sorted);

@@ -9,8 +9,8 @@ use nemlake_core::{Category, Diagnostic, Fingerprint, IRow, YearMonth};
 use crate::arrow::decimal_fallback;
 use crate::error::ResolveError;
 use crate::plan::ConformancePlan;
+use crate::plan::PlanHash;
 use crate::registry::{Registry, SchemaSource, TableId};
-use crate::rules::RulesHash;
 
 /// Strictness of resolution.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
@@ -88,9 +88,9 @@ pub struct Resolved {
 }
 
 impl Resolved {
-    /// The identity of the rules this shape is read with.
-    pub fn rules(&self) -> RulesHash {
-        self.plan.rules
+    /// The identity of the plan this shape is read with.
+    pub fn plan_hash(&self) -> PlanHash {
+        self.plan.hash
     }
 
     /// How the shape matched, in one word, with `+rule` when a
@@ -1322,6 +1322,16 @@ mod tests {
             }],
         }];
         assert_eq!(crate::file_model::validate::validate_structure(&t), vec![]);
+        let mut unruled = t.clone();
+        unruled.rules.clear();
+        let unruled = Registry::from_set(
+            SchemaSet {
+                markets: vec![],
+                tables: vec![unruled],
+                ..Default::default()
+            },
+            TypeOptions::default(),
+        );
         let r = Registry::from_set(
             SchemaSet {
                 markets: vec![],
@@ -1359,6 +1369,16 @@ mod tests {
         assert_eq!(later.label(), "exact");
         let other = r.resolve_in(&row(&cols4), opts, month("2010-05")).unwrap();
         assert_eq!(other.label(), "exact");
+        // The rule makes only its shape's files stale.
+        let before = |cols| {
+            unruled
+                .resolve_in(&row(cols), opts, month("2010-05"))
+                .unwrap()
+                .plan_hash()
+        };
+        assert_ne!(res.plan_hash(), before(&cols3));
+        assert_eq!(other.plan_hash(), before(&cols4));
+        assert_eq!(later.plan_hash(), before(&cols3));
     }
 
     #[test]
@@ -1406,7 +1426,7 @@ mod tests {
             assert!(!res.plan.missing.contains(&text));
             assert_eq!(res.plan.routes[0], plain.plan.routes[0]);
             // Other rules, other hash: the lake knows which made a file.
-            assert_ne!(res.rules(), plain.rules());
+            assert_ne!(res.plan_hash(), plain.plan_hash());
             assert!(res.warnings.is_empty());
             // Strict mode takes the same rule: the shape is declared.
             let strict = r

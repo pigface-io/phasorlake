@@ -286,7 +286,7 @@ fn plan(
                 "resolution": res.label(),
                 "version": res.version.0,
                 "source": res.source.label(),
-                "rules": res.rules().to_string(),
+                "plan_hash": res.plan_hash().to_string(),
                 "plan": &*res.plan,
             }));
             Ok(0)

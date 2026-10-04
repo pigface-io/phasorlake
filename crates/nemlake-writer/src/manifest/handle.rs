@@ -298,7 +298,7 @@ mod tests {
                 schema_version: 1,
                 fingerprint: "f".into(),
                 transform: crate::writer::Transform {
-                    rules: "rules:1".into(),
+                    plan_hash: "plan:1".into(),
                     ..Default::default()
                 },
             })
@@ -332,7 +332,7 @@ mod tests {
         let shapes = h.ingested_shapes("u", "sha").await.unwrap().unwrap();
         assert_eq!(shapes.len(), 1);
         assert_eq!(shapes[0].table, "T");
-        assert_eq!(shapes[0].transform.rules, "rules:1");
+        assert_eq!(shapes[0].transform.plan_hash, "plan:1");
         h.record_diagnostic(
             run,
             Some(iid),

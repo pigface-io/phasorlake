@@ -87,10 +87,10 @@ pub fn recorded_remote(rec: &FileRecord) -> Option<RemoteFile> {
 /// Strictness is not part of the question: a shape the registry would
 /// refuse in strict mode is current when the permissive rules that wrote it
 /// have not changed.
-pub fn rules_current(registry: &Registry, shapes: &[IngestShape]) -> bool {
+pub fn plans_current(registry: &Registry, shapes: &[IngestShape]) -> bool {
     shapes.iter().all(|s| {
         let t = &s.transform;
-        if t.rules.is_empty() {
+        if t.plan_hash.is_empty() {
             return false;
         }
         let columns: Vec<&str> = t.source_columns.iter().map(String::as_str).collect();
@@ -110,7 +110,7 @@ pub fn rules_current(registry: &Registry, shapes: &[IngestShape]) -> bool {
                 },
                 period,
             )
-            .is_ok_and(|r| r.rules().to_string() == t.rules)
+            .is_ok_and(|r| r.plan_hash().to_string() == t.plan_hash)
     })
 }
 
@@ -234,7 +234,7 @@ pub async fn run(
                     .await
                     .ok()
                     .flatten();
-                if shapes.is_some_and(|s| rules_current(&deps.registry, &s)) {
+                if shapes.is_some_and(|s| plans_current(&deps.registry, &s)) {
                     continue;
                 }
                 if let Some(remote) = recorded_remote(&rec) {
@@ -357,7 +357,7 @@ pub async fn run(
                             .ingested_shapes(local.remote.url.as_str(), &local.sha256)
                             .await
                         {
-                            Ok(Some(shapes)) if rules_current(&registry, &shapes) => {
+                            Ok(Some(shapes)) if plans_current(&registry, &shapes) => {
                                 return Step::Skipped(Box::new(local));
                             }
                             Ok(Some(_)) => rules_changed = true,

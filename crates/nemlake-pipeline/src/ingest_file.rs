@@ -330,9 +330,10 @@ impl BatchSink for LakeSink<'_> {
                         source_version: irow.version,
                         source_columns: irow.columns.iter().map(|c| (*c).to_owned()).collect(),
                         source_period: self.period.map(|p| p.to_string()),
-                        rules: resolved.rules().to_string(),
+                        plan_hash: resolved.plan_hash().to_string(),
                         schema_source: resolved.source.label().to_owned(),
                         resolution: resolved.label(),
+                        shape_id: shape_id(&self.registry.shape_ids(irow, self.period)),
                     },
                     rows: 0,
                     bad_rows: 0,
@@ -511,6 +512,17 @@ impl BatchSink for LakeSink<'_> {
             Flow::Continue
         }
     }
+}
+
+/// The census ids of a shape as recorded with an ingest: comma-separated,
+/// `None` when the census has not seen it.
+fn shape_id(ids: &[nemlake_core::ShapeId]) -> Option<String> {
+    (!ids.is_empty()).then(|| {
+        ids.iter()
+            .map(ToString::to_string)
+            .collect::<Vec<_>>()
+            .join(",")
+    })
 }
 
 /// The stem that names the Parquet files written from one entry of a
