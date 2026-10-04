@@ -3,6 +3,7 @@
 //! Everything here is Rust so the repository needs no second toolchain.
 
 mod bench;
+mod census_check;
 mod covergate;
 mod errors_doc;
 mod llm_check;
@@ -51,6 +52,9 @@ enum Cmd {
     },
     /// Check llm/index.md: size, and every path and recipe it names exists.
     LlmCheck,
+    /// Check every recorded census month against the registry: each shape
+    /// declared or read by a rule, each control-file type within the anchor's.
+    CensusCheck,
     /// Regenerate or check docs/errors.md from the diagnostic codes in the source.
     ErrorsDoc {
         /// Write the file.
@@ -70,6 +74,7 @@ fn main() -> ExitCode {
         Cmd::Ratchet { base } => ratchet::run(&base),
         Cmd::SchemaCompat { base } => schema_compat::run(&base),
         Cmd::LlmCheck => llm_check::run(),
+        Cmd::CensusCheck => census_check::run(),
         Cmd::ErrorsDoc { write, check } => errors_doc::run(write, check),
     };
     match result {

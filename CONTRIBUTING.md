@@ -11,7 +11,7 @@ of both stages on every file, which is exactly what CI runs.
 ```
 crates/nemlake-core          L0  vocabulary: identifiers, time, numbers, diagnostics. No I/O.
 crates/nemlake-registry      L1  the table model (file_model) and the registry: build.rs validates schemas/, resolve() on the hot path
-crates/nemlake-census            tooling that regenerates schemas/ from testdata/
+crates/nemlake-census            the census of shapes, and tooling that regenerates schemas/ from testdata/
 crates/nemlake-decode        L2  the MMS row format: scanner, field splitter, zips; no registry
 crates/nemlake-conform       L2  resolves blocks through the registry, casts to typed Arrow batches
 crates/nemlake-acquire       L3  sources, HTTP transport, cache (async)
@@ -34,6 +34,7 @@ worker; the async and sync worlds meet once per file.
 | unit and integration | every crate, `cargo test` | `just test`, pre-commit |
 | coverage | `cargo llvm-cov` over the workspace | `just cover` against `coverage.json`, pre-push |
 | schema regeneration | `nemlake-census regen --check` | `just schema-check`, pre-push |
+| census | every recorded month's shapes declared or ruled, types within the anchor's | `just census-check`, pre-push |
 | schema compatibility | table files at `origin/main` against the working tree | `just schema-compat`, pre-push |
 | benchmarks | criterion plus `nemlake-bench` | `just bench-fast` pre-push, `just bench` in CI, against `bench/budgets.json` |
 | network | `crates/nemlake-acquire/tests/net.rs` | `just net-test`, weekly in CI |

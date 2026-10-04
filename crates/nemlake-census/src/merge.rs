@@ -30,6 +30,7 @@ use nemlake_registry::file_model::{
 use crate::datamodel::{DmTable, parse_oracle_type};
 use crate::sample::SampledBlock;
 use nemlake_registry::file_model::ctl::{CtlFile, LoaderType};
+use nemlake_registry::file_model::shapes::ShapeEntry;
 
 /// What the merger is given for one table.
 #[derive(Debug, Default)]
@@ -52,6 +53,10 @@ pub struct Inputs<'a> {
     pub archive_files: Vec<String>,
     /// CTL file name, for provenance.
     pub ctl_path: Option<String>,
+    /// The census's shapes of this table: where one is a version's own
+    /// column list or a variant of it, the months it was seen in bound the
+    /// version's or variant's lineage, beside the sampled months.
+    pub census: Vec<&'a ShapeEntry>,
 }
 
 /// Why a table could not be merged.
@@ -382,6 +387,19 @@ pub fn merge(inputs: &Inputs<'_>) -> Result<TableDef, MergeError> {
             }
         }
         versions.sort_by_key(|v| v.n);
+    }
+    for e in &inputs.census {
+        let fp = e.fingerprint();
+        let Some(v) = versions.iter_mut().find(|v| v.n.0 == e.version) else {
+            continue;
+        };
+        if v.fingerprint == fp {
+            v.first_seen = min_month(v.first_seen, Some(e.first_seen));
+            v.last_seen = max_month(v.last_seen, Some(e.last_seen));
+        } else if let Some(x) = v.variants.iter_mut().find(|x| x.fingerprint == fp) {
+            x.first_seen = min_month(x.first_seen, Some(e.first_seen));
+            x.last_seen = max_month(x.last_seen, Some(e.last_seen));
+        }
     }
     let mut ctl_cols: BTreeMap<String, &LoaderType> = BTreeMap::new();
     for ctl in &inputs.ctls {
@@ -765,6 +783,7 @@ mod tests {
             snapshot: false,
             archive_files: vec!["DISPATCH_UNIT_SCADA".into()],
             ctl_path: Some("MMSDM_2024_01/CTL/PUBLIC_DVD_DISPATCH_UNIT_SCADA_202401.ctl".into()),
+            census: vec![],
         }
     }
 
@@ -924,6 +943,7 @@ mod tests {
             snapshot: true,
             archive_files: vec!["REGION".into()],
             ctl_path: None,
+            census: vec![],
         })
         .unwrap();
         assert_eq!(validate_table(&t), vec![]);
@@ -1304,6 +1324,36 @@ mod tests {
         // And again over its own output.
         inputs.existing = Some(&t);
         assert_eq!(merge(&inputs).unwrap(), t);
+    }
+
+    /// The census's months bound a version's lineage beside the sampled
+    /// ones; a shape that is no version's or variant's list changes nothing.
+    #[test]
+    fn census_months_bound_the_lineage() {
+        use nemlake_core::{ShapeId, TypeClass};
+        let (ctl, dm, blocks) = load_scada();
+        let plain = merge(&scada_inputs(&ctl, &dm, &blocks)).unwrap();
+        let v = &plain.versions[0];
+        let entry = |columns: &[String], first: &str, last: &str| ShapeEntry {
+            id: ShapeId(1),
+            report_type: "DISPATCH".into(),
+            report_subtype: "UNIT_SCADA".into(),
+            version: v.n.0,
+            first_seen: first.parse().unwrap(),
+            last_seen: last.parse().unwrap(),
+            columns: columns
+                .iter()
+                .map(|c| (c.clone(), TypeClass::Unknown))
+                .collect(),
+        };
+        let own = entry(&v.columns, "2009-07", "2026-08");
+        let other = entry(&["NOT".to_owned(), "THIS".to_owned()], "2001-01", "2001-01");
+        let mut inputs = scada_inputs(&ctl, &dm, &blocks);
+        inputs.census = vec![&own, &other];
+        let t = merge(&inputs).unwrap();
+        assert_eq!(t.versions[0].first_seen, Some("2009-07".parse().unwrap()));
+        assert_eq!(t.versions[0].last_seen, Some("2026-08".parse().unwrap()));
+        assert_eq!(t.versions[0].variants, plain.versions[0].variants);
     }
 
     #[test]

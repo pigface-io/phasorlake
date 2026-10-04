@@ -131,6 +131,15 @@ files = '^(bench/budgets\.json|coverage\.json)$'
 pass_filenames = false
 
 [[repos.hooks]]
+id = "census-check"
+name = "schemas: every recorded census month resolves against the registry"
+language = "system"
+entry = "just census-check"
+stages = ["pre-push"]
+files = '^(schemas/|crates/nemlake-(registry|census|core)/)'
+pass_filenames = false
+
+[[repos.hooks]]
 id = "schema-check"
 name = "derived: schemas/ regenerates byte-identically from the fixtures"
 language = "system"

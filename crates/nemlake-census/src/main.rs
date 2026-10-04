@@ -28,6 +28,7 @@ use nemlake_registry::file_model::TableDef;
 use nemlake_registry::file_model::blob::SchemaSet;
 use nemlake_registry::file_model::ctl::{self, CtlFile};
 use nemlake_registry::file_model::file::{read_table, write_table};
+use nemlake_registry::file_model::shapes::{ShapeEntry, read_shapes};
 
 #[derive(Parser)]
 #[command(
@@ -633,6 +634,19 @@ fn regen(
 
     let mut tables: BTreeSet<String> = ctls.keys().cloned().collect();
     tables.extend(samples_by_table.keys().cloned());
+    // The census's shapes, when it has recorded any: the months they were
+    // seen in bound each version's lineage beside the sampled months.
+    let mut census: BTreeMap<String, Vec<ShapeEntry>> = BTreeMap::new();
+    if let Ok(rd) = std::fs::read_dir(schemas.join("nem").join("shapes")) {
+        for p in rd.filter_map(Result::ok).map(|e| e.path()) {
+            if let Some(table) = p.file_stem().and_then(|s| s.to_str())
+                && p.extension().is_some_and(|e| e == "toml")
+            {
+                let shapes = read_shapes(&p).map_err(|e| Box::new(e.diagnostic()))?;
+                census.insert(table.to_owned(), shapes);
+            }
+        }
+    }
     let out_dir = schemas.join("nem").join("mms");
     std::fs::create_dir_all(&out_dir).map_err(|e| {
         Box::new(
@@ -686,6 +700,10 @@ fn regen(
             snapshot: snapshots.contains(&name),
             archive_files,
             ctl_path: ctl.and_then(|list| list.first()).map(|(_, _, p)| p.clone()),
+            census: census
+                .get(&name)
+                .map(|s| s.iter().collect())
+                .unwrap_or_default(),
         };
         let table = match merge(&inputs) {
             Ok(t) => t,

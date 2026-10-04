@@ -16,6 +16,8 @@ name = "xtask"
 path = "src/main.rs"
 
 [dependencies]
+nemlake-census.workspace = true
+nemlake-core.workspace = true
 nemlake-registry.workspace = true
 anyhow.workspace = true
 clap.workspace = true

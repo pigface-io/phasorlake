@@ -3197,6 +3197,8 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "clap",
+ "nemlake-census",
+ "nemlake-core",
  "nemlake-registry",
  "serde",
  "serde_json",
