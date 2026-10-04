@@ -1,8 +1,12 @@
 //! The sink that turns blocks into typed `RecordBatch`es.
 
+use std::sync::Arc;
+
 use arrow_array::RecordBatch;
 use nemlake_core::{Category, Diagnose as _, Diagnostic, Fingerprint, IRow};
-use nemlake_registry::{Registry, ResolveOptions, Resolved, SchemaVersion, TableId};
+use nemlake_registry::{
+    Cast, ConformancePlan, Registry, ResolveOptions, Resolved, SchemaVersion, TableId,
+};
 
 use nemlake_decode::PREFIX_FIELDS;
 use nemlake_decode::error::{RowError, RowFailure, SinkError};
@@ -16,8 +20,10 @@ use crate::builders::{ColumnBuilder, Parsed, parse_field};
 pub struct BlockBatch {
     /// The table.
     pub table: TableId,
-    /// The version the projection was based on.
+    /// The version the plan was based on.
     pub version: SchemaVersion,
+    /// The plan the rows were conformed with.
+    pub plan: Arc<ConformancePlan>,
     /// The observed fingerprint of the I row.
     pub fingerprint: Fingerprint,
     /// The rows, in the table's unified lake schema.
@@ -36,8 +42,22 @@ pub trait BatchSink {
     fn bad_row(&mut self, raw: &[u8], pos: Pos, err: &RowError) -> Flow;
 }
 
+/// One route of the plan as the row loop reads it: the file field, the
+/// output column, the cast. Kept small so a row's routes share cache lines.
+#[derive(Clone, Copy)]
+struct Step {
+    /// Position of the field in the D row.
+    field: u16,
+    /// Output column.
+    target: u16,
+    cast: Cast,
+    nullable: bool,
+}
+
 struct Block {
     resolved: Resolved,
+    /// The plan's routes that feed a column, in file order.
+    steps: Vec<Step>,
     fingerprint: Fingerprint,
     builders: Vec<ColumnBuilder>,
     report_type: String,
@@ -117,7 +137,7 @@ impl<'r, B: BatchSink> ArrowSink<'r, B> {
         if block.rows == 0 {
             return Ok(());
         }
-        let schema = block.resolved.projection.arrow.clone();
+        let schema = block.resolved.plan.arrow.clone();
         let arrays: Vec<_> = block
             .builders
             .iter_mut()
@@ -154,6 +174,7 @@ impl<'r, B: BatchSink> ArrowSink<'r, B> {
         let out = BlockBatch {
             table: block.resolved.table,
             version: block.resolved.version,
+            plan: block.resolved.plan.clone(),
             fingerprint: block.fingerprint,
             batch,
         };
@@ -177,7 +198,7 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
             self.out.warning(w.clone());
         }
         self.out.block_started(irow, &resolved, pos);
-        let schema = &resolved.projection.arrow;
+        let schema = &resolved.plan.arrow;
         let builders = schema
             .fields()
             .iter()
@@ -185,7 +206,21 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
             .collect();
         self.parsed.clear();
         self.parsed.resize(schema.fields().len(), Parsed::Null);
+        let steps = resolved
+            .plan
+            .routes
+            .iter()
+            .filter_map(|r| {
+                Some(Step {
+                    field: (PREFIX_FIELDS + usize::from(r.source_index)) as u16,
+                    target: r.target?,
+                    cast: r.cast,
+                    nullable: r.nullable,
+                })
+            })
+            .collect();
         self.block = Some(Block {
+            steps,
             fingerprint: irow.fingerprint(),
             builders,
             report_type: irow.report_type.to_owned(),
@@ -222,8 +257,7 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
             }
             .into());
         }
-        let casts = &block.resolved.projection.casts;
-        let declared = casts.len();
+        let declared = block.resolved.plan.routes.len();
         let observed = row.len_trimmed().saturating_sub(PREFIX_FIELDS);
         if observed > declared {
             return Err(RowError::FieldCount {
@@ -234,17 +268,11 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
         }
         // Pass 1: parse every field; nothing is appended until all succeed.
         self.parsed.fill(Parsed::Null);
-        for (i, c) in casts.iter().enumerate() {
-            let Some(target) = c.target else { continue };
-            let bytes = row.get(PREFIX_FIELDS + i).unwrap_or(b"");
-            let column = block.resolved.projection.column_name(target as usize);
-            let parsed = parse_field(
-                c.cast,
-                c.nullable,
-                (PREFIX_FIELDS + i) as u16,
-                column,
-                bytes,
-            )?;
+        for c in &block.steps {
+            let target = c.target;
+            let bytes = row.get(usize::from(c.field)).unwrap_or(b"");
+            let column = block.resolved.plan.arrow.field(target as usize).name();
+            let parsed = parse_field(c.cast, c.nullable, c.field, column, bytes)?;
             if matches!(parsed, Parsed::Clamped(_)) {
                 let seen = &mut block.clamped[target as usize];
                 seen.0 += 1;
@@ -254,10 +282,10 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
             }
             self.parsed[target as usize] = parsed;
         }
-        // A column the file does not carry is null; the projection's schema
+        // A column the file does not carry is null; the plan's schema
         // says whether files of this shape may leave it so.
-        for &m in &block.resolved.projection.missing {
-            let field = block.resolved.projection.arrow.field(m as usize);
+        for &m in &block.resolved.plan.missing {
+            let field = block.resolved.plan.arrow.field(m as usize);
             if !field.is_nullable() {
                 return Err(RowError::NullNotAllowed {
                     column: field.name().clone(),
@@ -365,8 +393,6 @@ pub fn collect<R: std::io::Read>(
 
 #[cfg(test)]
 mod tests {
-    use std::sync::Arc;
-
     use arrow_array::{Array, Float64Array, StringArray, TimestampNanosecondArray};
     use nemlake_registry::{Mode, TypeOptions};
 

@@ -18,7 +18,7 @@ use crate::file_model::TableDef;
 use arrow_schema::Schema;
 use nemlake_core::Fingerprint;
 
-use crate::resolve::{Cast, ColumnCast};
+use crate::plan::{Cast, ColumnRoute};
 
 /// The generation of the conversions the code itself performs: how a
 /// timestamp, a number or a date is read, how a partition is chosen. Raise
@@ -69,12 +69,12 @@ pub(crate) fn hash(
     t: &TableDef,
     dir: &str,
     arrow: &Schema,
-    casts: &[ColumnCast],
+    routes: &[ColumnRoute],
     missing: &[u16],
     primary_key: &[u16],
     time_column: Option<u16>,
 ) -> RulesHash {
-    let mut tokens: Vec<String> = Vec::with_capacity(8 + 2 * arrow.fields().len() + casts.len());
+    let mut tokens: Vec<String> = Vec::with_capacity(8 + 2 * arrow.fields().len() + routes.len());
     tokens.push(format!("nemlake rules {RULES_FORMAT}"));
     tokens.push(format!("table {}", t.name));
     tokens.push(format!("market {}", t.market));
@@ -101,7 +101,7 @@ pub(crate) fn hash(
             tokens.push(format!("field meta {k}={v}"));
         }
     }
-    for c in casts {
+    for c in routes {
         tokens.push(format!(
             "cast {} {} {}",
             c.target

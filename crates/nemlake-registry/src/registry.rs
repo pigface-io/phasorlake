@@ -1,4 +1,4 @@
-//! The loaded registry: tables, indexes and precomputed projections.
+//! The loaded registry: tables, indexes and precomputed conformance plans.
 
 use std::collections::HashMap;
 use std::path::Path;
@@ -12,7 +12,7 @@ use hashbrown::Equivalent;
 use nemlake_core::Fingerprint;
 
 use crate::arrow::lake_schema;
-use crate::resolve::Projection;
+use crate::plan::ConformancePlan;
 
 /// A dense handle to a table within one registry.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
@@ -96,13 +96,13 @@ pub struct Registry {
     by_pair: hashbrown::HashMap<PairKey, TableId>,
     by_dataset: HashMap<String, TableId>,
     by_fingerprint: HashMap<Fingerprint, (TableId, SchemaVersion)>,
-    /// The lake schema and the projections of each table, built the first
+    /// The lake schema and the plans of each table, built the first
     /// time the table is used. A run reads a handful of tables; building
     /// them for every table the registry knows would cost each run the
     /// memory and the time of all of them.
     shapes: Vec<OnceLock<TableShapes>>,
-    /// Projections built at run time for drifted or aliased shapes.
-    dynamic: Mutex<HashMap<(TableId, Fingerprint), Arc<Projection>>>,
+    /// ConformancePlans built at run time for drifted or aliased shapes.
+    dynamic: Mutex<HashMap<(TableId, Fingerprint), Arc<ConformancePlan>>>,
     /// Tables derived at run time from the header of a file whose report
     /// pair no table claims. Slots are written once and never moved, so a
     /// reference to one lives as long as the registry. Each is boxed: an
@@ -121,13 +121,13 @@ struct TableShapes {
     versions: Vec<VersionShapes>,
 }
 
-/// The projections of one declared version: of its own column list and of
+/// The plans of one declared version: of its own column list and of
 /// each other list published under its number.
 #[derive(Debug)]
 struct VersionShapes {
     n: SchemaVersion,
-    own: Arc<Projection>,
-    variants: Vec<(Fingerprint, Arc<Projection>)>,
+    own: Arc<ConformancePlan>,
+    variants: Vec<(Fingerprint, Arc<ConformancePlan>)>,
 }
 
 /// A table that is not in the registry: its definition, built from an I
@@ -292,7 +292,7 @@ impl Registry {
         }
     }
 
-    /// The lake schema and projections of a table of the registry, built
+    /// The lake schema and plans of a table of the registry, built
     /// on first use.
     fn shapes(&self, index: usize) -> &TableShapes {
         self.shapes[index].get_or_init(|| {
@@ -303,10 +303,9 @@ impl Registry {
             let lake = lake_schema(t, market, self.opts);
             let project = |columns: &[String]| {
                 let names: Vec<&str> = columns.iter().map(String::as_str).collect();
-                Arc::new(
-                    Projection::build(t, market, self.opts, &lake, &names)
-                        .expect("a validated column list projects onto its table"),
-                )
+                Arc::new(ConformancePlan::declared(
+                    t, market, self.opts, &lake, &names,
+                ))
             };
             let versions = t
                 .versions
@@ -486,18 +485,18 @@ impl Registry {
         self.shapes(i).versions.iter().find(|v| v.n == version)
     }
 
-    /// The projection of a declared version's own column list.
-    pub fn projection(&self, id: TableId, version: SchemaVersion) -> Option<&Arc<Projection>> {
+    /// The plan of a declared version's own column list.
+    pub fn plan(&self, id: TableId, version: SchemaVersion) -> Option<&Arc<ConformancePlan>> {
         self.version_shapes(id, version).map(|v| &v.own)
     }
 
-    /// The projection of a declared variant of a version.
-    pub fn variant_projection(
+    /// The plan of a declared variant of a version.
+    pub fn variant_plan(
         &self,
         id: TableId,
         version: SchemaVersion,
         fp: Fingerprint,
-    ) -> Option<&Arc<Projection>> {
+    ) -> Option<&Arc<ConformancePlan>> {
         self.version_shapes(id, version)?
             .variants
             .iter()
@@ -510,17 +509,17 @@ impl Registry {
         self.by_fingerprint.get(&fp).copied()
     }
 
-    /// A run-time projection for a drifted or aliased shape, cached.
-    pub(crate) fn dynamic_projection(
+    /// A run-time plan for a drifted or aliased shape, cached.
+    pub(crate) fn dynamic_plan(
         &self,
         id: TableId,
         fp: Fingerprint,
-        build: impl FnOnce() -> Arc<Projection>,
-    ) -> Arc<Projection> {
+        build: impl FnOnce() -> Arc<ConformancePlan>,
+    ) -> Arc<ConformancePlan> {
         let mut cache = self
             .dynamic
             .lock()
-            .expect("the projection cache is never poisoned");
+            .expect("the plan cache is never poisoned");
         cache.entry((id, fp)).or_insert_with(build).clone()
     }
 
@@ -589,7 +588,7 @@ mod tests {
         assert_eq!(r.market_of(id).arrow_tz(), "+10:00");
         assert_eq!(r.lake_schema(id).fields().len(), 4);
         let v = r.table(id).versions[0].n;
-        assert!(r.projection(id, v).is_some());
+        assert!(r.plan(id, v).is_some());
         assert_eq!(
             r.by_fingerprint(r.table(id).versions[0].fingerprint),
             Some((id, v))

@@ -54,7 +54,7 @@ pub struct IngestResult {
     pub table: String,
     /// Table handle.
     pub table_id: TableId,
-    /// Version the projection used.
+    /// Version the plan used.
     pub version: u16,
     /// Observed I-row fingerprint.
     pub fingerprint: Fingerprint,
@@ -307,18 +307,8 @@ impl BatchSink for LakeSink<'_> {
             return Ok(());
         };
         let rows = b.batch.num_rows() as u64;
-        let time_col = self
-            .registry
-            .projection(b.table, b.version)
-            .and_then(|p| p.time_column)
-            .map(usize::from)
-            .or_else(|| {
-                table
-                    .time_column
-                    .as_deref()
-                    .and_then(|c| table.column_index(c))
-            });
-        let parts: Vec<(Partition, arrow_array::RecordBatch)> = match (table.load_mode, time_col) {
+        let time_col = b.plan.time_column.map(usize::from);
+        let parts: Vec<(Partition, arrow_array::RecordBatch)> = match (b.plan.load_mode, time_col) {
             (LoadMode::Snapshot, _) => vec![(
                 self.period
                     .map_or(Partition::Unknown, |p| Partition::Snapshot {

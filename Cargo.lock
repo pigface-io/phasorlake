@@ -1562,6 +1562,7 @@ dependencies = [
  "nemlake-core",
  "postcard",
  "serde",
+ "serde_json",
  "tempfile",
  "thiserror",
  "toml",

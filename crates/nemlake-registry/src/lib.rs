@@ -1,9 +1,9 @@
 //! The schema registry: every table nemlake knows, and the resolution of an
-//! MMS I row to a typed projection.
+//! MMS I row to a conformance plan.
 //!
 //! The committed `schemas/` tree is validated and packed by `build.rs`;
 //! [`Registry::load_embedded`] decodes it once per process and precomputes a
-//! [`Projection`] (Arrow schema plus per-field casts) for every declared
+//! [`ConformancePlan`] (Arrow schema plus per-field routes) for every declared
 //! version, so resolving an I row on the hot path is a hash lookup and an
 //! `Arc` clone.
 //!
@@ -16,6 +16,7 @@ pub mod arrow;
 pub mod error;
 pub mod file_model;
 pub mod infer;
+pub mod plan;
 pub mod registry;
 pub mod resolve;
 pub mod rules;
@@ -24,6 +25,7 @@ pub use crate::file_model::{
     ColumnDef, ColumnType, LoadMode, Market, RuleColumn, RuleDef, SchemaVersion, TableDef,
 };
 pub use error::ResolveError;
+pub use plan::{Cast, ColumnRoute, ConformancePlan, Origin, PlanField};
 pub use registry::{LineageEntry, Registry, SchemaSource, TableId, TypeOptions};
-pub use resolve::{Cast, ColumnCast, Mode, Projection, ResolveOptions, Resolved, Status};
+pub use resolve::{Mode, ResolveOptions, Resolved, Status};
 pub use rules::{RULES_FORMAT, RulesHash};

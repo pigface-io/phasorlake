@@ -412,6 +412,31 @@ fn inspect_and_schema_commands() {
     ]);
     assert_eq!(code, 5);
     assert!(err.contains("schema."), "{err}");
+    // The plan of a shape: the declared table file has four columns, the
+    // file three, so the fourth is written null.
+    let plan: serde_json::Value = serde_json::from_str(&cli.ok(&[
+        "schema",
+        "plan",
+        "dispatch",
+        "unit_scada",
+        "1",
+        "--columns",
+        "SETTLEMENTDATE,DUID,SCADAVALUE",
+        "--month",
+        "2024-01",
+    ]))
+    .unwrap();
+    assert_eq!(plan["resolution"], "exact");
+    assert_eq!(plan["plan"]["table"], "DISPATCH_UNIT_SCADA");
+    assert_eq!(plan["plan"]["fields"].as_array().unwrap().len(), 4);
+    assert_eq!(plan["plan"]["routes"].as_array().unwrap().len(), 3);
+    assert_eq!(plan["plan"]["missing"], serde_json::json!([3]));
+    assert_eq!(plan["plan"]["routes"][2]["cast"]["kind"], "float64");
+    let (code, _, err) = cli.code(&["schema", "plan", "NOBODY", "KNOWS", "1", "--columns", "A"]);
+    assert_eq!(code, 0, "{err}");
+    let (code, _, err) = cli.code(&["schema", "plan", "X", "Y", "1", "--columns", ","]);
+    assert_eq!(code, 5);
+    assert!(err.contains("schema.no_columns"), "{err}");
 }
 
 /// A table and a column nobody declared are ingested all the same, as

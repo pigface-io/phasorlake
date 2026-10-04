@@ -1,15 +1,15 @@
-//! Resolving an I row to a projection: which lake column each I-row field
-//! feeds and how to cast it.
+//! Resolving an I row to a conformance plan: which lake column each I-row
+//! field feeds and how to cast it (see [`crate::plan`]).
 
 use std::sync::Arc;
 
-use crate::file_model::{ColumnType, MarketDef, SchemaVersion, TableDef};
-use arrow_schema::SchemaRef;
+use crate::file_model::{SchemaVersion, TableDef};
 use nemlake_core::{Category, Diagnostic, Fingerprint, IRow, YearMonth};
 
-use crate::arrow::{data_type, decimal_fallback};
+use crate::arrow::decimal_fallback;
 use crate::error::ResolveError;
-use crate::registry::{Registry, SchemaSource, TableId, TypeOptions};
+use crate::plan::ConformancePlan;
+use crate::registry::{Registry, SchemaSource, TableId};
 use crate::rules::RulesHash;
 
 /// Strictness of resolution.
@@ -28,277 +28,6 @@ pub enum Mode {
 pub struct ResolveOptions {
     /// Strictness.
     pub mode: Mode,
-}
-
-/// How a field is parsed into its lake column.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Cast {
-    /// Bytes as UTF-8 text.
-    Utf8,
-    /// `f64`.
-    Float64,
-    /// `i64`.
-    Int64,
-    /// `Decimal128(precision, scale)`, unscaled `i128`.
-    Decimal128 {
-        /// Precision.
-        precision: u8,
-        /// Scale.
-        scale: u8,
-    },
-    /// MMS timestamp in market time to UTC nanoseconds.
-    TimestampNanos {
-        /// Market offset east of UTC, seconds.
-        offset_secs: i32,
-    },
-    /// Date to days since the epoch.
-    Date32,
-    /// `true`/`false`, `Y`/`N`, `1`/`0`.
-    Boolean,
-}
-
-impl Cast {
-    fn for_type(ty: ColumnType, market: &MarketDef, opts: TypeOptions) -> Self {
-        match ty {
-            ColumnType::Utf8 { .. } => Self::Utf8,
-            ColumnType::Number {
-                precision: Some(p),
-                scale: Some(s),
-            } if opts.decimal => Self::Decimal128 {
-                precision: p,
-                scale: s,
-            },
-            ColumnType::Number { .. } => Self::Float64,
-            ColumnType::Integer => Self::Int64,
-            ColumnType::Timestamp => Self::TimestampNanos {
-                offset_secs: market.utc_offset_secs,
-            },
-            ColumnType::Date => Self::Date32,
-            ColumnType::Boolean => Self::Boolean,
-        }
-    }
-}
-
-/// What to do with the I-row field at one position.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct ColumnCast {
-    /// Index of the lake column this field feeds, or `None` to drop it.
-    pub target: Option<u16>,
-    /// How to parse it.
-    pub cast: Cast,
-    /// Whether an empty field is allowed (null) or an error.
-    pub nullable: bool,
-}
-
-/// A resolved shape: the lake schema plus one cast per I-row position.
-#[derive(Debug)]
-pub struct Projection {
-    /// The unified lake schema (all columns of the table).
-    pub arrow: SchemaRef,
-    /// One entry per I-row column, in I-row order.
-    pub casts: Vec<ColumnCast>,
-    /// Lake column indexes the I row does not supply; they are written null.
-    pub missing: Vec<u16>,
-    /// Lake column indexes of the primary key.
-    pub primary_key: Vec<u16>,
-    /// Lake column index of the partition column.
-    pub time_column: Option<u16>,
-    /// The identity of these rules: see [`crate::rules`].
-    pub rules: RulesHash,
-}
-
-impl Projection {
-    /// Builds the projection of a declared column list (normalised I-row
-    /// columns) onto `t`, with the table's lake schema. Every name of a
-    /// declared list is a column or alias of `t`; an undeclared list goes
-    /// through [`Projection::build_file_shape`], which keeps what this one
-    /// would have no place for.
-    pub fn build(
-        t: &TableDef,
-        market: &MarketDef,
-        opts: TypeOptions,
-        arrow: &SchemaRef,
-        names: &[&str],
-    ) -> Result<Self, ResolveError> {
-        let mut casts = Vec::with_capacity(names.len());
-        let mut supplied = vec![false; t.columns.len()];
-        for n in names {
-            match t.column_index(n) {
-                Some(i) => {
-                    let c = &t.columns[i];
-                    supplied[i] = true;
-                    casts.push(ColumnCast {
-                        target: Some(i as u16),
-                        cast: Cast::for_type(c.ty, market, opts),
-                        nullable: c.nullable,
-                    });
-                }
-                None => casts.push(ColumnCast {
-                    target: None,
-                    cast: Cast::Utf8,
-                    nullable: true,
-                }),
-            }
-        }
-        let missing: Vec<u16> = supplied
-            .iter()
-            .enumerate()
-            .filter(|(_, s)| !**s)
-            .map(|(i, _)| i as u16)
-            .collect();
-        let primary_key: Vec<u16> = t
-            .primary_key
-            .iter()
-            .filter_map(|k| t.column_index(k))
-            .map(|i| i as u16)
-            .collect();
-        let time_column = t
-            .time_column
-            .as_deref()
-            .and_then(|c| t.column_index(c))
-            .map(|i| i as u16);
-        let rules = crate::rules::hash(
-            t,
-            &t.dir_name(),
-            arrow,
-            &casts,
-            &missing,
-            &primary_key,
-            time_column,
-        );
-        Ok(Self {
-            arrow: arrow.clone(),
-            casts,
-            missing,
-            primary_key,
-            time_column,
-            rules,
-        })
-    }
-
-    /// Builds the projection of a column list the registry has not
-    /// declared, losing nothing the file carries.
-    ///
-    /// The schema is the table's lake schema with two changes that hold for
-    /// files of this shape only: every name that is not a column of the
-    /// table is added at the end as a nullable text column, marked as coming
-    /// from the file, and a column the shape lacks is made nullable where
-    /// the lake says it is not, since these files have no value for it.
-    /// `dir` is the directory the table's files go to.
-    pub fn build_file_shape(
-        t: &TableDef,
-        market: &MarketDef,
-        opts: TypeOptions,
-        lake: &SchemaRef,
-        names: &[&str],
-        dir: &str,
-    ) -> Self {
-        Self::build_routed(t, market, opts, lake, names, dir, &[])
-    }
-
-    /// As [`Projection::build_file_shape`], with the routes of the
-    /// hand-written rules that apply: each names a file column and the
-    /// index of the lake column it feeds in place of the one its name
-    /// would give it.
-    pub fn build_routed(
-        t: &TableDef,
-        market: &MarketDef,
-        opts: TypeOptions,
-        lake: &SchemaRef,
-        names: &[&str],
-        dir: &str,
-        routes: &[(&str, usize)],
-    ) -> Self {
-        let lake_width = lake.fields().len();
-        let mut fields: Vec<arrow_schema::Field> =
-            lake.fields().iter().map(|f| f.as_ref().clone()).collect();
-        let mut casts = Vec::with_capacity(names.len());
-        let mut supplied = vec![false; lake_width];
-        let mut extra: Vec<String> = Vec::new();
-        for n in names {
-            let routed = routes.iter().find(|(s, _)| s == n).map(|(_, i)| *i);
-            match routed
-                .or_else(|| t.column_index(n))
-                .filter(|&i| !supplied[i])
-            {
-                Some(i) => {
-                    let c = &t.columns[i];
-                    supplied[i] = true;
-                    casts.push(ColumnCast {
-                        target: Some(i as u16),
-                        cast: Cast::for_type(c.ty, market, opts),
-                        nullable: c.nullable,
-                    });
-                }
-                None => {
-                    // A name the file repeats, or one that collides with what
-                    // is already there, is told apart by a suffix.
-                    let mut name = (*n).to_owned();
-                    let mut k = 2;
-                    while extra.contains(&name) || t.column_index(&name).is_some() {
-                        name = format!("{n}__{k}");
-                        k += 1;
-                    }
-                    casts.push(ColumnCast {
-                        target: Some((lake_width + extra.len()) as u16),
-                        cast: Cast::Utf8,
-                        nullable: true,
-                    });
-                    let from_file: std::collections::HashMap<String, String> =
-                        [("nemlake:source".to_owned(), "file".to_owned())].into();
-                    fields.push(
-                        arrow_schema::Field::new(&name, arrow_schema::DataType::Utf8, true)
-                            .with_metadata(from_file),
-                    );
-                    extra.push(name);
-                }
-            }
-        }
-        let missing: Vec<u16> = supplied
-            .iter()
-            .enumerate()
-            .filter(|(_, s)| !**s)
-            .map(|(i, _)| i as u16)
-            .collect();
-        for &m in &missing {
-            let f = &mut fields[m as usize];
-            if !f.is_nullable() {
-                *f = f.clone().with_nullable(true);
-            }
-        }
-        let primary_key: Vec<u16> = t
-            .primary_key
-            .iter()
-            .filter_map(|k| t.column_index(k))
-            .map(|i| i as u16)
-            .collect();
-        let time_column = t
-            .time_column
-            .as_deref()
-            .and_then(|c| t.column_index(c))
-            .map(|i| i as u16);
-        let arrow = arrow_schema::Schema::new_with_metadata(fields, lake.metadata().clone());
-        let rules = crate::rules::hash(t, dir, &arrow, &casts, &missing, &primary_key, time_column);
-        Self {
-            arrow: std::sync::Arc::new(arrow),
-            casts,
-            missing,
-            primary_key,
-            time_column,
-            rules,
-        }
-    }
-
-    /// Number of columns files of this shape are written with: the lake's,
-    /// plus any the file carries beyond them.
-    pub fn lake_width(&self) -> usize {
-        self.arrow.fields().len()
-    }
-
-    /// The name of the column at `index` of this projection's schema.
-    pub fn column_name(&self, index: usize) -> &str {
-        self.arrow.field(index).name()
-    }
 }
 
 /// How the I row matched the registry.
@@ -343,12 +72,12 @@ impl Status {
 pub struct Resolved {
     /// The table.
     pub table: TableId,
-    /// The version the projection is based on.
+    /// The version the plan is based on.
     pub version: SchemaVersion,
     /// How it matched.
     pub status: Status,
-    /// The projection to parse with.
-    pub projection: Arc<Projection>,
+    /// The plan to conform with.
+    pub plan: Arc<ConformancePlan>,
     /// Where the table's definition came from.
     pub source: SchemaSource,
     /// The routes of hand-written rules that were applied: file column,
@@ -361,7 +90,7 @@ pub struct Resolved {
 impl Resolved {
     /// The identity of the rules this shape is read with.
     pub fn rules(&self) -> RulesHash {
-        self.projection.rules
+        self.plan.rules
     }
 
     /// How the shape matched, in one word, with `+rule` when a
@@ -473,8 +202,8 @@ impl Registry {
                 ),
         );
         let market = self.market_of(id);
-        res.projection = self.dynamic_projection(id, key, || {
-            Arc::new(Projection::build_routed(
+        res.plan = self.dynamic_plan(id, key, || {
+            Arc::new(ConformancePlan::file_shape(
                 t,
                 market,
                 self.options(),
@@ -531,19 +260,19 @@ impl Registry {
         // 1. Exact: declared version with the same fingerprint, or one of
         //    the other shapes AEMO published under that version number.
         if let Some(v) = t.version(version) {
-            let projection = if v.fingerprint == fp {
-                self.projection(id, version)
+            let plan = if v.fingerprint == fp {
+                self.plan(id, version)
             } else {
-                self.variant_projection(id, version, fp)
+                self.variant_plan(id, version, fp)
             };
-            if let Some(projection) = projection {
-                let projection = projection.clone();
+            if let Some(plan) = plan {
+                let plan = plan.clone();
                 self.decimal_warnings(t, &mut warnings);
                 return Ok(Resolved {
                     table: id,
                     version,
                     status: Status::Exact,
-                    projection,
+                    plan,
                     source: self.schema_source(id),
                     routed: Vec::new(),
                     warnings,
@@ -556,9 +285,9 @@ impl Registry {
             && let Some((other_id, matched)) = self.by_fingerprint(fp)
             && other_id == id
         {
-            let projection = self
-                .variant_projection(id, matched, fp)
-                .or_else(|| self.projection(id, matched))
+            let plan = self
+                .variant_plan(id, matched, fp)
+                .or_else(|| self.plan(id, matched))
                 .expect("declared versions are precomputed")
                 .clone();
             warnings.push(
@@ -578,7 +307,7 @@ impl Registry {
                 table: id,
                 version: matched,
                 status: Status::Aliased { matched },
-                projection,
+                plan,
                 source: self.schema_source(id),
                 routed: Vec::new(),
                 warnings,
@@ -662,14 +391,15 @@ impl Registry {
         // to their lake columns, the rest are kept as text under their own
         // names, and what the file lacks is null.
         let market = self.market_of(id);
-        let projection = self.dynamic_projection(id, fp, || {
-            Arc::new(Projection::build_file_shape(
+        let plan = self.dynamic_plan(id, fp, || {
+            Arc::new(ConformancePlan::file_shape(
                 t,
                 market,
                 self.options(),
                 self.lake_schema(id),
                 &observed,
                 &self.table_dir(id),
+                &[],
             ))
         });
         let mut d = Diagnostic::warning(
@@ -719,14 +449,14 @@ impl Registry {
                 extra,
                 reordered,
             },
-            projection,
+            plan,
             source: self.schema_source(id),
             routed: Vec::new(),
             warnings,
         })
     }
 
-    /// The projection of an I row onto a table derived from the file: every
+    /// The plan of an I row onto a table derived from the file: every
     /// column as text. A later block of the same pair with another column
     /// list keeps its extra columns under their own names.
     fn resolve_derived(&self, id: TableId, irow: &IRow<'_>) -> Resolved {
@@ -734,14 +464,15 @@ impl Registry {
         let market = self.market_of(id);
         let fp = irow.fingerprint();
         let names: Vec<&str> = irow.columns.to_vec();
-        let projection = self.dynamic_projection(id, fp, || {
-            Arc::new(Projection::build_file_shape(
+        let plan = self.dynamic_plan(id, fp, || {
+            Arc::new(ConformancePlan::file_shape(
                 t,
                 market,
                 self.options(),
                 self.lake_schema(id),
                 &names,
                 &self.table_dir(id),
+                &[],
             ))
         });
         let warning = Diagnostic::warning(
@@ -760,7 +491,7 @@ impl Registry {
             table: id,
             version: SchemaVersion(irow.version),
             status: Status::Derived,
-            projection,
+            plan,
             source: self.schema_source(id),
             routed: Vec::new(),
             warnings: vec![warning],
@@ -792,15 +523,15 @@ impl Registry {
         // resolve by hand with the same drift rules.
         let fp = irow.fingerprint();
         if fp == v.fingerprint {
-            let projection = self
-                .projection(id, v.n)
+            let plan = self
+                .plan(id, v.n)
                 .expect("declared versions are precomputed")
                 .clone();
             return Ok(Resolved {
                 table: id,
                 version: v.n,
                 status: Status::Exact,
-                projection,
+                plan,
                 source: self.schema_source(id),
                 routed: Vec::new(),
                 warnings: vec![],
@@ -828,11 +559,14 @@ impl Registry {
             });
         }
         let market = self.market_of(id);
-        let projection = self.dynamic_projection(id, fp, || {
-            Arc::new(
-                Projection::build(t, market, self.options(), self.lake_schema(id), header)
-                    .expect("header projection builds"),
-            )
+        let plan = self.dynamic_plan(id, fp, || {
+            Arc::new(ConformancePlan::declared(
+                t,
+                market,
+                self.options(),
+                self.lake_schema(id),
+                header,
+            ))
         });
         let missing = v
             .columns
@@ -853,7 +587,7 @@ impl Registry {
                 extra,
                 reordered: false,
             },
-            projection,
+            plan,
             source: self.schema_source(id),
             routed: Vec::new(),
             warnings: vec![],
@@ -901,18 +635,16 @@ impl Registry {
     }
 }
 
-/// The Arrow type a cast produces, for tests and tools.
-pub fn cast_data_type(
-    ty: ColumnType,
-    market: &MarketDef,
-    opts: TypeOptions,
-) -> arrow_schema::DataType {
-    data_type(ty, market, opts)
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::file_model::ColumnType;
+    use crate::plan::{Cast, ColumnRoute};
+    use crate::registry::TypeOptions;
+
+    fn route(r: &ColumnRoute) -> (Option<u16>, Cast, bool) {
+        (r.target, r.cast, r.nullable)
+    }
 
     fn reg() -> Arc<Registry> {
         Registry::load_embedded(TypeOptions::default())
@@ -936,53 +668,39 @@ mod tests {
         assert_eq!(res.status, Status::Exact);
         assert_eq!(res.status.label(), "exact");
         assert!(res.warnings.is_empty());
-        let p = &res.projection;
-        assert_eq!(p.casts.len(), 4);
+        let p = &res.plan;
+        assert_eq!(p.routes.len(), 4);
         assert_eq!(
-            p.casts[0],
-            ColumnCast {
-                target: Some(0),
-                cast: Cast::TimestampNanos {
+            route(&p.routes[0]),
+            (
+                Some(0),
+                Cast::TimestampNanos {
                     offset_secs: 36_000
                 },
-                nullable: false
-            }
+                false
+            )
         );
+        assert_eq!(route(&p.routes[1]), (Some(1), Cast::Utf8, false));
+        assert_eq!(route(&p.routes[2]), (Some(2), Cast::Float64, true));
         assert_eq!(
-            p.casts[1],
-            ColumnCast {
-                target: Some(1),
-                cast: Cast::Utf8,
-                nullable: false
-            }
-        );
-        assert_eq!(
-            p.casts[2],
-            ColumnCast {
-                target: Some(2),
-                cast: Cast::Float64,
-                nullable: true
-            }
-        );
-        assert_eq!(
-            p.casts[3],
-            ColumnCast {
-                target: Some(3),
-                cast: Cast::TimestampNanos {
+            route(&p.routes[3]),
+            (
+                Some(3),
+                Cast::TimestampNanos {
                     offset_secs: 36_000
                 },
-                nullable: true
-            }
+                true
+            )
         );
         assert!(p.missing.is_empty());
-        assert_eq!(p.primary_key, [0, 1]);
+        assert_eq!(p.key_columns, [0, 1]);
         assert_eq!(p.time_column, Some(0));
         assert_eq!(p.lake_width(), 4);
         // Strict mode accepts exact matches too, and the same Arc is returned.
         let again = r
             .resolve(&row, ResolveOptions { mode: Mode::Strict })
             .unwrap();
-        assert!(Arc::ptr_eq(&again.projection, &res.projection));
+        assert!(Arc::ptr_eq(&again.plan, &res.plan));
     }
 
     #[test]
@@ -997,7 +715,7 @@ mod tests {
         };
         let res = r.resolve(&row, ResolveOptions::default()).unwrap();
         assert_eq!(
-            res.projection.casts[2].cast,
+            res.plan.routes[2].cast,
             Cast::Decimal128 {
                 precision: 16,
                 scale: 6
@@ -1061,8 +779,8 @@ mod tests {
         assert_eq!(res.warnings[0].code, "schema.version_aliased");
         assert_eq!(res.warnings[0].version, Some(9));
         assert!(Arc::ptr_eq(
-            &res.projection,
-            r.projection(res.table, SchemaVersion(1)).unwrap()
+            &res.plan,
+            r.plan(res.table, SchemaVersion(1)).unwrap()
         ));
         // The columns of a declared variant, under an undeclared version
         // number, are that variant.
@@ -1080,11 +798,11 @@ mod tests {
                 matched: SchemaVersion(1)
             }
         );
-        assert_eq!(res.projection.casts.len(), 3);
-        assert_eq!(res.projection.missing, [3]);
+        assert_eq!(res.plan.routes.len(), 3);
+        assert_eq!(res.plan.missing, [3]);
         assert!(Arc::ptr_eq(
-            &res.projection,
-            r.variant_projection(res.table, SchemaVersion(1), row.fingerprint())
+            &res.plan,
+            r.variant_plan(res.table, SchemaVersion(1), row.fingerprint())
                 .unwrap()
         ));
     }
@@ -1109,16 +827,16 @@ mod tests {
             }
         );
         assert_eq!(res.status.label(), "drift");
-        assert_eq!(res.projection.missing, [2, 3]);
-        assert_eq!(res.projection.casts.len(), 2);
+        assert_eq!(res.plan.missing, [2, 3]);
+        assert_eq!(res.plan.routes.len(), 2);
         assert_eq!(res.warnings[0].code, "schema.compatible_drift");
         assert_eq!(
             res.warnings[0].expected.as_deref(),
             Some("SETTLEMENTDATE,DUID,SCADAVALUE,LASTCHANGED")
         );
-        // The dynamic projection is cached.
+        // The dynamic plan is cached.
         let again = r.resolve(&row, ResolveOptions::default()).unwrap();
-        assert!(Arc::ptr_eq(&again.projection, &res.projection));
+        assert!(Arc::ptr_eq(&again.plan, &res.plan));
         let e = r
             .resolve(&row, ResolveOptions { mode: Mode::Strict })
             .unwrap_err();
@@ -1164,20 +882,13 @@ mod tests {
             }
             other => panic!("{other:?}"),
         }
-        assert_eq!(res.projection.casts[0].target, Some(1));
-        assert_eq!(res.projection.casts[1].target, Some(0));
+        assert_eq!(res.plan.routes[0].target, Some(1));
+        assert_eq!(res.plan.routes[1].target, Some(0));
         // The column the table does not have is kept: one more column, text,
         // nullable, under its own name and marked as coming from the file.
-        assert_eq!(
-            res.projection.casts[4],
-            ColumnCast {
-                target: Some(4),
-                cast: Cast::Utf8,
-                nullable: true
-            }
-        );
-        assert_eq!(res.projection.lake_width(), 5);
-        let extra = res.projection.arrow.field(4);
+        assert_eq!(route(&res.plan.routes[4]), (Some(4), Cast::Utf8, true));
+        assert_eq!(res.plan.lake_width(), 5);
+        let extra = res.plan.arrow.field(4);
         assert_eq!(extra.name(), "QUALITY");
         assert_eq!(extra.data_type(), &arrow_schema::DataType::Utf8);
         assert!(extra.is_nullable());
@@ -1185,11 +896,11 @@ mod tests {
             extra.metadata().get("nemlake:source").map(String::as_str),
             Some("file")
         );
-        assert_eq!(res.projection.column_name(4), "QUALITY");
+        assert_eq!(res.plan.column_name(4), "QUALITY");
         // The table's own columns are as the lake has them.
         let lake = r.lake_schema(res.table);
         assert_eq!(lake.fields().len(), 4);
-        assert_eq!(res.projection.arrow.fields()[..4], lake.fields()[..]);
+        assert_eq!(res.plan.arrow.fields()[..4], lake.fields()[..]);
         assert_eq!(res.warnings[0].code, "schema.unknown_columns");
         assert!(res.warnings[0].message.contains("order differs"));
         assert!(res.warnings[0].message.contains("kept as text"));
@@ -1200,8 +911,8 @@ mod tests {
             ..row
         };
         let res = r.resolve(&row, ResolveOptions::default()).unwrap();
-        let names: Vec<&str> = (0..res.projection.lake_width())
-            .map(|i| res.projection.column_name(i))
+        let names: Vec<&str> = (0..res.plan.lake_width())
+            .map(|i| res.plan.column_name(i))
             .collect();
         assert_eq!(
             names,
@@ -1215,7 +926,7 @@ mod tests {
                 "DUID__2"
             ]
         );
-        assert!(res.projection.casts.iter().all(|c| c.target.is_some()));
+        assert!(res.plan.routes.iter().all(|c| c.target.is_some()));
     }
 
     #[test]
@@ -1269,10 +980,10 @@ mod tests {
         // which this shape's schema allows though the lake's does not.
         let res = r.resolve(&row, ResolveOptions::default()).unwrap();
         assert!(matches!(res.status, Status::Drift { .. }));
-        assert_eq!(res.projection.missing, [1, 3]);
-        assert!(res.projection.arrow.field(1).is_nullable());
+        assert_eq!(res.plan.missing, [1, 3]);
+        assert!(res.plan.arrow.field(1).is_nullable());
         assert!(!r.lake_schema(res.table).field(1).is_nullable());
-        assert!(!res.projection.arrow.field(0).is_nullable());
+        assert!(!res.plan.arrow.field(0).is_nullable());
         assert!(
             res.warnings
                 .iter()
@@ -1312,10 +1023,10 @@ mod tests {
                 .iter()
                 .all(|c| c.nullable && matches!(c.ty, ColumnType::Utf8 { .. }))
         );
-        assert_eq!(res.projection.lake_width(), 3);
+        assert_eq!(res.plan.lake_width(), 3);
         assert!(
-            res.projection
-                .casts
+            res.plan
+                .routes
                 .iter()
                 .all(|c| c.cast == Cast::Utf8 && c.target.is_some())
         );
@@ -1339,8 +1050,8 @@ mod tests {
             .unwrap();
         assert_eq!(again.table, res.table);
         assert_eq!(again.version, SchemaVersion(2));
-        assert_eq!(again.projection.lake_width(), 4);
-        assert_eq!(again.projection.column_name(3), "MORE");
+        assert_eq!(again.plan.lake_width(), 4);
+        assert_eq!(again.plan.column_name(3), "MORE");
         // Strict still refuses the pair, derived earlier or not.
         assert!(matches!(
             r.resolve(&row, ResolveOptions { mode: Mode::Strict }),
@@ -1399,10 +1110,10 @@ mod tests {
             assert_eq!(res.status, Status::Exact);
             assert_eq!(res.version, v.n);
             assert!(res.warnings.is_empty(), "{:?}", res.warnings);
-            assert!(res.projection.casts.iter().all(|c| c.target.is_some()));
+            assert!(res.plan.routes.iter().all(|c| c.target.is_some()));
             // What the other list has under its own name is null here.
             let lacking: Vec<&str> = res
-                .projection
+                .plan
                 .missing
                 .iter()
                 .map(|&i| t.columns[usize::from(i)].name.as_str())
@@ -1412,18 +1123,18 @@ mod tests {
             assert!(!variant.columns.iter().any(|c| c == lacking[0]));
         }
         // The two lists feed the same lake columns but for that one name.
-        let main = r.projection(id, v.n).unwrap();
+        let main = r.plan(id, v.n).unwrap();
         let res = r.resolve(&row, ResolveOptions::default()).unwrap();
-        let targets = |p: &Projection| p.casts.iter().map(|c| c.target).collect::<Vec<_>>();
-        let differing = targets(&res.projection)
+        let targets = |p: &ConformancePlan| p.routes.iter().map(|c| c.target).collect::<Vec<_>>();
+        let differing = targets(&res.plan)
             .iter()
             .zip(targets(main))
             .filter(|(a, b)| **a != *b)
             .count();
         assert_eq!(differing, 1);
         assert!(Arc::ptr_eq(
-            &res.projection,
-            r.variant_projection(id, v.n, variant.fingerprint).unwrap()
+            &res.plan,
+            r.variant_plan(id, v.n, variant.fingerprint).unwrap()
         ));
 
         // Columns appended without a version bump: the short list is a variant
@@ -1449,7 +1160,7 @@ mod tests {
         assert_eq!(res.status, Status::Exact);
         assert!(res.warnings.is_empty());
         assert_eq!(
-            res.projection.missing.len(),
+            res.plan.missing.len(),
             v.columns.len() - short.columns.len()
         );
     }
@@ -1489,7 +1200,7 @@ mod tests {
                 reordered: false
             }
         );
-        assert!(res.projection.casts.iter().all(|c| c.target.is_some()));
+        assert!(res.plan.routes.iter().all(|c| c.target.is_some()));
         assert!(matches!(
             r.resolve(&row, ResolveOptions { mode: Mode::Strict }),
             Err(ResolveError::VersionDrift { .. })
@@ -1582,8 +1293,8 @@ mod tests {
             assert_eq!(plain.status, Status::Exact);
             assert!(plain.routed.is_empty());
             assert_eq!(plain.label(), "exact");
-            assert_eq!(plain.projection.casts[2].target, Some(value));
-            assert_eq!(plain.projection.casts[2].cast, Cast::Float64);
+            assert_eq!(plain.plan.routes[2].target, Some(value));
+            assert_eq!(plain.plan.routes[2].cast, Cast::Float64);
         }
         let plain = r.resolve(&row, opts).unwrap();
 
@@ -1597,11 +1308,11 @@ mod tests {
                 res.routed,
                 [("SCADAVALUE".to_owned(), "SCADAVALUE_TEXT".to_owned())]
             );
-            assert_eq!(res.projection.casts[2].target, Some(text));
-            assert_eq!(res.projection.casts[2].cast, Cast::Utf8);
-            assert!(res.projection.missing.contains(&value));
-            assert!(!res.projection.missing.contains(&text));
-            assert_eq!(res.projection.casts[0], plain.projection.casts[0]);
+            assert_eq!(res.plan.routes[2].target, Some(text));
+            assert_eq!(res.plan.routes[2].cast, Cast::Utf8);
+            assert!(res.plan.missing.contains(&value));
+            assert!(!res.plan.missing.contains(&text));
+            assert_eq!(res.plan.routes[0], plain.plan.routes[0]);
             // Other rules, other hash: the lake knows which made a file.
             assert_ne!(res.rules(), plain.rules());
             assert!(res.warnings.is_empty());
@@ -1609,7 +1320,7 @@ mod tests {
             let strict = r
                 .resolve_in(&row, ResolveOptions { mode: Mode::Strict }, period)
                 .unwrap();
-            assert!(Arc::ptr_eq(&strict.projection, &res.projection));
+            assert!(Arc::ptr_eq(&strict.plan, &res.plan));
         }
 
         // A rule by version, whatever the month: an undeclared name is
@@ -1627,8 +1338,8 @@ mod tests {
             res.routed,
             [("CONFIDENTIAL_TO".to_owned(), "DUID".to_owned())]
         );
-        assert_eq!(res.projection.casts[1].target, Some(1));
-        assert_eq!(res.projection.lake_width(), t.columns.len());
+        assert_eq!(res.plan.routes[1].target, Some(1));
+        assert_eq!(res.plan.lake_width(), t.columns.len());
         // Both rules at once: each routes its own column.
         let res = r.resolve_in(&row7, opts, month("2010-01")).unwrap();
         assert_eq!(
@@ -1662,7 +1373,7 @@ mod tests {
             .expect("the conflict is reported");
         assert!(conflict.message.contains("CONFIDENTIAL_TO") && conflict.message.contains("DUID"));
         assert_eq!(
-            res.projection.column_name(res.projection.lake_width() - 1),
+            res.plan.column_name(res.plan.lake_width() - 1),
             "CONFIDENTIAL_TO"
         );
     }
@@ -1676,7 +1387,7 @@ mod tests {
         ));
         let market = r.market(crate::file_model::Market::Nem).unwrap();
         assert_eq!(
-            cast_data_type(ColumnType::Integer, market, TypeOptions::default()),
+            crate::arrow::data_type(ColumnType::Integer, market, TypeOptions::default()),
             arrow_schema::DataType::Int64
         );
     }

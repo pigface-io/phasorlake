@@ -132,6 +132,13 @@ pub fn schema(ctx: &Context, cmd: &SchemaCmd) -> Result<i32> {
             sample_rows,
             ctl,
         } => infer(ctx, path, *write, *sample_rows, ctl),
+        SchemaCmd::Plan {
+            report_type,
+            report_subtype,
+            version,
+            columns,
+            month,
+        } => plan(r, report_type, report_subtype, *version, columns, *month),
         SchemaCmd::Validate { dir } => match dir {
             None => {
                 println!(
@@ -164,6 +171,46 @@ pub fn schema(ctx: &Context, cmd: &SchemaCmd) -> Result<i32> {
                 }
             },
         },
+    }
+}
+
+/// `nemlake schema plan <type> <subtype> <version> --columns ...`: the plan
+/// a shape resolves to, permissively, as one JSON document.
+fn plan(
+    r: &Registry,
+    report_type: &str,
+    report_subtype: &str,
+    version: u16,
+    columns: &[String],
+    month: Option<nemlake_core::YearMonth>,
+) -> Result<i32> {
+    let norm = |s: &str| nemlake_core::normalize_name(s, &mut String::new()).map(str::to_owned);
+    let (Some(rt), Some(st)) = (norm(report_type), norm(report_subtype)) else {
+        anyhow::bail!("A report type and subtype are names: not empty, no control characters.")
+    };
+    let names: Vec<String> = columns.iter().filter_map(|c| norm(c)).collect();
+    let cols: Vec<&str> = names.iter().map(String::as_str).collect();
+    let irow = nemlake_core::IRow {
+        report_type: &rt,
+        report_subtype: &st,
+        version,
+        columns: &cols,
+    };
+    match r.resolve_in(&irow, nemlake_registry::ResolveOptions::default(), month) {
+        Ok(res) => {
+            render::json_line(&serde_json::json!({
+                "resolution": res.label(),
+                "version": res.version.0,
+                "source": res.source.label(),
+                "rules": res.rules().to_string(),
+                "plan": &*res.plan,
+            }));
+            Ok(0)
+        }
+        Err(e) => {
+            eprintln!("{}", e.diagnostic().render());
+            Ok(5)
+        }
     }
 }
 

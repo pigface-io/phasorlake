@@ -224,6 +224,22 @@ pub enum SchemaCmd {
         /// Table name.
         table: String,
     },
+    /// The conformance plan a shape is read with, as JSON: which lake
+    /// column each file column feeds, how it is cast, what is written null.
+    Plan {
+        /// Report type, e.g. `DISPATCH`.
+        report_type: String,
+        /// Report subtype, e.g. `UNIT_SCADA`.
+        report_subtype: String,
+        /// The version the file's I row carries.
+        version: u16,
+        /// The file's column names, in order.
+        #[arg(long, value_delimiter = ',', required = true)]
+        columns: Vec<String>,
+        /// The month of the source, for rules bounded by months.
+        #[arg(long, value_name = "YYYY-MM")]
+        month: Option<nemlake_core::YearMonth>,
+    },
     /// Validate a schemas directory (default: the embedded registry).
     Validate {
         /// Directory.
