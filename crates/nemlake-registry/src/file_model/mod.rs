@@ -17,6 +17,7 @@ pub mod ctl;
 pub mod error;
 pub mod file;
 pub mod model;
+pub mod shapes;
 pub mod validate;
 
 pub use error::SchemaFileError;

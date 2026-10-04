@@ -10,7 +10,7 @@
 
 use std::path::Path;
 
-use nemlake_core::{Fingerprint, YearMonth, normalize_name};
+use nemlake_core::{Fingerprint, ShapeId, YearMonth, normalize_name};
 use serde::{Deserialize, Serialize};
 
 use crate::file_model::error::SchemaFileError;
@@ -78,6 +78,8 @@ struct RuleFile {
     version: Option<u16>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     fingerprint: Option<Fingerprint>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    shape: Option<ShapeId>,
     /// `[[rule.column]]`: the routes.
     #[serde(default, rename = "column")]
     columns: Vec<RuleColumnFile>,
@@ -333,6 +335,7 @@ fn to_model(path: &Path, f: TableFile) -> Result<TableDef, SchemaFileError> {
             to: r.to,
             version: r.version.map(SchemaVersion),
             fingerprint: r.fingerprint,
+            shape: r.shape,
             columns: r
                 .columns
                 .into_iter()
@@ -469,6 +472,7 @@ fn from_model(t: &TableDef) -> TableFile {
                 to: r.to,
                 version: r.version.map(|v| v.0),
                 fingerprint: r.fingerprint,
+                shape: r.shape,
                 columns: r
                     .columns
                     .iter()
@@ -739,6 +743,7 @@ pub(crate) mod tests {
             to: Some("2011-12".parse().unwrap()),
             version: Some(SchemaVersion(1)),
             fingerprint: Some(t.versions[0].fingerprint),
+            shape: None,
             columns: vec![RuleColumn {
                 source: "SCADAVALUE".into(),
                 column: "SCADAVALUE_TEXT".into(),
@@ -774,9 +779,26 @@ pub(crate) mod tests {
         assert_eq!(read.rules.len(), 1);
         let rule = &read.rules[0];
         assert_eq!(
-            (rule.from, rule.to, rule.version, rule.fingerprint),
-            (None, None, None, None)
+            (
+                rule.from,
+                rule.to,
+                rule.version,
+                rule.fingerprint,
+                rule.shape
+            ),
+            (None, None, None, None, None)
         );
+        // A rule for a shape names it by its id, and writes it back.
+        let shaped = short.replace(
+            "note = \"always\"",
+            "note = \"always\"\nshape = \"0123456789abcdef\"",
+        );
+        let read = parse_table(Path::new("x.toml"), &shaped).unwrap();
+        assert_eq!(
+            read.rules[0].shape,
+            Some(nemlake_core::ShapeId(0x0123_4567_89ab_cdef))
+        );
+        assert!(write_table(&read).contains("shape = \"0123456789abcdef\""));
         assert_eq!(rule.columns[0].source, "SCADAVALUE");
         assert_eq!(rule.columns[0].column, "SCADAVALUE_TEXT");
         // An unknown key in a rule is an error like anywhere else.

@@ -1,15 +1,16 @@
 //! The loaded registry: tables, indexes and precomputed conformance plans.
 
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 use std::path::Path;
 use std::sync::{Arc, Mutex, OnceLock};
 
 use crate::file_model::blob::SchemaSet;
 use crate::file_model::compat::{Change, diff_versions};
+use crate::file_model::shapes::ShapeEntry;
 use crate::file_model::{Market, MarketDef, SchemaFileError, SchemaVersion, TableDef};
 use arrow_schema::SchemaRef;
 use hashbrown::Equivalent;
-use nemlake_core::Fingerprint;
+use nemlake_core::{Fingerprint, IRow, ShapeId, YearMonth};
 
 use crate::arrow::lake_schema;
 use crate::plan::ConformancePlan;
@@ -110,6 +111,22 @@ pub struct Registry {
     derived: Vec<OnceLock<Box<Derived>>>,
     /// The report pair of each derived table, in slot order.
     derived_pairs: Mutex<Vec<(String, String)>>,
+    /// The census's shapes of each table, by table name; for the embedded
+    /// registry decoded from their blob on first use.
+    census: OnceLock<BTreeMap<String, Vec<ShapeEntry>>>,
+    /// The blob the census's shapes are decoded from, when not given.
+    census_blob: &'static [u8],
+    /// Census shapes by report pair and fingerprint of their names, built
+    /// on first use.
+    census_index: OnceLock<HashMap<(String, String, Fingerprint), Vec<CensusShape>>>,
+}
+
+/// What resolution needs of a census shape: its id and when it was seen.
+#[derive(Debug, Clone, Copy)]
+struct CensusShape {
+    id: ShapeId,
+    first_seen: YearMonth,
+    last_seen: YearMonth,
 }
 
 /// What the files of one table are written with.
@@ -162,6 +179,9 @@ static EMBEDDED_DECIMAL: OnceLock<Arc<Registry>> = OnceLock::new();
 /// The blob `build.rs` packed from `schemas/`.
 const EMBEDDED_BLOB: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/registry.bin"));
 
+/// The census's shapes `build.rs` packed from `schemas/`.
+const EMBEDDED_SHAPES: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/shapes.bin"));
+
 /// The embedded blob, for benchmarks and tools that decode it themselves.
 pub fn embedded_blob() -> &'static [u8] {
     EMBEDDED_BLOB
@@ -178,7 +198,9 @@ impl Registry {
         cell.get_or_init(|| {
             let set = SchemaSet::decode(EMBEDDED_BLOB)
                 .expect("build.rs validated and packed the embedded registry");
-            Arc::new(Self::from_set(set, opts))
+            let mut registry = Self::from_set(set, opts);
+            registry.census_blob = EMBEDDED_SHAPES;
+            Arc::new(registry)
         })
         .clone()
     }
@@ -218,7 +240,15 @@ impl Registry {
             markets.retain(|x| x.market != m.market);
             markets.push(m);
         }
-        let set = SchemaSet { markets, tables };
+        let mut shapes = self.census().clone();
+        for (table, theirs) in over.shapes {
+            shapes.insert(table, theirs);
+        }
+        let set = SchemaSet {
+            markets,
+            tables,
+            shapes,
+        };
         // A user's own table may keep inferred columns; it must still be
         // well formed and fit the rest of the registry.
         let issues = set.validate_structure();
@@ -289,7 +319,68 @@ impl Registry {
                 .take(DERIVED_SLOTS)
                 .collect(),
             derived_pairs: Mutex::new(Vec::new()),
+            census: if set.shapes.is_empty() {
+                OnceLock::new()
+            } else {
+                OnceLock::from(set.shapes)
+            },
+            census_blob: &[],
+            census_index: OnceLock::new(),
         }
+    }
+
+    /// The census's shapes of each table, by table name.
+    pub fn census(&self) -> &BTreeMap<String, Vec<ShapeEntry>> {
+        self.census.get_or_init(|| {
+            if self.census_blob.is_empty() {
+                BTreeMap::new()
+            } else {
+                SchemaSet::decode_shapes(self.census_blob)
+                    .expect("build.rs validated and packed the census's shapes")
+            }
+        })
+    }
+
+    /// The ids the census gives a block of this report pair and column
+    /// list in a source of month `period`: the census shapes with these
+    /// names, seen in that month when it is known (a shape's id also covers
+    /// its control-file types, which an I row does not carry). Empty when
+    /// the census has not seen the block.
+    pub fn shape_ids(&self, irow: &IRow<'_>, period: Option<YearMonth>) -> Vec<ShapeId> {
+        let index = self.census_index.get_or_init(|| {
+            let mut index: HashMap<(String, String, Fingerprint), Vec<CensusShape>> =
+                HashMap::new();
+            for e in self.census().values().flatten() {
+                index
+                    .entry((
+                        e.report_type.clone(),
+                        e.report_subtype.clone(),
+                        e.fingerprint(),
+                    ))
+                    .or_default()
+                    .push(CensusShape {
+                        id: e.id,
+                        first_seen: e.first_seen,
+                        last_seen: e.last_seen,
+                    });
+            }
+            index
+        });
+        let key = (
+            irow.report_type.to_owned(),
+            irow.report_subtype.to_owned(),
+            irow.fingerprint(),
+        );
+        let mut ids: Vec<ShapeId> = index
+            .get(&key)
+            .into_iter()
+            .flatten()
+            .filter(|s| period.is_none_or(|p| s.first_seen <= p && p <= s.last_seen))
+            .map(|s| s.id)
+            .collect();
+        ids.sort();
+        ids.dedup();
+        ids
     }
 
     /// The lake schema and plans of a table of the registry, built
@@ -575,6 +666,27 @@ impl Registry {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// The embedded census is decoded when a shape is first asked for, and
+    /// knows the anchor month's shapes.
+    #[test]
+    fn the_embedded_census_names_the_anchor_months_shapes() {
+        let r = Registry::load_embedded(TypeOptions::default());
+        let cols = ["SETTLEMENTDATE", "DUID", "SCADAVALUE", "LASTCHANGED"];
+        let irow = IRow {
+            report_type: "DISPATCH",
+            report_subtype: "UNIT_SCADA",
+            version: 1,
+            columns: &cols,
+        };
+        let anchor = "2026-08".parse().ok();
+        let ids = r.shape_ids(&irow, anchor);
+        assert_eq!(ids.len(), 1);
+        let recorded = &r.census()["DISPATCH_UNIT_SCADA"];
+        assert!(recorded.iter().any(|e| e.id == ids[0]));
+        assert!(r.shape_ids(&irow, "2009-07".parse().ok()).is_empty());
+        assert!(r.census().len() > 200);
+    }
 
     #[test]
     fn embedded_registry_loads_and_indexes() {

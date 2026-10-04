@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::file_model::error::SchemaFileError;
 use crate::file_model::model::{Market, MarketDef, TableDef};
+use crate::file_model::shapes::{ShapeEntry, read_shapes, shape_issues};
 use crate::file_model::validate::{Issue, validate_set};
 
 /// Everything in a `schemas/` tree.
@@ -17,6 +18,11 @@ pub struct SchemaSet {
     pub markets: Vec<MarketDef>,
     /// Every table, sorted by name.
     pub tables: Vec<TableDef>,
+    /// The census's shapes of each table, by table name. Not part of the
+    /// blob: they are packed on their own ([`SchemaSet::encode_shapes`]) so
+    /// a run that never asks for a shape never decodes them.
+    #[serde(skip)]
+    pub shapes: BTreeMap<String, Vec<ShapeEntry>>,
 }
 
 /// Directories under a market that hold the census's metadata, not table
@@ -70,11 +76,10 @@ impl SchemaSet {
                 entries.sort();
                 for p in entries {
                     if p.is_dir() {
-                        let census = p
-                            .file_name()
-                            .and_then(|n| n.to_str())
-                            .is_some_and(|n| CENSUS_DIRS.contains(&n));
-                        if !census {
+                        let dir_name = p.file_name().and_then(|n| n.to_str()).unwrap_or("");
+                        if dir_name == "shapes" {
+                            set.read_shapes_dir(&p)?;
+                        } else if !CENSUS_DIRS.contains(&dir_name) {
                             stack.push(p);
                         }
                         continue;
@@ -92,6 +97,31 @@ impl SchemaSet {
         }
         set.tables.sort_by(|a, b| a.name.cmp(&b.name));
         Ok(set)
+    }
+
+    /// Reads every `{TABLE}.toml` of a shapes directory.
+    fn read_shapes_dir(&mut self, dir: &Path) -> Result<(), SchemaFileError> {
+        let mut files: Vec<_> = std::fs::read_dir(dir)
+            .map_err(|source| SchemaFileError::Read {
+                path: dir.display().to_string(),
+                source,
+            })?
+            .filter_map(Result::ok)
+            .map(|e| e.path())
+            .filter(|p| p.extension().is_some_and(|e| e == "toml"))
+            .collect();
+        files.sort();
+        for p in files {
+            let table = p
+                .file_stem()
+                .map(|s| s.to_string_lossy().into_owned())
+                .unwrap_or_default();
+            self.shapes
+                .entry(table)
+                .or_default()
+                .extend(read_shapes(&p)?);
+        }
+        Ok(())
     }
 
     /// Every issue in the set, per table then across tables; empty when
@@ -115,6 +145,16 @@ impl SchemaSet {
             .flat_map(crate::file_model::validate::validate_structure)
             .collect();
         out.extend(validate_set(&self.tables));
+        for (table, shapes) in &self.shapes {
+            out.extend(
+                shape_issues(table, shapes)
+                    .into_iter()
+                    .map(|message| Issue {
+                        table: table.clone(),
+                        message,
+                    }),
+            );
+        }
         let markets: BTreeMap<Market, &MarketDef> =
             self.markets.iter().map(|m| (m.market, m)).collect();
         for t in &self.tables {
@@ -141,6 +181,18 @@ impl SchemaSet {
 
     /// Decodes a postcard blob.
     pub fn decode(bytes: &[u8]) -> Result<Self, SchemaFileError> {
+        postcard::from_bytes(bytes).map_err(SchemaFileError::Blob)
+    }
+
+    /// Encodes the census's shapes as a postcard blob of their own.
+    pub fn encode_shapes(&self) -> Vec<u8> {
+        postcard::to_allocvec(&self.shapes).expect("shapes always serialise")
+    }
+
+    /// Decodes a blob of shapes.
+    pub fn decode_shapes(
+        bytes: &[u8],
+    ) -> Result<BTreeMap<String, Vec<ShapeEntry>>, SchemaFileError> {
         postcard::from_bytes(bytes).map_err(SchemaFileError::Blob)
     }
 
@@ -183,21 +235,52 @@ mod tests {
         std::fs::write(nem_dir.join("DRAFT_X.toml"), "garbage").unwrap();
         std::fs::write(nem_dir.join("_conflicts.toml"), "garbage").unwrap();
         std::fs::write(nem_dir.join("notes.md"), "text").unwrap();
-        for d in CENSUS_DIRS {
-            let census = dir.path().join("nem").join(d);
-            std::fs::create_dir_all(&census).unwrap();
-            std::fs::write(census.join("2026-08.toml"), "\"A.zip\" = \"0\"").unwrap();
-        }
+        // The census's files are not tables: a month's census is not read,
+        // and a table's shapes are read as shapes.
+        let census = dir.path().join("nem").join("census");
+        std::fs::create_dir_all(&census).unwrap();
+        std::fs::write(census.join("2026-08.toml"), "\"A.zip\" = \"0\"").unwrap();
+        let shapes = dir.path().join("nem").join("shapes");
+        std::fs::create_dir_all(&shapes).unwrap();
+        let entry = crate::file_model::shapes::tests::scada_entry();
+        std::fs::write(
+            shapes.join("DISPATCH_UNIT_SCADA.toml"),
+            crate::file_model::shapes::render_shapes(std::slice::from_ref(&entry)),
+        )
+        .unwrap();
         assert!(is_table_path("nem/mms/REGION.toml"));
         assert!(!is_table_path("nem/census/2026-08.toml"));
         assert!(!is_table_path("nem/shapes/REGION.toml"));
         let set = SchemaSet::read_dir(dir.path()).unwrap();
         assert_eq!(set.tables.len(), 1);
+        assert_eq!(
+            set.shapes["DISPATCH_UNIT_SCADA"],
+            std::slice::from_ref(&entry)
+        );
+        let mut edited = set.clone();
+        edited.shapes.get_mut("DISPATCH_UNIT_SCADA").unwrap()[0].version = 2;
+        assert!(
+            edited.validate().is_empty(),
+            "the version is not part of the id"
+        );
+        edited.shapes.get_mut("DISPATCH_UNIT_SCADA").unwrap()[0]
+            .columns
+            .pop();
+        assert_eq!(edited.validate().len(), 1);
+        std::fs::write(shapes.join("BAD.toml"), "shape = 1").unwrap();
+        assert!(SchemaSet::read_dir(dir.path()).is_err());
+        std::fs::remove_file(shapes.join("BAD.toml")).unwrap();
         assert_eq!(set.markets, vec![nem()]);
         assert!(set.validate().is_empty(), "{:?}", set.validate());
         let bytes = set.encode();
         let back = SchemaSet::decode(&bytes).unwrap();
-        assert_eq!(back, set);
+        assert_eq!(back.tables, set.tables);
+        assert!(back.shapes.is_empty(), "shapes are packed on their own");
+        assert_eq!(
+            SchemaSet::decode_shapes(&set.encode_shapes()).unwrap(),
+            set.shapes
+        );
+        assert!(SchemaSet::decode_shapes(&[0xff]).is_err());
         assert!(SchemaSet::decode(&bytes[..3]).is_err());
         assert_eq!(set.market(Market::Nem), Some(&nem()));
         assert_eq!(set.market(Market::Wem), None);
@@ -208,6 +291,7 @@ mod tests {
         let set = SchemaSet {
             markets: vec![],
             tables: vec![unit_scada()],
+            ..Default::default()
         };
         assert!(
             set.validate()
@@ -217,6 +301,7 @@ mod tests {
         let set = SchemaSet {
             markets: vec![nem(), nem()],
             tables: vec![],
+            ..Default::default()
         };
         assert!(
             set.validate()

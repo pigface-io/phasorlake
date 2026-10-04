@@ -2,7 +2,7 @@
 
 use std::fmt;
 
-use nemlake_core::{Fingerprint, YearMonth};
+use nemlake_core::{Fingerprint, ShapeId, YearMonth};
 use serde::{Deserialize, Serialize};
 
 /// The market a table belongs to.
@@ -284,6 +284,8 @@ pub struct RuleDef {
     pub version: Option<SchemaVersion>,
     /// Only blocks with this column list.
     pub fingerprint: Option<Fingerprint>,
+    /// Only blocks of this shape, as the census recorded it.
+    pub shape: Option<ShapeId>,
     /// The routes: which file column feeds which lake column.
     pub columns: Vec<RuleColumn>,
 }
@@ -298,14 +300,27 @@ pub struct RuleColumn {
 }
 
 impl RuleDef {
-    /// Whether the rule is for a block of this version and column list in
-    /// a source of this month. A rule bounded by months does not apply to
-    /// a source whose month is not known.
+    /// Whether the rule has a scope: a shape, a version, a column list or
+    /// a span of months. A rule for every file there ever was is a column
+    /// of the table, not a rule.
+    pub fn is_scoped(&self) -> bool {
+        self.shape.is_some()
+            || self.version.is_some()
+            || self.fingerprint.is_some()
+            || self.from.is_some()
+            || self.to.is_some()
+    }
+
+    /// Whether the rule is for a block of this version, column list and
+    /// shapes (the ids the census gives it) in a source of this month. A
+    /// rule bounded by months does not apply to a source whose month is
+    /// not known, nor a rule for a shape to a block the census has not seen.
     pub fn applies(
         &self,
         period: Option<YearMonth>,
         version: SchemaVersion,
         fingerprint: Fingerprint,
+        shapes: &[ShapeId],
     ) -> bool {
         if self.from.is_some() || self.to.is_some() {
             let Some(p) = period else {
@@ -317,6 +332,7 @@ impl RuleDef {
         }
         self.version.is_none_or(|v| v == version)
             && self.fingerprint.is_none_or(|f| f == fingerprint)
+            && self.shape.is_none_or(|s| shapes.contains(&s))
     }
 }
 
@@ -449,31 +465,50 @@ mod tests {
             to: None,
             version: None,
             fingerprint: None,
+            shape: None,
             columns: vec![],
         };
+        assert!(!rule.is_scoped());
         // Unbounded: every block, whatever is known of its source.
-        assert!(rule.applies(None, SchemaVersion(1), fp));
-        assert!(rule.applies(Some(month("2012-01")), SchemaVersion(9), other));
+        assert!(rule.applies(None, SchemaVersion(1), fp, &[]));
+        assert!(rule.applies(Some(month("2012-01")), SchemaVersion(9), other, &[]));
         // Bounded by months, both ends inclusive.
         rule.from = Some(month("2010-01"));
         rule.to = Some(month("2012-06"));
-        assert!(rule.applies(Some(month("2010-01")), SchemaVersion(1), fp));
-        assert!(rule.applies(Some(month("2012-06")), SchemaVersion(1), fp));
-        assert!(!rule.applies(Some(month("2009-12")), SchemaVersion(1), fp));
-        assert!(!rule.applies(Some(month("2012-07")), SchemaVersion(1), fp));
+        assert!(rule.applies(Some(month("2010-01")), SchemaVersion(1), fp, &[]));
+        assert!(rule.applies(Some(month("2012-06")), SchemaVersion(1), fp, &[]));
+        assert!(!rule.applies(Some(month("2009-12")), SchemaVersion(1), fp, &[]));
+        assert!(!rule.applies(Some(month("2012-07")), SchemaVersion(1), fp, &[]));
         assert!(
-            !rule.applies(None, SchemaVersion(1), fp),
+            !rule.applies(None, SchemaVersion(1), fp, &[]),
             "a month nobody knows is in no interval"
         );
         // One end alone.
         rule.to = None;
-        assert!(rule.applies(Some(month("2026-08")), SchemaVersion(1), fp));
+        assert!(rule.applies(Some(month("2026-08")), SchemaVersion(1), fp, &[]));
         // By version and by column list.
         rule.version = Some(SchemaVersion(2));
-        assert!(!rule.applies(Some(month("2011-01")), SchemaVersion(1), fp));
-        assert!(rule.applies(Some(month("2011-01")), SchemaVersion(2), fp));
+        assert!(!rule.applies(Some(month("2011-01")), SchemaVersion(1), fp, &[]));
+        assert!(rule.applies(Some(month("2011-01")), SchemaVersion(2), fp, &[]));
         rule.fingerprint = Some(fp);
-        assert!(rule.applies(Some(month("2011-01")), SchemaVersion(2), fp));
-        assert!(!rule.applies(Some(month("2011-01")), SchemaVersion(2), other));
+        assert!(rule.applies(Some(month("2011-01")), SchemaVersion(2), fp, &[]));
+        assert!(!rule.applies(Some(month("2011-01")), SchemaVersion(2), other, &[]));
+        assert!(rule.is_scoped());
+        // By shape: only a block the census gives that id.
+        let mut by_shape = RuleDef {
+            fingerprint: None,
+            version: None,
+            from: None,
+            shape: Some(ShapeId(7)),
+            ..rule
+        };
+        assert!(by_shape.is_scoped());
+        assert!(by_shape.applies(None, SchemaVersion(1), fp, &[ShapeId(3), ShapeId(7)]));
+        assert!(!by_shape.applies(None, SchemaVersion(1), fp, &[ShapeId(3)]));
+        assert!(!by_shape.applies(None, SchemaVersion(1), fp, &[]));
+        // A shape and an interval: both must hold.
+        by_shape.to = Some(month("2012-06"));
+        assert!(by_shape.applies(Some(month("2012-01")), SchemaVersion(1), fp, &[ShapeId(7)]));
+        assert!(!by_shape.applies(Some(month("2013-01")), SchemaVersion(1), fp, &[ShapeId(7)]));
     }
 }

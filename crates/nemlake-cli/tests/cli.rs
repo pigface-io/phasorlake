@@ -781,8 +781,16 @@ fn a_hand_written_rule_brings_in_the_files_of_an_interval() {
     assert!(line("2024-03").contains("\"resolution\":\"exact\""), "{ls}");
     assert!(cli.ok(&["reingest"]).contains("0 listed"));
 
-    // Widen the rule to every month: only the 2024 source is behind now.
+    // Widen the rule to every month of version 1: only the 2024 source is
+    // behind now.
+    std::fs::write(&table, ruled.replace("to = \"2011-12\"\n", "version = 1\n")).unwrap();
+    // A rule for every file there ever was is refused: it says nothing
+    // that a column of the table would not.
     std::fs::write(&table, ruled.replace("to = \"2011-12\"\n", "")).unwrap();
+    let (code, _, err) = cli.code(&["schema", "list"]);
+    assert_ne!(code, 0);
+    assert!(err.contains("has no scope"), "{err}");
+    std::fs::write(&table, ruled.replace("to = \"2011-12\"\n", "version = 1\n")).unwrap();
     let out = cli.ok(&["reingest", "--dry-run"]);
     assert!(
         out.contains("1 listed") && out.contains("RULED_202403"),

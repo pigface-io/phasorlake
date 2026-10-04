@@ -1280,11 +1280,19 @@ mod tests {
             to: Some("2011-12".parse().unwrap()),
             version: None,
             fingerprint: None,
+            shape: None,
             columns: vec![RuleColumn {
                 source: "SCADAVALUE".into(),
                 column: "SCADAVALUE_TEXT".into(),
             }],
         });
+        // A rule for a shape, and one for a shape within an interval.
+        let mut by_shape = existing.rules[0].clone();
+        by_shape.to = None;
+        by_shape.shape = Some(nemlake_core::ShapeId(0x0123_4567_89ab_cdef));
+        existing.rules.push(by_shape.clone());
+        by_shape.from = Some("2010-01".parse().unwrap());
+        existing.rules.push(by_shape);
         assert_eq!(validate_table(&existing), vec![]);
         let mut inputs = scada_inputs(&ctl, &dm, &blocks);
         inputs.existing = Some(&existing);

@@ -335,6 +335,14 @@ fn validate_rules(t: &TableDef, out: &mut Vec<Issue>) {
                 format!("rule {n} has no note; say why it exists and how it was checked"),
             ));
         }
+        if !r.is_scoped() {
+            out.push(issue(
+                t,
+                format!(
+                    "rule {n} has no scope; say which files it is for with shape, version, fingerprint, from or to"
+                ),
+            ));
+        }
         if let (Some(a), Some(b)) = (r.from, r.to)
             && b < a
         {
@@ -790,6 +798,18 @@ mod tests {
         let mut t = unit_scada_with_rule();
         t.rules[0].note = "  ".into();
         has(&t, "rule 1 has no note");
+
+        let mut t = unit_scada_with_rule();
+        t.rules[0].from = None;
+        t.rules[0].to = None;
+        t.rules[0].version = None;
+        t.rules[0].fingerprint = None;
+        has(
+            &t,
+            "rule 1 has no scope; say which files it is for with shape, version, fingerprint, from or to",
+        );
+        t.rules[0].shape = Some(nemlake_core::ShapeId(1));
+        assert_eq!(validate_table(&t), vec![]);
 
         let mut t = unit_scada_with_rule();
         t.rules[0].from = Some("2012-01".parse().unwrap());

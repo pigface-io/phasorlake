@@ -195,15 +195,24 @@ src = ["manual"]
 
 [[rule]]
 note = "Until 2011-12 RRP carried a currency suffix; checked against the 2010-03 and 2011-12 archives."
-from = "2009-07"                 # first source month, optional
-to = "2011-12"                   # last source month, inclusive, optional
-version = 1                      # only blocks published as this version, optional
-# fingerprint = "xxh3:..."       # only this exact column list, optional
+shape = "a3f9c2e1b4d07785"       # only blocks of this shape, from schemas/nem/shapes/
+# from = "2009-07"               # first source month
+# to = "2011-12"                 # last source month, inclusive
+# version = 1                    # only blocks published as this version
+# fingerprint = "xxh3:..."       # only this exact column list
 
 [[rule.column]]
 source = "RRP"                   # the column's name in the file
 column = "RRP_AS_PUBLISHED"      # the lake column it feeds in this interval
 ```
+
+A rule says which files it is for, and at least one scope is required. Name
+the shape: the census (`nemlake schema census`) records every shape a table
+was published in, with its id and the months it was seen, under
+`schemas/nem/shapes/`, and a rule for a shape applies to exactly the blocks
+of that shape in the months the census saw it. A span of months is for the
+rare case of one shape whose meaning changed over time; it may be combined
+with `shape`.
 
 A rule routes named file columns to declared lake columns; the lake
 column's type decides how the values are read. With that, a column

@@ -1,4 +1,5 @@
-//! Validates `schemas/` and packs it into `$OUT_DIR/registry.bin`.
+//! Validates `schemas/` and packs it into `$OUT_DIR/registry.bin`, and the
+//! census's shapes into `$OUT_DIR/shapes.bin`.
 //!
 //! A schema file that breaks an invariant fails the build with the issue
 //! list, so no binary ever ships a registry the validator rejects.
@@ -47,7 +48,7 @@ fn main() {
             list.join("\n")
         );
     }
-    let out =
-        PathBuf::from(std::env::var("OUT_DIR").expect("cargo sets OUT_DIR")).join("registry.bin");
-    std::fs::write(&out, set.encode()).expect("write registry.bin");
+    let out_dir = PathBuf::from(std::env::var("OUT_DIR").expect("cargo sets OUT_DIR"));
+    std::fs::write(out_dir.join("registry.bin"), set.encode()).expect("write registry.bin");
+    std::fs::write(out_dir.join("shapes.bin"), set.encode_shapes()).expect("write shapes.bin");
 }

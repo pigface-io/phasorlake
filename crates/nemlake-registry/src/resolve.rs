@@ -141,11 +141,16 @@ impl Registry {
         let t = self.table(id);
         let fp = irow.fingerprint();
         let version = SchemaVersion(irow.version);
+        let shapes = if t.rules.iter().any(|r| r.shape.is_some()) {
+            self.shape_ids(irow, period)
+        } else {
+            Vec::new()
+        };
         // Routes in the order the rules are written; the first route of a
         // file column, and the first into a lake column, stands.
         let mut routes: Vec<(&str, usize)> = Vec::new();
         for (n, rule) in t.rules.iter().enumerate() {
-            if !rule.applies(period, version, fp) {
+            if !rule.applies(period, version, fp, &shapes) {
                 continue;
             }
             for c in &rule.columns {
@@ -1242,6 +1247,7 @@ mod tests {
                 to: Some("2011-12".parse().unwrap()),
                 version: None,
                 fingerprint: None,
+                shape: None,
                 columns: vec![RuleColumn {
                     source: "SCADAVALUE".into(),
                     column: "SCADAVALUE_TEXT".into(),
@@ -1253,6 +1259,7 @@ mod tests {
                 to: None,
                 version: Some(SchemaVersion(7)),
                 fingerprint: None,
+                shape: None,
                 columns: vec![RuleColumn {
                     source: "CONFIDENTIAL_TO".into(),
                     column: "DUID".into(),
@@ -1264,9 +1271,94 @@ mod tests {
             SchemaSet {
                 markets: vec![],
                 tables: vec![t],
+                ..Default::default()
             },
             TypeOptions::default(),
         )
+    }
+
+    #[test]
+    fn a_rule_for_a_shape_routes_that_shape_only() {
+        use crate::file_model::blob::SchemaSet;
+        use crate::file_model::shapes::ShapeEntry;
+        use crate::file_model::{RuleColumn, RuleDef};
+        use nemlake_core::TypeClass;
+        let base = ruled();
+        let mut t = base
+            .table(base.table_by_name("DISPATCH_UNIT_SCADA").unwrap())
+            .clone();
+        let entry = |columns: &[(&str, TypeClass)], first: &str, last: &str| {
+            let mut e = ShapeEntry {
+                id: nemlake_core::ShapeId(0),
+                report_type: "DISPATCH".into(),
+                report_subtype: "UNIT_SCADA".into(),
+                version: 1,
+                first_seen: first.parse().unwrap(),
+                last_seen: last.parse().unwrap(),
+                columns: columns.iter().map(|(n, c)| ((*n).to_owned(), *c)).collect(),
+            };
+            e.id = e.shape().id();
+            e
+        };
+        let three = [
+            ("SETTLEMENTDATE", TypeClass::Timestamp),
+            ("DUID", TypeClass::Varchar),
+            ("SCADAVALUE", TypeClass::Varchar),
+        ];
+        let mut four = three.to_vec();
+        four.push(("LASTCHANGED", TypeClass::Timestamp));
+        let ruled_shape = entry(&three, "2010-01", "2010-12");
+        let sibling = entry(&four, "2010-01", "2010-12");
+        t.rules = vec![RuleDef {
+            note: "SCADAVALUE was loaded as text in this shape".into(),
+            from: None,
+            to: None,
+            version: None,
+            fingerprint: None,
+            shape: Some(ruled_shape.id),
+            columns: vec![RuleColumn {
+                source: "SCADAVALUE".into(),
+                column: "SCADAVALUE_TEXT".into(),
+            }],
+        }];
+        assert_eq!(crate::file_model::validate::validate_structure(&t), vec![]);
+        let r = Registry::from_set(
+            SchemaSet {
+                markets: vec![],
+                tables: vec![t],
+                shapes: [(
+                    "DISPATCH_UNIT_SCADA".to_owned(),
+                    vec![ruled_shape.clone(), sibling.clone()],
+                )]
+                .into(),
+            },
+            TypeOptions::default(),
+        );
+        let cols3: Vec<&str> = three.iter().map(|(n, _)| *n).collect();
+        let cols4: Vec<&str> = four.iter().map(|(n, _)| *n).collect();
+        let row = |columns| IRow {
+            report_type: "DISPATCH",
+            report_subtype: "UNIT_SCADA",
+            version: 1,
+            columns,
+        };
+        let month = |s: &str| Some(s.parse::<YearMonth>().unwrap());
+        assert_eq!(r.shape_ids(&row(&cols3), None), [ruled_shape.id]);
+        assert_eq!(
+            r.shape_ids(&row(&cols3), month("2010-05")),
+            [ruled_shape.id]
+        );
+        assert!(r.shape_ids(&row(&cols3), month("2012-01")).is_empty());
+        assert_eq!(r.shape_ids(&row(&cols4), None), [sibling.id]);
+        let opts = ResolveOptions::default();
+        // The shape the rule names, in a month the census saw it: routed.
+        let res = r.resolve_in(&row(&cols3), opts, month("2010-05")).unwrap();
+        assert_eq!(res.label(), "exact+rule");
+        // A month the census did not see it in, or the sibling shape: not.
+        let later = r.resolve_in(&row(&cols3), opts, month("2012-01")).unwrap();
+        assert_eq!(later.label(), "exact");
+        let other = r.resolve_in(&row(&cols4), opts, month("2010-05")).unwrap();
+        assert_eq!(other.label(), "exact");
     }
 
     #[test]
