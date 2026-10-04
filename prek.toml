@@ -109,7 +109,7 @@ name = "bench: the fast set, held to bench/budgets.json"
 language = "system"
 entry = "just bench-fast"
 stages = ["pre-push"]
-files = '^(crates/nemlake-(core|mms|schema|schema-model|store)/|bench/budgets\.json$)'
+files = '^(crates/nemlake-(core|decode|registry|writer)/|bench/budgets\.json$)'
 pass_filenames = false
 
 [[repos.hooks]]
@@ -136,5 +136,5 @@ name = "derived: schemas/ regenerates byte-identically from the fixtures"
 language = "system"
 entry = "just schema-check"
 stages = ["pre-push"]
-files = '^(schemas/|testdata/(bootstrap|csv)/|crates/nemlake-schema-bootstrap/)'
+files = '^(schemas/|testdata/(bootstrap|csv)/|crates/nemlake-census/)'
 pass_filenames = false

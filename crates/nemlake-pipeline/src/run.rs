@@ -3,14 +3,14 @@
 use std::time::Instant;
 
 use futures::StreamExt;
+use nemlake_acquire::cache::sha256_hex;
+use nemlake_acquire::{FileKind, LocalFile, RemoteFile};
 use nemlake_core::Diagnose;
 use nemlake_core::event::{Event, Summary};
 use nemlake_core::report::{DiagSink, Flow, Report, SourceOutcome, SourceStatus};
 use nemlake_core::{Category, Diagnostic};
-use nemlake_fetch::cache::sha256_hex;
-use nemlake_fetch::{FileKind, LocalFile, RemoteFile};
-use nemlake_schema::{Mode, Registry, ResolveOptions};
-use nemlake_store::manifest::{
+use nemlake_registry::{Mode, Registry, ResolveOptions};
+use nemlake_writer::manifest::{
     FileRecord, IngestEnd, IngestShape, IngestStart, IngestStatus, SchemaSeen,
 };
 use tokio::sync::mpsc;
@@ -39,7 +39,7 @@ pub fn local_remote(path: &std::path::Path) -> Option<RemoteFile> {
     };
     let stem = abs.file_stem()?.to_string_lossy().to_ascii_uppercase();
     let period = crate::ingest_file::period_from_stem(&stem);
-    let table = nemlake_fetch::MmsdmArchive::parse_name(&abs.file_name()?.to_string_lossy())
+    let table = nemlake_acquire::MmsdmArchive::parse_name(&abs.file_name()?.to_string_lossy())
         .map(|(t, _)| t);
     Some(RemoteFile {
         url,
@@ -73,8 +73,8 @@ pub fn recorded_remote(rec: &FileRecord) -> Option<RemoteFile> {
     let mut remote = local_remote(std::path::Path::new(&rec.cache_path))?;
     remote.url = Url::parse(&rec.url).ok()?;
     remote.source = match rec.source.as_str() {
-        nemlake_fetch::mmsdm::SOURCE_ID => nemlake_fetch::mmsdm::SOURCE_ID,
-        nemlake_fetch::wem::SOURCE_ID => nemlake_fetch::wem::SOURCE_ID,
+        nemlake_acquire::mmsdm::SOURCE_ID => nemlake_acquire::mmsdm::SOURCE_ID,
+        nemlake_acquire::wem::SOURCE_ID => nemlake_acquire::wem::SOURCE_ID,
         _ => "local",
     };
     Some(remote)
@@ -155,7 +155,7 @@ pub async fn run(
     if let Err(e) = deps.manifest.abort_running().await {
         report.emit(e.diagnostic());
     }
-    let _ = nemlake_store::parquet_hive::sweep_tmp(&deps.home.lake());
+    let _ = nemlake_writer::parquet_hive::sweep_tmp(&deps.home.lake());
 
     // 1. List.
     let listed: Vec<Listed> = match &plan.input {

@@ -1,19 +1,18 @@
 # nemlake: AEMO market data into a local Parquet lake.
 #
 # Layers, dependencies pointing down only:
-#   cli -> pipeline -> {fetch, mms, store} -> schema -> schema-model -> core
-# The bootstrap, bench and xtask crates are tooling and are not default members,
+#   cli -> pipeline -> {acquire, decode, writer} -> registry -> core
+# The census, bench and xtask crates are tooling and are not default members,
 # so `cargo build` compiles only what ships.
 [workspace]
 resolver = "3"
 members = [
     "crates/nemlake-core",
-    "crates/nemlake-schema-model",
-    "crates/nemlake-schema",
-    "crates/nemlake-schema-bootstrap",
-    "crates/nemlake-mms",
-    "crates/nemlake-fetch",
-    "crates/nemlake-store",
+    "crates/nemlake-registry",
+    "crates/nemlake-census",
+    "crates/nemlake-decode",
+    "crates/nemlake-acquire",
+    "crates/nemlake-writer",
     "crates/nemlake-pipeline",
     "crates/nemlake-cli",
     "crates/nemlake-bench",
@@ -21,11 +20,10 @@ members = [
 ]
 default-members = [
     "crates/nemlake-core",
-    "crates/nemlake-schema-model",
-    "crates/nemlake-schema",
-    "crates/nemlake-mms",
-    "crates/nemlake-fetch",
-    "crates/nemlake-store",
+    "crates/nemlake-registry",
+    "crates/nemlake-decode",
+    "crates/nemlake-acquire",
+    "crates/nemlake-writer",
     "crates/nemlake-pipeline",
     "crates/nemlake-cli",
 ]
@@ -64,11 +62,10 @@ uninlined_format_args = "deny"
 
 [workspace.dependencies]
 nemlake-core = { path = "crates/nemlake-core" }
-nemlake-schema-model = { path = "crates/nemlake-schema-model" }
-nemlake-schema = { path = "crates/nemlake-schema" }
-nemlake-mms = { path = "crates/nemlake-mms" }
-nemlake-fetch = { path = "crates/nemlake-fetch" }
-nemlake-store = { path = "crates/nemlake-store" }
+nemlake-registry = { path = "crates/nemlake-registry" }
+nemlake-decode = { path = "crates/nemlake-decode" }
+nemlake-acquire = { path = "crates/nemlake-acquire" }
+nemlake-writer = { path = "crates/nemlake-writer" }
 nemlake-pipeline = { path = "crates/nemlake-pipeline" }
 
 # hot path

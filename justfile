@@ -69,25 +69,25 @@ schema_inputs := "--ctl testdata/bootstrap/MMSDM_2026_08/CTL --ctl testdata/boot
 
 # the embedded schema files: regenerate from the fixtures and fail on a diff
 schema-check:
-    cargo run -q -p nemlake-schema-bootstrap -- regen --check --schemas schemas {{schema_inputs}}
+    cargo run -q -p nemlake-census -- regen --check --schemas schemas {{schema_inputs}}
 
 # regenerate the schema files from the fixtures
 schema-regen:
-    cargo run -q -p nemlake-schema-bootstrap -- regen --schemas schemas {{schema_inputs}}
+    cargo run -q -p nemlake-census -- regen --schemas schemas {{schema_inputs}}
 
 # refresh the bootstrap fixtures of a month from nemweb: every CTL, the head of every zip and the README (needs the network; one request per interval, nemweb blocks fast clients)
 schema-fixtures month="2024-01" interval_ms="1200":
-    cargo run -q -p nemlake-schema-bootstrap -- ctls --month {{month}} --interval-ms {{interval_ms}} --out testdata/bootstrap/MMSDM_{{replace(month, "-", "_")}}/CTL
-    cargo run -q -p nemlake-schema-bootstrap -- heads --month {{month}} --interval-ms {{interval_ms}} --out testdata/bootstrap/MMSDM_{{replace(month, "-", "_")}}/heads
-    cargo run -q -p nemlake-schema-bootstrap -- readme --month {{month}} --interval-ms {{interval_ms}} --out testdata/bootstrap/MMSDM_{{replace(month, "-", "_")}}
+    cargo run -q -p nemlake-census -- ctls --month {{month}} --interval-ms {{interval_ms}} --out testdata/bootstrap/MMSDM_{{replace(month, "-", "_")}}/CTL
+    cargo run -q -p nemlake-census -- heads --month {{month}} --interval-ms {{interval_ms}} --out testdata/bootstrap/MMSDM_{{replace(month, "-", "_")}}/heads
+    cargo run -q -p nemlake-census -- readme --month {{month}} --interval-ms {{interval_ms}} --out testdata/bootstrap/MMSDM_{{replace(month, "-", "_")}}
 
 # read AEMO's MMS Data Model Report into testdata/bootstrap/datamodel/ (needs the network; a few hundred paced requests)
 schema-datamodel interval_ms="1200":
-    cargo run -q -p nemlake-schema-bootstrap -- datamodel --interval-ms {{interval_ms}} --out testdata/bootstrap/datamodel
+    cargo run -q -p nemlake-census -- datamodel --interval-ms {{interval_ms}} --out testdata/bootstrap/datamodel
 
 # the real nemweb: one small month listing and the smallest zip (needs the network)
 net-test:
-    NEMLAKE_NET_TESTS=1 cargo test --locked -p nemlake-fetch --test net -- --nocapture
+    NEMLAKE_NET_TESTS=1 cargo test --locked -p nemlake-acquire --test net -- --nocapture
 
 # ── benchmarks ───────────────────────────────────────────────────────────────
 

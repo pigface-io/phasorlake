@@ -4,10 +4,10 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 use anyhow::Result;
+use nemlake_acquire::{MmsdmArchive, Query};
 use nemlake_core::Diagnose;
-use nemlake_fetch::{MmsdmArchive, Query};
 use nemlake_pipeline::{Input, Plan, RunOptions};
-use nemlake_schema::Mode;
+use nemlake_registry::Mode;
 use tokio_util::sync::CancellationToken;
 
 use crate::cli::{Cli, FetchMarket, IngestArgs};
@@ -33,7 +33,7 @@ fn options(
         fail_fast: args.fail_fast,
         dry_run,
         strict_footer: args.strict || ctx.config.strict,
-        batch_rows: nemlake_mms::arrow_sink::DEFAULT_BATCH_ROWS,
+        batch_rows: nemlake_decode::arrow_sink::DEFAULT_BATCH_ROWS,
     }
 }
 

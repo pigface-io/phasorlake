@@ -10,12 +10,12 @@ use std::path::Path;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
+use nemlake_acquire::cache::DiskCache;
+use nemlake_acquire::{Fetcher, FetcherConfig, OfflineTransport};
 use nemlake_core::paths::Home;
-use nemlake_fetch::cache::DiskCache;
-use nemlake_fetch::{Fetcher, FetcherConfig, OfflineTransport};
 use nemlake_pipeline::{Deps, Input, Plan, RunOptions, run};
-use nemlake_schema::{Registry, TypeOptions};
-use nemlake_store::{Manifest, ManifestHandle};
+use nemlake_registry::{Registry, TypeOptions};
+use nemlake_writer::{Manifest, ManifestHandle};
 use peak_alloc::PeakAlloc;
 use tokio_util::sync::CancellationToken;
 

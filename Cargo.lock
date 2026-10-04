@@ -1428,19 +1428,59 @@ dependencies = [
 ]
 
 [[package]]
+name = "nemlake-acquire"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "crc32fast",
+ "flate2",
+ "futures",
+ "memchr",
+ "nemlake-core",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "serde_yaml_ng",
+ "sha2",
+ "tempfile",
+ "thiserror",
+ "tokio",
+ "url",
+ "zip",
+]
+
+[[package]]
 name = "nemlake-bench"
 version = "0.1.0"
 dependencies = [
+ "nemlake-acquire",
  "nemlake-core",
- "nemlake-fetch",
  "nemlake-pipeline",
- "nemlake-schema",
- "nemlake-store",
+ "nemlake-registry",
+ "nemlake-writer",
  "peak_alloc",
  "serde_json",
  "tempfile",
  "tokio",
  "tokio-util",
+ "zip",
+]
+
+[[package]]
+name = "nemlake-census"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "flate2",
+ "nemlake-acquire",
+ "nemlake-core",
+ "nemlake-registry",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror",
+ "tokio",
+ "toml",
  "zip",
 ]
 
@@ -1451,12 +1491,12 @@ dependencies = [
  "anyhow",
  "clap",
  "indicatif",
+ "nemlake-acquire",
  "nemlake-core",
- "nemlake-fetch",
- "nemlake-mms",
+ "nemlake-decode",
  "nemlake-pipeline",
- "nemlake-schema",
- "nemlake-store",
+ "nemlake-registry",
+ "nemlake-writer",
  "serde",
  "serde_json",
  "tempfile",
@@ -1484,29 +1524,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "nemlake-fetch"
-version = "0.1.0"
-dependencies = [
- "async-trait",
- "crc32fast",
- "flate2",
- "futures",
- "memchr",
- "nemlake-core",
- "reqwest",
- "serde",
- "serde_json",
- "serde_yaml_ng",
- "sha2",
- "tempfile",
- "thiserror",
- "tokio",
- "url",
- "zip",
-]
-
-[[package]]
-name = "nemlake-mms"
+name = "nemlake-decode"
 version = "0.1.0"
 dependencies = [
  "arrow-array",
@@ -1515,7 +1533,7 @@ dependencies = [
  "csv",
  "memchr",
  "nemlake-core",
- "nemlake-schema",
+ "nemlake-registry",
  "proptest",
  "serde_json",
  "tempfile",
@@ -1531,11 +1549,11 @@ dependencies = [
  "arrow-schema",
  "async-trait",
  "futures",
+ "nemlake-acquire",
  "nemlake-core",
- "nemlake-fetch",
- "nemlake-mms",
- "nemlake-schema",
- "nemlake-store",
+ "nemlake-decode",
+ "nemlake-registry",
+ "nemlake-writer",
  "parquet",
  "serde_json",
  "tempfile",
@@ -1547,41 +1565,13 @@ dependencies = [
 ]
 
 [[package]]
-name = "nemlake-schema"
+name = "nemlake-registry"
 version = "0.1.0"
 dependencies = [
  "arrow-schema",
  "criterion",
  "hashbrown 0.17.1",
  "insta",
- "nemlake-core",
- "nemlake-schema-model",
- "tempfile",
- "thiserror",
-]
-
-[[package]]
-name = "nemlake-schema-bootstrap"
-version = "0.1.0"
-dependencies = [
- "clap",
- "flate2",
- "nemlake-core",
- "nemlake-fetch",
- "nemlake-schema-model",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror",
- "tokio",
- "toml",
- "zip",
-]
-
-[[package]]
-name = "nemlake-schema-model"
-version = "0.1.0"
-dependencies = [
  "nemlake-core",
  "postcard",
  "serde",
@@ -1591,7 +1581,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "nemlake-store"
+name = "nemlake-writer"
 version = "0.1.0"
 dependencies = [
  "arrow-array",
@@ -3215,7 +3205,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "clap",
- "nemlake-schema-model",
+ "nemlake-registry",
  "serde",
  "serde_json",
 ]

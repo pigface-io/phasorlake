@@ -7,17 +7,17 @@ use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
+use nemlake_acquire::LocalFile;
 use nemlake_core::event::Event;
 use nemlake_core::{Category, Diagnose, Diagnostic, Fingerprint, IRow, YearMonth};
-use nemlake_fetch::LocalFile;
-use nemlake_mms::archive::{WalkError, walk_csv_entries};
-use nemlake_mms::arrow_sink::{ArrowSink, BatchSink, BlockBatch};
-use nemlake_mms::quarantine::QuarantineWriter;
-use nemlake_mms::scan::{Flow, Pos, ScanOptions, ScanStats, scan};
-use nemlake_mms::{RowError, SinkError};
-use nemlake_schema::{LoadMode, Registry, ResolveOptions, Resolved, TableId};
-use nemlake_store::partition::split_by_month;
-use nemlake_store::{
+use nemlake_decode::archive::{WalkError, walk_csv_entries};
+use nemlake_decode::arrow_sink::{ArrowSink, BatchSink, BlockBatch};
+use nemlake_decode::quarantine::QuarantineWriter;
+use nemlake_decode::scan::{Flow, Pos, ScanOptions, ScanStats, scan};
+use nemlake_decode::{RowError, SinkError};
+use nemlake_registry::{LoadMode, Registry, ResolveOptions, Resolved, TableId};
+use nemlake_writer::partition::split_by_month;
+use nemlake_writer::{
     FileMeta, LakeWriter, ParquetHive, Partition, PartitionKey, Transform, WriterId, WrittenFile,
 };
 use tokio::sync::mpsc;
@@ -188,7 +188,7 @@ impl LakeSink<'_> {
         &mut self,
         key: WriterKey,
         wid: WriterId,
-    ) -> Result<(), nemlake_store::StoreError> {
+    ) -> Result<(), nemlake_writer::StoreError> {
         let written = self.writer.close(wid)?;
         let (table_id, version, shape, _) = key;
         if let Some(r) = self
@@ -204,7 +204,7 @@ impl LakeSink<'_> {
     /// Finishes the writer that was written to longest ago, to make room
     /// for another. Its file is complete; rows that come for its partition
     /// later go to a further file.
-    fn close_least_recent(&mut self) -> Result<(), nemlake_store::StoreError> {
+    fn close_least_recent(&mut self) -> Result<(), nemlake_writer::StoreError> {
         let Some((key, wid)) = self
             .writers
             .iter()
@@ -217,7 +217,7 @@ impl LakeSink<'_> {
         self.close_one(key, wid)
     }
 
-    fn close_all(&mut self) -> Result<(), nemlake_store::StoreError> {
+    fn close_all(&mut self) -> Result<(), nemlake_writer::StoreError> {
         let mut keys: Vec<_> = self.writers.drain().collect();
         keys.sort_by_key(|(k, _)| *k);
         for (key, (wid, _)) in keys {

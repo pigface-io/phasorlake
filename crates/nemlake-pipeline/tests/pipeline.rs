@@ -7,15 +7,15 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use async_trait::async_trait;
+use nemlake_acquire::cache::DiskCache;
+use nemlake_acquire::transport::{Canned, StaticTransport};
+use nemlake_acquire::{FetchError, Fetcher, FetcherConfig, FileKind, Query, RemoteFile, Source};
 use nemlake_core::event::Event;
 use nemlake_core::paths::Home;
-use nemlake_fetch::cache::DiskCache;
-use nemlake_fetch::transport::{Canned, StaticTransport};
-use nemlake_fetch::{FetchError, Fetcher, FetcherConfig, FileKind, Query, RemoteFile, Source};
 use nemlake_pipeline::{Deps, Input, Plan, RunOptions, run};
-use nemlake_schema::{Registry, TypeOptions};
-use nemlake_store::manifest::DiagFilter;
-use nemlake_store::{Manifest, ManifestHandle, ManifestThread};
+use nemlake_registry::{Registry, TypeOptions};
+use nemlake_writer::manifest::DiagFilter;
+use nemlake_writer::{Manifest, ManifestHandle, ManifestThread};
 use tokio_util::sync::CancellationToken;
 use url::Url;
 
@@ -164,17 +164,17 @@ async fn a_table_without_a_time_column_is_partitioned_by_its_file_month() {
         version: 1,
         columns: &cols,
     };
-    let table = nemlake_schema::infer::draft_table(
-        nemlake_schema::Market::Nem,
+    let table = nemlake_registry::infer::draft_table(
+        nemlake_registry::Market::Nem,
         &irow,
-        &nemlake_schema::infer::Sampler::new(2),
+        &nemlake_registry::infer::Sampler::new(2),
     );
     assert_eq!(table.time_column, None);
     let overlay = e.home.root().join("overlay/nem/mms");
     std::fs::create_dir_all(&overlay).unwrap();
     std::fs::write(
         overlay.join("NEMLAKE_TEST_NOTIME.toml"),
-        nemlake_schema::file::write_table(&table),
+        nemlake_registry::file_model::file::write_table(&table),
     )
     .unwrap();
     e.deps.registry = Arc::new(
@@ -545,7 +545,7 @@ column = "VALUE_TEXT"
             request: "ingest ruled".into(),
             input: Input::Local(vec![old, new]),
             options: RunOptions {
-                mode: nemlake_schema::Mode::Strict,
+                mode: nemlake_registry::Mode::Strict,
                 ..Default::default()
             },
         },
@@ -760,7 +760,7 @@ async fn rows_that_wander_over_many_months_are_written_in_parts() {
 /// What the manifest records of a source is enough to name it again.
 #[test]
 fn a_recorded_source_becomes_a_file_to_read() {
-    use nemlake_store::manifest::{FileRecord, IngestShape};
+    use nemlake_writer::manifest::{FileRecord, IngestShape};
     let rec = |source: &str, url: &str, path: &str| FileRecord {
         source: source.into(),
         url: url.into(),

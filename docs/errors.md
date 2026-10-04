@@ -14,133 +14,133 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 
 | code | raised in |
 |---|---|
-| `net.blocked` | `crates/nemlake-fetch/src/error.rs` |
-| `net.body` | `crates/nemlake-fetch/src/error.rs` |
-| `net.connect` | `crates/nemlake-fetch/src/error.rs` |
-| `net.content_length_mismatch` | `crates/nemlake-fetch/src/error.rs` |
-| `net.http_status` | `crates/nemlake-fetch/src/error.rs` |
+| `net.blocked` | `crates/nemlake-acquire/src/error.rs` |
+| `net.body` | `crates/nemlake-acquire/src/error.rs` |
+| `net.connect` | `crates/nemlake-acquire/src/error.rs` |
+| `net.content_length_mismatch` | `crates/nemlake-acquire/src/error.rs` |
+| `net.http_status` | `crates/nemlake-acquire/src/error.rs` |
 | `net.offline` | `crates/nemlake-pipeline/src/report.rs` |
-| `net.range_ignored` | `crates/nemlake-fetch/src/error.rs` |
-| `net.retries_exhausted` | `crates/nemlake-fetch/src/error.rs` |
-| `net.timeout` | `crates/nemlake-fetch/src/error.rs` |
+| `net.range_ignored` | `crates/nemlake-acquire/src/error.rs` |
+| `net.retries_exhausted` | `crates/nemlake-acquire/src/error.rs` |
+| `net.timeout` | `crates/nemlake-acquire/src/error.rs` |
 
 ## listing
 
 | code | raised in |
 |---|---|
-| `listing.month_missing` | `crates/nemlake-fetch/src/error.rs` |
-| `listing.no_match` | `crates/nemlake-fetch/src/error.rs` |
-| `listing.parse_failed` | `crates/nemlake-fetch/src/error.rs` |
-| `listing.unsupported` | `crates/nemlake-fetch/src/error.rs` |
+| `listing.month_missing` | `crates/nemlake-acquire/src/error.rs` |
+| `listing.no_match` | `crates/nemlake-acquire/src/error.rs` |
+| `listing.parse_failed` | `crates/nemlake-acquire/src/error.rs` |
+| `listing.unsupported` | `crates/nemlake-acquire/src/error.rs` |
 
 ## cache
 
 | code | raised in |
 |---|---|
-| `cache.io` | `crates/nemlake-fetch/src/error.rs` |
-| `cache.sha256_mismatch` | `crates/nemlake-fetch/src/error.rs` |
-| `cache.sidecar_corrupt` | `crates/nemlake-fetch/src/error.rs` |
+| `cache.io` | `crates/nemlake-acquire/src/error.rs` |
+| `cache.sha256_mismatch` | `crates/nemlake-acquire/src/error.rs` |
+| `cache.sidecar_corrupt` | `crates/nemlake-acquire/src/error.rs` |
 | `cache.source_missing` | `crates/nemlake-pipeline/src/run.rs` |
 
 ## zip
 
 | code | raised in |
 |---|---|
-| `zip.bad_entry` | `crates/nemlake-mms/src/archive.rs` |
-| `zip.member_mismatch` | `crates/nemlake-fetch/src/error.rs` |
-| `zip.member_unsupported` | `crates/nemlake-fetch/src/error.rs` |
-| `zip.nesting_too_deep` | `crates/nemlake-mms/src/archive.rs` |
-| `zip.no_csv` | `crates/nemlake-mms/src/archive.rs` |
-| `zip.open_failed` | `crates/nemlake-mms/src/archive.rs` |
-| `zip.remote_index` | `crates/nemlake-fetch/src/error.rs` |
-| `zip.spool_failed` | `crates/nemlake-mms/src/archive.rs` |
+| `zip.bad_entry` | `crates/nemlake-decode/src/archive.rs` |
+| `zip.member_mismatch` | `crates/nemlake-acquire/src/error.rs` |
+| `zip.member_unsupported` | `crates/nemlake-acquire/src/error.rs` |
+| `zip.nesting_too_deep` | `crates/nemlake-decode/src/archive.rs` |
+| `zip.no_csv` | `crates/nemlake-decode/src/archive.rs` |
+| `zip.open_failed` | `crates/nemlake-decode/src/archive.rs` |
+| `zip.remote_index` | `crates/nemlake-acquire/src/error.rs` |
+| `zip.spool_failed` | `crates/nemlake-decode/src/archive.rs` |
 
 ## csv
 
 | code | raised in |
 |---|---|
-| `csv.block_mismatch` | `crates/nemlake-mms/src/error.rs` |
-| `csv.data_before_header` | `crates/nemlake-mms/src/error.rs` |
-| `csv.field_count_mismatch` | `crates/nemlake-mms/src/error.rs` |
+| `csv.block_mismatch` | `crates/nemlake-decode/src/error.rs` |
+| `csv.data_before_header` | `crates/nemlake-decode/src/error.rs` |
+| `csv.field_count_mismatch` | `crates/nemlake-decode/src/error.rs` |
 | `csv.footer_count_mismatch` | `crates/nemlake-pipeline/src/ingest_file.rs` |
-| `csv.header_malformed` | `crates/nemlake-mms/src/error.rs` |
-| `csv.line_too_long` | `crates/nemlake-mms/src/error.rs` |
+| `csv.header_malformed` | `crates/nemlake-decode/src/error.rs` |
+| `csv.line_too_long` | `crates/nemlake-decode/src/error.rs` |
 | `csv.read_failed` | `crates/nemlake-pipeline/src/ingest_file.rs` |
-| `csv.row_too_short` | `crates/nemlake-mms/src/error.rs` |
-| `csv.stopped_fail_fast` | `crates/nemlake-mms/src/error.rs` |
-| `csv.too_many_bad_rows` | `crates/nemlake-mms/src/error.rs` |
+| `csv.row_too_short` | `crates/nemlake-decode/src/error.rs` |
+| `csv.stopped_fail_fast` | `crates/nemlake-decode/src/error.rs` |
+| `csv.too_many_bad_rows` | `crates/nemlake-decode/src/error.rs` |
 
 ## parse
 
 | code | raised in |
 |---|---|
-| `parse.boolean` | `crates/nemlake-mms/src/error.rs` |
-| `parse.decimal` | `crates/nemlake-mms/src/error.rs` |
-| `parse.float` | `crates/nemlake-mms/src/error.rs` |
-| `parse.integer` | `crates/nemlake-mms/src/error.rs` |
-| `parse.null_not_allowed` | `crates/nemlake-mms/src/error.rs` |
-| `parse.timestamp` | `crates/nemlake-mms/src/error.rs` |
-| `parse.timestamp_clamped` | `crates/nemlake-mms/src/arrow_sink.rs` |
-| `parse.utf8` | `crates/nemlake-mms/src/error.rs` |
+| `parse.boolean` | `crates/nemlake-decode/src/error.rs` |
+| `parse.decimal` | `crates/nemlake-decode/src/error.rs` |
+| `parse.float` | `crates/nemlake-decode/src/error.rs` |
+| `parse.integer` | `crates/nemlake-decode/src/error.rs` |
+| `parse.null_not_allowed` | `crates/nemlake-decode/src/error.rs` |
+| `parse.timestamp` | `crates/nemlake-decode/src/error.rs` |
+| `parse.timestamp_clamped` | `crates/nemlake-decode/src/arrow_sink.rs` |
+| `parse.utf8` | `crates/nemlake-decode/src/error.rs` |
 
 ## schema
 
 | code | raised in |
 |---|---|
-| `schema.blob_corrupt` | `crates/nemlake-schema-model/src/error.rs` |
-| `schema.breaking_change` | `crates/nemlake-schema-model/src/error.rs` |
-| `schema.compatible_drift` | `crates/nemlake-schema/src/resolve.rs` |
-| `schema.ctl_dir` | `crates/nemlake-schema-bootstrap/src/main.rs` |
-| `schema.ctl_read` | `crates/nemlake-schema-bootstrap/src/main.rs` |
-| `schema.datamodel_page` | `crates/nemlake-schema-bootstrap/src/dmreport.rs` |
-| `schema.datamodel_parse` | `crates/nemlake-schema-bootstrap/src/datamodel.rs` |
-| `schema.datamodel_read` | `crates/nemlake-schema-bootstrap/src/datamodel.rs` |
-| `schema.decimal_fallback` | `crates/nemlake-schema/src/resolve.rs` |
-| `schema.file_conflict` | `crates/nemlake-schema-model/src/error.rs` |
-| `schema.file_invalid` | `crates/nemlake-schema-model/src/error.rs` |
-| `schema.file_parse` | `crates/nemlake-schema-model/src/error.rs` |
-| `schema.file_read` | `crates/nemlake-schema-model/src/error.rs` |
-| `schema.head_method` | `crates/nemlake-schema-bootstrap/src/remote.rs` |
-| `schema.head_no_irow` | `crates/nemlake-schema-bootstrap/src/remote.rs` |
-| `schema.head_not_zip` | `crates/nemlake-schema-bootstrap/src/remote.rs` |
-| `schema.head_write` | `crates/nemlake-schema-bootstrap/src/remote.rs` |
-| `schema.merge_no_columns` | `crates/nemlake-schema-bootstrap/src/merge.rs` |
-| `schema.merge_no_version` | `crates/nemlake-schema-bootstrap/src/merge.rs` |
-| `schema.missing_key` | `crates/nemlake-schema/src/error.rs` |
-| `schema.no_columns` | `crates/nemlake-schema/src/error.rs` |
-| `schema.out_dir` | `crates/nemlake-schema-bootstrap/src/main.rs` |
-| `schema.rule_conflict` | `crates/nemlake-schema/src/resolve.rs` |
-| `schema.sample_irow` | `crates/nemlake-schema-bootstrap/src/sample.rs` |
-| `schema.sample_no_csv` | `crates/nemlake-schema-bootstrap/src/sample.rs` |
-| `schema.sample_read` | `crates/nemlake-schema-bootstrap/src/sample.rs` |
-| `schema.sample_zip` | `crates/nemlake-schema-bootstrap/src/sample.rs` |
-| `schema.standing_list` | `crates/nemlake-schema-bootstrap/src/main.rs` |
-| `schema.unknown_columns` | `crates/nemlake-schema/src/resolve.rs` |
-| `schema.unknown_table` | `crates/nemlake-schema/src/error.rs` |
-| `schema.unknown_version` | `crates/nemlake-schema/src/error.rs` |
-| `schema.version_aliased` | `crates/nemlake-schema/src/resolve.rs` |
-| `schema.version_drift` | `crates/nemlake-schema/src/error.rs` |
-| `schema.write` | `crates/nemlake-schema-bootstrap/src/main.rs` |
+| `schema.blob_corrupt` | `crates/nemlake-registry/src/file_model/error.rs` |
+| `schema.breaking_change` | `crates/nemlake-registry/src/file_model/error.rs` |
+| `schema.compatible_drift` | `crates/nemlake-registry/src/resolve.rs` |
+| `schema.ctl_dir` | `crates/nemlake-census/src/main.rs` |
+| `schema.ctl_read` | `crates/nemlake-census/src/main.rs` |
+| `schema.datamodel_page` | `crates/nemlake-census/src/dmreport.rs` |
+| `schema.datamodel_parse` | `crates/nemlake-census/src/datamodel.rs` |
+| `schema.datamodel_read` | `crates/nemlake-census/src/datamodel.rs` |
+| `schema.decimal_fallback` | `crates/nemlake-registry/src/resolve.rs` |
+| `schema.file_conflict` | `crates/nemlake-registry/src/file_model/error.rs` |
+| `schema.file_invalid` | `crates/nemlake-registry/src/file_model/error.rs` |
+| `schema.file_parse` | `crates/nemlake-registry/src/file_model/error.rs` |
+| `schema.file_read` | `crates/nemlake-registry/src/file_model/error.rs` |
+| `schema.head_method` | `crates/nemlake-census/src/remote.rs` |
+| `schema.head_no_irow` | `crates/nemlake-census/src/remote.rs` |
+| `schema.head_not_zip` | `crates/nemlake-census/src/remote.rs` |
+| `schema.head_write` | `crates/nemlake-census/src/remote.rs` |
+| `schema.merge_no_columns` | `crates/nemlake-census/src/merge.rs` |
+| `schema.merge_no_version` | `crates/nemlake-census/src/merge.rs` |
+| `schema.missing_key` | `crates/nemlake-registry/src/error.rs` |
+| `schema.no_columns` | `crates/nemlake-registry/src/error.rs` |
+| `schema.out_dir` | `crates/nemlake-census/src/main.rs` |
+| `schema.rule_conflict` | `crates/nemlake-registry/src/resolve.rs` |
+| `schema.sample_irow` | `crates/nemlake-census/src/sample.rs` |
+| `schema.sample_no_csv` | `crates/nemlake-census/src/sample.rs` |
+| `schema.sample_read` | `crates/nemlake-census/src/sample.rs` |
+| `schema.sample_zip` | `crates/nemlake-census/src/sample.rs` |
+| `schema.standing_list` | `crates/nemlake-census/src/main.rs` |
+| `schema.unknown_columns` | `crates/nemlake-registry/src/resolve.rs` |
+| `schema.unknown_table` | `crates/nemlake-registry/src/error.rs` |
+| `schema.unknown_version` | `crates/nemlake-registry/src/error.rs` |
+| `schema.version_aliased` | `crates/nemlake-registry/src/resolve.rs` |
+| `schema.version_drift` | `crates/nemlake-registry/src/error.rs` |
+| `schema.write` | `crates/nemlake-census/src/main.rs` |
 
 ## store
 
 | code | raised in |
 |---|---|
-| `store.io` | `crates/nemlake-store/src/error.rs` |
-| `store.parquet_write` | `crates/nemlake-store/src/error.rs` |
-| `store.partition_column_not_timestamp` | `crates/nemlake-store/src/error.rs` |
+| `store.io` | `crates/nemlake-writer/src/error.rs` |
+| `store.parquet_write` | `crates/nemlake-writer/src/error.rs` |
+| `store.partition_column_not_timestamp` | `crates/nemlake-writer/src/error.rs` |
 | `store.quarantine_write` | `crates/nemlake-pipeline/src/ingest_file.rs` |
-| `store.rename` | `crates/nemlake-store/src/error.rs` |
-| `store.schema_mismatch` | `crates/nemlake-store/src/error.rs` |
-| `store.write_failed` | `crates/nemlake-mms/src/error.rs` |
+| `store.rename` | `crates/nemlake-writer/src/error.rs` |
+| `store.schema_mismatch` | `crates/nemlake-writer/src/error.rs` |
+| `store.write_failed` | `crates/nemlake-decode/src/error.rs` |
 
 ## manifest
 
 | code | raised in |
 |---|---|
-| `manifest.closed` | `crates/nemlake-store/src/error.rs` |
-| `manifest.migration_failed` | `crates/nemlake-store/src/error.rs` |
-| `manifest.not_found` | `crates/nemlake-store/src/error.rs` |
+| `manifest.closed` | `crates/nemlake-writer/src/error.rs` |
+| `manifest.migration_failed` | `crates/nemlake-writer/src/error.rs` |
+| `manifest.not_found` | `crates/nemlake-writer/src/error.rs` |
 | `manifest.rules_changed` | `crates/nemlake-pipeline/src/run.rs` |
 | `manifest.superseded` | `crates/nemlake-pipeline/src/run.rs` |
 
@@ -155,9 +155,9 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 
 | code | raised in |
 |---|---|
-| `internal.arrow` | `crates/nemlake-mms/src/error.rs` |
-| `internal.diagnostic_json` | `crates/nemlake-store/src/manifest/mod.rs` |
-| `internal.no_such_writer` | `crates/nemlake-store/src/error.rs` |
+| `internal.arrow` | `crates/nemlake-decode/src/error.rs` |
+| `internal.diagnostic_json` | `crates/nemlake-writer/src/manifest/mod.rs` |
+| `internal.no_such_writer` | `crates/nemlake-writer/src/error.rs` |
 | `internal.panic` | `crates/nemlake-pipeline/src/run.rs` |
 
 ## Retired

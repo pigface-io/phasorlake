@@ -14,10 +14,10 @@ workspace = true
 [dependencies]
 arrow-array.workspace = true
 nemlake-core.workspace = true
-nemlake-schema.workspace = true
-nemlake-mms.workspace = true
-nemlake-fetch.workspace = true
-nemlake-store.workspace = true
+nemlake-registry.workspace = true
+nemlake-decode.workspace = true
+nemlake-acquire.workspace = true
+nemlake-writer.workspace = true
 futures.workspace = true
 serde_json.workspace = true
 thiserror.workspace = true

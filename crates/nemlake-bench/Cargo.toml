@@ -17,10 +17,10 @@ path = "src/main.rs"
 
 [dependencies]
 nemlake-core.workspace = true
-nemlake-fetch.workspace = true
+nemlake-acquire.workspace = true
 nemlake-pipeline.workspace = true
-nemlake-schema.workspace = true
-nemlake-store.workspace = true
+nemlake-registry.workspace = true
+nemlake-writer.workspace = true
 peak_alloc.workspace = true
 serde_json.workspace = true
 tempfile.workspace = true

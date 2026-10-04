@@ -6,13 +6,13 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use anyhow::{Context as _, Result};
+use nemlake_acquire::cache::DiskCache;
+use nemlake_acquire::{Fetcher, FetcherConfig, OfflineTransport, ReqwestTransport, Transport};
 use nemlake_core::config::Config;
 use nemlake_core::paths::Home;
-use nemlake_fetch::cache::DiskCache;
-use nemlake_fetch::{Fetcher, FetcherConfig, OfflineTransport, ReqwestTransport, Transport};
 use nemlake_pipeline::Deps;
-use nemlake_schema::{Registry, TypeOptions};
-use nemlake_store::{ManifestHandle, ManifestThread};
+use nemlake_registry::{Registry, TypeOptions};
+use nemlake_writer::{ManifestHandle, ManifestThread};
 
 use crate::cli::Cli;
 

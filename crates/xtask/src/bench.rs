@@ -241,15 +241,15 @@ pub fn run(set: &str, do_tighten: bool) -> Result<bool> {
     // library's unit tests as a benchmark harness, which rejects criterion flags.
     let targets: &[(&str, &str)] = match set {
         "fast" => &[
-            ("nemlake-mms", "scan"),
-            ("nemlake-schema", "resolve"),
+            ("nemlake-decode", "scan"),
+            ("nemlake-registry", "resolve"),
             ("nemlake-core", "values"),
         ],
         "full" => &[
-            ("nemlake-mms", "scan"),
-            ("nemlake-schema", "resolve"),
+            ("nemlake-decode", "scan"),
+            ("nemlake-registry", "resolve"),
             ("nemlake-core", "values"),
-            ("nemlake-store", "write"),
+            ("nemlake-writer", "write"),
         ],
         other => bail!("unknown set {other}; use fast or full"),
     };

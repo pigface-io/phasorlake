@@ -10,12 +10,11 @@ of both stages on every file, which is exactly what CI runs.
 
 ```
 crates/nemlake-core          L0  vocabulary: identifiers, time, numbers, diagnostics. No I/O.
-crates/nemlake-schema-model  L1  the table model, TOML files, validation, evolution rules
-crates/nemlake-schema        L1  the registry: build.rs validates schemas/, resolve() on the hot path
-crates/nemlake-schema-bootstrap  tooling that regenerates schemas/ from testdata/
-crates/nemlake-mms           L2  the MMS row format: scanner, typed Arrow sink, zips
-crates/nemlake-fetch         L3  sources, HTTP transport, cache (async)
-crates/nemlake-store         L3  Parquet writer, partitioner, SQLite manifest actor
+crates/nemlake-registry      L1  the table model (file_model) and the registry: build.rs validates schemas/, resolve() on the hot path
+crates/nemlake-census            tooling that regenerates schemas/ from testdata/
+crates/nemlake-decode    L2  the MMS row format: scanner, typed Arrow sink, zips
+crates/nemlake-acquire   L3  sources, HTTP transport, cache (async)
+crates/nemlake-writer    L3  Parquet writer, partitioner, SQLite manifest actor
 crates/nemlake-pipeline      L4  list → fetch → ingest → commit as tokio streams
 crates/nemlake-cli           L5  the command: flags, rendering, exit codes
 crates/nemlake-bench             end-to-end benchmark harness
@@ -33,10 +32,10 @@ worker; the async and sync worlds meet once per file.
 |---|---|---|
 | unit and integration | every crate, `cargo test` | `just test`, pre-commit |
 | coverage | `cargo llvm-cov` over the workspace | `just cover` against `coverage.json`, pre-push |
-| schema regeneration | `nemlake-schema-bootstrap regen --check` | `just schema-check`, pre-push |
+| schema regeneration | `nemlake-census regen --check` | `just schema-check`, pre-push |
 | schema compatibility | table files at `origin/main` against the working tree | `just schema-compat`, pre-push |
 | benchmarks | criterion plus `nemlake-bench` | `just bench-fast` pre-push, `just bench` in CI, against `bench/budgets.json` |
-| network | `crates/nemlake-fetch/tests/net.rs` | `just net-test`, weekly in CI |
+| network | `crates/nemlake-acquire/tests/net.rs` | `just net-test`, weekly in CI |
 
 ## Floors and budgets
 

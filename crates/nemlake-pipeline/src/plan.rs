@@ -3,10 +3,10 @@
 use std::path::PathBuf;
 use std::sync::Arc;
 
+use nemlake_acquire::{Fetcher, Query, Source};
 use nemlake_core::paths::Home;
-use nemlake_fetch::{Fetcher, Query, Source};
-use nemlake_schema::{Mode, Registry};
-use nemlake_store::ManifestHandle;
+use nemlake_registry::{Mode, Registry};
+use nemlake_writer::ManifestHandle;
 
 /// Knobs of a run.
 #[derive(Debug, Clone)]
@@ -39,7 +39,7 @@ impl Default for RunOptions {
             fail_fast: false,
             dry_run: false,
             strict_footer: false,
-            batch_rows: nemlake_mms::arrow_sink::DEFAULT_BATCH_ROWS,
+            batch_rows: nemlake_decode::arrow_sink::DEFAULT_BATCH_ROWS,
         }
     }
 }

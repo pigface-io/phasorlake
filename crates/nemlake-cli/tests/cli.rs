@@ -835,7 +835,7 @@ fn archive_is_kept_and_cache_commands_only_remove_throwaway_files() {
         dir.join("a.zip.json"),
         format!(
             r#"{{"url":"https://h/DATA/a.zip","size":9,"sha256":"{}","fetched_at":"2026-10-03T10:00:05Z","request":{{"by":"fetch nem REGION 2024-01..2024-01","tool":"nemlake/0.1.0","source":"nem-mmsdm","started_at":"2026-10-03T10:00:00Z","request_url":"https://h/DATA/a.zip","http_status":200,"attempts":1}}}}"#,
-            nemlake_fetch::cache::sha256_hex(b"zip bytes")
+            nemlake_acquire::cache::sha256_hex(b"zip bytes")
         ),
     )
     .unwrap();

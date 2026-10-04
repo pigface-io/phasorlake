@@ -1,8 +1,8 @@
 //! `cache` and `wem`.
 
 use anyhow::Result;
+use nemlake_acquire::{Query, Source, WemDatafiles};
 use nemlake_core::{Diagnose, YearMonth};
-use nemlake_fetch::{Query, Source, WemDatafiles};
 
 use crate::cli::{ArchiveCmd, CacheCmd, WemCmd};
 use crate::context::Context;

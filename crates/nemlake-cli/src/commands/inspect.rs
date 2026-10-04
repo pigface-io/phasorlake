@@ -4,10 +4,10 @@ use std::path::Path;
 
 use anyhow::Result;
 use nemlake_core::{Diagnose, IRow};
-use nemlake_mms::archive::walk_csv_entries;
-use nemlake_mms::inspect::{BlockSummary, InspectSink};
-use nemlake_mms::scan::{ScanOptions, scan};
-use nemlake_schema::{Mode, ResolveOptions};
+use nemlake_decode::archive::walk_csv_entries;
+use nemlake_decode::inspect::{BlockSummary, InspectSink};
+use nemlake_decode::scan::{ScanOptions, scan};
+use nemlake_registry::{Mode, ResolveOptions};
 
 use crate::context::Context;
 use crate::render;
@@ -63,10 +63,10 @@ pub fn scan_blocks(
             skipped.push(o.to_owned());
         })
         .map_err(|e| match e {
-            nemlake_mms::archive::WalkError::Archive(a) => {
+            nemlake_decode::archive::WalkError::Archive(a) => {
                 anyhow::anyhow!("{}", a.diagnostic().render())
             }
-            nemlake_mms::archive::WalkError::Callback(c) => c,
+            nemlake_decode::archive::WalkError::Callback(c) => c,
         })?;
         if !skipped.is_empty() && !ctx.json {
             eprintln!(
@@ -114,12 +114,12 @@ pub fn inspect(ctx: &Context, path: &Path, infer: bool, sample_rows: u64) -> Res
         }));
         if infer && b.table.is_none() {
             let cols: Vec<&str> = b.columns.iter().map(String::as_str).collect();
-            let draft = nemlake_schema::infer::draft_table(
-                nemlake_schema::Market::Nem,
+            let draft = nemlake_registry::infer::draft_table(
+                nemlake_registry::Market::Nem,
                 &irow_of(b, &cols),
                 &b.sampler,
             );
-            let toml = nemlake_schema::file::write_table(&draft);
+            let toml = nemlake_registry::file_model::file::write_table(&draft);
             drafts.push(serde_json::json!({ "table": draft.name, "toml": toml }));
         }
     }

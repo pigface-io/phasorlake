@@ -2,12 +2,12 @@
 
 use anyhow::Result;
 use nemlake_core::{Diagnose, Severity};
-use nemlake_store::manifest::DiagFilter;
+use nemlake_writer::manifest::DiagFilter;
 
 use crate::context::Context;
 use crate::render;
 
-fn fail(e: &nemlake_store::error::ManifestError) -> anyhow::Error {
+fn fail(e: &nemlake_writer::error::ManifestError) -> anyhow::Error {
     anyhow::anyhow!("{}", e.diagnostic().render())
 }
 

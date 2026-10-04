@@ -1,6 +1,6 @@
 //! The registry only changes in ways the lake survives. Every table file
 //! under `schemas/` at the base ref is compared with the working tree by
-//! the rules of `nemlake_schema_model::compat`: no column id reused or
+//! the rules of `nemlake_registry::file_model::compat`: no column id reused or
 //! moved, no type narrowed, no declared version or variant dropped, no
 //! table deleted. A change that breaks one of them on purpose is explained
 //! by a `schema-break:` line in a commit message since the base.
@@ -9,10 +9,10 @@ use std::path::Path;
 use std::process::Command;
 
 use anyhow::{Context, Result};
-use nemlake_schema_model::TableDef;
-use nemlake_schema_model::blob::SchemaSet;
-use nemlake_schema_model::compat::breaking_changes;
-use nemlake_schema_model::file::parse_table;
+use nemlake_registry::file_model::TableDef;
+use nemlake_registry::file_model::blob::SchemaSet;
+use nemlake_registry::file_model::compat::breaking_changes;
+use nemlake_registry::file_model::file::parse_table;
 
 fn git(args: &[&str]) -> Result<Option<String>> {
     let out = Command::new("git")

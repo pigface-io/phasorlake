@@ -1,8 +1,8 @@
 //! The outcome of a run and how it becomes an exit code.
 
+use nemlake_acquire::RemoteFile;
 use nemlake_core::event::Summary;
 use nemlake_core::report::Report;
-use nemlake_fetch::RemoteFile;
 
 /// Exit code: success.
 pub const EXIT_OK: i32 = 0;

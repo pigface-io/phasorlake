@@ -4,7 +4,7 @@ use std::path::Path;
 
 use anyhow::Result;
 use nemlake_core::Diagnose;
-use nemlake_schema::{Registry, SchemaVersion, TypeOptions};
+use nemlake_registry::{Registry, SchemaVersion, TypeOptions};
 
 use crate::cli::SchemaCmd;
 use crate::context::Context;
@@ -71,7 +71,7 @@ pub fn schema(ctx: &Context, cmd: &SchemaCmd) -> Result<i32> {
             if ctx.json {
                 render::json_line(t);
             } else {
-                print!("{}", nemlake_schema::file::write_table(t));
+                print!("{}", nemlake_registry::file_model::file::write_table(t));
                 println!("\n# Arrow lake schema\n{}", r.lake_schema(id));
             }
             Ok(0)
@@ -177,8 +177,8 @@ fn infer(
 ) -> Result<i32> {
     use std::collections::BTreeMap;
 
-    use nemlake_schema::ctl::CtlFile;
-    use nemlake_schema::infer::{apply_ctl, draft_table, extend_table};
+    use nemlake_registry::file_model::ctl::CtlFile;
+    use nemlake_registry::infer::{apply_ctl, draft_table, extend_table};
 
     let r = &ctx.registry;
     // The control files on offer, each with the name it was given under.
@@ -187,7 +187,7 @@ fn infer(
         let text = std::fs::read_to_string(p).map_err(|e| {
             anyhow::anyhow!("The control file {} could not be read: {e}", p.display())
         })?;
-        let parsed = nemlake_schema::ctl::parse(&p.display().to_string(), &text)
+        let parsed = nemlake_registry::file_model::ctl::parse(&p.display().to_string(), &text)
             .map_err(|e| anyhow::anyhow!("{}", e.diagnostic().render()))?;
         let name = p.file_name().map_or_else(
             || p.display().to_string(),
@@ -210,7 +210,7 @@ fn infer(
     let mut overruled: BTreeMap<String, Vec<String>> = BTreeMap::new();
     // Tables this file changes, by name, and the draft that claims each
     // report pair nobody declared.
-    let mut changed: BTreeMap<String, nemlake_schema::TableDef> = BTreeMap::new();
+    let mut changed: BTreeMap<String, nemlake_registry::TableDef> = BTreeMap::new();
     let mut drafted: BTreeMap<(String, String), String> = BTreeMap::new();
     let blocks = super::inspect::scan_blocks(ctx, path, sample_rows)?;
     for (_, b) in &blocks {
@@ -223,7 +223,7 @@ fn infer(
         let known = b.table.clone().or_else(|| drafted.get(&pair).cloned());
         match known {
             None => {
-                let mut draft = draft_table(nemlake_schema::Market::Nem, &irow, &b.sampler);
+                let mut draft = draft_table(nemlake_registry::Market::Nem, &irow, &b.sampler);
                 if let Some((file, ctl)) = ctl_for(&irow) {
                     let notes = apply_ctl(&mut draft, &irow, &b.sampler, ctl);
                     // The control file knows the table's own name.
@@ -276,8 +276,8 @@ fn infer(
     }
     let mut out = Vec::new();
     for (name, t) in &changed {
-        let toml = nemlake_schema::file::write_table(t);
-        let issues = nemlake_schema::validate::validate_structure(t);
+        let toml = nemlake_registry::file_model::file::write_table(t);
+        let issues = nemlake_registry::file_model::validate::validate_structure(t);
         let target = ctx
             .home
             .schemas()
