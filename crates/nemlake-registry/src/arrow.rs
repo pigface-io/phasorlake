@@ -4,8 +4,9 @@ use std::collections::HashMap;
 use std::sync::Arc;
 
 use crate::file_model::{ColumnDef, ColumnType, MarketDef, TableDef};
-use arrow_schema::{DataType, Field, Schema, SchemaRef, TimeUnit};
+use arrow_schema::{DataType, Field, Schema, SchemaRef};
 
+use crate::plan::Cast;
 use crate::registry::TypeOptions;
 
 /// Parquet's field-id metadata key; Iceberg reads the same key.
@@ -22,20 +23,7 @@ pub const RAW_OF_KEY: &str = "nemlake:raw-of";
 /// knows precision and scale; a decimal request for a column without them
 /// falls back to `Float64` and the caller may warn.
 pub fn data_type(ty: ColumnType, market: &MarketDef, opts: TypeOptions) -> DataType {
-    match ty {
-        ColumnType::Utf8 { .. } => DataType::Utf8,
-        ColumnType::Number {
-            precision: Some(p),
-            scale: Some(s),
-        } if opts.decimal => DataType::Decimal128(p, s as i8),
-        ColumnType::Number { .. } => DataType::Float64,
-        ColumnType::Integer => DataType::Int64,
-        ColumnType::Timestamp => {
-            DataType::Timestamp(TimeUnit::Nanosecond, Some(Arc::from(market.arrow_tz())))
-        }
-        ColumnType::Date => DataType::Date32,
-        ColumnType::Boolean => DataType::Boolean,
-    }
+    Cast::for_type(ty, market, opts).data_type(market)
 }
 
 /// Whether a decimal was requested but this column has to fall back.
@@ -64,18 +52,14 @@ pub fn lake_schema(t: &TableDef, market: &MarketDef, opts: TypeOptions) -> Schem
         .map(|c| {
             let f = field(c, market, opts);
             // A raw column says whose values it holds, by that column's id.
-            match c.src.iter().any(|s| s == "raw").then(|| {
-                c.name
-                    .strip_suffix("__raw")
-                    .and_then(|b| t.column(b))
-                    .map(|b| b.id.0.to_string())
-            }) {
-                Some(Some(of)) => {
+            match c.raw_of().and_then(|b| t.column(b)) {
+                Some(of) => {
+                    let of = of.id.0.to_string();
                     let mut md = f.metadata().clone();
                     md.insert(RAW_OF_KEY.to_owned(), of);
                     f.with_metadata(md)
                 }
-                _ => f,
+                None => f,
             }
         })
         .collect();
@@ -136,7 +120,10 @@ mod tests {
         );
         assert_eq!(
             data_type(ColumnType::Timestamp, &nem(), dec),
-            DataType::Timestamp(TimeUnit::Nanosecond, Some(Arc::from("+10:00")))
+            DataType::Timestamp(
+                arrow_schema::TimeUnit::Nanosecond,
+                Some(Arc::from("+10:00"))
+            )
         );
     }
 }

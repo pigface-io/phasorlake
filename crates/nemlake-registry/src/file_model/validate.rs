@@ -333,17 +333,14 @@ pub fn validate_structure(t: &TableDef) -> Vec<Issue> {
                 ),
             ));
         }
-        if c.src.iter().any(|s| s == "raw") {
-            let base = c.name.strip_suffix("__raw");
-            if base.is_none_or(|b| t.column(b).is_none()) || !text {
-                out.push(issue(
-                    t,
-                    format!(
-                        "column {} has src raw: it is the nullable text {{column}}__raw of a declared column",
-                        c.name
-                    ),
-                ));
-            }
+        if c.is_raw() && (c.raw_of().is_none_or(|b| t.column(b).is_none()) || !text) {
+            out.push(issue(
+                t,
+                format!(
+                    "column {} has src raw: it is the nullable text {{column}}__raw of a declared column",
+                    c.name
+                ),
+            ));
         }
     }
     out

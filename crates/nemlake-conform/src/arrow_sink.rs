@@ -3,6 +3,7 @@
 use std::sync::Arc;
 
 use std::collections::HashMap;
+use std::fmt::Write as _;
 
 use arrow_array::builder::{ArrayBuilder, StringBuilder};
 use arrow_array::{ArrayRef, RecordBatch};
@@ -117,6 +118,36 @@ struct Block {
     raws: Vec<RawColumn>,
 }
 
+/// The allocations of a [`Block`], carried to the next block of a file.
+#[derive(Default)]
+struct BlockBuffers {
+    steps: Vec<Step>,
+    missing_required: Vec<u16>,
+    builders: Vec<ColumnBuilder>,
+    report_type: String,
+    report_subtype: String,
+    version_text: String,
+    clamped: Vec<Tally>,
+    nulls_kept: Vec<Tally>,
+    raws: Vec<RawColumn>,
+}
+
+impl From<Block> for BlockBuffers {
+    fn from(b: Block) -> Self {
+        Self {
+            steps: b.steps,
+            missing_required: b.missing_required,
+            builders: b.builders,
+            report_type: b.report_type,
+            report_subtype: b.report_subtype,
+            version_text: b.version_text,
+            clamped: b.clamped,
+            nulls_kept: b.nulls_kept,
+            raws: b.raws,
+        }
+    }
+}
+
 /// Builds typed batches from MMS rows through the registry.
 ///
 /// A row is never refused for one of its values. A value that does not fit
@@ -141,6 +172,11 @@ pub struct ArrowSink<'r, B: BatchSink> {
     /// field position, fault, and whether the declared raw column took it.
     misfits: Vec<(u16, u16, Fault, bool)>,
 }
+
+/// Rows a new column builder makes room for. Builders grow as rows come;
+/// a block of a few rows (most blocks of a file of many tables) must not
+/// pay for touching room for thousands.
+const FIRST_ROWS: usize = 256;
 
 /// Rows per batch by default.
 pub const DEFAULT_BATCH_ROWS: usize = 65_536;
@@ -216,12 +252,14 @@ impl<'r, B: BatchSink> ArrowSink<'r, B> {
                 .with_version(block.resolved.version.0)
                 .with_column(column.to_owned())
         };
-        let mut fields: Vec<Field> = plan
-            .arrow
-            .fields()
-            .iter()
-            .map(|f| f.as_ref().clone())
-            .collect();
+        // The plan's schema serves every batch that needs no change to it;
+        // a copy is made only for one that does (a column made nullable, a
+        // raw column added).
+        let lake = &plan.arrow;
+        let mut changed: Option<Vec<Field>> = None;
+        fn own<'c>(c: &'c mut Option<Vec<Field>>, lake: &Schema) -> &'c mut Vec<Field> {
+            c.get_or_insert_with(|| lake.fields().iter().map(|f| f.as_ref().clone()).collect())
+        }
         let mut arrays: Vec<ArrayRef> = block
             .builders
             .iter_mut()
@@ -233,7 +271,7 @@ impl<'r, B: BatchSink> ArrowSink<'r, B> {
             let Some((sample, _)) = tally.first.take() else {
                 continue;
             };
-            let column = fields[i].name();
+            let column = lake.field(i).name();
             let mut d = warn(
                 "parse.timestamp_clamped",
                 column,
@@ -253,10 +291,10 @@ impl<'r, B: BatchSink> ArrowSink<'r, B> {
             let Some((_, line)) = tally.first.take() else {
                 continue;
             };
-            let column = fields[i].name().clone();
+            let column = lake.field(i).name();
             let mut d = warn(
                 "parse.null_kept",
-                &column,
+                column,
                 format!(
                     "{} row(s) of table {} have no value for column {column}, which does not allow nulls; the rows are kept with the column null. The first is line {line}.",
                     tally.count, table.name
@@ -266,15 +304,17 @@ impl<'r, B: BatchSink> ArrowSink<'r, B> {
             d.expected = Some("a value".into());
             d.observed = Some(String::new());
             self.out.warning(d);
-            fields[i] = fields[i].clone().with_nullable(true);
+            let f = &mut own(&mut changed, lake)[i];
+            *f = f.clone().with_nullable(true);
             tally.count = 0;
         }
         // Values that did not fit their column's type: the text beside it.
         for raw in block.raws.drain(..) {
             // The column is null where its value did not fit.
             let i = raw.target as usize;
-            fields[i] = fields[i].clone().with_nullable(true);
-            let target = fields[i].clone();
+            let f = &mut own(&mut changed, lake)[i];
+            *f = f.clone().with_nullable(true);
+            let target = lake.field(i);
             let column = target.name();
             let (sample, line, fault) = raw.first;
             let fault_text = fault.row_error(column, sample.as_bytes()).to_string();
@@ -299,13 +339,14 @@ impl<'r, B: BatchSink> ArrowSink<'r, B> {
                 .cloned()
                 .unwrap_or_else(|| column.clone());
             let md: HashMap<String, String> = [(RAW_OF_KEY.to_owned(), of)].into();
-            fields.push(Field::new(raw.name, DataType::Utf8, true).with_metadata(md));
+            own(&mut changed, lake)
+                .push(Field::new(raw.name, DataType::Utf8, true).with_metadata(md));
             arrays.push(Arc::new(text.finish()));
         }
-        let schema = Arc::new(Schema::new_with_metadata(
-            fields,
-            plan.arrow.metadata().clone(),
-        ));
+        let schema = match changed {
+            Some(fields) => Arc::new(Schema::new_with_metadata(fields, lake.metadata().clone())),
+            None => Arc::clone(lake),
+        };
         let batch = RecordBatch::try_new(schema, arrays).map_err(|e| SinkError::Arrow {
             table: table.name.clone(),
             message: e.to_string(),
@@ -337,48 +378,72 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
             self.out.warning(w.clone());
         }
         self.out.block_started(irow, &resolved, pos);
+        // A file of many blocks reuses the buffers of the block before:
+        // only the first I row of a file allocates them, and a block of the
+        // same shape keeps its column builders as well.
+        let old = self.block.take();
+        let same_shape = old
+            .as_ref()
+            .is_some_and(|b| Arc::ptr_eq(&b.resolved.plan, &resolved.plan));
+        let mut b = old.map(BlockBuffers::from).unwrap_or_default();
         let schema = &resolved.plan.arrow;
         let width = schema.fields().len();
-        let builders = schema
-            .fields()
-            .iter()
-            .map(|f| ColumnBuilder::new(f.data_type(), self.batch_rows.min(8192)))
-            .collect();
+        if !same_shape {
+            b.builders.clear();
+            b.builders.extend(
+                schema
+                    .fields()
+                    .iter()
+                    .map(|f| ColumnBuilder::new(f.data_type(), self.batch_rows.min(FIRST_ROWS))),
+            );
+        }
         self.parsed.clear();
         self.parsed.resize(width, Parsed::Null);
-        let steps = resolved
-            .plan
-            .routes
-            .iter()
-            .filter_map(|r| {
-                Some(Step {
-                    field: (PREFIX_FIELDS + usize::from(r.source_index)) as u16,
-                    target: r.target?,
-                    raw: r.raw_target,
-                    cast: r.cast,
-                    nullable: r.nullable,
-                })
+        b.steps.clear();
+        b.steps.extend(resolved.plan.routes.iter().filter_map(|r| {
+            Some(Step {
+                field: (PREFIX_FIELDS + usize::from(r.source_index)) as u16,
+                target: r.target?,
+                raw: r.raw_target,
+                cast: r.cast,
+                nullable: r.nullable,
             })
-            .collect();
-        let missing_required = resolved
-            .plan
-            .missing
-            .iter()
-            .copied()
-            .filter(|&m| !schema.field(m as usize).is_nullable())
-            .collect();
+        }));
+        b.missing_required.clear();
+        b.missing_required.extend(
+            resolved
+                .plan
+                .missing
+                .iter()
+                .copied()
+                .filter(|&m| !schema.field(m as usize).is_nullable()),
+        );
+        for tallies in [&mut b.clamped, &mut b.nulls_kept] {
+            tallies.clear();
+            tallies.resize_with(width, Tally::default);
+        }
+        b.raws.clear();
+        for (to, from) in [
+            (&mut b.report_type, irow.report_type),
+            (&mut b.report_subtype, irow.report_subtype),
+        ] {
+            to.clear();
+            to.push_str(from);
+        }
+        b.version_text.clear();
+        write!(b.version_text, "{}", irow.version).expect("writing to a String");
         self.block = Some(Block {
-            steps,
-            missing_required,
+            steps: b.steps,
+            missing_required: b.missing_required,
             fingerprint: irow.fingerprint(),
-            builders,
-            report_type: irow.report_type.to_owned(),
-            report_subtype: irow.report_subtype.to_owned(),
-            version_text: irow.version.to_string(),
+            builders: b.builders,
+            report_type: b.report_type,
+            report_subtype: b.report_subtype,
+            version_text: b.version_text,
             rows: 0,
-            clamped: std::iter::repeat_with(Tally::default).take(width).collect(),
-            nulls_kept: std::iter::repeat_with(Tally::default).take(width).collect(),
-            raws: Vec::new(),
+            clamped: b.clamped,
+            nulls_kept: b.nulls_kept,
+            raws: b.raws,
             resolved,
         });
         Ok(())
@@ -541,7 +606,7 @@ fn keep_misfits(block: &mut Block, misfits: &[(u16, u16, Fault, bool)], row: &Ro
             None => {
                 let plan = &block.resolved.plan;
                 let column = plan.column_name(target as usize);
-                let mut name = format!("{column}__raw");
+                let mut name = nemlake_registry::file_model::raw_name(column);
                 // A value the declared raw column cannot take as text goes
                 // beside it.
                 if !declared && plan.fields.iter().any(|f| f.name == name) {

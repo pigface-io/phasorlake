@@ -68,6 +68,7 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 | `csv.row_too_short` | `crates/nemlake-decode/src/error.rs` |
 | `csv.stopped_fail_fast` | `crates/nemlake-decode/src/error.rs` |
 | `csv.too_many_bad_rows` | `crates/nemlake-decode/src/error.rs` |
+| `csv.unknown_record` | `crates/nemlake-decode/src/error.rs` |
 
 ## parse
 

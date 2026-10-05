@@ -90,6 +90,9 @@ pub enum RowError {
         "The D row has only {0} fields; a row starts with D, report type, subtype and version."
     )]
     TooShort(usize),
+    /// A line that starts with neither C, I nor D.
+    #[error("The row starts with {0:?}; a row of an MMS file starts with C, I or D.")]
+    UnknownRecord(char),
 }
 
 /// What is wrong with `value` as a number of the declared kind, in the
@@ -124,6 +127,7 @@ impl Diagnose for RowError {
                 Diagnostic::error("csv.block_mismatch", Category::Csv, msg)
             }
             Self::TooShort(_) => Diagnostic::error("csv.row_too_short", Category::Csv, msg),
+            Self::UnknownRecord(_) => Diagnostic::error("csv.unknown_record", Category::Csv, msg),
             Self::NullNotAllowed { column } => {
                 Diagnostic::error("parse.null_not_allowed", Category::Parse, msg)
                     .with_column(column.clone())
@@ -425,6 +429,10 @@ mod tests {
             Some("K")
         );
         assert_eq!(RowError::TooShort(2).diagnostic().code, "csv.row_too_short");
+        assert_eq!(
+            RowError::UnknownRecord('x').diagnostic().code,
+            "csv.unknown_record"
+        );
         let e = RowError::BlockMismatch {
             report_type: "A".into(),
             report_subtype: "B".into(),

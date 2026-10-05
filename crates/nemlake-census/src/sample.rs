@@ -6,7 +6,7 @@ use std::collections::BTreeMap;
 use std::io::{BufRead, BufReader, Read};
 use std::path::Path;
 
-use nemlake_core::{Category, Diagnose, Diagnostic, Fingerprint, YearMonth, normalize_name};
+use nemlake_core::{Category, Diagnose, Diagnostic, Fingerprint, YearMonth};
 
 /// One block's header as seen in a file.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -197,7 +197,7 @@ pub fn sample_reader<R: Read>(
     max_rows: u64,
 ) -> Result<Vec<SampledBlock>, SampleError> {
     let mut blocks: Vec<SampledBlock> = Vec::new();
-    let mut buf = String::new();
+    let mut irows = nemlake_core::IRowScratch::default();
     for (idx, line) in BufReader::new(r).lines().enumerate() {
         let line_no = idx as u64 + 1;
         let line = line.map_err(|source| SampleError::Read {
@@ -208,52 +208,24 @@ pub fn sample_reader<R: Read>(
         match line.as_bytes().first() {
             Some(b'I') => {
                 let fields = split_fields(line);
-                if fields.len() < 5 {
-                    return Err(SampleError::IRow {
+                let (rt, st, version, columns) = irows
+                    .with_header(fields.iter().map(|f| Some(f.as_str())), |h| {
+                        (
+                            h.report_type.to_owned(),
+                            h.report_subtype.to_owned(),
+                            h.version,
+                            h.columns
+                                .iter()
+                                .map(|c| (*c).to_owned())
+                                .collect::<Vec<_>>(),
+                        )
+                    })
+                    .map_err(|e| SampleError::IRow {
                         path: path.to_owned(),
                         line: line_no,
-                        message: format!("only {} fields", fields.len()),
-                    });
-                }
-                let version = fields[3]
-                    .trim()
-                    .parse::<u16>()
-                    .map_err(|_| SampleError::IRow {
-                        path: path.to_owned(),
-                        line: line_no,
-                        message: format!("version {:?} is not an integer", fields[3]),
+                        message: e.to_string(),
                     })?;
-                let mut columns: Vec<String> = Vec::new();
-                for f in &fields[4..] {
-                    match normalize_name(f, &mut buf) {
-                        Some(n) => columns.push(n.to_owned()),
-                        None if f.trim().is_empty() => columns.push(String::new()),
-                        None => {
-                            return Err(SampleError::IRow {
-                                path: path.to_owned(),
-                                line: line_no,
-                                message: format!("column name {f:?} is not a name"),
-                            });
-                        }
-                    }
-                }
-                while columns.last().is_some_and(String::is_empty) {
-                    columns.pop();
-                }
-                if columns.iter().any(String::is_empty) {
-                    return Err(SampleError::IRow {
-                        path: path.to_owned(),
-                        line: line_no,
-                        message: "an empty column name is not at the end".into(),
-                    });
-                }
                 let n = columns.len();
-                let rt = normalize_name(&fields[1], &mut buf)
-                    .unwrap_or("")
-                    .to_owned();
-                let st = normalize_name(&fields[2], &mut buf)
-                    .unwrap_or("")
-                    .to_owned();
                 blocks.push(SampledBlock {
                     report_type: rt,
                     report_subtype: st,
@@ -534,7 +506,7 @@ mod tests {
         let p = dir.path().join("a.csv");
         std::fs::write(&p, "I,A,B\n").unwrap();
         let e = sample_path(&p, 1).unwrap_err();
-        assert!(e.to_string().contains("only 3 fields"));
+        assert!(e.to_string().contains("it has 3 fields"));
         assert_eq!(e.diagnostic().code, "schema.sample_irow");
         std::fs::write(&p, "I,A,B,x,C\n").unwrap();
         assert!(

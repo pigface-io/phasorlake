@@ -885,6 +885,47 @@ async fn a_value_that_does_not_fit_keeps_its_row_with_the_text_beside_it() {
     assert!(walk(&e.home.quarantine()).is_empty());
 }
 
+/// A file of many blocks, each I row a different table, as most AEMO
+/// files are: every block lands in its own table, every row is kept.
+#[tokio::test]
+async fn each_block_of_a_file_goes_to_its_own_table() {
+    let e = env();
+    let p = e.home.root().join("PUBLIC_DISPATCHIS_202401010005.CSV");
+    std::fs::copy(
+        concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/../../testdata/csv/multi_block_dispatchis.csv"
+        ),
+        &p,
+    )
+    .unwrap();
+    let (tx, _rx) = tokio::sync::mpsc::channel(4096);
+    let rep = run(
+        Plan {
+            request: "ingest".into(),
+            input: Input::Local(vec![p]),
+            options: RunOptions::default(),
+        },
+        e.deps.clone(),
+        tx,
+        CancellationToken::new(),
+    )
+    .await;
+    assert_eq!(rep.exit_code, 0, "{:?}", rep.report.summary_lines());
+    assert_eq!(rep.summary.rows, 19);
+    let tables: std::collections::BTreeSet<String> = walk(&e.home.lake())
+        .iter()
+        .map(|f| {
+            // lake/{market}/{table}/...
+            let rel = Path::new(f).strip_prefix(e.home.lake()).unwrap();
+            let table = rel.components().nth(1).unwrap().as_os_str();
+            table.to_string_lossy().into_owned()
+        })
+        .collect();
+    assert_eq!(tables.len(), 7, "{tables:?}");
+    assert!(tables.contains("dispatchprice"), "{tables:?}");
+}
+
 /// A partition whose later batches carry a column of kept text, or a null
 /// where the lake allows none, goes on in a further file that has room
 /// for them; earlier batches keep their own file, later ones get nulls.

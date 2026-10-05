@@ -113,9 +113,14 @@ fn census_columns(inputs: &Inputs<'_>, columns: &mut Vec<ColumnDef>, next_id: &m
                     if !nemlake_registry::file_model::compat::class_fits(*class, c.ty)
                         && !matches!(c.ty, ColumnType::Utf8 { .. }) =>
                 {
-                    let raw = format!("{}__raw", c.name);
+                    let raw = nemlake_registry::file_model::raw_name(&c.name);
                     if !columns.iter().any(|x| x.name == raw) {
-                        add(columns, raw, e.version, "raw");
+                        add(
+                            columns,
+                            raw,
+                            e.version,
+                            nemlake_registry::file_model::RAW_SRC,
+                        );
                     }
                 }
                 _ => {}
@@ -156,11 +161,6 @@ impl Diagnose for MergeError {
         };
         Diagnostic::error(code, Category::Schema, self.to_string()).with_table(table)
     }
-}
-
-/// Maps a loader type to a logical type.
-pub fn loader_to_type(l: &LoaderType) -> Option<ColumnType> {
-    l.column_type()
 }
 
 fn same_class(a: ColumnType, b: ColumnType) -> bool {
@@ -539,7 +539,7 @@ pub fn merge(inputs: &Inputs<'_>) -> Result<TableDef, MergeError> {
             |e| e.id,
         );
         let mut src = Vec::new();
-        let ctl_ty = ctl_cols.get(cname).and_then(|l| loader_to_type(l));
+        let ctl_ty = ctl_cols.get(cname).and_then(|l| l.column_type());
         let dm = dm_cols.get(cname);
         let dm_ty = dm.and_then(|d| parse_oracle_type(&d.oracle));
         if ctl_cols.contains_key(cname) {
@@ -1549,39 +1549,39 @@ mod tests {
 
     #[test]
     fn loader_mapping() {
-        assert_eq!(loader_to_type(&LoaderType::Filler), None);
+        assert_eq!(LoaderType::Filler.column_type(), None);
         assert_eq!(
-            loader_to_type(&LoaderType::Char(3)),
+            LoaderType::Char(3).column_type(),
             Some(ColumnType::Utf8 {
                 max_len: Some(3),
                 dict: false
             })
         );
         assert_eq!(
-            loader_to_type(&LoaderType::Date("yyyy/mm/dd".into())),
+            LoaderType::Date("yyyy/mm/dd".into()).column_type(),
             Some(ColumnType::Date)
         );
         assert_eq!(
-            loader_to_type(&LoaderType::Date("yyyy/mm/dd hh24:mi:ss".into())),
+            LoaderType::Date("yyyy/mm/dd hh24:mi:ss".into()).column_type(),
             Some(ColumnType::Timestamp)
         );
         assert_eq!(
-            loader_to_type(&LoaderType::Timestamp(None)),
+            LoaderType::Timestamp(None).column_type(),
             Some(ColumnType::Timestamp)
         );
         assert_eq!(
-            loader_to_type(&LoaderType::Timestamp(Some("yyyy/mm/dd".into()))),
+            LoaderType::Timestamp(Some("yyyy/mm/dd".into())).column_type(),
             Some(ColumnType::Date)
         );
         assert_eq!(
-            loader_to_type(&LoaderType::DecimalExternal),
+            LoaderType::DecimalExternal.column_type(),
             Some(ColumnType::Number {
                 precision: None,
                 scale: None
             })
         );
         assert_eq!(
-            loader_to_type(&LoaderType::IntegerExternal),
+            LoaderType::IntegerExternal.column_type(),
             Some(ColumnType::Integer)
         );
         assert!(is_dict_like(

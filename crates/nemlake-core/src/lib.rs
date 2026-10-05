@@ -21,6 +21,6 @@ pub mod report;
 pub mod shape;
 
 pub use diag::{Category, Diagnose, Diagnostic, Sample, Severity};
-pub use irow::{Fingerprint, IRow, normalize_name};
+pub use irow::{Fingerprint, IRow, IRowError, IRowScratch, normalize_name};
 pub use period::YearMonth;
 pub use shape::{CanonicalShape, SHAPE_FORMAT, ShapeId, TypeClass};

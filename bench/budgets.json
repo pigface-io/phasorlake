@@ -11,6 +11,9 @@
       "max_rss_mb": 102.655,
       "min_rows_per_s": 3663999.13
     },
+    "parse/scan_many_blocks": {
+      "min_mb_per_s": 105.0
+    },
     "parse/scan_split_only": {
       "min_mb_per_s": 1378.312
     },

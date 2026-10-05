@@ -3,7 +3,7 @@
 use std::io::Read;
 
 use memchr::memchr;
-use nemlake_core::{IRow, normalize_name};
+use nemlake_core::{IRow, IRowScratch};
 
 use crate::error::{RowError, RowFailure, ScanError, SinkError};
 use crate::fields::{Row, Splitter};
@@ -89,8 +89,7 @@ pub fn scan<R: Read, S: Sink>(
     let mut filled = 0usize;
     let mut stats = ScanStats::default();
     let mut splitter = Splitter::with_capacity(64);
-    let mut names: Vec<String> = Vec::new();
-    let mut name_buf = String::new();
+    let mut irows = IRowScratch::default();
     let mut seen_header = false;
     let mut eof = false;
     let mut line_start_offset: u64 = 0;
@@ -155,88 +154,20 @@ pub fn scan<R: Read, S: Sink>(
                         Ok(()) => stats.rows += 1,
                         Err(RowFailure::Sink(e)) => return Err(ScanError::Sink(*e)),
                         Err(RowFailure::Row(e)) => {
-                            stats.bad_rows += 1;
-                            if sink.bad_row(line, pos, &e) == Flow::Stop {
-                                return Err(ScanError::Stopped { line: pos.line });
-                            }
-                            let (first_line, first) = first_bad.get_or_insert((pos.line, e));
-                            if stats.bad_rows > opts.max_bad_rows {
-                                return Err(ScanError::TooManyBadRows {
-                                    bad: stats.bad_rows,
-                                    limit: opts.max_bad_rows,
-                                    line: *first_line,
-                                    first: first.clone(),
-                                });
-                            }
+                            on_bad_row(sink, &mut stats, &mut first_bad, opts, line, pos, e)?;
                         }
                     }
                 }
                 Some(b'I') => {
                     let row = splitter.split(line);
-                    if row.len() < 5 {
-                        return Err(ScanError::BadHeader {
+                    irows
+                        .with_header((0..row.len()).map(|i| row.str(i)), |irow| {
+                            sink.header(irow, pos)
+                        })
+                        .map_err(|e| ScanError::BadHeader {
                             line: pos.line,
-                            message: format!(
-                                "it has {} fields; an I row needs report type, subtype, version and at least one column",
-                                row.len()
-                            ),
-                        });
-                    }
-                    let report_type = row
-                        .str(1)
-                        .and_then(|s| normalize_name(s, &mut name_buf).map(str::to_owned));
-                    // Some standing-data tables publish no subtype:
-                    // `I,GENCONDATA,,6,...`. An empty subtype is a name.
-                    let report_subtype = row.str(2).and_then(|s| {
-                        if s.trim().is_empty() {
-                            Some(String::new())
-                        } else {
-                            normalize_name(s, &mut name_buf).map(str::to_owned)
-                        }
-                    });
-                    let version = row.str(3).and_then(|s| s.trim().parse::<u16>().ok());
-                    let (Some(report_type), Some(report_subtype), Some(version)) =
-                        (report_type, report_subtype, version)
-                    else {
-                        return Err(ScanError::BadHeader {
-                            line: pos.line,
-                            message: "the report type is empty, the subtype is not a name, or the version is not a small integer".into(),
-                        });
-                    };
-                    names.clear();
-                    for i in 4..row.len() {
-                        let f = row.str(i).unwrap_or("");
-                        match normalize_name(f, &mut name_buf) {
-                            Some(n) => names.push(n.to_owned()),
-                            None if f.trim().is_empty() => names.push(String::new()),
-                            None => {
-                                return Err(ScanError::BadHeader {
-                                    line: pos.line,
-                                    message: format!(
-                                        "column name {f:?} at field {i} is not a name"
-                                    ),
-                                });
-                            }
-                        }
-                    }
-                    while names.last().is_some_and(String::is_empty) {
-                        names.pop();
-                    }
-                    if names.iter().any(String::is_empty) {
-                        return Err(ScanError::BadHeader {
-                            line: pos.line,
-                            message: "an empty column name is not at the end of the row".into(),
-                        });
-                    }
-                    // I rows are rare (one per block), so this small allocation is fine.
-                    let name_refs: Vec<&str> = names.iter().map(String::as_str).collect();
-                    let irow = IRow {
-                        report_type: &report_type,
-                        report_subtype: &report_subtype,
-                        version,
-                        columns: &name_refs,
-                    };
-                    sink.header(&irow, pos)?;
+                            message: e.to_string(),
+                        })??;
                     seen_header = true;
                     stats.blocks += 1;
                 }
@@ -249,21 +180,9 @@ pub fn scan<R: Read, S: Sink>(
                     }
                 }
                 None => {}
-                Some(_) => {
-                    stats.bad_rows += 1;
-                    let err = RowError::TooShort(0);
-                    if sink.bad_row(line, pos, &err) == Flow::Stop {
-                        return Err(ScanError::Stopped { line: pos.line });
-                    }
-                    let (first_line, first) = first_bad.get_or_insert((pos.line, Box::new(err)));
-                    if stats.bad_rows > opts.max_bad_rows {
-                        return Err(ScanError::TooManyBadRows {
-                            bad: stats.bad_rows,
-                            limit: opts.max_bad_rows,
-                            line: *first_line,
-                            first: first.clone(),
-                        });
-                    }
+                Some(&b) => {
+                    let e = Box::new(RowError::UnknownRecord(char::from(b)));
+                    on_bad_row(sink, &mut stats, &mut first_bad, opts, line, pos, e)?;
                 }
             }
         }
@@ -284,6 +203,34 @@ pub fn scan<R: Read, S: Sink>(
         },
     )?;
     Ok(stats)
+}
+
+/// Counts a row that could not be read and hands it to the sink; an error
+/// when the sink stops or there are more such rows than `opts` allows.
+#[cold]
+fn on_bad_row<S: Sink>(
+    sink: &mut S,
+    stats: &mut ScanStats,
+    first_bad: &mut Option<(u64, Box<RowError>)>,
+    opts: &ScanOptions,
+    line: &[u8],
+    pos: Pos,
+    e: Box<RowError>,
+) -> Result<(), ScanError> {
+    stats.bad_rows += 1;
+    if sink.bad_row(line, pos, &e) == Flow::Stop {
+        return Err(ScanError::Stopped { line: pos.line });
+    }
+    let (first_line, first) = first_bad.get_or_insert((pos.line, e));
+    if stats.bad_rows > opts.max_bad_rows {
+        return Err(ScanError::TooManyBadRows {
+            bad: stats.bad_rows,
+            limit: opts.max_bad_rows,
+            line: *first_line,
+            first: first.clone(),
+        });
+    }
+    Ok(())
 }
 
 #[cfg(test)]

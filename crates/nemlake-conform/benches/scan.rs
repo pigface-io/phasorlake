@@ -1,5 +1,6 @@
 //! Throughput of the scanner alone and of the typed Arrow path, over a
-//! synthetic file generated from the DISPATCH_UNIT_SCADA fixture.
+//! synthetic file generated from the DISPATCH_UNIT_SCADA fixture, and over
+//! a file of many short blocks, where reading I rows dominates.
 
 use std::fmt::Write as _;
 use std::hint::black_box;
@@ -41,6 +42,31 @@ fn synthetic() -> Vec<u8> {
         i += 1;
     }
     let _ = write!(out, "C,\"END OF REPORT\",{}\r\n", i + 3);
+    out.into_bytes()
+}
+
+/// The blocks of a multi-table DISPATCHIS file (seven I rows, about three
+/// D rows each) repeated to `MANY_BLOCKS_BYTES`: an I row every few rows.
+const MANY_BLOCKS_BYTES: usize = 8 << 20;
+
+fn many_blocks() -> Vec<u8> {
+    let text = std::fs::read_to_string(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../../testdata/csv/multi_block_dispatchis.csv"
+    ))
+    .unwrap();
+    let body: String = text
+        .lines()
+        .filter(|l| l.starts_with("I,") || l.starts_with("D,"))
+        .flat_map(|l| [l, "\r\n"])
+        .collect();
+    let header = text.lines().next().unwrap();
+    let mut out = String::with_capacity(MANY_BLOCKS_BYTES + body.len() + 1024);
+    out.push_str(header);
+    out.push_str("\r\n");
+    while out.len() < MANY_BLOCKS_BYTES {
+        out.push_str(&body);
+    }
     out.into_bytes()
 }
 
@@ -94,6 +120,19 @@ fn bench(c: &mut Criterion) {
             let mut s = ArrowSink::new(&registry, ResolveOptions::default(), 65_536, Drop);
             let st = scan(black_box(data.as_slice()), &mut s, &ScanOptions::default()).unwrap();
             black_box(st.rows);
+        });
+    });
+    g.finish();
+
+    let data = many_blocks();
+    let mut g = c.benchmark_group("parse");
+    g.throughput(Throughput::Bytes(data.len() as u64));
+    g.sample_size(10);
+    g.bench_function("scan_many_blocks", |b| {
+        b.iter(|| {
+            let mut s = ArrowSink::new(&registry, ResolveOptions::default(), 65_536, Drop);
+            let st = scan(black_box(data.as_slice()), &mut s, &ScanOptions::default()).unwrap();
+            black_box(st.blocks);
         });
     });
     g.finish();

@@ -215,6 +215,30 @@ pub struct ColumnDef {
     pub curated: bool,
 }
 
+/// The `src` of a raw column.
+pub const RAW_SRC: &str = "raw";
+
+/// The name of the column that keeps, as text, the values of `column` that
+/// do not fit its type.
+pub fn raw_name(column: &str) -> String {
+    format!("{column}__raw")
+}
+
+impl ColumnDef {
+    /// Whether this is a raw column: the text of another column's values
+    /// that do not fit that column's type.
+    pub fn is_raw(&self) -> bool {
+        self.src.iter().any(|s| s == RAW_SRC)
+    }
+
+    /// For a raw column, the name of the column whose values it keeps.
+    pub fn raw_of(&self) -> Option<&str> {
+        self.is_raw()
+            .then(|| self.name.strip_suffix("__raw"))
+            .flatten()
+    }
+}
+
 /// One published shape of a table.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct VersionDef {

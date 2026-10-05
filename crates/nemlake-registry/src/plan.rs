@@ -65,6 +65,22 @@ impl Cast {
             ColumnType::Boolean => Self::Boolean,
         }
     }
+
+    /// The Arrow type this cast produces, in `market`'s time zone.
+    pub(crate) fn data_type(self, market: &MarketDef) -> DataType {
+        match self {
+            Self::Utf8 => DataType::Utf8,
+            Self::Float64 => DataType::Float64,
+            Self::Int64 => DataType::Int64,
+            Self::Decimal128 { precision, scale } => DataType::Decimal128(precision, scale as i8),
+            Self::TimestampNanos { .. } => DataType::Timestamp(
+                arrow_schema::TimeUnit::Nanosecond,
+                Some(Arc::from(market.arrow_tz())),
+            ),
+            Self::Date32 => DataType::Date32,
+            Self::Boolean => DataType::Boolean,
+        }
+    }
 }
 
 /// Why a file column goes where it goes.
@@ -272,11 +288,10 @@ impl<'a> Draft<'a> {
         let t = self.t;
         let c = &t.columns[i];
         self.supplied[i] = true;
-        let raw_name = format!("{}__raw", c.name);
         let raw_target = t
             .columns
             .iter()
-            .position(|r| r.name == raw_name && r.src.iter().any(|s| s == "raw"))
+            .position(|r| r.raw_of() == Some(c.name.as_str()))
             .map(|r| r as u16);
         self.routes.push(ColumnRoute {
             source_name: name.to_owned(),
