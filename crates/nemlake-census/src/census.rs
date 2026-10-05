@@ -21,7 +21,7 @@
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
-use nemlake_acquire::{DiskCache, MmsdmArchive};
+use nemlake_acquire::{Archive, MmsdmArchive};
 use nemlake_core::{
     CanonicalShape, Category, Diagnose, Diagnostic, IRow, ShapeId, TypeClass, YearMonth,
 };
@@ -241,64 +241,27 @@ pub fn read_blocks(reader: impl std::io::Read) -> Result<Vec<RawBlock>, Box<Diag
     Ok(blocks.0)
 }
 
-/// Every archived file of `month`, sorted: under the month's directory
-/// (2015 on) and the month's whole zip (before): data zips and CSVs,
-/// control files and the README. Sidecars and partial downloads are left
-/// out.
+/// Every archived file of `month` (see [`MmsdmArchive::archived_files`]);
+/// an error when there is none, which says to download the month first.
 pub fn month_files(
-    archive: &DiskCache,
+    archive: &Archive,
     nem: &MmsdmArchive,
     month: YearMonth,
 ) -> Result<Vec<PathBuf>, CensusError> {
-    let not_url = |e: nemlake_acquire::FetchError| CensusError::Read {
-        path: month.to_string(),
-        message: e.to_string(),
-    };
-    let dir = archive.path_for(nem.month_root(month).map_err(not_url)?.as_str());
-    let whole = archive.path_for(
-        nem.year_root(month.year())
-            .map_err(not_url)?
-            .join(&format!("MMSDM_{}_{:02}.zip", month.year(), month.month()))
-            .map_err(|e| CensusError::Read {
-                path: month.to_string(),
-                message: e.to_string(),
-            })?
-            .as_str(),
-    );
-    let mut out = Vec::new();
-    let mut stack = vec![dir.clone()];
-    while let Some(d) = stack.pop() {
-        let Ok(rd) = std::fs::read_dir(&d) else {
-            continue;
-        };
-        for e in rd.filter_map(Result::ok) {
-            let p = e.path();
-            if p.is_dir() {
-                stack.push(p);
-            } else if is_archived_data(&p) {
-                out.push(p);
-            }
-        }
+    let files = nem
+        .archived_files(archive, month)
+        .map_err(|e| CensusError::Read {
+            path: month.to_string(),
+            message: e.to_string(),
+        })?;
+    if files.is_empty() {
+        let dir = nem
+            .month_root(month)
+            .map(|u| archive.path_for(u.as_str()).display().to_string())
+            .unwrap_or_default();
+        return Err(CensusError::NotArchived { month, path: dir });
     }
-    if whole.is_file() {
-        out.push(whole);
-    }
-    if out.is_empty() {
-        return Err(CensusError::NotArchived {
-            month,
-            path: dir.display().to_string(),
-        });
-    }
-    out.sort();
-    Ok(out)
-}
-
-fn is_archived_data(p: &Path) -> bool {
-    p.extension().is_some_and(|x| {
-        ["zip", "csv", "ctl", "txt"]
-            .iter()
-            .any(|k| x.eq_ignore_ascii_case(k))
-    })
+    Ok(files)
 }
 
 /// The file a walked entry belongs to: the innermost zip it was read out
@@ -676,35 +639,51 @@ SETTLEMENTDATE DATE "yyyy/mm/dd hh24:mi:ss", DUID CHAR(20), SCADAVALUE FLOAT EXT
         csv
     }
 
-    fn put(path: &Path, bytes: &[u8]) {
+    /// Archives `bytes` as the download of `url`, sidecar and all.
+    fn put(store: &Archive, url: &str, bytes: &[u8]) {
+        let path = store.path_for(url);
         std::fs::create_dir_all(path.parent().unwrap()).unwrap();
-        std::fs::write(path, bytes).unwrap();
+        std::fs::write(&path, bytes).unwrap();
+        let sidecar = nemlake_acquire::Sidecar {
+            url: url.to_owned(),
+            size: bytes.len() as u64,
+            sha256: nemlake_acquire::archive::sha256_hex(bytes),
+            fetched_at: "2026-10-05T00:00:00Z".into(),
+            etag: None,
+            last_modified: None,
+            tool: "test".into(),
+        };
+        Archive::write_sidecar(&path, &sidecar).unwrap();
     }
 
     #[test]
     fn every_block_of_every_archived_file_is_recorded_with_its_rows() {
         let dir = tempfile::tempdir().unwrap();
-        let store = DiskCache::new(dir.path());
+        let store = Archive::new(dir.path());
         let nem = MmsdmArchive::new("https://h").unwrap();
         let reg = Registry::load_embedded(TypeOptions::default());
         let month = YearMonth::new(2026, 8).unwrap();
         let root = nem.month_root(month).unwrap();
         // Listings give `#` as `%23`; the archive keeps the decoded name.
-        let at = |rel: &str| store.path_for(root.join(&rel.replace('#', "%23")).unwrap().as_str());
+        let at = |rel: &str| root.join(&rel.replace('#', "%23")).unwrap().to_string();
         let data = |name: &str| at(&format!("DATA/{name}"));
         let scada_rows = 110_000;
         let csv = three_tables(scada_rows);
         assert!(csv.len() > 4 << 20);
         let zip_name = "PUBLIC_ARCHIVE#DISPATCH_UNIT_SCADA#FILE01#202608010000.zip";
-        put(&data(zip_name), &zip_of(&[("A.CSV", &csv)]));
-        // A sidecar and a partial download beside it are not files of the month.
-        put(&data(&format!("{zip_name}.json")), b"{}");
-        put(&data("PUBLIC_ARCHIVE#X#FILE01#202608010000.zip.part"), b"x");
+        put(&store, &data(zip_name), &zip_of(&[("A.CSV", &csv)]));
+        // A partial download, and a file without a sidecar, are not
+        // archived files of the month.
+        let stray = store.path_for(&data("PUBLIC_ARCHIVE#X#FILE01#202608010000.zip"));
+        std::fs::write(Archive::part_path(&stray), b"x").unwrap();
+        std::fs::write(&stray, b"x").unwrap();
         put(
+            &store,
             &data("PUBLIC_ARCHIVE#BAD#FILE01#202608010000.zip"),
             b"not a zip",
         );
         put(
+            &store,
             &at("CTL/PUBLIC_ARCHIVE#DISPATCH_UNIT_SCADA#FILE01#202608.ctl"),
             SCADA_CTL.as_bytes(),
         );
@@ -785,7 +764,7 @@ SETTLEMENTDATE DATE "yyyy/mm/dd hh24:mi:ss", DUID CHAR(20), SCADAVALUE FLOAT EXT
     #[test]
     fn a_whole_month_zip_is_read_through_its_nested_zips_and_control_files() {
         let dir = tempfile::tempdir().unwrap();
-        let store = DiskCache::new(dir.path());
+        let store = Archive::new(dir.path());
         let nem = MmsdmArchive::new("https://h").unwrap();
         let reg = Registry::load_embedded(TypeOptions::default());
         let month = YearMonth::new(2012, 1).unwrap();
@@ -813,9 +792,8 @@ SETTLEMENTDATE DATE "yyyy/mm/dd hh24:mi:ss", DUID CHAR(20), SCADAVALUE FLOAT EXT
             ),
         ]);
         put(
-            &store.path_for(
-                "https://h/Data_Archive/Wholesale_Electricity/MMSDM/2012/MMSDM_2012_01.zip",
-            ),
+            &store,
+            "https://h/Data_Archive/Wholesale_Electricity/MMSDM/2012/MMSDM_2012_01.zip",
             &whole,
         );
         let files = month_files(&store, &nem, month).unwrap();

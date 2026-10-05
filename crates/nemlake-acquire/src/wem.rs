@@ -108,7 +108,7 @@ impl Source for WemDatafiles {
         let mut out = Vec::new();
         for ds in &self.datasets {
             let murl = self.manifest_url(ds)?;
-            let body = fetcher.fetch_listing(murl.as_str(), 3_600).await?;
+            let body = fetcher.fetch_listing(murl.as_str()).await?;
             let text = String::from_utf8_lossy(&body);
             for e in parse_manifest(murl.as_str(), &text)? {
                 let Some(ym) = YearMonth::new(e.year, e.month) else {
@@ -129,7 +129,6 @@ impl Source for WemDatafiles {
                     period: Some(ym),
                     size: None,
                     modified: e.generated_at,
-                    member: None,
                 });
             }
         }
@@ -144,7 +143,7 @@ mod tests {
     use std::time::Duration;
 
     use super::*;
-    use crate::cache::DiskCache;
+    use crate::archive::Archive;
     use crate::fetcher::FetcherConfig;
     use crate::transport::{Canned, StaticTransport};
 
@@ -184,7 +183,7 @@ mod tests {
         t.add(murl.as_str(), Canned::ok(&text));
         let f = Fetcher::new(
             Arc::new(t),
-            DiskCache::new(dir.path()),
+            Archive::new(dir.path()),
             FetcherConfig {
                 attempts: 1,
                 min_interval: Duration::ZERO,

@@ -7,9 +7,8 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use async_trait::async_trait;
-use nemlake_acquire::cache::DiskCache;
 use nemlake_acquire::transport::{Canned, StaticTransport};
-use nemlake_acquire::{FetchError, Fetcher, FetcherConfig, Query, RemoteFile, Source};
+use nemlake_acquire::{Archive, FetchError, Fetcher, FetcherConfig, Query, RemoteFile, Source};
 use nemlake_core::event::Event;
 use nemlake_core::paths::Home;
 use nemlake_pipeline::{Deps, Input, Plan, RunOptions, run};
@@ -54,13 +53,12 @@ fn env_with(types: TypeOptions) -> Env {
     let transport = Arc::new(StaticTransport::default());
     let fetcher = Fetcher::new(
         Arc::new(transport.clone()),
-        DiskCache::new(home.cache()),
+        Archive::new(home.archive()),
         FetcherConfig {
             attempts: 2,
             backoff: Duration::from_millis(1),
             max_backoff: Duration::from_millis(1),
             min_interval: Duration::ZERO,
-            ..Default::default()
         },
     );
     let deps = Deps {
@@ -1113,16 +1111,16 @@ fn a_recorded_source_becomes_a_file_to_read() {
         etag: None,
         last_modified: None,
     };
-    let member = nemlake_pipeline::recorded_remote(&rec(
+    let archived = nemlake_pipeline::recorded_remote(&rec(
         "nem-mmsdm",
-        "https://h/MMSDM_2012_01.zip#DATA/PUBLIC_DVD_REGION_201201010000.zip",
-        "/archive/h/MMSDM_2012_01.zip.members/PUBLIC_DVD_REGION_201201010000.zip",
+        "https://h/2024/MMSDM_2024_01/DATA/PUBLIC_DVD_REGION_202401010000.zip",
+        "/archive/h/2024/MMSDM_2024_01/DATA/PUBLIC_DVD_REGION_202401010000.zip",
     ))
     .unwrap();
-    assert_eq!(member.source, "nem-mmsdm");
-    assert_eq!(member.stem(), "public_dvd_region_201201010000");
-    assert_eq!(member.table.as_deref(), Some("REGION"));
-    assert_eq!(member.period.unwrap().to_string(), "2012-01");
+    assert_eq!(archived.source, "nem-mmsdm");
+    assert_eq!(archived.stem(), "public_dvd_region_202401010000");
+    assert_eq!(archived.table.as_deref(), Some("REGION"));
+    assert_eq!(archived.period.unwrap().to_string(), "2024-01");
     let wem =
         nemlake_pipeline::recorded_remote(&rec("wem-datafiles", "https://w/a.csv", "/a/a.csv"))
             .unwrap();
@@ -1363,6 +1361,87 @@ impl Source for Broken {
     }
 }
 
+/// `fetch` downloads into the archive and writes nothing else; `ingest
+/// --from` then reads the month from the archive, without the network.
+#[tokio::test]
+async fn fetch_only_downloads_and_ingest_reads_the_archived_month() {
+    let e = env();
+    let zip_tmp = e.home.root().join("z.zip");
+    make_zip(
+        &zip_tmp,
+        &[(
+            "PUBLIC_DVD_TRADINGPRICE_202401010000.CSV",
+            &std::fs::read(fixtures().join("TRADINGPRICE_v2_head.csv")).unwrap(),
+        )],
+    );
+    let nem = nemlake_acquire::MmsdmArchive::new("https://h").unwrap();
+    let ym = nemlake_core::YearMonth::new(2024, 1).unwrap();
+    let url = nem
+        .month_root(ym)
+        .unwrap()
+        .join("DATA/PUBLIC_DVD_TRADINGPRICE_202401010000.zip")
+        .unwrap();
+    e.transport
+        .add(url.as_str(), Canned::ok(&std::fs::read(&zip_tmp).unwrap()));
+    let query = |tables: &[&str]| Query {
+        exclude: Vec::new(),
+        tables: tables.iter().map(|t| (*t).to_owned()).collect(),
+        from: ym,
+        to: ym,
+    };
+    let (rep, _) = run_plan(
+        &e,
+        Plan {
+            request: "fetch".into(),
+            input: Input::Remote {
+                source: Arc::new(OneFile(vec![RemoteFile {
+                    url: url.clone(),
+                    source: "nem-mmsdm",
+                    table: Some("TRADINGPRICE".into()),
+                    period: Some(ym),
+                    size: None,
+                    modified: None,
+                }])),
+                query: query(&[]),
+            },
+            options: RunOptions {
+                ingest: false,
+                ..Default::default()
+            },
+        },
+    )
+    .await;
+    assert_eq!(rep.exit_code, 0, "{:?}", rep.report.summary_lines());
+    assert_eq!((rep.summary.downloaded, rep.summary.ingested), (1, 0));
+    assert!(walk(&e.home.lake()).is_empty(), "nothing is written");
+    assert!(
+        e.deps
+            .fetcher
+            .archive()
+            .lookup(url.as_str())
+            .unwrap()
+            .is_some()
+    );
+
+    let ingest = |tables: &[&str]| Plan {
+        request: "ingest nem".into(),
+        input: Input::Archive {
+            source: Arc::new(nem.clone()),
+            query: query(tables),
+        },
+        options: RunOptions::default(),
+    };
+    let requests = e.transport.request_count();
+    let (rep, _) = run_plan(&e, ingest(&["REGION"])).await;
+    assert_eq!(rep.summary.listed, 0, "another table's files are left");
+    let (rep, _) = run_plan(&e, ingest(&[])).await;
+    assert_eq!(rep.exit_code, 0, "{:?}", rep.report.summary_lines());
+    assert_eq!((rep.summary.listed, rep.summary.ingested), (1, 1));
+    assert!(rep.summary.rows > 0);
+    assert_eq!(e.transport.request_count(), requests, "no request");
+    assert!(!walk(&e.home.lake()).is_empty());
+}
+
 #[tokio::test]
 async fn remote_source_downloads_then_serves_from_cache_and_reports_fetch_failures() {
     let e = env();
@@ -1391,7 +1470,6 @@ async fn remote_source_downloads_then_serves_from_cache_and_reports_fetch_failur
         period: Some(ym),
         size: None,
         modified: None,
-        member: None,
     };
     let source = Arc::new(OneFile(vec![
         remote("PUBLIC_DVD_TRADINGPRICE_202401010000.zip", "TRADINGPRICE"),

@@ -44,17 +44,30 @@ pub struct Cli {
 /// Top-level commands.
 #[derive(Subcommand, Debug)]
 pub enum Command {
-    /// Download and ingest files from AEMO.
+    /// Download files from AEMO into the archive, each once.
     Fetch {
         /// The market.
         #[command(subcommand)]
         market: FetchMarket,
     },
-    /// Ingest local zips or CSVs; no network.
+    /// Write Parquet from archived months (`--from`) or from local zips or
+    /// CSVs; no network.
     Ingest {
         /// Files or directories.
-        #[arg(required = true)]
+        #[arg(required_unless_present = "from", conflicts_with = "from")]
         paths: Vec<PathBuf>,
+        /// First archived month, YYYY-MM.
+        #[arg(long)]
+        from: Option<YearMonth>,
+        /// Last archived month, YYYY-MM (default: same as --from).
+        #[arg(long, requires = "from")]
+        to: Option<YearMonth>,
+        /// Tables, comma separated (default: every table archived).
+        #[arg(long, value_delimiter = ',', requires = "from")]
+        table: Vec<String>,
+        /// Tables to leave out, comma separated.
+        #[arg(long, value_delimiter = ',', requires = "from")]
+        exclude: Vec<String>,
         /// Ingest flags.
         #[command(flatten)]
         ingest: IngestArgs,
@@ -131,17 +144,11 @@ pub enum Command {
         cmd: SchemaCmd,
     },
     /// The archive of downloaded files: every file as the server sent it,
-    /// with a record of how it was requested.
+    /// with a record of where and when it came from.
     Archive {
         /// The subcommand.
         #[command(subcommand)]
         cmd: ArchiveCmd,
-    },
-    /// Listings and scratch files, which can be thrown away.
-    Cache {
-        /// The subcommand.
-        #[command(subcommand)]
-        cmd: CacheCmd,
     },
     /// Western Australia (WEM) data.
     Wem {
@@ -175,16 +182,10 @@ pub enum FetchMarket {
         /// Concurrent downloads.
         #[arg(long)]
         downloads: Option<usize>,
-        /// Re-download even when cached.
-        #[arg(long)]
-        refresh: bool,
-        /// Ingest flags.
-        #[command(flatten)]
-        ingest: IngestArgs,
     },
 }
 
-/// Flags shared by fetch and ingest.
+/// Flags of ingest.
 #[derive(Args, Debug, Clone, Default)]
 pub struct IngestArgs {
     /// Bad rows tolerated per file before it fails (default from config, else 0).
@@ -271,27 +272,10 @@ pub enum SchemaCmd {
 /// Archive commands.
 #[derive(Subcommand, Debug)]
 pub enum ArchiveCmd {
-    /// Every archived download with when and how it was requested.
+    /// Every archived download with where and when it came from.
     Ls,
     /// Hash every archived file again and compare with its record.
     Verify,
-}
-
-/// Cache commands. Neither touches the archive of downloads.
-#[derive(Subcommand, Debug)]
-pub enum CacheCmd {
-    /// Remove every cached listing, so the next run lists afresh.
-    Clear,
-    /// Remove leftovers of interrupted work: partial downloads nobody
-    /// resumed, spooled files, stale listings, records without a file.
-    Gc {
-        /// Partial downloads are kept for a resume for this many days.
-        #[arg(long, value_name = "DAYS", default_value_t = 7)]
-        keep_partial: u64,
-        /// List what would be removed and remove nothing.
-        #[arg(long)]
-        dry_run: bool,
-    },
 }
 
 /// WEM commands.

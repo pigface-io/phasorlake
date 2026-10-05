@@ -1,12 +1,13 @@
 //! The real nemweb, opt-in: `NEMLAKE_NET_TESTS=1 cargo test -p nemlake-acquire --test net`.
 //! Lists January 2024 and downloads the smallest zip in it twice, the second
-//! time from the cache.
+//! time from the archive.
 
 use std::sync::Arc;
 use std::time::Duration;
 
-use nemlake_acquire::cache::DiskCache;
-use nemlake_acquire::{Fetcher, FetcherConfig, MmsdmArchive, Query, ReqwestTransport, Source};
+use nemlake_acquire::{
+    Archive, Fetcher, FetcherConfig, MmsdmArchive, Query, ReqwestTransport, Source,
+};
 use nemlake_core::YearMonth;
 
 #[tokio::test]
@@ -24,7 +25,7 @@ async fn lists_and_downloads_the_smallest_zip() {
     .unwrap();
     let fetcher = Fetcher::new(
         Arc::new(transport),
-        DiskCache::new(dir.path()),
+        Archive::new(dir.path()),
         FetcherConfig::default(),
     );
     let source = MmsdmArchive::new("https://www.nemweb.com.au").unwrap();

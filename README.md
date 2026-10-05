@@ -14,8 +14,12 @@ a failure is explained.
 
 ```sh
 cargo install --path crates/nemlake-cli --locked
-nemlake fetch nem --table DISPATCH_UNIT_SCADA --from 2024-01 --to 2024-01
+nemlake fetch nem --table DISPATCH_UNIT_SCADA --from 2024-01
+nemlake ingest --from 2024-01 --table DISPATCH_UNIT_SCADA
 ```
+
+`fetch` downloads into the archive, each file once; `ingest` writes Parquet
+from what is archived, without the network.
 
 The result lands under `~/.nemlake/lake/nem/dispatch_unit_scada/year=2024/month=01/`.
 Query it:
@@ -25,14 +29,15 @@ select count(*), typeof(settlementdate)
 from read_parquet('~/.nemlake/lake/nem/dispatch_unit_scada/**/*.parquet', hive_partitioning = true);
 ```
 
-Run the same command again and it finishes in milliseconds: the manifest knows
-the file is already in the lake.
+Run the same commands again and they finish in milliseconds: the archive has
+the file, and the manifest knows it is already in the lake.
 
 ## Commands
 
 | command | what it does |
 |---|---|
-| `nemlake fetch nem --from YYYY-MM [--to YYYY-MM] [--table T,T] [--exclude T,T] [--dry-run]` | list the archive, download, ingest. Without `--table`: every table the archive has for those months. `--dry-run` lists the files and totals their size |
+| `nemlake fetch nem --from YYYY-MM [--to YYYY-MM] [--table T,T] [--exclude T,T] [--dry-run]` | list the archive and download each file not archived yet, with the month's control files and README. Without `--table`: every table the archive has for those months. `--dry-run` lists the files and totals their size |
+| `nemlake ingest --from YYYY-MM [--to YYYY-MM] [--table T,T] [--exclude T,T]` | write Parquet from the archived files of those months, no network |
 | `nemlake ingest <zip\|csv\|dir>...` | ingest local files, no network |
 | `nemlake reingest [--dry-run]` | read again, from disk, every source whose lake files are behind the current rules; no network |
 | `nemlake inspect <file> [--infer]` | every block in a file, its version and how the registry resolves it; draft a schema for unknown ones |
@@ -42,8 +47,7 @@ the file is already in the lake.
 | `nemlake schema list\|show\|diff\|lineage\|validate` | the registry |
 | `nemlake schema plan <type> <subtype> <version> --columns A,B,C [--month YYYY-MM]` | the conformance plan a shape is read with, as JSON: where each file column goes, its cast, what is written null |
 | `nemlake schema infer <file> [--write] [--ctl FILE]` | draft what a file adds to the registry: a new table, version or variant; `--ctl` types it from AEMO's control file for the table |
-| `nemlake archive ls\|verify` | every downloaded file with when and how it was requested; `verify` hashes each one again |
-| `nemlake cache gc\|clear` | throwaway files only: `gc` removes leftovers of interrupted work, `clear` the cached listings; neither touches the archive |
+| `nemlake archive ls\|verify` | every downloaded file with where and when it came from; `verify` hashes each one again |
 | `nemlake wem manifest <dataset>` | a WEM dataset's file list (WEM ingestion comes later) |
 
 Global flags: `--home DIR` (or `NEMLAKE_HOME`), `--json`, `-v`, `--offline`,
@@ -56,8 +60,8 @@ Global flags: `--home DIR` (or `NEMLAKE_HOME`), `--json`, `-v`, `--offline`,
 ~/.nemlake/
   lake/nem/{table}/year=YYYY/month=MM/{source}-v{version}-{shape8}-{sha8}.parquet   appended tables, partitioned by market-local month
   lake/nem/{table}/snapshot=YYYYMM/...                                     standing-data tables (REGION, PARTICIPANT, ...): each month's file is the whole table
-  archive/{host}/{path of the URL}[.json]                                  every download as the server sent it, with its request record
-  cache/listings/, cache/tmp/                                              listings and scratch files, safe to delete
+  archive/{host}/{path of the URL}[.json]                                  every download as the server sent it, with its record
+  cache/tmp/                                                               scratch files of a running ingest, safe to delete
   quarantine/{table}/{source}.jsonl                                        rows whose structure was wrong for their block, with the reason
   manifest.sqlite                                                          runs, files, ingests, outputs, diagnostics
 ```
@@ -146,21 +150,17 @@ path its URL spells out:
   PUBLIC_DVD_DISPATCHPRICE_202401010000.zip.json
 ```
 
-The `.json` beside it records what makes the file traceable: the URL, when
-the request was sent and when the download completed, the nemlake command
-that asked for it, the tool version and user agent, the status and headers
-the server answered with, how many attempts it took and whether one resumed
-an earlier one, the size and sha256 of the bytes, and what the listing said
-about the file. A file read out of a whole-month zip sits under that zip's
-path with `.members` added, and its record names the zip, the member, its
-offset and the CRC-32 it was checked against.
+The `.json` beside it records where the file came from: the URL, when the
+download completed, the server's `ETag` and `Last-Modified` (when AEMO
+published it), the size and sha256 of the bytes, and the nemlake version
+that fetched it.
 
-Nothing in nemlake deletes an archived file. When the same URL later
-serves other bytes, the earlier file is kept beside the new one and the
-new record points at it. Everything in the lake can be derived again from
-the archive, which is what `nemlake reingest` does when the rules for
-reading a table improve. `nemlake archive verify` hashes every file
-against its record.
+A file is downloaded once. Nothing in nemlake replaces or deletes an
+archived file; to fetch one again, delete it and its record. Everything in
+the lake, and the census of every shape AEMO published (`just census`), is
+derived from the archive, which is what `nemlake reingest` does when the
+rules for reading a table improve. `nemlake archive verify` hashes every
+file against its record.
 
 ## Your own tables
 
@@ -241,9 +241,8 @@ sources it affects.
 The archive begins in July 2009. From 2015 each month is a directory of
 per-table zips and nemlake downloads the ones asked for. Before 2015 a month
 exists only as one zip of 1.4 to 2.1 GB holding those per-table zips;
-nemlake reads that zip's index with ranged requests and downloads only the
-members asked for, checked against the CRC-32 the index records. One table
-of January 2012 is a 12 MB download, not 1.9 GB.
+nemlake downloads it whole, once, and reads the per-table zips nested in it
+from disk.
 
 File names changed along the way, from `PUBLIC_DVD_{TABLE}_{YYYYMM}010000.zip`
 to `PUBLIC_ARCHIVE#{TABLE}#FILE{NN}#{YYYYMM}010000.zip`; both are read.
@@ -261,18 +260,18 @@ between requests (`request_interval_ms` in `config.toml`), and when the
 server refuses it (HTTP 403, or 429 through every retry) it sends nothing
 more in that run and reports `net.blocked` for what is left.
 
-A download that breaks keeps what arrived. The next attempt, or the next
-run, asks for the rest with `Range` and `If-Range`, so a file that changed
-in the meantime is fetched whole again instead of being stitched together.
+A download that breaks leaves nothing behind; the next attempt fetches the
+file whole. Its bytes go from the network to disk without a copy, hashed on
+the way on a thread of their own.
 
 ## Errors
 
 Every error and warning carries a stable code (`csv.field_count_mismatch`,
 `net.content_length_mismatch`, `schema.version_drift`, ...), a full-sentence
-message and the context: the request, the URL, the cache file, the zip entry,
+message and the context: the request, the URL, the archived file, the zip entry,
 the table and version, the line and byte offset, and a sample of the offending
 input. A run attempts every file and reports each failure; the exit code says
-whether all, some or none succeeded (0, 3, 1), 4 for an offline cache miss, 5
+whether all, some or none succeeded (0, 3, 1), 4 for a file not archived when offline, 5
 for a schema that could not be resolved in strict mode. `docs/errors.md` lists
 every code.
 

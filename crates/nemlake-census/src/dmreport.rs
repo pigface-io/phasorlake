@@ -331,21 +331,17 @@ pub struct Report {
     pub tables: BTreeMap<String, DmTable>,
 }
 
-/// How long a fetched page is reused from the cache: the report changes
-/// with a data-model release, a few times a year.
-const PAGE_TTL: i64 = 7 * 86_400;
-
 async fn page(fetcher: &Fetcher, base: &str, name: &str) -> Result<(String, Page), ReportError> {
     let url = format!("{base}{name}");
-    let body = fetcher.fetch_listing(&url, PAGE_TTL).await?;
+    let body = fetcher.fetch_listing(&url).await?;
     let parsed = parse_page(&String::from_utf8_lossy(&body));
     Ok((url, parsed))
 }
 
 /// The paced fetcher of the report's pages: one request at a time,
 /// `interval` apart, retried where that makes sense, and stopped for good
-/// when the server refuses. Pages are kept under `cache`.
-pub fn report_fetcher(cache: &std::path::Path, interval: Duration) -> Result<Fetcher, FetchError> {
+/// when the server refuses. Pages are read into memory, never archived.
+pub fn report_fetcher(interval: Duration) -> Result<Fetcher, FetchError> {
     let transport = nemlake_acquire::transport::ReqwestTransport::new(
         &format!("nemlake-census/{}", env!("CARGO_PKG_VERSION")),
         Duration::from_secs(20),
@@ -353,7 +349,7 @@ pub fn report_fetcher(cache: &std::path::Path, interval: Duration) -> Result<Fet
     )?;
     Ok(Fetcher::new(
         Arc::new(transport),
-        nemlake_acquire::DiskCache::new(cache),
+        nemlake_acquire::Archive::new(std::env::temp_dir().join("nemlake-datamodel")),
         nemlake_acquire::FetcherConfig {
             min_interval: interval,
             ..Default::default()
@@ -420,7 +416,7 @@ mod tests {
     use std::time::Duration;
 
     use nemlake_acquire::transport::{Canned, StaticTransport};
-    use nemlake_acquire::{DiskCache, FetcherConfig};
+    use nemlake_acquire::{Archive, FetcherConfig};
 
     use super::*;
 
@@ -560,7 +556,7 @@ mod tests {
     fn fetcher(t: &Arc<StaticTransport>, dir: &std::path::Path) -> Fetcher {
         Fetcher::new(
             Arc::new(t.clone()),
-            DiskCache::new(dir),
+            Archive::new(dir),
             FetcherConfig {
                 attempts: 1,
                 min_interval: Duration::ZERO,

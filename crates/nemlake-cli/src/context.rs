@@ -6,8 +6,9 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use anyhow::{Context as _, Result};
-use nemlake_acquire::cache::DiskCache;
-use nemlake_acquire::{Fetcher, FetcherConfig, OfflineTransport, ReqwestTransport, Transport};
+use nemlake_acquire::{
+    Archive, Fetcher, FetcherConfig, OfflineTransport, ReqwestTransport, Transport,
+};
 use nemlake_core::config::Config;
 use nemlake_core::paths::Home;
 use nemlake_pipeline::Deps;
@@ -81,33 +82,15 @@ impl Context {
             .map_err(|e| anyhow::anyhow!("{}", nemlake_core::Diagnose::diagnostic(&e).render()))
     }
 
-    /// The archive of downloads and the cache of listings under the home.
-    pub fn store(&self) -> DiskCache {
-        DiskCache::at(self.home.cache(), self.home.archive())
+    /// The archive of downloads under the home.
+    pub fn archive(&self) -> Archive {
+        Archive::new(self.home.archive())
     }
 
-    /// A fetcher over the real network, or offline. `requested_by` is the
-    /// command being run; it is recorded beside every file it downloads.
+    /// A fetcher over the real network, or offline, with requests the
+    /// configured interval apart.
     pub fn fetcher(
         &self,
-        requested_by: &str,
-        refresh: bool,
-        events: Option<tokio::sync::mpsc::Sender<nemlake_core::event::Event>>,
-    ) -> Result<Arc<Fetcher>> {
-        self.paced_fetcher(
-            requested_by,
-            refresh,
-            Duration::from_millis(self.config.request_interval_ms),
-            events,
-        )
-    }
-
-    /// As [`Context::fetcher`], with requests at least `interval` apart.
-    pub fn paced_fetcher(
-        &self,
-        requested_by: &str,
-        refresh: bool,
-        interval: Duration,
         events: Option<tokio::sync::mpsc::Sender<nemlake_core::event::Event>>,
     ) -> Result<Arc<Fetcher>> {
         let ua = format!(
@@ -124,13 +107,10 @@ impl Context {
             )
         };
         let cfg = FetcherConfig {
-            refresh,
-            min_interval: interval,
-            requested_by: requested_by.to_owned(),
-            user_agent: Some(ua),
+            min_interval: Duration::from_millis(self.config.request_interval_ms),
             ..Default::default()
         };
-        let mut f = Fetcher::new(transport, self.store(), cfg);
+        let mut f = Fetcher::new(transport, self.archive(), cfg);
         if let Some(tx) = events {
             f = f.with_events(tx);
         }

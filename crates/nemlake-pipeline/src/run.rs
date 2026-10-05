@@ -3,7 +3,6 @@
 use std::time::Instant;
 
 use futures::StreamExt;
-use nemlake_acquire::cache::sha256_hex;
 use nemlake_acquire::{LocalFile, RemoteFile};
 use nemlake_core::Diagnose;
 use nemlake_core::event::{Event, Summary};
@@ -37,22 +36,83 @@ pub fn local_remote(path: &std::path::Path) -> Option<RemoteFile> {
         period,
         size: std::fs::metadata(&abs).ok().map(|m| m.len()),
         modified: None,
-        member: None,
     })
 }
 
-/// Hashes a local file into a `LocalFile`.
+/// Hashes a local file into a `LocalFile`, reading it in pieces. Blocking:
+/// the run calls it off the async runtime.
 pub fn local_file(remote: RemoteFile, path: &std::path::Path) -> std::io::Result<LocalFile> {
-    let bytes = std::fs::read(path)?;
+    let (sha256, size) = nemlake_acquire::sha256_file(path)?;
     Ok(LocalFile {
         remote,
         path: path.to_path_buf(),
-        sha256: sha256_hex(&bytes),
-        size: bytes.len() as u64,
+        sha256,
+        size,
         cached: true,
         etag: None,
         last_modified: None,
     })
+}
+
+/// [`local_file`] on a blocking thread.
+async fn hash_local(remote: RemoteFile, path: std::path::PathBuf) -> std::io::Result<LocalFile> {
+    tokio::task::spawn_blocking(move || local_file(remote, &path))
+        .await
+        .unwrap_or_else(|e| Err(std::io::Error::other(e)))
+}
+
+/// The archived data files (zips and CSVs) of `query`'s months, as files
+/// to read: what their sidecars say, so nothing is hashed again. A table
+/// filter applies to files named for one table; a whole-month zip holds
+/// every table and is kept.
+fn archived(
+    source: &nemlake_acquire::MmsdmArchive,
+    archive: &nemlake_acquire::Archive,
+    query: &nemlake_acquire::Query,
+) -> Result<Vec<LocalFile>, nemlake_acquire::FetchError> {
+    let mut out = Vec::new();
+    for month in query.from.range_inclusive(query.to) {
+        for path in source.archived_files(archive, month)? {
+            let name = path
+                .file_name()
+                .map(|n| n.to_string_lossy().into_owned())
+                .unwrap_or_default();
+            let lower = name.to_ascii_lowercase();
+            if !(lower.ends_with(".zip") || lower.ends_with(".csv")) {
+                continue;
+            }
+            let table = nemlake_acquire::MmsdmArchive::parse_name(&name);
+            if let Some(t) = &table {
+                let named = |names: &[String]| names.iter().any(|n| n.eq_ignore_ascii_case(t));
+                if (!query.tables.is_empty() && !named(&query.tables)) || named(&query.exclude) {
+                    continue;
+                }
+            }
+            let Some(sidecar) = nemlake_acquire::Archive::read_sidecar(&path)? else {
+                continue;
+            };
+            let Ok(url) = Url::parse(&sidecar.url) else {
+                continue;
+            };
+            out.push(LocalFile {
+                remote: RemoteFile {
+                    url,
+                    source: nemlake_acquire::mmsdm::SOURCE_ID,
+                    table,
+                    period: Some(month),
+                    size: Some(sidecar.size),
+                    modified: None,
+                },
+                path,
+                sha256: sidecar.sha256,
+                size: sidecar.size,
+                cached: true,
+                etag: sidecar.etag,
+                last_modified: sidecar.last_modified,
+            });
+        }
+    }
+    Ok(out)
 }
 
 /// A source the manifest has recorded, as the file to read it from again.
@@ -108,6 +168,8 @@ struct Listed {
     remote: RemoteFile,
     path: Option<std::path::PathBuf>,
     known: Option<FileRecord>,
+    /// An archived file, known with its hash already.
+    archived: Option<LocalFile>,
 }
 
 enum Fetched {
@@ -154,6 +216,7 @@ pub async fn run(
                     remote,
                     path: None,
                     known: None,
+                    archived: None,
                 })
                 .collect(),
             Err(e) => {
@@ -178,6 +241,23 @@ pub async fn run(
                 .await;
             }
         },
+        Input::Archive { source, query } => match archived(source, deps.fetcher.archive(), query) {
+            Ok(files) => files
+                .into_iter()
+                .map(|l| Listed {
+                    remote: l.remote.clone(),
+                    path: Some(l.path.clone()),
+                    known: None,
+                    archived: Some(l),
+                })
+                .collect(),
+            Err(e) => {
+                let d = e.diagnostic().with_request(request.clone());
+                emit(&events, Event::Diagnostic(Box::new(d.clone())));
+                report.emit(d);
+                Vec::new()
+            }
+        },
         Input::Local(paths) => {
             let mut out = Vec::new();
             for p in paths {
@@ -186,6 +266,7 @@ pub async fn run(
                         remote,
                         path: Some(p.clone()),
                         known: None,
+                        archived: None,
                     }),
                     None => {
                         let d = Diagnostic::error(
@@ -230,6 +311,7 @@ pub async fn run(
                         remote,
                         path: Some(std::path::PathBuf::from(&rec.cache_path)),
                         known: Some(rec),
+                        archived: None,
                     });
                 }
             }
@@ -252,12 +334,15 @@ pub async fn run(
     let fetcher = deps.fetcher.clone();
     let req = request.clone();
     let fetched = futures::stream::iter(listed)
-        .map(|Listed { remote, path, known }| {
+        .map(|Listed { remote, path, known, archived }| {
             let fetcher = fetcher.clone();
             let req = req.clone();
             async move {
+                if let Some(l) = archived {
+                    return Fetched::Ok(l);
+                }
                 match path {
-                    Some(p) => match (local_file(remote.clone(), &p), known) {
+                    Some(p) => match (hash_local(remote.clone(), p.clone()).await, known) {
                         // What the server said of a recorded source stays
                         // with it when it is read again.
                         (Ok(l), Some(known)) => Fetched::Ok(LocalFile {
@@ -337,6 +422,9 @@ pub async fn run(
                                 bytes: local.size,
                             },
                         );
+                        if !options.ingest {
+                            return Step::Downloaded(Box::new(local));
+                        }
                         // In the lake already, by rules that still hold:
                         // nothing to do. By rules that have changed: read
                         // it again.
@@ -428,6 +516,24 @@ pub async fn run(
                 emit(&events, Event::SourceDone(Box::new(outcome.clone())));
                 report.finish_source(outcome);
             }
+            Step::Downloaded(local) => {
+                if local.cached {
+                    summary.cached += 1;
+                } else {
+                    summary.downloaded += 1;
+                }
+                let outcome = SourceOutcome {
+                    source: local.remote.url.to_string(),
+                    status: SourceStatus::Ok,
+                    failed_with: None,
+                    errors: 0,
+                    warnings: 0,
+                    rows: 0,
+                    bad_rows: 0,
+                };
+                emit(&events, Event::SourceDone(Box::new(outcome.clone())));
+                report.finish_source(outcome);
+            }
             Step::Panicked(req, msg) => {
                 let d = Diagnostic::error(
                     "internal.panic",
@@ -482,6 +588,7 @@ fn remove_output(path: &std::path::Path, lake: &std::path::Path) {
 
 enum Step {
     FetchFailed(RemoteFile, Box<Diagnostic>),
+    Downloaded(Box<LocalFile>),
     Skipped(Box<LocalFile>),
     Ingested(Box<FileReport>),
     Panicked(String, String),

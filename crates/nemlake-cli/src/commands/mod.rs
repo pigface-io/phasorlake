@@ -17,7 +17,28 @@ pub async fn dispatch(cli: Cli) -> Result<i32> {
     let ctx = Context::new(&cli)?;
     match &cli.command {
         Command::Fetch { market } => lake::fetch(&cli, &ctx, market).await,
-        Command::Ingest { paths, ingest } => lake::ingest(&cli, &ctx, paths, ingest).await,
+        Command::Ingest {
+            paths,
+            from,
+            to,
+            table,
+            exclude,
+            ingest,
+        } => match from {
+            Some(from) => {
+                lake::ingest_archived(
+                    &cli,
+                    &ctx,
+                    *from,
+                    to.unwrap_or(*from),
+                    table,
+                    exclude,
+                    ingest,
+                )
+                .await
+            }
+            None => lake::ingest(&cli, &ctx, paths, ingest).await,
+        },
         Command::Reingest { dry_run, ingest } => lake::reingest(&cli, &ctx, *dry_run, ingest).await,
         Command::Verify { table } => lake::verify(&ctx, table.as_deref()).await,
         Command::Inspect {
@@ -52,7 +73,6 @@ pub async fn dispatch(cli: Cli) -> Result<i32> {
         }
         Command::Schema { cmd } => schema::schema(&ctx, cmd).await,
         Command::Archive { cmd } => misc::archive(&ctx, cmd),
-        Command::Cache { cmd } => misc::cache(&ctx, cmd),
         Command::Wem { cmd } => misc::wem(&ctx, cmd).await,
     }
 }

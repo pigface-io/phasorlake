@@ -20,7 +20,6 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 | `net.content_length_mismatch` | `crates/nemlake-acquire/src/error.rs` |
 | `net.http_status` | `crates/nemlake-acquire/src/error.rs` |
 | `net.offline` | `crates/nemlake-pipeline/src/report.rs` |
-| `net.range_ignored` | `crates/nemlake-acquire/src/error.rs` |
 | `net.retries_exhausted` | `crates/nemlake-acquire/src/error.rs` |
 | `net.timeout` | `crates/nemlake-acquire/src/error.rs` |
 
@@ -46,12 +45,9 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 | code | raised in |
 |---|---|
 | `zip.bad_entry` | `crates/nemlake-decode/src/archive.rs` |
-| `zip.member_mismatch` | `crates/nemlake-acquire/src/error.rs` |
-| `zip.member_unsupported` | `crates/nemlake-acquire/src/error.rs` |
 | `zip.nesting_too_deep` | `crates/nemlake-decode/src/archive.rs` |
 | `zip.no_csv` | `crates/nemlake-decode/src/archive.rs` |
 | `zip.open_failed` | `crates/nemlake-decode/src/archive.rs` |
-| `zip.remote_index` | `crates/nemlake-acquire/src/error.rs` |
 | `zip.spool_failed` | `crates/nemlake-decode/src/archive.rs` |
 
 ## csv

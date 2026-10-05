@@ -8,7 +8,7 @@ use std::time::Duration;
 
 use criterion::{BatchSize, Criterion, Throughput, criterion_group, criterion_main};
 use nemlake_acquire::transport::{Canned, StaticTransport};
-use nemlake_acquire::{DiskCache, Fetcher, FetcherConfig, RemoteFile};
+use nemlake_acquire::{Archive, Fetcher, FetcherConfig, RemoteFile};
 use url::Url;
 
 const LISTING_ROWS: usize = 10_000;
@@ -53,7 +53,6 @@ fn bench(c: &mut Criterion) {
         period: None,
         size: Some(DOWNLOAD_BYTES as u64),
         modified: None,
-        member: None,
     };
     let rt = tokio::runtime::Builder::new_multi_thread()
         .enable_all()
@@ -66,7 +65,7 @@ fn bench(c: &mut Criterion) {
                 let dir = tempfile::tempdir().unwrap();
                 let fetcher = Fetcher::new(
                     Arc::new(Arc::clone(&transport)),
-                    DiskCache::new(dir.path()),
+                    Archive::new(dir.path()),
                     FetcherConfig {
                         min_interval: Duration::ZERO,
                         ..Default::default()

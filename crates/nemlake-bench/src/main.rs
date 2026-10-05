@@ -10,7 +10,6 @@ use std::path::Path;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
-use nemlake_acquire::cache::DiskCache;
 use nemlake_acquire::{Fetcher, FetcherConfig, OfflineTransport};
 use nemlake_core::paths::Home;
 use nemlake_pipeline::{Deps, Input, Plan, RunOptions, run};
@@ -91,7 +90,7 @@ fn main() {
             ManifestHandle::spawn_with(Manifest::open(&home.manifest()).expect("manifest"));
         let fetcher = Arc::new(Fetcher::new(
             Arc::new(OfflineTransport),
-            DiskCache::new(home.cache()),
+            nemlake_acquire::Archive::new(home.archive()),
             FetcherConfig::default(),
         ));
         let deps = Deps {

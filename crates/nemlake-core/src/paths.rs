@@ -38,13 +38,9 @@ impl Home {
     pub fn archive(&self) -> PathBuf {
         self.root.join("archive")
     }
-    /// What can be thrown away: listings and scratch files.
+    /// What can be thrown away: scratch files.
     pub fn cache(&self) -> PathBuf {
         self.root.join("cache")
-    }
-    /// Cached directory listings.
-    pub fn listings(&self) -> PathBuf {
-        self.cache().join("listings")
     }
     /// Scratch space for spooled nested zips and in-progress files.
     pub fn tmp(&self) -> PathBuf {
@@ -72,7 +68,6 @@ impl Home {
         for d in [
             self.lake(),
             self.archive(),
-            self.listings(),
             self.tmp(),
             self.quarantine(),
             self.schemas(),
@@ -108,7 +103,6 @@ mod tests {
             h.lake(),
             h.archive(),
             h.cache(),
-            h.listings(),
             h.tmp(),
             h.quarantine(),
             h.schemas(),

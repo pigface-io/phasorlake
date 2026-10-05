@@ -27,6 +27,8 @@ pub struct RunOptions {
     pub strict_footer: bool,
     /// Rows per Arrow batch.
     pub batch_rows: usize,
+    /// Ingest what is fetched; `false` only downloads into the archive.
+    pub ingest: bool,
 }
 
 impl Default for RunOptions {
@@ -40,6 +42,7 @@ impl Default for RunOptions {
             dry_run: false,
             strict_footer: false,
             batch_rows: nemlake_conform::arrow_sink::DEFAULT_BATCH_ROWS,
+            ingest: true,
         }
     }
 }
@@ -51,6 +54,14 @@ pub enum Input {
         /// The source.
         source: Arc<dyn Source>,
         /// The query.
+        query: Query,
+    },
+    /// The archived files of the NEM archive's months of a query: what
+    /// `fetch` downloaded, read from disk, never from the network.
+    Archive {
+        /// The archive's month layout.
+        source: Arc<nemlake_acquire::MmsdmArchive>,
+        /// The months and tables.
         query: Query,
     },
     /// Local zips or CSVs.

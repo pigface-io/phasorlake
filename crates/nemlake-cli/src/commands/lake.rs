@@ -34,12 +34,13 @@ fn options(
         dry_run,
         strict_footer: args.strict || ctx.config.strict,
         batch_rows: nemlake_conform::arrow_sink::DEFAULT_BATCH_ROWS,
+        ingest: true,
     }
 }
 
-async fn run_plan(cli: &Cli, ctx: &Context, plan: Plan, refresh: bool) -> Result<i32> {
+async fn run_plan(cli: &Cli, ctx: &Context, plan: Plan) -> Result<i32> {
     let (tx, rx) = tokio::sync::mpsc::channel(4096);
-    let fetcher = ctx.fetcher(&plan.request, refresh, Some(tx.clone()))?;
+    let fetcher = ctx.fetcher(Some(tx.clone()))?;
     let (manifest, thread) = ctx.manifest()?;
     let deps = ctx.deps(fetcher, manifest);
     let cancel = CancellationToken::new();
@@ -110,8 +111,6 @@ pub async fn fetch(cli: &Cli, ctx: &Context, market: &FetchMarket) -> Result<i32
             to,
             dry_run,
             downloads,
-            refresh,
-            ingest,
         } => {
             let source = Arc::new(
                 MmsdmArchive::new(&ctx.config.sources.nem_base_url)
@@ -149,9 +148,12 @@ pub async fn fetch(cli: &Cli, ctx: &Context, market: &FetchMarket) -> Result<i32
                         to,
                     },
                 },
-                options: options(cli, ctx, ingest, *downloads, *dry_run),
+                options: RunOptions {
+                    ingest: false,
+                    ..options(cli, ctx, &IngestArgs::default(), *downloads, *dry_run)
+                },
             };
-            run_plan(cli, ctx, plan, *refresh).await
+            run_plan(cli, ctx, plan).await
         }
     }
 }
@@ -189,7 +191,49 @@ pub async fn ingest(cli: &Cli, ctx: &Context, paths: &[PathBuf], args: &IngestAr
         input: Input::Local(files),
         options: options(cli, ctx, args, None, false),
     };
-    run_plan(cli, ctx, plan, false).await
+    run_plan(cli, ctx, plan).await
+}
+
+/// `nemlake ingest --from ...`: the archived files of the months, as
+/// `fetch nem` downloaded them; no network.
+pub async fn ingest_archived(
+    cli: &Cli,
+    ctx: &Context,
+    from: nemlake_core::YearMonth,
+    to: nemlake_core::YearMonth,
+    tables: &[String],
+    exclude: &[String],
+    args: &IngestArgs,
+) -> Result<i32> {
+    if to < from {
+        anyhow::bail!("--to {to} is before --from {from}.");
+    }
+    let source = Arc::new(
+        MmsdmArchive::new(&ctx.config.sources.nem_base_url)
+            .map_err(|e| anyhow::anyhow!("{}", e.diagnostic().render()))?,
+    );
+    let upper = |v: &[String]| v.iter().map(|t| t.to_ascii_uppercase()).collect::<Vec<_>>();
+    let plan = Plan {
+        request: format!(
+            "ingest nem {} {from}..{to}",
+            if tables.is_empty() {
+                "*".to_owned()
+            } else {
+                tables.join(",")
+            }
+        ),
+        input: Input::Archive {
+            source,
+            query: Query {
+                tables: upper(tables),
+                exclude: upper(exclude),
+                from,
+                to,
+            },
+        },
+        options: options(cli, ctx, args, None, false),
+    };
+    run_plan(cli, ctx, plan).await
 }
 
 /// `nemlake reingest`: every recorded source whose lake files are behind
@@ -200,7 +244,7 @@ pub async fn reingest(cli: &Cli, ctx: &Context, dry_run: bool, args: &IngestArgs
         input: Input::Stale,
         options: options(cli, ctx, args, None, dry_run),
     };
-    run_plan(cli, ctx, plan, false).await
+    run_plan(cli, ctx, plan).await
 }
 
 /// `nemlake verify`: every output the manifest lists exists with its size.

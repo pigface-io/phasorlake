@@ -16,15 +16,19 @@
 //!     {MM}/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_{TABLE}_{YYYYMM}010000.zip
 //! ```
 //!
-//! For those the zip's index is read with ranged requests and each
-//! per-table zip becomes a [`RemoteFile`] with a `member`, so fetching one
-//! table downloads that member only. Where a month has both a directory and
-//! a whole-month zip, the directory is used.
+//! nemlake downloads everything once, so such a month is one file: the
+//! whole zip, read locally with its per-table zips nested inside. Where a
+//! month has both a directory and a whole-month zip, the directory is used.
+//! A directory month also lists its control files (`CTL/`) and its README
+//! (`DOCUMENTATION/`), which the census and the schema tools read.
+
+use std::path::PathBuf;
 
 use async_trait::async_trait;
 use nemlake_core::YearMonth;
 use url::Url;
 
+use crate::archive::Archive;
 use crate::error::FetchError;
 use crate::fetcher::Fetcher;
 use crate::listing;
@@ -33,11 +37,6 @@ use crate::source::{Query, RemoteFile, Source};
 /// The source id.
 pub const SOURCE_ID: &str = "nem-mmsdm";
 
-/// Listings of months at least this old are cached for a week; the current
-/// and previous month for an hour.
-const OLD_LISTING_TTL: i64 = 7 * 86_400;
-const RECENT_LISTING_TTL: i64 = 3_600;
-
 /// The first year whose months are published as directories of per-table
 /// zips. Earlier months exist only as one whole-month zip.
 const FIRST_DIRECTORY_YEAR: i32 = 2015;
@@ -45,8 +44,8 @@ const FIRST_DIRECTORY_YEAR: i32 = 2015;
 /// The sub-directories of a month that hold per-table data zips.
 const DATA_DIRS: [&str; 3] = ["DATA/", "P5MIN_ALL_DATA/", "PREDISP_ALL_DATA/"];
 
-/// A whole-month zip never changes once published; its index is cached this long.
-const ZIP_DIRECTORY_TTL: i64 = 90 * 86_400;
+/// The sub-directories of a month that hold its control files and README.
+const SUPPORT_DIRS: [&str; 2] = ["CTL/", "DOCUMENTATION/"];
 
 /// How the archive publishes one month.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -54,11 +53,21 @@ pub enum MonthLayout {
     /// A directory of per-table zips (`MMSDM_2024_01/.../DATA/`).
     Directory,
     /// Only one zip of the whole month (`MMSDM_2012_01.zip`) holding the
-    /// per-table zips; they are read out of it with ranged requests.
+    /// per-table zips, the control files and the README.
     WholeZip {
         /// The zip.
         url: Url,
     },
+}
+
+/// The files of one month: its per-table data files with the table each
+/// carries, or its whole zip; and its control files and README.
+struct MonthFiles {
+    /// The URL listed, for a message about a table not found.
+    listed_url: String,
+    data: Vec<(String, RemoteFile)>,
+    whole: Option<RemoteFile>,
+    support: Vec<RemoteFile>,
 }
 
 /// The monthly archive.
@@ -117,10 +126,7 @@ impl MmsdmArchive {
             url: year_url.to_string(),
             available,
         };
-        let body = match fetcher
-            .fetch_listing(year_url.as_str(), Self::listing_ttl(ym))
-            .await
-        {
+        let body = match fetcher.fetch_listing(year_url.as_str()).await {
             Ok(b) => b,
             Err(FetchError::HttpStatus { status: 404, .. }) => {
                 return Err(missing("no such year".into()));
@@ -161,22 +167,12 @@ impl MmsdmArchive {
         }))
     }
 
-    /// Whether a member of a whole-month zip is one of the per-table data zips.
-    fn is_data_member(name: &str) -> bool {
-        let upper = name.to_ascii_uppercase();
-        upper.ends_with(".ZIP")
-            && DATA_DIRS
-                .iter()
-                .any(|d| upper.contains(&format!("/MMSDM_HISTORICAL_DATA_SQLLOADER/{d}")))
-    }
-
-    /// Every per-table file of a month with the table it carries, from
-    /// whichever layout the month is published in, plus the URL listed.
+    /// The files of a month, from whichever layout it is published in.
     async fn month_files(
         &self,
         ym: YearMonth,
         fetcher: &Fetcher,
-    ) -> Result<(String, Vec<(String, RemoteFile)>), FetchError> {
+    ) -> Result<MonthFiles, FetchError> {
         // From 2015 the month has a directory; try it first and fall back to
         // the year listing when it is not there.
         if ym.year() >= FIRST_DIRECTORY_YEAR {
@@ -187,34 +183,50 @@ impl MmsdmArchive {
         }
         match self.month_layout(ym, fetcher).await? {
             MonthLayout::Directory => self.directory_files(ym, fetcher).await,
-            MonthLayout::WholeZip { url, .. } => {
-                let members = fetcher
-                    .list_zip_members(url.as_str(), ZIP_DIRECTORY_TTL)
-                    .await?;
-                let mut out = Vec::new();
-                for m in members {
-                    if !Self::is_data_member(&m.name) {
-                        continue;
-                    }
-                    let Some(table) = Self::parse_name(m.file_name()) else {
-                        continue;
-                    };
-                    out.push((
-                        table.clone(),
-                        RemoteFile {
-                            url: RemoteFile::member_url(&url, &m.name),
-                            source: SOURCE_ID,
-                            table: Some(table),
-                            period: Some(ym),
-                            size: Some(m.uncompressed_size),
-                            modified: None,
-                            member: Some(Box::new(m)),
-                        },
-                    ));
-                }
-                Ok((url.to_string(), out))
-            }
+            MonthLayout::WholeZip { url } => Ok(MonthFiles {
+                listed_url: url.to_string(),
+                data: Vec::new(),
+                whole: Some(RemoteFile {
+                    url,
+                    source: SOURCE_ID,
+                    table: None,
+                    period: Some(ym),
+                    size: None,
+                    modified: None,
+                }),
+                support: Vec::new(),
+            }),
         }
+    }
+
+    /// Every archived file of `month`, sorted: under the month's directory
+    /// (2015 on) and the month's whole zip (before): data zips and CSVs,
+    /// control files and the README. Sidecars and partial downloads are
+    /// left out.
+    pub fn archived_files(
+        &self,
+        archive: &Archive,
+        month: YearMonth,
+    ) -> Result<Vec<PathBuf>, FetchError> {
+        let dir = archive.path_for(self.month_root(month)?.as_str());
+        let whole_url = self
+            .year_root(month.year())?
+            .join(&format!("MMSDM_{}_{:02}.zip", month.year(), month.month()))
+            .map_err(|e| FetchError::Parse {
+                url: month.to_string(),
+                what: "month zip URL",
+                message: e.to_string(),
+            })?;
+        let mut out: Vec<PathBuf> = archive
+            .entries_under(Some(&dir))
+            .into_iter()
+            .map(|e| e.path)
+            .collect();
+        if let Some(whole) = archive.lookup(whole_url.as_str())? {
+            out.push(whole.path);
+        }
+        out.sort();
+        Ok(out)
     }
 
     /// The per-table files of a month published as a directory.
@@ -222,12 +234,11 @@ impl MmsdmArchive {
         &self,
         ym: YearMonth,
         fetcher: &Fetcher,
-    ) -> Result<(String, Vec<(String, RemoteFile)>), FetchError> {
+    ) -> Result<MonthFiles, FetchError> {
         let dirs = self.data_dirs(ym)?;
-        let ttl = Self::listing_ttl(ym);
         let mut out = Vec::new();
         for (i, dir) in dirs.iter().enumerate() {
-            let body = match fetcher.fetch_listing(dir.as_str(), ttl).await {
+            let body = match fetcher.fetch_listing(dir.as_str()).await {
                 Ok(b) => b,
                 // The big-table directories do not exist for every month.
                 Err(FetchError::HttpStatus { status: 404, .. }) if i > 0 => continue,
@@ -268,12 +279,45 @@ impl MmsdmArchive {
                         period: Some(ym),
                         size: e.size,
                         modified: e.modified,
-                        member: None,
                     },
                 ));
             }
         }
-        Ok((dirs[0].to_string(), out))
+        let root = self.month_root(ym)?;
+        let mut support = Vec::new();
+        for d in SUPPORT_DIRS {
+            let Ok(dir) = root.join(d) else { continue };
+            let body = match fetcher.fetch_listing(dir.as_str()).await {
+                Ok(b) => b,
+                Err(FetchError::HttpStatus { status: 404, .. }) => continue,
+                Err(e) => return Err(e),
+            };
+            for e in listing::parse(&body) {
+                let lower = e.name.to_ascii_lowercase();
+                if e.is_dir || !(lower.ends_with(".ctl") || lower == "readme.txt") {
+                    continue;
+                }
+                let url = dir.join(&e.href).map_err(|er| FetchError::Parse {
+                    url: e.href.clone(),
+                    what: "listing href",
+                    message: er.to_string(),
+                })?;
+                support.push(RemoteFile {
+                    url,
+                    source: SOURCE_ID,
+                    table: None,
+                    period: Some(ym),
+                    size: e.size,
+                    modified: e.modified,
+                });
+            }
+        }
+        Ok(MonthFiles {
+            listed_url: dirs[0].to_string(),
+            data: out,
+            whole: None,
+            support,
+        })
     }
 
     /// The directories to list for a month published as a directory.
@@ -297,20 +341,6 @@ impl MmsdmArchive {
         }
         Some(parsed.split_table().0.to_owned())
     }
-
-    fn listing_ttl(ym: YearMonth) -> i64 {
-        let now = nemlake_core::clock::unix_now();
-        let (y, m) = nemlake_core::nemtime::local_year_month(
-            now * nemlake_core::nemtime::NANOS_PER_SECOND,
-            0,
-        );
-        let current = YearMonth::new(y, m as u8).expect("civil month is 1..=12");
-        if current.ordinal() - ym.ordinal() >= 2 {
-            OLD_LISTING_TTL
-        } else {
-            RECENT_LISTING_TTL
-        }
-    }
 }
 
 #[async_trait]
@@ -328,8 +358,14 @@ impl Source for MmsdmArchive {
         let mut found = vec![false; wanted.len()];
         let mut last_listing: Option<(String, Vec<String>)> = None;
         for ym in query.from.range_inclusive(query.to) {
-            let (listed_url, files) = self.month_files(ym, fetcher).await?;
-            for (table, remote) in &files {
+            let month = self.month_files(ym, fetcher).await?;
+            // A whole-month zip holds every table of the month.
+            if let Some(whole) = month.whole {
+                found.iter_mut().for_each(|f| *f = true);
+                out.push(whole);
+            }
+            out.extend(month.support);
+            for (table, remote) in &month.data {
                 if !wanted.is_empty() {
                     let mut any = false;
                     for (i, w) in wanted.iter().enumerate() {
@@ -348,7 +384,10 @@ impl Source for MmsdmArchive {
                 }
                 out.push(remote.clone());
             }
-            last_listing = Some((listed_url, files.into_iter().map(|(t, _)| t).collect()));
+            last_listing = Some((
+                month.listed_url,
+                month.data.into_iter().map(|(t, _)| t).collect(),
+            ));
         }
         if let (Some(i), Some((url, mut names))) = (found.iter().position(|f| !f), last_listing) {
             let w = &wanted[i];
@@ -389,7 +428,7 @@ mod tests {
     use std::time::Duration;
 
     use super::*;
-    use crate::cache::DiskCache;
+    use crate::archive::Archive;
     use crate::fetcher::FetcherConfig;
     use crate::transport::{Canned, StaticTransport};
 
@@ -409,18 +448,6 @@ mod tests {
             a.year_root(2012).unwrap().as_str(),
             "https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2012/"
         );
-        assert!(MmsdmArchive::is_data_member(
-            "01/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_REGION_201201010000.zip"
-        ));
-        assert!(MmsdmArchive::is_data_member(
-            "01/MMSDM_Historical_Data_SQLLoader/PREDISP_ALL_DATA/PUBLIC_DVD_X_201201010000.zip"
-        ));
-        assert!(!MmsdmArchive::is_data_member(
-            "01/MMSDM_Historical_Data_SQLLoader/CTL/PUBLIC_DVD_REGION_201201.ctl"
-        ));
-        assert!(!MmsdmArchive::is_data_member(
-            "01/MMSDM_Historical_Data_SQLLoader/DATA/Readme.htm"
-        ));
         assert!(MmsdmArchive::new("not a url").is_err());
         assert_eq!(
             MmsdmArchive::parse_name("PUBLIC_DVD_DISPATCH_UNIT_SCADA_202401010000.zip"),
@@ -446,10 +473,6 @@ mod tests {
         assert_eq!(
             MmsdmArchive::parse_name("PUBLIC_DVD_123_202401010000.zip"),
             Some("123".into())
-        );
-        assert!(
-            MmsdmArchive::listing_ttl(YearMonth::new(2020, 1).unwrap())
-                > MmsdmArchive::listing_ttl(YearMonth::new(2999, 1).unwrap())
         );
     }
 
@@ -491,7 +514,7 @@ mod tests {
         t.add(dirs[2].as_str(), Canned::status(404));
         let f = Fetcher::new(
             Arc::new(t.clone()),
-            DiskCache::new(dir.path()),
+            Archive::new(dir.path()),
             FetcherConfig {
                 attempts: 1,
                 min_interval: Duration::ZERO,
@@ -553,7 +576,7 @@ mod tests {
             min_interval: Duration::ZERO,
             ..Default::default()
         };
-        let f = Fetcher::new(Arc::new(t.clone()), DiskCache::new(dir.path()), cfg);
+        let f = Fetcher::new(Arc::new(t.clone()), Archive::new(dir.path()), cfg);
         let q = Query {
             exclude: Vec::new(),
             tables: vec!["dispatch_unit_scada".into(), "BIDPEROFFER".into()],
@@ -811,51 +834,6 @@ mod tests {
         assert_eq!(local.remote.file_name(), r.file_name());
     }
 
-    /// A whole-month zip as AEMO published them before 2015: per-table zips
-    /// inside one zip, beside control files and documentation.
-    fn month_zip() -> (Vec<u8>, Vec<u8>, Vec<u8>) {
-        use crate::remotezip::tests::make_zip;
-        let region_csv = b"C,NEMP.WORLD,DVD_REGION,AEMO,PUBLIC,2012/02/07,00:00:00\r\nI,PARTICIPANT_REGISTRATION,REGION,1,REGIONID,DESCRIPTION\r\nD,PARTICIPANT_REGISTRATION,REGION,1,NSW1,New South Wales\r\nC,\"END OF REPORT\",4\r\n";
-        let region = make_zip(
-            &[("PUBLIC_DVD_REGION_201201010000.CSV", region_csv)],
-            &[],
-            false,
-        );
-        let price = make_zip(
-            &[("PUBLIC_DVD_PREDISPATCHPRICE_201201010000.CSV", b"C,x\r\n")],
-            &[],
-            false,
-        );
-        let month = make_zip(
-            &[
-                ("01/", b""),
-                (
-                    "01/MMSDM_Historical_Data_SQLLoader/CTL/PUBLIC_DVD_REGION_201201.ctl",
-                    b"LOAD DATA",
-                ),
-                ("01/MMSDM_Historical_Data_SQLLoader/DATA/", b""),
-                (
-                    "01/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_REGION_201201010000.zip",
-                    &region,
-                ),
-                (
-                    "01/MMSDM_Historical_Data_SQLLoader/DATA/Readme.htm",
-                    b"<html>",
-                ),
-                (
-                    "01/MMSDM_Historical_Data_SQLLoader/PREDISP_ALL_DATA/PUBLIC_DVD_PREDISPATCHPRICE_201201010000.zip",
-                    &price,
-                ),
-            ],
-            // AEMO deflates most members and stores a few; cover both.
-            &[
-                "01/MMSDM_Historical_Data_SQLLoader/PREDISP_ALL_DATA/PUBLIC_DVD_PREDISPATCHPRICE_201201010000.zip",
-            ],
-            false,
-        );
-        (month, region, price)
-    }
-
     const YEAR_2012: &str =
         "https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2012/";
 
@@ -866,25 +844,91 @@ mod tests {
     fn quick(t: &Arc<StaticTransport>, dir: &std::path::Path) -> Fetcher {
         Fetcher::new(
             Arc::new(Arc::clone(t)),
-            DiskCache::new(dir),
+            Archive::new(dir),
             FetcherConfig {
                 attempts: 2,
                 backoff: Duration::from_millis(1),
                 max_backoff: Duration::from_millis(1),
                 min_interval: Duration::ZERO,
-                ..Default::default()
             },
         )
     }
 
+    /// A directory month lists its control files and its README beside
+    /// its data, whatever tables are asked for: the census reads them.
     #[tokio::test]
-    async fn whole_month_zip_is_listed_and_one_member_fetched() {
+    async fn a_month_lists_its_control_files_and_readme() {
         let dir = tempfile::tempdir().unwrap();
-        let (month, region, price) = month_zip();
+        let t = Arc::new(StaticTransport::default());
+        let a = MmsdmArchive::new("https://h").unwrap();
+        let ym = YearMonth::new(2024, 1).unwrap();
+        let root = a.month_root(ym).unwrap();
+        let link = |sub: &str, name: &str| {
+            format!(
+                r#" 2/13/2024 8:27 AM 12 <A HREF="{}{sub}{name}">{name}</A><br>"#,
+                root.path()
+            )
+        };
+        let data = root.join("DATA/").unwrap();
+        t.add(
+            data.as_str(),
+            Canned::ok(
+                format!(
+                    "<pre>{}</pre>",
+                    link("DATA/", "PUBLIC_DVD_REGION_202401010000.zip")
+                )
+                .as_bytes(),
+            ),
+        );
+        t.add(
+            root.join("CTL/").unwrap().as_str(),
+            Canned::ok(
+                format!(
+                    "<pre>{}{}</pre>",
+                    link("CTL/", "PUBLIC_DVD_REGION_202401.ctl"),
+                    link("CTL/", "notes.htm")
+                )
+                .as_bytes(),
+            ),
+        );
+        t.add(
+            root.join("DOCUMENTATION/").unwrap().as_str(),
+            Canned::ok(format!("<pre>{}</pre>", link("DOCUMENTATION/", "README.txt")).as_bytes()),
+        );
+        let f = quick(&t, dir.path());
+        let files = a
+            .list(
+                &Query {
+                    exclude: Vec::new(),
+                    tables: vec!["REGION".into()],
+                    from: ym,
+                    to: ym,
+                },
+                &f,
+            )
+            .await
+            .unwrap();
+        let names: Vec<String> = files.iter().map(RemoteFile::file_name).collect();
+        assert_eq!(
+            names,
+            [
+                "PUBLIC_DVD_REGION_202401.ctl",
+                "README.txt",
+                "PUBLIC_DVD_REGION_202401010000.zip"
+            ],
+            "{names:?}"
+        );
+    }
+
+    /// Before 2015 a month is one zip: it is listed as one file, whatever
+    /// tables are asked for, and downloaded whole.
+    #[tokio::test]
+    async fn a_whole_month_zip_is_one_file() {
+        let dir = tempfile::tempdir().unwrap();
         let zip_url = format!("{YEAR_2012}MMSDM_2012_01.zip");
         let t = Arc::new(StaticTransport::default());
         t.add(YEAR_2012, Canned::ok(&year_listing()));
-        t.add(&zip_url, Canned::ok(&month));
+        t.add(&zip_url, Canned::ok(b"PK month zip bytes"));
         let f = quick(&t, dir.path());
         let a = MmsdmArchive::new("https://www.nemweb.com.au").unwrap();
         let ym = YearMonth::new(2012, 1).unwrap();
@@ -894,141 +938,27 @@ mod tests {
                 url: Url::parse(&zip_url).unwrap(),
             }
         );
-
-        // Every data member is listed, each as a member of the month zip.
-        let all = a
-            .list(
-                &Query {
-                    exclude: Vec::new(),
-                    tables: vec![],
-                    from: ym,
-                    to: ym,
-                },
-                &f,
-            )
-            .await
-            .unwrap();
-        assert_eq!(all.len(), 2);
-        let tables: Vec<&str> = all.iter().filter_map(|r| r.table.as_deref()).collect();
-        assert_eq!(tables, ["PREDISPATCHPRICE", "REGION"]);
-        let region_remote = all
-            .iter()
-            .find(|r| r.table.as_deref() == Some("REGION"))
-            .unwrap();
-        assert_eq!(
-            region_remote.url.as_str(),
-            format!(
-                "{zip_url}#01/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_REGION_201201010000.zip"
-            )
-        );
-        assert_eq!(region_remote.request_url().as_str(), zip_url);
-        assert_eq!(
-            region_remote.file_name(),
-            "PUBLIC_DVD_REGION_201201010000.zip"
-        );
-        assert_eq!(region_remote.stem(), "public_dvd_region_201201010000");
-        assert_eq!(region_remote.size, Some(region.len() as u64));
-        assert_eq!(region_remote.period, Some(ym));
-
-        // The index was read with ranged requests and is now cached.
-        let before = t.request_count();
-        let one = a
-            .list(
-                &Query {
-                    exclude: Vec::new(),
-                    tables: vec!["region".into()],
-                    from: ym,
-                    to: ym,
-                },
-                &f,
-            )
-            .await
-            .unwrap();
-        assert_eq!(one.len(), 1);
-        assert_eq!(
-            t.request_count(),
-            before,
-            "listing and index come from the cache"
-        );
-
-        // Fetching the member yields exactly the inner zip.
-        let local = f.fetch(&one[0]).await.unwrap();
-        assert!(!local.cached);
-        assert_eq!(std::fs::read(&local.path).unwrap(), region);
-        assert_eq!(local.size, region.len() as u64);
-        assert_eq!(local.sha256, crate::cache::sha256_hex(&region));
+        let query = |tables: &[&str]| Query {
+            exclude: Vec::new(),
+            tables: tables.iter().map(|s| (*s).to_owned()).collect(),
+            from: ym,
+            to: ym,
+        };
+        let all = a.list(&query(&[]), &f).await.unwrap();
+        assert_eq!(all.len(), 1);
+        assert_eq!(all[0].url.as_str(), zip_url);
+        assert_eq!(all[0].table, None);
+        assert_eq!(all[0].period, Some(ym));
+        assert_eq!(a.list(&query(&["REGION"]), &f).await.unwrap(), all);
+        let local = f.fetch(&all[0]).await.unwrap();
+        assert_eq!(std::fs::read(&local.path).unwrap(), b"PK month zip bytes");
+        // The archive finds it as the month's file.
+        let store = Archive::new(dir.path());
+        assert_eq!(a.archived_files(&store, ym).unwrap(), [local.path]);
         assert!(
-            local
-                .path
-                .ends_with(local.path.file_name().unwrap().to_str().unwrap())
-        );
-        assert!(
-            local
-                .path
-                .file_name()
+            a.archived_files(&store, YearMonth::new(2012, 2).unwrap())
                 .unwrap()
-                .to_str()
-                .unwrap()
-                .ends_with("PUBLIC_DVD_REGION_201201010000.zip")
-        );
-        // It is archived under the month zip's own path, and its sidecar says
-        // which member of which zip it is and how it was asked for.
-        assert!(
-            local.path.ends_with(
-                "2012/MMSDM_2012_01.zip.members/01/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_REGION_201201010000.zip"
-            ),
-            "{}",
-            local.path.display()
-        );
-        let sidecar = DiskCache::read_sidecar(&local.path).unwrap().unwrap();
-        assert_eq!(sidecar.url, one[0].url.as_str());
-        let req = sidecar.request.unwrap();
-        assert_eq!(req.request_url, zip_url);
-        assert_eq!(req.http_status, 206);
-        assert!(
-            req.range.as_deref().unwrap().starts_with("bytes="),
-            "{:?}",
-            req.range
-        );
-        assert_eq!(req.listed_size, Some(region.len() as u64));
-        assert_eq!(req.table.as_deref(), Some("REGION"));
-        assert_eq!(req.period.as_deref(), Some("2012-01"));
-        let member = one[0].member.as_ref().unwrap();
-        let of = req.member.unwrap();
-        assert_eq!(of.name, member.name);
-        assert_eq!(of.header_offset, member.header_offset);
-        assert_eq!(of.crc32, format!("{:08x}", member.crc32));
-        assert_eq!(of.method, 8);
-        let again = f.fetch(&one[0]).await.unwrap();
-        assert!(again.cached);
-        assert_eq!(again.sha256, local.sha256);
-        // A stored member comes out the same way.
-        let p = all
-            .iter()
-            .find(|r| r.table.as_deref() == Some("PREDISPATCHPRICE"))
-            .unwrap();
-        assert_eq!(p.member.as_ref().unwrap().method, 0);
-        assert_eq!(
-            std::fs::read(f.fetch(p).await.unwrap().path).unwrap(),
-            price
-        );
-
-        // A table the month does not have names the nearest ones.
-        let e = a
-            .list(
-                &Query {
-                    exclude: Vec::new(),
-                    tables: vec!["REGIONX".into()],
-                    from: ym,
-                    to: ym,
-                },
-                &f,
-            )
-            .await
-            .unwrap_err();
-        assert!(
-            matches!(&e, FetchError::NoMatch { nearest, .. } if nearest.contains("REGION")),
-            "{e}"
+                .is_empty()
         );
     }
 
@@ -1085,126 +1015,6 @@ mod tests {
                 .await
                 .unwrap(),
             MonthLayout::Directory
-        );
-
-        // The month zip is not a zip.
-        let zip_url = format!("{YEAR_2012}MMSDM_2012_01.zip");
-        t.add(&zip_url, Canned::ok(b"<html>Service Unavailable</html>"));
-        let e = a.list(&q(2012, 1), &f).await.unwrap_err();
-        assert!(matches!(&e, FetchError::RemoteZip { .. }), "{e}");
-        assert_eq!(
-            nemlake_core::Diagnose::diagnostic(&e).code,
-            "zip.remote_index"
-        );
-    }
-
-    #[tokio::test]
-    async fn corrupt_or_unsupported_members_are_refused() {
-        let dir = tempfile::tempdir().unwrap();
-        let (month, region, _) = month_zip();
-        let zip_url = format!("{YEAR_2012}MMSDM_2012_01.zip");
-        let t = Arc::new(StaticTransport::default());
-        t.add(YEAR_2012, Canned::ok(&year_listing()));
-        t.add(&zip_url, Canned::ok(&month));
-        let f = quick(&t, dir.path());
-        let a = MmsdmArchive::new("https://www.nemweb.com.au").unwrap();
-        let ym = YearMonth::new(2012, 1).unwrap();
-        let listed = a
-            .list(
-                &Query {
-                    exclude: Vec::new(),
-                    tables: vec!["REGION".into()],
-                    from: ym,
-                    to: ym,
-                },
-                &f,
-            )
-            .await
-            .unwrap();
-        let remote = &listed[0];
-        let member = remote.member.clone().unwrap();
-
-        // The directory's CRC disagrees with the bytes: refused after retries, nothing cached.
-        let mut wrong_crc = remote.clone();
-        wrong_crc.member.as_mut().unwrap().crc32 ^= 1;
-        let e = f.fetch(&wrong_crc).await.unwrap_err();
-        assert!(
-            matches!(&e, FetchError::RetriesExhausted { last, .. } if matches!(**last, FetchError::MemberMismatch { what: "crc32", .. })),
-            "{e}"
-        );
-        let mut wrong_size = remote.clone();
-        wrong_size.member.as_mut().unwrap().uncompressed_size += 1;
-        let e = f.fetch(&wrong_size).await.unwrap_err();
-        assert!(
-            matches!(&e, FetchError::RetriesExhausted { last, .. } if matches!(**last, FetchError::MemberMismatch { what: "size", .. })),
-            "{e}"
-        );
-        assert!(f.cache().entries().unwrap().is_empty());
-
-        // The offset does not point at a local header.
-        let mut wrong_offset = remote.clone();
-        wrong_offset.member.as_mut().unwrap().header_offset += 3;
-        let e = f.fetch(&wrong_offset).await.unwrap_err();
-        assert!(
-            matches!(&e, FetchError::RemoteZip { message, .. } if message.contains("local file header")),
-            "{e}"
-        );
-
-        // Bytes that are not a deflate stream.
-        let mut garbage = month.clone();
-        let data_at = member.header_offset as usize + 30 + member.name.len();
-        for b in &mut garbage[data_at..data_at + member.compressed_size as usize] {
-            *b = 0xff;
-        }
-        let t2 = Arc::new(StaticTransport::default());
-        t2.add(&zip_url, Canned::ok(&garbage));
-        let f2 = quick(&t2, &dir.path().join("b"));
-        let e = f2.fetch(remote).await.unwrap_err();
-        assert!(
-            matches!(&e, FetchError::RemoteZip { message, .. } if message.contains("does not inflate")),
-            "{e}"
-        );
-
-        // The body ends before the member does.
-        let t3 = Arc::new(StaticTransport::default());
-        t3.add(&zip_url, Canned::ok(&month[..data_at + 5]));
-        let f3 = quick(&t3, &dir.path().join("c"));
-        let e = f3.fetch(remote).await.unwrap_err();
-        assert!(
-            matches!(&e, FetchError::RetriesExhausted { last, .. } if matches!(**last, FetchError::ContentLength { .. })),
-            "{e}"
-        );
-
-        // Encrypted or exotically compressed members are named, not guessed at.
-        let mut encrypted = remote.clone();
-        encrypted.member.as_mut().unwrap().flags |= 1;
-        let e = f.fetch(&encrypted).await.unwrap_err();
-        assert!(
-            matches!(&e, FetchError::MemberUnsupported { reason, .. } if reason.contains("encrypted")),
-            "{e}"
-        );
-        let mut bzip = remote.clone();
-        bzip.member.as_mut().unwrap().method = 12;
-        let e = f.fetch(&bzip).await.unwrap_err();
-        assert!(
-            matches!(&e, FetchError::MemberUnsupported { reason, .. } if reason.contains("method 12")),
-            "{e}"
-        );
-
-        // Offline: nothing cached means a clear refusal.
-        let off = Fetcher::new(
-            Arc::new(crate::transport::OfflineTransport),
-            DiskCache::new(dir.path().join("d")),
-            FetcherConfig::default(),
-        );
-        assert!(matches!(
-            off.list_zip_members(&zip_url, 60).await,
-            Err(FetchError::Offline { .. })
-        ));
-        // And the good member still fetches after all of that.
-        assert_eq!(
-            std::fs::read(f.fetch(remote).await.unwrap().path).unwrap(),
-            region
         );
     }
 }

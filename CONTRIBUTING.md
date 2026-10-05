@@ -14,7 +14,7 @@ crates/nemlake-registry      L1  the table model (file_model) and the registry: 
 crates/nemlake-census            the census of shapes, and tooling that regenerates schemas/ from testdata/
 crates/nemlake-decode        L2  the MMS row format: scanner, field splitter, zips; no registry
 crates/nemlake-conform       L2  resolves blocks through the registry, casts to typed Arrow batches
-crates/nemlake-acquire       L3  sources, HTTP transport, cache (async)
+crates/nemlake-acquire       L3  sources, HTTP transport, archive (async)
 crates/nemlake-writer        L3  Parquet writer, partitioner, SQLite manifest actor
 crates/nemlake-pipeline      L4  list → fetch → ingest → commit as tokio streams
 crates/nemlake-cli           L5  the command: flags, rendering, exit codes

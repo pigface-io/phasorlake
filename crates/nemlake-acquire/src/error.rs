@@ -121,52 +121,8 @@ pub enum FetchError {
         /// First bytes of that refusal's body.
         body_head: Vec<u8>,
     },
-    /// The server ignored a `Range` header.
-    #[error(
-        "The server answered a ranged request for {url} with HTTP {status} instead of 206; reading part of this file is not possible."
-    )]
-    RangeIgnored {
-        /// URL.
-        url: String,
-        /// Status.
-        status: u16,
-    },
-    /// The index of a remote zip could not be read.
-    #[error("The zip at {url} could not be indexed remotely: {message}.")]
-    RemoteZip {
-        /// URL.
-        url: String,
-        /// What is wrong.
-        message: String,
-    },
-    /// A member of a remote zip cannot be extracted by nemlake.
-    #[error("Member {member} of the zip at {url} cannot be extracted: {reason}.")]
-    MemberUnsupported {
-        /// URL.
-        url: String,
-        /// Member name.
-        member: String,
-        /// Why.
-        reason: String,
-    },
-    /// A member of a remote zip did not match its directory entry.
-    #[error(
-        "Member {member} of the zip at {url} has {what} {observed} but the zip's directory records {expected}; the bytes were discarded."
-    )]
-    MemberMismatch {
-        /// URL.
-        url: String,
-        /// Member name.
-        member: String,
-        /// `size` or `crc32`.
-        what: &'static str,
-        /// Recorded.
-        expected: String,
-        /// Computed.
-        observed: String,
-    },
-    /// The cache directory failed.
-    #[error("The cache path {path} could not be read or written.")]
+    /// A file of the archive could not be read or written.
+    #[error("The archive path {path} could not be read or written.")]
     CacheIo {
         /// Path.
         path: String,
@@ -213,7 +169,6 @@ impl FetchError {
             Self::Connect { .. }
             | Self::Timeout { .. }
             | Self::ContentLength { .. }
-            | Self::MemberMismatch { .. }
             | Self::Body { .. } => true,
             Self::HttpStatus { status, .. } => *status == 429 || *status == 408 || *status >= 500,
             _ => false,
@@ -281,29 +236,6 @@ impl Diagnose for FetchError {
                 .with_url(url.clone())
                 .expected_observed("200", status.to_string())
                 .with_sample(body_head),
-            Self::RangeIgnored { url, status } => {
-                Diagnostic::error("net.range_ignored", Category::Net, msg)
-                    .with_url(url.clone())
-                    .expected_observed("206", status.to_string())
-            }
-            Self::RemoteZip { url, .. } => {
-                Diagnostic::error("zip.remote_index", Category::Zip, msg).with_url(url.clone())
-            }
-            Self::MemberUnsupported { url, member, .. } => {
-                Diagnostic::error("zip.member_unsupported", Category::Zip, msg)
-                    .with_url(url.clone())
-                    .with_entry(member.clone())
-            }
-            Self::MemberMismatch {
-                url,
-                member,
-                expected,
-                observed,
-                ..
-            } => Diagnostic::error("zip.member_mismatch", Category::Zip, msg)
-                .with_url(url.clone())
-                .with_entry(member.clone())
-                .expected_observed(expected.clone(), observed.clone()),
             Self::CacheIo { path, source } => Diagnostic::error("cache.io", Category::Cache, msg)
                 .with_file(path.clone())
                 .caused_by(source),
@@ -395,16 +327,6 @@ mod tests {
             }
             .is_retryable()
         );
-        assert!(
-            FetchError::MemberMismatch {
-                url: "u".into(),
-                member: "m".into(),
-                what: "crc32",
-                expected: "a".into(),
-                observed: "b".into()
-            }
-            .is_retryable()
-        );
         let d = FetchError::HttpStatus {
             url: "u".into(),
             status: 503,
@@ -483,13 +405,6 @@ mod tests {
                 "listing.month_missing",
             ),
             (
-                FetchError::RangeIgnored {
-                    url: "u".into(),
-                    status: 200,
-                },
-                "net.range_ignored",
-            ),
-            (
                 FetchError::Blocked {
                     url: "u".into(),
                     status: 403,
@@ -497,31 +412,6 @@ mod tests {
                     body_head: b"Website is unavailable".to_vec(),
                 },
                 "net.blocked",
-            ),
-            (
-                FetchError::RemoteZip {
-                    url: "u".into(),
-                    message: "m".into(),
-                },
-                "zip.remote_index",
-            ),
-            (
-                FetchError::MemberUnsupported {
-                    url: "u".into(),
-                    member: "m".into(),
-                    reason: "r".into(),
-                },
-                "zip.member_unsupported",
-            ),
-            (
-                FetchError::MemberMismatch {
-                    url: "u".into(),
-                    member: "m".into(),
-                    what: "size",
-                    expected: "1".into(),
-                    observed: "2".into(),
-                },
-                "zip.member_mismatch",
             ),
             (
                 FetchError::CacheIo {

@@ -129,9 +129,6 @@ enum Cmd {
         /// Milliseconds between two requests.
         #[arg(long, default_value_t = 1000)]
         interval_ms: u64,
-        /// Where fetched pages are cached between runs.
-        #[arg(long, default_value = "target/bootstrap-cache")]
-        cache: PathBuf,
         /// Where the report's pages live.
         #[arg(long, default_value = nemlake_census::dmreport::REPORT_BASE)]
         base: String,
@@ -238,11 +235,9 @@ fn main() -> ExitCode {
         Cmd::Datamodel {
             out,
             interval_ms,
-            cache,
             base,
         } => {
             let fetcher = match nemlake_census::dmreport::report_fetcher(
-                &cache,
                 std::time::Duration::from_millis(interval_ms),
             ) {
                 Ok(f) => f,
@@ -279,17 +274,14 @@ fn main() -> ExitCode {
 fn archive(
     home: Option<&Path>,
     base: &str,
-) -> Result<(nemlake_acquire::DiskCache, nemlake_acquire::MmsdmArchive), ExitCode> {
+) -> Result<(nemlake_acquire::Archive, nemlake_acquire::MmsdmArchive), ExitCode> {
     let user_home = std::env::var_os("HOME").map(PathBuf::from);
     let Some(home) = nemlake_core::paths::Home::resolve(home, user_home.as_deref()) else {
         eprintln!("error: no home directory; pass --home");
         return Err(ExitCode::from(2));
     };
     let nem = nemlake_acquire::MmsdmArchive::new(base).map_err(|e| fail(&e.diagnostic()))?;
-    Ok((
-        nemlake_acquire::DiskCache::at(home.cache(), home.archive()),
-        nem,
-    ))
+    Ok((nemlake_acquire::Archive::new(home.archive()), nem))
 }
 
 /// A scratch directory for nested zips, removed when dropped.
