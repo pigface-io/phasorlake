@@ -15,8 +15,8 @@ workspace = true
 nemlake-core.workspace = true
 memchr.workspace = true
 serde_json.workspace = true
+tempfile.workspace = true
 thiserror.workspace = true
 zip.workspace = true
 
 [dev-dependencies]
-tempfile.workspace = true

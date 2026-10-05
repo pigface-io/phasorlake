@@ -23,24 +23,76 @@ pub struct Entry {
     pub is_dir: bool,
 }
 
-/// Extracts every link with the text that precedes it on its line.
+/// Bytes as text, borrowing when they are UTF-8 (they always are on nemweb).
+fn text(b: &[u8]) -> std::borrow::Cow<'_, str> {
+    String::from_utf8_lossy(b)
+}
+
+/// `b` without ASCII whitespace at either end.
+fn trim(b: &[u8]) -> &[u8] {
+    let start = b
+        .iter()
+        .position(|c| !c.is_ascii_whitespace())
+        .unwrap_or(b.len());
+    let end = b
+        .iter()
+        .rposition(|c| !c.is_ascii_whitespace())
+        .map_or(start, |i| i + 1);
+    &b[start..end]
+}
+
+/// The next `href="` at or after `pos`, either case, in one pass over the
+/// document: each finder's last hit is kept and searched again only once
+/// the scan has passed it.
+struct Hrefs<'h> {
+    html: &'h [u8],
+    finders: [(memmem::Finder<'static>, Option<usize>); 2],
+}
+
+impl<'h> Hrefs<'h> {
+    fn new(html: &'h [u8]) -> Self {
+        let finder = |needle: &'static [u8]| {
+            let f = memmem::Finder::new(needle);
+            let first = f.find(html);
+            (f, first)
+        };
+        Self {
+            html,
+            finders: [finder(b"HREF=\""), finder(b"href=\"")],
+        }
+    }
+
+    fn next(&mut self, pos: usize) -> Option<usize> {
+        let html = self.html;
+        let mut best: Option<usize> = None;
+        for (finder, hit) in &mut self.finders {
+            if let Some(h) = *hit
+                && h < pos
+            {
+                *hit = finder.find(&html[pos..]).map(|i| pos + i);
+            }
+            if let Some(h) = *hit {
+                best = Some(best.map_or(h, |b| b.min(h)));
+            }
+        }
+        best
+    }
+}
+
+/// Extracts every link with the text that precedes it on its line. One pass
+/// over the document; only the strings an entry keeps are allocated.
 pub fn parse(html: &[u8]) -> Vec<Entry> {
-    let mut out = Vec::new();
-    let finder = memmem::Finder::new(b"HREF=\"");
-    let finder_lower = memmem::Finder::new(b"href=\"");
+    // A row of an IIS listing is some 150 to 250 bytes.
+    let mut out = Vec::with_capacity(html.len() / 160);
+    let mut hrefs = Hrefs::new(html);
     let mut pos = 0usize;
     let mut last_end = 0usize;
     while pos < html.len() {
-        let hit = match (finder.find(&html[pos..]), finder_lower.find(&html[pos..])) {
-            (Some(a), Some(b)) => Some(a.min(b)),
-            (a, b) => a.or(b),
-        };
-        let Some(off) = hit else { break };
-        let href_start = pos + off + 6;
+        let Some(at) = hrefs.next(pos) else { break };
+        let href_start = at + 6;
         let Some(href_len) = memchr::memchr(b'"', &html[href_start..]) else {
             break;
         };
-        let href = String::from_utf8_lossy(&html[href_start..href_start + href_len]).into_owned();
         // Anchor text: after the next '>' up to '<'.
         let after_tag = href_start + href_len;
         let Some(gt) = memchr::memchr(b'>', &html[after_tag..]) else {
@@ -48,50 +100,40 @@ pub fn parse(html: &[u8]) -> Vec<Entry> {
         };
         let text_start = after_tag + gt + 1;
         let text_len = memchr::memchr(b'<', &html[text_start..]).unwrap_or(html.len() - text_start);
-        let name = String::from_utf8_lossy(&html[text_start..text_start + text_len])
-            .trim()
-            .to_owned();
-        // The prefix: text between the previous anchor end (or line break) and this tag's '<'.
-        let tag_start = html[..pos + off]
-            .iter()
-            .rposition(|&b| b == b'<')
-            .unwrap_or(pos + off);
-        let prefix_start = html[last_end..tag_start]
-            .iter()
-            .rposition(|&b| b == b'>')
-            .map_or(last_end, |i| last_end + i + 1);
-        let prefix =
-            String::from_utf8_lossy(&html[prefix_start..tag_start]).replace("&lt;dir&gt;", "<dir>");
-        let prefix = prefix.trim();
-        let is_dir = prefix.ends_with("<dir>");
-        let (modified, size) = if is_dir {
-            (
-                Some(prefix.trim_end_matches("<dir>").trim().to_owned()).filter(|s| !s.is_empty()),
-                None,
-            )
-        } else {
-            match prefix.rsplit_once(char::is_whitespace) {
-                Some((date, size))
-                    if size.bytes().all(|b| b.is_ascii_digit()) && !size.is_empty() =>
-                {
-                    (
-                        Some(date.trim().to_owned()).filter(|s| !s.is_empty()),
-                        size.parse().ok(),
-                    )
-                }
-                _ => (None, None),
+        let name = trim(&html[text_start..text_start + text_len]);
+        last_end = {
+            // The prefix: text between the previous anchor end (or line
+            // break) and this tag's '<'.
+            let tag_start = memchr::memrchr(b'<', &html[last_end..at]).map_or(at, |i| last_end + i);
+            let prefix_start = memchr::memrchr(b'>', &html[last_end..tag_start])
+                .map_or(last_end, |i| last_end + i + 1);
+            let prefix = trim(&html[prefix_start..tag_start]);
+            if name.first() != Some(&b'[') {
+                let dir_mark = [&b"&lt;dir&gt;"[..], b"<dir>"]
+                    .into_iter()
+                    .find(|m| prefix.ends_with(m));
+                let (modified, size) = match dir_mark {
+                    Some(m) => (trim(&prefix[..prefix.len() - m.len()]), None),
+                    None => match prefix.iter().rposition(u8::is_ascii_whitespace) {
+                        Some(i)
+                            if i + 1 < prefix.len()
+                                && prefix[i + 1..].iter().all(u8::is_ascii_digit) =>
+                        {
+                            (trim(&prefix[..i]), text(&prefix[i + 1..]).parse().ok())
+                        }
+                        _ => (&prefix[..0], None),
+                    },
+                };
+                out.push(Entry {
+                    href: text(&html[href_start..href_start + href_len]).into_owned(),
+                    name: text(name).into_owned(),
+                    size,
+                    modified: (!modified.is_empty()).then(|| text(modified).into_owned()),
+                    is_dir: dir_mark.is_some(),
+                });
             }
+            text_start + text_len
         };
-        if !name.starts_with('[') {
-            out.push(Entry {
-                href,
-                name,
-                size,
-                modified,
-                is_dir,
-            });
-        }
-        last_end = text_start + text_len;
         pos = last_end;
     }
     out

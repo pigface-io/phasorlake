@@ -15,7 +15,7 @@ use nemlake_core::event::Event;
 use nemlake_core::{Category, Diagnose, Diagnostic, Fingerprint, IRow, YearMonth};
 use nemlake_decode::archive::{WalkError, walk_csv_entries};
 use nemlake_decode::quarantine::QuarantineWriter;
-use nemlake_decode::scan::{Flow, Pos, ScanOptions, scan};
+use nemlake_decode::scan::{Flow, Pos, ScanOptions, scan_with};
 use nemlake_decode::{RowError, SinkError};
 use nemlake_registry::{LoadMode, Registry, ResolveOptions, Resolved, TableId};
 use nemlake_writer::partition::split_by_month;
@@ -545,7 +545,12 @@ pub fn period_from_stem(stem: &str) -> Option<YearMonth> {
     nemlake_core::archive_name::parse(stem).map(|n| n.month)
 }
 
-fn ingest_entry(input: &IngestInput, entry: &str, reader: &mut dyn std::io::Read) -> EntryReport {
+fn ingest_entry(
+    input: &IngestInput,
+    entry: &str,
+    reader: &mut dyn std::io::Read,
+    scan_buf: &mut Vec<u8>,
+) -> EntryReport {
     let period = input
         .local
         .remote
@@ -589,7 +594,7 @@ fn ingest_entry(input: &IngestInput, entry: &str, reader: &mut dyn std::io::Read
         table: None,
         version: None,
     };
-    let scanned = scan(reader, &mut arrow, &scan_opts);
+    let scanned = scan_with(reader, &mut arrow, &scan_opts, scan_buf);
     let (recovered, flushed) = arrow.finish();
     sink = recovered;
     let scanned = match (scanned, flushed) {
@@ -667,6 +672,8 @@ fn ingest_entry(input: &IngestInput, entry: &str, reader: &mut dyn std::io::Read
 /// Ingests one local file: a zip (entries walked, nested zips included) or
 /// a bare CSV.
 pub fn ingest_file(input: IngestInput) -> FileReport {
+    // One read buffer for every entry of the file.
+    let mut scan_buf = Vec::new();
     let path = input.local.path.clone();
     let is_csv = path
         .extension()
@@ -679,7 +686,7 @@ pub fn ingest_file(input: IngestInput) -> FileReport {
             .map(|n| n.to_string_lossy().into_owned())
             .unwrap_or_default();
         match std::fs::File::open(&path) {
-            Ok(mut f) => entries.push(ingest_entry(&input, &name, &mut f)),
+            Ok(mut f) => entries.push(ingest_entry(&input, &name, &mut f, &mut scan_buf)),
             Err(e) => {
                 file_error = Some(
                     Diagnostic::error(
@@ -698,7 +705,7 @@ pub fn ingest_file(input: IngestInput) -> FileReport {
             &path,
             &input.tmp_dir,
             &mut |e| {
-                let rep = ingest_entry(&input, &e.name, e.reader);
+                let rep = ingest_entry(&input, &e.name, e.reader, &mut scan_buf);
                 let stop = fail_fast && rep.error.is_some();
                 entries.push(rep);
                 if stop { Err(()) } else { Ok(()) }

@@ -72,17 +72,14 @@ fn synthetic_zip(dir: &Path) -> std::path::PathBuf {
     path
 }
 
-fn main() {
-    let dir = tempfile::tempdir().expect("tempdir");
-    let zip_path = synthetic_zip(dir.path());
-    let zip_bytes = std::fs::metadata(&zip_path).map_or(0, |m| m.len());
-    let home = Home::at(dir.path().join("home"));
+/// One ingest of the zip into a fresh home: wall time and peak heap.
+fn ingest_once(dir: &Path, zip_path: &Path, registry: &Arc<Registry>) -> (Duration, f64) {
+    let home = Home::at(dir.join("home"));
     home.ensure_dirs().expect("home");
     let runtime = tokio::runtime::Builder::new_multi_thread()
         .enable_all()
         .build()
         .expect("runtime");
-    let registry = Registry::load_embedded(TypeOptions::default());
     PEAK.reset_peak_usage();
     let start = Instant::now();
     let (summary, exit) = runtime.block_on(async {
@@ -101,7 +98,7 @@ fn main() {
         };
         let plan = Plan {
             request: "bench".into(),
-            input: Input::Local(vec![zip_path.clone()]),
+            input: Input::Local(vec![zip_path.to_path_buf()]),
             options: RunOptions {
                 jobs: 1,
                 ..RunOptions::default()
@@ -117,6 +114,15 @@ fn main() {
     let peak_mb = f64::from(PEAK.peak_usage_as_mb());
     assert_eq!(exit, 0, "the benchmark ingest must succeed: {summary:?}");
     assert_eq!(summary.rows, ROWS as u64, "every row must land");
+    (elapsed, peak_mb)
+}
+
+fn main() {
+    let dir = tempfile::tempdir().expect("tempdir");
+    let zip_path = synthetic_zip(dir.path());
+    let zip_bytes = std::fs::metadata(&zip_path).map_or(0, |m| m.len());
+    let registry = Registry::load_embedded(TypeOptions::default());
+    let (elapsed, peak_mb) = ingest_once(dir.path(), &zip_path, &registry);
     let mut out = serde_json::Map::new();
     let mut m = serde_json::Map::new();
     m.insert(
@@ -136,8 +142,7 @@ fn main() {
         serde_json::Value::Object(m),
     );
     eprintln!(
-        "ingested {} rows from a {:.1} MB zip in {:.0} ms; peak heap {:.1} MB",
-        summary.rows,
+        "ingested {ROWS} rows from a {:.1} MB zip in {:.0} ms; peak heap {:.1} MB",
         zip_bytes as f64 / 1e6,
         elapsed.as_secs_f64() * 1000.0,
         peak_mb

@@ -25,7 +25,7 @@ use nemlake_acquire::{Archive, MmsdmArchive};
 use nemlake_core::{
     CanonicalShape, Category, Diagnose, Diagnostic, IRow, ShapeId, TypeClass, YearMonth,
 };
-use nemlake_decode::scan::{Flow, Pos, ScanOptions, Sink, scan};
+use nemlake_decode::scan::{Flow, Pos, ScanOptions, Sink, scan_with};
 use nemlake_decode::{Row, RowError, RowFailure, SinkError};
 use nemlake_registry::Registry;
 use nemlake_registry::file_model::ctl::CtlFile;
@@ -226,9 +226,12 @@ impl Sink for Blocks {
 }
 
 /// Every block of one CSV stream, in order: I rows only, D rows counted.
-pub fn read_blocks(reader: impl std::io::Read) -> Result<Vec<RawBlock>, Box<Diagnostic>> {
+pub fn read_blocks(
+    reader: impl std::io::Read,
+    buf: &mut Vec<u8>,
+) -> Result<Vec<RawBlock>, Box<Diagnostic>> {
     let mut blocks = Blocks::default();
-    scan(
+    scan_with(
         reader,
         &mut blocks,
         &ScanOptions {
@@ -236,6 +239,7 @@ pub fn read_blocks(reader: impl std::io::Read) -> Result<Vec<RawBlock>, Box<Diag
             max_bad_rows: u64::MAX,
             ..Default::default()
         },
+        buf,
     )
     .map_err(|e| Box::new(e.diagnostic()))?;
     Ok(blocks.0)
@@ -288,6 +292,8 @@ pub fn census_month(
     tmp: &Path,
 ) -> MonthCensus {
     let mut raw: BTreeMap<String, Vec<RawBlock>> = BTreeMap::new();
+    // One read buffer for every file and entry of the month.
+    let mut scan_buf = Vec::new();
     let mut ctls: Vec<(String, String)> = Vec::new();
     let mut problems = Vec::new();
     let read_text = |name: String, r: &mut dyn std::io::Read, ctls: &mut Vec<(String, String)>| {
@@ -315,7 +321,7 @@ pub fn census_month(
                 )
                 .caused_by(&e)
             }) {
-                Ok(f) => match read_blocks(std::io::BufReader::with_capacity(1 << 20, f)) {
+                Ok(f) => match read_blocks(f, &mut scan_buf) {
                     Ok(b) => {
                         raw.insert(name, b);
                     }
@@ -332,7 +338,7 @@ pub fn census_month(
                 tmp,
                 &mut |e| {
                     let key = file_key(path, &e.name);
-                    let blocks = read_blocks(e.reader).map_err(|d| {
+                    let blocks = read_blocks(e.reader, &mut scan_buf).map_err(|d| {
                         d.with_file(path.display().to_string())
                             .with_entry(e.name.clone())
                     })?;

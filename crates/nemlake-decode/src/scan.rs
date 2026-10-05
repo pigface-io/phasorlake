@@ -90,11 +90,26 @@ const BUF: usize = 1 << 20;
 
 /// Scans `reader` to the end, delivering rows to `sink`.
 pub fn scan<R: Read, S: Sink>(
-    mut reader: R,
+    reader: R,
     sink: &mut S,
     opts: &ScanOptions,
 ) -> Result<ScanStats, ScanError> {
-    let mut buf: Vec<u8> = vec![0; BUF.min(opts.max_line_bytes.max(16))];
+    scan_with(reader, sink, opts, &mut Vec::new())
+}
+
+/// [`scan`] reading through `buf`, which is grown to the read size once
+/// and can be passed again for the next stream: a file of many entries,
+/// or many files, reuses one buffer.
+pub fn scan_with<R: Read, S: Sink>(
+    mut reader: R,
+    sink: &mut S,
+    opts: &ScanOptions,
+    buf: &mut Vec<u8>,
+) -> Result<ScanStats, ScanError> {
+    let want = BUF.min(opts.max_line_bytes.max(16));
+    if buf.len() < want {
+        buf.resize(want, 0);
+    }
     let mut filled = 0usize;
     let mut stats = ScanStats::default();
     let mut splitter = Splitter::with_capacity(64);

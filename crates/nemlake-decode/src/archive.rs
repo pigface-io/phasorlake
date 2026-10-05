@@ -2,8 +2,8 @@
 //! a callback as a streaming reader.
 
 use std::fs::File;
-use std::io::{BufReader, Read};
-use std::path::{Path, PathBuf};
+use std::io::{BufReader, Read, Seek, Write as _};
+use std::path::Path;
 
 use nemlake_core::{Category, Diagnose, Diagnostic};
 
@@ -108,8 +108,9 @@ pub struct Entry<'a> {
 /// Walks every `.CSV` entry of the zip at `path`, nested zips included, in
 /// archive order. `on_entry` may return an error to stop the walk.
 ///
-/// Nested zips are spooled to `tmp_dir` because the zip format needs a
-/// seekable central directory, and are deleted afterwards. Every other
+/// A nested zip is walked in memory up to 64 MiB, else from a temporary
+/// file in `tmp_dir`, removed once read: the zip format needs a seekable
+/// central directory. Every other
 /// entry (a control file, a README) goes to `on_other` with its reader.
 pub fn walk_csv_entries<E>(
     path: &Path,
@@ -117,7 +118,7 @@ pub fn walk_csv_entries<E>(
     on_entry: &mut dyn FnMut(Entry<'_>) -> Result<(), E>,
     on_other: &mut dyn FnMut(Entry<'_>),
 ) -> Result<usize, WalkError<E>> {
-    walk(path, tmp_dir, 0, "", on_entry, on_other)
+    walk(path, tmp_dir, NESTED_IN_MEMORY, 0, "", on_entry, on_other)
 }
 
 /// Either the archive failed or the callback did.
@@ -131,51 +132,76 @@ pub enum WalkError<E> {
     Callback(E),
 }
 
+/// Read buffer of a zip on disk. The zip reader asks for its compressed
+/// bytes 8 KiB at a time; this lets each system call bring many of them.
+const ZIP_READ_BUFFER: usize = 64 << 10;
+/// A nested zip up to this size is read into memory and walked there;
+/// a larger one goes to a temporary file.
+const NESTED_IN_MEMORY: u64 = 64 << 20;
+/// Write buffer of a nested zip spooled to disk.
+const SPOOL_BUFFER: usize = 1 << 20;
+
 fn walk<E>(
     path: &Path,
     tmp_dir: &Path,
+    in_memory: u64,
     depth: u8,
     prefix: &str,
     on_entry: &mut dyn FnMut(Entry<'_>) -> Result<(), E>,
     on_other: &mut dyn FnMut(Entry<'_>),
 ) -> Result<usize, WalkError<E>> {
     let p = path.display().to_string();
-    let file = File::open(path).map_err(|e| {
+    let open = |message: String| {
         WalkError::Archive(ArchiveError::Open {
             path: p.clone(),
-            message: e.to_string(),
+            message,
         })
-    })?;
-    let mut archive = zip::ZipArchive::new(BufReader::new(file)).map_err(|e| {
-        WalkError::Archive(ArchiveError::Open {
-            path: p.clone(),
-            message: e.to_string(),
-        })
-    })?;
+    };
+    let file = File::open(path).map_err(|e| open(e.to_string()))?;
+    let archive = zip::ZipArchive::new(BufReader::with_capacity(ZIP_READ_BUFFER, file))
+        .map_err(|e| open(e.to_string()))?;
+    walk_zip(
+        archive, &p, tmp_dir, in_memory, depth, prefix, on_entry, on_other,
+    )
+}
+
+#[allow(clippy::too_many_arguments)]
+fn walk_zip<R: Read + Seek, E>(
+    mut archive: zip::ZipArchive<R>,
+    p: &str,
+    tmp_dir: &Path,
+    in_memory: u64,
+    depth: u8,
+    prefix: &str,
+    on_entry: &mut dyn FnMut(Entry<'_>) -> Result<(), E>,
+    on_other: &mut dyn FnMut(Entry<'_>),
+) -> Result<usize, WalkError<E>> {
     let mut found = 0usize;
     for i in 0..archive.len() {
         let mut entry = archive.by_index(i).map_err(|e| {
             WalkError::Archive(ArchiveError::Entry {
-                path: p.clone(),
+                path: p.to_owned(),
                 entry: i.to_string(),
                 message: e.to_string(),
             })
         })?;
-        let name = entry.name().to_owned();
-        let full = if prefix.is_empty() {
-            name.clone()
-        } else {
-            format!("{prefix}!{name}")
-        };
         if entry.is_dir() {
             continue;
         }
-        let upper = name.to_ascii_uppercase();
-        if upper.ends_with(".CSV") {
+        let name = entry.name();
+        let full = if prefix.is_empty() {
+            name.to_owned()
+        } else {
+            format!("{prefix}!{name}")
+        };
+        let is = |ext: &str| {
+            name.len() >= ext.len() && name[name.len() - ext.len()..].eq_ignore_ascii_case(ext)
+        };
+        if is(".csv") {
             let size = Some(entry.size());
             let mut reader = Counting {
                 inner: &mut entry,
-                path: &p,
+                path: p,
                 entry: &full,
                 failed: None,
             };
@@ -189,49 +215,77 @@ fn walk<E>(
             }
             result.map_err(WalkError::Callback)?;
             found += 1;
-        } else if upper.ends_with(".ZIP") {
+        } else if is(".zip") {
             if depth + 1 > MAX_DEPTH {
                 return Err(WalkError::Archive(ArchiveError::TooDeep {
-                    path: p,
+                    path: p.to_owned(),
                     entry: full,
                     depth: depth + 1,
                 }));
             }
-            std::fs::create_dir_all(tmp_dir).map_err(|source| {
-                WalkError::Archive(ArchiveError::Spool {
-                    path: p.clone(),
+            let size = entry.size();
+            let inner_label = format!("{p}!{name}");
+            let bad_inner = |message: String| {
+                WalkError::Archive(ArchiveError::Entry {
+                    path: p.to_owned(),
                     entry: full.clone(),
-                    tmp: tmp_dir.display().to_string(),
-                    source,
+                    message,
                 })
-            })?;
-            let tmp: PathBuf = tmp_dir.join(format!(
-                "{}-{}-{}.zip",
-                std::process::id(),
-                i,
-                name.replace(['/', '\\'], "_")
-            ));
-            {
-                let mut out = File::create(&tmp).map_err(|source| {
+            };
+            if size <= in_memory {
+                // The zip format needs to seek to its central directory;
+                // a small inner zip is walked in memory, never on disk.
+                let mut bytes = Vec::with_capacity(size as usize);
+                entry
+                    .read_to_end(&mut bytes)
+                    .map_err(|e| bad_inner(e.to_string()))?;
+                drop(entry);
+                let inner = zip::ZipArchive::new(std::io::Cursor::new(bytes))
+                    .map_err(|e| bad_inner(e.to_string()))?;
+                found += walk_zip(
+                    inner,
+                    &inner_label,
+                    tmp_dir,
+                    in_memory,
+                    depth + 1,
+                    &full,
+                    on_entry,
+                    on_other,
+                )?;
+            } else {
+                let spool_err = |tmp: &Path, source: std::io::Error| {
                     WalkError::Archive(ArchiveError::Spool {
-                        path: p.clone(),
+                        path: p.to_owned(),
                         entry: full.clone(),
                         tmp: tmp.display().to_string(),
                         source,
                     })
-                })?;
-                std::io::copy(&mut entry, &mut out).map_err(|source| {
-                    WalkError::Archive(ArchiveError::Spool {
-                        path: p.clone(),
-                        entry: full.clone(),
-                        tmp: tmp.display().to_string(),
-                        source,
-                    })
-                })?;
+                };
+                std::fs::create_dir_all(tmp_dir).map_err(|e| spool_err(tmp_dir, e))?;
+                // Unique, and removed when dropped, whatever happens.
+                let tmp =
+                    tempfile::NamedTempFile::new_in(tmp_dir).map_err(|e| spool_err(tmp_dir, e))?;
+                {
+                    let mut out = std::io::BufWriter::with_capacity(SPOOL_BUFFER, tmp.as_file());
+                    std::io::copy(&mut entry, &mut out)
+                        .and_then(|_| out.flush())
+                        .map_err(|e| spool_err(tmp.path(), e))?;
+                }
+                drop(entry);
+                let file = tmp.reopen().map_err(|e| spool_err(tmp.path(), e))?;
+                let inner = zip::ZipArchive::new(BufReader::with_capacity(ZIP_READ_BUFFER, file))
+                    .map_err(|e| bad_inner(e.to_string()))?;
+                found += walk_zip(
+                    inner,
+                    &inner_label,
+                    tmp_dir,
+                    in_memory,
+                    depth + 1,
+                    &full,
+                    on_entry,
+                    on_other,
+                )?;
             }
-            let inner = walk(&tmp, tmp_dir, depth + 1, &full, on_entry, on_other);
-            let _ = std::fs::remove_file(&tmp);
-            found += inner?;
         } else {
             on_other(Entry {
                 name: full,
@@ -241,7 +295,9 @@ fn walk<E>(
         }
     }
     if depth == 0 && found == 0 {
-        return Err(WalkError::Archive(ArchiveError::NoCsv { path: p }));
+        return Err(WalkError::Archive(ArchiveError::NoCsv {
+            path: p.to_owned(),
+        }));
     }
     Ok(found)
 }
@@ -300,11 +356,23 @@ pub(crate) mod tests {
     type Collected = (Vec<(String, Vec<u8>)>, Vec<String>);
 
     fn collect(path: &Path, tmp: &Path) -> Result<Collected, WalkError<std::io::Error>> {
+        collect_with(path, tmp, NESTED_IN_MEMORY)
+    }
+
+    /// As [`collect`], with nested zips above `in_memory` bytes spooled.
+    fn collect_with(
+        path: &Path,
+        tmp: &Path,
+        in_memory: u64,
+    ) -> Result<Collected, WalkError<std::io::Error>> {
         let mut got = Vec::new();
         let mut others = Vec::new();
-        walk_csv_entries(
+        walk(
             path,
             tmp,
+            in_memory,
+            0,
+            "",
             &mut |e| {
                 let mut buf = Vec::new();
                 e.reader.read_to_end(&mut buf)?;
@@ -335,16 +403,18 @@ pub(crate) mod tests {
                 ("readme.md", b"hi"),
             ],
         );
-        let (got, others) = collect(&outer, &dir.path().join("tmp")).unwrap();
+        let tmp = dir.path().join("tmp");
+        let (got, others) = collect(&outer, &tmp).unwrap();
         let names: Vec<&str> = got.iter().map(|(n, _)| n.as_str()).collect();
         assert_eq!(names, ["A.CSV", "nested.zip!INNER.CSV", "B.csv"]);
         assert_eq!(got[1].1, inter);
         assert_eq!(others, ["nested.zip!notes.txt", "readme.md"]);
+        assert!(!tmp.exists(), "a small nested zip is read in memory");
+        // A big one goes through a temporary file, removed once read.
+        let spooled = collect_with(&outer, &tmp, 0).unwrap();
+        assert_eq!(spooled.0, got);
         assert!(
-            std::fs::read_dir(dir.path().join("tmp"))
-                .unwrap()
-                .next()
-                .is_none(),
+            std::fs::read_dir(&tmp).unwrap().next().is_none(),
             "spooled zip removed"
         );
     }
@@ -415,11 +485,22 @@ pub(crate) mod tests {
         // Spool failure: tmp dir is a file.
         let tmp_file = dir.path().join("tmpfile");
         std::fs::write(&tmp_file, b"").unwrap();
-        let e = collect(&l1, &tmp_file).unwrap_err();
+        let e = collect_with(&l1, &tmp_file, 0).unwrap_err();
         assert!(
             matches!(e, WalkError::Archive(ArchiveError::Spool { .. })),
             "{e}"
         );
+        // A nested entry that is not a zip.
+        let fake = dir.path().join("fake.zip");
+        make_zip(&fake, &[("inner.zip", b"not a zip")]);
+        assert!(matches!(
+            collect(&fake, &tmp).unwrap_err(),
+            WalkError::Archive(ArchiveError::Entry { .. })
+        ));
+        assert!(matches!(
+            collect_with(&fake, &tmp, 0).unwrap_err(),
+            WalkError::Archive(ArchiveError::Entry { .. })
+        ));
         assert_eq!(
             nemlake_core::Diagnose::diagnostic(&ArchiveError::Entry {
                 path: "p".into(),
