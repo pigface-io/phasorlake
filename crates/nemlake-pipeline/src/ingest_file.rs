@@ -15,7 +15,7 @@ use nemlake_core::event::Event;
 use nemlake_core::{Category, Diagnose, Diagnostic, Fingerprint, IRow, YearMonth};
 use nemlake_decode::archive::{WalkError, walk_csv_entries};
 use nemlake_decode::quarantine::QuarantineWriter;
-use nemlake_decode::scan::{Flow, Pos, ScanOptions, ScanStats, scan};
+use nemlake_decode::scan::{Flow, Pos, ScanOptions, scan};
 use nemlake_decode::{RowError, SinkError};
 use nemlake_registry::{LoadMode, Registry, ResolveOptions, Resolved, TableId};
 use nemlake_writer::partition::split_by_month;
@@ -87,8 +87,6 @@ pub struct EntryReport {
     pub row_errors: Vec<Diagnostic>,
     /// The error that failed the entry, if any.
     pub error: Option<Diagnostic>,
-    /// Scanner counts.
-    pub stats: Option<ScanStats>,
 }
 
 /// One source file.
@@ -100,18 +98,9 @@ pub struct FileReport {
     pub entries: Vec<EntryReport>,
     /// An error that prevented reading the file at all.
     pub file_error: Option<Diagnostic>,
-    /// Entries that were not CSVs or zips.
-    pub skipped_entries: Vec<String>,
     /// The file was read again because the rules it had been written by
     /// have changed.
     pub rules_changed: bool,
-}
-
-impl FileReport {
-    /// Whether anything failed.
-    pub fn failed(&self) -> bool {
-        self.file_error.is_some() || self.entries.iter().any(|e| e.error.is_some())
-    }
 }
 
 /// What tells one open writer from another: table, version, column list
@@ -614,7 +603,6 @@ fn ingest_entry(input: &IngestInput, entry: &str, reader: &mut dyn std::io::Read
         warnings: vec![],
         row_errors: vec![],
         error: None,
-        stats: None,
     };
     match scanned {
         Ok(stats) => {
@@ -623,32 +611,29 @@ fn ingest_entry(input: &IngestInput, entry: &str, reader: &mut dyn std::io::Read
                 let mut d = e.diagnostic();
                 d.fill_from(&ctx);
                 report.error = Some(d);
-            } else {
-                report.stats = Some(stats);
-                if stats.footer_mismatch() {
-                    let d = Diagnostic::new(
-                        "csv.footer_count_mismatch",
-                        Category::Csv,
-                        if input.options.strict_footer {
-                            nemlake_core::Severity::Error
-                        } else {
-                            nemlake_core::Severity::Warning
-                        },
-                        format!(
-                            "The footer says {} lines but {} were read.",
-                            stats.footer_declared.unwrap_or(0),
-                            stats.lines
-                        ),
-                    )
-                    .expected_observed(
-                        stats.footer_declared.unwrap_or(0).to_string(),
-                        stats.lines.to_string(),
-                    );
+            } else if stats.footer_mismatch() {
+                let d = Diagnostic::new(
+                    "csv.footer_count_mismatch",
+                    Category::Csv,
                     if input.options.strict_footer {
-                        report.error = Some(d);
+                        nemlake_core::Severity::Error
                     } else {
-                        sink.warnings.push(d);
-                    }
+                        nemlake_core::Severity::Warning
+                    },
+                    format!(
+                        "The footer says {} lines but {} were read.",
+                        stats.footer_declared.unwrap_or(0),
+                        stats.lines
+                    ),
+                )
+                .expected_observed(
+                    stats.footer_declared.unwrap_or(0).to_string(),
+                    stats.lines.to_string(),
+                );
+                if input.options.strict_footer {
+                    report.error = Some(d);
+                } else {
+                    sink.warnings.push(d);
                 }
             }
         }
@@ -687,7 +672,6 @@ pub fn ingest_file(input: IngestInput) -> FileReport {
         .extension()
         .is_some_and(|e| e.eq_ignore_ascii_case("csv"));
     let mut entries = Vec::new();
-    let mut skipped_entries = Vec::new();
     let mut file_error = None;
     if is_csv {
         let name = path
@@ -719,7 +703,7 @@ pub fn ingest_file(input: IngestInput) -> FileReport {
                 entries.push(rep);
                 if stop { Err(()) } else { Ok(()) }
             },
-            &mut |other| skipped_entries.push(other.to_owned()),
+            &mut |_| {},
         );
         if let Err(WalkError::Archive(e)) = result {
             let mut d = e.diagnostic();
@@ -734,7 +718,6 @@ pub fn ingest_file(input: IngestInput) -> FileReport {
         local: input.local,
         entries,
         file_error,
-        skipped_entries,
     }
 }
 

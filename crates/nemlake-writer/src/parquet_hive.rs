@@ -61,7 +61,8 @@ impl ParquetHive {
     }
 
     /// Sets the zstd level (1..=22).
-    pub fn with_zstd_level(mut self, level: i32) -> Self {
+    #[cfg(test)]
+    pub(crate) fn with_zstd_level(mut self, level: i32) -> Self {
         self.zstd_level = level.clamp(1, 22);
         self
     }

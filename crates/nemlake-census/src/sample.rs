@@ -341,65 +341,6 @@ pub fn sample_path(path: &Path, max_rows: u64) -> Result<SampledFile, SampleErro
     })
 }
 
-/// Samples one path: a `.CSV`, a `.zip`, or a bundle of heads written by the
-/// `heads --bundle` subcommand, which yields one [`SampledFile`] per head.
-pub fn sample_file(path: &Path, max_rows: u64) -> Result<Vec<SampledFile>, SampleError> {
-    let is_zip = path
-        .extension()
-        .is_some_and(|e| e.eq_ignore_ascii_case("zip"));
-    if !is_zip {
-        let p = path.display().to_string();
-        let text = std::fs::read(path).map_err(|source| SampleError::Read {
-            path: p.clone(),
-            source,
-        })?;
-        if text.starts_with(crate::remote::BUNDLE_MARKER.as_bytes()) {
-            return sample_bundle(&p, &text, max_rows);
-        }
-    }
-    Ok(vec![sample_path(path, max_rows)?])
-}
-
-/// Splits a bundle at its `C,NEMLAKE.HEAD,{stem}` rows and samples each part
-/// as the file it was cut from.
-fn sample_bundle(path: &str, text: &[u8], max_rows: u64) -> Result<Vec<SampledFile>, SampleError> {
-    let marker = crate::remote::HEAD_MARKER.as_bytes();
-    let mut out = Vec::new();
-    let mut current: Option<(String, usize)> = None;
-    let mut pos = 0usize;
-    let flush = |stem: &str, body: &[u8], out: &mut Vec<SampledFile>| {
-        let blocks = sample_reader(&format!("{path}!{stem}"), body, max_rows)?;
-        let (table, month) = match table_from_stem(stem) {
-            Some((t, m)) => (Some(t), Some(m)),
-            None => (None, None),
-        };
-        if !blocks.is_empty() {
-            out.push(SampledFile {
-                table,
-                month,
-                blocks,
-            });
-        }
-        Ok::<(), SampleError>(())
-    };
-    for line in text.split_inclusive(|&b| b == b'\n') {
-        if line.starts_with(marker) {
-            if let Some((stem, start)) = current.take() {
-                flush(&stem, &text[start..pos], &mut out)?;
-            }
-            let stem = String::from_utf8_lossy(&line[marker.len()..])
-                .trim()
-                .to_owned();
-            current = Some((stem, pos + line.len()));
-        }
-        pos += line.len();
-    }
-    if let Some((stem, start)) = current {
-        flush(&stem, &text[start..], &mut out)?;
-    }
-    Ok(out)
-}
-
 /// Samples every `.csv`/`.CSV`/`.zip` file in a directory, non-recursively,
 /// in name order. Files that are not MMS files (no `I` row) are skipped.
 pub fn sample_dir(dir: &Path, max_rows: u64) -> Result<Vec<SampledFile>, SampleError> {
@@ -418,11 +359,10 @@ pub fn sample_dir(dir: &Path, max_rows: u64) -> Result<Vec<SampledFile>, SampleE
     paths.sort();
     let mut out = Vec::new();
     for p in paths {
-        out.extend(
-            sample_file(&p, max_rows)?
-                .into_iter()
-                .filter(|s| !s.blocks.is_empty()),
-        );
+        let s = sample_path(&p, max_rows)?;
+        if !s.blocks.is_empty() {
+            out.push(s);
+        }
     }
     Ok(out)
 }

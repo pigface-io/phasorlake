@@ -95,7 +95,6 @@ pub struct Registry {
     from_user: Vec<bool>,
     by_name: HashMap<String, TableId>,
     by_pair: hashbrown::HashMap<PairKey, TableId>,
-    by_dataset: HashMap<String, TableId>,
     by_fingerprint: HashMap<Fingerprint, (TableId, SchemaVersion)>,
     /// The lake schema and the plans of each table, built the first
     /// time the table is used. A run reads a handful of tables; building
@@ -278,16 +277,12 @@ impl Registry {
         let tables = set.tables;
         let mut by_name = HashMap::with_capacity(tables.len());
         let mut by_pair = hashbrown::HashMap::with_capacity(tables.len());
-        let mut by_dataset = HashMap::new();
         let mut by_fingerprint = HashMap::new();
         for (i, t) in tables.iter().enumerate() {
             let id = TableId(i as u32);
             by_name.insert(t.name.clone(), id);
             for (a, b) in &t.report_pairs {
                 by_pair.insert(PairKey(a.clone(), b.clone()), id);
-            }
-            for d in &t.datasets {
-                by_dataset.insert(d.clone(), id);
             }
             // A market no file defines gets the definition its name implies.
             if !markets.iter().any(|m| m.market == t.market) {
@@ -312,7 +307,6 @@ impl Registry {
             tables,
             by_name,
             by_pair,
-            by_dataset,
             by_fingerprint,
             dynamic: Mutex::new(HashMap::new()),
             derived: std::iter::repeat_with(OnceLock::new)
@@ -533,11 +527,6 @@ impl Registry {
             .copied()
     }
 
-    /// The handle for a plain-CSV dataset.
-    pub fn table_by_dataset(&self, dataset: &str) -> Option<TableId> {
-        self.by_dataset.get(dataset).copied()
-    }
-
     /// Every table with its handle.
     pub fn tables(&self) -> impl Iterator<Item = (TableId, &TableDef)> {
         self.tables
@@ -708,7 +697,6 @@ mod tests {
         assert!(r.tables().count() >= 20);
         assert!(r.market(Market::Nem).is_some());
         assert!(r.market(Market::Wem).is_some());
-        assert!(r.table_by_dataset("facility-scada").is_none());
         let dec = Registry::load_embedded(TypeOptions { decimal: true });
         assert!(dec.options().decimal);
         let f = &dec.lake_schema(id).fields()[2];

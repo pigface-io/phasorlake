@@ -4,15 +4,13 @@ use std::time::Instant;
 
 use futures::StreamExt;
 use nemlake_acquire::cache::sha256_hex;
-use nemlake_acquire::{FileKind, LocalFile, RemoteFile};
+use nemlake_acquire::{LocalFile, RemoteFile};
 use nemlake_core::Diagnose;
 use nemlake_core::event::{Event, Summary};
 use nemlake_core::report::{DiagSink, Flow, Report, SourceOutcome, SourceStatus};
 use nemlake_core::{Category, Diagnostic};
 use nemlake_registry::{Mode, Registry, ResolveOptions};
-use nemlake_writer::manifest::{
-    FileRecord, IngestEnd, IngestShape, IngestStart, IngestStatus, SchemaSeen,
-};
+use nemlake_writer::manifest::{FileRecord, IngestEnd, IngestShape, IngestStart, IngestStatus};
 use tokio::sync::mpsc;
 use tokio_util::sync::CancellationToken;
 use url::Url;
@@ -29,24 +27,14 @@ fn emit(tx: &mpsc::Sender<Event>, e: Event) {
 pub fn local_remote(path: &std::path::Path) -> Option<RemoteFile> {
     let abs = std::path::absolute(path).ok()?;
     let url = Url::from_file_path(&abs).ok()?;
-    let kind = if abs
-        .extension()
-        .is_some_and(|e| e.eq_ignore_ascii_case("csv"))
-    {
-        FileKind::PlainCsv
-    } else {
-        FileKind::MmsZip
-    };
     let stem = abs.file_stem()?.to_string_lossy().to_ascii_uppercase();
     let period = crate::ingest_file::period_from_stem(&stem);
-    let table = nemlake_acquire::MmsdmArchive::parse_name(&abs.file_name()?.to_string_lossy())
-        .map(|(t, _)| t);
+    let table = nemlake_acquire::MmsdmArchive::parse_name(&abs.file_name()?.to_string_lossy());
     Some(RemoteFile {
         url,
         source: "local",
         table,
         period,
-        kind,
         size: std::fs::metadata(&abs).ok().map(|m| m.len()),
         modified: None,
         member: None,
@@ -679,19 +667,6 @@ async fn commit(
                         report.emit(e.diagnostic());
                     }
                 }
-                let _ = deps
-                    .manifest
-                    .record_schema_seen(SchemaSeen {
-                        fingerprint: r.fingerprint.to_string(),
-                        table: Some(r.table.clone()),
-                        report_type: r.transform.report_type.clone(),
-                        report_subtype: r.transform.report_subtype.clone(),
-                        version: r.transform.source_version,
-                        columns: r.transform.source_columns.clone(),
-                        status: r.transform.resolution.clone(),
-                        file_id: Some(fid),
-                    })
-                    .await;
             }
             for o in &r.outputs {
                 summary.bytes_out += o.bytes;

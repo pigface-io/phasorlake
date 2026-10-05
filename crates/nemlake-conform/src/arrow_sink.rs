@@ -182,7 +182,8 @@ impl<'r, B: BatchSink> ArrowSink<'r, B> {
     }
 
     /// Takes the inner sink back.
-    pub fn into_inner(mut self) -> Result<B, SinkError> {
+    #[cfg(test)]
+    pub(crate) fn into_inner(mut self) -> Result<B, SinkError> {
         self.flush()?;
         Ok(self.out)
     }
@@ -194,13 +195,9 @@ impl<'r, B: BatchSink> ArrowSink<'r, B> {
         (self.out, r)
     }
 
-    /// The inner sink.
-    pub fn inner(&self) -> &B {
-        &self.out
-    }
-
     /// The inner sink, mutably.
-    pub fn inner_mut(&mut self) -> &mut B {
+    #[cfg(test)]
+    pub(crate) fn inner_mut(&mut self) -> &mut B {
         &mut self.out
     }
 
@@ -580,9 +577,10 @@ fn keep_misfits(block: &mut Block, misfits: &[(u16, u16, Fault, bool)], row: &Ro
     }
 }
 
-/// A `BatchSink` that keeps everything in memory, for tests and `inspect`.
+/// A `BatchSink` that keeps everything in memory, for tests.
+#[cfg(test)]
 #[derive(Debug, Default)]
-pub struct CollectBatches {
+pub(crate) struct CollectBatches {
     /// Batches in order.
     pub batches: Vec<BlockBatch>,
     /// Warnings in order.
@@ -595,6 +593,7 @@ pub struct CollectBatches {
     pub fail_fast: bool,
 }
 
+#[cfg(test)]
 impl BatchSink for CollectBatches {
     fn batch(&mut self, b: BlockBatch) -> Result<(), SinkError> {
         self.batches.push(b);
@@ -623,8 +622,9 @@ impl BatchSink for CollectBatches {
     }
 }
 
-/// Convenience: scans `reader` through an [`ArrowSink`] into [`CollectBatches`].
-pub fn collect<R: std::io::Read>(
+/// Scans `reader` through an [`ArrowSink`] into [`CollectBatches`].
+#[cfg(test)]
+pub(crate) fn collect<R: std::io::Read>(
     registry: &Registry,
     reader: R,
     opts: ResolveOptions,
@@ -1017,7 +1017,7 @@ D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",H,2\n";
             e,
             nemlake_decode::error::ScanError::Stopped { line: 3 }
         ));
-        assert_eq!(sink.inner().bad.len(), 1);
+        assert_eq!(sink.inner_mut().bad.len(), 1);
         sink.inner_mut().bad.clear();
     }
 

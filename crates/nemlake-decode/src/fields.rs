@@ -26,8 +26,6 @@ pub struct Span {
 pub struct Splitter {
     spans: Vec<Span>,
     scratch: Vec<u8>,
-    /// Whether a quote was left open at the end of the line.
-    unterminated: bool,
 }
 
 /// One split line: the fields of a row.
@@ -44,7 +42,6 @@ impl Splitter {
         Self {
             spans: Vec::with_capacity(fields),
             scratch: Vec::with_capacity(256),
-            unterminated: false,
         }
     }
 
@@ -52,7 +49,6 @@ impl Splitter {
     pub fn split<'a>(&'a mut self, line: &'a [u8]) -> Row<'a> {
         self.spans.clear();
         self.scratch.clear();
-        self.unterminated = false;
         if memchr(b'"', line).is_none() {
             let mut start = 0u32;
             for i in memchr_iter(b',', line) {
@@ -78,11 +74,6 @@ impl Splitter {
         }
     }
 
-    /// Whether the last split line ended inside an open quote.
-    pub const fn unterminated_quote(&self) -> bool {
-        self.unterminated
-    }
-
     fn split_quoted(&mut self, line: &[u8]) {
         let mut i = 0usize;
         let n = line.len();
@@ -96,7 +87,6 @@ impl Splitter {
                     match memchr(b'"', &line[j..]) {
                         None => {
                             // Unterminated: take the rest as the field.
-                            self.unterminated = true;
                             j = n;
                             break;
                         }
@@ -200,7 +190,8 @@ impl<'a> Row<'a> {
     }
 
     /// The whole line.
-    pub const fn line(&self) -> &'a [u8] {
+    #[cfg(test)]
+    pub(crate) const fn line(&self) -> &'a [u8] {
         self.line
     }
 
@@ -262,14 +253,11 @@ mod tests {
     }
 
     #[test]
-    fn unterminated_quote_takes_rest_and_flags() {
+    fn unterminated_quote_takes_rest() {
         let mut s = Splitter::default();
         let r = s.split(br#"a,"open,b"#);
         assert_eq!(r.len(), 2);
         assert_eq!(r.get(1), Some(b"open,b".as_slice()));
-        assert!(s.unterminated_quote());
-        let _ = s.split(b"a,b");
-        assert!(!s.unterminated_quote());
     }
 
     #[test]

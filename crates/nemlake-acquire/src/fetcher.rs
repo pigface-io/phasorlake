@@ -111,12 +111,14 @@ impl Fetcher {
     }
 
     /// The config.
-    pub fn config(&self) -> &FetcherConfig {
+    #[cfg(test)]
+    pub(crate) fn config(&self) -> &FetcherConfig {
         &self.config
     }
 
     /// Whether downloads are forbidden.
-    pub fn is_offline(&self) -> bool {
+    #[cfg(test)]
+    pub(crate) fn is_offline(&self) -> bool {
         self.transport.is_offline()
     }
 
@@ -1000,7 +1002,6 @@ mod tests {
     use url::Url;
 
     use super::*;
-    use crate::source::FileKind;
     use crate::transport::{Canned, OfflineTransport, StaticTransport};
 
     fn remote(url: &str) -> RemoteFile {
@@ -1009,7 +1010,6 @@ mod tests {
             source: "nem-mmsdm",
             table: Some("REGION".into()),
             period: Some(YearMonth::new(2024, 1).unwrap()),
-            kind: FileKind::MmsZip,
             size: None,
             modified: None,
             member: None,

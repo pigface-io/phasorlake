@@ -17,7 +17,7 @@ use url::Url;
 
 use crate::error::FetchError;
 use crate::fetcher::Fetcher;
-use crate::source::{FileKind, Query, RemoteFile, Source};
+use crate::source::{Query, RemoteFile, Source};
 
 /// The source id.
 pub const SOURCE_ID: &str = "wem-datafiles";
@@ -104,10 +104,6 @@ impl WemDatafiles {
 
 #[async_trait]
 impl Source for WemDatafiles {
-    fn id(&self) -> &'static str {
-        SOURCE_ID
-    }
-
     async fn list(&self, query: &Query, fetcher: &Fetcher) -> Result<Vec<RemoteFile>, FetchError> {
         let mut out = Vec::new();
         for ds in &self.datasets {
@@ -131,7 +127,6 @@ impl Source for WemDatafiles {
                     source: SOURCE_ID,
                     table: Some(ds.clone()),
                     period: Some(ym),
-                    kind: FileKind::PlainCsv,
                     size: None,
                     modified: e.generated_at,
                     member: None,
@@ -180,7 +175,6 @@ mod tests {
         .unwrap();
         let w = WemDatafiles::new("https://data.wa.aemo.com.au", vec!["facility-scada".into()])
             .unwrap();
-        assert_eq!(w.id(), "wem-datafiles");
         let murl = w.manifest_url("facility-scada").unwrap();
         assert_eq!(
             murl.as_str(),
@@ -206,7 +200,6 @@ mod tests {
         let files = w.list(&q, &f).await.unwrap();
         assert_eq!(files.len(), 2);
         assert_eq!(files[0].period, Some(YearMonth::new(2023, 8).unwrap()));
-        assert_eq!(files[0].kind, FileKind::PlainCsv);
         assert_eq!(files[0].table.as_deref(), Some("facility-scada"));
         assert!(files[1].url.as_str().ends_with("2023-09.csv"));
     }

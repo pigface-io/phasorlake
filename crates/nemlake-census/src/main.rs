@@ -78,11 +78,8 @@ enum Cmd {
         #[arg(long)]
         month: nemlake_core::YearMonth,
         /// Output directory: one `{stem}.CSV` per zip.
-        #[arg(long, required_unless_present = "bundle", conflicts_with = "bundle")]
-        out: Option<PathBuf>,
-        /// Output file: every head of the month in one multi-block CSV.
         #[arg(long)]
-        bundle: Option<PathBuf>,
+        out: PathBuf,
         /// D rows to keep per block.
         #[arg(long, default_value_t = 20)]
         rows: usize,
@@ -149,35 +146,6 @@ enum Cmd {
         out: PathBuf,
         /// Milliseconds between two requests; nemweb blocks fast clients.
         #[arg(long, default_value_t = 500)]
-        interval_ms: u64,
-        /// Where listings and zip indexes are cached between runs.
-        #[arg(long, default_value = "target/bootstrap-cache")]
-        cache: PathBuf,
-        /// Archive base URL.
-        #[arg(long, default_value = "https://www.nemweb.com.au")]
-        base: String,
-    },
-    /// Gather what historical months add: a bundle of heads per month and
-    /// the control files that type columns later months dropped (network).
-    History {
-        /// Archive months, in the order to visit them; newest first keeps
-        /// the newest control file for each table.
-        #[arg(long, required = true, value_delimiter = ',')]
-        months: Vec<nemlake_core::YearMonth>,
-        /// Output directory: `MMSDM_{YYYY}_{MM}.heads.csv` and `CTL/`.
-        #[arg(long)]
-        dir: PathBuf,
-        /// Directories of control files already on hand; repeatable.
-        #[arg(long)]
-        ctl: Vec<PathBuf>,
-        /// D rows to keep per block.
-        #[arg(long, default_value_t = 1)]
-        rows: usize,
-        /// Bytes to request of each zip.
-        #[arg(long, default_value_t = 65_536)]
-        bytes: u64,
-        /// Milliseconds between two requests; nemweb blocks fast clients.
-        #[arg(long, default_value_t = 1000)]
         interval_ms: u64,
         /// Where listings and zip indexes are cached between runs.
         #[arg(long, default_value = "target/bootstrap-cache")]
@@ -266,33 +234,25 @@ fn main() -> ExitCode {
         Cmd::Heads {
             month,
             out,
-            bundle,
             rows,
             bytes,
             interval_ms,
             cache,
             base,
         } => {
-            use nemlake_census::remote::{HeadDest, HeadOptions};
-            let dest = match (out, bundle) {
-                (_, Some(f)) => HeadDest::Bundle(f),
-                (Some(d), None) => HeadDest::Dir(d),
-                (None, None) => unreachable!("clap requires --out or --bundle"),
-            };
-            let opts = HeadOptions { rows, bytes };
+            let opts = nemlake_census::remote::HeadOptions { rows, bytes };
             let (archive, fetcher) = match network(&base, &cache, interval_ms) {
                 Ok(n) => n,
                 Err(code) => return code,
             };
             let result = run_async(nemlake_census::remote::fetch_heads(
-                &fetcher, &archive, &dest, month, opts,
+                &fetcher, &archive, &out, month, opts,
             ));
             match result {
                 Ok(outcomes) => {
                     let mut failed = 0;
                     for o in &outcomes {
                         match (&o.path, &o.error) {
-                            (Some(_), _) if matches!(dest, HeadDest::Bundle(_)) => {}
                             (Some(p), _) => eprintln!("wrote {}", p.display()),
                             (None, Some(e)) => {
                                 failed += 1;
@@ -396,42 +356,6 @@ fn main() -> ExitCode {
                     ExitCode::from(1)
                 }
             }
-        }
-        Cmd::History {
-            months,
-            dir,
-            ctl,
-            rows,
-            bytes,
-            interval_ms,
-            cache,
-            base,
-        } => {
-            let (archive, fetcher) = match network(&base, &cache, interval_ms) {
-                Ok(n) => n,
-                Err(code) => return code,
-            };
-            let opts = nemlake_census::remote::HeadOptions { rows, bytes };
-            for month in months {
-                let result = run_async(nemlake_census::remote::fetch_history_month(
-                    &fetcher, &archive, &dir, &ctl, month, opts,
-                ));
-                match result {
-                    Ok(m) => eprintln!(
-                        "{month}: {} head(s){}, {} control file(s) fetched",
-                        m.heads,
-                        if m.fetched_bundle {
-                            ""
-                        } else {
-                            " (already here)"
-                        },
-                        m.ctls.len()
-                    ),
-                    // Stop at the first failure: a refusal must not be followed by more requests.
-                    Err(e) => return fail(&e.diagnostic()),
-                }
-            }
-            ExitCode::SUCCESS
         }
     }
 }

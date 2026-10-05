@@ -107,7 +107,8 @@ impl Report {
     }
 
     /// Total errors.
-    pub fn error_count(&self) -> u64 {
+    #[cfg(test)]
+    pub(crate) fn error_count(&self) -> u64 {
         self.by_code
             .values()
             .filter(|b| b.examples.first().is_some_and(Diagnostic::is_error))
@@ -116,7 +117,8 @@ impl Report {
     }
 
     /// Total warnings (deduplicated repeats counted once each).
-    pub fn warning_count(&self) -> u64 {
+    #[cfg(test)]
+    pub(crate) fn warning_count(&self) -> u64 {
         self.by_code
             .values()
             .filter(|b| b.examples.first().is_some_and(|d| !d.is_error()))
@@ -209,10 +211,12 @@ impl DiagSink for Report {
     }
 }
 
-/// A sink that collects everything, for tests and small tools.
+/// A sink that collects everything, for tests.
+#[cfg(test)]
 #[derive(Debug, Default)]
-pub struct VecSink(pub Vec<Diagnostic>);
+pub(crate) struct VecSink(pub Vec<Diagnostic>);
 
+#[cfg(test)]
 impl DiagSink for VecSink {
     fn emit(&mut self, d: Diagnostic) -> Flow {
         self.0.push(d);

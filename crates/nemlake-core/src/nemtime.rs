@@ -275,7 +275,8 @@ pub fn format_local_seconds(secs_utc: i64, offset_secs: i32) -> String {
 
 /// Formats a UTC instant in nanoseconds as the MMS string in market time,
 /// to the second.
-pub fn format_local(nanos_utc: i64, offset_secs: i32) -> String {
+#[cfg(test)]
+pub(crate) fn format_local(nanos_utc: i64, offset_secs: i32) -> String {
     format_local_seconds(nanos_utc.div_euclid(NANOS_PER_SECOND), offset_secs)
 }
 

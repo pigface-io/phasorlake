@@ -503,102 +503,6 @@ impl Registry {
         }
     }
 
-    /// Resolves a plain-CSV header row against a dataset's table.
-    pub fn resolve_header(
-        &self,
-        dataset: &str,
-        header: &[&str],
-        opts: ResolveOptions,
-    ) -> Result<Resolved, ResolveError> {
-        let Some(id) = self.table_by_dataset(dataset) else {
-            return Err(ResolveError::UnknownTable {
-                report_type: "dataset".into(),
-                report_subtype: dataset.to_owned(),
-            });
-        };
-        let t = self.table(id);
-        let v = t.latest_version().expect("a validated table has a version");
-        let irow = IRow {
-            report_type: "dataset",
-            report_subtype: dataset,
-            version: v.n.0,
-            columns: header,
-        };
-        // Share the MMS path: a dataset's table claims no report pair, so
-        // resolve by hand with the same drift rules.
-        let fp = irow.fingerprint();
-        if fp == v.fingerprint {
-            let plan = self
-                .plan(id, v.n)
-                .expect("declared versions are precomputed")
-                .clone();
-            return Ok(Resolved {
-                table: id,
-                version: v.n,
-                status: Status::Exact,
-                plan,
-                source: self.schema_source(id),
-                routed: Vec::new(),
-                warnings: vec![],
-            });
-        }
-        if opts.mode == Mode::Strict {
-            let missing = v
-                .columns
-                .iter()
-                .filter(|c| !header.contains(&c.as_str()))
-                .cloned()
-                .collect();
-            let extra = header
-                .iter()
-                .filter(|c| t.column_index(c).is_none())
-                .map(|c| (*c).to_owned())
-                .collect();
-            return Err(ResolveError::VersionDrift {
-                table: t.name.clone(),
-                version: v.n.0,
-                declared: v.columns.len(),
-                observed: header.len(),
-                missing,
-                extra,
-            });
-        }
-        let market = self.market_of(id);
-        let plan = self.dynamic_plan(id, fp, || {
-            Arc::new(ConformancePlan::declared(
-                t,
-                market,
-                self.options(),
-                self.lake_schema(id),
-                header,
-            ))
-        });
-        let missing = v
-            .columns
-            .iter()
-            .filter(|c| !header.contains(&c.as_str()))
-            .cloned()
-            .collect();
-        let extra = header
-            .iter()
-            .filter(|c| t.column_index(c).is_none())
-            .map(|c| (*c).to_owned())
-            .collect();
-        Ok(Resolved {
-            table: id,
-            version: v.n,
-            status: Status::Drift {
-                missing,
-                extra,
-                reordered: false,
-            },
-            plan,
-            source: self.schema_source(id),
-            routed: Vec::new(),
-            warnings: vec![],
-        })
-    }
-
     fn decimal_warnings(&self, t: &TableDef, warnings: &mut Vec<Diagnostic>) {
         if !self.options().decimal {
             return;
@@ -1491,12 +1395,8 @@ mod tests {
     }
 
     #[test]
-    fn header_resolution_for_datasets() {
+    fn integer_columns_are_int64() {
         let r = reg();
-        assert!(matches!(
-            r.resolve_header("facility-scada", &["A"], ResolveOptions::default()),
-            Err(ResolveError::UnknownTable { .. })
-        ));
         let market = r.market(crate::file_model::Market::Nem).unwrap();
         assert_eq!(
             crate::arrow::data_type(ColumnType::Integer, market, TypeOptions::default()),

@@ -76,7 +76,8 @@ impl YearMonth {
     }
 
     /// `YYYYMM`, as AEMO writes it in archive file names.
-    pub fn compact(self) -> String {
+    #[cfg(test)]
+    pub(crate) fn compact(self) -> String {
         format!("{:04}{:02}", self.year, self.month)
     }
 

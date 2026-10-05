@@ -194,14 +194,6 @@ pub enum FetchError {
         /// Computed.
         observed: String,
     },
-    /// A source that is not implemented yet.
-    #[error("Source {source_id} does not support {what} yet.")]
-    Unsupported {
-        /// Source id.
-        source_id: &'static str,
-        /// What was asked.
-        what: String,
-    },
     /// A manifest or other structured file could not be parsed.
     #[error("The file {url} is not the expected {what}: {message}")]
     Parse {
@@ -326,9 +318,6 @@ impl Diagnose for FetchError {
             } => Diagnostic::warning("cache.sha256_mismatch", Category::Cache, msg)
                 .with_file(path.clone())
                 .expected_observed(expected.clone(), observed.clone()),
-            Self::Unsupported { .. } => {
-                Diagnostic::error("listing.unsupported", Category::Listing, msg)
-            }
             Self::Parse { url, .. } => {
                 Diagnostic::error("listing.parse_failed", Category::Listing, msg)
                     .with_url(url.clone())
@@ -555,13 +544,6 @@ mod tests {
                     observed: "b".into(),
                 },
                 "cache.sha256_mismatch",
-            ),
-            (
-                FetchError::Unsupported {
-                    source_id: "s",
-                    what: "w".into(),
-                },
-                "listing.unsupported",
             ),
             (
                 FetchError::Parse {

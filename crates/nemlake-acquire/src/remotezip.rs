@@ -58,8 +58,8 @@ impl ZipMember {
     }
 
     /// Whether the name ends in `/`.
-    #[must_use]
-    pub fn is_dir(&self) -> bool {
+    #[cfg(test)]
+    pub(crate) fn is_dir(&self) -> bool {
         self.name.ends_with('/')
     }
 
@@ -300,8 +300,8 @@ impl Inflater {
     }
 
     /// Whether the end of the deflate stream was reached.
-    #[must_use]
-    pub const fn finished(&self) -> bool {
+    #[cfg(test)]
+    pub(crate) const fn finished(&self) -> bool {
         self.done
     }
 

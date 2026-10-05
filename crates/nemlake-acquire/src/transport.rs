@@ -16,10 +16,6 @@ use crate::error::FetchError;
 pub struct HttpRequest {
     /// URL.
     pub url: String,
-    /// `If-None-Match`.
-    pub if_none_match: Option<String>,
-    /// `If-Modified-Since`.
-    pub if_modified_since: Option<String>,
     /// `Range: bytes={start}-{end}`; an open end reads to the end of the file.
     pub range: Option<ByteRange>,
     /// `If-Range`: the ETag or Last-Modified the range is valid for. A server
@@ -87,8 +83,6 @@ impl HttpRequest {
     pub fn get(url: &str) -> Self {
         Self {
             url: url.to_owned(),
-            if_none_match: None,
-            if_modified_since: None,
             range: None,
             if_range: None,
         }
@@ -171,12 +165,6 @@ impl ReqwestTransport {
 impl Transport for ReqwestTransport {
     async fn get(&self, req: HttpRequest) -> Result<HttpResponse, FetchError> {
         let mut r = self.client.get(&req.url);
-        if let Some(e) = &req.if_none_match {
-            r = r.header("If-None-Match", e);
-        }
-        if let Some(m) = &req.if_modified_since {
-            r = r.header("If-Modified-Since", m);
-        }
         if let Some(range) = &req.range {
             r = r.header("Range", range.header_value());
         }

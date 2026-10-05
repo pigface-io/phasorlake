@@ -1547,7 +1547,6 @@ dependencies = [
  "parquet",
  "serde_json",
  "tempfile",
- "thiserror",
  "tokio",
  "tokio-util",
  "url",

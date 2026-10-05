@@ -36,7 +36,7 @@ impl Context {
     /// Resolves home, config and registry. Cheap: no network, no SQLite.
     pub fn new(cli: &Cli) -> Result<Self> {
         let user_home = std::env::var_os("HOME").map(PathBuf::from);
-        let home = Home::resolve(cli.home.as_deref(), None, user_home.as_deref())
+        let home = Home::resolve(cli.home.as_deref(), user_home.as_deref())
             .context("No home directory: pass --home or set NEMLAKE_HOME.")?;
         home.ensure_dirs().with_context(|| {
             format!(

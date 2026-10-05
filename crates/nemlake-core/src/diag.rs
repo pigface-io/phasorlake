@@ -483,77 +483,6 @@ impl Diagnose for Diagnostic {
     }
 }
 
-/// An error carrying extra context from the layers it passed through.
-///
-/// `Located<E>` keeps the original `E` (so callers still match on variants
-/// and `source()` still works) and a [`Context`] that outer layers merge
-/// into. Converting to a [`Diagnostic`] applies the context.
-#[derive(Debug)]
-pub struct Located<E> {
-    /// The original error.
-    pub inner: E,
-    /// What the layers above it knew. Boxed so `Result<T, Located<E>>`
-    /// stays small on the hot path.
-    pub ctx: Box<Context>,
-}
-
-impl<E: Diagnose> Located<E> {
-    /// Wraps an error with empty context.
-    pub fn new(inner: E) -> Self {
-        Self {
-            inner,
-            ctx: Box::default(),
-        }
-    }
-
-    /// Fills unset context fields from `ctx`.
-    pub fn at(mut self, ctx: &Context) -> Self {
-        self.ctx.fill_from(ctx);
-        self
-    }
-}
-
-impl<E: Diagnose> Diagnose for Located<E> {
-    fn diagnostic(&self) -> Diagnostic {
-        let mut d = self.inner.diagnostic();
-        d.fill_from(&self.ctx);
-        d
-    }
-}
-
-impl<E: Diagnose> fmt::Display for Located<E> {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.write_str(&self.diagnostic().render())
-    }
-}
-
-impl<E: Diagnose + fmt::Debug> std::error::Error for Located<E> {}
-
-/// Adds context to a `Result` whose error is not yet `Located`. A result
-/// that already is uses [`Relocate::relocated`].
-pub trait WithContext<T, E> {
-    /// Wraps the error (if any) and fills unset context from `ctx`.
-    fn located(self, ctx: &Context) -> Result<T, Located<E>>;
-}
-
-/// Adds outer context to a `Result` whose error is already `Located`.
-pub trait Relocate<T, E> {
-    /// Fills unset context from `ctx`.
-    fn relocated(self, ctx: &Context) -> Result<T, Located<E>>;
-}
-
-impl<T, E: Diagnose> Relocate<T, E> for Result<T, Located<E>> {
-    fn relocated(self, ctx: &Context) -> Result<T, Located<E>> {
-        self.map_err(|e| e.at(ctx))
-    }
-}
-
-impl<T, E: Diagnose> WithContext<T, E> for Result<T, E> {
-    fn located(self, ctx: &Context) -> Result<T, Located<E>> {
-        self.map_err(|e| Located::new(e).at(ctx))
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -658,7 +587,7 @@ mod tests {
     }
 
     #[test]
-    fn located_merges_outer_context_without_overwriting_inner() {
+    fn fill_from_merges_outer_context_without_overwriting_inner() {
         let outer = Context {
             request: Some("ingest a.zip".into()),
             file: Some("a.zip".into()),
@@ -667,31 +596,26 @@ mod tests {
             version: Some(2),
             url: None,
         };
-        let r: Result<(), Inner> = Err(Inner);
-        let located = r.located(&outer).unwrap_err();
-        let d = located.diagnostic();
+        let mut d = Inner.diagnostic();
+        d.fill_from(&outer);
         assert_eq!(d.entry.as_deref(), Some("b.zip!INNER.CSV"));
         assert_eq!(d.line, Some(7));
         assert_eq!(d.request.as_deref(), Some("ingest a.zip"));
         assert_eq!(d.table.as_deref(), Some("T"));
         assert_eq!(d.version, Some(2));
-        assert_eq!(located.code(), "parse.timestamp");
-        assert!(located.to_string().contains("entry b.zip!INNER.CSV"));
         // A second, outer-most layer adds the URL and keeps everything else.
         let outermost = Context {
             url: Some("https://h/a.zip".into()),
             request: Some("other".into()),
             ..Default::default()
         };
-        let r2: Result<(), Located<Inner>> = Err(located);
-        let d2 = r2.relocated(&outermost).unwrap_err().diagnostic();
-        assert_eq!(d2.url.as_deref(), Some("https://h/a.zip"));
-        assert_eq!(d2.request.as_deref(), Some("ingest a.zip"));
-        assert_eq!(d2.entry.as_deref(), Some("b.zip!INNER.CSV"));
+        d.fill_from(&outermost);
+        assert_eq!(d.url.as_deref(), Some("https://h/a.zip"));
+        assert_eq!(d.request.as_deref(), Some("ingest a.zip"));
+        assert_eq!(d.entry.as_deref(), Some("b.zip!INNER.CSV"));
         // Re-applying the same entry prefix does not duplicate it.
-        let again = Located::new(Inner).at(&outer).at(&outer).diagnostic();
-        assert_eq!(again.entry.as_deref(), Some("b.zip!INNER.CSV"));
-        let _ = format!("{:?}", Located::new(Inner));
+        d.fill_from(&outer);
+        assert_eq!(d.entry.as_deref(), Some("b.zip!INNER.CSV"));
         assert_eq!(
             Diagnostic::error("net.x", Category::Net, "m")
                 .diagnostic()

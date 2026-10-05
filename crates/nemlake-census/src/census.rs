@@ -491,7 +491,7 @@ mod tests {
 
     use nemlake_acquire::remotezip::ZipMember;
     use nemlake_acquire::transport::{Canned, StaticTransport};
-    use nemlake_acquire::{DiskCache, FetcherConfig, FileKind};
+    use nemlake_acquire::{DiskCache, FetcherConfig};
     use nemlake_registry::TypeOptions;
 
     use super::*;
@@ -514,7 +514,6 @@ mod tests {
             source: "nem-mmsdm",
             table: None,
             period: YearMonth::new(2026, 8),
-            kind: FileKind::MmsZip,
             size: None,
             modified: None,
             member: None,

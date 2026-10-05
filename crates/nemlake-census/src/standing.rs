@@ -11,8 +11,8 @@
 //!    file is committed as a fixture and read by [`readme_tables`].
 //! 2. A short list of tables the README does not name, each of which the
 //!    committed samples show to behave the same way: every sampled row of
-//!    an earlier month is there again in a later one. A test holds each
-//!    entry to that, by [`repeats`].
+//!    an earlier month is there again in a later one. A test of this
+//!    module holds each entry to that.
 
 /// The tables AEMO's archive README lists as static or standing data, in
 /// the order it lists them, upper-case.
@@ -47,15 +47,17 @@ pub fn readme_tables(text: &str) -> Vec<String> {
 
 /// One sampled file as rows of named values: the column names of its I
 /// row and the fields of each D row after the four-field prefix.
+#[cfg(test)]
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Rows {
+struct Rows {
     /// Column names, in file order.
-    pub columns: Vec<String>,
+    columns: Vec<String>,
     /// Data rows, in file order.
-    pub rows: Vec<Vec<String>>,
+    rows: Vec<Vec<String>>,
 }
 
 /// Splits one CSV line into fields, honouring double quotes.
+#[cfg(test)]
 fn fields(line: &str) -> Vec<String> {
     let mut out = Vec::new();
     let mut cur = String::new();
@@ -78,7 +80,8 @@ fn fields(line: &str) -> Vec<String> {
 
 /// Reads the first block of an MMS CSV as [`Rows`]; `None` when it has no
 /// I row.
-pub fn first_block(text: &str) -> Option<Rows> {
+#[cfg(test)]
+fn first_block(text: &str) -> Option<Rows> {
     let mut columns: Option<Vec<String>> = None;
     let mut rows = Vec::new();
     for line in text.lines() {
@@ -109,7 +112,8 @@ pub fn first_block(text: &str) -> Option<Rows> {
 ///
 /// Fewer than `at_least` rows in the earlier sample is no evidence either
 /// way and gives `false`.
-pub fn repeats(earlier: &Rows, later: &Rows, at_least: usize) -> bool {
+#[cfg(test)]
+fn repeats(earlier: &Rows, later: &Rows, at_least: usize) -> bool {
     if earlier.rows.len() < at_least {
         return false;
     }

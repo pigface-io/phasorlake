@@ -28,32 +28,9 @@ enum Cmd {
     FinishIngest(i64, IngestEnd, Reply<()>),
     AbortRunning(Reply<usize>),
     RecordDiagnostic(i64, Option<i64>, Box<Diagnostic>, Reply<()>),
-    RecordSchemaSeen(Box<SchemaSeen>, Reply<()>),
     ListIngests(Option<String>, bool, usize, Reply<Vec<IngestRecord>>),
     ListDiagnostics(DiagFilter, Reply<Vec<(i64, Option<i64>, Diagnostic)>>),
     LatestRun(Reply<Option<RunRecord>>),
-    TableTotals(String, Reply<(u64, u64)>),
-}
-
-/// A shape observation.
-#[derive(Debug, Clone)]
-pub struct SchemaSeen {
-    /// Fingerprint text.
-    pub fingerprint: String,
-    /// Table, when resolved.
-    pub table: Option<String>,
-    /// Report type.
-    pub report_type: String,
-    /// Report subtype.
-    pub report_subtype: String,
-    /// Version.
-    pub version: u16,
-    /// Columns.
-    pub columns: Vec<String>,
-    /// Resolution status label.
-    pub status: String,
-    /// File id.
-    pub file_id: Option<i64>,
 }
 
 /// An async handle to the manifest thread. Cloning shares the thread.
@@ -132,9 +109,6 @@ impl ManifestHandle {
                         Cmd::RecordDiagnostic(run, ingest, d, r) => {
                             let _ = r.send(manifest.record_diagnostic(run, ingest, &d));
                         }
-                        Cmd::RecordSchemaSeen(s, r) => {
-                            let _ = r.send(manifest.record_schema_seen(&s));
-                        }
                         Cmd::ListIngests(table, failed, limit, r) => {
                             let _ = r.send(manifest.list_ingests(table.as_deref(), failed, limit));
                         }
@@ -143,9 +117,6 @@ impl ManifestHandle {
                         }
                         Cmd::LatestRun(r) => {
                             let _ = r.send(manifest.latest_run());
-                        }
-                        Cmd::TableTotals(t, r) => {
-                            let _ = r.send(manifest.table_totals(&t));
                         }
                     }
                 }
@@ -232,10 +203,6 @@ impl ManifestHandle {
         self.call(|r| Cmd::RecordDiagnostic(run_id, ingest_id, Box::new(d), r))
             .await
     }
-    /// See [`Manifest::record_schema_seen`].
-    pub async fn record_schema_seen(&self, s: SchemaSeen) -> Result<(), ManifestError> {
-        self.call(|r| Cmd::RecordSchemaSeen(Box::new(s), r)).await
-    }
     /// See [`Manifest::list_ingests`].
     pub async fn list_ingests(
         &self,
@@ -256,10 +223,6 @@ impl ManifestHandle {
     /// See [`Manifest::latest_run`].
     pub async fn latest_run(&self) -> Result<Option<RunRecord>, ManifestError> {
         self.call(Cmd::LatestRun).await
-    }
-    /// See [`Manifest::table_totals`].
-    pub async fn table_totals(&self, table: &str) -> Result<(u64, u64), ManifestError> {
-        self.call(|r| Cmd::TableTotals(table.to_owned(), r)).await
     }
 }
 
@@ -304,18 +267,6 @@ mod tests {
             })
             .await
             .unwrap();
-        h.record_schema_seen(SchemaSeen {
-            fingerprint: "f".into(),
-            table: Some("T".into()),
-            report_type: "A".into(),
-            report_subtype: "B".into(),
-            version: 1,
-            columns: vec!["X".into()],
-            status: "exact".into(),
-            file_id: Some(fid),
-        })
-        .await
-        .unwrap();
         h.finish_ingest(
             iid,
             IngestEnd {
@@ -351,7 +302,6 @@ mod tests {
             1
         );
         assert_eq!(h.list_ingests(None, false, 5).await.unwrap().len(), 1);
-        assert_eq!(h.table_totals("T").await.unwrap(), (2, 0));
         assert_eq!(h.outputs_of_file(fid).await.unwrap().len(), 0);
         assert!(h.quarantine_of_file(fid).await.unwrap().is_empty());
         assert_eq!(h.supersede_file(fid).await.unwrap(), 1);

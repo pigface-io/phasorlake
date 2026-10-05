@@ -34,16 +34,6 @@ pub enum SchemaFileError {
         /// What is wrong, naming the key.
         message: String,
     },
-    /// Two files conflict.
-    #[error("Schema files {a} and {b} conflict: {message}")]
-    Conflict {
-        /// First file.
-        a: String,
-        /// Second file.
-        b: String,
-        /// What is wrong.
-        message: String,
-    },
     /// A change between two registries is not allowed.
     #[error("Table {table} changed incompatibly: {message}")]
     Breaking {
@@ -77,10 +67,6 @@ impl Diagnose for SchemaFileError {
                     .with_file(path.clone())
                     .with_table(table.clone())
             }
-            Self::Conflict { a, .. } => {
-                Diagnostic::error("schema.file_conflict", Category::Schema, msg)
-                    .with_file(a.clone())
-            }
             Self::Breaking { table, .. } => {
                 Diagnostic::error("schema.breaking_change", Category::Schema, msg)
                     .with_table(table.clone())
@@ -113,12 +99,6 @@ mod tests {
             line: Some(4),
         };
         assert_eq!(e.diagnostic().line, Some(4));
-        let e = SchemaFileError::Conflict {
-            a: "a".into(),
-            b: "b".into(),
-            message: "m".into(),
-        };
-        assert_eq!(e.diagnostic().code, "schema.file_conflict");
         let e = SchemaFileError::Breaking {
             table: "T".into(),
             message: "m".into(),

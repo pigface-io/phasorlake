@@ -31,7 +31,6 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 | `listing.month_missing` | `crates/nemlake-acquire/src/error.rs` |
 | `listing.no_match` | `crates/nemlake-acquire/src/error.rs` |
 | `listing.parse_failed` | `crates/nemlake-acquire/src/error.rs` |
-| `listing.unsupported` | `crates/nemlake-acquire/src/error.rs` |
 
 ## cache
 
@@ -78,12 +77,9 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 | `parse.decimal` | `crates/nemlake-decode/src/error.rs` |
 | `parse.float` | `crates/nemlake-decode/src/error.rs` |
 | `parse.integer` | `crates/nemlake-decode/src/error.rs` |
-| `parse.null_kept` | `crates/nemlake-conform/src/arrow_sink.rs` |
 | `parse.null_not_allowed` | `crates/nemlake-decode/src/error.rs` |
 | `parse.timestamp` | `crates/nemlake-decode/src/error.rs` |
-| `parse.timestamp_clamped` | `crates/nemlake-conform/src/arrow_sink.rs` |
 | `parse.utf8` | `crates/nemlake-decode/src/error.rs` |
-| `parse.value_kept_raw` | `crates/nemlake-conform/src/arrow_sink.rs` |
 
 ## schema
 
@@ -100,7 +96,6 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 | `schema.datamodel_parse` | `crates/nemlake-census/src/datamodel.rs` |
 | `schema.datamodel_read` | `crates/nemlake-census/src/datamodel.rs` |
 | `schema.decimal_fallback` | `crates/nemlake-registry/src/resolve.rs` |
-| `schema.file_conflict` | `crates/nemlake-registry/src/file_model/error.rs` |
 | `schema.file_invalid` | `crates/nemlake-registry/src/file_model/error.rs` |
 | `schema.file_parse` | `crates/nemlake-registry/src/file_model/error.rs` |
 | `schema.file_read` | `crates/nemlake-registry/src/file_model/error.rs` |
@@ -160,7 +155,6 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 | code | raised in |
 |---|---|
 | `internal.arrow` | `crates/nemlake-decode/src/error.rs` |
-| `internal.diagnostic_json` | `crates/nemlake-writer/src/manifest/mod.rs` |
 | `internal.no_such_writer` | `crates/nemlake-writer/src/error.rs` |
 | `internal.panic` | `crates/nemlake-pipeline/src/run.rs` |
 

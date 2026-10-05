@@ -9,29 +9,20 @@ pub struct Home {
     root: PathBuf,
 }
 
-/// Environment variable overriding the home directory.
-pub const HOME_ENV: &str = "NEMLAKE_HOME";
-
 impl Home {
     /// A home at an explicit path.
     pub fn at(root: impl Into<PathBuf>) -> Self {
         Self { root: root.into() }
     }
 
-    /// Resolves the home: the explicit flag, then `NEMLAKE_HOME`, then
-    /// `~/.nemlake` under the user's home directory.
-    pub fn resolve(
-        flag: Option<&Path>,
-        env: Option<&str>,
-        user_home: Option<&Path>,
-    ) -> Option<Self> {
-        if let Some(p) = flag {
-            return Some(Self::at(p));
+    /// Resolves the home: the explicit flag (which the command line also
+    /// fills from `NEMLAKE_HOME`), else `~/.nemlake` under the user's home
+    /// directory.
+    pub fn resolve(flag: Option<&Path>, user_home: Option<&Path>) -> Option<Self> {
+        match flag {
+            Some(p) => Some(Self::at(p)),
+            None => user_home.map(|h| Self::at(h.join(".nemlake"))),
         }
-        if let Some(e) = env.filter(|e| !e.is_empty()) {
-            return Some(Self::at(e));
-        }
-        user_home.map(|h| Self::at(h.join(".nemlake")))
     }
 
     /// The root.
@@ -100,21 +91,12 @@ mod tests {
     fn precedence() {
         let flag = Path::new("/f");
         let home = Path::new("/u");
+        assert_eq!(Home::resolve(Some(flag), Some(home)).unwrap().root(), flag);
         assert_eq!(
-            Home::resolve(Some(flag), Some("/e"), Some(home))
-                .unwrap()
-                .root(),
-            flag
-        );
-        assert_eq!(
-            Home::resolve(None, Some("/e"), Some(home)).unwrap().root(),
-            Path::new("/e")
-        );
-        assert_eq!(
-            Home::resolve(None, Some(""), Some(home)).unwrap().root(),
+            Home::resolve(None, Some(home)).unwrap().root(),
             Path::new("/u/.nemlake")
         );
-        assert_eq!(Home::resolve(None, None, None), None);
+        assert_eq!(Home::resolve(None, None), None);
     }
 
     #[test]

@@ -37,15 +37,8 @@ fn options(
     }
 }
 
-async fn run_plan(
-    cli: &Cli,
-    ctx: &Context,
-    plan: Plan,
-    refresh: bool,
-    downloads: Option<usize>,
-) -> Result<i32> {
+async fn run_plan(cli: &Cli, ctx: &Context, plan: Plan, refresh: bool) -> Result<i32> {
     let (tx, rx) = tokio::sync::mpsc::channel(4096);
-    let _ = downloads;
     let fetcher = ctx.fetcher(&plan.request, refresh, Some(tx.clone()))?;
     let (manifest, thread) = ctx.manifest()?;
     let deps = ctx.deps(fetcher, manifest);
@@ -158,7 +151,7 @@ pub async fn fetch(cli: &Cli, ctx: &Context, market: &FetchMarket) -> Result<i32
                 },
                 options: options(cli, ctx, ingest, *downloads, *dry_run),
             };
-            run_plan(cli, ctx, plan, *refresh, *downloads).await
+            run_plan(cli, ctx, plan, *refresh).await
         }
     }
 }
@@ -196,7 +189,7 @@ pub async fn ingest(cli: &Cli, ctx: &Context, paths: &[PathBuf], args: &IngestAr
         input: Input::Local(files),
         options: options(cli, ctx, args, None, false),
     };
-    run_plan(cli, ctx, plan, false, None).await
+    run_plan(cli, ctx, plan, false).await
 }
 
 /// `nemlake reingest`: every recorded source whose lake files are behind
@@ -207,7 +200,7 @@ pub async fn reingest(cli: &Cli, ctx: &Context, dry_run: bool, args: &IngestArgs
         input: Input::Stale,
         options: options(cli, ctx, args, None, dry_run),
     };
-    run_plan(cli, ctx, plan, false, None).await
+    run_plan(cli, ctx, plan, false).await
 }
 
 /// `nemlake verify`: every output the manifest lists exists with its size.

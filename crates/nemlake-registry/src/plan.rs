@@ -5,8 +5,8 @@
 //! parsed, and for the output, which columns it has, which of them form
 //! the key and which one partitions it. `nemlake-conform` applies it; the
 //! registry is the only place that builds one. It serialises (`nemlake
-//! schema plan` prints it as JSON) and has a deterministic byte encoding
-//! ([`ConformancePlan::encode`]).
+//! schema plan` prints it as JSON); [`PlanHash`] names what of it decides
+//! the output.
 
 use std::sync::Arc;
 
@@ -78,9 +78,6 @@ pub enum Origin {
     /// The table has no column for it; it is kept as text under its own
     /// name, in a column of these files only.
     FileExtra,
-    /// It is not kept: a plain-CSV header column its dataset's table does
-    /// not declare.
-    Dropped,
 }
 
 /// The generation of the conversions the code itself performs: how a
@@ -309,20 +306,6 @@ impl<'a> Draft<'a> {
         });
     }
 
-    fn route_dropped(&mut self, name: &str) {
-        self.routes.push(ColumnRoute {
-            source_name: name.to_owned(),
-            source_index: self.routes.len() as u16,
-            target: None,
-            target_name: None,
-            target_field_id: None,
-            raw_target: None,
-            cast: Cast::Utf8,
-            nullable: true,
-            origin: Origin::Dropped,
-        });
-    }
-
     fn finish(self, dir: &str, arrow: SchemaRef) -> ConformancePlan {
         let t = self.t;
         let missing: Vec<u16> = self
@@ -381,8 +364,8 @@ impl<'a> Draft<'a> {
 impl ConformancePlan {
     /// The plan of a declared column list (normalised I-row columns) onto
     /// `t`, with the table's lake schema. Every name of a declared list is
-    /// a column or alias of `t`; a name that is not (a plain-CSV header
-    /// column) is dropped. An undeclared list goes through
+    /// a column or alias of `t` (validation holds it). An undeclared list
+    /// goes through
     /// [`ConformancePlan::file_shape`], which keeps what this one would
     /// have no place for.
     pub fn declared(
@@ -394,10 +377,10 @@ impl ConformancePlan {
     ) -> Self {
         let mut d = Draft::new(t, market, opts, t.columns.len());
         for n in names {
-            match t.column_index(n) {
-                Some(i) => d.route_to_column(n, i, Origin::Declared),
-                None => d.route_dropped(n),
-            }
+            let i = t
+                .column_index(n)
+                .expect("a declared column list names columns of its table");
+            d.route_to_column(n, i, Origin::Declared);
         }
         d.finish(&t.dir_name(), lake.clone())
     }
@@ -467,20 +450,14 @@ impl ConformancePlan {
 
     /// Number of columns files of this shape are written with: the lake's,
     /// plus any the file carries beyond them.
-    pub fn lake_width(&self) -> usize {
+    #[cfg(test)]
+    pub(crate) fn lake_width(&self) -> usize {
         self.fields.len()
     }
 
     /// The name of the output column at `index`.
     pub fn column_name(&self, index: usize) -> &str {
         &self.fields[index].name
-    }
-
-    /// The plan's deterministic byte encoding: the same plan always
-    /// encodes to the same bytes, and any change to what it says changes
-    /// them.
-    pub fn encode(&self) -> Vec<u8> {
-        postcard::to_stdvec(self).expect("a plan always serialises")
     }
 }
 
@@ -629,7 +606,7 @@ mod tests {
     }
 
     #[test]
-    fn a_declared_shape_plans_every_column_and_encodes_stably() {
+    fn a_declared_shape_plans_every_column() {
         let r = Registry::load_embedded(TypeOptions::default());
         let cols = ["SETTLEMENTDATE", "DUID", "SCADAVALUE", "LASTCHANGED"];
         let irow = nemlake_core::IRow {
@@ -653,13 +630,12 @@ mod tests {
         assert_eq!(p.routes[1].target_name.as_deref(), Some("DUID"));
         assert!(p.fields.iter().all(|f| f.field_id.is_some()));
         assert_eq!(p.routes[2].target_field_id, p.fields[2].field_id);
-        assert_eq!(p.encode(), p.encode());
         let json = serde_json::to_value(&*p).unwrap();
         assert_eq!(json["routes"][0]["cast"]["kind"], "timestamp_nanos");
         assert_eq!(json["routes"][0]["origin"], "declared");
         assert!(json.get("arrow").is_none());
 
-        // Another column list encodes to other bytes.
+        // A file column beyond the lake's is routed to an extra column.
         let fewer = ["SETTLEMENTDATE", "DUID", "SCADAVALUE", "EXTRA"];
         let q = r
             .resolve(
@@ -671,7 +647,6 @@ mod tests {
             )
             .unwrap()
             .plan;
-        assert_ne!(p.encode(), q.encode());
         assert_eq!(q.routes[3].origin, Origin::FileExtra);
         assert_eq!(q.routes[3].target_field_id, None);
         assert_eq!(q.fields[4].origin, Origin::FileExtra);

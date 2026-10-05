@@ -9,8 +9,6 @@ mod handle;
 
 use std::path::Path;
 
-pub use handle::SchemaSeen;
-
 use nemlake_core::{Diagnostic, Severity};
 use rusqlite::{Connection, OptionalExtension, params};
 use serde::{Deserialize, Serialize};
@@ -33,6 +31,10 @@ const MIGRATIONS: &[(&str, &str)] = &[
     (
         "0004_plan_hash",
         include_str!("migrations/0004_plan_hash.sql"),
+    ),
+    (
+        "0005_drop_schemas_seen",
+        include_str!("migrations/0005_drop_schemas_seen.sql"),
     ),
 ];
 
@@ -237,7 +239,8 @@ impl Manifest {
     }
 
     /// An in-memory manifest, for tests.
-    pub fn in_memory() -> Result<Self, ManifestError> {
+    #[cfg(test)]
+    pub(crate) fn in_memory() -> Result<Self, ManifestError> {
         let conn = Connection::open_in_memory().map_err(|e| ManifestError::Sqlite {
             path: ":memory:".into(),
             message: e.to_string(),
@@ -618,16 +621,6 @@ impl Manifest {
         self.sql(r).map(|_| ())
     }
 
-    /// Records a shape seen in the wild; the first sighting wins.
-    pub fn record_schema_seen(&mut self, s: &SchemaSeen) -> Result<(), ManifestError> {
-        let r = self.conn.execute(
-            "INSERT OR IGNORE INTO schemas_seen (fingerprint, table_name, report_type, report_subtype, schema_version, columns, status, first_seen_file, first_seen_at)
-             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)",
-            params![s.fingerprint, s.table, s.report_type, s.report_subtype, i64::from(s.version), s.columns.join(","), s.status, s.file_id, now()],
-        );
-        self.sql(r).map(|_| ())
-    }
-
     /// Ingests, newest first, optionally for one table or only failed ones.
     pub fn list_ingests(
         &self,
@@ -715,16 +708,6 @@ impl Manifest {
             })
             .and_then(Iterator::collect),
         )
-    }
-
-    /// Row counts for a table across `ok` ingests, for `verify`.
-    pub fn table_totals(&self, table: &str) -> Result<(u64, u64), ManifestError> {
-        let r = self.conn.query_row(
-            "SELECT COALESCE(SUM(i.rows), 0), COUNT(DISTINCT o.id) FROM ingests i LEFT JOIN outputs o ON o.ingest_id = i.id WHERE i.table_name = ?1 AND i.status = 'ok'",
-            [table],
-            |r| Ok((r.get::<_, i64>(0)? as u64, r.get::<_, i64>(1)? as u64)),
-        );
-        self.sql(r)
     }
 }
 
@@ -929,7 +912,6 @@ mod tests {
         assert_eq!(recs[0].status, IngestStatus::Ok);
         assert_eq!(recs[0].outputs, outputs);
         assert_eq!(recs[0].bad_rows, 1);
-        assert_eq!(m.table_totals("T").unwrap(), (5, 1));
         assert_eq!(m.list_ingests(Some("OTHER"), false, 10).unwrap().len(), 0);
         assert_eq!(m.list_ingests(None, true, 10).unwrap().len(), 0);
         // Re-begin replaces the row; a failure is listed with its code.
@@ -1014,19 +996,6 @@ mod tests {
             .unwrap()
             .is_empty()
         );
-        // Schema seen.
-        let seen = SchemaSeen {
-            fingerprint: "xxh3:1".into(),
-            table: Some("T".into()),
-            report_type: "A".into(),
-            report_subtype: "B".into(),
-            version: 1,
-            columns: vec!["X".into(), "Y".into()],
-            status: "exact".into(),
-            file_id: Some(fid),
-        };
-        m.record_schema_seen(&seen).unwrap();
-        m.record_schema_seen(&seen).unwrap();
         // Supersede and abort_running.
         let iid3 = m
             .begin_ingest(&IngestStart {

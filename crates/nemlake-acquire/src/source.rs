@@ -23,16 +23,6 @@ pub struct Query {
     pub to: YearMonth,
 }
 
-/// What kind of file a remote is.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum FileKind {
-    /// A zip of MMS CSVs.
-    MmsZip,
-    /// A plain CSV with a header row.
-    PlainCsv,
-}
-
 /// A file a source wants fetched.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct RemoteFile {
@@ -44,8 +34,6 @@ pub struct RemoteFile {
     pub table: Option<String>,
     /// The period it covers.
     pub period: Option<YearMonth>,
-    /// Kind.
-    pub kind: FileKind,
     /// Size the listing reported.
     pub size: Option<u64>,
     /// Modified time the listing reported, as text.
@@ -123,8 +111,6 @@ impl RemoteFile {
 /// Where files live for one market and publication.
 #[async_trait]
 pub trait Source: Send + Sync {
-    /// Stable id, e.g. `nem-mmsdm`.
-    fn id(&self) -> &'static str;
     /// The files a query needs, in a stable order.
     async fn list(&self, query: &Query, fetcher: &Fetcher) -> Result<Vec<RemoteFile>, FetchError>;
 }
@@ -140,7 +126,6 @@ mod tests {
             source: "nem-mmsdm",
             table: None,
             period: None,
-            kind: FileKind::MmsZip,
             size: None,
             modified: None,
             member: None,

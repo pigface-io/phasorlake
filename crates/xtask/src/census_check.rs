@@ -18,20 +18,9 @@ use nemlake_census::census::{census_dir, read_month};
 use nemlake_core::{Category, Diagnostic, IRow, ShapeId, TypeClass, YearMonth};
 use nemlake_registry::file_model::compat::class_fits;
 use nemlake_registry::file_model::shapes::ShapeEntry;
-use nemlake_registry::{ColumnType, Mode, Origin, Registry, ResolveOptions, Status, TypeOptions};
+use nemlake_registry::{Mode, Origin, Registry, ResolveOptions, Status, TypeOptions};
 
 /// The name of a declared type's class, as a table file writes it.
-fn type_name(ty: ColumnType) -> &'static str {
-    match ty {
-        ColumnType::Utf8 { .. } => "utf8",
-        ColumnType::Number { .. } => "number",
-        ColumnType::Integer => "integer",
-        ColumnType::Date => "date",
-        ColumnType::Timestamp => "timestamp",
-        ColumnType::Boolean => "boolean",
-    }
-}
-
 fn months_text(months: &BTreeSet<YearMonth>) -> String {
     months
         .iter()
@@ -162,7 +151,7 @@ pub fn check(
         let anchor = registry
             .table_by_name(&table)
             .and_then(|id| registry.table(id).column(&column))
-            .map_or("", |c| type_name(c.ty));
+            .map_or("", |c| c.ty.kind_name());
         let mut d = Diagnostic::error(
             "schema.census_type_regression",
             Category::Schema,

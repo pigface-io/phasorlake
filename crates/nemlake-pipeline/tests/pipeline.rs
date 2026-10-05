@@ -9,7 +9,7 @@ use std::time::Duration;
 use async_trait::async_trait;
 use nemlake_acquire::cache::DiskCache;
 use nemlake_acquire::transport::{Canned, StaticTransport};
-use nemlake_acquire::{FetchError, Fetcher, FetcherConfig, FileKind, Query, RemoteFile, Source};
+use nemlake_acquire::{FetchError, Fetcher, FetcherConfig, Query, RemoteFile, Source};
 use nemlake_core::event::Event;
 use nemlake_core::paths::Home;
 use nemlake_pipeline::{Deps, Input, Plan, RunOptions, run};
@@ -1082,14 +1082,10 @@ fn a_recorded_source_becomes_a_file_to_read() {
     assert_eq!(member.stem(), "public_dvd_region_201201010000");
     assert_eq!(member.table.as_deref(), Some("REGION"));
     assert_eq!(member.period.unwrap().to_string(), "2012-01");
-    assert_eq!(member.kind, FileKind::MmsZip);
     let wem =
         nemlake_pipeline::recorded_remote(&rec("wem-datafiles", "https://w/a.csv", "/a/a.csv"))
             .unwrap();
-    assert_eq!(
-        (wem.source, wem.kind),
-        ("wem-datafiles", FileKind::PlainCsv)
-    );
+    assert_eq!(wem.source, "wem-datafiles");
     let local =
         nemlake_pipeline::recorded_remote(&rec("other", "file:///x/a.csv", "/x/a.csv")).unwrap();
     assert_eq!(local.source, "local");
@@ -1310,9 +1306,6 @@ struct OneFile(Vec<RemoteFile>);
 
 #[async_trait]
 impl Source for OneFile {
-    fn id(&self) -> &'static str {
-        "test"
-    }
     async fn list(&self, _q: &Query, _f: &Fetcher) -> Result<Vec<RemoteFile>, FetchError> {
         Ok(self.0.clone())
     }
@@ -1322,9 +1315,6 @@ struct Broken;
 
 #[async_trait]
 impl Source for Broken {
-    fn id(&self) -> &'static str {
-        "broken"
-    }
     async fn list(&self, _q: &Query, _f: &Fetcher) -> Result<Vec<RemoteFile>, FetchError> {
         Err(FetchError::Offline {
             url: "https://h/".into(),
@@ -1358,7 +1348,6 @@ async fn remote_source_downloads_then_serves_from_cache_and_reports_fetch_failur
         source: "nem-mmsdm",
         table: Some(table.into()),
         period: Some(ym),
-        kind: FileKind::MmsZip,
         size: None,
         modified: None,
         member: None,

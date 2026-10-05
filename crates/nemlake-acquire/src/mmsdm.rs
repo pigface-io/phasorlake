@@ -28,7 +28,7 @@ use url::Url;
 use crate::error::FetchError;
 use crate::fetcher::Fetcher;
 use crate::listing;
-use crate::source::{FileKind, Query, RemoteFile, Source};
+use crate::source::{Query, RemoteFile, Source};
 
 /// The source id.
 pub const SOURCE_ID: &str = "nem-mmsdm";
@@ -58,8 +58,6 @@ pub enum MonthLayout {
     WholeZip {
         /// The zip.
         url: Url,
-        /// Its size, when the listing showed it.
-        size: Option<u64>,
     },
 }
 
@@ -147,7 +145,7 @@ impl MmsdmArchive {
                 what: "listing href",
                 message: er.to_string(),
             })?;
-            return Ok(MonthLayout::WholeZip { url, size: e.size });
+            return Ok(MonthLayout::WholeZip { url });
         }
         let mut months: Vec<&str> = entries
             .iter()
@@ -198,7 +196,7 @@ impl MmsdmArchive {
                     if !Self::is_data_member(&m.name) {
                         continue;
                     }
-                    let Some((table, _split)) = Self::parse_name(m.file_name()) else {
+                    let Some(table) = Self::parse_name(m.file_name()) else {
                         continue;
                     };
                     out.push((
@@ -208,7 +206,6 @@ impl MmsdmArchive {
                             source: SOURCE_ID,
                             table: Some(table),
                             period: Some(ym),
-                            kind: FileKind::MmsZip,
                             size: Some(m.uncompressed_size),
                             modified: None,
                             member: Some(Box::new(m)),
@@ -248,7 +245,7 @@ impl MmsdmArchive {
                 // of the month: it is listed, under its own name, and its
                 // tables are whatever its I rows say.
                 let (table, named) = match Self::parse_name(&e.name) {
-                    Some((table, _split)) => (table, true),
+                    Some(table) => (table, true),
                     None if e.name.to_ascii_lowercase().ends_with(".zip") => {
                         (e.name.to_ascii_uppercase(), false)
                     }
@@ -269,7 +266,6 @@ impl MmsdmArchive {
                         source: SOURCE_ID,
                         table: named.then(|| table.clone()),
                         period: Some(ym),
-                        kind: FileKind::MmsZip,
                         size: e.size,
                         modified: e.modified,
                         member: None,
@@ -286,22 +282,20 @@ impl MmsdmArchive {
         Ok(DATA_DIRS.iter().filter_map(|d| root.join(d).ok()).collect())
     }
 
-    /// The table a data zip carries and which of its files it is, for
-    /// either naming scheme (see [`nemlake_core::archive_name`]):
+    /// The table a data zip carries, for either naming scheme (see
+    /// [`nemlake_core::archive_name`]):
     /// `PUBLIC_DVD_BIDPEROFFER1_202401010000.zip` and
     /// `PUBLIC_ARCHIVE#BIDPEROFFER#FILE01#202608010000.zip` are both
-    /// `("BIDPEROFFER", Some(1))`.
-    pub fn parse_name(name: &str) -> Option<(String, Option<u8>)> {
-        let lower = name.to_ascii_lowercase();
-        if !lower.ends_with(".zip") {
+    /// `BIDPEROFFER`.
+    pub fn parse_name(name: &str) -> Option<String> {
+        if !name.to_ascii_lowercase().ends_with(".zip") {
             return None;
         }
         let parsed = nemlake_core::archive_name::parse(name)?;
         if parsed.file.is_some() {
-            return Some((parsed.table, parsed.file));
+            return Some(parsed.table);
         }
-        let (base, split) = parsed.split_table();
-        Some((base.to_owned(), split))
+        Some(parsed.split_table().0.to_owned())
     }
 
     fn listing_ttl(ym: YearMonth) -> i64 {
@@ -319,18 +313,8 @@ impl MmsdmArchive {
     }
 }
 
-/// Whether a listed table name matches a requested one: equal, or the
-/// requested name plus a split digit (`BIDPEROFFER1` for `BIDPEROFFER`).
-fn matches_table(listed_table: &str, wanted: &str) -> bool {
-    listed_table.eq_ignore_ascii_case(wanted)
-}
-
 #[async_trait]
 impl Source for MmsdmArchive {
-    fn id(&self) -> &'static str {
-        SOURCE_ID
-    }
-
     async fn list(&self, query: &Query, fetcher: &Fetcher) -> Result<Vec<RemoteFile>, FetchError> {
         let mut out = Vec::new();
         let upper = |names: &[String]| -> Vec<String> {
@@ -349,7 +333,7 @@ impl Source for MmsdmArchive {
                 if !wanted.is_empty() {
                     let mut any = false;
                     for (i, w) in wanted.iter().enumerate() {
-                        if matches_table(table, w) {
+                        if table.eq_ignore_ascii_case(w) {
                             found[i] = true;
                             any = true;
                         }
@@ -359,7 +343,7 @@ impl Source for MmsdmArchive {
                     }
                 }
                 // Leaving a table out wins over asking for it.
-                if excluded.iter().any(|x| matches_table(table, x)) {
+                if excluded.iter().any(|x| table.eq_ignore_ascii_case(x)) {
                     continue;
                 }
                 out.push(remote.clone());
@@ -440,19 +424,19 @@ mod tests {
         assert!(MmsdmArchive::new("not a url").is_err());
         assert_eq!(
             MmsdmArchive::parse_name("PUBLIC_DVD_DISPATCH_UNIT_SCADA_202401010000.zip"),
-            Some(("DISPATCH_UNIT_SCADA".into(), None))
+            Some("DISPATCH_UNIT_SCADA".into())
         );
         assert_eq!(
             MmsdmArchive::parse_name("PUBLIC_DVD_BIDPEROFFER1_202401010000.zip"),
-            Some(("BIDPEROFFER".into(), Some(1)))
+            Some("BIDPEROFFER".into())
         );
         assert_eq!(
             MmsdmArchive::parse_name("PUBLIC_DVD_P5MIN_CONSTRAINTSOLUTION4_ALL_202401010000.zip"),
-            Some(("P5MIN_CONSTRAINTSOLUTION".into(), Some(4)))
+            Some("P5MIN_CONSTRAINTSOLUTION".into())
         );
         assert_eq!(
             MmsdmArchive::parse_name("PUBLIC_DVD_P5MIN_UNITSOLUTION_ALL_202401010000.zip"),
-            Some(("P5MIN_UNITSOLUTION".into(), None))
+            Some("P5MIN_UNITSOLUTION".into())
         );
         assert_eq!(
             MmsdmArchive::parse_name("PUBLIC_MARKETNOTICEDATA_202401.DMP"),
@@ -461,10 +445,8 @@ mod tests {
         assert_eq!(MmsdmArchive::parse_name("PUBLIC_DVD_X_2024.zip"), None);
         assert_eq!(
             MmsdmArchive::parse_name("PUBLIC_DVD_123_202401010000.zip"),
-            Some(("123".into(), None))
+            Some("123".into())
         );
-        assert!(matches_table("REGION", "region"));
-        assert!(!matches_table("REGIONAPC", "REGION"));
         assert!(
             MmsdmArchive::listing_ttl(YearMonth::new(2020, 1).unwrap())
                 > MmsdmArchive::listing_ttl(YearMonth::new(2999, 1).unwrap())
@@ -572,7 +554,6 @@ mod tests {
             ..Default::default()
         };
         let f = Fetcher::new(Arc::new(t.clone()), DiskCache::new(dir.path()), cfg);
-        assert_eq!(a.id(), "nem-mmsdm");
         let q = Query {
             exclude: Vec::new(),
             tables: vec!["dispatch_unit_scada".into(), "BIDPEROFFER".into()],
@@ -813,7 +794,7 @@ mod tests {
         assert_eq!(r.stem(), "public_archive_dispatchprice_file01_202608010000");
         assert_eq!(
             MmsdmArchive::parse_name("PUBLIC_ARCHIVE#BIDOFFERPERIOD#FILE02#202608010000.zip"),
-            Some(("BIDOFFERPERIOD".into(), Some(2)))
+            Some("BIDOFFERPERIOD".into())
         );
         assert_eq!(
             MmsdmArchive::parse_name("PUBLIC_ARCHIVE#X#FILE01#202608.ctl"),
@@ -911,7 +892,6 @@ mod tests {
             a.month_layout(ym, &f).await.unwrap(),
             MonthLayout::WholeZip {
                 url: Url::parse(&zip_url).unwrap(),
-                size: Some(1_912_843_433)
             }
         );
 
