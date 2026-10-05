@@ -244,11 +244,13 @@ pub fn run(set: &str, do_tighten: bool) -> Result<bool> {
             ("nemlake-conform", "scan"),
             ("nemlake-registry", "resolve"),
             ("nemlake-core", "values"),
+            ("nemlake-acquire", "fetch"),
         ],
         "full" => &[
             ("nemlake-conform", "scan"),
             ("nemlake-registry", "resolve"),
             ("nemlake-core", "values"),
+            ("nemlake-acquire", "fetch"),
             ("nemlake-writer", "write"),
         ],
         other => bail!("unknown set {other}; use fast or full"),

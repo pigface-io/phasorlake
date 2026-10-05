@@ -852,7 +852,7 @@ mod tests {
             Canned::ok(&zip_of(b"I,A,X,1,V\r\nD,A,X,1,1\r\n")),
         );
         let mut refusal = Canned::status(403);
-        refusal.body = b"Website is unavailable".to_vec();
+        refusal.body = b"Website is unavailable".to_vec().into();
         t.add(
             &format!("{root}/DATA/PUBLIC_DVD_B_202401010000.zip"),
             refusal,

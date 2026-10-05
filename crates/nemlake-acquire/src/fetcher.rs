@@ -1205,7 +1205,7 @@ mod tests {
         let dir = tempfile::tempdir().unwrap();
         let t = Arc::new(StaticTransport::default());
         let mut refusal = Canned::status(403);
-        refusal.body = b"Website is unavailable".to_vec();
+        refusal.body = bytes::Bytes::from_static(b"Website is unavailable");
         t.add("https://h/a.zip", refusal);
         t.add("https://h/b.zip", Canned::ok(b"fine"));
         t.add("https://h/listing/", Canned::ok(b"<pre></pre>"));

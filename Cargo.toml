@@ -100,6 +100,7 @@ serde_yaml_ng = "0.10"
 tokio = { version = "1.53", features = ["rt-multi-thread", "sync", "fs", "time", "signal", "macros"] }
 tokio-util = { version = "0.7", features = ["rt"] }
 futures = "0.3"
+bytes = "1"
 async-trait = "0.1"
 reqwest = { version = "0.13", default-features = false, features = ["rustls", "stream", "http2"] }
 url = { version = "2", features = ["serde"] }

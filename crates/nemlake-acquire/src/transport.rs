@@ -237,7 +237,9 @@ pub struct Canned {
     /// Status.
     pub status: u16,
     /// Body.
-    pub body: Vec<u8>,
+    pub body: bytes::Bytes,
+    /// Bytes per chunk of the body stream.
+    pub chunk: usize,
     /// Content-Length to claim; `None` claims the body's length, `Some(0)` claims none.
     pub claimed_length: Option<u64>,
     /// ETag.
@@ -253,7 +255,8 @@ impl Canned {
     pub fn ok(body: &[u8]) -> Self {
         Self {
             status: 200,
-            body: body.to_vec(),
+            body: bytes::Bytes::copy_from_slice(body),
+            chunk: 1024,
             claimed_length: None,
             etag: Some("\"etag\"".into()),
             fail_after: None,
@@ -264,7 +267,8 @@ impl Canned {
     pub fn status(status: u16) -> Self {
         Self {
             status,
-            body: format!("<html>{status}</html>").into_bytes(),
+            body: format!("<html>{status}</html>").into_bytes().into(),
+            chunk: 1024,
             claimed_length: None,
             etag: None,
             fail_after: None,
@@ -372,7 +376,9 @@ impl Transport for Arc<StaticTransport> {
                 });
             }
             let have = canned.body.len() as u64;
-            canned.body = canned.body[start.min(have) as usize..end.min(have) as usize].to_vec();
+            canned.body = canned
+                .body
+                .slice(start.min(have) as usize..end.min(have) as usize);
             canned.status = 206;
             total_length = Some(believed);
             content_length = Some(end - start);
@@ -383,7 +389,11 @@ impl Transport for Arc<StaticTransport> {
                 Ok(canned.body[..n.min(len)].to_vec()),
                 Err("connection reset".into()),
             ],
-            None => canned.body.chunks(1024).map(|c| Ok(c.to_vec())).collect(),
+            None => canned
+                .body
+                .chunks(canned.chunk.max(1))
+                .map(|c| Ok(c.to_vec()))
+                .collect(),
         };
         Ok(HttpResponse {
             status: canned.status,
