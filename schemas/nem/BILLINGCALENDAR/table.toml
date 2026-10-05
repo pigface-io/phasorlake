@@ -1,0 +1,64 @@
+# Our schema of BILLINGCALENDAR. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "BILLINGCALENDAR"
+description = "BILLINGCALENDAR sets out the billing calendar for the year, with week number 1 starting on 1 January. BILLINGCALENDAR advises preliminary and final statement posting date and corresponding settlement for each billing week."
+report_pairs = [["BILLING_CONFIG", "BILLINGCALENDAR"]]
+load_mode = "snapshot"
+dedupe = "pk_lastchanged"
+primary_key = ["CONTRACTYEAR", "WEEKNO"]
+next_column_id = 12
+
+column = [
+    { id = 1, name = "CONTRACTYEAR", type = "double", nullable = false },
+    { id = 2, name = "WEEKNO", type = "double", nullable = false },
+    { id = 3, name = "STARTDATE", type = "timestamp_ns", nullable = true },
+    { id = 4, name = "ENDDATE", type = "timestamp_ns", nullable = true },
+    { id = 5, name = "PRELIMINARYSTATEMENTDATE", type = "timestamp_ns", nullable = true },
+    { id = 6, name = "FINALSTATEMENTDATE", type = "timestamp_ns", nullable = true },
+    { id = 7, name = "PAYMENTDATE", type = "timestamp_ns", nullable = true },
+    { id = 8, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 9, name = "REVISION1_STATEMENTDATE", type = "timestamp_ns", nullable = true },
+    { id = 10, name = "REVISION2_STATEMENTDATE", type = "timestamp_ns", nullable = true },
+    { id = 11, name = "REVISION0_STATEMENTDATE", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "b5436f9e12c387f3e8c5a6d0b5a040cb723663f3696ddb7b69c02e7234ae7683"
+aemo_ctl = "PUBLIC_DVD_BILLINGCALENDAR_202401.ctl"
+aemo_versions = [2]
+columns = [
+    "CONTRACTYEAR",
+    "WEEKNO",
+    "STARTDATE",
+    "ENDDATE",
+    "PRELIMINARYSTATEMENTDATE",
+    "FINALSTATEMENTDATE",
+    "PAYMENTDATE",
+    "LASTCHANGED",
+    "REVISION1_STATEMENTDATE",
+    "REVISION2_STATEMENTDATE",
+]
+
+[[increment]]
+n = 2
+from = "2026-08"
+ctl = "002.ctl"
+ctl_sha256 = "6275838baebb774a1cecd0d8128cc748c0f187806bd495795679eea558b65b3e"
+aemo_ctl = "PUBLIC_ARCHIVE#BILLINGCALENDAR#FILE01#202608.ctl"
+aemo_versions = [3]
+columns = [
+    "CONTRACTYEAR",
+    "WEEKNO",
+    "STARTDATE",
+    "ENDDATE",
+    "PRELIMINARYSTATEMENTDATE",
+    "FINALSTATEMENTDATE",
+    "PAYMENTDATE",
+    "LASTCHANGED",
+    "REVISION1_STATEMENTDATE",
+    "REVISION2_STATEMENTDATE",
+    "REVISION0_STATEMENTDATE",
+]

@@ -1,0 +1,122 @@
+# Our schema of DUDETAIL. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "DUDETAIL"
+description = "DUDETAIL sets out a records specific details for each unit including start type and whether normally on or off load. Much of this data is information only and is not used in dispatch or settlements."
+report_pairs = [["PARTICIPANT_REGISTRATION", "DUDETAIL"]]
+load_mode = "snapshot"
+dedupe = "pk_lastchanged"
+primary_key = ["DUID", "EFFECTIVEDATE", "VERSIONNO"]
+next_column_id = 35
+
+column = [
+    { id = 1, name = "DUID", type = "string", nullable = false },
+    { id = 2, name = "EFFECTIVEDATE", type = "timestamp_ns", nullable = false },
+    { id = 3, name = "VERSIONNO", type = "double", nullable = false },
+    { id = 4, name = "CONNECTIONPOINTID", type = "string", nullable = true },
+    { id = 5, name = "VOLTLEVEL", type = "string", nullable = true },
+    { id = 6, name = "REGISTEREDCAPACITY", type = "double", nullable = true },
+    { id = 7, name = "AGCCAPABILITY", type = "string", nullable = true },
+    { id = 8, name = "DISPATCHTYPE", type = "string", nullable = true },
+    { id = 9, name = "MAXCAPACITY", type = "double", nullable = true },
+    { id = 10, name = "STARTTYPE", type = "string", nullable = true },
+    { id = 11, name = "NORMALLYONFLAG", type = "string", nullable = true },
+    { id = 12, name = "PHYSICALDETAILSFLAG", type = "string", nullable = true },
+    { id = 13, name = "SPINNINGRESERVEFLAG", type = "string", nullable = true },
+    { id = 14, name = "AUTHORISEDBY", type = "string", nullable = true },
+    { id = 15, name = "AUTHORISEDDATE", type = "timestamp_ns", nullable = true },
+    { id = 16, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 17, name = "INTERMITTENTFLAG", type = "string", nullable = true },
+    { id = 18, name = "SEMISCHEDULE_FLAG", type = "string", nullable = true },
+    { id = 19, name = "MAXRATEOFCHANGEUP", type = "double", nullable = true },
+    { id = 20, name = "MAXRATEOFCHANGEDOWN", type = "double", nullable = true },
+    { id = 21, name = "DISPATCHSUBTYPE", type = "string", nullable = true },
+    { id = 22, name = "ADG_ID", type = "string", nullable = true },
+    { id = 23, name = "MINCAPACITY", type = "double", nullable = true },
+    { id = 24, name = "REGISTEREDMINCAPACITY", type = "double", nullable = true },
+    { id = 25, name = "MAXRATEOFCHANGEUP_LOAD", type = "double", nullable = true },
+    { id = 26, name = "MAXRATEOFCHANGEDOWN_LOAD", type = "double", nullable = true },
+    { id = 27, name = "MAXSTORAGECAPACITY", type = "double", nullable = true },
+    { id = 28, name = "STORAGEIMPORTEFFICIENCYFACTOR", type = "double", nullable = true },
+    { id = 29, name = "STORAGEEXPORTEFFICIENCYFACTOR", type = "double", nullable = true },
+    { id = 30, name = "MIN_RAMP_RATE_UP", type = "double", nullable = true },
+    { id = 31, name = "MIN_RAMP_RATE_DOWN", type = "double", nullable = true },
+    { id = 32, name = "LOAD_MIN_RAMP_RATE_UP", type = "double", nullable = true },
+    { id = 33, name = "LOAD_MIN_RAMP_RATE_DOWN", type = "double", nullable = true },
+    { id = 34, name = "AGGREGATED", type = "double", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "bb1ec65f04ab778752cd6aa4dc84a91d1531d199a3f85f3cafdb53696591f1ff"
+aemo_ctl = "PUBLIC_DVD_DUDETAIL_202401.ctl"
+aemo_versions = [4]
+columns = [
+    "DUID",
+    "EFFECTIVEDATE",
+    "VERSIONNO",
+    "CONNECTIONPOINTID",
+    "VOLTLEVEL",
+    "REGISTEREDCAPACITY",
+    "AGCCAPABILITY",
+    "DISPATCHTYPE",
+    "MAXCAPACITY",
+    "STARTTYPE",
+    "NORMALLYONFLAG",
+    "PHYSICALDETAILSFLAG",
+    "SPINNINGRESERVEFLAG",
+    "AUTHORISEDBY",
+    "AUTHORISEDDATE",
+    "LASTCHANGED",
+    "INTERMITTENTFLAG",
+    "SEMISCHEDULE_FLAG",
+    "MAXRATEOFCHANGEUP",
+    "MAXRATEOFCHANGEDOWN",
+    "DISPATCHSUBTYPE",
+    "ADG_ID",
+]
+
+[[increment]]
+n = 2
+from = "2026-08"
+ctl = "002.ctl"
+ctl_sha256 = "23d7295d0e07fb98c01f360c969ba8ccd5b21d2c76ce0146c4ad5ac9f680749c"
+aemo_ctl = "PUBLIC_ARCHIVE#DUDETAIL#FILE01#202608.ctl"
+aemo_versions = [7]
+columns = [
+    "EFFECTIVEDATE",
+    "DUID",
+    "VERSIONNO",
+    "CONNECTIONPOINTID",
+    "VOLTLEVEL",
+    "REGISTEREDCAPACITY",
+    "AGCCAPABILITY",
+    "DISPATCHTYPE",
+    "MAXCAPACITY",
+    "STARTTYPE",
+    "NORMALLYONFLAG",
+    "PHYSICALDETAILSFLAG",
+    "SPINNINGRESERVEFLAG",
+    "AUTHORISEDBY",
+    "AUTHORISEDDATE",
+    "LASTCHANGED",
+    "INTERMITTENTFLAG",
+    "SEMISCHEDULE_FLAG",
+    "MAXRATEOFCHANGEUP",
+    "MAXRATEOFCHANGEDOWN",
+    "DISPATCHSUBTYPE",
+    "ADG_ID",
+    "MINCAPACITY",
+    "REGISTEREDMINCAPACITY",
+    "MAXRATEOFCHANGEUP_LOAD",
+    "MAXRATEOFCHANGEDOWN_LOAD",
+    "MAXSTORAGECAPACITY",
+    "STORAGEIMPORTEFFICIENCYFACTOR",
+    "STORAGEEXPORTEFFICIENCYFACTOR",
+    "MIN_RAMP_RATE_UP",
+    "MIN_RAMP_RATE_DOWN",
+    "LOAD_MIN_RAMP_RATE_UP",
+    "LOAD_MIN_RAMP_RATE_DOWN",
+    "AGGREGATED",
+]

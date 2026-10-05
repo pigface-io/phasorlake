@@ -1,0 +1,41 @@
+# Our schema of STPASA_CONSTRAINTSOLUTION. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "STPASA_CONSTRAINTSOLUTION"
+description = "STPASA_CONSTRAINTSOLUTION shows binding and violated constraint results from the capacity evaluation, including the RHS value."
+report_pairs = [["STPASA", "CONSTRAINTSOLUTION"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["RUN_DATETIME", "INTERVAL_DATETIME", "CONSTRAINTID", "RUNTYPE"]
+time_column = "INTERVAL_DATETIME"
+next_column_id = 10
+
+column = [
+    { id = 1, name = "RUN_DATETIME", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "INTERVAL_DATETIME", type = "timestamp_ns", nullable = false },
+    { id = 3, name = "CONSTRAINTID", type = "string", nullable = false },
+    { id = 4, name = "CAPACITYRHS", type = "double", nullable = true },
+    { id = 5, name = "CAPACITYMARGINALVALUE", type = "double", nullable = true },
+    { id = 6, name = "CAPACITYVIOLATIONDEGREE", type = "double", nullable = true },
+    { id = 7, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 8, name = "RUNTYPE", type = "string", nullable = false },
+    { id = 9, name = "STUDYREGIONID", type = "string", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "cedc2e6c5c6e921b8cbf77344074ad2e060fbd438693cde7bda3b57c4aa46186"
+aemo_ctl = "PUBLIC_DVD_STPASA_CONSTRAINTSOLUTION_202401.ctl"
+aemo_versions = [3]
+columns = [
+    "RUN_DATETIME",
+    "INTERVAL_DATETIME",
+    "CONSTRAINTID",
+    "CAPACITYRHS",
+    "CAPACITYMARGINALVALUE",
+    "CAPACITYVIOLATIONDEGREE",
+    "LASTCHANGED",
+    "RUNTYPE",
+    "STUDYREGIONID",
+]

@@ -1,0 +1,42 @@
+# Our schema of REGIONSTANDINGDATA. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "REGIONSTANDINGDATA"
+description = "REGIONSTANDINGDATA sets out standing region data including the region reference node."
+report_pairs = [["MARKET_CONFIG", "REGIONSTANDINGDATA"]]
+load_mode = "snapshot"
+dedupe = "pk_lastchanged"
+primary_key = ["EFFECTIVEDATE", "VERSIONNO", "REGIONID"]
+next_column_id = 11
+
+column = [
+    { id = 1, name = "EFFECTIVEDATE", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "VERSIONNO", type = "double", nullable = false },
+    { id = 3, name = "REGIONID", type = "string", nullable = false },
+    { id = 4, name = "RSOID", type = "string", nullable = true },
+    { id = 5, name = "REGIONALREFERENCEPOINTID", type = "string", nullable = true },
+    { id = 6, name = "PEAKTRADINGPERIOD", type = "double", nullable = true },
+    { id = 7, name = "AUTHORISEDDATE", type = "timestamp_ns", nullable = true },
+    { id = 8, name = "AUTHORISEDBY", type = "string", nullable = true },
+    { id = 9, name = "SCALINGFACTOR", type = "double", nullable = true },
+    { id = 10, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "b6c30ce92ff8c05cc1d62c9cd07c87038b0efb0850c51fc636a8669c1e474d67"
+aemo_ctl = "PUBLIC_DVD_REGIONSTANDINGDATA_202401.ctl"
+aemo_versions = [1]
+columns = [
+    "EFFECTIVEDATE",
+    "VERSIONNO",
+    "REGIONID",
+    "RSOID",
+    "REGIONALREFERENCEPOINTID",
+    "PEAKTRADINGPERIOD",
+    "AUTHORISEDDATE",
+    "AUTHORISEDBY",
+    "SCALINGFACTOR",
+    "LASTCHANGED",
+]

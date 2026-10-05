@@ -1,0 +1,52 @@
+# Our schema of ANCILLARY_RECOVERY_SPLIT. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "ANCILLARY_RECOVERY_SPLIT"
+description = "ANCILLARY_RECOVERY_SPLIT holds the actual customer portion for each service and payment type. A single EFFECTIVEDATE/VERSIONNO combination applies to all services (i.e. the latest EFFECTIVEDATE/VERSIONNO is not retrieved for a single service, but applies to a data set)."
+report_pairs = [["SETTLEMENT_CONFIG", "ANCILLARY_RECOVERY_SPLIT"]]
+load_mode = "snapshot"
+dedupe = "pk_lastchanged"
+primary_key = ["EFFECTIVEDATE", "VERSIONNO", "SERVICE", "PAYMENTTYPE"]
+next_column_id = 8
+
+column = [
+    { id = 1, name = "EFFECTIVEDATE", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "VERSIONNO", type = "double", nullable = false },
+    { id = 3, name = "SERVICE", type = "string", nullable = false },
+    { id = 4, name = "PAYMENTTYPE", type = "string", nullable = false },
+    { id = 5, name = "CUSTOMER_PORTION", type = "double", nullable = true },
+    { id = 6, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 7, name = "ACE_PORTION", type = "double", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "65f49d06fe4b59748c839ba6713e795c89f55d4772b4454f0e3da6bea9ed02f1"
+aemo_ctl = "PUBLIC_DVD_ANCILLARY_RECOVERY_SPLIT_202401.ctl"
+aemo_versions = [1]
+columns = [
+    "EFFECTIVEDATE",
+    "VERSIONNO",
+    "SERVICE",
+    "PAYMENTTYPE",
+    "CUSTOMER_PORTION",
+    "LASTCHANGED",
+]
+
+[[increment]]
+n = 2
+from = "2026-08"
+ctl = "002.ctl"
+ctl_sha256 = "167f51da61e05ada1d5449ed8bcf95db2e5e359ab625ff8e1029ff86beda5da6"
+aemo_ctl = "PUBLIC_ARCHIVE#ANCILLARY_RECOVERY_SPLIT#FILE01#202608.ctl"
+aemo_versions = [2]
+columns = [
+    "EFFECTIVEDATE",
+    "VERSIONNO",
+    "SERVICE",
+    "PAYMENTTYPE",
+    "CUSTOMER_PORTION",
+    "LASTCHANGED",
+    "ACE_PORTION",
+]

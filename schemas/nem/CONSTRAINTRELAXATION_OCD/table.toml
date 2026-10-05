@@ -1,0 +1,37 @@
+# Our schema of CONSTRAINTRELAXATION_OCD. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "CONSTRAINTRELAXATION_OCD"
+description = """
+CONSTRAINTRELAXATION_OCD contains details of interconnector constraints and unit ancillary service constraints relaxed in the over-constrained dispatch (OCD) re-run for this interval (if there was one).
+Note: INTERVENTION is not included in CONSTRAINTRELAXATION_OCD, since the relaxation of the same constraint is the same amount in both intervened and non-intervened cases."""
+report_pairs = [["PRICELOAD", "CONSTRAINTRELAXATION"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["SETTLEMENTDATE", "RUNNO", "CONSTRAINTID", "VERSIONNO"]
+time_column = "SETTLEMENTDATE"
+next_column_id = 7
+
+column = [
+    { id = 1, name = "SETTLEMENTDATE", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "RUNNO", type = "double", nullable = false },
+    { id = 3, name = "CONSTRAINTID", type = "string", nullable = false },
+    { id = 4, name = "RHS", type = "double", nullable = true },
+    { id = 5, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 6, name = "VERSIONNO", type = "double", nullable = false },
+]
+
+[[increment]]
+n = 1
+from = "2026-08"
+ctl = "001.ctl"
+ctl_sha256 = "d6fc2c7dc329d51b4448f6c1592ae85d4db418dd0ff4ce783679883080943ba0"
+aemo_ctl = "PUBLIC_ARCHIVE#CONSTRAINTRELAXATION_OCD#FILE01#202608.ctl"
+aemo_versions = [1]
+columns = [
+    "SETTLEMENTDATE",
+    "RUNNO",
+    "CONSTRAINTID",
+    "RHS",
+    "LASTCHANGED",
+    "VERSIONNO",
+]

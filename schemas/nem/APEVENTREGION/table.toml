@@ -1,0 +1,51 @@
+# Our schema of APEVENTREGION. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "APEVENTREGION"
+description = "APEVENTREGION is the Region detail for an administered pricing event defined through APEVENT."
+report_pairs = [["AP", "APEVENTREGION"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["APEVENTID", "REGIONID"]
+time_column = "LASTCHANGED"
+next_column_id = 15
+
+column = [
+    { id = 1, name = "APEVENTID", type = "double", nullable = false },
+    { id = 2, name = "REGIONID", type = "string", nullable = false },
+    { id = 3, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 4, name = "ENERGYAPFLAG", type = "double", nullable = true },
+    { id = 5, name = "RAISE6SECAPFLAG", type = "double", nullable = true },
+    { id = 6, name = "RAISE60SECAPFLAG", type = "double", nullable = true },
+    { id = 7, name = "RAISE5MINAPFLAG", type = "double", nullable = true },
+    { id = 8, name = "RAISEREGAPFLAG", type = "double", nullable = true },
+    { id = 9, name = "LOWER6SECAPFLAG", type = "double", nullable = true },
+    { id = 10, name = "LOWER60SECAPFLAG", type = "double", nullable = true },
+    { id = 11, name = "LOWER5MINAPFLAG", type = "double", nullable = true },
+    { id = 12, name = "LOWERREGAPFLAG", type = "double", nullable = true },
+    { id = 13, name = "RAISE1SECAPFLAG", type = "double", nullable = true },
+    { id = 14, name = "LOWER1SECAPFLAG", type = "double", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2026-08"
+ctl = "001.ctl"
+ctl_sha256 = "76ef7c16dbaced8f54638ff00711c5bdb01126f02105e228163e62e065e9e67c"
+aemo_ctl = "PUBLIC_ARCHIVE#APEVENTREGION#FILE01#202608.ctl"
+aemo_versions = [2]
+columns = [
+    "APEVENTID",
+    "REGIONID",
+    "LASTCHANGED",
+    "ENERGYAPFLAG",
+    "RAISE6SECAPFLAG",
+    "RAISE60SECAPFLAG",
+    "RAISE5MINAPFLAG",
+    "RAISEREGAPFLAG",
+    "LOWER6SECAPFLAG",
+    "LOWER60SECAPFLAG",
+    "LOWER5MINAPFLAG",
+    "LOWERREGAPFLAG",
+    "RAISE1SECAPFLAG",
+    "LOWER1SECAPFLAG",
+]

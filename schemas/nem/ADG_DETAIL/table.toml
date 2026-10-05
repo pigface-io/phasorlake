@@ -1,0 +1,36 @@
+# Our schema of ADG_DETAIL. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "ADG_DETAIL"
+report_pairs = [["PARTICIPANT_REGISTRATION", "ADG_DETAIL"]]
+load_mode = "append"
+dedupe = "none"
+primary_key = []
+time_column = "EFFECTIVEDATE"
+next_column_id = 8
+
+column = [
+    { id = 1, name = "ADG_ID", type = "string", nullable = true },
+    { id = 2, name = "EFFECTIVEDATE", type = "timestamp_ns", nullable = true },
+    { id = 3, name = "VERSION_DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 4, name = "ADG_TYPE", type = "string", nullable = true },
+    { id = 5, name = "AUTHORISEDDATE", type = "timestamp_ns", nullable = true },
+    { id = 6, name = "AUTHORISEDBY", type = "string", nullable = true },
+    { id = 7, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2026-08"
+ctl = "001.ctl"
+ctl_sha256 = "f252427e4d967c12298623e8e2e744738cb27e5bbfe91fe354389e2413311565"
+aemo_ctl = "PUBLIC_ARCHIVE#ADG_DETAIL#FILE01#202608.ctl"
+aemo_versions = [1]
+columns = [
+    "ADG_ID",
+    "EFFECTIVEDATE",
+    "VERSION_DATETIME",
+    "ADG_TYPE",
+    "AUTHORISEDDATE",
+    "AUTHORISEDBY",
+    "LASTCHANGED",
+]

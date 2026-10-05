@@ -1,0 +1,29 @@
+# Our schema of DISPATCHBLOCKEDCONSTRAINT. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "DISPATCHBLOCKEDCONSTRAINT"
+description = "DISPATCH Blocked Constraints lists any constraints that were blocked in a dispatch run. If no constraints are blocked, there will be no rows for that dispatch run."
+report_pairs = [["DISPATCH", "BLOCKED_CONSTRAINTS"]]
+load_mode = "append"
+dedupe = "pk"
+primary_key = ["SETTLEMENTDATE", "RUNNO", "CONSTRAINTID"]
+time_column = "SETTLEMENTDATE"
+next_column_id = 4
+
+column = [
+    { id = 1, name = "SETTLEMENTDATE", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "RUNNO", type = "double", nullable = false },
+    { id = 3, name = "CONSTRAINTID", type = "string", nullable = false },
+]
+
+[[increment]]
+n = 1
+from = "2026-08"
+ctl = "001.ctl"
+ctl_sha256 = "902a149442da167fc97ab5691672a33d8780830796590ab38b62d1efed81095c"
+aemo_ctl = "PUBLIC_ARCHIVE#DISPATCHBLOCKEDCONSTRAINT#FILE01#202608.ctl"
+aemo_versions = [1]
+columns = [
+    "SETTLEMENTDATE",
+    "RUNNO",
+    "CONSTRAINTID",
+]

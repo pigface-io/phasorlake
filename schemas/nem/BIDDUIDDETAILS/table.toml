@@ -1,0 +1,42 @@
+# Our schema of BIDDUIDDETAILS. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "BIDDUIDDETAILS"
+description = "BIDDUIDDETAILS and the associated tracking object BIDDUIDDETAILSTRK define the registration data for each ancillary service a dispatchable unit is registered to provide. The registration data is required to validate a dispatchable unit bid submitted for that ancillary service."
+report_pairs = [["PARTICIPANT_REGISTRATION", "BIDDUIDDETAILS"]]
+load_mode = "snapshot"
+dedupe = "pk_lastchanged"
+primary_key = ["DUID", "EFFECTIVEDATE", "VERSIONNO", "BIDTYPE"]
+next_column_id = 11
+
+column = [
+    { id = 1, name = "DUID", type = "string", nullable = false },
+    { id = 2, name = "EFFECTIVEDATE", type = "timestamp_ns", nullable = false },
+    { id = 3, name = "VERSIONNO", type = "double", nullable = false },
+    { id = 4, name = "BIDTYPE", type = "string", nullable = false },
+    { id = 5, name = "MAXCAPACITY", type = "double", nullable = true },
+    { id = 6, name = "MINENABLEMENTLEVEL", type = "double", nullable = true },
+    { id = 7, name = "MAXENABLEMENTLEVEL", type = "double", nullable = true },
+    { id = 8, name = "MAXLOWERANGLE", type = "double", nullable = true },
+    { id = 9, name = "MAXUPPERANGLE", type = "double", nullable = true },
+    { id = 10, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "0b0769c8161e7553965f8258e0607990f19872e64205d62ead554f8659461f9a"
+aemo_ctl = "PUBLIC_DVD_BIDDUIDDETAILS_202401.ctl"
+aemo_versions = [1]
+columns = [
+    "DUID",
+    "EFFECTIVEDATE",
+    "VERSIONNO",
+    "BIDTYPE",
+    "MAXCAPACITY",
+    "MINENABLEMENTLEVEL",
+    "MAXENABLEMENTLEVEL",
+    "MAXLOWERANGLE",
+    "MAXUPPERANGLE",
+    "LASTCHANGED",
+]

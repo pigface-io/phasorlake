@@ -1,0 +1,40 @@
+# Our schema of FPP_FORECAST_RESIDUAL_DCF. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "FPP_FORECAST_RESIDUAL_DCF"
+report_pairs = [["FPP", "FORECAST_RESIDUAL_DCF"]]
+load_mode = "append"
+dedupe = "none"
+primary_key = []
+time_column = "LASTCHANGED"
+next_column_id = 10
+
+column = [
+    { id = 1, name = "CONSTRAINTID", type = "string", nullable = true },
+    { id = 2, name = "EFFECTIVE_START_DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 3, name = "EFFECTIVE_END_DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 4, name = "VERSIONNO", type = "double", nullable = true },
+    { id = 5, name = "BIDTYPE", type = "string", nullable = true },
+    { id = 6, name = "RESIDUAL_DCF", type = "double", nullable = true },
+    { id = 7, name = "RESIDUAL_DCF_REASON_FLAG", type = "double", nullable = true },
+    { id = 8, name = "DCF_ABS_NEGATIVE_PERF_TOTAL", type = "double", nullable = true },
+    { id = 9, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2026-08"
+ctl = "001.ctl"
+ctl_sha256 = "182bc0b7033002c0290b1be316fd4be9daabd1b1087cae2f77bf85068e502d00"
+aemo_ctl = "PUBLIC_ARCHIVE#FPP_FORECAST_RESIDUAL_DCF#FILE01#202608.ctl"
+aemo_versions = [1]
+columns = [
+    "CONSTRAINTID",
+    "EFFECTIVE_START_DATETIME",
+    "EFFECTIVE_END_DATETIME",
+    "VERSIONNO",
+    "BIDTYPE",
+    "RESIDUAL_DCF",
+    "RESIDUAL_DCF_REASON_FLAG",
+    "DCF_ABS_NEGATIVE_PERF_TOTAL",
+    "LASTCHANGED",
+]

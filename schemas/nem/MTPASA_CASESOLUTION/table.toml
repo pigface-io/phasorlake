@@ -1,0 +1,64 @@
+# Our schema of MTPASA_CASESOLUTION. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "MTPASA_CASESOLUTION"
+report_pairs = [["MTPASA", "CASESOLUTION"]]
+load_mode = "append"
+dedupe = "none"
+primary_key = []
+time_column = "RUN_DATETIME"
+next_column_id = 22
+
+column = [
+    { id = 1, name = "RUN_DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 2, name = "RUN_NO", type = "double", nullable = true },
+    { id = 3, name = "PASAVERSION", type = "string", nullable = true },
+    { id = 4, name = "RESERVECONDITION", type = "double", nullable = true },
+    { id = 5, name = "LORCONDITION", type = "double", nullable = true },
+    { id = 6, name = "CAPACITYOBJFUNCTION", type = "double", nullable = true },
+    { id = 7, name = "CAPACITYOPTION", type = "double", nullable = true },
+    { id = 8, name = "MAXSURPLUSRESERVEOPTION", type = "double", nullable = true },
+    { id = 9, name = "MAXSPARECAPACITYOPTION", type = "double", nullable = true },
+    { id = 10, name = "INTERCONNECTORFLOWPENALTY", type = "double", nullable = true },
+    { id = 11, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 12, name = "RUNTYPE", type = "string", nullable = true },
+    { id = 13, name = "RELIABILITYLRCDEMANDOPTION", type = "double", nullable = true },
+    { id = 14, name = "OUTAGELRCDEMANDOPTION", type = "double", nullable = true },
+    { id = 15, name = "LORDEMANDOPTION", type = "double", nullable = true },
+    { id = 16, name = "RELIABILITYLRCCAPACITYOPTION", type = "string", nullable = true },
+    { id = 17, name = "OUTAGELRCCAPACITYOPTION", type = "string", nullable = true },
+    { id = 18, name = "LORCAPACITYOPTION", type = "string", nullable = true },
+    { id = 19, name = "LORUIGFOPTION", type = "double", nullable = true },
+    { id = 20, name = "RELIABILITYLRCUIGFOPTION", type = "double", nullable = true },
+    { id = 21, name = "OUTAGELRCUIGFOPTION", type = "double", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "4e51dd272eb17109d4407746a417fc769f996cafae45d010c3fdf53e56670699"
+aemo_ctl = "PUBLIC_DVD_MTPASA_CASESOLUTION_202401.ctl"
+aemo_versions = [4]
+columns = [
+    "RUN_DATETIME",
+    "RUN_NO",
+    "PASAVERSION",
+    "RESERVECONDITION",
+    "LORCONDITION",
+    "CAPACITYOBJFUNCTION",
+    "CAPACITYOPTION",
+    "MAXSURPLUSRESERVEOPTION",
+    "MAXSPARECAPACITYOPTION",
+    "INTERCONNECTORFLOWPENALTY",
+    "LASTCHANGED",
+    "RUNTYPE",
+    "RELIABILITYLRCDEMANDOPTION",
+    "OUTAGELRCDEMANDOPTION",
+    "LORDEMANDOPTION",
+    "RELIABILITYLRCCAPACITYOPTION",
+    "OUTAGELRCCAPACITYOPTION",
+    "LORCAPACITYOPTION",
+    "LORUIGFOPTION",
+    "RELIABILITYLRCUIGFOPTION",
+    "OUTAGELRCUIGFOPTION",
+]

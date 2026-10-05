@@ -1,0 +1,33 @@
+# Our schema of SETLOCALAREATNI. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "SETLOCALAREATNI"
+description = "SETLOCALAREATNI shows the list of TNIs constituent to a local area in a settlement run."
+report_pairs = [["SETTLEMENTS", "LOCALAREATNI"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["SETTLEMENTDATE", "SETTLEMENTRUNNO", "LOCALAREAID", "TNI"]
+time_column = "SETTLEMENTDATE"
+next_column_id = 6
+
+column = [
+    { id = 1, name = "SETTLEMENTDATE", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "SETTLEMENTRUNNO", type = "double", nullable = false },
+    { id = 3, name = "LOCALAREAID", type = "string", nullable = false },
+    { id = 4, name = "TNI", type = "string", nullable = false },
+    { id = 5, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2026-08"
+ctl = "001.ctl"
+ctl_sha256 = "992b15357a03e452911b86d379b66d84aa6e95bdc19b4e8639b90f7e0e1bafd1"
+aemo_ctl = "PUBLIC_ARCHIVE#SETLOCALAREATNI#FILE01#202608.ctl"
+aemo_versions = [1]
+columns = [
+    "SETTLEMENTDATE",
+    "SETTLEMENTRUNNO",
+    "LOCALAREAID",
+    "TNI",
+    "LASTCHANGED",
+]

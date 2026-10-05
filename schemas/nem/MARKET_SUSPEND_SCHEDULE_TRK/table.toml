@@ -1,0 +1,35 @@
+# Our schema of MARKET_SUSPEND_SCHEDULE_TRK. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "MARKET_SUSPEND_SCHEDULE_TRK"
+description = "Parent table for pricing regimes used in suspensions"
+report_pairs = [["FORCE_MAJEURE", "MARKET_SUSPEND_SCHEDULE_TRK"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["EFFECTIVEDATE"]
+time_column = "EFFECTIVEDATE"
+next_column_id = 7
+
+column = [
+    { id = 1, name = "EFFECTIVEDATE", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "SOURCE_START_DATE", type = "timestamp_ns", nullable = true },
+    { id = 3, name = "SOURCE_END_DATE", type = "timestamp_ns", nullable = true },
+    { id = 4, name = "COMMENTS", type = "string", nullable = true },
+    { id = 5, name = "AUTHORISEDDATE", type = "timestamp_ns", nullable = true },
+    { id = 6, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2026-08"
+ctl = "001.ctl"
+ctl_sha256 = "af493a45b5b19ca389c8edb23da8203f4dfe72c837cad43cb830aeaf9d031dfc"
+aemo_ctl = "PUBLIC_ARCHIVE#MARKET_SUSPEND_SCHEDULE_TRK#FILE01#202608.ctl"
+aemo_versions = [1]
+columns = [
+    "EFFECTIVEDATE",
+    "SOURCE_START_DATE",
+    "SOURCE_END_DATE",
+    "COMMENTS",
+    "AUTHORISEDDATE",
+    "LASTCHANGED",
+]

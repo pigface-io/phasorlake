@@ -1,0 +1,33 @@
+# Our schema of INTERMITTENT_FORECAST_TRK. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "INTERMITTENT_FORECAST_TRK"
+description = "Uniquely tracks which Intermittent Generation forecast was used for the DUID in which Dispatch run"
+report_pairs = [["DISPATCH", "INTERMITTENT_FORECAST_TRK"]]
+load_mode = "append"
+dedupe = "pk"
+primary_key = ["SETTLEMENTDATE", "DUID"]
+time_column = "SETTLEMENTDATE"
+next_column_id = 6
+
+column = [
+    { id = 1, name = "SETTLEMENTDATE", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "DUID", type = "string", nullable = false },
+    { id = 3, name = "ORIGIN", type = "string", nullable = true },
+    { id = 4, name = "FORECAST_PRIORITY", type = "double", nullable = true },
+    { id = 5, name = "OFFERDATETIME", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2026-08"
+ctl = "001.ctl"
+ctl_sha256 = "80b6592cfa689ca4054eb2787b3a56ba60c276e7436c95b60a51f0c579c81e26"
+aemo_ctl = "PUBLIC_ARCHIVE#INTERMITTENT_FORECAST_TRK#FILE01#202608.ctl"
+aemo_versions = [1]
+columns = [
+    "SETTLEMENTDATE",
+    "DUID",
+    "ORIGIN",
+    "FORECAST_PRIORITY",
+    "OFFERDATETIME",
+]

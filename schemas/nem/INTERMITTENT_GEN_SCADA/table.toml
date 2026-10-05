@@ -1,0 +1,34 @@
+# Our schema of INTERMITTENT_GEN_SCADA. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "INTERMITTENT_GEN_SCADA"
+report_pairs = [["DEMAND", "INTERMITTENT_GEN_SCADA"]]
+load_mode = "append"
+dedupe = "none"
+primary_key = []
+time_column = "RUN_DATETIME"
+next_column_id = 7
+
+column = [
+    { id = 1, name = "RUN_DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 2, name = "DUID", type = "string", nullable = true },
+    { id = 3, name = "SCADA_TYPE", type = "string", nullable = true },
+    { id = 4, name = "SCADA_VALUE", type = "double", nullable = true },
+    { id = 5, name = "SCADA_QUALITY", type = "string", nullable = true },
+    { id = 6, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2026-08"
+ctl = "001.ctl"
+ctl_sha256 = "843ef5c99d7bd420505cd386054b7249b4917c2e01c38a136e35f699b1225467"
+aemo_ctl = "PUBLIC_ARCHIVE#INTERMITTENT_GEN_SCADA#FILE01#202608.ctl"
+aemo_versions = [1]
+columns = [
+    "RUN_DATETIME",
+    "DUID",
+    "SCADA_TYPE",
+    "SCADA_VALUE",
+    "SCADA_QUALITY",
+    "LASTCHANGED",
+]

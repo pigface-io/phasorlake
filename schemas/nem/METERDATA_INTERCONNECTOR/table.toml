@@ -1,0 +1,37 @@
+# Our schema of METERDATA_INTERCONNECTOR. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "METERDATA_INTERCONNECTOR"
+description = "Publishes metering data associated with wholesale interconnectors for a given CASE_ID"
+report_pairs = [["METERDATA", "INTERCONNECTOR"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["CASE_ID", "SETTLEMENTDATE", "INTERCONNECTORID", "PERIODID"]
+time_column = "SETTLEMENTDATE"
+next_column_id = 8
+
+column = [
+    { id = 1, name = "CASE_ID", type = "double", nullable = false },
+    { id = 2, name = "SETTLEMENTDATE", type = "timestamp_ns", nullable = false },
+    { id = 3, name = "INTERCONNECTORID", type = "string", nullable = false },
+    { id = 4, name = "PERIODID", type = "double", nullable = false },
+    { id = 5, name = "IMPORTVALUE", type = "double", nullable = true },
+    { id = 6, name = "EXPORTVALUE", type = "double", nullable = true },
+    { id = 7, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2026-08"
+ctl = "001.ctl"
+ctl_sha256 = "9743253277376cb118719269fb17c02ef99b3452ea40971136a987b4ba6614df"
+aemo_ctl = "PUBLIC_ARCHIVE#METERDATA_INTERCONNECTOR#FILE01#202608.ctl"
+aemo_versions = [1]
+columns = [
+    "CASE_ID",
+    "SETTLEMENTDATE",
+    "INTERCONNECTORID",
+    "PERIODID",
+    "IMPORTVALUE",
+    "EXPORTVALUE",
+    "LASTCHANGED",
+]

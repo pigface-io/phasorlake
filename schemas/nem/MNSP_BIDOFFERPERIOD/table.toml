@@ -1,0 +1,59 @@
+# Our schema of MNSP_BIDOFFERPERIOD. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "MNSP_BIDOFFERPERIOD"
+description = "MNSP_BIDOFFERPERIOD shows 5-minute availability and data about a specific bid and LinkID for the given Settlement Date and period. MNSP_BIDOFFERPERIOD is a child to MNSP_DAYOFFER and links to MNSP_OFFERTRK."
+report_pairs = [["BIDS", "MNSP_BIDOFFERPERIOD"]]
+load_mode = "append"
+dedupe = "pk"
+primary_key = ["TRADINGDATE", "OFFERDATETIME", "LINKID", "PERIODID"]
+time_column = "TRADINGDATE"
+next_column_id = 19
+
+column = [
+    { id = 1, name = "TRADINGDATE", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "OFFERDATETIME", type = "timestamp_ns", nullable = false },
+    { id = 3, name = "LINKID", type = "string", nullable = false },
+    { id = 4, name = "PERIODID", type = "double", nullable = false },
+    { id = 5, name = "MAXAVAIL", type = "double", nullable = true },
+    { id = 6, name = "BANDAVAIL1", type = "double", nullable = true },
+    { id = 7, name = "BANDAVAIL2", type = "double", nullable = true },
+    { id = 8, name = "BANDAVAIL3", type = "double", nullable = true },
+    { id = 9, name = "BANDAVAIL4", type = "double", nullable = true },
+    { id = 10, name = "BANDAVAIL5", type = "double", nullable = true },
+    { id = 11, name = "BANDAVAIL6", type = "double", nullable = true },
+    { id = 12, name = "BANDAVAIL7", type = "double", nullable = true },
+    { id = 13, name = "BANDAVAIL8", type = "double", nullable = true },
+    { id = 14, name = "BANDAVAIL9", type = "double", nullable = true },
+    { id = 15, name = "BANDAVAIL10", type = "double", nullable = true },
+    { id = 16, name = "FIXEDLOAD", type = "double", nullable = true },
+    { id = 17, name = "RAMPUPRATE", type = "double", nullable = true },
+    { id = 18, name = "PASAAVAILABILITY", type = "double", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "f619f2167853bc310d6c5f42ad9d64f138f70611a9a04496086af3e534aa5848"
+aemo_ctl = "PUBLIC_DVD_MNSP_PEROFFER_202401.ctl"
+aemo_versions = [1]
+columns = [
+    "TRADINGDATE",
+    "OFFERDATETIME",
+    "LINKID",
+    "PERIODID",
+    "MAXAVAIL",
+    "BANDAVAIL1",
+    "BANDAVAIL2",
+    "BANDAVAIL3",
+    "BANDAVAIL4",
+    "BANDAVAIL5",
+    "BANDAVAIL6",
+    "BANDAVAIL7",
+    "BANDAVAIL8",
+    "BANDAVAIL9",
+    "BANDAVAIL10",
+    "FIXEDLOAD",
+    "RAMPUPRATE",
+    "PASAAVAILABILITY",
+]

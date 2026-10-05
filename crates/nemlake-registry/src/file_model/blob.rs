@@ -35,6 +35,7 @@ pub fn is_table_path(path: &str) -> bool {
     let name = segments.pop().unwrap_or(path);
     name.ends_with(".toml")
         && name != "market.toml"
+        && name != "table.toml"
         && !name.starts_with('_')
         && !name.starts_with("DRAFT_")
         && !segments.iter().any(|s| CENSUS_DIRS.contains(s))
@@ -79,7 +80,9 @@ impl SchemaSet {
                         let dir_name = p.file_name().and_then(|n| n.to_str()).unwrap_or("");
                         if dir_name == "shapes" {
                             set.read_shapes_dir(&p)?;
-                        } else if !CENSUS_DIRS.contains(&dir_name) {
+                        } else if !CENSUS_DIRS.contains(&dir_name)
+                            && !p.join("table.toml").is_file()
+                        {
                             stack.push(p);
                         }
                         continue;

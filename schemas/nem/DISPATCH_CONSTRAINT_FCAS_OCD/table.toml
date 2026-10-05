@@ -1,0 +1,41 @@
+# Our schema of DISPATCH_CONSTRAINT_FCAS_OCD. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "DISPATCH_CONSTRAINT_FCAS_OCD"
+description = "FCAS constraint solution from OCD re-run."
+report_pairs = [["PRICELOAD", "CONSTRAINT_FCAS_OCD"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["SETTLEMENTDATE", "RUNNO", "INTERVENTION", "CONSTRAINTID", "VERSIONNO"]
+time_column = "SETTLEMENTDATE"
+next_column_id = 10
+
+column = [
+    { id = 1, name = "SETTLEMENTDATE", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "RUNNO", type = "double", nullable = false },
+    { id = 3, name = "INTERVENTION", type = "double", nullable = false },
+    { id = 4, name = "CONSTRAINTID", type = "string", nullable = false },
+    { id = 5, name = "VERSIONNO", type = "double", nullable = false },
+    { id = 6, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 7, name = "RHS", type = "double", nullable = true },
+    { id = 8, name = "MARGINALVALUE", type = "double", nullable = true },
+    { id = 9, name = "VIOLATIONDEGREE", type = "double", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2026-08"
+ctl = "001.ctl"
+ctl_sha256 = "35b2632816b57b11104a2aa78233f7982686dcdcb0429816f065f5488a37659d"
+aemo_ctl = "PUBLIC_ARCHIVE#DISPATCH_CONSTRAINT_FCAS_OCD#FILE01#202608.ctl"
+aemo_versions = [1]
+columns = [
+    "SETTLEMENTDATE",
+    "RUNNO",
+    "INTERVENTION",
+    "CONSTRAINTID",
+    "VERSIONNO",
+    "LASTCHANGED",
+    "RHS",
+    "MARGINALVALUE",
+    "VIOLATIONDEGREE",
+]

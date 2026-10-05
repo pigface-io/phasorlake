@@ -14,8 +14,10 @@ default_stages = ["pre-commit"]
 [[repos]]
 repo = "builtin"
 hooks = [
-    { id = "trailing-whitespace", exclude = '^testdata/' },
-    { id = "end-of-file-fixer", exclude = '^testdata/' },
+    # AEMO's files are kept byte for byte: fixtures, and control files
+    # whose hash a table records.
+    { id = "trailing-whitespace", exclude = '^(testdata/|schemas/.*/ctl/|reference/)' },
+    { id = "end-of-file-fixer", exclude = '^(testdata/|schemas/.*/ctl/|reference/)' },
     { id = "check-yaml" },
     { id = "check-toml" },
     { id = "check-json" },

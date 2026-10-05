@@ -1,0 +1,32 @@
+# Our schema of MNSP_PARTICIPANT. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "MNSP_PARTICIPANT"
+description = "MNSP_PARTICIPANT registers MNSP ownership."
+report_pairs = [["PARTICIPANT_REGISTRATION", "MNSP_PARTICIPANT"]]
+load_mode = "snapshot"
+dedupe = "pk_lastchanged"
+primary_key = ["INTERCONNECTORID", "EFFECTIVEDATE", "VERSIONNO", "PARTICIPANTID"]
+next_column_id = 6
+
+column = [
+    { id = 1, name = "INTERCONNECTORID", type = "string", nullable = false },
+    { id = 2, name = "EFFECTIVEDATE", type = "timestamp_ns", nullable = false },
+    { id = 3, name = "VERSIONNO", type = "double", nullable = false },
+    { id = 4, name = "PARTICIPANTID", type = "string", nullable = false },
+    { id = 5, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "b795b54d282d2dfd353ad4a3ebad6d81ee7d97452f5de3b799edb84376b8b3ec"
+aemo_ctl = "PUBLIC_DVD_MNSP_PARTICIPANT_202401.ctl"
+aemo_versions = [1]
+columns = [
+    "INTERCONNECTORID",
+    "EFFECTIVEDATE",
+    "VERSIONNO",
+    "PARTICIPANTID",
+    "LASTCHANGED",
+]

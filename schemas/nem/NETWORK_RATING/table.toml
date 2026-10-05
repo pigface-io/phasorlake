@@ -1,0 +1,47 @@
+# Our schema of NETWORK_RATING. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "NETWORK_RATING"
+description = """
+NETWORK_RATING defines a list of the equipment ratings that may be used as inputs to market constraints.
+If the rating is flagged as dynamic then in real-time the rating will be dynamically determined and the static value will be used as a fallback value should the dynamic value fail.
+Note:
+In some rare cases equipment has ratings provided from more than one TNSP. This is identified by a different SPD Id. The value used in the NEM is normally the more restrictive of the two values."""
+report_pairs = [["NETWORK", "RATING"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["SPD_ID", "VALIDFROM"]
+time_column = "LASTCHANGED"
+next_column_id = 11
+
+column = [
+    { id = 1, name = "SPD_ID", type = "string", nullable = false },
+    { id = 2, name = "VALIDFROM", type = "timestamp_ns", nullable = false },
+    { id = 3, name = "VALIDTO", type = "timestamp_ns", nullable = true },
+    { id = 4, name = "REGIONID", type = "string", nullable = true },
+    { id = 5, name = "SUBSTATIONID", type = "string", nullable = true },
+    { id = 6, name = "EQUIPMENTTYPE", type = "string", nullable = true },
+    { id = 7, name = "EQUIPMENTID", type = "string", nullable = true },
+    { id = 8, name = "RATINGLEVEL", type = "string", nullable = true },
+    { id = 9, name = "ISDYNAMIC", type = "double", nullable = true },
+    { id = 10, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2026-08"
+ctl = "001.ctl"
+ctl_sha256 = "5fe519c11c575f082540aabe263e7d7544dc4fdd7ad95d1e6cbeb1c0982ca3bd"
+aemo_ctl = "PUBLIC_ARCHIVE#NETWORK_RATING#FILE01#202608.ctl"
+aemo_versions = [1]
+columns = [
+    "SPD_ID",
+    "VALIDFROM",
+    "VALIDTO",
+    "REGIONID",
+    "SUBSTATIONID",
+    "EQUIPMENTTYPE",
+    "EQUIPMENTID",
+    "RATINGLEVEL",
+    "ISDYNAMIC",
+    "LASTCHANGED",
+]

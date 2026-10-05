@@ -1,0 +1,42 @@
+# Our schema of FPP_EST_PERF_COST_RATE. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "FPP_EST_PERF_COST_RATE"
+report_pairs = [["FPP", "EST_PERF_COST_RATE"]]
+load_mode = "append"
+dedupe = "none"
+primary_key = []
+time_column = "INTERVAL_DATETIME"
+next_column_id = 11
+
+column = [
+    { id = 1, name = "INTERVAL_DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 2, name = "CONSTRAINTID", type = "string", nullable = true },
+    { id = 3, name = "VERSIONNO", type = "double", nullable = true },
+    { id = 4, name = "BIDTYPE", type = "string", nullable = true },
+    { id = 5, name = "RELEVANT_REGIONS", type = "string", nullable = true },
+    { id = 6, name = "FPP_PAYMENT_RATE", type = "double", nullable = true },
+    { id = 7, name = "FPP_RECOVERY_RATE", type = "double", nullable = true },
+    { id = 8, name = "USED_FCAS_RATE", type = "double", nullable = true },
+    { id = 9, name = "UNUSED_FCAS_RATE", type = "double", nullable = true },
+    { id = 10, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2026-08"
+ctl = "001.ctl"
+ctl_sha256 = "463d660254b8fdee3fd916b7f83483c4ca27d20d76ac8f34ff040565a1ece843"
+aemo_ctl = "PUBLIC_ARCHIVE#FPP_EST_PERF_COST_RATE#FILE01#202608.ctl"
+aemo_versions = [1]
+columns = [
+    "INTERVAL_DATETIME",
+    "CONSTRAINTID",
+    "VERSIONNO",
+    "BIDTYPE",
+    "RELEVANT_REGIONS",
+    "FPP_PAYMENT_RATE",
+    "FPP_RECOVERY_RATE",
+    "USED_FCAS_RATE",
+    "UNUSED_FCAS_RATE",
+    "LASTCHANGED",
+]

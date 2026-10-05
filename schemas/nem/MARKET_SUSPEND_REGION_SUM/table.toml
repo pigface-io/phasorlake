@@ -1,0 +1,35 @@
+# Our schema of MARKET_SUSPEND_REGION_SUM. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "MARKET_SUSPEND_REGION_SUM"
+description = "Summary of Market Suspension timings"
+report_pairs = [["FORCE_MAJEURE", "MARKET_SUSPEND_REGION_SUM"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["SUSPENSION_ID", "REGIONID"]
+time_column = "LASTCHANGED"
+next_column_id = 7
+
+column = [
+    { id = 1, name = "SUSPENSION_ID", type = "string", nullable = false },
+    { id = 2, name = "REGIONID", type = "string", nullable = false },
+    { id = 3, name = "INITIAL_INTERVAL", type = "timestamp_ns", nullable = true },
+    { id = 4, name = "END_REGION_INTERVAL", type = "timestamp_ns", nullable = true },
+    { id = 5, name = "END_SUSPENSION_INTERVAL", type = "timestamp_ns", nullable = true },
+    { id = 6, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2026-08"
+ctl = "001.ctl"
+ctl_sha256 = "c981e4b7111a685dad31d1a1d79fb58d62b0f4f9dda499d9905caaf1db94d09b"
+aemo_ctl = "PUBLIC_ARCHIVE#MARKET_SUSPEND_REGION_SUM#FILE01#202608.ctl"
+aemo_versions = [1]
+columns = [
+    "SUSPENSION_ID",
+    "REGIONID",
+    "INITIAL_INTERVAL",
+    "END_REGION_INTERVAL",
+    "END_SUSPENSION_INTERVAL",
+    "LASTCHANGED",
+]

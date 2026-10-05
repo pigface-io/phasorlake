@@ -1,0 +1,46 @@
+# Our schema of FPP_FORECAST_DEFAULT_CF. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "FPP_FORECAST_DEFAULT_CF"
+report_pairs = [["FPP", "FORECAST_DEFAULT_CF"]]
+load_mode = "append"
+dedupe = "none"
+primary_key = []
+time_column = "LASTCHANGED"
+next_column_id = 13
+
+column = [
+    { id = 1, name = "FPP_UNITID", type = "string", nullable = true },
+    { id = 2, name = "CONSTRAINTID", type = "string", nullable = true },
+    { id = 3, name = "EFFECTIVE_START_DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 4, name = "EFFECTIVE_END_DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 5, name = "VERSIONNO", type = "double", nullable = true },
+    { id = 6, name = "BIDTYPE", type = "string", nullable = true },
+    { id = 7, name = "REGIONID", type = "string", nullable = true },
+    { id = 8, name = "DEFAULT_CONTRIBUTION_FACTOR", type = "double", nullable = true },
+    { id = 9, name = "DCF_REASON_FLAG", type = "double", nullable = true },
+    { id = 10, name = "DCF_ABS_NEGATIVE_PERF_TOTAL", type = "double", nullable = true },
+    { id = 11, name = "SETTLEMENTS_UNITID", type = "string", nullable = true },
+    { id = 12, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2026-08"
+ctl = "001.ctl"
+ctl_sha256 = "b8a9962b53a4e5ce4f4eadf9cc971112caea22ef428b2f13c02ae9a154680880"
+aemo_ctl = "PUBLIC_ARCHIVE#FPP_FORECAST_DEFAULT_CF#FILE01#202608.ctl"
+aemo_versions = [1]
+columns = [
+    "FPP_UNITID",
+    "CONSTRAINTID",
+    "EFFECTIVE_START_DATETIME",
+    "EFFECTIVE_END_DATETIME",
+    "VERSIONNO",
+    "BIDTYPE",
+    "REGIONID",
+    "DEFAULT_CONTRIBUTION_FACTOR",
+    "DCF_REASON_FLAG",
+    "DCF_ABS_NEGATIVE_PERF_TOTAL",
+    "SETTLEMENTS_UNITID",
+    "LASTCHANGED",
+]

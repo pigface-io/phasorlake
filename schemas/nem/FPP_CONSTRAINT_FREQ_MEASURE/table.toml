@@ -1,0 +1,42 @@
+# Our schema of FPP_CONSTRAINT_FREQ_MEASURE. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "FPP_CONSTRAINT_FREQ_MEASURE"
+report_pairs = [["FPP", "CONSTRAINT_FREQ_MEASURE"]]
+load_mode = "append"
+dedupe = "none"
+primary_key = []
+time_column = "INTERVAL_DATETIME"
+next_column_id = 11
+
+column = [
+    { id = 1, name = "INTERVAL_DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 2, name = "MEASUREMENT_DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 3, name = "CONSTRAINTID", type = "string", nullable = true },
+    { id = 4, name = "VERSIONNO", type = "double", nullable = true },
+    { id = 5, name = "BIDTYPE", type = "string", nullable = true },
+    { id = 6, name = "FM_RAISE_HZ", type = "double", nullable = true },
+    { id = 7, name = "FM_LOWER_HZ", type = "double", nullable = true },
+    { id = 8, name = "USED_IN_RCR_FLAG", type = "double", nullable = true },
+    { id = 9, name = "CORRELATION_FLAG", type = "double", nullable = true },
+    { id = 10, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2026-08"
+ctl = "001.ctl"
+ctl_sha256 = "b40a4001b177d792c078650f42059844b2ed6f2f338ea03dcd05cef3f1654209"
+aemo_ctl = "PUBLIC_ARCHIVE#FPP_CONSTRAINT_FREQ_MEASURE#FILE01#202608.ctl"
+aemo_versions = [1]
+columns = [
+    "INTERVAL_DATETIME",
+    "MEASUREMENT_DATETIME",
+    "CONSTRAINTID",
+    "VERSIONNO",
+    "BIDTYPE",
+    "FM_RAISE_HZ",
+    "FM_LOWER_HZ",
+    "USED_IN_RCR_FLAG",
+    "CORRELATION_FLAG",
+    "LASTCHANGED",
+]

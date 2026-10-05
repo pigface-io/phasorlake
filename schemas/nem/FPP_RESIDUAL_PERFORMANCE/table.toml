@@ -1,0 +1,38 @@
+# Our schema of FPP_RESIDUAL_PERFORMANCE. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "FPP_RESIDUAL_PERFORMANCE"
+report_pairs = [["FPP", "RESIDUAL_PERFORMANCE"]]
+load_mode = "append"
+dedupe = "none"
+primary_key = []
+time_column = "INTERVAL_DATETIME"
+next_column_id = 9
+
+column = [
+    { id = 1, name = "INTERVAL_DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 2, name = "REGIONID", type = "string", nullable = true },
+    { id = 3, name = "VERSIONNO", type = "double", nullable = true },
+    { id = 4, name = "RAISE_PERFORMANCE", type = "double", nullable = true },
+    { id = 5, name = "RAISE_REASON_FLAG", type = "double", nullable = true },
+    { id = 6, name = "LOWER_PERFORMANCE", type = "double", nullable = true },
+    { id = 7, name = "LOWER_REASON_FLAG", type = "double", nullable = true },
+    { id = 8, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2026-08"
+ctl = "001.ctl"
+ctl_sha256 = "5ead5671580e046fbb78bfcee532d135d53e233da4a6629a068aee657f20f194"
+aemo_ctl = "PUBLIC_ARCHIVE#FPP_RESIDUAL_PERFORMANCE#FILE01#202608.ctl"
+aemo_versions = [1]
+columns = [
+    "INTERVAL_DATETIME",
+    "REGIONID",
+    "VERSIONNO",
+    "RAISE_PERFORMANCE",
+    "RAISE_REASON_FLAG",
+    "LOWER_PERFORMANCE",
+    "LOWER_REASON_FLAG",
+    "LASTCHANGED",
+]

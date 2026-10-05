@@ -1,0 +1,136 @@
+# Our schema of MTPASA_REGIONRESULT. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "MTPASA_REGIONRESULT"
+description = "Region results for interval of max demand per day."
+report_pairs = [["MTPASA", "REGIONRESULT"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["RUN_DATETIME", "RUN_NO", "RUNTYPE", "DEMAND_POE_TYPE", "DAY", "REGIONID"]
+time_column = "RUN_DATETIME"
+next_column_id = 40
+
+column = [
+    { id = 1, name = "RUN_DATETIME", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "RUN_NO", type = "double", nullable = false },
+    { id = 3, name = "RUNTYPE", type = "string", nullable = false },
+    { id = 4, name = "DEMAND_POE_TYPE", type = "string", nullable = false },
+    { id = 5, name = "DAY", type = "timestamp_ns", nullable = false },
+    { id = 6, name = "REGIONID", type = "string", nullable = false },
+    { id = 7, name = "PERIODID", type = "double", nullable = true },
+    { id = 8, name = "DEMAND", type = "double", nullable = true },
+    { id = 9, name = "AGGREGATEINSTALLEDCAPACITY", type = "double", nullable = true },
+    { id = 10, name = "NUMBEROFITERATIONS", type = "double", nullable = true },
+    { id = 11, name = "USE_NUMBEROFITERATIONS", type = "double", nullable = true },
+    { id = 12, name = "USE_MAX", type = "double", nullable = true },
+    { id = 13, name = "USE_UPPERQUARTILE", type = "double", nullable = true },
+    { id = 14, name = "USE_MEDIAN", type = "double", nullable = true },
+    { id = 15, name = "USE_LOWERQUARTILE", type = "double", nullable = true },
+    { id = 16, name = "USE_MIN", type = "double", nullable = true },
+    { id = 17, name = "USE_AVERAGE", type = "double", nullable = true },
+    { id = 18, name = "USE_EVENT_AVERAGE", type = "double", nullable = true },
+    { id = 19, name = "TOTALSCHEDULEDGEN90", type = "double", nullable = true },
+    { id = 20, name = "TOTALSCHEDULEDGEN50", type = "double", nullable = true },
+    { id = 21, name = "TOTALSCHEDULEDGEN10", type = "double", nullable = true },
+    { id = 22, name = "TOTALINTERMITTENTGEN90", type = "double", nullable = true },
+    { id = 23, name = "TOTALINTERMITTENTGEN50", type = "double", nullable = true },
+    { id = 24, name = "TOTALINTERMITTENTGEN10", type = "double", nullable = true },
+    { id = 25, name = "DEMANDSIDEPARTICIPATION90", type = "double", nullable = true },
+    { id = 26, name = "DEMANDSIDEPARTICIPATION50", type = "double", nullable = true },
+    { id = 27, name = "DEMANDSIDEPARTICIPATION10", type = "double", nullable = true },
+    { id = 28, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 32, name = "TOTALSEMISCHEDULEGEN90", type = "double", nullable = true },
+    { id = 33, name = "TOTALSEMISCHEDULEGEN50", type = "double", nullable = true },
+    { id = 34, name = "TOTALSEMISCHEDULEGEN10", type = "double", nullable = true },
+    { id = 35, name = "TOTALAVAILABLEGENMIN", type = "double", nullable = true },
+    { id = 36, name = "TOTALAVAILABLEGEN10", type = "double", nullable = true },
+    { id = 37, name = "TOTALAVAILABLEGEN50", type = "double", nullable = true },
+    { id = 38, name = "TOTALAVAILABLEGEN90", type = "double", nullable = true },
+    { id = 39, name = "TOTALAVAILABLEGENMAX", type = "double", nullable = true },
+    { id = 29, name = "TOTALSEMISCHEDULEDGEN90", type = "double", nullable = true },
+    { id = 30, name = "TOTALSEMISCHEDULEDGEN50", type = "double", nullable = true },
+    { id = 31, name = "TOTALSEMISCHEDULEDGEN10", type = "double", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "409d928cc6ecfd71fddd8be1bd229c4068c0c6dc01b15bf2f27a0e1552f08781"
+aemo_ctl = "PUBLIC_DVD_MTPASA_REGIONRESULT_202401.ctl"
+aemo_versions = [2]
+columns = [
+    "RUN_DATETIME",
+    "RUN_NO",
+    "RUNTYPE",
+    "DEMAND_POE_TYPE",
+    "DAY",
+    "REGIONID",
+    "PERIODID",
+    "DEMAND",
+    "AGGREGATEINSTALLEDCAPACITY",
+    "NUMBEROFITERATIONS",
+    "USE_NUMBEROFITERATIONS",
+    "USE_MAX",
+    "USE_UPPERQUARTILE",
+    "USE_MEDIAN",
+    "USE_LOWERQUARTILE",
+    "USE_MIN",
+    "USE_AVERAGE",
+    "USE_EVENT_AVERAGE",
+    "TOTALSCHEDULEDGEN90",
+    "TOTALSCHEDULEDGEN50",
+    "TOTALSCHEDULEDGEN10",
+    "TOTALINTERMITTENTGEN90",
+    "TOTALINTERMITTENTGEN50",
+    "TOTALINTERMITTENTGEN10",
+    "DEMANDSIDEPARTICIPATION90",
+    "DEMANDSIDEPARTICIPATION50",
+    "DEMANDSIDEPARTICIPATION10",
+    "LASTCHANGED",
+]
+
+[[increment]]
+n = 2
+from = "2026-08"
+ctl = "002.ctl"
+ctl_sha256 = "aacbf6eefa6813cfe01f9dec8d54eb99e7e0169db7bbf2f1afaa8a35e2056036"
+aemo_ctl = "PUBLIC_ARCHIVE#MTPASA_REGIONRESULT#FILE01#202608.ctl"
+aemo_versions = [2]
+columns = [
+    "RUN_DATETIME",
+    "RUN_NO",
+    "RUNTYPE",
+    "DEMAND_POE_TYPE",
+    "DAY",
+    "REGIONID",
+    "PERIODID",
+    "DEMAND",
+    "AGGREGATEINSTALLEDCAPACITY",
+    "NUMBEROFITERATIONS",
+    "USE_NUMBEROFITERATIONS",
+    "USE_MAX",
+    "USE_UPPERQUARTILE",
+    "USE_MEDIAN",
+    "USE_LOWERQUARTILE",
+    "USE_MIN",
+    "USE_AVERAGE",
+    "USE_EVENT_AVERAGE",
+    "TOTALSCHEDULEDGEN90",
+    "TOTALSCHEDULEDGEN50",
+    "TOTALSCHEDULEDGEN10",
+    "TOTALINTERMITTENTGEN90",
+    "TOTALINTERMITTENTGEN50",
+    "TOTALINTERMITTENTGEN10",
+    "DEMANDSIDEPARTICIPATION90",
+    "DEMANDSIDEPARTICIPATION50",
+    "DEMANDSIDEPARTICIPATION10",
+    "LASTCHANGED",
+    "TOTALSEMISCHEDULEGEN90",
+    "TOTALSEMISCHEDULEGEN50",
+    "TOTALSEMISCHEDULEGEN10",
+    "TOTALAVAILABLEGENMIN",
+    "TOTALAVAILABLEGEN10",
+    "TOTALAVAILABLEGEN50",
+    "TOTALAVAILABLEGEN90",
+    "TOTALAVAILABLEGENMAX",
+]

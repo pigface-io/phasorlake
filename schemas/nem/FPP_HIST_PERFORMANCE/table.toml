@@ -1,0 +1,44 @@
+# Our schema of FPP_HIST_PERFORMANCE. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "FPP_HIST_PERFORMANCE"
+report_pairs = [["FPP", "HIST_PERFORMANCE"]]
+load_mode = "append"
+dedupe = "none"
+primary_key = []
+time_column = "LASTCHANGED"
+next_column_id = 12
+
+column = [
+    { id = 1, name = "FPP_UNITID", type = "string", nullable = true },
+    { id = 2, name = "EFFECTIVE_START_DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 3, name = "EFFECTIVE_END_DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 4, name = "VERSIONNO", type = "double", nullable = true },
+    { id = 5, name = "HIST_PERIOD_START_DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 6, name = "HIST_PERIOD_END_DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 7, name = "REG_HIST_RAISE_PERFORMANCE", type = "double", nullable = true },
+    { id = 8, name = "REG_HIST_LOWER_PERFORMANCE", type = "double", nullable = true },
+    { id = 9, name = "FPP_HIST_RAISE_PERFORMANCE", type = "double", nullable = true },
+    { id = 10, name = "FPP_HIST_LOWER_PERFORMANCE", type = "double", nullable = true },
+    { id = 11, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2026-08"
+ctl = "001.ctl"
+ctl_sha256 = "deacd468d12c5ae363e73c31e36f60044c5a018df6e2195efcd11a500b779495"
+aemo_ctl = "PUBLIC_ARCHIVE#FPP_HIST_PERFORMANCE#FILE01#202608.ctl"
+aemo_versions = [1]
+columns = [
+    "FPP_UNITID",
+    "EFFECTIVE_START_DATETIME",
+    "EFFECTIVE_END_DATETIME",
+    "VERSIONNO",
+    "HIST_PERIOD_START_DATETIME",
+    "HIST_PERIOD_END_DATETIME",
+    "REG_HIST_RAISE_PERFORMANCE",
+    "REG_HIST_LOWER_PERFORMANCE",
+    "FPP_HIST_RAISE_PERFORMANCE",
+    "FPP_HIST_LOWER_PERFORMANCE",
+    "LASTCHANGED",
+]

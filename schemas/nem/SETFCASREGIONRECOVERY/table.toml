@@ -1,0 +1,70 @@
+# Our schema of SETFCASREGIONRECOVERY. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "SETFCASREGIONRECOVERY"
+description = "SETFCASREGIONRECOVERY shows FCAS Regional Recovery Data against each Trading Interval."
+report_pairs = [["SETTLEMENTS", "FCASREGIONRECOVERY"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["SETTLEMENTDATE", "VERSIONNO", "BIDTYPE", "REGIONID", "PERIODID"]
+time_column = "SETTLEMENTDATE"
+next_column_id = 15
+
+column = [
+    { id = 1, name = "SETTLEMENTDATE", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "VERSIONNO", type = "double", nullable = false },
+    { id = 3, name = "BIDTYPE", type = "string", nullable = false },
+    { id = 4, name = "REGIONID", type = "string", nullable = false },
+    { id = 5, name = "PERIODID", type = "double", nullable = false },
+    { id = 6, name = "GENERATORREGIONENERGY", type = "double", nullable = true },
+    { id = 7, name = "CUSTOMERREGIONENERGY", type = "double", nullable = true },
+    { id = 8, name = "REGIONRECOVERY", type = "double", nullable = true },
+    { id = 9, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 10, name = "REGION_ACE_MWH", type = "double", nullable = true },
+    { id = 11, name = "REGION_ASOE_MWH", type = "double", nullable = true },
+    { id = 12, name = "REGIONRECOVERYAMOUNT_ACE", type = "double", nullable = true },
+    { id = 13, name = "REGIONRECOVERYAMOUNT_ASOE", type = "double", nullable = true },
+    { id = 14, name = "REGIONRECOVERYAMOUNT", type = "double", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "e5961047eed70688d221c516d854cd9abd931a62bb9729eaa13ba8fe9ffc5def"
+aemo_ctl = "PUBLIC_DVD_SETFCASREGIONRECOVERY_202401.ctl"
+aemo_versions = [5]
+columns = [
+    "SETTLEMENTDATE",
+    "VERSIONNO",
+    "BIDTYPE",
+    "REGIONID",
+    "PERIODID",
+    "GENERATORREGIONENERGY",
+    "CUSTOMERREGIONENERGY",
+    "REGIONRECOVERY",
+    "LASTCHANGED",
+]
+
+[[increment]]
+n = 2
+from = "2026-08"
+ctl = "002.ctl"
+ctl_sha256 = "a568dde2bd108533dadd8549e145393f8f75f1d0204305080b8e57186e4185ed"
+aemo_ctl = "PUBLIC_ARCHIVE#SETFCASREGIONRECOVERY#FILE01#202608.ctl"
+aemo_versions = [6]
+columns = [
+    "SETTLEMENTDATE",
+    "VERSIONNO",
+    "BIDTYPE",
+    "REGIONID",
+    "PERIODID",
+    "GENERATORREGIONENERGY",
+    "CUSTOMERREGIONENERGY",
+    "REGIONRECOVERY",
+    "LASTCHANGED",
+    "REGION_ACE_MWH",
+    "REGION_ASOE_MWH",
+    "REGIONRECOVERYAMOUNT_ACE",
+    "REGIONRECOVERYAMOUNT_ASOE",
+    "REGIONRECOVERYAMOUNT",
+]

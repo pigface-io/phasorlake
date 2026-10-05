@@ -1,0 +1,77 @@
+# Our schema of PREDISPATCHCONSTRAINT. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "PREDISPATCHCONSTRAINT"
+description = """
+PREDISPATCHCONSTRAINT sets out constraints that are binding in each predispatch run and interconnector constraints (whether binding or not). Only binding and interconnector constraints are reported. Binding contracts have marginal value greater than $0. Interconnector constraints are listed so RHS values can be reported for ST PASA.
+Constraint solutions only report fixed loading /MR constraints on the next day."""
+report_pairs = [["PREDISPATCH", "CONSTRAINT_SOLUTION"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["CONSTRAINTID", "DATETIME"]
+time_column = "DATETIME"
+next_column_id = 16
+
+column = [
+    { id = 1, name = "PREDISPATCHSEQNO", type = "string", nullable = true },
+    { id = 2, name = "RUNNO", type = "double", nullable = true },
+    { id = 3, name = "CONSTRAINTID", type = "string", nullable = false },
+    { id = 4, name = "PERIODID", type = "string", nullable = true },
+    { id = 5, name = "INTERVENTION", type = "double", nullable = true },
+    { id = 6, name = "RHS", type = "double", nullable = true },
+    { id = 7, name = "MARGINALVALUE", type = "double", nullable = true },
+    { id = 8, name = "VIOLATIONDEGREE", type = "double", nullable = true },
+    { id = 9, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 10, name = "DATETIME", type = "timestamp_ns", nullable = false },
+    { id = 15, name = "DUID", type = "string", nullable = true },
+    { id = 12, name = "GENCONID_EFFECTIVEDATE", type = "timestamp_ns", nullable = true },
+    { id = 13, name = "GENCONID_VERSIONNO", type = "double", nullable = true },
+    { id = 14, name = "LHS", type = "double", nullable = true },
+    { id = 11, name = "CONFIDENTIAL_TO", type = "string", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "a85ebaf5396e98b4c25a608cffa7de4eaf34abddd15d7cd19994f7a6abc16889"
+aemo_ctl = "PUBLIC_DVD_PREDISPATCHCONSTRAINT_D_202401.ctl"
+aemo_versions = [5]
+columns = [
+    "PREDISPATCHSEQNO",
+    "RUNNO",
+    "CONSTRAINTID",
+    "PERIODID",
+    "INTERVENTION",
+    "RHS",
+    "MARGINALVALUE",
+    "VIOLATIONDEGREE",
+    "LASTCHANGED",
+    "DATETIME",
+    "GENCONID_EFFECTIVEDATE",
+    "GENCONID_VERSIONNO",
+    "LHS",
+]
+
+[[increment]]
+n = 2
+from = "2026-08"
+ctl = "002.ctl"
+ctl_sha256 = "395438329df11c89c3fb2eeb29c65fcf51d2c8abbba7cfcbc755afe40850f278"
+aemo_ctl = "PUBLIC_ARCHIVE#PREDISPATCHCONSTRAINT#FILE01#202608.ctl"
+aemo_versions = [5]
+columns = [
+    "PREDISPATCHSEQNO",
+    "RUNNO",
+    "CONSTRAINTID",
+    "PERIODID",
+    "INTERVENTION",
+    "RHS",
+    "MARGINALVALUE",
+    "VIOLATIONDEGREE",
+    "LASTCHANGED",
+    "DATETIME",
+    "DUID",
+    "GENCONID_EFFECTIVEDATE",
+    "GENCONID_VERSIONNO",
+    "LHS",
+]

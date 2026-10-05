@@ -1,0 +1,36 @@
+# Our schema of FPP_RCR. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "FPP_RCR"
+report_pairs = [["FPP", "FPP_RCR"]]
+load_mode = "append"
+dedupe = "none"
+primary_key = []
+time_column = "INTERVAL_DATETIME"
+next_column_id = 8
+
+column = [
+    { id = 1, name = "INTERVAL_DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 2, name = "CONSTRAINTID", type = "string", nullable = true },
+    { id = 3, name = "VERSIONNO", type = "double", nullable = true },
+    { id = 4, name = "BIDTYPE", type = "string", nullable = true },
+    { id = 5, name = "RCR", type = "double", nullable = true },
+    { id = 6, name = "RCR_REASON_FLAG", type = "double", nullable = true },
+    { id = 7, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2026-08"
+ctl = "001.ctl"
+ctl_sha256 = "0116768af732b3483c2b454679c80b4720d5029210f7a1447b3945113057f861"
+aemo_ctl = "PUBLIC_ARCHIVE#FPP_RCR#FILE01#202608.ctl"
+aemo_versions = [1]
+columns = [
+    "INTERVAL_DATETIME",
+    "CONSTRAINTID",
+    "VERSIONNO",
+    "BIDTYPE",
+    "RCR",
+    "RCR_REASON_FLAG",
+    "LASTCHANGED",
+]

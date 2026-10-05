@@ -1,0 +1,37 @@
+# Our schema of INTERMITTENT_GEN_LIMIT_DAY. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "INTERMITTENT_GEN_LIMIT_DAY"
+description = "Summary record for an Upper MW Limit submission for an intermittent generating unit for a Trading Day"
+report_pairs = [["DEMAND", "INTERMITTENT_GEN_LIMIT_DAY"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["TRADINGDATE", "DUID", "OFFERDATETIME"]
+time_column = "TRADINGDATE"
+next_column_id = 8
+
+column = [
+    { id = 1, name = "TRADINGDATE", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "DUID", type = "string", nullable = false },
+    { id = 3, name = "OFFERDATETIME", type = "timestamp_ns", nullable = false },
+    { id = 4, name = "PARTICIPANTID", type = "string", nullable = true },
+    { id = 5, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 6, name = "AUTHORISEDBYUSER", type = "string", nullable = true },
+    { id = 7, name = "AUTHORISEDBYPARTICIPANTID", type = "string", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2026-08"
+ctl = "001.ctl"
+ctl_sha256 = "2c084acb04d2ec55887ebc4b1e5d3a255fb86983a7557cb5acc5d69b4822abf6"
+aemo_ctl = "PUBLIC_ARCHIVE#INTERMITTENT_GEN_LIMIT_DAY#FILE01#202608.ctl"
+aemo_versions = [1]
+columns = [
+    "TRADINGDATE",
+    "DUID",
+    "OFFERDATETIME",
+    "PARTICIPANTID",
+    "LASTCHANGED",
+    "AUTHORISEDBYUSER",
+    "AUTHORISEDBYPARTICIPANTID",
+]

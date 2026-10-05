@@ -1,0 +1,32 @@
+# Our schema of GST_RATE. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "GST_RATE"
+description = "GST_RATE maintains the GST rates on a BAS (Business Activity Statement) class basis."
+report_pairs = [["BILLING_CONFIG", "GST_RATE"]]
+load_mode = "snapshot"
+dedupe = "pk_lastchanged"
+primary_key = ["EFFECTIVEDATE", "VERSIONNO", "BAS_CLASS"]
+next_column_id = 6
+
+column = [
+    { id = 1, name = "EFFECTIVEDATE", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "VERSIONNO", type = "double", nullable = false },
+    { id = 3, name = "BAS_CLASS", type = "string", nullable = false },
+    { id = 4, name = "GST_RATE", type = "double", nullable = true },
+    { id = 5, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "b699d13db6bf48a4cff0b275d23437a9b6ed14f5f9e259a7c457cb867d741b79"
+aemo_ctl = "PUBLIC_DVD_GST_RATE_202401.ctl"
+aemo_versions = [1]
+columns = [
+    "EFFECTIVEDATE",
+    "VERSIONNO",
+    "BAS_CLASS",
+    "GST_RATE",
+    "LASTCHANGED",
+]

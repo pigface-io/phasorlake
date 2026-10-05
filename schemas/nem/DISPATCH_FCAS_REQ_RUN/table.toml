@@ -1,0 +1,28 @@
+# Our schema of DISPATCH_FCAS_REQ_RUN. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "DISPATCH_FCAS_REQ_RUN"
+report_pairs = [["DISPATCH", "FCAS_REQ_RUN"]]
+load_mode = "append"
+dedupe = "none"
+primary_key = []
+time_column = "RUN_DATETIME"
+next_column_id = 4
+
+column = [
+    { id = 1, name = "RUN_DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 2, name = "RUNNO", type = "double", nullable = true },
+    { id = 3, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2026-08"
+ctl = "001.ctl"
+ctl_sha256 = "6dcaeddcbc5d6fde67147e22a6536900a3d4c4b0a177ea97f56a6a513c199af0"
+aemo_ctl = "PUBLIC_ARCHIVE#DISPATCH_FCAS_REQ_RUN#FILE01#202608.ctl"
+aemo_versions = [1]
+columns = [
+    "RUN_DATETIME",
+    "RUNNO",
+    "LASTCHANGED",
+]

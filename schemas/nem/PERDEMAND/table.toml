@@ -1,0 +1,45 @@
+# Our schema of PERDEMAND. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "PERDEMAND"
+description = "PERDEMAND sets out the regional demands and MR schedule data for each half-hour period. PERDEMAND is a child table to RESDEMANDTRK."
+report_pairs = [["DEMAND", "PERIOD"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["SETTLEMENTDATE", "REGIONID", "OFFERDATE", "PERIODID", "VERSIONNO"]
+time_column = "SETTLEMENTDATE"
+next_column_id = 12
+
+column = [
+    { id = 1, name = "EFFECTIVEDATE", type = "timestamp_ns", nullable = true },
+    { id = 2, name = "SETTLEMENTDATE", type = "timestamp_ns", nullable = false },
+    { id = 3, name = "REGIONID", type = "string", nullable = false },
+    { id = 4, name = "OFFERDATE", type = "timestamp_ns", nullable = false },
+    { id = 5, name = "PERIODID", type = "double", nullable = false },
+    { id = 6, name = "VERSIONNO", type = "double", nullable = false },
+    { id = 7, name = "RESDEMAND", type = "double", nullable = true },
+    { id = 8, name = "DEMAND90PROBABILITY", type = "double", nullable = true },
+    { id = 9, name = "DEMAND10PROBABILITY", type = "double", nullable = true },
+    { id = 10, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 11, name = "MR_SCHEDULE", type = "double", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "69e6be14f824a8048344180d4bc679c7c8f1d3f1a156dfb4c41956d916c82db3"
+aemo_ctl = "PUBLIC_DVD_PERDEMAND_202401.ctl"
+aemo_versions = [1]
+columns = [
+    "EFFECTIVEDATE",
+    "SETTLEMENTDATE",
+    "REGIONID",
+    "OFFERDATE",
+    "PERIODID",
+    "VERSIONNO",
+    "RESDEMAND",
+    "DEMAND90PROBABILITY",
+    "DEMAND10PROBABILITY",
+    "LASTCHANGED",
+    "MR_SCHEDULE",
+]

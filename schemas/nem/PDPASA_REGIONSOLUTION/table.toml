@@ -1,0 +1,168 @@
+# Our schema of PDPASA_REGIONSOLUTION. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "PDPASA_REGIONSOLUTION"
+description = "The PDPASA region solution data"
+report_pairs = [["PDPASA", "REGIONSOLUTION"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["RUN_DATETIME", "INTERVAL_DATETIME", "REGIONID", "RUNTYPE"]
+time_column = "INTERVAL_DATETIME"
+next_column_id = 46
+
+column = [
+    { id = 1, name = "RUN_DATETIME", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "INTERVAL_DATETIME", type = "timestamp_ns", nullable = false },
+    { id = 3, name = "REGIONID", type = "string", nullable = false },
+    { id = 4, name = "DEMAND10", type = "double", nullable = true },
+    { id = 5, name = "DEMAND50", type = "double", nullable = true },
+    { id = 6, name = "DEMAND90", type = "double", nullable = true },
+    { id = 7, name = "RESERVEREQ", type = "double", nullable = true },
+    { id = 8, name = "CAPACITYREQ", type = "double", nullable = true },
+    { id = 9, name = "ENERGYREQDEMAND50", type = "double", nullable = true },
+    { id = 10, name = "UNCONSTRAINEDCAPACITY", type = "double", nullable = true },
+    { id = 11, name = "CONSTRAINEDCAPACITY", type = "double", nullable = true },
+    { id = 12, name = "NETINTERCHANGEUNDERSCARCITY", type = "double", nullable = true },
+    { id = 13, name = "SURPLUSCAPACITY", type = "double", nullable = true },
+    { id = 14, name = "SURPLUSRESERVE", type = "double", nullable = true },
+    { id = 15, name = "RESERVECONDITION", type = "double", nullable = true },
+    { id = 16, name = "MAXSURPLUSRESERVE", type = "double", nullable = true },
+    { id = 17, name = "MAXSPARECAPACITY", type = "double", nullable = true },
+    { id = 18, name = "LORCONDITION", type = "double", nullable = true },
+    { id = 19, name = "AGGREGATECAPACITYAVAILABLE", type = "double", nullable = true },
+    { id = 20, name = "AGGREGATESCHEDULEDLOAD", type = "double", nullable = true },
+    { id = 21, name = "AGGREGATEPASAAVAILABILITY", type = "double", nullable = true },
+    { id = 22, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 23, name = "RUNTYPE", type = "string", nullable = false },
+    { id = 24, name = "ENERGYREQDEMAND10", type = "double", nullable = true },
+    { id = 25, name = "CALCULATEDLOR1LEVEL", type = "double", nullable = true },
+    { id = 26, name = "CALCULATEDLOR2LEVEL", type = "double", nullable = true },
+    { id = 27, name = "MSRNETINTERCHANGEUNDERSCARCITY", type = "double", nullable = true },
+    { id = 28, name = "LORNETINTERCHANGEUNDERSCARCITY", type = "double", nullable = true },
+    { id = 29, name = "TOTALINTERMITTENTGENERATION", type = "double", nullable = true },
+    { id = 30, name = "DEMAND_AND_NONSCHEDGEN", type = "double", nullable = true },
+    { id = 31, name = "UIGF", type = "double", nullable = true },
+    { id = 32, name = "SEMISCHEDULEDCAPACITY", type = "double", nullable = true },
+    { id = 33, name = "LOR_SEMISCHEDULEDCAPACITY", type = "double", nullable = true },
+    { id = 34, name = "LCR", type = "double", nullable = true },
+    { id = 35, name = "LCR2", type = "double", nullable = true },
+    { id = 36, name = "FUM", type = "double", nullable = true },
+    { id = 37, name = "SS_SOLAR_UIGF", type = "double", nullable = true },
+    { id = 38, name = "SS_WIND_UIGF", type = "double", nullable = true },
+    { id = 39, name = "SS_SOLAR_CAPACITY", type = "double", nullable = true },
+    { id = 40, name = "SS_WIND_CAPACITY", type = "double", nullable = true },
+    { id = 41, name = "SS_SOLAR_CLEARED", type = "double", nullable = true },
+    { id = 42, name = "SS_WIND_CLEARED", type = "double", nullable = true },
+    { id = 43, name = "WDR_AVAILABLE", type = "double", nullable = true },
+    { id = 44, name = "WDR_PASAAVAILABLE", type = "double", nullable = true },
+    { id = 45, name = "WDR_CAPACITY", type = "double", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "310db988acbd32e73e9785305b4ba6f013099dedea3fc6d0767edf02ce5788c9"
+aemo_ctl = "PUBLIC_DVD_PDPASA_REGIONSOLUTION_202401.ctl"
+aemo_versions = [6]
+columns = [
+    "RUN_DATETIME",
+    "INTERVAL_DATETIME",
+    "REGIONID",
+    "DEMAND10",
+    "DEMAND50",
+    "DEMAND90",
+    "RESERVEREQ",
+    "CAPACITYREQ",
+    "ENERGYREQDEMAND50",
+    "UNCONSTRAINEDCAPACITY",
+    "CONSTRAINEDCAPACITY",
+    "NETINTERCHANGEUNDERSCARCITY",
+    "SURPLUSCAPACITY",
+    "SURPLUSRESERVE",
+    "RESERVECONDITION",
+    "MAXSURPLUSRESERVE",
+    "MAXSPARECAPACITY",
+    "LORCONDITION",
+    "AGGREGATECAPACITYAVAILABLE",
+    "AGGREGATESCHEDULEDLOAD",
+    "AGGREGATEPASAAVAILABILITY",
+    "LASTCHANGED",
+    "RUNTYPE",
+    "ENERGYREQDEMAND10",
+    "CALCULATEDLOR1LEVEL",
+    "CALCULATEDLOR2LEVEL",
+    "MSRNETINTERCHANGEUNDERSCARCITY",
+    "LORNETINTERCHANGEUNDERSCARCITY",
+    "TOTALINTERMITTENTGENERATION",
+    "DEMAND_AND_NONSCHEDGEN",
+    "UIGF",
+    "SEMISCHEDULEDCAPACITY",
+    "LOR_SEMISCHEDULEDCAPACITY",
+    "LCR",
+    "LCR2",
+    "FUM",
+    "SS_SOLAR_UIGF",
+    "SS_WIND_UIGF",
+    "SS_SOLAR_CAPACITY",
+    "SS_WIND_CAPACITY",
+    "SS_SOLAR_CLEARED",
+    "SS_WIND_CLEARED",
+    "WDR_AVAILABLE",
+    "WDR_PASAAVAILABLE",
+    "WDR_CAPACITY",
+]
+
+[[increment]]
+n = 2
+from = "2026-08"
+ctl = "002.ctl"
+ctl_sha256 = "59f360329d2d1b06706b1ca31eadfcb05ffa4337ba6c29f2f468bb1dde71f257"
+aemo_ctl = "PUBLIC_ARCHIVE#PDPASA_REGIONSOLUTION#FILE01#202608.ctl"
+aemo_versions = [7]
+columns = [
+    "RUN_DATETIME",
+    "INTERVAL_DATETIME",
+    "REGIONID",
+    "DEMAND10",
+    "DEMAND50",
+    "DEMAND90",
+    "RESERVEREQ",
+    "CAPACITYREQ",
+    "ENERGYREQDEMAND50",
+    "UNCONSTRAINEDCAPACITY",
+    "CONSTRAINEDCAPACITY",
+    "NETINTERCHANGEUNDERSCARCITY",
+    "SURPLUSCAPACITY",
+    "SURPLUSRESERVE",
+    "RESERVECONDITION",
+    "MAXSURPLUSRESERVE",
+    "MAXSPARECAPACITY",
+    "LORCONDITION",
+    "AGGREGATECAPACITYAVAILABLE",
+    "AGGREGATESCHEDULEDLOAD",
+    "LASTCHANGED",
+    "AGGREGATEPASAAVAILABILITY",
+    "RUNTYPE",
+    "ENERGYREQDEMAND10",
+    "CALCULATEDLOR1LEVEL",
+    "CALCULATEDLOR2LEVEL",
+    "MSRNETINTERCHANGEUNDERSCARCITY",
+    "LORNETINTERCHANGEUNDERSCARCITY",
+    "TOTALINTERMITTENTGENERATION",
+    "DEMAND_AND_NONSCHEDGEN",
+    "UIGF",
+    "SEMISCHEDULEDCAPACITY",
+    "LOR_SEMISCHEDULEDCAPACITY",
+    "LCR",
+    "LCR2",
+    "FUM",
+    "SS_SOLAR_UIGF",
+    "SS_WIND_UIGF",
+    "SS_SOLAR_CAPACITY",
+    "SS_WIND_CAPACITY",
+    "SS_SOLAR_CLEARED",
+    "SS_WIND_CLEARED",
+    "WDR_AVAILABLE",
+    "WDR_PASAAVAILABLE",
+    "WDR_CAPACITY",
+]

@@ -1,0 +1,99 @@
+# Our schema of P5MIN_UNITSOLUTION. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "P5MIN_UNITSOLUTION"
+description = """
+The five-minute predispatch (P5Min) is a MMS system providing projected dispatch for 12 Dispatch cycles (one hour). The 5-minute Predispatch cycle runs every 5-minutes to produce a dispatch and pricing schedule to a 5-minute resolution covering the next hour, a total of twelve periods.
+P5MIN_UNITSOLUTION shows the Unit results from the capacity evaluations for each period of the study."""
+report_pairs = [["P5MIN", "UNITSOLUTION"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["RUN_DATETIME", "INTERVAL_DATETIME", "DUID"]
+time_column = "INTERVAL_DATETIME"
+next_column_id = 38
+
+column = [
+    { id = 1, name = "RUN_DATETIME", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "INTERVENTION", type = "double", nullable = true },
+    { id = 3, name = "INTERVAL_DATETIME", type = "timestamp_ns", nullable = false },
+    { id = 4, name = "DUID", type = "string", nullable = false },
+    { id = 5, name = "CONNECTIONPOINTID", type = "string", nullable = true },
+    { id = 6, name = "TRADETYPE", type = "double", nullable = true },
+    { id = 7, name = "AGCSTATUS", type = "double", nullable = true },
+    { id = 8, name = "INITIALMW", type = "double", nullable = true },
+    { id = 9, name = "TOTALCLEARED", type = "double", nullable = true },
+    { id = 10, name = "RAMPDOWNRATE", type = "double", nullable = true },
+    { id = 11, name = "RAMPUPRATE", type = "double", nullable = true },
+    { id = 12, name = "LOWER5MIN", type = "double", nullable = true },
+    { id = 13, name = "LOWER60SEC", type = "double", nullable = true },
+    { id = 14, name = "LOWER6SEC", type = "double", nullable = true },
+    { id = 15, name = "RAISE5MIN", type = "double", nullable = true },
+    { id = 16, name = "RAISE60SEC", type = "double", nullable = true },
+    { id = 17, name = "RAISE6SEC", type = "double", nullable = true },
+    { id = 18, name = "LOWERREG", type = "double", nullable = true },
+    { id = 19, name = "RAISEREG", type = "double", nullable = true },
+    { id = 20, name = "AVAILABILITY", type = "double", nullable = true },
+    { id = 21, name = "RAISE6SECFLAGS", type = "double", nullable = true },
+    { id = 22, name = "RAISE60SECFLAGS", type = "double", nullable = true },
+    { id = 23, name = "RAISE5MINFLAGS", type = "double", nullable = true },
+    { id = 24, name = "RAISEREGFLAGS", type = "double", nullable = true },
+    { id = 25, name = "LOWER6SECFLAGS", type = "double", nullable = true },
+    { id = 26, name = "LOWER60SECFLAGS", type = "double", nullable = true },
+    { id = 27, name = "LOWER5MINFLAGS", type = "double", nullable = true },
+    { id = 28, name = "LOWERREGFLAGS", type = "double", nullable = true },
+    { id = 29, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 30, name = "SEMIDISPATCHCAP", type = "double", nullable = true },
+    { id = 31, name = "DISPATCHMODETIME", type = "double", nullable = true },
+    { id = 32, name = "LOWER1SEC", type = "double", nullable = true },
+    { id = 33, name = "RAISE1SEC", type = "double", nullable = true },
+    { id = 34, name = "RAISE1SECFLAGS", type = "double", nullable = true },
+    { id = 35, name = "LOWER1SECFLAGS", type = "double", nullable = true },
+    { id = 36, name = "CONFORMANCE_MODE", type = "double", nullable = true },
+    { id = 37, name = "UIGF", type = "double", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "4d2ed10153f4d0b7223fdff898ef2af5785ab70465762ff8580bf7d686c2eb37"
+aemo_ctl = "PUBLIC_DVD_P5MIN_UNITSOLUTION_202401.ctl"
+aemo_versions = [4, 5]
+columns = [
+    "RUN_DATETIME",
+    "INTERVENTION",
+    "INTERVAL_DATETIME",
+    "DUID",
+    "CONNECTIONPOINTID",
+    "TRADETYPE",
+    "AGCSTATUS",
+    "INITIALMW",
+    "TOTALCLEARED",
+    "RAMPDOWNRATE",
+    "RAMPUPRATE",
+    "LOWER5MIN",
+    "LOWER60SEC",
+    "LOWER6SEC",
+    "RAISE5MIN",
+    "RAISE60SEC",
+    "RAISE6SEC",
+    "LOWERREG",
+    "RAISEREG",
+    "AVAILABILITY",
+    "RAISE6SECFLAGS",
+    "RAISE60SECFLAGS",
+    "RAISE5MINFLAGS",
+    "RAISEREGFLAGS",
+    "LOWER6SECFLAGS",
+    "LOWER60SECFLAGS",
+    "LOWER5MINFLAGS",
+    "LOWERREGFLAGS",
+    "LASTCHANGED",
+    "SEMIDISPATCHCAP",
+    "DISPATCHMODETIME",
+    "LOWER1SEC",
+    "RAISE1SEC",
+    "RAISE1SECFLAGS",
+    "LOWER1SECFLAGS",
+    "CONFORMANCE_MODE",
+    "UIGF",
+]

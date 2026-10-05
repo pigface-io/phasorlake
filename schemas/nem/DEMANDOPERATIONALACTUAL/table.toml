@@ -1,0 +1,35 @@
+# Our schema of DEMANDOPERATIONALACTUAL. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "DEMANDOPERATIONALACTUAL"
+description = "Shows Actual Operational Demand for a particular date time interval."
+report_pairs = [["OPERATIONAL_DEMAND", "ACTUAL"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["INTERVAL_DATETIME", "REGIONID"]
+time_column = "INTERVAL_DATETIME"
+next_column_id = 7
+
+column = [
+    { id = 1, name = "INTERVAL_DATETIME", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "REGIONID", type = "string", nullable = false },
+    { id = 3, name = "OPERATIONAL_DEMAND", type = "double", nullable = true },
+    { id = 4, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 5, name = "OPERATIONAL_DEMAND_ADJUSTMENT", type = "double", nullable = true },
+    { id = 6, name = "WDR_ESTIMATE", type = "double", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2026-08"
+ctl = "001.ctl"
+ctl_sha256 = "ec92277c0f3fc2741580d6f61e4faede4d794ce0818e8fd271b8857a57f08404"
+aemo_ctl = "PUBLIC_ARCHIVE#DEMANDOPERATIONALACTUAL#FILE01#202608.ctl"
+aemo_versions = [3]
+columns = [
+    "INTERVAL_DATETIME",
+    "REGIONID",
+    "OPERATIONAL_DEMAND",
+    "LASTCHANGED",
+    "OPERATIONAL_DEMAND_ADJUSTMENT",
+    "WDR_ESTIMATE",
+]

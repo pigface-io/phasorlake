@@ -1,0 +1,119 @@
+# Our schema of GENCONDATA. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "GENCONDATA"
+description = """
+GENCONDATA sets out the generic constraints contained within a generic constraint set invoked in PASA, predispatch and dispatch.
+Fields enable selective application of invoked constraints in the Dispatch, Predispatch, ST PASA or MT PASA processes."""
+report_pairs = [["GENCONDATA", ""], ["GENCONDATA", "NULL"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["EFFECTIVEDATE", "VERSIONNO", "GENCONID"]
+time_column = "EFFECTIVEDATE"
+next_column_id = 30
+
+column = [
+    { id = 1, name = "EFFECTIVEDATE", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "VERSIONNO", type = "double", nullable = false },
+    { id = 3, name = "GENCONID", type = "string", nullable = false },
+    { id = 4, name = "CONSTRAINTTYPE", type = "string", nullable = true },
+    { id = 5, name = "CONSTRAINTVALUE", type = "double", nullable = true },
+    { id = 6, name = "DESCRIPTION", type = "string", nullable = true },
+    { id = 7, name = "STATUS", type = "string", nullable = true },
+    { id = 8, name = "GENERICCONSTRAINTWEIGHT", type = "double", nullable = true },
+    { id = 9, name = "AUTHORISEDDATE", type = "timestamp_ns", nullable = true },
+    { id = 10, name = "AUTHORISEDBY", type = "string", nullable = true },
+    { id = 11, name = "DYNAMICRHS", type = "double", nullable = true },
+    { id = 12, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 13, name = "DISPATCH", type = "string", nullable = true },
+    { id = 14, name = "PREDISPATCH", type = "string", nullable = true },
+    { id = 15, name = "STPASA", type = "string", nullable = true },
+    { id = 16, name = "MTPASA", type = "string", nullable = true },
+    { id = 17, name = "IMPACT", type = "string", nullable = true },
+    { id = 18, name = "SOURCE", type = "string", nullable = true },
+    { id = 19, name = "LIMITTYPE", type = "string", nullable = true },
+    { id = 20, name = "REASON", type = "string", nullable = true },
+    { id = 21, name = "MODIFICATIONS", type = "string", nullable = true },
+    { id = 22, name = "ADDITIONALNOTES", type = "string", nullable = true },
+    { id = 23, name = "P5MIN_SCOPE_OVERRIDE", type = "string", nullable = true },
+    { id = 24, name = "LRC", type = "string", nullable = true },
+    { id = 25, name = "LOR", type = "string", nullable = true },
+    { id = 26, name = "FORCE_SCADA", type = "double", nullable = true },
+    { id = 27, name = "SYSTEMSECURITY", type = "string", nullable = true },
+    { id = 28, name = "SSM_REGIONID", type = "string", nullable = true },
+    { id = 29, name = "SSM_GROUPID", type = "string", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "bafae94f413faac8b0f09c8668c5690c3620a83936be14a3b9957fd37a641891"
+aemo_ctl = "PUBLIC_DVD_GENCONDATA_202401.ctl"
+aemo_versions = [6]
+columns = [
+    "EFFECTIVEDATE",
+    "VERSIONNO",
+    "GENCONID",
+    "CONSTRAINTTYPE",
+    "CONSTRAINTVALUE",
+    "DESCRIPTION",
+    "STATUS",
+    "GENERICCONSTRAINTWEIGHT",
+    "AUTHORISEDDATE",
+    "AUTHORISEDBY",
+    "DYNAMICRHS",
+    "LASTCHANGED",
+    "DISPATCH",
+    "PREDISPATCH",
+    "STPASA",
+    "MTPASA",
+    "IMPACT",
+    "SOURCE",
+    "LIMITTYPE",
+    "REASON",
+    "MODIFICATIONS",
+    "ADDITIONALNOTES",
+    "P5MIN_SCOPE_OVERRIDE",
+    "LRC",
+    "LOR",
+    "FORCE_SCADA",
+]
+
+[[increment]]
+n = 2
+from = "2026-08"
+ctl = "002.ctl"
+ctl_sha256 = "13d663d061b52ff7b88141b3020d32be80d84c1afc53a408effa2c16cf0b1d4a"
+aemo_ctl = "PUBLIC_ARCHIVE#GENCONDATA#FILE01#202608.ctl"
+aemo_versions = [7]
+columns = [
+    "EFFECTIVEDATE",
+    "VERSIONNO",
+    "GENCONID",
+    "CONSTRAINTTYPE",
+    "CONSTRAINTVALUE",
+    "DESCRIPTION",
+    "STATUS",
+    "GENERICCONSTRAINTWEIGHT",
+    "AUTHORISEDDATE",
+    "AUTHORISEDBY",
+    "DYNAMICRHS",
+    "LASTCHANGED",
+    "DISPATCH",
+    "PREDISPATCH",
+    "STPASA",
+    "MTPASA",
+    "ADDITIONALNOTES",
+    "P5MIN_SCOPE_OVERRIDE",
+    "LRC",
+    "LOR",
+    "IMPACT",
+    "SOURCE",
+    "LIMITTYPE",
+    "REASON",
+    "MODIFICATIONS",
+    "FORCE_SCADA",
+    "SYSTEMSECURITY",
+    "SSM_REGIONID",
+    "SSM_GROUPID",
+]

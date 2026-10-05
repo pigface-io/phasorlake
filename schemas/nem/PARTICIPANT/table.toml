@@ -1,0 +1,36 @@
+# Our schema of PARTICIPANT. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "PARTICIPANT"
+description = "PARTICIPANT sets out Participant ID, name and class for all participants."
+report_pairs = [["PARTICIPANT_REGISTRATION", "PARTICIPANT"]]
+load_mode = "snapshot"
+dedupe = "pk_lastchanged"
+primary_key = ["PARTICIPANTID"]
+next_column_id = 8
+
+column = [
+    { id = 1, name = "PARTICIPANTID", type = "string", nullable = false },
+    { id = 2, name = "PARTICIPANTCLASSID", type = "string", nullable = true },
+    { id = 3, name = "NAME", type = "string", nullable = true },
+    { id = 4, name = "DESCRIPTION", type = "string", nullable = true },
+    { id = 5, name = "ACN", type = "string", nullable = true },
+    { id = 6, name = "PRIMARYBUSINESS", type = "string", nullable = true },
+    { id = 7, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "3cacdfc8f8cdc46bf0d197d40880e7c3a262841e69c952dd39487be1f9d919ae"
+aemo_ctl = "PUBLIC_DVD_PARTICIPANT_202401.ctl"
+aemo_versions = [1]
+columns = [
+    "PARTICIPANTID",
+    "PARTICIPANTCLASSID",
+    "NAME",
+    "DESCRIPTION",
+    "ACN",
+    "PRIMARYBUSINESS",
+    "LASTCHANGED",
+]

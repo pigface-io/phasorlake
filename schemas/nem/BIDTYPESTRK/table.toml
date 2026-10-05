@@ -1,0 +1,32 @@
+# Our schema of BIDTYPESTRK. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "BIDTYPESTRK"
+description = "BIDTYPESTRK, together with the associated data in BIDTYPES, define a set of ancillary services with bidding parameters from a given date."
+report_pairs = [["MARKET_CONFIG", "BIDTYPESTRK"]]
+load_mode = "snapshot"
+dedupe = "pk_lastchanged"
+primary_key = ["EFFECTIVEDATE", "VERSIONNO"]
+next_column_id = 6
+
+column = [
+    { id = 1, name = "EFFECTIVEDATE", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "VERSIONNO", type = "double", nullable = false },
+    { id = 3, name = "AUTHORISEDDATE", type = "timestamp_ns", nullable = true },
+    { id = 4, name = "AUTHORISEDBY", type = "string", nullable = true },
+    { id = 5, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "65167c472f5fbc14555ef0174f64d980c3975799d071451948caa965393b24a0"
+aemo_ctl = "PUBLIC_DVD_BIDTYPESTRK_202401.ctl"
+aemo_versions = [1]
+columns = [
+    "EFFECTIVEDATE",
+    "VERSIONNO",
+    "AUTHORISEDDATE",
+    "AUTHORISEDBY",
+    "LASTCHANGED",
+]

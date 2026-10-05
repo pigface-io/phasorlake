@@ -1,0 +1,63 @@
+# Our schema of PREDISPATCHCASESOLUTION. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "PREDISPATCHCASESOLUTION"
+description = "PREDISPATCHCASESOLUTION provides information relating to the complete predispatch run. The fields provide an overview of the dispatch run results allowing immediate identification of conditions such as energy or FCAS deficiencies."
+report_pairs = [["PREDISPATCH", "CASE_SOLUTION"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["PREDISPATCHSEQNO", "RUNNO"]
+time_column = "LASTCHANGED"
+next_column_id = 21
+
+column = [
+    { id = 1, name = "PREDISPATCHSEQNO", type = "string", nullable = false },
+    { id = 2, name = "RUNNO", type = "double", nullable = false },
+    { id = 3, name = "SOLUTIONSTATUS", type = "double", nullable = true },
+    { id = 4, name = "SPDVERSION", type = "string", nullable = true },
+    { id = 5, name = "NONPHYSICALLOSSES", type = "double", nullable = true },
+    { id = 6, name = "TOTALOBJECTIVE", type = "double", nullable = true },
+    { id = 7, name = "TOTALAREAGENVIOLATION", type = "double", nullable = true },
+    { id = 8, name = "TOTALINTERCONNECTORVIOLATION", type = "double", nullable = true },
+    { id = 9, name = "TOTALGENERICVIOLATION", type = "double", nullable = true },
+    { id = 10, name = "TOTALRAMPRATEVIOLATION", type = "double", nullable = true },
+    { id = 11, name = "TOTALUNITMWCAPACITYVIOLATION", type = "double", nullable = true },
+    { id = 12, name = "TOTAL5MINVIOLATION", type = "double", nullable = true },
+    { id = 13, name = "TOTALREGVIOLATION", type = "double", nullable = true },
+    { id = 14, name = "TOTAL6SECVIOLATION", type = "double", nullable = true },
+    { id = 15, name = "TOTAL60SECVIOLATION", type = "double", nullable = true },
+    { id = 16, name = "TOTALASPROFILEVIOLATION", type = "double", nullable = true },
+    { id = 17, name = "TOTALENERGYCONSTRVIOLATION", type = "double", nullable = true },
+    { id = 18, name = "TOTALENERGYOFFERVIOLATION", type = "double", nullable = true },
+    { id = 19, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 20, name = "INTERVENTION", type = "double", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "dfe3a9ca073ee460459e73d0151e7f657b99152271ed8d9247f5917fccfbd03f"
+aemo_ctl = "PUBLIC_DVD_PREDISPATCHCASESOLUTION_202401.ctl"
+aemo_versions = [1]
+columns = [
+    "PREDISPATCHSEQNO",
+    "RUNNO",
+    "SOLUTIONSTATUS",
+    "SPDVERSION",
+    "NONPHYSICALLOSSES",
+    "TOTALOBJECTIVE",
+    "TOTALAREAGENVIOLATION",
+    "TOTALINTERCONNECTORVIOLATION",
+    "TOTALGENERICVIOLATION",
+    "TOTALRAMPRATEVIOLATION",
+    "TOTALUNITMWCAPACITYVIOLATION",
+    "TOTAL5MINVIOLATION",
+    "TOTALREGVIOLATION",
+    "TOTAL6SECVIOLATION",
+    "TOTAL60SECVIOLATION",
+    "TOTALASPROFILEVIOLATION",
+    "TOTALENERGYCONSTRVIOLATION",
+    "TOTALENERGYOFFERVIOLATION",
+    "LASTCHANGED",
+    "INTERVENTION",
+]

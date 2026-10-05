@@ -1,0 +1,51 @@
+# Our schema of ROOFTOP_PV_ACTUAL. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "ROOFTOP_PV_ACTUAL"
+description = "Estimate of regional Rooftop Solar actual generation for each half-hour interval in a day"
+report_pairs = [["ROOFTOP", "ACTUAL"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["INTERVAL_DATETIME", "REGIONID", "TYPE"]
+time_column = "INTERVAL_DATETIME"
+next_column_id = 7
+
+column = [
+    { id = 1, name = "INTERVAL_DATETIME", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "REGIONID", type = "string", nullable = false },
+    { id = 3, name = "POWER", type = "double", nullable = true },
+    { id = 6, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 5, name = "TYPE", type = "string", nullable = false },
+    { id = 4, name = "QI", type = "double", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "bd661d42b856e96e6d5b4841862d5ffa793ef90a1eb156af24a05244297250f7"
+aemo_ctl = "PUBLIC_DVD_ROOFTOP_PV_ACTUAL_202401.ctl"
+aemo_versions = [2]
+columns = [
+    "INTERVAL_DATETIME",
+    "REGIONID",
+    "POWER",
+    "QI",
+    "TYPE",
+    "LASTCHANGED",
+]
+
+[[increment]]
+n = 2
+from = "2026-08"
+ctl = "002.ctl"
+ctl_sha256 = "cfea7189e98599284c9304195be86a554c97f29fa0c688cab42da05aa1585c8b"
+aemo_ctl = "PUBLIC_ARCHIVE#ROOFTOP_PV_ACTUAL#FILE01#202608.ctl"
+aemo_versions = [2]
+columns = [
+    "INTERVAL_DATETIME",
+    "REGIONID",
+    "POWER",
+    "LASTCHANGED",
+    "TYPE",
+    "QI",
+]

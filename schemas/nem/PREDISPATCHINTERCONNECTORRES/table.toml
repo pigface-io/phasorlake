@@ -1,0 +1,100 @@
+# Our schema of PREDISPATCHINTERCONNECTORRES. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "PREDISPATCHINTERCONNECTORRES"
+description = """
+PREDISPATCHINTERCONNECTORRES records Interconnector flows and losses for the periods calculated in each predispatch run. Only binding and interconnector constraints are reported.
+Some fields are for the Frequency Controlled Ancillary Services export and import limits and extra reporting of the generic constraint setting the energy import and export limits."""
+report_pairs = [["PREDISPATCH", "INTERCONNECTOR_SOLN"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["INTERCONNECTORID", "DATETIME"]
+time_column = "DATETIME"
+next_column_id = 24
+
+column = [
+    { id = 1, name = "PREDISPATCHSEQNO", type = "string", nullable = true },
+    { id = 2, name = "RUNNO", type = "double", nullable = true },
+    { id = 3, name = "INTERCONNECTORID", type = "string", nullable = false },
+    { id = 4, name = "PERIODID", type = "string", nullable = true },
+    { id = 5, name = "INTERVENTION", type = "double", nullable = true },
+    { id = 6, name = "METEREDMWFLOW", type = "double", nullable = true },
+    { id = 7, name = "MWFLOW", type = "double", nullable = true },
+    { id = 8, name = "MWLOSSES", type = "double", nullable = true },
+    { id = 9, name = "MARGINALVALUE", type = "double", nullable = true },
+    { id = 10, name = "VIOLATIONDEGREE", type = "double", nullable = true },
+    { id = 11, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 12, name = "DATETIME", type = "timestamp_ns", nullable = false },
+    { id = 13, name = "EXPORTLIMIT", type = "double", nullable = true },
+    { id = 14, name = "IMPORTLIMIT", type = "double", nullable = true },
+    { id = 15, name = "MARGINALLOSS", type = "double", nullable = true },
+    { id = 16, name = "EXPORTGENCONID", type = "string", nullable = true },
+    { id = 17, name = "IMPORTGENCONID", type = "string", nullable = true },
+    { id = 18, name = "FCASEXPORTLIMIT", type = "double", nullable = true },
+    { id = 19, name = "FCASIMPORTLIMIT", type = "double", nullable = true },
+    { id = 20, name = "LOCAL_PRICE_ADJUSTMENT_EXPORT", type = "double", nullable = true },
+    { id = 21, name = "LOCALLY_CONSTRAINED_EXPORT", type = "double", nullable = true },
+    { id = 22, name = "LOCAL_PRICE_ADJUSTMENT_IMPORT", type = "double", nullable = true },
+    { id = 23, name = "LOCALLY_CONSTRAINED_IMPORT", type = "double", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "887b9978a285707ee5d950739b6aca7a47c80027f36f4dd0df342e6303cc0624"
+aemo_ctl = "PUBLIC_DVD_PREDISPATCHINTERCONNECTORRES_D_202401.ctl"
+aemo_versions = [3]
+columns = [
+    "PREDISPATCHSEQNO",
+    "RUNNO",
+    "INTERCONNECTORID",
+    "PERIODID",
+    "INTERVENTION",
+    "METEREDMWFLOW",
+    "MWFLOW",
+    "MWLOSSES",
+    "MARGINALVALUE",
+    "VIOLATIONDEGREE",
+    "LASTCHANGED",
+    "DATETIME",
+    "EXPORTLIMIT",
+    "IMPORTLIMIT",
+    "MARGINALLOSS",
+    "EXPORTGENCONID",
+    "IMPORTGENCONID",
+    "FCASEXPORTLIMIT",
+    "FCASIMPORTLIMIT",
+]
+
+[[increment]]
+n = 2
+from = "2026-08"
+ctl = "002.ctl"
+ctl_sha256 = "03104b8a11c264d55d4476a00f5e45ec42a8ca074b954be058dc7fd41de9e4f4"
+aemo_ctl = "PUBLIC_ARCHIVE#PREDISPATCHINTERCONNECTORRES#FILE01#202608.ctl"
+aemo_versions = [3]
+columns = [
+    "PREDISPATCHSEQNO",
+    "RUNNO",
+    "INTERCONNECTORID",
+    "PERIODID",
+    "INTERVENTION",
+    "METEREDMWFLOW",
+    "MWFLOW",
+    "MWLOSSES",
+    "MARGINALVALUE",
+    "VIOLATIONDEGREE",
+    "LASTCHANGED",
+    "DATETIME",
+    "EXPORTLIMIT",
+    "IMPORTLIMIT",
+    "MARGINALLOSS",
+    "EXPORTGENCONID",
+    "IMPORTGENCONID",
+    "FCASEXPORTLIMIT",
+    "FCASIMPORTLIMIT",
+    "LOCAL_PRICE_ADJUSTMENT_EXPORT",
+    "LOCALLY_CONSTRAINED_EXPORT",
+    "LOCAL_PRICE_ADJUSTMENT_IMPORT",
+    "LOCALLY_CONSTRAINED_IMPORT",
+]

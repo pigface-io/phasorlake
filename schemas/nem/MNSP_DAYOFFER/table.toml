@@ -1,0 +1,71 @@
+# Our schema of MNSP_DAYOFFER. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "MNSP_DAYOFFER"
+description = """
+MNSP_DAYOFFER shows price and other non-period data pertaining to a specific MNSP bid and Link ID to be effective from the given Settlement Date.
+MNSP_DAYOFFER is the parent table to MNSP_PEROFFER, and joins to MNSP_OFFERTRK."""
+report_pairs = [["BIDS", "MNSP_DAYOFFER"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["SETTLEMENTDATE", "OFFERDATE", "VERSIONNO", "PARTICIPANTID", "LINKID"]
+time_column = "SETTLEMENTDATE"
+next_column_id = 24
+
+column = [
+    { id = 1, name = "SETTLEMENTDATE", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "OFFERDATE", type = "timestamp_ns", nullable = false },
+    { id = 3, name = "VERSIONNO", type = "double", nullable = false },
+    { id = 4, name = "PARTICIPANTID", type = "string", nullable = false },
+    { id = 5, name = "LINKID", type = "string", nullable = false },
+    { id = 6, name = "ENTRYTYPE", type = "string", nullable = true },
+    { id = 7, name = "REBIDEXPLANATION", type = "string", nullable = true },
+    { id = 8, name = "PRICEBAND1", type = "double", nullable = true },
+    { id = 9, name = "PRICEBAND2", type = "double", nullable = true },
+    { id = 10, name = "PRICEBAND3", type = "double", nullable = true },
+    { id = 11, name = "PRICEBAND4", type = "double", nullable = true },
+    { id = 12, name = "PRICEBAND5", type = "double", nullable = true },
+    { id = 13, name = "PRICEBAND6", type = "double", nullable = true },
+    { id = 14, name = "PRICEBAND7", type = "double", nullable = true },
+    { id = 15, name = "PRICEBAND8", type = "double", nullable = true },
+    { id = 16, name = "PRICEBAND9", type = "double", nullable = true },
+    { id = 17, name = "PRICEBAND10", type = "double", nullable = true },
+    { id = 18, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 19, name = "REBID_EVENT_TIME", type = "string", nullable = true },
+    { id = 20, name = "REBID_AWARE_TIME", type = "string", nullable = true },
+    { id = 21, name = "REBID_DECISION_TIME", type = "string", nullable = true },
+    { id = 22, name = "REBID_CATEGORY", type = "string", nullable = true },
+    { id = 23, name = "REFERENCE_ID", type = "string", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "69a823a59bedf5173c4f84a957e0c5cc4a69d7846a87c17e1c21106b394be7b0"
+aemo_ctl = "PUBLIC_DVD_MNSP_DAYOFFER_202401.ctl"
+aemo_versions = [1]
+columns = [
+    "SETTLEMENTDATE",
+    "OFFERDATE",
+    "VERSIONNO",
+    "PARTICIPANTID",
+    "LINKID",
+    "ENTRYTYPE",
+    "REBIDEXPLANATION",
+    "PRICEBAND1",
+    "PRICEBAND2",
+    "PRICEBAND3",
+    "PRICEBAND4",
+    "PRICEBAND5",
+    "PRICEBAND6",
+    "PRICEBAND7",
+    "PRICEBAND8",
+    "PRICEBAND9",
+    "PRICEBAND10",
+    "LASTCHANGED",
+    "REBID_EVENT_TIME",
+    "REBID_AWARE_TIME",
+    "REBID_DECISION_TIME",
+    "REBID_CATEGORY",
+    "REFERENCE_ID",
+]

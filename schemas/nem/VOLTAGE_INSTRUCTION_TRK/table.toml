@@ -1,0 +1,43 @@
+# Our schema of VOLTAGE_INSTRUCTION_TRK. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "VOLTAGE_INSTRUCTION_TRK"
+description = "Parent record for Voltage Instructions (MVAr Dispatch). 'SIGNAL' records will have no children; 'INSTRUCTION' records will have children"
+report_pairs = [["VOLTAGE_INSTRUCTION", "TRACK"]]
+load_mode = "append"
+dedupe = "pk"
+primary_key = ["RUN_DATETIME", "VERSION_DATETIME"]
+time_column = "RUN_DATETIME"
+next_column_id = 11
+
+column = [
+    { id = 1, name = "RUN_DATETIME", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "FILE_TYPE", type = "string", nullable = true },
+    { id = 3, name = "VERSION_DATETIME", type = "timestamp_ns", nullable = false },
+    { id = 4, name = "SE_DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 5, name = "SOLUTION_CATEGORY", type = "string", nullable = true },
+    { id = 6, name = "SOLUTION_STATUS", type = "string", nullable = true },
+    { id = 7, name = "OPERATING_MODE", type = "string", nullable = true },
+    { id = 8, name = "OPERATING_STATUS", type = "string", nullable = true },
+    { id = 9, name = "EST_EXPIRY", type = "timestamp_ns", nullable = true },
+    { id = 10, name = "EST_NEXT_INSTRUCTION", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2026-08"
+ctl = "001.ctl"
+ctl_sha256 = "858e730a65877539c1a7053ebd10859b191fe44302868efb0bcc8620b43565be"
+aemo_ctl = "PUBLIC_ARCHIVE#VOLTAGE_INSTRUCTION_TRK#FILE01#202608.ctl"
+aemo_versions = [2]
+columns = [
+    "RUN_DATETIME",
+    "FILE_TYPE",
+    "VERSION_DATETIME",
+    "SE_DATETIME",
+    "SOLUTION_CATEGORY",
+    "SOLUTION_STATUS",
+    "OPERATING_MODE",
+    "OPERATING_STATUS",
+    "EST_EXPIRY",
+    "EST_NEXT_INSTRUCTION",
+]

@@ -1,0 +1,35 @@
+# Our schema of BILLINGDAYTRK. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "BILLINGDAYTRK"
+description = "BILLINGDAYTRK is key for matching settlement versions with billing runs. BILLINGDAYTRK displays the billrunnos per billing week, and the settlement version numbers per settlement day comprising the billrunno."
+report_pairs = [["BILLING", "DAYTRK"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["CONTRACTYEAR", "WEEKNO", "BILLRUNNO", "SETTLEMENTDATE"]
+time_column = "SETTLEMENTDATE"
+next_column_id = 7
+
+column = [
+    { id = 1, name = "CONTRACTYEAR", type = "double", nullable = false },
+    { id = 2, name = "WEEKNO", type = "double", nullable = false },
+    { id = 3, name = "BILLRUNNO", type = "double", nullable = false },
+    { id = 4, name = "SETTLEMENTDATE", type = "timestamp_ns", nullable = false },
+    { id = 5, name = "RUNNO", type = "double", nullable = true },
+    { id = 6, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "1e20b7239ade298f105fb1e08796f6caa45af8e2fa843a09bc0862a142108c0c"
+aemo_ctl = "PUBLIC_DVD_BILLINGDAYTRK_202401.ctl"
+aemo_versions = [5]
+columns = [
+    "CONTRACTYEAR",
+    "WEEKNO",
+    "BILLRUNNO",
+    "SETTLEMENTDATE",
+    "RUNNO",
+    "LASTCHANGED",
+]

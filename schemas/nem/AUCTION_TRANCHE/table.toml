@@ -1,0 +1,43 @@
+# Our schema of AUCTION_TRANCHE. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "AUCTION_TRANCHE"
+description = "AUCTION_TRANCHE supports the Settlement Residue Auction, by holding the default definitions for the percentage number of units allocated and dates applicable to each tranche for a specified auction quarter. This information provides the basis for setting up contracts for individual tranches."
+report_pairs = [["IRAUCTION_CONFIG", "AUCTION_TRANCHE"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["CONTRACTYEAR", "QUARTER", "VERSIONNO", "TRANCHE"]
+time_column = "LASTCHANGED"
+next_column_id = 11
+
+column = [
+    { id = 1, name = "CONTRACTYEAR", type = "double", nullable = false },
+    { id = 2, name = "QUARTER", type = "double", nullable = false },
+    { id = 3, name = "VERSIONNO", type = "double", nullable = false },
+    { id = 4, name = "TRANCHE", type = "double", nullable = false },
+    { id = 5, name = "AUCTIONDATE", type = "timestamp_ns", nullable = true },
+    { id = 6, name = "NOTIFYDATE", type = "timestamp_ns", nullable = true },
+    { id = 7, name = "UNITALLOCATION", type = "double", nullable = true },
+    { id = 8, name = "CHANGEDATE", type = "timestamp_ns", nullable = true },
+    { id = 9, name = "CHANGEDBY", type = "string", nullable = true },
+    { id = 10, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "54f5f44e04aa52a286529bb792d3d476ff69888a9fcdf1b519eb65aefd3834e2"
+aemo_ctl = "PUBLIC_DVD_AUCTION_TRANCHE_202401.ctl"
+aemo_versions = [1]
+columns = [
+    "CONTRACTYEAR",
+    "QUARTER",
+    "VERSIONNO",
+    "TRANCHE",
+    "AUCTIONDATE",
+    "NOTIFYDATE",
+    "UNITALLOCATION",
+    "CHANGEDATE",
+    "CHANGEDBY",
+    "LASTCHANGED",
+]

@@ -1,0 +1,83 @@
+# Our schema of MTPASA_REGIONSUMMARY. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "MTPASA_REGIONSUMMARY"
+description = "Region Results summary over aggregation periods."
+report_pairs = [["MTPASA", "REGIONSUMMARY"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["RUN_DATETIME", "RUN_NO", "RUNTYPE", "DEMAND_POE_TYPE", "AGGREGATION_PERIOD", "PERIOD_ENDING", "REGIONID"]
+time_column = "RUN_DATETIME"
+next_column_id = 31
+
+column = [
+    { id = 1, name = "RUN_DATETIME", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "RUN_NO", type = "double", nullable = false },
+    { id = 3, name = "RUNTYPE", type = "string", nullable = false },
+    { id = 4, name = "DEMAND_POE_TYPE", type = "string", nullable = false },
+    { id = 5, name = "AGGREGATION_PERIOD", type = "string", nullable = false },
+    { id = 6, name = "PERIOD_ENDING", type = "timestamp_ns", nullable = false },
+    { id = 7, name = "REGIONID", type = "string", nullable = false },
+    { id = 8, name = "NATIVEDEMAND", type = "double", nullable = true },
+    { id = 9, name = "USE_PERCENTILE10", type = "double", nullable = true },
+    { id = 10, name = "USE_PERCENTILE20", type = "double", nullable = true },
+    { id = 11, name = "USE_PERCENTILE30", type = "double", nullable = true },
+    { id = 12, name = "USE_PERCENTILE40", type = "double", nullable = true },
+    { id = 13, name = "USE_PERCENTILE50", type = "double", nullable = true },
+    { id = 14, name = "USE_PERCENTILE60", type = "double", nullable = true },
+    { id = 15, name = "USE_PERCENTILE70", type = "double", nullable = true },
+    { id = 16, name = "USE_PERCENTILE80", type = "double", nullable = true },
+    { id = 17, name = "USE_PERCENTILE90", type = "double", nullable = true },
+    { id = 18, name = "USE_PERCENTILE100", type = "double", nullable = true },
+    { id = 19, name = "USE_AVERAGE", type = "double", nullable = true },
+    { id = 20, name = "NUMBEROFITERATIONS", type = "double", nullable = true },
+    { id = 21, name = "USE_NUMBEROFITERATIONS", type = "double", nullable = true },
+    { id = 22, name = "USE_EVENT_MAX", type = "double", nullable = true },
+    { id = 23, name = "USE_EVENT_UPPERQUARTILE", type = "double", nullable = true },
+    { id = 24, name = "USE_EVENT_MEDIAN", type = "double", nullable = true },
+    { id = 25, name = "USE_EVENT_LOWERQUARTILE", type = "double", nullable = true },
+    { id = 26, name = "USE_EVENT_MIN", type = "double", nullable = true },
+    { id = 27, name = "WEIGHT", type = "double", nullable = true },
+    { id = 28, name = "USE_WEIGHTED_AVG", type = "double", nullable = true },
+    { id = 29, name = "LRC", type = "double", nullable = true },
+    { id = 30, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "66f4e1c066e8596ec364506ab0f1f75899d9ee92e809711c104a31cf59b70dce"
+aemo_ctl = "PUBLIC_DVD_MTPASA_REGIONSUMMARY_202401.ctl"
+aemo_versions = [1]
+columns = [
+    "RUN_DATETIME",
+    "RUN_NO",
+    "RUNTYPE",
+    "DEMAND_POE_TYPE",
+    "AGGREGATION_PERIOD",
+    "PERIOD_ENDING",
+    "REGIONID",
+    "NATIVEDEMAND",
+    "USE_PERCENTILE10",
+    "USE_PERCENTILE20",
+    "USE_PERCENTILE30",
+    "USE_PERCENTILE40",
+    "USE_PERCENTILE50",
+    "USE_PERCENTILE60",
+    "USE_PERCENTILE70",
+    "USE_PERCENTILE80",
+    "USE_PERCENTILE90",
+    "USE_PERCENTILE100",
+    "USE_AVERAGE",
+    "NUMBEROFITERATIONS",
+    "USE_NUMBEROFITERATIONS",
+    "USE_EVENT_MAX",
+    "USE_EVENT_UPPERQUARTILE",
+    "USE_EVENT_MEDIAN",
+    "USE_EVENT_LOWERQUARTILE",
+    "USE_EVENT_MIN",
+    "WEIGHT",
+    "USE_WEIGHTED_AVG",
+    "LRC",
+    "LASTCHANGED",
+]

@@ -17,6 +17,24 @@ pub const ORACLE_KEY: &str = "nemlake:oracle";
 /// file only, the name) of the column whose values it holds.
 pub const RAW_OF_KEY: &str = "nemlake:raw-of";
 
+impl crate::file_model::v2::model::LakeType {
+    /// The Arrow type, with timestamps in `market`'s offset.
+    pub fn arrow(self, market: &MarketDef) -> DataType {
+        use crate::file_model::v2::model::LakeType;
+        match self {
+            LakeType::String => DataType::Utf8,
+            LakeType::Double => DataType::Float64,
+            LakeType::Long => DataType::Int64,
+            LakeType::Boolean => DataType::Boolean,
+            LakeType::Date => DataType::Date32,
+            LakeType::TimestampNs => DataType::Timestamp(
+                arrow_schema::TimeUnit::Nanosecond,
+                Some(Arc::from(market.arrow_tz())),
+            ),
+        }
+    }
+}
+
 /// The Arrow type for a column under the given options.
 ///
 /// `Number` becomes `Float64` unless decimals are requested and the schema
@@ -81,6 +99,28 @@ mod tests {
             utc_offset_secs: 36_000,
             timestamp_format: TimestampFormat::AemoSlash,
         }
+    }
+
+    #[test]
+    fn lake_types_map_to_arrow() {
+        use crate::file_model::v2::model::LakeType;
+        let got: Vec<String> = LakeType::ALL
+            .iter()
+            .map(|t| t.arrow(&nem()).to_string())
+            .collect();
+        let want = [
+            DataType::Utf8,
+            DataType::Float64,
+            DataType::Int64,
+            DataType::Boolean,
+            DataType::Date32,
+            DataType::Timestamp(
+                arrow_schema::TimeUnit::Nanosecond,
+                Some(Arc::from("+10:00")),
+            ),
+        ]
+        .map(|d| d.to_string());
+        assert_eq!(got, want);
     }
 
     #[test]

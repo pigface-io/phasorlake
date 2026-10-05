@@ -1,0 +1,37 @@
+# Our schema of DEMANDOPERATIONALFORECAST. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "DEMANDOPERATIONALFORECAST"
+description = "Shows Forecast Operational Demand for a particular date time interval."
+report_pairs = [["OPERATIONAL_DEMAND", "FORECAST"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["INTERVAL_DATETIME", "REGIONID"]
+time_column = "INTERVAL_DATETIME"
+next_column_id = 8
+
+column = [
+    { id = 1, name = "INTERVAL_DATETIME", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "REGIONID", type = "string", nullable = false },
+    { id = 3, name = "LOAD_DATE", type = "timestamp_ns", nullable = true },
+    { id = 4, name = "OPERATIONAL_DEMAND_POE10", type = "double", nullable = true },
+    { id = 5, name = "OPERATIONAL_DEMAND_POE50", type = "double", nullable = true },
+    { id = 6, name = "OPERATIONAL_DEMAND_POE90", type = "double", nullable = true },
+    { id = 7, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2026-08"
+ctl = "001.ctl"
+ctl_sha256 = "e3cda948787f6246726d3e52fbd7f39b6d0382e2a2cf7c75f17ea4e5132a6479"
+aemo_ctl = "PUBLIC_ARCHIVE#DEMANDOPERATIONALFORECAST#FILE01#202608.ctl"
+aemo_versions = [1]
+columns = [
+    "INTERVAL_DATETIME",
+    "REGIONID",
+    "LOAD_DATE",
+    "OPERATIONAL_DEMAND_POE10",
+    "OPERATIONAL_DEMAND_POE50",
+    "OPERATIONAL_DEMAND_POE90",
+    "LASTCHANGED",
+]

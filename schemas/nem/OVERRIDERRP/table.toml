@@ -1,0 +1,42 @@
+# Our schema of OVERRIDERRP. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "OVERRIDERRP"
+description = "OVERRIDERRP shows details of override price periods."
+report_pairs = [["FORCE_MAJEURE", "OVERRIDERRP"]]
+load_mode = "snapshot"
+dedupe = "pk_lastchanged"
+primary_key = ["REGIONID", "STARTDATE", "STARTPERIOD"]
+next_column_id = 11
+
+column = [
+    { id = 1, name = "REGIONID", type = "string", nullable = false },
+    { id = 2, name = "STARTDATE", type = "timestamp_ns", nullable = false },
+    { id = 3, name = "STARTPERIOD", type = "double", nullable = false },
+    { id = 4, name = "ENDDATE", type = "timestamp_ns", nullable = true },
+    { id = 5, name = "ENDPERIOD", type = "double", nullable = true },
+    { id = 6, name = "RRP", type = "double", nullable = true },
+    { id = 7, name = "DESCRIPTION", type = "string", nullable = true },
+    { id = 8, name = "AUTHORISESTART", type = "string", nullable = true },
+    { id = 9, name = "AUTHORISEEND", type = "string", nullable = true },
+    { id = 10, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "395b98666bc9e2808d6f3f4881240bbb01c2f6840636bfc7527099a3a371f99d"
+aemo_ctl = "PUBLIC_DVD_OVERRIDERRP_202401.ctl"
+aemo_versions = [1]
+columns = [
+    "REGIONID",
+    "STARTDATE",
+    "STARTPERIOD",
+    "ENDDATE",
+    "ENDPERIOD",
+    "RRP",
+    "DESCRIPTION",
+    "AUTHORISESTART",
+    "AUTHORISEEND",
+    "LASTCHANGED",
+]

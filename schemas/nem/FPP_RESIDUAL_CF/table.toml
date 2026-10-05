@@ -1,0 +1,46 @@
+# Our schema of FPP_RESIDUAL_CF. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "FPP_RESIDUAL_CF"
+report_pairs = [["FPP", "RESIDUAL_CF"]]
+load_mode = "append"
+dedupe = "none"
+primary_key = []
+time_column = "INTERVAL_DATETIME"
+next_column_id = 13
+
+column = [
+    { id = 1, name = "INTERVAL_DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 2, name = "CONSTRAINTID", type = "string", nullable = true },
+    { id = 3, name = "VERSIONNO", type = "double", nullable = true },
+    { id = 4, name = "BIDTYPE", type = "string", nullable = true },
+    { id = 5, name = "RESIDUAL_CF", type = "double", nullable = true },
+    { id = 6, name = "NEGATIVE_RESIDUAL_CF", type = "double", nullable = true },
+    { id = 7, name = "RESIDUAL_DCF", type = "double", nullable = true },
+    { id = 8, name = "RESIDUAL_CF_REASON_FLAG", type = "double", nullable = true },
+    { id = 9, name = "CF_ABS_POSITIVE_PERF_TOTAL", type = "double", nullable = true },
+    { id = 10, name = "CF_ABS_NEGATIVE_PERF_TOTAL", type = "double", nullable = true },
+    { id = 11, name = "NCF_ABS_NEGATIVE_PERF_TOTAL", type = "double", nullable = true },
+    { id = 12, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2026-08"
+ctl = "001.ctl"
+ctl_sha256 = "29db8b401fac2337d541b602bafc515b0c4bf9a0054ac3cb6f7a526169408340"
+aemo_ctl = "PUBLIC_ARCHIVE#FPP_RESIDUAL_CF#FILE01#202608.ctl"
+aemo_versions = [1]
+columns = [
+    "INTERVAL_DATETIME",
+    "CONSTRAINTID",
+    "VERSIONNO",
+    "BIDTYPE",
+    "RESIDUAL_CF",
+    "NEGATIVE_RESIDUAL_CF",
+    "RESIDUAL_DCF",
+    "RESIDUAL_CF_REASON_FLAG",
+    "CF_ABS_POSITIVE_PERF_TOTAL",
+    "CF_ABS_NEGATIVE_PERF_TOTAL",
+    "NCF_ABS_NEGATIVE_PERF_TOTAL",
+    "LASTCHANGED",
+]

@@ -1,0 +1,60 @@
+-- ************************************************************
+-- Title:	PUBLIC_DVD_MTPASA_REGIONSUMMARY_202401.ctl
+-- ************************************************************
+-- Project : NEMMCO MONTHLY DVD RELEASE
+-- Purpose : Control File to load monthly csv file
+-- Target Application  : Monthly DVD Release
+-- Application Version : 1
+-- Visibility Id : PUBLIC
+--
+-- ************************************************************
+-- Special Instructions : 1. USER TO CONNECT AS MTPASA_REGIONSUMMARY owner
+--
+-- ************************************************************
+-- History :
+--      MMS Data Model Version   Template Generated On
+--      ======================   ======================
+--      PUBLIC			       v
+-- ************************************************************
+LOAD DATA
+INFILE PUBLIC_DVD_MTPASA_REGIONSUMMARY_202401010000.CSV
+APPEND INTO TABLE MTPASA_REGIONSUMMARY
+WHEN (1:1) = 'D'
+FIELDS TERMINATED BY ','
+OPTIONALLY ENCLOSED BY '"'
+TRAILING NULLCOLS
+(row_type FILLER,
+report_type FILLER,
+report_subtype FILLER,
+report_version FILLER,
+RUN_DATETIME DATE "yyyy/mm/dd hh24:mi:ss",
+RUN_NO FLOAT EXTERNAL,
+RUNTYPE CHAR(20),
+DEMAND_POE_TYPE CHAR(20),
+AGGREGATION_PERIOD CHAR(20),
+PERIOD_ENDING DATE "yyyy/mm/dd hh24:mi:ss",
+REGIONID CHAR(20),
+NATIVEDEMAND FLOAT EXTERNAL,
+USE_PERCENTILE10 FLOAT EXTERNAL,
+USE_PERCENTILE20 FLOAT EXTERNAL,
+USE_PERCENTILE30 FLOAT EXTERNAL,
+USE_PERCENTILE40 FLOAT EXTERNAL,
+USE_PERCENTILE50 FLOAT EXTERNAL,
+USE_PERCENTILE60 FLOAT EXTERNAL,
+USE_PERCENTILE70 FLOAT EXTERNAL,
+USE_PERCENTILE80 FLOAT EXTERNAL,
+USE_PERCENTILE90 FLOAT EXTERNAL,
+USE_PERCENTILE100 FLOAT EXTERNAL,
+USE_AVERAGE FLOAT EXTERNAL,
+NUMBEROFITERATIONS FLOAT EXTERNAL,
+USE_NUMBEROFITERATIONS FLOAT EXTERNAL,
+USE_EVENT_MAX FLOAT EXTERNAL,
+USE_EVENT_UPPERQUARTILE FLOAT EXTERNAL,
+USE_EVENT_MEDIAN FLOAT EXTERNAL,
+USE_EVENT_LOWERQUARTILE FLOAT EXTERNAL,
+USE_EVENT_MIN FLOAT EXTERNAL,
+WEIGHT FLOAT EXTERNAL,
+USE_WEIGHTED_AVG FLOAT EXTERNAL,
+LRC FLOAT EXTERNAL,
+LASTCHANGED DATE "yyyy/mm/dd hh24:mi:ss")
+-- End of Script

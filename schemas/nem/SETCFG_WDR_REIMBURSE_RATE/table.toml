@@ -1,0 +1,34 @@
+# Our schema of SETCFG_WDR_REIMBURSE_RATE. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "SETCFG_WDR_REIMBURSE_RATE"
+report_pairs = [["SETTLEMENTS_CONFIG", "WDR_REIMBURSE_RATE"]]
+load_mode = "append"
+dedupe = "none"
+primary_key = []
+time_column = "LASTCHANGED"
+next_column_id = 7
+
+column = [
+    { id = 1, name = "WDRRRPERIOD", type = "string", nullable = true },
+    { id = 2, name = "REGIONID", type = "string", nullable = true },
+    { id = 3, name = "VERSION_DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 4, name = "WDRRR", type = "double", nullable = true },
+    { id = 5, name = "ISFIRM", type = "double", nullable = true },
+    { id = 6, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2026-08"
+ctl = "001.ctl"
+ctl_sha256 = "d31ebf11c3dd674b90b4ae7e7bd3094d21939d85b92e7e7651e7cbb21b4dffae"
+aemo_ctl = "PUBLIC_ARCHIVE#SETCFG_WDR_REIMBURSE_RATE#FILE01#202608.ctl"
+aemo_versions = [1]
+columns = [
+    "WDRRRPERIOD",
+    "REGIONID",
+    "VERSION_DATETIME",
+    "WDRRR",
+    "ISFIRM",
+    "LASTCHANGED",
+]

@@ -1,0 +1,28 @@
+# Our schema of AGGREGATE_DISPATCH_GROUP. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "AGGREGATE_DISPATCH_GROUP"
+report_pairs = [["PARTICIPANT_REGISTRATION", "AGGREGATE_DISPATCH_GROUP"]]
+load_mode = "append"
+dedupe = "none"
+primary_key = []
+time_column = "LASTCHANGED"
+next_column_id = 4
+
+column = [
+    { id = 1, name = "ADG_ID", type = "string", nullable = true },
+    { id = 2, name = "COMMENTS", type = "string", nullable = true },
+    { id = 3, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2026-08"
+ctl = "001.ctl"
+ctl_sha256 = "3bd1d2e86dc251000c00db75a903b5679f5ce93b3755f974b10a6606250a4471"
+aemo_ctl = "PUBLIC_ARCHIVE#AGGREGATE_DISPATCH_GROUP#FILE01#202608.ctl"
+aemo_versions = [1]
+columns = [
+    "ADG_ID",
+    "COMMENTS",
+    "LASTCHANGED",
+]

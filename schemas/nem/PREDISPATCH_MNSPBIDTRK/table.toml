@@ -1,0 +1,41 @@
+# Our schema of PREDISPATCH_MNSPBIDTRK. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "PREDISPATCH_MNSPBIDTRK"
+description = "PREDISPATCH_MNSPBIDTRK shows the MNSP bid tracking, including the bid version used in each predispatch run for each MNSP Interconnector Link. PREDISPATCH_MNSPBIDTRK shows the audit trail of the bid used for each predispatch run."
+report_pairs = [["PREDISPATCH", "MNSPBIDTRK"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["PREDISPATCHSEQNO", "LINKID", "PERIODID"]
+time_column = "SETTLEMENTDATE"
+next_column_id = 10
+
+column = [
+    { id = 1, name = "PREDISPATCHSEQNO", type = "string", nullable = false },
+    { id = 2, name = "LINKID", type = "string", nullable = false },
+    { id = 3, name = "PERIODID", type = "string", nullable = false },
+    { id = 4, name = "PARTICIPANTID", type = "string", nullable = true },
+    { id = 5, name = "SETTLEMENTDATE", type = "timestamp_ns", nullable = true },
+    { id = 6, name = "OFFERDATE", type = "timestamp_ns", nullable = true },
+    { id = 7, name = "VERSIONNO", type = "double", nullable = true },
+    { id = 8, name = "DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 9, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "7d409a8ec9991527bb5af1e3a64230587381635f682610b866a3ccce060f0a1e"
+aemo_ctl = "PUBLIC_DVD_PREDISPATCH_MNSPBIDTRK_202401.ctl"
+aemo_versions = [1]
+columns = [
+    "PREDISPATCHSEQNO",
+    "LINKID",
+    "PERIODID",
+    "PARTICIPANTID",
+    "SETTLEMENTDATE",
+    "OFFERDATE",
+    "VERSIONNO",
+    "DATETIME",
+    "LASTCHANGED",
+]

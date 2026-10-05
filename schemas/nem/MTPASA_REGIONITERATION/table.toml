@@ -1,0 +1,45 @@
+# Our schema of MTPASA_REGIONITERATION. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "MTPASA_REGIONITERATION"
+description = "Region results for Unserved Energy (USE)"
+report_pairs = [["MTPASA", "REGIONITERATION"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["RUN_DATETIME", "RUN_NO", "RUNTYPE", "DEMAND_POE_TYPE", "AGGREGATION_PERIOD", "PERIOD_ENDING", "REGIONID", "USE_ITERATION_ID"]
+time_column = "RUN_DATETIME"
+next_column_id = 12
+
+column = [
+    { id = 1, name = "RUN_DATETIME", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "RUN_NO", type = "double", nullable = false },
+    { id = 3, name = "RUNTYPE", type = "string", nullable = false },
+    { id = 4, name = "DEMAND_POE_TYPE", type = "string", nullable = false },
+    { id = 5, name = "AGGREGATION_PERIOD", type = "string", nullable = false },
+    { id = 6, name = "PERIOD_ENDING", type = "timestamp_ns", nullable = false },
+    { id = 7, name = "REGIONID", type = "string", nullable = false },
+    { id = 8, name = "USE_ITERATION_ID", type = "double", nullable = false },
+    { id = 9, name = "USE_ITERATION_EVENT_NUMBER", type = "double", nullable = true },
+    { id = 10, name = "USE_ITERATION_EVENT_AVERAGE", type = "double", nullable = true },
+    { id = 11, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "59ff90ebe31bf80bd17b13ad291b2fc37d14e83b7381ad41c325d26aa53cd1a1"
+aemo_ctl = "PUBLIC_DVD_MTPASA_REGIONITERATION_202401.ctl"
+aemo_versions = [1]
+columns = [
+    "RUN_DATETIME",
+    "RUN_NO",
+    "RUNTYPE",
+    "DEMAND_POE_TYPE",
+    "AGGREGATION_PERIOD",
+    "PERIOD_ENDING",
+    "REGIONID",
+    "USE_ITERATION_ID",
+    "USE_ITERATION_EVENT_NUMBER",
+    "USE_ITERATION_EVENT_AVERAGE",
+    "LASTCHANGED",
+]

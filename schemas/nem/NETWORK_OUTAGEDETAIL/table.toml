@@ -1,0 +1,61 @@
+# Our schema of NETWORK_OUTAGEDETAIL. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "NETWORK_OUTAGEDETAIL"
+description = "Lists asset owners planned outages for transmission equipment. This also includes details for transmission equipment that will not have an outage, but associated secondary equipment has an outage and a related constraint set may be invoked. This scenario is indicated by the ISSECONDARY field in the table"
+report_pairs = [["NETWORK", "OUTAGEDETAIL"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["OUTAGEID", "SUBSTATIONID", "EQUIPMENTTYPE", "EQUIPMENTID", "STARTTIME"]
+time_column = "LASTCHANGED"
+next_column_id = 20
+
+column = [
+    { id = 1, name = "OUTAGEID", type = "double", nullable = false },
+    { id = 2, name = "SUBSTATIONID", type = "string", nullable = false },
+    { id = 3, name = "EQUIPMENTTYPE", type = "string", nullable = false },
+    { id = 4, name = "EQUIPMENTID", type = "string", nullable = false },
+    { id = 5, name = "STARTTIME", type = "timestamp_ns", nullable = false },
+    { id = 6, name = "ENDTIME", type = "timestamp_ns", nullable = true },
+    { id = 7, name = "SUBMITTEDDATE", type = "timestamp_ns", nullable = true },
+    { id = 8, name = "OUTAGESTATUSCODE", type = "string", nullable = true },
+    { id = 9, name = "RESUBMITREASON", type = "string", nullable = true },
+    { id = 10, name = "RESUBMITOUTAGEID", type = "double", nullable = true },
+    { id = 11, name = "RECALLTIMEDAY", type = "double", nullable = true },
+    { id = 12, name = "RECALLTIMENIGHT", type = "double", nullable = true },
+    { id = 13, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 14, name = "REASON", type = "string", nullable = true },
+    { id = 15, name = "ISSECONDARY", type = "double", nullable = true },
+    { id = 16, name = "ACTUAL_STARTTIME", type = "timestamp_ns", nullable = true },
+    { id = 17, name = "ACTUAL_ENDTIME", type = "timestamp_ns", nullable = true },
+    { id = 18, name = "COMPANYREFCODE", type = "string", nullable = true },
+    { id = 19, name = "ELEMENTID", type = "double", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2026-08"
+ctl = "001.ctl"
+ctl_sha256 = "b1a9215ebc5f41ce4932b92acffeadf36d5d841e8f4549c7977cc143cc42b466"
+aemo_ctl = "PUBLIC_ARCHIVE#NETWORK_OUTAGEDETAIL#FILE01#202608.ctl"
+aemo_versions = [4]
+columns = [
+    "OUTAGEID",
+    "SUBSTATIONID",
+    "EQUIPMENTTYPE",
+    "EQUIPMENTID",
+    "STARTTIME",
+    "ENDTIME",
+    "SUBMITTEDDATE",
+    "OUTAGESTATUSCODE",
+    "RESUBMITREASON",
+    "RESUBMITOUTAGEID",
+    "RECALLTIMEDAY",
+    "RECALLTIMENIGHT",
+    "LASTCHANGED",
+    "REASON",
+    "ISSECONDARY",
+    "ACTUAL_STARTTIME",
+    "ACTUAL_ENDTIME",
+    "COMPANYREFCODE",
+    "ELEMENTID",
+]

@@ -1,0 +1,37 @@
+# Our schema of GENCONSET. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "GENCONSET"
+description = "GENCONSET sets out generic constraint sets that are invoked and revoked, and may contain many generic constraints (GENCONDATA)."
+report_pairs = [["GENCONSET", ""], ["GENCONSET", "NULL"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["GENCONSETID", "EFFECTIVEDATE", "VERSIONNO", "GENCONID"]
+time_column = "EFFECTIVEDATE"
+next_column_id = 8
+
+column = [
+    { id = 1, name = "GENCONSETID", type = "string", nullable = false },
+    { id = 2, name = "EFFECTIVEDATE", type = "timestamp_ns", nullable = false },
+    { id = 3, name = "VERSIONNO", type = "double", nullable = false },
+    { id = 4, name = "GENCONID", type = "string", nullable = false },
+    { id = 5, name = "GENCONEFFDATE", type = "timestamp_ns", nullable = true },
+    { id = 6, name = "GENCONVERSIONNO", type = "double", nullable = true },
+    { id = 7, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "675166bd1c3fbc1192302b0fb5910d21c1104bf368682fb76c3ec1567c77e43a"
+aemo_ctl = "PUBLIC_DVD_GENCONSET_202401.ctl"
+aemo_versions = [1]
+columns = [
+    "GENCONSETID",
+    "EFFECTIVEDATE",
+    "VERSIONNO",
+    "GENCONID",
+    "GENCONEFFDATE",
+    "GENCONVERSIONNO",
+    "LASTCHANGED",
+]

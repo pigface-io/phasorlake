@@ -1,0 +1,92 @@
+# Our schema of P5MIN_CASESOLUTION. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "P5MIN_CASESOLUTION"
+description = """
+The five-minute predispatch (P5Min) is a MMS system providing projected dispatch for 12 Dispatch cycles (one hour). The 5-minute Predispatch cycle runs every 5-minutes to produce a dispatch and pricing schedule to a 5-minute resolution covering the next hour, a total of twelve periods.
+P5MIN_CASESOLUTION shows one record containing results pertaining to the entire solution."""
+report_pairs = [["P5MIN", "CASESOLUTION"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["RUN_DATETIME"]
+time_column = "RUN_DATETIME"
+next_column_id = 20
+
+column = [
+    { id = 1, name = "RUN_DATETIME", type = "timestamp_ns", nullable = false },
+    { id = 3, name = "STARTINTERVAL_DATETIME", type = "string", nullable = true },
+    { id = 4, name = "TOTALOBJECTIVE", type = "double", nullable = true },
+    { id = 5, name = "NONPHYSICALLOSSES", type = "double", nullable = true },
+    { id = 6, name = "TOTALAREAGENVIOLATION", type = "double", nullable = true },
+    { id = 7, name = "TOTALINTERCONNECTORVIOLATION", type = "double", nullable = true },
+    { id = 8, name = "TOTALGENERICVIOLATION", type = "double", nullable = true },
+    { id = 9, name = "TOTALRAMPRATEVIOLATION", type = "double", nullable = true },
+    { id = 10, name = "TOTALUNITMWCAPACITYVIOLATION", type = "double", nullable = true },
+    { id = 11, name = "TOTAL5MINVIOLATION", type = "double", nullable = true },
+    { id = 12, name = "TOTALREGVIOLATION", type = "double", nullable = true },
+    { id = 13, name = "TOTAL6SECVIOLATION", type = "double", nullable = true },
+    { id = 14, name = "TOTAL60SECVIOLATION", type = "double", nullable = true },
+    { id = 15, name = "TOTALENERGYCONSTRVIOLATION", type = "double", nullable = true },
+    { id = 16, name = "TOTALENERGYOFFERVIOLATION", type = "double", nullable = true },
+    { id = 17, name = "TOTALASPROFILEVIOLATION", type = "double", nullable = true },
+    { id = 18, name = "TOTALFASTSTARTVIOLATION", type = "double", nullable = true },
+    { id = 19, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 2, name = "INTERVENTION", type = "double", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "1aa1f4dc8a47fb87a3f0d8237280230f638ab5d6ca76b267f935e5adfac82520"
+aemo_ctl = "PUBLIC_DVD_P5MIN_CASESOLUTION_202401.ctl"
+aemo_versions = [2]
+columns = [
+    "RUN_DATETIME",
+    "INTERVENTION",
+    "STARTINTERVAL_DATETIME",
+    "TOTALOBJECTIVE",
+    "NONPHYSICALLOSSES",
+    "TOTALAREAGENVIOLATION",
+    "TOTALINTERCONNECTORVIOLATION",
+    "TOTALGENERICVIOLATION",
+    "TOTALRAMPRATEVIOLATION",
+    "TOTALUNITMWCAPACITYVIOLATION",
+    "TOTAL5MINVIOLATION",
+    "TOTALREGVIOLATION",
+    "TOTAL6SECVIOLATION",
+    "TOTAL60SECVIOLATION",
+    "TOTALENERGYCONSTRVIOLATION",
+    "TOTALENERGYOFFERVIOLATION",
+    "TOTALASPROFILEVIOLATION",
+    "TOTALFASTSTARTVIOLATION",
+    "LASTCHANGED",
+]
+
+[[increment]]
+n = 2
+from = "2026-08"
+ctl = "002.ctl"
+ctl_sha256 = "0c71536b994a39a6aabd4ff0cfd91f57b9469518abaff5edf6b7e4ea28a55f69"
+aemo_ctl = "PUBLIC_ARCHIVE#P5MIN_CASESOLUTION#FILE01#202608.ctl"
+aemo_versions = [2]
+columns = [
+    "RUN_DATETIME",
+    "STARTINTERVAL_DATETIME",
+    "TOTALOBJECTIVE",
+    "NONPHYSICALLOSSES",
+    "TOTALAREAGENVIOLATION",
+    "TOTALINTERCONNECTORVIOLATION",
+    "TOTALGENERICVIOLATION",
+    "TOTALRAMPRATEVIOLATION",
+    "TOTALUNITMWCAPACITYVIOLATION",
+    "TOTAL5MINVIOLATION",
+    "TOTALREGVIOLATION",
+    "TOTAL6SECVIOLATION",
+    "TOTAL60SECVIOLATION",
+    "TOTALENERGYCONSTRVIOLATION",
+    "TOTALENERGYOFFERVIOLATION",
+    "TOTALASPROFILEVIOLATION",
+    "TOTALFASTSTARTVIOLATION",
+    "LASTCHANGED",
+    "INTERVENTION",
+]

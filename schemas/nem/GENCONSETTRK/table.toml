@@ -1,0 +1,66 @@
+# Our schema of GENCONSETTRK. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "GENCONSETTRK"
+description = "GENCONSETTRK assists in determining the correct version of a generic constraint set that has been invoked in GENCONSETINVOKE."
+report_pairs = [["GENCONSETTRK", ""], ["GENCONSETTRK", "NULL"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["GENCONSETID", "EFFECTIVEDATE", "VERSIONNO"]
+time_column = "EFFECTIVEDATE"
+next_column_id = 12
+
+column = [
+    { id = 1, name = "GENCONSETID", type = "string", nullable = false },
+    { id = 2, name = "EFFECTIVEDATE", type = "timestamp_ns", nullable = false },
+    { id = 3, name = "VERSIONNO", type = "double", nullable = false },
+    { id = 4, name = "DESCRIPTION", type = "string", nullable = true },
+    { id = 5, name = "AUTHORISEDBY", type = "string", nullable = true },
+    { id = 6, name = "AUTHORISEDDATE", type = "timestamp_ns", nullable = true },
+    { id = 7, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 10, name = "SYSTEMNORMAL", type = "string", nullable = true },
+    { id = 8, name = "COVERAGE", type = "string", nullable = true },
+    { id = 9, name = "MODIFICATIONS", type = "string", nullable = true },
+    { id = 11, name = "OUTAGE", type = "string", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "fc300d39fc72dd3b4a15367cfce5ff9ef3bc694e427026afce98cd2c74a0227e"
+aemo_ctl = "PUBLIC_DVD_GENCONSETTRK_202401.ctl"
+aemo_versions = [2]
+columns = [
+    "GENCONSETID",
+    "EFFECTIVEDATE",
+    "VERSIONNO",
+    "DESCRIPTION",
+    "AUTHORISEDBY",
+    "AUTHORISEDDATE",
+    "LASTCHANGED",
+    "COVERAGE",
+    "MODIFICATIONS",
+    "SYSTEMNORMAL",
+    "OUTAGE",
+]
+
+[[increment]]
+n = 2
+from = "2026-08"
+ctl = "002.ctl"
+ctl_sha256 = "5ddbe6c94faa0fde1c189d548e5d9166f401d21251737c7ddd3586b69854eea7"
+aemo_ctl = "PUBLIC_ARCHIVE#GENCONSETTRK#FILE01#202608.ctl"
+aemo_versions = [2]
+columns = [
+    "GENCONSETID",
+    "EFFECTIVEDATE",
+    "VERSIONNO",
+    "DESCRIPTION",
+    "AUTHORISEDBY",
+    "AUTHORISEDDATE",
+    "LASTCHANGED",
+    "SYSTEMNORMAL",
+    "COVERAGE",
+    "MODIFICATIONS",
+    "OUTAGE",
+]

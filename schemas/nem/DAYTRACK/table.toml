@@ -1,0 +1,60 @@
+# Our schema of DAYTRACK. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "DAYTRACK"
+description = "DAYTRACK identifies the actual settlement run processed for each settlement day. Settlement run is in the column EXPOSTRUNNO. Generally the number of the settlement run used in the latest statement is the maximum number."
+report_pairs = [["SETTLEMENTS", "DAYTRACK"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["SETTLEMENTDATE", "EXPOSTRUNNO"]
+time_column = "SETTLEMENTDATE"
+next_column_id = 11
+
+column = [
+    { id = 1, name = "SETTLEMENTDATE", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "REGIONID", type = "string", nullable = true },
+    { id = 3, name = "EXANTERUNSTATUS", type = "string", nullable = true },
+    { id = 4, name = "EXANTERUNNO", type = "double", nullable = true },
+    { id = 5, name = "EXPOSTRUNSTATUS", type = "string", nullable = true },
+    { id = 6, name = "EXPOSTRUNNO", type = "double", nullable = false },
+    { id = 7, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 8, name = "SETTLEMENTINTERVALLENGTH", type = "double", nullable = true },
+    { id = 9, name = "METER_CASEID", type = "double", nullable = true },
+    { id = 10, name = "METER_RUNTYPE", type = "string", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "02052c0d198a02f4e18eb94fec4dc2a2edf7824f122e65b3a2995efccd8b56a2"
+aemo_ctl = "PUBLIC_DVD_DAYTRACK_202401.ctl"
+aemo_versions = [6]
+columns = [
+    "SETTLEMENTDATE",
+    "REGIONID",
+    "EXANTERUNSTATUS",
+    "EXANTERUNNO",
+    "EXPOSTRUNSTATUS",
+    "EXPOSTRUNNO",
+    "LASTCHANGED",
+]
+
+[[increment]]
+n = 2
+from = "2026-08"
+ctl = "002.ctl"
+ctl_sha256 = "5c6884a5aa44bb9f85656bb0c61afb0a96987c3f91e82a7cae16035537d43642"
+aemo_ctl = "PUBLIC_ARCHIVE#DAYTRACK#FILE01#202608.ctl"
+aemo_versions = [7]
+columns = [
+    "SETTLEMENTDATE",
+    "REGIONID",
+    "EXANTERUNSTATUS",
+    "EXANTERUNNO",
+    "EXPOSTRUNSTATUS",
+    "EXPOSTRUNNO",
+    "LASTCHANGED",
+    "SETTLEMENTINTERVALLENGTH",
+    "METER_CASEID",
+    "METER_RUNTYPE",
+]

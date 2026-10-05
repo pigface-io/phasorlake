@@ -1,0 +1,41 @@
+# Our schema of RESDEMANDTRK. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "RESDEMANDTRK"
+description = """
+RESDEMANDTRK defines the existence and versioning information of a forecast for a specific region and trading date.
+RESDEMANDTRK and PERDEMAND have a parent/child relationship, and are for defined forecast regional demands since market start. RESDEMANDTRK defines the existence and versioning information of a forecast for a specific region and trading date. PERDEMAND defines the numerical forecast values for each trading interval of a the trading day for that region. A complete trading day forecast for one region consists of one RESDEMANDTRK record and 48 PERDEMAND records."""
+report_pairs = [["DEMAND", "TRK"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["EFFECTIVEDATE", "REGIONID", "OFFERDATE", "VERSIONNO"]
+time_column = "EFFECTIVEDATE"
+next_column_id = 9
+
+column = [
+    { id = 1, name = "EFFECTIVEDATE", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "REGIONID", type = "string", nullable = false },
+    { id = 3, name = "OFFERDATE", type = "timestamp_ns", nullable = false },
+    { id = 4, name = "VERSIONNO", type = "double", nullable = false },
+    { id = 5, name = "FILENAME", type = "string", nullable = true },
+    { id = 6, name = "AUTHORISEDDATE", type = "timestamp_ns", nullable = true },
+    { id = 7, name = "AUTHORISEDBY", type = "string", nullable = true },
+    { id = 8, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "f4ce26d4d1c93d2b8ba94a7d1adbf4bd92bbe705ea76ea14585ff77dc7111b87"
+aemo_ctl = "PUBLIC_DVD_RESDEMANDTRK_202401.ctl"
+aemo_versions = [1]
+columns = [
+    "EFFECTIVEDATE",
+    "REGIONID",
+    "OFFERDATE",
+    "VERSIONNO",
+    "FILENAME",
+    "AUTHORISEDDATE",
+    "AUTHORISEDBY",
+    "LASTCHANGED",
+]

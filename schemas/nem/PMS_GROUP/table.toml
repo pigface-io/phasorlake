@@ -1,0 +1,28 @@
+# Our schema of PMS_GROUP. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "PMS_GROUP"
+report_pairs = [["PARTICIPANT_REGISTRATION", "PMS_GROUP"]]
+load_mode = "append"
+dedupe = "none"
+primary_key = []
+time_column = "LASTCHANGED"
+next_column_id = 4
+
+column = [
+    { id = 1, name = "GROUPID", type = "double", nullable = true },
+    { id = 2, name = "CREATEDDATE", type = "timestamp_ns", nullable = true },
+    { id = 3, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2026-08"
+ctl = "001.ctl"
+ctl_sha256 = "5eac4742cc318abeff2825f0bbf37b75bf561d1318f0b52f681c763c6306d056"
+aemo_ctl = "PUBLIC_ARCHIVE#PMS_GROUP#FILE01#202608.ctl"
+aemo_versions = [1]
+columns = [
+    "GROUPID",
+    "CREATEDDATE",
+    "LASTCHANGED",
+]

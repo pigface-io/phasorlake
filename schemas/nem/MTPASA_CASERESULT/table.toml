@@ -1,0 +1,31 @@
+# Our schema of MTPASA_CASERESULT. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "MTPASA_CASERESULT"
+description = "MTPASA solution header table"
+report_pairs = [["MTPASA", "CASERESULT"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["RUN_DATETIME", "RUN_NO"]
+time_column = "RUN_DATETIME"
+next_column_id = 5
+
+column = [
+    { id = 1, name = "RUN_DATETIME", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "RUN_NO", type = "double", nullable = false },
+    { id = 3, name = "PLEXOS_VERSION", type = "string", nullable = true },
+    { id = 4, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "8a126d1794e34e81d3a263b0098f2103e09b941428b67164f273fcb02bb05f16"
+aemo_ctl = "PUBLIC_DVD_MTPASA_CASERESULT_202401.ctl"
+aemo_versions = [1]
+columns = [
+    "RUN_DATETIME",
+    "RUN_NO",
+    "PLEXOS_VERSION",
+    "LASTCHANGED",
+]

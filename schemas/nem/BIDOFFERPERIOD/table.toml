@@ -1,0 +1,113 @@
+# Our schema of BIDOFFERPERIOD. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "BIDOFFERPERIOD"
+description = "BIDOFFERPERIOD shows 5-minute period-based Energy and Ancillary Service bid data.BIDOFFERPERIOD is a child table of BIDDAYOFFER"
+report_pairs = [["BIDS", "BIDOFFERPERIOD"]]
+load_mode = "append"
+dedupe = "pk"
+primary_key = ["DUID", "BIDTYPE", "TRADINGDATE", "OFFERDATETIME", "PERIODID"]
+time_column = "TRADINGDATE"
+next_column_id = 29
+
+column = [
+    { id = 1, name = "DUID", type = "string", nullable = false },
+    { id = 2, name = "BIDTYPE", type = "string", nullable = false },
+    { id = 3, name = "TRADINGDATE", type = "timestamp_ns", nullable = false },
+    { id = 4, name = "OFFERDATETIME", type = "timestamp_ns", nullable = false },
+    { id = 5, name = "PERIODID", type = "double", nullable = false },
+    { id = 6, name = "MAXAVAIL", type = "double", nullable = true },
+    { id = 7, name = "FIXEDLOAD", type = "double", nullable = true },
+    { id = 8, name = "RAMPUPRATE", type = "double", nullable = true },
+    { id = 9, name = "RAMPDOWNRATE", type = "double", nullable = true },
+    { id = 10, name = "ENABLEMENTMIN", type = "double", nullable = true },
+    { id = 11, name = "ENABLEMENTMAX", type = "double", nullable = true },
+    { id = 12, name = "LOWBREAKPOINT", type = "double", nullable = true },
+    { id = 13, name = "HIGHBREAKPOINT", type = "double", nullable = true },
+    { id = 14, name = "BANDAVAIL1", type = "double", nullable = true },
+    { id = 15, name = "BANDAVAIL2", type = "double", nullable = true },
+    { id = 16, name = "BANDAVAIL3", type = "double", nullable = true },
+    { id = 17, name = "BANDAVAIL4", type = "double", nullable = true },
+    { id = 18, name = "BANDAVAIL5", type = "double", nullable = true },
+    { id = 19, name = "BANDAVAIL6", type = "double", nullable = true },
+    { id = 20, name = "BANDAVAIL7", type = "double", nullable = true },
+    { id = 21, name = "BANDAVAIL8", type = "double", nullable = true },
+    { id = 22, name = "BANDAVAIL9", type = "double", nullable = true },
+    { id = 23, name = "BANDAVAIL10", type = "double", nullable = true },
+    { id = 24, name = "PASAAVAILABILITY", type = "double", nullable = true },
+    { id = 25, name = "DIRECTION", type = "string", nullable = true },
+    { id = 26, name = "ENERGYLIMIT", type = "double", nullable = true },
+    { id = 27, name = "PERIODIDTO", type = "double", nullable = true },
+    { id = 28, name = "RECALL_PERIOD", type = "double", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "f3f2a333ca63a7d089929c65b9b23f635a0b9a26399d64deeac97450b6a96efb"
+aemo_ctl = "PUBLIC_DVD_BIDPEROFFER1_202401.ctl"
+aemo_versions = [1]
+columns = [
+    "DUID",
+    "BIDTYPE",
+    "TRADINGDATE",
+    "OFFERDATETIME",
+    "PERIODID",
+    "MAXAVAIL",
+    "FIXEDLOAD",
+    "RAMPUPRATE",
+    "RAMPDOWNRATE",
+    "ENABLEMENTMIN",
+    "ENABLEMENTMAX",
+    "LOWBREAKPOINT",
+    "HIGHBREAKPOINT",
+    "BANDAVAIL1",
+    "BANDAVAIL2",
+    "BANDAVAIL3",
+    "BANDAVAIL4",
+    "BANDAVAIL5",
+    "BANDAVAIL6",
+    "BANDAVAIL7",
+    "BANDAVAIL8",
+    "BANDAVAIL9",
+    "BANDAVAIL10",
+    "PASAAVAILABILITY",
+]
+
+[[increment]]
+n = 2
+from = "2026-08"
+ctl = "002.ctl"
+ctl_sha256 = "548d85a9517a0f30abd247dc2221dba4841dbd0322a75718d6531a18882053dc"
+aemo_ctl = "PUBLIC_ARCHIVE#BIDOFFERPERIOD#FILE01#202608.ctl"
+aemo_versions = [3]
+columns = [
+    "DUID",
+    "BIDTYPE",
+    "TRADINGDATE",
+    "OFFERDATETIME",
+    "DIRECTION",
+    "PERIODID",
+    "MAXAVAIL",
+    "FIXEDLOAD",
+    "RAMPUPRATE",
+    "RAMPDOWNRATE",
+    "ENABLEMENTMIN",
+    "ENABLEMENTMAX",
+    "LOWBREAKPOINT",
+    "HIGHBREAKPOINT",
+    "BANDAVAIL1",
+    "BANDAVAIL2",
+    "BANDAVAIL3",
+    "BANDAVAIL4",
+    "BANDAVAIL5",
+    "BANDAVAIL6",
+    "BANDAVAIL7",
+    "BANDAVAIL8",
+    "BANDAVAIL9",
+    "BANDAVAIL10",
+    "PASAAVAILABILITY",
+    "ENERGYLIMIT",
+    "PERIODIDTO",
+    "RECALL_PERIOD",
+]

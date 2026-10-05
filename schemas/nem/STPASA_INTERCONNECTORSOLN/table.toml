@@ -1,0 +1,49 @@
+# Our schema of STPASA_INTERCONNECTORSOLN. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "STPASA_INTERCONNECTORSOLN"
+description = "STPASA_INTERCONNECTORSOLN shows the results of the capacity evaluation for Interconnectors, including the calculated limits for the interval."
+report_pairs = [["STPASA", "INTERCONNECTORSOLN"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["RUN_DATETIME", "INTERVAL_DATETIME", "INTERCONNECTORID", "RUNTYPE"]
+time_column = "INTERVAL_DATETIME"
+next_column_id = 14
+
+column = [
+    { id = 1, name = "RUN_DATETIME", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "INTERVAL_DATETIME", type = "timestamp_ns", nullable = false },
+    { id = 3, name = "INTERCONNECTORID", type = "string", nullable = false },
+    { id = 4, name = "CAPACITYMWFLOW", type = "double", nullable = true },
+    { id = 5, name = "CAPACITYMARGINALVALUE", type = "double", nullable = true },
+    { id = 6, name = "CAPACITYVIOLATIONDEGREE", type = "double", nullable = true },
+    { id = 7, name = "CALCULATEDEXPORTLIMIT", type = "double", nullable = true },
+    { id = 8, name = "CALCULATEDIMPORTLIMIT", type = "double", nullable = true },
+    { id = 9, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 10, name = "RUNTYPE", type = "string", nullable = false },
+    { id = 11, name = "EXPORTLIMITCONSTRAINTID", type = "string", nullable = true },
+    { id = 12, name = "IMPORTLIMITCONSTRAINTID", type = "string", nullable = true },
+    { id = 13, name = "STUDYREGIONID", type = "string", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "f110a087a059e480a9d29fe3cc7df06c945c9d49d40f6fd1e5ef1dc9a5367217"
+aemo_ctl = "PUBLIC_DVD_STPASA_INTERCONNECTORSOLN_202401.ctl"
+aemo_versions = [3]
+columns = [
+    "RUN_DATETIME",
+    "INTERVAL_DATETIME",
+    "INTERCONNECTORID",
+    "CAPACITYMWFLOW",
+    "CAPACITYMARGINALVALUE",
+    "CAPACITYVIOLATIONDEGREE",
+    "CALCULATEDEXPORTLIMIT",
+    "CALCULATEDIMPORTLIMIT",
+    "LASTCHANGED",
+    "RUNTYPE",
+    "EXPORTLIMITCONSTRAINTID",
+    "IMPORTLIMITCONSTRAINTID",
+    "STUDYREGIONID",
+]

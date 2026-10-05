@@ -1,0 +1,43 @@
+# Our schema of RESIDUE_TRK. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "RESIDUE_TRK"
+description = "RESIDUE_TRK supports the Settlement Residue Auction, by showing the tracking records for different residue auction runs. RESIDUE_TRK joins to RESIDUE_PUBLIC_DATA and RESIDUE_CON_DATA."
+report_pairs = [["IRAUCTION", "RESIDUE_TRK"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["VERSIONNO", "AUCTIONID"]
+time_column = "LASTCHANGED"
+next_column_id = 11
+
+column = [
+    { id = 1, name = "CONTRACTID", type = "string", nullable = true },
+    { id = 2, name = "VERSIONNO", type = "double", nullable = false },
+    { id = 3, name = "RUNDATE", type = "timestamp_ns", nullable = true },
+    { id = 4, name = "AUTHORISEDDATE", type = "timestamp_ns", nullable = true },
+    { id = 5, name = "AUTHORISEDBY", type = "string", nullable = true },
+    { id = 6, name = "POSTDATE", type = "timestamp_ns", nullable = true },
+    { id = 7, name = "POSTEDBY", type = "string", nullable = true },
+    { id = 8, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 9, name = "STATUS", type = "string", nullable = true },
+    { id = 10, name = "AUCTIONID", type = "string", nullable = false },
+]
+
+[[increment]]
+n = 1
+from = "2026-08"
+ctl = "001.ctl"
+ctl_sha256 = "facc61cb82e2a1e342944845a2bae1af5fbc21a164d357f67d6914c924239366"
+aemo_ctl = "PUBLIC_ARCHIVE#RESIDUE_TRK#FILE01#202608.ctl"
+aemo_versions = [1]
+columns = [
+    "CONTRACTID",
+    "VERSIONNO",
+    "RUNDATE",
+    "AUTHORISEDDATE",
+    "AUTHORISEDBY",
+    "POSTDATE",
+    "POSTEDBY",
+    "LASTCHANGED",
+    "STATUS",
+    "AUCTIONID",
+]

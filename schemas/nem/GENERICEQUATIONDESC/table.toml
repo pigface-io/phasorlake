@@ -1,0 +1,40 @@
+# Our schema of GENERICEQUATIONDESC. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "GENERICEQUATIONDESC"
+description = "GENERICEQUATIONDESC defines a generic equation identifier with a description. The formulation of the generic equation is detailed in GENERICEQUATIONRHS."
+report_pairs = [["GEQDESC", ""], ["GEQDESC", "NULL"]]
+load_mode = "snapshot"
+dedupe = "pk_lastchanged"
+primary_key = ["EQUATIONID"]
+next_column_id = 10
+
+column = [
+    { id = 1, name = "EQUATIONID", type = "string", nullable = false },
+    { id = 2, name = "DESCRIPTION", type = "string", nullable = true },
+    { id = 3, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 4, name = "IMPACT", type = "string", nullable = true },
+    { id = 5, name = "SOURCE", type = "string", nullable = true },
+    { id = 6, name = "LIMITTYPE", type = "string", nullable = true },
+    { id = 7, name = "REASON", type = "string", nullable = true },
+    { id = 8, name = "MODIFICATIONS", type = "string", nullable = true },
+    { id = 9, name = "ADDITIONALNOTES", type = "string", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "f177dc51334486c63867fae34897e93654cedb138bcf56bc5a9215e33c89ce47"
+aemo_ctl = "PUBLIC_DVD_GENERICEQUATIONDESC_202401.ctl"
+aemo_versions = [2]
+columns = [
+    "EQUATIONID",
+    "DESCRIPTION",
+    "LASTCHANGED",
+    "IMPACT",
+    "SOURCE",
+    "LIMITTYPE",
+    "REASON",
+    "MODIFICATIONS",
+    "ADDITIONALNOTES",
+]

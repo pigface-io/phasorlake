@@ -1,0 +1,43 @@
+# Our schema of BILLINGREGIONEXPORTS. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "BILLINGREGIONEXPORTS"
+description = "BILLINGREGIONEXPORTS sets out the region summary table of overall energy exported to and from each region for each billing run."
+report_pairs = [["BILLING", "REGIONEXPORTS"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["CONTRACTYEAR", "WEEKNO", "BILLRUNNO", "REGIONID", "EXPORTTO"]
+time_column = "LASTCHANGED"
+next_column_id = 11
+
+column = [
+    { id = 1, name = "CONTRACTYEAR", type = "double", nullable = false },
+    { id = 2, name = "WEEKNO", type = "double", nullable = false },
+    { id = 3, name = "BILLRUNNO", type = "double", nullable = false },
+    { id = 4, name = "REGIONID", type = "string", nullable = false },
+    { id = 5, name = "EXPORTTO", type = "string", nullable = false },
+    { id = 6, name = "ENERGY", type = "double", nullable = true },
+    { id = 7, name = "VALUE", type = "double", nullable = true },
+    { id = 8, name = "SURPLUSENERGY", type = "double", nullable = true },
+    { id = 9, name = "SURPLUSVALUE", type = "double", nullable = true },
+    { id = 10, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "6d164fa11be1ee6e64e94659fba29d3d11d4c54caae5133913557961045e5598"
+aemo_ctl = "PUBLIC_DVD_BILLINGREGIONEXPORTS_202401.ctl"
+aemo_versions = [5]
+columns = [
+    "CONTRACTYEAR",
+    "WEEKNO",
+    "BILLRUNNO",
+    "REGIONID",
+    "EXPORTTO",
+    "ENERGY",
+    "VALUE",
+    "SURPLUSENERGY",
+    "SURPLUSVALUE",
+    "LASTCHANGED",
+]

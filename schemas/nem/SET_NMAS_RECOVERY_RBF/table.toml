@@ -1,0 +1,45 @@
+# Our schema of SET_NMAS_RECOVERY_RBF. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "SET_NMAS_RECOVERY_RBF"
+description = "SET_NMAS_RECOVERY_RBF publishes the RBF for NSCAS non testing payments on a half hourly basis."
+report_pairs = [["SETTLEMENTS", "NMAS_RECOVERY_RBF"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["SETTLEMENTDATE", "VERSIONNO", "PERIODID", "SERVICE", "CONTRACTID", "PAYMENTTYPE", "REGIONID"]
+time_column = "SETTLEMENTDATE"
+next_column_id = 12
+
+column = [
+    { id = 1, name = "SETTLEMENTDATE", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "VERSIONNO", type = "double", nullable = false },
+    { id = 3, name = "PERIODID", type = "double", nullable = false },
+    { id = 4, name = "SERVICE", type = "string", nullable = false },
+    { id = 5, name = "CONTRACTID", type = "string", nullable = false },
+    { id = 6, name = "PAYMENTTYPE", type = "string", nullable = false },
+    { id = 7, name = "REGIONID", type = "string", nullable = false },
+    { id = 8, name = "RBF", type = "double", nullable = true },
+    { id = 9, name = "PAYMENT_AMOUNT", type = "double", nullable = true },
+    { id = 10, name = "RECOVERY_AMOUNT", type = "double", nullable = true },
+    { id = 11, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2026-08"
+ctl = "001.ctl"
+ctl_sha256 = "864e20e7429ffe017ed1ed680d3d10f4f8c6c277e7b3e311e2f9b296484b35de"
+aemo_ctl = "PUBLIC_ARCHIVE#SET_NMAS_RECOVERY_RBF#FILE01#202608.ctl"
+aemo_versions = [1]
+columns = [
+    "SETTLEMENTDATE",
+    "VERSIONNO",
+    "PERIODID",
+    "SERVICE",
+    "CONTRACTID",
+    "PAYMENTTYPE",
+    "REGIONID",
+    "RBF",
+    "PAYMENT_AMOUNT",
+    "RECOVERY_AMOUNT",
+    "LASTCHANGED",
+]

@@ -1,0 +1,40 @@
+# Our schema of FPP_REGION_FREQ_MEASURE. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "FPP_REGION_FREQ_MEASURE"
+report_pairs = [["FPP", "REGION_FREQ_MEASURE"]]
+load_mode = "append"
+dedupe = "none"
+primary_key = []
+time_column = "INTERVAL_DATETIME"
+next_column_id = 10
+
+column = [
+    { id = 1, name = "INTERVAL_DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 2, name = "MEASUREMENT_DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 3, name = "REGIONID", type = "string", nullable = true },
+    { id = 4, name = "VERSIONNO", type = "double", nullable = true },
+    { id = 5, name = "FREQ_DEVIATION_HZ", type = "double", nullable = true },
+    { id = 6, name = "HZ_QUALITY_FLAG", type = "double", nullable = true },
+    { id = 7, name = "FREQ_MEASURE_HZ", type = "double", nullable = true },
+    { id = 8, name = "FM_ALIGNMENT_FLAG", type = "double", nullable = true },
+    { id = 9, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2026-08"
+ctl = "001.ctl"
+ctl_sha256 = "c5757bd6411e1fa8ae696308d522e1434bd6c3caedc65ad5b1d67b9c383d6c70"
+aemo_ctl = "PUBLIC_ARCHIVE#FPP_REGION_FREQ_MEASURE#FILE01#202608.ctl"
+aemo_versions = [1]
+columns = [
+    "INTERVAL_DATETIME",
+    "MEASUREMENT_DATETIME",
+    "REGIONID",
+    "VERSIONNO",
+    "FREQ_DEVIATION_HZ",
+    "HZ_QUALITY_FLAG",
+    "FREQ_MEASURE_HZ",
+    "FM_ALIGNMENT_FLAG",
+    "LASTCHANGED",
+]

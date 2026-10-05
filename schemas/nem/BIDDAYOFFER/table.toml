@@ -1,0 +1,130 @@
+# Our schema of BIDDAYOFFER. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "BIDDAYOFFER"
+description = "BIDDAYOFFER shows the Energy and Ancillary Service bid data for each Market Day. BIDDAYOFFER is the parent table to BIDPEROFFER."
+report_pairs = [["BIDS", "BIDDAYOFFER"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["DUID", "BIDTYPE", "SETTLEMENTDATE", "OFFERDATE"]
+time_column = "SETTLEMENTDATE"
+next_column_id = 34
+
+column = [
+    { id = 1, name = "DUID", type = "string", nullable = false },
+    { id = 2, name = "BIDTYPE", type = "string", nullable = false },
+    { id = 3, name = "SETTLEMENTDATE", type = "timestamp_ns", nullable = false },
+    { id = 4, name = "OFFERDATE", type = "timestamp_ns", nullable = false },
+    { id = 5, name = "VERSIONNO", type = "double", nullable = true },
+    { id = 6, name = "PARTICIPANTID", type = "string", nullable = true },
+    { id = 7, name = "DAILYENERGYCONSTRAINT", type = "double", nullable = true },
+    { id = 8, name = "REBIDEXPLANATION", type = "string", nullable = true },
+    { id = 9, name = "PRICEBAND1", type = "double", nullable = true },
+    { id = 10, name = "PRICEBAND2", type = "double", nullable = true },
+    { id = 11, name = "PRICEBAND3", type = "double", nullable = true },
+    { id = 12, name = "PRICEBAND4", type = "double", nullable = true },
+    { id = 13, name = "PRICEBAND5", type = "double", nullable = true },
+    { id = 14, name = "PRICEBAND6", type = "double", nullable = true },
+    { id = 15, name = "PRICEBAND7", type = "double", nullable = true },
+    { id = 16, name = "PRICEBAND8", type = "double", nullable = true },
+    { id = 17, name = "PRICEBAND9", type = "double", nullable = true },
+    { id = 18, name = "PRICEBAND10", type = "double", nullable = true },
+    { id = 19, name = "MINIMUMLOAD", type = "double", nullable = true },
+    { id = 20, name = "T1", type = "double", nullable = true },
+    { id = 21, name = "T2", type = "double", nullable = true },
+    { id = 22, name = "T3", type = "double", nullable = true },
+    { id = 23, name = "T4", type = "double", nullable = true },
+    { id = 24, name = "NORMALSTATUS", type = "string", nullable = true },
+    { id = 25, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 26, name = "ENTRYTYPE", type = "string", nullable = true },
+    { id = 27, name = "REBID_EVENT_TIME", type = "string", nullable = true },
+    { id = 28, name = "REBID_AWARE_TIME", type = "string", nullable = true },
+    { id = 29, name = "REBID_DECISION_TIME", type = "string", nullable = true },
+    { id = 30, name = "REBID_CATEGORY", type = "string", nullable = true },
+    { id = 31, name = "REFERENCE_ID", type = "string", nullable = true },
+    { id = 32, name = "DIRECTION", type = "string", nullable = true },
+    { id = 33, name = "MR_FACTOR", type = "double", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "cd33fa5d88184c9a07ddc0383220819582f0c717463855e1c6191847701373fd"
+aemo_ctl = "PUBLIC_DVD_BIDDAYOFFER_202401.ctl"
+aemo_versions = [1]
+columns = [
+    "DUID",
+    "BIDTYPE",
+    "SETTLEMENTDATE",
+    "OFFERDATE",
+    "VERSIONNO",
+    "PARTICIPANTID",
+    "DAILYENERGYCONSTRAINT",
+    "REBIDEXPLANATION",
+    "PRICEBAND1",
+    "PRICEBAND2",
+    "PRICEBAND3",
+    "PRICEBAND4",
+    "PRICEBAND5",
+    "PRICEBAND6",
+    "PRICEBAND7",
+    "PRICEBAND8",
+    "PRICEBAND9",
+    "PRICEBAND10",
+    "MINIMUMLOAD",
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "NORMALSTATUS",
+    "LASTCHANGED",
+    "ENTRYTYPE",
+    "REBID_EVENT_TIME",
+    "REBID_AWARE_TIME",
+    "REBID_DECISION_TIME",
+    "REBID_CATEGORY",
+    "REFERENCE_ID",
+]
+
+[[increment]]
+n = 2
+from = "2026-08"
+ctl = "002.ctl"
+ctl_sha256 = "9ef326156d77ec600c3e79574cf7ef65d65b4d9d860c39380eac9435bf74da3e"
+aemo_ctl = "PUBLIC_ARCHIVE#BIDDAYOFFER#FILE01#202608.ctl"
+aemo_versions = [2]
+columns = [
+    "DUID",
+    "BIDTYPE",
+    "SETTLEMENTDATE",
+    "OFFERDATE",
+    "DIRECTION",
+    "VERSIONNO",
+    "PARTICIPANTID",
+    "DAILYENERGYCONSTRAINT",
+    "REBIDEXPLANATION",
+    "PRICEBAND1",
+    "PRICEBAND2",
+    "PRICEBAND3",
+    "PRICEBAND4",
+    "PRICEBAND5",
+    "PRICEBAND6",
+    "PRICEBAND7",
+    "PRICEBAND8",
+    "PRICEBAND9",
+    "PRICEBAND10",
+    "MINIMUMLOAD",
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "NORMALSTATUS",
+    "LASTCHANGED",
+    "MR_FACTOR",
+    "ENTRYTYPE",
+    "REBID_EVENT_TIME",
+    "REBID_AWARE_TIME",
+    "REBID_DECISION_TIME",
+    "REBID_CATEGORY",
+    "REFERENCE_ID",
+]

@@ -1,0 +1,48 @@
+# Our schema of SET_ENERGY_REGION_SUMMARY. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "SET_ENERGY_REGION_SUMMARY"
+report_pairs = [["SETTLEMENTS", "ENERGY_REGION_SUMMARY"]]
+load_mode = "append"
+dedupe = "none"
+primary_key = []
+time_column = "SETTLEMENTDATE"
+next_column_id = 14
+
+column = [
+    { id = 1, name = "SETTLEMENTDATE", type = "timestamp_ns", nullable = true },
+    { id = 2, name = "VERSIONNO", type = "double", nullable = true },
+    { id = 3, name = "PERIODID", type = "double", nullable = true },
+    { id = 4, name = "REGIONID", type = "string", nullable = true },
+    { id = 5, name = "CE_MWH", type = "double", nullable = true },
+    { id = 6, name = "UFEA_MWH", type = "double", nullable = true },
+    { id = 7, name = "ACE_MWH", type = "double", nullable = true },
+    { id = 8, name = "ASOE_MWH", type = "double", nullable = true },
+    { id = 9, name = "ACE_AMOUNT", type = "double", nullable = true },
+    { id = 10, name = "ASOE_AMOUNT", type = "double", nullable = true },
+    { id = 11, name = "TOTAL_MWH", type = "double", nullable = true },
+    { id = 12, name = "TOTAL_AMOUNT", type = "double", nullable = true },
+    { id = 13, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2026-08"
+ctl = "001.ctl"
+ctl_sha256 = "9b89abe42a89bd4645e463f3215c0064070eed7f1946b8d4239b32c2550ebda2"
+aemo_ctl = "PUBLIC_ARCHIVE#SET_ENERGY_REGION_SUMMARY#FILE01#202608.ctl"
+aemo_versions = [1]
+columns = [
+    "SETTLEMENTDATE",
+    "VERSIONNO",
+    "PERIODID",
+    "REGIONID",
+    "CE_MWH",
+    "UFEA_MWH",
+    "ACE_MWH",
+    "ASOE_MWH",
+    "ACE_AMOUNT",
+    "ASOE_AMOUNT",
+    "TOTAL_MWH",
+    "TOTAL_AMOUNT",
+    "LASTCHANGED",
+]

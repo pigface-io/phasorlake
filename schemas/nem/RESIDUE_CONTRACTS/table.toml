@@ -1,0 +1,59 @@
+# Our schema of RESIDUE_CONTRACTS. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "RESIDUE_CONTRACTS"
+description = "RESIDUE_CONTRACTS supports the Settlement Residue Auction, by holding the contract details for each period for which a residue contract will be offered."
+report_pairs = [["IRAUCTION", "RESIDUE_CONTRACTS"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["CONTRACTYEAR", "QUARTER", "TRANCHE"]
+time_column = "LASTCHANGED"
+next_column_id = 19
+
+column = [
+    { id = 1, name = "CONTRACTYEAR", type = "double", nullable = false },
+    { id = 2, name = "QUARTER", type = "double", nullable = false },
+    { id = 3, name = "TRANCHE", type = "double", nullable = false },
+    { id = 4, name = "CONTRACTID", type = "string", nullable = true },
+    { id = 5, name = "STARTDATE", type = "timestamp_ns", nullable = true },
+    { id = 6, name = "ENDDATE", type = "timestamp_ns", nullable = true },
+    { id = 7, name = "NOTIFYDATE", type = "timestamp_ns", nullable = true },
+    { id = 8, name = "AUCTIONDATE", type = "timestamp_ns", nullable = true },
+    { id = 9, name = "CALCMETHOD", type = "string", nullable = true },
+    { id = 10, name = "AUTHORISEDDATE", type = "timestamp_ns", nullable = true },
+    { id = 11, name = "AUTHORISEDBY", type = "string", nullable = true },
+    { id = 12, name = "NOTIFYPOSTDATE", type = "timestamp_ns", nullable = true },
+    { id = 13, name = "NOTIFYBY", type = "string", nullable = true },
+    { id = 14, name = "POSTDATE", type = "timestamp_ns", nullable = true },
+    { id = 15, name = "POSTEDBY", type = "string", nullable = true },
+    { id = 16, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 17, name = "DESCRIPTION", type = "string", nullable = true },
+    { id = 18, name = "AUCTIONID", type = "string", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "1ae8cf61dc9b22de71a13ed3305e54a63088fb44eacf61100189161d68a95f33"
+aemo_ctl = "PUBLIC_DVD_RESIDUE_CONTRACTS_202401.ctl"
+aemo_versions = [1]
+columns = [
+    "CONTRACTYEAR",
+    "QUARTER",
+    "TRANCHE",
+    "CONTRACTID",
+    "STARTDATE",
+    "ENDDATE",
+    "NOTIFYDATE",
+    "AUCTIONDATE",
+    "CALCMETHOD",
+    "AUTHORISEDDATE",
+    "AUTHORISEDBY",
+    "NOTIFYPOSTDATE",
+    "NOTIFYBY",
+    "POSTDATE",
+    "POSTEDBY",
+    "LASTCHANGED",
+    "DESCRIPTION",
+    "AUCTIONID",
+]

@@ -1,0 +1,66 @@
+# Our schema of SETIRSURPLUS. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "SETIRSURPLUS"
+description = "SETIRSURPLUS records the interregional residue calculation for each interconnector and each side of the interconnector."
+report_pairs = [["SETTLEMENTS", "IRSURPLUS"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["SETTLEMENTDATE", "SETTLEMENTRUNNO", "PERIODID", "INTERCONNECTORID", "REGIONID"]
+time_column = "SETTLEMENTDATE"
+next_column_id = 12
+
+column = [
+    { id = 1, name = "SETTLEMENTDATE", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "SETTLEMENTRUNNO", type = "double", nullable = false },
+    { id = 3, name = "PERIODID", type = "double", nullable = false },
+    { id = 4, name = "INTERCONNECTORID", type = "string", nullable = false },
+    { id = 5, name = "REGIONID", type = "string", nullable = false },
+    { id = 6, name = "MWFLOW", type = "double", nullable = true },
+    { id = 7, name = "LOSSFACTOR", type = "double", nullable = true },
+    { id = 8, name = "SURPLUSVALUE", type = "double", nullable = true },
+    { id = 9, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 11, name = "CSP_DEROGATION_AMOUNT", type = "double", nullable = true },
+    { id = 10, name = "UNADJUSTED_IRSR", type = "double", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "c09fb4c3efe6b30ca6e6f2723c284e682e92de18a3875f7ae750368ad78fb5a5"
+aemo_ctl = "PUBLIC_DVD_SETIRSURPLUS_202401.ctl"
+aemo_versions = [6]
+columns = [
+    "SETTLEMENTDATE",
+    "SETTLEMENTRUNNO",
+    "PERIODID",
+    "INTERCONNECTORID",
+    "REGIONID",
+    "MWFLOW",
+    "LOSSFACTOR",
+    "SURPLUSVALUE",
+    "LASTCHANGED",
+    "UNADJUSTED_IRSR",
+    "CSP_DEROGATION_AMOUNT",
+]
+
+[[increment]]
+n = 2
+from = "2026-08"
+ctl = "002.ctl"
+ctl_sha256 = "11a88ddf20843d6bd366c400eced5f8f63b7f1b2b56e0def61231917db607d75"
+aemo_ctl = "PUBLIC_ARCHIVE#SETIRSURPLUS#FILE01#202608.ctl"
+aemo_versions = [6]
+columns = [
+    "SETTLEMENTDATE",
+    "SETTLEMENTRUNNO",
+    "PERIODID",
+    "INTERCONNECTORID",
+    "REGIONID",
+    "MWFLOW",
+    "LOSSFACTOR",
+    "SURPLUSVALUE",
+    "LASTCHANGED",
+    "CSP_DEROGATION_AMOUNT",
+    "UNADJUSTED_IRSR",
+]

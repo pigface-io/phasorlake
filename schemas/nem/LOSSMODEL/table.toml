@@ -1,0 +1,38 @@
+# Our schema of LOSSMODEL. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "LOSSMODEL"
+description = "LOSSMODEL sets out segment breakpoints in loss model for each interconnector, used by LP Solver modelling of interconnector flows."
+report_pairs = [["MARKET_CONFIG", "LOSSMODEL"]]
+load_mode = "snapshot"
+dedupe = "pk_lastchanged"
+primary_key = ["EFFECTIVEDATE", "VERSIONNO", "INTERCONNECTORID", "LOSSSEGMENT"]
+next_column_id = 9
+
+column = [
+    { id = 1, name = "EFFECTIVEDATE", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "VERSIONNO", type = "double", nullable = false },
+    { id = 3, name = "INTERCONNECTORID", type = "string", nullable = false },
+    { id = 4, name = "PERIODID", type = "string", nullable = true },
+    { id = 5, name = "LOSSSEGMENT", type = "double", nullable = false },
+    { id = 6, name = "MWBREAKPOINT", type = "double", nullable = true },
+    { id = 7, name = "LOSSFACTOR", type = "double", nullable = true },
+    { id = 8, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "f7facc1f45c6958683b4110063006b203d8c62527bde6b91289713c30c2f526f"
+aemo_ctl = "PUBLIC_DVD_LOSSMODEL_202401.ctl"
+aemo_versions = [1]
+columns = [
+    "EFFECTIVEDATE",
+    "VERSIONNO",
+    "INTERCONNECTORID",
+    "PERIODID",
+    "LOSSSEGMENT",
+    "MWBREAKPOINT",
+    "LOSSFACTOR",
+    "LASTCHANGED",
+]

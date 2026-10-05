@@ -1,0 +1,89 @@
+# Our schema of BIDPEROFFER_D. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "BIDPEROFFER_D"
+description = """
+BIDPEROFFER_D shows the public summary of the energy and FCAS offers applicable in the Dispatch for the
+intervals identified. BIDPEROFFER_D is the child to BIDDAYOFFER_D."""
+report_pairs = [["BID", "BIDPEROFFER_D"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["SETTLEMENTDATE", "DUID", "BIDTYPE", "INTERVAL_DATETIME"]
+time_column = "SETTLEMENTDATE"
+next_column_id = 33
+
+column = [
+    { id = 1, name = "SETTLEMENTDATE", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "DUID", type = "string", nullable = false },
+    { id = 3, name = "BIDTYPE", type = "string", nullable = false },
+    { id = 4, name = "DIRECTION", type = "string", nullable = true },
+    { id = 5, name = "INTERVAL_DATETIME", type = "timestamp_ns", nullable = false },
+    { id = 6, name = "BIDSETTLEMENTDATE", type = "timestamp_ns", nullable = true },
+    { id = 7, name = "OFFERDATE", type = "timestamp_ns", nullable = true },
+    { id = 8, name = "PERIODID", type = "double", nullable = true },
+    { id = 9, name = "VERSIONNO", type = "double", nullable = true },
+    { id = 10, name = "MAXAVAIL", type = "double", nullable = true },
+    { id = 11, name = "FIXEDLOAD", type = "double", nullable = true },
+    { id = 12, name = "ROCUP", type = "double", nullable = true },
+    { id = 13, name = "ROCDOWN", type = "double", nullable = true },
+    { id = 14, name = "ENABLEMENTMIN", type = "double", nullable = true },
+    { id = 15, name = "ENABLEMENTMAX", type = "double", nullable = true },
+    { id = 16, name = "LOWBREAKPOINT", type = "double", nullable = true },
+    { id = 17, name = "HIGHBREAKPOINT", type = "double", nullable = true },
+    { id = 18, name = "BANDAVAIL1", type = "double", nullable = true },
+    { id = 19, name = "BANDAVAIL2", type = "double", nullable = true },
+    { id = 20, name = "BANDAVAIL3", type = "double", nullable = true },
+    { id = 21, name = "BANDAVAIL4", type = "double", nullable = true },
+    { id = 22, name = "BANDAVAIL5", type = "double", nullable = true },
+    { id = 23, name = "BANDAVAIL6", type = "double", nullable = true },
+    { id = 24, name = "BANDAVAIL7", type = "double", nullable = true },
+    { id = 25, name = "BANDAVAIL8", type = "double", nullable = true },
+    { id = 26, name = "BANDAVAIL9", type = "double", nullable = true },
+    { id = 27, name = "BANDAVAIL10", type = "double", nullable = true },
+    { id = 28, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 29, name = "PASAAVAILABILITY", type = "double", nullable = true },
+    { id = 30, name = "MR_CAPACITY", type = "double", nullable = true },
+    { id = 31, name = "ENERGYLIMIT", type = "double", nullable = true },
+    { id = 32, name = "RECALL_PERIOD", type = "double", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2026-08"
+ctl = "001.ctl"
+ctl_sha256 = "2910af0c3a6dcdd8ef9d4ec9c9389c7b4192d9125fee12cc8cf7f507a1893c23"
+aemo_ctl = "PUBLIC_ARCHIVE#BIDPEROFFER_D#FILE01#202608.ctl"
+aemo_versions = [4]
+columns = [
+    "SETTLEMENTDATE",
+    "DUID",
+    "BIDTYPE",
+    "DIRECTION",
+    "INTERVAL_DATETIME",
+    "BIDSETTLEMENTDATE",
+    "OFFERDATE",
+    "PERIODID",
+    "VERSIONNO",
+    "MAXAVAIL",
+    "FIXEDLOAD",
+    "ROCUP",
+    "ROCDOWN",
+    "ENABLEMENTMIN",
+    "ENABLEMENTMAX",
+    "LOWBREAKPOINT",
+    "HIGHBREAKPOINT",
+    "BANDAVAIL1",
+    "BANDAVAIL2",
+    "BANDAVAIL3",
+    "BANDAVAIL4",
+    "BANDAVAIL5",
+    "BANDAVAIL6",
+    "BANDAVAIL7",
+    "BANDAVAIL8",
+    "BANDAVAIL9",
+    "BANDAVAIL10",
+    "LASTCHANGED",
+    "PASAAVAILABILITY",
+    "MR_CAPACITY",
+    "ENERGYLIMIT",
+    "RECALL_PERIOD",
+]

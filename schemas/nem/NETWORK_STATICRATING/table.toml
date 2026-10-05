@@ -1,0 +1,45 @@
+# Our schema of NETWORK_STATICRATING. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "NETWORK_STATICRATING"
+description = """
+NETWORK_STATICRATING lists the static rating values that will apply for a Rating Application ID.
+This data does not provide information for when the rating actually applies in the NEM. This is dependent on the Rating Application definition.
+For information on the Rating Applications please refer to the information published on the AEMO website under the topic "Transmission Equipment Ratings". The Rating Applications are referred to as Alternate Value Application Ratings.
+Ratings that normally use dynamic values will also have static rating values defined. These are used as a fallback if the dynamic rating fails."""
+report_pairs = [["NETWORK", "STATICRATING"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["SUBSTATIONID", "EQUIPMENTTYPE", "EQUIPMENTID", "RATINGLEVEL", "APPLICATIONID", "VALIDFROM"]
+time_column = "LASTCHANGED"
+next_column_id = 10
+
+column = [
+    { id = 1, name = "SUBSTATIONID", type = "string", nullable = false },
+    { id = 2, name = "EQUIPMENTTYPE", type = "string", nullable = false },
+    { id = 3, name = "EQUIPMENTID", type = "string", nullable = false },
+    { id = 4, name = "RATINGLEVEL", type = "string", nullable = false },
+    { id = 5, name = "APPLICATIONID", type = "string", nullable = false },
+    { id = 6, name = "VALIDFROM", type = "timestamp_ns", nullable = false },
+    { id = 7, name = "VALIDTO", type = "timestamp_ns", nullable = true },
+    { id = 8, name = "RATINGVALUE", type = "double", nullable = true },
+    { id = 9, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2026-08"
+ctl = "001.ctl"
+ctl_sha256 = "344468d21d8624d8cc0a38bee0dc2a6ad6349f6397a051145709abaa9d442a44"
+aemo_ctl = "PUBLIC_ARCHIVE#NETWORK_STATICRATING#FILE01#202608.ctl"
+aemo_versions = [1]
+columns = [
+    "SUBSTATIONID",
+    "EQUIPMENTTYPE",
+    "EQUIPMENTID",
+    "RATINGLEVEL",
+    "APPLICATIONID",
+    "VALIDFROM",
+    "VALIDTO",
+    "RATINGVALUE",
+    "LASTCHANGED",
+]

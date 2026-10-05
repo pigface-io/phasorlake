@@ -1,0 +1,33 @@
+# Our schema of PRUDENTIALRUNTRK. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "PRUDENTIALRUNTRK"
+description = "Records the prudential run accepted by Settlements staff for each prudential date"
+report_pairs = [["PRUDENTIAL", "RUNTRK"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["PRUDENTIAL_DATE", "RUNNO"]
+time_column = "LASTCHANGED"
+next_column_id = 6
+
+column = [
+    { id = 1, name = "PRUDENTIAL_DATE", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "RUNNO", type = "double", nullable = false },
+    { id = 3, name = "AUTHORISEDBY", type = "string", nullable = true },
+    { id = 4, name = "AUTHORISEDDATE", type = "timestamp_ns", nullable = true },
+    { id = 5, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2026-08"
+ctl = "001.ctl"
+ctl_sha256 = "b3b9f8fb73de9fe984e91efc8cdfbbb594e39dd97bbca96d9a49a4f639361c8e"
+aemo_ctl = "PUBLIC_ARCHIVE#PRUDENTIALRUNTRK#FILE01#202608.ctl"
+aemo_versions = [1]
+columns = [
+    "PRUDENTIAL_DATE",
+    "RUNNO",
+    "AUTHORISEDBY",
+    "AUTHORISEDDATE",
+    "LASTCHANGED",
+]

@@ -1,0 +1,55 @@
+# Our schema of DISPATCH_FCAS_REQ. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "DISPATCH_FCAS_REQ"
+description = "DISPATCH_FCAS_REQ shows Dispatch Constraint tracking for Regional FCAS recovery."
+report_pairs = [["DISPATCH", "FCAS_REQ"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["SETTLEMENTDATE", "RUNNO", "INTERVENTION", "GENCONID", "REGIONID", "BIDTYPE"]
+time_column = "SETTLEMENTDATE"
+next_column_id = 17
+
+column = [
+    { id = 1, name = "SETTLEMENTDATE", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "RUNNO", type = "double", nullable = false },
+    { id = 3, name = "INTERVENTION", type = "double", nullable = false },
+    { id = 4, name = "GENCONID", type = "string", nullable = false },
+    { id = 5, name = "REGIONID", type = "string", nullable = false },
+    { id = 6, name = "BIDTYPE", type = "string", nullable = false },
+    { id = 7, name = "GENCONEFFECTIVEDATE", type = "timestamp_ns", nullable = true },
+    { id = 8, name = "GENCONVERSIONNO", type = "double", nullable = true },
+    { id = 9, name = "MARGINALVALUE", type = "double", nullable = true },
+    { id = 10, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 11, name = "BASE_COST", type = "double", nullable = true },
+    { id = 12, name = "ADJUSTED_COST", type = "double", nullable = true },
+    { id = 13, name = "ESTIMATED_CMPF", type = "double", nullable = true },
+    { id = 14, name = "ESTIMATED_CRMPF", type = "double", nullable = true },
+    { id = 15, name = "RECOVERY_FACTOR_CMPF", type = "double", nullable = true },
+    { id = 16, name = "RECOVERY_FACTOR_CRMPF", type = "double", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "6e76511f04806168c7617ccb6c9837abc8af6d705a35252374d1c49753e5eedc"
+aemo_ctl = "PUBLIC_DVD_DISPATCH_FCAS_REQ_202401.ctl"
+aemo_versions = [2]
+columns = [
+    "SETTLEMENTDATE",
+    "RUNNO",
+    "INTERVENTION",
+    "GENCONID",
+    "REGIONID",
+    "BIDTYPE",
+    "GENCONEFFECTIVEDATE",
+    "GENCONVERSIONNO",
+    "MARGINALVALUE",
+    "LASTCHANGED",
+    "BASE_COST",
+    "ADJUSTED_COST",
+    "ESTIMATED_CMPF",
+    "ESTIMATED_CRMPF",
+    "RECOVERY_FACTOR_CMPF",
+    "RECOVERY_FACTOR_CRMPF",
+]

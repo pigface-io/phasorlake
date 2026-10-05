@@ -1,0 +1,43 @@
+# Our schema of INTERMITTENT_DS_PRED. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "INTERMITTENT_DS_PRED"
+description = "Unconstrained Intermittent Generation Forecasts (UIGF) for Dispatch"
+report_pairs = [["DEMAND", "INTERMITTENT_DS_PRED"]]
+load_mode = "append"
+dedupe = "pk"
+primary_key = ["RUN_DATETIME", "DUID", "OFFERDATETIME", "INTERVAL_DATETIME", "ORIGIN", "FORECAST_PRIORITY"]
+time_column = "INTERVAL_DATETIME"
+next_column_id = 11
+
+column = [
+    { id = 1, name = "RUN_DATETIME", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "DUID", type = "string", nullable = false },
+    { id = 3, name = "OFFERDATETIME", type = "timestamp_ns", nullable = false },
+    { id = 4, name = "INTERVAL_DATETIME", type = "timestamp_ns", nullable = false },
+    { id = 5, name = "ORIGIN", type = "string", nullable = false },
+    { id = 6, name = "FORECAST_PRIORITY", type = "double", nullable = false },
+    { id = 7, name = "FORECAST_MEAN", type = "double", nullable = true },
+    { id = 8, name = "FORECAST_POE10", type = "double", nullable = true },
+    { id = 9, name = "FORECAST_POE50", type = "double", nullable = true },
+    { id = 10, name = "FORECAST_POE90", type = "double", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2026-08"
+ctl = "001.ctl"
+ctl_sha256 = "b6b64e763083410202a7ec1ebd7e1848a53c63e5bed5f3c80c92f5191c92be72"
+aemo_ctl = "PUBLIC_ARCHIVE#INTERMITTENT_DS_PRED#FILE01#202608.ctl"
+aemo_versions = [1]
+columns = [
+    "RUN_DATETIME",
+    "DUID",
+    "OFFERDATETIME",
+    "INTERVAL_DATETIME",
+    "ORIGIN",
+    "FORECAST_PRIORITY",
+    "FORECAST_MEAN",
+    "FORECAST_POE10",
+    "FORECAST_POE50",
+    "FORECAST_POE90",
+]

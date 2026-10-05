@@ -1,0 +1,47 @@
+# Our schema of DISPATCH_INTERCONNECTION. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "DISPATCH_INTERCONNECTION"
+description = "Inter-regional flow information common to or aggregated for regulated (i.e. not MNSP) Interconnectors spanning the From-Region and To-Region - NB only the physical run is calculated'"
+report_pairs = [["DISPATCH", "INTERCONNECTION"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["SETTLEMENTDATE", "RUNNO", "INTERVENTION", "FROM_REGIONID", "TO_REGIONID"]
+time_column = "SETTLEMENTDATE"
+next_column_id = 13
+
+column = [
+    { id = 1, name = "SETTLEMENTDATE", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "RUNNO", type = "double", nullable = false },
+    { id = 3, name = "INTERVENTION", type = "double", nullable = false },
+    { id = 4, name = "FROM_REGIONID", type = "string", nullable = false },
+    { id = 5, name = "TO_REGIONID", type = "string", nullable = false },
+    { id = 6, name = "DISPATCHINTERVAL", type = "double", nullable = true },
+    { id = 7, name = "IRLF", type = "double", nullable = true },
+    { id = 8, name = "MWFLOW", type = "double", nullable = true },
+    { id = 9, name = "METEREDMWFLOW", type = "double", nullable = true },
+    { id = 10, name = "FROM_REGION_MW_LOSSES", type = "double", nullable = true },
+    { id = 11, name = "TO_REGION_MW_LOSSES", type = "double", nullable = true },
+    { id = 12, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2026-08"
+ctl = "001.ctl"
+ctl_sha256 = "ff9d4653aef933d65973418e724ad381e4dcee7496fb00b046b4ae59084314ff"
+aemo_ctl = "PUBLIC_ARCHIVE#DISPATCH_INTERCONNECTION#FILE01#202608.ctl"
+aemo_versions = [1]
+columns = [
+    "SETTLEMENTDATE",
+    "RUNNO",
+    "INTERVENTION",
+    "FROM_REGIONID",
+    "TO_REGIONID",
+    "DISPATCHINTERVAL",
+    "IRLF",
+    "MWFLOW",
+    "METEREDMWFLOW",
+    "FROM_REGION_MW_LOSSES",
+    "TO_REGION_MW_LOSSES",
+    "LASTCHANGED",
+]

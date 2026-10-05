@@ -1,0 +1,85 @@
+# Our schema of BILLINGREGIONFIGURES. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
+schema_format = 2
+name = "BILLINGREGIONFIGURES"
+description = "BILLINGREGIONFIGURES sets out additional summary region details including ancillary service amounts for each billing run."
+report_pairs = [["BILLING", "REGIONFIGURES"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["CONTRACTYEAR", "WEEKNO", "BILLRUNNO", "REGIONID"]
+time_column = "LASTCHANGED"
+next_column_id = 19
+
+column = [
+    { id = 1, name = "CONTRACTYEAR", type = "double", nullable = false },
+    { id = 2, name = "WEEKNO", type = "double", nullable = false },
+    { id = 3, name = "BILLRUNNO", type = "double", nullable = false },
+    { id = 4, name = "REGIONID", type = "string", nullable = false },
+    { id = 5, name = "ENERGYOUT", type = "double", nullable = true },
+    { id = 6, name = "VALUEOUT", type = "double", nullable = true },
+    { id = 7, name = "ENERGYPURCHASED", type = "double", nullable = true },
+    { id = 8, name = "VALUEPURCHASED", type = "double", nullable = true },
+    { id = 9, name = "EXCESSGEN", type = "double", nullable = true },
+    { id = 10, name = "RESERVETRADING", type = "double", nullable = true },
+    { id = 11, name = "INTCOMPO", type = "double", nullable = true },
+    { id = 12, name = "ADMINPRICECOMPO", type = "double", nullable = true },
+    { id = 13, name = "SETTSURPLUS", type = "double", nullable = true },
+    { id = 14, name = "ASPAYMENT", type = "double", nullable = true },
+    { id = 15, name = "POOLFEES", type = "double", nullable = true },
+    { id = 16, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 17, name = "WDRSQ", type = "double", nullable = true },
+    { id = 18, name = "WDRTA", type = "double", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2024-01"
+ctl = "001.ctl"
+ctl_sha256 = "bd2988429f5e8a04f3ae02cb8354a8025a3ac37b3e6250f8c2f14762e3182634"
+aemo_ctl = "PUBLIC_DVD_BILLINGREGIONFIGURES_202401.ctl"
+aemo_versions = [5]
+columns = [
+    "CONTRACTYEAR",
+    "WEEKNO",
+    "BILLRUNNO",
+    "REGIONID",
+    "ENERGYOUT",
+    "VALUEOUT",
+    "ENERGYPURCHASED",
+    "VALUEPURCHASED",
+    "EXCESSGEN",
+    "RESERVETRADING",
+    "INTCOMPO",
+    "ADMINPRICECOMPO",
+    "SETTSURPLUS",
+    "ASPAYMENT",
+    "POOLFEES",
+    "LASTCHANGED",
+]
+
+[[increment]]
+n = 2
+from = "2026-08"
+ctl = "002.ctl"
+ctl_sha256 = "770b5544abf55e4ba2f5cb125adafc0380b85b20d2a2dd02c08edcf78501f874"
+aemo_ctl = "PUBLIC_ARCHIVE#BILLINGREGIONFIGURES#FILE01#202608.ctl"
+aemo_versions = [6]
+columns = [
+    "CONTRACTYEAR",
+    "WEEKNO",
+    "BILLRUNNO",
+    "REGIONID",
+    "ENERGYOUT",
+    "VALUEOUT",
+    "ENERGYPURCHASED",
+    "VALUEPURCHASED",
+    "EXCESSGEN",
+    "RESERVETRADING",
+    "INTCOMPO",
+    "ADMINPRICECOMPO",
+    "SETTSURPLUS",
+    "ASPAYMENT",
+    "POOLFEES",
+    "LASTCHANGED",
+    "WDRSQ",
+    "WDRTA",
+]
