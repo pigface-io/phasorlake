@@ -18,6 +18,7 @@ pub mod error;
 pub mod file;
 pub mod model;
 pub mod shapes;
+pub mod v2;
 pub mod validate;
 
 pub use error::SchemaFileError;

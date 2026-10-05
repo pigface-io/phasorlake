@@ -21,6 +21,20 @@
 use nemlake_core::{Category, Diagnose, Diagnostic};
 
 use crate::file_model::model::ColumnType;
+use crate::file_model::v2::model::LakeType;
+
+/// SHA-256 of a control file's bytes, lower-case hex: what an increment
+/// records of the file it keeps.
+pub fn sha256(bytes: &[u8]) -> String {
+    use sha2::Digest as _;
+    use std::fmt::Write as _;
+    sha2::Sha256::digest(bytes)
+        .iter()
+        .fold(String::with_capacity(64), |mut s, b| {
+            let _ = write!(s, "{b:02x}");
+            s
+        })
+}
 
 /// A SQL*Loader column datatype.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -65,6 +79,25 @@ impl LoaderType {
                 scale: None,
             },
             Self::IntegerExternal => ColumnType::Integer,
+        })
+    }
+
+    /// The lake type a column this loader type brings in starts with;
+    /// `None` for a filler. Every number is a `double`; a date with an
+    /// hour is a `timestamp_ns`.
+    pub fn default_type(&self) -> Option<LakeType> {
+        Some(match self {
+            Self::Filler => return None,
+            Self::Char(_) => LakeType::String,
+            Self::FloatExternal | Self::DecimalExternal | Self::IntegerExternal => LakeType::Double,
+            Self::Date(f) | Self::Timestamp(Some(f)) => {
+                if f.to_ascii_lowercase().contains("hh") {
+                    LakeType::TimestampNs
+                } else {
+                    LakeType::Date
+                }
+            }
+            Self::Timestamp(None) => LakeType::TimestampNs,
         })
     }
 
@@ -120,6 +153,31 @@ impl CtlFile {
     /// The loaded (non-filler) columns.
     pub fn data_columns(&self) -> impl Iterator<Item = &CtlColumn> {
         self.columns.iter().filter(|c| c.ty != LoaderType::Filler)
+    }
+
+    /// The loaded columns' names, upper-case, in file order.
+    pub fn column_names(&self) -> Vec<String> {
+        self.data_columns()
+            .map(|c| c.name.to_ascii_uppercase())
+            .collect()
+    }
+
+    /// Whether `other` loads the same columns, in the same order, with the
+    /// same types. Two months' files of one table differ in their title and
+    /// file name even when nothing else changed; only a layout that differs
+    /// starts a new increment.
+    pub fn same_layout(&self, other: &Self) -> bool {
+        let layout = |f: &Self| -> Vec<(String, String)> {
+            f.data_columns()
+                .map(|c| {
+                    (
+                        c.name.to_ascii_uppercase(),
+                        c.ty.render().to_ascii_uppercase(),
+                    )
+                })
+                .collect()
+        };
+        layout(self) == layout(other)
     }
 }
 
@@ -509,6 +567,53 @@ DUID CHAR(20),
 SCADAVALUE FLOAT EXTERNAL)
 -- End of Script
 "#;
+
+    #[test]
+    fn layout_hash_and_default_types() {
+        let a = parse("a.ctl", SCADA).unwrap();
+        assert_eq!(a.column_names(), ["SETTLEMENTDATE", "DUID", "SCADAVALUE"]);
+        // Another month's file: a new name and title, the same layout.
+        let next = SCADA
+            .replace("202401010000", "202608010000")
+            .replace("hh24:mi:ss", "HH24:MI:SS");
+        let b = parse("b.ctl", &next).unwrap();
+        assert!(a.same_layout(&b));
+        assert_ne!(sha256(SCADA.as_bytes()), sha256(next.as_bytes()));
+        let wider = SCADA.replace(
+            "SCADAVALUE FLOAT EXTERNAL)",
+            "SCADAVALUE FLOAT EXTERNAL,\nLASTCHANGED DATE \"yyyy/mm/dd hh24:mi:ss\")",
+        );
+        assert!(!a.same_layout(&parse("c.ctl", &wider).unwrap()));
+        let typed = SCADA.replace("DUID CHAR(20)", "DUID CHAR(30)");
+        assert!(!a.same_layout(&parse("d.ctl", &typed).unwrap()));
+        assert_eq!(
+            sha256(b""),
+            "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        );
+        let ty = |l: LoaderType| l.default_type();
+        assert_eq!(ty(LoaderType::Filler), None);
+        assert_eq!(ty(LoaderType::Char(3)), Some(LakeType::String));
+        for n in [
+            LoaderType::FloatExternal,
+            LoaderType::DecimalExternal,
+            LoaderType::IntegerExternal,
+        ] {
+            assert_eq!(ty(n), Some(LakeType::Double));
+        }
+        assert_eq!(
+            ty(LoaderType::Date("yyyy/mm/dd hh24:mi:ss".into())),
+            Some(LakeType::TimestampNs)
+        );
+        assert_eq!(
+            ty(LoaderType::Date("yyyy/mm/dd".into())),
+            Some(LakeType::Date)
+        );
+        assert_eq!(
+            ty(LoaderType::Timestamp(Some("YYYY/MM/DD".into()))),
+            Some(LakeType::Date)
+        );
+        assert_eq!(ty(LoaderType::Timestamp(None)), Some(LakeType::TimestampNs));
+    }
 
     #[test]
     fn parses_aemo_ctl() {
