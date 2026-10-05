@@ -236,6 +236,17 @@ rules were chosen by, and the plan hash differs from that of a file read
 without them. Edit a rule and `nemlake reingest` reads again exactly the
 sources it affects.
 
+## The census of every shape
+
+nemlake documents what AEMO published, from evidence. Every file of the
+archive is downloaded once (`nemlake fetch nem`), and `just census FROM TO`
+reads each archived file of those months in full, offline, recording every
+block (one per I row: a file of many tables has many) with its shape and
+rows under `schemas/nem/census/` and `schemas/nem/shapes/`. That static map
+is committed. A new month goes forward with `just census-forward YYYY-MM`:
+download, census, regenerate the schemas, and gate them against the census.
+Parquet is optional: `nemlake ingest --from` writes it from the archive.
+
 ## Which months
 
 The archive begins in July 2009. From 2015 each month is a directory of

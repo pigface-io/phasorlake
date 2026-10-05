@@ -83,6 +83,13 @@ schema-fixtures month="2024-01":
 census from to=from *args:
     cargo run --release -q -p nemlake-census -- census --from {{from}} --to {{to}} "${@:3}"
 
+# a new month, end to end: download it once, record every block of every file, regenerate the schemas, gate them against the census
+census-forward month:
+    cargo run --release -q -p nemlake-cli -- fetch nem --from {{month}}
+    just census {{month}}
+    just schema-regen
+    just census-check
+
 # every recorded census month against the registry: each shape declared or read by a rule, each control-file type within the anchor's (passes when no census is recorded)
 census-check:
     cargo run -q -p xtask -- census-check
