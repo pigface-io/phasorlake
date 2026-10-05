@@ -109,13 +109,13 @@ pub struct Entry<'a> {
 /// archive order. `on_entry` may return an error to stop the walk.
 ///
 /// Nested zips are spooled to `tmp_dir` because the zip format needs a
-/// seekable central directory, and are deleted afterwards. Other entries
-/// are reported through `on_other` and skipped.
+/// seekable central directory, and are deleted afterwards. Every other
+/// entry (a control file, a README) goes to `on_other` with its reader.
 pub fn walk_csv_entries<E>(
     path: &Path,
     tmp_dir: &Path,
     on_entry: &mut dyn FnMut(Entry<'_>) -> Result<(), E>,
-    on_other: &mut dyn FnMut(&str),
+    on_other: &mut dyn FnMut(Entry<'_>),
 ) -> Result<usize, WalkError<E>> {
     walk(path, tmp_dir, 0, "", on_entry, on_other)
 }
@@ -137,7 +137,7 @@ fn walk<E>(
     depth: u8,
     prefix: &str,
     on_entry: &mut dyn FnMut(Entry<'_>) -> Result<(), E>,
-    on_other: &mut dyn FnMut(&str),
+    on_other: &mut dyn FnMut(Entry<'_>),
 ) -> Result<usize, WalkError<E>> {
     let p = path.display().to_string();
     let file = File::open(path).map_err(|e| {
@@ -233,7 +233,11 @@ fn walk<E>(
             let _ = std::fs::remove_file(&tmp);
             found += inner?;
         } else {
-            on_other(&full);
+            on_other(Entry {
+                name: full,
+                size: Some(entry.size()),
+                reader: &mut entry,
+            });
         }
     }
     if depth == 0 && found == 0 {
@@ -307,7 +311,7 @@ pub(crate) mod tests {
                 got.push((e.name, buf));
                 Ok(())
             },
-            &mut |o| others.push(o.to_owned()),
+            &mut |o| others.push(o.name),
         )?;
         Ok((got, others))
     }

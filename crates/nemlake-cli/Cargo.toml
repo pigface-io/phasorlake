@@ -21,7 +21,6 @@ nemlake-registry.workspace = true
 nemlake-decode.workspace = true
 nemlake-conform.workspace = true
 nemlake-acquire.workspace = true
-nemlake-census.workspace = true
 nemlake-writer.workspace = true
 nemlake-pipeline.workspace = true
 anyhow.workspace = true

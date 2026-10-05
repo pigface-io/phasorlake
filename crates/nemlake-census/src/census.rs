@@ -1,14 +1,16 @@
-//! The census: which shape every file of every month had.
+//! The census: which shape every block of every file of every month had.
 //!
-//! For each month the archive's file list is taken, and of each file only
-//! its head: enough of the zip to read every I row near its start (see
-//! [`read_blocks`]). Each block's columns are joined with the types the
-//! month's control files load them as, which gives the block's
-//! [`CanonicalShape`] and its [`ShapeId`]. Two files are written, both
-//! metadata only, in an order that does not depend on the order of work:
+//! nemlake downloads every file of the archive once (`nemlake fetch nem`).
+//! The census then reads each archived file of a month in full, offline,
+//! nested zips included, and records every I row it holds: a file of many
+//! tables has a block per table, anywhere in the file, and all are seen.
+//! Each block's columns are joined with the types the month's control
+//! files load them as, which gives the block's [`CanonicalShape`] and its
+//! [`ShapeId`]. Two files are written, both metadata only, in an order that
+//! does not depend on the order of work:
 //!
-//! - `{root}/census/{YYYY-MM}.toml`: every file of the month and the id of
-//!   each of its blocks;
+//! - `{root}/census/{YYYY-MM}.toml`: every file of the month and each of its
+//!   blocks, in file order, with its row count;
 //! - `{root}/shapes/{TABLE}.toml`: every distinct shape of a table, once,
 //!   with the months it was first and last seen. A shape once recorded is
 //!   never removed.
@@ -19,43 +21,21 @@
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
-use nemlake_acquire::{FetchError, Fetcher, MmsdmArchive, Query, RemoteFile, Source};
-use nemlake_core::{CanonicalShape, Category, Diagnose, Diagnostic, ShapeId, TypeClass, YearMonth};
+use nemlake_acquire::{DiskCache, MmsdmArchive};
+use nemlake_core::{
+    CanonicalShape, Category, Diagnose, Diagnostic, IRow, ShapeId, TypeClass, YearMonth,
+};
+use nemlake_decode::scan::{Flow, Pos, ScanOptions, Sink, scan};
+use nemlake_decode::{Row, RowError, RowFailure, SinkError};
 use nemlake_registry::Registry;
 use nemlake_registry::file_model::ctl::CtlFile;
 use nemlake_registry::file_model::shapes::{ShapeEntry, parse_shapes, render_shapes};
 use serde::{Deserialize, Serialize};
 
-use crate::remote::{HeadError, inflate_head, list_ctls, trim_head};
-use crate::sample::sample_reader;
-
-/// How much of a zip is read for its I rows: `first` bytes, then four
-/// times as many while the last block seen has no D row yet and the zip
-/// goes on, up to `cap`.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct HeadPolicy {
-    /// Bytes of the first read.
-    pub first: u64,
-    /// Most bytes read of one zip.
-    pub cap: u64,
-}
-
-impl Default for HeadPolicy {
-    fn default() -> Self {
-        Self {
-            first: crate::remote::HEAD_BYTES,
-            cap: 4 << 20,
-        }
-    }
-}
-
 /// Why the census of a month could not be taken or recorded.
 #[derive(Debug, thiserror::Error)]
 pub enum CensusError {
-    /// Listing, fetching or reading a head.
-    #[error(transparent)]
-    Head(#[from] HeadError),
-    /// A census or shapes file that cannot be read.
+    /// A census, shapes or archived file that cannot be read.
     #[error("The census file {path} cannot be read: {message}")]
     Read {
         /// The file.
@@ -72,19 +52,22 @@ pub enum CensusError {
         #[source]
         source: std::io::Error,
     },
-}
-
-impl From<FetchError> for CensusError {
-    fn from(e: FetchError) -> Self {
-        Self::Head(e.into())
-    }
+    /// No file of the month is in the archive.
+    #[error(
+        "No file of {month} is in the archive under {path}; download the month first with `nemlake fetch nem --from {month}`."
+    )]
+    NotArchived {
+        /// The month.
+        month: YearMonth,
+        /// Where its files would be.
+        path: String,
+    },
 }
 
 impl Diagnose for CensusError {
     fn diagnostic(&self) -> Diagnostic {
         let msg = self.to_string();
         match self {
-            Self::Head(e) => e.diagnostic(),
             Self::Read { path, .. } => {
                 Diagnostic::error("schema.census_unreadable", Category::Schema, msg)
                     .with_file(path.clone())
@@ -93,6 +76,10 @@ impl Diagnose for CensusError {
                 Diagnostic::error("schema.census_write", Category::Schema, msg)
                     .with_file(path.clone())
                     .caused_by(source)
+            }
+            Self::NotArchived { path, .. } => {
+                Diagnostic::error("schema.census_not_archived", Category::Schema, msg)
+                    .with_file(path.clone())
             }
         }
     }
@@ -105,18 +92,54 @@ pub struct BlockShape {
     pub shape: CanonicalShape,
     /// The version AEMO stamped on it.
     pub version: u16,
+    /// Its D rows.
+    pub rows: u64,
 }
 
 /// The census of one month: per file name, its blocks in file order. A
-/// file whose head could not be read has none, and `problems` says why.
+/// file that could not be read has none, and `problems` says why.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct MonthCensus {
     /// The month.
     pub month: Option<YearMonth>,
     /// File name to blocks.
     pub files: BTreeMap<String, Vec<BlockShape>>,
-    /// Files whose head could not be read, with the diagnostic.
+    /// Files that could not be read, with the diagnostic.
     pub problems: Vec<Diagnostic>,
+}
+
+/// The table a control file loads, from its name in either archive naming
+/// scheme, upper-case. A split digit of the old scheme stays on the name.
+#[must_use]
+pub fn ctl_table(file_name: &str) -> Option<String> {
+    if !file_name.to_ascii_lowercase().ends_with(".ctl") {
+        return None;
+    }
+    nemlake_core::archive_name::parse(file_name).map(|n| n.table)
+}
+
+/// The names under which a control file or a data stem may be looked up:
+/// as written, and without a split digit.
+fn table_keys(table: &str) -> Vec<String> {
+    let upper = table.to_ascii_uppercase();
+    let trimmed = upper.trim_end_matches(|c: char| c.is_ascii_digit());
+    if trimmed.is_empty() || trimmed == upper {
+        vec![upper]
+    } else {
+        vec![trimmed.to_owned(), upper]
+    }
+}
+
+/// Whether the control file for `ctl_table` describes the data file for
+/// `data_table`: the same name, a split of it, or with `siblings` the
+/// daily `_D` file of the same table.
+fn ctl_serves(ctl_table: &str, data_table: &str, siblings: bool) -> bool {
+    let wanted = table_keys(data_table);
+    let mut have = table_keys(ctl_table);
+    if siblings && let Some(base) = ctl_table.to_ascii_uppercase().strip_suffix("_D") {
+        have.extend(table_keys(base));
+    }
+    have.iter().any(|k| wanted.contains(k))
 }
 
 /// The control files of a month, with the table each one's file name says.
@@ -129,59 +152,13 @@ impl Ctls {
         let mut out: Vec<(String, CtlFile)> = files
             .into_iter()
             .filter_map(|(name, text)| {
-                let table = crate::remote::ctl_table(name)?;
+                let table = ctl_table(name)?;
                 let ctl = nemlake_registry::file_model::ctl::parse(name, text).ok()?;
                 Some((table, ctl))
             })
             .collect();
         out.sort_by(|a, b| a.0.cmp(&b.0));
         Self(out)
-    }
-
-    /// Every control file in `dir`.
-    pub fn read_dir(dir: &Path) -> Result<Self, CensusError> {
-        let unreadable = |e: std::io::Error| CensusError::Read {
-            path: dir.display().to_string(),
-            message: e.to_string(),
-        };
-        let mut texts = Vec::new();
-        for e in std::fs::read_dir(dir).map_err(unreadable)? {
-            let p = e.map_err(unreadable)?.path();
-            if p.extension().is_some_and(|x| x.eq_ignore_ascii_case("ctl")) {
-                let name = p.file_name().map(|n| n.to_string_lossy().into_owned());
-                texts.push((
-                    name.unwrap_or_default(),
-                    std::fs::read_to_string(&p).map_err(unreadable)?,
-                ));
-            }
-        }
-        Ok(Self::parse(
-            texts.iter().map(|(n, t)| (n.as_str(), t.as_str())),
-        ))
-    }
-
-    /// The month's control files from the archive (fetched when they are
-    /// not archived yet).
-    pub async fn fetch(
-        fetcher: &Fetcher,
-        archive: &MmsdmArchive,
-        month: YearMonth,
-    ) -> Result<Self, CensusError> {
-        let mut texts = Vec::new();
-        for remote in list_ctls(fetcher, archive, month).await? {
-            let local = fetcher.fetch(&remote).await?;
-            let text = std::fs::read(&local.path).map_err(|e| CensusError::Read {
-                path: local.path.display().to_string(),
-                message: e.to_string(),
-            })?;
-            texts.push((
-                remote.file_name(),
-                String::from_utf8_lossy(&text).into_owned(),
-            ));
-        }
-        Ok(Self::parse(
-            texts.iter().map(|(n, t)| (n.as_str(), t.as_str())),
-        ))
     }
 
     /// The control file that describes `table`'s file: one of the same
@@ -191,81 +168,261 @@ impl Ctls {
             tables.iter().find_map(|t| {
                 self.0
                     .iter()
-                    .find(|(ct, _)| crate::remote::ctl_serves(ct, t, siblings))
+                    .find(|(ct, _)| ctl_serves(ct, t, siblings))
                     .map(|(_, c)| c)
             })
         })
     }
 }
 
-/// The blocks near the start of a remote zip: report pair, version and
-/// columns of each I row read, growing the read as `policy` says.
-pub async fn read_blocks(
-    fetcher: &Fetcher,
-    remote: &RemoteFile,
-    policy: HeadPolicy,
-) -> Result<Vec<crate::sample::SampledBlock>, HeadError> {
-    let identity = remote.url.as_str();
-    let mut len = policy.first.max(1024);
-    loop {
-        let body = fetcher.fetch_head(remote, len).await?;
-        let whole = (body.len() as u64) < len;
-        let (_, mut inflated) = inflate_head(identity, &body)?;
-        if remote.member.is_some() {
-            inflated = inflate_head(identity, &inflated)?.1;
+/// A block as read, before it is typed: report pair, version, columns and
+/// rows.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RawBlock {
+    /// Report type.
+    pub report_type: String,
+    /// Report subtype.
+    pub report_subtype: String,
+    /// Version.
+    pub version: u16,
+    /// Column names, normalised.
+    pub columns: Vec<String>,
+    /// D rows.
+    pub rows: u64,
+}
+
+/// A sink that keeps only the I rows of a header-only scan.
+#[derive(Default)]
+struct Blocks(Vec<RawBlock>);
+
+impl Sink for Blocks {
+    fn comment(&mut self, _: &Row<'_>, _: Pos) -> Result<(), SinkError> {
+        Ok(())
+    }
+    fn header(&mut self, irow: &IRow<'_>, _: Pos) -> Result<(), SinkError> {
+        self.0.push(RawBlock {
+            report_type: irow.report_type.to_owned(),
+            report_subtype: irow.report_subtype.to_owned(),
+            version: irow.version,
+            columns: irow.columns.iter().map(|c| (*c).to_owned()).collect(),
+            rows: 0,
+        });
+        Ok(())
+    }
+    fn row(&mut self, _: &Row<'_>, _: Pos) -> Result<(), RowFailure> {
+        Ok(())
+    }
+    fn bad_row(&mut self, _: &[u8], _: Pos, _: &RowError) -> Flow {
+        Flow::Continue
+    }
+    fn footer(&mut self, _: Option<u64>, _: u64, _: Pos) -> Result<(), SinkError> {
+        Ok(())
+    }
+    fn block_rows(&mut self, rows: u64) {
+        if let Some(b) = self.0.last_mut() {
+            b.rows = rows;
         }
-        let head = trim_head(&inflated, 1);
-        let blocks =
-            sample_reader(identity, head.as_slice(), 1).map_err(|e| HeadError::NoIRow {
-                url: format!("{identity}: {e}"),
-                bytes: inflated.len(),
-            })?;
-        let settled = blocks.last().is_some_and(|b| b.rows > 0);
-        if settled || whole || len >= policy.cap {
-            if blocks.is_empty() {
-                return Err(HeadError::NoIRow {
-                    url: identity.to_owned(),
-                    bytes: inflated.len(),
-                });
-            }
-            return Ok(blocks);
-        }
-        len = (len * 4).min(policy.cap);
     }
 }
 
-/// The census of the files `remotes` of one month, typed by `ctls`.
-/// Stops for good when the server refuses.
-pub async fn census_files(
-    fetcher: &Fetcher,
-    registry: &Registry,
-    remotes: &[RemoteFile],
-    ctls: &Ctls,
-    policy: HeadPolicy,
-) -> Result<MonthCensus, CensusError> {
-    let mut out = MonthCensus::default();
-    for remote in remotes {
-        let name = remote.file_name();
-        let blocks = match read_blocks(fetcher, remote, policy).await {
-            Ok(b) => b,
-            Err(HeadError::Fetch(e @ FetchError::Blocked { .. })) => return Err(e.into()),
-            Err(e) => {
-                out.problems.push(e.diagnostic());
-                out.files.insert(name, Vec::new());
-                continue;
-            }
+/// Every block of one CSV stream, in order: I rows only, D rows counted.
+pub fn read_blocks(reader: impl std::io::Read) -> Result<Vec<RawBlock>, Box<Diagnostic>> {
+    let mut blocks = Blocks::default();
+    scan(
+        reader,
+        &mut blocks,
+        &ScanOptions {
+            headers_only: true,
+            max_bad_rows: u64::MAX,
+            ..Default::default()
+        },
+    )
+    .map_err(|e| Box::new(e.diagnostic()))?;
+    Ok(blocks.0)
+}
+
+/// Every archived file of `month`, sorted: under the month's directory
+/// (2015 on) and the month's whole zip (before): data zips and CSVs,
+/// control files and the README. Sidecars and partial downloads are left
+/// out.
+pub fn month_files(
+    archive: &DiskCache,
+    nem: &MmsdmArchive,
+    month: YearMonth,
+) -> Result<Vec<PathBuf>, CensusError> {
+    let not_url = |e: nemlake_acquire::FetchError| CensusError::Read {
+        path: month.to_string(),
+        message: e.to_string(),
+    };
+    let dir = archive.path_for(nem.month_root(month).map_err(not_url)?.as_str());
+    let whole = archive.path_for(
+        nem.year_root(month.year())
+            .map_err(not_url)?
+            .join(&format!("MMSDM_{}_{:02}.zip", month.year(), month.month()))
+            .map_err(|e| CensusError::Read {
+                path: month.to_string(),
+                message: e.to_string(),
+            })?
+            .as_str(),
+    );
+    let mut out = Vec::new();
+    let mut stack = vec![dir.clone()];
+    while let Some(d) = stack.pop() {
+        let Ok(rd) = std::fs::read_dir(&d) else {
+            continue;
         };
-        let file_table = remote
-            .table
-            .clone()
-            .or_else(|| nemlake_core::archive_name::parse(&name).map(|n| n.table));
-        let shapes = blocks
-            .into_iter()
-            .map(|b| block_shape(registry, ctls, file_table.as_deref(), b))
-            .collect();
-        out.files.insert(name, shapes);
+        for e in rd.filter_map(Result::ok) {
+            let p = e.path();
+            if p.is_dir() {
+                stack.push(p);
+            } else if is_archived_data(&p) {
+                out.push(p);
+            }
+        }
     }
+    if whole.is_file() {
+        out.push(whole);
+    }
+    if out.is_empty() {
+        return Err(CensusError::NotArchived {
+            month,
+            path: dir.display().to_string(),
+        });
+    }
+    out.sort();
     Ok(out)
+}
+
+fn is_archived_data(p: &Path) -> bool {
+    p.extension().is_some_and(|x| {
+        ["zip", "csv", "ctl", "txt"]
+            .iter()
+            .any(|k| x.eq_ignore_ascii_case(k))
+    })
+}
+
+/// The file a walked entry belongs to: the innermost zip it was read out
+/// of (`MMSDM_2012_01.zip!…/PUBLIC_DVD_X_201201010000.zip!X.CSV` is
+/// `PUBLIC_DVD_X_201201010000.zip`), else the file itself.
+fn file_key(outer: &Path, entry: &str) -> String {
+    match entry.rsplit_once('!') {
+        Some((zip, _)) => zip.rsplit(['/', '!']).next().unwrap_or(zip).to_owned(),
+        None => outer
+            .file_name()
+            .map(|n| n.to_string_lossy().into_owned())
+            .unwrap_or_default(),
+    }
+}
+
+/// The census of `month` from its archived `files`: every block of every
+/// data file, typed by the control files among them (loose, or inside a
+/// whole-month zip). A file that cannot be read is a problem of its own
+/// and the census goes on. `tmp` takes nested zips while they are read.
+pub fn census_month(
+    registry: &Registry,
+    month: YearMonth,
+    files: &[PathBuf],
+    tmp: &Path,
+) -> MonthCensus {
+    let mut raw: BTreeMap<String, Vec<RawBlock>> = BTreeMap::new();
+    let mut ctls: Vec<(String, String)> = Vec::new();
+    let mut problems = Vec::new();
+    let read_text = |name: String, r: &mut dyn std::io::Read, ctls: &mut Vec<(String, String)>| {
+        let mut text = Vec::new();
+        if r.read_to_end(&mut text).is_ok() {
+            ctls.push((name, String::from_utf8_lossy(&text).into_owned()));
+        }
+    };
+    for path in files {
+        let name = path
+            .file_name()
+            .map(|n| n.to_string_lossy().into_owned())
+            .unwrap_or_default();
+        let lower = name.to_ascii_lowercase();
+        if lower.ends_with(".ctl") {
+            if let Ok(mut f) = std::fs::File::open(path) {
+                read_text(name, &mut f, &mut ctls);
+            }
+        } else if lower.ends_with(".csv") {
+            match std::fs::File::open(path).map_err(|e| {
+                Diagnostic::error(
+                    "schema.census_unreadable",
+                    Category::Schema,
+                    format!("The archived file {} cannot be read.", path.display()),
+                )
+                .caused_by(&e)
+            }) {
+                Ok(f) => match read_blocks(std::io::BufReader::with_capacity(1 << 20, f)) {
+                    Ok(b) => {
+                        raw.insert(name, b);
+                    }
+                    Err(d) => {
+                        problems.push(d.with_file(path.display().to_string()));
+                        raw.insert(name, Vec::new());
+                    }
+                },
+                Err(d) => problems.push(d),
+            }
+        } else if lower.ends_with(".zip") {
+            let walked = nemlake_decode::archive::walk_csv_entries::<Box<Diagnostic>>(
+                path,
+                tmp,
+                &mut |e| {
+                    let key = file_key(path, &e.name);
+                    let blocks = read_blocks(e.reader).map_err(|d| {
+                        d.with_file(path.display().to_string())
+                            .with_entry(e.name.clone())
+                    })?;
+                    raw.entry(key).or_default().extend(blocks);
+                    Ok(())
+                },
+                &mut |e| {
+                    let base = e
+                        .name
+                        .rsplit(['/', '!'])
+                        .next()
+                        .unwrap_or(&e.name)
+                        .to_owned();
+                    if base.to_ascii_lowercase().ends_with(".ctl") {
+                        read_text(base, e.reader, &mut ctls);
+                    }
+                },
+            );
+            match walked {
+                Ok(_) => {}
+                // A whole-month zip holds control files beside data zips;
+                // a zip of control files only has no CSV, and that is fine.
+                Err(nemlake_decode::archive::WalkError::Archive(
+                    nemlake_decode::archive::ArchiveError::NoCsv { .. },
+                )) => {}
+                Err(nemlake_decode::archive::WalkError::Archive(a)) => {
+                    problems.push(a.diagnostic());
+                    raw.entry(name).or_default();
+                }
+                Err(nemlake_decode::archive::WalkError::Callback(d)) => {
+                    problems.push(*d);
+                    raw.entry(name).or_default();
+                }
+            }
+        }
+    }
+    let ctls = Ctls::parse(ctls.iter().map(|(n, t)| (n.as_str(), t.as_str())));
+    let files = raw
+        .into_iter()
+        .map(|(name, blocks)| {
+            let file_table = nemlake_core::archive_name::parse(&name).map(|n| n.table);
+            let shapes = blocks
+                .into_iter()
+                .map(|b| block_shape(registry, &ctls, file_table.as_deref(), b))
+                .collect();
+            (name, shapes)
+        })
+        .collect();
+    MonthCensus {
+        month: Some(month),
+        files,
+        problems,
+    }
 }
 
 /// A block's shape: its columns typed by the control file of the table
@@ -274,7 +431,7 @@ pub fn block_shape(
     registry: &Registry,
     ctls: &Ctls,
     file_table: Option<&str>,
-    b: crate::sample::SampledBlock,
+    b: RawBlock,
 ) -> BlockShape {
     let table = registry
         .declared_by_pair(&b.report_type, &b.report_subtype)
@@ -291,6 +448,7 @@ pub fn block_shape(
     };
     BlockShape {
         version: b.version,
+        rows: b.rows,
         shape: CanonicalShape {
             columns: b.columns.iter().map(|c| (c.clone(), class(c))).collect(),
             report_type: b.report_type,
@@ -299,40 +457,26 @@ pub fn block_shape(
     }
 }
 
-/// The census of `month`: its files from the archive listing, its control
-/// files from `ctl_dir` when given, else from the archive.
-pub async fn census_month(
-    fetcher: &Fetcher,
-    archive: &MmsdmArchive,
-    registry: &Registry,
-    month: YearMonth,
-    ctl_dir: Option<&Path>,
-    policy: HeadPolicy,
-) -> Result<MonthCensus, CensusError> {
-    let query = Query {
-        exclude: Vec::new(),
-        tables: Vec::new(),
-        from: month,
-        to: month,
-    };
-    let remotes = archive.list(&query, fetcher).await?;
-    let ctls = match ctl_dir {
-        Some(d) => Ctls::read_dir(d)?,
-        None => Ctls::fetch(fetcher, archive, month).await?,
-    };
-    let mut census = census_files(fetcher, registry, &remotes, &ctls, policy).await?;
-    census.month = Some(month);
-    Ok(census)
-}
-
-/// One file's entry in a month's census: one id, or one per block.
+/// One file's entry in a month's census: its blocks, in file order. The
+/// census of a month taken before row counts were kept has only ids.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum FileEntry {
-    /// A file of one block.
+    /// A file of one block, without its rows.
     One(ShapeId),
-    /// A file of several blocks, or none that could be read.
+    /// A file of several blocks, or none that could be read, without rows.
     Many(Vec<ShapeId>),
+    /// Every block with its rows.
+    Blocks(Vec<BlockEntry>),
+}
+
+/// One block of a file in a month's census.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub struct BlockEntry {
+    /// Its shape.
+    pub shape: ShapeId,
+    /// Its D rows.
+    pub rows: u64,
 }
 
 impl FileEntry {
@@ -341,6 +485,7 @@ impl FileEntry {
         match self {
             Self::One(id) => vec![*id],
             Self::Many(ids) => ids.clone(),
+            Self::Blocks(blocks) => blocks.iter().map(|b| b.shape).collect(),
         }
     }
 }
@@ -422,13 +567,17 @@ pub fn record(
     let mut entries: BTreeMap<&str, FileEntry> = BTreeMap::new();
     let mut by_table: BTreeMap<String, Vec<&BlockShape>> = BTreeMap::new();
     for (name, blocks) in &census.files {
-        let ids: Vec<ShapeId> = blocks.iter().map(|b| b.shape.id()).collect();
         entries.insert(
             name,
-            match ids.as_slice() {
-                [one] => FileEntry::One(*one),
-                _ => FileEntry::Many(ids),
-            },
+            FileEntry::Blocks(
+                blocks
+                    .iter()
+                    .map(|b| BlockEntry {
+                        shape: b.shape.id(),
+                        rows: b.rows,
+                    })
+                    .collect(),
+            ),
         );
         for b in blocks {
             let s = &b.shape;
@@ -442,7 +591,7 @@ pub fn record(
         }
     }
     let text = format!(
-        "# Generated by `nemlake schema census`: the shape of every file of {month}.\n{}",
+        "# Generated by `nemlake-census census`: the blocks of every file of {month}.\n{}",
         toml::to_string(&entries).expect("a census serialises")
     );
     let mut added = 0;
@@ -486,53 +635,10 @@ pub fn record(
 #[cfg(test)]
 mod tests {
     use std::io::Write as _;
-    use std::sync::Arc;
-    use std::time::Duration;
 
-    use nemlake_acquire::remotezip::ZipMember;
-    use nemlake_acquire::transport::{Canned, StaticTransport};
-    use nemlake_acquire::{DiskCache, FetcherConfig};
     use nemlake_registry::TypeOptions;
 
     use super::*;
-
-    fn zip_of(name: &str, csv: &[u8]) -> Vec<u8> {
-        let mut cursor = std::io::Cursor::new(Vec::new());
-        {
-            let mut w = zip::ZipWriter::new(&mut cursor);
-            w.start_file(name, zip::write::SimpleFileOptions::default())
-                .unwrap();
-            w.write_all(csv).unwrap();
-            w.finish().unwrap();
-        }
-        cursor.into_inner()
-    }
-
-    fn remote(url: &str) -> RemoteFile {
-        RemoteFile {
-            url: url::Url::parse(url).unwrap(),
-            source: "nem-mmsdm",
-            table: None,
-            period: YearMonth::new(2026, 8),
-            size: None,
-            modified: None,
-            member: None,
-        }
-    }
-
-    fn fetcher(dir: &Path, t: &Arc<StaticTransport>) -> Fetcher {
-        Fetcher::new(
-            Arc::new(t.clone()),
-            DiskCache::new(dir),
-            FetcherConfig {
-                attempts: 1,
-                backoff: Duration::from_millis(1),
-                max_backoff: Duration::from_millis(1),
-                min_interval: Duration::ZERO,
-                ..Default::default()
-            },
-        )
-    }
 
     const SCADA_CTL: &str = r#"LOAD DATA INFILE "PUBLIC_ARCHIVE#DISPATCH_UNIT_SCADA#FILE01#202608010000.CSV" APPEND INTO TABLE DISPATCH_UNIT_SCADA
 FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"' TRAILING NULLCOLS
@@ -540,42 +646,84 @@ FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"' TRAILING NULLCOLS
 SETTLEMENTDATE DATE "yyyy/mm/dd hh24:mi:ss", DUID CHAR(20), SCADAVALUE FLOAT EXTERNAL)
 "#;
 
-    fn scada_csv(rows: usize) -> Vec<u8> {
+    fn zip_of(entries: &[(&str, &[u8])]) -> Vec<u8> {
+        let mut cursor = std::io::Cursor::new(Vec::new());
+        {
+            let mut w = zip::ZipWriter::new(&mut cursor);
+            for (name, bytes) in entries {
+                w.start_file(*name, zip::write::SimpleFileOptions::default())
+                    .unwrap();
+                w.write_all(bytes).unwrap();
+            }
+            w.finish().unwrap();
+        }
+        cursor.into_inner()
+    }
+
+    /// A file of three tables, the second and third starting after more
+    /// than 4 MiB of the first: what a head-only census never saw.
+    fn three_tables(scada_rows: usize) -> Vec<u8> {
         let mut csv = b"C,NEMP.WORLD,DVD,AEMO,PUBLIC,2026/09/01,00:00:00,,,\r\nI,DISPATCH,UNIT_SCADA,1,SETTLEMENTDATE,DUID,SCADAVALUE\r\n".to_vec();
-        for i in 0..rows {
+        for i in 0..scada_rows {
             csv.extend_from_slice(
-                format!("D,DISPATCH,UNIT_SCADA,1,\"2026/08/01 00:05:00\",U{i},{i}.5\r\n")
+                format!("D,DISPATCH,UNIT_SCADA,1,\"2026/08/01 00:05:00\",UNIT{i:08},{i}.5\r\n")
                     .as_bytes(),
             );
         }
+        csv.extend_from_slice(b"I,NEMLAKE_TEST,EXTRA,2,A,B\r\nD,NEMLAKE_TEST,EXTRA,2,x,y\r\nD,NEMLAKE_TEST,EXTRA,2,x,z\r\n");
+        csv.extend_from_slice(b"I,NEMLAKE_TEST,LAST,1,C\r\nD,NEMLAKE_TEST,LAST,1,q\r\n");
+        csv.extend_from_slice(format!("C,\"END OF REPORT\",{}\r\n", scada_rows + 8).as_bytes());
         csv
     }
 
-    #[tokio::test]
-    async fn every_block_gets_its_shape_typed_by_the_months_control_file() {
+    fn put(path: &Path, bytes: &[u8]) {
+        std::fs::create_dir_all(path.parent().unwrap()).unwrap();
+        std::fs::write(path, bytes).unwrap();
+    }
+
+    #[test]
+    fn every_block_of_every_archived_file_is_recorded_with_its_rows() {
         let dir = tempfile::tempdir().unwrap();
-        let t = Arc::new(StaticTransport::default());
-        // A file of the newer naming scheme with two blocks, the second of
-        // a table no control file of the month describes.
-        let mut csv = scada_csv(3);
-        csv.extend_from_slice(b"I,NEMLAKE_TEST,EXTRA,2,A,B\r\nD,NEMLAKE_TEST,EXTRA,2,x,y\r\n");
-        let url =
-            "https://h/PUBLIC_ARCHIVE%23DISPATCH_UNIT_SCADA%23ALL%23FILE01%23202608010000.zip";
-        t.add(url, Canned::ok(&zip_of("A.CSV", &csv)));
-        let f = fetcher(dir.path(), &t);
+        let store = DiskCache::new(dir.path());
+        let nem = MmsdmArchive::new("https://h").unwrap();
         let reg = Registry::load_embedded(TypeOptions::default());
-        let ctls = Ctls::parse([(
-            "PUBLIC_ARCHIVE#DISPATCH_UNIT_SCADA#FILE01#202608.ctl",
-            SCADA_CTL,
-        )]);
-        let mut census = census_files(&f, &reg, &[remote(url)], &ctls, HeadPolicy::default())
-            .await
-            .unwrap();
-        assert!(census.problems.is_empty(), "{:?}", census.problems);
-        let name = "PUBLIC_ARCHIVE#DISPATCH_UNIT_SCADA#ALL#FILE01#202608010000.zip";
-        let blocks = &census.files[name];
-        assert_eq!(blocks.len(), 2);
-        assert_eq!(blocks[0].version, 1);
+        let month = YearMonth::new(2026, 8).unwrap();
+        let root = nem.month_root(month).unwrap();
+        // Listings give `#` as `%23`; the archive keeps the decoded name.
+        let at = |rel: &str| store.path_for(root.join(&rel.replace('#', "%23")).unwrap().as_str());
+        let data = |name: &str| at(&format!("DATA/{name}"));
+        let scada_rows = 110_000;
+        let csv = three_tables(scada_rows);
+        assert!(csv.len() > 4 << 20);
+        let zip_name = "PUBLIC_ARCHIVE#DISPATCH_UNIT_SCADA#FILE01#202608010000.zip";
+        put(&data(zip_name), &zip_of(&[("A.CSV", &csv)]));
+        // A sidecar and a partial download beside it are not files of the month.
+        put(&data(&format!("{zip_name}.json")), b"{}");
+        put(&data("PUBLIC_ARCHIVE#X#FILE01#202608010000.zip.part"), b"x");
+        put(
+            &data("PUBLIC_ARCHIVE#BAD#FILE01#202608010000.zip"),
+            b"not a zip",
+        );
+        put(
+            &at("CTL/PUBLIC_ARCHIVE#DISPATCH_UNIT_SCADA#FILE01#202608.ctl"),
+            SCADA_CTL.as_bytes(),
+        );
+        let files = month_files(&store, &nem, month).unwrap();
+        assert_eq!(files.len(), 3, "{files:?}");
+        let tmp = tempfile::tempdir().unwrap();
+        let census = census_month(&reg, month, &files, tmp.path());
+        assert_eq!(census.problems.len(), 1, "{:?}", census.problems);
+        assert!(
+            census.files["PUBLIC_ARCHIVE#BAD#FILE01#202608010000.zip"].is_empty(),
+            "{:?}",
+            census.files.keys().collect::<Vec<_>>()
+        );
+        let blocks = &census.files[zip_name];
+        assert_eq!(blocks.len(), 3);
+        assert_eq!(
+            blocks.iter().map(|b| b.rows).collect::<Vec<_>>(),
+            [scada_rows as u64, 2, 1]
+        );
         assert_eq!(
             blocks[0].shape.columns,
             [
@@ -585,244 +733,129 @@ SETTLEMENTDATE DATE "yyyy/mm/dd hh24:mi:ss", DUID CHAR(20), SCADAVALUE FLOAT EXT
             ]
         );
         assert_eq!(blocks[1].shape.report_subtype, "EXTRA");
+        assert_eq!(blocks[2].shape.report_subtype, "LAST");
         assert!(
-            blocks[1]
+            blocks[2]
                 .shape
                 .columns
                 .iter()
                 .all(|(_, c)| *c == TypeClass::Unknown)
         );
 
-        // Recorded: the census file names both ids, each table's shapes
-        // file holds its shape once, and a second month only moves the
-        // months it was seen in.
-        census.month = YearMonth::new(2026, 8);
-        let root = dir.path().join("schemas");
-        assert_eq!(record(&root, &reg, &census).unwrap(), 2);
-        let month = read_month(&root, YearMonth::new(2026, 8).unwrap())
-            .unwrap()
-            .unwrap();
+        // Recorded: every block with its rows; each table's shapes file
+        // holds its shape once; a second month only moves the months seen.
+        let schemas = dir.path().join("schemas");
+        assert_eq!(record(&schemas, &reg, &census).unwrap(), 3);
+        let recorded = read_month(&schemas, month).unwrap().unwrap();
         assert_eq!(
-            month[name].ids(),
-            [blocks[0].shape.id(), blocks[1].shape.id()]
+            recorded[zip_name],
+            FileEntry::Blocks(
+                blocks
+                    .iter()
+                    .map(|b| BlockEntry {
+                        shape: b.shape.id(),
+                        rows: b.rows
+                    })
+                    .collect()
+            )
         );
-        let text =
-            std::fs::read_to_string(census_path(&root, YearMonth::new(2026, 8).unwrap())).unwrap();
-        assert!(
-            text.starts_with("# Generated by `nemlake schema census`"),
-            "{text}"
-        );
-        census.month = YearMonth::new(2026, 6);
-        assert_eq!(record(&root, &reg, &census).unwrap(), 0);
-        let shapes = read_shapes(&root, "DISPATCH_UNIT_SCADA").unwrap();
+        let mut earlier = census.clone();
+        earlier.month = YearMonth::new(2026, 6);
+        assert_eq!(record(&schemas, &reg, &earlier).unwrap(), 0);
+        let shapes = read_shapes(&schemas, "DISPATCH_UNIT_SCADA").unwrap();
         assert_eq!(shapes.len(), 1);
-        assert_eq!(shapes[0].id, blocks[0].shape.id());
-        assert_eq!(shapes[0].shape().id(), shapes[0].id);
         assert_eq!(shapes[0].first_seen.to_string(), "2026-06");
         assert_eq!(shapes[0].last_seen.to_string(), "2026-08");
-        assert_eq!(read_shapes(&root, "NEMLAKE_TEST_EXTRA").unwrap().len(), 1);
-        assert!(read_shapes(&root, "NOBODY").unwrap().is_empty());
-        assert!(
-            read_month(&root, YearMonth::new(2020, 1).unwrap())
-                .unwrap()
-                .is_none()
-        );
+        assert_eq!(read_shapes(&schemas, "NEMLAKE_TEST_LAST").unwrap().len(), 1);
+        assert!(read_shapes(&schemas, "NOBODY").unwrap().is_empty());
         // The same census again writes the same bytes.
         let before =
-            std::fs::read_to_string(shapes_dir(&root).join("DISPATCH_UNIT_SCADA.toml")).unwrap();
-        record(&root, &reg, &census).unwrap();
+            std::fs::read_to_string(shapes_dir(&schemas).join("DISPATCH_UNIT_SCADA.toml")).unwrap();
+        record(&schemas, &reg, &census).unwrap();
         assert_eq!(
-            std::fs::read_to_string(shapes_dir(&root).join("DISPATCH_UNIT_SCADA.toml")).unwrap(),
+            std::fs::read_to_string(shapes_dir(&schemas).join("DISPATCH_UNIT_SCADA.toml")).unwrap(),
             before
         );
+        // A month not in the archive says to download it.
+        let e = month_files(&store, &nem, YearMonth::new(2020, 1).unwrap()).unwrap_err();
+        assert_eq!(e.diagnostic().code, "schema.census_not_archived");
+        assert!(e.to_string().contains("nemlake fetch nem --from 2020-01"));
     }
 
-    #[tokio::test]
-    async fn a_member_of_a_whole_month_zip_is_read_from_its_offset_and_grown() {
+    #[test]
+    fn a_whole_month_zip_is_read_through_its_nested_zips_and_control_files() {
         let dir = tempfile::tempdir().unwrap();
-        let t = Arc::new(StaticTransport::default());
-        // A per-table zip inside a month zip, stored, after 100 bytes of
-        // something else. Its first block's C rows are long, so the first
-        // read ends before any D row and the read is grown.
-        let mut csv = b"C,".to_vec();
-        // Letters that do not compress, so the head really is long.
-        let mut seed = 7u32;
-        csv.extend((0..3000).map(|_| {
-            seed = seed.wrapping_mul(1_103_515_245).wrapping_add(12_345);
-            b'a' + (seed >> 16) as u8 % 26
-        }));
-        csv.extend_from_slice(b"\r\n");
-        csv.extend_from_slice(&scada_csv(2));
-        let inner = zip_of("PUBLIC_DVD_DISPATCH_UNIT_SCADA_201001010000.CSV", &csv);
-        let mut cursor = std::io::Cursor::new(Vec::new());
-        {
-            let mut w = zip::ZipWriter::new(&mut cursor);
-            let stored = zip::write::SimpleFileOptions::default()
-                .compression_method(zip::CompressionMethod::Stored);
-            w.start_file("DOCUMENTATION/README.txt", stored).unwrap();
-            w.write_all(&[b'r'; 100]).unwrap();
-            w.start_file(
-                "DATA/PUBLIC_DVD_DISPATCH_UNIT_SCADA_201001010000.zip",
-                stored,
-            )
-            .unwrap();
-            w.write_all(&inner).unwrap();
-            w.finish().unwrap();
-        }
-        let month = cursor.into_inner();
-        let offset = zip::ZipArchive::new(std::io::Cursor::new(&month))
-            .unwrap()
-            .by_index(1)
-            .unwrap()
-            .header_start();
-        t.add("https://h/MMSDM_2010_01.zip", Canned::ok(&month));
-        let f = fetcher(dir.path(), &t);
-        let m = RemoteFile {
-            member: Some(Box::new(ZipMember {
-                name: "DATA/PUBLIC_DVD_DISPATCH_UNIT_SCADA_201001010000.zip".into(),
-                method: 0,
-                crc32: 0,
-                compressed_size: inner.len() as u64,
-                uncompressed_size: inner.len() as u64,
-                header_offset: offset,
-                name_and_extra: 0,
-                flags: 0,
-            })),
-            ..remote(
-                "https://h/MMSDM_2010_01.zip#DATA/PUBLIC_DVD_DISPATCH_UNIT_SCADA_201001010000.zip",
-            )
-        };
-        let policy = HeadPolicy {
-            first: 1024,
-            cap: 64 << 10,
-        };
-        let blocks = read_blocks(&f, &m, policy).await.unwrap();
-        assert_eq!(blocks.len(), 1);
-        assert_eq!(blocks[0].columns, ["SETTLEMENTDATE", "DUID", "SCADAVALUE"]);
-        let ranges = t.ranges.lock().unwrap().clone();
-        assert_eq!(ranges.len(), 2, "{ranges:?}");
-        // Without a control file every class is unknown; a bad zip is a
-        // problem of its own file and the census goes on.
-        t.add(
-            "https://h/bad.zip",
-            Canned::ok(b"not a zip at all, not at all"),
-        );
+        let store = DiskCache::new(dir.path());
+        let nem = MmsdmArchive::new("https://h").unwrap();
         let reg = Registry::load_embedded(TypeOptions::default());
-        let census = census_files(
-            &f,
-            &reg,
-            &[m, remote("https://h/bad.zip")],
-            &Ctls::parse([]),
-            policy,
+        let month = YearMonth::new(2012, 1).unwrap();
+        let inner = zip_of(&[(
+            "PUBLIC_DVD_DISPATCH_UNIT_SCADA_201201010000.CSV",
+            &three_tables(3),
+        )]);
+        let ctl = SCADA_CTL.replace(
+            "PUBLIC_ARCHIVE#DISPATCH_UNIT_SCADA#FILE01#202608010000.CSV",
+            "PUBLIC_DVD_DISPATCH_UNIT_SCADA_201201010000.CSV",
+        );
+        let prefix = "MMSDM_2012_01/MMSDM_Historical_Data_SQLLoader";
+        let whole = zip_of(&[
+            (
+                &format!("{prefix}/DOCUMENTATION/README.txt"),
+                b"Static/Standing data tables".as_slice(),
+            ),
+            (
+                &format!("{prefix}/CTL/PUBLIC_DVD_DISPATCH_UNIT_SCADA_201201.ctl"),
+                ctl.as_bytes(),
+            ),
+            (
+                &format!("{prefix}/DATA/PUBLIC_DVD_DISPATCH_UNIT_SCADA_201201010000.zip"),
+                &inner,
+            ),
+        ]);
+        put(
+            &store.path_for(
+                "https://h/Data_Archive/Wholesale_Electricity/MMSDM/2012/MMSDM_2012_01.zip",
+            ),
+            &whole,
+        );
+        let files = month_files(&store, &nem, month).unwrap();
+        assert_eq!(files.len(), 1);
+        let tmp = tempfile::tempdir().unwrap();
+        let census = census_month(&reg, month, &files, tmp.path());
+        assert!(census.problems.is_empty(), "{:?}", census.problems);
+        let blocks = &census.files["PUBLIC_DVD_DISPATCH_UNIT_SCADA_201201010000.zip"];
+        assert_eq!(blocks.len(), 3);
+        assert_eq!(blocks[0].rows, 3);
+        assert_eq!(blocks[0].shape.columns[0].1, TypeClass::Timestamp);
+
+        // The fixtures of the month come out of the same zip.
+        let out = dir.path().join("fixtures");
+        let w = crate::fixtures::write_fixtures(&files, tmp.path(), &out, 2).unwrap();
+        assert!(w.problems.is_empty(), "{:?}", w.problems);
+        assert_eq!((w.heads, w.ctls, w.readme), (1, 1, true));
+        let head = std::fs::read_to_string(
+            out.join("heads/PUBLIC_DVD_DISPATCH_UNIT_SCADA_201201010000.CSV"),
         )
-        .await
         .unwrap();
-        assert_eq!(census.problems.len(), 1);
-        assert_eq!(census.problems[0].code, "schema.head_not_zip");
-        assert!(census.files["bad.zip"].is_empty());
-        let scada = &census.files["PUBLIC_DVD_DISPATCH_UNIT_SCADA_201001010000.zip"][0];
+        assert_eq!(head.matches("\nI,").count(), 3, "{head}");
+        assert_eq!(head.matches("D,DISPATCH,UNIT_SCADA").count(), 2);
         assert!(
-            scada
-                .shape
-                .columns
-                .iter()
-                .all(|(_, c)| *c == TypeClass::Unknown)
+            out.join("CTL/PUBLIC_DVD_DISPATCH_UNIT_SCADA_201201.ctl")
+                .is_file()
         );
-    }
-
-    /// The committed heads of both months the registry is built from: the
-    /// shape of every block resolves exactly, and in the anchor month
-    /// every column is typed by its control file.
-    #[test]
-    fn the_bootstrap_heads_of_both_months_resolve_exactly() {
-        use nemlake_core::IRow;
-        let reg = Registry::load_embedded(TypeOptions::default());
-        for month in ["MMSDM_2024_01", "MMSDM_2026_08"] {
-            let root = Path::new(env!("CARGO_MANIFEST_DIR"))
-                .join("../../testdata/bootstrap")
-                .join(month);
-            let ctls = Ctls::read_dir(&root.join("CTL")).unwrap();
-            let mut seen = std::collections::BTreeSet::new();
-            let mut untyped = Vec::new();
-            for e in std::fs::read_dir(root.join("heads")).unwrap() {
-                let p = e.unwrap().path();
-                let name = p.file_name().unwrap().to_string_lossy().into_owned();
-                let file_table = nemlake_core::archive_name::parse(&name).map(|n| n.table);
-                let text = std::fs::read(&p).unwrap();
-                for b in sample_reader(&name, text.as_slice(), 1).unwrap() {
-                    let b = block_shape(&reg, &ctls, file_table.as_deref(), b);
-                    let s = &b.shape;
-                    let columns: Vec<&str> = s.columns.iter().map(|(c, _)| c.as_str()).collect();
-                    let irow = IRow {
-                        report_type: &s.report_type,
-                        report_subtype: &s.report_subtype,
-                        version: b.version,
-                        columns: &columns,
-                    };
-                    let res = reg
-                        .resolve(
-                            &irow,
-                            nemlake_registry::ResolveOptions {
-                                mode: nemlake_registry::Mode::Strict,
-                            },
-                        )
-                        .unwrap_or_else(|e| panic!("{month} {name}: {e}"));
-                    assert_eq!(
-                        res.status,
-                        nemlake_registry::Status::Exact,
-                        "{month} {name}"
-                    );
-                    untyped.extend(
-                        s.columns
-                            .iter()
-                            .filter(|(_, c)| *c == TypeClass::Unknown)
-                            .map(|(c, _)| format!("{name} {c}")),
-                    );
-                    seen.insert(s.id());
-                }
-            }
-            assert!(seen.len() > 100, "{month}: {} shapes", seen.len());
-            // The earlier month's fixtures hold only the control files the
-            // anchor month lacks, so some of its columns stay untyped.
-            if month == "MMSDM_2026_08" {
-                assert!(untyped.is_empty(), "{month}: {untyped:?}");
-            }
-        }
+        assert!(out.join("README.txt").is_file());
     }
 
     #[test]
-    fn control_files_come_from_a_directory_and_errors_have_codes() {
-        let dir = tempfile::tempdir().unwrap();
-        std::fs::write(
-            dir.path()
-                .join("PUBLIC_ARCHIVE#DISPATCH_UNIT_SCADA#FILE01#202608.ctl"),
-            SCADA_CTL,
-        )
-        .unwrap();
-        std::fs::write(dir.path().join("README.txt"), "x").unwrap();
-        let ctls = Ctls::read_dir(dir.path()).unwrap();
-        assert!(ctls.for_table(&["DISPATCH_UNIT_SCADA"]).is_some());
-        assert!(ctls.for_table(&["NOPE"]).is_none());
-        let e = Ctls::read_dir(&dir.path().join("none")).err().unwrap();
-        assert_eq!(e.diagnostic().code, "schema.census_unreadable");
-        let root = dir.path().join("schemas");
-        std::fs::create_dir_all(census_dir(&root)).unwrap();
-        std::fs::write(
-            census_path(&root, YearMonth::new(2026, 8).unwrap()),
-            "= nope",
-        )
-        .unwrap();
-        let e = read_month(&root, YearMonth::new(2026, 8).unwrap()).unwrap_err();
-        assert_eq!(e.diagnostic().code, "schema.census_unreadable");
-        std::fs::create_dir_all(shapes_dir(&root)).unwrap();
-        std::fs::write(shapes_dir(&root).join("T.toml"), "shape = 1").unwrap();
-        assert!(read_shapes(&root, "T").is_err());
-        let e = CensusError::Write {
-            path: "p".into(),
-            source: std::io::Error::other("full"),
-        };
-        assert_eq!(e.diagnostic().code, "schema.census_write");
-        let e = CensusError::from(FetchError::Offline { url: "u".into() });
-        assert_eq!(e.diagnostic().code, "net.offline");
+    fn a_census_recorded_before_row_counts_still_reads() {
+        let old: BTreeMap<String, FileEntry> =
+            toml::from_str("\"a.zip\" = \"9c77fb0f8b590880\"\n\"b.zip\" = [\"9c77fb0f8b590880\", \"af3df42662b718de\"]\n")
+                .unwrap();
+        assert_eq!(old["a.zip"].ids().len(), 1);
+        assert_eq!(old["b.zip"].ids().len(), 2);
+        assert!(ctl_table("readme.txt").is_none());
+        assert!(ctl_serves("PREDISPATCHPRICE_D", "PREDISPATCHPRICE", true));
+        assert!(!ctl_serves("REGIONAPC", "REGION", true));
+        assert_eq!(table_keys("BIDPEROFFER1"), ["BIDPEROFFER", "BIDPEROFFER1"]);
     }
 }

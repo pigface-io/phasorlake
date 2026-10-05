@@ -457,47 +457,6 @@ fn inspect_and_schema_commands() {
     let (code, _, err) = cli.code(&["schema", "plan", "X", "Y", "1", "--columns", ","]);
     assert_eq!(code, 5);
     assert!(err.contains("schema.no_columns"), "{err}");
-    // The census: a month recorded already is skipped, offline a month
-    // whose listing is not cached is refused, and control files from a
-    // directory are for one month only.
-    let schemas = cli.home.path().join("census-schemas");
-    std::fs::create_dir_all(schemas.join("nem/census")).unwrap();
-    std::fs::write(schemas.join("nem/census/2026-08.toml"), "").unwrap();
-    let schemas = schemas.to_str().unwrap();
-    let out = cli.ok(&[
-        "schema",
-        "census",
-        "--from",
-        "2026-08",
-        "--schemas",
-        schemas,
-    ]);
-    assert!(out.contains("2026-08: recorded already"), "{out}");
-    let (code, _, err) = cli.code(&[
-        "--offline",
-        "schema",
-        "census",
-        "--from",
-        "2026-07",
-        "--schemas",
-        schemas,
-    ]);
-    assert_eq!(code, 1);
-    assert!(err.contains("net.offline"), "{err}");
-    let (code, _, err) = cli.code(&[
-        "schema",
-        "census",
-        "--from",
-        "2026-07",
-        "--to",
-        "2026-08",
-        "--ctl",
-        "x",
-        "--schemas",
-        schemas,
-    ]);
-    assert_ne!(code, 0);
-    assert!(err.contains("one month"), "{err}");
 }
 
 /// A table and a column nobody declared are ingested all the same, as

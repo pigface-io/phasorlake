@@ -33,6 +33,10 @@ pub trait Sink {
     /// The footer `C,"END OF REPORT",n`, or end of input without one.
     fn footer(&mut self, declared: Option<u64>, lines_read: u64, pos: Pos)
     -> Result<(), SinkError>;
+    /// The number of `D` rows of the block that just ended, in a scan of
+    /// [`ScanOptions::headers_only`]; called before the next
+    /// [`Sink::header`] and before [`Sink::footer`].
+    fn block_rows(&mut self, _rows: u64) {}
 }
 
 /// Limits for a scan.
@@ -42,6 +46,10 @@ pub struct ScanOptions {
     pub max_line_bytes: usize,
     /// Bad rows tolerated before the file fails.
     pub max_bad_rows: u64,
+    /// Read only the I rows: a D row is counted against its block and
+    /// never split or handed to [`Sink::row`]. What a census needs, at the
+    /// speed of finding line ends.
+    pub headers_only: bool,
 }
 
 impl Default for ScanOptions {
@@ -49,6 +57,7 @@ impl Default for ScanOptions {
         Self {
             max_line_bytes: 64 << 20,
             max_bad_rows: 0,
+            headers_only: false,
         }
     }
 }
@@ -90,6 +99,7 @@ pub fn scan<R: Read, S: Sink>(
     let mut stats = ScanStats::default();
     let mut splitter = Splitter::with_capacity(64);
     let mut irows = IRowScratch::default();
+    let mut block_rows: u64 = 0;
     let mut seen_header = false;
     let mut eof = false;
     let mut line_start_offset: u64 = 0;
@@ -149,6 +159,11 @@ pub fn scan<R: Read, S: Sink>(
                     if !seen_header {
                         return Err(ScanError::DataBeforeHeader { line: pos.line });
                     }
+                    if opts.headers_only {
+                        block_rows += 1;
+                        stats.rows += 1;
+                        continue;
+                    }
                     let row = splitter.split(line);
                     match sink.row(&row, pos) {
                         Ok(()) => stats.rows += 1,
@@ -159,6 +174,10 @@ pub fn scan<R: Read, S: Sink>(
                     }
                 }
                 Some(b'I') => {
+                    if opts.headers_only && seen_header {
+                        sink.block_rows(block_rows);
+                        block_rows = 0;
+                    }
                     let row = splitter.split(line);
                     irows
                         .with_header((0..row.len()).map(|i| row.str(i)), |irow| {
@@ -193,6 +212,9 @@ pub fn scan<R: Read, S: Sink>(
         } else if eof {
             break;
         }
+    }
+    if opts.headers_only && seen_header {
+        sink.block_rows(block_rows);
     }
     sink.footer(
         stats.footer_declared,
@@ -247,6 +269,7 @@ pub(crate) mod tests {
         pub footer: Option<(Option<u64>, u64)>,
         pub reject_rows_with: Option<usize>,
         pub stop_on_bad: bool,
+        pub block_rows: Vec<u64>,
     }
 
     impl Sink for Collect {
@@ -283,6 +306,9 @@ pub(crate) mod tests {
                     .collect(),
             );
             Ok(())
+        }
+        fn block_rows(&mut self, rows: u64) {
+            self.block_rows.push(rows);
         }
         fn bad_row(&mut self, raw: &[u8], pos: Pos, _: &RowError) -> Flow {
             self.bad
@@ -334,6 +360,38 @@ pub(crate) mod tests {
             ["QLD1", "Queensland Region", "Active", "2004/06/11 10:43:05"]
         );
         assert_eq!(c.footer, Some((Some(9), 9)));
+    }
+
+    #[test]
+    fn headers_only_reads_every_block_and_counts_its_rows() {
+        let mut c = Collect::default();
+        let stats = scan(
+            fixture("multi_block_dispatchis.csv").as_slice(),
+            &mut c,
+            &ScanOptions {
+                headers_only: true,
+                ..Default::default()
+            },
+        )
+        .unwrap();
+        assert_eq!(stats.blocks, 7);
+        assert_eq!(c.headers.len(), 7);
+        assert!(c.rows.is_empty(), "no D row is split or handed over");
+        assert_eq!(c.block_rows.len(), 7);
+        assert_eq!(c.block_rows.iter().sum::<u64>(), stats.rows);
+        assert!(!stats.footer_mismatch());
+        // A D row before any I row is still an error.
+        assert!(matches!(
+            scan(
+                b"D,A,B,1,x\n".as_slice(),
+                &mut Collect::default(),
+                &ScanOptions {
+                    headers_only: true,
+                    ..Default::default()
+                },
+            ),
+            Err(ScanError::DataBeforeHeader { line: 1 })
+        ));
     }
 
     #[test]
@@ -516,7 +574,7 @@ pub(crate) mod tests {
             &mut c,
             &ScanOptions {
                 max_line_bytes: 16,
-                max_bad_rows: 0,
+                ..Default::default()
             },
         )
         .unwrap_err();

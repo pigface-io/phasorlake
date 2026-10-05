@@ -115,6 +115,17 @@ fn bench(c: &mut Criterion) {
             black_box((st.rows, s.0));
         });
     });
+    g.bench_function("scan_headers_only", |b| {
+        b.iter(|| {
+            let mut s = Count(0);
+            let opts = ScanOptions {
+                headers_only: true,
+                ..Default::default()
+            };
+            let st = scan(black_box(data.as_slice()), &mut s, &opts).unwrap();
+            black_box(st.rows);
+        });
+    });
     g.bench_function("scan_typed_arrow", |b| {
         b.iter(|| {
             let mut s = ArrowSink::new(&registry, ResolveOptions::default(), 65_536, Drop);

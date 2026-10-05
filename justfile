@@ -75,15 +75,13 @@ schema-check:
 schema-regen:
     cargo run -q -p nemlake-census -- regen --schemas schemas {{schema_inputs}}
 
-# refresh the bootstrap fixtures of a month from nemweb: every CTL, the head of every zip and the README (needs the network; one request per interval, nemweb blocks fast clients)
-schema-fixtures month="2024-01" interval_ms="1200":
-    cargo run -q -p nemlake-census -- ctls --month {{month}} --interval-ms {{interval_ms}} --out testdata/bootstrap/MMSDM_{{replace(month, "-", "_")}}/CTL
-    cargo run -q -p nemlake-census -- heads --month {{month}} --interval-ms {{interval_ms}} --out testdata/bootstrap/MMSDM_{{replace(month, "-", "_")}}/heads
-    cargo run -q -p nemlake-census -- readme --month {{month}} --interval-ms {{interval_ms}} --out testdata/bootstrap/MMSDM_{{replace(month, "-", "_")}}
+# cut the bootstrap fixtures of a month from the local archive: every CTL, the head of every data file and the README (download the month first: `nemlake fetch nem --from MONTH`)
+schema-fixtures month="2024-01":
+    cargo run --release -q -p nemlake-census -- fixtures --month {{month}} --out testdata/bootstrap/MMSDM_{{replace(month, "-", "_")}}
 
-# record which shape every file of each month had, into schemas/nem/census/ and schemas/nem/shapes/ (reads the head of each zip: from the archive when it is there, else one paced request each)
+# record every block of every archived file of each month (shape and rows) into schemas/nem/census/ and schemas/nem/shapes/; reads the local archive in full, offline
 census from to=from *args:
-    cargo run --release -q -p nemlake-cli -- schema census --from {{from}} --to {{to}} "${@:3}"
+    cargo run --release -q -p nemlake-census -- census --from {{from}} --to {{to}} "${@:3}"
 
 # every recorded census month against the registry: each shape declared or read by a rule, each control-file type within the anchor's (passes when no census is recorded)
 census-check:

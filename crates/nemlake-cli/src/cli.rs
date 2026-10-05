@@ -240,34 +240,6 @@ pub enum SchemaCmd {
         #[arg(long, value_name = "YYYY-MM")]
         month: Option<nemlake_core::YearMonth>,
     },
-    /// Record which shape every file of each month had: its report pair
-    /// and columns, typed by the month's control files, as a content-addressed
-    /// id. Reads only the head of each zip, from the archive when it is
-    /// there; writes `{schemas}/nem/census/{YYYY-MM}.toml` and
-    /// `{schemas}/nem/shapes/{TABLE}.toml`. A month already recorded is
-    /// skipped, so a run that stops can be run again.
-    Census {
-        /// First month.
-        #[arg(long, value_name = "YYYY-MM")]
-        from: nemlake_core::YearMonth,
-        /// Last month (default: the first).
-        #[arg(long, value_name = "YYYY-MM")]
-        to: Option<nemlake_core::YearMonth>,
-        /// Take the census of months already recorded again.
-        #[arg(long)]
-        refresh: bool,
-        /// A directory of the month's control files to type the columns
-        /// with, instead of the archive's (one month only).
-        #[arg(long, value_name = "DIR")]
-        ctl: Option<PathBuf>,
-        /// The schemas directory to write into.
-        #[arg(long, default_value = "schemas")]
-        schemas: PathBuf,
-        /// Milliseconds between requests; nemweb refuses clients that ask
-        /// faster.
-        #[arg(long, default_value_t = 1200)]
-        interval_ms: u64,
-    },
     /// Validate a schemas directory (default: the embedded registry).
     Validate {
         /// Directory.

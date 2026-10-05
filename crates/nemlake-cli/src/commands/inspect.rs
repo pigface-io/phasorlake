@@ -60,7 +60,7 @@ pub fn scan_blocks(
         let tmp = ctx.home.tmp();
         let mut skipped = Vec::new();
         walk_csv_entries(path, &tmp, &mut |e| handle(&e.name, e.reader), &mut |o| {
-            skipped.push(o.to_owned());
+            skipped.push(o.name);
         })
         .map_err(|e| match e {
             nemlake_decode::archive::WalkError::Archive(a) => {

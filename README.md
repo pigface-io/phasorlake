@@ -40,7 +40,6 @@ the file is already in the lake.
 | `nemlake errors [--last] [--table T] [--code C]` | diagnostics recorded by past runs |
 | `nemlake verify` | every Parquet file the manifest lists exists with its size |
 | `nemlake schema list\|show\|diff\|lineage\|validate` | the registry |
-| `nemlake schema census --from YYYY-MM [--to YYYY-MM] [--refresh] [--ctl DIR]` | record which shape (report pair, columns, control-file types, as a content-addressed id) every file of each month had, into `schemas/nem/census/` and `schemas/nem/shapes/`; reads only the head of each zip, from the archive when it is there |
 | `nemlake schema plan <type> <subtype> <version> --columns A,B,C [--month YYYY-MM]` | the conformance plan a shape is read with, as JSON: where each file column goes, its cast, what is written null |
 | `nemlake schema infer <file> [--write] [--ctl FILE]` | draft what a file adds to the registry: a new table, version or variant; `--ctl` types it from AEMO's control file for the table |
 | `nemlake archive ls\|verify` | every downloaded file with when and how it was requested; `verify` hashes each one again |
@@ -119,7 +118,7 @@ All three are written into the file's footer and into the manifest:
 | `nemlake.report_type`, `nemlake.report_subtype`, `nemlake.source_version`, `nemlake.source_columns`, `nemlake.fingerprint` | the shape: the block's I row as AEMO published it |
 | `nemlake.source_period` | the month of the source, which rules for an interval are chosen by |
 | `nemlake.plan` | the hash of the conformance plan the shape was read by: which file column feeds which lake column, that column's id, type and nullability, how the value is parsed, the key and time columns, the load mode, the directory |
-| `nemlake.shape_id` | the ids the census gives the shape (`nemlake schema census`), when it has seen it |
+| `nemlake.shape_id` | the ids the census gives the shape (`just census`), when it has seen it |
 | `nemlake.schema_source` | where the table's definition came from: `registry` (built in), `user` (your own table file), `file` (nobody declared it, so the file's own header) |
 | `nemlake.resolution`, `nemlake.table`, `nemlake.schema_version` | how the shape matched the definition: `exact`, `aliased`, `drift` or `derived`, and as which table and version |
 
@@ -213,7 +212,7 @@ column = "RRP_AS_PUBLISHED"      # the lake column it feeds in this interval
 ```
 
 A rule says which files it is for, and at least one scope is required. Name
-the shape: the census (`nemlake schema census`) records every shape a table
+the shape: the census (`just census`) records every shape a table
 was published in, with its id and the months it was seen, under
 `schemas/nem/shapes/`, and a rule for a shape applies to exactly the blocks
 of that shape in the months the census saw it. A span of months is for the

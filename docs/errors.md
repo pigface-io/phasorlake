@@ -88,6 +88,7 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 |---|---|
 | `schema.blob_corrupt` | `crates/nemlake-registry/src/file_model/error.rs` |
 | `schema.breaking_change` | `crates/nemlake-registry/src/file_model/error.rs` |
+| `schema.census_not_archived` | `crates/nemlake-census/src/census.rs` |
 | `schema.census_unreadable` | `crates/nemlake-census/src/census.rs` |
 | `schema.census_write` | `crates/nemlake-census/src/census.rs` |
 | `schema.compatible_drift` | `crates/nemlake-registry/src/resolve.rs` |
@@ -100,10 +101,8 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 | `schema.file_invalid` | `crates/nemlake-registry/src/file_model/error.rs` |
 | `schema.file_parse` | `crates/nemlake-registry/src/file_model/error.rs` |
 | `schema.file_read` | `crates/nemlake-registry/src/file_model/error.rs` |
-| `schema.head_method` | `crates/nemlake-census/src/remote.rs` |
-| `schema.head_no_irow` | `crates/nemlake-census/src/remote.rs` |
-| `schema.head_not_zip` | `crates/nemlake-census/src/remote.rs` |
-| `schema.head_write` | `crates/nemlake-census/src/remote.rs` |
+| `schema.fixture_read_failed` | `crates/nemlake-census/src/fixtures.rs` |
+| `schema.fixture_write_failed` | `crates/nemlake-census/src/fixtures.rs` |
 | `schema.merge_no_columns` | `crates/nemlake-census/src/merge.rs` |
 | `schema.merge_no_version` | `crates/nemlake-census/src/merge.rs` |
 | `schema.missing_key` | `crates/nemlake-registry/src/error.rs` |

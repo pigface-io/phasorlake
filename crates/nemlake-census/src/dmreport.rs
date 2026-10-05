@@ -17,6 +17,8 @@ use std::collections::BTreeMap;
 
 use nemlake_acquire::{FetchError, Fetcher};
 use nemlake_core::{Category, Diagnose, Diagnostic};
+use std::sync::Arc;
+use std::time::Duration;
 
 use crate::datamodel::{DmColumn, DmTable};
 
@@ -338,6 +340,25 @@ async fn page(fetcher: &Fetcher, base: &str, name: &str) -> Result<(String, Page
     let body = fetcher.fetch_listing(&url, PAGE_TTL).await?;
     let parsed = parse_page(&String::from_utf8_lossy(&body));
     Ok((url, parsed))
+}
+
+/// The paced fetcher of the report's pages: one request at a time,
+/// `interval` apart, retried where that makes sense, and stopped for good
+/// when the server refuses. Pages are kept under `cache`.
+pub fn report_fetcher(cache: &std::path::Path, interval: Duration) -> Result<Fetcher, FetchError> {
+    let transport = nemlake_acquire::transport::ReqwestTransport::new(
+        &format!("nemlake-census/{}", env!("CARGO_PKG_VERSION")),
+        Duration::from_secs(20),
+        Duration::from_secs(60),
+    )?;
+    Ok(Fetcher::new(
+        Arc::new(transport),
+        nemlake_acquire::DiskCache::new(cache),
+        nemlake_acquire::FetcherConfig {
+            min_interval: interval,
+            ..Default::default()
+        },
+    ))
 }
 
 /// Walks the report at `base` (see [`REPORT_BASE`]): one request for the
