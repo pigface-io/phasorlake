@@ -10,7 +10,7 @@ use nemlake_conform::arrow_sink::{ArrowSink, BatchSink, BlockBatch};
 use nemlake_core::IRow;
 use nemlake_decode::scan::{Flow, Pos, ScanOptions, Sink, scan};
 use nemlake_decode::{Row, RowError, RowFailure, SinkError};
-use nemlake_registry::{Registry, ResolveOptions, TypeOptions};
+use nemlake_registry::{Registry, ResolveOptions};
 
 const TARGET_BYTES: usize = 64 << 20;
 
@@ -104,7 +104,7 @@ impl BatchSink for Drop {
 
 fn bench(c: &mut Criterion) {
     let data = synthetic();
-    let registry = Registry::load_embedded(TypeOptions::default());
+    let registry = Registry::load_embedded();
     let mut g = c.benchmark_group("parse");
     g.throughput(Throughput::Bytes(data.len() as u64));
     g.sample_size(10);

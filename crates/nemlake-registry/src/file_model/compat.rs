@@ -1,132 +1,15 @@
-//! Evolution rules: what may change between two versions of a table, or
-//! between two revisions of the same schema file.
+//! What may change between two revisions of a table without breaking the
+//! files already in the lake.
 
 use std::collections::BTreeMap;
 
-use crate::file_model::model::{ColumnType, SchemaVersion, TableDef};
+use crate::file_model::model::Table;
 
-/// One difference between two versions of a table.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub enum Change {
-    /// A column appears in `to` but not `from`.
-    Added(String),
-    /// A column appears in `from` but not `to`.
-    Removed(String),
-    /// Both have the same columns in a different order.
-    Reordered,
-}
-
-impl std::fmt::Display for Change {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::Added(c) => write!(f, "added column {c}"),
-            Self::Removed(c) => write!(f, "removed column {c}"),
-            Self::Reordered => write!(f, "reordered columns"),
-        }
-    }
-}
-
-/// The differences between version `from` and version `to` of one table.
-///
-/// Returns `None` when either version is undeclared.
-pub fn diff_versions(t: &TableDef, from: SchemaVersion, to: SchemaVersion) -> Option<Vec<Change>> {
-    let a = t.version(from)?;
-    let b = t.version(to)?;
-    let mut out = Vec::new();
-    for c in &b.columns {
-        if !a.columns.contains(c) {
-            out.push(Change::Added(c.clone()));
-        }
-    }
-    for c in &a.columns {
-        if !b.columns.contains(c) {
-            out.push(Change::Removed(c.clone()));
-        }
-    }
-    if out.is_empty() && a.columns != b.columns {
-        out.push(Change::Reordered);
-    } else if !out.is_empty() {
-        // Order among the shared columns also matters for a reader of raw files.
-        let shared_a: Vec<&String> = a.columns.iter().filter(|c| b.columns.contains(c)).collect();
-        let shared_b: Vec<&String> = b.columns.iter().filter(|c| a.columns.contains(c)).collect();
-        if shared_a != shared_b {
-            out.push(Change::Reordered);
-        }
-    }
-    Some(out)
-}
-
-/// Whether `to` is a type the lake may widen `from` into without rewriting
-/// old files: the same class, never narrower.
-///
-/// For a later Iceberg table this is not the same as a metadata-only type
-/// promotion: Iceberg promotes int to long, float to double and decimals
-/// to a larger precision, but not a date to a timestamp, nor a float to a
-/// decimal. Any widening here changes the plan of every shape that carries
-/// the column, so `nemlake reingest` rewrites its files rather than relying
-/// on a reader to promote old ones.
-pub fn is_widening(from: ColumnType, to: ColumnType) -> bool {
-    use ColumnType::{Boolean, Date, Integer, Number, Timestamp, Utf8};
-    match (from, to) {
-        (Integer, Integer | Number { .. }) => true,
-        (
-            Number {
-                precision: p0,
-                scale: s0,
-            },
-            Number {
-                precision: p1,
-                scale: s1,
-            },
-        ) => match (p0, s0, p1, s1) {
-            (_, _, None, None) => true,
-            (Some(p0), Some(s0), Some(p1), Some(s1)) => p1 - s1 >= p0 - s0 && s1 >= s0,
-            (None, None, Some(_), Some(_)) => false,
-            _ => p1 >= p0 && s1 >= s0,
-        },
-        (Utf8 { max_len: a, .. }, Utf8 { max_len: b, .. }) => match (a, b) {
-            (_, None) => true,
-            (None, Some(_)) => false,
-            (Some(a), Some(b)) => b >= a,
-        },
-        (Timestamp, Timestamp) | (Date, Date | Timestamp) | (Boolean, Boolean) => true,
-        _ => false,
-    }
-}
-
-/// Whether a value a control file loads as `observed` fits a column
-/// declared `declared`: the class widens into the declared type's class.
-/// Lengths and precisions are left aside, which a class says nothing of;
-/// an unknown class says nothing either way and fits.
-pub fn class_fits(observed: nemlake_core::TypeClass, declared: ColumnType) -> bool {
-    use nemlake_core::TypeClass;
-    let text = ColumnType::Utf8 {
-        max_len: None,
-        dict: false,
-    };
-    let number = ColumnType::Number {
-        precision: None,
-        scale: None,
-    };
-    let from = match observed {
-        TypeClass::Varchar => text,
-        TypeClass::Number => number,
-        TypeClass::Integer => ColumnType::Integer,
-        TypeClass::Date => ColumnType::Date,
-        TypeClass::Timestamp => ColumnType::Timestamp,
-        TypeClass::Unknown => return true,
-    };
-    let to = match declared {
-        ColumnType::Utf8 { .. } => text,
-        ColumnType::Number { .. } => number,
-        other => other,
-    };
-    is_widening(from, to)
-}
-
-/// Changes to a table between two revisions of its schema file that would
-/// invalidate files already in the lake or break the registry's promises.
-pub fn breaking_changes(old: &TableDef, new: &TableDef) -> Vec<String> {
+/// Changes between two revisions of a table that the lake does not
+/// survive: a column id removed or reused, a type changed other than by
+/// an Iceberg promotion, a column made non-nullable, an increment removed
+/// or changed, or the key, load mode or time column changed.
+pub fn breaking_changes(old: &Table, new: &Table) -> Vec<String> {
     let mut out = Vec::new();
     if new.next_column_id < old.next_column_id {
         out.push(format!(
@@ -136,69 +19,49 @@ pub fn breaking_changes(old: &TableDef, new: &TableDef) -> Vec<String> {
     }
     let new_by_id: BTreeMap<_, _> = new.columns.iter().map(|c| (c.id, c)).collect();
     for oc in &old.columns {
-        match new_by_id.get(&oc.id) {
-            None => out.push(format!(
-                "column {} (id {}) was deleted; mark it removed_in instead",
+        let Some(nc) = new_by_id.get(&oc.id) else {
+            out.push(format!(
+                "column {} (id {}) was removed; a lake column is never removed",
                 oc.name, oc.id
-            )),
-            Some(nc) => {
-                if nc.name != oc.name && !nc.aliases.contains(&oc.name) {
-                    out.push(format!(
-                        "column id {} was renamed from {} to {} without keeping the old name as an alias",
-                        oc.id, oc.name, nc.name
-                    ));
-                }
-                if !is_widening(oc.ty, nc.ty) {
-                    out.push(format!(
-                        "column {} changed type from {:?} to {:?}, which is not a widening",
-                        oc.name, oc.ty, nc.ty
-                    ));
-                }
-                if oc.nullable && !nc.nullable {
-                    out.push(format!("column {} became non-nullable", oc.name));
-                }
-            }
+            ));
+            continue;
+        };
+        if nc.name != oc.name {
+            out.push(format!(
+                "column id {} was renamed from {} to {}; a renamed column is a new column",
+                oc.id, oc.name, nc.name
+            ));
+        }
+        if !oc.ty.promotes_to(nc.ty) {
+            out.push(format!(
+                "column {} changed type from {} to {}, which is not an Iceberg promotion; add a new column",
+                oc.name, oc.ty, nc.ty
+            ));
+        }
+        if oc.nullable && !nc.nullable {
+            out.push(format!("column {} became non-nullable", oc.name));
         }
     }
-    let mut old_names: Vec<_> = old
-        .columns
-        .iter()
-        .map(|c| (c.name.as_str(), c.id))
-        .collect();
-    old_names.sort_unstable();
     for nc in &new.columns {
-        if let Some((_, old_id)) = old_names
-            .iter()
-            .find(|(n, id)| *n == nc.name && *id != nc.id)
+        if let Some(oc) = old.columns.iter().find(|c| c.name == nc.name)
+            && oc.id != nc.id
         {
             out.push(format!(
                 "column {} moved from id {} to id {}",
-                nc.name, old_id, nc.id
+                nc.name, oc.id, nc.id
             ));
         }
     }
-    // A published column list is a fact: every list the old file declared
-    // for a version, as the version itself or as a variant, must still be
-    // declared for it. Which of them stands for the version may change.
-    for ov in &old.versions {
-        let Some(nv) = new.version(ov.n) else {
-            out.push(format!("version {} was deleted", ov.n));
-            continue;
-        };
-        let declared = |fp| nv.fingerprint == fp || nv.variant(fp).is_some();
-        if !declared(ov.fingerprint) {
-            out.push(format!(
-                "version {} no longer declares its column list (fingerprint {}); a published version is a fact",
-                ov.n, ov.fingerprint
-            ));
-        }
-        for x in &ov.variants {
-            if !declared(x.fingerprint) {
+    for oi in &old.increments {
+        match new.increment(oi.n) {
+            None => out.push(format!("increment {} was removed", oi.n)),
+            Some(ni) if ni.from != oi.from || ni.ctl_sha256 != oi.ctl_sha256 => {
                 out.push(format!(
-                    "version {} lost the variant with fingerprint {}; files of that shape would read as drift",
-                    ov.n, x.fingerprint
+                    "increment {} changed its month or its control file; add an increment instead",
+                    oi.n
                 ));
             }
+            _ => {}
         }
     }
     if old.primary_key != new.primary_key {
@@ -224,322 +87,54 @@ pub fn breaking_changes(old: &TableDef, new: &TableDef) -> Vec<String> {
 
 #[cfg(test)]
 mod tests {
-    use nemlake_core::Fingerprint;
-
     use super::*;
-    use crate::file_model::file::tests::unit_scada;
-    use crate::file_model::model::{ColumnDef, ColumnId, VersionDef};
+    use crate::file_model::model::tests::unit_scada;
+    use crate::file_model::model::{ColumnId, LakeType, LoadMode};
 
-    fn with_v2(extra: &str) -> TableDef {
-        let mut t = unit_scada();
-        let mut cols = t.versions[0].columns.clone();
-        cols.push(extra.to_owned());
-        t.columns.push(ColumnDef {
-            id: ColumnId(4),
-            name: extra.to_owned(),
-            aliases: vec![],
-            ty: ColumnType::Timestamp,
-            nullable: true,
-            oracle: None,
-            loader: None,
-            added_in: SchemaVersion(2),
-            removed_in: None,
-            description: None,
-            src: vec![],
-            curated: false,
-        });
-        t.next_column_id = 5;
-        t.versions.push(VersionDef {
-            n: SchemaVersion(2),
-            fingerprint: Fingerprint::of_names(cols.iter().map(String::as_str)),
-            columns: cols,
-            first_seen: None,
-            last_seen: None,
-            src: None,
-            variants: Vec::new(),
-        });
-        t
+    fn breaks(edit: impl FnOnce(&mut Table)) -> Vec<String> {
+        let mut new = unit_scada();
+        edit(&mut new);
+        breaking_changes(&unit_scada(), &new)
     }
 
     #[test]
-    fn diffs() {
-        let t = with_v2("LASTCHANGED");
-        let d = diff_versions(&t, SchemaVersion(1), SchemaVersion(2)).unwrap();
-        assert_eq!(d, vec![Change::Added("LASTCHANGED".into())]);
-        let d = diff_versions(&t, SchemaVersion(2), SchemaVersion(1)).unwrap();
-        assert_eq!(d, vec![Change::Removed("LASTCHANGED".into())]);
-        assert!(diff_versions(&t, SchemaVersion(1), SchemaVersion(9)).is_none());
-        assert_eq!(Change::Reordered.to_string(), "reordered columns");
-        assert!(Change::Added("A".into()).to_string().contains("added"));
-        assert!(Change::Removed("A".into()).to_string().contains("removed"));
-        // Pure reorder.
-        let mut t2 = t.clone();
-        t2.versions[1].columns = vec!["DUID".into(), "SETTLEMENTDATE".into(), "SCADAVALUE".into()];
-        assert_eq!(
-            diff_versions(&t2, SchemaVersion(1), SchemaVersion(2)).unwrap(),
-            vec![Change::Reordered]
+    fn what_breaks_the_lake() {
+        assert!(breaks(|_| {}).is_empty());
+        // Our own edits that keep the lake: a new column, a new increment,
+        // a fixed increment column list, a note, a column made nullable.
+        assert!(
+            breaks(|t| {
+                t.columns[0].nullable = true;
+                t.columns[2].note = Some("why".into());
+                t.increments[0].columns.pop();
+                t.increments[1].aemo_versions.push(2);
+            })
+            .is_empty()
         );
-        // Add plus reorder of the shared part.
-        let mut t3 = t.clone();
-        t3.versions[1].columns = vec![
-            "DUID".into(),
-            "SETTLEMENTDATE".into(),
-            "SCADAVALUE".into(),
-            "X".into(),
-        ];
-        let d = diff_versions(&t3, SchemaVersion(1), SchemaVersion(2)).unwrap();
-        assert!(d.contains(&Change::Reordered) && d.contains(&Change::Added("X".into())));
-    }
-
-    #[test]
-    fn widening_table() {
-        use ColumnType::*;
-        let n = |p, s| Number {
-            precision: p,
-            scale: s,
+        let one = |edit: fn(&mut Table), needle: &str| {
+            let b = breaks(edit);
+            assert!(b.iter().any(|m| m.contains(needle)), "{needle}: {b:?}");
         };
-        assert!(is_widening(Integer, Integer));
-        assert!(is_widening(Integer, n(Some(15), Some(5))));
-        assert!(is_widening(n(Some(10), Some(2)), n(Some(15), Some(5))));
-        assert!(!is_widening(n(Some(15), Some(5)), n(Some(10), Some(2))));
-        assert!(is_widening(n(Some(15), Some(5)), n(None, None)));
-        assert!(!is_widening(n(None, None), n(Some(15), Some(5))));
-        assert!(is_widening(n(Some(10), None), n(Some(12), None)));
-        assert!(!is_widening(n(Some(12), None), n(Some(10), None)));
-        assert!(!is_widening(n(Some(10), Some(2)), n(Some(10), Some(3)))); // integer digits shrink
-        assert!(is_widening(
-            Utf8 {
-                max_len: Some(10),
-                dict: false
-            },
-            Utf8 {
-                max_len: Some(20),
-                dict: true
-            }
-        ));
-        assert!(!is_widening(
-            Utf8 {
-                max_len: Some(20),
-                dict: false
-            },
-            Utf8 {
-                max_len: Some(10),
-                dict: false
-            }
-        ));
-        assert!(is_widening(
-            Utf8 {
-                max_len: Some(20),
-                dict: false
-            },
-            Utf8 {
-                max_len: None,
-                dict: false
-            }
-        ));
-        assert!(!is_widening(
-            Utf8 {
-                max_len: None,
-                dict: false
-            },
-            Utf8 {
-                max_len: Some(1),
-                dict: false
-            }
-        ));
-        assert!(is_widening(Date, Timestamp));
-        assert!(!is_widening(Timestamp, Date));
-        assert!(!is_widening(
-            Utf8 {
-                max_len: None,
-                dict: false
-            },
-            Integer
-        ));
-        assert!(is_widening(Boolean, Boolean));
-        assert!(!is_widening(
-            Number {
-                precision: None,
-                scale: None
-            },
-            Integer
-        ));
-    }
-
-    #[test]
-    fn a_class_fits_what_it_widens_into() {
-        use nemlake_core::TypeClass;
-        let number = ColumnType::Number {
-            precision: Some(10),
-            scale: Some(2),
-        };
-        let text = ColumnType::Utf8 {
-            max_len: Some(5),
-            dict: true,
-        };
-        assert!(class_fits(TypeClass::Number, number));
-        assert!(class_fits(TypeClass::Integer, number));
-        assert!(class_fits(TypeClass::Varchar, text));
-        assert!(class_fits(TypeClass::Date, ColumnType::Timestamp));
-        assert!(class_fits(TypeClass::Unknown, ColumnType::Boolean));
-        assert!(!class_fits(TypeClass::Varchar, number));
-        assert!(!class_fits(TypeClass::Number, text));
-        assert!(!class_fits(TypeClass::Timestamp, ColumnType::Date));
-    }
-
-    /// A column the census declared, of the file or of kept text, has an
-    /// id like any other: giving it to another column is breaking.
-    #[test]
-    fn census_columns_keep_their_ids() {
-        let mut old = unit_scada();
-        let id = ColumnId(old.next_column_id);
-        old.columns.push(ColumnDef {
-            id,
-            name: "SCADAVALUE__raw".into(),
-            aliases: vec![],
-            ty: ColumnType::Utf8 {
-                max_len: None,
-                dict: false,
-            },
-            nullable: true,
-            oracle: None,
-            loader: None,
-            added_in: SchemaVersion(1),
-            removed_in: None,
-            description: None,
-            src: vec!["raw".into()],
-            curated: false,
-        });
-        old.next_column_id += 1;
-        let mut new = old.clone();
-        let reused = new.columns.last_mut().unwrap();
-        reused.name = "QUALITY".into();
-        reused.src = vec!["file".into()];
-        assert!(
-            breaking_changes(&old, &new)
-                .iter()
-                .any(|m| m.contains("renamed")),
-            "{:?}",
-            breaking_changes(&old, &new)
+        one(|t| t.next_column_id = 1, "next_column_id went");
+        one(|t| drop(t.columns.remove(3)), "was removed");
+        one(|t| t.columns[2].name = "MW".into(), "renamed");
+        one(
+            |t| t.columns[2].ty = LakeType::Long,
+            "not an Iceberg promotion",
         );
-        let mut gone = old.clone();
-        gone.columns.pop();
-        assert!(
-            breaking_changes(&old, &gone)
-                .iter()
-                .any(|m| m.contains("deleted"))
+        one(|t| t.columns[2].nullable = false, "became non-nullable");
+        one(|t| t.columns[2].id = ColumnId(7), "moved from id 3 to id 7");
+        one(|t| drop(t.increments.remove(0)), "increment 1 was removed");
+        one(
+            |t| t.increments[1].from = "2026-09".parse().unwrap(),
+            "add an increment instead",
         );
-    }
-
-    #[test]
-    fn breaking_detection() {
-        let old = unit_scada();
-        let new = with_v2("LASTCHANGED");
-        assert!(breaking_changes(&old, &new).is_empty());
-
-        let mut b = new.clone();
-        b.next_column_id = 3;
-        assert!(breaking_changes(&new, &b)[0].contains("next_column_id"));
-
-        let mut b = new.clone();
-        b.columns.remove(3);
-        assert!(
-            breaking_changes(&new, &b)
-                .iter()
-                .any(|m| m.contains("deleted"))
+        one(
+            |t| t.increments[0].ctl_sha256 = Some("x".into()),
+            "add an increment instead",
         );
-
-        let mut b = new.clone();
-        b.columns[3].name = "LAST_CHANGED".into();
-        assert!(
-            breaking_changes(&new, &b)
-                .iter()
-                .any(|m| m.contains("renamed"))
-        );
-        b.columns[3].aliases.push("LASTCHANGED".into());
-        assert!(breaking_changes(&new, &b).is_empty());
-
-        let mut b = new.clone();
-        b.columns[2].ty = ColumnType::Integer;
-        assert!(
-            breaking_changes(&new, &b)
-                .iter()
-                .any(|m| m.contains("not a widening"))
-        );
-
-        let mut b = new.clone();
-        b.columns[2].nullable = false;
-        assert!(
-            breaking_changes(&new, &b)
-                .iter()
-                .any(|m| m.contains("non-nullable"))
-        );
-
-        let mut b = new.clone();
-        b.columns[3].id = ColumnId(7);
-        b.columns[3].name = "OTHER".into();
-        b.columns.push(ColumnDef {
-            id: ColumnId(8),
-            name: "LASTCHANGED".into(),
-            ..new.columns[3].clone()
-        });
-        let msgs = breaking_changes(&new, &b);
-        assert!(msgs.iter().any(|m| m.contains("moved from id")), "{msgs:?}");
-
-        let mut b = new.clone();
-        b.versions.pop();
-        assert!(
-            breaking_changes(&new, &b)
-                .iter()
-                .any(|m| m.contains("version 2 was deleted"))
-        );
-
-        let mut b = new.clone();
-        b.versions[1].fingerprint = Fingerprint(1);
-        assert!(
-            breaking_changes(&new, &b)
-                .iter()
-                .any(|m| m.contains("version 2 no longer declares its column list"))
-        );
-
-        // Adding a variant is fine; dropping one is breaking.
-        let mut with_variant = new.clone();
-        with_variant.versions[1]
-            .variants
-            .push(crate::file_model::model::VariantDef {
-                columns: vec!["SETTLEMENTDATE".into(), "DUID".into()],
-                fingerprint: Fingerprint::of_names(["SETTLEMENTDATE", "DUID"]),
-                first_seen: None,
-                last_seen: None,
-            });
-        assert!(breaking_changes(&new, &with_variant).is_empty());
-        assert!(
-            breaking_changes(&with_variant, &new)
-                .iter()
-                .any(|m| m.contains("version 2 lost the variant"))
-        );
-        // Which list stands for the version may change, as long as every
-        // list the old file declared is still declared.
-        let mut swapped = with_variant.clone();
-        let v = &mut swapped.versions[1];
-        let variant = v.variants.remove(0);
-        let was = crate::file_model::model::VariantDef {
-            columns: std::mem::replace(&mut v.columns, variant.columns),
-            fingerprint: std::mem::replace(&mut v.fingerprint, variant.fingerprint),
-            first_seen: None,
-            last_seen: None,
-        };
-        v.variants.push(was);
-        assert!(breaking_changes(&with_variant, &swapped).is_empty());
-        assert!(breaking_changes(&swapped, &with_variant).is_empty());
-
-        let mut b = new.clone();
-        b.primary_key.pop();
-        b.load_mode = crate::file_model::model::LoadMode::Snapshot;
-        b.time_column = None;
-        let msgs = breaking_changes(&new, &b);
-        assert!(msgs.iter().any(|m| m.contains("primary_key")));
-        assert!(msgs.iter().any(|m| m.contains("load_mode")));
-        assert!(msgs.iter().any(|m| m.contains("time_column")));
+        one(|t| t.primary_key.pop().map(drop).unwrap(), "primary_key");
+        one(|t| t.load_mode = LoadMode::Snapshot, "load_mode");
+        one(|t| t.time_column = None, "time_column");
     }
 }

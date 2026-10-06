@@ -12,7 +12,8 @@ use nemlake_acquire::{Archive, FetchError, Fetcher, FetcherConfig, Query, Remote
 use nemlake_core::event::Event;
 use nemlake_core::paths::Home;
 use nemlake_pipeline::{Deps, Input, Plan, RunOptions, run};
-use nemlake_registry::{Mode, Registry, TypeOptions};
+use nemlake_registry::file_model::{Column, ColumnId, Dedupe, Increment, LakeType, Market, Table};
+use nemlake_registry::{LoadMode, Mode, Registry};
 use nemlake_writer::manifest::DiagFilter;
 use nemlake_writer::{Manifest, ManifestHandle, ManifestThread};
 use tokio_util::sync::CancellationToken;
@@ -42,10 +43,6 @@ struct Env {
 }
 
 fn env() -> Env {
-    env_with(TypeOptions::default())
-}
-
-fn env_with(types: TypeOptions) -> Env {
     let dir = tempfile::tempdir().unwrap();
     let home = Home::at(dir.path().join("home"));
     home.ensure_dirs().unwrap();
@@ -62,7 +59,7 @@ fn env_with(types: TypeOptions) -> Env {
         },
     );
     let deps = Deps {
-        registry: Registry::load_embedded(types),
+        registry: Registry::load_embedded(),
         fetcher: Arc::new(fetcher),
         manifest,
         home: home.clone(),
@@ -74,6 +71,75 @@ fn env_with(types: TypeOptions) -> Env {
         transport,
         _thread: thread,
     }
+}
+
+/// A table of text columns, with increments of `(from, columns)`.
+fn text_table(
+    name: &str,
+    pair: (&str, &str),
+    columns: &[&str],
+    increments: &[(&str, &[&str])],
+    time_column: Option<&str>,
+) -> Table {
+    Table {
+        market: Market::Nem,
+        name: name.into(),
+        description: None,
+        report_pairs: vec![(pair.0.into(), pair.1.into())],
+        load_mode: LoadMode::Append,
+        dedupe: Dedupe::None,
+        primary_key: vec![],
+        time_column: time_column.map(str::to_owned),
+        next_column_id: columns.len() as u32 + 1,
+        columns: columns
+            .iter()
+            .enumerate()
+            .map(|(i, c)| Column {
+                id: ColumnId(i as u32 + 1),
+                name: (*c).into(),
+                ty: if Some(*c) == time_column {
+                    LakeType::TimestampNs
+                } else {
+                    LakeType::String
+                },
+                nullable: true,
+                note: None,
+            })
+            .collect(),
+        increments: increments
+            .iter()
+            .enumerate()
+            .map(|(i, (from, cols))| Increment {
+                n: i as u16 + 1,
+                from: from.parse().unwrap(),
+                ctl: None,
+                ctl_sha256: None,
+                aemo_ctl: None,
+                aemo_versions: vec![1],
+                columns: cols.iter().map(|c| (*c).to_owned()).collect(),
+                note: None,
+            })
+            .collect(),
+    }
+}
+
+/// Lays `t` over the registry as a user's own table under `{root}`, as
+/// `{root}/nem/{TABLE}/table.toml`, without the control files the
+/// registry keeps.
+fn overlay(registry: &Registry, root: &Path, t: &Table) -> Arc<Registry> {
+    let mut t = t.clone();
+    for i in &mut t.increments {
+        i.ctl = None;
+        i.ctl_sha256 = None;
+    }
+    let dir = root.join("nem").join(&t.name);
+    std::fs::create_dir_all(&dir).unwrap();
+    std::fs::write(
+        dir.join("table.toml"),
+        nemlake_registry::file_model::file::write_table(&t),
+    )
+    .unwrap();
+    Arc::new(registry.with_overlay(root).unwrap())
 }
 
 async fn run_plan(e: &Env, plan: Plan) -> (nemlake_pipeline::RunReport, Vec<Event>) {
@@ -92,50 +158,27 @@ fn parquet_rows(path: &str) -> usize {
     b.build().unwrap().map(|r| r.unwrap().num_rows()).sum()
 }
 
-/// With decimals on, a NUMBER(p,s) column is written as Decimal128(p,s)
-/// holding exactly the digits AEMO published; the default is Float64.
+/// Every number is a double.
 #[tokio::test]
-async fn decimal_mode_writes_exact_decimals() {
+async fn numbers_are_written_as_doubles() {
     use arrow_array::Array;
     let csv = fixtures().join("DISPATCHPRICE_v4_head.csv");
-    let read = |e: &Env| {
-        let files = walk(&e.home.lake());
-        assert_eq!(files.len(), 1, "{files:?}");
-        let f = std::fs::File::open(&files[0]).unwrap();
-        let b = parquet::arrow::arrow_reader::ParquetRecordBatchReaderBuilder::try_new(f).unwrap();
-        let schema = b.schema().clone();
-        let batch = b.build().unwrap().next().unwrap().unwrap();
-        (schema, batch)
-    };
-    let plan = || Plan {
-        request: "ingest price".into(),
-        input: Input::Local(vec![csv.clone()]),
-        options: RunOptions::default(),
-    };
-
-    let exact = env_with(TypeOptions { decimal: true });
-    let (rep, _) = run_plan(&exact, plan()).await;
-    assert_eq!(rep.exit_code, 0, "{:?}", rep.report.summary_lines());
-    let (schema, batch) = read(&exact);
-    let rrp = schema.field_with_name("RRP").unwrap();
-    assert_eq!(rrp.data_type(), &arrow_schema::DataType::Decimal128(15, 5));
-    let col = batch
-        .column_by_name("RRP")
-        .unwrap()
-        .as_any()
-        .downcast_ref::<arrow_array::Decimal128Array>()
-        .unwrap();
-    // The first D row of the fixture publishes RRP as 57.98.
-    assert_eq!(col.value_as_string(0), "57.98000");
-    assert_eq!(col.value(0), 5_798_000);
-    assert_eq!(col.null_count(), 0);
-
     let floats = env();
-    let (rep, _) = run_plan(&floats, plan()).await;
-    assert_eq!(rep.exit_code, 0);
-    let (schema, batch) = read(&floats);
+    let (rep, _) = run_plan(
+        &floats,
+        Plan {
+            request: "ingest price".into(),
+            input: Input::Local(vec![csv]),
+            options: RunOptions::default(),
+        },
+    )
+    .await;
+    assert_eq!(rep.exit_code, 0, "{:?}", rep.report.summary_lines());
+    let files = walk(&floats.home.lake());
+    assert_eq!(files.len(), 1, "{files:?}");
+    let batch = parquet_batch(&files[0]);
     assert_eq!(
-        schema.field_with_name("RRP").unwrap().data_type(),
+        batch.schema().field_with_name("RRP").unwrap().data_type(),
         &arrow_schema::DataType::Float64
     );
     let col = batch
@@ -144,8 +187,9 @@ async fn decimal_mode_writes_exact_decimals() {
         .as_any()
         .downcast_ref::<arrow_array::Float64Array>()
         .unwrap();
+    // The first D row of the fixture publishes RRP as 57.98.
     assert!((col.value(0) - 57.98).abs() < 1e-12);
-    // Both modes carry the same column id, so a reader can line them up.
+    assert_eq!(col.null_count(), 0);
     assert_eq!(batch.num_rows(), 20);
 }
 
@@ -162,25 +206,14 @@ async fn a_table_without_a_time_column_is_partitioned_by_its_file_month() {
         version: 1,
         columns: &cols,
     };
-    let table = nemlake_registry::infer::draft_table(
-        nemlake_registry::Market::Nem,
-        &irow,
-        &nemlake_registry::infer::Sampler::new(2),
+    let table = text_table(
+        "NEMLAKE_TEST_NOTIME",
+        (irow.report_type, irow.report_subtype),
+        &cols,
+        &[("2009-07", &cols)],
+        None,
     );
-    assert_eq!(table.time_column, None);
-    let overlay = e.home.root().join("overlay/nem/mms");
-    std::fs::create_dir_all(&overlay).unwrap();
-    std::fs::write(
-        overlay.join("NEMLAKE_TEST_NOTIME.toml"),
-        nemlake_registry::file_model::file::write_table(&table),
-    )
-    .unwrap();
-    e.deps.registry = Arc::new(
-        e.deps
-            .registry
-            .with_overlay(&e.home.root().join("overlay"))
-            .unwrap(),
-    );
+    e.deps.registry = overlay(&e.deps.registry, &e.home.root().join("overlay"), &table);
     let csv = "C,NEMP.WORLD,TEST\nI,NEMLAKE_TEST,NOTIME,1,CONTRACTYEAR,WEEKNO\nD,NEMLAKE_TEST,NOTIME,1,2024,9\nD,NEMLAKE_TEST,NOTIME,1,2024,10\nC,\"END OF REPORT\",5\n";
     let dated = e.home.root().join("PUBLIC_DVD_NOTIME_202403010000.CSV");
     let undated = e.home.root().join("notime.csv");
@@ -239,7 +272,7 @@ async fn local_zip_ingests_idempotently_and_records_manifest() {
     assert_eq!(rep.summary.rows, 20);
     assert_eq!(rep.summary.listed, 1);
     assert_eq!(rep.report.succeeded(), 1);
-    assert!(events.iter().any(|ev| matches!(ev, Event::BlockResolved { table, status, .. } if table == "DISPATCH_UNIT_SCADA" && status == "exact")));
+    assert!(events.iter().any(|ev| matches!(ev, Event::BlockResolved { table, status, .. } if table == "DISPATCH_UNIT_SCADA" && status == "conforms")));
     assert!(events.iter().any(|ev| matches!(ev, Event::Summary(_))));
     let files: Vec<_> = walk(&e.home.lake());
     assert_eq!(
@@ -314,11 +347,11 @@ fn footer(path: &str, key: &str) -> String {
         .unwrap_or_default()
 }
 
-/// Every output records the shape it was read from and the rules it was
-/// read by. A source already in the lake is skipped while those rules
-/// hold, and read again, from disk, once they have changed.
+/// Every output records the shape it was read from and the plan it was
+/// read by. A source already in the lake is skipped while that plan holds,
+/// and read again, from disk, once it has changed.
 #[tokio::test]
-async fn a_source_is_read_again_when_its_rules_change() {
+async fn a_source_is_read_again_when_its_plan_changes() {
     let e = env();
     let csv = e
         .home
@@ -326,8 +359,20 @@ async fn a_source_is_read_again_when_its_rules_change() {
         .join("PUBLIC_DVD_DISPATCHPRICE_202401010000.CSV");
     std::fs::copy(fixtures().join("DISPATCHPRICE_v4_head.csv"), &csv).unwrap();
     let floats = e.deps.clone();
+    // Another registry, in which RRP is text: another plan.
+    let mut price = e
+        .deps
+        .registry
+        .table(e.deps.registry.table_by_name("DISPATCHPRICE").unwrap())
+        .clone();
+    price
+        .columns
+        .iter_mut()
+        .find(|c| c.name == "RRP")
+        .unwrap()
+        .ty = LakeType::String;
     let decimals = Deps {
-        registry: Registry::load_embedded(TypeOptions { decimal: true }),
+        registry: overlay(&e.deps.registry, &e.home.root().join("retyped"), &price),
         ..e.deps.clone()
     };
     let go = |deps: &Deps, input: Input, dry_run: bool| {
@@ -363,7 +408,7 @@ async fn a_source_is_read_again_when_its_rules_change() {
         "{first:?}"
     );
     assert_eq!(first.schema_source, "registry");
-    assert_eq!(first.resolution, "exact");
+    assert_eq!(first.resolution, "conforms");
     assert_eq!(
         (first.report_type.as_str(), first.report_subtype.as_str()),
         ("DISPATCH", "PRICE")
@@ -374,7 +419,8 @@ async fn a_source_is_read_again_when_its_rules_change() {
     assert_eq!(files.len(), 1);
     assert_eq!(footer(&files[0], "nemlake.plan"), first.plan_hash);
     assert_eq!(footer(&files[0], "nemlake.schema_source"), "registry");
-    assert_eq!(footer(&files[0], "nemlake.resolution"), "exact");
+    assert_eq!(footer(&files[0], "nemlake.resolution"), "conforms");
+    assert_eq!(footer(&files[0], "nemlake.schema_version"), "1");
     assert_eq!(footer(&files[0], "nemlake.report_type"), "DISPATCH");
     assert_eq!(footer(&files[0], "nemlake.report_subtype"), "PRICE");
     assert_eq!(footer(&files[0], "nemlake.source_version"), "4");
@@ -390,7 +436,7 @@ async fn a_source_is_read_again_when_its_rules_change() {
     assert_eq!(rep.summary.listed, 0);
     assert_eq!(rep.exit_code, 0);
 
-    // Other rules (decimal types): the same source is read again and its
+    // Another plan (RRP as text): the same source is read again and its
     // Parquet file replaced, not duplicated.
     let rep = go(&decimals, Input::Stale, true).await;
     assert_eq!(rep.summary.listed, 1, "a dry run lists what is behind");
@@ -413,12 +459,13 @@ async fn a_source_is_read_again_when_its_rules_change() {
     let second = ingests[0].transform.clone();
     assert_ne!(second.plan_hash, first.plan_hash);
     assert_eq!(second.source_columns, first.source_columns);
+    assert_eq!(second.schema_source, "user");
     assert_eq!(walk(&e.home.lake()), files);
     assert_eq!(footer(&files[0], "nemlake.plan"), second.plan_hash);
     let rep = go(&decimals, Input::Stale, false).await;
     assert_eq!(rep.summary.listed, 0);
 
-    // Back to the first rules through the manifest alone: the same hash
+    // Back to the first plan through the manifest alone: the same hash
     // as the first read gave.
     let rep = go(&floats, Input::Stale, false).await;
     assert_eq!(rep.exit_code, 0, "{:?}", rep.report.summary_lines());
@@ -441,161 +488,110 @@ async fn a_source_is_read_again_when_its_rules_change() {
     assert_eq!(walk(&e.home.lake()), files, "what is in the lake stays");
 }
 
-/// A person's rule for an interval: the files of those months have a
-/// column read into another lake column, as that column's type. The same
-/// table, the same column list, read two ways by the month of the source,
-/// and the lake says which.
+/// The month of a source decides the increment its blocks are read
+/// against: the same table, two shapes, both conforming in their months,
+/// and the lake says which increment read each.
 #[tokio::test]
-async fn a_rule_for_an_interval_reads_its_files_another_way() {
-    use arrow_array::Array;
+async fn the_month_decides_the_increment() {
     let e = env();
-    let columns = ["SETTLEMENTDATE", "UNIT", "VALUE"];
-    let table = format!(
-        r#"schema_format = 1
-market = "nem"
-source = "mms"
-name = "NEMLAKE_TEST_RULED"
-package = "TEST"
-visibility = "public"
-report_pairs = [["NEMLAKE_TEST", "RULED"]]
-load_mode = "append"
-dedupe = "none"
-time_column = "SETTLEMENTDATE"
-next_column_id = 5
-
-[[column]]
-id = 1
-name = "SETTLEMENTDATE"
-type = "timestamp"
-added_in = 1
-
-[[column]]
-id = 2
-name = "UNIT"
-type = "utf8"
-added_in = 1
-
-[[column]]
-id = 3
-name = "VALUE"
-type = "number"
-added_in = 1
-
-[[column]]
-id = 4
-name = "VALUE_TEXT"
-type = "utf8"
-added_in = 1
-src = ["manual"]
-
-[[version]]
-n = 1
-columns = ["SETTLEMENTDATE", "UNIT", "VALUE"]
-fingerprint = "{}"
-
-[[rule]]
-note = "Until 2011 the value was published with its unit."
-to = "2011-12"
-
-[[rule.column]]
-source = "VALUE"
-column = "VALUE_TEXT"
-"#,
-        nemlake_core::Fingerprint::of_names(columns)
-    );
-    let schemas = e.home.root().join("schemas/nem/mms");
-    std::fs::create_dir_all(&schemas).unwrap();
-    std::fs::write(schemas.join("NEMLAKE_TEST_RULED.toml"), table).unwrap();
-    let registry = Arc::new(
-        e.deps
-            .registry
-            .with_overlay(&e.home.root().join("schemas"))
-            .unwrap(),
+    let three = ["SETTLEMENTDATE", "UNIT", "VALUE"];
+    let four = ["SETTLEMENTDATE", "UNIT", "VALUE", "QUALITY"];
+    let table = text_table(
+        "NEMLAKE_TEST_GROWN",
+        ("NEMLAKE_TEST", "GROWN"),
+        &four,
+        &[("2009-07", &three), ("2020-01", &four)],
+        Some("SETTLEMENTDATE"),
     );
     let deps = Deps {
-        registry,
+        registry: overlay(&e.deps.registry, &e.home.root().join("schemas"), &table),
         ..e.deps.clone()
     };
-    let file = |name: &str, stamp: &str, value: &str| {
+    let file = |name: &str, stamp: &str, cols: &[&str]| {
         let p = e.home.root().join(name);
+        let values = ["A1", "1.5", "GOOD"][..cols.len() - 1].join(",");
         std::fs::write(
             &p,
             format!(
-                "C,NEMP.WORLD,TEST\nI,NEMLAKE_TEST,RULED,1,SETTLEMENTDATE,UNIT,VALUE\nD,NEMLAKE_TEST,RULED,1,\"{stamp}\",A1,{value}\nC,\"END OF REPORT\",4\n"
+                "C,NEMP.WORLD,TEST\nI,NEMLAKE_TEST,GROWN,1,{}\nD,NEMLAKE_TEST,GROWN,1,\"{stamp}\",{values}\nC,\"END OF REPORT\",4\n",
+                cols.join(",")
             ),
         )
         .unwrap();
         p
     };
     let old = file(
-        "PUBLIC_DVD_RULED_201003010000.CSV",
+        "PUBLIC_DVD_GROWN_201003010000.CSV",
         "2010/03/01 00:05:00",
-        "1.5 MW",
+        &three,
     );
     let new = file(
-        "PUBLIC_DVD_RULED_202403010000.CSV",
+        "PUBLIC_DVD_GROWN_202403010000.CSV",
         "2024/03/01 00:05:00",
-        "2.5",
+        &four,
     );
-    let (tx, _rx) = tokio::sync::mpsc::channel(4096);
-    let rep = run(
-        Plan {
-            request: "ingest ruled".into(),
-            input: Input::Local(vec![old, new]),
-            options: RunOptions {
-                mode: nemlake_registry::Mode::Strict,
-                ..Default::default()
-            },
-        },
-        deps.clone(),
-        tx,
-        CancellationToken::new(),
-    )
-    .await;
+    let go = |input: Input, mode: Mode, deps: &Deps| {
+        let deps = deps.clone();
+        async move {
+            let (tx, _rx) = tokio::sync::mpsc::channel(4096);
+            run(
+                Plan {
+                    request: "ingest grown".into(),
+                    input,
+                    options: RunOptions {
+                        mode,
+                        ..Default::default()
+                    },
+                },
+                deps,
+                tx,
+                CancellationToken::new(),
+            )
+            .await
+        }
+    };
+    let rep = go(Input::Local(vec![old, new]), Mode::Strict, &deps).await;
     assert_eq!(rep.exit_code, 0, "{:?}", rep.report.summary_lines());
     assert_eq!(rep.summary.bad_rows, 0);
-
-    let read = |month: &str| {
+    let path = |month: &str| {
         let files: Vec<String> = walk(&e.home.lake())
             .into_iter()
             .filter(|p| p.contains(month))
             .collect();
         assert_eq!(files.len(), 1, "{month}: {files:?}");
-        let f = std::fs::File::open(&files[0]).unwrap();
-        let b = parquet::arrow::arrow_reader::ParquetRecordBatchReaderBuilder::try_new(f).unwrap();
-        let batch = b.build().unwrap().next().unwrap().unwrap();
-        let number = batch
-            .column_by_name("VALUE")
-            .unwrap()
-            .as_any()
-            .downcast_ref::<arrow_array::Float64Array>()
-            .unwrap()
-            .clone();
-        let text = batch
-            .column_by_name("VALUE_TEXT")
-            .unwrap()
-            .as_any()
-            .downcast_ref::<arrow_array::StringArray>()
-            .unwrap()
-            .clone();
-        (files[0].clone(), number, text)
+        files[0].clone()
     };
-    // 2010: inside the interval. The value is kept as published, as text.
-    let (path, number, text) = read("year=2010");
-    assert!(number.is_null(0));
-    assert_eq!(text.value(0), "1.5 MW");
-    assert_eq!(footer(&path, "nemlake.resolution"), "exact+rule");
-    assert_eq!(footer(&path, "nemlake.source_period"), "2010-03");
-    let old_rules = footer(&path, "nemlake.plan");
-    // 2024: outside it. The value is a number.
-    let (path, number, text) = read("year=2024");
-    assert!((number.value(0) - 2.5).abs() < 1e-12);
-    assert!(text.is_null(0));
-    assert_eq!(footer(&path, "nemlake.resolution"), "exact");
-    assert_eq!(footer(&path, "nemlake.source_period"), "2024-03");
-    assert_ne!(footer(&path, "nemlake.plan"), old_rules);
+    let (p2010, p2024) = (path("year=2010"), path("year=2024"));
+    assert_eq!(footer(&p2010, "nemlake.schema_version"), "1");
+    assert_eq!(footer(&p2024, "nemlake.schema_version"), "2");
+    for p in [&p2010, &p2024] {
+        assert_eq!(footer(p, "nemlake.resolution"), "conforms");
+        assert_eq!(footer(p, "nemlake.source_version"), "1");
+    }
+    assert_eq!(footer(&p2010, "nemlake.source_period"), "2010-03");
+    assert_ne!(
+        footer(&p2010, "nemlake.plan"),
+        footer(&p2024, "nemlake.plan")
+    );
+    // The 2010 file is null in the column it lacks, as the lake has it.
+    assert_eq!(texts(&parquet_batch(&p2010), "QUALITY"), [None]);
 
-    // The manifest has the same, and with it both sources are current.
+    // The three-column shape in 2024 deviates from the increment then:
+    // strict mode refuses it, and otherwise it is kept.
+    let late = file(
+        "PUBLIC_DVD_GROWN_202405010000.CSV",
+        "2024/05/01 00:05:00",
+        &three,
+    );
+    let rep = go(Input::Local(vec![late.clone()]), Mode::Strict, &deps).await;
+    assert_ne!(rep.exit_code, 0);
+    assert!(
+        rep.report.by_code.contains_key("schema.deviates"),
+        "{:?}",
+        rep.report.by_code.keys()
+    );
+    let rep = go(Input::Local(vec![late]), Mode::Permissive, &deps).await;
+    assert_eq!(rep.exit_code, 0, "{:?}", rep.report.summary_lines());
     let ingests = deps.manifest.list_ingests(None, false, 10).await.unwrap();
     let by_period = |p: &str| {
         ingests
@@ -603,23 +599,14 @@ column = "VALUE_TEXT"
             .find(|i| i.transform.source_period.as_deref() == Some(p))
             .unwrap()
     };
-    assert_eq!(by_period("2010-03").transform.resolution, "exact+rule");
-    assert_eq!(by_period("2024-03").transform.resolution, "exact");
-    let (tx, _rx) = tokio::sync::mpsc::channel(4096);
-    let rep = run(
-        Plan {
-            request: "reingest".into(),
-            input: Input::Stale,
-            options: RunOptions::default(),
-        },
-        deps.clone(),
-        tx,
-        CancellationToken::new(),
-    )
-    .await;
-    assert_eq!(rep.summary.listed, 0, "nothing is behind its rules");
-    // Under the registry without the rule's table the same sources are
-    // behind: their table is gone and they would be read from the file.
+    assert_eq!(by_period("2010-03").schema_version, 1);
+    assert_eq!(by_period("2024-03").schema_version, 2);
+    assert_eq!(by_period("2024-05").transform.resolution, "deviates");
+
+    // With the manifest, every source is current; under the registry
+    // without the table they are behind: they would be read from the file.
+    let rep = go(Input::Stale, Mode::Permissive, &deps).await;
+    assert_eq!(rep.summary.listed, 0, "nothing is behind its plan");
     let (tx, _rx) = tokio::sync::mpsc::channel(4096);
     let rep = run(
         Plan {
@@ -635,7 +622,7 @@ column = "VALUE_TEXT"
         CancellationToken::new(),
     )
     .await;
-    assert_eq!(rep.summary.listed, 2);
+    assert_eq!(rep.summary.listed, 3);
 }
 
 /// A source whose rows wander over more months than a worker may hold
@@ -803,9 +790,9 @@ fn dudetail_with_a_fraction(e: &Env) -> PathBuf {
 /// there and the text is beside it, in a column of its own.
 #[tokio::test]
 async fn a_value_that_does_not_fit_keeps_its_row_with_the_text_beside_it() {
-    let mut e = env_with(TypeOptions { decimal: true });
+    let mut e = env();
     // DUDETAIL as a user's table file might have it: REGISTEREDCAPACITY a
-    // whole number of at most six digits, as AEMO's NUMBER(6,0) says.
+    // whole number, as AEMO's NUMBER(6,0) says.
     let registry = e.deps.registry.clone();
     let mut table = registry
         .table(registry.table_by_name("DUDETAIL").unwrap())
@@ -815,22 +802,8 @@ async fn a_value_that_does_not_fit_keeps_its_row_with_the_text_beside_it() {
         .iter_mut()
         .find(|c| c.name == "REGISTEREDCAPACITY")
         .unwrap();
-    cap.ty = nemlake_registry::ColumnType::Number {
-        precision: Some(6),
-        scale: Some(0),
-    };
-    let overlay = e.home.root().join("overlay/nem/mms");
-    std::fs::create_dir_all(&overlay).unwrap();
-    std::fs::write(
-        overlay.join("DUDETAIL.toml"),
-        nemlake_registry::file_model::file::write_table(&table),
-    )
-    .unwrap();
-    e.deps.registry = Arc::new(
-        registry
-            .with_overlay(&e.home.root().join("overlay"))
-            .unwrap(),
-    );
+    cap.ty = LakeType::Long;
+    e.deps.registry = overlay(&registry, &e.home.root().join("overlay"), &table);
     let zip_path = dudetail_with_a_fraction(&e);
     let plan = |strict: bool| Plan {
         request: "ingest dudetail".into(),
@@ -847,7 +820,7 @@ async fn a_value_that_does_not_fit_keeps_its_row_with_the_text_beside_it() {
     // Strict mode refuses the file, naming the column and the line.
     let (rep, _) = run_plan(&e, plan(true)).await;
     assert_eq!(rep.exit_code, 1, "{:?}", rep.report.summary_lines());
-    let refusal = &rep.report.by_code["parse.decimal"].examples[0];
+    let refusal = &rep.report.by_code["parse.integer"].examples[0];
     assert!(refusal.is_error());
     assert_eq!(refusal.column.as_deref(), Some("REGISTEREDCAPACITY"));
     assert_eq!(refusal.table.as_deref(), Some("DUDETAIL"));
@@ -871,10 +844,7 @@ async fn a_value_that_does_not_fit_keeps_its_row_with_the_text_beside_it() {
     let b = parquet_batch(&files[0]);
     assert_eq!(b.num_rows(), 20);
     let cap = b.column_by_name("REGISTEREDCAPACITY").unwrap();
-    assert!(matches!(
-        cap.data_type(),
-        arrow_schema::DataType::Decimal128(6, 0)
-    ));
+    assert!(matches!(cap.data_type(), arrow_schema::DataType::Int64));
     assert!(cap.is_null(0));
     assert_eq!(cap.null_count(), 1);
     let raw = texts(&b, "REGISTEREDCAPACITY__raw");
@@ -989,36 +959,15 @@ async fn a_census_column_is_written_with_its_field_id() {
         .table(registry.table_by_name("DISPATCH_UNIT_SCADA").unwrap())
         .clone();
     let id = table.next_column_id;
-    table.columns.push(nemlake_registry::ColumnDef {
-        id: nemlake_registry::file_model::ColumnId(id),
+    table.columns.push(Column {
+        id: ColumnId(id),
         name: "QUALITY".into(),
-        aliases: vec![],
-        ty: nemlake_registry::ColumnType::Utf8 {
-            max_len: None,
-            dict: false,
-        },
+        ty: LakeType::String,
         nullable: true,
-        oracle: None,
-        loader: None,
-        added_in: nemlake_registry::SchemaVersion(1),
-        removed_in: None,
-        description: None,
-        src: vec!["file".into()],
-        curated: false,
+        note: Some("Seen beside the declared columns.".into()),
     });
     table.next_column_id += 1;
-    let overlay = e.home.root().join("overlay/nem/mms");
-    std::fs::create_dir_all(&overlay).unwrap();
-    std::fs::write(
-        overlay.join("DISPATCH_UNIT_SCADA.toml"),
-        nemlake_registry::file_model::file::write_table(&table),
-    )
-    .unwrap();
-    e.deps.registry = Arc::new(
-        registry
-            .with_overlay(&e.home.root().join("overlay"))
-            .unwrap(),
-    );
+    e.deps.registry = overlay(&registry, &e.home.root().join("overlay"), &table);
     let p = e
         .home
         .root()
@@ -1131,7 +1080,7 @@ fn a_recorded_source_becomes_a_file_to_read() {
     assert!(nemlake_pipeline::recorded_remote(&rec("local", "not a url", "/x/a.csv")).is_none());
 
     // An ingest recorded before rules were is never current.
-    let reg = Registry::load_embedded(TypeOptions::default());
+    let reg = Registry::load_embedded();
     let old = IngestShape {
         table: "T".into(),
         transform: Default::default(),
@@ -1505,7 +1454,7 @@ async fn remote_source_downloads_then_serves_from_cache_and_reports_fetch_failur
     let files = walk(&e.home.lake());
     assert!(
         files.iter().any(|f| f.contains(
-            "nem/tradingprice/year=2024/month=01/public_dvd_tradingprice_202401010000-v2-"
+            "nem/tradingprice/year=2024/month=01/public_dvd_tradingprice_202401010000-v1-"
         )),
         "{files:?}"
     );

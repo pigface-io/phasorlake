@@ -1,14 +1,14 @@
-//! The census gate: every shape the census recorded for every month must
-//! be one the registry reads as declared, and every type class a control
-//! file ever loaded a column as must fit the type the anchor gives it.
+//! The census gate: the evidence against our schema. For every block the
+//! census recorded in month M:
 //!
-//! A shape passes when it resolves, in the month it was seen, exactly (to
-//! a declared version or variant) or through a hand-written rule. Anything
-//! else is a place a rule or a declaration is needed before the months are
-//! backfilled. A class that does not widen into the anchor's type is
-//! reported with the months it was seen in; nothing is widened here.
+//! - its table exists;
+//! - it conforms to the table's increment in force at M;
+//! - each type class a control file loads one of its columns as fits the
+//!   type our schema gives the column.
 //!
-//! Every finding is one JSON diagnostic per line.
+//! Each finding names the fix, which goes in the table's `table.toml`:
+//! the increment's `columns`, or the column's `type`. Nothing is changed
+//! here. Every finding is one JSON diagnostic per line.
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
@@ -16,11 +16,10 @@ use std::path::Path;
 use anyhow::{Context as _, Result};
 use nemlake_census::census::{census_dir, read_month};
 use nemlake_core::{Category, Diagnostic, IRow, ShapeId, TypeClass, YearMonth};
-use nemlake_registry::file_model::compat::class_fits;
 use nemlake_registry::file_model::shapes::ShapeEntry;
-use nemlake_registry::{Mode, Origin, Registry, ResolveOptions, Status, TypeOptions};
+use nemlake_registry::{Mode, Registry, ResolveOptions, Status};
 
-/// The name of a declared type's class, as a table file writes it.
+/// Months as a list for a message.
 fn months_text(months: &BTreeSet<YearMonth>) -> String {
     months
         .iter()
@@ -29,16 +28,22 @@ fn months_text(months: &BTreeSet<YearMonth>) -> String {
         .join(", ")
 }
 
+/// The file a table's schema is in, for a message.
+fn table_file(table: &str) -> String {
+    format!("schemas/nem/{table}/table.toml")
+}
+
 /// Every finding of the census of `months` (file name to shape ids, per
 /// month) against `registry`, whose census holds the shapes.
 pub fn check(
     registry: &Registry,
     months: &BTreeMap<YearMonth, BTreeMap<String, Vec<ShapeId>>>,
 ) -> Vec<Diagnostic> {
-    let by_id: BTreeMap<ShapeId, (&str, &ShapeEntry)> = registry
+    let by_id: BTreeMap<ShapeId, &ShapeEntry> = registry
         .census()
-        .iter()
-        .flat_map(|(t, shapes)| shapes.iter().map(move |e| (e.id, (t.as_str(), e))))
+        .values()
+        .flatten()
+        .map(|e| (e.id, e))
         .collect();
     let mut out = Vec::new();
     // Per shape, the months it was seen in and the first file.
@@ -53,11 +58,14 @@ pub fn check(
             }
         }
     }
-    // Per anchor column and class that does not fit: the months.
+    // Per table, column and class that does not fit: the months.
     let mut regressions: BTreeMap<(String, String, TypeClass), BTreeSet<YearMonth>> =
         BTreeMap::new();
+    // Per table, increment and shape that deviates from it: the months.
+    let mut deviations: BTreeMap<(String, u16, ShapeId), (BTreeSet<YearMonth>, Diagnostic)> =
+        BTreeMap::new();
     for (id, (shape_months, file)) in &seen {
-        let Some((table, entry)) = by_id.get(id) else {
+        let Some(entry) = by_id.get(id) else {
             out.push(
                 Diagnostic::error(
                     "schema.census_unknown_shape",
@@ -72,6 +80,24 @@ pub fn check(
             continue;
         };
         let names: Vec<&str> = entry.columns.iter().map(|(n, _)| n.as_str()).collect();
+        let Some(tid) = registry.declared_by_pair(&entry.report_type, &entry.report_subtype) else {
+            out.push(
+                Diagnostic::error(
+                    "schema.census_deviates",
+                    Category::Schema,
+                    format!(
+                        "Shape {id} ({}, {}), seen in {} ({file} and others), belongs to no table; `nemlake-census sync` adds the table from the month's control file.",
+                        entry.report_type,
+                        entry.report_subtype,
+                        months_text(shape_months)
+                    ),
+                )
+                .with_version(entry.version)
+                .with_entry(file.clone()),
+            );
+            continue;
+        };
+        let t = registry.table(tid);
         let irow = IRow {
             report_type: &entry.report_type,
             report_subtype: &entry.report_subtype,
@@ -79,90 +105,83 @@ pub fn check(
             columns: &names,
         };
         for &month in shape_months {
-            let res = registry.resolve_in(
-                &irow,
-                ResolveOptions {
-                    mode: Mode::Permissive,
-                },
-                Some(month),
-            );
-            let res = match res {
-                Ok(r) if r.status == Status::Exact || !r.routed.is_empty() => r,
-                other => {
-                    let why = match &other {
-                        Ok(r) => match &r.status {
-                            Status::Drift {
-                                missing,
-                                extra,
-                                reordered,
-                            } => format!(
-                                "it drifts from version {}: missing {missing:?}, unknown {extra:?}{}",
-                                r.version,
-                                if *reordered { ", reordered" } else { "" }
-                            ),
-                            Status::Aliased { matched } => format!(
-                                "its version {} is not declared; its columns are those of version {matched}",
-                                entry.version
-                            ),
-                            _ => "no table claims its report pair".to_owned(),
-                        },
-                        Err(e) => e.to_string(),
-                    };
-                    let mut d = Diagnostic::error(
-                        "schema.census_unresolved",
-                        Category::Schema,
-                        format!(
-                            "Shape {id} of table {table}, seen in {} ({file} and others), is not declared and no rule reads it: {why}. Declare it or write a rule for it.",
-                            months_text(shape_months)
-                        ),
-                    )
-                    .with_table((*table).to_owned())
-                    .with_version(entry.version)
-                    .with_entry(file.clone());
-                    if let Ok(r) = &other
-                        && let Some(v) = registry.table(r.table).version(r.version)
-                    {
-                        d.expected = Some(v.columns.join(","));
-                    }
-                    d.observed = Some(names.join(","));
-                    out.push(d);
-                    break;
-                }
-            };
-            let t = registry.table(res.table);
-            for (route, (_, class)) in res.plan.routes.iter().zip(&entry.columns) {
-                if !matches!(route.origin, Origin::Declared | Origin::Rule) {
-                    continue;
-                }
-                let Some(anchor) = route.target_name.as_deref().and_then(|n| t.column(n)) else {
-                    continue;
-                };
-                let target = &anchor.name;
-                if !class_fits(*class, anchor.ty) {
+            let res = registry
+                .resolve_in(
+                    &irow,
+                    ResolveOptions {
+                        mode: Mode::Permissive,
+                    },
+                    Some(month),
+                )
+                .expect("a table's shape resolves permissively");
+            if let Status::Deviates {
+                missing,
+                extra,
+                reordered,
+            } = &res.status
+            {
+                let key = (t.name.clone(), res.version, *id);
+                let inc = t.increment(res.version).expect("the increment in force");
+                deviations
+                    .entry(key)
+                    .or_insert_with(|| {
+                        let mut d = Diagnostic::error(
+                            "schema.census_deviates",
+                            Category::Schema,
+                            String::new(),
+                        )
+                        .with_table(t.name.clone())
+                        .with_version(entry.version)
+                        .with_entry(file.clone());
+                        d.message = format!(
+                            "Shape {id} of table {} deviates from {}@{}: missing {missing:?}, not listed {extra:?}{}. If the files are right, edit increment {}'s columns in {}.",
+                            t.name,
+                            t.name,
+                            inc.n,
+                            if *reordered { ", reordered" } else { "" },
+                            inc.n,
+                            table_file(&t.name)
+                        );
+                        d.expected = Some(inc.columns.join(","));
+                        d.observed = Some(names.join(","));
+                        (BTreeSet::new(), d)
+                    })
+                    .0
+                    .insert(month);
+            }
+            for (name, class) in &entry.columns {
+                if let Some(c) = t.column(name)
+                    && !c.ty.holds(*class)
+                {
                     regressions
-                        .entry((t.name.clone(), target.clone(), *class))
+                        .entry((t.name.clone(), c.name.clone(), *class))
                         .or_default()
                         .insert(month);
                 }
             }
         }
     }
+    for (_, (months, mut d)) in deviations {
+        d.message = format!("{} Seen in {}.", d.message, months_text(&months));
+        out.push(d);
+    }
     for ((table, column, class), months) in regressions {
-        let anchor = registry
+        let ty = registry
             .table_by_name(&table)
             .and_then(|id| registry.table(id).column(&column))
-            .map_or("", |c| c.ty.kind_name());
+            .map_or_else(String::new, |c| c.ty.to_string());
         let mut d = Diagnostic::error(
             "schema.census_type_regression",
             Category::Schema,
             format!(
-                "Column {column} of table {table} is declared {anchor}, but the control files of {} load it as {class}, which does not widen into it. Nothing is widened by this check: declare the type, or write a rule for those months.",
-                months_text(&months)
+                "Column {column} of table {table} is {ty}, but the control files of {} load it as {class}, which {ty} does not hold. Edit the column's type in {}, or add a column for those values.",
+                months_text(&months),
+                table_file(&table)
             ),
         )
         .with_table(table)
         .with_column(column);
-        d.expected = Some(anchor.to_owned());
+        d.expected = Some(ty);
         d.observed = Some(class.to_string());
         out.push(d);
     }
@@ -207,7 +226,7 @@ pub fn run() -> Result<bool> {
         println!("census-check: no census recorded under schemas/nem/census; nothing to check");
         return Ok(true);
     }
-    let registry = Registry::load_dir(&schemas, TypeOptions::default())
+    let registry = Registry::load_dir(&schemas)
         .map_err(|e| anyhow::anyhow!("{e}"))
         .context("loading schemas/")?;
     let found = check(&registry, &months);
@@ -244,18 +263,15 @@ mod tests {
     }
 
     fn registry(shapes: Vec<ShapeEntry>) -> Registry {
-        let embedded = Registry::load_embedded(TypeOptions::default());
+        let embedded = Registry::load_embedded();
         let t = embedded
             .table(embedded.table_by_name("DISPATCH_UNIT_SCADA").unwrap())
             .clone();
-        Registry::from_set(
-            SchemaSet {
-                markets: vec![],
-                tables: vec![t],
-                shapes: [("DISPATCH_UNIT_SCADA".to_owned(), shapes)].into(),
-            },
-            TypeOptions::default(),
-        )
+        Registry::from_set(SchemaSet {
+            tables: vec![t],
+            shapes: [("DISPATCH_UNIT_SCADA".to_owned(), shapes)].into(),
+            ..Default::default()
+        })
     }
 
     fn census(
@@ -272,6 +288,8 @@ mod tests {
         out
     }
 
+    /// The 2026-08 increment of DISPATCH_UNIT_SCADA; 2024-01's lacks
+    /// LASTCHANGED.
     const DECLARED: [(&str, TypeClass); 4] = [
         ("SETTLEMENTDATE", TypeClass::Timestamp),
         ("DUID", TypeClass::Varchar),
@@ -280,67 +298,88 @@ mod tests {
     ];
 
     #[test]
-    fn a_declared_census_passes() {
-        let ok = entry(&DECLARED, 1, "2026-08");
-        let r = registry(vec![ok.clone()]);
-        assert!(check(&r, &census(&[("2026-08", "A.zip", ok.id)])).is_empty());
+    fn a_conforming_census_passes() {
+        let now = entry(&DECLARED, 1, "2026-08");
+        let then = entry(&DECLARED[..3], 1, "2024-01");
+        let r = registry(vec![now.clone(), then.clone()]);
+        let c = census(&[("2026-08", "A.zip", now.id), ("2024-01", "B.zip", then.id)]);
+        assert!(check(&r, &c).is_empty(), "{:?}", check(&r, &c));
     }
 
     #[test]
-    fn a_drifted_shape_fails_with_its_columns() {
-        let mut cols = DECLARED.to_vec();
+    fn a_deviating_shape_fails_with_its_months_and_fix() {
+        let mut cols = DECLARED[..3].to_vec();
         cols.push(("QUALITY", TypeClass::Varchar));
-        let drifted = entry(&cols, 1, "2015-03");
-        let r = registry(vec![drifted.clone()]);
+        let odd = entry(&cols, 1, "2015-03");
+        let r = registry(vec![odd.clone()]);
         let found = check(
             &r,
-            &census(&[
-                ("2015-03", "B.zip", drifted.id),
-                ("2015-04", "C.zip", drifted.id),
-            ]),
+            &census(&[("2015-03", "B.zip", odd.id), ("2015-04", "C.zip", odd.id)]),
         );
         assert_eq!(found.len(), 1, "{found:?}");
         let d = &found[0];
-        assert_eq!(d.code, "schema.census_unresolved");
+        assert_eq!(d.code, "schema.census_deviates");
         assert_eq!(d.table.as_deref(), Some("DISPATCH_UNIT_SCADA"));
-        assert!(d.message.contains(&drifted.id.to_string()), "{}", d.message);
+        assert!(d.message.contains(&odd.id.to_string()), "{}", d.message);
+        assert!(d.message.contains("DISPATCH_UNIT_SCADA@1"), "{}", d.message);
         assert!(d.message.contains("2015-03, 2015-04"), "{}", d.message);
         assert!(d.message.contains("\"QUALITY\""), "{}", d.message);
+        assert!(
+            d.message
+                .contains("schemas/nem/DISPATCH_UNIT_SCADA/table.toml"),
+            "{}",
+            d.message
+        );
         assert_eq!(
             d.expected.as_deref(),
-            Some("SETTLEMENTDATE,DUID,SCADAVALUE,LASTCHANGED")
+            Some("SETTLEMENTDATE,DUID,SCADAVALUE")
         );
         assert!(d.observed.as_deref().unwrap().ends_with(",QUALITY"));
+        // The 2026 shape is a deviation in 2024: the month decides.
+        let now = entry(&DECLARED, 1, "2026-08");
+        let r = registry(vec![now.clone()]);
+        let found = check(&r, &census(&[("2024-06", "D.zip", now.id)]));
+        assert_eq!(found[0].code, "schema.census_deviates");
         // An id no shapes file records.
         let found = check(&r, &census(&[("2015-03", "D.zip", ShapeId(42))]));
         assert_eq!(found[0].code, "schema.census_unknown_shape");
+        // A shape of a report pair no table claims.
+        let mut stray = entry(&DECLARED, 1, "2026-08");
+        stray.report_subtype = "NOBODY".into();
+        stray.id = stray.shape().id();
+        let r = registry(vec![stray.clone()]);
+        let found = check(&r, &census(&[("2026-08", "E.zip", stray.id)]));
+        assert!(
+            found[0].message.contains("belongs to no table"),
+            "{found:?}"
+        );
     }
 
     #[test]
-    fn a_type_that_does_not_widen_is_reported_with_its_months() {
+    fn a_type_our_column_does_not_hold_is_reported_with_its_months() {
         let mut cols = DECLARED.to_vec();
         cols[2].1 = TypeClass::Varchar;
-        let texty = entry(&cols, 1, "2011-01");
+        let texty = entry(&cols, 1, "2026-08");
         let r = registry(vec![texty.clone()]);
         let found = check(
             &r,
             &census(&[
-                ("2011-01", "E.zip", texty.id),
-                ("2011-02", "F.zip", texty.id),
+                ("2026-08", "E.zip", texty.id),
+                ("2026-09", "F.zip", texty.id),
             ]),
         );
         assert_eq!(found.len(), 1, "{found:?}");
         let d = &found[0];
         assert_eq!(d.code, "schema.census_type_regression");
         assert_eq!(d.column.as_deref(), Some("SCADAVALUE"));
+        assert_eq!(d.expected.as_deref(), Some("double"));
         assert_eq!(d.observed.as_deref(), Some("varchar"));
-        assert!(d.message.contains("2011-01, 2011-02"), "{}", d.message);
-        // A class that widens into the anchor is fine: a date into a
-        // timestamp; an unknown class says nothing.
+        assert!(d.message.contains("2026-08, 2026-09"), "{}", d.message);
+        // A date into a timestamp is held; an unknown class says nothing.
         cols[2].1 = TypeClass::Unknown;
         cols[0].1 = TypeClass::Date;
-        let fine = entry(&cols, 1, "2011-03");
+        let fine = entry(&cols, 1, "2026-10");
         let r = registry(vec![fine.clone()]);
-        assert!(check(&r, &census(&[("2011-03", "G.zip", fine.id)])).is_empty());
+        assert!(check(&r, &census(&[("2026-10", "G.zip", fine.id)])).is_empty());
     }
 }

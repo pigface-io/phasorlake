@@ -7,7 +7,7 @@ use nemlake_core::{Category, Diagnose, Diagnostic};
 pub enum ResolveError {
     /// No table claims the report pair.
     #[error(
-        "No table in the registry claims report pair ({report_type}, {report_subtype}); rerun with --permissive to infer a draft schema."
+        "No table in the registry claims report pair ({report_type}, {report_subtype}); rerun with --permissive to keep its rows as text."
     )]
     UnknownTable {
         /// Report type.
@@ -15,45 +15,36 @@ pub enum ResolveError {
         /// Report subtype.
         report_subtype: String,
     },
-    /// Known version, different columns, and strict mode.
+    /// The block's columns are not its increment's, and strict mode.
     #[error(
-        "Table {table} version {version} declares {declared} columns but the I row has {observed}; missing {missing:?}, unexpected {extra:?}."
+        "Table {table}@{increment} lists columns {expected} but the I row has {observed}; missing {missing:?}, not listed {extra:?}{}. If the file is right, fix the increment's columns in its table.toml; --permissive reads it as it is.",
+        if *reordered { ", in another order" } else { "" }
     )]
-    VersionDrift {
+    Deviates {
         /// Table.
         table: String,
-        /// Version.
-        version: u16,
-        /// Declared count.
-        declared: usize,
-        /// Observed count.
-        observed: usize,
-        /// Declared columns the I row lacks.
+        /// The increment in force.
+        increment: u16,
+        /// The increment's columns, comma separated.
+        expected: String,
+        /// The I row's columns, comma separated.
+        observed: String,
+        /// Increment columns the I row lacks.
         missing: Vec<String>,
-        /// I-row columns the registry does not know.
+        /// I-row columns the increment does not list.
         extra: Vec<String>,
-    },
-    /// Unknown version, strict mode.
-    #[error(
-        "Table {table} has no declared version {version}; its nearest is {nearest}. Rerun with --permissive to read it as drift."
-    )]
-    UnknownVersion {
-        /// Table.
-        table: String,
-        /// Observed version.
-        version: u16,
-        /// Nearest declared version.
-        nearest: u16,
+        /// The columns both have come in another order.
+        reordered: bool,
     },
     /// A primary-key column is absent from the I row.
     #[error(
-        "Table {table} version {version}: the I row lacks primary-key column {column}; rows could not be deduplicated, so the block is refused."
+        "Table {table}@{increment}: the I row lacks primary-key column {column}; rows could not be deduplicated, so the block is refused."
     )]
     MissingKey {
         /// Table.
         table: String,
-        /// Version.
-        version: u16,
+        /// The increment in force.
+        increment: u16,
         /// The missing key column.
         column: String,
     },
@@ -76,38 +67,23 @@ impl Diagnose for ResolveError {
             Self::UnknownTable { .. } => {
                 Diagnostic::error("schema.unknown_table", Category::Schema, msg)
             }
-            Self::VersionDrift {
+            Self::Deviates {
                 table,
-                version,
-                declared,
+                increment,
+                expected,
                 observed,
-                missing,
-                extra,
-            } => Diagnostic::error("schema.version_drift", Category::Schema, msg)
+                ..
+            } => Diagnostic::error("schema.deviates", Category::Schema, msg)
                 .with_table(table.clone())
-                .with_version(*version)
-                .expected_observed(
-                    format!("{declared} columns"),
-                    format!("{observed} columns (missing {missing:?}, unexpected {extra:?})"),
-                ),
-            Self::UnknownVersion {
-                table,
-                version,
-                nearest,
-            } => Diagnostic::error("schema.unknown_version", Category::Schema, msg)
-                .with_table(table.clone())
-                .with_version(*version)
-                .expected_observed(
-                    format!("a declared version such as {nearest}"),
-                    version.to_string(),
-                ),
+                .with_version(*increment)
+                .expected_observed(expected.clone(), observed.clone()),
             Self::MissingKey {
                 table,
-                version,
+                increment,
                 column,
             } => Diagnostic::error("schema.missing_key", Category::Schema, msg)
                 .with_table(table.clone())
-                .with_version(*version)
+                .with_version(*increment)
                 .with_column(column.clone()),
             Self::NoColumns { version, .. } => {
                 Diagnostic::error("schema.no_columns", Category::Schema, msg).with_version(*version)
@@ -122,19 +98,21 @@ mod tests {
 
     #[test]
     fn codes_and_context() {
-        let e = ResolveError::VersionDrift {
+        let e = ResolveError::Deviates {
             table: "T".into(),
-            version: 2,
-            declared: 3,
-            observed: 4,
+            increment: 2,
+            expected: "A,B".into(),
+            observed: "B,A,X".into(),
             missing: vec![],
             extra: vec!["X".into()],
+            reordered: true,
         };
         let d = e.diagnostic();
-        assert_eq!(d.code, "schema.version_drift");
+        assert_eq!(d.code, "schema.deviates");
         assert_eq!(d.table.as_deref(), Some("T"));
         assert_eq!(d.version, Some(2));
-        assert!(d.observed.as_deref().unwrap().contains("X"));
+        assert_eq!(d.observed.as_deref(), Some("B,A,X"));
+        assert!(d.message.contains("T@2") && d.message.contains("another order"));
         assert_eq!(
             ResolveError::UnknownTable {
                 report_type: "A".into(),
@@ -144,19 +122,9 @@ mod tests {
             .code,
             "schema.unknown_table"
         );
-        assert_eq!(
-            ResolveError::UnknownVersion {
-                table: "T".into(),
-                version: 9,
-                nearest: 4
-            }
-            .diagnostic()
-            .code,
-            "schema.unknown_version"
-        );
         let d = ResolveError::MissingKey {
             table: "T".into(),
-            version: 1,
+            increment: 1,
             column: "K".into(),
         }
         .diagnostic();

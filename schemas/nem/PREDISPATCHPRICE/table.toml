@@ -91,5 +91,54 @@ columns = [
     "LOWER5MINRRP",
     "LOWERREGRRP",
     "RAISE1SECRRP",
+    "RAISE1SECROP",
+    "LOWER1SECRRP",
+    "LOWER1SECROP",
+]
+note = "The file the control file loads, PUBLIC_DVD_PREDISPATCHPRICE_D_202401010000.CSV, carries RAISE1SECROP, LOWER1SECROP, which its control file does not list; the increment lists the file's columns."
+
+[[increment]]
+n = 2
+from = "2026-08"
+ctl = "002.ctl"
+ctl_sha256 = "d72bc594446407cd24236f4cd2a62cabfffc5a78be790cd4ff31ee3411815b43"
+aemo_ctl = "PUBLIC_ARCHIVE#PREDISPATCHPRICE#FILE01#202608.ctl"
+aemo_versions = [2]
+columns = [
+    "PREDISPATCHSEQNO",
+    "RUNNO",
+    "REGIONID",
+    "PERIODID",
+    "INTERVENTION",
+    "RRP",
+    "EEP",
+    "RRP1",
+    "EEP1",
+    "RRP2",
+    "EEP2",
+    "RRP3",
+    "EEP3",
+    "RRP4",
+    "EEP4",
+    "RRP5",
+    "EEP5",
+    "RRP6",
+    "EEP6",
+    "RRP7",
+    "EEP7",
+    "RRP8",
+    "EEP8",
+    "LASTCHANGED",
+    "DATETIME",
+    "RAISE6SECRRP",
+    "RAISE60SECRRP",
+    "RAISE5MINRRP",
+    "RAISEREGRRP",
+    "LOWER6SECRRP",
+    "LOWER60SECRRP",
+    "LOWER5MINRRP",
+    "LOWERREGRRP",
+    "RAISE1SECRRP",
     "LOWER1SECRRP",
 ]
+note = "Its control file lays the table out as the one before does, but the files of the months before carry other columns."

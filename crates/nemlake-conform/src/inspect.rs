@@ -1,10 +1,8 @@
 //! Summarising a file without building batches: what `nemlake inspect` shows.
 
 use nemlake_core::{Fingerprint, IRow};
-use nemlake_registry::infer::Sampler;
 use nemlake_registry::{Registry, ResolveOptions};
 
-use nemlake_decode::PREFIX_FIELDS;
 use nemlake_decode::error::{RowError, RowFailure, SinkError};
 use nemlake_decode::fields::Row;
 use nemlake_decode::scan::{Flow, Pos, Sink};
@@ -26,13 +24,11 @@ pub struct BlockSummary {
     pub fingerprint: Fingerprint,
     /// D rows.
     pub rows: u64,
-    /// `exact`, `aliased`, `drift`, or the resolve error's code.
+    /// `conforms`, `deviates`, `derived`, or the resolve error's code.
     pub status: String,
     /// The table that claims the report pair, whether or not this shape
     /// of it resolved; `None` when no table does.
     pub table: Option<String>,
-    /// Type evidence from the rows, for `--infer`.
-    pub sampler: Sampler,
 }
 
 /// Collects block summaries.
@@ -43,19 +39,16 @@ pub struct InspectSink<'r> {
     pub blocks: Vec<BlockSummary>,
     /// The first C row's fields.
     pub header: Option<Vec<String>>,
-    /// Rows to sample per block for type evidence.
-    pub sample_rows: u64,
 }
 
 impl<'r> InspectSink<'r> {
     /// A sink resolving against `registry`.
-    pub fn new(registry: &'r Registry, opts: ResolveOptions, sample_rows: u64) -> Self {
+    pub fn new(registry: &'r Registry, opts: ResolveOptions) -> Self {
         Self {
             registry,
             opts,
             blocks: Vec::new(),
             header: None,
-            sample_rows,
         }
     }
 }
@@ -94,20 +87,15 @@ impl Sink for InspectSink<'_> {
             rows: 0,
             status,
             table,
-            sampler: Sampler::new(irow.columns.len()),
         });
         Ok(())
     }
 
-    fn row(&mut self, row: &Row<'_>, _: Pos) -> Result<(), RowFailure> {
+    fn row(&mut self, _: &Row<'_>, _: Pos) -> Result<(), RowFailure> {
         let Some(b) = self.blocks.last_mut() else {
             return Err(RowError::TooShort(0).into());
         };
         b.rows += 1;
-        if b.rows <= self.sample_rows {
-            b.sampler
-                .observe((PREFIX_FIELDS..row.len()).filter_map(|i| row.get(i)));
-        }
         Ok(())
     }
 
@@ -122,14 +110,14 @@ impl Sink for InspectSink<'_> {
 
 #[cfg(test)]
 mod tests {
-    use nemlake_registry::{Mode, TypeOptions};
+    use nemlake_registry::Mode;
 
     use super::*;
     use nemlake_decode::scan::{ScanOptions, scan};
 
     #[test]
     fn summarises_multi_block_file() {
-        let r = Registry::load_embedded(TypeOptions::default());
+        let r = Registry::load_embedded();
         let fixture = std::fs::read_to_string(format!(
             "{}/../../testdata/csv/multi_block_dispatchis.csv",
             env!("CARGO_MANIFEST_DIR")
@@ -144,7 +132,7 @@ mod tests {
             &fixture[footer..]
         );
         let text = text.into_bytes();
-        let mut s = InspectSink::new(&r, ResolveOptions { mode: Mode::Strict }, 100);
+        let mut s = InspectSink::new(&r, ResolveOptions { mode: Mode::Strict });
         let stats = scan(
             text.as_slice(),
             &mut s,
@@ -163,7 +151,8 @@ mod tests {
             .find(|b| b.report_subtype == "PRICE")
             .unwrap();
         assert_eq!(price.table.as_deref(), Some("DISPATCHPRICE"));
-        assert_eq!(price.status, "exact");
+        // The live feed's DISPATCHPRICE is not the archive's increment.
+        assert_eq!(price.status, "schema.deviates");
         assert_eq!(price.rows, 3);
         let unknown = s
             .blocks
@@ -172,28 +161,8 @@ mod tests {
             .unwrap();
         assert_eq!(unknown.status, "schema.unknown_table");
         assert_eq!(unknown.table, None);
-        assert_eq!(unknown.sampler.rows, 2);
-        assert_eq!(
-            unknown.sampler.column_type(0),
-            nemlake_registry::ColumnType::Timestamp
-        );
-        let draft = nemlake_registry::infer::draft_table(
-            nemlake_registry::Market::Nem,
-            &IRow {
-                report_type: &unknown.report_type,
-                report_subtype: &unknown.report_subtype,
-                version: unknown.version,
-                columns: &unknown
-                    .columns
-                    .iter()
-                    .map(String::as_str)
-                    .collect::<Vec<_>>(),
-            },
-            &unknown.sampler,
-        );
-        assert_eq!(draft.name, "NEMLAKE_TEST_NEW_THING");
         // A D row before any I row is an error from the scanner, not the sink.
-        let mut s = InspectSink::new(&r, ResolveOptions::default(), 1);
+        let mut s = InspectSink::new(&r, ResolveOptions::default());
         assert!(scan(b"D,a,b,1,x\n".as_slice(), &mut s, &ScanOptions::default()).is_err());
         let r = s.row(
             &nemlake_decode::fields::Splitter::default().split(b"D,a"),

@@ -43,10 +43,12 @@ columns = [
     "MARGINALVALUE",
     "VIOLATIONDEGREE",
     "LASTCHANGED",
+    "CONFIDENTIAL_TO",
     "GENCONID_EFFECTIVEDATE",
     "GENCONID_VERSIONNO",
     "LHS",
 ]
+note = "The file the control file loads, PUBLIC_DVD_P5MIN_CONSTRAINTSOLUTION1_202401010000.CSV, carries CONFIDENTIAL_TO, which its control file does not list; the increment lists the file's columns."
 
 [[increment]]
 n = 2

@@ -20,8 +20,7 @@
 
 use nemlake_core::{Category, Diagnose, Diagnostic};
 
-use crate::file_model::model::ColumnType;
-use crate::file_model::v2::model::LakeType;
+use crate::file_model::model::LakeType;
 
 /// SHA-256 of a control file's bytes, lower-case hex: what an increment
 /// records of the file it keeps.
@@ -56,32 +55,6 @@ pub enum LoaderType {
 }
 
 impl LoaderType {
-    /// The logical type a loader type implies; `None` for a filler. A
-    /// control file knows the class of a column (text with a length, a
-    /// number, a time) but not a number's precision and scale.
-    pub fn column_type(&self) -> Option<ColumnType> {
-        Some(match self {
-            Self::Filler => return None,
-            Self::Char(n) => ColumnType::Utf8 {
-                max_len: Some(*n),
-                dict: false,
-            },
-            Self::Date(f) | Self::Timestamp(Some(f)) => {
-                if f.to_ascii_lowercase().contains("hh") {
-                    ColumnType::Timestamp
-                } else {
-                    ColumnType::Date
-                }
-            }
-            Self::Timestamp(None) => ColumnType::Timestamp,
-            Self::FloatExternal | Self::DecimalExternal => ColumnType::Number {
-                precision: None,
-                scale: None,
-            },
-            Self::IntegerExternal => ColumnType::Integer,
-        })
-    }
-
     /// The lake type a column this loader type brings in starts with;
     /// `None` for a filler. Every number is a `double`; a date with an
     /// hour is a `timestamp_ns`.
@@ -105,12 +78,15 @@ impl LoaderType {
     /// form; `None` for a filler.
     pub fn type_class(&self) -> Option<nemlake_core::TypeClass> {
         use nemlake_core::TypeClass;
-        Some(match self.column_type()? {
-            ColumnType::Utf8 { .. } | ColumnType::Boolean => TypeClass::Varchar,
-            ColumnType::Number { .. } => TypeClass::Number,
-            ColumnType::Integer => TypeClass::Integer,
-            ColumnType::Date => TypeClass::Date,
-            ColumnType::Timestamp => TypeClass::Timestamp,
+        Some(match self {
+            Self::Filler => return None,
+            Self::Char(_) => TypeClass::Varchar,
+            Self::FloatExternal | Self::DecimalExternal => TypeClass::Number,
+            Self::IntegerExternal => TypeClass::Integer,
+            Self::Date(_) | Self::Timestamp(_) => match self.default_type() {
+                Some(LakeType::Date) => TypeClass::Date,
+                _ => TypeClass::Timestamp,
+            },
         })
     }
 

@@ -41,11 +41,7 @@ pub async fn dispatch(cli: Cli) -> Result<i32> {
         },
         Command::Reingest { dry_run, ingest } => lake::reingest(&cli, &ctx, *dry_run, ingest).await,
         Command::Verify { table } => lake::verify(&ctx, table.as_deref()).await,
-        Command::Inspect {
-            path,
-            infer,
-            sample_rows,
-        } => inspect::inspect(&ctx, path, *infer, *sample_rows),
+        Command::Inspect { path } => inspect::inspect(&ctx, path),
         Command::Ls {
             table,
             failed,

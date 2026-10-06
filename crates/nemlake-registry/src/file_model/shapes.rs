@@ -2,8 +2,8 @@
 //!
 //! Every distinct shape of the table the census saw, once, with the months
 //! it was first and last seen. `nemlake schema census` writes these files;
-//! the registry embeds them, so a hand-written rule can name the shape it
-//! is for by its id, and resolution can tell which shapes a block is.
+//! the registry embeds them, so resolution can tell which shapes a block
+//! is, and the census gate can hold every shape to our schema.
 
 use std::path::Path;
 

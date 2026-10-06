@@ -15,7 +15,7 @@ const CATEGORIES: [&str; 12] = [
 
 /// Codes that are no longer raised. A code is a promise to whoever matches
 /// on it, so a retired one stays listed and may never be given a new meaning.
-const RETIRED: [(&str, &str); 2] = [
+const RETIRED: [(&str, &str); 10] = [
     (
         "listing.era_unsupported",
         "months before 2024 could not be listed; every archive month is now readable and a month the archive does not publish is `listing.month_missing`",
@@ -23,6 +23,38 @@ const RETIRED: [(&str, &str); 2] = [
     (
         "schema.merge_version_conflict",
         "the schema bootstrap refused two different column lists under one version number; each list is now a variant of the version",
+    ),
+    (
+        "schema.version_drift",
+        "a block whose columns differed from its declared version; resolution is now against increments, and such a block is `schema.deviates`",
+    ),
+    (
+        "schema.unknown_version",
+        "an I-row version the table did not declare; increments decide now, and an unseen version is the warning `schema.unseen_version`",
+    ),
+    (
+        "schema.version_aliased",
+        "an undeclared version whose columns were those of a declared one; resolution is by increments and columns now",
+    ),
+    (
+        "schema.compatible_drift",
+        "a block missing declared columns; now `schema.deviates`",
+    ),
+    (
+        "schema.unknown_columns",
+        "a block with columns the table did not declare; now `schema.deviates`",
+    ),
+    (
+        "schema.decimal_fallback",
+        "decimal mode read a column without precision as a float; decimal mode is gone and every number is a double",
+    ),
+    (
+        "schema.rule_conflict",
+        "a hand-written rule routed a column the file also carried; rules are gone, fixes go in an increment's columns",
+    ),
+    (
+        "schema.census_unresolved",
+        "a census shape neither declared nor read by a rule; now `schema.census_deviates`",
     ),
 ];
 

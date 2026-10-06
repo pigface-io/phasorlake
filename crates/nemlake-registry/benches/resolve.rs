@@ -4,10 +4,10 @@ use std::hint::black_box;
 
 use criterion::{Criterion, criterion_group, criterion_main};
 use nemlake_core::IRow;
-use nemlake_registry::{Registry, ResolveOptions, TypeOptions};
+use nemlake_registry::{Registry, ResolveOptions};
 
 fn bench(c: &mut Criterion) {
-    let r = Registry::load_embedded(TypeOptions::default());
+    let r = Registry::load_embedded();
     let cols = ["SETTLEMENTDATE", "DUID", "SCADAVALUE"];
     let row = IRow {
         report_type: "DISPATCH",
@@ -47,11 +47,7 @@ fn bench(c: &mut Criterion) {
                 nemlake_registry::registry::embedded_blob(),
             ))
             .unwrap();
-            black_box(
-                Registry::from_set(set, TypeOptions::default())
-                    .tables()
-                    .count(),
-            )
+            black_box(Registry::from_set(set).tables().count())
         });
     });
     g.finish();

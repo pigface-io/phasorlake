@@ -1,33 +1,28 @@
-//! Mapping logical column types to Arrow.
+//! Lake types as Arrow types, and a table's lake schema.
 
 use std::collections::HashMap;
 use std::sync::Arc;
 
-use crate::file_model::{ColumnDef, ColumnType, MarketDef, TableDef};
 use arrow_schema::{DataType, Field, Schema, SchemaRef};
 
-use crate::plan::Cast;
-use crate::registry::TypeOptions;
+use crate::file_model::{Column, LakeType, MarketDef, Table};
 
 /// Parquet's field-id metadata key; Iceberg reads the same key.
 pub const FIELD_ID_KEY: &str = "PARQUET:field_id";
-/// The Oracle type the column was declared with, for provenance.
-pub const ORACLE_KEY: &str = "nemlake:oracle";
 /// On a column of values kept as text: the id (or, for a column of the
 /// file only, the name) of the column whose values it holds.
 pub const RAW_OF_KEY: &str = "nemlake:raw-of";
 
-impl crate::file_model::v2::model::LakeType {
+impl LakeType {
     /// The Arrow type, with timestamps in `market`'s offset.
     pub fn arrow(self, market: &MarketDef) -> DataType {
-        use crate::file_model::v2::model::LakeType;
         match self {
-            LakeType::String => DataType::Utf8,
-            LakeType::Double => DataType::Float64,
-            LakeType::Long => DataType::Int64,
-            LakeType::Boolean => DataType::Boolean,
-            LakeType::Date => DataType::Date32,
-            LakeType::TimestampNs => DataType::Timestamp(
+            Self::String => DataType::Utf8,
+            Self::Double => DataType::Float64,
+            Self::Long => DataType::Int64,
+            Self::Boolean => DataType::Boolean,
+            Self::Date => DataType::Date32,
+            Self::TimestampNs => DataType::Timestamp(
                 arrow_schema::TimeUnit::Nanosecond,
                 Some(Arc::from(market.arrow_tz())),
             ),
@@ -35,63 +30,30 @@ impl crate::file_model::v2::model::LakeType {
     }
 }
 
-/// The Arrow type for a column under the given options.
-///
-/// `Number` becomes `Float64` unless decimals are requested and the schema
-/// knows precision and scale; a decimal request for a column without them
-/// falls back to `Float64` and the caller may warn.
-pub fn data_type(ty: ColumnType, market: &MarketDef, opts: TypeOptions) -> DataType {
-    Cast::for_type(ty, market, opts).data_type(market)
-}
-
-/// Whether a decimal was requested but this column has to fall back.
-pub fn decimal_fallback(ty: ColumnType, opts: TypeOptions) -> bool {
-    opts.decimal
-        && matches!(ty, ColumnType::Number { precision, scale } if precision.is_none() || scale.is_none())
-}
-
 /// The Arrow field for a column, with its stable id in the metadata.
-pub fn field(c: &ColumnDef, market: &MarketDef, opts: TypeOptions) -> Field {
-    let mut md = HashMap::with_capacity(2);
-    md.insert(FIELD_ID_KEY.to_owned(), c.id.0.to_string());
-    if let Some(o) = &c.oracle {
-        md.insert(ORACLE_KEY.to_owned(), o.clone());
-    }
-    Field::new(&c.name, data_type(c.ty, market, opts), c.nullable).with_metadata(md)
+pub fn field(c: &Column, market: &MarketDef) -> Field {
+    let md: HashMap<String, String> = [(FIELD_ID_KEY.to_owned(), c.id.0.to_string())].into();
+    Field::new(&c.name, c.ty.arrow(market), c.nullable).with_metadata(md)
 }
 
-/// The unified lake schema of a table: every column ever declared, in lake
-/// order. Files of every version share it; a version that lacks a column
-/// writes nulls.
-pub fn lake_schema(t: &TableDef, market: &MarketDef, opts: TypeOptions) -> SchemaRef {
-    let fields: Vec<Field> = t
-        .columns
-        .iter()
-        .map(|c| {
-            let f = field(c, market, opts);
-            // A raw column says whose values it holds, by that column's id.
-            match c.raw_of().and_then(|b| t.column(b)) {
-                Some(of) => {
-                    let of = of.id.0.to_string();
-                    let mut md = f.metadata().clone();
-                    md.insert(RAW_OF_KEY.to_owned(), of);
-                    f.with_metadata(md)
-                }
-                None => f,
-            }
-        })
-        .collect();
-    let mut md = HashMap::new();
-    md.insert("nemlake:table".to_owned(), t.name.clone());
-    md.insert("nemlake:market".to_owned(), t.market.to_string());
+/// The lake schema of a table: every column it ever had, in lake order,
+/// each with its id as `PARQUET:field_id`. Files of every increment share
+/// it; a file that lacks a column writes nulls.
+pub fn lake_schema(t: &Table, market: &MarketDef) -> SchemaRef {
+    let fields: Vec<Field> = t.columns.iter().map(|c| field(c, market)).collect();
+    let md: HashMap<String, String> = [
+        ("nemlake:table".to_owned(), t.name.clone()),
+        ("nemlake:market".to_owned(), t.market.to_string()),
+    ]
+    .into();
     Arc::new(Schema::new_with_metadata(fields, md))
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::file_model::{Market, TimestampFormat};
-
     use super::*;
+    use crate::file_model::model::tests::unit_scada;
+    use crate::file_model::{Market, TimestampFormat};
 
     fn nem() -> MarketDef {
         MarketDef {
@@ -103,11 +65,7 @@ mod tests {
 
     #[test]
     fn lake_types_map_to_arrow() {
-        use crate::file_model::v2::model::LakeType;
-        let got: Vec<String> = LakeType::ALL
-            .iter()
-            .map(|t| t.arrow(&nem()).to_string())
-            .collect();
+        let got: Vec<DataType> = LakeType::ALL.iter().map(|t| t.arrow(&nem())).collect();
         let want = [
             DataType::Utf8,
             DataType::Float64,
@@ -118,52 +76,17 @@ mod tests {
                 arrow_schema::TimeUnit::Nanosecond,
                 Some(Arc::from("+10:00")),
             ),
-        ]
-        .map(|d| d.to_string());
+        ];
         assert_eq!(got, want);
     }
 
     #[test]
-    fn maps_types() {
-        let f64_opts = TypeOptions { decimal: false };
-        let dec = TypeOptions { decimal: true };
-        let num = ColumnType::Number {
-            precision: Some(15),
-            scale: Some(5),
-        };
-        assert_eq!(data_type(num, &nem(), f64_opts), DataType::Float64);
-        assert_eq!(data_type(num, &nem(), dec), DataType::Decimal128(15, 5));
-        let bare = ColumnType::Number {
-            precision: None,
-            scale: None,
-        };
-        assert_eq!(data_type(bare, &nem(), dec), DataType::Float64);
-        assert!(decimal_fallback(bare, dec));
-        assert!(!decimal_fallback(num, dec));
-        assert!(!decimal_fallback(bare, f64_opts));
-        assert_eq!(data_type(ColumnType::Integer, &nem(), dec), DataType::Int64);
-        assert_eq!(
-            data_type(
-                ColumnType::Utf8 {
-                    max_len: Some(3),
-                    dict: true
-                },
-                &nem(),
-                dec
-            ),
-            DataType::Utf8
-        );
-        assert_eq!(data_type(ColumnType::Date, &nem(), dec), DataType::Date32);
-        assert_eq!(
-            data_type(ColumnType::Boolean, &nem(), dec),
-            DataType::Boolean
-        );
-        assert_eq!(
-            data_type(ColumnType::Timestamp, &nem(), dec),
-            DataType::Timestamp(
-                arrow_schema::TimeUnit::Nanosecond,
-                Some(Arc::from("+10:00"))
-            )
-        );
+    fn the_lake_schema_carries_ids() {
+        let s = lake_schema(&unit_scada(), &nem());
+        assert_eq!(s.fields().len(), 4);
+        assert_eq!(s.field(2).metadata()[FIELD_ID_KEY], "3");
+        assert!(!s.field(0).is_nullable());
+        assert_eq!(s.metadata()["nemlake:table"], "DISPATCH_UNIT_SCADA");
+        assert_eq!(s.metadata()["nemlake:market"], "nem");
     }
 }

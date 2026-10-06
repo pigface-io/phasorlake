@@ -148,7 +148,7 @@ pub fn plans_current(registry: &Registry, shapes: &[IngestShape]) -> bool {
             version: t.source_version,
             columns: &columns,
         };
-        // The month the source was read as: rules can be bounded by months.
+        // The month the source was read as: it decides the increment.
         let period = t.source_period.as_deref().and_then(|p| p.parse().ok());
         registry
             .resolve_in(

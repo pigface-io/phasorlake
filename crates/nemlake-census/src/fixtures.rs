@@ -1,7 +1,7 @@
 //! Test fixtures cut from a month of the local archive.
 //!
-//! The schema regeneration reads, per month, the control files, the
-//! archive's README and the head of every data file: each block's I row
+//! The tests read, per month, the control files, the archive's README and
+//! the head of every data file: each block's I row
 //! and its first few D rows. `fixtures` writes them from the files a
 //! `nemlake fetch nem` archived, so the committed fixtures are excerpts of
 //! real downloads, with no request of their own.

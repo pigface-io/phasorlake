@@ -1,176 +1,91 @@
-//! Reading and writing the TOML form of a table and of a market.
+//! Reading and writing `schemas/{market}/{TABLE}/table.toml` and
+//! `schemas/{market}/market.toml`.
 //!
-//! The TOML shape is flat and human-first: top-level scalars, `report_pairs`
-//! as an array of two-element arrays, `[[column]]` and `[[version]]` arrays
-//! of tables with `type = "number", precision = 15, scale = 5`, and a
-//! `[provenance]` table. The file structs here mirror that shape exactly and
-//! convert to and from the in-memory [`TableDef`]; writing is deterministic
-//! (declaration order), so a regenerated file that changes nothing is
-//! byte-identical. Unknown keys are errors.
+//! The file is ours and hand-editable: top-level scalars, one line per
+//! column (`column = [{ id = 1, name = "…", type = "double", nullable =
+//! true }, …]`; `[[column]]` tables read the same) and one `[[increment]]`
+//! per control file AEMO changed. Unknown keys are errors. Writing is
+//! deterministic, so a file that changes nothing is byte-identical.
 
+use std::fmt::Write as _;
 use std::path::Path;
 
-use nemlake_core::{Fingerprint, ShapeId, YearMonth, normalize_name};
+use nemlake_core::{YearMonth, normalize_name};
 use serde::{Deserialize, Serialize};
 
 use crate::file_model::error::SchemaFileError;
 use crate::file_model::model::{
-    ColumnDef, ColumnId, ColumnType, Dedupe, LoadMode, Market, MarketDef, Provenance, RuleColumn,
-    RuleDef, SchemaVersion, SourceKind, TableDef, TimestampFormat, VariantDef, VersionDef,
-    Visibility,
+    Column, ColumnId, Dedupe, Increment, LakeType, LoadMode, Market, MarketDef, Table,
+    TimestampFormat,
 };
 
-/// The format version this crate reads and writes.
-pub const SCHEMA_FORMAT: u32 = 1;
+/// The format of `table.toml` this crate reads and writes.
+pub const SCHEMA_FORMAT: u32 = 2;
+
+/// The format of `market.toml`.
+pub const MARKET_FORMAT: u32 = 1;
+
+/// The name of a table's file in its directory.
+pub const TABLE_FILE: &str = "table.toml";
+
+/// The directory of a table's control files, beside `table.toml`.
+pub const CTL_DIR: &str = "ctl";
 
 const fn default_true() -> bool {
     true
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 struct TableFile {
     schema_format: u32,
-    market: Market,
-    source: SourceKind,
     name: String,
-    package: String,
-    visibility: Visibility,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
     description: Option<String>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    #[serde(default)]
     report_pairs: Vec<(String, String)>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    datasets: Vec<String>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    archive_files: Vec<String>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    feeds: Vec<String>,
     load_mode: LoadMode,
     dedupe: Dedupe,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    #[serde(default)]
     primary_key: Vec<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
     time_column: Option<String>,
     next_column_id: u32,
-    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
-    deprecated: bool,
-    #[serde(rename = "column")]
-    columns: Vec<ColumnFile>,
-    #[serde(rename = "version")]
-    versions: Vec<VersionFile>,
-    /// `[[rule]]`: hand-written rules for the files of an interval.
-    #[serde(default, rename = "rule", skip_serializing_if = "Vec::is_empty")]
-    rules: Vec<RuleFile>,
-    #[serde(default, skip_serializing_if = "is_default_provenance")]
-    provenance: ProvenanceFile,
+    #[serde(default)]
+    column: Vec<ColumnFile>,
+    #[serde(default)]
+    increment: Vec<IncrementFile>,
 }
 
-#[derive(Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
-struct RuleFile {
-    note: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    from: Option<YearMonth>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    to: Option<YearMonth>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    version: Option<u16>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    fingerprint: Option<Fingerprint>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    shape: Option<ShapeId>,
-    /// `[[rule.column]]`: the routes.
-    #[serde(default, rename = "column")]
-    columns: Vec<RuleColumnFile>,
-}
-
-#[derive(Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
-struct RuleColumnFile {
-    source: String,
-    column: String,
-}
-
-#[derive(Serialize, Deserialize)]
+#[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 struct ColumnFile {
     id: u32,
     name: String,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    aliases: Vec<String>,
     #[serde(rename = "type")]
-    ty: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    max_len: Option<u32>,
-    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
-    dict: bool,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    precision: Option<u8>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    scale: Option<u8>,
-    #[serde(default = "default_true", skip_serializing_if = "Clone::clone")]
+    ty: LakeType,
+    #[serde(default = "default_true")]
     nullable: bool,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    oracle: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    loader: Option<String>,
-    added_in: u16,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    removed_in: Option<u16>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    description: Option<String>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    src: Vec<String>,
-    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
-    curated: bool,
-}
-
-#[derive(Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
-struct VersionFile {
-    n: u16,
-    columns: Vec<String>,
-    fingerprint: Fingerprint,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    first_seen: Option<YearMonth>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    last_seen: Option<YearMonth>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    src: Option<String>,
-    /// `[[version.variant]]`: other shapes published under this version.
-    #[serde(default, rename = "variant", skip_serializing_if = "Vec::is_empty")]
-    variants: Vec<VariantFile>,
-}
-
-#[derive(Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
-struct VariantFile {
-    columns: Vec<String>,
-    fingerprint: Fingerprint,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    first_seen: Option<YearMonth>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    last_seen: Option<YearMonth>,
-}
-
-#[derive(Serialize, Deserialize, Default, PartialEq)]
-#[serde(deny_unknown_fields, default)]
-struct ProvenanceFile {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    ctl: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    data_model: Option<String>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
-    sampled_months: Vec<YearMonth>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    generated: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
     note: Option<String>,
 }
 
-fn is_default_provenance(p: &ProvenanceFile) -> bool {
-    *p == ProvenanceFile::default()
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct IncrementFile {
+    n: u16,
+    from: YearMonth,
+    #[serde(default)]
+    ctl: Option<String>,
+    #[serde(default)]
+    ctl_sha256: Option<String>,
+    #[serde(default)]
+    aemo_ctl: Option<String>,
+    #[serde(default)]
+    aemo_versions: Vec<u16>,
+    columns: Vec<String>,
+    #[serde(default)]
+    note: Option<String>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -192,67 +107,15 @@ fn parse_err(path: &Path, text: &str, e: &toml::de::Error) -> SchemaFileError {
     }
 }
 
-fn invalid(path: &Path, table: &str, message: impl Into<String>) -> SchemaFileError {
+fn wrong_format(path: &Path, name: &str, found: u32, reads: u32) -> SchemaFileError {
     SchemaFileError::Invalid {
         path: path.display().to_string(),
-        table: table.to_owned(),
-        message: message.into(),
+        table: name.to_owned(),
+        message: format!("schema_format is {found} but this nemlake reads {reads}"),
     }
 }
 
-fn column_type(path: &Path, table: &str, c: &ColumnFile) -> Result<ColumnType, SchemaFileError> {
-    let bad_key = |key: &str| {
-        invalid(
-            path,
-            table,
-            format!(
-                "column {} has type {} but sets {key}, which belongs to another type",
-                c.name, c.ty
-            ),
-        )
-    };
-    let ty = match c.ty.as_str() {
-        "utf8" => {
-            if c.precision.is_some() || c.scale.is_some() {
-                return Err(bad_key("precision/scale"));
-            }
-            ColumnType::Utf8 {
-                max_len: c.max_len,
-                dict: c.dict,
-            }
-        }
-        "number" => {
-            if c.max_len.is_some() || c.dict {
-                return Err(bad_key("max_len/dict"));
-            }
-            ColumnType::Number {
-                precision: c.precision,
-                scale: c.scale,
-            }
-        }
-        "integer" => ColumnType::Integer,
-        "timestamp" => ColumnType::Timestamp,
-        "date" => ColumnType::Date,
-        "boolean" => ColumnType::Boolean,
-        other => {
-            return Err(invalid(
-                path,
-                table,
-                format!(
-                    "column {} has unknown type {other:?}; one of utf8, number, integer, timestamp, date, boolean",
-                    c.name
-                ),
-            ));
-        }
-    };
-    if !matches!(ty, ColumnType::Utf8 { .. } | ColumnType::Number { .. })
-        && (c.max_len.is_some() || c.dict || c.precision.is_some() || c.scale.is_some())
-    {
-        return Err(bad_key("max_len/dict/precision/scale"));
-    }
-    Ok(ty)
-}
-
+/// A name as an I row writes it: upper case, unquoted.
 fn norm(s: &mut String, buf: &mut String) {
     if let Some(n) = normalize_name(s, buf)
         && n != s.as_str()
@@ -261,120 +124,49 @@ fn norm(s: &mut String, buf: &mut String) {
     }
 }
 
-fn to_model(path: &Path, f: TableFile) -> Result<TableDef, SchemaFileError> {
+/// Parses a table file's text. Names are normalised, so a hand-typed
+/// lower-case name still matches an I row.
+pub fn parse_table(path: &Path, text: &str, market: Market) -> Result<Table, SchemaFileError> {
+    let f: TableFile = toml::from_str(text).map_err(|e| parse_err(path, text, &e))?;
     if f.schema_format != SCHEMA_FORMAT {
-        return Err(invalid(
-            path,
-            &f.name,
-            format!(
-                "schema_format is {} but this nemlake reads {SCHEMA_FORMAT}",
-                f.schema_format
-            ),
-        ));
+        return Err(wrong_format(path, &f.name, f.schema_format, SCHEMA_FORMAT));
     }
     let mut buf = String::new();
-    let mut columns = Vec::with_capacity(f.columns.len());
-    for c in &f.columns {
-        let ty = column_type(path, &f.name, c)?;
-        let mut name = c.name.clone();
-        norm(&mut name, &mut buf);
-        let mut aliases = c.aliases.clone();
-        aliases.iter_mut().for_each(|a| norm(a, &mut buf));
-        columns.push(ColumnDef {
-            id: ColumnId(c.id),
-            name,
-            aliases,
-            ty,
-            nullable: c.nullable,
-            oracle: c.oracle.clone(),
-            loader: c.loader.clone(),
-            added_in: SchemaVersion(c.added_in),
-            removed_in: c.removed_in.map(SchemaVersion),
-            description: c.description.clone(),
-            src: c.src.clone(),
-            curated: c.curated,
-        });
-    }
-    let versions = f
-        .versions
-        .into_iter()
-        .map(|v| {
-            let mut columns = v.columns;
-            columns.iter_mut().for_each(|c| norm(c, &mut buf));
-            let variants = v
-                .variants
-                .into_iter()
-                .map(|x| {
-                    let mut columns = x.columns;
-                    columns.iter_mut().for_each(|c| norm(c, &mut buf));
-                    VariantDef {
-                        columns,
-                        fingerprint: x.fingerprint,
-                        first_seen: x.first_seen,
-                        last_seen: x.last_seen,
-                    }
-                })
-                .collect();
-            VersionDef {
-                n: SchemaVersion(v.n),
-                columns,
-                fingerprint: v.fingerprint,
-                first_seen: v.first_seen,
-                last_seen: v.last_seen,
-                src: v.src,
-                variants,
-            }
-        })
-        .collect();
-    let rules = f
-        .rules
-        .into_iter()
-        .map(|r| RuleDef {
-            note: r.note,
-            from: r.from,
-            to: r.to,
-            version: r.version.map(SchemaVersion),
-            fingerprint: r.fingerprint,
-            shape: r.shape,
-            columns: r
-                .columns
-                .into_iter()
-                .map(|c| {
-                    let (mut source, mut column) = (c.source, c.column);
-                    norm(&mut source, &mut buf);
-                    norm(&mut column, &mut buf);
-                    RuleColumn { source, column }
-                })
-                .collect(),
-        })
-        .collect();
-    let mut t = TableDef {
-        rules,
-        market: f.market,
-        source: f.source,
+    let mut t = Table {
+        market,
         name: f.name,
-        package: f.package,
-        visibility: f.visibility,
         description: f.description,
         report_pairs: f.report_pairs,
-        datasets: f.datasets,
-        archive_files: f.archive_files,
-        feeds: f.feeds,
         load_mode: f.load_mode,
         dedupe: f.dedupe,
         primary_key: f.primary_key,
         time_column: f.time_column,
         next_column_id: f.next_column_id,
-        deprecated: f.deprecated,
-        columns,
-        versions,
-        provenance: Provenance {
-            ctl: f.provenance.ctl,
-            data_model: f.provenance.data_model,
-            sampled_months: f.provenance.sampled_months,
-            generated: f.provenance.generated,
-            note: f.provenance.note,
-        },
+        columns: f
+            .column
+            .into_iter()
+            .map(|c| Column {
+                id: ColumnId(c.id),
+                name: c.name,
+                ty: c.ty,
+                nullable: c.nullable,
+                note: c.note,
+            })
+            .collect(),
+        increments: f
+            .increment
+            .into_iter()
+            .map(|i| Increment {
+                n: i.n,
+                from: i.from,
+                ctl: i.ctl,
+                ctl_sha256: i.ctl_sha256,
+                aemo_ctl: i.aemo_ctl,
+                aemo_versions: i.aemo_versions,
+                columns: i.columns,
+                note: i.note,
+            })
+            .collect(),
     };
     norm(&mut t.name, &mut buf);
     for (a, b) in &mut t.report_pairs {
@@ -385,149 +177,122 @@ fn to_model(path: &Path, f: TableFile) -> Result<TableDef, SchemaFileError> {
     if let Some(tc) = &mut t.time_column {
         norm(tc, &mut buf);
     }
+    t.columns
+        .iter_mut()
+        .for_each(|c| norm(&mut c.name, &mut buf));
+    for i in &mut t.increments {
+        i.columns.iter_mut().for_each(|c| norm(c, &mut buf));
+    }
     Ok(t)
 }
 
-fn from_model(t: &TableDef) -> TableFile {
-    TableFile {
-        schema_format: SCHEMA_FORMAT,
-        market: t.market,
-        source: t.source,
-        name: t.name.clone(),
-        package: t.package.clone(),
-        visibility: t.visibility,
-        description: t.description.clone(),
-        report_pairs: t.report_pairs.clone(),
-        datasets: t.datasets.clone(),
-        archive_files: t.archive_files.clone(),
-        feeds: t.feeds.clone(),
-        load_mode: t.load_mode,
-        dedupe: t.dedupe,
-        primary_key: t.primary_key.clone(),
-        time_column: t.time_column.clone(),
-        next_column_id: t.next_column_id,
-        deprecated: t.deprecated,
-        columns: t
-            .columns
-            .iter()
-            .map(|c| {
-                let (ty, max_len, dict, precision, scale) = match c.ty {
-                    ColumnType::Utf8 { max_len, dict } => ("utf8", max_len, dict, None, None),
-                    ColumnType::Number { precision, scale } => {
-                        ("number", None, false, precision, scale)
-                    }
-                    ColumnType::Integer => ("integer", None, false, None, None),
-                    ColumnType::Timestamp => ("timestamp", None, false, None, None),
-                    ColumnType::Date => ("date", None, false, None, None),
-                    ColumnType::Boolean => ("boolean", None, false, None, None),
-                };
-                ColumnFile {
-                    id: c.id.0,
-                    name: c.name.clone(),
-                    aliases: c.aliases.clone(),
-                    ty: ty.to_owned(),
-                    max_len,
-                    dict,
-                    precision,
-                    scale,
-                    nullable: c.nullable,
-                    oracle: c.oracle.clone(),
-                    loader: c.loader.clone(),
-                    added_in: c.added_in.0,
-                    removed_in: c.removed_in.map(|v| v.0),
-                    description: c.description.clone(),
-                    src: c.src.clone(),
-                    curated: c.curated,
-                }
-            })
-            .collect(),
-        versions: t
-            .versions
-            .iter()
-            .map(|v| VersionFile {
-                n: v.n.0,
-                columns: v.columns.clone(),
-                fingerprint: v.fingerprint,
-                first_seen: v.first_seen,
-                last_seen: v.last_seen,
-                src: v.src.clone(),
-                variants: v
-                    .variants
-                    .iter()
-                    .map(|x| VariantFile {
-                        columns: x.columns.clone(),
-                        fingerprint: x.fingerprint,
-                        first_seen: x.first_seen,
-                        last_seen: x.last_seen,
-                    })
-                    .collect(),
-            })
-            .collect(),
-        rules: t
-            .rules
-            .iter()
-            .map(|r| RuleFile {
-                note: r.note.clone(),
-                from: r.from,
-                to: r.to,
-                version: r.version.map(|v| v.0),
-                fingerprint: r.fingerprint,
-                shape: r.shape,
-                columns: r
-                    .columns
-                    .iter()
-                    .map(|c| RuleColumnFile {
-                        source: c.source.clone(),
-                        column: c.column.clone(),
-                    })
-                    .collect(),
-            })
-            .collect(),
-        provenance: ProvenanceFile {
-            ctl: t.provenance.ctl.clone(),
-            data_model: t.provenance.data_model.clone(),
-            sampled_months: t.provenance.sampled_months.clone(),
-            generated: t.provenance.generated.clone(),
-            note: t.provenance.note.clone(),
-        },
-    }
-}
-
-/// Parses a table file's text. Names are normalised so a hand-typed
-/// lower-case name still matches an I row.
-pub fn parse_table(path: &Path, text: &str) -> Result<TableDef, SchemaFileError> {
-    let f: TableFile = toml::from_str(text).map_err(|e| parse_err(path, text, &e))?;
-    to_model(path, f)
-}
-
-/// Reads and parses a table file.
-pub fn read_table(path: &Path) -> Result<TableDef, SchemaFileError> {
-    let text = std::fs::read_to_string(path).map_err(|source| SchemaFileError::Read {
+/// Reads `{dir}/table.toml`.
+pub fn read_table(dir: &Path, market: Market) -> Result<Table, SchemaFileError> {
+    let path = dir.join(TABLE_FILE);
+    let text = std::fs::read_to_string(&path).map_err(|source| SchemaFileError::Read {
         path: path.display().to_string(),
         source,
     })?;
-    parse_table(path, &text)
+    parse_table(&path, &text, market)
+}
+
+/// A TOML string.
+fn q(s: &str) -> String {
+    toml::Value::String(s.to_owned()).to_string()
+}
+
+/// A short TOML array on one line.
+fn inline<T: AsRef<str>>(items: &[T]) -> String {
+    let parts: Vec<String> = items.iter().map(|s| q(s.as_ref())).collect();
+    format!("[{}]", parts.join(", "))
 }
 
 /// Renders a table as TOML, deterministically.
-pub fn write_table(t: &TableDef) -> String {
-    let body = toml::to_string_pretty(&from_model(t)).expect("a TableDef always serialises");
-    format!(
-        "# Generated by `nemlake-census regen`; hand edits go in fields marked `curated = true` and in `[[rule]]` blocks.\n{body}"
-    )
+pub fn write_table(t: &Table) -> String {
+    let mut out = format!(
+        "# Our schema of {}. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.\nschema_format = {SCHEMA_FORMAT}\nname = {}\n",
+        t.name,
+        q(&t.name)
+    );
+    if let Some(d) = &t.description {
+        let _ = writeln!(out, "description = {}", q(d));
+    }
+    let pairs: Vec<String> = t
+        .report_pairs
+        .iter()
+        .map(|(a, b)| format!("[{}, {}]", q(a), q(b)))
+        .collect();
+    let _ = writeln!(out, "report_pairs = [{}]", pairs.join(", "));
+    let mode = match t.load_mode {
+        LoadMode::Append => "append",
+        LoadMode::Snapshot => "snapshot",
+    };
+    let dedupe = match t.dedupe {
+        Dedupe::None => "none",
+        Dedupe::Pk => "pk",
+        Dedupe::PkLastchanged => "pk_lastchanged",
+    };
+    let _ = writeln!(out, "load_mode = \"{mode}\"\ndedupe = \"{dedupe}\"");
+    let _ = writeln!(out, "primary_key = {}", inline(&t.primary_key));
+    if let Some(tc) = &t.time_column {
+        let _ = writeln!(out, "time_column = {}", q(tc));
+    }
+    let _ = writeln!(out, "next_column_id = {}", t.next_column_id);
+    out.push_str("\ncolumn = [\n");
+    for c in &t.columns {
+        let _ = write!(
+            out,
+            "    {{ id = {}, name = {}, type = \"{}\", nullable = {}",
+            c.id,
+            q(&c.name),
+            c.ty,
+            c.nullable
+        );
+        if let Some(n) = &c.note {
+            let _ = write!(out, ", note = {}", q(n));
+        }
+        out.push_str(" },\n");
+    }
+    out.push_str("]\n");
+    for i in &t.increments {
+        let _ = write!(out, "\n[[increment]]\nn = {}\nfrom = \"{}\"\n", i.n, i.from);
+        for (key, value) in [
+            ("ctl", &i.ctl),
+            ("ctl_sha256", &i.ctl_sha256),
+            ("aemo_ctl", &i.aemo_ctl),
+        ] {
+            if let Some(v) = value {
+                let _ = writeln!(out, "{key} = {}", q(v));
+            }
+        }
+        let versions: Vec<String> = i.aemo_versions.iter().map(u16::to_string).collect();
+        let _ = writeln!(out, "aemo_versions = [{}]", versions.join(", "));
+        out.push_str("columns = [\n");
+        for c in &i.columns {
+            let _ = writeln!(out, "    {},", q(c));
+        }
+        out.push_str("]\n");
+        if let Some(n) = &i.note {
+            let _ = writeln!(out, "note = {}", q(n));
+        }
+    }
+    out
+}
+
+/// The control file of increment `n`'s name in the `ctl/` directory.
+pub fn ctl_file_name(n: u16) -> String {
+    format!("{n:03}.ctl")
 }
 
 /// Parses a market file's text.
 pub fn parse_market(path: &Path, text: &str) -> Result<MarketDef, SchemaFileError> {
     let f: MarketFile = toml::from_str(text).map_err(|e| parse_err(path, text, &e))?;
-    if f.schema_format != SCHEMA_FORMAT {
-        return Err(invalid(
+    if f.schema_format != MARKET_FORMAT {
+        return Err(wrong_format(
             path,
             f.market.as_str(),
-            format!(
-                "schema_format is {} but this nemlake reads {SCHEMA_FORMAT}",
-                f.schema_format
-            ),
+            f.schema_format,
+            MARKET_FORMAT,
         ));
     }
     Ok(MarketDef {
@@ -549,7 +314,7 @@ pub fn read_market(path: &Path) -> Result<MarketDef, SchemaFileError> {
 /// Renders a market as TOML.
 pub fn write_market(m: &MarketDef) -> String {
     let f = MarketFile {
-        schema_format: SCHEMA_FORMAT,
+        schema_format: MARKET_FORMAT,
         market: m.market,
         utc_offset_secs: m.utc_offset_secs,
         timestamp_format: m.timestamp_format,
@@ -558,346 +323,122 @@ pub fn write_market(m: &MarketDef) -> String {
 }
 
 #[cfg(test)]
-pub(crate) mod tests {
+mod tests {
     use super::*;
+    use crate::file_model::model::tests::unit_scada;
 
-    /// A valid DISPATCH_UNIT_SCADA definition for tests across the crate.
-    pub(crate) fn unit_scada() -> TableDef {
-        let cols = ["SETTLEMENTDATE", "DUID", "SCADAVALUE"];
-        TableDef {
-            market: Market::Nem,
-            source: SourceKind::Mms,
-            name: "DISPATCH_UNIT_SCADA".into(),
-            package: "DISPATCH".into(),
-            visibility: Visibility::Public,
-            description: Some("SCADA MW per unit.".into()),
-            report_pairs: vec![("DISPATCH".into(), "UNIT_SCADA".into())],
-            datasets: vec![],
-            archive_files: vec!["DISPATCH_UNIT_SCADA".into()],
-            feeds: vec!["Dispatch_SCADA".into()],
-            load_mode: LoadMode::Append,
-            dedupe: Dedupe::Pk,
-            primary_key: vec!["SETTLEMENTDATE".into(), "DUID".into()],
-            time_column: Some("SETTLEMENTDATE".into()),
-            next_column_id: 4,
-            deprecated: false,
-            columns: vec![
-                ColumnDef {
-                    id: ColumnId(1),
-                    name: "SETTLEMENTDATE".into(),
-                    aliases: vec![],
-                    ty: ColumnType::Timestamp,
-                    nullable: false,
-                    oracle: Some("DATE".into()),
-                    loader: Some("DATE \"yyyy/mm/dd hh24:mi:ss\"".into()),
-                    added_in: SchemaVersion(1),
-                    removed_in: None,
-                    description: None,
-                    src: vec!["ctl".into(), "irow".into()],
-                    curated: false,
-                },
-                ColumnDef {
-                    id: ColumnId(2),
-                    name: "DUID".into(),
-                    aliases: vec![],
-                    ty: ColumnType::Utf8 {
-                        max_len: Some(20),
-                        dict: true,
-                    },
-                    nullable: false,
-                    oracle: Some("VARCHAR2(20)".into()),
-                    loader: Some("CHAR(20)".into()),
-                    added_in: SchemaVersion(1),
-                    removed_in: None,
-                    description: None,
-                    src: vec![],
-                    curated: false,
-                },
-                ColumnDef {
-                    id: ColumnId(3),
-                    name: "SCADAVALUE".into(),
-                    aliases: vec![],
-                    ty: ColumnType::Number {
-                        precision: Some(15),
-                        scale: Some(5),
-                    },
-                    nullable: true,
-                    oracle: Some("NUMBER(15,5)".into()),
-                    loader: Some("FLOAT EXTERNAL".into()),
-                    added_in: SchemaVersion(1),
-                    removed_in: None,
-                    description: None,
-                    src: vec![],
-                    curated: false,
-                },
-            ],
-            versions: vec![VersionDef {
-                n: SchemaVersion(1),
-                columns: cols.iter().map(|s| (*s).to_owned()).collect(),
-                fingerprint: Fingerprint::of_names(cols),
-                first_seen: Some("2009-07".parse().unwrap()),
-                last_seen: None,
-                src: Some("irow:MMSDM_2024_01".into()),
-                variants: Vec::new(),
-            }],
-            rules: vec![],
-            provenance: Provenance {
-                ctl: Some("x.ctl".into()),
-                ..Default::default()
-            },
-        }
+    fn parse(text: &str) -> Result<Table, SchemaFileError> {
+        parse_table(Path::new("table.toml"), text, Market::Nem)
     }
 
     #[test]
     fn round_trips_and_is_deterministic() {
         let t = unit_scada();
         let text = write_table(&t);
-        assert!(text.contains("[[column]]"), "{text}");
-        assert!(text.contains("type = \"number\""), "{text}");
-        assert!(text.contains("precision = 15"), "{text}");
         assert!(
-            text.contains("report_pairs = [[") && text.contains("\"UNIT_SCADA\","),
+            text.contains(
+                "    { id = 3, name = \"SCADAVALUE\", type = \"double\", nullable = true },\n"
+            ),
             "{text}"
         );
-        assert!(
-            !text.contains("nullable = true"),
-            "default nullable must be omitted: {text}"
-        );
-        let back = parse_table(Path::new("x.toml"), &text).unwrap();
+        assert!(text.contains("report_pairs = [[\"DISPATCH\", \"UNIT_SCADA\"]]"));
+        assert!(text.contains("\n[[increment]]\nn = 2\nfrom = \"2026-08\"\n"));
+        let back = parse(&text).unwrap();
         assert_eq!(back, t);
         assert_eq!(write_table(&back), text);
-        // Every type renders and reads back.
-        let mut all = unit_scada();
-        for (i, ty) in [
-            ColumnType::Integer,
-            ColumnType::Date,
-            ColumnType::Boolean,
-            ColumnType::Utf8 {
-                max_len: None,
-                dict: false,
-            },
-        ]
-        .into_iter()
-        .enumerate()
-        {
-            all.columns[i % 3].ty = ty;
-            let back = parse_table(Path::new("x.toml"), &write_table(&all)).unwrap();
-            assert_eq!(back.columns[i % 3].ty, ty);
-        }
-        // Empty provenance is omitted entirely.
-        let mut bare = unit_scada();
-        bare.provenance = Provenance::default();
-        assert!(!write_table(&bare).contains("[provenance]"));
+        // A column note and every optional key render and read back.
+        let mut all = t.clone();
+        all.columns[2].note = Some("a \"quoted\" note".into());
+        all.increments[0].ctl = Some("001.ctl".into());
+        all.increments[0].ctl_sha256 = Some("ab".into());
+        all.time_column = None;
+        all.description = None;
+        all.dedupe = Dedupe::None;
+        all.load_mode = LoadMode::Snapshot;
+        let text = write_table(&all);
+        assert_eq!(parse(&text).unwrap(), all);
+        all.dedupe = Dedupe::Pk;
+        assert_eq!(parse(&write_table(&all)).unwrap(), all);
     }
 
     #[test]
-    fn variants_round_trip_under_their_version() {
-        let mut t = unit_scada();
-        assert!(!write_table(&t).contains("variant"));
-        t.columns[2].aliases.push("MW".into());
-        t.versions[0].variants.push(VariantDef {
-            columns: vec!["SETTLEMENTDATE".into(), "DUID".into(), "MW".into()],
-            fingerprint: Fingerprint::of_names(["SETTLEMENTDATE", "DUID", "MW"]),
-            first_seen: Some("2010-01".parse().unwrap()),
-            last_seen: None,
-        });
-        let text = write_table(&t);
-        assert!(text.contains("[[version.variant]]"), "{text}");
-        let back = parse_table(Path::new("x.toml"), &text).unwrap();
-        assert_eq!(back, t);
-        assert_eq!(write_table(&back), text);
-        // Variant names are normalised like every other name.
-        let lower = text.replace("\"MW\",\n]\nfingerprint", "\"mw\",\n]\nfingerprint");
-        assert_ne!(lower, text);
-        assert_eq!(parse_table(Path::new("x.toml"), &lower).unwrap(), t);
-        // Unknown keys in a variant are rejected.
-        let bad = text.replace("[[version.variant]]", "[[version.variant]]\nnope = 1");
-        assert!(parse_table(Path::new("x.toml"), &bad).is_err());
-    }
+    fn reads_hand_written_forms() {
+        // `[[column]]` tables, a missing nullable (true), lower-case names.
+        let text = r#"
+schema_format = 2
+name = "region"
+report_pairs = [["dispatch", "region"]]
+load_mode = "snapshot"
+dedupe = "pk"
+primary_key = ["regionid"]
+next_column_id = 3
 
-    /// A table with a hand-declared column and a rule that routes a file
-    /// column to it for an interval.
-    pub(crate) fn unit_scada_with_rule() -> TableDef {
-        let mut t = unit_scada();
-        t.columns.push(ColumnDef {
-            id: ColumnId(4),
-            name: "SCADAVALUE_TEXT".into(),
-            aliases: vec![],
-            ty: ColumnType::Utf8 {
-                max_len: None,
-                dict: false,
-            },
-            nullable: true,
-            oracle: None,
-            loader: None,
-            added_in: SchemaVersion(1),
-            removed_in: None,
-            description: Some("SCADAVALUE as published before 2012.".into()),
-            src: vec!["manual".into()],
-            curated: true,
-        });
-        t.next_column_id = 5;
-        t.rules.push(RuleDef {
-            note: "Until 2011 the value was published with a unit suffix.".into(),
-            from: Some("2009-07".parse().unwrap()),
-            to: Some("2011-12".parse().unwrap()),
-            version: Some(SchemaVersion(1)),
-            fingerprint: Some(t.versions[0].fingerprint),
-            shape: None,
-            columns: vec![RuleColumn {
-                source: "SCADAVALUE".into(),
-                column: "SCADAVALUE_TEXT".into(),
-            }],
-        });
-        t
-    }
+[[column]]
+id = 1
+name = "regionid"
+type = "string"
+nullable = false
 
-    #[test]
-    fn rules_round_trip_as_written() {
-        assert!(!write_table(&unit_scada()).contains("\n[[rule]]"));
-        let t = unit_scada_with_rule();
-        let text = write_table(&t);
-        assert!(text.contains("\n[[rule]]"), "{text}");
-        assert!(text.contains("[[rule.column]]"), "{text}");
-        assert!(text.contains("from = \"2009-07\"") && text.contains("to = \"2011-12\""));
-        assert!(text.contains("source = \"SCADAVALUE\""));
-        assert!(text.contains("column = \"SCADAVALUE_TEXT\""));
-        let back = parse_table(Path::new("x.toml"), &text).unwrap();
-        assert_eq!(back, t);
-        assert_eq!(write_table(&back), text);
-        // A rule may be as short as a note and a route, typed by hand in
-        // any case.
-        let short = format!(
-            "{}\n[[rule]]\nnote = \"always\"\n[[rule.column]]\nsource = \"scadavalue\"\ncolumn = \"scadavalue_text\"\n",
-            write_table(&{
-                let mut plain = t.clone();
-                plain.rules.clear();
-                plain
-            })
-        );
-        let read = parse_table(Path::new("x.toml"), &short).unwrap();
-        assert_eq!(read.rules.len(), 1);
-        let rule = &read.rules[0];
-        assert_eq!(
-            (
-                rule.from,
-                rule.to,
-                rule.version,
-                rule.fingerprint,
-                rule.shape
-            ),
-            (None, None, None, None, None)
-        );
-        // A rule for a shape names it by its id, and writes it back.
-        let shaped = short.replace(
-            "note = \"always\"",
-            "note = \"always\"\nshape = \"0123456789abcdef\"",
-        );
-        let read = parse_table(Path::new("x.toml"), &shaped).unwrap();
-        assert_eq!(
-            read.rules[0].shape,
-            Some(nemlake_core::ShapeId(0x0123_4567_89ab_cdef))
-        );
-        assert!(write_table(&read).contains("shape = \"0123456789abcdef\""));
-        assert_eq!(rule.columns[0].source, "SCADAVALUE");
-        assert_eq!(rule.columns[0].column, "SCADAVALUE_TEXT");
-        // An unknown key in a rule is an error like anywhere else.
-        let bad = short.replace(
-            "note = \"always\"",
-            "note = \"always\"\nuntil = \"2012-01\"",
-        );
-        assert!(parse_table(Path::new("x.toml"), &bad).is_err());
-    }
+[[column]]
+id = 2
+name = "\"Description\""
+type = "string"
 
-    #[test]
-    fn normalises_names_on_read() {
-        let mut t = unit_scada();
-        t.name = "dispatch_unit_scada".into();
-        t.report_pairs[0].1 = "unit_scada".into();
-        t.columns[1].name = "duid".into();
-        t.columns[1].aliases.push("old_duid".into());
-        t.versions[0].columns[1] = "\"duid\"".into();
-        t.primary_key[1] = "duid".into();
-        t.time_column = Some("settlementdate".into());
-        let back = parse_table(Path::new("x.toml"), &write_table(&t)).unwrap();
-        assert_eq!(back.name, "DISPATCH_UNIT_SCADA");
-        assert_eq!(back.report_pairs[0].1, "UNIT_SCADA");
-        assert_eq!(back.columns[1].name, "DUID");
-        assert_eq!(back.columns[1].aliases, vec!["OLD_DUID".to_owned()]);
-        assert_eq!(back.versions[0].columns[1], "DUID");
-        assert_eq!(back.primary_key[1], "DUID");
-        assert_eq!(back.time_column.as_deref(), Some("SETTLEMENTDATE"));
+[[increment]]
+n = 1
+from = "2024-01"
+columns = ["REGIONID", "description"]
+"#;
+        let t = parse(text).unwrap();
+        assert_eq!(t.name, "REGION");
+        assert_eq!(t.report_pairs, [("DISPATCH".into(), "REGION".into())]);
+        assert_eq!(t.primary_key, ["REGIONID"]);
+        assert_eq!(t.columns[1].name, "DESCRIPTION");
+        assert!(t.columns[1].nullable);
+        assert_eq!(t.increments[0].columns, ["REGIONID", "DESCRIPTION"]);
+        assert!(t.increments[0].aemo_versions.is_empty());
     }
 
     #[test]
     fn rejects_unknown_keys_wrong_format_and_bad_types() {
-        let text = write_table(&unit_scada()).replace("package =", "pakage =");
-        let e = parse_table(Path::new("x.toml"), &text).unwrap_err();
+        let text = write_table(&unit_scada());
+        let e = parse(&text.replace("dedupe =", "dedup =")).unwrap_err();
         assert!(matches!(e, SchemaFileError::Parse { .. }), "{e}");
-        assert!(e.to_string().contains("pakage"), "{e}");
-        let text = write_table(&unit_scada()).replace("schema_format = 1", "schema_format = 9");
-        let e = parse_table(Path::new("x.toml"), &text).unwrap_err();
-        assert!(e.to_string().contains("schema_format is 9"), "{e}");
-        let e = parse_table(Path::new("x.toml"), "schema_format = 1\nname = 3\n").unwrap_err();
+        assert!(e.to_string().contains("dedup"), "{e}");
+        let e = parse(&text.replace("schema_format = 2", "schema_format = 1")).unwrap_err();
+        assert!(e.to_string().contains("schema_format is 1"), "{e}");
+        let e = parse(&text.replace("type = \"double\"", "type = \"number\"")).unwrap_err();
+        assert!(e.to_string().contains("number"), "{e}");
+        let e = parse(&text.replace("aemo_versions", "versions")).unwrap_err();
+        assert!(e.to_string().contains("versions"), "{e}");
+        let e = parse("schema_format = 2\nname = 3\n").unwrap_err();
         assert!(
             matches!(e, SchemaFileError::Parse { line: Some(2), .. }),
             "{e:?}"
         );
-        let text = write_table(&unit_scada()).replace("type = \"number\"", "type = \"float\"");
-        let e = parse_table(Path::new("x.toml"), &text).unwrap_err();
-        assert!(e.to_string().contains("unknown type \"float\""), "{e}");
-        let text = write_table(&unit_scada()).replace(
-            "type = \"timestamp\"",
-            "type = \"timestamp\"\nprecision = 3",
-        );
-        let e = parse_table(Path::new("x.toml"), &text).unwrap_err();
-        assert!(e.to_string().contains("belongs to another type"), "{e}");
-        let text = write_table(&unit_scada())
-            .replace("type = \"number\"", "type = \"number\"\nmax_len = 3");
-        assert!(parse_table(Path::new("x.toml"), &text).is_err());
-        let text = write_table(&unit_scada()).replace("dict = true", "dict = true\nscale = 1");
-        assert!(parse_table(Path::new("x.toml"), &text).is_err());
     }
 
     #[test]
-    fn market_file() {
-        let m = MarketDef {
-            market: Market::Nem,
-            utc_offset_secs: 36_000,
-            timestamp_format: TimestampFormat::AemoSlash,
-        };
-        let text = write_market(&m);
-        assert!(text.contains("market = \"nem\""), "{text}");
-        assert_eq!(parse_market(Path::new("m.toml"), &text).unwrap(), m);
-        let bad = text.replace("schema_format = 1", "schema_format = 2");
-        assert!(parse_market(Path::new("m.toml"), &bad).is_err());
-        assert!(
-            parse_market(
-                Path::new("m.toml"),
-                "schema_format = 1\nmarket = \"mars\"\n"
-            )
-            .is_err()
-        );
-    }
-
-    #[test]
-    fn reads_from_disk() {
+    fn reads_from_disk_and_markets() {
         let dir = tempfile::tempdir().unwrap();
-        let p = dir.path().join("T.toml");
-        std::fs::write(&p, write_table(&unit_scada())).unwrap();
-        assert_eq!(read_table(&p).unwrap(), unit_scada());
+        std::fs::write(dir.path().join(TABLE_FILE), write_table(&unit_scada())).unwrap();
+        assert_eq!(read_table(dir.path(), Market::Nem).unwrap(), unit_scada());
         assert!(matches!(
-            read_table(&dir.path().join("none.toml")),
+            read_table(&dir.path().join("none"), Market::Nem),
             Err(SchemaFileError::Read { .. })
         ));
-        let mp = dir.path().join("market.toml");
+        assert_eq!(ctl_file_name(2), "002.ctl");
         let m = MarketDef {
             market: Market::Wem,
             utc_offset_secs: 28_800,
             timestamp_format: TimestampFormat::Iso8601,
         };
+        let mp = dir.path().join("market.toml");
         std::fs::write(&mp, write_market(&m)).unwrap();
         assert_eq!(read_market(&mp).unwrap(), m);
         assert!(read_market(&dir.path().join("none.toml")).is_err());
+        let bad = write_market(&m).replace("schema_format = 1", "schema_format = 2");
+        assert!(parse_market(&mp, &bad).is_err());
+        assert!(parse_market(&mp, "schema_format = 1\nmarket = \"mars\"\n").is_err());
     }
 }

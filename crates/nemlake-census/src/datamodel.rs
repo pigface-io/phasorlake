@@ -9,7 +9,6 @@ use std::collections::BTreeMap;
 use std::path::Path;
 
 use nemlake_core::{Category, Diagnose, Diagnostic};
-use nemlake_registry::file_model::ColumnType;
 use serde::{Deserialize, Serialize};
 
 /// One table of the data model.
@@ -130,119 +129,9 @@ impl DataModel {
     }
 }
 
-/// Parses an Oracle type into the lake's logical type. Returns `None` for
-/// a type this tool does not know, so the caller falls back to the CTL.
-///
-/// `NUMBER(p,0)` with `p <= 18` is an integer; any other `NUMBER` is a
-/// decimal number. `DATE` and `TIMESTAMP(n)` are timestamps (an MMS `DATE`
-/// always carries a time).
-pub fn parse_oracle_type(s: &str) -> Option<ColumnType> {
-    let s = s.trim();
-    let (base, args) = match s.find('(') {
-        Some(i) => (s[..i].trim(), Some(s[i + 1..].trim_end_matches(')').trim())),
-        None => (s, None),
-    };
-    let nums = |args: Option<&str>| -> Vec<Option<u8>> {
-        args.map(|a| a.split(',').map(|n| n.trim().parse::<u8>().ok()).collect())
-            .unwrap_or_default()
-    };
-    match base.to_ascii_uppercase().as_str() {
-        "VARCHAR2" | "VARCHAR" | "CHAR" | "NVARCHAR2" | "CLOB" => {
-            let max_len = nums(args).first().copied().flatten().map(u32::from);
-            Some(ColumnType::Utf8 {
-                max_len,
-                dict: false,
-            })
-        }
-        "NUMBER" | "NUMERIC" | "DECIMAL" => {
-            let n = nums(args);
-            match (n.first().copied().flatten(), n.get(1).copied().flatten()) {
-                (Some(p), Some(0)) if p <= 18 => Some(ColumnType::Integer),
-                (Some(p), None) if p <= 18 && args.is_some_and(|a| !a.contains(',')) => {
-                    Some(ColumnType::Integer)
-                }
-                (p, s) => Some(ColumnType::Number {
-                    precision: p,
-                    scale: s,
-                }),
-            }
-        }
-        "DATE" | "TIMESTAMP" => Some(ColumnType::Timestamp),
-        _ => None,
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn oracle_types() {
-        assert_eq!(
-            parse_oracle_type("Number(16,6)"),
-            Some(ColumnType::Number {
-                precision: Some(16),
-                scale: Some(6)
-            })
-        );
-        assert_eq!(parse_oracle_type("NUMBER(3,0)"), Some(ColumnType::Integer));
-        assert_eq!(parse_oracle_type("NUMBER(10)"), Some(ColumnType::Integer));
-        assert_eq!(
-            parse_oracle_type("NUMBER(22,0)"),
-            Some(ColumnType::Number {
-                precision: Some(22),
-                scale: Some(0)
-            })
-        );
-        assert_eq!(
-            parse_oracle_type("NUMBER"),
-            Some(ColumnType::Number {
-                precision: None,
-                scale: None
-            })
-        );
-        assert_eq!(
-            parse_oracle_type("Number (15,5)"),
-            Some(ColumnType::Number {
-                precision: Some(15),
-                scale: Some(5)
-            })
-        );
-        assert_eq!(
-            parse_oracle_type("varchar2(20)"),
-            Some(ColumnType::Utf8 {
-                max_len: Some(20),
-                dict: false
-            })
-        );
-        assert_eq!(
-            parse_oracle_type("CHAR(1)"),
-            Some(ColumnType::Utf8 {
-                max_len: Some(1),
-                dict: false
-            })
-        );
-        assert_eq!(
-            parse_oracle_type("CLOB"),
-            Some(ColumnType::Utf8 {
-                max_len: None,
-                dict: false
-            })
-        );
-        assert_eq!(parse_oracle_type("Date"), Some(ColumnType::Timestamp));
-        assert_eq!(
-            parse_oracle_type("TIMESTAMP(3)"),
-            Some(ColumnType::Timestamp)
-        );
-        assert_eq!(parse_oracle_type("BLOB"), None);
-        assert_eq!(
-            parse_oracle_type("NUMBER(x,y)"),
-            Some(ColumnType::Number {
-                precision: None,
-                scale: None
-            })
-        );
-    }
 
     #[test]
     fn loads_fixture() {
@@ -267,13 +156,7 @@ mod tests {
         );
         assert!(t.columns[0].mandatory);
         assert!(!t.columns[2].mandatory);
-        assert_eq!(
-            parse_oracle_type(&t.columns[2].oracle),
-            Some(ColumnType::Number {
-                precision: Some(16),
-                scale: Some(6)
-            })
-        );
+        assert_eq!(t.columns[2].oracle, "Number(16,6)");
         assert!(dm.table("NOPE").is_none());
     }
 

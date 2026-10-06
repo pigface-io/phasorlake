@@ -62,19 +62,6 @@ cover:
     cargo llvm-cov --workspace --locked --lcov --output-path coverage/rust.lcov
     cargo run -q -p xtask -- covergate coverage/rust.lcov
 
-# What the schema files are generated from. The control files of the newest
-# month come first: where two months have one for the same table, the first
-# named wins, so the registry is typed by what AEMO publishes today.
-schema_inputs := "--ctl testdata/bootstrap/MMSDM_2026_08/CTL --ctl testdata/bootstrap/MMSDM_2024_01/CTL --datamodel testdata/bootstrap/datamodel/mms_data_model_v5.0.0.1.json --samples testdata/csv --samples testdata/bootstrap/MMSDM_2024_01/heads --samples testdata/bootstrap/MMSDM_2026_08/heads --readme testdata/bootstrap/MMSDM_2026_08/README.txt"
-
-# the embedded schema files: regenerate from the fixtures and fail on a diff
-schema-check:
-    cargo run -q -p nemlake-census -- regen --check --schemas schemas {{schema_inputs}}
-
-# regenerate the schema files from the fixtures
-schema-regen:
-    cargo run -q -p nemlake-census -- regen --schemas schemas {{schema_inputs}}
-
 # cut the bootstrap fixtures of a month from the local archive: every CTL, the head of every data file and the README (download the month first: `nemlake fetch nem --from MONTH`)
 schema-fixtures month="2024-01":
     cargo run --release -q -p nemlake-census -- fixtures --month {{month}} --out testdata/bootstrap/MMSDM_{{replace(month, "-", "_")}}
@@ -83,14 +70,13 @@ schema-fixtures month="2024-01":
 census from to=from *args:
     cargo run --release -q -p nemlake-census -- census --from {{from}} --to {{to}} "${@:3}"
 
-# a new month, end to end: download it once, record every block of every file, regenerate the schemas, gate them against the census
+# a new month, end to end: download it once, record every block of every file, gate the census against the schemas
 census-forward month:
     cargo run --release -q -p nemlake-cli -- fetch nem --from {{month}}
     just census {{month}}
-    just schema-regen
     just census-check
 
-# every recorded census month against the registry: each shape declared or read by a rule, each control-file type within the anchor's (passes when no census is recorded)
+# every recorded census block against our schema: its table exists, it conforms to the increment in force that month, each control-file type fits our column's (passes when no census is recorded)
 census-check:
     cargo run -q -p xtask -- census-check
 

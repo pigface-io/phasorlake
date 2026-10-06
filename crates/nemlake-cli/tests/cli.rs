@@ -256,65 +256,97 @@ fn bad_rows_fail_and_are_explained() {
 
 /// The head of every zip of the months the registry is built from, the
 /// anchor (August 2026) and an earlier one (January 2024): each one must
-/// resolve exactly against the registry (strict mode refuses drift) and
-/// every row must parse into its declared types, as floats and as exact
-/// decimals.
+/// conform to the increment of its table in force that month (strict mode
+/// refuses a deviation) and every row must parse into its column's type.
+/// January 2024 has one known deviation: the `_ALL` files of three P5MIN
+/// tables carry other columns than the file each table's control file
+/// loads, under the same report pair.
 #[test]
 fn every_archive_table_ingests_strictly() {
-    every_head_ingests_strictly("MMSDM_2024_01", 161);
-    every_head_ingests_strictly("MMSDM_2026_08", 309);
+    every_head_ingests_strictly(
+        "MMSDM_2024_01",
+        161,
+        &[
+            "P5MIN_CONSTRAINTSOLUTION1_ALL",
+            "P5MIN_CONSTRAINTSOLUTION2_ALL",
+            "P5MIN_CONSTRAINTSOLUTION3_ALL",
+            "P5MIN_CONSTRAINTSOLUTION4_ALL",
+            "P5MIN_REGIONSOLUTION_ALL",
+            "P5MIN_UNITSOLUTION_ALL",
+        ],
+    );
+    every_head_ingests_strictly("MMSDM_2026_08", 309, &[]);
 }
 
-fn every_head_ingests_strictly(month: &str, at_least: usize) {
+fn every_head_ingests_strictly(month: &str, at_least: usize, deviating: &[&str]) {
     let heads = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("../../testdata/bootstrap")
         .join(month)
         .join("heads");
     let files = std::fs::read_dir(&heads).unwrap().count();
     assert!(files >= at_least, "{files} head fixtures of {month}");
-    for mode in [&[][..], &["--decimal"][..]] {
-        let cli = Cli::new();
-        let mut args: Vec<&str> = mode.to_vec();
-        args.extend(["--json", "ingest", heads.to_str().unwrap(), "--strict"]);
-        let (code, out, err) = cli.code(&args);
-        assert_eq!(
-            code,
-            0,
-            "{mode:?}: {err}{}",
-            &out[out.len().saturating_sub(2000)..]
-        );
-        let ls = cli.ok(&["--json", "ls", "--limit", "1000"]);
-        let rows: Vec<&str> = ls.lines().collect();
-        assert_eq!(rows.len(), files, "{mode:?}: one ingest per head");
-        for r in &rows {
-            assert!(
-                r.contains("\"status\":\"ok\"") && r.contains("\"bad_rows\":0"),
-                "{mode:?}: {r}"
-            );
-        }
-        let errors = cli.ok(&["--json", "errors", "--limit", "1000"]);
-        // No row fails to parse. The one parse diagnostic allowed is the
-        // warning that a "no end" date beyond the nanosecond range was
-        // clamped, which the standing data of each month does contain.
-        for line in errors.lines().filter(|l| l.contains("\"parse.")) {
-            assert!(
-                line.contains("parse.timestamp_clamped")
-                    && line.contains("\"severity\":\"warning\""),
-                "{mode:?}: {line}"
-            );
-        }
+    let deviates = |l: &str| deviating.iter().any(|d| l.contains(&format!("_{d}_")));
+    let cli = Cli::new();
+    let (code, out, err) = cli.code(&["--json", "ingest", heads.to_str().unwrap(), "--strict"]);
+    assert_eq!(
+        code == 0,
+        deviating.is_empty(),
+        "{month}: {err}{}",
+        &out[out.len().saturating_sub(2000)..]
+    );
+    let ls = cli.ok(&["--json", "ls", "--limit", "1000"]);
+    let rows: Vec<&str> = ls.lines().collect();
+    assert_eq!(
+        rows.len() + deviating.len(),
+        files,
+        "{month}: one ingest per head"
+    );
+    for r in &rows {
         assert!(
-            errors.contains("parse.timestamp_clamped")
-                && (errors.contains("2999/12/31 00:00:00")
-                    || errors.contains("9999/12/31 00:00:00")),
-            "{mode:?}: the clamp is reported: {errors}"
+            r.contains("\"status\":\"ok\"")
+                && r.contains("\"bad_rows\":0")
+                && r.contains("\"resolution\":\"conforms\""),
+            "{month}: {r}"
         );
-        // The only schema diagnostic allowed is the note that a column without
-        // a usable precision is a float in decimal mode.
-        for line in errors.lines().filter(|l| l.contains("\"schema.")) {
+    }
+    let errors = cli.ok(&["--json", "errors", "--limit", "1000"]);
+    // No row fails to parse. The one parse diagnostic allowed is the
+    // warning that a "no end" date beyond the nanosecond range was
+    // clamped, which the standing data of each month does contain.
+    for line in errors.lines().filter(|l| l.contains("\"parse.")) {
+        assert!(
+            line.contains("parse.timestamp_clamped") && line.contains("\"severity\":\"warning\""),
+            "{month}: {line}"
+        );
+    }
+    assert!(
+        errors.contains("parse.timestamp_clamped")
+            && (errors.contains("2999/12/31 00:00:00") || errors.contains("9999/12/31 00:00:00")),
+        "{month}: the clamp is reported: {errors}"
+    );
+    // The only schema diagnostic is the refusal of each known deviation.
+    let mut refused = 0;
+    for line in errors.lines().filter(|l| l.contains("\"schema.")) {
+        assert!(
+            line.contains("schema.deviates") && deviates(line),
+            "{month}: {line}"
+        );
+        refused += 1;
+    }
+    assert_eq!(refused, deviating.len(), "{month}: {errors}");
+    // Without --strict a deviating file is kept whole.
+    if !deviating.is_empty() {
+        let cli = Cli::new();
+        let (code, out, err) = cli.code(&["--json", "ingest", heads.to_str().unwrap()]);
+        assert_eq!(code, 0, "{month}: {err}{out}");
+        let ls = cli.ok(&["--json", "ls", "--limit", "1000"]);
+        assert_eq!(ls.lines().count(), files);
+        let kept: Vec<&str> = ls.lines().filter(|l| deviates(l)).collect();
+        assert_eq!(kept.len(), deviating.len(), "{ls}");
+        for r in kept {
             assert!(
-                !mode.is_empty() && line.contains("schema.decimal_fallback"),
-                "{mode:?}: {line}"
+                r.contains("\"bad_rows\":0") && r.contains("\"resolution\":\"deviates\""),
+                "{r}"
             );
         }
     }
@@ -341,19 +373,10 @@ fn inspect_and_schema_commands() {
     assert_eq!(code, 5, "unknown tables make inspect exit 5: {out}");
     assert!(
         out.contains("DISPATCH.PRICE")
-            && out.contains("exact")
+            && out.contains("conforms")
             && out.contains("schema.unknown_table"),
         "{out}"
     );
-    let (code, out, _) = cli.code(&["--json", "inspect", multi.to_str().unwrap(), "--infer"]);
-    assert_eq!(code, 5);
-    assert!(
-        out.contains("\"drafts\":[{") && out.contains("NEMLAKE_TEST_NEW_THING"),
-        "{out}"
-    );
-    let (code, out, _) = cli.code(&["inspect", multi.to_str().unwrap(), "--infer"]);
-    assert_eq!(code, 5);
-    assert!(out.contains("# draft for NEMLAKE_TEST_NEW_THING"), "{out}");
     let zip_path = cli.home.path().join("PUBLIC_DVD_REGION_202401010000.zip");
     make_zip(
         &zip_path,
@@ -397,30 +420,20 @@ fn inspect_and_schema_commands() {
     let (code, _, err) = cli.code(&["schema", "show", "NOPE"]);
     assert_eq!(code, 1);
     assert!(err.contains("no table NOPE"), "{err}");
-    let diff = cli.ok(&["schema", "diff", "DISPATCHPRICE", "4", "5"]);
-    assert!(diff.contains("added column"), "{diff}");
+    let incs = cli.ok(&["schema", "increments", "DISPATCH_UNIT_SCADA"]);
     assert!(
-        cli.ok(&["schema", "diff", "DISPATCHPRICE", "4", "4"])
-            .contains("no changes")
+        incs.contains("2024-01") && incs.contains("2026-08") && incs.contains("+LASTCHANGED"),
+        "{incs}"
     );
     assert!(
-        cli.ok(&["--json", "schema", "diff", "DISPATCHPRICE", "4", "5"])
-            .contains("added column")
-    );
-    assert_eq!(
-        cli.code(&["schema", "diff", "DISPATCHPRICE", "4", "99"]).0,
-        1
-    );
-    let lineage = cli.ok(&["schema", "lineage", "DISPATCHPRICE"]);
-    assert!(
-        lineage.contains("version") && lineage.contains('5'),
-        "{lineage}"
+        incs.contains("PUBLIC_ARCHIVE#DISPATCH_UNIT_SCADA#FILE01#202608.ctl"),
+        "{incs}"
     );
     assert!(
-        cli.ok(&["--json", "schema", "lineage", "DISPATCHPRICE"])
+        cli.ok(&["--json", "schema", "increments", "DISPATCH_UNIT_SCADA"])
             .starts_with('[')
     );
-    assert_eq!(cli.code(&["schema", "lineage", "NOPE"]).0, 1);
+    assert_eq!(cli.code(&["schema", "increments", "NOPE"]).0, 1);
     assert!(cli.ok(&["schema", "validate"]).contains("valid"));
     let schemas = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../schemas");
     let (code, out, _) = cli.code(&["schema", "validate", schemas.to_str().unwrap()]);
@@ -432,8 +445,8 @@ fn inspect_and_schema_commands() {
     ]);
     assert_eq!(code, 5);
     assert!(err.contains("schema."), "{err}");
-    // The plan of a shape: the declared table file has four columns, the
-    // file three, so the fourth is written null.
+    // The plan of a shape: the table has four columns, the file of 2024
+    // three, as the increment then lists, so the fourth is written null.
     let plan: serde_json::Value = serde_json::from_str(&cli.ok(&[
         "schema",
         "plan",
@@ -446,7 +459,9 @@ fn inspect_and_schema_commands() {
         "2024-01",
     ]))
     .unwrap();
-    assert_eq!(plan["resolution"], "exact");
+    assert_eq!(plan["resolution"], "conforms");
+    assert_eq!(plan["version"], 1);
+    assert_eq!(plan["plan"]["increment"], 1);
     assert_eq!(plan["plan"]["table"], "DISPATCH_UNIT_SCADA");
     assert_eq!(plan["plan"]["fields"].as_array().unwrap().len(), 4);
     assert_eq!(plan["plan"]["routes"].as_array().unwrap().len(), 3);
@@ -475,7 +490,7 @@ fn what_the_registry_does_not_declare_is_kept_not_skipped() {
     assert_eq!(code, 0, "{out}{err}");
     assert!(out.contains("3 rows (0 quarantined)"), "{out}");
     assert!(
-        out.contains("schema.unknown_table") && out.contains("schema.unknown_columns"),
+        out.contains("schema.unknown_table") && out.contains("schema.deviates"),
         "{out}"
     );
     // The undeclared table is apart from the registry's, under its report pair.
@@ -514,7 +529,7 @@ fn what_the_registry_does_not_declare_is_kept_not_skipped() {
 /// adopted, `reingest` reads the source again from disk and the lake
 /// follows: typed files in the table's own directory, the text ones gone.
 #[test]
-fn reingest_brings_the_lake_up_to_the_rules() {
+fn reingest_brings_the_lake_up_to_the_schema() {
     let cli = Cli::new();
     let csv = cli.home.path().join("PUBLIC_DVD_FOLLOWS_202403010000.CSV");
     std::fs::write(
@@ -552,14 +567,8 @@ fn reingest_brings_the_lake_up_to_the_rules() {
     let out = cli.ok(&["reingest"]);
     assert!(out.contains("0 listed"), "{out}");
 
-    // Adopt a schema for the table: the source is now behind the rules.
-    cli.ok(&["schema", "infer", csv_arg, "--write"]);
-    let dir = cli.home.path().join("schemas/nem/mms");
-    std::fs::rename(
-        dir.join("DRAFT_NEMLAKE_TEST_FOLLOWS.toml"),
-        dir.join("NEMLAKE_TEST_FOLLOWS.toml"),
-    )
-    .unwrap();
+    // Adopt a schema for the table: the source is now behind it.
+    user_table(&cli, "NEMLAKE_TEST_FOLLOWS", FOLLOWS);
     let out = cli.ok(&["reingest", "--dry-run"]);
     assert!(
         out.contains("1 listed") && out.contains("PUBLIC_DVD_FOLLOWS"),
@@ -580,13 +589,13 @@ fn reingest_brings_the_lake_up_to_the_rules() {
     let ls = cli.ok(&["--json", "ls"]);
     assert_eq!(ls.lines().count(), 1, "{ls}");
     assert!(ls.contains("\"schema_source\":\"user\""), "{ls}");
-    assert!(ls.contains("\"resolution\":\"exact\""), "{ls}");
+    assert!(ls.contains("\"resolution\":\"conforms\""), "{ls}");
     assert!(cli.ok(&["verify"]).contains("no problems"));
     // Up to date again; an ordinary ingest of the same file is skipped.
     assert!(cli.ok(&["reingest"]).contains("0 listed"));
     assert!(cli.ok(&["ingest", csv_arg]).contains("1 skipped"));
 
-    // Without the user's table the rules are the old ones, and the source
+    // Without the user's table the plan is the old one, and the source
     // is no longer there to read.
     std::fs::remove_file(&csv).unwrap();
     let (code, out, err) = cli.code(&["--no-user-schemas", "reingest"]);
@@ -595,186 +604,91 @@ fn reingest_brings_the_lake_up_to_the_rules() {
     assert_eq!(parquet(), after, "what is in the lake stays");
 }
 
-/// A control file from AEMO's archive types a draft: its loader types are
-/// the base, the table takes the name the control file loads into, and a
-/// sampled value that does not fit overrules it with a note.
+/// A user's fix for files that deviate from their increment, a column and
+/// an increment, puts exactly the sources it touches behind.
 #[test]
-fn schema_infer_types_a_draft_from_a_control_file() {
+fn a_fix_in_table_toml_brings_in_the_files_that_deviate() {
     let cli = Cli::new();
-    let csv = cli.home.path().join("PUBLIC_DVD_CTLTYPED_202403010000.CSV");
-    std::fs::write(
-        &csv,
-        "C,NEMP.WORLD,TEST\nI,NEMLAKE_TEST,CTLTYPED,1,SETTLEMENTDATE,UNIT,VALUE,FLAG\nD,NEMLAKE_TEST,CTLTYPED,1,\"2024/03/01 00:05:00\",7,1.5,yes\nC,\"END OF REPORT\",4\n",
-    )
-    .unwrap();
-    let ctl = cli.home.path().join("PUBLIC_DVD_CTLTYPED_202403.ctl");
-    std::fs::write(
-        &ctl,
-        "LOAD DATA\nINFILE PUBLIC_DVD_CTLTYPED_202403010000.CSV\nAPPEND INTO TABLE NEMLAKE_CTLTYPED\nWHEN (1:1) = 'D'\nFIELDS TERMINATED BY ','\nOPTIONALLY ENCLOSED BY '\"'\nTRAILING NULLCOLS\n(row_type FILLER,\nreport_type FILLER,\nreport_subtype FILLER,\nreport_version FILLER,\nSETTLEMENTDATE DATE \"yyyy/mm/dd hh24:mi:ss\",\nUNIT CHAR(20),\nVALUE FLOAT EXTERNAL,\nFLAG FLOAT EXTERNAL)\n",
-    )
-    .unwrap();
-    let (csv, ctl) = (csv.to_str().unwrap(), ctl.to_str().unwrap());
-    // Without it the rows alone decide: UNIT, a number in this sample, is
-    // guessed a number.
-    let out = cli.ok(&["schema", "infer", csv]);
-    assert!(out.contains("# draft for NEMLAKE_TEST_CTLTYPED"), "{out}");
-    assert!(!out.contains("CHAR(20)"), "{out}");
-    // With it: the table's own name, UNIT as text of 20, and FLAG, which
-    // the control file calls a number, stays text because `yes` is not one.
-    let out = cli.ok(&["schema", "infer", csv, "--ctl", ctl]);
-    assert!(out.contains("# draft for NEMLAKE_CTLTYPED"), "{out}");
-    assert!(
-        out.contains("loader = \"CHAR(20)\"") && out.contains("max_len = 20"),
-        "{out}"
-    );
-    assert!(out.contains("PUBLIC_DVD_CTLTYPED_202403.ctl"), "{out}");
-    assert!(
-        out.contains("# note: column FLAG: the control file says FLOAT EXTERNAL"),
-        "{out}"
-    );
-    let json = cli.ok(&["--json", "schema", "infer", csv, "--ctl", ctl, "--write"]);
-    assert!(
-        json.contains("\"table\":\"NEMLAKE_CTLTYPED\"")
-            && json.contains("\"notes\":[\"column FLAG"),
-        "{json}"
-    );
-    let dir = cli.home.path().join("schemas/nem/mms");
-    std::fs::rename(
-        dir.join("DRAFT_NEMLAKE_CTLTYPED.toml"),
-        dir.join("NEMLAKE_CTLTYPED.toml"),
-    )
-    .unwrap();
-    let (code, out, err) = cli.code(&["ingest", csv, "--strict"]);
-    assert_eq!(code, 0, "{out}{err}");
-    assert!(out.contains("1 rows (0 quarantined)"), "{out}");
-    // A control file that cannot be parsed stops the command and says why.
-    let bad = cli.home.path().join("bad.ctl");
-    std::fs::write(&bad, "not a control file").unwrap();
-    let (code, _, err) = cli.code(&["schema", "infer", csv, "--ctl", bad.to_str().unwrap()]);
-    assert_ne!(code, 0);
-    assert!(err.contains("bad.ctl"), "{err}");
-    let (code, _, err) = cli.code(&["schema", "infer", csv, "--ctl", "/nonexistent/x.ctl"]);
-    assert_ne!(code, 0);
-    assert!(err.contains("could not be read"), "{err}");
-}
-
-/// Files of an earlier interval that today's table cannot read, a value
-/// with its unit where a number is declared, are brought in by a rule
-/// written by hand in the table file; changing the rule puts exactly the
-/// sources it touches behind.
-#[test]
-fn a_hand_written_rule_brings_in_the_files_of_an_interval() {
-    let cli = Cli::new();
-    let write = |name: &str, stamp: &str, value: &str| -> String {
+    let write = |name: &str, stamp: &str, quality: bool| -> String {
         let p = cli.home.path().join(name);
+        let (cols, extra) = if quality {
+            (",QUALITY", ",GOOD")
+        } else {
+            ("", "")
+        };
         std::fs::write(
             &p,
             format!(
-                "C,NEMP.WORLD,TEST\nI,NEMLAKE_TEST,RULED,1,SETTLEMENTDATE,UNIT,VALUE\nD,NEMLAKE_TEST,RULED,1,\"{stamp}\",A1,{value}\nC,\"END OF REPORT\",4\n"
+                "C,NEMP.WORLD,TEST\nI,NEMLAKE_TEST,FIXED,1,SETTLEMENTDATE,UNIT,VALUE{cols}\nD,NEMLAKE_TEST,FIXED,1,\"{stamp}\",A1,2.5{extra}\nC,\"END OF REPORT\",4\n"
             ),
         )
         .unwrap();
         p.to_str().unwrap().to_owned()
     };
-    let new = write(
-        "PUBLIC_DVD_RULED_202403010000.CSV",
-        "2024/03/01 00:05:00",
-        "2.5",
-    );
     let old = write(
-        "PUBLIC_DVD_RULED_201003010000.CSV",
+        "PUBLIC_DVD_FIXED_201003010000.CSV",
         "2010/03/01 00:05:00",
-        "1.5 MW",
+        false,
     );
-    // The table as today's file shows it: VALUE is a number.
-    cli.ok(&["schema", "infer", &new, "--write"]);
-    let dir = cli.home.path().join("schemas/nem/mms");
-    let table = dir.join("NEMLAKE_TEST_RULED.toml");
-    std::fs::rename(dir.join("DRAFT_NEMLAKE_TEST_RULED.toml"), &table).unwrap();
-    let (code, out, err) = cli.code(&["ingest", &new]);
+    let new = write(
+        "PUBLIC_DVD_FIXED_202403010000.CSV",
+        "2024/03/01 00:05:00",
+        true,
+    );
+    let table = user_table(&cli, "NEMLAKE_TEST_FIXED", FIXED);
+    let (code, out, err) = cli.code(&["ingest", &old, "--strict"]);
     assert_eq!(code, 0, "{out}{err}");
-    // The 2010 file does not fit it: strict mode refuses it, and otherwise
-    // its value is kept only as text beside a null.
-    let (code, out, _) = cli.code(&["ingest", &old, "--strict"]);
+    // The 2024 file carries a column the increment does not list: strict
+    // mode refuses it, and otherwise it is kept as text of its own.
+    let (code, out, _) = cli.code(&["ingest", &new, "--strict"]);
     assert_ne!(code, 0, "{out}");
-    assert!(out.contains("parse.float"), "{out}");
-    let (code, out, _) = cli.code(&["ingest", &old]);
+    assert!(out.contains("schema.deviates"), "{out}");
+    let (code, out, _) = cli.code(&["ingest", &new]);
     assert_eq!(code, 0, "{out}");
-    assert!(out.contains("parse.value_kept_raw"), "{out}");
+    assert!(out.contains("schema.deviates"), "{out}");
 
-    // A column to keep the old values as published, and a rule that sends
-    // them there for the files up to 2011-12.
-    let text = std::fs::read_to_string(&table).unwrap();
-    assert!(text.contains("next_column_id = 4"), "{text}");
-    let ruled = format!(
-        "{}\n[[column]]\nid = 4\nname = \"VALUE_AS_PUBLISHED\"\ntype = \"utf8\"\nadded_in = 1\nsrc = [\"manual\"]\n\n[[rule]]\nnote = \"Until 2011 the value carried its unit.\"\nto = \"2011-12\"\n\n[[rule.column]]\nsource = \"VALUE\"\ncolumn = \"VALUE_AS_PUBLISHED\"\n",
-        text.replace("next_column_id = 4", "next_column_id = 5")
-    );
-    std::fs::write(&table, &ruled).unwrap();
+    // The fix: QUALITY is a column of the table from 2020 on.
+    let fixed = FIXED.replace("next_column_id = 4", "next_column_id = 5").replace(
+        "]\n\n[[increment]]",
+        "    { id = 4, name = \"QUALITY\", type = \"string\", nullable = true },\n]\n\n[[increment]]",
+    ) + "\n[[increment]]\nn = 2\nfrom = \"2020-01\"\ncolumns = [\"SETTLEMENTDATE\", \"UNIT\", \"VALUE\", \"QUALITY\"]\nnote = \"Files carry QUALITY from 2020.\"\n";
+    std::fs::write(&table, &fixed).unwrap();
     assert!(
-        cli.ok(&["schema", "show", "NEMLAKE_TEST_RULED"])
-            .contains("VALUE_AS_PUBLISHED")
+        cli.ok(&["schema", "increments", "NEMLAKE_TEST_FIXED"])
+            .contains("+QUALITY")
     );
-    // Only the 2010 file is behind: its value now has a column to go to.
-    // The 2024 file's shape does not carry the new column, so the plan it
-    // is read by has not changed.
+    // Only the 2024 file is behind: the 2010 file's shape does not carry
+    // the new column, so the plan it is read by has not changed.
     let out = cli.ok(&["reingest", "--dry-run"]);
     assert!(
-        out.contains("1 listed") && out.contains("RULED_201003"),
+        out.contains("1 listed") && out.contains("FIXED_202403"),
         "{out}"
     );
-    let (code, out, err) = cli.code(&["reingest"]);
+    let (code, out, err) = cli.code(&["reingest", "--strict"]);
     assert_eq!(code, 0, "{out}{err}");
-    assert!(
-        out.contains("1 ingested") && out.contains("(0 quarantined)"),
-        "{out}"
-    );
+    assert!(out.contains("1 ingested"), "{out}");
     let ls = cli.ok(&["--json", "ls"]);
-    let line = |period: &str| {
-        ls.lines()
+    for period in ["2010-03", "2024-03"] {
+        let line = ls
+            .lines()
             .find(|l| l.contains(&format!("\"source_period\":\"{period}\"")))
-            .unwrap_or_else(|| panic!("no ingest of {period}: {ls}"))
-            .to_owned()
-    };
-    assert!(
-        line("2010-03").contains("\"resolution\":\"exact+rule\""),
-        "{ls}"
-    );
-    assert!(line("2010-03").contains("\"status\":\"ok\""), "{ls}");
-    assert!(line("2024-03").contains("\"resolution\":\"exact\""), "{ls}");
+            .unwrap_or_else(|| panic!("no ingest of {period}: {ls}"));
+        assert!(line.contains("\"resolution\":\"conforms\""), "{line}");
+    }
     assert!(cli.ok(&["reingest"]).contains("0 listed"));
 
-    // Widen the rule to every month of version 1: only the 2024 source is
-    // behind now.
-    std::fs::write(&table, ruled.replace("to = \"2011-12\"\n", "version = 1\n")).unwrap();
-    // A rule for every file there ever was is refused: it says nothing
-    // that a column of the table would not.
-    std::fs::write(&table, ruled.replace("to = \"2011-12\"\n", "")).unwrap();
+    // An increment that lists a column the table does not have is refused
+    // with the reason.
+    std::fs::write(&table, fixed.replace("\"QUALITY\"]", "\"NOWHERE\"]")).unwrap();
     let (code, _, err) = cli.code(&["schema", "list"]);
     assert_ne!(code, 0);
-    assert!(err.contains("has no scope"), "{err}");
-    std::fs::write(&table, ruled.replace("to = \"2011-12\"\n", "version = 1\n")).unwrap();
-    let out = cli.ok(&["reingest", "--dry-run"]);
-    assert!(
-        out.contains("1 listed") && out.contains("RULED_202403"),
-        "{out}"
-    );
-
-    // A rule that names a column nobody declared is refused with the reason.
-    std::fs::write(
-        &table,
-        ruled.replace("column = \"VALUE_AS_PUBLISHED\"", "column = \"NOWHERE\""),
-    )
-    .unwrap();
-    let (code, _, err) = cli.code(&["schema", "list"]);
-    assert_ne!(code, 0);
-    assert!(err.contains("not a declared column"), "{err}");
+    assert!(err.contains("NOWHERE, which is not a column"), "{err}");
 }
 
-/// `schema infer` drafts what a file adds; a draft renamed into
-/// `{home}/schemas/` is in effect for every command, without a rebuild.
+/// A table in `{home}/schemas/` is in effect for every command, without a
+/// rebuild; one of the same name replaces the built-in table.
 #[test]
-fn schema_infer_drafts_and_user_schemas_take_effect() {
+fn user_schemas_take_effect() {
     let cli = Cli::new();
     // Two report pairs no table claims, in one file.
     let new = cli.home.path().join("new_pairs.csv");
@@ -784,39 +698,26 @@ fn schema_infer_drafts_and_user_schemas_take_effect() {
     )
     .unwrap();
     let new = new.to_str().unwrap();
-    let dir = cli.home.path().join("schemas/nem/mms");
-    let adopt = |table: &str| {
-        std::fs::rename(
-            dir.join(format!("DRAFT_{table}.toml")),
-            dir.join(format!("{table}.toml")),
-        )
-        .unwrap();
-    };
-
-    // Each pair gets a draft.
-    let out = cli.ok(&["schema", "infer", new]);
-    assert!(out.contains("# draft for NEMLAKE_TEST_FIRST"), "{out}");
-    assert!(out.contains("# draft for NEMLAKE_TEST_SECOND"), "{out}");
-    assert!(out.contains("\"inferred\""), "{out}");
-    assert!(!dir.exists(), "printing writes nothing");
-    let out = cli.ok(&["schema", "infer", new, "--write"]);
-    assert!(out.contains("2 draft(s)"), "{out}");
-    assert!(dir.join("DRAFT_NEMLAKE_TEST_FIRST.toml").is_file());
-    assert!(dir.join("DRAFT_NEMLAKE_TEST_SECOND.toml").is_file());
-    // A draft is inert until it is renamed.
     let (code, out, _) = cli.code(&["inspect", new]);
     assert_eq!(code, 5, "{out}");
-    adopt("NEMLAKE_TEST_FIRST");
-    adopt("NEMLAKE_TEST_SECOND");
+    user_table(&cli, "NEMLAKE_TEST_FIRST", &FIXED.replace("FIXED", "FIRST"));
+    user_table(
+        &cli,
+        "NEMLAKE_TEST_SECOND",
+        &FIXED
+            .replace("FIXED", "SECOND")
+            .replace("UNIT", "FLAG")
+            .replace(", \"VALUE\"]", "]")
+            .replace(
+                "    { id = 3, name = \"VALUE\", type = \"double\", nullable = true },\n",
+                "",
+            ),
+    );
     let (code, out, err) = cli.code(&["inspect", new]);
     assert_eq!(code, 0, "{out}{err}");
     assert!(
         out.contains("NEMLAKE_TEST_FIRST") && !out.contains("schema.unknown_table"),
         "{out}"
-    );
-    assert!(
-        cli.ok(&["schema", "infer", new])
-            .contains("nothing to infer")
     );
     assert!(cli.ok(&["schema", "list"]).contains("NEMLAKE_TEST_SECOND"));
     // The file now ingests in strict mode.
@@ -825,43 +726,50 @@ fn schema_infer_drafts_and_user_schemas_take_effect() {
     let ls = cli.ok(&["--json", "ls", "--limit", "100"]);
     assert!(ls.contains("\"table\":\"NEMLAKE_TEST_FIRST\""), "{ls}");
     assert!(ls.contains("\"table\":\"NEMLAKE_TEST_SECOND\""), "{ls}");
+    assert!(ls.contains("\"schema_source\":\"user\""), "{ls}");
     // Without the user's tables the pairs are unknown again.
     let (code, _, _) = cli.code(&["--no-user-schemas", "inspect", new]);
     assert_eq!(code, 5);
 
-    // A known table published under a new version with a new column.
+    // A built-in table published with a new column: refused in strict
+    // mode until the user's own DISPATCH_UNIT_SCADA lists it.
     let v2 = cli.home.path().join("scada_v2.csv");
     std::fs::write(
         &v2,
-        "C,NEMP.WORLD,TEST\nI,DISPATCH,UNIT_SCADA,2,SETTLEMENTDATE,DUID,SCADAVALUE,QUALITY\nD,DISPATCH,UNIT_SCADA,2,\"2024/01/01 00:05:00\",BW01,1.5,GOOD\nC,\"END OF REPORT\",4\n",
+        "C,NEMP.WORLD,TEST\nI,DISPATCH,UNIT_SCADA,2,SETTLEMENTDATE,DUID,SCADAVALUE,LASTCHANGED,QUALITY\nD,DISPATCH,UNIT_SCADA,2,\"2024/01/01 00:05:00\",BW01,1.5,\"2024/01/01 00:06:00\",GOOD\nC,\"END OF REPORT\",4\n",
     )
     .unwrap();
     let v2 = v2.to_str().unwrap();
     let (code, out, err) = cli.code(&["ingest", v2, "--strict"]);
-    assert_ne!(
-        code, 0,
-        "an undeclared version is refused in strict mode: {out}{err}"
-    );
-    let out = cli.ok(&["--json", "schema", "infer", v2, "--write"]);
-    assert!(
-        out.contains("\"table\":\"DISPATCH_UNIT_SCADA\"") && out.contains("QUALITY"),
-        "{out}"
-    );
-    assert!(out.contains("\"issues\":[]"), "{out}");
-    adopt("DISPATCH_UNIT_SCADA");
+    assert_ne!(code, 0, "a deviation is refused in strict mode: {out}{err}");
+    let show = cli.ok(&["schema", "show", "DISPATCH_UNIT_SCADA"]);
+    let toml = &show[..show.find("\n# Arrow lake schema").unwrap()];
+    let ours = toml
+        .lines()
+        .filter(|l| !l.starts_with("ctl"))
+        .collect::<Vec<_>>()
+        .join("\n")
+        .replace("next_column_id = 5", "next_column_id = 6")
+        .replacen(
+            "]\n\n[[increment]]",
+            "    { id = 5, name = \"QUALITY\", type = \"string\", nullable = true },\n]\n\n[[increment]]",
+            1,
+        )
+        + "\n\n[[increment]]\nn = 3\nfrom = \"2026-09\"\naemo_versions = [2]\ncolumns = [\"SETTLEMENTDATE\", \"DUID\", \"SCADAVALUE\", \"LASTCHANGED\", \"QUALITY\"]\n";
+    user_table(&cli, "DISPATCH_UNIT_SCADA", &ours);
     let (code, out, err) = cli.code(&["ingest", v2, "--strict"]);
     assert_eq!(code, 0, "{out}{err}");
     assert!(
-        cli.ok(&["schema", "lineage", "DISPATCH_UNIT_SCADA"])
-            .contains("QUALITY")
+        cli.ok(&["schema", "increments", "DISPATCH_UNIT_SCADA"])
+            .contains("+QUALITY")
     );
 
     // A broken file in the user's directory stops every command, and says how to go on.
-    std::fs::write(dir.join("BROKEN.toml"), "schema_format = 1\nname = 3\n").unwrap();
+    user_table(&cli, "BROKEN", "schema_format = 2\nname = 3\n");
     let (code, _, err) = cli.code(&["schema", "list"]);
     assert_ne!(code, 0);
     assert!(
-        err.contains("BROKEN.toml") && err.contains("--no-user-schemas"),
+        err.contains("BROKEN") && err.contains("--no-user-schemas"),
         "{err}"
     );
     assert!(
@@ -975,15 +883,74 @@ fn cache_wem_fetch_and_config() {
     assert!(err.contains("jobz"), "{err}");
     std::fs::write(
         cli.home.path().join("config.toml"),
-        "jobs = 1\nstrict = true\ndecimal = true\n",
+        "jobs = 1\nstrict = true\n",
     )
     .unwrap();
     assert!(cli.ok(&["-v", "schema", "list"]).contains("DISPATCH"));
-    assert!(
-        cli.ok(&["--decimal", "schema", "show", "DISPATCH_UNIT_SCADA"])
-            .contains("Decimal128(16, 6)")
-    );
 }
+
+/// A user's own table, as `{home}/schemas/nem/{TABLE}/table.toml`; the
+/// path of the file.
+fn user_table(cli: &Cli, name: &str, text: &str) -> PathBuf {
+    let dir = cli.home.path().join("schemas/nem").join(name);
+    std::fs::create_dir_all(&dir).unwrap();
+    let path = dir.join("table.toml");
+    std::fs::write(&path, text).unwrap();
+    path
+}
+
+/// A user's table for (NEMLAKE_TEST, FOLLOWS), as a person writes one.
+const FOLLOWS: &str = r#"schema_format = 2
+name = "NEMLAKE_TEST_FOLLOWS"
+report_pairs = [["NEMLAKE_TEST", "FOLLOWS"]]
+load_mode = "append"
+dedupe = "none"
+time_column = "SETTLEMENTDATE"
+next_column_id = 4
+
+[[column]]
+id = 1
+name = "SETTLEMENTDATE"
+type = "timestamp_ns"
+
+[[column]]
+id = 2
+name = "UNIT"
+type = "string"
+
+[[column]]
+id = 3
+name = "VALUE"
+type = "double"
+
+[[increment]]
+n = 1
+from = "2009-07"
+columns = ["SETTLEMENTDATE", "UNIT", "VALUE"]
+"#;
+
+/// A user's table for (NEMLAKE_TEST, FIXED), in the form nemlake writes.
+const FIXED: &str = r#"schema_format = 2
+name = "NEMLAKE_TEST_FIXED"
+report_pairs = [["NEMLAKE_TEST", "FIXED"]]
+load_mode = "append"
+dedupe = "none"
+primary_key = []
+time_column = "SETTLEMENTDATE"
+next_column_id = 4
+
+column = [
+    { id = 1, name = "SETTLEMENTDATE", type = "timestamp_ns", nullable = true },
+    { id = 2, name = "UNIT", type = "string", nullable = true },
+    { id = 3, name = "VALUE", type = "double", nullable = true },
+]
+
+[[increment]]
+n = 1
+from = "2009-07"
+aemo_versions = [1]
+columns = ["SETTLEMENTDATE", "UNIT", "VALUE"]
+"#;
 
 fn walk(root: &Path) -> Vec<PathBuf> {
     let mut out = Vec::new();

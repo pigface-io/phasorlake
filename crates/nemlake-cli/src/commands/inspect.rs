@@ -4,7 +4,7 @@ use std::path::Path;
 
 use anyhow::Result;
 use nemlake_conform::inspect::{BlockSummary, InspectSink};
-use nemlake_core::{Diagnose, IRow};
+use nemlake_core::Diagnose;
 use nemlake_decode::archive::walk_csv_entries;
 use nemlake_decode::scan::{ScanOptions, scan};
 use nemlake_registry::{Mode, ResolveOptions};
@@ -14,17 +14,13 @@ use crate::render;
 
 /// Every block of every CSV in `path` (a CSV, or a zip walked through
 /// nested zips), each with the entry it came from, resolved strictly so a
-/// status other than `exact` names what the registry lacks. Entries that
+/// status other than `conforms` names what the registry lacks. Entries that
 /// are not CSVs are reported on stderr.
-pub fn scan_blocks(
-    ctx: &Context,
-    path: &Path,
-    sample_rows: u64,
-) -> Result<Vec<(String, BlockSummary)>> {
+fn scan_blocks(ctx: &Context, path: &Path) -> Result<Vec<(String, BlockSummary)>> {
     let opts = ResolveOptions { mode: Mode::Strict };
     let mut blocks: Vec<(String, BlockSummary)> = Vec::new();
     let mut handle = |entry: &str, reader: &mut dyn std::io::Read| -> Result<()> {
-        let mut sink = InspectSink::new(&ctx.registry, opts, sample_rows);
+        let mut sink = InspectSink::new(&ctx.registry, opts);
         let stats = scan(
             reader,
             &mut sink,
@@ -80,22 +76,11 @@ pub fn scan_blocks(
     Ok(blocks)
 }
 
-/// The I row a block summary was built from.
-pub fn irow_of<'a>(b: &'a BlockSummary, columns: &'a [&'a str]) -> IRow<'a> {
-    IRow {
-        report_type: &b.report_type,
-        report_subtype: &b.report_subtype,
-        version: b.version,
-        columns,
-    }
-}
-
 /// `nemlake inspect <file>`
-pub fn inspect(ctx: &Context, path: &Path, infer: bool, sample_rows: u64) -> Result<i32> {
+pub fn inspect(ctx: &Context, path: &Path) -> Result<i32> {
     let mut rows: Vec<Vec<String>> = Vec::new();
-    let mut drafts: Vec<serde_json::Value> = Vec::new();
     let mut json_blocks: Vec<serde_json::Value> = Vec::new();
-    for (entry, b) in &scan_blocks(ctx, path, sample_rows)? {
+    for (entry, b) in &scan_blocks(ctx, path)? {
         rows.push(vec![
             entry.clone(),
             b.line.to_string(),
@@ -112,20 +97,10 @@ pub fn inspect(ctx: &Context, path: &Path, infer: bool, sample_rows: u64) -> Res
             "version": b.version, "columns": b.columns, "rows": b.rows, "table": b.table, "status": b.status,
             "fingerprint": b.fingerprint.to_string(),
         }));
-        if infer && b.table.is_none() {
-            let cols: Vec<&str> = b.columns.iter().map(String::as_str).collect();
-            let draft = nemlake_registry::infer::draft_table(
-                nemlake_registry::Market::Nem,
-                &irow_of(b, &cols),
-                &b.sampler,
-            );
-            let toml = nemlake_registry::file_model::file::write_table(&draft);
-            drafts.push(serde_json::json!({ "table": draft.name, "toml": toml }));
-        }
     }
     if ctx.json {
         render::json_line(
-            &serde_json::json!({ "file": path.display().to_string(), "blocks": json_blocks, "drafts": drafts }),
+            &serde_json::json!({ "file": path.display().to_string(), "blocks": json_blocks }),
         );
     } else {
         print!(
@@ -145,13 +120,6 @@ pub fn inspect(ctx: &Context, path: &Path, infer: bool, sample_rows: u64) -> Res
                 &rows
             )
         );
-        for d in &drafts {
-            println!(
-                "\n# draft for {}\n{}",
-                d["table"].as_str().unwrap_or(""),
-                d["toml"].as_str().unwrap_or("")
-            );
-        }
     }
     let unresolved = rows.iter().filter(|r| r[7].starts_with("schema.")).count();
     Ok(if unresolved > 0 { 5 } else { 0 })

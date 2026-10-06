@@ -1,17 +1,15 @@
-//! The invariants every table file must satisfy. Run at build time over the
-//! committed files, at runtime over user overlays, and in `cargo test`.
+//! The invariants every table must satisfy. Run at build time over the
+//! committed files, at run time over a user's own tables, and in tests.
 
 use std::collections::{BTreeMap, HashSet};
 
-use nemlake_core::Fingerprint;
-
-use crate::file_model::model::{ColumnType, LoadMode, SourceKind, TableDef};
+use crate::file_model::model::{LakeType, LoadMode, Table};
 
 /// One thing wrong with a table or a set of tables. The message names the
-/// key so the fix is obvious.
+/// key, so the fix is plain.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Issue {
-    /// The table, or empty for a cross-table issue.
+    /// The table, or empty for an issue across tables.
     pub table: String,
     /// What is wrong.
     pub message: String,
@@ -27,69 +25,41 @@ impl std::fmt::Display for Issue {
     }
 }
 
-fn issue(t: &TableDef, message: impl Into<String>) -> Issue {
+/// An issue of table `t`.
+pub fn issue(t: &Table, message: impl Into<String>) -> Issue {
     Issue {
         table: t.name.clone(),
         message: message.into(),
     }
 }
 
-/// Checks one table in isolation: its structure, and that every column
-/// has been curated. This is what the committed registry must pass.
-pub fn validate_table(t: &TableDef) -> Vec<Issue> {
-    let mut out = validate_structure(t);
-    out.extend(uncurated(t));
-    out
-}
-
-/// Columns whose type nobody has confirmed: `src = ["inferred"]`. They may
-/// not be committed to the registry, but a table a user keeps for their
-/// own files may have them.
-pub fn uncurated(t: &TableDef) -> Vec<Issue> {
-    t.columns
-        .iter()
-        .filter(|c| c.src.iter().any(|s| s == "inferred"))
-        .map(|c| {
-            issue(
-                t,
-                format!(
-                    "column {} has src inferred; curate it before committing",
-                    c.name
-                ),
-            )
-        })
-        .collect()
-}
-
-/// Checks that a table is well formed, whoever wrote it.
-pub fn validate_structure(t: &TableDef) -> Vec<Issue> {
+/// Checks one table.
+pub fn validate_table(t: &Table) -> Vec<Issue> {
     let mut out = Vec::new();
     if t.name.is_empty() {
         out.push(issue(t, "name is empty"));
     }
-    if t.package.is_empty() {
-        out.push(issue(t, "package is empty"));
-    }
-    match t.source {
-        SourceKind::Mms if t.report_pairs.is_empty() => out.push(issue(
+    if t.report_pairs.is_empty() {
+        out.push(issue(
             t,
-            "report_pairs is empty; an MMS table needs at least one (report_type, report_subtype)",
-        )),
-        SourceKind::PlainCsv if t.datasets.is_empty() => out.push(issue(
-            t,
-            "datasets is empty; a plain-CSV table needs at least one dataset name",
-        )),
-        _ => {}
+            "report_pairs is empty; a table needs at least one (report_type, report_subtype)",
+        ));
     }
     if t.columns.is_empty() {
         out.push(issue(t, "column list is empty"));
     }
-    if t.versions.is_empty() {
-        out.push(issue(t, "version list is empty"));
+    if t.increments.is_empty() {
+        out.push(issue(t, "increment list is empty"));
     }
+    columns(t, &mut out);
+    keys(t, &mut out);
+    increments(t, &mut out);
+    out
+}
 
-    let mut names: HashSet<&str> = HashSet::new();
-    let mut ids: HashSet<u32> = HashSet::new();
+fn columns(t: &Table, out: &mut Vec<Issue>) {
+    let mut names = HashSet::new();
+    let mut ids = HashSet::new();
     for c in &t.columns {
         if c.name.is_empty() {
             out.push(issue(t, format!("column id {} has an empty name", c.id)));
@@ -100,19 +70,14 @@ pub fn validate_structure(t: &TableDef) -> Vec<Issue> {
                 format!("column name {} is declared twice", c.name),
             ));
         }
-        for a in &c.aliases {
-            if !names.insert(a.as_str()) {
-                out.push(issue(
-                    t,
-                    format!(
-                        "alias {} of column {} collides with another name or alias",
-                        a, c.name
-                    ),
-                ));
-            }
-        }
-        if !ids.insert(c.id.0) {
+        if !ids.insert(c.id) {
             out.push(issue(t, format!("column id {} is used twice", c.id)));
+        }
+        if c.id.0 == 0 {
+            out.push(issue(
+                t,
+                format!("column {} has id 0; ids start at 1", c.name),
+            ));
         }
         if c.id.0 >= t.next_column_id {
             out.push(issue(
@@ -123,108 +88,51 @@ pub fn validate_structure(t: &TableDef) -> Vec<Issue> {
                 ),
             ));
         }
-        if c.id.0 == 0 {
-            out.push(issue(
-                t,
-                format!("column {} has id 0; ids start at 1", c.name),
-            ));
-        }
-        if let Some(r) = c.removed_in
-            && r <= c.added_in
-        {
-            out.push(issue(
-                t,
-                format!(
-                    "column {} has removed_in {} not after added_in {}",
-                    c.name, r, c.added_in
-                ),
-            ));
-        }
-        if let ColumnType::Number { precision, scale } = c.ty {
-            match (precision, scale) {
-                (Some(p), Some(s)) if s > p => {
-                    out.push(issue(
-                        t,
-                        format!("column {} has scale {s} greater than precision {p}", c.name),
-                    ));
-                }
-                (Some(p), _) if p == 0 || p > 38 => {
-                    out.push(issue(
-                        t,
-                        format!(
-                            "column {} has precision {p}; Decimal128 allows 1..=38",
-                            c.name
-                        ),
-                    ));
-                }
-                (None, Some(_)) => out.push(issue(
-                    t,
-                    format!("column {} has a scale but no precision", c.name),
-                )),
-                _ => {}
-            }
-        }
-        if let ColumnType::Utf8 {
-            max_len: Some(0), ..
-        } = c.ty
-        {
-            out.push(issue(t, format!("column {} has max_len 0", c.name)));
-        }
-    }
-
-    for k in &t.primary_key {
-        match t.column(k) {
-            None => out.push(issue(
-                t,
-                format!("primary_key names {k}, which is not a column"),
-            )),
-            // A key column refuses nulls wherever it can: only a table with
-            // a published shape that lacks the column may leave it nullable.
-            Some(c) if c.nullable && shapes_without(t, c).is_empty() => out.push(issue(
-                t,
-                format!("primary_key column {k} is nullable; set nullable = false"),
-            )),
-            Some(c) if c.removed_in.is_some() => {
-                out.push(issue(t, format!("primary_key column {k} has been removed")));
-            }
-            _ => {}
-        }
-    }
-    let mut pk_seen = HashSet::new();
-    for k in &t.primary_key {
-        if !pk_seen.insert(k) {
-            out.push(issue(t, format!("primary_key lists {k} twice")));
-        }
-    }
-    for c in &t.columns {
         if !c.nullable && !t.primary_key.contains(&c.name) {
-            out.push(issue(t, format!("column {} is non-nullable but not in primary_key; only key columns may refuse nulls", c.name)));
-        }
-        // A file of a shape without the column would have to write a null.
-        if !c.nullable
-            && let Some(shape) = shapes_without(t, c).first()
-        {
             out.push(issue(
                 t,
                 format!(
-                    "column {} is non-nullable but {shape} does not carry it; set nullable = true",
+                    "column {} is non-nullable but not in primary_key; only key columns may refuse nulls",
                     c.name
                 ),
             ));
         }
+        if !c.nullable
+            && let Some(i) = t.increments.iter().find(|i| !i.columns.contains(&c.name))
+        {
+            out.push(issue(
+                t,
+                format!(
+                    "column {} is non-nullable but increment {} does not carry it; set nullable = true",
+                    c.name, i.n
+                ),
+            ));
+        }
     }
+}
 
-    // An appended table with no time of its own is partitioned by the
-    // month of the file its rows came in, so no time column is required.
+fn keys(t: &Table, out: &mut Vec<Issue>) {
+    let mut seen = HashSet::new();
+    for k in &t.primary_key {
+        if !seen.insert(k) {
+            out.push(issue(t, format!("primary_key lists {k} twice")));
+        }
+        if t.column(k).is_none() {
+            out.push(issue(
+                t,
+                format!("primary_key names {k}, which is not a column"),
+            ));
+        }
+    }
     if let Some(tc) = &t.time_column {
         match t.column(tc) {
             None => out.push(issue(t, format!("time_column {tc} is not a column"))),
-            Some(c) if !matches!(c.ty, ColumnType::Timestamp | ColumnType::Date) => {
+            Some(c) if !matches!(c.ty, LakeType::TimestampNs | LakeType::Date) => {
                 out.push(issue(
                     t,
                     format!(
-                        "time_column {tc} has type {}; it must be timestamp or date",
-                        c.ty.kind_name()
+                        "time_column {tc} has type {}; it must be timestamp_ns or date",
+                        c.ty
                     ),
                 ));
             }
@@ -237,189 +145,68 @@ pub fn validate_structure(t: &TableDef) -> Vec<Issue> {
             "load_mode is snapshot but primary_key is empty; snapshots are replaced by key",
         ));
     }
-
-    let mut prev = None;
-    for v in &t.versions {
-        if let Some(p) = prev
-            && v.n <= p
-        {
-            out.push(issue(
-                t,
-                format!(
-                    "version {} follows version {p}; versions must strictly increase",
-                    v.n
-                ),
-            ));
-        }
-        prev = Some(v.n);
-        if v.columns.is_empty() {
-            out.push(issue(t, format!("version {} has no columns", v.n)));
-        }
-        let mut seen = HashSet::new();
-        for c in &v.columns {
-            if !seen.insert(c) {
-                out.push(issue(t, format!("version {} lists column {c} twice", v.n)));
-            }
-            match t.column(c) {
-                None => out.push(issue(
-                    t,
-                    format!("version {} lists column {c}, which is not declared", v.n),
-                )),
-                Some(def) => {
-                    if def.added_in > v.n {
-                        out.push(issue(
-                            t,
-                            format!(
-                                "version {} lists column {c}, which is added_in {}",
-                                v.n, def.added_in
-                            ),
-                        ));
-                    }
-                    if let Some(r) = def.removed_in
-                        && r <= v.n
-                    {
-                        out.push(issue(
-                            t,
-                            format!("version {} lists column {c}, which is removed_in {r}", v.n),
-                        ));
-                    }
-                }
-            }
-        }
-        let recomputed = Fingerprint::of_names(v.columns.iter().map(String::as_str));
-        if recomputed != v.fingerprint {
-            out.push(issue(
-                t,
-                format!(
-                    "version {} declares fingerprint {} but its columns hash to {recomputed}",
-                    v.n, v.fingerprint
-                ),
-            ));
-        }
-        // Two versions may have the same columns: AEMO has bumped a version
-        // number without changing the list, and both numbers are in files.
-        if let (Some(a), Some(b)) = (v.first_seen, v.last_seen)
-            && b < a
-        {
-            out.push(issue(
-                t,
-                format!("version {} has last_seen {b} before first_seen {a}", v.n),
-            ));
-        }
-        validate_variants(t, v, &mut out);
-    }
-    validate_rules(t, &mut out);
-    for c in &t.columns {
-        let in_a_shape = t.versions.iter().any(|v| {
-            v.columns.contains(&c.name)
-                || v.variants
-                    .iter()
-                    .any(|x| x.columns.iter().any(|n| is_named(c, n)))
-        });
-        // A column declared by hand, one the census saw beside the
-        // declared ones (`file`) or the text of values that did not fit a
-        // column (`raw`) need be in no version's list.
-        let outside = ["manual", "file", "raw"];
-        if !in_a_shape && c.src.iter().all(|s| !outside.contains(&s.as_str())) {
-            out.push(issue(t, format!("column {} appears in no version", c.name)));
-        }
-        let text = matches!(c.ty, ColumnType::Utf8 { .. }) && c.nullable;
-        if c.src.iter().any(|s| s == "file") && !text {
-            out.push(issue(
-                t,
-                format!(
-                    "column {} has src file, which is kept as nullable text",
-                    c.name
-                ),
-            ));
-        }
-        if c.is_raw() && (c.raw_of().is_none_or(|b| t.column(b).is_none()) || !text) {
-            out.push(issue(
-                t,
-                format!(
-                    "column {} has src raw: it is the nullable text {{column}}__raw of a declared column",
-                    c.name
-                ),
-            ));
-        }
-    }
-    out
 }
 
-/// Checks the hand-written rules of a table: each says why it exists,
-/// names an interval that is not empty, and routes file columns to
-/// declared lake columns without ambiguity.
-fn validate_rules(t: &TableDef, out: &mut Vec<Issue>) {
-    for (i, r) in t.rules.iter().enumerate() {
-        let n = i + 1;
-        if r.note.trim().is_empty() {
-            out.push(issue(
-                t,
-                format!("rule {n} has no note; say why it exists and how it was checked"),
-            ));
+fn increments(t: &Table, out: &mut Vec<Issue>) {
+    let mut ns = HashSet::new();
+    let mut prev = None;
+    for i in &t.increments {
+        if !ns.insert(i.n) {
+            out.push(issue(t, format!("increment {} is declared twice", i.n)));
         }
-        if !r.is_scoped() {
+        if i.n == 0 {
+            out.push(issue(t, "increment 0; increments start at 1"));
+        }
+        if let Some(p) = prev
+            && i.from <= p
+        {
             out.push(issue(
                 t,
                 format!(
-                    "rule {n} has no scope; say which files it is for with shape, version, fingerprint, from or to"
+                    "increment {} applies from {} after one from {p}; from must strictly increase",
+                    i.n, i.from
                 ),
             ));
         }
-        if let (Some(a), Some(b)) = (r.from, r.to)
-            && b < a
-        {
-            out.push(issue(t, format!("rule {n} has to {b} before from {a}")));
+        prev = Some(i.from);
+        if i.columns.is_empty() {
+            out.push(issue(t, format!("increment {} has no columns", i.n)));
         }
-        if r.columns.is_empty() {
-            out.push(issue(t, format!("rule {n} routes no column")));
-        }
-        let mut sources = HashSet::new();
-        let mut targets = HashSet::new();
-        for c in &r.columns {
-            if c.source.is_empty() {
-                out.push(issue(t, format!("rule {n} has a route with no source")));
-            }
-            if !sources.insert(c.source.as_str()) {
+        let mut seen = HashSet::new();
+        for c in &i.columns {
+            if !seen.insert(c) {
                 out.push(issue(
                     t,
-                    format!("rule {n} routes source {} twice", c.source),
+                    format!("increment {} lists column {c} twice", i.n),
                 ));
             }
-            if !targets.insert(c.column.as_str()) {
-                out.push(issue(
-                    t,
-                    format!("rule {n} routes two sources to column {}", c.column),
-                ));
-            }
-            if !t.columns.iter().any(|d| d.name == c.column) {
+            if t.column(c).is_none() {
                 out.push(issue(
                     t,
                     format!(
-                        "rule {n} routes {} to {}, which is not a declared column; declare it with src = [\"manual\"]",
-                        c.source, c.column
+                        "increment {} lists column {c}, which is not a column; add it to column",
+                        i.n
                     ),
                 ));
             }
-            if c.source == c.column {
-                out.push(issue(
-                    t,
-                    format!(
-                        "rule {n} routes {} to itself, which is what happens without a rule",
-                        c.source
-                    ),
-                ));
-            }
+        }
+        if i.ctl.is_some() != i.ctl_sha256.is_some() {
+            out.push(issue(
+                t,
+                format!(
+                    "increment {} names a control file without its hash, or a hash without its file",
+                    i.n
+                ),
+            ));
         }
     }
 }
 
 /// Checks a set of tables together: unique names and report pairs.
-pub fn validate_set<'a>(tables: impl IntoIterator<Item = &'a TableDef>) -> Vec<Issue> {
+pub fn validate_set<'a>(tables: impl IntoIterator<Item = &'a Table>) -> Vec<Issue> {
     let mut out = Vec::new();
     let mut names: BTreeMap<&str, usize> = BTreeMap::new();
     let mut pairs: BTreeMap<(&str, &str), &str> = BTreeMap::new();
-    let mut datasets: BTreeMap<&str, &str> = BTreeMap::new();
     for t in tables {
         *names.entry(t.name.as_str()).or_default() += 1;
         for (a, b) in &t.report_pairs {
@@ -435,16 +222,6 @@ pub fn validate_set<'a>(tables: impl IntoIterator<Item = &'a TableDef>) -> Vec<I
                 });
             }
         }
-        for d in &t.datasets {
-            if let Some(other) = datasets.insert(d.as_str(), t.name.as_str())
-                && other != t.name
-            {
-                out.push(Issue {
-                    table: String::new(),
-                    message: format!("dataset {d} is claimed by both {other} and {}", t.name),
-                });
-            }
-        }
     }
     for (n, count) in names {
         if count > 1 {
@@ -457,494 +234,119 @@ pub fn validate_set<'a>(tables: impl IntoIterator<Item = &'a TableDef>) -> Vec<I
     out
 }
 
-/// Whether `name` is `c`'s name or one of its aliases.
-fn is_named(c: &crate::file_model::model::ColumnDef, name: &str) -> bool {
-    c.name == name || c.aliases.iter().any(|a| a == name)
-}
-
-/// The versions and variants that do not carry column `c`, described for a
-/// message: `version 3`, `version 3 variant 1`.
-fn shapes_without(t: &TableDef, c: &crate::file_model::model::ColumnDef) -> Vec<String> {
-    let mut out = Vec::new();
-    for v in &t.versions {
-        if !v.columns.iter().any(|n| is_named(c, n)) {
-            out.push(format!("version {}", v.n));
-        }
-        for (i, x) in v.variants.iter().enumerate() {
-            if !x.columns.iter().any(|n| is_named(c, n)) {
-                out.push(format!("version {} variant {}", v.n, i + 1));
-            }
-        }
-    }
-    out
-}
-
-/// A variant is another real shape of a version: its columns must be
-/// columns or aliases of the table, hash to the declared fingerprint and
-/// differ from the version and its other variants.
-fn validate_variants(t: &TableDef, v: &crate::file_model::model::VersionDef, out: &mut Vec<Issue>) {
-    let mut fps: HashSet<Fingerprint> = HashSet::new();
-    fps.insert(v.fingerprint);
-    for (i, x) in v.variants.iter().enumerate() {
-        let label = format!("version {} variant {}", v.n, i + 1);
-        if x.columns.is_empty() {
-            out.push(issue(t, format!("{label} has no columns")));
-        }
-        let mut seen = HashSet::new();
-        for c in &x.columns {
-            match t.column(c) {
-                None => out.push(issue(
-                    t,
-                    format!("{label} lists column {c}, which is not a column or alias"),
-                )),
-                Some(def) => {
-                    if !seen.insert(def.id) {
-                        out.push(issue(t, format!("{label} lists column {} twice", def.name)));
-                    }
-                }
-            }
-        }
-        let recomputed = Fingerprint::of_names(x.columns.iter().map(String::as_str));
-        if recomputed != x.fingerprint {
-            out.push(issue(
-                t,
-                format!(
-                    "{label} declares fingerprint {} but its columns hash to {recomputed}",
-                    x.fingerprint
-                ),
-            ));
-        } else if !fps.insert(x.fingerprint) {
-            out.push(issue(
-                t,
-                format!("{label} has the same columns as the version or another variant"),
-            ));
-        }
-        if let (Some(a), Some(b)) = (x.first_seen, x.last_seen)
-            && b < a
-        {
-            out.push(issue(
-                t,
-                format!("{label} has last_seen {b} before first_seen {a}"),
-            ));
-        }
-    }
-}
-
 #[cfg(test)]
 mod tests {
-    use nemlake_core::Fingerprint;
-
     use super::*;
-    use crate::file_model::file::tests::unit_scada;
-    use crate::file_model::model::{ColumnDef, ColumnId, Dedupe, SchemaVersion, VersionDef};
+    use crate::file_model::model::tests::unit_scada;
+    use crate::file_model::model::{Column, ColumnId};
 
-    fn msgs(t: &TableDef) -> Vec<String> {
+    fn messages(t: &Table) -> Vec<String> {
         validate_table(t).into_iter().map(|i| i.message).collect()
     }
 
-    fn has(t: &TableDef, needle: &str) -> bool {
-        let m = msgs(t);
-        let found = m.iter().any(|s| s.contains(needle));
-        assert!(found, "no issue containing {needle:?} in {m:#?}");
-        found
+    fn has(t: &Table, needle: &str) -> bool {
+        let m = messages(t);
+        assert!(m.iter().any(|x| x.contains(needle)), "{needle}: {m:?}");
+        true
     }
 
     #[test]
-    fn valid_table_has_no_issues() {
-        assert_eq!(validate_table(&unit_scada()), vec![]);
-        assert!(validate_set([&unit_scada()]).is_empty());
+    fn a_good_table_has_no_issue() {
+        assert_eq!(messages(&unit_scada()), Vec::<String>::new());
+        let i = Issue {
+            table: String::new(),
+            message: "m".into(),
+        };
+        assert_eq!(i.to_string(), "m");
+        assert_eq!(
+            issue(&unit_scada(), "m").to_string(),
+            "DISPATCH_UNIT_SCADA: m"
+        );
     }
 
     #[test]
-    fn column_issues() {
+    fn columns_and_ids() {
         let mut t = unit_scada();
-        t.columns[1].name = "SETTLEMENTDATE".into();
-        has(&t, "declared twice");
+        t.columns.push(Column {
+            id: ColumnId(3),
+            name: "DUID".into(),
+            ty: LakeType::String,
+            nullable: true,
+            note: None,
+        });
+        assert!(has(&t, "DUID is declared twice") && has(&t, "id 3 is used twice"));
         let mut t = unit_scada();
-        t.columns[2].aliases.push("DUID".into());
-        has(&t, "collides");
-        let mut t = unit_scada();
-        t.columns[1].id = ColumnId(1);
-        has(&t, "used twice");
-        let mut t = unit_scada();
-        t.columns[2].id = ColumnId(9);
-        has(&t, "next_column_id is 4");
-        let mut t = unit_scada();
-        t.columns[2].id = ColumnId(0);
-        has(&t, "id 0");
-        let mut t = unit_scada();
-        t.columns[2].removed_in = Some(SchemaVersion(1));
-        has(&t, "removed_in 1 not after");
-        let mut t = unit_scada();
-        t.columns[2].ty = ColumnType::Number {
-            precision: Some(5),
-            scale: Some(6),
-        };
-        has(&t, "scale 6 greater");
-        t.columns[2].ty = ColumnType::Number {
-            precision: Some(40),
-            scale: None,
-        };
-        has(&t, "precision 40");
-        t.columns[2].ty = ColumnType::Number {
-            precision: None,
-            scale: Some(2),
-        };
-        has(&t, "no precision");
-        t.columns[2].ty = ColumnType::Utf8 {
-            max_len: Some(0),
-            dict: false,
-        };
-        has(&t, "max_len 0");
-        let mut t = unit_scada();
-        t.columns[0].name = String::new();
-        has(&t, "empty name");
+        t.columns[0].id = ColumnId(0);
+        t.columns[1].id = ColumnId(9);
+        t.columns[1].name = String::new();
+        assert!(has(&t, "ids start at 1") && has(&t, "next_column_id is 5"));
+        assert!(has(&t, "empty name"));
         let mut t = unit_scada();
         t.columns[2].nullable = false;
-        has(&t, "non-nullable but not in primary_key");
+        assert!(has(&t, "only key columns may refuse nulls"));
         let mut t = unit_scada();
-        t.columns[2].src = vec!["inferred".into()];
-        has(&t, "src inferred");
+        t.columns.clear();
+        t.increments.clear();
+        t.report_pairs.clear();
+        t.name = String::new();
+        assert!(has(&t, "column list is empty") && has(&t, "increment list is empty"));
+        assert!(has(&t, "report_pairs is empty") && has(&t, "name is empty"));
     }
 
     #[test]
-    fn key_and_time_issues() {
-        let mut t = unit_scada();
-        t.primary_key.push("NOPE".into());
-        has(&t, "not a column");
-        let mut t = unit_scada();
-        t.columns[1].nullable = true;
-        has(&t, "is nullable");
+    fn keys_and_time() {
         let mut t = unit_scada();
         t.primary_key.push("DUID".into());
-        has(&t, "twice");
-        let mut t = unit_scada();
-        t.columns[1].removed_in = Some(SchemaVersion(3));
-        has(&t, "has been removed");
+        t.primary_key.push("NOPE".into());
+        assert!(has(&t, "lists DUID twice") && has(&t, "NOPE, which is not a column"));
         let mut t = unit_scada();
         t.time_column = Some("DUID".into());
-        has(&t, "must be timestamp or date");
-        t.time_column = Some("X".into());
-        has(&t, "time_column X is not a column");
-        t.time_column = None;
-        assert!(validate_table(&t).is_empty(), "{:?}", validate_table(&t));
+        assert!(has(&t, "must be timestamp_ns or date"));
+        t.time_column = Some("NOPE".into());
+        assert!(has(&t, "time_column NOPE is not a column"));
         let mut t = unit_scada();
         t.load_mode = LoadMode::Snapshot;
-        t.time_column = None;
         t.primary_key.clear();
         t.columns[0].nullable = true;
         t.columns[1].nullable = true;
-        has(&t, "snapshot but primary_key is empty");
+        assert!(has(&t, "snapshots are replaced by key"));
+        // A key column an increment lacks must take nulls.
         let mut t = unit_scada();
-        t.name.clear();
-        t.package.clear();
-        t.report_pairs.clear();
-        has(&t, "name is empty");
-        has(&t, "package is empty");
-        has(&t, "report_pairs is empty");
-        let mut t = unit_scada();
-        t.source = SourceKind::PlainCsv;
-        has(&t, "datasets is empty");
-        let mut t = unit_scada();
-        t.columns.clear();
-        t.versions.clear();
-        t.primary_key.clear();
-        t.time_column = None;
-        t.load_mode = LoadMode::Snapshot;
-        t.dedupe = Dedupe::None;
-        has(&t, "column list is empty");
-        has(&t, "version list is empty");
-    }
-
-    #[test]
-    fn variant_issues() {
-        use crate::file_model::model::VariantDef;
-        let variant = |cols: &[&str]| VariantDef {
-            columns: cols.iter().map(|c| (*c).to_owned()).collect(),
-            fingerprint: Fingerprint::of_names(cols.iter().copied()),
-            first_seen: None,
-            last_seen: None,
-        };
-        // A valid variant: an alias name in place of the canonical one.
-        let mut t = unit_scada();
-        t.columns[2].aliases.push("MW".into());
-        t.versions[0]
-            .variants
-            .push(variant(&["SETTLEMENTDATE", "DUID", "MW"]));
-        assert!(validate_table(&t).is_empty(), "{:?}", validate_table(&t));
-        // And a shorter list that still carries the key.
-        t.versions[0]
-            .variants
-            .push(variant(&["SETTLEMENTDATE", "DUID"]));
-        assert!(validate_table(&t).is_empty(), "{:?}", validate_table(&t));
-
-        let with = |v: VariantDef| {
-            let mut t = unit_scada();
-            t.columns[2].aliases.push("MW".into());
-            t.versions[0].variants.push(v);
-            t
-        };
-        has(&with(variant(&[])), "variant 1 has no columns");
-        has(
-            &with(variant(&["SETTLEMENTDATE", "DUID", "NOPE"])),
-            "lists column NOPE, which is not a column or alias",
-        );
-        has(
-            &with(variant(&["SETTLEMENTDATE", "DUID", "SCADAVALUE", "MW"])),
-            "lists column SCADAVALUE twice",
-        );
-        // A shape without a key column is allowed only when that column
-        // admits null: old files have no value to give.
-        let short = with(variant(&["SETTLEMENTDATE", "MW"]));
-        has(
-            &short,
-            "column DUID is non-nullable but version 1 variant 1 does not carry it",
-        );
-        let mut relaxed = short.clone();
-        relaxed.columns[1].nullable = true;
-        assert!(
-            validate_table(&relaxed).is_empty(),
-            "{:?}",
-            validate_table(&relaxed)
-        );
-        // A column that lives only in a variant is still a column of the table.
-        let mut extra = unit_scada();
-        extra.columns.push(ColumnDef {
-            id: ColumnId(extra.next_column_id),
-            name: "QUALITY".into(),
-            ..extra.columns[2].clone()
-        });
-        extra.next_column_id += 1;
-        has(&extra, "column QUALITY appears in no version");
-        extra.versions[0].variants.push(variant(&[
-            "SETTLEMENTDATE",
-            "DUID",
-            "SCADAVALUE",
-            "QUALITY",
-        ]));
-        assert!(
-            validate_table(&extra).is_empty(),
-            "{:?}",
-            validate_table(&extra)
-        );
-        has(
-            &with(variant(&["SETTLEMENTDATE", "DUID", "SCADAVALUE"])),
-            "same columns as the version or another variant",
-        );
-        let mut wrong = variant(&["SETTLEMENTDATE", "DUID", "MW"]);
-        wrong.fingerprint = Fingerprint(7);
-        has(&with(wrong), "variant 1 declares fingerprint");
-        let mut dates = variant(&["SETTLEMENTDATE", "DUID", "MW"]);
-        dates.first_seen = Some("2024-02".parse().unwrap());
-        dates.last_seen = Some("2024-01".parse().unwrap());
-        has(
-            &with(dates),
-            "variant 1 has last_seen 2024-01 before first_seen 2024-02",
-        );
-    }
-
-    #[test]
-    fn version_issues() {
-        let mut t = unit_scada();
-        t.versions.push(t.versions[0].clone());
-        has(&t, "must strictly increase");
-        // The same columns under two version numbers is a fact of the feed.
-        let mut t = unit_scada();
-        t.versions.push(t.versions[0].clone());
-        t.versions[1].n = SchemaVersion(2);
-        assert!(validate_table(&t).is_empty(), "{:?}", validate_table(&t));
-        let mut t = unit_scada();
-        t.versions[0].columns.push("X".into());
-        has(&t, "not declared");
-        has(&t, "declares fingerprint");
-        let mut t = unit_scada();
-        t.versions[0].columns.push("DUID".into());
-        has(&t, "twice");
-        let mut t = unit_scada();
-        t.versions[0].columns.clear();
-        t.versions[0].fingerprint = Fingerprint::of_names([]);
-        has(&t, "has no columns");
-        has(&t, "appears in no version");
-        let mut t = unit_scada();
-        t.columns[2].added_in = SchemaVersion(2);
-        has(&t, "added_in 2");
-        let mut t = unit_scada();
-        t.columns.push(ColumnDef {
-            id: ColumnId(3),
-            name: "GONE".into(),
-            added_in: SchemaVersion(1),
-            removed_in: Some(SchemaVersion(2)),
-            ..t.columns[2].clone()
-        });
-        t.columns[3].id = ColumnId(9);
-        t.next_column_id = 10;
-        t.versions.push(VersionDef {
-            n: SchemaVersion(2),
-            columns: vec![
-                "SETTLEMENTDATE".into(),
-                "DUID".into(),
-                "SCADAVALUE".into(),
-                "GONE".into(),
-            ],
-            fingerprint: Fingerprint::of_names(["SETTLEMENTDATE", "DUID", "SCADAVALUE", "GONE"]),
-            first_seen: Some("2024-02".parse().unwrap()),
-            last_seen: Some("2024-01".parse().unwrap()),
-            src: None,
-            variants: Vec::new(),
-        });
-        has(&t, "removed_in 2");
-        has(&t, "last_seen 2024-01 before first_seen 2024-02");
-        // A manual column may exist in no version (reserved for the future).
-        let mut t = unit_scada();
-        t.columns.push(ColumnDef {
-            id: ColumnId(3),
-            name: "FUTURE".into(),
-            src: vec!["manual".into()],
-            ..t.columns[2].clone()
-        });
-        t.columns[3].id = ColumnId(3);
-        t.columns[2].id = ColumnId(9);
-        t.next_column_id = 10;
-        assert!(
-            !msgs(&t).iter().any(|m| m.contains("FUTURE")),
-            "{:?}",
-            msgs(&t)
-        );
-    }
-
-    #[test]
-    fn census_columns_are_nullable_text() {
-        use crate::file_model::model::ColumnDef;
-        let column = |name: &str, src: &str, nullable: bool| ColumnDef {
-            id: ColumnId(90),
-            name: name.into(),
-            aliases: vec![],
-            ty: ColumnType::Utf8 {
-                max_len: None,
-                dict: false,
-            },
-            nullable,
-            oracle: None,
-            loader: None,
-            added_in: SchemaVersion(1),
-            removed_in: None,
-            description: None,
-            src: vec![src.into()],
-            curated: false,
-        };
-        let with = |c: ColumnDef| {
-            let mut t = unit_scada();
-            t.next_column_id = 91;
-            t.columns.push(c);
-            t
-        };
-        assert_eq!(
-            validate_table(&with(column("QUALITY", "file", true))),
-            vec![]
-        );
-        assert_eq!(
-            validate_table(&with(column("SCADAVALUE__raw", "raw", true))),
-            vec![]
-        );
-        has(
-            &with(column("QUALITY", "file", false)),
-            "src file, which is kept as nullable text",
-        );
-        has(&with(column("NOWHERE__raw", "raw", true)), "has src raw");
-        has(&with(column("SCADAVALUE_RAW", "raw", true)), "has src raw");
-        has(
-            &with(column("QUALITY", "ctl", true)),
-            "appears in no version",
-        );
-    }
-
-    #[test]
-    fn rule_issues() {
-        use crate::file_model::file::tests::unit_scada_with_rule;
-        use crate::file_model::model::RuleColumn;
-        assert_eq!(validate_table(&unit_scada_with_rule()), vec![]);
-
-        let mut t = unit_scada_with_rule();
-        t.rules[0].note = "  ".into();
-        has(&t, "rule 1 has no note");
-
-        let mut t = unit_scada_with_rule();
-        t.rules[0].from = None;
-        t.rules[0].to = None;
-        t.rules[0].version = None;
-        t.rules[0].fingerprint = None;
-        has(
+        t.increments[0].columns.retain(|c| c != "DUID");
+        assert!(has(
             &t,
-            "rule 1 has no scope; say which files it is for with shape, version, fingerprint, from or to",
-        );
-        t.rules[0].shape = Some(nemlake_core::ShapeId(1));
-        assert_eq!(validate_table(&t), vec![]);
-
-        let mut t = unit_scada_with_rule();
-        t.rules[0].from = Some("2012-01".parse().unwrap());
-        has(&t, "rule 1 has to 2011-12 before from 2012-01");
-
-        let mut t = unit_scada_with_rule();
-        t.rules[0].columns.clear();
-        has(&t, "rule 1 routes no column");
-
-        let mut t = unit_scada_with_rule();
-        t.rules[0].columns[0].column = "NOWHERE".into();
-        has(&t, "which is not a declared column");
-
-        let mut t = unit_scada_with_rule();
-        t.rules[0].columns[0].source = "SCADAVALUE_TEXT".into();
-        has(&t, "to itself");
-
-        let mut t = unit_scada_with_rule();
-        t.rules[0].columns.push(RuleColumn {
-            source: "SCADAVALUE".into(),
-            column: "DUID".into(),
-        });
-        has(&t, "routes source SCADAVALUE twice");
-
-        let mut t = unit_scada_with_rule();
-        t.rules[0].columns.push(RuleColumn {
-            source: "DUID".into(),
-            column: "SCADAVALUE_TEXT".into(),
-        });
-        has(&t, "routes two sources to column SCADAVALUE_TEXT");
-
-        let mut t = unit_scada_with_rule();
-        t.rules[0].columns[0].source = String::new();
-        has(&t, "a route with no source");
+            "DUID is non-nullable but increment 1 does not carry it"
+        ));
     }
 
     #[test]
-    fn set_issues() {
+    fn increments() {
+        let mut t = unit_scada();
+        t.increments[1].n = 1;
+        t.increments[1].from = t.increments[0].from;
+        assert!(has(&t, "increment 1 is declared twice") && has(&t, "strictly increase"));
+        let mut t = unit_scada();
+        t.increments[0].n = 0;
+        t.increments[0].columns.push("SCADAVALUE".into());
+        t.increments[0].columns.push("GHOST".into());
+        t.increments[0].ctl = Some("001.ctl".into());
+        assert!(has(&t, "increment 0") && has(&t, "lists column SCADAVALUE twice"));
+        assert!(has(&t, "GHOST, which is not a column") && has(&t, "without its hash"));
+        let mut t = unit_scada();
+        t.increments[1].columns.clear();
+        t.columns[0].nullable = true;
+        t.columns[1].nullable = true;
+        assert!(has(&t, "increment 2 has no columns"));
+    }
+
+    #[test]
+    fn sets() {
         let a = unit_scada();
         let mut b = unit_scada();
         b.name = "OTHER".into();
-        let issues = validate_set([&a, &b]);
-        assert!(
-            issues.iter().any(|i| i.message.contains("claimed by both")),
-            "{issues:?}"
-        );
-        let issues = validate_set([&a, &a]);
-        assert!(issues.iter().any(|i| i.message.contains("defined 2 times")));
-        let mut c = unit_scada();
-        c.name = "C".into();
-        c.report_pairs.clear();
-        c.source = SourceKind::PlainCsv;
-        c.datasets = vec!["ds".into()];
-        let mut d = c.clone();
-        d.name = "D".into();
-        let issues = validate_set([&c, &d]);
-        assert!(
-            issues
-                .iter()
-                .any(|i| i.message.contains("dataset ds is claimed"))
-        );
-        assert_eq!(issues[0].to_string(), issues[0].message);
-        let i = Issue {
-            table: "T".into(),
-            message: "m".into(),
-        };
-        assert_eq!(i.to_string(), "T: m");
+        let issues = validate_set([&a, &b, &a]);
+        assert_eq!(issues.len(), 3, "{issues:?}");
+        assert!(issues[0].message.contains("claimed by both"));
+        assert!(issues[2].message.contains("defined 2 times"));
     }
 }

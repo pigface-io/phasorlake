@@ -605,8 +605,6 @@ pub fn record(
 mod tests {
     use std::io::Write as _;
 
-    use nemlake_registry::TypeOptions;
-
     use super::*;
 
     const SCADA_CTL: &str = r#"LOAD DATA INFILE "PUBLIC_ARCHIVE#DISPATCH_UNIT_SCADA#FILE01#202608010000.CSV" APPEND INTO TABLE DISPATCH_UNIT_SCADA
@@ -667,7 +665,7 @@ SETTLEMENTDATE DATE "yyyy/mm/dd hh24:mi:ss", DUID CHAR(20), SCADAVALUE FLOAT EXT
         let dir = tempfile::tempdir().unwrap();
         let store = Archive::new(dir.path());
         let nem = MmsdmArchive::new("https://h").unwrap();
-        let reg = Registry::load_embedded(TypeOptions::default());
+        let reg = Registry::load_embedded();
         let month = YearMonth::new(2026, 8).unwrap();
         let root = nem.month_root(month).unwrap();
         // Listings give `#` as `%23`; the archive keeps the decoded name.
@@ -772,7 +770,7 @@ SETTLEMENTDATE DATE "yyyy/mm/dd hh24:mi:ss", DUID CHAR(20), SCADAVALUE FLOAT EXT
         let dir = tempfile::tempdir().unwrap();
         let store = Archive::new(dir.path());
         let nem = MmsdmArchive::new("https://h").unwrap();
-        let reg = Registry::load_embedded(TypeOptions::default());
+        let reg = Registry::load_embedded();
         let month = YearMonth::new(2012, 1).unwrap();
         let inner = zip_of(&[(
             "PUBLIC_DVD_DISPATCH_UNIT_SCADA_201201010000.CSV",

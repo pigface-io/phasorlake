@@ -299,11 +299,11 @@ impl BatchSink for LakeSink<'_> {
     fn block_started(&mut self, irow: &IRow<'_>, resolved: &Resolved, _pos: Pos) {
         let table = self.registry.table(resolved.table);
         let fingerprint = irow.fingerprint();
-        // Two column lists of one version are two shapes, read by two sets
-        // of rules: each is a result of its own.
+        // Two column lists of one increment are two shapes, read by two
+        // plans: each is a result of its own.
         let idx = match self.results.iter().position(|r| {
             r.table_id == resolved.table
-                && r.version == resolved.version.0
+                && r.version == resolved.version
                 && r.fingerprint == fingerprint
         }) {
             Some(i) => i,
@@ -311,7 +311,7 @@ impl BatchSink for LakeSink<'_> {
                 self.results.push(IngestResult {
                     table: table.name.clone(),
                     table_id: resolved.table,
-                    version: resolved.version.0,
+                    version: resolved.version,
                     fingerprint,
                     transform: Transform {
                         report_type: irow.report_type.to_owned(),
@@ -321,7 +321,7 @@ impl BatchSink for LakeSink<'_> {
                         source_period: self.period.map(|p| p.to_string()),
                         plan_hash: resolved.plan_hash().to_string(),
                         schema_source: resolved.source.label().to_owned(),
-                        resolution: resolved.label(),
+                        resolution: resolved.label().to_owned(),
                         shape_id: shape_id(&self.registry.shape_ids(irow, self.period)),
                     },
                     rows: 0,
@@ -337,8 +337,8 @@ impl BatchSink for LakeSink<'_> {
             let _ = tx.try_send(Event::BlockResolved {
                 source: format!("{}!{}", self.local.remote.url, self.entry),
                 table: table.name.clone(),
-                version: resolved.version.0,
-                status: resolved.label(),
+                version: resolved.version,
+                status: resolved.label().to_owned(),
             });
         }
     }
@@ -373,7 +373,7 @@ impl BatchSink for LakeSink<'_> {
             )],
         };
         for (partition, batch) in parts {
-            let key: WriterKey = (b.table, b.version.0, b.fingerprint.0, partition);
+            let key: WriterKey = (b.table, b.version, b.fingerprint.0, partition);
             self.tick += 1;
             let fail =
                 |e: &(dyn std::error::Error + 'static)| SinkError::write(table.name.clone(), e);
@@ -417,7 +417,7 @@ impl BatchSink for LakeSink<'_> {
                     };
                     let meta = self.meta(
                         &table.name,
-                        b.version.0,
+                        b.version,
                         b.fingerprint,
                         time_col,
                         self.results[idx].transform.clone(),

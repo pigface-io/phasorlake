@@ -1,15 +1,17 @@
-//! The schema model: what a table is, how its versions relate, and the rules
-//! a committed schema file must satisfy.
+//! The schema model: our schema per table, in increments AEMO's control
+//! files set, and the rules a committed schema must satisfy.
 //!
 //! Pure and synchronous. It knows nothing of Arrow, so the registry's
 //! `build.rs` compiles this module on its own to validate `schemas/` at
-//! compile time and emit a compact blob; the rest of the crate adds the Arrow
-//! mapping.
+//! compile time and emit a compact blob; the rest of the crate adds the
+//! Arrow mapping.
 //!
-//! On disk a table is one TOML file (see [`mod@file`]) with every column declared
-//! once and every version as an ordered list of column names. In memory it is
-//! a [`TableDef`]. [`validate`] holds the invariants, [`compat`] the evolution
-//! rules, and [`blob`] the postcard encoding of a whole set of tables.
+//! A table is `schemas/{market}/{TABLE}/table.toml` (see [`mod@file`]): its
+//! lake columns with exact types and stable ids, which persist, and its
+//! increments (`TABLE@n`), each the file shape of one AEMO control file
+//! kept byte for byte under `{TABLE}/ctl/`. [`validate`] holds the
+//! invariants, [`compat`] what the lake survives, [`blob`] the packed set,
+//! and [`ctl`] the parser of AEMO's SQL*Loader control files.
 
 pub mod blob;
 pub mod compat;
@@ -18,12 +20,10 @@ pub mod error;
 pub mod file;
 pub mod model;
 pub mod shapes;
-pub mod v2;
 pub mod validate;
 
 pub use error::SchemaFileError;
 pub use model::{
-    ColumnDef, ColumnId, ColumnType, Dedupe, LoadMode, Market, MarketDef, Provenance, RAW_SRC,
-    RuleColumn, RuleDef, SchemaVersion, SourceKind, TableDef, TimestampFormat, VariantDef,
-    VersionDef, Visibility, raw_name,
+    Column, ColumnId, Dedupe, Increment, LakeType, LoadMode, Market, MarketDef, Table,
+    TimestampFormat,
 };

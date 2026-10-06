@@ -9,9 +9,7 @@ use arrow_array::builder::{ArrayBuilder, StringBuilder};
 use arrow_array::{ArrayRef, RecordBatch};
 use arrow_schema::{DataType, Field, Schema};
 use nemlake_core::{Category, Diagnose as _, Diagnostic, Fingerprint, IRow};
-use nemlake_registry::{
-    Cast, ConformancePlan, Mode, Registry, ResolveOptions, Resolved, SchemaVersion, TableId,
-};
+use nemlake_registry::{Cast, ConformancePlan, Mode, Registry, ResolveOptions, Resolved, TableId};
 
 use nemlake_decode::PREFIX_FIELDS;
 use nemlake_decode::error::{RowError, RowFailure, SinkError};
@@ -26,8 +24,8 @@ use crate::builders::{ColumnBuilder, Fault, Parsed, parse_field};
 pub struct BlockBatch {
     /// The table.
     pub table: TableId,
-    /// The version the plan was based on.
-    pub version: SchemaVersion,
+    /// The table's increment the plan was based on.
+    pub version: u16,
     /// The plan the rows were conformed with.
     pub plan: Arc<ConformancePlan>,
     /// The observed fingerprint of the I row.
@@ -40,7 +38,7 @@ pub struct BlockBatch {
 pub trait BatchSink {
     /// A batch is ready.
     fn batch(&mut self, b: BlockBatch) -> Result<(), SinkError>;
-    /// A warning raised while resolving (drift, decimal fallback).
+    /// A warning raised while resolving (a deviation, an unseen version).
     fn warning(&mut self, d: Diagnostic);
     /// A block began; `resolved` describes how it matched.
     fn block_started(&mut self, _irow: &IRow<'_>, _resolved: &Resolved, _pos: Pos) {}
@@ -56,8 +54,6 @@ struct Step {
     field: u16,
     /// Output column.
     target: u16,
-    /// The table's declared raw column for it, if any.
-    raw: Option<u16>,
     cast: Cast,
     nullable: bool,
 }
@@ -70,9 +66,8 @@ struct RawColumn {
     /// The raw column's name.
     name: String,
     /// One entry per row of the batch: the text, or null where the value
-    /// fit. `None` when the table declares the raw column: the text is
-    /// then appended to it like any other value.
-    text: Option<StringBuilder>,
+    /// fit.
+    text: StringBuilder,
     /// How many values were kept so.
     count: u64,
     /// The first of them: its text, its line and the fault.
@@ -161,16 +156,19 @@ impl From<Block> for BlockBuffers {
 pub struct ArrowSink<'r, B: BatchSink> {
     registry: &'r Registry,
     opts: ResolveOptions,
-    /// The month of the source being read, when it is known: a table's
-    /// rules can be bounded by months.
+    /// The month of the source being read, when it is known: it decides
+    /// the increment a block is read against.
     period: Option<nemlake_core::YearMonth>,
     batch_rows: usize,
     out: B,
     block: Option<Block>,
     parsed: Vec<Parsed>,
     /// The values of the current row that did not fit: output column,
-    /// field position, fault, and whether the declared raw column took it.
-    misfits: Vec<(u16, u16, Fault, bool)>,
+    /// field position, fault.
+    misfits: Vec<(u16, u16, Fault)>,
+    /// The shapes (plan and I-row version) whose resolution warnings were
+    /// passed on: a file of many blocks of one shape says them once.
+    warned: Vec<(nemlake_registry::PlanHash, u16)>,
 }
 
 /// Rows a new column builder makes room for. Builders grow as rows come;
@@ -186,7 +184,6 @@ fn expected(ty: &DataType) -> String {
     match ty {
         DataType::Float64 => "a number (Float64)".into(),
         DataType::Int64 => "a whole number (Int64)".into(),
-        DataType::Decimal128(p, s) => format!("a decimal number that fits Decimal128({p}, {s})"),
         DataType::Timestamp(..) => "a timestamp yyyy/mm/dd hh24:mi:ss".into(),
         DataType::Date32 => "a date yyyy/mm/dd".into(),
         DataType::Boolean => "a boolean".into(),
@@ -206,11 +203,12 @@ impl<'r, B: BatchSink> ArrowSink<'r, B> {
             block: None,
             parsed: Vec::new(),
             misfits: Vec::new(),
+            warned: Vec::new(),
         }
     }
 
-    /// Says which month the source being read is of, so that rules
-    /// bounded by months apply to it.
+    /// Says which month the source being read is of, so that each block
+    /// is read against the increment in force then.
     #[must_use]
     pub fn with_period(mut self, period: Option<nemlake_core::YearMonth>) -> Self {
         self.period = period;
@@ -249,7 +247,7 @@ impl<'r, B: BatchSink> ArrowSink<'r, B> {
         let warn = |code: &'static str, column: &str, message: String| {
             Diagnostic::warning(code, Category::Parse, message)
                 .with_table(table.name.clone())
-                .with_version(block.resolved.version.0)
+                .with_version(block.resolved.version)
                 .with_column(column.to_owned())
         };
         // The plan's schema serves every batch that needs no change to it;
@@ -330,9 +328,7 @@ impl<'r, B: BatchSink> ArrowSink<'r, B> {
             d.expected = Some(expected(target.data_type()));
             d.observed = Some(sample);
             self.out.warning(d);
-            let Some(mut text) = raw.text else {
-                continue;
-            };
+            let mut text = raw.text;
             let of = target
                 .metadata()
                 .get(nemlake_registry::arrow::FIELD_ID_KEY)
@@ -374,8 +370,12 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
             .registry
             .resolve_in(irow, self.opts, self.period)
             .map_err(|e| SinkError::Refused(Box::new(e.diagnostic())))?;
-        for w in &resolved.warnings {
-            self.out.warning(w.clone());
+        let shape = (resolved.plan_hash(), irow.version);
+        if !resolved.warnings.is_empty() && !self.warned.contains(&shape) {
+            self.warned.push(shape);
+            for w in &resolved.warnings {
+                self.out.warning(w.clone());
+            }
         }
         self.out.block_started(irow, &resolved, pos);
         // A file of many blocks reuses the buffers of the block before:
@@ -404,7 +404,6 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
             Some(Step {
                 field: (PREFIX_FIELDS + usize::from(r.source_index)) as u16,
                 target: r.target?,
-                raw: r.raw_target,
                 cast: r.cast,
                 nullable: r.nullable,
             })
@@ -469,7 +468,7 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
                 version: String::from_utf8_lossy(row.get(3).unwrap_or(b"")).into_owned(),
                 block_type: block.report_type.clone(),
                 block_subtype: block.report_subtype.clone(),
-                block_version: block.resolved.version.0,
+                block_version: block.resolved.version,
             }
             .into());
         }
@@ -494,7 +493,7 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
                 .at(pos.line, pos.byte_offset)
                 .with_sample(bytes)
                 .with_table(block.resolved.plan.table.clone())
-                .with_version(block.resolved.version.0);
+                .with_version(block.resolved.version);
             RowFailure::from(SinkError::Refused(Box::new(d)))
         };
         // Pass 1: parse every field; nothing is appended until all are read.
@@ -507,16 +506,7 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
                 Ok(p) => p,
                 Err(fault) if strict => return Err(refuse(block, target, c.field, fault)),
                 Err(fault) => {
-                    // The table's own raw column takes the text, when it
-                    // has one and the text is text.
-                    let declared = match c.raw {
-                        Some(r) if fault != Fault::Null && std::str::from_utf8(bytes).is_ok() => {
-                            self.parsed[r as usize] = Parsed::Str(c.field);
-                            true
-                        }
-                        _ => false,
-                    };
-                    self.misfits.push((target, c.field, fault, declared));
+                    self.misfits.push((target, c.field, fault));
                     Parsed::Null
                 }
             };
@@ -537,7 +527,7 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
                 .diagnostic()
                 .at(pos.line, pos.byte_offset)
                 .with_table(block.resolved.plan.table.clone())
-                .with_version(block.resolved.version.0);
+                .with_version(block.resolved.version);
                 return Err(SinkError::Refused(Box::new(d)).into());
             }
             for &m in &block.missing_required {
@@ -588,35 +578,27 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
 /// allowed is a kept null; any other value goes, as text, to its column's
 /// raw column, which is started (null for the rows before) on its first
 /// value. Every raw column gets one entry for the row.
-fn keep_misfits(block: &mut Block, misfits: &[(u16, u16, Fault, bool)], row: &Row<'_>, line: u64) {
+fn keep_misfits(block: &mut Block, misfits: &[(u16, u16, Fault)], row: &Row<'_>, line: u64) {
     let rows_before = block.rows;
-    for &(target, field, fault, declared) in misfits {
+    for &(target, field, fault) in misfits {
         let bytes = row.get(usize::from(field)).unwrap_or(b"");
         if fault == Fault::Null {
             block.nulls_kept[target as usize].note(String::new, line);
             continue;
         }
         let text = String::from_utf8_lossy(bytes);
-        let raw = match block
-            .raws
-            .iter()
-            .position(|r| r.target == target && r.text.is_none() == declared)
-        {
+        let raw = match block.raws.iter().position(|r| r.target == target) {
             Some(i) => &mut block.raws[i],
             None => {
                 let plan = &block.resolved.plan;
                 let column = plan.column_name(target as usize);
-                let mut name = nemlake_registry::file_model::raw_name(column);
-                // A value the declared raw column cannot take as text goes
-                // beside it.
-                if !declared && plan.fields.iter().any(|f| f.name == name) {
+                let mut name = format!("{column}__raw");
+                // A column of the file may already have the name.
+                if plan.fields.iter().any(|f| f.name == name) {
                     name.push_str("__2");
                 }
-                let text_column = (!declared).then(|| {
-                    let mut b = StringBuilder::new();
-                    b.append_nulls(rows_before);
-                    b
-                });
+                let mut text_column = StringBuilder::new();
+                text_column.append_nulls(rows_before);
                 block.raws.push(RawColumn {
                     target,
                     name,
@@ -627,17 +609,13 @@ fn keep_misfits(block: &mut Block, misfits: &[(u16, u16, Fault, bool)], row: &Ro
                 block.raws.last_mut().expect("just pushed")
             }
         };
-        if let Some(b) = &mut raw.text {
-            b.append_value(&text);
-        }
+        raw.text.append_value(&text);
         raw.count += 1;
     }
     // Raw columns of the batch without a value in this row are null for it.
     for raw in &mut block.raws {
-        if let Some(b) = &mut raw.text
-            && b.len() == rows_before
-        {
-            b.append_null();
+        if raw.text.len() == rows_before {
+            raw.text.append_null();
         }
     }
 }
@@ -669,7 +647,7 @@ impl BatchSink for CollectBatches {
     }
     fn block_started(&mut self, _irow: &IRow<'_>, resolved: &Resolved, _pos: Pos) {
         self.blocks
-            .push((String::new(), resolved.version.0, resolved.status.label()));
+            .push((String::new(), resolved.version, resolved.status.label()));
     }
     fn bad_row(&mut self, raw: &[u8], pos: Pos, err: &RowError) -> Flow {
         self.bad.push((
@@ -709,7 +687,7 @@ pub(crate) fn collect<R: std::io::Read>(
 #[cfg(test)]
 mod tests {
     use arrow_array::{Array, Float64Array, StringArray, TimestampNanosecondArray};
-    use nemlake_registry::{Mode, TypeOptions};
+    use nemlake_registry::Mode;
 
     use super::*;
     use nemlake_decode::scan::ScanOptions;
@@ -723,7 +701,7 @@ mod tests {
     }
 
     fn reg() -> Arc<Registry> {
-        Registry::load_embedded(TypeOptions::default())
+        Registry::load_embedded()
     }
 
     #[test]
@@ -757,7 +735,7 @@ mod tests {
         assert_eq!(duid.value(0), "BUTLERSG");
         let mw = b.column(2).as_any().downcast_ref::<Float64Array>().unwrap();
         assert!((mw.value(0) - 9.199_999).abs() < 1e-9);
-        assert_eq!(out.blocks, vec![(String::new(), 1, "exact")]);
+        assert_eq!(out.blocks, vec![(String::new(), 1, "conforms")]);
         assert!(out.warnings.is_empty());
         assert_eq!(
             b.schema().metadata()["nemlake:table"],
@@ -935,8 +913,8 @@ mod tests {
     }
 
     #[test]
-    fn drift_version_alias_and_decimal() {
-        // DISPATCHPRICE in the live feed is version 5 with more columns than the archive's version 4.
+    fn deviations_keep_what_the_file_carries_unless_strict() {
+        // DISPATCHPRICE in the live feed is version 5.
         let r = reg();
         let text = fixture("multi_block_dispatchis.csv");
         let lines: Vec<&[u8]> = text.split(|&b| b == b'\n').collect();
@@ -953,10 +931,10 @@ mod tests {
         )
         .unwrap();
         assert_eq!(stats.rows, 3);
-        assert_eq!(
-            out.blocks[0].2, "exact",
-            "the registry sampled both versions"
-        );
+        // The live feed's DISPATCHPRICE lays the archive's columns out in
+        // another order: kept, and flagged.
+        assert_eq!(out.blocks[0].2, "deviates");
+        assert!(out.warnings.iter().any(|w| w.code == "schema.deviates"));
         // Strict mode with a hand-made unknown version.
         let rows = b"I,DISPATCH,UNIT_SCADA,7,SETTLEMENTDATE,DUID,SCADAVALUE,EXTRA\nD,DISPATCH,UNIT_SCADA,7,\"2024/01/01 00:05:00\",X,1,z\n";
         let e = collect(
@@ -966,7 +944,7 @@ mod tests {
             &ScanOptions::default(),
         )
         .unwrap_err();
-        assert!(e.to_string().contains("no declared version 7"), "{e}");
+        assert!(e.to_string().contains("not listed [\"EXTRA\"]"), "{e}");
         let (out, stats) = collect(
             &r,
             rows.as_slice(),
@@ -975,8 +953,13 @@ mod tests {
         )
         .unwrap();
         assert_eq!(stats.rows, 1);
-        assert_eq!(out.blocks[0].2, "drift");
-        assert_eq!(out.warnings[0].code, "schema.unknown_columns");
+        assert_eq!(out.blocks[0].2, "deviates");
+        assert!(out.warnings.iter().any(|w| w.code == "schema.deviates"));
+        assert!(
+            out.warnings
+                .iter()
+                .any(|w| w.code == "schema.unseen_version")
+        );
         // The column the table does not have is kept, as text.
         let batch = &out.batches[0].batch;
         assert_eq!(batch.num_columns(), 5);
@@ -1000,19 +983,6 @@ mod tests {
         assert_eq!(stats.bad_rows, 0);
         assert_eq!(out.batches[0].batch.column(1).null_count(), 1);
         assert!(out.warnings.iter().any(|w| w.code == "schema.missing_key"));
-        // Decimal mode.
-        let dec = Registry::load_embedded(TypeOptions { decimal: true });
-        let (out, _) = collect(
-            &dec,
-            fixture("DISPATCH_UNIT_SCADA_v1_head.csv").as_slice(),
-            ResolveOptions::default(),
-            &ScanOptions::default(),
-        )
-        .unwrap();
-        assert!(matches!(
-            out.batches[0].batch.column(2).data_type(),
-            arrow_schema::DataType::Decimal128(16, 6)
-        ));
     }
 
     #[test]
@@ -1198,106 +1168,6 @@ D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",E,2\n";
     /// A table that declares `{column}__raw` gets the text there, under
     /// the column's own id, and no column of the batch alone.
     #[test]
-    fn a_declared_raw_column_takes_the_text() {
-        use nemlake_registry::file_model::blob::SchemaSet;
-        use nemlake_registry::file_model::{ColumnDef, ColumnId, ColumnType};
-        let embedded = reg();
-        let mut t = embedded
-            .table(embedded.table_by_name("DISPATCH_UNIT_SCADA").unwrap())
-            .clone();
-        t.columns.push(ColumnDef {
-            id: ColumnId(t.next_column_id),
-            name: "SCADAVALUE__raw".into(),
-            aliases: vec![],
-            ty: ColumnType::Utf8 {
-                max_len: None,
-                dict: false,
-            },
-            nullable: true,
-            oracle: None,
-            loader: None,
-            added_in: SchemaVersion(1),
-            removed_in: None,
-            description: None,
-            src: vec!["raw".into()],
-            curated: true,
-        });
-        t.next_column_id += 1;
-        assert!(nemlake_registry::file_model::validate::validate_table(&t).is_empty());
-        let r = Registry::from_set(
-            SchemaSet {
-                markets: vec![],
-                tables: vec![t],
-                ..Default::default()
-            },
-            TypeOptions::default(),
-        );
-        let (out, stats) = collect(
-            &r,
-            MISFITS,
-            ResolveOptions::default(),
-            &ScanOptions::default(),
-        )
-        .unwrap();
-        assert_eq!(stats.rows, 6);
-        let b = &out.batches[0].batch;
-        let names: Vec<_> = b
-            .schema()
-            .fields()
-            .iter()
-            .map(|f| f.name().clone())
-            .collect();
-        assert_eq!(
-            names,
-            [
-                "SETTLEMENTDATE",
-                "DUID",
-                "SCADAVALUE",
-                "LASTCHANGED",
-                "SCADAVALUE__raw",
-                "SETTLEMENTDATE__raw"
-            ]
-        );
-        let raw = b.column(4).as_any().downcast_ref::<StringArray>().unwrap();
-        assert_eq!(raw.value(2), "notanumber");
-        assert_eq!(raw.value(4), "also bad");
-        assert_eq!(raw.null_count(), 4);
-        let field = b.schema().field(4).clone();
-        assert_eq!(
-            field.metadata()[RAW_OF_KEY],
-            b.schema().field(2).metadata()[nemlake_registry::arrow::FIELD_ID_KEY]
-        );
-        assert!(
-            field
-                .metadata()
-                .contains_key(nemlake_registry::arrow::FIELD_ID_KEY)
-        );
-        assert!(b.schema().field(2).is_nullable());
-        let scada = out
-            .warnings
-            .iter()
-            .find(|w| w.code == "parse.value_kept_raw" && w.column.as_deref() == Some("SCADAVALUE"))
-            .unwrap();
-        assert!(
-            scada.message.contains("in column SCADAVALUE__raw"),
-            "{}",
-            scada.message
-        );
-        // Text that is not UTF-8 cannot go there; it goes beside it.
-        let bad = b"I,DISPATCH,UNIT_SCADA,1,SETTLEMENTDATE,DUID,SCADAVALUE\nD,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",A,\xff\n";
-        let (out, _) = collect(
-            &r,
-            bad.as_slice(),
-            ResolveOptions::default(),
-            &ScanOptions::default(),
-        )
-        .unwrap();
-        let b = &out.batches[0].batch;
-        assert_eq!(b.schema().field(5).name(), "SCADAVALUE__raw__2");
-        assert!(b.column(4).is_null(0));
-    }
-
-    #[test]
     fn raw_columns_exist_only_in_the_batches_that_need_them() {
         let r = reg();
         let mut sink = ArrowSink::new(&r, ResolveOptions::default(), 2, CollectBatches::default());
@@ -1368,6 +1238,6 @@ D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",,1\n";
                 .collect::<Vec<_>>(),
             [7, 7, 6]
         );
-        assert_eq!(out.batches[0].version, SchemaVersion(4));
+        assert_eq!(out.batches[0].version, 1);
     }
 }

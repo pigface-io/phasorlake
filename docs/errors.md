@@ -87,35 +87,19 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 | `schema.census_not_archived` | `crates/nemlake-census/src/census.rs` |
 | `schema.census_unreadable` | `crates/nemlake-census/src/census.rs` |
 | `schema.census_write` | `crates/nemlake-census/src/census.rs` |
-| `schema.compatible_drift` | `crates/nemlake-registry/src/resolve.rs` |
-| `schema.ctl_dir` | `crates/nemlake-census/src/main.rs` |
-| `schema.ctl_read` | `crates/nemlake-census/src/main.rs` |
 | `schema.datamodel_page` | `crates/nemlake-census/src/dmreport.rs` |
 | `schema.datamodel_parse` | `crates/nemlake-census/src/datamodel.rs` |
 | `schema.datamodel_read` | `crates/nemlake-census/src/datamodel.rs` |
-| `schema.decimal_fallback` | `crates/nemlake-registry/src/resolve.rs` |
+| `schema.deviates` | `crates/nemlake-registry/src/error.rs` |
 | `schema.file_invalid` | `crates/nemlake-registry/src/file_model/error.rs` |
 | `schema.file_parse` | `crates/nemlake-registry/src/file_model/error.rs` |
 | `schema.file_read` | `crates/nemlake-registry/src/file_model/error.rs` |
 | `schema.fixture_read_failed` | `crates/nemlake-census/src/fixtures.rs` |
 | `schema.fixture_write_failed` | `crates/nemlake-census/src/fixtures.rs` |
-| `schema.merge_no_columns` | `crates/nemlake-census/src/merge.rs` |
-| `schema.merge_no_version` | `crates/nemlake-census/src/merge.rs` |
 | `schema.missing_key` | `crates/nemlake-registry/src/error.rs` |
 | `schema.no_columns` | `crates/nemlake-registry/src/error.rs` |
-| `schema.out_dir` | `crates/nemlake-census/src/main.rs` |
-| `schema.rule_conflict` | `crates/nemlake-registry/src/resolve.rs` |
-| `schema.sample_irow` | `crates/nemlake-census/src/sample.rs` |
-| `schema.sample_no_csv` | `crates/nemlake-census/src/sample.rs` |
-| `schema.sample_read` | `crates/nemlake-census/src/sample.rs` |
-| `schema.sample_zip` | `crates/nemlake-census/src/sample.rs` |
-| `schema.standing_list` | `crates/nemlake-census/src/main.rs` |
-| `schema.unknown_columns` | `crates/nemlake-registry/src/resolve.rs` |
 | `schema.unknown_table` | `crates/nemlake-registry/src/error.rs` |
-| `schema.unknown_version` | `crates/nemlake-registry/src/error.rs` |
-| `schema.version_aliased` | `crates/nemlake-registry/src/resolve.rs` |
-| `schema.version_drift` | `crates/nemlake-registry/src/error.rs` |
-| `schema.write` | `crates/nemlake-census/src/main.rs` |
+| `schema.unseen_version` | `crates/nemlake-registry/src/resolve.rs` |
 
 ## store
 
@@ -162,3 +146,11 @@ No longer raised; kept so the code is never reused.
 |---|---|
 | `listing.era_unsupported` | months before 2024 could not be listed; every archive month is now readable and a month the archive does not publish is `listing.month_missing` |
 | `schema.merge_version_conflict` | the schema bootstrap refused two different column lists under one version number; each list is now a variant of the version |
+| `schema.version_drift` | a block whose columns differed from its declared version; resolution is now against increments, and such a block is `schema.deviates` |
+| `schema.unknown_version` | an I-row version the table did not declare; increments decide now, and an unseen version is the warning `schema.unseen_version` |
+| `schema.version_aliased` | an undeclared version whose columns were those of a declared one; resolution is by increments and columns now |
+| `schema.compatible_drift` | a block missing declared columns; now `schema.deviates` |
+| `schema.unknown_columns` | a block with columns the table did not declare; now `schema.deviates` |
+| `schema.decimal_fallback` | decimal mode read a column without precision as a float; decimal mode is gone and every number is a double |
+| `schema.rule_conflict` | a hand-written rule routed a column the file also carried; rules are gone, fixes go in an increment's columns |
+| `schema.census_unresolved` | a census shape neither declared nor read by a rule; now `schema.census_deviates` |

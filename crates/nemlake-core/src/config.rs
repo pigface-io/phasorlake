@@ -19,8 +19,6 @@ pub struct Config {
     /// Minimum gap between two requests to a server, in milliseconds.
     /// AEMO's web server blocks clients that ask too fast.
     pub request_interval_ms: u64,
-    /// Emit `Decimal128` for `NUMBER(p,s)` columns instead of `f64`.
-    pub decimal: bool,
     /// Bad rows tolerated per source before it fails.
     pub max_bad_rows: u64,
     /// Fail on every warning.
@@ -47,7 +45,6 @@ impl Default for Config {
             jobs: 0,
             downloads: 4,
             request_interval_ms: 250,
-            decimal: false,
             max_bad_rows: 0,
             strict: false,
             user_agent_suffix: String::new(),

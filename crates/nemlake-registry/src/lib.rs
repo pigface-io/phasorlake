@@ -2,28 +2,22 @@
 //! MMS I row to a conformance plan.
 //!
 //! The committed `schemas/` tree is validated and packed by `build.rs`;
-//! [`Registry::load_embedded`] decodes it once per process and precomputes a
-//! [`ConformancePlan`] (Arrow schema plus per-field routes) for every declared
-//! version, so resolving an I row on the hot path is a hash lookup and an
-//! `Arc` clone.
-//!
-//! Resolution outcomes, in order of preference: an exact fingerprint match;
-//! an unknown version whose columns match a known one (aliased); a known
-//! version whose columns differ (drift, compatible or not); an unknown table
-//! (inferred into a draft, or refused in strict mode). See [`resolve`].
+//! [`Registry::load_embedded`] decodes it once per process. Each table is
+//! our schema (columns with exact types and stable ids) and its increments,
+//! the file shapes AEMO's control files set. A block of a month resolves
+//! against the increment in force then: it conforms, deviates (strict mode
+//! refuses it) or, for a report pair no table claims, is derived from the
+//! file. See [`resolve`].
 
 pub mod arrow;
 pub mod error;
 pub mod file_model;
-pub mod infer;
 pub mod plan;
 pub mod registry;
 pub mod resolve;
 
-pub use crate::file_model::{
-    ColumnDef, ColumnType, LoadMode, Market, RuleColumn, RuleDef, SchemaVersion, TableDef,
-};
+pub use crate::file_model::{Column, Increment, LakeType, LoadMode, Market, Table};
 pub use error::ResolveError;
 pub use plan::{Cast, ColumnRoute, ConformancePlan, Origin, PLAN_FORMAT, PlanField, PlanHash};
-pub use registry::{LineageEntry, Registry, SchemaSource, TableId, TypeOptions};
+pub use registry::{Registry, SchemaSource, TableId};
 pub use resolve::{Mode, ResolveOptions, Resolved, Status};

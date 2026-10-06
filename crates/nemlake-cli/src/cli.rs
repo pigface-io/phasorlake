@@ -30,9 +30,6 @@ pub struct Cli {
     /// Parse workers (default half the cores).
     #[arg(long, global = true)]
     pub jobs: Option<usize>,
-    /// Emit Decimal128 for NUMBER(p,s) columns instead of f64.
-    #[arg(long, global = true)]
-    pub decimal: bool,
     /// Use only the tables built into nemlake; ignore `{home}/schemas/`.
     #[arg(long, global = true)]
     pub no_user_schemas: bool,
@@ -88,12 +85,6 @@ pub enum Command {
     Inspect {
         /// A zip or CSV.
         path: PathBuf,
-        /// Infer a draft schema for blocks the registry does not know.
-        #[arg(long)]
-        infer: bool,
-        /// Rows to sample per block for inference.
-        #[arg(long, default_value_t = 1000)]
-        sample_rows: u64,
     },
     /// List what the manifest knows.
     Ls {
@@ -191,9 +182,10 @@ pub struct IngestArgs {
     /// Bad rows tolerated per file before it fails (default from config, else 0).
     #[arg(long)]
     pub max_bad_rows: Option<u64>,
-    /// Refuse what the registry does not declare: an unknown table, version
-    /// or column list fails its file. Without this, everything a file
-    /// carries is kept and what is undeclared is reported.
+    /// Refuse what the registry does not declare: an unknown table, or a
+    /// block whose columns are not its increment's, fails its file.
+    /// Without this, everything a file carries is kept and what deviates
+    /// is reported.
     #[arg(long)]
     pub strict: bool,
     /// Stop at the first failure.
@@ -211,17 +203,9 @@ pub enum SchemaCmd {
         /// Table name.
         table: String,
     },
-    /// Columns added, removed or reordered between two versions.
-    Diff {
-        /// Table name.
-        table: String,
-        /// From version.
-        from: u16,
-        /// To version.
-        to: u16,
-    },
-    /// Every version of a table with when it was seen.
-    Lineage {
+    /// A table's increments: from which month, the AEMO control file and
+    /// versions, and the columns each adds or drops.
+    Increments {
         /// Table name.
         table: String,
     },
@@ -237,7 +221,7 @@ pub enum SchemaCmd {
         /// The file's column names, in order.
         #[arg(long, value_delimiter = ',', required = true)]
         columns: Vec<String>,
-        /// The month of the source, for rules bounded by months.
+        /// The month of the source, which decides the increment.
         #[arg(long, value_name = "YYYY-MM")]
         month: Option<nemlake_core::YearMonth>,
     },
@@ -245,27 +229,6 @@ pub enum SchemaCmd {
     Validate {
         /// Directory.
         dir: Option<PathBuf>,
-    },
-    /// Draft what a file would add to the registry: a table for a report
-    /// pair nobody declared, a version or a variant for a column list the
-    /// table does not have yet.
-    Infer {
-        /// A zip or CSV.
-        path: PathBuf,
-        /// Write each draft to `{home}/schemas/` as `DRAFT_{TABLE}.toml`
-        /// instead of printing it. A draft is ignored until it is renamed
-        /// to `{TABLE}.toml`.
-        #[arg(long)]
-        write: bool,
-        /// Rows to sample per block for the types of new columns.
-        #[arg(long, default_value_t = 1000)]
-        sample_rows: u64,
-        /// A control file (`.ctl`) of the same table from AEMO's archive,
-        /// to type new columns from; repeatable. It is used for a block
-        /// that carries every column it names, and the sampled rows
-        /// overrule it where a value does not fit.
-        #[arg(long, value_name = "FILE")]
-        ctl: Vec<PathBuf>,
     },
 }
 

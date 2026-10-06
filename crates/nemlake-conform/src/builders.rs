@@ -2,8 +2,8 @@
 
 use arrow_array::ArrayRef;
 use arrow_array::builder::{
-    ArrayBuilder, BooleanBuilder, Date32Builder, Decimal128Builder, Float64Builder, Int64Builder,
-    StringBuilder, TimestampNanosecondBuilder,
+    ArrayBuilder, BooleanBuilder, Date32Builder, Float64Builder, Int64Builder, StringBuilder,
+    TimestampNanosecondBuilder,
 };
 use arrow_schema::DataType;
 use nemlake_core::{nemtime, num};
@@ -25,8 +25,6 @@ pub enum Parsed {
     /// A timestamp beyond what nanoseconds hold, clamped to the nearest end
     /// of the range.
     Clamped(i64),
-    /// An unscaled decimal.
-    I128(i128),
     /// Text: the field index to fetch from the row again.
     Str(u16),
     /// A boolean.
@@ -99,9 +97,6 @@ pub fn parse_field(cast: Cast, nullable: bool, index: u16, bytes: &[u8]) -> Resu
         Cast::Int64 => num::parse_i64(bytes)
             .map(Parsed::I64)
             .map_err(Fault::Number),
-        Cast::Decimal128 { precision, scale } => num::parse_decimal(bytes, precision, scale)
-            .map(Parsed::I128)
-            .map_err(Fault::Number),
         Cast::TimestampNanos { offset_secs } => nemtime::parse_nanos(bytes, offset_secs)
             .map(|(nanos, clamped)| {
                 if clamped {
@@ -131,8 +126,6 @@ pub enum ColumnBuilder {
     F64(Float64Builder),
     /// `i64`.
     I64(Int64Builder),
-    /// `Decimal128`.
-    Dec(Decimal128Builder),
     /// Timestamp nanoseconds with a zone.
     Ts(TimestampNanosecondBuilder),
     /// Days.
@@ -148,10 +141,6 @@ impl ColumnBuilder {
             DataType::Utf8 => Self::Utf8(StringBuilder::with_capacity(capacity, capacity * 8)),
             DataType::Float64 => Self::F64(Float64Builder::with_capacity(capacity)),
             DataType::Int64 => Self::I64(Int64Builder::with_capacity(capacity)),
-            DataType::Decimal128(p, s) => Self::Dec(
-                Decimal128Builder::with_capacity(capacity)
-                    .with_data_type(DataType::Decimal128(*p, *s)),
-            ),
             DataType::Timestamp(_, tz) => Self::Ts(
                 TimestampNanosecondBuilder::with_capacity(capacity).with_timezone_opt(tz.clone()),
             ),
@@ -168,7 +157,6 @@ impl ColumnBuilder {
             Self::Utf8(b) => b.append_null(),
             Self::F64(b) => b.append_null(),
             Self::I64(b) => b.append_null(),
-            Self::Dec(b) => b.append_null(),
             Self::Ts(b) => b.append_null(),
             Self::Date(b) => b.append_null(),
             Self::Bool(b) => b.append_null(),
@@ -188,7 +176,6 @@ impl ColumnBuilder {
             }
             (Self::F64(b), Parsed::F64(v)) => b.append_value(v),
             (Self::I64(b), Parsed::I64(v)) => b.append_value(v),
-            (Self::Dec(b), Parsed::I128(v)) => b.append_value(v),
             (Self::Ts(b), Parsed::I64(v) | Parsed::Clamped(v)) => b.append_value(v),
             (Self::Date(b), Parsed::I64(v)) => b.append_value(v as i32),
             (Self::Bool(b), Parsed::Bool(v)) => b.append_value(v),
@@ -202,7 +189,6 @@ impl ColumnBuilder {
             Self::Utf8(b) => b.len(),
             Self::F64(b) => b.len(),
             Self::I64(b) => b.len(),
-            Self::Dec(b) => b.len(),
             Self::Ts(b) => b.len(),
             Self::Date(b) => b.len(),
             Self::Bool(b) => b.len(),
@@ -220,7 +206,6 @@ impl ColumnBuilder {
             Self::Utf8(b) => std::sync::Arc::new(b.finish()),
             Self::F64(b) => std::sync::Arc::new(b.finish()),
             Self::I64(b) => std::sync::Arc::new(b.finish()),
-            Self::Dec(b) => std::sync::Arc::new(b.finish()),
             Self::Ts(b) => std::sync::Arc::new(b.finish()),
             Self::Date(b) => std::sync::Arc::new(b.finish()),
             Self::Bool(b) => std::sync::Arc::new(b.finish()),
@@ -297,32 +282,6 @@ mod tests {
         );
         assert!(parse_field!(Cast::Int64, true, 0, "I", b"4.2").is_err());
         assert_eq!(
-            parse_field!(
-                Cast::Decimal128 {
-                    precision: 10,
-                    scale: 2
-                },
-                true,
-                0,
-                "D",
-                b"1.5"
-            ),
-            Ok(Parsed::I128(150))
-        );
-        assert!(
-            parse_field!(
-                Cast::Decimal128 {
-                    precision: 10,
-                    scale: 2
-                },
-                true,
-                0,
-                "D",
-                b"1.555"
-            )
-            .is_err()
-        );
-        assert_eq!(
             parse_field!(Cast::Date32, true, 0, "D", b"1970/01/03"),
             Ok(Parsed::I64(2))
         );
@@ -357,7 +316,6 @@ mod tests {
             DataType::Utf8,
             DataType::Float64,
             DataType::Int64,
-            DataType::Decimal128(10, 2),
             tz.clone(),
             DataType::Date32,
             DataType::Boolean,
@@ -366,7 +324,6 @@ mod tests {
             Parsed::Str(0),
             Parsed::F64(1.5),
             Parsed::I64(7),
-            Parsed::I128(150),
             Parsed::I64(1_000_000),
             Parsed::I64(3),
             Parsed::Bool(true),

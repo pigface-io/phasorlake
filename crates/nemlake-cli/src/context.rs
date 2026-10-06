@@ -12,7 +12,7 @@ use nemlake_acquire::{
 use nemlake_core::config::Config;
 use nemlake_core::paths::Home;
 use nemlake_pipeline::Deps;
-use nemlake_registry::{Registry, TypeOptions};
+use nemlake_registry::Registry;
 use nemlake_writer::{ManifestHandle, ManifestThread};
 
 use crate::cli::Cli;
@@ -48,9 +48,7 @@ impl Context {
         let config_path = cli.config.clone().unwrap_or_else(|| home.config_file());
         let config = Config::load(&config_path)
             .map_err(|e| anyhow::anyhow!("{}", nemlake_core::Diagnose::diagnostic(&e).render()))?;
-        let mut registry = Registry::load_embedded(TypeOptions {
-            decimal: cli.decimal || config.decimal,
-        });
+        let mut registry = Registry::load_embedded();
         // The user's own tables, when there are any: a file named after a
         // built-in table replaces it, others are added.
         let overlay = home.schemas();

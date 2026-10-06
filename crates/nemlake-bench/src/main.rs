@@ -13,7 +13,7 @@ use std::time::{Duration, Instant};
 use nemlake_acquire::{Fetcher, FetcherConfig, OfflineTransport};
 use nemlake_core::paths::Home;
 use nemlake_pipeline::{Deps, Input, Plan, RunOptions, run};
-use nemlake_registry::{Registry, TypeOptions};
+use nemlake_registry::Registry;
 use nemlake_writer::{Manifest, ManifestHandle};
 use peak_alloc::PeakAlloc;
 use tokio_util::sync::CancellationToken;
@@ -121,7 +121,7 @@ fn main() {
     let dir = tempfile::tempdir().expect("tempdir");
     let zip_path = synthetic_zip(dir.path());
     let zip_bytes = std::fs::metadata(&zip_path).map_or(0, |m| m.len());
-    let registry = Registry::load_embedded(TypeOptions::default());
+    let registry = Registry::load_embedded();
     let (elapsed, peak_mb) = ingest_once(dir.path(), &zip_path, &registry);
     let mut out = serde_json::Map::new();
     let mut m = serde_json::Map::new();
