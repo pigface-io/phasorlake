@@ -91,6 +91,17 @@ enum Cmd {
         #[arg(long, default_value = "crates/nemlake-census/snapshot_tables.toml")]
         snapshot_list: PathBuf,
     },
+    /// Report, per table, where AEMO's PDR control files differ from the
+    /// control files of our increments: columns only one of them loads,
+    /// loader types that differ, tables only the PDR has. Report only.
+    PdrDiff {
+        /// The PDR control files.
+        #[arg(long, default_value = "reference/pdr")]
+        pdr: PathBuf,
+        /// The schemas directory.
+        #[arg(long, default_value = "schemas")]
+        schemas: PathBuf,
+    },
     /// Cut the fixtures of a month from the local archive: its control
     /// files, its README and the head of every data file (each block's I
     /// row and first D rows).
@@ -176,6 +187,22 @@ fn main() -> ExitCode {
             &base,
             (&datamodel, &readme, &snapshot_list),
         ),
+        Cmd::PdrDiff { pdr, schemas } => {
+            let tables = match nemlake_registry::file_model::blob::SchemaSet::read_dir(&schemas) {
+                Ok(set) => set.tables,
+                Err(e) => return fail(&e.diagnostic()),
+            };
+            match nemlake_census::pdr::report(&pdr, &schemas.join("nem"), &tables) {
+                Ok(lines) => {
+                    for l in &lines {
+                        println!("{l}");
+                    }
+                    eprintln!("{} difference(s)", lines.len());
+                    ExitCode::SUCCESS
+                }
+                Err(d) => fail(&d),
+            }
+        }
         Cmd::Fixtures {
             month,
             out,

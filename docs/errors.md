@@ -98,6 +98,7 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 | `schema.fixture_write_failed` | `crates/nemlake-census/src/fixtures.rs` |
 | `schema.missing_key` | `crates/nemlake-registry/src/error.rs` |
 | `schema.no_columns` | `crates/nemlake-registry/src/error.rs` |
+| `schema.pdr_read` | `crates/nemlake-census/src/pdr.rs` |
 | `schema.standing_list` | `crates/nemlake-census/src/main.rs` |
 | `schema.sync_write` | `crates/nemlake-census/src/sync.rs` |
 | `schema.unknown_table` | `crates/nemlake-registry/src/error.rs` |
