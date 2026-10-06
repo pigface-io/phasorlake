@@ -1,11 +1,13 @@
 //! `nemlake-census`: keep `schemas/` in step with AEMO's archive.
 //!
-//! `census` records every block of every archived file of a month, and
-//! `fixtures` cuts a month's test fixtures, both from the local archive
-//! that `nemlake fetch nem` fills:
+//! `census` records every block of every archived file of a month, `sync`
+//! brings the schemas up to the month's control files, and `fixtures` cuts
+//! a month's test fixtures, all from the local archive that `nemlake fetch
+//! nem` fills:
 //!
 //! ```text
 //! nemlake-census census --from 2024-01 --to 2024-12
+//! nemlake-census sync --from 2024-01 --to 2024-12 [--check]
 //! nemlake-census fixtures --month 2024-01 --out testdata/bootstrap/MMSDM_2024_01
 //! ```
 
@@ -51,6 +53,43 @@ enum Cmd {
         /// Archive base URL, which names where the month's files are kept.
         #[arg(long, default_value = "https://www.nemweb.com.au")]
         base: String,
+    },
+    /// Bring `{schemas}/nem/` up to the control files of each archived
+    /// month, oldest first: a table a month's control file lays out anew
+    /// gains an increment, a table the schemas lack is started. Nothing
+    /// there is changed. Take the census of a month first: a new table's
+    /// report pairs and every increment's versions come from it.
+    Sync {
+        /// First month.
+        #[arg(long, value_name = "YYYY-MM")]
+        from: nemlake_core::YearMonth,
+        /// Last month (default: the first).
+        #[arg(long, value_name = "YYYY-MM")]
+        to: Option<nemlake_core::YearMonth>,
+        /// Report what would change, write nothing, and exit 3 if anything would.
+        #[arg(long)]
+        check: bool,
+        /// The nemlake home whose archive is read (default `~/.nemlake`).
+        #[arg(long, env = "NEMLAKE_HOME")]
+        home: Option<PathBuf>,
+        /// The schemas directory.
+        #[arg(long, default_value = "schemas")]
+        schemas: PathBuf,
+        /// Archive base URL, which names where the month's files are kept.
+        #[arg(long, default_value = "https://www.nemweb.com.au")]
+        base: String,
+        /// The data-model JSON a new table takes its key and description from.
+        #[arg(
+            long,
+            default_value = "testdata/bootstrap/datamodel/mms_data_model_v5.0.0.1.json"
+        )]
+        datamodel: PathBuf,
+        /// AEMO's archive README, which lists the standing-data tables.
+        #[arg(long, default_value = "testdata/bootstrap/MMSDM_2026_08/README.txt")]
+        readme: PathBuf,
+        /// Standing-data tables the README does not name.
+        #[arg(long, default_value = "crates/nemlake-census/snapshot_tables.toml")]
+        snapshot_list: PathBuf,
     },
     /// Cut the fixtures of a month from the local archive: its control
     /// files, its README and the head of every data file (each block's I
@@ -118,6 +157,24 @@ fn main() -> ExitCode {
             home.as_deref(),
             &schemas,
             &base,
+        ),
+        Cmd::Sync {
+            from,
+            to,
+            check,
+            home,
+            schemas,
+            base,
+            datamodel,
+            readme,
+            snapshot_list,
+        } => sync(
+            (from, to.unwrap_or(from)),
+            check,
+            home.as_deref(),
+            &schemas,
+            &base,
+            (&datamodel, &readme, &snapshot_list),
         ),
         Cmd::Fixtures {
             month,
@@ -271,6 +328,139 @@ fn fixtures(
             } else {
                 ExitCode::from(3)
             }
+        }
+        Err(d) => fail(&d),
+    }
+}
+
+#[derive(serde::Deserialize)]
+struct SnapshotList {
+    observed: Vec<String>,
+}
+
+/// What a new table takes from outside its control file: the data model,
+/// and the standing-data tables of the README and the list beside it.
+fn facts(
+    datamodel: &Path,
+    readme: &Path,
+    snapshot_list: &Path,
+) -> Result<nemlake_census::sync::Facts, Box<nemlake_core::Diagnostic>> {
+    let unreadable = |path: &Path, cause: &dyn std::fmt::Display| {
+        Box::new(
+            nemlake_core::Diagnostic::error(
+                "schema.standing_list",
+                nemlake_core::Category::Schema,
+                format!(
+                    "The list of standing-data tables {} could not be read: {cause}",
+                    path.display()
+                ),
+            )
+            .with_file(path.display().to_string()),
+        )
+    };
+    let dm = nemlake_census::datamodel::DataModel::load(datamodel)
+        .map_err(|e| Box::new(e.diagnostic()))?;
+    let text = std::fs::read(readme).map_err(|e| unreadable(readme, &e))?;
+    let mut snapshots: std::collections::BTreeSet<String> =
+        nemlake_census::standing::readme_tables(&String::from_utf8_lossy(&text))
+            .into_iter()
+            .collect();
+    if snapshots.is_empty() {
+        return Err(unreadable(readme, &"it names no table"));
+    }
+    let list = std::fs::read_to_string(snapshot_list)
+        .map_err(|e| unreadable(snapshot_list, &e))
+        .and_then(|t| {
+            toml::from_str::<SnapshotList>(&t).map_err(|e| unreadable(snapshot_list, &e))
+        })?;
+    snapshots.extend(list.observed);
+    Ok(nemlake_census::sync::Facts {
+        datamodel: Some(dm),
+        snapshots,
+    })
+}
+
+/// `sync`: one month after another, oldest first.
+fn sync(
+    (from, to): (nemlake_core::YearMonth, nemlake_core::YearMonth),
+    check: bool,
+    home: Option<&Path>,
+    schemas: &Path,
+    base: &str,
+    (datamodel, readme, snapshot_list): (&Path, &Path, &Path),
+) -> ExitCode {
+    use nemlake_census::sync::{Evidence, Sync, by_table, read_ctls};
+    let facts = match facts(datamodel, readme, snapshot_list) {
+        Ok(f) => f,
+        Err(d) => return fail(&d),
+    };
+    let (store, nem) = match archive(home, base) {
+        Ok(a) => a,
+        Err(code) => return code,
+    };
+    let tmp = match scratch() {
+        Ok(t) => t,
+        Err(code) => return code,
+    };
+    let mut s = match Sync::load(schemas) {
+        Ok(s) => s,
+        Err(d) => return fail(&d),
+    };
+    let shapes: Vec<_> = match nemlake_registry::file_model::blob::SchemaSet::read_dir(schemas) {
+        Ok(set) => set.shapes.into_values().flatten().collect(),
+        Err(e) => return fail(&e.diagnostic()),
+    };
+    let mut code = ExitCode::SUCCESS;
+    for month in from.range_inclusive(to) {
+        let files = match nemlake_census::census::month_files(&store, &nem, month) {
+            Ok(f) => f,
+            // A month not downloaded here says nothing either way.
+            Err(e @ nemlake_census::census::CensusError::NotArchived { .. }) => {
+                eprintln!("note: {month} skipped: {e}");
+                continue;
+            }
+            Err(e) => return fail(&e.diagnostic()),
+        };
+        let (found, mut problems) = read_ctls(&files, tmp.path());
+        let (ctls, unparsed) = by_table(found);
+        problems.extend(unparsed);
+        for d in &problems {
+            eprintln!("error: {}", d.render());
+            code = ExitCode::from(3);
+        }
+        let evidence = match nemlake_census::census::read_month(schemas, month) {
+            Ok(Some(files)) => Evidence::new(&files, &shapes),
+            Ok(None) => {
+                eprintln!(
+                    "note: {month} has no census; new tables are skipped and no version is recorded (`just census {month}` first)"
+                );
+                Evidence::default()
+            }
+            Err(e) => return fail(&e.diagnostic()),
+        };
+        let said = s.month(month, &ctls, &evidence, &facts);
+        for line in &said {
+            println!("{month}: {line}");
+        }
+        eprintln!(
+            "{month}: {} control file(s), {} change(s)",
+            ctls.len(),
+            said.len()
+        );
+    }
+    let changed = s.changed();
+    if check {
+        if changed > 0 {
+            eprintln!("{changed} table(s) would change; run `just schema-sync` for the months");
+            return ExitCode::from(3);
+        }
+        eprintln!("no table would change");
+        return code;
+    }
+    match s.write() {
+        Ok(n) => {
+            eprintln!("{n} table(s) written");
+            code
         }
         Err(d) => fail(&d),
     }

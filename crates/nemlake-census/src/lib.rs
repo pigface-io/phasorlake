@@ -15,3 +15,4 @@ pub mod datamodel;
 pub mod dmreport;
 pub mod fixtures;
 pub mod standing;
+pub mod sync;

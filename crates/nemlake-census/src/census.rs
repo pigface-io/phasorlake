@@ -120,7 +120,7 @@ pub fn ctl_table(file_name: &str) -> Option<String> {
 
 /// The names under which a control file or a data stem may be looked up:
 /// as written, and without a split digit.
-fn table_keys(table: &str) -> Vec<String> {
+pub(crate) fn table_keys(table: &str) -> Vec<String> {
     let upper = table.to_ascii_uppercase();
     let trimmed = upper.trim_end_matches(|c: char| c.is_ascii_digit());
     if trimmed.is_empty() || trimmed == upper {

@@ -3,7 +3,7 @@
 # A standing-data table's monthly archive file is the whole table as it
 # stood, not the rows of that month. The list of them is AEMO's own: the
 # README.txt in the DOCUMENTATION directory of every archive month, kept as
-# testdata/bootstrap/MMSDM_2026_08/README.txt and read by `regen --readme`.
+# testdata/bootstrap/MMSDM_2026_08/README.txt and read by `nemlake-census sync --readme`.
 # That README was last revised for data model v4.12 and misses tables added
 # since.
 #

@@ -70,10 +70,19 @@ schema-fixtures month="2024-01":
 census from to=from *args:
     cargo run --release -q -p nemlake-census -- census --from {{from}} --to {{to}} "${@:3}"
 
-# a new month, end to end: download it once, record every block of every file, gate the census against the schemas
+# bring schemas/nem/ up to the control files of each archived month: a table a month lays out anew gains an increment, a missing table is started; nothing there is changed (take the census of the months first)
+schema-sync from to=from:
+    cargo run --release -q -p nemlake-census -- sync --from {{from}} --to {{to}}
+
+# fail if syncing the archived months would change schemas/nem/ (a month not downloaded here is skipped)
+schema-sync-check from="2024-01" to="2026-08":
+    cargo run --release -q -p nemlake-census -- sync --check --from {{from}} --to {{to}}
+
+# a new month, end to end: download it once, record every block of every file, sync the schemas to its control files, gate the census against them
 census-forward month:
     cargo run --release -q -p nemlake-cli -- fetch nem --from {{month}}
     just census {{month}}
+    just schema-sync {{month}}
     just census-check
 
 # every recorded census block against our schema: its table exists, it conforms to the increment in force that month, each control-file type fits our column's (passes when no census is recorded)

@@ -1,6 +1,6 @@
 [package]
 name = "nemlake-census"
-description = "Developer tool that regenerates nemlake schema files from AEMO CTL files, data-model pages and sampled archives."
+description = "Developer tool that keeps nemlake schema files in step with the control files of AEMO's archive, and records its census."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true

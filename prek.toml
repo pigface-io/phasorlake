@@ -140,3 +140,12 @@ entry = "just census-check"
 stages = ["pre-push"]
 files = '^(schemas/|crates/nemlake-(registry|census|core)/)'
 pass_filenames = false
+
+[[repos.hooks]]
+id = "schema-sync-check"
+name = "schemas: in step with the control files of every archived month"
+language = "system"
+entry = "just schema-sync-check"
+stages = ["pre-push"]
+files = '^(schemas/|crates/nemlake-(registry|census)/)'
+pass_filenames = false
