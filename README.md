@@ -39,19 +39,18 @@ the file, and the manifest knows it is already in the lake.
 | `nemlake fetch nem --from YYYY-MM [--to YYYY-MM] [--table T,T] [--exclude T,T] [--dry-run]` | list the archive and download each file not archived yet, with the month's control files and README. Without `--table`: every table the archive has for those months. `--dry-run` lists the files and totals their size |
 | `nemlake ingest --from YYYY-MM [--to YYYY-MM] [--table T,T] [--exclude T,T]` | write Parquet from the archived files of those months, no network |
 | `nemlake ingest <zip\|csv\|dir>...` | ingest local files, no network |
-| `nemlake reingest [--dry-run]` | read again, from disk, every source whose lake files are behind the current rules; no network |
-| `nemlake inspect <file> [--infer]` | every block in a file, its version and how the registry resolves it; draft a schema for unknown ones |
+| `nemlake reingest [--dry-run]` | read again, from disk, every source whose lake files are behind the current schemas; no network |
+| `nemlake inspect <file>` | every block in a file, its version and how the registry resolves it |
 | `nemlake ls [--table T] [--failed] [--runs]` | what the manifest knows |
 | `nemlake errors [--last] [--table T] [--code C]` | diagnostics recorded by past runs |
 | `nemlake verify` | every Parquet file the manifest lists exists with its size |
-| `nemlake schema list\|show\|diff\|lineage\|validate` | the registry |
+| `nemlake schema list\|show\|increments\|validate` | the registry; `increments T` lists a table's increments with the columns each adds or drops |
 | `nemlake schema plan <type> <subtype> <version> --columns A,B,C [--month YYYY-MM]` | the conformance plan a shape is read with, as JSON: where each file column goes, its cast, what is written null |
-| `nemlake schema infer <file> [--write] [--ctl FILE]` | draft what a file adds to the registry: a new table, version or variant; `--ctl` types it from AEMO's control file for the table |
 | `nemlake archive ls\|verify` | every downloaded file with where and when it came from; `verify` hashes each one again |
 | `nemlake wem manifest <dataset>` | a WEM dataset's file list (WEM ingestion comes later) |
 
 Global flags: `--home DIR` (or `NEMLAKE_HOME`), `--json`, `-v`, `--offline`,
-`--jobs N`, `--decimal`. Ingest flags: `--max-bad-rows N`, `--strict`,
+`--jobs N`, `--no-user-schemas`. Ingest flags: `--max-bad-rows N`, `--strict`,
 `--fail-fast`.
 
 ## How the data is laid out
@@ -66,31 +65,35 @@ Global flags: `--home DIR` (or `NEMLAKE_HOME`), `--json`, `-v`, `--offline`,
   manifest.sqlite                                                          runs, files, ingests, outputs, diagnostics
 ```
 
-Every Parquet file carries the unified lake schema of its table: every column
-AEMO has ever published for it, so files from different versions read as one
-table and a later Iceberg catalogue can adopt the column ids unchanged.
+Every Parquet file carries the lake schema of its table: every column the
+table has ever had, each with its id as `PARQUET:field_id`, so files of
+every increment read as one table and a later Iceberg catalogue can adopt
+the column ids unchanged.
 
 Nothing a file carries is skipped. A table no schema declares is ingested
 from its own header, every column as text, under
 `lake/nem/_unregistered/{report type}.{report subtype}/`; a column a table's
 schema does not have is kept beside the declared ones as text under its own
-name; a column the file lacks is null. Each case is reported, and
-`nemlake schema infer` drafts the schema that would make it a declared
-shape. `--strict` refuses such files instead.
+name; a column the file lacks is null. Each case is reported
+(`schema.unknown_table`, `schema.deviates`). `--strict` refuses such files
+instead.
 
-AEMO appends and renames columns without bumping the I-row version, so one
-version can have several real shapes. The registry records each extra shape
-as a `[[version.variant]]` of its version; a file of any declared shape
-resolves exactly, and only a shape nobody has seen before is reported as
-drift.
+Types are exact, as Parquet and Iceberg name them, and ours: a table's
+`table.toml` says each column's type, whatever a later control file says.
 
-Types: `DATE` and `TIMESTAMP` → `Timestamp(ns, +10:00)` (NEM time is fixed
-AEST), `NUMBER(p,s)` → `Float64` (or `Decimal128(p, s)` with `--decimal`),
-`VARCHAR2`/`CHAR` → `Utf8`. Whole numbers are `Float64` too: AEMO's control
-files load every numeric column as `FLOAT EXTERNAL`, its data puts fractions
-in columns the data model declares `NUMBER(p,0)`, and `Float64` holds every
-whole number of up to 15 digits exactly. A column is `Int64` only where a
-table file says so by hand (`type = "integer"`, `curated = true`).
+| `type` | Arrow | Iceberg V3 | a new column gets it from |
+|---|---|---|---|
+| `string` | `Utf8` | `string` | `CHAR(n)` |
+| `double` | `Float64` | `double` | `FLOAT`, `DECIMAL` and `INTEGER EXTERNAL` |
+| `long` | `Int64` | `long` | (only by hand) |
+| `boolean` | `Boolean` | `boolean` | (only by hand) |
+| `date` | `Date32` | `date` | `DATE`/`TIMESTAMP` without an hour |
+| `timestamp_ns` | `Timestamp(ns, +10:00)` | `timestamptz_ns` | `DATE`/`TIMESTAMP` with an hour |
+
+Every number is a `double`: AEMO's control files load numbers as
+`FLOAT EXTERNAL`, its data puts fractions in columns the data model
+declares `NUMBER(p,0)`, and a `double` holds every whole number of up to 15
+digits exactly. NEM time is fixed AEST.
 
 Every timestamp in the lake is nanoseconds since the epoch in UTC, one unit
 with no exceptions, and a fractional second is kept to the last digit, so a
@@ -102,7 +105,7 @@ so `END_DATE > now()` still holds, and each column it happens in is
 reported as `parse.timestamp_clamped` with a count and an example.
 
 No row is dropped for one of its values. A value its column's type cannot
-hold (a fraction where `--decimal` gives `Decimal128(6, 0)`, a month 13)
+hold (a fraction in a `long` column, a month 13)
 leaves the column null in that row and is kept, as published, in a text
 column beside it named `{column}__raw`, which exists only in the files that
 need it (`parse.value_kept_raw`). An empty value in a column that does not
@@ -113,25 +116,25 @@ block, such as more fields than the I row declares, goes to the quarantine.
 ## How a file was made
 
 A Parquet file is a function of three things: the bytes of its source, the
-shape of the block it was read from, and the rules the shape was read by.
+shape of the block it was read from, and the plan the shape was read by.
 All three are written into the file's footer and into the manifest:
 
 | footer key | what it says |
 |---|---|
 | `nemlake.source_url`, `nemlake.source_sha256`, `nemlake.entry` | the source: where it came from, its hash, the CSV inside it |
 | `nemlake.report_type`, `nemlake.report_subtype`, `nemlake.source_version`, `nemlake.source_columns`, `nemlake.fingerprint` | the shape: the block's I row as AEMO published it |
-| `nemlake.source_period` | the month of the source, which rules for an interval are chosen by |
+| `nemlake.source_period` | the month of the source, which decides the increment a block is read against |
 | `nemlake.plan` | the hash of the conformance plan the shape was read by: which file column feeds which lake column, that column's id, type and nullability, how the value is parsed, the key and time columns, the load mode, the directory |
 | `nemlake.shape_id` | the ids the census gives the shape (`just census`), when it has seen it |
 | `nemlake.schema_source` | where the table's definition came from: `registry` (built in), `user` (your own table file), `file` (nobody declared it, so the file's own header) |
-| `nemlake.resolution`, `nemlake.table`, `nemlake.schema_version` | how the shape matched the definition: `exact`, `aliased`, `drift` or `derived`, and as which table and version |
+| `nemlake.resolution`, `nemlake.table`, `nemlake.schema_version` | how the shape matched: `conforms` (its columns are its increment's), `deviates` or `derived`; the table, and the increment (`TABLE@n`, our version; AEMO's is `source_version`) |
 
 The plan hash changes when the output of that shape would: a column it
-carries gets another type, a table gets a schema where it had none,
-`--decimal` is turned on, a rule routes one of its columns. It does not
+carries gets another type, a table gets a schema where it had none, the
+increment it is read against changes. It does not
 change when a description is edited, nor when the table gains a column the
 shape does not carry: its files simply lack that column, which reads as
-null. A source whose recorded hash is no longer what the current rules
+null. A source whose recorded hash is no longer what the current schemas
 give is behind: the next `fetch` or
 `ingest` that covers it reads it again instead of skipping it, and
 `nemlake reingest` does that for every source in the manifest, straight
@@ -158,83 +161,77 @@ that fetched it.
 A file is downloaded once. Nothing in nemlake replaces or deletes an
 archived file; to fetch one again, delete it and its record. Everything in
 the lake, and the census of every shape AEMO published (`just census`), is
-derived from the archive, which is what `nemlake reingest` does when the
-rules for reading a table improve. `nemlake archive verify` hashes every
+derived from the archive, which is what `nemlake reingest` does when a
+table's schema improves. `nemlake archive verify` hashes every
 file against its record.
+
+## Our schema, in increments
+
+Each table is a directory under `schemas/nem/`:
+
+```
+schemas/nem/DISPATCH_UNIT_SCADA/
+  table.toml      our schema: persists, hand-editable
+  ctl/001.ctl     AEMO's control file of increment 1, byte for byte as archived
+  ctl/002.ctl     ... of increment 2
+```
+
+```toml
+schema_format = 2
+name = "DISPATCH_UNIT_SCADA"
+report_pairs = [["DISPATCH", "UNIT_SCADA"]]
+load_mode = "append"
+dedupe = "pk_lastchanged"
+primary_key = ["SETTLEMENTDATE", "DUID"]
+time_column = "SETTLEMENTDATE"
+next_column_id = 5
+
+column = [      # one per lake column, ever; an id is never reused
+    { id = 1, name = "SETTLEMENTDATE", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "DUID", type = "string", nullable = false },
+    { id = 3, name = "SCADAVALUE", type = "double", nullable = true },
+    { id = 4, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+]
+
+[[increment]]   # DISPATCH_UNIT_SCADA@2, in force from 2026-08 until the next
+n = 2
+from = "2026-08"
+ctl = "002.ctl"
+ctl_sha256 = "1ae68ab0..."
+aemo_ctl = "PUBLIC_ARCHIVE#DISPATCH_UNIT_SCADA#FILE01#202608.ctl"
+aemo_versions = [1]    # the I-row versions seen under it
+columns = ["SETTLEMENTDATE", "DUID", "SCADAVALUE", "LASTCHANGED"]   # file order
+```
+
+The columns and their types are ours and persist. An increment is the file
+shape one AEMO control file sets from a month on: our version, apart from
+AEMO's. A block of month M is read against the increment in force at M
+(with no month known: the increment with its columns, else the latest). It
+conforms when its columns are the increment's; otherwise it deviates, is
+kept whole (a column the table lacks as text of its own, a column the file
+lacks as null) and is reported, and `--strict` refuses it. A renamed column
+is a new column.
+
+`just schema-sync FROM TO` follows the archive: a month whose control file
+lays a table out anew appends an increment, with new columns given fresh
+ids and their default types, and a table the schemas lack is started from
+its control file, the data model and the census. It never changes what is
+there. Where the files differ from their control file, the fix is yours,
+in `table.toml`: edit the increment's `columns`, a column's `type`, or add a
+column, with a `note` saying why. Types change only by an Iceberg promotion
+(`just schema-compat`), and none of ours is one: a column of another type
+is a new column.
+
+AEMO's PDR control files can be kept under `reference/pdr/` for
+comparison (`nemlake-census pdr-diff`); resolution never reads them.
 
 ## Your own tables
 
-AEMO adds tables and versions faster than releases follow. When a file does
-not resolve, `nemlake schema infer <file> --write` drafts what is missing:
-a table for a report pair nobody declared, or a new version or variant of a
-table that exists, with the types of new columns guessed from the rows.
-Give it the table's control file from the same archive month with `--ctl`
-(the `.ctl` files sit in the month's `CTL/` directory) and the draft is
-typed from AEMO's own loader definition instead, takes the table's real
-name, and keeps a guess only where a sampled value does not fit what the
-control file says. The
-drafts land in `~/.nemlake/schemas/nem/mms/DRAFT_{TABLE}.toml` and do nothing
-until you have looked at them and renamed one to `{TABLE}.toml`. From then
-on every command uses it: a file named after a built-in table replaces it,
-any other adds a table. `--no-user-schemas` runs without them. What was
-ingested before the table file existed is brought up to it by
-`nemlake reingest`.
-
-## Rules for an interval
-
-AEMO's files are not uniform over seventeen years, and no one set of rules
-explains them all. nemlake does not try. The registry describes what is
-published today; an older file is read by its own header, and whatever does
-not fit today's table is kept beside it rather than forced into it.
-
-Where you know better for some stretch of time, say so in the table file,
-by hand, for exactly the files you mean:
-
-```toml
-[[column]]                       # a column of your own to receive the values
-id = 14
-name = "RRP_AS_PUBLISHED"
-type = "utf8"
-added_in = 1
-src = ["manual"]
-
-[[rule]]
-note = "Until 2011-12 RRP carried a currency suffix; checked against the 2010-03 and 2011-12 archives."
-shape = "a3f9c2e1b4d07785"       # only blocks of this shape, from schemas/nem/shapes/
-# from = "2009-07"               # first source month
-# to = "2011-12"                 # last source month, inclusive
-# version = 1                    # only blocks published as this version
-# fingerprint = "xxh3:..."       # only this exact column list
-
-[[rule.column]]
-source = "RRP"                   # the column's name in the file
-column = "RRP_AS_PUBLISHED"      # the lake column it feeds in this interval
-```
-
-A rule says which files it is for, and at least one scope is required. Name
-the shape: the census (`just census`) records every shape a table
-was published in, with its id and the months it was seen, under
-`schemas/nem/shapes/`, and a rule for a shape applies to exactly the blocks
-of that shape in the months the census saw it. A span of months is for the
-rare case of one shape whose meaning changed over time; it may be combined
-with `shape`.
-
-A rule routes named file columns to declared lake columns; the lake
-column's type decides how the values are read. With that, a column
-published under another name for a few years can feed the column it
-belongs to, and a column whose values were of another kind before a market
-change can be kept as published in a column of its own. Rules apply in the
-order written, each needs a `note` saying why it exists, and none is ever
-generated or inferred: regenerating the registry carries them over as
-written. A rule never loses data. If a file carries both the routed column
-and the column it would feed, both are kept and the run reports
-`schema.rule_conflict`.
-
-Which rules read a file is on record: the `nemlake.resolution` of a file a
-rule touched ends in `+rule`, `nemlake.source_period` is the month the
-rules were chosen by, and the plan hash differs from that of a file read
-without them. Edit a rule and `nemlake reingest` reads again exactly the
-sources it affects.
+A table of your own goes in `~/.nemlake/schemas/nem/{TABLE}/table.toml`,
+laid out like the ones above (control files are optional there). Every
+command uses it: one named after a built-in table replaces it, any other
+adds a table. `--no-user-schemas` runs without them. What was ingested
+before the table existed is brought up to it by `nemlake reingest`.
 
 ## The census of every shape
 
@@ -244,7 +241,8 @@ reads each archived file of those months in full, offline, recording every
 block (one per I row: a file of many tables has many) with its shape and
 rows under `schemas/nem/census/` and `schemas/nem/shapes/`. That static map
 is committed. A new month goes forward with `just census-forward YYYY-MM`:
-download, census, regenerate the schemas, and gate them against the census.
+download, census, sync the schemas to the month's control files, and gate
+the census against them (`just census-check`).
 Parquet is optional: `nemlake ingest --from` writes it from the archive.
 
 ## Which months
@@ -258,13 +256,13 @@ from disk.
 File names changed along the way, from `PUBLIC_DVD_{TABLE}_{YYYYMM}010000.zip`
 to `PUBLIC_ARCHIVE#{TABLE}#FILE{NN}#{YYYYMM}010000.zip`; both are read.
 
-The registry is anchored on what AEMO publishes today: its tables, column
-ids and types come from the newest month it was built from (August 2026),
-and the shapes of an earlier month (January 2024) are declared against
-that anchor. Every file of those two months resolves exactly. A file of
-another month resolves exactly where its shape is one of theirs, which
-most are; a shape nobody has declared is still ingested whole, as
-described above, and `nemlake schema infer` drafts its declaration.
+The schemas start from the control files of January 2024 and August 2026.
+Every file of those months conforms to its increment, but for the
+January 2024 `_ALL` files of three P5MIN tables, which carry other columns
+than the files their control files load under the same report pair, and
+are kept and flagged. A file of another month is read against the
+increment in force then; `just schema-sync` brings the increments up to
+the months downloaded.
 
 AEMO's web server blocks a client that asks too fast. nemlake leaves 250 ms
 between requests (`request_interval_ms` in `config.toml`), and when the
@@ -316,10 +314,11 @@ numbers may not regress below live in `bench/budgets.json`.
 
 Working today: the NEM monthly archive from July 2009 on, Parquet + manifest,
 every table of the August 2026 and January 2024 archives (241) in the
-registry, exact decimals with `--decimal`, downloads that resume where they
-stopped, and a lake that can be read again from the archive when the rules
-change. Next: the shapes of earlier years as declared variants; then live
-5-minute feeds and compaction; then WEM and an Iceberg writer.
+registry, each in increments set by AEMO's control files, downloads that
+resume where they stopped, and a lake that can be read again from the
+archive when a schema changes. Next: download the whole archive and sync
+the increments of every month from July 2009; then live 5-minute feeds
+and compaction; then WEM and an Iceberg writer.
 
 ## Developing
 
