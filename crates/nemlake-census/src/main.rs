@@ -69,6 +69,11 @@ enum Cmd {
         /// Report what would change, write nothing, and exit 3 if anything would.
         #[arg(long)]
         check: bool,
+        /// Start every table's increments again from the months synced, in
+        /// month order: for a first pass over the whole archive. Columns,
+        /// ids and types stay; a table no month has keeps its increments.
+        #[arg(long)]
+        rebuild: bool,
         /// The nemlake home whose archive is read (default `~/.nemlake`).
         #[arg(long, env = "NEMLAKE_HOME")]
         home: Option<PathBuf>,
@@ -173,6 +178,7 @@ fn main() -> ExitCode {
             from,
             to,
             check,
+            rebuild,
             home,
             schemas,
             base,
@@ -181,7 +187,7 @@ fn main() -> ExitCode {
             snapshot_list,
         } => sync(
             (from, to.unwrap_or(from)),
-            check,
+            (check, rebuild),
             home.as_deref(),
             &schemas,
             &base,
@@ -410,7 +416,7 @@ fn facts(
 /// `sync`: one month after another, oldest first.
 fn sync(
     (from, to): (nemlake_core::YearMonth, nemlake_core::YearMonth),
-    check: bool,
+    (check, rebuild): (bool, bool),
     home: Option<&Path>,
     schemas: &Path,
     base: &str,
@@ -437,6 +443,9 @@ fn sync(
         Ok(set) => set.shapes.into_values().flatten().collect(),
         Err(e) => return fail(&e.diagnostic()),
     };
+    if rebuild {
+        s.rebuild();
+    }
     let mut code = ExitCode::SUCCESS;
     for month in from.range_inclusive(to) {
         let files = match nemlake_census::census::month_files(&store, &nem, month) {
@@ -474,6 +483,9 @@ fn sync(
             ctls.len(),
             said.len()
         );
+    }
+    for line in s.finish() {
+        println!("{line}");
     }
     let changed = s.changed();
     if check {

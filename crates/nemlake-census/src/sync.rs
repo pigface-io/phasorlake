@@ -16,6 +16,7 @@
 //! control file, no column's id, type or nullability.
 
 use std::collections::{BTreeMap, BTreeSet};
+use std::fmt::Write as _;
 use std::path::{Path, PathBuf};
 
 use nemlake_core::{Category, Diagnostic, YearMonth};
@@ -193,6 +194,9 @@ struct Entry {
     table: Table,
     new_ctls: Vec<(String, Vec<u8>)>,
     changed: bool,
+    /// Under `--rebuild`, the increments the table had: they come back if
+    /// no month synced has a control file of the table.
+    before: Option<Vec<Increment>>,
 }
 
 /// The schemas of a market, as `sync` changes them.
@@ -220,6 +224,7 @@ impl Sync {
                             table,
                             new_ctls: Vec::new(),
                             changed: false,
+                            before: None,
                         },
                     )
                 })
@@ -303,18 +308,21 @@ impl Sync {
     ) -> Option<String> {
         let e = &self.tables[name];
         let t = &e.table;
+        // A table being rebuilt has no increment until its first month.
         let in_force = t
             .increments
             .iter()
             .rev()
             .find(|i| i.from <= month)
-            .or_else(|| t.increments.first())?;
-        let same = match self.kept_ctl(e, in_force) {
-            Some(kept) => kept.same_layout(&c.ctl),
-            None => in_force.columns == c.ctl.column_names(),
-        };
-        if same || t.increments.iter().any(|i| i.from == month) {
-            return None;
+            .or_else(|| t.increments.first());
+        if let Some(in_force) = in_force {
+            let same = match self.kept_ctl(e, in_force) {
+                Some(kept) => kept.same_layout(&c.ctl),
+                None => in_force.columns == c.ctl.column_names(),
+            };
+            if same || t.increments.iter().any(|i| i.from == month) {
+                return None;
+            }
         }
         let n = t.next_increment();
         let versions = evidence.versions(&t.report_pairs);
@@ -340,15 +348,16 @@ impl Sync {
         e.table.increments.insert(at, inc);
         e.new_ctls.push((file, c.bytes.clone()));
         e.changed = true;
-        Some(format!(
-            "{name}@{n}: new increment from {month} ({}){}",
-            c.name,
-            if added.is_empty() {
-                String::new()
-            } else {
-                format!(", new column(s) {}", added.join(", "))
-            }
-        ))
+        // A key column this layout lacks takes nulls in its files.
+        let relaxed = relax_missing(&mut e.table);
+        let mut line = format!("{name}@{n}: new increment from {month} ({})", c.name);
+        if !added.is_empty() {
+            let _ = write!(line, ", new column(s) {}", added.join(", "));
+        }
+        if !relaxed.is_empty() {
+            let _ = write!(line, ", made nullable {}", relaxed.join(", "));
+        }
+        Some(line)
     }
 
     /// A table the schemas lack, from its control file of `month`.
@@ -460,9 +469,46 @@ impl Sync {
                 table: t,
                 new_ctls: vec![(file, c.bytes.clone())],
                 changed: true,
+                before: None,
             },
         );
         Ok(line)
+    }
+
+    /// Starts every table's increments again: each comes back, in month
+    /// order and numbered from 1, from the control files of the months
+    /// synced next. Columns, ids, types and notes stay; so does what an
+    /// increment did not come from (the notes of a hand fix are lost).
+    pub fn rebuild(&mut self) {
+        for e in self.tables.values_mut() {
+            e.before = Some(std::mem::take(&mut e.table.increments));
+            e.new_ctls.clear();
+            e.changed = true;
+        }
+    }
+
+    /// Ends a rebuild: a table no synced month had a control file of keeps
+    /// the increments it had. Says which, one line each.
+    pub fn finish(&mut self) -> Vec<String> {
+        let mut said = Vec::new();
+        for e in self.tables.values_mut() {
+            let Some(before) = e.before.take() else {
+                continue;
+            };
+            if e.table.increments.is_empty() {
+                e.table.increments = before;
+                e.changed = false;
+                said.push(format!(
+                    "{}: no control file in the months synced; its increments are kept",
+                    e.table.name
+                ));
+            } else if e.table.increments == before {
+                e.changed = false;
+            } else {
+                e.before = Some(before);
+            }
+        }
+        said
     }
 
     /// The tables that changed.
@@ -486,6 +532,10 @@ impl Sync {
         for e in self.tables.values().filter(|e| e.changed) {
             let dir = self.dir.join(&e.table.name);
             let ctl_dir = dir.join(CTL_DIR);
+            // A rebuilt table's control files are all new.
+            if e.before.is_some() && ctl_dir.is_dir() {
+                std::fs::remove_dir_all(&ctl_dir).map_err(|err| fail(&ctl_dir, &err))?;
+            }
             std::fs::create_dir_all(&ctl_dir).map_err(|err| fail(&ctl_dir, &err))?;
             for (name, bytes) in &e.new_ctls {
                 let p = ctl_dir.join(name);
@@ -496,6 +546,18 @@ impl Sync {
         }
         Ok(self.changed())
     }
+}
+
+/// Makes nullable each non-nullable column an increment lacks; the names.
+fn relax_missing(t: &mut Table) -> Vec<String> {
+    let mut out = Vec::new();
+    for c in &mut t.columns {
+        if !c.nullable && t.increments.iter().any(|i| !i.columns.contains(&c.name)) {
+            c.nullable = true;
+            out.push(c.name.clone());
+        }
+    }
+    out
 }
 
 /// Adds each column of `ctl` the table lacks, with a fresh id and the
@@ -734,6 +796,81 @@ mod tests {
             (t.load_mode, t.time_column.as_deref()),
             (LoadMode::Snapshot, None)
         );
+    }
+
+    /// Rebuilt from the two bootstrap months, every table's increments
+    /// come back as the conversion gave them, but for the hand fixes
+    /// (columns the files carry beyond their control file), which a
+    /// rebuild drops; ids and types stay.
+    #[test]
+    fn a_rebuild_of_the_bootstrap_months_gives_the_converted_increments() {
+        let mut s = Sync::load(&root().join("schemas")).unwrap();
+        let before: BTreeMap<String, Table> = s
+            .tables
+            .iter()
+            .map(|(n, e)| (n.clone(), e.table.clone()))
+            .collect();
+        s.rebuild();
+        let facts = Facts::default();
+        for (m, ev) in [
+            ("2024-01", Evidence::default()),
+            ("2026-08", evidence_2026_08()),
+        ] {
+            s.month(m.parse().unwrap(), &fixture_ctls(m), &ev, &facts);
+        }
+        assert!(s.finish().is_empty());
+        let fixed = [
+            "DISPATCHCONSTRAINT",
+            "MTPASA_REGIONRESULT",
+            "P5MIN_CONSTRAINTSOLUTION",
+            "PREDISPATCHCONSTRAINT",
+            "PREDISPATCHPRICE",
+        ];
+        let key = |t: &Table| -> Vec<_> {
+            t.increments
+                .iter()
+                .map(|i| {
+                    (
+                        i.n,
+                        i.from,
+                        i.ctl.clone(),
+                        i.ctl_sha256.clone(),
+                        i.columns.clone(),
+                    )
+                })
+                .collect()
+        };
+        for (name, old) in &before {
+            let new = s.table(name).unwrap();
+            assert_eq!(new.columns, old.columns, "{name}");
+            if fixed.contains(&name.as_str()) {
+                assert_ne!(key(new), key(old), "{name}");
+                assert!(new.increments.iter().all(|i| i.note.is_none()), "{name}");
+            } else {
+                assert_eq!(key(new), key(old), "{name}");
+            }
+        }
+        // PREDISPATCHPRICE's two months lay it out alike: one increment.
+        assert_eq!(s.table("PREDISPATCHPRICE").unwrap().increments.len(), 1);
+        // A table no synced month has keeps what it had.
+        let mut s = Sync::load(&root().join("schemas")).unwrap();
+        s.rebuild();
+        let said = s.finish();
+        assert_eq!(said.len(), before.len());
+        assert_eq!(s.changed(), 0);
+    }
+
+    #[test]
+    fn a_layout_without_a_key_column_makes_it_nullable() {
+        let mut t = Sync::load(&root().join("schemas"))
+            .unwrap()
+            .table("DISPATCH_UNIT_SCADA")
+            .unwrap()
+            .clone();
+        t.increments[0].columns.retain(|c| c != "DUID");
+        assert_eq!(relax_missing(&mut t), ["DUID"]);
+        assert!(t.column("DUID").unwrap().nullable);
+        assert!(relax_missing(&mut t).is_empty());
     }
 
     #[test]

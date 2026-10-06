@@ -74,6 +74,10 @@ census from to=from *args:
 schema-sync from to=from:
     cargo run --release -q -p nemlake-census -- sync --from {{from}} --to {{to}}
 
+# start every table's increments again from the control files of the archived months, in month order (the first pass over the whole archive); columns, ids and types stay
+schema-rebuild from="2009-07" to="2026-08":
+    cargo run --release -q -p nemlake-census -- sync --rebuild --from {{from}} --to {{to}}
+
 # fail if syncing the archived months would change schemas/nem/ (a month not downloaded here is skipped)
 schema-sync-check from="2024-01" to="2026-08":
     cargo run --release -q -p nemlake-census -- sync --check --from {{from}} --to {{to}}
