@@ -11,6 +11,9 @@
       "max_rss_mb": 102.655,
       "min_rows_per_s": 3663999.13
     },
+    "fetch/download": {
+      "min_mb_per_s": 800.0
+    },
     "fetch/listing_parse": {
       "min_mb_per_s": 900.0
     },
