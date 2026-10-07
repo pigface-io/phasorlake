@@ -22,10 +22,10 @@ column = [
 
 [[increment]]
 n = 1
-from = "2024-01"
+from = "2019-10"
 ctl = "001.ctl"
-ctl_sha256 = "876b632cc9bf4d92160817b9ed4258f23ebb9cd20672a3a64fc60e003b0b728b"
-aemo_ctl = "PUBLIC_DVD_ROOFTOP_PV_FORECAST_202401.ctl"
+ctl_sha256 = "de27ec4b918e0688271da3d6e8084018040bf1310f87aef77cdc4f55271255b7"
+aemo_ctl = "PUBLIC_DVD_ROOFTOP_PV_FORECAST_201910.ctl"
 aemo_versions = [1]
 columns = [
     "VERSION_DATETIME",

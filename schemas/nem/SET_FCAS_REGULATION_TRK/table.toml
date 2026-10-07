@@ -39,11 +39,11 @@ column = [
 
 [[increment]]
 n = 1
-from = "2024-01"
+from = "2015-01"
 ctl = "001.ctl"
-ctl_sha256 = "4e7f68a3b4f02411569db975555eb80620abb9fbf9eeb5eb514ccf6a45ec5415"
-aemo_ctl = "PUBLIC_DVD_SET_FCAS_REGULATION_TRK_202401.ctl"
-aemo_versions = [1]
+ctl_sha256 = "6f952a0d1b9986670312626e984a264f7f6882e731cc3672f71aed303d11cc1b"
+aemo_ctl = "PUBLIC_DVD_SET_FCAS_REGULATION_TRK_201501.ctl"
+aemo_versions = []
 columns = [
     "SETTLEMENTDATE",
     "VERSIONNO",
@@ -58,10 +58,31 @@ columns = [
 
 [[increment]]
 n = 2
-from = "2026-08"
+from = "2024-08"
 ctl = "002.ctl"
-ctl_sha256 = "6771d5713bf1abc22190577999ab1925dc87656abe8d9c7c92e41962cac1879d"
-aemo_ctl = "PUBLIC_ARCHIVE#SET_FCAS_REGULATION_TRK#FILE01#202608.ctl"
+ctl_sha256 = "33e3ac5f73d04fbbca391fdca1a68ff1d0e84e3560fa434c1cb83a5658cea509"
+aemo_ctl = "PUBLIC_ARCHIVE#SET_FCAS_REGULATION_TRK#FILE01#202408.ctl"
+aemo_versions = []
+columns = [
+    "SETTLEMENTDATE",
+    "VERSIONNO",
+    "INTERVAL_DATETIME",
+    "CONSTRAINTID",
+    "CMPF",
+    "CRMPF",
+    "RECOVERY_FACTOR_CMPF",
+    "RECOVERY_FACTOR_CRMPF",
+    "LASTCHANGED",
+    "USESUBSTITUTEDEMAND",
+    "REQUIREMENTDEMAND",
+]
+
+[[increment]]
+n = 3
+from = "2025-04"
+ctl = "003.ctl"
+ctl_sha256 = "39b80adb7adf2978dae36f8da01e3e28960bf78fad667ec900a2d47774d6b9cb"
+aemo_ctl = "PUBLIC_ARCHIVE#SET_FCAS_REGULATION_TRK#FILE01#202504.ctl"
 aemo_versions = [3]
 columns = [
     "SETTLEMENTDATE",

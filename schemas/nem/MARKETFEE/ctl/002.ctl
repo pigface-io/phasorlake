@@ -1,5 +1,5 @@
 -- ************************************************************
--- Title:	PUBLIC_ARCHIVE#MARKETFEE#FILE01#202608.ctl
+-- Title:	PUBLIC_DVD_MARKETFEE_202405.ctl
 -- ************************************************************
 -- Project : NEMMCO MONTHLY DVD RELEASE
 -- Purpose : Control File to load monthly csv file
@@ -17,7 +17,7 @@
 --      PUBLIC			       v
 -- ************************************************************
 LOAD DATA
-INFILE PUBLIC_ARCHIVE#MARKETFEE#FILE01#202608010000.CSV
+INFILE PUBLIC_DVD_MARKETFEE_202405010000.CSV
 APPEND INTO TABLE MARKETFEE
 WHEN (1:1) = 'D'
 FIELDS TERMINATED BY ','
@@ -31,7 +31,7 @@ MARKETFEEID CHAR(10),
 MARKETFEEPERIOD CHAR(20),
 MARKETFEETYPE CHAR(12),
 DESCRIPTION CHAR(64),
-LASTCHANGED DATE "YYYY/MM/DD HH24:MI:SS",
+LASTCHANGED DATE "yyyy/mm/dd hh24:mi:ss",
 GL_TCODE CHAR(15),
 GL_FINANCIALCODE CHAR(10),
 FEE_CLASS CHAR(40),

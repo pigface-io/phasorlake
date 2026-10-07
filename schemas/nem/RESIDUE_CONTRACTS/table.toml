@@ -32,10 +32,10 @@ column = [
 
 [[increment]]
 n = 1
-from = "2024-01"
+from = "2015-03"
 ctl = "001.ctl"
-ctl_sha256 = "1ae8cf61dc9b22de71a13ed3305e54a63088fb44eacf61100189161d68a95f33"
-aemo_ctl = "PUBLIC_DVD_RESIDUE_CONTRACTS_202401.ctl"
+ctl_sha256 = "e9b9e2b9219077310a6123696c3bc6145e0e4ef65bb0be60aa2685a260054ab2"
+aemo_ctl = "PUBLIC_DVD_RESIDUE_CONTRACTS_201503.ctl"
 aemo_versions = [1]
 columns = [
     "CONTRACTYEAR",

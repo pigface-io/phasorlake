@@ -9,7 +9,7 @@ load_mode = "append"
 dedupe = "pk_lastchanged"
 primary_key = ["SETTLEMENTDATE", "OFFERDATE", "VERSIONNO", "PARTICIPANTID", "LINKID"]
 time_column = "SETTLEMENTDATE"
-next_column_id = 24
+next_column_id = 25
 
 column = [
     { id = 1, name = "SETTLEMENTDATE", type = "timestamp_ns", nullable = false },
@@ -35,15 +35,16 @@ column = [
     { id = 21, name = "REBID_DECISION_TIME", type = "string", nullable = true },
     { id = 22, name = "REBID_CATEGORY", type = "string", nullable = true },
     { id = 23, name = "REFERENCE_ID", type = "string", nullable = true },
+    { id = 24, name = "MR_FACTOR", type = "double", nullable = true },
 ]
 
 [[increment]]
 n = 1
-from = "2024-01"
+from = "2015-01"
 ctl = "001.ctl"
-ctl_sha256 = "69a823a59bedf5173c4f84a957e0c5cc4a69d7846a87c17e1c21106b394be7b0"
-aemo_ctl = "PUBLIC_DVD_MNSP_DAYOFFER_202401.ctl"
-aemo_versions = [1]
+ctl_sha256 = "5e803daec0f2d857a8f83e033d9dc1512cbb1bb46f0b9b7e4041f4c170ddb925"
+aemo_ctl = "PUBLIC_DVD_MNSP_DAYOFFER_201501.ctl"
+aemo_versions = []
 columns = [
     "SETTLEMENTDATE",
     "OFFERDATE",
@@ -63,6 +64,97 @@ columns = [
     "PRICEBAND9",
     "PRICEBAND10",
     "LASTCHANGED",
+    "MR_FACTOR",
+]
+
+[[increment]]
+n = 2
+from = "2021-03"
+ctl = "002.ctl"
+ctl_sha256 = "980571050916c9f6605e5e00db1dce8ad9743fc5dead664a8f77326682b60a37"
+aemo_ctl = "PUBLIC_DVD_MNSP_DAYOFFER_202103.ctl"
+aemo_versions = []
+columns = [
+    "SETTLEMENTDATE",
+    "OFFERDATE",
+    "VERSIONNO",
+    "PARTICIPANTID",
+    "LINKID",
+    "ENTRYTYPE",
+    "REBIDEXPLANATION",
+    "PRICEBAND1",
+    "PRICEBAND2",
+    "PRICEBAND3",
+    "PRICEBAND4",
+    "PRICEBAND5",
+    "PRICEBAND6",
+    "PRICEBAND7",
+    "PRICEBAND8",
+    "PRICEBAND9",
+    "PRICEBAND10",
+    "LASTCHANGED",
+]
+
+[[increment]]
+n = 3
+from = "2021-04"
+ctl = "003.ctl"
+ctl_sha256 = "0d4392d799d97c9c796bd9b5d228b454cfa85a440f88899d3179e12a750cd8fd"
+aemo_ctl = "PUBLIC_DVD_MNSP_DAYOFFER_202104.ctl"
+aemo_versions = []
+columns = [
+    "SETTLEMENTDATE",
+    "OFFERDATE",
+    "VERSIONNO",
+    "PARTICIPANTID",
+    "LINKID",
+    "ENTRYTYPE",
+    "REBIDEXPLANATION",
+    "PRICEBAND1",
+    "PRICEBAND2",
+    "PRICEBAND3",
+    "PRICEBAND4",
+    "PRICEBAND5",
+    "PRICEBAND6",
+    "PRICEBAND7",
+    "PRICEBAND8",
+    "PRICEBAND9",
+    "PRICEBAND10",
+    "LASTCHANGED",
+    "REBID_EVENT_TIME",
+    "REBID_AWARE_TIME",
+    "REBID_DECISION_TIME",
+    "REBID_CATEGORY",
+    "REFERENCE_ID",
+]
+
+[[increment]]
+n = 4
+from = "2024-08"
+ctl = "004.ctl"
+ctl_sha256 = "858a0b33928780b55acc3cdb68569ced48d76b5a79e7ace637841c2e8c538e98"
+aemo_ctl = "PUBLIC_ARCHIVE#MNSP_DAYOFFER#FILE01#202408.ctl"
+aemo_versions = []
+columns = [
+    "SETTLEMENTDATE",
+    "OFFERDATE",
+    "VERSIONNO",
+    "PARTICIPANTID",
+    "LINKID",
+    "ENTRYTYPE",
+    "REBIDEXPLANATION",
+    "PRICEBAND1",
+    "PRICEBAND2",
+    "PRICEBAND3",
+    "PRICEBAND4",
+    "PRICEBAND5",
+    "PRICEBAND6",
+    "PRICEBAND7",
+    "PRICEBAND8",
+    "PRICEBAND9",
+    "PRICEBAND10",
+    "LASTCHANGED",
+    "MR_FACTOR",
     "REBID_EVENT_TIME",
     "REBID_AWARE_TIME",
     "REBID_DECISION_TIME",

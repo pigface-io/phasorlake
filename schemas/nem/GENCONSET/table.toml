@@ -21,10 +21,10 @@ column = [
 
 [[increment]]
 n = 1
-from = "2024-01"
+from = "2015-01"
 ctl = "001.ctl"
-ctl_sha256 = "675166bd1c3fbc1192302b0fb5910d21c1104bf368682fb76c3ec1567c77e43a"
-aemo_ctl = "PUBLIC_DVD_GENCONSET_202401.ctl"
+ctl_sha256 = "ae80721a1f5deecdce5e3e38ce8aac24758890f7fba614a140b2125a77cebecd"
+aemo_ctl = "PUBLIC_DVD_GENCONSET_201501.ctl"
 aemo_versions = [1]
 columns = [
     "GENCONSETID",

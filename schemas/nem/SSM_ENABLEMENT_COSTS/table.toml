@@ -17,10 +17,10 @@ column = [
 
 [[increment]]
 n = 1
-from = "2026-08"
+from = "2025-11"
 ctl = "001.ctl"
-ctl_sha256 = "30775d230d6466519c792fc0ea64973bba8eeba04b9d62f6fc2fa940ad53fbf2"
-aemo_ctl = "PUBLIC_ARCHIVE#SSM_ENABLEMENT_COSTS#FILE01#202608.ctl"
+ctl_sha256 = "4f90fc76de85b0e5377205203075fc6b56b9e45bf146f757bf1cf578383ad73b"
+aemo_ctl = "PUBLIC_ARCHIVE#SSM_ENABLEMENT_COSTS#FILE01#202511.ctl"
 aemo_versions = [1]
 columns = [
     "END_TRADINGDATE",

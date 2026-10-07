@@ -256,13 +256,15 @@ from disk.
 File names changed along the way, from `PUBLIC_DVD_{TABLE}_{YYYYMM}010000.zip`
 to `PUBLIC_ARCHIVE#{TABLE}#FILE{NN}#{YYYYMM}010000.zip`; both are read.
 
-The schemas start from the control files of January 2024 and August 2026.
-Every file of those months conforms to its increment, but for the
-January 2024 `_ALL` files of three P5MIN tables, which carry other columns
-than the files their control files load under the same report pair, and
-are kept and flagged. A file of another month is read against the
-increment in force then; `just schema-sync` brings the increments up to
-the months downloaded.
+The increments come from the control files of every month from January
+2015 to August 2026, built in one pass (`just schema-rebuild`), so each
+starts in the month its layout first appeared; 2009 to 2014 follow once
+those months are downloaded. Every file of August 2026 conforms to its
+increment. In January 2024 the `_ALL` files of three P5MIN tables carry
+other columns than the files their control files load, and five tables'
+files carry columns their control file does not list; those files are
+kept and flagged until a census of every month settles them. A file of
+another month is read against the increment in force then.
 
 AEMO's web server blocks a client that asks too fast. nemlake leaves 250 ms
 between requests (`request_interval_ms` in `config.toml`), and when the

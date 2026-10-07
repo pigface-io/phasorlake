@@ -22,10 +22,28 @@ column = [
 
 [[increment]]
 n = 1
-from = "2024-01"
+from = "2015-01"
 ctl = "001.ctl"
-ctl_sha256 = "aa792d2255bf5f1d44839323df2f76665d0f91a70d738864d579b1eb3cf45dc7"
-aemo_ctl = "PUBLIC_DVD_PREDISPATCHOFFERTRK_202401.ctl"
+ctl_sha256 = "730f54198a767d3a60de64a1bf3290d3887926934fa0364c4ac0a2e07c221208"
+aemo_ctl = "PUBLIC_DVD_PREDISPATCHOFFERTRK_201501.ctl"
+aemo_versions = []
+columns = [
+    "PREDISPATCHSEQNO",
+    "DUID",
+    "BIDTYPE",
+    "PERIODID",
+    "BIDSETTLEMENTDATE",
+    "BIDOFFERDATE",
+    "DATETIME",
+    "LASTCHANGED",
+]
+
+[[increment]]
+n = 2
+from = "2021-04"
+ctl = "002.ctl"
+ctl_sha256 = "9c9886dc411d910c69e8c74f92d7bdf63a4a299c506a7330a3653aec08575fed"
+aemo_ctl = "PUBLIC_DVD_PREDISPATCHOFFERTRK_202104.ctl"
 aemo_versions = [1]
 columns = [
     "PREDISPATCHSEQNO",

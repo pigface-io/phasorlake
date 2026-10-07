@@ -22,10 +22,28 @@ column = [
 
 [[increment]]
 n = 1
-from = "2026-08"
+from = "2024-12"
 ctl = "001.ctl"
-ctl_sha256 = "8e8be4f498d442ff27807a9174ea38f1e4d673ee3e285776d76d4bb840c1d1cd"
-aemo_ctl = "PUBLIC_ARCHIVE#FPP_EST_RESIDUAL_COST_RATE#FILE01#202608.ctl"
+ctl_sha256 = "beefbe328dbda02091aa319fe2975f1d670d6e2fc9c3d4f3556817deef1568b6"
+aemo_ctl = "PUBLIC_ARCHIVE#FPP_EST_RESIDUAL_COST_RATE#FILE01#202412.ctl"
+aemo_versions = []
+columns = [
+    "INTERVAL_DATETIME",
+    "CONSTRAINTID",
+    "VERSIONNO",
+    "BIDTYPE",
+    "RELEVANT_REGIONS",
+    "FPP",
+    "USED_FCAS",
+    "UNUSED_FCAS",
+]
+
+[[increment]]
+n = 2
+from = "2026-05"
+ctl = "002.ctl"
+ctl_sha256 = "8d547b0737ea52d305c8c657c459e440131e9b9b67be309639b7eeee27088fa3"
+aemo_ctl = "PUBLIC_ARCHIVE#FPP_EST_RESIDUAL_COST_RATE#FILE01#202605.ctl"
 aemo_versions = [1]
 columns = [
     "INTERVAL_DATETIME",

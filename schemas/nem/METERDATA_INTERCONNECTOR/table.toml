@@ -21,10 +21,10 @@ column = [
 
 [[increment]]
 n = 1
-from = "2026-08"
+from = "2024-08"
 ctl = "001.ctl"
-ctl_sha256 = "9743253277376cb118719269fb17c02ef99b3452ea40971136a987b4ba6614df"
-aemo_ctl = "PUBLIC_ARCHIVE#METERDATA_INTERCONNECTOR#FILE01#202608.ctl"
+ctl_sha256 = "34e25c7a5e929162977e6622fd586951f6ab4875af179e4f0964dd92d1221d3d"
+aemo_ctl = "PUBLIC_ARCHIVE#METERDATA_INTERCONNECTOR#FILE01#202408.ctl"
 aemo_versions = [1]
 columns = [
     "CASE_ID",

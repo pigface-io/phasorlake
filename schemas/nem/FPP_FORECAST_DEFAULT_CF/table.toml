@@ -25,10 +25,52 @@ column = [
 
 [[increment]]
 n = 1
-from = "2026-08"
+from = "2024-12"
 ctl = "001.ctl"
-ctl_sha256 = "b8a9962b53a4e5ce4f4eadf9cc971112caea22ef428b2f13c02ae9a154680880"
-aemo_ctl = "PUBLIC_ARCHIVE#FPP_FORECAST_DEFAULT_CF#FILE01#202608.ctl"
+ctl_sha256 = "eea279673b1f330b9385094596da11ab8cfcbcaf118e9c4a5e8d2367ede3c0dd"
+aemo_ctl = "PUBLIC_ARCHIVE#FPP_FORECAST_DEFAULT_CF#FILE01#202412.ctl"
+aemo_versions = []
+columns = [
+    "FPP_UNITID",
+    "CONSTRAINTID",
+    "EFFECTIVE_START_DATETIME",
+    "EFFECTIVE_END_DATETIME",
+    "VERSIONNO",
+    "BIDTYPE",
+    "REGIONID",
+    "DEFAULT_CONTRIBUTION_FACTOR",
+    "DCF_REASON_FLAG",
+    "DCF_ABS_NEGATIVE_PERF_TOTAL",
+    "SETTLEMENTS_UNITID",
+]
+
+[[increment]]
+n = 2
+from = "2025-04"
+ctl = "002.ctl"
+ctl_sha256 = "d27e9d8efde5ad2370b9c4593b269acab70323a56f82199599e1b3153a04342b"
+aemo_ctl = "PUBLIC_ARCHIVE#FPP_FORECAST_DEFAULT_CF#FILE01#202504.ctl"
+aemo_versions = []
+columns = [
+    "FPP_UNITID",
+    "CONSTRAINTID",
+    "EFFECTIVE_START_DATETIME",
+    "EFFECTIVE_END_DATETIME",
+    "VERSIONNO",
+    "BIDTYPE",
+    "REGIONID",
+    "DEFAULT_CONTRIBUTION_FACTOR",
+    "DCF_REASON_FLAG",
+    "DCF_ABS_NEGATIVE_PERF_TOTAL",
+    "SETTLEMENTS_UNITID",
+]
+
+[[increment]]
+n = 3
+from = "2026-05"
+ctl = "003.ctl"
+ctl_sha256 = "e5fff27bbe185634a478410f08b336a86cb0c69d7cc278ed632ac9f1561922bc"
+aemo_ctl = "PUBLIC_ARCHIVE#FPP_FORECAST_DEFAULT_CF#FILE01#202605.ctl"
 aemo_versions = [1]
 columns = [
     "FPP_UNITID",

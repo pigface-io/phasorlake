@@ -18,10 +18,10 @@ column = [
 
 [[increment]]
 n = 1
-from = "2024-01"
+from = "2020-10"
 ctl = "001.ctl"
-ctl_sha256 = "0179ebe9569b55936468bb569dfe63d8dfbc0d16bc1ba82b870adda22b61ab65"
-aemo_ctl = "PUBLIC_DVD_DUALLOC_202401.ctl"
+ctl_sha256 = "70bf995d4d5bd948c7c59e41b03fde103195689644a6cbf19509378febcee603"
+aemo_ctl = "PUBLIC_DVD_DUALLOC_202010.ctl"
 aemo_versions = [1]
 columns = [
     "EFFECTIVEDATE",

@@ -1,5 +1,5 @@
 -- ************************************************************
--- Title:	PUBLIC_ARCHIVE#FPP_RCR#FILE01#202608.ctl
+-- Title:	PUBLIC_ARCHIVE#FPP_RCR#FILE01#202412.ctl
 -- ************************************************************
 -- Project : NEMMCO MONTHLY DVD RELEASE
 -- Purpose : Control File to load monthly csv file
@@ -17,7 +17,7 @@
 --      PUBLIC			       v
 -- ************************************************************
 LOAD DATA
-INFILE PUBLIC_ARCHIVE#FPP_RCR#FILE01#202608010000.CSV
+INFILE PUBLIC_ARCHIVE#FPP_RCR#FILE01#202412010000.CSV
 APPEND INTO TABLE FPP_RCR
 WHEN (1:1) = 'D'
 FIELDS TERMINATED BY ','
@@ -32,6 +32,5 @@ CONSTRAINTID CHAR(20),
 VERSIONNO FLOAT EXTERNAL,
 BIDTYPE CHAR(10),
 RCR FLOAT EXTERNAL,
-RCR_REASON_FLAG FLOAT EXTERNAL,
-LASTCHANGED DATE "YYYY/MM/DD HH24:MI:SS")
+RCR_REASON_FLAG FLOAT EXTERNAL)
 -- End of Script

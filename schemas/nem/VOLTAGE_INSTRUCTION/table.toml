@@ -27,10 +27,10 @@ column = [
 
 [[increment]]
 n = 1
-from = "2026-08"
+from = "2024-08"
 ctl = "001.ctl"
-ctl_sha256 = "00bdaf5de693a40482dae414093b3cfcf2c9f3153ade9b0a54d17c7f98346a8c"
-aemo_ctl = "PUBLIC_ARCHIVE#VOLTAGE_INSTRUCTION#FILE01#202608.ctl"
+ctl_sha256 = "d45cd4bf635a577b94605eb83cb5ce37083f62afb441edc847b04ead66ea0472"
+aemo_ctl = "PUBLIC_ARCHIVE#VOLTAGE_INSTRUCTION#FILE01#202408.ctl"
 aemo_versions = [2]
 columns = [
     "RUN_DATETIME",

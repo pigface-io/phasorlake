@@ -1,5 +1,5 @@
 -- ************************************************************
--- Title:	PUBLIC_ARCHIVE#ANCILLARY_RECOVERY_SPLIT#FILE01#202608.ctl
+-- Title:	PUBLIC_DVD_ANCILLARY_RECOVERY_SPLIT_202405.ctl
 -- ************************************************************
 -- Project : NEMMCO MONTHLY DVD RELEASE
 -- Purpose : Control File to load monthly csv file
@@ -17,7 +17,7 @@
 --      PUBLIC			       v
 -- ************************************************************
 LOAD DATA
-INFILE PUBLIC_ARCHIVE#ANCILLARY_RECOVERY_SPLIT#FILE01#202608010000.CSV
+INFILE PUBLIC_DVD_ANCILLARY_RECOVERY_SPLIT_202405010000.CSV
 APPEND INTO TABLE ANCILLARY_RECOVERY_SPLIT
 WHEN (1:1) = 'D'
 FIELDS TERMINATED BY ','
@@ -27,11 +27,11 @@ TRAILING NULLCOLS
 report_type FILLER,
 report_subtype FILLER,
 report_version FILLER,
-EFFECTIVEDATE DATE "YYYY/MM/DD HH24:MI:SS",
+EFFECTIVEDATE DATE "yyyy/mm/dd hh24:mi:ss",
 VERSIONNO FLOAT EXTERNAL,
 SERVICE CHAR(10),
 PAYMENTTYPE CHAR(20),
 CUSTOMER_PORTION FLOAT EXTERNAL,
-LASTCHANGED DATE "YYYY/MM/DD HH24:MI:SS",
+LASTCHANGED DATE "yyyy/mm/dd hh24:mi:ss",
 ACE_PORTION FLOAT EXTERNAL)
 -- End of Script

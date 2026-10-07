@@ -22,10 +22,28 @@ column = [
 
 [[increment]]
 n = 1
-from = "2026-08"
+from = "2024-12"
 ctl = "001.ctl"
-ctl_sha256 = "c5757bd6411e1fa8ae696308d522e1434bd6c3caedc65ad5b1d67b9c383d6c70"
-aemo_ctl = "PUBLIC_ARCHIVE#FPP_REGION_FREQ_MEASURE#FILE01#202608.ctl"
+ctl_sha256 = "775d5b409c10b673c8d5dd8d30bbbe8aba6bad2ca31b9133b205221e9df5252d"
+aemo_ctl = "PUBLIC_ARCHIVE#FPP_REGION_FREQ_MEASURE#FILE01#202412.ctl"
+aemo_versions = []
+columns = [
+    "INTERVAL_DATETIME",
+    "MEASUREMENT_DATETIME",
+    "REGIONID",
+    "VERSIONNO",
+    "FREQ_DEVIATION_HZ",
+    "HZ_QUALITY_FLAG",
+    "FREQ_MEASURE_HZ",
+    "FM_ALIGNMENT_FLAG",
+]
+
+[[increment]]
+n = 2
+from = "2026-05"
+ctl = "002.ctl"
+ctl_sha256 = "e6a09aa683b04410799fd7e8d4de1a3b11273c9cae9f14eeeb5f45763b7771a4"
+aemo_ctl = "PUBLIC_ARCHIVE#FPP_REGION_FREQ_MEASURE#FILE01#202605.ctl"
 aemo_versions = [1]
 columns = [
     "INTERVAL_DATETIME",

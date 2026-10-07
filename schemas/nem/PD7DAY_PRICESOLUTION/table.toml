@@ -31,10 +31,36 @@ column = [
 
 [[increment]]
 n = 1
-from = "2026-08"
+from = "2024-08"
 ctl = "001.ctl"
-ctl_sha256 = "816a52e56ed3e7fb0736c099426908b230618565a169b63802625cd08278d6a1"
-aemo_ctl = "PUBLIC_ARCHIVE#PD7DAY_PRICESOLUTION#FILE01#202608.ctl"
+ctl_sha256 = "754687a1beaa5414feb074326f204d46151a2af48c32277a0fa629adc0e65a82"
+aemo_ctl = "PUBLIC_ARCHIVE#PD7DAY_PRICESOLUTION#FILE01#202408.ctl"
+aemo_versions = []
+columns = [
+    "RUN_DATETIME",
+    "INTERVENTION",
+    "INTERVAL_DATETIME",
+    "REGIONID",
+    "RRP",
+    "LOWER1SECRRP",
+    "LOWER6SECRRP",
+    "LOWER60SECRRP",
+    "LOWER5MINRRP",
+    "LOWERREGRRP",
+    "RAISE1SECRRP",
+    "RAISE6SECRRP",
+    "RAISE60SECRRP",
+    "RAISE5MINRRP",
+    "RAISEREGRRP",
+    "LASTCHANGED",
+]
+
+[[increment]]
+n = 2
+from = "2025-04"
+ctl = "002.ctl"
+ctl_sha256 = "8a310cb151556fabc73e73e85fdbe304e46221b381ea1978974ccecf068be4c7"
+aemo_ctl = "PUBLIC_ARCHIVE#PD7DAY_PRICESOLUTION#FILE01#202504.ctl"
 aemo_versions = [1]
 columns = [
     "RUN_DATETIME",

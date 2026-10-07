@@ -1,5 +1,5 @@
 -- ************************************************************
--- Title:	PUBLIC_ARCHIVE#PDPASA_DUIDAVAILABILITY#FILE01#202608.ctl
+-- Title:	PUBLIC_ARCHIVE#PDPASA_DUIDAVAILABILITY#FILE01#202507.ctl
 -- ************************************************************
 -- Project : NEMMCO MONTHLY DVD RELEASE
 -- Purpose : Control File to load monthly csv file
@@ -17,7 +17,7 @@
 --      PUBLIC			       v
 -- ************************************************************
 LOAD DATA
-INFILE PUBLIC_ARCHIVE#PDPASA_DUIDAVAILABILITY#FILE01#202608010000.CSV
+INFILE PUBLIC_ARCHIVE#PDPASA_DUIDAVAILABILITY#FILE01#202507010000.CSV
 APPEND INTO TABLE PDPASA_DUIDAVAILABILITY
 WHEN (1:1) = 'D'
 FIELDS TERMINATED BY ','

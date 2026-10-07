@@ -18,10 +18,10 @@ column = [
 
 [[increment]]
 n = 1
-from = "2026-08"
+from = "2024-08"
 ctl = "001.ctl"
-ctl_sha256 = "6a9df9b717e72cae139b864d0510b21753d6f8563b80ff5386d7922818bc40ec"
-aemo_ctl = "PUBLIC_ARCHIVE#SECDEPOSIT_INTEREST_RATE#FILE01#202608.ctl"
+ctl_sha256 = "2432c2b0d1f7067244c431d61bff9ed48f41953f04e4aa13899b1df6c6a72969"
+aemo_ctl = "PUBLIC_ARCHIVE#SECDEPOSIT_INTEREST_RATE#FILE01#202408.ctl"
 aemo_versions = [1]
 columns = [
     "INTEREST_ACCT_ID",

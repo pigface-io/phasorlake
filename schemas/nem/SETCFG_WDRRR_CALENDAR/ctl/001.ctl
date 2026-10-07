@@ -1,5 +1,5 @@
 -- ************************************************************
--- Title:	PUBLIC_ARCHIVE#SETCFG_WDRRR_CALENDAR#FILE01#202608.ctl
+-- Title:	PUBLIC_ARCHIVE#SETCFG_WDRRR_CALENDAR#FILE01#202408.ctl
 -- ************************************************************
 -- Project : NEMMCO MONTHLY DVD RELEASE
 -- Purpose : Control File to load monthly csv file
@@ -17,7 +17,7 @@
 --      PUBLIC			       v
 -- ************************************************************
 LOAD DATA
-INFILE PUBLIC_ARCHIVE#SETCFG_WDRRR_CALENDAR#FILE01#202608010000.CSV
+INFILE PUBLIC_ARCHIVE#SETCFG_WDRRR_CALENDAR#FILE01#202408010000.CSV
 APPEND INTO TABLE SETCFG_WDRRR_CALENDAR
 WHEN (1:1) = 'D'
 FIELDS TERMINATED BY ','

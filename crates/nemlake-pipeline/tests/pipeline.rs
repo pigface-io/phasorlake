@@ -420,7 +420,7 @@ async fn a_source_is_read_again_when_its_plan_changes() {
     assert_eq!(footer(&files[0], "nemlake.plan"), first.plan_hash);
     assert_eq!(footer(&files[0], "nemlake.schema_source"), "registry");
     assert_eq!(footer(&files[0], "nemlake.resolution"), "conforms");
-    assert_eq!(footer(&files[0], "nemlake.schema_version"), "1");
+    assert_eq!(footer(&files[0], "nemlake.schema_version"), "4");
     assert_eq!(footer(&files[0], "nemlake.report_type"), "DISPATCH");
     assert_eq!(footer(&files[0], "nemlake.report_subtype"), "PRICE");
     assert_eq!(footer(&files[0], "nemlake.source_version"), "4");
@@ -1454,7 +1454,7 @@ async fn remote_source_downloads_then_serves_from_cache_and_reports_fetch_failur
     let files = walk(&e.home.lake());
     assert!(
         files.iter().any(|f| f.contains(
-            "nem/tradingprice/year=2024/month=01/public_dvd_tradingprice_202401010000-v1-"
+            "nem/tradingprice/year=2024/month=01/public_dvd_tradingprice_202401010000-v2-"
         )),
         "{files:?}"
     );

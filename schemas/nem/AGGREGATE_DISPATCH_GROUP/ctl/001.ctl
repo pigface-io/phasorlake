@@ -1,5 +1,5 @@
 -- ************************************************************
--- Title:	PUBLIC_ARCHIVE#AGGREGATE_DISPATCH_GROUP#FILE01#202608.ctl
+-- Title:	PUBLIC_ARCHIVE#AGGREGATE_DISPATCH_GROUP#FILE01#202408.ctl
 -- ************************************************************
 -- Project : NEMMCO MONTHLY DVD RELEASE
 -- Purpose : Control File to load monthly csv file
@@ -17,7 +17,7 @@
 --      PUBLIC			       v
 -- ************************************************************
 LOAD DATA
-INFILE PUBLIC_ARCHIVE#AGGREGATE_DISPATCH_GROUP#FILE01#202608010000.CSV
+INFILE PUBLIC_ARCHIVE#AGGREGATE_DISPATCH_GROUP#FILE01#202408010000.CSV
 APPEND INTO TABLE AGGREGATE_DISPATCH_GROUP
 WHEN (1:1) = 'D'
 FIELDS TERMINATED BY ','

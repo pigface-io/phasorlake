@@ -23,10 +23,10 @@ column = [
 
 [[increment]]
 n = 1
-from = "2026-08"
+from = "2024-08"
 ctl = "001.ctl"
-ctl_sha256 = "0f31ac25a66f0ee75c5b9720fd22081c1980ccb7ad099d04ef7ec1f44c0177c7"
-aemo_ctl = "PUBLIC_ARCHIVE#SRA_FINANCIAL_RUNTRK#FILE01#202608.ctl"
+ctl_sha256 = "4aa3127e4d7b6d28597486f97334e92a4fb4f31c69bd553b59fa58a8ca83416f"
+aemo_ctl = "PUBLIC_ARCHIVE#SRA_FINANCIAL_RUNTRK#FILE01#202408.ctl"
 aemo_versions = [1]
 columns = [
     "SRA_YEAR",

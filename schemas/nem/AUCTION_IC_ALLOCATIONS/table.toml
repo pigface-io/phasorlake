@@ -26,10 +26,31 @@ column = [
 
 [[increment]]
 n = 1
-from = "2024-01"
+from = "2015-01"
 ctl = "001.ctl"
-ctl_sha256 = "c396bfef74530ce560487c3b27ef177befac752eb6e737f47baf5085a8d254cd"
-aemo_ctl = "PUBLIC_DVD_AUCTION_IC_ALLOCATIONS_202401.ctl"
+ctl_sha256 = "4bcfcbfb2d95cc80f77c0ef7781faa59aea9bc20270b0c22e5e470e541bce9b4"
+aemo_ctl = "PUBLIC_DVD_AUCTION_IC_ALLOCATIONS_201501.ctl"
+aemo_versions = []
+columns = [
+    "CONTRACTYEAR",
+    "QUARTER",
+    "VERSIONNO",
+    "INTERCONNECTORID",
+    "FROMREGIONID",
+    "MAXIMUMUNITS",
+    "PROPORTION",
+    "AUCTIONFEE",
+    "CHANGEDATE",
+    "CHANGEDBY",
+    "LASTCHANGED",
+]
+
+[[increment]]
+n = 2
+from = "2019-10"
+ctl = "002.ctl"
+ctl_sha256 = "d72750c9b48a2708e0046b1df8b745223cf498090e60da7b4a75f2bc518ca732"
+aemo_ctl = "PUBLIC_DVD_AUCTION_IC_ALLOCATIONS_201910.ctl"
 aemo_versions = [2]
 columns = [
     "CONTRACTYEAR",

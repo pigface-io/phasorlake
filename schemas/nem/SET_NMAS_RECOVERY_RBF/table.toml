@@ -25,10 +25,31 @@ column = [
 
 [[increment]]
 n = 1
-from = "2026-08"
+from = "2024-08"
 ctl = "001.ctl"
-ctl_sha256 = "864e20e7429ffe017ed1ed680d3d10f4f8c6c277e7b3e311e2f9b296484b35de"
-aemo_ctl = "PUBLIC_ARCHIVE#SET_NMAS_RECOVERY_RBF#FILE01#202608.ctl"
+ctl_sha256 = "d8792333e050de28707b8c16e250cd519be2b85b3aab2245074507dd4ad07ca3"
+aemo_ctl = "PUBLIC_ARCHIVE#SET_NMAS_RECOVERY_RBF#FILE01#202408.ctl"
+aemo_versions = []
+columns = [
+    "SETTLEMENTDATE",
+    "VERSIONNO",
+    "PERIODID",
+    "SERVICE",
+    "CONTRACTID",
+    "PAYMENTTYPE",
+    "REGIONID",
+    "RBF",
+    "PAYMENT_AMOUNT",
+    "RECOVERY_AMOUNT",
+    "LASTCHANGED",
+]
+
+[[increment]]
+n = 2
+from = "2026-05"
+ctl = "002.ctl"
+ctl_sha256 = "47ea81fd82ec8f1a2e36061344cbe3fab03e2ee0051da6a5eb556a3b570a76d5"
+aemo_ctl = "PUBLIC_ARCHIVE#SET_NMAS_RECOVERY_RBF#FILE01#202605.ctl"
 aemo_versions = [1]
 columns = [
     "SETTLEMENTDATE",

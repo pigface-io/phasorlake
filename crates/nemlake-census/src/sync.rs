@@ -731,7 +731,8 @@ mod tests {
             .iter()
             .map(|i| i.n)
             .collect();
-        assert_eq!(order, [1, 4, 2, 3]);
+        // 2015-01, 2024-10, then 2025-06 and 2026-11 as synced.
+        assert_eq!(order, [1, 2, 4, 3]);
     }
 
     /// A table the schemas lack starts from its control file, the data
@@ -799,11 +800,10 @@ mod tests {
     }
 
     /// Rebuilt from the two bootstrap months, every table's increments
-    /// come back as the conversion gave them, but for the hand fixes
-    /// (columns the files carry beyond their control file), which a
-    /// rebuild drops; ids and types stay.
+    /// are numbered in month order, each the layout of its control file;
+    /// columns, ids and types stay.
     #[test]
-    fn a_rebuild_of_the_bootstrap_months_gives_the_converted_increments() {
+    fn a_rebuild_numbers_increments_in_month_order() {
         let mut s = Sync::load(&root().join("schemas")).unwrap();
         let before: BTreeMap<String, Table> = s
             .tables
@@ -819,35 +819,27 @@ mod tests {
             s.month(m.parse().unwrap(), &fixture_ctls(m), &ev, &facts);
         }
         assert!(s.finish().is_empty());
-        let fixed = [
-            "DISPATCHCONSTRAINT",
-            "MTPASA_REGIONRESULT",
-            "P5MIN_CONSTRAINTSOLUTION",
-            "PREDISPATCHCONSTRAINT",
-            "PREDISPATCHPRICE",
-        ];
-        let key = |t: &Table| -> Vec<_> {
-            t.increments
-                .iter()
-                .map(|i| {
-                    (
-                        i.n,
-                        i.from,
-                        i.ctl.clone(),
-                        i.ctl_sha256.clone(),
-                        i.columns.clone(),
-                    )
-                })
-                .collect()
-        };
         for (name, old) in &before {
-            let new = s.table(name).unwrap();
-            assert_eq!(new.columns, old.columns, "{name}");
-            if fixed.contains(&name.as_str()) {
-                assert_ne!(key(new), key(old), "{name}");
-                assert!(new.increments.iter().all(|i| i.note.is_none()), "{name}");
-            } else {
-                assert_eq!(key(new), key(old), "{name}");
+            let e = &s.tables[name];
+            assert_eq!(
+                e.table
+                    .columns
+                    .iter()
+                    .map(|c| (c.id, c.ty))
+                    .collect::<Vec<_>>(),
+                old.columns.iter().map(|c| (c.id, c.ty)).collect::<Vec<_>>(),
+                "{name}"
+            );
+            for (k, i) in e.table.increments.iter().enumerate() {
+                assert_eq!(usize::from(i.n), k + 1, "{name}");
+                let (_, bytes) = e
+                    .new_ctls
+                    .iter()
+                    .find(|(f, _)| Some(f) == i.ctl.as_ref())
+                    .unwrap();
+                let ctl = parse("x", &String::from_utf8_lossy(bytes)).unwrap();
+                assert_eq!(i.columns, ctl.column_names(), "{name}");
+                assert!(i.note.is_none(), "{name}");
             }
         }
         // PREDISPATCHPRICE's two months lay it out alike: one increment.

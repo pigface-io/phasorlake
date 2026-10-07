@@ -20,11 +20,11 @@ column = [
 
 [[increment]]
 n = 1
-from = "2024-01"
+from = "2019-10"
 ctl = "001.ctl"
-ctl_sha256 = "bd661d42b856e96e6d5b4841862d5ffa793ef90a1eb156af24a05244297250f7"
-aemo_ctl = "PUBLIC_DVD_ROOFTOP_PV_ACTUAL_202401.ctl"
-aemo_versions = [2]
+ctl_sha256 = "317b73f789365ebb833c48afd5cb617e64adede1a24a4f6270f849a5945733b0"
+aemo_ctl = "PUBLIC_DVD_ROOFTOP_PV_ACTUAL_201910.ctl"
+aemo_versions = []
 columns = [
     "INTERVAL_DATETIME",
     "REGIONID",
@@ -36,10 +36,10 @@ columns = [
 
 [[increment]]
 n = 2
-from = "2026-08"
+from = "2024-08"
 ctl = "002.ctl"
-ctl_sha256 = "cfea7189e98599284c9304195be86a554c97f29fa0c688cab42da05aa1585c8b"
-aemo_ctl = "PUBLIC_ARCHIVE#ROOFTOP_PV_ACTUAL#FILE01#202608.ctl"
+ctl_sha256 = "1105670a8e1a8866d5ded40dd62e89f3b05d1ae64b7ffce9bd89373451e282fc"
+aemo_ctl = "PUBLIC_ARCHIVE#ROOFTOP_PV_ACTUAL#FILE01#202408.ctl"
 aemo_versions = [2]
 columns = [
     "INTERVAL_DATETIME",

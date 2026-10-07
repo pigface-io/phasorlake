@@ -16,10 +16,10 @@ column = [
 
 [[increment]]
 n = 1
-from = "2026-08"
+from = "2024-08"
 ctl = "001.ctl"
-ctl_sha256 = "5eac4742cc318abeff2825f0bbf37b75bf561d1318f0b52f681c763c6306d056"
-aemo_ctl = "PUBLIC_ARCHIVE#PMS_GROUP#FILE01#202608.ctl"
+ctl_sha256 = "db8171e8fe14f6da0807ae47409c767cc6a6aef70cc4ea6fe0de05c56a620523"
+aemo_ctl = "PUBLIC_ARCHIVE#PMS_GROUP#FILE01#202408.ctl"
 aemo_versions = [1]
 columns = [
     "GROUPID",

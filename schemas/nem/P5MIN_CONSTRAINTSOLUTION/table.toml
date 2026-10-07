@@ -29,11 +29,54 @@ column = [
 
 [[increment]]
 n = 1
-from = "2024-01"
+from = "2015-01"
 ctl = "001.ctl"
-ctl_sha256 = "a52362afb95c46c64edc7e7c57b8a478b89566da9e9e560ffbab01aeaf58f8c5"
-aemo_ctl = "PUBLIC_DVD_P5MIN_CONSTRAINTSOLUTION1_202401.ctl"
-aemo_versions = [6]
+ctl_sha256 = "86b36e04c31b0c536193b70aad761d743c538c655bc9372b16c99be264a7add6"
+aemo_ctl = "PUBLIC_DVD_P5MIN_CONSTRAINTSOLUTION1_201501.ctl"
+aemo_versions = []
+columns = [
+    "RUN_DATETIME",
+    "INTERVAL_DATETIME",
+    "CONSTRAINTID",
+    "RHS",
+    "MARGINALVALUE",
+    "VIOLATIONDEGREE",
+    "LASTCHANGED",
+    "DUID",
+    "GENCONID_EFFECTIVEDATE",
+    "GENCONID_VERSIONNO",
+    "LHS",
+]
+
+[[increment]]
+n = 2
+from = "2018-12"
+ctl = "002.ctl"
+ctl_sha256 = "8719e8fed35ecf1dc9f2be4b7c78e2ad5a95f9fe667d19f629093a4282b9b174"
+aemo_ctl = "PUBLIC_DVD_P5MIN_CONSTRAINTSOLUTION1_201812.ctl"
+aemo_versions = []
+columns = [
+    "RUN_DATETIME",
+    "INTERVAL_DATETIME",
+    "CONSTRAINTID",
+    "RHS",
+    "MARGINALVALUE",
+    "VIOLATIONDEGREE",
+    "LASTCHANGED",
+    "DUID",
+    "GENCONID_EFFECTIVEDATE",
+    "GENCONID_VERSIONNO",
+    "LHS",
+    "INTERVENTION",
+]
+
+[[increment]]
+n = 3
+from = "2019-07"
+ctl = "003.ctl"
+ctl_sha256 = "12dc41ce123db51a437d9f71a00b3953b65981bac1cd815ed46ca4ddd7465e07"
+aemo_ctl = "PUBLIC_DVD_P5MIN_CONSTRAINTSOLUTION1_201907.ctl"
+aemo_versions = []
 columns = [
     "RUN_DATETIME",
     "INTERVENTION",
@@ -43,19 +86,60 @@ columns = [
     "MARGINALVALUE",
     "VIOLATIONDEGREE",
     "LASTCHANGED",
-    "CONFIDENTIAL_TO",
     "GENCONID_EFFECTIVEDATE",
     "GENCONID_VERSIONNO",
     "LHS",
 ]
-note = "The file the control file loads, PUBLIC_DVD_P5MIN_CONSTRAINTSOLUTION1_202401010000.CSV, carries CONFIDENTIAL_TO, which its control file does not list; the increment lists the file's columns."
 
 [[increment]]
-n = 2
-from = "2026-08"
-ctl = "002.ctl"
-ctl_sha256 = "dc3ad77c9fb9bbd76960273a2e11422c578fe1a8c5cab49fd7c8d0db2fadf461"
-aemo_ctl = "PUBLIC_ARCHIVE#P5MIN_CONSTRAINTSOLUTION#FILE01#202608.ctl"
+n = 4
+from = "2019-08"
+ctl = "004.ctl"
+ctl_sha256 = "6139ce8f3b546f12e11ce82f4bd530951568d89e97f702d9fe264a8e04f9b7e0"
+aemo_ctl = "PUBLIC_DVD_P5MIN_CONSTRAINTSOLUTION1_201908.ctl"
+aemo_versions = []
+columns = [
+    "RUN_DATETIME",
+    "INTERVAL_DATETIME",
+    "CONSTRAINTID",
+    "RHS",
+    "MARGINALVALUE",
+    "VIOLATIONDEGREE",
+    "LASTCHANGED",
+    "DUID",
+    "GENCONID_EFFECTIVEDATE",
+    "GENCONID_VERSIONNO",
+    "LHS",
+    "INTERVENTION",
+]
+
+[[increment]]
+n = 5
+from = "2019-10"
+ctl = "005.ctl"
+ctl_sha256 = "566fac34c56fe7ed4487a6f3579ccbdb15a30c4b37a12ff70ccd8e4f5faca264"
+aemo_ctl = "PUBLIC_DVD_P5MIN_CONSTRAINTSOLUTION1_201910.ctl"
+aemo_versions = []
+columns = [
+    "RUN_DATETIME",
+    "INTERVENTION",
+    "INTERVAL_DATETIME",
+    "CONSTRAINTID",
+    "RHS",
+    "MARGINALVALUE",
+    "VIOLATIONDEGREE",
+    "LASTCHANGED",
+    "GENCONID_EFFECTIVEDATE",
+    "GENCONID_VERSIONNO",
+    "LHS",
+]
+
+[[increment]]
+n = 6
+from = "2024-08"
+ctl = "006.ctl"
+ctl_sha256 = "403ad38e265914baf3201aa529f25beb0346af56fd27e72704b2b3c648c8ca64"
+aemo_ctl = "PUBLIC_ARCHIVE#P5MIN_CONSTRAINTSOLUTION#FILE01#202408.ctl"
 aemo_versions = [6]
 columns = [
     "RUN_DATETIME",

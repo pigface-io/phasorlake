@@ -1,5 +1,5 @@
 -- ************************************************************
--- Title:	PUBLIC_ARCHIVE#DISPATCH_CONSTRAINT_FCAS_OCD#FILE01#202608.ctl
+-- Title:	PUBLIC_ARCHIVE#DISPATCH_CONSTRAINT_FCAS_OCD#FILE01#202410.ctl
 -- ************************************************************
 -- Project : NEMMCO MONTHLY DVD RELEASE
 -- Purpose : Control File to load monthly csv file
@@ -17,7 +17,7 @@
 --      PUBLIC			       v
 -- ************************************************************
 LOAD DATA
-INFILE PUBLIC_ARCHIVE#DISPATCH_CONSTRAINT_FCAS_OCD#FILE01#202608010000.CSV
+INFILE PUBLIC_ARCHIVE#DISPATCH_CONSTRAINT_FCAS_OCD#FILE01#202410010000.CSV
 APPEND INTO TABLE DISPATCH_CONSTRAINT_FCAS_OCD
 WHEN (1:1) = 'D'
 FIELDS TERMINATED BY ','

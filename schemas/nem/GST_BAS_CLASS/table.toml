@@ -16,10 +16,10 @@ column = [
 
 [[increment]]
 n = 1
-from = "2024-01"
+from = "2015-01"
 ctl = "001.ctl"
-ctl_sha256 = "7100613de6fc0461fd1ec5acd59bdc3853be82ae98b366e1e8f5560f6f94a335"
-aemo_ctl = "PUBLIC_DVD_GST_BAS_CLASS_202401.ctl"
+ctl_sha256 = "2f8c182f3e0decd7186f581241588b059f0158071688b6bce6428670b625599e"
+aemo_ctl = "PUBLIC_DVD_GST_BAS_CLASS_201501.ctl"
 aemo_versions = [1]
 columns = [
     "BAS_CLASS",

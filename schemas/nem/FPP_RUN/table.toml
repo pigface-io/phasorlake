@@ -19,10 +19,25 @@ column = [
 
 [[increment]]
 n = 1
-from = "2026-08"
+from = "2024-12"
 ctl = "001.ctl"
-ctl_sha256 = "5062082429153d91bc4c0b4db401a1057fb6b5a533f2eef59fe9e278661c5523"
-aemo_ctl = "PUBLIC_ARCHIVE#FPP_RUN#FILE01#202608.ctl"
+ctl_sha256 = "09dc87bfda574516c1951b6da8ecb671b10d0b895c0502b15ec2c72af77c4def"
+aemo_ctl = "PUBLIC_ARCHIVE#FPP_RUN#FILE01#202412.ctl"
+aemo_versions = []
+columns = [
+    "INTERVAL_DATETIME",
+    "VERSIONNO",
+    "FPPRUN_DATETIME",
+    "RUN_STATUS",
+    "AUTHORISED_DATETIME",
+]
+
+[[increment]]
+n = 2
+from = "2026-05"
+ctl = "002.ctl"
+ctl_sha256 = "1de0c2e7577f0683757360b25e341513f721dcb6cd8c7159087a7f75a6d5ca27"
+aemo_ctl = "PUBLIC_ARCHIVE#FPP_RUN#FILE01#202605.ctl"
 aemo_versions = [1]
 columns = [
     "INTERVAL_DATETIME",

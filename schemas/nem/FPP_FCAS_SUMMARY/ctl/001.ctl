@@ -1,5 +1,5 @@
 -- ************************************************************
--- Title:	PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202608.ctl
+-- Title:	PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202412.ctl
 -- ************************************************************
 -- Project : NEMMCO MONTHLY DVD RELEASE
 -- Purpose : Control File to load monthly csv file
@@ -17,7 +17,7 @@
 --      PUBLIC			       v
 -- ************************************************************
 LOAD DATA
-INFILE PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202608010000.CSV
+INFILE PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202412010000.CSV
 APPEND INTO TABLE FPP_FCAS_SUMMARY
 WHEN (1:1) = 'D'
 FIELDS TERMINATED BY ','
@@ -41,6 +41,5 @@ BASE_COST FLOAT EXTERNAL,
 TSFCAS FLOAT EXTERNAL,
 TOTAL_FPP FLOAT EXTERNAL,
 RCR FLOAT EXTERNAL,
-USAGE_VALUE FLOAT EXTERNAL,
-LASTCHANGED DATE "YYYY/MM/DD HH24:MI:SS")
+USAGE FLOAT EXTERNAL)
 -- End of Script

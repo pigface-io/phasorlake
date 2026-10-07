@@ -160,7 +160,7 @@ mod tests {
         assert_eq!(lines.len(), 3, "{lines:?}");
         assert_eq!(
             lines[0],
-            "DISPATCH_UNIT_SCADA@1 (from 2024-01): PDR only: LASTCHANGED"
+            "DISPATCH_UNIT_SCADA@1 (from 2015-01): PDR only: LASTCHANGED"
         );
         assert_eq!(lines[1], "NOBODY: in the PDR, not in our schemas");
         assert!(lines[2].contains("does not parse"), "{lines:?}");

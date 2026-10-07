@@ -9,7 +9,7 @@ load_mode = "append"
 dedupe = "pk_lastchanged"
 primary_key = ["RUN_DATETIME", "INTERVAL_DATETIME", "DUID"]
 time_column = "INTERVAL_DATETIME"
-next_column_id = 38
+next_column_id = 43
 
 column = [
     { id = 1, name = "RUN_DATETIME", type = "timestamp_ns", nullable = false },
@@ -49,15 +49,260 @@ column = [
     { id = 35, name = "LOWER1SECFLAGS", type = "double", nullable = true },
     { id = 36, name = "CONFORMANCE_MODE", type = "double", nullable = true },
     { id = 37, name = "UIGF", type = "double", nullable = true },
+    { id = 38, name = "INITIAL_ENERGY_STORAGE", type = "double", nullable = true },
+    { id = 39, name = "ENERGY_STORAGE", type = "double", nullable = true },
+    { id = 40, name = "ENERGY_STORAGE_MIN", type = "double", nullable = true },
+    { id = 41, name = "ENERGY_STORAGE_MAX", type = "double", nullable = true },
+    { id = 42, name = "MIN_AVAILABILITY", type = "double", nullable = true },
 ]
 
 [[increment]]
 n = 1
-from = "2024-01"
+from = "2015-01"
 ctl = "001.ctl"
-ctl_sha256 = "4d2ed10153f4d0b7223fdff898ef2af5785ab70465762ff8580bf7d686c2eb37"
-aemo_ctl = "PUBLIC_DVD_P5MIN_UNITSOLUTION_202401.ctl"
-aemo_versions = [4, 5]
+ctl_sha256 = "ddbd8516ddc5014b6bbdadea07085b2b5abe7bd384325055cc888f70d8dcf9e8"
+aemo_ctl = "PUBLIC_DVD_P5MIN_UNITSOLUTION_201501.ctl"
+aemo_versions = []
+columns = [
+    "RUN_DATETIME",
+    "INTERVAL_DATETIME",
+    "DUID",
+    "CONNECTIONPOINTID",
+    "TRADETYPE",
+    "AGCSTATUS",
+    "INITIALMW",
+    "TOTALCLEARED",
+    "RAMPDOWNRATE",
+    "RAMPUPRATE",
+    "LOWER5MIN",
+    "LOWER60SEC",
+    "LOWER6SEC",
+    "RAISE5MIN",
+    "RAISE60SEC",
+    "RAISE6SEC",
+    "LOWERREG",
+    "RAISEREG",
+    "AVAILABILITY",
+    "RAISE6SECFLAGS",
+    "RAISE60SECFLAGS",
+    "RAISE5MINFLAGS",
+    "RAISEREGFLAGS",
+    "LOWER6SECFLAGS",
+    "LOWER60SECFLAGS",
+    "LOWER5MINFLAGS",
+    "LOWERREGFLAGS",
+    "LASTCHANGED",
+    "SEMIDISPATCHCAP",
+]
+
+[[increment]]
+n = 2
+from = "2018-12"
+ctl = "002.ctl"
+ctl_sha256 = "0967e8c95c0337517c93690e4b354229a2656e421d034394afc840fd97d108db"
+aemo_ctl = "PUBLIC_DVD_P5MIN_UNITSOLUTION_201812.ctl"
+aemo_versions = []
+columns = [
+    "RUN_DATETIME",
+    "INTERVAL_DATETIME",
+    "DUID",
+    "CONNECTIONPOINTID",
+    "TRADETYPE",
+    "AGCSTATUS",
+    "INITIALMW",
+    "TOTALCLEARED",
+    "RAMPDOWNRATE",
+    "RAMPUPRATE",
+    "LOWER5MIN",
+    "LOWER60SEC",
+    "LOWER6SEC",
+    "RAISE5MIN",
+    "RAISE60SEC",
+    "RAISE6SEC",
+    "LOWERREG",
+    "RAISEREG",
+    "AVAILABILITY",
+    "RAISE6SECFLAGS",
+    "RAISE60SECFLAGS",
+    "RAISE5MINFLAGS",
+    "RAISEREGFLAGS",
+    "LOWER6SECFLAGS",
+    "LOWER60SECFLAGS",
+    "LOWER5MINFLAGS",
+    "LOWERREGFLAGS",
+    "LASTCHANGED",
+    "SEMIDISPATCHCAP",
+    "INTERVENTION",
+]
+
+[[increment]]
+n = 3
+from = "2019-07"
+ctl = "003.ctl"
+ctl_sha256 = "46ea95d52e06cf7f9b2106664797d9dc4a4fa88676327dfe1d76faa00825577b"
+aemo_ctl = "PUBLIC_DVD_P5MIN_UNITSOLUTION_201907.ctl"
+aemo_versions = []
+columns = [
+    "RUN_DATETIME",
+    "INTERVENTION",
+    "INTERVAL_DATETIME",
+    "DUID",
+    "CONNECTIONPOINTID",
+    "TRADETYPE",
+    "AGCSTATUS",
+    "INITIALMW",
+    "TOTALCLEARED",
+    "RAMPDOWNRATE",
+    "RAMPUPRATE",
+    "LOWER5MIN",
+    "LOWER60SEC",
+    "LOWER6SEC",
+    "RAISE5MIN",
+    "RAISE60SEC",
+    "RAISE6SEC",
+    "LOWERREG",
+    "RAISEREG",
+    "AVAILABILITY",
+    "RAISE6SECFLAGS",
+    "RAISE60SECFLAGS",
+    "RAISE5MINFLAGS",
+    "RAISEREGFLAGS",
+    "LOWER6SECFLAGS",
+    "LOWER60SECFLAGS",
+    "LOWER5MINFLAGS",
+    "LOWERREGFLAGS",
+    "LASTCHANGED",
+    "SEMIDISPATCHCAP",
+]
+
+[[increment]]
+n = 4
+from = "2019-08"
+ctl = "004.ctl"
+ctl_sha256 = "8ce5342a9b27861924f1ca0eb508f7b0b968ed9065356a5f8d0e109cd240cce6"
+aemo_ctl = "PUBLIC_DVD_P5MIN_UNITSOLUTION_201908.ctl"
+aemo_versions = []
+columns = [
+    "RUN_DATETIME",
+    "INTERVAL_DATETIME",
+    "DUID",
+    "CONNECTIONPOINTID",
+    "TRADETYPE",
+    "AGCSTATUS",
+    "INITIALMW",
+    "TOTALCLEARED",
+    "RAMPDOWNRATE",
+    "RAMPUPRATE",
+    "LOWER5MIN",
+    "LOWER60SEC",
+    "LOWER6SEC",
+    "RAISE5MIN",
+    "RAISE60SEC",
+    "RAISE6SEC",
+    "LOWERREG",
+    "RAISEREG",
+    "AVAILABILITY",
+    "RAISE6SECFLAGS",
+    "RAISE60SECFLAGS",
+    "RAISE5MINFLAGS",
+    "RAISEREGFLAGS",
+    "LOWER6SECFLAGS",
+    "LOWER60SECFLAGS",
+    "LOWER5MINFLAGS",
+    "LOWERREGFLAGS",
+    "LASTCHANGED",
+    "SEMIDISPATCHCAP",
+    "INTERVENTION",
+]
+
+[[increment]]
+n = 5
+from = "2019-10"
+ctl = "005.ctl"
+ctl_sha256 = "9134abbea466ffd4afc5c0221c9dbc523c19a32b354451798c22f93c942acfcf"
+aemo_ctl = "PUBLIC_DVD_P5MIN_UNITSOLUTION_201910.ctl"
+aemo_versions = []
+columns = [
+    "RUN_DATETIME",
+    "INTERVENTION",
+    "INTERVAL_DATETIME",
+    "DUID",
+    "CONNECTIONPOINTID",
+    "TRADETYPE",
+    "AGCSTATUS",
+    "INITIALMW",
+    "TOTALCLEARED",
+    "RAMPDOWNRATE",
+    "RAMPUPRATE",
+    "LOWER5MIN",
+    "LOWER60SEC",
+    "LOWER6SEC",
+    "RAISE5MIN",
+    "RAISE60SEC",
+    "RAISE6SEC",
+    "LOWERREG",
+    "RAISEREG",
+    "AVAILABILITY",
+    "RAISE6SECFLAGS",
+    "RAISE60SECFLAGS",
+    "RAISE5MINFLAGS",
+    "RAISEREGFLAGS",
+    "LOWER6SECFLAGS",
+    "LOWER60SECFLAGS",
+    "LOWER5MINFLAGS",
+    "LOWERREGFLAGS",
+    "LASTCHANGED",
+    "SEMIDISPATCHCAP",
+]
+
+[[increment]]
+n = 6
+from = "2022-06"
+ctl = "006.ctl"
+ctl_sha256 = "ed37311c978bfacf2fa46a4e2caf7a47f947d08adddb15883cce9d79fb3f17d8"
+aemo_ctl = "PUBLIC_DVD_P5MIN_UNITSOLUTION_202206.ctl"
+aemo_versions = []
+columns = [
+    "RUN_DATETIME",
+    "INTERVENTION",
+    "INTERVAL_DATETIME",
+    "DUID",
+    "CONNECTIONPOINTID",
+    "TRADETYPE",
+    "AGCSTATUS",
+    "INITIALMW",
+    "TOTALCLEARED",
+    "RAMPDOWNRATE",
+    "RAMPUPRATE",
+    "LOWER5MIN",
+    "LOWER60SEC",
+    "LOWER6SEC",
+    "RAISE5MIN",
+    "RAISE60SEC",
+    "RAISE6SEC",
+    "LOWERREG",
+    "RAISEREG",
+    "AVAILABILITY",
+    "RAISE6SECFLAGS",
+    "RAISE60SECFLAGS",
+    "RAISE5MINFLAGS",
+    "RAISEREGFLAGS",
+    "LOWER6SECFLAGS",
+    "LOWER60SECFLAGS",
+    "LOWER5MINFLAGS",
+    "LOWERREGFLAGS",
+    "LASTCHANGED",
+    "SEMIDISPATCHCAP",
+    "DISPATCHMODETIME",
+]
+
+[[increment]]
+n = 7
+from = "2023-07"
+ctl = "007.ctl"
+ctl_sha256 = "2e595de5b28d7bc8c52001b899abd642f3ac1688c5c5dbca7bffb3967f2429c7"
+aemo_ctl = "PUBLIC_DVD_P5MIN_UNITSOLUTION_202307.ctl"
+aemo_versions = []
 columns = [
     "RUN_DATETIME",
     "INTERVENTION",
@@ -96,4 +341,56 @@ columns = [
     "LOWER1SECFLAGS",
     "CONFORMANCE_MODE",
     "UIGF",
+]
+
+[[increment]]
+n = 8
+from = "2024-05"
+ctl = "008.ctl"
+ctl_sha256 = "6ac274f38356c8316ad0dccdc2ba583417f51c26db2325b010390d617dd7e478"
+aemo_ctl = "PUBLIC_DVD_P5MIN_UNITSOLUTION_202405.ctl"
+aemo_versions = []
+columns = [
+    "RUN_DATETIME",
+    "INTERVENTION",
+    "INTERVAL_DATETIME",
+    "DUID",
+    "CONNECTIONPOINTID",
+    "TRADETYPE",
+    "AGCSTATUS",
+    "INITIALMW",
+    "TOTALCLEARED",
+    "RAMPDOWNRATE",
+    "RAMPUPRATE",
+    "LOWER5MIN",
+    "LOWER60SEC",
+    "LOWER6SEC",
+    "RAISE5MIN",
+    "RAISE60SEC",
+    "RAISE6SEC",
+    "LOWERREG",
+    "RAISEREG",
+    "AVAILABILITY",
+    "RAISE6SECFLAGS",
+    "RAISE60SECFLAGS",
+    "RAISE5MINFLAGS",
+    "RAISEREGFLAGS",
+    "LOWER6SECFLAGS",
+    "LOWER60SECFLAGS",
+    "LOWER5MINFLAGS",
+    "LOWERREGFLAGS",
+    "LASTCHANGED",
+    "SEMIDISPATCHCAP",
+    "DISPATCHMODETIME",
+    "LOWER1SEC",
+    "RAISE1SEC",
+    "RAISE1SECFLAGS",
+    "LOWER1SECFLAGS",
+    "CONFORMANCE_MODE",
+    "UIGF",
+    "INITIAL_ENERGY_STORAGE",
+    "ENERGY_STORAGE",
+    "ENERGY_STORAGE_MIN",
+    "ENERGY_STORAGE_MAX",
+    "MIN_AVAILABILITY",
 ]

@@ -28,10 +28,10 @@ column = [
 
 [[increment]]
 n = 1
-from = "2026-08"
+from = "2024-08"
 ctl = "001.ctl"
-ctl_sha256 = "5fe519c11c575f082540aabe263e7d7544dc4fdd7ad95d1e6cbeb1c0982ca3bd"
-aemo_ctl = "PUBLIC_ARCHIVE#NETWORK_RATING#FILE01#202608.ctl"
+ctl_sha256 = "1849f88fc172b0905740d290fc207ea935b4e2cd92c55835c7a8fae6f5668a8d"
+aemo_ctl = "PUBLIC_ARCHIVE#NETWORK_RATING#FILE01#202408.ctl"
 aemo_versions = [1]
 columns = [
     "SPD_ID",

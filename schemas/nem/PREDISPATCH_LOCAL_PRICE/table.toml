@@ -21,10 +21,10 @@ column = [
 
 [[increment]]
 n = 1
-from = "2026-08"
+from = "2024-08"
 ctl = "001.ctl"
-ctl_sha256 = "34e34bd0efa5444f7b61083b3cf1750f1564a9141644e5c5b8398a0820b4e014"
-aemo_ctl = "PUBLIC_ARCHIVE#PREDISPATCH_LOCAL_PRICE#FILE01#202608.ctl"
+ctl_sha256 = "882f5cffe9259c3f2b5f302989973ec5f498148377ba6f1965874cc3b64cbbcc"
+aemo_ctl = "PUBLIC_ARCHIVE#PREDISPATCH_LOCAL_PRICE#FILE01#202408.ctl"
 aemo_versions = [1]
 columns = [
     "PREDISPATCHSEQNO",

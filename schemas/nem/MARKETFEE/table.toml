@@ -23,11 +23,11 @@ column = [
 
 [[increment]]
 n = 1
-from = "2024-01"
+from = "2015-01"
 ctl = "001.ctl"
-ctl_sha256 = "1a391c421692bb2f967150d6ba92de174c9d1968811b672eb06ead727803a217"
-aemo_ctl = "PUBLIC_DVD_MARKETFEE_202401.ctl"
-aemo_versions = [1]
+ctl_sha256 = "eff78ff45fe10f0f4282631c7366b92abb8b9b62226851674d8a03186388bb2b"
+aemo_ctl = "PUBLIC_DVD_MARKETFEE_201501.ctl"
+aemo_versions = []
 columns = [
     "MARKETFEEID",
     "MARKETFEEPERIOD",
@@ -41,10 +41,10 @@ columns = [
 
 [[increment]]
 n = 2
-from = "2026-08"
+from = "2024-05"
 ctl = "002.ctl"
-ctl_sha256 = "457f6617b75cb2f05b527e65fc3860aa271e59b56280219f948095246fc26fd3"
-aemo_ctl = "PUBLIC_ARCHIVE#MARKETFEE#FILE01#202608.ctl"
+ctl_sha256 = "0ef84c5392bca3f582c51b82d73e8d4051fc252bcaf12b597c0dc81d8d3c4a1d"
+aemo_ctl = "PUBLIC_DVD_MARKETFEE_202405.ctl"
 aemo_versions = [2]
 columns = [
     "MARKETFEEID",

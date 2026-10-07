@@ -6,7 +6,7 @@ load_mode = "append"
 dedupe = "none"
 primary_key = []
 time_column = "INTERVAL_DATETIME"
-next_column_id = 10
+next_column_id = 11
 
 column = [
     { id = 1, name = "INTERVAL_DATETIME", type = "timestamp_ns", nullable = true },
@@ -18,14 +18,51 @@ column = [
     { id = 7, name = "USAGE_VALUE", type = "double", nullable = true },
     { id = 8, name = "USAGE_REASON_FLAG", type = "double", nullable = true },
     { id = 9, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 10, name = "USAGE", type = "double", nullable = true },
 ]
 
 [[increment]]
 n = 1
-from = "2026-08"
+from = "2024-12"
 ctl = "001.ctl"
-ctl_sha256 = "e655e8b354c4831738a30088b95031b9859b20f56168a6d34370ac94ccfed5a0"
-aemo_ctl = "PUBLIC_ARCHIVE#FPP_USAGE#FILE01#202608.ctl"
+ctl_sha256 = "63e2d9eed46199c0a3451d64d8d1691fa1d96f41322aeb0e75c784aa9824b50a"
+aemo_ctl = "PUBLIC_ARCHIVE#FPP_USAGE#FILE01#202412.ctl"
+aemo_versions = []
+columns = [
+    "INTERVAL_DATETIME",
+    "CONSTRAINTID",
+    "VERSIONNO",
+    "BIDTYPE",
+    "REGULATION_MW",
+    "USED_MW",
+    "USAGE",
+    "USAGE_REASON_FLAG",
+]
+
+[[increment]]
+n = 2
+from = "2025-04"
+ctl = "002.ctl"
+ctl_sha256 = "18c554e03f7cd6ef3aa36afbfb12c8ad45388c327b5c20e8cfebe3dc7484dd8b"
+aemo_ctl = "PUBLIC_ARCHIVE#FPP_USAGE#FILE01#202504.ctl"
+aemo_versions = []
+columns = [
+    "INTERVAL_DATETIME",
+    "CONSTRAINTID",
+    "VERSIONNO",
+    "BIDTYPE",
+    "REGULATION_MW",
+    "USED_MW",
+    "USAGE_VALUE",
+    "USAGE_REASON_FLAG",
+]
+
+[[increment]]
+n = 3
+from = "2026-05"
+ctl = "003.ctl"
+ctl_sha256 = "ca627e99c838dc9552d48e993124401be2875e30fb2f9eee905a08778a10506b"
+aemo_ctl = "PUBLIC_ARCHIVE#FPP_USAGE#FILE01#202605.ctl"
 aemo_versions = [1]
 columns = [
     "INTERVAL_DATETIME",

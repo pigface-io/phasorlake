@@ -26,10 +26,10 @@ column = [
 
 [[increment]]
 n = 1
-from = "2024-01"
+from = "2021-04"
 ctl = "001.ctl"
-ctl_sha256 = "fc23c0741476311e0dfb5cadec8e6c886a1644d5aa557b830b903e5dca39b6c5"
-aemo_ctl = "PUBLIC_DVD_PDPASA_INTERCONNECTORSOLN_202401.ctl"
+ctl_sha256 = "19fbed16a6c0f35684e7f3b85153d42f1a9fa8144bdacdcdb2911d36b8a73cf3"
+aemo_ctl = "PUBLIC_DVD_PDPASA_INTERCONNECTORSOLN_202104.ctl"
 aemo_versions = [1]
 columns = [
     "RUN_DATETIME",

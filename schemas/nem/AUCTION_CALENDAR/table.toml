@@ -26,10 +26,28 @@ column = [
 
 [[increment]]
 n = 1
-from = "2024-01"
+from = "2015-01"
 ctl = "001.ctl"
-ctl_sha256 = "e552511628dc7cd0b5115067934d9febf5e7466140f305555c6c9a4a3e36c73e"
-aemo_ctl = "PUBLIC_DVD_AUCTION_CALENDAR_202401.ctl"
+ctl_sha256 = "a55ecbd38a8ad2264cc4f75d39797ab0faa2efe80e56cdfcdba13cd0aeb12513"
+aemo_ctl = "PUBLIC_DVD_AUCTION_CALENDAR_201501.ctl"
+aemo_versions = []
+columns = [
+    "CONTRACTYEAR",
+    "QUARTER",
+    "STARTDATE",
+    "ENDDATE",
+    "NOTIFYDATE",
+    "PAYMENTDATE",
+    "RECONCILIATIONDATE",
+    "LASTCHANGED",
+]
+
+[[increment]]
+n = 2
+from = "2016-10"
+ctl = "002.ctl"
+ctl_sha256 = "0c18c7757c09060349c96e73936754341f86c5faed3b23c9855e30af0448e4e9"
+aemo_ctl = "PUBLIC_DVD_AUCTION_CALENDAR_201610.ctl"
 aemo_versions = [2]
 columns = [
     "CONTRACTYEAR",

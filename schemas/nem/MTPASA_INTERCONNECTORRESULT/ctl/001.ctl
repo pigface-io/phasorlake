@@ -1,5 +1,5 @@
 -- ************************************************************
--- Title:	PUBLIC_DVD_MTPASA_INTERCONNECTORRESULT_202401.ctl
+-- Title:	PUBLIC_DVD_MTPASA_INTERCONNECTORRESULT_201910.ctl
 -- ************************************************************
 -- Project : NEMMCO MONTHLY DVD RELEASE
 -- Purpose : Control File to load monthly csv file
@@ -17,7 +17,7 @@
 --      PUBLIC			       v
 -- ************************************************************
 LOAD DATA
-INFILE PUBLIC_DVD_MTPASA_INTERCONNECTORRESULT_202401010000.CSV
+INFILE PUBLIC_DVD_MTPASA_INTERCONNECTORRESULT_201910010000.CSV
 APPEND INTO TABLE MTPASA_INTERCONNECTORRESULT
 WHEN (1:1) = 'D'
 FIELDS TERMINATED BY ','

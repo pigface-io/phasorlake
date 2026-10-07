@@ -44,11 +44,47 @@ column = [
 
 [[increment]]
 n = 1
-from = "2024-01"
+from = "2015-01"
 ctl = "001.ctl"
-ctl_sha256 = "dcec25102d77f207f02c7bf519da71184a7c0f71121c668895748335ebb48160"
-aemo_ctl = "PUBLIC_DVD_TRADINGPRICE_202401.ctl"
-aemo_versions = [2]
+ctl_sha256 = "36389c1e6cf89638b19714ddbbcaa547559b28d5316ef193cf3a288d5e2dcabc"
+aemo_ctl = "PUBLIC_DVD_TRADINGPRICE_201501.ctl"
+aemo_versions = []
+columns = [
+    "SETTLEMENTDATE",
+    "RUNNO",
+    "REGIONID",
+    "PERIODID",
+    "RRP",
+    "EEP",
+    "INVALIDFLAG",
+    "LASTCHANGED",
+    "ROP",
+    "RAISE6SECRRP",
+    "RAISE6SECROP",
+    "RAISE60SECRRP",
+    "RAISE60SECROP",
+    "RAISE5MINRRP",
+    "RAISE5MINROP",
+    "RAISEREGRRP",
+    "RAISEREGROP",
+    "LOWER6SECRRP",
+    "LOWER6SECROP",
+    "LOWER60SECRRP",
+    "LOWER60SECROP",
+    "LOWER5MINRRP",
+    "LOWER5MINROP",
+    "LOWERREGRRP",
+    "LOWERREGROP",
+    "PRICE_STATUS",
+]
+
+[[increment]]
+n = 2
+from = "2023-07"
+ctl = "002.ctl"
+ctl_sha256 = "75f946c5a17304485d80f3cc550a04cf92e9976cb241f0d71c19fc19e40c4ca9"
+aemo_ctl = "PUBLIC_DVD_TRADINGPRICE_202307.ctl"
+aemo_versions = []
 columns = [
     "SETTLEMENTDATE",
     "RUNNO",
@@ -83,11 +119,11 @@ columns = [
 ]
 
 [[increment]]
-n = 2
-from = "2026-08"
-ctl = "002.ctl"
-ctl_sha256 = "3d936005c88a38ca9baf44faedb29809b1f59c7141f9f3dfb20d3cdeb78db03c"
-aemo_ctl = "PUBLIC_ARCHIVE#TRADINGPRICE#FILE01#202608.ctl"
+n = 3
+from = "2024-08"
+ctl = "003.ctl"
+ctl_sha256 = "16e1309c546b8e86afcf8f23ec0e83d88dc0aa3012624772982ebf7f381db283"
+aemo_ctl = "PUBLIC_ARCHIVE#TRADINGPRICE#FILE01#202408.ctl"
 aemo_versions = [3]
 columns = [
     "SETTLEMENTDATE",

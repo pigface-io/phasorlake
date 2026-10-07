@@ -20,10 +20,10 @@ column = [
 
 [[increment]]
 n = 1
-from = "2026-08"
+from = "2024-08"
 ctl = "001.ctl"
-ctl_sha256 = "d22972603a42aa91a3916a847448309cc7aeffa7c8524c42e015590ff699de0c"
-aemo_ctl = "PUBLIC_ARCHIVE#AVERAGEPRICE30#FILE01#202608.ctl"
+ctl_sha256 = "8d02886737973ce2be96dfc026742fdd6a2280958b0a5a278c9c143d4319c2ee"
+aemo_ctl = "PUBLIC_ARCHIVE#AVERAGEPRICE30#FILE01#202408.ctl"
 aemo_versions = [1]
 columns = [
     "PERIODDATE",

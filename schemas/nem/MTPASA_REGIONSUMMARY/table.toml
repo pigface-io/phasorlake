@@ -44,10 +44,10 @@ column = [
 
 [[increment]]
 n = 1
-from = "2024-01"
+from = "2019-10"
 ctl = "001.ctl"
-ctl_sha256 = "66f4e1c066e8596ec364506ab0f1f75899d9ee92e809711c104a31cf59b70dce"
-aemo_ctl = "PUBLIC_DVD_MTPASA_REGIONSUMMARY_202401.ctl"
+ctl_sha256 = "6cd4c7f2256ceead12c3cd01647ea8fcfc9597c9edbaffaffee18fa83f92b8ae"
+aemo_ctl = "PUBLIC_DVD_MTPASA_REGIONSUMMARY_201910.ctl"
 aemo_versions = [1]
 columns = [
     "RUN_DATETIME",

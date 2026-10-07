@@ -29,10 +29,10 @@ column = [
 
 [[increment]]
 n = 1
-from = "2026-08"
+from = "2024-12"
 ctl = "001.ctl"
-ctl_sha256 = "49151efd7d2eecea7bb44117adc4d6a3e8ca6317563895564ad95acf260a215a"
-aemo_ctl = "PUBLIC_ARCHIVE#DISPATCH_FCAS_REQ_CONSTRAINT#FILE01#202608.ctl"
+ctl_sha256 = "f454b07c7ca8d11d1f7b09b6d60cbe07060d8afa0720f20d4221c90b07514921"
+aemo_ctl = "PUBLIC_ARCHIVE#DISPATCH_FCAS_REQ_CONSTRAINT#FILE01#202412.ctl"
 aemo_versions = [1]
 columns = [
     "RUN_DATETIME",

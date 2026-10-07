@@ -1238,6 +1238,7 @@ D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",,1\n";
                 .collect::<Vec<_>>(),
             [7, 7, 6]
         );
-        assert_eq!(out.batches[0].version, 1);
+        // The head carries the columns of DISPATCHPRICE@4.
+        assert_eq!(out.batches[0].version, 4);
     }
 }

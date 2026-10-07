@@ -22,11 +22,29 @@ column = [
 
 [[increment]]
 n = 1
-from = "2024-01"
+from = "2015-01"
 ctl = "001.ctl"
-ctl_sha256 = "cecbab11e62e1d7c36d8d02f83c8314c96bc7e48e44d93e0cdc787e2504f1abd"
-aemo_ctl = "PUBLIC_DVD_DISPATCH_MNSPBIDTRK_202401.ctl"
-aemo_versions = [1]
+ctl_sha256 = "e35d47a57d0f6adfdc88205e6542d35c06e68bf56708c12119917282e8a37ba4"
+aemo_ctl = "PUBLIC_DVD_DISPATCH_MNSPBIDTRK_201501.ctl"
+aemo_versions = []
+columns = [
+    "SETTLEMENTDATE",
+    "RUNNO",
+    "PARTICIPANTID",
+    "LINKID",
+    "OFFERSETTLEMENTDATE",
+    "OFFEREFFECTIVEDATE",
+    "OFFERVERSIONNO",
+    "LASTCHANGED",
+]
+
+[[increment]]
+n = 2
+from = "2021-04"
+ctl = "002.ctl"
+ctl_sha256 = "d98cde4f15a7f0ee456b12f2236baed2f103a77a973648bb2f08165da19b87d8"
+aemo_ctl = "PUBLIC_DVD_DISPATCH_MNSPBIDTRK_202104.ctl"
+aemo_versions = []
 columns = [
     "SETTLEMENTDATE",
     "RUNNO",

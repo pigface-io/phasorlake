@@ -28,11 +28,11 @@ column = [
 
 [[increment]]
 n = 1
-from = "2024-01"
+from = "2015-01"
 ctl = "001.ctl"
-ctl_sha256 = "e2a043a37c6984f853befd7e2f2eee410a81de6474ab1fe861c419b404275434"
-aemo_ctl = "PUBLIC_DVD_DISPATCHCONSTRAINT_202401.ctl"
-aemo_versions = [5]
+ctl_sha256 = "03bbd71c788f969148adc35888ced8ab9702a1ba5a082e63f2eeec5aef35219c"
+aemo_ctl = "PUBLIC_DVD_DISPATCHCONSTRAINT_201501.ctl"
+aemo_versions = []
 columns = [
     "SETTLEMENTDATE",
     "RUNNO",
@@ -43,19 +43,85 @@ columns = [
     "MARGINALVALUE",
     "VIOLATIONDEGREE",
     "LASTCHANGED",
-    "CONFIDENTIAL_TO",
+    "DUID",
     "GENCONID_EFFECTIVEDATE",
     "GENCONID_VERSIONNO",
     "LHS",
 ]
-note = "The file the control file loads, PUBLIC_DVD_DISPATCHCONSTRAINT_202401010000.CSV, carries CONFIDENTIAL_TO, which its control file does not list; the increment lists the file's columns."
 
 [[increment]]
 n = 2
-from = "2026-08"
+from = "2019-07"
 ctl = "002.ctl"
-ctl_sha256 = "fd38f5cc5250ca956ed011ff2e842190e49e71ccf8fa52e345e0947c2ac6272d"
-aemo_ctl = "PUBLIC_ARCHIVE#DISPATCHCONSTRAINT#FILE01#202608.ctl"
+ctl_sha256 = "ae4d5d5cf4f518803e76323cb8fe09499a2b32cd5990f8c31d843ae46ea5cb2c"
+aemo_ctl = "PUBLIC_DVD_DISPATCHCONSTRAINT_201907.ctl"
+aemo_versions = []
+columns = [
+    "SETTLEMENTDATE",
+    "RUNNO",
+    "CONSTRAINTID",
+    "DISPATCHINTERVAL",
+    "INTERVENTION",
+    "RHS",
+    "MARGINALVALUE",
+    "VIOLATIONDEGREE",
+    "LASTCHANGED",
+    "GENCONID_EFFECTIVEDATE",
+    "GENCONID_VERSIONNO",
+    "LHS",
+]
+
+[[increment]]
+n = 3
+from = "2019-08"
+ctl = "003.ctl"
+ctl_sha256 = "70fbf0df6467301d5e42bc93f760eecf94fe2f53f449c47c08462e7f988d9031"
+aemo_ctl = "PUBLIC_DVD_DISPATCHCONSTRAINT_201908.ctl"
+aemo_versions = []
+columns = [
+    "SETTLEMENTDATE",
+    "RUNNO",
+    "CONSTRAINTID",
+    "DISPATCHINTERVAL",
+    "INTERVENTION",
+    "RHS",
+    "MARGINALVALUE",
+    "VIOLATIONDEGREE",
+    "LASTCHANGED",
+    "DUID",
+    "GENCONID_EFFECTIVEDATE",
+    "GENCONID_VERSIONNO",
+    "LHS",
+]
+
+[[increment]]
+n = 4
+from = "2019-10"
+ctl = "004.ctl"
+ctl_sha256 = "ce57a450e7d9ed0fb021aa6e5753069f43603f614df0dcb2cb50e05c01c2b737"
+aemo_ctl = "PUBLIC_DVD_DISPATCHCONSTRAINT_201910.ctl"
+aemo_versions = []
+columns = [
+    "SETTLEMENTDATE",
+    "RUNNO",
+    "CONSTRAINTID",
+    "DISPATCHINTERVAL",
+    "INTERVENTION",
+    "RHS",
+    "MARGINALVALUE",
+    "VIOLATIONDEGREE",
+    "LASTCHANGED",
+    "GENCONID_EFFECTIVEDATE",
+    "GENCONID_VERSIONNO",
+    "LHS",
+]
+
+[[increment]]
+n = 5
+from = "2024-08"
+ctl = "005.ctl"
+ctl_sha256 = "e4b3fbf162465a054965057845940cb55288e4a0ca4f394a75b8a65614ceb050"
+aemo_ctl = "PUBLIC_ARCHIVE#DISPATCHCONSTRAINT#FILE01#202408.ctl"
 aemo_versions = [5]
 columns = [
     "SETTLEMENTDATE",

@@ -20,10 +20,10 @@ column = [
 
 [[increment]]
 n = 1
-from = "2026-08"
+from = "2024-08"
 ctl = "001.ctl"
-ctl_sha256 = "ff24e78cbfe2c91879f3367480aeb455f975e8e966ec253d700dd00842ce4bc2"
-aemo_ctl = "PUBLIC_ARCHIVE#MARKET_SUSPEND_REGIME_SUM#FILE01#202608.ctl"
+ctl_sha256 = "fa24b0e283c8fcb5632d852fbc8c90cd6ebcd3eab7714bc2b9e996a400d139be"
+aemo_ctl = "PUBLIC_ARCHIVE#MARKET_SUSPEND_REGIME_SUM#FILE01#202408.ctl"
 aemo_versions = [1]
 columns = [
     "SUSPENSION_ID",

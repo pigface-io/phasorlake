@@ -24,10 +24,10 @@ column = [
 
 [[increment]]
 n = 1
-from = "2026-08"
+from = "2024-08"
 ctl = "001.ctl"
-ctl_sha256 = "4307bd15e6453b712db1a2e05e8a0f1a44d4953c9d3323cca18569d9e9bd58ab"
-aemo_ctl = "PUBLIC_ARCHIVE#SETLOCALAREAENERGY#FILE01#202608.ctl"
+ctl_sha256 = "b83112961a4350c784d9a13732f98ba1f390e66e26e3c50f82397f7771e2a134"
+aemo_ctl = "PUBLIC_ARCHIVE#SETLOCALAREAENERGY#FILE01#202408.ctl"
 aemo_versions = [1]
 columns = [
     "SETTLEMENTDATE",

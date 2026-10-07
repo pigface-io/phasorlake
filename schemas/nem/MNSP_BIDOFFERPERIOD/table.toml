@@ -7,7 +7,7 @@ load_mode = "append"
 dedupe = "pk"
 primary_key = ["TRADINGDATE", "OFFERDATETIME", "LINKID", "PERIODID"]
 time_column = "TRADINGDATE"
-next_column_id = 19
+next_column_id = 20
 
 column = [
     { id = 1, name = "TRADINGDATE", type = "timestamp_ns", nullable = false },
@@ -28,15 +28,16 @@ column = [
     { id = 16, name = "FIXEDLOAD", type = "double", nullable = true },
     { id = 17, name = "RAMPUPRATE", type = "double", nullable = true },
     { id = 18, name = "PASAAVAILABILITY", type = "double", nullable = true },
+    { id = 19, name = "RECALL_PERIOD", type = "double", nullable = true },
 ]
 
 [[increment]]
 n = 1
-from = "2024-01"
+from = "2021-04"
 ctl = "001.ctl"
-ctl_sha256 = "f619f2167853bc310d6c5f42ad9d64f138f70611a9a04496086af3e534aa5848"
-aemo_ctl = "PUBLIC_DVD_MNSP_PEROFFER_202401.ctl"
-aemo_versions = [1]
+ctl_sha256 = "4a1376292e1ef1f0dd28e03cc3fad816b640b9b70dff466c6861add4863ab944"
+aemo_ctl = "PUBLIC_DVD_MNSP_PEROFFER_202104.ctl"
+aemo_versions = []
 columns = [
     "TRADINGDATE",
     "OFFERDATETIME",
@@ -56,4 +57,61 @@ columns = [
     "FIXEDLOAD",
     "RAMPUPRATE",
     "PASAAVAILABILITY",
+]
+
+[[increment]]
+n = 2
+from = "2024-08"
+ctl = "002.ctl"
+ctl_sha256 = "8743c47b8a427edc2f4419cd8fd5580a406bda319721431ff8ed3d20ed414343"
+aemo_ctl = "PUBLIC_ARCHIVE#MNSP_BIDOFFERPERIOD#FILE01#202408.ctl"
+aemo_versions = []
+columns = [
+    "LINKID",
+    "TRADINGDATE",
+    "OFFERDATETIME",
+    "PERIODID",
+    "MAXAVAIL",
+    "FIXEDLOAD",
+    "RAMPUPRATE",
+    "BANDAVAIL1",
+    "BANDAVAIL2",
+    "BANDAVAIL3",
+    "BANDAVAIL4",
+    "BANDAVAIL5",
+    "BANDAVAIL6",
+    "BANDAVAIL7",
+    "BANDAVAIL8",
+    "BANDAVAIL9",
+    "BANDAVAIL10",
+    "PASAAVAILABILITY",
+]
+
+[[increment]]
+n = 3
+from = "2025-04"
+ctl = "003.ctl"
+ctl_sha256 = "0b9532af627ae96b880a07ba9845ee0f56daf8a2939b197c0ac6ce61a94ce1ac"
+aemo_ctl = "PUBLIC_ARCHIVE#MNSP_BIDOFFERPERIOD#FILE01#202504.ctl"
+aemo_versions = []
+columns = [
+    "LINKID",
+    "TRADINGDATE",
+    "OFFERDATETIME",
+    "PERIODID",
+    "MAXAVAIL",
+    "FIXEDLOAD",
+    "RAMPUPRATE",
+    "BANDAVAIL1",
+    "BANDAVAIL2",
+    "BANDAVAIL3",
+    "BANDAVAIL4",
+    "BANDAVAIL5",
+    "BANDAVAIL6",
+    "BANDAVAIL7",
+    "BANDAVAIL8",
+    "BANDAVAIL9",
+    "BANDAVAIL10",
+    "PASAAVAILABILITY",
+    "RECALL_PERIOD",
 ]

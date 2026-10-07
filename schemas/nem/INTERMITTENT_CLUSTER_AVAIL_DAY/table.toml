@@ -18,10 +18,10 @@ column = [
 
 [[increment]]
 n = 1
-from = "2026-08"
+from = "2024-08"
 ctl = "001.ctl"
-ctl_sha256 = "5f13b32f9edd7e0141a68c300ccd03681b1b70ab6945752cd320de251e8e3fb4"
-aemo_ctl = "PUBLIC_ARCHIVE#INTERMITTENT_CLUSTER_AVAIL_DAY#FILE01#202608.ctl"
+ctl_sha256 = "1ad6a9ae6c59f38b2b60b5777fc2bf491c5b47d13bfb0cb9077095ae506ffa60"
+aemo_ctl = "PUBLIC_ARCHIVE#INTERMITTENT_CLUSTER_AVAIL_DAY#FILE01#202408.ctl"
 aemo_versions = [1]
 columns = [
     "TRADINGDATE",

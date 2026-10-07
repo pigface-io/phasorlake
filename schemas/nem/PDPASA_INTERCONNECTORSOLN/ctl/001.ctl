@@ -1,5 +1,5 @@
 -- ************************************************************
--- Title:	PUBLIC_DVD_PDPASA_INTERCONNECTORSOLN_202401.ctl
+-- Title:	PUBLIC_DVD_PDPASA_INTERCONNECTORSOLN_202104.ctl
 -- ************************************************************
 -- Project : NEMMCO MONTHLY DVD RELEASE
 -- Purpose : Control File to load monthly csv file
@@ -17,7 +17,7 @@
 --      PUBLIC			       v
 -- ************************************************************
 LOAD DATA
-INFILE PUBLIC_DVD_PDPASA_INTERCONNECTORSOLN_202401010000.CSV
+INFILE PUBLIC_DVD_PDPASA_INTERCONNECTORSOLN_202104010000.CSV
 APPEND INTO TABLE PDPASA_INTERCONNECTORSOLN
 WHEN (1:1) = 'D'
 FIELDS TERMINATED BY ','

@@ -32,11 +32,11 @@ column = [
 
 [[increment]]
 n = 1
-from = "2024-01"
+from = "2015-01"
 ctl = "001.ctl"
-ctl_sha256 = "bd2988429f5e8a04f3ae02cb8354a8025a3ac37b3e6250f8c2f14762e3182634"
-aemo_ctl = "PUBLIC_DVD_BILLINGREGIONFIGURES_202401.ctl"
-aemo_versions = [5]
+ctl_sha256 = "551b29df0627c79c980b5c5e5d4b56e419b2b3aa058a2a0e8ad685d014e87506"
+aemo_ctl = "PUBLIC_DVD_BILLINGREGIONFIGURES_201501.ctl"
+aemo_versions = []
 columns = [
     "CONTRACTYEAR",
     "WEEKNO",
@@ -58,10 +58,10 @@ columns = [
 
 [[increment]]
 n = 2
-from = "2026-08"
+from = "2024-08"
 ctl = "002.ctl"
-ctl_sha256 = "770b5544abf55e4ba2f5cb125adafc0380b85b20d2a2dd02c08edcf78501f874"
-aemo_ctl = "PUBLIC_ARCHIVE#BILLINGREGIONFIGURES#FILE01#202608.ctl"
+ctl_sha256 = "329342508b0a0b2e583f33d78650b60d3cd890553d2f26c0c46e9b6318cf4201"
+aemo_ctl = "PUBLIC_ARCHIVE#BILLINGREGIONFIGURES#FILE01#202408.ctl"
 aemo_versions = [6]
 columns = [
     "CONTRACTYEAR",

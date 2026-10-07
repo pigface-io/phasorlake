@@ -28,10 +28,10 @@ column = [
 
 [[increment]]
 n = 1
-from = "2024-01"
+from = "2015-01"
 ctl = "001.ctl"
-ctl_sha256 = "ba47ec857a0fe5ec14cd4f6159991b726da4497c3bfbea854a34bd1c9b117428"
-aemo_ctl = "PUBLIC_DVD_MNSP_INTERCONNECTOR_202401.ctl"
+ctl_sha256 = "88a304a17b016b1314b29666c373d1aba23f7187c236391212966e51c2251b6a"
+aemo_ctl = "PUBLIC_DVD_MNSP_INTERCONNECTOR_201501.ctl"
 aemo_versions = [2]
 columns = [
     "LINKID",

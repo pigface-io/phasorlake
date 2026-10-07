@@ -24,11 +24,11 @@ column = [
 
 [[increment]]
 n = 1
-from = "2024-01"
+from = "2015-01"
 ctl = "001.ctl"
-ctl_sha256 = "02052c0d198a02f4e18eb94fec4dc2a2edf7824f122e65b3a2995efccd8b56a2"
-aemo_ctl = "PUBLIC_DVD_DAYTRACK_202401.ctl"
-aemo_versions = [6]
+ctl_sha256 = "f9068e25a38ba7a1c4d537a1fce0599fc5348d4057df708214447a1ba5e32766"
+aemo_ctl = "PUBLIC_DVD_DAYTRACK_201501.ctl"
+aemo_versions = []
 columns = [
     "SETTLEMENTDATE",
     "REGIONID",
@@ -41,10 +41,28 @@ columns = [
 
 [[increment]]
 n = 2
-from = "2026-08"
+from = "2024-08"
 ctl = "002.ctl"
-ctl_sha256 = "5c6884a5aa44bb9f85656bb0c61afb0a96987c3f91e82a7cae16035537d43642"
-aemo_ctl = "PUBLIC_ARCHIVE#DAYTRACK#FILE01#202608.ctl"
+ctl_sha256 = "ed6fa86991968d60db153742bb350930d71a6cd2ec94c608863b706e9370e75e"
+aemo_ctl = "PUBLIC_ARCHIVE#DAYTRACK#FILE01#202408.ctl"
+aemo_versions = []
+columns = [
+    "SETTLEMENTDATE",
+    "REGIONID",
+    "EXANTERUNSTATUS",
+    "EXANTERUNNO",
+    "EXPOSTRUNSTATUS",
+    "EXPOSTRUNNO",
+    "LASTCHANGED",
+    "SETTLEMENTINTERVALLENGTH",
+]
+
+[[increment]]
+n = 3
+from = "2025-04"
+ctl = "003.ctl"
+ctl_sha256 = "9976e17287f678e34011dcb1fd8ccc2d5f7f985003ba68ea9592cd758b77a63a"
+aemo_ctl = "PUBLIC_ARCHIVE#DAYTRACK#FILE01#202504.ctl"
 aemo_versions = [7]
 columns = [
     "SETTLEMENTDATE",

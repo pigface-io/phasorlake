@@ -30,11 +30,11 @@ column = [
 
 [[increment]]
 n = 1
-from = "2024-01"
+from = "2015-01"
 ctl = "001.ctl"
-ctl_sha256 = "0e6b9bf35cf5c76fb1c5b5a38f83bcb9c77d8e7cd874acd9aad8a8a97020f8fd"
-aemo_ctl = "PUBLIC_DVD_GENCONSETINVOKE_202401.ctl"
-aemo_versions = [2]
+ctl_sha256 = "27759124a3d2752073ecdf595fdc8ef139fc8cd88c43724d5ca62300d86068a0"
+aemo_ctl = "PUBLIC_DVD_GENCONSETINVOKE_201501.ctl"
+aemo_versions = []
 columns = [
     "INVOCATION_ID",
     "STARTDATE",
@@ -54,10 +54,106 @@ columns = [
 
 [[increment]]
 n = 2
-from = "2026-08"
+from = "2018-03"
 ctl = "002.ctl"
-ctl_sha256 = "d3b3f4e08c4a7b4a3147c41f8418193c62b4bf5082fed058d016db53af535615"
-aemo_ctl = "PUBLIC_ARCHIVE#GENCONSETINVOKE#FILE01#202608.ctl"
+ctl_sha256 = "19e11d1b91406ca1d03b55635b9ff2e50cf69c57f5eb601e64a7cf572d20cdd4"
+aemo_ctl = "PUBLIC_DVD_GENCONSETINVOKE_201803.ctl"
+aemo_versions = []
+columns = [
+    "STARTDATE",
+    "STARTPERIOD",
+    "GENCONSETID",
+    "ENDDATE",
+    "ENDPERIOD",
+    "STARTAUTHORISEDBY",
+    "ENDAUTHORISEDBY",
+    "INTERVENTION",
+    "ASCONSTRAINTTYPE",
+    "LASTCHANGED",
+    "STARTINTERVALDATETIME",
+    "ENDINTERVALDATETIME",
+    "SYSTEMNORMAL",
+    "INVOCATION_ID",
+]
+
+[[increment]]
+n = 3
+from = "2019-07"
+ctl = "003.ctl"
+ctl_sha256 = "e39d3c6cc6d9d3649192957c2376b5810b76089e8fa8ddbf911cf34ee49dfcd3"
+aemo_ctl = "PUBLIC_DVD_GENCONSETINVOKE_201907.ctl"
+aemo_versions = []
+columns = [
+    "INVOCATION_ID",
+    "STARTDATE",
+    "STARTPERIOD",
+    "GENCONSETID",
+    "ENDDATE",
+    "ENDPERIOD",
+    "STARTAUTHORISEDBY",
+    "ENDAUTHORISEDBY",
+    "INTERVENTION",
+    "ASCONSTRAINTTYPE",
+    "LASTCHANGED",
+    "STARTINTERVALDATETIME",
+    "ENDINTERVALDATETIME",
+    "SYSTEMNORMAL",
+]
+
+[[increment]]
+n = 4
+from = "2019-08"
+ctl = "004.ctl"
+ctl_sha256 = "b28bee8411dd25a0767c23f520e8fd52c3b5d163584bd32ff194e204c14f9dee"
+aemo_ctl = "PUBLIC_DVD_GENCONSETINVOKE_201908.ctl"
+aemo_versions = []
+columns = [
+    "STARTDATE",
+    "STARTPERIOD",
+    "GENCONSETID",
+    "ENDDATE",
+    "ENDPERIOD",
+    "STARTAUTHORISEDBY",
+    "ENDAUTHORISEDBY",
+    "INTERVENTION",
+    "ASCONSTRAINTTYPE",
+    "LASTCHANGED",
+    "STARTINTERVALDATETIME",
+    "ENDINTERVALDATETIME",
+    "SYSTEMNORMAL",
+    "INVOCATION_ID",
+]
+
+[[increment]]
+n = 5
+from = "2019-10"
+ctl = "005.ctl"
+ctl_sha256 = "180eba308c376fb576ef518bb5a37169f94ff00d181aaf4e3b21addbfd80d47f"
+aemo_ctl = "PUBLIC_DVD_GENCONSETINVOKE_201910.ctl"
+aemo_versions = []
+columns = [
+    "INVOCATION_ID",
+    "STARTDATE",
+    "STARTPERIOD",
+    "GENCONSETID",
+    "ENDDATE",
+    "ENDPERIOD",
+    "STARTAUTHORISEDBY",
+    "ENDAUTHORISEDBY",
+    "INTERVENTION",
+    "ASCONSTRAINTTYPE",
+    "LASTCHANGED",
+    "STARTINTERVALDATETIME",
+    "ENDINTERVALDATETIME",
+    "SYSTEMNORMAL",
+]
+
+[[increment]]
+n = 6
+from = "2024-08"
+ctl = "006.ctl"
+ctl_sha256 = "3200cf688d771afb6b1aa9244efc75f1029a24712af93c9fba41c3b0dd6a77a8"
+aemo_ctl = "PUBLIC_ARCHIVE#GENCONSETINVOKE#FILE01#202408.ctl"
 aemo_versions = [2]
 columns = [
     "STARTDATE",

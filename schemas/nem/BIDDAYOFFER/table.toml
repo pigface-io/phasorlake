@@ -47,11 +47,84 @@ column = [
 
 [[increment]]
 n = 1
-from = "2024-01"
+from = "2015-01"
 ctl = "001.ctl"
-ctl_sha256 = "cd33fa5d88184c9a07ddc0383220819582f0c717463855e1c6191847701373fd"
-aemo_ctl = "PUBLIC_DVD_BIDDAYOFFER_202401.ctl"
-aemo_versions = [1]
+ctl_sha256 = "4a74458b5bf19907d0851c0dde94abdb45905a6975a2cfec623ad97a4ec25d08"
+aemo_ctl = "PUBLIC_DVD_BIDDAYOFFER_201501.ctl"
+aemo_versions = []
+columns = [
+    "DUID",
+    "BIDTYPE",
+    "SETTLEMENTDATE",
+    "OFFERDATE",
+    "VERSIONNO",
+    "PARTICIPANTID",
+    "DAILYENERGYCONSTRAINT",
+    "REBIDEXPLANATION",
+    "PRICEBAND1",
+    "PRICEBAND2",
+    "PRICEBAND3",
+    "PRICEBAND4",
+    "PRICEBAND5",
+    "PRICEBAND6",
+    "PRICEBAND7",
+    "PRICEBAND8",
+    "PRICEBAND9",
+    "PRICEBAND10",
+    "MINIMUMLOAD",
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "NORMALSTATUS",
+    "LASTCHANGED",
+    "MR_FACTOR",
+    "ENTRYTYPE",
+]
+
+[[increment]]
+n = 2
+from = "2021-03"
+ctl = "002.ctl"
+ctl_sha256 = "bf3c27320f576253214de23091a08e1173d06f236672c29d24b537a861ccdf6e"
+aemo_ctl = "PUBLIC_DVD_BIDDAYOFFER_202103.ctl"
+aemo_versions = []
+columns = [
+    "DUID",
+    "BIDTYPE",
+    "SETTLEMENTDATE",
+    "OFFERDATE",
+    "VERSIONNO",
+    "PARTICIPANTID",
+    "DAILYENERGYCONSTRAINT",
+    "REBIDEXPLANATION",
+    "PRICEBAND1",
+    "PRICEBAND2",
+    "PRICEBAND3",
+    "PRICEBAND4",
+    "PRICEBAND5",
+    "PRICEBAND6",
+    "PRICEBAND7",
+    "PRICEBAND8",
+    "PRICEBAND9",
+    "PRICEBAND10",
+    "MINIMUMLOAD",
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "NORMALSTATUS",
+    "LASTCHANGED",
+    "ENTRYTYPE",
+]
+
+[[increment]]
+n = 3
+from = "2021-04"
+ctl = "003.ctl"
+ctl_sha256 = "57eb7964bf5ebba520d46f2773871068a9aa94362beac7f9f86e24df7c4d1246"
+aemo_ctl = "PUBLIC_DVD_BIDDAYOFFER_202104.ctl"
+aemo_versions = []
 columns = [
     "DUID",
     "BIDTYPE",
@@ -87,11 +160,53 @@ columns = [
 ]
 
 [[increment]]
-n = 2
-from = "2026-08"
-ctl = "002.ctl"
-ctl_sha256 = "9ef326156d77ec600c3e79574cf7ef65d65b4d9d860c39380eac9435bf74da3e"
-aemo_ctl = "PUBLIC_ARCHIVE#BIDDAYOFFER#FILE01#202608.ctl"
+n = 4
+from = "2024-03"
+ctl = "004.ctl"
+ctl_sha256 = "09322caa189da87a14bd6690c82776633f52ef130a7314b0443107e01b64da70"
+aemo_ctl = "PUBLIC_DVD_BIDDAYOFFER_202403.ctl"
+aemo_versions = []
+columns = [
+    "DUID",
+    "BIDTYPE",
+    "SETTLEMENTDATE",
+    "OFFERDATE",
+    "VERSIONNO",
+    "PARTICIPANTID",
+    "DAILYENERGYCONSTRAINT",
+    "REBIDEXPLANATION",
+    "PRICEBAND1",
+    "PRICEBAND2",
+    "PRICEBAND3",
+    "PRICEBAND4",
+    "PRICEBAND5",
+    "PRICEBAND6",
+    "PRICEBAND7",
+    "PRICEBAND8",
+    "PRICEBAND9",
+    "PRICEBAND10",
+    "MINIMUMLOAD",
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "NORMALSTATUS",
+    "LASTCHANGED",
+    "ENTRYTYPE",
+    "REBID_EVENT_TIME",
+    "REBID_AWARE_TIME",
+    "REBID_DECISION_TIME",
+    "REBID_CATEGORY",
+    "REFERENCE_ID",
+    "DIRECTION",
+]
+
+[[increment]]
+n = 5
+from = "2024-08"
+ctl = "005.ctl"
+ctl_sha256 = "0f1a32359aef847cda194fc6a208aef07a97aa4e52f052615294c37d88661247"
+aemo_ctl = "PUBLIC_ARCHIVE#BIDDAYOFFER#FILE01#202408.ctl"
 aemo_versions = [2]
 columns = [
     "DUID",

@@ -24,10 +24,30 @@ column = [
 
 [[increment]]
 n = 1
-from = "2026-08"
+from = "2024-12"
 ctl = "001.ctl"
-ctl_sha256 = "deacd468d12c5ae363e73c31e36f60044c5a018df6e2195efcd11a500b779495"
-aemo_ctl = "PUBLIC_ARCHIVE#FPP_HIST_PERFORMANCE#FILE01#202608.ctl"
+ctl_sha256 = "91bcfca6a06edf7ed42c314a2845d2acbed8ce37ef257da57a0f3b5bb608b3d6"
+aemo_ctl = "PUBLIC_ARCHIVE#FPP_HIST_PERFORMANCE#FILE01#202412.ctl"
+aemo_versions = []
+columns = [
+    "FPP_UNITID",
+    "EFFECTIVE_START_DATETIME",
+    "EFFECTIVE_END_DATETIME",
+    "VERSIONNO",
+    "HIST_PERIOD_START_DATETIME",
+    "HIST_PERIOD_END_DATETIME",
+    "REG_HIST_RAISE_PERFORMANCE",
+    "REG_HIST_LOWER_PERFORMANCE",
+    "FPP_HIST_RAISE_PERFORMANCE",
+    "FPP_HIST_LOWER_PERFORMANCE",
+]
+
+[[increment]]
+n = 2
+from = "2026-05"
+ctl = "002.ctl"
+ctl_sha256 = "54d7bbb08a4b1cbd26b68c1b4bb0aa43ee9afaf631f3e3bc4b5827cdcf93bca1"
+aemo_ctl = "PUBLIC_ARCHIVE#FPP_HIST_PERFORMANCE#FILE01#202605.ctl"
 aemo_versions = [1]
 columns = [
     "FPP_UNITID",

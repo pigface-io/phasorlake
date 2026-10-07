@@ -23,10 +23,10 @@ column = [
 
 [[increment]]
 n = 1
-from = "2024-01"
+from = "2015-03"
 ctl = "001.ctl"
-ctl_sha256 = "5d4651769e770a54a160407294ec4271ef3424ca6349684abfcb052edfc19556"
-aemo_ctl = "PUBLIC_DVD_AUCTION_202401.ctl"
+ctl_sha256 = "d3f179786d878b9cc493275da51898473f511973f50007a0b24d17813e64b5f2"
+aemo_ctl = "PUBLIC_DVD_AUCTION_201503.ctl"
 aemo_versions = [1]
 columns = [
     "AUCTIONID",

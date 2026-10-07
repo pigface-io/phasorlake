@@ -6,7 +6,7 @@ load_mode = "append"
 dedupe = "none"
 primary_key = []
 time_column = "INTERVAL_DATETIME"
-next_column_id = 17
+next_column_id = 18
 
 column = [
     { id = 1, name = "RUN_DATETIME", type = "timestamp_ns", nullable = true },
@@ -25,14 +25,65 @@ column = [
     { id = 14, name = "RCR", type = "double", nullable = true },
     { id = 15, name = "USAGE_VALUE", type = "double", nullable = true },
     { id = 16, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 17, name = "USAGE", type = "double", nullable = true },
 ]
 
 [[increment]]
 n = 1
-from = "2026-08"
+from = "2024-12"
 ctl = "001.ctl"
-ctl_sha256 = "8636c753f389f4b30d2bd11a8ea7f31c7b017787f774b7960ac4bfcec850c727"
-aemo_ctl = "PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202608.ctl"
+ctl_sha256 = "f67b895cae32362cd6ca7dc7ae71f2e1eec0f5082d2cc2430c4e16239e8a5cd7"
+aemo_ctl = "PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202412.ctl"
+aemo_versions = []
+columns = [
+    "RUN_DATETIME",
+    "RUNNO",
+    "INTERVAL_DATETIME",
+    "CONSTRAINTID",
+    "VERSIONNO",
+    "BIDTYPE",
+    "RELEVANT_REGIONS",
+    "REGULATION_MW",
+    "CONSTRAINT_MARGINAL_VALUE",
+    "P_REGULATION",
+    "BASE_COST",
+    "TSFCAS",
+    "TOTAL_FPP",
+    "RCR",
+    "USAGE",
+]
+
+[[increment]]
+n = 2
+from = "2025-04"
+ctl = "002.ctl"
+ctl_sha256 = "7526c36113bfd17d9c5951bc3abfeaa85a55fe58185656b1a02e9fae01e281f4"
+aemo_ctl = "PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202504.ctl"
+aemo_versions = []
+columns = [
+    "RUN_DATETIME",
+    "RUNNO",
+    "INTERVAL_DATETIME",
+    "CONSTRAINTID",
+    "VERSIONNO",
+    "BIDTYPE",
+    "RELEVANT_REGIONS",
+    "REGULATION_MW",
+    "CONSTRAINT_MARGINAL_VALUE",
+    "P_REGULATION",
+    "BASE_COST",
+    "TSFCAS",
+    "TOTAL_FPP",
+    "RCR",
+    "USAGE_VALUE",
+]
+
+[[increment]]
+n = 3
+from = "2026-05"
+ctl = "003.ctl"
+ctl_sha256 = "af9d5352844908c24ab4c6f01c94a81f5d4966fce86a4935478aa0903aeffa3f"
+aemo_ctl = "PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202605.ctl"
 aemo_versions = [1]
 columns = [
     "RUN_DATETIME",

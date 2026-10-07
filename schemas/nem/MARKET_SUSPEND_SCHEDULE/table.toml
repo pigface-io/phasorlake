@@ -30,10 +30,10 @@ column = [
 
 [[increment]]
 n = 1
-from = "2026-08"
+from = "2024-08"
 ctl = "001.ctl"
-ctl_sha256 = "69249880c5549d4a66707df141d891ac1220bb03162f487d19f9fdf81047e86f"
-aemo_ctl = "PUBLIC_ARCHIVE#MARKET_SUSPEND_SCHEDULE#FILE01#202608.ctl"
+ctl_sha256 = "b7c094575b07475683825f069ae7b9e222ae566666121212fa9a3b74179e3b37"
+aemo_ctl = "PUBLIC_ARCHIVE#MARKET_SUSPEND_SCHEDULE#FILE01#202408.ctl"
 aemo_versions = [2]
 columns = [
     "EFFECTIVEDATE",

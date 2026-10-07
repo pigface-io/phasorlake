@@ -25,11 +25,11 @@ column = [
 
 [[increment]]
 n = 1
-from = "2024-01"
+from = "2015-01"
 ctl = "001.ctl"
-ctl_sha256 = "fc300d39fc72dd3b4a15367cfce5ff9ef3bc694e427026afce98cd2c74a0227e"
-aemo_ctl = "PUBLIC_DVD_GENCONSETTRK_202401.ctl"
-aemo_versions = [2]
+ctl_sha256 = "c0b6452ae76d6d6d845249966a61b0d7783a2b0ceb4b7e5dbd0c937eaff1350d"
+aemo_ctl = "PUBLIC_DVD_GENCONSETTRK_201501.ctl"
+aemo_versions = []
 columns = [
     "GENCONSETID",
     "EFFECTIVEDATE",
@@ -46,10 +46,94 @@ columns = [
 
 [[increment]]
 n = 2
-from = "2026-08"
+from = "2018-03"
 ctl = "002.ctl"
-ctl_sha256 = "5ddbe6c94faa0fde1c189d548e5d9166f401d21251737c7ddd3586b69854eea7"
-aemo_ctl = "PUBLIC_ARCHIVE#GENCONSETTRK#FILE01#202608.ctl"
+ctl_sha256 = "30d74a821254d32309bcffd96bc57c163d8b4eb29c3db5543d62b1e031f130ed"
+aemo_ctl = "PUBLIC_DVD_GENCONSETTRK_201803.ctl"
+aemo_versions = []
+columns = [
+    "GENCONSETID",
+    "EFFECTIVEDATE",
+    "VERSIONNO",
+    "DESCRIPTION",
+    "AUTHORISEDBY",
+    "AUTHORISEDDATE",
+    "LASTCHANGED",
+    "SYSTEMNORMAL",
+    "COVERAGE",
+    "MODIFICATIONS",
+    "OUTAGE",
+]
+
+[[increment]]
+n = 3
+from = "2019-07"
+ctl = "003.ctl"
+ctl_sha256 = "c5659ed99b85291218845ed751572bdd2e617ef7554c934fdf3c02690d851d03"
+aemo_ctl = "PUBLIC_DVD_GENCONSETTRK_201907.ctl"
+aemo_versions = []
+columns = [
+    "GENCONSETID",
+    "EFFECTIVEDATE",
+    "VERSIONNO",
+    "DESCRIPTION",
+    "AUTHORISEDBY",
+    "AUTHORISEDDATE",
+    "LASTCHANGED",
+    "COVERAGE",
+    "MODIFICATIONS",
+    "SYSTEMNORMAL",
+    "OUTAGE",
+]
+
+[[increment]]
+n = 4
+from = "2019-08"
+ctl = "004.ctl"
+ctl_sha256 = "77f255a219757e68e6c2070b52859d76c9d5310947feed92e4f8e7774ede5e16"
+aemo_ctl = "PUBLIC_DVD_GENCONSETTRK_201908.ctl"
+aemo_versions = []
+columns = [
+    "GENCONSETID",
+    "EFFECTIVEDATE",
+    "VERSIONNO",
+    "DESCRIPTION",
+    "AUTHORISEDBY",
+    "AUTHORISEDDATE",
+    "LASTCHANGED",
+    "SYSTEMNORMAL",
+    "COVERAGE",
+    "MODIFICATIONS",
+    "OUTAGE",
+]
+
+[[increment]]
+n = 5
+from = "2019-10"
+ctl = "005.ctl"
+ctl_sha256 = "884cf8db40d770a9dc410653741ce93a22dba6dfb23f5b132b101603bd4a08c5"
+aemo_ctl = "PUBLIC_DVD_GENCONSETTRK_201910.ctl"
+aemo_versions = []
+columns = [
+    "GENCONSETID",
+    "EFFECTIVEDATE",
+    "VERSIONNO",
+    "DESCRIPTION",
+    "AUTHORISEDBY",
+    "AUTHORISEDDATE",
+    "LASTCHANGED",
+    "COVERAGE",
+    "MODIFICATIONS",
+    "SYSTEMNORMAL",
+    "OUTAGE",
+]
+
+[[increment]]
+n = 6
+from = "2024-08"
+ctl = "006.ctl"
+ctl_sha256 = "ff8a01b5b8ae4f2ff9a2cf203ac310683f63e18946f8cc3a80d0f71243f4769d"
+aemo_ctl = "PUBLIC_ARCHIVE#GENCONSETTRK#FILE01#202408.ctl"
 aemo_versions = [2]
 columns = [
     "GENCONSETID",

@@ -258,15 +258,28 @@ fn bad_rows_fail_and_are_explained() {
 /// anchor (August 2026) and an earlier one (January 2024): each one must
 /// conform to the increment of its table in force that month (strict mode
 /// refuses a deviation) and every row must parse into its column's type.
-/// January 2024 has one known deviation: the `_ALL` files of three P5MIN
+/// January 2024 has known deviations: the `_ALL` files of three P5MIN
 /// tables carry other columns than the file each table's control file
-/// loads, under the same report pair.
+/// loads, under the same report pair; and five tables' files carry
+/// columns their control file of the month does not list, which a census
+/// of every month is to settle.
 #[test]
 fn every_archive_table_ingests_strictly() {
     every_head_ingests_strictly(
         "MMSDM_2024_01",
         161,
         &[
+            "DISPATCHCONSTRAINT",
+            "MTPASA_REGIONRESULT",
+            "P5MIN_CONSTRAINTSOLUTION1",
+            "P5MIN_CONSTRAINTSOLUTION2",
+            "P5MIN_CONSTRAINTSOLUTION3",
+            "P5MIN_CONSTRAINTSOLUTION4",
+            "PREDISPATCHCONSTRAINT_D",
+            "PREDISPATCHCONSTRAINT1",
+            "PREDISPATCHCONSTRAINT2",
+            "PREDISPATCHPRICE",
+            "PREDISPATCHPRICE_D",
             "P5MIN_CONSTRAINTSOLUTION1_ALL",
             "P5MIN_CONSTRAINTSOLUTION2_ALL",
             "P5MIN_CONSTRAINTSOLUTION3_ALL",
@@ -324,9 +337,14 @@ fn every_head_ingests_strictly(month: &str, at_least: usize, deviating: &[&str])
             && (errors.contains("2999/12/31 00:00:00") || errors.contains("9999/12/31 00:00:00")),
         "{month}: the clamp is reported: {errors}"
     );
-    // The only schema diagnostic is the refusal of each known deviation.
+    // The only schema diagnostics are the refusal of each known deviation
+    // and, for a month without a census, a version its increment has not
+    // recorded.
     let mut refused = 0;
-    for line in errors.lines().filter(|l| l.contains("\"schema.")) {
+    for line in errors
+        .lines()
+        .filter(|l| l.contains("\"schema.") && !l.contains("schema.unseen_version"))
+    {
         assert!(
             line.contains("schema.deviates") && deviates(line),
             "{month}: {line}"
@@ -422,11 +440,11 @@ fn inspect_and_schema_commands() {
     assert!(err.contains("no table NOPE"), "{err}");
     let incs = cli.ok(&["schema", "increments", "DISPATCH_UNIT_SCADA"]);
     assert!(
-        incs.contains("2024-01") && incs.contains("2026-08") && incs.contains("+LASTCHANGED"),
+        incs.contains("2015-01") && incs.contains("2024-10") && incs.contains("+LASTCHANGED"),
         "{incs}"
     );
     assert!(
-        incs.contains("PUBLIC_ARCHIVE#DISPATCH_UNIT_SCADA#FILE01#202608.ctl"),
+        incs.contains("PUBLIC_ARCHIVE#DISPATCH_UNIT_SCADA#FILE01#202410.ctl"),
         "{incs}"
     );
     assert!(

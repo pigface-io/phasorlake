@@ -28,10 +28,56 @@ column = [
 
 [[increment]]
 n = 1
-from = "2026-08"
+from = "2015-10"
 ctl = "001.ctl"
-ctl_sha256 = "76ef7c16dbaced8f54638ff00711c5bdb01126f02105e228163e62e065e9e67c"
-aemo_ctl = "PUBLIC_ARCHIVE#APEVENTREGION#FILE01#202608.ctl"
+ctl_sha256 = "72896f56849f2500d2103dba4ec3198ab4efff8ebc562bd66187e5e936942916"
+aemo_ctl = "PUBLIC_DVD_APEVENTREGION_201510.ctl"
+aemo_versions = []
+columns = [
+    "APEVENTID",
+    "REGIONID",
+    "LASTCHANGED",
+    "ENERGYAPFLAG",
+    "RAISE6SECAPFLAG",
+    "RAISE60SECAPFLAG",
+    "RAISE5MINAPFLAG",
+    "RAISEREGAPFLAG",
+    "LOWER6SECAPFLAG",
+    "LOWER60SECAPFLAG",
+    "LOWER5MINAPFLAG",
+    "LOWERREGAPFLAG",
+]
+
+[[increment]]
+n = 2
+from = "2024-05"
+ctl = "002.ctl"
+ctl_sha256 = "01cac1cae43734c7c306a5615e7d5e9dc663e8eee8cb609a169460aebda07337"
+aemo_ctl = "PUBLIC_DVD_APEVENTREGION_202405.ctl"
+aemo_versions = []
+columns = [
+    "APEVENTID",
+    "REGIONID",
+    "LASTCHANGED",
+    "ENERGYAPFLAG",
+    "RAISE1SECAPFLAG",
+    "RAISE6SECAPFLAG",
+    "RAISE60SECAPFLAG",
+    "RAISE5MINAPFLAG",
+    "RAISEREGAPFLAG",
+    "LOWER1SECAPFLAG",
+    "LOWER6SECAPFLAG",
+    "LOWER60SECAPFLAG",
+    "LOWER5MINAPFLAG",
+    "LOWERREGAPFLAG",
+]
+
+[[increment]]
+n = 3
+from = "2024-08"
+ctl = "003.ctl"
+ctl_sha256 = "1331fa096490beb27f5d43346000adf2583a135e20fc2acbb5999df8780f0829"
+aemo_ctl = "PUBLIC_ARCHIVE#APEVENTREGION#FILE01#202408.ctl"
 aemo_versions = [2]
 columns = [
     "APEVENTID",

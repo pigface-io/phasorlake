@@ -23,10 +23,10 @@ column = [
 
 [[increment]]
 n = 1
-from = "2026-08"
+from = "2025-07"
 ctl = "001.ctl"
-ctl_sha256 = "1395296764c2829de11ca31e10f6480cca9e9bed0de3700d318701dcf2a60c4b"
-aemo_ctl = "PUBLIC_ARCHIVE#STPASA_DUIDAVAILABILITY#FILE01#202608.ctl"
+ctl_sha256 = "6cba4c458170514917a869d6521959cd050f4cafe621706d33c115d6a58e47ba"
+aemo_ctl = "PUBLIC_ARCHIVE#STPASA_DUIDAVAILABILITY#FILE01#202507.ctl"
 aemo_versions = [1]
 columns = [
     "RUN_DATETIME",

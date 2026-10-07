@@ -1,5 +1,5 @@
 -- ************************************************************
--- Title:	PUBLIC_DVD_ROOFTOP_PV_FORECAST_202401.ctl
+-- Title:	PUBLIC_DVD_ROOFTOP_PV_FORECAST_201910.ctl
 -- ************************************************************
 -- Project : NEMMCO MONTHLY DVD RELEASE
 -- Purpose : Control File to load monthly csv file
@@ -17,7 +17,7 @@
 --      PUBLIC			       v
 -- ************************************************************
 LOAD DATA
-INFILE PUBLIC_DVD_ROOFTOP_PV_FORECAST_202401010000.CSV
+INFILE PUBLIC_DVD_ROOFTOP_PV_FORECAST_201910010000.CSV
 APPEND INTO TABLE ROOFTOP_PV_FORECAST
 WHEN (1:1) = 'D'
 FIELDS TERMINATED BY ','

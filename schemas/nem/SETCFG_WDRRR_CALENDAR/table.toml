@@ -19,10 +19,10 @@ column = [
 
 [[increment]]
 n = 1
-from = "2026-08"
+from = "2024-08"
 ctl = "001.ctl"
-ctl_sha256 = "0fe685cd5003460a38f181b06e42f736f76b60c21c14e60a815a5f20b1d10b58"
-aemo_ctl = "PUBLIC_ARCHIVE#SETCFG_WDRRR_CALENDAR#FILE01#202608.ctl"
+ctl_sha256 = "c5217d7a4ce43083749749fa36f78809c7414493293c87da8988c63ef3a6d69a"
+aemo_ctl = "PUBLIC_ARCHIVE#SETCFG_WDRRR_CALENDAR#FILE01#202408.ctl"
 aemo_versions = [1]
 columns = [
     "WDRRRPERIOD",

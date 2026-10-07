@@ -17,10 +17,10 @@ column = [
 
 [[increment]]
 n = 1
-from = "2026-08"
+from = "2024-08"
 ctl = "001.ctl"
-ctl_sha256 = "ba7f0f47e398e7449e5f22c24faca57e5efc5cd3e68891587ab344327ee6a78f"
-aemo_ctl = "PUBLIC_ARCHIVE#NETWORK_OUTAGESTATUSCODE#FILE01#202608.ctl"
+ctl_sha256 = "74d0a28f2ae2cfef7ec04e2d4b306b20619ff6ce9f8fb85f44cc41374b96bec9"
+aemo_ctl = "PUBLIC_ARCHIVE#NETWORK_OUTAGESTATUSCODE#FILE01#202408.ctl"
 aemo_versions = [1]
 columns = [
     "OUTAGESTATUSCODE",

@@ -22,10 +22,10 @@ column = [
 
 [[increment]]
 n = 1
-from = "2024-01"
+from = "2015-01"
 ctl = "001.ctl"
-ctl_sha256 = "704e4b4db8d1eaa0b4fd290b0f05a095ff3c82cd9502032aed754f61592dc886"
-aemo_ctl = "PUBLIC_DVD_REGIONAPCINTERVALS_202401.ctl"
+ctl_sha256 = "553c6732811b68c503d4657baeff9f4b93cf837ef98ca99ad09602541ca15c50"
+aemo_ctl = "PUBLIC_DVD_REGIONAPCINTERVALS_201501.ctl"
 aemo_versions = [1]
 columns = [
     "REGIONID",

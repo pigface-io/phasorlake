@@ -21,10 +21,10 @@ column = [
 
 [[increment]]
 n = 1
-from = "2026-08"
+from = "2024-08"
 ctl = "001.ctl"
-ctl_sha256 = "2c084acb04d2ec55887ebc4b1e5d3a255fb86983a7557cb5acc5d69b4822abf6"
-aemo_ctl = "PUBLIC_ARCHIVE#INTERMITTENT_GEN_LIMIT_DAY#FILE01#202608.ctl"
+ctl_sha256 = "4290bbc7089bb6be2262c35e9f5c3f58655521c2c7c2198a5be9fdbfcee6fd87"
+aemo_ctl = "PUBLIC_ARCHIVE#INTERMITTENT_GEN_LIMIT_DAY#FILE01#202408.ctl"
 aemo_versions = [1]
 columns = [
     "TRADINGDATE",

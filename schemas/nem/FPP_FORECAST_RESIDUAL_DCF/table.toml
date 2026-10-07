@@ -22,10 +22,28 @@ column = [
 
 [[increment]]
 n = 1
-from = "2026-08"
+from = "2024-12"
 ctl = "001.ctl"
-ctl_sha256 = "182bc0b7033002c0290b1be316fd4be9daabd1b1087cae2f77bf85068e502d00"
-aemo_ctl = "PUBLIC_ARCHIVE#FPP_FORECAST_RESIDUAL_DCF#FILE01#202608.ctl"
+ctl_sha256 = "d2dfd17f9b96c6654b9a069fc014fc3d5fd93edbb9822e5d951ce8fa71091c73"
+aemo_ctl = "PUBLIC_ARCHIVE#FPP_FORECAST_RESIDUAL_DCF#FILE01#202412.ctl"
+aemo_versions = []
+columns = [
+    "CONSTRAINTID",
+    "EFFECTIVE_START_DATETIME",
+    "EFFECTIVE_END_DATETIME",
+    "VERSIONNO",
+    "BIDTYPE",
+    "RESIDUAL_DCF",
+    "RESIDUAL_DCF_REASON_FLAG",
+    "DCF_ABS_NEGATIVE_PERF_TOTAL",
+]
+
+[[increment]]
+n = 2
+from = "2026-05"
+ctl = "002.ctl"
+ctl_sha256 = "4439474f64890967931b0791c2fa7ff507da2b1a6cca7125f0be4b72dab7e109"
+aemo_ctl = "PUBLIC_ARCHIVE#FPP_FORECAST_RESIDUAL_DCF#FILE01#202605.ctl"
 aemo_versions = [1]
 columns = [
     "CONSTRAINTID",

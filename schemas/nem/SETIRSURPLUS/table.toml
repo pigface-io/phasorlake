@@ -25,11 +25,32 @@ column = [
 
 [[increment]]
 n = 1
-from = "2024-01"
+from = "2015-01"
 ctl = "001.ctl"
-ctl_sha256 = "c09fb4c3efe6b30ca6e6f2723c284e682e92de18a3875f7ae750368ad78fb5a5"
-aemo_ctl = "PUBLIC_DVD_SETIRSURPLUS_202401.ctl"
-aemo_versions = [6]
+ctl_sha256 = "415a04cf0d532eb0d8d05688c5f0424cdab33e0b5206a2d2af9e8cb3fd3965b6"
+aemo_ctl = "PUBLIC_DVD_SETIRSURPLUS_201501.ctl"
+aemo_versions = []
+columns = [
+    "SETTLEMENTDATE",
+    "SETTLEMENTRUNNO",
+    "PERIODID",
+    "INTERCONNECTORID",
+    "REGIONID",
+    "MWFLOW",
+    "LOSSFACTOR",
+    "SURPLUSVALUE",
+    "LASTCHANGED",
+    "CSP_DEROGATION_AMOUNT",
+    "UNADJUSTED_IRSR",
+]
+
+[[increment]]
+n = 2
+from = "2019-07"
+ctl = "002.ctl"
+ctl_sha256 = "80707d707c13619f773cd8bd604017812066c59c1cc69b483486d951e443592b"
+aemo_ctl = "PUBLIC_DVD_SETIRSURPLUS_201907.ctl"
+aemo_versions = []
 columns = [
     "SETTLEMENTDATE",
     "SETTLEMENTRUNNO",
@@ -45,11 +66,53 @@ columns = [
 ]
 
 [[increment]]
-n = 2
-from = "2026-08"
-ctl = "002.ctl"
-ctl_sha256 = "11a88ddf20843d6bd366c400eced5f8f63b7f1b2b56e0def61231917db607d75"
-aemo_ctl = "PUBLIC_ARCHIVE#SETIRSURPLUS#FILE01#202608.ctl"
+n = 3
+from = "2019-08"
+ctl = "003.ctl"
+ctl_sha256 = "a2b76dad68992c8963758ae898ec14da02dbfb186805187a9220cee6d244ad48"
+aemo_ctl = "PUBLIC_DVD_SETIRSURPLUS_201908.ctl"
+aemo_versions = []
+columns = [
+    "SETTLEMENTDATE",
+    "SETTLEMENTRUNNO",
+    "PERIODID",
+    "INTERCONNECTORID",
+    "REGIONID",
+    "MWFLOW",
+    "LOSSFACTOR",
+    "SURPLUSVALUE",
+    "LASTCHANGED",
+    "CSP_DEROGATION_AMOUNT",
+    "UNADJUSTED_IRSR",
+]
+
+[[increment]]
+n = 4
+from = "2019-10"
+ctl = "004.ctl"
+ctl_sha256 = "f6eda547fa3ec52ae2407bf8795e0fd56da99a8c6ecf5d0752903cd80f10ba67"
+aemo_ctl = "PUBLIC_DVD_SETIRSURPLUS_201910.ctl"
+aemo_versions = []
+columns = [
+    "SETTLEMENTDATE",
+    "SETTLEMENTRUNNO",
+    "PERIODID",
+    "INTERCONNECTORID",
+    "REGIONID",
+    "MWFLOW",
+    "LOSSFACTOR",
+    "SURPLUSVALUE",
+    "LASTCHANGED",
+    "UNADJUSTED_IRSR",
+    "CSP_DEROGATION_AMOUNT",
+]
+
+[[increment]]
+n = 5
+from = "2024-08"
+ctl = "005.ctl"
+ctl_sha256 = "e92509ef349aba853e039615e453f11ad10b41d8a77f0d1439dcead8bd40a913"
+aemo_ctl = "PUBLIC_ARCHIVE#SETIRSURPLUS#FILE01#202408.ctl"
 aemo_versions = [6]
 columns = [
     "SETTLEMENTDATE",

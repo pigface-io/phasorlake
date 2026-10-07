@@ -1,5 +1,5 @@
 -- ************************************************************
--- Title:	PUBLIC_DVD_MTPASA_CONSTRAINTSUMMARY_202401.ctl
+-- Title:	PUBLIC_DVD_MTPASA_CONSTRAINTSUMMARY_201910.ctl
 -- ************************************************************
 -- Project : NEMMCO MONTHLY DVD RELEASE
 -- Purpose : Control File to load monthly csv file
@@ -17,7 +17,7 @@
 --      PUBLIC			       v
 -- ************************************************************
 LOAD DATA
-INFILE PUBLIC_DVD_MTPASA_CONSTRAINTSUMMARY_202401010000.CSV
+INFILE PUBLIC_DVD_MTPASA_CONSTRAINTSUMMARY_201910010000.CSV
 APPEND INTO TABLE MTPASA_CONSTRAINTSUMMARY
 WHEN (1:1) = 'D'
 FIELDS TERMINATED BY ','

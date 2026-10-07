@@ -23,10 +23,29 @@ column = [
 
 [[increment]]
 n = 1
-from = "2026-08"
+from = "2025-01"
 ctl = "001.ctl"
-ctl_sha256 = "cfeeb3d5f11115384ba077a10d38f111c4e5939aba794df138aceaaf225e3e83"
-aemo_ctl = "PUBLIC_ARCHIVE#FPP_PD_FWD_EST_RESIDUALRATE#FILE01#202608.ctl"
+ctl_sha256 = "793f898244e14cd0d949e4a12d86160f8c34e1887b2b1ba938b2bcd2ce545d18"
+aemo_ctl = "PUBLIC_ARCHIVE#FPP_PD_FWD_EST_RESIDUALRATE#FILE01#202501.ctl"
+aemo_versions = []
+columns = [
+    "PREDISPATCHSEQNO",
+    "RUN_DATETIME",
+    "RUNNO",
+    "INTERVAL_DATETIME",
+    "CONSTRAINTID",
+    "VERSIONNO",
+    "BIDTYPE",
+    "RELEVANT_REGIONS",
+    "EST_UNUSED_FCAS",
+]
+
+[[increment]]
+n = 2
+from = "2026-05"
+ctl = "002.ctl"
+ctl_sha256 = "bea3060366da60974f6d324eb0c4ad751e3cfd3cf8e03270e261ff7b57d9ba7a"
+aemo_ctl = "PUBLIC_ARCHIVE#FPP_PD_FWD_EST_RESIDUALRATE#FILE01#202605.ctl"
 aemo_versions = [1]
 columns = [
     "PREDISPATCHSEQNO",

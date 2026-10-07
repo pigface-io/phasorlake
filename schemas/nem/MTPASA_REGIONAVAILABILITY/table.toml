@@ -32,10 +32,10 @@ column = [
 
 [[increment]]
 n = 1
-from = "2026-08"
+from = "2024-08"
 ctl = "001.ctl"
-ctl_sha256 = "3b611775be5dc3f561b6402dfe1d3b81f7a3292c48607ec7d49c1df5d1e6ecc5"
-aemo_ctl = "PUBLIC_ARCHIVE#MTPASA_REGIONAVAILABILITY#FILE01#202608.ctl"
+ctl_sha256 = "b785696413a48c812922655c9bc71f46e229b3b03dfb58fe3c956f55d43ab22e"
+aemo_ctl = "PUBLIC_ARCHIVE#MTPASA_REGIONAVAILABILITY#FILE01#202408.ctl"
 aemo_versions = [4]
 columns = [
     "PUBLISH_DATETIME",

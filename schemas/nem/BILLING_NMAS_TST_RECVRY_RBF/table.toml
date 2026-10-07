@@ -24,10 +24,10 @@ column = [
 
 [[increment]]
 n = 1
-from = "2026-08"
+from = "2024-10"
 ctl = "001.ctl"
-ctl_sha256 = "d0fc71c0f654d7b37126ef93fea280140b8215a3e539667b2cbea5b086b45368"
-aemo_ctl = "PUBLIC_ARCHIVE#BILLING_NMAS_TST_RECVRY_RBF#FILE01#202608.ctl"
+ctl_sha256 = "568e65a12ef95a57c88e05f1563bba5d9f50b327d9183448d071fb738515cd3e"
+aemo_ctl = "PUBLIC_ARCHIVE#BILLING_NMAS_TST_RECVRY_RBF#FILE01#202410.ctl"
 aemo_versions = [1]
 columns = [
     "CONTRACTYEAR",

@@ -33,10 +33,10 @@ column = [
 
 [[increment]]
 n = 1
-from = "2026-08"
+from = "2024-08"
 ctl = "001.ctl"
-ctl_sha256 = "b1a9215ebc5f41ce4932b92acffeadf36d5d841e8f4549c7977cc143cc42b466"
-aemo_ctl = "PUBLIC_ARCHIVE#NETWORK_OUTAGEDETAIL#FILE01#202608.ctl"
+ctl_sha256 = "edf4f1e0b929ced8decc0727d922f2b2df963e8e9f5933076ac9d5e60df84af1"
+aemo_ctl = "PUBLIC_ARCHIVE#NETWORK_OUTAGEDETAIL#FILE01#202408.ctl"
 aemo_versions = [4]
 columns = [
     "OUTAGEID",

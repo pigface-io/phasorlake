@@ -29,10 +29,10 @@ column = [
 
 [[increment]]
 n = 1
-from = "2026-08"
+from = "2024-08"
 ctl = "001.ctl"
-ctl_sha256 = "ccc40b4264cb6682540882f668f2679b5e0a0b2aa4aa961561d72194d67487db"
-aemo_ctl = "PUBLIC_ARCHIVE#PMS_GROUPSERVICE#FILE01#202608.ctl"
+ctl_sha256 = "1b92edc23cc669cc1a6b3d158aa13fdfe6f486e5c9579728842637b7dd2a8dca"
+aemo_ctl = "PUBLIC_ARCHIVE#PMS_GROUPSERVICE#FILE01#202408.ctl"
 aemo_versions = [1]
 columns = [
     "GROUPSERVICEID",
