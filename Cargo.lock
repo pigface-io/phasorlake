@@ -1532,6 +1532,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "nemlake-mdff"
+version = "0.1.0"
+
+[[package]]
 name = "nemlake-pipeline"
 version = "0.1.0"
 dependencies = [

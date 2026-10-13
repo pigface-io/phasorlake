@@ -15,6 +15,7 @@
     "crates/nemlake-acquire/src": 85,
     "crates/nemlake-writer/src": 85,
     "crates/nemlake-pipeline/src": 75,
-    "crates/nemlake-cli/src": 30
+    "crates/nemlake-cli/src": 30,
+    "crates/nemlake-mdff/src": 98
   }
 }
