@@ -1,0 +1,18 @@
+{
+  "machine": "apple-m-series",
+  "tolerance": {
+    "time_pct": 10.0,
+    "mem_pct": 5.0
+  },
+  "benches": {
+    "fetch/download": {
+      "min_mb_per_s": 800.0
+    },
+    "mirror/listing_parse": {
+      "min_mb_per_s": 720.0
+    },
+    "mirror/map_zip_of_zips": {
+      "min_mb_per_s": 125.0
+    }
+  }
+}

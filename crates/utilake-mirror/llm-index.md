@@ -1,0 +1,36 @@
+# nemweb-mirror: index for agents
+
+A copy of every file under nemweb's Data_Archive and Reports/ARCHIVE folders, and the catalog of it that nemlake reads. One crate, `crates/nemweb-mirror` (a library and the binary), and `crates/xtask` for the gates. Async at the edges (HTTP), sync in the zip reading.
+Each entry names where a thing starts. Read those files before you edit.
+
+## Rules a hook or CI enforces
+
+- Run tools through `just`, never with hand-picked flags. `just check` runs every hook, as CI does.
+- `unsafe` is forbidden; zips are read through `BufReader<File>` or from memory.
+- A coverage floor in `coverage.json` only goes up; a budget in `bench/budgets.json` only tightens. Loosening one needs a `coverage-floor:` or `bench-budget:` line in the commit message (`just budget-check`).
+- Every failure mode is a `Diagnostic` (`crates/nemweb-mirror/src/diag.rs`) with a stable `category.snake_name` code and a full-sentence message. Codes are never renamed; `docs/errors.md` is generated from them (`just errors-doc`).
+- Every HTTP request goes through `Fetcher` (`crates/nemweb-mirror/src/net/fetcher.rs`): pacing, retries, the 403/429 breaker. Never download from nemweb in a shell loop.
+- The archive layout and sidecar are a contract with nemlake (`docs/archive.md`); the catalog format is versioned (`docs/catalog.md`).
+- Nothing is filtered: every folder under a root is followed and every file is recorded. The listing reader stops on any line it cannot read.
+- An archived file is removed only by `compare --delete`, only when found the same as its folder, and only after it is recorded among the removed.
+- Fixtures under `testdata/` are AEMO pages kept byte for byte (`testdata/LICENCE.md`). Unit tests use a temp home; nothing touches the network.
+- Commits follow Conventional Commits with an imperative subject and no tool attribution.
+
+## Features
+
+- **Home and config**: the archive and the mirror's records under the home, the config file in the records (`crates/nemweb-mirror/src/config.rs`).
+- **Net**: transports (reqwest, offline, canned for tests), the paced fetcher, the archive with sidecars. `crates/nemweb-mirror/src/net/`.
+- **Crawl**: the strict IIS listing reader (`crates/nemweb-mirror/src/listing.rs`) and the breadth-first crawl that keeps every page and writes the crawl record (`crates/nemweb-mirror/src/crawl.rs`).
+- **Download**: every crawled file through the fetcher, skipping archived and removed ones; a refusal or a full disk stops the pass (`crates/nemweb-mirror/src/download.rs`); one run at a time (`crates/nemweb-mirror/src/lock.rs`).
+- **Map**: the catalog, every folder, file and zip entry, zips within zips (`crates/nemweb-mirror/src/map.rs`); the committed pattern summary (`crates/nemweb-mirror/src/summary.rs`).
+- **Compare**: each zip beside a folder of the same name against that folder; `--delete` removes the same ones (`crates/nemweb-mirror/src/compare.rs`).
+- **Status**: pages read, files archived out of those listed (`crates/nemweb-mirror/src/status.rs`).
+- **Command**: `crawl`, `download`, `run`, `map`, `compare`, `summary`, `status`. `crates/nemweb-mirror/src/cli.rs`, `crates/nemweb-mirror/src/commands.rs`.
+- **Gates**: coverage (`just cover`), benchmarks (`just bench`), ratchet (`just budget-check`), agent index (`just llm-check`), error catalogue (`just errors-check`). `crates/xtask/src/`, `bench/budgets.json`, `coverage.json`.
+
+## Documents
+
+- `README.md`: what it is, how to run it, where things are on disk.
+- `docs/archive.md`: the archive layout and sidecar, as nemlake reads them.
+- `docs/catalog.md`: the catalog format.
+- `docs/errors.md`: every diagnostic code.

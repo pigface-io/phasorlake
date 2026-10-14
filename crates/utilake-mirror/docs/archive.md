@@ -1,0 +1,53 @@
+# The archive
+
+The archive is where every downloaded file is kept, untransformed. nemlake
+reads it; nemweb-mirror and nemlake's own `fetch` both write it, so a file
+either downloads is never downloaded again by the other.
+
+## Layout
+
+A file's path is its URL's host and path under `{home}/archive/`:
+
+```
+https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2009/MMSDM_2009_07.zip
+{home}/archive/www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2009/MMSDM_2009_07.zip
+```
+
+Each path segment is percent-decoded (`%23` is `#`), and the characters no
+file system takes (control characters and `/ \ : * ? " < > |`) become `_`;
+`.`, `..` and empty segments become `_`. A query string, which no archive
+URL has, is folded into the file name as `name@{first 16 hex of its
+sha256}`; a fragment is not part of the file. `Archive::path_for`
+(`crates/nemweb-mirror/src/net/archive.rs`) is the reference.
+
+A file is written to `{path}.part` and renamed into place only after its
+size matches the server's `Content-Length`; a `.part` file is never part of
+the archive.
+
+## Sidecar
+
+Beside every file, `{path}.json`:
+
+```json
+{
+  "url": "https://www.nemweb.com.au/…/MMSDM_2009_07.zip",
+  "size": 1469212391,
+  "sha256": "…",
+  "fetched_at": "2026-10-15T09:12:44Z",
+  "etag": "\"…\"",
+  "last_modified": "Mon, 12 Oct 2026 00:32:30 GMT",
+  "tool": "nemweb-mirror/0.1.0"
+}
+```
+
+`etag` and `last_modified` are present when the server sent them. A file is
+archived when it and its sidecar exist, the sidecar's `url` is the file's
+URL and its `size` is the file's length. Readers ignore fields they do not
+know.
+
+## Removed duplicates
+
+A zip removed by `nemweb-mirror compare --delete` is gone from the archive
+but recorded in `{home}/mirror/removed.ndjson`, one line per file:
+`url`, `size`, `sha256`, `same_as` (the folder holding the same files) and
+`removed_at`. Its files are the folder's files.
