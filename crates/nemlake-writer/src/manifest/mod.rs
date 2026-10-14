@@ -500,6 +500,13 @@ impl Manifest {
         )
     }
 
+    /// Paths of every quarantine file a current ingest recorded; a file
+    /// under the quarantine directory that is not in this list is an orphan.
+    pub fn live_quarantine(&self) -> Result<Vec<String>, ManifestError> {
+        let mut stmt = self.sql(self.conn.prepare("SELECT DISTINCT quarantine_path FROM ingests WHERE quarantine_path IS NOT NULL AND status != 'superseded' ORDER BY quarantine_path"))?;
+        self.sql(stmt.query_map([], |r| r.get(0)).and_then(Iterator::collect))
+    }
+
     /// Marks every ingest of a file superseded and forgets its outputs.
     pub fn supersede_file(&mut self, file_id: i64) -> Result<usize, ManifestError> {
         let r = self.conn.execute("UPDATE ingests SET status = 'superseded' WHERE file_id = ?1 AND status IN ('ok', 'failed', 'aborted')", [file_id]);
@@ -881,6 +888,7 @@ mod tests {
             "sha changed"
         );
         assert_eq!(m.quarantine_of_file(fid).unwrap(), ["q"]);
+        assert_eq!(m.live_quarantine().unwrap(), ["q"]);
         let recs = m.list_ingests(None, false, 10).unwrap();
         assert_eq!(recs.len(), 1);
         assert_eq!(recs[0].fingerprint, "xxh3:1");
@@ -1029,6 +1037,7 @@ mod tests {
         assert_eq!(m.supersede_file(fid).unwrap(), 2);
         assert_eq!(m.outputs_of_file(fid).unwrap().len(), 0);
         assert!(m.quarantine_of_file(fid).unwrap().is_empty());
+        assert!(m.live_quarantine().unwrap().is_empty(), "superseded");
         assert_eq!(
             m.list_ingests(None, false, 10).unwrap()[0].status,
             IngestStatus::Superseded

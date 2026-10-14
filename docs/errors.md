@@ -131,6 +131,7 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 | code | raised in |
 |---|---|
 | `verify.missing_file` | `crates/nemlake-cli/src/commands/lake.rs` |
+| `verify.orphan_quarantine` | `crates/nemlake-cli/src/commands/lake.rs` |
 | `verify.size_mismatch` | `crates/nemlake-cli/src/commands/lake.rs` |
 
 ## internal

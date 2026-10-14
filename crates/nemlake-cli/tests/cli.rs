@@ -101,6 +101,16 @@ fn ingest_ls_errors_verify_round_trip() {
     assert!(verify.contains("verified, no problems"), "{verify}");
     let verify_json = cli.ok(&["--json", "verify", "--table", "REGION"]);
     assert!(verify_json.contains("\"problems\":[]"), "{verify_json}");
+    // A quarantine file no current ingest recorded is an orphan.
+    let qdir = cli.home.path().join("quarantine/region");
+    std::fs::create_dir_all(&qdir).unwrap();
+    std::fs::write(qdir.join("left_over.jsonl"), "{}\n").unwrap();
+    let (code, out, _) = cli.code(&["verify", "--table", "REGION"]);
+    assert_eq!(code, 1);
+    assert!(out.contains("verify.orphan_quarantine"), "{out}");
+    let (_, out, _) = cli.code(&["verify", "--table", "DISPATCH_UNIT_SCADA"]);
+    assert!(!out.contains("orphan"), "another table's quarantine: {out}");
+    std::fs::remove_file(qdir.join("left_over.jsonl")).unwrap();
     // Snapshot partition for REGION, month partition for SCADA.
     let lake = cli.home.path().join("lake/nem");
     assert!(lake.join("region/snapshot=202401").is_dir());
