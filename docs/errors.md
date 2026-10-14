@@ -7,6 +7,7 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 | code | raised in |
 |---|---|
 | `config.bad_path` | `crates/nemlake-pipeline/src/run.rs` |
+| `config.mirror_root` | `crates/nemlake-mirror/src/error.rs` |
 | `config.parse` | `crates/nemlake-core/src/config.rs` |
 | `config.read` | `crates/nemlake-core/src/config.rs` |
 
@@ -30,6 +31,7 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 | `listing.month_missing` | `crates/nemlake-acquire/src/error.rs` |
 | `listing.no_match` | `crates/nemlake-acquire/src/error.rs` |
 | `listing.parse_failed` | `crates/nemlake-acquire/src/error.rs` |
+| `listing.unparsed_line` | `crates/nemlake-mirror/src/error.rs` |
 
 ## cache
 
@@ -134,6 +136,13 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 | `verify.missing_file` | `crates/nemlake-cli/src/commands/lake.rs` |
 | `verify.orphan_quarantine` | `crates/nemlake-cli/src/commands/lake.rs` |
 | `verify.size_mismatch` | `crates/nemlake-cli/src/commands/lake.rs` |
+
+## mirror
+
+| code | raised in |
+|---|---|
+| `mirror.io` | `crates/nemlake-mirror/src/error.rs` |
+| `mirror.record_corrupt` | `crates/nemlake-mirror/src/error.rs` |
 
 ## internal
 

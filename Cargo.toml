@@ -3,6 +3,7 @@
 # Layers, dependencies pointing down only:
 #   cli -> pipeline -> {acquire, conform, writer}; conform -> {decode, registry};
 #   decode -> core; registry -> core. Decode never sees the registry.
+#   cli -> mirror -> acquire: the copy of nemweb's archive folders and its map.
 #   mdff is a leaf on std alone: AEMO's meter data file format, not yet used.
 # The bench and xtask crates are tooling and are not default members, so
 # `cargo build` compiles only what ships. The census crate ships: the command
@@ -18,6 +19,7 @@ members = [
     "crates/nemlake-acquire",
     "crates/nemlake-writer",
     "crates/nemlake-pipeline",
+    "crates/nemlake-mirror",
     "crates/nemlake-cli",
     "crates/nemlake-mdff",
     "crates/nemlake-bench",
@@ -32,6 +34,7 @@ default-members = [
     "crates/nemlake-acquire",
     "crates/nemlake-writer",
     "crates/nemlake-pipeline",
+    "crates/nemlake-mirror",
     "crates/nemlake-cli",
 ]
 
@@ -76,6 +79,7 @@ nemlake-census = { path = "crates/nemlake-census" }
 nemlake-acquire = { path = "crates/nemlake-acquire" }
 nemlake-writer = { path = "crates/nemlake-writer" }
 nemlake-pipeline = { path = "crates/nemlake-pipeline" }
+nemlake-mirror = { path = "crates/nemlake-mirror" }
 
 # hot path
 memchr = "2.8"

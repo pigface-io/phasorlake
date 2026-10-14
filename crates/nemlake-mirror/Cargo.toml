@@ -1,0 +1,30 @@
+[package]
+name = "nemlake-mirror"
+description = "A copy of every file under nemweb's archive folders, and a map of every file in it, zips opened as folders."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+nemlake-core.workspace = true
+nemlake-acquire.workspace = true
+memchr.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+url.workspace = true
+
+[dev-dependencies]
+criterion.workspace = true
+tempfile.workspace = true
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }
+
+[[bench]]
+name = "mirror"
+harness = false

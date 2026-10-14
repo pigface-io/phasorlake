@@ -147,6 +147,12 @@ pub enum Command {
         #[command(subcommand)]
         cmd: WemCmd,
     },
+    /// A copy of every file under nemweb's archive folders, and its map.
+    Mirror {
+        /// The subcommand.
+        #[command(subcommand)]
+        cmd: MirrorCmd,
+    },
 }
 
 /// Markets to fetch.
@@ -239,6 +245,26 @@ pub enum ArchiveCmd {
     Ls,
     /// Hash every archived file again and compare with its record.
     Verify,
+}
+
+/// Mirror commands.
+#[derive(Subcommand, Debug)]
+pub enum MirrorCmd {
+    /// Read every listing page under the roots into the crawl record.
+    Crawl {
+        /// Roots to crawl instead of nemweb's Data_Archive/ and Reports/ARCHIVE/.
+        #[arg(long = "root")]
+        roots: Vec<String>,
+        /// Move the current crawl aside and read every page again.
+        #[arg(long)]
+        fresh: bool,
+    },
+    /// Pages read, and files archived out of those listed, per root.
+    Status {
+        /// The roots the crawl used, when not the default ones.
+        #[arg(long = "root")]
+        roots: Vec<String>,
+    },
 }
 
 /// WEM commands.

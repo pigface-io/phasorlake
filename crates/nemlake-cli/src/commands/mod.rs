@@ -3,6 +3,7 @@
 mod inspect;
 mod lake;
 mod manifest;
+mod mirror;
 mod misc;
 mod schema;
 
@@ -70,6 +71,7 @@ pub async fn dispatch(cli: Cli) -> Result<i32> {
         Command::Schema { cmd } => schema::schema(&ctx, cmd).await,
         Command::Archive { cmd } => misc::archive(&ctx, cmd),
         Command::Wem { cmd } => misc::wem(&ctx, cmd).await,
+        Command::Mirror { cmd } => mirror::mirror(&ctx, cmd).await,
     }
 }
 

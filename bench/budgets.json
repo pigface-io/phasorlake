@@ -17,6 +17,9 @@
     "fetch/listing_parse": {
       "min_mb_per_s": 900.0
     },
+    "mirror/listing_parse": {
+      "min_mb_per_s": 720.0
+    },
     "parse/scan_headers_only": {
       "min_mb_per_s": 5300.0
     },

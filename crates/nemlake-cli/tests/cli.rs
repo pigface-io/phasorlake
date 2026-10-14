@@ -998,3 +998,62 @@ fn walk(root: &Path) -> Vec<PathBuf> {
     }
     out
 }
+
+/// The mirror crawls from the pages it kept, offline, and counts what the
+/// archive holds of what the crawl listed.
+#[test]
+fn the_mirror_crawls_kept_pages_and_reports_its_status() {
+    let cli = Cli::new();
+    let root = "https://h/A/";
+    let pages = cli.home.path().join("mirror/crawl/listings/h/A");
+    std::fs::create_dir_all(pages.join("b")).unwrap();
+    std::fs::write(
+        pages.join("index.html"),
+        "<pre><A HREF=\"/\">[To Parent Directory]</A><br><br> Monday, October 12, 2026 10:45 AM &lt;dir&gt; <A HREF=\"/A/b/\">b</A><br> Monday, October 12, 2026 10:45 AM 9 <A HREF=\"/A/a.zip\">a.zip</A><br> Monday, October 12, 2026 10:45 AM &lt;dir&gt; <A HREF=\"/Z/\">Z</A><br></pre>",
+    )
+    .unwrap();
+    std::fs::write(pages.join("b/index.html"), "<pre></pre>").unwrap();
+
+    let status = cli.ok(&["mirror", "status", "--root", root]);
+    assert!(
+        status.contains("crawl in progress: 2 pages read"),
+        "{status}"
+    );
+
+    let out = cli.ok(&["--offline", "mirror", "crawl", "--root", root]);
+    assert!(
+        out.contains("1 folders, 1 files (0.0 GB), 1 links out of the roots; 2 pages read, 0 of them from nemweb"),
+        "{out}"
+    );
+    let out = cli.ok(&["--offline", "--json", "mirror", "crawl", "--root", root]);
+    assert!(out.contains("\"already_done\":true"), "{out}");
+    let out = cli.ok(&["--offline", "mirror", "crawl", "--root", root]);
+    assert!(out.contains("complete already"), "{out}");
+
+    let file = cli.home.path().join("archive/h/A/a.zip");
+    std::fs::create_dir_all(file.parent().unwrap()).unwrap();
+    std::fs::write(&file, b"zip bytes").unwrap();
+    let status = cli.ok(&["mirror", "status", "--root", root]);
+    assert!(status.contains("1/1"), "{status}");
+    assert!(status.contains("1 links out of the roots"), "{status}");
+    let status = cli.ok(&["--json", "mirror", "status", "--root", root]);
+    assert!(status.contains("\"archived_files\":1"), "{status}");
+
+    // Fresh, offline: the first page cannot be asked for.
+    let (code, out, _) = cli.code(&[
+        "--offline",
+        "--json",
+        "mirror",
+        "crawl",
+        "--fresh",
+        "--root",
+        root,
+    ]);
+    assert_eq!(code, 1);
+    assert!(out.contains("net.offline"), "{out}");
+    let (code, _, err) = cli.code(&["mirror", "crawl", "--root", "https://h/A"]);
+    assert_eq!(code, 1);
+    assert!(err.contains("config.mirror_root"), "{err}");
+    let (code, _, _) = cli.code(&["mirror", "status"]);
+    assert_eq!(code, 0);
+}

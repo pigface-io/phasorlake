@@ -23,6 +23,7 @@ nemlake-conform.workspace = true
 nemlake-acquire.workspace = true
 nemlake-writer.workspace = true
 nemlake-pipeline.workspace = true
+nemlake-mirror.workspace = true
 anyhow.workspace = true
 clap.workspace = true
 indicatif.workspace = true
