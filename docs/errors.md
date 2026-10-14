@@ -21,7 +21,7 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 | `net.content_length_mismatch` | `crates/nemlake-acquire/src/error.rs` |
 | `net.http_status` | `crates/nemlake-acquire/src/error.rs` |
 | `net.offline` | `crates/nemlake-pipeline/src/report.rs` |
-| `net.retries_exhausted` | `crates/nemlake-acquire/src/error.rs` |
+| `net.retries_exhausted` | `crates/nemlake-cli/src/commands/mirror.rs` |
 | `net.timeout` | `crates/nemlake-acquire/src/error.rs` |
 
 ## listing
@@ -142,6 +142,7 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 | code | raised in |
 |---|---|
 | `mirror.crawl_incomplete` | `crates/nemlake-mirror/src/error.rs` |
+| `mirror.files_failed` | `crates/nemlake-cli/src/commands/mirror.rs` |
 | `mirror.io` | `crates/nemlake-mirror/src/error.rs` |
 | `mirror.locked` | `crates/nemlake-mirror/src/error.rs` |
 | `mirror.not_same` | `crates/nemlake-mirror/src/error.rs` |

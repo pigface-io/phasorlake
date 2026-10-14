@@ -27,7 +27,7 @@ pub async fn mirror(cli: &Cli, ctx: &Context, cmd: &MirrorCmd) -> Result<i32> {
         MirrorCmd::Download => {
             let fetcher = ctx.fetcher(None)?;
             match mirror.lock() {
-                Ok(_lock) => download(ctx, &fetcher, &mirror).await,
+                Ok(_lock) => download(ctx, &fetcher, &mirror).await.map(|(code, _)| code),
                 Err(e) => Err(e),
             }
         }
@@ -92,33 +92,60 @@ async fn run(
     let mut refused = 0;
     loop {
         let fetcher = ctx.fetcher(None)?;
+        let started = std::time::Instant::now();
         let attempt = async {
             crawl(ctx, &fetcher, mirror, given, fresh).await?;
             download(ctx, &fetcher, mirror).await
         };
-        match attempt.await {
-            Err(MirrorError::Fetch(e @ FetchError::Blocked { .. })) if refused < refusals => {
-                refused += 1;
-                report(ctx, &e.diagnostic());
-                if ctx.json {
-                    render::json_line(&serde_json::json!({
-                        "event": "waiting",
-                        "refusals": refused,
-                        "seconds": wait.as_secs(),
-                    }));
-                } else {
-                    eprintln!(
-                        "nemweb refused a request ({refused} of {refusals}); waiting {} minutes",
-                        wait.as_secs() / 60
-                    );
-                }
-                tokio::time::sleep(wait).await;
-                // The crawl moved aside already; a second move would lose it.
-                fresh = false;
-            }
-            other => return Ok(other),
+        let d = match attempt.await {
+            Ok((code, false)) => return Ok(Ok(code)),
+            // Files failed on the network: another pass fetches only those.
+            Ok((_, true)) => nemlake_core::Diagnostic::error(
+                "mirror.files_failed",
+                nemlake_core::Category::Mirror,
+                "Some files failed on the network; the next pass fetches only those.",
+            ),
+            Err(MirrorError::Fetch(e)) if waits_out(&e) => e.diagnostic(),
+            Err(other) => return Ok(Err(other)),
+        };
+        // A run that got somewhere before failing starts the count again.
+        if started.elapsed() > wait {
+            refused = 0;
         }
+        if refused >= refusals {
+            report(ctx, &d);
+            return Ok(Ok(1));
+        }
+        refused += 1;
+        report(ctx, &d);
+        if ctx.json {
+            render::json_line(&serde_json::json!({
+                "event": "waiting",
+                "refusals": refused,
+                "seconds": wait.as_secs(),
+            }));
+        } else {
+            eprintln!(
+                "nemweb refused a request or the network failed ({refused} of {refusals} in a row); waiting {} minutes",
+                wait.as_secs() / 60
+            );
+        }
+        tokio::time::sleep(wait).await;
+        // The crawl moved aside already; a second move would lose it.
+        fresh = false;
     }
+}
+
+/// Failures that pass with time: a refusal by nemweb, and the network.
+fn waits_out(e: &FetchError) -> bool {
+    matches!(
+        e,
+        FetchError::Blocked { .. }
+            | FetchError::RetriesExhausted { .. }
+            | FetchError::Timeout { .. }
+            | FetchError::Connect { .. }
+            | FetchError::Body { .. }
+    )
 }
 
 async fn crawl(
@@ -163,7 +190,13 @@ async fn crawl(
     Ok(0)
 }
 
-async fn download(ctx: &Context, fetcher: &Fetcher, mirror: &Mirror) -> Result<i32, MirrorError> {
+/// Downloads the crawl's files; the exit code, and whether a file failed
+/// on the network, which passes with time.
+async fn download(
+    ctx: &Context,
+    fetcher: &Fetcher,
+    mirror: &Mirror,
+) -> Result<(i32, bool), MirrorError> {
     let json = ctx.json;
     let progress = ctx.progress;
     let summary = nemlake_mirror::download(fetcher, mirror, ctx.config.downloads, |f| {
@@ -195,7 +228,13 @@ async fn download(ctx: &Context, fetcher: &Fetcher, mirror: &Mirror) -> Result<i
             summary.failed.len(),
         );
     }
-    Ok(i32::from(!summary.failed.is_empty()))
+    let network = summary.failed.iter().any(|d| {
+        matches!(
+            d.code.as_ref(),
+            "net.retries_exhausted" | "net.timeout" | "net.connect" | "net.body"
+        )
+    });
+    Ok((i32::from(!summary.failed.is_empty()), network))
 }
 
 fn map(ctx: &Context, mirror: &Mirror, given: &[String], jobs: usize) -> Result<i32, MirrorError> {

@@ -262,7 +262,7 @@ pub enum MirrorCmd {
     /// Download every file of the finished crawl into the archive, each once.
     Download,
     /// Crawl (carrying on from a cut-off crawl), then download; when nemweb
-    /// refuses (HTTP 403/429), wait and start again.
+    /// refuses (HTTP 403/429) or the network fails, wait and start again.
     Run {
         /// Roots to crawl instead of nemweb's Data_Archive/ and Reports/ARCHIVE/.
         #[arg(long = "root")]
@@ -270,10 +270,12 @@ pub enum MirrorCmd {
         /// Move the current crawl aside and read every page again.
         #[arg(long)]
         fresh: bool,
-        /// How many times to wait out a refusal before giving up.
+        /// How many refusals or network failures in a row to wait out before
+        /// giving up; an attempt that ran longer than the wait starts the
+        /// count again.
         #[arg(long, default_value_t = 8)]
         refusals: u32,
-        /// Minutes to wait after a refusal.
+        /// Minutes to wait after a refusal or a network failure.
         #[arg(long, default_value_t = 15)]
         wait_minutes: u64,
     },
