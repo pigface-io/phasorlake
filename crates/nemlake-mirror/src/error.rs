@@ -61,6 +61,20 @@ pub enum MirrorError {
         /// The summary file.
         path: String,
     },
+    /// A zip in the archive could not be read.
+    #[error("The zip {path} could not be read: {message}")]
+    Zip {
+        /// The zip.
+        path: String,
+        /// Cause.
+        message: String,
+    },
+    /// Only a zip found the same as its folder is removed.
+    #[error("{url} was not found the same as its folder, so it is kept.")]
+    NotSame {
+        /// The zip's URL.
+        url: String,
+    },
     /// A root is not a folder URL.
     #[error("The root {url} is not a folder: a root is an http(s) URL ending in `/`.")]
     Root {
@@ -107,6 +121,12 @@ impl Diagnose for MirrorError {
             Self::SummaryStale { path } => {
                 Diagnostic::error("mirror.summary_stale", Category::Mirror, msg)
                     .with_file(path.clone())
+            }
+            Self::Zip { path, .. } => {
+                Diagnostic::error("zip.open_failed", Category::Zip, msg).with_file(path.clone())
+            }
+            Self::NotSame { url } => {
+                Diagnostic::error("mirror.not_same", Category::Mirror, msg).with_url(url.clone())
             }
             Self::Root { url } => {
                 Diagnostic::error("config.mirror_root", Category::Config, msg).with_url(url.clone())

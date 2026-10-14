@@ -6,6 +6,7 @@
 //! the same archive `nemlake fetch` uses, so a file is never downloaded
 //! twice. [`status()`] counts how far that has got.
 
+pub mod compare;
 pub mod crawl;
 pub mod download;
 pub mod error;
@@ -15,6 +16,7 @@ pub mod map;
 pub mod status;
 pub mod summary;
 
+pub use compare::{Comparison, Pair, Removed, Verdict, compare, pairs, remove};
 pub use crawl::{
     CrawlSummary, Mirror, PageRead, Remote, RemoteKind, crawl, default_roots, read_record, root,
 };

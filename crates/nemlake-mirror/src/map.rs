@@ -56,6 +56,8 @@ pub enum State {
     NotArchived,
     /// Archived, no longer listed by nemweb.
     GoneUpstream,
+    /// Removed from the archive: a zip found the same as its folder.
+    Removed,
 }
 
 /// Why a file or zip could not be read.
@@ -90,6 +92,9 @@ pub struct Node {
     /// For a file nemweb lists or listed: archived or not.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub state: Option<State>,
+    /// For a removed zip, the folder that holds the same files.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub same_as: Option<String>,
     /// Why it could not be read, when it could not.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub error: Option<NodeError>,
@@ -108,6 +113,7 @@ impl Node {
             crc32: None,
             modified: None,
             state: None,
+            same_as: None,
             error: None,
             depth,
         }
@@ -127,6 +133,8 @@ pub struct MapSummary {
     pub not_archived: usize,
     /// Archived files nemweb no longer lists.
     pub gone_upstream: usize,
+    /// Zips removed as the same as their folders.
+    pub removed: usize,
     /// Files or zips that could not be read.
     pub errors: usize,
     /// Bytes of the archived files nemweb lists or listed.
@@ -140,6 +148,7 @@ struct Top {
     size: Option<u64>,
     modified: Option<String>,
     state: Option<State>,
+    same_as: Option<String>,
 }
 
 /// Writes the map of the crawl record and the archive under `roots`,
@@ -199,6 +208,7 @@ fn tops(
     };
     let mut tops = BTreeMap::new();
     let mut listed = HashSet::new();
+    let removed = mirror.removed()?;
     for r in read_record(&mirror.record_path())? {
         let kind = match r.kind {
             RemoteKind::External => continue,
@@ -208,8 +218,11 @@ fn tops(
         if !roots.iter().any(|root| r.url.starts_with(root.as_str())) {
             continue;
         }
+        let gone = removed.get(&r.url);
         let state = (kind == NodeKind::File).then(|| {
-            if archive.path_for(&r.url).is_file() {
+            if gone.is_some() {
+                State::Removed
+            } else if archive.path_for(&r.url).is_file() {
                 State::Archived
             } else {
                 State::NotArchived
@@ -222,6 +235,7 @@ fn tops(
                 size: r.size,
                 modified: Some(r.modified),
                 state,
+                same_as: gone.map(|g| g.same_as.clone()),
             },
         );
         listed.insert(r.url);
@@ -236,6 +250,7 @@ fn tops(
                         size: Some(a.sidecar.size),
                         modified: a.sidecar.last_modified,
                         state: Some(State::GoneUpstream),
+                        same_as: None,
                     },
                 );
             }
@@ -253,6 +268,7 @@ fn tops(
             size: None,
             modified: None,
             state: None,
+            same_as: None,
         });
     }
     Ok(tops)
@@ -325,7 +341,10 @@ impl Lister {
         node.size = top.size;
         node.modified.clone_from(&top.modified);
         node.state = top.state;
-        if top.state == Some(State::NotArchived) || top.kind == NodeKind::Dir {
+        node.same_as.clone_from(&top.same_as);
+        if matches!(top.state, Some(State::NotArchived | State::Removed))
+            || top.kind == NodeKind::Dir
+        {
             return vec![node];
         }
         let file = archive.root().join(key.iter().collect::<PathBuf>());
@@ -608,9 +627,13 @@ impl Output {
         match node.state {
             Some(State::NotArchived) => s.not_archived += 1,
             Some(State::GoneUpstream) => s.gone_upstream += 1,
+            Some(State::Removed) => s.removed += 1,
             _ => {}
         }
-        if node.state.is_some_and(|st| st != State::NotArchived) {
+        if node
+            .state
+            .is_some_and(|st| matches!(st, State::Archived | State::GoneUpstream))
+        {
             s.archived_bytes += node.size.unwrap_or(0);
         }
         if node.error.is_some() {
@@ -668,6 +691,7 @@ pub fn tree_line(node: &Node) -> String {
     match node.state {
         Some(State::NotArchived) => line.push_str(" [not downloaded]"),
         Some(State::GoneUpstream) => line.push_str(" [no longer on nemweb]"),
+        Some(State::Removed) => line.push_str(" [removed: same as its folder]"),
         _ => {}
     }
     if let Some(e) = &node.error {
@@ -899,6 +923,7 @@ h/
             size: None,
             modified: None,
             state: Some(State::Archived),
+            same_as: None,
         };
         let nodes = l.top(&f.archive, &key, &top);
         let paths: Vec<_> = nodes.iter().map(|n| n.path.as_str()).collect();

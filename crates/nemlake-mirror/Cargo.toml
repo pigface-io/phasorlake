@@ -14,6 +14,7 @@ workspace = true
 [dependencies]
 nemlake-core.workspace = true
 nemlake-acquire.workspace = true
+crc32fast.workspace = true
 futures.workspace = true
 memchr.workspace = true
 serde.workspace = true
@@ -24,7 +25,6 @@ url.workspace = true
 zip.workspace = true
 
 [dev-dependencies]
-crc32fast.workspace = true
 criterion.workspace = true
 serde_json.workspace = true
 tempfile.workspace = true

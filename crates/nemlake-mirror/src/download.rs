@@ -34,6 +34,8 @@ pub struct DownloadSummary {
     pub files: usize,
     /// Of those, already in the archive.
     pub cached: usize,
+    /// Of those, removed as the same as their folders, so not fetched.
+    pub removed: usize,
     /// Downloaded in this pass.
     pub downloaded: usize,
     /// Bytes downloaded in this pass.
@@ -59,10 +61,13 @@ pub async fn download(
             path: mirror.crawl_dir().display().to_string(),
         });
     }
-    let files: Vec<RemoteFile> = read_record(&mirror.record_path())?
+    let removed = mirror.removed()?;
+    let record = read_record(&mirror.record_path())?;
+    let listed = record.iter().filter(|r| r.kind == RemoteKind::File).count();
+    let files: Vec<RemoteFile> = record
         .into_iter()
         .enumerate()
-        .filter(|(_, r)| r.kind == RemoteKind::File)
+        .filter(|(_, r)| r.kind == RemoteKind::File && !removed.contains_key(&r.url))
         .map(|(i, r)| {
             Ok(RemoteFile {
                 url: Url::parse(&r.url).map_err(|e| MirrorError::Record {
@@ -79,7 +84,8 @@ pub async fn download(
         })
         .collect::<Result<_, MirrorError>>()?;
     let mut summary = DownloadSummary {
-        files: files.len(),
+        files: listed,
+        removed: listed - files.len(),
         ..DownloadSummary::default()
     };
     let mut results = futures::stream::iter(&files)
@@ -101,7 +107,7 @@ pub async fn download(
                     cached: local.cached,
                     bytes: local.size,
                     done,
-                    total: summary.files,
+                    total: files.len(),
                 });
             }
             Err(e) if stops_the_pass(&e) => return Err(e.into()),

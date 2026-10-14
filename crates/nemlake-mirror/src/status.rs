@@ -22,6 +22,10 @@ pub struct RootStatus {
     pub archived_files: usize,
     /// Their bytes.
     pub archived_bytes: u64,
+    /// Files removed as the same as their folders.
+    pub removed_files: usize,
+    /// Their bytes.
+    pub removed_bytes: u64,
 }
 
 /// The state of the mirror.
@@ -58,6 +62,7 @@ pub fn status(mirror: &Mirror, archive: &Archive, roots: &[Url]) -> Result<Statu
     if !status.crawl_done {
         return Ok(status);
     }
+    let removed = mirror.removed()?;
     for remote in read_record(&mirror.record_path())? {
         match remote.kind {
             RemoteKind::External => status.external += 1,
@@ -73,6 +78,11 @@ pub fn status(mirror: &Mirror, archive: &Archive, roots: &[Url]) -> Result<Statu
                 let size = remote.size.unwrap_or(0);
                 root.files += 1;
                 root.bytes += size;
+                if removed.contains_key(&remote.url) {
+                    root.removed_files += 1;
+                    root.removed_bytes += size;
+                    continue;
+                }
                 let archived = std::fs::metadata(archive.path_for(&remote.url))
                     .is_ok_and(|m| m.is_file() && m.len() == size);
                 if archived {
@@ -164,6 +174,8 @@ mod tests {
                 bytes: 7,
                 archived_files: 1,
                 archived_bytes: 3,
+                removed_files: 0,
+                removed_bytes: 0,
             }
         );
         assert_eq!((s.roots[1].files, s.roots[1].archived_files), (1, 0));

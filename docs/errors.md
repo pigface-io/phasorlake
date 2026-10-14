@@ -49,7 +49,7 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 | `zip.bad_entry` | `crates/nemlake-mirror/src/map.rs` |
 | `zip.nesting_too_deep` | `crates/nemlake-mirror/src/map.rs` |
 | `zip.no_csv` | `crates/nemlake-decode/src/archive.rs` |
-| `zip.open_failed` | `crates/nemlake-mirror/src/map.rs` |
+| `zip.open_failed` | `crates/nemlake-mirror/src/error.rs` |
 | `zip.spool_failed` | `crates/nemlake-decode/src/archive.rs` |
 
 ## csv
@@ -144,6 +144,7 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 | `mirror.crawl_incomplete` | `crates/nemlake-mirror/src/error.rs` |
 | `mirror.io` | `crates/nemlake-mirror/src/error.rs` |
 | `mirror.locked` | `crates/nemlake-mirror/src/error.rs` |
+| `mirror.not_same` | `crates/nemlake-mirror/src/error.rs` |
 | `mirror.record_corrupt` | `crates/nemlake-mirror/src/error.rs` |
 | `mirror.summary_stale` | `crates/nemlake-mirror/src/error.rs` |
 

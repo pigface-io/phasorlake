@@ -1078,7 +1078,9 @@ fn the_mirror_downloads_what_the_crawl_listed() {
     let (code, out, err) = cli.code(&["--offline", "mirror", "run", "--root", root]);
     assert_eq!(code, 1);
     assert!(
-        out.contains("1 files: 0 archived already, 0 downloaded (0.0 GB), 1 failed"),
+        out.contains(
+            "1 files: 0 archived already, 0 removed as duplicates, 0 downloaded (0.0 GB), 1 failed"
+        ),
         "{out}"
     );
     assert!(err.contains("net.offline"), "{err}");

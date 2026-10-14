@@ -284,6 +284,14 @@ pub enum MirrorCmd {
         #[arg(long = "root")]
         roots: Vec<String>,
     },
+    /// Compare each zip nemweb lists beside a folder of the same name (the
+    /// whole-month zips) with that folder, both archived.
+    Compare {
+        /// Remove each zip found the same as its folder, recording it so it
+        /// is not downloaded again and stays in the map.
+        #[arg(long)]
+        delete: bool,
+    },
     /// Fold the map into patterns (digit runs as `{n}`) and write it as
     /// Markdown, small enough to commit.
     Summary {

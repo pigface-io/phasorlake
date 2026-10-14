@@ -47,6 +47,7 @@ pub async fn mirror(cli: &Cli, ctx: &Context, cmd: &MirrorCmd) -> Result<i32> {
             let jobs = cli.jobs.unwrap_or_else(|| ctx.config.effective_jobs());
             map(ctx, &mirror, roots, jobs)
         }
+        MirrorCmd::Compare { delete } => compare(ctx, &mirror, *delete),
         MirrorCmd::Summary { out, check } => summary(ctx, &mirror, out, *check),
         MirrorCmd::Status { roots } => status(ctx, &mirror, roots),
     };
@@ -185,9 +186,10 @@ async fn download(ctx: &Context, fetcher: &Fetcher, mirror: &Mirror) -> Result<i
             eprintln!();
         }
         println!(
-            "{} files: {} archived already, {} downloaded ({:.1} GB), {} failed",
+            "{} files: {} archived already, {} removed as duplicates, {} downloaded ({:.1} GB), {} failed",
             summary.files,
             summary.cached,
+            summary.removed,
             summary.downloaded,
             summary.bytes as f64 / 1e9,
             summary.failed.len(),
@@ -203,18 +205,90 @@ fn map(ctx: &Context, mirror: &Mirror, given: &[String], jobs: usize) -> Result<
         render::json_line(&serde_json::json!({ "event": "map_done", "summary": s }));
     } else {
         println!(
-            "{} folders, {} files, {} zips; {:.1} GB archived, {} not downloaded, {} no longer on nemweb, {} unreadable; written to {}",
+            "{} folders, {} files, {} zips; {:.1} GB archived, {} not downloaded, {} removed as duplicates, {} no longer on nemweb, {} unreadable; written to {}",
             s.dirs,
             s.files,
             s.zips,
             s.archived_bytes as f64 / 1e9,
             s.not_archived,
+            s.removed,
             s.gone_upstream,
             s.errors,
             mirror.dir().join("map").display(),
         );
     }
     Ok(i32::from(s.errors > 0))
+}
+
+fn compare(ctx: &Context, mirror: &Mirror, delete: bool) -> Result<i32, MirrorError> {
+    use nemlake_mirror::Verdict;
+    let archive = ctx.archive();
+    let removed = mirror.removed()?;
+    let tmp = mirror.dir().join("tmp");
+    let (mut waiting, mut freed, mut rows) = (0usize, 0u64, Vec::new());
+    for pair in nemlake_mirror::pairs(mirror)? {
+        if removed.contains_key(&pair.zip) {
+            continue;
+        }
+        let cmp = nemlake_mirror::compare(&archive, &pair, &tmp)?;
+        if cmp.verdict == Verdict::NotArchived {
+            waiting += 1;
+            continue;
+        }
+        let mut action = "kept";
+        if delete && cmp.verdict == Verdict::Same {
+            let r = nemlake_mirror::remove(mirror, &archive, &cmp)?;
+            freed += r.size;
+            action = "removed";
+        }
+        if ctx.json {
+            render::json_line(&serde_json::json!({
+                "event": "compared", "comparison": cmp, "action": action,
+            }));
+        } else {
+            let name = cmp.zip.rsplit('/').next().unwrap_or(&cmp.zip).to_owned();
+            rows.push(vec![
+                name,
+                format!("{:?}", cmp.verdict).to_lowercase(),
+                cmp.same.to_string(),
+                cmp.repacked.to_string(),
+                cmp.only_in_zip.len().to_string(),
+                cmp.different.len().to_string(),
+                cmp.only_in_folder.len().to_string(),
+                action.to_owned(),
+            ]);
+            for f in cmp.only_in_zip.iter().take(5) {
+                eprintln!("{}: only in the zip: {f}", cmp.zip);
+            }
+            for f in cmp.different.iter().take(5) {
+                eprintln!("{}: differs from the folder: {f}", cmp.zip);
+            }
+        }
+    }
+    if !ctx.json {
+        print!(
+            "{}",
+            render::table(
+                &[
+                    "zip",
+                    "verdict",
+                    "same",
+                    "repacked",
+                    "only in zip",
+                    "differ",
+                    "only in folder",
+                    "action"
+                ],
+                &rows,
+            )
+        );
+        println!(
+            "{} compared, {waiting} waiting for downloads, {:.1} GB freed",
+            rows.len(),
+            freed as f64 / 1e9
+        );
+    }
+    Ok(0)
 }
 
 fn summary(
@@ -289,7 +363,14 @@ fn status_text(s: &Status) -> String {
         .map(|r| {
             vec![
                 r.root.clone(),
-                format!("{}/{}", r.archived_files, r.files),
+                if r.removed_files > 0 {
+                    format!(
+                        "{}/{} ({} removed)",
+                        r.archived_files, r.files, r.removed_files
+                    )
+                } else {
+                    format!("{}/{}", r.archived_files, r.files)
+                },
                 format!(
                     "{:.1}/{:.1}",
                     r.archived_bytes as f64 / 1e9,
