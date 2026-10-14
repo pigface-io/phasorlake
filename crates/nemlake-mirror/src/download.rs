@@ -45,9 +45,9 @@ pub struct DownloadSummary {
 /// Downloads every file of the finished crawl, `downloads` at a time,
 /// through the fetcher, which skips a file the archive already holds.
 ///
-/// A file that fails is reported and the rest carry on; a refusal by
-/// nemweb (`net.blocked`) stops the pass, since every later request would
-/// be refused too.
+/// A file that fails is reported and the rest carry on. Two failures stop
+/// the pass, since every later file would fail the same way: a refusal by
+/// nemweb (`net.blocked`), and a full disk.
 pub async fn download(
     fetcher: &Fetcher,
     mirror: &Mirror,
@@ -104,11 +104,20 @@ pub async fn download(
                     total: summary.files,
                 });
             }
-            Err(e @ FetchError::Blocked { .. }) => return Err(e.into()),
+            Err(e) if stops_the_pass(&e) => return Err(e.into()),
             Err(e) => summary.failed.push(e.diagnostic()),
         }
     }
     Ok(summary)
+}
+
+/// Whether every later download would fail as this one did.
+fn stops_the_pass(e: &FetchError) -> bool {
+    match e {
+        FetchError::Blocked { .. } => true,
+        FetchError::CacheIo { source, .. } => source.kind() == std::io::ErrorKind::StorageFull,
+        _ => false,
+    }
 }
 
 #[cfg(test)]
@@ -212,6 +221,17 @@ mod tests {
             (d.code.as_ref(), d.line),
             ("mirror.record_corrupt", Some(1))
         );
+    }
+
+    #[test]
+    fn a_full_disk_stops_the_pass_and_other_disk_faults_do_not() {
+        let io = |kind| FetchError::CacheIo {
+            path: "/a.zip.part".into(),
+            source: std::io::Error::from(kind),
+        };
+        assert!(stops_the_pass(&io(std::io::ErrorKind::StorageFull)));
+        assert!(!stops_the_pass(&io(std::io::ErrorKind::PermissionDenied)));
+        assert!(!stops_the_pass(&FetchError::Offline { url: "u".into() }));
     }
 
     #[test]
