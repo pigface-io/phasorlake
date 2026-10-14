@@ -1,5 +1,5 @@
 # Our schema of NETWORK_STATICRATING. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "NETWORK_STATICRATING"
 description = """
 NETWORK_STATICRATING lists the static rating values that will apply for a Rating Application ID.
@@ -8,7 +8,6 @@ For information on the Rating Applications please refer to the information publi
 Ratings that normally use dynamic values will also have static rating values defined. These are used as a fallback if the dynamic rating fails."""
 report_pairs = [["NETWORK", "STATICRATING"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["SUBSTATIONID", "EQUIPMENTTYPE", "EQUIPMENTID", "RATINGLEVEL", "APPLICATIONID", "VALIDFROM"]
 time_column = "LASTCHANGED"
 next_column_id = 10
@@ -24,6 +23,13 @@ column = [
     { id = 8, name = "RATINGVALUE", type = "double", nullable = true },
     { id = 9, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["SUBSTATIONID", "EQUIPMENTTYPE", "EQUIPMENTID", "RATINGLEVEL", "APPLICATIONID"]
+valid = { kind = "from", column = "VALIDFROM" }
+order = ["LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

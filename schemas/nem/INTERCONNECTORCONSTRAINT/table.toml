@@ -1,10 +1,9 @@
 # Our schema of INTERCONNECTORCONSTRAINT. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "INTERCONNECTORCONSTRAINT"
 description = "INTERCONNECTORCONSTRAINT sets out Interconnector limit data used as defaults in dispatch, predispatch and STPASA and used by SPD in calculating flows. INTERCONNECTORCONSTRAINT includes an additional field to restrict an interconnector from support transfer of FCAS."
 report_pairs = [["MARKET_CONFIG", "INTERCONNECTORCONSTRAINT"]]
 load_mode = "snapshot"
-dedupe = "pk_lastchanged"
 primary_key = ["EFFECTIVEDATE", "VERSIONNO", "INTERCONNECTORID"]
 next_column_id = 23
 
@@ -32,6 +31,13 @@ column = [
     { id = 21, name = "FCASSUPPORTUNAVAILABLE", type = "double", nullable = true },
     { id = 22, name = "ICTYPE", type = "string", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["INTERCONNECTORID"]
+valid = { kind = "from", column = "EFFECTIVEDATE" }
+order = ["VERSIONNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

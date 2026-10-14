@@ -1,10 +1,9 @@
 # Our schema of LOSSFACTORMODEL. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "LOSSFACTORMODEL"
 description = "LOSSFACTORMODEL sets out the demand coefficients for each interconnector, used by LP Solver modelling of interconnector flows."
 report_pairs = [["MARKET_CONFIG", "LOSSFACTORMODEL"]]
 load_mode = "snapshot"
-dedupe = "pk_lastchanged"
 primary_key = ["EFFECTIVEDATE", "VERSIONNO", "INTERCONNECTORID", "REGIONID"]
 next_column_id = 7
 
@@ -16,6 +15,13 @@ column = [
     { id = 5, name = "DEMANDCOEFFICIENT", type = "double", nullable = true },
     { id = 6, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["INTERCONNECTORID", "REGIONID"]
+valid = { kind = "from", column = "EFFECTIVEDATE" }
+order = ["VERSIONNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

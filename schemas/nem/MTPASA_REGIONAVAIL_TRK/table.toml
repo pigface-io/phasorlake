@@ -1,10 +1,9 @@
 # Our schema of MTPASA_REGIONAVAIL_TRK. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "MTPASA_REGIONAVAIL_TRK"
 description = "The tracking table to assist in versioning of the region-aggregate offered PASA Availability data published to the MTPASA_REGIONAVAILABILITY table."
 report_pairs = [["MTPASA", "REGIONAVAILTRK"]]
 load_mode = "append"
-dedupe = "pk"
 primary_key = ["PUBLISH_DATETIME"]
 time_column = "PUBLISH_DATETIME"
 next_column_id = 5
@@ -15,6 +14,12 @@ column = [
     { id = 3, name = "ENDDATE", type = "timestamp_ns", nullable = true },
     { id = 4, name = "LATEST_OFFER_DATETIME", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = []
+valid = { kind = "instant", column = "PUBLISH_DATETIME" }
+order = []
 
 [[increment]]
 n = 1

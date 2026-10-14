@@ -1,10 +1,9 @@
 # Our schema of P5MIN_LOCAL_PRICE. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "P5MIN_LOCAL_PRICE"
 description = "Sets out local pricing offsets associated with each DUID connection point for each dispatch period"
 report_pairs = [["P5MIN", "LOCAL_PRICE"]]
 load_mode = "append"
-dedupe = "pk"
 primary_key = ["RUN_DATETIME", "INTERVAL_DATETIME", "DUID"]
 time_column = "INTERVAL_DATETIME"
 next_column_id = 6
@@ -16,6 +15,13 @@ column = [
     { id = 4, name = "LOCAL_PRICE_ADJUSTMENT", type = "double", nullable = true },
     { id = 5, name = "LOCALLY_CONSTRAINED", type = "double", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["DUID"]
+valid = { kind = "interval_end", column = "INTERVAL_DATETIME" }
+order = ["RUN_DATETIME"]
+cutoff = "RUN_DATETIME"
 
 [[increment]]
 n = 1

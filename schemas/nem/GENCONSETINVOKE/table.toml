@@ -1,12 +1,11 @@
 # Our schema of GENCONSETINVOKE. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "GENCONSETINVOKE"
 description = """
 GENCONSETINVOKE provides details of invoked and revoked generic constraints. GENCONSETINVOKE is the key table for determining what constraints are active in dispatch, predispatch and PASA.
 GENCONSETINVOKE also indicates whether constraints are for interconnector limits, ancillary services, etc."""
 report_pairs = [["GENERIC_CONSTRAINT", "GENCONSETINVOKE"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["INVOCATION_ID"]
 time_column = "LASTCHANGED"
 next_column_id = 15
@@ -27,6 +26,13 @@ column = [
     { id = 14, name = "SYSTEMNORMAL", type = "string", nullable = true },
     { id = 1, name = "INVOCATION_ID", type = "double", nullable = false },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["INVOCATION_ID", "INTERVENTION"]
+valid = { kind = "timeless" }
+order = ["LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

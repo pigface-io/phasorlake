@@ -1,9 +1,8 @@
 # Our schema of PDPASA_DUIDAVAILABILITY. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "PDPASA_DUIDAVAILABILITY"
 report_pairs = [["PDPASA", "DUIDAVAILABILITY"]]
 load_mode = "append"
-dedupe = "none"
 primary_key = []
 time_column = "INTERVAL_DATETIME"
 next_column_id = 11
@@ -20,6 +19,13 @@ column = [
     { id = 9, name = "LOAD_RECALL_PERIOD", type = "double", nullable = true },
     { id = 10, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = []
+valid = { kind = "timeless" }
+order = ["RUN_DATETIME", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

@@ -1,10 +1,9 @@
 # Our schema of DISPATCHABLEUNIT. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "DISPATCHABLEUNIT"
 description = "DISPATCHABLEUNIT sets out the unit name and type of each dispatchable unit in the market."
 report_pairs = [["PARTICIPANT_REGISTRATION", "DISPATCHABLEUNIT"]]
 load_mode = "snapshot"
-dedupe = "pk_lastchanged"
 primary_key = ["DUID"]
 next_column_id = 5
 
@@ -14,6 +13,13 @@ column = [
     { id = 3, name = "UNITTYPE", type = "string", nullable = true },
     { id = 4, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["DUID"]
+valid = { kind = "timeless" }
+order = ["LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

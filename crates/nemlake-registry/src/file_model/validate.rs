@@ -4,6 +4,7 @@
 use std::collections::{BTreeMap, HashSet};
 
 use crate::file_model::model::{LakeType, LoadMode, Table};
+use crate::file_model::temporal::RESERVED_PREFIX;
 
 /// One thing wrong with a table or a set of tables. The message names the
 /// key, so the fix is plain.
@@ -53,6 +54,9 @@ pub fn validate_table(t: &Table) -> Vec<Issue> {
     }
     columns(t, &mut out);
     keys(t, &mut out);
+    if let Err(problems) = t.temporal.check(t) {
+        out.extend(problems.into_iter().map(|m| issue(t, m)));
+    }
     increments(t, &mut out);
     out
 }
@@ -72,6 +76,15 @@ fn columns(t: &Table, out: &mut Vec<Issue>) {
         }
         if !ids.insert(c.id) {
             out.push(issue(t, format!("column id {} is used twice", c.id)));
+        }
+        if c.name.to_ascii_uppercase().starts_with(RESERVED_PREFIX) {
+            out.push(issue(
+                t,
+                format!(
+                    "column {} starts with {RESERVED_PREFIX}, which is reserved for the columns nemlake adds to a read",
+                    c.name
+                ),
+            ));
         }
         if c.id.0 == 0 {
             out.push(issue(
@@ -291,6 +304,23 @@ mod tests {
         t.name = String::new();
         assert!(has(&t, "column list is empty") && has(&t, "increment list is empty"));
         assert!(has(&t, "report_pairs is empty") && has(&t, "name is empty"));
+        let mut t = unit_scada();
+        t.columns[2].name = "_nl_source".into();
+        assert!(has(&t, "_nl_source starts with _NL_"));
+    }
+
+    #[test]
+    fn temporal_roles() {
+        let mut t = unit_scada();
+        t.temporal.order.clear();
+        assert!(has(&t, "regenerate it"));
+        t.temporal.origin = crate::file_model::temporal::RoleOrigin::Hand;
+        assert!(
+            validate_table(&t).is_empty(),
+            "a hand choice is the person's"
+        );
+        t.temporal.entity.clear();
+        assert!(has(&t, "DUID has no temporal role"));
     }
 
     #[test]

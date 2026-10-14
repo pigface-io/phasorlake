@@ -1,12 +1,11 @@
 # Our schema of MARKETSUSPENSION. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "MARKETSUSPENSION"
 description = """
 MARKETSUSPENSION is obsolete from 2017 End of Year DM4.27 Release.
 MARKETSUSPENSION sets out a start and end periods of any market suspension and the reason."""
 report_pairs = [["FORCE_MAJEURE", "MARKETSUSPENSION"]]
 load_mode = "snapshot"
-dedupe = "pk_lastchanged"
 primary_key = ["SUSPENSIONID"]
 next_column_id = 10
 
@@ -21,6 +20,13 @@ column = [
     { id = 8, name = "ENDAUTHORISEDBY", type = "string", nullable = true },
     { id = 9, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["SUSPENSIONID"]
+valid = { kind = "timeless" }
+order = ["LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

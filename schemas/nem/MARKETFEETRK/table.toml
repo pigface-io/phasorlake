@@ -1,10 +1,9 @@
 # Our schema of MARKETFEETRK. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "MARKETFEETRK"
 description = "MARKETFEETRK sets out versions of each market fee used and its effective date."
 report_pairs = [["SETTLEMENT_CONFIG", "MARKETFEETRK"]]
 load_mode = "snapshot"
-dedupe = "pk_lastchanged"
 primary_key = ["MARKETFEEVERSIONNO", "EFFECTIVEDATE"]
 next_column_id = 6
 
@@ -15,6 +14,13 @@ column = [
     { id = 4, name = "AUTHORISEDDATE", type = "timestamp_ns", nullable = true },
     { id = 5, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["MARKETFEEVERSIONNO"]
+valid = { kind = "from", column = "EFFECTIVEDATE" }
+order = ["LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

@@ -1,10 +1,9 @@
 # Our schema of SET_ANCILLARY_SUMMARY. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "SET_ANCILLARY_SUMMARY"
 description = "SET_ANCILLARY_SUMMARY summarises payments for all Ancillary Services to participants on the basis of regions and trading intervals."
 report_pairs = [["SETTLEMENTS", "ANCILLARY_SUMMARY"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["SETTLEMENTDATE", "VERSIONNO", "SERVICE", "PAYMENTTYPE", "REGIONID", "PERIODID"]
 time_column = "SETTLEMENTDATE"
 next_column_id = 9
@@ -19,6 +18,13 @@ column = [
     { id = 7, name = "PAYMENTAMOUNT", type = "double", nullable = true },
     { id = 8, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["SERVICE", "PAYMENTTYPE", "REGIONID", "PERIODID"]
+valid = { kind = "interval_end", column = "SETTLEMENTDATE" }
+order = ["VERSIONNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

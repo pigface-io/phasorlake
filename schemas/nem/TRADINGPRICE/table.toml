@@ -1,10 +1,9 @@
 # Our schema of TRADINGPRICE. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "TRADINGPRICE"
 description = "TRADINGPRICE sets out half-hourly spot market price, including fields to handle the Ancillary Services functionality. If prices are adjusted, the final price is recorded in the regional reference price (RRP) field with price before adjustment recorded in the regional original price (ROP) field."
 report_pairs = [["TRADING", "PRICE"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["SETTLEMENTDATE", "RUNNO", "REGIONID", "PERIODID"]
 time_column = "SETTLEMENTDATE"
 next_column_id = 31
@@ -41,6 +40,13 @@ column = [
     { id = 29, name = "LOWERREGROP", type = "double", nullable = true },
     { id = 30, name = "PRICE_STATUS", type = "string", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["REGIONID", "PERIODID"]
+valid = { kind = "interval_end", column = "SETTLEMENTDATE" }
+order = ["RUNNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

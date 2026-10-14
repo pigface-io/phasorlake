@@ -1,9 +1,8 @@
 # Our schema of P5MIN_FCAS_REQ_RUN. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "P5MIN_FCAS_REQ_RUN"
 report_pairs = [["P5MIN", "FCAS_REQ_RUN"]]
 load_mode = "append"
-dedupe = "none"
 primary_key = []
 time_column = "RUN_DATETIME"
 next_column_id = 4
@@ -13,6 +12,13 @@ column = [
     { id = 2, name = "RUNNO", type = "double", nullable = true },
     { id = 3, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = []
+valid = { kind = "timeless" }
+order = ["RUN_DATETIME", "RUNNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

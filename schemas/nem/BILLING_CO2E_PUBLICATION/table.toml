@@ -1,10 +1,9 @@
 # Our schema of BILLING_CO2E_PUBLICATION. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "BILLING_CO2E_PUBLICATION"
 description = "Carbon Dioxide Intensity Index publication table"
 report_pairs = [["BILLING", "BILLING_CO2E_PUBLICATION"]]
 load_mode = "append"
-dedupe = "pk"
 primary_key = ["CONTRACTYEAR", "WEEKNO", "SETTLEMENTDATE", "REGIONID"]
 time_column = "SETTLEMENTDATE"
 next_column_id = 9
@@ -19,6 +18,12 @@ column = [
     { id = 7, name = "GENERATOREMISSIONS", type = "double", nullable = true },
     { id = 8, name = "INTENSITYINDEX", type = "double", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["CONTRACTYEAR", "WEEKNO", "REGIONID"]
+valid = { kind = "interval_end", column = "SETTLEMENTDATE" }
+order = ["BILLRUNNO"]
 
 [[increment]]
 n = 1

@@ -1,10 +1,9 @@
 # Our schema of MTPASA_LOLPRESULT. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "MTPASA_LOLPRESULT"
 description = "Results for Loss of Load Probability (LOLP) run per day"
 report_pairs = [["MTPASA", "LOLPRESULT"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["RUN_DATETIME", "RUN_NO", "RUNTYPE", "DAY", "REGIONID"]
 time_column = "RUN_DATETIME"
 next_column_id = 13
@@ -23,6 +22,13 @@ column = [
     { id = 11, name = "LOSSOFLOADMAGNITUDE", type = "string", nullable = true },
     { id = 12, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["RUNTYPE", "REGIONID"]
+valid = { kind = "instant", column = "DAY" }
+order = ["RUN_DATETIME", "RUN_NO", "LASTCHANGED"]
+cutoff = "RUN_DATETIME"
 
 [[increment]]
 n = 1

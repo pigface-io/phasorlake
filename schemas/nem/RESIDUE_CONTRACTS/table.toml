@@ -1,10 +1,9 @@
 # Our schema of RESIDUE_CONTRACTS. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "RESIDUE_CONTRACTS"
 description = "RESIDUE_CONTRACTS supports the Settlement Residue Auction, by holding the contract details for each period for which a residue contract will be offered."
 report_pairs = [["IRAUCTION", "RESIDUE_CONTRACTS"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["CONTRACTYEAR", "QUARTER", "TRANCHE"]
 time_column = "LASTCHANGED"
 next_column_id = 19
@@ -29,6 +28,13 @@ column = [
     { id = 17, name = "DESCRIPTION", type = "string", nullable = true },
     { id = 18, name = "AUCTIONID", type = "string", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["CONTRACTYEAR", "QUARTER", "TRANCHE"]
+valid = { kind = "timeless" }
+order = ["LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

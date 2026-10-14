@@ -1,10 +1,9 @@
 # Our schema of VOLTAGE_INSTRUCTION_TRK. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "VOLTAGE_INSTRUCTION_TRK"
 description = "Parent record for Voltage Instructions (MVAr Dispatch). 'SIGNAL' records will have no children; 'INSTRUCTION' records will have children"
 report_pairs = [["VOLTAGE_INSTRUCTION", "TRACK"]]
 load_mode = "append"
-dedupe = "pk"
 primary_key = ["RUN_DATETIME", "VERSION_DATETIME"]
 time_column = "RUN_DATETIME"
 next_column_id = 11
@@ -21,6 +20,12 @@ column = [
     { id = 9, name = "EST_EXPIRY", type = "timestamp_ns", nullable = true },
     { id = 10, name = "EST_NEXT_INSTRUCTION", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = []
+valid = { kind = "instant", column = "RUN_DATETIME" }
+order = ["VERSION_DATETIME"]
 
 [[increment]]
 n = 1

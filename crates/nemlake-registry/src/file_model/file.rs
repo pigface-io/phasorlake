@@ -4,8 +4,13 @@
 //! The file is ours and hand-editable: top-level scalars, one line per
 //! column (`column = [{ id = 1, name = "…", type = "double", nullable =
 //! true }, …]`; `[[column]]` tables read the same) and one `[[increment]]`
-//! per control file AEMO changed. Unknown keys are errors. Writing is
-//! deterministic, so a file that changes nothing is byte-identical.
+//! per control file AEMO changed, and the table's time roles under
+//! `[temporal]`. Unknown keys are errors. Writing is deterministic, so a
+//! file that changes nothing is byte-identical.
+//!
+//! Format 2 had a `dedupe` key instead of `[temporal]`; such a file (a
+//! user's own table written before) still reads, with its roles derived,
+//! and is written back as format 3.
 
 use std::fmt::Write as _;
 use std::path::Path;
@@ -15,12 +20,24 @@ use serde::{Deserialize, Serialize};
 
 use crate::file_model::error::SchemaFileError;
 use crate::file_model::model::{
-    Column, ColumnId, Dedupe, Increment, LakeType, LoadMode, Market, MarketDef, Table,
-    TimestampFormat,
+    Column, ColumnId, Increment, LakeType, LoadMode, Market, MarketDef, Table, TimestampFormat,
 };
+use crate::file_model::temporal::{RoleOrigin, Temporal, ValidAxis, derive};
 
 /// The format of `table.toml` this crate reads and writes.
-pub const SCHEMA_FORMAT: u32 = 2;
+pub const SCHEMA_FORMAT: u32 = 3;
+
+/// The format before `[temporal]`, still read.
+const SCHEMA_FORMAT_DEDUPE: u32 = 2;
+
+/// Format 2's `dedupe`, read and dropped: `[temporal]` says it now.
+#[derive(Deserialize)]
+#[serde(rename_all = "snake_case")]
+enum LegacyDedupe {
+    None,
+    Pk,
+    PkLastchanged,
+}
 
 /// The format of `market.toml`.
 pub const MARKET_FORMAT: u32 = 1;
@@ -45,7 +62,8 @@ struct TableFile {
     #[serde(default)]
     report_pairs: Vec<(String, String)>,
     load_mode: LoadMode,
-    dedupe: Dedupe,
+    #[serde(default)]
+    dedupe: Option<LegacyDedupe>,
     #[serde(default)]
     primary_key: Vec<String>,
     #[serde(default)]
@@ -55,6 +73,54 @@ struct TableFile {
     column: Vec<ColumnFile>,
     #[serde(default)]
     increment: Vec<IncrementFile>,
+    #[serde(default)]
+    temporal: Option<TemporalFile>,
+}
+
+/// `valid = { kind = "from", column = "EFFECTIVEDATE" }`.
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct ValidFile {
+    kind: ValidKind,
+    #[serde(default)]
+    column: Option<String>,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "snake_case")]
+enum ValidKind {
+    Timeless,
+    IntervalEnd,
+    Instant,
+    From,
+}
+
+impl ValidFile {
+    fn axis(self) -> Result<ValidAxis<String>, &'static str> {
+        match (self.kind, self.column) {
+            (ValidKind::Timeless, None) => Ok(ValidAxis::Timeless),
+            (ValidKind::Timeless, Some(_)) => {
+                Err("temporal valid kind \"timeless\" takes no column")
+            }
+            (_, None) => Err("temporal valid needs a column unless its kind is \"timeless\""),
+            (ValidKind::IntervalEnd, Some(c)) => Ok(ValidAxis::IntervalEnd(c)),
+            (ValidKind::Instant, Some(c)) => Ok(ValidAxis::Instant(c)),
+            (ValidKind::From, Some(c)) => Ok(ValidAxis::From(c)),
+        }
+    }
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct TemporalFile {
+    origin: RoleOrigin,
+    #[serde(default)]
+    entity: Vec<String>,
+    valid: ValidFile,
+    #[serde(default)]
+    order: Vec<String>,
+    #[serde(default)]
+    cutoff: Option<String>,
 }
 
 #[derive(Deserialize)]
@@ -128,9 +194,36 @@ fn norm(s: &mut String, buf: &mut String) {
 /// lower-case name still matches an I row.
 pub fn parse_table(path: &Path, text: &str, market: Market) -> Result<Table, SchemaFileError> {
     let f: TableFile = toml::from_str(text).map_err(|e| parse_err(path, text, &e))?;
-    if f.schema_format != SCHEMA_FORMAT {
-        return Err(wrong_format(path, &f.name, f.schema_format, SCHEMA_FORMAT));
+    let invalid = |message: &str| SchemaFileError::Invalid {
+        path: path.display().to_string(),
+        table: f.name.clone(),
+        message: message.to_owned(),
+    };
+    match (f.schema_format, &f.dedupe, &f.temporal) {
+        (SCHEMA_FORMAT, None, Some(_)) | (SCHEMA_FORMAT_DEDUPE, Some(_), None) => {}
+        (SCHEMA_FORMAT, Some(_), _) => {
+            return Err(invalid(
+                "dedupe is format 2; format 3 says it under [temporal]",
+            ));
+        }
+        (SCHEMA_FORMAT, None, None) => return Err(invalid("[temporal] is missing")),
+        (SCHEMA_FORMAT_DEDUPE, _, _) => {
+            return Err(invalid(
+                "format 2 has dedupe and no [temporal]; write it as schema_format = 3",
+            ));
+        }
+        (found, _, _) => return Err(wrong_format(path, &f.name, found, SCHEMA_FORMAT)),
     }
+    let roles = match f.temporal {
+        Some(r) => Some(Temporal {
+            origin: r.origin,
+            entity: r.entity,
+            valid: r.valid.axis().map_err(invalid)?,
+            order: r.order,
+            cutoff: r.cutoff,
+        }),
+        None => None,
+    };
     let mut buf = String::new();
     let mut t = Table {
         market,
@@ -138,7 +231,14 @@ pub fn parse_table(path: &Path, text: &str, market: Market) -> Result<Table, Sch
         description: f.description,
         report_pairs: f.report_pairs,
         load_mode: f.load_mode,
-        dedupe: f.dedupe,
+        // Format 2: derived below, once the names are normalised.
+        temporal: roles.unwrap_or(Temporal {
+            origin: RoleOrigin::Derived,
+            entity: Vec::new(),
+            valid: ValidAxis::Timeless,
+            order: Vec::new(),
+            cutoff: None,
+        }),
         primary_key: f.primary_key,
         time_column: f.time_column,
         next_column_id: f.next_column_id,
@@ -182,6 +282,18 @@ pub fn parse_table(path: &Path, text: &str, market: Market) -> Result<Table, Sch
         .for_each(|c| norm(&mut c.name, &mut buf));
     for i in &mut t.increments {
         i.columns.iter_mut().for_each(|c| norm(c, &mut buf));
+    }
+    if f.schema_format == SCHEMA_FORMAT_DEDUPE {
+        t.temporal = derive(&t.primary_key, &t.columns);
+    } else {
+        let r = &mut t.temporal;
+        for n in r.entity.iter_mut().chain(&mut r.order).chain(&mut r.cutoff) {
+            norm(n, &mut buf);
+        }
+        r.valid = std::mem::replace(&mut r.valid, ValidAxis::Timeless).map(|mut n| {
+            norm(&mut n, &mut buf);
+            n
+        });
     }
     Ok(t)
 }
@@ -227,12 +339,7 @@ pub fn write_table(t: &Table) -> String {
         LoadMode::Append => "append",
         LoadMode::Snapshot => "snapshot",
     };
-    let dedupe = match t.dedupe {
-        Dedupe::None => "none",
-        Dedupe::Pk => "pk",
-        Dedupe::PkLastchanged => "pk_lastchanged",
-    };
-    let _ = writeln!(out, "load_mode = \"{mode}\"\ndedupe = \"{dedupe}\"");
+    let _ = writeln!(out, "load_mode = \"{mode}\"");
     let _ = writeln!(out, "primary_key = {}", inline(&t.primary_key));
     if let Some(tc) = &t.time_column {
         let _ = writeln!(out, "time_column = {}", q(tc));
@@ -254,6 +361,7 @@ pub fn write_table(t: &Table) -> String {
         out.push_str(" },\n");
     }
     out.push_str("]\n");
+    write_temporal(&mut out, &t.temporal);
     for i in &t.increments {
         let _ = write!(out, "\n[[increment]]\nn = {}\nfrom = \"{}\"\n", i.n, i.from);
         for (key, value) in [
@@ -277,6 +385,27 @@ pub fn write_table(t: &Table) -> String {
         }
     }
     out
+}
+
+/// `[temporal]`: who chose the roles, then each role on one line.
+fn write_temporal(out: &mut String, r: &Temporal<String>) {
+    let origin = match r.origin {
+        RoleOrigin::Derived => "derived",
+        RoleOrigin::Hand => "hand",
+    };
+    let valid = match r.valid.column() {
+        Some(c) => format!("{{ kind = \"{}\", column = {} }}", r.valid.kind(), q(c)),
+        None => format!("{{ kind = \"{}\" }}", r.valid.kind()),
+    };
+    let _ = write!(
+        out,
+        "\n[temporal]\norigin = \"{origin}\"\nentity = {}\nvalid = {valid}\norder = {}\n",
+        inline(&r.entity),
+        inline(&r.order)
+    );
+    if let Some(c) = &r.cutoff {
+        let _ = writeln!(out, "cutoff = {}", q(c));
+    }
 }
 
 /// The control file of increment `n`'s name in the `ctl/` directory.
@@ -343,6 +472,12 @@ mod tests {
         );
         assert!(text.contains("report_pairs = [[\"DISPATCH\", \"UNIT_SCADA\"]]"));
         assert!(text.contains("\n[[increment]]\nn = 2\nfrom = \"2026-08\"\n"));
+        assert!(
+            text.contains(
+                "\n[temporal]\norigin = \"derived\"\nentity = [\"DUID\"]\nvalid = { kind = \"interval_end\", column = \"SETTLEMENTDATE\" }\norder = [\"LASTCHANGED\"]\ncutoff = \"LASTCHANGED\"\n\n[[increment]]"
+            ),
+            "{text}"
+        );
         let back = parse(&text).unwrap();
         assert_eq!(back, t);
         assert_eq!(write_table(&back), text);
@@ -353,12 +488,21 @@ mod tests {
         all.increments[0].ctl_sha256 = Some("ab".into());
         all.time_column = None;
         all.description = None;
-        all.dedupe = Dedupe::None;
         all.load_mode = LoadMode::Snapshot;
+        all.temporal.origin = RoleOrigin::Hand;
+        all.temporal.cutoff = None;
+        all.temporal.valid = ValidAxis::Timeless;
         let text = write_table(&all);
+        assert!(text.contains("valid = { kind = \"timeless\" }\n"), "{text}");
+        assert!(!text.contains("cutoff"), "{text}");
         assert_eq!(parse(&text).unwrap(), all);
-        all.dedupe = Dedupe::Pk;
-        assert_eq!(parse(&write_table(&all)).unwrap(), all);
+        all.temporal.valid = ValidAxis::From("settlementdate".into());
+        let back = parse(&write_table(&all)).unwrap();
+        assert_eq!(
+            back.temporal.valid,
+            ValidAxis::From("SETTLEMENTDATE".into()),
+            "normalised"
+        );
     }
 
     #[test]
@@ -397,15 +541,39 @@ columns = ["REGIONID", "description"]
         assert!(t.columns[1].nullable);
         assert_eq!(t.increments[0].columns, ["REGIONID", "DESCRIPTION"]);
         assert!(t.increments[0].aemo_versions.is_empty());
+        // Format 2's dedupe is dropped and the roles derived; written back as 3.
+        assert_eq!(t.temporal, derive(&t.primary_key, &t.columns));
+        assert!(write_table(&t).contains("schema_format = 3\n"));
     }
 
     #[test]
     fn rejects_unknown_keys_wrong_format_and_bad_types() {
         let text = write_table(&unit_scada());
-        let e = parse(&text.replace("dedupe =", "dedup =")).unwrap_err();
+        let e = parse(&text.replace("origin =", "orign =")).unwrap_err();
         assert!(matches!(e, SchemaFileError::Parse { .. }), "{e}");
-        assert!(e.to_string().contains("dedup"), "{e}");
-        let e = parse(&text.replace("schema_format = 2", "schema_format = 1")).unwrap_err();
+        assert!(e.to_string().contains("orign"), "{e}");
+        let e = parse(&text.replace("kind = \"interval_end\"", "kind = \"end\"")).unwrap_err();
+        assert!(e.to_string().contains("end"), "{e}");
+        let e = parse(&text.replace("kind = \"interval_end\"", "kind = \"timeless\"")).unwrap_err();
+        assert!(e.to_string().contains("takes no column"), "{e}");
+        let e = parse(&text.replace(", column = \"SETTLEMENTDATE\" }", " }")).unwrap_err();
+        assert!(e.to_string().contains("needs a column"), "{e}");
+        let e = parse(&text.replace(
+            "load_mode = \"append\"\n",
+            "load_mode = \"append\"\ndedupe = \"pk\"\n",
+        ))
+        .unwrap_err();
+        assert!(e.to_string().contains("dedupe is format 2"), "{e}");
+        let no_roles = text.split("\n[temporal]").next().unwrap().to_owned();
+        let e = parse(&no_roles).unwrap_err();
+        assert!(e.to_string().contains("[temporal] is missing"), "{e}");
+        let e = parse(&text.replace("schema_format = 3", "schema_format = 2")).unwrap_err();
+        assert!(
+            e.to_string()
+                .contains("format 2 has dedupe and no [temporal]"),
+            "{e}"
+        );
+        let e = parse(&text.replace("schema_format = 3", "schema_format = 1")).unwrap_err();
         assert!(e.to_string().contains("schema_format is 1"), "{e}");
         let e = parse(&text.replace("type = \"double\"", "type = \"number\"")).unwrap_err();
         assert!(e.to_string().contains("number"), "{e}");

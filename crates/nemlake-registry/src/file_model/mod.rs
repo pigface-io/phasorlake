@@ -20,10 +20,11 @@ pub mod error;
 pub mod file;
 pub mod model;
 pub mod shapes;
+pub mod temporal;
 pub mod validate;
 
 pub use error::SchemaFileError;
 pub use model::{
-    Column, ColumnId, Dedupe, Increment, LakeType, LoadMode, Market, MarketDef, Table,
-    TimestampFormat,
+    Column, ColumnId, Increment, LakeType, LoadMode, Market, MarketDef, Table, TimestampFormat,
 };
+pub use temporal::{RoleOrigin, Temporal, ValidAxis};

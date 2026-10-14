@@ -17,6 +17,7 @@ pub mod census;
 pub mod datamodel;
 pub mod dmreport;
 pub mod fixtures;
+pub mod migrate;
 pub mod pdr;
 pub mod standing;
 pub mod sync;

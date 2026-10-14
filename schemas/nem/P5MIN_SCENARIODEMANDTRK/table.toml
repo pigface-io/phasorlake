@@ -1,9 +1,8 @@
 # Our schema of P5MIN_SCENARIODEMANDTRK. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "P5MIN_SCENARIODEMANDTRK"
 report_pairs = [["P5MIN", "SCENARIODEMANDTRK"]]
 load_mode = "append"
-dedupe = "none"
 primary_key = []
 time_column = "EFFECTIVEDATE"
 next_column_id = 5
@@ -14,6 +13,13 @@ column = [
     { id = 3, name = "AUTHORISEDDATE", type = "timestamp_ns", nullable = true },
     { id = 4, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = []
+valid = { kind = "timeless" }
+order = ["VERSION_DATETIME", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

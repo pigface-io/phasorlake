@@ -1,12 +1,11 @@
 # Our schema of P5MIN_INTERCONNECTORSOLN. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "P5MIN_INTERCONNECTORSOLN"
 description = """
 The five-minute predispatch (P5Min) is a MMS system providing projected dispatch for 12 Dispatch cycles (one hour). The 5-minute Predispatch cycle runs every 5-minutes to produce a dispatch and pricing schedule to a 5-minute resolution covering the next hour, a total of twelve periods.
 P5MIN_INTERCONNECTORSOLN sets out the results of the capacity evaluation for Interconnectors, including the calculated limits for the interval."""
 report_pairs = [["P5MIN", "INTERCONNECTORSOLN"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["RUN_DATETIME", "INTERCONNECTORID", "INTERVAL_DATETIME"]
 time_column = "INTERVAL_DATETIME"
 next_column_id = 23
@@ -35,6 +34,13 @@ column = [
     { id = 22, name = "LOCALLY_CONSTRAINED_IMPORT", type = "double", nullable = true },
     { id = 2, name = "INTERVENTION", type = "double", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["INTERCONNECTORID", "INTERVENTION"]
+valid = { kind = "interval_end", column = "INTERVAL_DATETIME" }
+order = ["RUN_DATETIME", "LASTCHANGED"]
+cutoff = "RUN_DATETIME"
 
 [[increment]]
 n = 1

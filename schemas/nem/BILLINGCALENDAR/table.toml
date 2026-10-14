@@ -1,10 +1,9 @@
 # Our schema of BILLINGCALENDAR. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "BILLINGCALENDAR"
 description = "BILLINGCALENDAR sets out the billing calendar for the year, with week number 1 starting on 1 January. BILLINGCALENDAR advises preliminary and final statement posting date and corresponding settlement for each billing week."
 report_pairs = [["BILLING_CONFIG", "BILLINGCALENDAR"]]
 load_mode = "snapshot"
-dedupe = "pk_lastchanged"
 primary_key = ["CONTRACTYEAR", "WEEKNO"]
 next_column_id = 12
 
@@ -21,6 +20,13 @@ column = [
     { id = 10, name = "REVISION2_STATEMENTDATE", type = "timestamp_ns", nullable = true },
     { id = 11, name = "REVISION0_STATEMENTDATE", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["CONTRACTYEAR", "WEEKNO"]
+valid = { kind = "timeless" }
+order = ["LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

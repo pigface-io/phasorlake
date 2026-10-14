@@ -1,12 +1,11 @@
 # Our schema of BIDTYPES. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "BIDTYPES"
 description = """
 BIDTYPES, together with the associated tracking data in BIDTYPESTRK, define a set of ancillary services with bidding parameters from a given date.
 BIDTYPES is static data describing each type of bid quantity, the number of applicable bands, how many days ahead a price lock down becomes effective and the validation rule that applies."""
 report_pairs = [["MARKET_CONFIG", "BIDTYPES"]]
 load_mode = "snapshot"
-dedupe = "pk_lastchanged"
 primary_key = ["BIDTYPE", "EFFECTIVEDATE", "VERSIONNO"]
 next_column_id = 10
 
@@ -21,6 +20,13 @@ column = [
     { id = 8, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
     { id = 9, name = "SPDALIAS", type = "string", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["BIDTYPE"]
+valid = { kind = "from", column = "EFFECTIVEDATE" }
+order = ["VERSIONNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

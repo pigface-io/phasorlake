@@ -1,10 +1,9 @@
 # Our schema of IRFMEVENTS. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "IRFMEVENTS"
 description = "IRFMEVENTS sets out specific Industrial Relations Forced Majeure events."
 report_pairs = [["FORCE_MAJEURE", "IRFMEVENTS"]]
 load_mode = "snapshot"
-dedupe = "pk_lastchanged"
 primary_key = ["IRFMID"]
 next_column_id = 7
 
@@ -16,6 +15,13 @@ column = [
     { id = 5, name = "ENDPERIOD", type = "double", nullable = true },
     { id = 6, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["IRFMID"]
+valid = { kind = "timeless" }
+order = ["LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

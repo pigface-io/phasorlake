@@ -1,12 +1,11 @@
 # Our schema of RESIDUE_PUBLIC_DATA. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "RESIDUE_PUBLIC_DATA"
 description = """
 RESIDUE_PUBLIC_DATA shows the public auction results.
 RESIDUE_PUBLIC_DATA supports the Settlement Residue Auction, by holding the public details of the auction for a given contract. RESIDUE_PUBLIC_DATA joins to RESIDUE_CON_DATA and RESIDUE."""
 report_pairs = [["IRAUCTION", "RESIDUE_PUBLIC_DATA"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["CONTRACTID", "VERSIONNO", "INTERCONNECTORID", "FROMREGIONID"]
 time_column = "LASTCHANGED"
 next_column_id = 10
@@ -22,6 +21,13 @@ column = [
     { id = 8, name = "RESERVEPRICE", type = "double", nullable = true },
     { id = 9, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["CONTRACTID", "INTERCONNECTORID", "FROMREGIONID"]
+valid = { kind = "timeless" }
+order = ["VERSIONNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

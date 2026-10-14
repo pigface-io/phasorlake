@@ -1,10 +1,9 @@
 # Our schema of MARKETFEE. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "MARKETFEE"
 description = "MARKETFEE sets out fee type and period for each market fee."
 report_pairs = [["SETTLEMENT_CONFIG", "MARKETFEE"]]
 load_mode = "snapshot"
-dedupe = "pk_lastchanged"
 primary_key = ["MARKETFEEID"]
 next_column_id = 11
 
@@ -20,6 +19,13 @@ column = [
     { id = 9, name = "METER_TYPE", type = "string", nullable = true },
     { id = 10, name = "METER_SUBTYPE", type = "string", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["MARKETFEEID"]
+valid = { kind = "timeless" }
+order = ["LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

@@ -1,12 +1,11 @@
 # Our schema of GENCONDATA. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "GENCONDATA"
 description = """
 GENCONDATA sets out the generic constraints contained within a generic constraint set invoked in PASA, predispatch and dispatch.
 Fields enable selective application of invoked constraints in the Dispatch, Predispatch, ST PASA or MT PASA processes."""
 report_pairs = [["GENCONDATA", ""], ["GENCONDATA", "NULL"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["EFFECTIVEDATE", "VERSIONNO", "GENCONID"]
 time_column = "EFFECTIVEDATE"
 next_column_id = 30
@@ -42,6 +41,13 @@ column = [
     { id = 28, name = "SSM_REGIONID", type = "string", nullable = true },
     { id = 29, name = "SSM_GROUPID", type = "string", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["GENCONID"]
+valid = { kind = "from", column = "EFFECTIVEDATE" }
+order = ["VERSIONNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

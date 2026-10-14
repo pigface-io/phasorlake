@@ -1,10 +1,9 @@
 # Our schema of BIDDUIDDETAILS. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "BIDDUIDDETAILS"
 description = "BIDDUIDDETAILS and the associated tracking object BIDDUIDDETAILSTRK define the registration data for each ancillary service a dispatchable unit is registered to provide. The registration data is required to validate a dispatchable unit bid submitted for that ancillary service."
 report_pairs = [["PARTICIPANT_REGISTRATION", "BIDDUIDDETAILS"]]
 load_mode = "snapshot"
-dedupe = "pk_lastchanged"
 primary_key = ["DUID", "EFFECTIVEDATE", "VERSIONNO", "BIDTYPE"]
 next_column_id = 11
 
@@ -20,6 +19,13 @@ column = [
     { id = 9, name = "MAXUPPERANGLE", type = "double", nullable = true },
     { id = 10, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["DUID", "BIDTYPE"]
+valid = { kind = "from", column = "EFFECTIVEDATE" }
+order = ["VERSIONNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

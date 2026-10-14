@@ -1,10 +1,9 @@
 # Our schema of SPDCONNECTIONPOINTCONSTRAINT. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "SPDCONNECTIONPOINTCONSTRAINT"
 description = "SPDCONNECTIONPOINTCONSTRAINT sets out details of connections point constraints issued in dispatch, predispatch and STPASA."
 report_pairs = [["SPDCPC", ""], ["SPDCPC", "NULL"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["CONNECTIONPOINTID", "EFFECTIVEDATE", "VERSIONNO", "GENCONID", "BIDTYPE"]
 time_column = "EFFECTIVEDATE"
 next_column_id = 8
@@ -18,6 +17,13 @@ column = [
     { id = 6, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
     { id = 7, name = "BIDTYPE", type = "string", nullable = false },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["CONNECTIONPOINTID", "GENCONID", "BIDTYPE"]
+valid = { kind = "from", column = "EFFECTIVEDATE" }
+order = ["VERSIONNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

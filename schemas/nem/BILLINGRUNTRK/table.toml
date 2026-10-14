@@ -1,10 +1,9 @@
 # Our schema of BILLINGRUNTRK. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "BILLINGRUNTRK"
 description = "BILLINGRUNTRK identifies the Statement type (i.e. Status of PRELIM, FINAL, REVISE) and date of the BillRunNo posted, per WeekNo. This provides a further extension of tracking data from the BILLINGDAYTRK table."
 report_pairs = [["BILLING", "RUNTRK"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["CONTRACTYEAR", "WEEKNO", "BILLRUNNO"]
 time_column = "LASTCHANGED"
 next_column_id = 18
@@ -28,6 +27,13 @@ column = [
     { id = 16, name = "MAKEUP", type = "double", nullable = true },
     { id = 17, name = "REVISIONINDEX", type = "double", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["CONTRACTYEAR", "WEEKNO"]
+valid = { kind = "timeless" }
+order = ["BILLRUNNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

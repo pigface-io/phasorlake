@@ -1,10 +1,9 @@
 # Our schema of PREDISPATCH_FCAS_REQ. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "PREDISPATCH_FCAS_REQ"
 description = "PREDISPATCH_FCAS_REQ shows Predispatch Constraint tracking for Regional FCAS Requirements."
 report_pairs = [["PREDISPATCH", "REGIONFCASREQUIREMENT"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["GENCONID", "REGIONID", "BIDTYPE", "DATETIME"]
 time_column = "DATETIME"
 next_column_id = 19
@@ -29,6 +28,13 @@ column = [
     { id = 17, name = "RECOVERY_FACTOR_CMPF", type = "double", nullable = true },
     { id = 18, name = "RECOVERY_FACTOR_CRMPF", type = "double", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["GENCONID", "REGIONID", "BIDTYPE", "INTERVENTION"]
+valid = { kind = "interval_end", column = "DATETIME" }
+order = ["PREDISPATCHSEQNO", "RUNNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

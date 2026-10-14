@@ -1,10 +1,9 @@
 # Our schema of EMSMASTER. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "EMSMASTER"
 description = "EMSMASTER provides a description of the SCADA measurements that are associated with the SPD_ID points utilised in generic equation RHS terms"
 report_pairs = [["GENERIC_CONSTRAINT", "EMSMASTER"]]
 load_mode = "snapshot"
-dedupe = "pk_lastchanged"
 primary_key = ["SPD_ID", "SPD_TYPE"]
 next_column_id = 6
 
@@ -15,6 +14,13 @@ column = [
     { id = 4, name = "GROUPING_ID", type = "string", nullable = true },
     { id = 5, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["SPD_ID", "SPD_TYPE"]
+valid = { kind = "timeless" }
+order = ["LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

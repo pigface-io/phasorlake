@@ -779,8 +779,8 @@ fn user_schemas_take_effect() {
         .join("\n")
         .replace("next_column_id = 5", "next_column_id = 6")
         .replacen(
-            "]\n\n[[increment]]",
-            "    { id = 5, name = \"QUALITY\", type = \"string\", nullable = true },\n]\n\n[[increment]]",
+            "]\n\n[temporal]",
+            "    { id = 5, name = \"QUALITY\", type = \"string\", nullable = true },\n]\n\n[temporal]",
             1,
         )
         + "\n\n[[increment]]\nn = 3\nfrom = \"2026-09\"\naemo_versions = [2]\ncolumns = [\"SETTLEMENTDATE\", \"DUID\", \"SCADAVALUE\", \"LASTCHANGED\", \"QUALITY\"]\n";

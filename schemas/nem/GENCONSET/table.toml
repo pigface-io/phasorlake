@@ -1,10 +1,9 @@
 # Our schema of GENCONSET. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "GENCONSET"
 description = "GENCONSET sets out generic constraint sets that are invoked and revoked, and may contain many generic constraints (GENCONDATA)."
 report_pairs = [["GENCONSET", ""], ["GENCONSET", "NULL"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["GENCONSETID", "EFFECTIVEDATE", "VERSIONNO", "GENCONID"]
 time_column = "EFFECTIVEDATE"
 next_column_id = 8
@@ -18,6 +17,13 @@ column = [
     { id = 6, name = "GENCONVERSIONNO", type = "double", nullable = true },
     { id = 7, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["GENCONSETID", "GENCONID"]
+valid = { kind = "from", column = "EFFECTIVEDATE" }
+order = ["VERSIONNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

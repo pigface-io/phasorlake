@@ -1,10 +1,9 @@
 # Our schema of GST_BAS_CLASS. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "GST_BAS_CLASS"
 description = "GST_BAS_CLASS contains a static list of BAS (Business Activity Statement) classifications supported by the MMS."
 report_pairs = [["BILLING_CONFIG", "GST_BAS_CLASS"]]
 load_mode = "snapshot"
-dedupe = "pk_lastchanged"
 primary_key = ["BAS_CLASS"]
 next_column_id = 4
 
@@ -13,6 +12,13 @@ column = [
     { id = 2, name = "DESCRIPTION", type = "string", nullable = true },
     { id = 3, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["BAS_CLASS"]
+valid = { kind = "timeless" }
+order = ["LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

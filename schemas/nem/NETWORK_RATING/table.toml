@@ -1,5 +1,5 @@
 # Our schema of NETWORK_RATING. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "NETWORK_RATING"
 description = """
 NETWORK_RATING defines a list of the equipment ratings that may be used as inputs to market constraints.
@@ -8,7 +8,6 @@ Note:
 In some rare cases equipment has ratings provided from more than one TNSP. This is identified by a different SPD Id. The value used in the NEM is normally the more restrictive of the two values."""
 report_pairs = [["NETWORK", "RATING"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["SPD_ID", "VALIDFROM"]
 time_column = "LASTCHANGED"
 next_column_id = 11
@@ -25,6 +24,13 @@ column = [
     { id = 9, name = "ISDYNAMIC", type = "double", nullable = true },
     { id = 10, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["SPD_ID"]
+valid = { kind = "from", column = "VALIDFROM" }
+order = ["LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

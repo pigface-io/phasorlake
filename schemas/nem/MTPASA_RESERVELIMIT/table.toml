@@ -1,10 +1,9 @@
 # Our schema of MTPASA_RESERVELIMIT. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "MTPASA_RESERVELIMIT"
 description = "MT PASA input table defining a MT PASA Reserve Requirement within a single set. An MT PASA Reserve Requirement can span more than one region."
 report_pairs = [["MTPASA", "RESERVELIMIT"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["EFFECTIVEDATE", "VERSION_DATETIME", "RESERVELIMITID"]
 time_column = "EFFECTIVEDATE"
 next_column_id = 7
@@ -17,6 +16,13 @@ column = [
     { id = 5, name = "RHS", type = "double", nullable = true },
     { id = 6, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["RESERVELIMITID"]
+valid = { kind = "from", column = "EFFECTIVEDATE" }
+order = ["VERSION_DATETIME", "LASTCHANGED"]
+cutoff = "VERSION_DATETIME"
 
 [[increment]]
 n = 1

@@ -1,10 +1,9 @@
 # Our schema of AUCTION_IC_ALLOCATIONS. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "AUCTION_IC_ALLOCATIONS"
 description = "AUCTION_IC_ALLOCATIONS supports the Settlement Residue Auction by providing the basis for setting up contracts for individual tranches. AUCTION_IC_ALLOCATIONS shows the default definitions for the total number of units and proportion applicable to each directional interconnector for a specified auction quarter."
 report_pairs = [["IRAUCTION_CONFIG", "AUCTION_IC_ALLOCATIONS"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["CONTRACTYEAR", "QUARTER", "VERSIONNO", "INTERCONNECTORID", "FROMREGIONID"]
 time_column = "LASTCHANGED"
 next_column_id = 13
@@ -23,6 +22,13 @@ column = [
     { id = 11, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
     { id = 12, name = "AUCTIONFEE_SALES", type = "double", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["CONTRACTYEAR", "QUARTER", "INTERCONNECTORID", "FROMREGIONID"]
+valid = { kind = "timeless" }
+order = ["VERSIONNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

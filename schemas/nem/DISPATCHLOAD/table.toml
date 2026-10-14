@@ -1,10 +1,9 @@
 # Our schema of DISPATCHLOAD. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "DISPATCHLOAD"
 description = "DISPATCHLOAD set out the current SCADA MW and target MW for each dispatchable unit, including relevant Frequency Control Ancillary Services (FCAS) enabling targets for each five minutes and additional fields to handle the new Ancillary Services functionality. Fast Start Plant status is indicated by dispatch mode."
 report_pairs = [["DISPATCH", "UNIT_SOLUTION"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["SETTLEMENTDATE", "RUNNO", "DUID", "INTERVENTION"]
 time_column = "SETTLEMENTDATE"
 next_column_id = 70
@@ -80,6 +79,13 @@ column = [
     { id = 68, name = "MIN_AVAILABILITY", type = "double", nullable = true },
     { id = 69, name = "ELEMENT_CAP", type = "double", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["DUID", "INTERVENTION"]
+valid = { kind = "interval_end", column = "SETTLEMENTDATE" }
+order = ["RUNNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

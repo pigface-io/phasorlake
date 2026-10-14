@@ -1,10 +1,9 @@
 # Our schema of PARTICIPANTCATEGORYALLOC. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "PARTICIPANTCATEGORYALLOC"
 description = "PARTICIPANTCATEGORYALLOC sets out the assignment of participants to particular categories."
 report_pairs = [["PARTICIPANT_REGISTRATION", "PARTICIPANTCATEGORYALLOC"]]
 load_mode = "snapshot"
-dedupe = "pk_lastchanged"
 primary_key = ["PARTICIPANTCATEGORYID", "PARTICIPANTID"]
 next_column_id = 4
 
@@ -13,6 +12,13 @@ column = [
     { id = 2, name = "PARTICIPANTID", type = "string", nullable = false },
     { id = 3, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["PARTICIPANTCATEGORYID", "PARTICIPANTID"]
+valid = { kind = "timeless" }
+order = ["LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

@@ -1,10 +1,9 @@
 # Our schema of INSTRUCTIONTYPE. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "INSTRUCTIONTYPE"
 description = "Dispatch instruction (GD instruct) has types and subtypes. INSTRUCTIONTYPE, together with INSTRUCTIONSUBTYPE, sets out valid instruction types."
 report_pairs = [["GD_INSTRUCT", "INSTRUCTIONTYPE"]]
 load_mode = "snapshot"
-dedupe = "pk_lastchanged"
 primary_key = ["INSTRUCTIONTYPEID"]
 next_column_id = 5
 
@@ -14,6 +13,13 @@ column = [
     { id = 3, name = "REGIONID", type = "string", nullable = true },
     { id = 4, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["INSTRUCTIONTYPEID"]
+valid = { kind = "timeless" }
+order = ["LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

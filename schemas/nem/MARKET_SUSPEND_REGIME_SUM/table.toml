@@ -1,10 +1,9 @@
 # Our schema of MARKET_SUSPEND_REGIME_SUM. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "MARKET_SUSPEND_REGIME_SUM"
 description = "Tracks the evolution of pricing regimes applied to the suspended region and from which Dispatch Interval"
 report_pairs = [["FORCE_MAJEURE", "MARKET_SUSPEND_REGIME_SUM"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["SUSPENSION_ID", "REGIONID", "START_INTERVAL"]
 time_column = "LASTCHANGED"
 next_column_id = 7
@@ -17,6 +16,13 @@ column = [
     { id = 5, name = "PRICING_REGIME", type = "string", nullable = true },
     { id = 6, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["SUSPENSION_ID", "REGIONID"]
+valid = { kind = "instant", column = "START_INTERVAL" }
+order = ["LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

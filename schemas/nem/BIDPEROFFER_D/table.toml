@@ -1,12 +1,11 @@
 # Our schema of BIDPEROFFER_D. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "BIDPEROFFER_D"
 description = """
 BIDPEROFFER_D shows the public summary of the energy and FCAS offers applicable in the Dispatch for the
 intervals identified. BIDPEROFFER_D is the child to BIDDAYOFFER_D."""
 report_pairs = [["BID", "BIDPEROFFER_D"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["SETTLEMENTDATE", "DUID", "BIDTYPE", "INTERVAL_DATETIME"]
 time_column = "SETTLEMENTDATE"
 next_column_id = 33
@@ -45,6 +44,13 @@ column = [
     { id = 31, name = "ENERGYLIMIT", type = "double", nullable = true },
     { id = 32, name = "RECALL_PERIOD", type = "double", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["DUID", "BIDTYPE", "INTERVAL_DATETIME"]
+valid = { kind = "interval_end", column = "SETTLEMENTDATE" }
+order = ["OFFERDATE", "VERSIONNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

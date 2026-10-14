@@ -1,10 +1,9 @@
 # Our schema of STPASA_CONSTRAINTSOLUTION. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "STPASA_CONSTRAINTSOLUTION"
 description = "STPASA_CONSTRAINTSOLUTION shows binding and violated constraint results from the capacity evaluation, including the RHS value."
 report_pairs = [["STPASA", "CONSTRAINTSOLUTION"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["RUN_DATETIME", "INTERVAL_DATETIME", "CONSTRAINTID", "RUNTYPE"]
 time_column = "INTERVAL_DATETIME"
 next_column_id = 10
@@ -20,6 +19,13 @@ column = [
     { id = 8, name = "RUNTYPE", type = "string", nullable = false },
     { id = 9, name = "STUDYREGIONID", type = "string", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["CONSTRAINTID", "RUNTYPE"]
+valid = { kind = "interval_end", column = "INTERVAL_DATETIME" }
+order = ["RUN_DATETIME", "LASTCHANGED"]
+cutoff = "RUN_DATETIME"
 
 [[increment]]
 n = 1

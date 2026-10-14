@@ -1,10 +1,9 @@
 # Our schema of SET_FCAS_REGULATION_TRK. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "SET_FCAS_REGULATION_TRK"
 description = "SET_FCAS_REGULATION_TRK shows FCAS Regulation Service Constraint tracking for Regional FCAS Regulation recovery"
 report_pairs = [["SETTLEMENTS", "SET_FCAS_REGULATION_TRK"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["SETTLEMENTDATE", "VERSIONNO", "INTERVAL_DATETIME", "CONSTRAINTID"]
 time_column = "SETTLEMENTDATE"
 next_column_id = 26
@@ -36,6 +35,13 @@ column = [
     { id = 24, name = "DRCF", type = "double", nullable = true },
     { id = 25, name = "RESIDUALTOTAL_MWH", type = "double", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["INTERVAL_DATETIME", "CONSTRAINTID"]
+valid = { kind = "interval_end", column = "SETTLEMENTDATE" }
+order = ["VERSIONNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

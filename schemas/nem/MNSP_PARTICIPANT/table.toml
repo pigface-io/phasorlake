@@ -1,10 +1,9 @@
 # Our schema of MNSP_PARTICIPANT. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "MNSP_PARTICIPANT"
 description = "MNSP_PARTICIPANT registers MNSP ownership."
 report_pairs = [["PARTICIPANT_REGISTRATION", "MNSP_PARTICIPANT"]]
 load_mode = "snapshot"
-dedupe = "pk_lastchanged"
 primary_key = ["INTERCONNECTORID", "EFFECTIVEDATE", "VERSIONNO", "PARTICIPANTID"]
 next_column_id = 6
 
@@ -15,6 +14,13 @@ column = [
     { id = 4, name = "PARTICIPANTID", type = "string", nullable = false },
     { id = 5, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["INTERCONNECTORID", "PARTICIPANTID"]
+valid = { kind = "from", column = "EFFECTIVEDATE" }
+order = ["VERSIONNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

@@ -6,6 +6,8 @@ use std::fmt;
 use nemlake_core::{TypeClass, YearMonth};
 use serde::{Deserialize, Serialize};
 
+use crate::file_model::temporal::Temporal;
+
 /// The market a table belongs to.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -60,18 +62,6 @@ pub enum LoadMode {
     Append,
     /// Each file is a full snapshot of standing data.
     Snapshot,
-}
-
-/// How overlapping sources are reconciled by a later `compact`.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum Dedupe {
-    /// Keep every row.
-    None,
-    /// Keep one row per primary key.
-    Pk,
-    /// Keep the row with the latest `LASTCHANGED` per primary key.
-    PkLastchanged,
 }
 
 /// How a timestamp column is written.
@@ -238,8 +228,8 @@ pub struct Table {
     pub report_pairs: Vec<(String, String)>,
     /// Append or snapshot.
     pub load_mode: LoadMode,
-    /// Dedupe strategy.
-    pub dedupe: Dedupe,
+    /// What a fact is about, when it applies, and which revision is newest.
+    pub temporal: Temporal<String>,
     /// Primary key column names.
     pub primary_key: Vec<String>,
     /// The column that partitions the table by month.
@@ -322,7 +312,13 @@ pub(crate) mod tests {
             description: Some("SCADA MW per unit.".into()),
             report_pairs: vec![("DISPATCH".into(), "UNIT_SCADA".into())],
             load_mode: LoadMode::Append,
-            dedupe: Dedupe::PkLastchanged,
+            temporal: Temporal {
+                origin: crate::file_model::temporal::RoleOrigin::Derived,
+                entity: names(&["DUID"]),
+                valid: crate::file_model::temporal::ValidAxis::IntervalEnd("SETTLEMENTDATE".into()),
+                order: names(&["LASTCHANGED"]),
+                cutoff: Some("LASTCHANGED".into()),
+            },
             primary_key: names(&["SETTLEMENTDATE", "DUID"]),
             time_column: Some("SETTLEMENTDATE".into()),
             next_column_id: 5,

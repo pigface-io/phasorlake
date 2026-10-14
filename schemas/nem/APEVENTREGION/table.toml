@@ -1,10 +1,9 @@
 # Our schema of APEVENTREGION. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "APEVENTREGION"
 description = "APEVENTREGION is the Region detail for an administered pricing event defined through APEVENT."
 report_pairs = [["AP", "APEVENTREGION"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["APEVENTID", "REGIONID"]
 time_column = "LASTCHANGED"
 next_column_id = 15
@@ -25,6 +24,13 @@ column = [
     { id = 13, name = "RAISE1SECAPFLAG", type = "double", nullable = true },
     { id = 14, name = "LOWER1SECAPFLAG", type = "double", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["APEVENTID", "REGIONID"]
+valid = { kind = "timeless" }
+order = ["LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

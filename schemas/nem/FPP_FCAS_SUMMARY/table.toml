@@ -1,9 +1,8 @@
 # Our schema of FPP_FCAS_SUMMARY. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "FPP_FCAS_SUMMARY"
 report_pairs = [["FPP", "FCAS_SUMMARY"]]
 load_mode = "append"
-dedupe = "none"
 primary_key = []
 time_column = "INTERVAL_DATETIME"
 next_column_id = 18
@@ -27,6 +26,13 @@ column = [
     { id = 16, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
     { id = 17, name = "USAGE", type = "double", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = []
+valid = { kind = "timeless" }
+order = ["RUN_DATETIME", "VERSIONNO", "RUNNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

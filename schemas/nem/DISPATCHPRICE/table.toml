@@ -1,10 +1,9 @@
 # Our schema of DISPATCHPRICE. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "DISPATCHPRICE"
 description = "DISPATCHPRICE records 5 minute dispatch prices for energy and FCAS, including whether an intervention has occurred, or price override (e.g. for Administered Price Cap). DISPATCHPRICE updates when price adjustments occur, in which case the new price is written to the RRP field, and the old price to the ROP field as an audit trail."
 report_pairs = [["DISPATCH", "PRICE"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["SETTLEMENTDATE", "RUNNO", "REGIONID", "DISPATCHINTERVAL", "INTERVENTION"]
 time_column = "SETTLEMENTDATE"
 next_column_id = 67
@@ -77,6 +76,13 @@ column = [
     { id = 63, name = "CUMUL_PRE_AP_RAISE1_PRICE", type = "double", nullable = true },
     { id = 64, name = "CUMUL_PRE_AP_LOWER1_PRICE", type = "double", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["REGIONID", "DISPATCHINTERVAL", "INTERVENTION"]
+valid = { kind = "interval_end", column = "SETTLEMENTDATE" }
+order = ["RUNNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

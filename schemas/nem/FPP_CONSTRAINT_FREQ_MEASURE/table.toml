@@ -1,9 +1,8 @@
 # Our schema of FPP_CONSTRAINT_FREQ_MEASURE. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "FPP_CONSTRAINT_FREQ_MEASURE"
 report_pairs = [["FPP", "CONSTRAINT_FREQ_MEASURE"]]
 load_mode = "append"
-dedupe = "none"
 primary_key = []
 time_column = "INTERVAL_DATETIME"
 next_column_id = 11
@@ -20,6 +19,13 @@ column = [
     { id = 9, name = "CORRELATION_FLAG", type = "double", nullable = true },
     { id = 10, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = []
+valid = { kind = "timeless" }
+order = ["VERSIONNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

@@ -1,10 +1,9 @@
 # Our schema of BILLING_DIRECTION_RECON_OTHER. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "BILLING_DIRECTION_RECON_OTHER"
 description = "Billing reconciliation result table for both provisional and final directions"
 report_pairs = [["BILLING", "BILLING_DIRECTION_RECON_OTHER"]]
 load_mode = "append"
-dedupe = "pk"
 primary_key = ["CONTRACTYEAR", "WEEKNO", "BILLRUNNO", "DIRECTION_ID", "REGIONID"]
 time_column = "DIRECTION_START_DATE"
 next_column_id = 22
@@ -32,6 +31,12 @@ column = [
     { id = 20, name = "REGION_ASOE_MWH", type = "double", nullable = true },
     { id = 21, name = "DIRECTION_SERVICE_ID", type = "string", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["CONTRACTYEAR", "WEEKNO", "DIRECTION_ID", "REGIONID"]
+valid = { kind = "timeless" }
+order = ["BILLRUNNO"]
 
 [[increment]]
 n = 1

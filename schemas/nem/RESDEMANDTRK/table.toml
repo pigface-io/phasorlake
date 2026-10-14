@@ -1,12 +1,11 @@
 # Our schema of RESDEMANDTRK. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "RESDEMANDTRK"
 description = """
 RESDEMANDTRK defines the existence and versioning information of a forecast for a specific region and trading date.
 RESDEMANDTRK and PERDEMAND have a parent/child relationship, and are for defined forecast regional demands since market start. RESDEMANDTRK defines the existence and versioning information of a forecast for a specific region and trading date. PERDEMAND defines the numerical forecast values for each trading interval of a the trading day for that region. A complete trading day forecast for one region consists of one RESDEMANDTRK record and 48 PERDEMAND records."""
 report_pairs = [["DEMAND", "TRK"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["EFFECTIVEDATE", "REGIONID", "OFFERDATE", "VERSIONNO"]
 time_column = "EFFECTIVEDATE"
 next_column_id = 9
@@ -21,6 +20,13 @@ column = [
     { id = 7, name = "AUTHORISEDBY", type = "string", nullable = true },
     { id = 8, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["REGIONID"]
+valid = { kind = "from", column = "EFFECTIVEDATE" }
+order = ["OFFERDATE", "VERSIONNO", "LASTCHANGED"]
+cutoff = "OFFERDATE"
 
 [[increment]]
 n = 1

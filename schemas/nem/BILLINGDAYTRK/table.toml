@@ -1,10 +1,9 @@
 # Our schema of BILLINGDAYTRK. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "BILLINGDAYTRK"
 description = "BILLINGDAYTRK is key for matching settlement versions with billing runs. BILLINGDAYTRK displays the billrunnos per billing week, and the settlement version numbers per settlement day comprising the billrunno."
 report_pairs = [["BILLING", "DAYTRK"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["CONTRACTYEAR", "WEEKNO", "BILLRUNNO", "SETTLEMENTDATE"]
 time_column = "SETTLEMENTDATE"
 next_column_id = 7
@@ -17,6 +16,13 @@ column = [
     { id = 5, name = "RUNNO", type = "double", nullable = true },
     { id = 6, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["CONTRACTYEAR", "WEEKNO"]
+valid = { kind = "interval_end", column = "SETTLEMENTDATE" }
+order = ["BILLRUNNO", "RUNNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

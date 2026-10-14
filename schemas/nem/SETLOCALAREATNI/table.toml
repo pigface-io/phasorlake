@@ -1,10 +1,9 @@
 # Our schema of SETLOCALAREATNI. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "SETLOCALAREATNI"
 description = "SETLOCALAREATNI shows the list of TNIs constituent to a local area in a settlement run."
 report_pairs = [["SETTLEMENTS", "LOCALAREATNI"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["SETTLEMENTDATE", "SETTLEMENTRUNNO", "LOCALAREAID", "TNI"]
 time_column = "SETTLEMENTDATE"
 next_column_id = 6
@@ -16,6 +15,13 @@ column = [
     { id = 4, name = "TNI", type = "string", nullable = false },
     { id = 5, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["SETTLEMENTRUNNO", "LOCALAREAID", "TNI"]
+valid = { kind = "interval_end", column = "SETTLEMENTDATE" }
+order = ["LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

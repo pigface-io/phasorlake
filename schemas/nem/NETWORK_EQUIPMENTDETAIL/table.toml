@@ -1,12 +1,11 @@
 # Our schema of NETWORK_EQUIPMENTDETAIL. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "NETWORK_EQUIPMENTDETAIL"
 description = """
 NETWORK_EQUIPMENTDETAIL Provides details on equipment that may have outages or ratings. A single piece of equipment may have multiple records if its details change.
 A line will typically have at least two valid records at a time, once for each end of the line."""
 report_pairs = [["NETWORK", "EQUIPMENTDETAIL"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["SUBSTATIONID", "EQUIPMENTTYPE", "EQUIPMENTID", "VALIDFROM"]
 time_column = "LASTCHANGED"
 next_column_id = 10
@@ -22,6 +21,13 @@ column = [
     { id = 8, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
     { id = 9, name = "ELEMENTID", type = "double", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["SUBSTATIONID", "EQUIPMENTTYPE", "EQUIPMENTID"]
+valid = { kind = "from", column = "VALIDFROM" }
+order = ["LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

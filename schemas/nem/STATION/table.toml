@@ -1,10 +1,9 @@
 # Our schema of STATION. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "STATION"
 description = "STATION sets out valid station identifiers."
 report_pairs = [["PARTICIPANT_REGISTRATION", "STATION"]]
 load_mode = "snapshot"
-dedupe = "pk_lastchanged"
 primary_key = ["STATIONID"]
 next_column_id = 12
 
@@ -21,6 +20,13 @@ column = [
     { id = 10, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
     { id = 11, name = "CONNECTIONPOINTID", type = "string", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["STATIONID"]
+valid = { kind = "timeless" }
+order = ["LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

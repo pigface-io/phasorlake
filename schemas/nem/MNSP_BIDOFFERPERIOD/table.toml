@@ -1,10 +1,9 @@
 # Our schema of MNSP_BIDOFFERPERIOD. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "MNSP_BIDOFFERPERIOD"
 description = "MNSP_BIDOFFERPERIOD shows 5-minute availability and data about a specific bid and LinkID for the given Settlement Date and period. MNSP_BIDOFFERPERIOD is a child to MNSP_DAYOFFER and links to MNSP_OFFERTRK."
 report_pairs = [["BIDS", "MNSP_BIDOFFERPERIOD"]]
 load_mode = "append"
-dedupe = "pk"
 primary_key = ["TRADINGDATE", "OFFERDATETIME", "LINKID", "PERIODID"]
 time_column = "TRADINGDATE"
 next_column_id = 20
@@ -30,6 +29,13 @@ column = [
     { id = 18, name = "PASAAVAILABILITY", type = "double", nullable = true },
     { id = 19, name = "RECALL_PERIOD", type = "double", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["LINKID", "PERIODID"]
+valid = { kind = "instant", column = "TRADINGDATE" }
+order = ["OFFERDATETIME"]
+cutoff = "OFFERDATETIME"
 
 [[increment]]
 n = 1

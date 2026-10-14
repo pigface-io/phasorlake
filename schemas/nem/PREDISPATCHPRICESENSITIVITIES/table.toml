@@ -1,10 +1,9 @@
 # Our schema of PREDISPATCHPRICESENSITIVITIES. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "PREDISPATCHPRICESENSITIVITIES"
 description = "PREDISPATCHPRICESENSITIVITIES sets out the sensitivity prices for each region by period."
 report_pairs = [["PREDISPATCH", "PRICESENSITIVITIES"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["REGIONID", "DATETIME"]
 time_column = "DATETIME"
 next_column_id = 52
@@ -62,6 +61,13 @@ column = [
     { id = 50, name = "RRPEEP42", type = "double", nullable = true },
     { id = 51, name = "RRPEEP43", type = "double", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["REGIONID", "INTERVENTION"]
+valid = { kind = "interval_end", column = "DATETIME" }
+order = ["PREDISPATCHSEQNO", "RUNNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

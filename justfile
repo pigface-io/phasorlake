@@ -70,6 +70,10 @@ schema-fixtures month="2024-01":
 census from to=from *args:
     cargo run --release -q -p nemlake-census -- census --from {{from}} --to {{to}} "${@:3}"
 
+# write every table file again in the current schema_format, deriving what the format adds
+schema-migrate:
+    cargo run --release -q -p nemlake-census -- migrate
+
 # bring schemas/nem/ up to the control files of each archived month: a table a month lays out anew gains an increment, a missing table is started; nothing there is changed (take the census of the months first)
 schema-sync from to=from:
     cargo run --release -q -p nemlake-census -- sync --from {{from}} --to {{to}}

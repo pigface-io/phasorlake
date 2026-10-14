@@ -1,9 +1,8 @@
 # Our schema of SSM_ENABLEMENT_PERIOD. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "SSM_ENABLEMENT_PERIOD"
 report_pairs = [["SSM", "ENABLEMENT_PERIOD"]]
 load_mode = "append"
-dedupe = "none"
 primary_key = []
 time_column = "LASTCHANGED"
 next_column_id = 7
@@ -16,6 +15,13 @@ column = [
     { id = 5, name = "ENABLEMENT_REASON", type = "string", nullable = true },
     { id = 6, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = []
+valid = { kind = "timeless" }
+order = ["LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

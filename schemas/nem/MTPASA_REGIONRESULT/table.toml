@@ -1,10 +1,9 @@
 # Our schema of MTPASA_REGIONRESULT. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "MTPASA_REGIONRESULT"
 description = "Region results for interval of max demand per day."
 report_pairs = [["MTPASA", "REGIONRESULT"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["RUN_DATETIME", "RUN_NO", "RUNTYPE", "DEMAND_POE_TYPE", "DAY", "REGIONID"]
 time_column = "RUN_DATETIME"
 next_column_id = 40
@@ -50,6 +49,13 @@ column = [
     { id = 30, name = "TOTALSEMISCHEDULEDGEN50", type = "double", nullable = true },
     { id = 31, name = "TOTALSEMISCHEDULEDGEN10", type = "double", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["RUNTYPE", "DEMAND_POE_TYPE", "REGIONID"]
+valid = { kind = "instant", column = "DAY" }
+order = ["RUN_DATETIME", "RUN_NO", "LASTCHANGED"]
+cutoff = "RUN_DATETIME"
 
 [[increment]]
 n = 1

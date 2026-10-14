@@ -1,10 +1,9 @@
 # Our schema of DISPATCH_CONSTRAINT_FCAS_OCD. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "DISPATCH_CONSTRAINT_FCAS_OCD"
 description = "FCAS constraint solution from OCD re-run."
 report_pairs = [["PRICELOAD", "CONSTRAINT_FCAS_OCD"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["SETTLEMENTDATE", "RUNNO", "INTERVENTION", "CONSTRAINTID", "VERSIONNO"]
 time_column = "SETTLEMENTDATE"
 next_column_id = 10
@@ -20,6 +19,13 @@ column = [
     { id = 8, name = "MARGINALVALUE", type = "double", nullable = true },
     { id = 9, name = "VIOLATIONDEGREE", type = "double", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["INTERVENTION", "CONSTRAINTID"]
+valid = { kind = "interval_end", column = "SETTLEMENTDATE" }
+order = ["RUNNO", "VERSIONNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

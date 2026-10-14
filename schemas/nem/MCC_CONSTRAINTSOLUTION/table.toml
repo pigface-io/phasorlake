@@ -1,10 +1,9 @@
 # Our schema of MCC_CONSTRAINTSOLUTION. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "MCC_CONSTRAINTSOLUTION"
 description = "Constraint solution data from the MCC dispatch rerun process. Note only constraints with a non-zero marginal value are published."
 report_pairs = [["MCC", "CONSTRAINTSOLUTION"]]
 load_mode = "append"
-dedupe = "pk"
 primary_key = ["RUN_DATETIME", "CONSTRAINTID"]
 time_column = "RUN_DATETIME"
 next_column_id = 5
@@ -15,6 +14,12 @@ column = [
     { id = 3, name = "RHS", type = "double", nullable = true },
     { id = 4, name = "MARGINALVALUE", type = "double", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["CONSTRAINTID"]
+valid = { kind = "instant", column = "RUN_DATETIME" }
+order = []
 
 [[increment]]
 n = 1

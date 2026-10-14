@@ -1,10 +1,9 @@
 # Our schema of BILLINGREGIONIMPORTS. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "BILLINGREGIONIMPORTS"
 description = "BILLINGREGIONIMPORTS sets out the region summary table of overall energy imported to and from each region for each billing run."
 report_pairs = [["BILLING", "REGIONIMPORTS"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["CONTRACTYEAR", "WEEKNO", "BILLRUNNO", "REGIONID", "IMPORTFROM"]
 time_column = "LASTCHANGED"
 next_column_id = 11
@@ -21,6 +20,13 @@ column = [
     { id = 9, name = "SURPLUSVALUE", type = "double", nullable = true },
     { id = 10, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["CONTRACTYEAR", "WEEKNO", "REGIONID", "IMPORTFROM"]
+valid = { kind = "timeless" }
+order = ["BILLRUNNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

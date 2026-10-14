@@ -1,10 +1,9 @@
 # Our schema of GST_RATE. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "GST_RATE"
 description = "GST_RATE maintains the GST rates on a BAS (Business Activity Statement) class basis."
 report_pairs = [["BILLING_CONFIG", "GST_RATE"]]
 load_mode = "snapshot"
-dedupe = "pk_lastchanged"
 primary_key = ["EFFECTIVEDATE", "VERSIONNO", "BAS_CLASS"]
 next_column_id = 6
 
@@ -15,6 +14,13 @@ column = [
     { id = 4, name = "GST_RATE", type = "double", nullable = true },
     { id = 5, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["BAS_CLASS"]
+valid = { kind = "from", column = "EFFECTIVEDATE" }
+order = ["VERSIONNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

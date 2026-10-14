@@ -1,10 +1,9 @@
 # Our schema of PDPASA_CASESOLUTION. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "PDPASA_CASESOLUTION"
 description = "The top-level table identifying a PDPASA case, reporting options applied in the case and summary results"
 report_pairs = [["PDPASA", "CASESOLUTION"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["RUN_DATETIME"]
 time_column = "RUN_DATETIME"
 next_column_id = 20
@@ -30,6 +29,13 @@ column = [
     { id = 18, name = "RELIABILITYLRCUIGFOPTION", type = "double", nullable = true },
     { id = 19, name = "OUTAGELRCUIGFOPTION", type = "double", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = []
+valid = { kind = "instant", column = "RUN_DATETIME" }
+order = ["LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

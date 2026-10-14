@@ -7,8 +7,7 @@ use std::sync::{Arc, Mutex, OnceLock};
 use crate::file_model::blob::SchemaSet;
 use crate::file_model::shapes::ShapeEntry;
 use crate::file_model::{
-    Column, ColumnId, Dedupe, Increment, LakeType, LoadMode, Market, MarketDef, SchemaFileError,
-    Table,
+    Column, ColumnId, Increment, LakeType, LoadMode, Market, MarketDef, SchemaFileError, Table,
 };
 use arrow_schema::SchemaRef;
 use hashbrown::Equivalent;
@@ -566,7 +565,7 @@ fn derived_table(market: Market, irow: &IRow<'_>) -> Table {
         format!("{}_{}", irow.report_type, irow.report_subtype)
     };
     let columns: Vec<String> = irow.columns.iter().map(|c| (*c).to_owned()).collect();
-    Table {
+    let mut t = Table {
         market,
         name,
         description: Some(
@@ -574,7 +573,13 @@ fn derived_table(market: Market, irow: &IRow<'_>) -> Table {
         ),
         report_pairs: vec![(irow.report_type.to_owned(), irow.report_subtype.to_owned())],
         load_mode: LoadMode::Append,
-        dedupe: Dedupe::None,
+        temporal: crate::file_model::Temporal {
+            origin: crate::file_model::RoleOrigin::Derived,
+            entity: Vec::new(),
+            valid: crate::file_model::ValidAxis::Timeless,
+            order: Vec::new(),
+            cutoff: None,
+        },
         primary_key: vec![],
         time_column: None,
         next_column_id: columns.len() as u32 + 1,
@@ -599,7 +604,9 @@ fn derived_table(market: Market, irow: &IRow<'_>) -> Table {
             columns,
             note: None,
         }],
-    }
+    };
+    t.temporal = crate::file_model::temporal::derive(&t.primary_key, &t.columns);
+    t
 }
 
 #[cfg(test)]
@@ -679,6 +686,7 @@ mod tests {
             i.ctl = None;
             i.ctl_sha256 = None;
         }
+        t.temporal = crate::file_model::temporal::derive(&t.primary_key, &t.columns);
         write(dir.path(), &t);
         let mut n = t.clone();
         n.name = "NEWTABLE".into();

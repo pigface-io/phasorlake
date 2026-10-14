@@ -1,9 +1,8 @@
 # Our schema of PD7DAY_MARKET_SUMMARY. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "PD7DAY_MARKET_SUMMARY"
 report_pairs = [["PD7DAY", "MARKET_SUMMARY"]]
 load_mode = "append"
-dedupe = "none"
 primary_key = []
 time_column = "INTERVAL_DATETIME"
 next_column_id = 4
@@ -13,6 +12,12 @@ column = [
     { id = 2, name = "INTERVAL_DATETIME", type = "timestamp_ns", nullable = true },
     { id = 3, name = "GPG_FUEL_FORECAST_TJ", type = "double", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = []
+valid = { kind = "timeless" }
+order = ["RUN_DATETIME"]
 
 [[increment]]
 n = 1

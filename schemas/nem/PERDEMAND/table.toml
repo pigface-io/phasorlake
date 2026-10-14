@@ -1,10 +1,9 @@
 # Our schema of PERDEMAND. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "PERDEMAND"
 description = "PERDEMAND sets out the regional demands and MR schedule data for each half-hour period. PERDEMAND is a child table to RESDEMANDTRK."
 report_pairs = [["DEMAND", "PERIOD"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["SETTLEMENTDATE", "REGIONID", "OFFERDATE", "PERIODID", "VERSIONNO"]
 time_column = "SETTLEMENTDATE"
 next_column_id = 12
@@ -22,6 +21,13 @@ column = [
     { id = 10, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
     { id = 11, name = "MR_SCHEDULE", type = "double", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["REGIONID", "PERIODID"]
+valid = { kind = "interval_end", column = "SETTLEMENTDATE" }
+order = ["OFFERDATE", "VERSIONNO", "LASTCHANGED"]
+cutoff = "OFFERDATE"
 
 [[increment]]
 n = 1

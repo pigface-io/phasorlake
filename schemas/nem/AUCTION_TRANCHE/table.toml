@@ -1,10 +1,9 @@
 # Our schema of AUCTION_TRANCHE. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "AUCTION_TRANCHE"
 description = "AUCTION_TRANCHE supports the Settlement Residue Auction, by holding the default definitions for the percentage number of units allocated and dates applicable to each tranche for a specified auction quarter. This information provides the basis for setting up contracts for individual tranches."
 report_pairs = [["IRAUCTION_CONFIG", "AUCTION_TRANCHE"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["CONTRACTYEAR", "QUARTER", "VERSIONNO", "TRANCHE"]
 time_column = "LASTCHANGED"
 next_column_id = 11
@@ -21,6 +20,13 @@ column = [
     { id = 9, name = "CHANGEDBY", type = "string", nullable = true },
     { id = 10, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["CONTRACTYEAR", "QUARTER", "TRANCHE"]
+valid = { kind = "timeless" }
+order = ["VERSIONNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

@@ -1,12 +1,11 @@
 # Our schema of P5MIN_REGIONSOLUTION. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "P5MIN_REGIONSOLUTION"
 description = """
 The five-minute predispatch (P5Min) is a MMS system providing projected dispatch for 12 Dispatch cycles (one hour). The 5-minute Predispatch cycle runs every 5-minutes to produce a dispatch and pricing schedule to a 5-minute resolution covering the next hour, a total of twelve periods.
 P5MIN_REGIONSOLUTION shows the results of the regional capacity, maximum surplus reserve and maximum spare capacity evaluations for each period of the study."""
 report_pairs = [["P5MIN", "REGIONSOLUTION"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["RUN_DATETIME", "INTERVAL_DATETIME", "REGIONID"]
 time_column = "INTERVAL_DATETIME"
 next_column_id = 120
@@ -132,6 +131,13 @@ column = [
     { id = 118, name = "BDU_INITIAL_ENERGY_STORAGE", type = "double", nullable = true },
     { id = 119, name = "DECGEN_INITIAL_ENERGY_STORAGE", type = "double", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["REGIONID", "INTERVENTION"]
+valid = { kind = "interval_end", column = "INTERVAL_DATETIME" }
+order = ["RUN_DATETIME", "LASTCHANGED"]
+cutoff = "RUN_DATETIME"
 
 [[increment]]
 n = 1

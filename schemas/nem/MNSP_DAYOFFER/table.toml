@@ -1,12 +1,11 @@
 # Our schema of MNSP_DAYOFFER. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "MNSP_DAYOFFER"
 description = """
 MNSP_DAYOFFER shows price and other non-period data pertaining to a specific MNSP bid and Link ID to be effective from the given Settlement Date.
 MNSP_DAYOFFER is the parent table to MNSP_PEROFFER, and joins to MNSP_OFFERTRK."""
 report_pairs = [["BIDS", "MNSP_DAYOFFER"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["SETTLEMENTDATE", "OFFERDATE", "VERSIONNO", "PARTICIPANTID", "LINKID"]
 time_column = "SETTLEMENTDATE"
 next_column_id = 25
@@ -37,6 +36,13 @@ column = [
     { id = 23, name = "REFERENCE_ID", type = "string", nullable = true },
     { id = 24, name = "MR_FACTOR", type = "double", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["PARTICIPANTID", "LINKID"]
+valid = { kind = "interval_end", column = "SETTLEMENTDATE" }
+order = ["OFFERDATE", "VERSIONNO", "LASTCHANGED"]
+cutoff = "OFFERDATE"
 
 [[increment]]
 n = 1

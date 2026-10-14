@@ -1,10 +1,9 @@
 # Our schema of DEMANDOPERATIONALACTUAL. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "DEMANDOPERATIONALACTUAL"
 description = "Shows Actual Operational Demand for a particular date time interval."
 report_pairs = [["OPERATIONAL_DEMAND", "ACTUAL"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["INTERVAL_DATETIME", "REGIONID"]
 time_column = "INTERVAL_DATETIME"
 next_column_id = 7
@@ -17,6 +16,13 @@ column = [
     { id = 5, name = "OPERATIONAL_DEMAND_ADJUSTMENT", type = "double", nullable = true },
     { id = 6, name = "WDR_ESTIMATE", type = "double", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["REGIONID"]
+valid = { kind = "interval_end", column = "INTERVAL_DATETIME" }
+order = ["LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

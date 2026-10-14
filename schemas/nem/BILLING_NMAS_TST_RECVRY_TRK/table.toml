@@ -1,10 +1,9 @@
 # Our schema of BILLING_NMAS_TST_RECVRY_TRK. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "BILLING_NMAS_TST_RECVRY_TRK"
 description = "BILLING_NMAS_TEST_RECVRY_TRK tracks the energy data used to allocate the test payment recovery over the recovery period."
 report_pairs = [["BILLING", "NMAS_TST_RECVRY_TRK"]]
 load_mode = "append"
-dedupe = "pk"
 primary_key = ["CONTRACTYEAR", "WEEKNO", "BILLRUNNO", "RECOVERY_CONTRACTYEAR", "RECOVERY_WEEKNO", "RECOVERY_BILLRUNNO"]
 next_column_id = 7
 
@@ -16,6 +15,12 @@ column = [
     { id = 5, name = "RECOVERY_WEEKNO", type = "double", nullable = false },
     { id = 6, name = "RECOVERY_BILLRUNNO", type = "double", nullable = false },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["CONTRACTYEAR", "WEEKNO", "RECOVERY_CONTRACTYEAR", "RECOVERY_WEEKNO", "RECOVERY_BILLRUNNO"]
+valid = { kind = "timeless" }
+order = ["BILLRUNNO"]
 
 [[increment]]
 n = 1

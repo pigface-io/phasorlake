@@ -1,10 +1,9 @@
 # Our schema of MARKETNOTICETYPE. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "MARKETNOTICETYPE"
 description = "MARKETNOTICETYPE sets out the different types of market notices (e.g. market systems)."
 report_pairs = [["MARKET_NOTICE", "MARKETNOTICETYPE"]]
 load_mode = "snapshot"
-dedupe = "pk_lastchanged"
 primary_key = ["TYPEID"]
 next_column_id = 5
 
@@ -14,6 +13,13 @@ column = [
     { id = 3, name = "RAISEDBY", type = "string", nullable = true },
     { id = 4, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["TYPEID"]
+valid = { kind = "timeless" }
+order = ["LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

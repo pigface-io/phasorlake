@@ -1,10 +1,9 @@
 # Our schema of SRA_PRUDENTIAL_RUN. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "SRA_PRUDENTIAL_RUN"
 description = "Records the prudential run details for each prudential date"
 report_pairs = [["IRAUCTION", "SRA_PRUDENTIAL_RUN"]]
 load_mode = "append"
-dedupe = "pk"
 primary_key = ["PRUDENTIAL_DATE", "PRUDENTIAL_RUNNO"]
 time_column = "PRUDENTIAL_DATE"
 next_column_id = 3
@@ -13,6 +12,12 @@ column = [
     { id = 1, name = "PRUDENTIAL_DATE", type = "timestamp_ns", nullable = false },
     { id = 2, name = "PRUDENTIAL_RUNNO", type = "double", nullable = false },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["PRUDENTIAL_RUNNO"]
+valid = { kind = "instant", column = "PRUDENTIAL_DATE" }
+order = []
 
 [[increment]]
 n = 1

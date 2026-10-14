@@ -1,10 +1,9 @@
 # Our schema of NETWORK_SUBSTATIONDETAIL. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "NETWORK_SUBSTATIONDETAIL"
 description = "NETWORK_SUBSTATIONDETAIL sets out the attributes of sub-stations across time"
 report_pairs = [["NETWORK", "SUBSTATIONDETAIL"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["SUBSTATIONID", "VALIDFROM"]
 time_column = "LASTCHANGED"
 next_column_id = 8
@@ -18,6 +17,13 @@ column = [
     { id = 6, name = "OWNERID", type = "string", nullable = true },
     { id = 7, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["SUBSTATIONID"]
+valid = { kind = "from", column = "VALIDFROM" }
+order = ["LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

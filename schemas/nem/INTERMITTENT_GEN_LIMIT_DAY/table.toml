@@ -1,10 +1,9 @@
 # Our schema of INTERMITTENT_GEN_LIMIT_DAY. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "INTERMITTENT_GEN_LIMIT_DAY"
 description = "Summary record for an Upper MW Limit submission for an intermittent generating unit for a Trading Day"
 report_pairs = [["DEMAND", "INTERMITTENT_GEN_LIMIT_DAY"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["TRADINGDATE", "DUID", "OFFERDATETIME"]
 time_column = "TRADINGDATE"
 next_column_id = 8
@@ -18,6 +17,13 @@ column = [
     { id = 6, name = "AUTHORISEDBYUSER", type = "string", nullable = true },
     { id = 7, name = "AUTHORISEDBYPARTICIPANTID", type = "string", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["DUID"]
+valid = { kind = "instant", column = "TRADINGDATE" }
+order = ["OFFERDATETIME", "LASTCHANGED"]
+cutoff = "OFFERDATETIME"
 
 [[increment]]
 n = 1

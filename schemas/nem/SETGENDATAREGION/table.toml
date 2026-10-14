@@ -1,10 +1,9 @@
 # Our schema of SETGENDATAREGION. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "SETGENDATAREGION"
 description = "SETGENDATAREGION sets out summary settlement data for generation within the specified region."
 report_pairs = [["SETTLEMENTS", "GENDATAREGION"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["SETTLEMENTDATE", "VERSIONNO", "PERIODID", "REGIONID"]
 time_column = "SETTLEMENTDATE"
 next_column_id = 15
@@ -25,6 +24,13 @@ column = [
     { id = 13, name = "EXPENERGYCOST", type = "double", nullable = true },
     { id = 14, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["PERIODID", "REGIONID"]
+valid = { kind = "interval_end", column = "SETTLEMENTDATE" }
+order = ["VERSIONNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

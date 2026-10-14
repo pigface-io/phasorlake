@@ -1,10 +1,9 @@
 # Our schema of NEGATIVE_RESIDUE. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "NEGATIVE_RESIDUE"
 description = "Shows the inputs provided to the Negative Residue Constraints in the Dispatch horizon"
 report_pairs = [["DISPATCH", "NEGATIVE_RESIDUE"]]
 load_mode = "append"
-dedupe = "pk"
 primary_key = ["SETTLEMENTDATE", "NRM_DATETIME", "DIRECTIONAL_INTERCONNECTORID"]
 time_column = "SETTLEMENTDATE"
 next_column_id = 17
@@ -27,6 +26,12 @@ column = [
     { id = 15, name = "NRMCONSTRAINT_BLOCKED_FLAG", type = "double", nullable = true },
     { id = 16, name = "NRM_LOOP_FLAG", type = "double", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["NRM_DATETIME", "DIRECTIONAL_INTERCONNECTORID"]
+valid = { kind = "interval_end", column = "SETTLEMENTDATE" }
+order = ["PREDISPATCHSEQNO"]
 
 [[increment]]
 n = 1

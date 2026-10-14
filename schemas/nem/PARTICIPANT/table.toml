@@ -1,10 +1,9 @@
 # Our schema of PARTICIPANT. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "PARTICIPANT"
 description = "PARTICIPANT sets out Participant ID, name and class for all participants."
 report_pairs = [["PARTICIPANT_REGISTRATION", "PARTICIPANT"]]
 load_mode = "snapshot"
-dedupe = "pk_lastchanged"
 primary_key = ["PARTICIPANTID"]
 next_column_id = 8
 
@@ -17,6 +16,13 @@ column = [
     { id = 6, name = "PRIMARYBUSINESS", type = "string", nullable = true },
     { id = 7, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["PARTICIPANTID"]
+valid = { kind = "timeless" }
+order = ["LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

@@ -1,9 +1,8 @@
 # Our schema of PD7DAY_PRICESOLUTION. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "PD7DAY_PRICESOLUTION"
 report_pairs = [["PD7DAY", "PRICESOLUTION"]]
 load_mode = "append"
-dedupe = "none"
 primary_key = []
 time_column = "INTERVAL_DATETIME"
 next_column_id = 19
@@ -28,6 +27,13 @@ column = [
     { id = 17, name = "BDU_INITIAL_ENERGY_STORAGE", type = "double", nullable = true },
     { id = 18, name = "DECGEN_INITIAL_ENERGY_STORAGE", type = "double", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["INTERVENTION"]
+valid = { kind = "timeless" }
+order = ["RUN_DATETIME", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

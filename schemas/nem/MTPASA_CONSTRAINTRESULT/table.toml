@@ -1,10 +1,9 @@
 # Our schema of MTPASA_CONSTRAINTRESULT. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "MTPASA_CONSTRAINTRESULT"
 description = "Constraint results for Binding or Violating Constraints"
 report_pairs = [["MTPASA", "CONSTRAINTRESULT"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["RUN_DATETIME", "RUN_NO", "RUNTYPE", "DEMAND_POE_TYPE", "DAY", "CONSTRAINTID"]
 time_column = "RUN_DATETIME"
 next_column_id = 16
@@ -26,6 +25,13 @@ column = [
     { id = 14, name = "CONSTRAINTVIOLATION10", type = "double", nullable = true },
     { id = 15, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["RUNTYPE", "DEMAND_POE_TYPE", "CONSTRAINTID"]
+valid = { kind = "instant", column = "DAY" }
+order = ["RUN_DATETIME", "RUN_NO", "VERSIONNO", "LASTCHANGED"]
+cutoff = "RUN_DATETIME"
 
 [[increment]]
 n = 1

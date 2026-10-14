@@ -1,9 +1,8 @@
 # Our schema of FPP_FORECAST_DEFAULT_CF. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "FPP_FORECAST_DEFAULT_CF"
 report_pairs = [["FPP", "FORECAST_DEFAULT_CF"]]
 load_mode = "append"
-dedupe = "none"
 primary_key = []
 time_column = "LASTCHANGED"
 next_column_id = 13
@@ -22,6 +21,13 @@ column = [
     { id = 11, name = "SETTLEMENTS_UNITID", type = "string", nullable = true },
     { id = 12, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = []
+valid = { kind = "timeless" }
+order = ["VERSIONNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

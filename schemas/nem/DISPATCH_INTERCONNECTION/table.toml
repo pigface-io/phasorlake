@@ -1,10 +1,9 @@
 # Our schema of DISPATCH_INTERCONNECTION. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "DISPATCH_INTERCONNECTION"
 description = "Inter-regional flow information common to or aggregated for regulated (i.e. not MNSP) Interconnectors spanning the From-Region and To-Region - NB only the physical run is calculated'"
 report_pairs = [["DISPATCH", "INTERCONNECTION"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["SETTLEMENTDATE", "RUNNO", "INTERVENTION", "FROM_REGIONID", "TO_REGIONID"]
 time_column = "SETTLEMENTDATE"
 next_column_id = 13
@@ -23,6 +22,13 @@ column = [
     { id = 11, name = "TO_REGION_MW_LOSSES", type = "double", nullable = true },
     { id = 12, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["INTERVENTION", "FROM_REGIONID", "TO_REGIONID"]
+valid = { kind = "interval_end", column = "SETTLEMENTDATE" }
+order = ["RUNNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

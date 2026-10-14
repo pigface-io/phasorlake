@@ -1,10 +1,9 @@
 # Our schema of P5MIN_BLOCKEDCONSTRAINT. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "P5MIN_BLOCKEDCONSTRAINT"
 description = "P5MIN Blocked Constraints lists any constraints that were blocked in a P5MIN run. If no constraints are blocked, there will be no rows for that 5 minute predispatch run."
 report_pairs = [["P5MIN", "BLOCKED_CONSTRAINTS"]]
 load_mode = "append"
-dedupe = "pk"
 primary_key = ["RUN_DATETIME", "CONSTRAINTID"]
 time_column = "RUN_DATETIME"
 next_column_id = 3
@@ -13,6 +12,12 @@ column = [
     { id = 1, name = "RUN_DATETIME", type = "timestamp_ns", nullable = false },
     { id = 2, name = "CONSTRAINTID", type = "string", nullable = false },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["CONSTRAINTID"]
+valid = { kind = "instant", column = "RUN_DATETIME" }
+order = []
 
 [[increment]]
 n = 1

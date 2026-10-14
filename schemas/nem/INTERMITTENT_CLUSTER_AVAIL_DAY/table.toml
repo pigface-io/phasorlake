@@ -1,10 +1,9 @@
 # Our schema of INTERMITTENT_CLUSTER_AVAIL_DAY. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "INTERMITTENT_CLUSTER_AVAIL_DAY"
 description = "Summary record for an Elements Unavailable submission for an intermittent generating unit cluster for a Trading Day"
 report_pairs = [["DEMAND", "INTERMITTENT_CLUSTER_AVAIL_DAY"]]
 load_mode = "append"
-dedupe = "pk"
 primary_key = ["TRADINGDATE", "DUID", "OFFERDATETIME", "CLUSTERID"]
 time_column = "TRADINGDATE"
 next_column_id = 5
@@ -15,6 +14,13 @@ column = [
     { id = 3, name = "OFFERDATETIME", type = "timestamp_ns", nullable = false },
     { id = 4, name = "CLUSTERID", type = "string", nullable = false },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["DUID", "CLUSTERID"]
+valid = { kind = "instant", column = "TRADINGDATE" }
+order = ["OFFERDATETIME"]
+cutoff = "OFFERDATETIME"
 
 [[increment]]
 n = 1

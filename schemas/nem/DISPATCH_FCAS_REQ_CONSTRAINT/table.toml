@@ -1,9 +1,8 @@
 # Our schema of DISPATCH_FCAS_REQ_CONSTRAINT. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "DISPATCH_FCAS_REQ_CONSTRAINT"
 report_pairs = [["DISPATCH", "FCAS_REQ_CONSTRAINT"]]
 load_mode = "append"
-dedupe = "none"
 primary_key = []
 time_column = "INTERVAL_DATETIME"
 next_column_id = 17
@@ -26,6 +25,12 @@ column = [
     { id = 15, name = "ADJUSTED_COST", type = "double", nullable = true },
     { id = 16, name = "P_REGULATION", type = "double", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = []
+valid = { kind = "timeless" }
+order = ["RUN_DATETIME", "RUNNO"]
 
 [[increment]]
 n = 1

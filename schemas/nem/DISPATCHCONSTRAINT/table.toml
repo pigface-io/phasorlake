@@ -1,10 +1,9 @@
 # Our schema of DISPATCHCONSTRAINT. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "DISPATCHCONSTRAINT"
 description = "DISPATCHCONSTRAINT sets out details of all binding and interregion constraints in each dispatch run. Note: invoked constraints can be established from GENCONSETINVOKE. Binding constraints show as marginal value >$0. Interconnector constraints are listed so RHS (SCADA calculated limits) can be reported."
 report_pairs = [["DISPATCH", "CONSTRAINT"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["SETTLEMENTDATE", "RUNNO", "CONSTRAINTID", "DISPATCHINTERVAL", "INTERVENTION"]
 time_column = "SETTLEMENTDATE"
 next_column_id = 15
@@ -25,6 +24,13 @@ column = [
     { id = 13, name = "LHS", type = "double", nullable = true },
     { id = 14, name = "CONFIDENTIAL_TO", type = "string", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["CONSTRAINTID", "DISPATCHINTERVAL", "INTERVENTION"]
+valid = { kind = "interval_end", column = "SETTLEMENTDATE" }
+order = ["RUNNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

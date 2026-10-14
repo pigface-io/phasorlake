@@ -1,9 +1,8 @@
 # Our schema of MTPASA_DUIDAVAILABILITY. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "MTPASA_DUIDAVAILABILITY"
 report_pairs = [["MTPASA", "DUIDAVAILABILITY"]]
 load_mode = "append"
-dedupe = "none"
 primary_key = []
 time_column = "DAY"
 next_column_id = 11
@@ -20,6 +19,13 @@ column = [
     { id = 9, name = "PASAUNITSTATE", type = "string", nullable = true },
     { id = 10, name = "PASARECALLTIME", type = "double", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = []
+valid = { kind = "timeless" }
+order = ["PUBLISH_DATETIME", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

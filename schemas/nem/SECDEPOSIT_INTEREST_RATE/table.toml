@@ -1,10 +1,9 @@
 # Our schema of SECDEPOSIT_INTEREST_RATE. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "SECDEPOSIT_INTEREST_RATE"
 description = "The security deposit interest rate on a daily basis. This is the public table published when the business enter and authorise a new daily interest rate"
 report_pairs = [["BILLING_CONFIG", "SECDEPOSIT_INTEREST_RATE"]]
 load_mode = "append"
-dedupe = "pk"
 primary_key = ["INTEREST_ACCT_ID", "EFFECTIVEDATE", "VERSION_DATETIME"]
 time_column = "EFFECTIVEDATE"
 next_column_id = 5
@@ -15,6 +14,13 @@ column = [
     { id = 3, name = "VERSION_DATETIME", type = "timestamp_ns", nullable = false },
     { id = 4, name = "INTEREST_RATE", type = "double", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["INTEREST_ACCT_ID"]
+valid = { kind = "from", column = "EFFECTIVEDATE" }
+order = ["VERSION_DATETIME"]
+cutoff = "VERSION_DATETIME"
 
 [[increment]]
 n = 1

@@ -1,10 +1,9 @@
 # Our schema of DUDETAIL. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "DUDETAIL"
 description = "DUDETAIL sets out a records specific details for each unit including start type and whether normally on or off load. Much of this data is information only and is not used in dispatch or settlements."
 report_pairs = [["PARTICIPANT_REGISTRATION", "DUDETAIL"]]
 load_mode = "snapshot"
-dedupe = "pk_lastchanged"
 primary_key = ["DUID", "EFFECTIVEDATE", "VERSIONNO"]
 next_column_id = 35
 
@@ -44,6 +43,13 @@ column = [
     { id = 33, name = "LOAD_MIN_RAMP_RATE_DOWN", type = "double", nullable = true },
     { id = 34, name = "AGGREGATED", type = "double", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["DUID"]
+valid = { kind = "from", column = "EFFECTIVEDATE" }
+order = ["VERSIONNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

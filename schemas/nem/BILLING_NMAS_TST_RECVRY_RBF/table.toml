@@ -1,10 +1,9 @@
 # Our schema of BILLING_NMAS_TST_RECVRY_RBF. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "BILLING_NMAS_TST_RECVRY_RBF"
 description = "BILLING_NMAS_TEST_RECVRY_RBF sets out the NSCAS/SRAS Testing Payment recovery data for the posted billing week."
 report_pairs = [["BILLING", "NMAS_TST_RECVRY_RBF"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["CONTRACTYEAR", "WEEKNO", "BILLRUNNO", "SERVICE", "CONTRACTID", "REGIONID"]
 time_column = "LASTCHANGED"
 next_column_id = 11
@@ -21,6 +20,13 @@ column = [
     { id = 9, name = "RECOVERY_AMOUNT", type = "double", nullable = true },
     { id = 10, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["CONTRACTYEAR", "WEEKNO", "SERVICE", "CONTRACTID", "REGIONID"]
+valid = { kind = "timeless" }
+order = ["BILLRUNNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

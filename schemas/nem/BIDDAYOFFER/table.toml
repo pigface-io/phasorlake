@@ -1,10 +1,9 @@
 # Our schema of BIDDAYOFFER. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "BIDDAYOFFER"
 description = "BIDDAYOFFER shows the Energy and Ancillary Service bid data for each Market Day. BIDDAYOFFER is the parent table to BIDPEROFFER."
 report_pairs = [["BIDS", "BIDDAYOFFER"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["DUID", "BIDTYPE", "SETTLEMENTDATE", "OFFERDATE"]
 time_column = "SETTLEMENTDATE"
 next_column_id = 34
@@ -44,6 +43,13 @@ column = [
     { id = 32, name = "DIRECTION", type = "string", nullable = true },
     { id = 33, name = "MR_FACTOR", type = "double", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["DUID", "BIDTYPE"]
+valid = { kind = "interval_end", column = "SETTLEMENTDATE" }
+order = ["OFFERDATE", "VERSIONNO", "LASTCHANGED"]
+cutoff = "OFFERDATE"
 
 [[increment]]
 n = 1

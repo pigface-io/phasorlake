@@ -1,10 +1,9 @@
 # Our schema of DISPATCH_MNSPBIDTRK. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "DISPATCH_MNSPBIDTRK"
 description = "DISPATCH_MNSPBIDTRK shows the MNSP bid tracking, including the bid version used in each dispatch run for each MNSP Interconnector Link. DISPATCH_MNSPBIDTRK is the audit trail of the bids actually used for each dispatch run."
 report_pairs = [["DISPATCH", "MNSPBIDTRK"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["SETTLEMENTDATE", "RUNNO", "PARTICIPANTID", "LINKID"]
 time_column = "SETTLEMENTDATE"
 next_column_id = 9
@@ -19,6 +18,13 @@ column = [
     { id = 7, name = "OFFERVERSIONNO", type = "double", nullable = true },
     { id = 8, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["PARTICIPANTID", "LINKID"]
+valid = { kind = "interval_end", column = "SETTLEMENTDATE" }
+order = ["RUNNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

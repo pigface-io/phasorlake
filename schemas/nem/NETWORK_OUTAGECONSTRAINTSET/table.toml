@@ -1,10 +1,9 @@
 # Our schema of NETWORK_OUTAGECONSTRAINTSET. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "NETWORK_OUTAGECONSTRAINTSET"
 description = "NETWORK_OUTAGECONSTRAINTSET lists the Constraint Set or Sets that are expected to be invoked for the outage once it is confirmed to proceed."
 report_pairs = [["NETWORK", "OUTAGECONSTRAINTSET"]]
 load_mode = "append"
-dedupe = "pk"
 primary_key = ["OUTAGEID", "GENCONSETID"]
 time_column = "STARTINTERVAL"
 next_column_id = 5
@@ -15,6 +14,12 @@ column = [
     { id = 3, name = "STARTINTERVAL", type = "timestamp_ns", nullable = true },
     { id = 4, name = "ENDINTERVAL", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["OUTAGEID", "GENCONSETID"]
+valid = { kind = "timeless" }
+order = []
 
 [[increment]]
 n = 1

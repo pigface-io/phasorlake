@@ -1,10 +1,9 @@
 # Our schema of BIDOFFERPERIOD. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "BIDOFFERPERIOD"
 description = "BIDOFFERPERIOD shows 5-minute period-based Energy and Ancillary Service bid data.BIDOFFERPERIOD is a child table of BIDDAYOFFER"
 report_pairs = [["BIDS", "BIDOFFERPERIOD"]]
 load_mode = "append"
-dedupe = "pk"
 primary_key = ["DUID", "BIDTYPE", "TRADINGDATE", "OFFERDATETIME", "PERIODID"]
 time_column = "TRADINGDATE"
 next_column_id = 29
@@ -39,6 +38,13 @@ column = [
     { id = 27, name = "PERIODIDTO", type = "double", nullable = true },
     { id = 28, name = "RECALL_PERIOD", type = "double", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["DUID", "BIDTYPE", "PERIODID"]
+valid = { kind = "instant", column = "TRADINGDATE" }
+order = ["OFFERDATETIME"]
+cutoff = "OFFERDATETIME"
 
 [[increment]]
 n = 1

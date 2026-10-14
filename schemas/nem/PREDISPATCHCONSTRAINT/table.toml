@@ -1,12 +1,11 @@
 # Our schema of PREDISPATCHCONSTRAINT. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "PREDISPATCHCONSTRAINT"
 description = """
 PREDISPATCHCONSTRAINT sets out constraints that are binding in each predispatch run and interconnector constraints (whether binding or not). Only binding and interconnector constraints are reported. Binding contracts have marginal value greater than $0. Interconnector constraints are listed so RHS values can be reported for ST PASA.
 Constraint solutions only report fixed loading /MR constraints on the next day."""
 report_pairs = [["PREDISPATCH", "CONSTRAINT_SOLUTION"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["CONSTRAINTID", "DATETIME"]
 time_column = "DATETIME"
 next_column_id = 16
@@ -28,6 +27,13 @@ column = [
     { id = 14, name = "LHS", type = "double", nullable = true },
     { id = 11, name = "CONFIDENTIAL_TO", type = "string", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["CONSTRAINTID", "INTERVENTION"]
+valid = { kind = "interval_end", column = "DATETIME" }
+order = ["PREDISPATCHSEQNO", "RUNNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

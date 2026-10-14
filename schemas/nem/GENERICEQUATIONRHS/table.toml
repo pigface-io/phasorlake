@@ -1,10 +1,9 @@
 # Our schema of GENERICEQUATIONRHS. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "GENERICEQUATIONRHS"
 description = "GENERICEQUATIONRHS stores the formulation of commonly used Generic Constraint Right Hand Side Equations referenced from Generic Constraint Right Hand Side definitions stored in GENERICCONSTRAINTRHS. The Generic Equation definitions are versioned and the latest effective version is applied to the dispatch process."
 report_pairs = [["GEQRHS", ""], ["GEQRHS", "NULL"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["EQUATIONID", "EFFECTIVEDATE", "VERSIONNO", "TERMID"]
 time_column = "EFFECTIVEDATE"
 next_column_id = 15
@@ -25,6 +24,13 @@ column = [
     { id = 13, name = "PARAMETERTERM3", type = "string", nullable = true },
     { id = 14, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["EQUATIONID", "TERMID"]
+valid = { kind = "from", column = "EFFECTIVEDATE" }
+order = ["VERSIONNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

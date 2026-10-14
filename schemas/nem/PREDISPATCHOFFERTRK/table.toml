@@ -1,10 +1,9 @@
 # Our schema of PREDISPATCHOFFERTRK. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "PREDISPATCHOFFERTRK"
 description = "PREDISPATCHOFFERTRK is for the ancillary service bid tracking of predispatch processing. PREDISPATCHOFFERTRK identifies which bids from BIDDAYOFFER and BIDPEROFFER were applied for a given unit and ancillary service for each predispatch run."
 report_pairs = [["PREDISPATCH", "OFFERTRK"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["PREDISPATCHSEQNO", "DUID", "BIDTYPE", "PERIODID"]
 time_column = "DATETIME"
 next_column_id = 9
@@ -19,6 +18,13 @@ column = [
     { id = 7, name = "DATETIME", type = "timestamp_ns", nullable = true },
     { id = 8, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["DUID", "BIDTYPE", "PERIODID"]
+valid = { kind = "timeless" }
+order = ["PREDISPATCHSEQNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

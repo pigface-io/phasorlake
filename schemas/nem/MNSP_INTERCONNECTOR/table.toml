@@ -1,10 +1,9 @@
 # Our schema of MNSP_INTERCONNECTOR. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "MNSP_INTERCONNECTOR"
 description = "MNSP_INTERCONNECTOR sets out attributes of each interconnector."
 report_pairs = [["PARTICIPANT_REGISTRATION", "MNSP_INTERCONNECTOR"]]
 load_mode = "snapshot"
-dedupe = "pk_lastchanged"
 primary_key = ["LINKID", "EFFECTIVEDATE", "VERSIONNO"]
 next_column_id = 16
 
@@ -25,6 +24,13 @@ column = [
     { id = 14, name = "FROM_REGION_TLF", type = "double", nullable = true },
     { id = 15, name = "TO_REGION_TLF", type = "double", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["LINKID"]
+valid = { kind = "from", column = "EFFECTIVEDATE" }
+order = ["VERSIONNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

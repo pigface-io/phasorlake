@@ -1,10 +1,9 @@
 # Our schema of GENUNITS_UNIT. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "GENUNITS_UNIT"
 description = "Physical units within a Gen Unit Set"
 report_pairs = [["PARTICIPANT_REGISTRATION", "GENUNITS_UNIT"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["GENSETID", "EFFECTIVEDATE", "VERSIONNO", "UNIT_GROUPING_LABEL"]
 time_column = "EFFECTIVEDATE"
 next_column_id = 14
@@ -24,6 +23,13 @@ column = [
     { id = 12, name = "REGISTEREDCAPACITY", type = "double", nullable = true },
     { id = 13, name = "REGISTEREDMINCAPACITY", type = "double", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["GENSETID", "UNIT_GROUPING_LABEL"]
+valid = { kind = "from", column = "EFFECTIVEDATE" }
+order = ["VERSIONNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

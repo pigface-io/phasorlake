@@ -1,10 +1,9 @@
 # Our schema of DISPATCHCASESOLUTION. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "DISPATCHCASESOLUTION"
 description = "DISPATCHCASESOLUTION shows information relating to the complete dispatch run. The fields in DISPATCHCASESOLUTION provide an overview of the dispatch run results allowing immediate identification of conditions such as energy or FCAS deficiencies."
 report_pairs = [["DISPATCH", "CASE_SOLUTION"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["SETTLEMENTDATE", "RUNNO"]
 time_column = "SETTLEMENTDATE"
 next_column_id = 25
@@ -35,6 +34,13 @@ column = [
     { id = 23, name = "SWITCHRUNBESTSTATUS", type = "double", nullable = true },
     { id = 24, name = "SWITCHRUNBESTSTATUS_INT", type = "double", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["INTERVENTION"]
+valid = { kind = "interval_end", column = "SETTLEMENTDATE" }
+order = ["RUNNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

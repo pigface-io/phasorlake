@@ -96,6 +96,17 @@ enum Cmd {
         #[arg(long, default_value = "crates/nemlake-census/snapshot_tables.toml")]
         snapshot_list: PathBuf,
     },
+    /// Write every table file again in the current `schema_format`,
+    /// deriving what a new format adds (format 3: `[temporal]`). Changes
+    /// no column, id, type or increment.
+    Migrate {
+        /// The schemas directory.
+        #[arg(long, default_value = "schemas")]
+        schemas: PathBuf,
+        /// Report the files that would change, write nothing, and exit 3 if any would.
+        #[arg(long)]
+        check: bool,
+    },
     /// Report, per table, where AEMO's PDR control files differ from the
     /// control files of our increments: columns only one of them loads,
     /// loader types that differ, tables only the PDR has. Report only.
@@ -193,6 +204,23 @@ fn main() -> ExitCode {
             &base,
             (&datamodel, &readme, &snapshot_list),
         ),
+        Cmd::Migrate { schemas, check } => match nemlake_census::migrate::run(&schemas, check) {
+            Ok(changed) if check && !changed.is_empty() => {
+                for p in &changed {
+                    println!("would rewrite {}", p.display());
+                }
+                ExitCode::from(3)
+            }
+            Ok(changed) => {
+                println!(
+                    "{} table file(s) {}",
+                    changed.len(),
+                    if check { "out of date" } else { "rewritten" }
+                );
+                ExitCode::SUCCESS
+            }
+            Err(d) => fail(&d),
+        },
         Cmd::PdrDiff { pdr, schemas } => {
             let tables = match nemlake_registry::file_model::blob::SchemaSet::read_dir(&schemas) {
                 Ok(set) => set.tables,

@@ -1,9 +1,8 @@
 # Our schema of MTPASA_CASESOLUTION. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "MTPASA_CASESOLUTION"
 report_pairs = [["MTPASA", "CASESOLUTION"]]
 load_mode = "append"
-dedupe = "none"
 primary_key = []
 time_column = "RUN_DATETIME"
 next_column_id = 22
@@ -31,6 +30,13 @@ column = [
     { id = 20, name = "RELIABILITYLRCUIGFOPTION", type = "double", nullable = true },
     { id = 21, name = "OUTAGELRCUIGFOPTION", type = "double", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = []
+valid = { kind = "timeless" }
+order = ["RUN_DATETIME", "RUN_NO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

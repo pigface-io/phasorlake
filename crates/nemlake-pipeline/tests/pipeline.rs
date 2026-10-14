@@ -12,7 +12,9 @@ use nemlake_acquire::{Archive, FetchError, Fetcher, FetcherConfig, Query, Remote
 use nemlake_core::event::Event;
 use nemlake_core::paths::Home;
 use nemlake_pipeline::{Deps, Input, Plan, RunOptions, run};
-use nemlake_registry::file_model::{Column, ColumnId, Dedupe, Increment, LakeType, Market, Table};
+use nemlake_registry::file_model::{
+    Column, ColumnId, Increment, LakeType, Market, RoleOrigin, Table, Temporal, ValidAxis,
+};
 use nemlake_registry::{LoadMode, Mode, Registry};
 use nemlake_writer::manifest::DiagFilter;
 use nemlake_writer::{Manifest, ManifestHandle, ManifestThread};
@@ -87,7 +89,13 @@ fn text_table(
         description: None,
         report_pairs: vec![(pair.0.into(), pair.1.into())],
         load_mode: LoadMode::Append,
-        dedupe: Dedupe::None,
+        temporal: Temporal {
+            origin: RoleOrigin::Hand,
+            entity: vec![],
+            valid: ValidAxis::Timeless,
+            order: vec![],
+            cutoff: None,
+        },
         primary_key: vec![],
         time_column: time_column.map(str::to_owned),
         next_column_id: columns.len() as u32 + 1,

@@ -1,10 +1,9 @@
 # Our schema of SETCFG_PARTICIPANT_MPFTRK. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "SETCFG_PARTICIPANT_MPFTRK"
 description = "SETCFG_PARTICIPANT_MPFTRK is the tracking table for Market Participation Factors (MPF) data stored in the SETCFG_PARTICIPANT_MPF table for each participant."
 report_pairs = [["SETTLEMENT_CONFIG", "SETCFG_PARTICIPANT_MPFTRK"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["PARTICIPANTID", "EFFECTIVEDATE", "VERSIONNO"]
 time_column = "EFFECTIVEDATE"
 next_column_id = 7
@@ -17,6 +16,13 @@ column = [
     { id = 5, name = "AUTHORISEDDATE", type = "timestamp_ns", nullable = true },
     { id = 6, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["PARTICIPANTID"]
+valid = { kind = "from", column = "EFFECTIVEDATE" }
+order = ["VERSIONNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

@@ -1,10 +1,9 @@
 # Our schema of NETWORK_OUTAGEDETAIL. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "NETWORK_OUTAGEDETAIL"
 description = "Lists asset owners planned outages for transmission equipment. This also includes details for transmission equipment that will not have an outage, but associated secondary equipment has an outage and a related constraint set may be invoked. This scenario is indicated by the ISSECONDARY field in the table"
 report_pairs = [["NETWORK", "OUTAGEDETAIL"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["OUTAGEID", "SUBSTATIONID", "EQUIPMENTTYPE", "EQUIPMENTID", "STARTTIME"]
 time_column = "LASTCHANGED"
 next_column_id = 20
@@ -30,6 +29,13 @@ column = [
     { id = 18, name = "COMPANYREFCODE", type = "string", nullable = true },
     { id = 19, name = "ELEMENTID", type = "double", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["OUTAGEID", "SUBSTATIONID", "EQUIPMENTTYPE", "EQUIPMENTID"]
+valid = { kind = "instant", column = "STARTTIME" }
+order = ["LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

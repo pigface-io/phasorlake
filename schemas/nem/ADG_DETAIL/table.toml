@@ -1,9 +1,8 @@
 # Our schema of ADG_DETAIL. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "ADG_DETAIL"
 report_pairs = [["PARTICIPANT_REGISTRATION", "ADG_DETAIL"]]
 load_mode = "append"
-dedupe = "none"
 primary_key = []
 time_column = "EFFECTIVEDATE"
 next_column_id = 8
@@ -17,6 +16,13 @@ column = [
     { id = 6, name = "AUTHORISEDBY", type = "string", nullable = true },
     { id = 7, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = []
+valid = { kind = "timeless" }
+order = ["VERSION_DATETIME", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

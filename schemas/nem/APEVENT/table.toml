@@ -1,10 +1,9 @@
 # Our schema of APEVENT. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "APEVENT"
 description = "APEVENT is the driving data defining the existence and timeframes of an administered pricing event."
 report_pairs = [["AP", "APEVENT"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["APEVENTID"]
 time_column = "LASTCHANGED"
 next_column_id = 10
@@ -20,6 +19,13 @@ column = [
     { id = 8, name = "ENDAUTHORISEDDATE", type = "timestamp_ns", nullable = true },
     { id = 9, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["APEVENTID"]
+valid = { kind = "timeless" }
+order = ["LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

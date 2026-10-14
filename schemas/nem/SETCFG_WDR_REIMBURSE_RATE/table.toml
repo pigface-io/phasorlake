@@ -1,9 +1,8 @@
 # Our schema of SETCFG_WDR_REIMBURSE_RATE. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "SETCFG_WDR_REIMBURSE_RATE"
 report_pairs = [["SETTLEMENTS_CONFIG", "WDR_REIMBURSE_RATE"]]
 load_mode = "append"
-dedupe = "none"
 primary_key = []
 time_column = "LASTCHANGED"
 next_column_id = 7
@@ -16,6 +15,13 @@ column = [
     { id = 5, name = "ISFIRM", type = "double", nullable = true },
     { id = 6, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = []
+valid = { kind = "timeless" }
+order = ["VERSION_DATETIME", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

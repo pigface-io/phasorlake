@@ -24,8 +24,9 @@ use nemlake_registry::file_model::blob::SchemaSet;
 use nemlake_registry::file_model::ctl::{CtlFile, parse, sha256};
 use nemlake_registry::file_model::file::{CTL_DIR, TABLE_FILE, ctl_file_name, write_table};
 use nemlake_registry::file_model::shapes::ShapeEntry;
+use nemlake_registry::file_model::temporal::derive;
 use nemlake_registry::file_model::{
-    Column, ColumnId, Dedupe, Increment, LakeType, LoadMode, Market, Table,
+    Column, ColumnId, Increment, LakeType, LoadMode, Market, Table, Temporal,
 };
 
 use crate::census::{FileEntry, table_keys};
@@ -411,13 +412,13 @@ impl Sync {
             } else {
                 LoadMode::Append
             },
-            dedupe: match (
-                primary_key.is_empty(),
-                columns.iter().any(|c| c == "LASTCHANGED"),
-            ) {
-                (true, _) => Dedupe::None,
-                (false, true) => Dedupe::PkLastchanged,
-                (false, false) => Dedupe::Pk,
+            // Derived once the columns and their types are known, below.
+            temporal: Temporal {
+                origin: nemlake_registry::file_model::RoleOrigin::Derived,
+                entity: Vec::new(),
+                valid: nemlake_registry::file_model::ValidAxis::Timeless,
+                order: Vec::new(),
+                cutoff: None,
             },
             primary_key,
             time_column: None,
@@ -429,6 +430,7 @@ impl Sync {
         for col in &mut t.columns {
             col.nullable = !t.primary_key.contains(&col.name);
         }
+        t.temporal = derive(&t.primary_key, &t.columns);
         if !snapshot {
             let timed = |c: &&Column| matches!(c.ty, LakeType::TimestampNs | LakeType::Date);
             t.time_column = TIME_CANDIDATES
@@ -774,7 +776,8 @@ mod tests {
         let t = s.table("DISPATCH_UNIT_SCADA").unwrap();
         assert_eq!(t.report_pairs, [("DISPATCH".into(), "UNIT_SCADA".into())]);
         assert_eq!(t.primary_key, ["SETTLEMENTDATE", "DUID"]);
-        assert_eq!(t.dedupe, Dedupe::PkLastchanged);
+        assert_eq!(t.temporal, derive(&t.primary_key, &t.columns));
+        assert_eq!(t.temporal.entity, ["DUID"]);
         assert_eq!(t.time_column.as_deref(), Some("SETTLEMENTDATE"));
         assert_eq!(t.increments[0].aemo_versions, [1]);
         assert!(!t.column("DUID").unwrap().nullable);

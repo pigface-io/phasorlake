@@ -1,10 +1,9 @@
 # Our schema of DAYTRACK. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "DAYTRACK"
 description = "DAYTRACK identifies the actual settlement run processed for each settlement day. Settlement run is in the column EXPOSTRUNNO. Generally the number of the settlement run used in the latest statement is the maximum number."
 report_pairs = [["SETTLEMENTS", "DAYTRACK"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["SETTLEMENTDATE", "EXPOSTRUNNO"]
 time_column = "SETTLEMENTDATE"
 next_column_id = 11
@@ -21,6 +20,13 @@ column = [
     { id = 9, name = "METER_CASEID", type = "double", nullable = true },
     { id = 10, name = "METER_RUNTYPE", type = "string", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["EXPOSTRUNNO"]
+valid = { kind = "interval_end", column = "SETTLEMENTDATE" }
+order = ["LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

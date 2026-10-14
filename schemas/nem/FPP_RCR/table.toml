@@ -1,9 +1,8 @@
 # Our schema of FPP_RCR. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "FPP_RCR"
 report_pairs = [["FPP", "FPP_RCR"]]
 load_mode = "append"
-dedupe = "none"
 primary_key = []
 time_column = "INTERVAL_DATETIME"
 next_column_id = 8
@@ -17,6 +16,13 @@ column = [
     { id = 6, name = "RCR_REASON_FLAG", type = "double", nullable = true },
     { id = 7, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = []
+valid = { kind = "timeless" }
+order = ["VERSIONNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

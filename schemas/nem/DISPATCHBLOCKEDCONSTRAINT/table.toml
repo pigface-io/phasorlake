@@ -1,10 +1,9 @@
 # Our schema of DISPATCHBLOCKEDCONSTRAINT. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "DISPATCHBLOCKEDCONSTRAINT"
 description = "DISPATCH Blocked Constraints lists any constraints that were blocked in a dispatch run. If no constraints are blocked, there will be no rows for that dispatch run."
 report_pairs = [["DISPATCH", "BLOCKED_CONSTRAINTS"]]
 load_mode = "append"
-dedupe = "pk"
 primary_key = ["SETTLEMENTDATE", "RUNNO", "CONSTRAINTID"]
 time_column = "SETTLEMENTDATE"
 next_column_id = 4
@@ -14,6 +13,12 @@ column = [
     { id = 2, name = "RUNNO", type = "double", nullable = false },
     { id = 3, name = "CONSTRAINTID", type = "string", nullable = false },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["CONSTRAINTID"]
+valid = { kind = "interval_end", column = "SETTLEMENTDATE" }
+order = ["RUNNO"]
 
 [[increment]]
 n = 1

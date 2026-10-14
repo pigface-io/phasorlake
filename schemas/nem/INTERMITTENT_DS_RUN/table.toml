@@ -1,10 +1,9 @@
 # Our schema of INTERMITTENT_DS_RUN. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "INTERMITTENT_DS_RUN"
 description = "Unconstrained Intermittent Generation Forecasts (UIGF) for Dispatch."
 report_pairs = [["DEMAND", "INTERMITTENT_DS_RUN"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["RUN_DATETIME", "DUID", "OFFERDATETIME", "ORIGIN", "FORECAST_PRIORITY"]
 time_column = "RUN_DATETIME"
 next_column_id = 14
@@ -24,6 +23,13 @@ column = [
     { id = 12, name = "SUPPRESSED_PARTICIPANT", type = "double", nullable = true },
     { id = 13, name = "TRANSACTION_ID", type = "string", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["DUID", "ORIGIN", "FORECAST_PRIORITY"]
+valid = { kind = "instant", column = "RUN_DATETIME" }
+order = ["OFFERDATETIME", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

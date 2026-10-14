@@ -1,10 +1,9 @@
 # Our schema of DISPATCHREGIONSUM. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "DISPATCHREGIONSUM"
 description = "DISPATCHREGIONSUM sets out the 5-minute solution for each dispatch run for each region, including the Frequency Control Ancillary Services (FCAS) services provided. Additional fields are for the Raise Regulation and Lower Regulation Ancillary Services plus improvements to demand calculations."
 report_pairs = [["DISPATCH", "REGIONSUM"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["SETTLEMENTDATE", "RUNNO", "REGIONID", "DISPATCHINTERVAL", "INTERVENTION"]
 time_column = "SETTLEMENTDATE"
 next_column_id = 128
@@ -138,6 +137,13 @@ column = [
     { id = 126, name = "BDU_INITIAL_ENERGY_STORAGE", type = "double", nullable = true },
     { id = 127, name = "DECGEN_INITIAL_ENERGY_STORAGE", type = "double", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["REGIONID", "DISPATCHINTERVAL", "INTERVENTION"]
+valid = { kind = "interval_end", column = "SETTLEMENTDATE" }
+order = ["RUNNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1

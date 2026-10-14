@@ -1,10 +1,9 @@
 # Our schema of TRADINGINTERCONNECT. Hand edits are welcome; `nemlake-census sync` only appends increments and columns.
-schema_format = 2
+schema_format = 3
 name = "TRADINGINTERCONNECT"
 description = "TRADINGINTERCONNECT shows the half-hourly summary of Interconnector flows based on 5-minute averages."
 report_pairs = [["TRADING", "INTERCONNECTORRES"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["SETTLEMENTDATE", "RUNNO", "INTERCONNECTORID", "PERIODID"]
 time_column = "SETTLEMENTDATE"
 next_column_id = 9
@@ -19,6 +18,13 @@ column = [
     { id = 7, name = "MWLOSSES", type = "double", nullable = true },
     { id = 8, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
 ]
+
+[temporal]
+origin = "derived"
+entity = ["INTERCONNECTORID", "PERIODID"]
+valid = { kind = "interval_end", column = "SETTLEMENTDATE" }
+order = ["RUNNO", "LASTCHANGED"]
+cutoff = "LASTCHANGED"
 
 [[increment]]
 n = 1
