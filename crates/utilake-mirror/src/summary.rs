@@ -202,16 +202,18 @@ mod tests {
             r#"{"path":"h/A/2026","kind":"dir"}"#,
             r#"{"path":"h/A/2026/d_20260101.zip","kind":"zip","size":7,"state":"not_archived"}"#,
             r#"{"path":"h/A/README.txt","kind":"file","size":3,"state":"archived"}"#,
+            r#"{"path":"h/A/v2.txt","kind":"file","size":1,"state":"archived"}"#,
         ];
         std::fs::write(&p, lines.join("\n") + "\n").unwrap();
         let md = summary(&p).unwrap();
         let expected = "\
-6 patterns over 4 files of nemweb, 32 B (1 not downloaded).
+7 patterns over 5 files of nemweb, 33 B (1 not downloaded).
 
 ```text
 h/
   A/
     README.txt  3 B
+    v{1}.txt  1 B  v2.txt
     {4}/  × 2  2025 … 2026
       d_{8}.zip/ (zip)  × 3  29 B  d_20250101.zip … d_20260101.zip (1 not downloaded)
         x_{4}.csv  × 2  90 B  x_0001.csv … x_0002.csv

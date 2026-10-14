@@ -357,6 +357,10 @@ mod tests {
             "the page has no <pre> listing"
         );
         assert_eq!(
+            parse(b"<html><p").unwrap_err().reason,
+            "the page has no <pre> listing"
+        );
+        assert_eq!(
             parse(b"<pre>").unwrap_err().reason,
             "the <pre> listing is not closed"
         );

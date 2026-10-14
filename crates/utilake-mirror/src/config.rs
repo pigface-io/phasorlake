@@ -65,6 +65,13 @@ pub struct Config {
     pub user_agent_suffix: String,
     /// Threads that read zips for the map; 0 means half the cores.
     pub jobs: usize,
+    /// Tries per request before it fails.
+    pub attempts: u32,
+    /// Wait before the second try, in milliseconds; it doubles each try,
+    /// up to 60 times this.
+    pub backoff_ms: u64,
+    /// Seconds a request may wait for the next bytes before it fails.
+    pub read_timeout_secs: u64,
 }
 
 impl Default for Config {
@@ -75,6 +82,9 @@ impl Default for Config {
             base_url: "https://www.nemweb.com.au".to_owned(),
             user_agent_suffix: String::new(),
             jobs: 0,
+            attempts: 5,
+            backoff_ms: 500,
+            read_timeout_secs: 120,
         }
     }
 }

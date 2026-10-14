@@ -56,17 +56,6 @@ pub struct FetcherConfig {
     pub min_interval: Duration,
 }
 
-impl Default for FetcherConfig {
-    fn default() -> Self {
-        Self {
-            attempts: 5,
-            backoff: Duration::from_millis(500),
-            max_backoff: Duration::from_secs(30),
-            min_interval: Duration::from_millis(250),
-        }
-    }
-}
-
 /// Fetches remote files into the archive.
 pub struct Fetcher {
     transport: Arc<dyn Transport>,
@@ -78,6 +67,8 @@ pub struct Fetcher {
     /// every retry): status, the URL refused and the start of its body.
     /// Every later request fails at once without touching the network.
     blocked: std::sync::OnceLock<(u16, String, Vec<u8>)>,
+    /// Requests the server answered with 200 and whose body arrived whole.
+    succeeded: std::sync::atomic::AtomicU64,
 }
 
 /// Chunks in flight between the download and the writer.
@@ -95,7 +86,13 @@ impl Fetcher {
             last_request: Mutex::new(None),
             blocked: std::sync::OnceLock::new(),
             events: None,
+            succeeded: std::sync::atomic::AtomicU64::new(0),
         }
+    }
+
+    /// Requests that succeeded so far: a run that got somewhere.
+    pub fn succeeded(&self) -> u64 {
+        self.succeeded.load(std::sync::atomic::Ordering::Relaxed)
     }
 
     /// Sends progress events to `tx`.
@@ -169,12 +166,11 @@ impl Fetcher {
         }
         self.ensure_online(url)?;
         let path = self.archive.path_for(url);
-        if let Some(p) = path.parent() {
-            std::fs::create_dir_all(p).map_err(|source| FetchError::CacheIo {
-                path: p.display().to_string(),
-                source,
-            })?;
-        }
+        let p = path.parent().unwrap_or(Path::new("."));
+        std::fs::create_dir_all(p).map_err(|source| FetchError::CacheIo {
+            path: p.display().to_string(),
+            source,
+        })?;
         let part = Archive::part_path(&path);
         let streamed = self
             .get_with_retries(url, |resp| {
@@ -244,7 +240,11 @@ impl Fetcher {
                 }),
             };
             match result {
-                Ok(v) => return Ok(v),
+                Ok(v) => {
+                    self.succeeded
+                        .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                    return Ok(v);
+                }
                 Err(e) if e.is_retryable() => last = Some(e),
                 Err(e) => return Err(e),
             }
@@ -593,17 +593,11 @@ mod tests {
         short.claimed_length = Some(10);
         t.add("https://h/short.zip", short);
         let e = f.fetch(&remote("https://h/short.zip")).await.unwrap_err();
-        match e {
-            FetchError::RetriesExhausted { last, .. } => assert!(matches!(
-                *last,
-                FetchError::ContentLength {
-                    expected: 10,
-                    received: 3,
-                    ..
-                }
-            )),
-            other => panic!("{other}"),
-        }
+        assert!(
+            matches!(&e, FetchError::RetriesExhausted { last, .. }
+                if matches!(**last, FetchError::ContentLength { expected: 10, received: 3, .. })),
+            "{e}"
+        );
         let path = f.archive().path_for("https://h/short.zip");
         assert!(!path.exists() && !Archive::part_path(&path).exists());
         assert!(f.archive().lookup("https://h/short.zip").unwrap().is_none());
@@ -647,5 +641,56 @@ mod tests {
         paced.fetch_listing("https://h/dir/").await.unwrap();
         paced.fetch_listing("https://h/dir/").await.unwrap();
         assert!(start.elapsed() >= Duration::from_millis(30));
+    }
+
+    #[tokio::test]
+    async fn the_archive_failing_to_take_a_file_is_a_cache_error() {
+        let dir = tempfile::tempdir().unwrap();
+        let t = Arc::new(StaticTransport::default());
+        // More chunks than the channel to the writer holds.
+        let mut many = Canned::ok(&[1u8; 64 << 10]);
+        many.chunk = 1 << 10;
+        t.add("https://h/a/b.zip", many);
+        // The archive's root is a file: no folder can be made under it.
+        let root = dir.path().join("file");
+        std::fs::write(&root, "").unwrap();
+        let f = Fetcher::new(Arc::new(t.clone()), Archive::new(&root), fast());
+        let e = f.fetch(&remote("https://h/a/b.zip")).await.unwrap_err();
+        assert!(matches!(e, FetchError::CacheIo { .. }), "{e}");
+        // The part file cannot be created: the writer stops, its error says
+        // why, and the body stops.
+        let f = Fetcher::new(Arc::new(t.clone()), Archive::new(dir.path()), fast());
+        let path = f.archive().path_for("https://h/a/b.zip");
+        std::fs::create_dir_all(Archive::part_path(&path)).unwrap();
+        let e = f.fetch(&remote("https://h/a/b.zip")).await.unwrap_err();
+        assert!(matches!(e, FetchError::CacheIo { .. }), "{e}");
+        std::fs::remove_dir(Archive::part_path(&path)).unwrap();
+        // The file's own path is a folder with something in it: no rename.
+        std::fs::create_dir_all(path.join("x")).unwrap();
+        let e = f.fetch(&remote("https://h/a/b.zip")).await.unwrap_err();
+        assert!(matches!(e, FetchError::CacheIo { .. }), "{e}");
+    }
+
+    #[tokio::test]
+    async fn a_listing_whose_body_breaks_and_progress_on_a_big_file() {
+        let dir = tempfile::tempdir().unwrap();
+        let t = Arc::new(StaticTransport::default());
+        let mut broken = Canned::ok(b"0123456789");
+        broken.fail_after = Some(4);
+        t.add("https://h/list/", broken);
+        let big = vec![7u8; 9 << 20];
+        let mut c = Canned::ok(&big);
+        c.chunk = 1 << 20;
+        t.add("https://h/big.zip", c);
+        let (tx, mut rx) = tokio::sync::mpsc::channel(64);
+        let f = Fetcher::new(Arc::new(t.clone()), Archive::new(dir.path()), fast()).with_events(tx);
+        let e = f.fetch_listing("https://h/list/").await.unwrap_err();
+        assert!(matches!(e, FetchError::RetriesExhausted { .. }), "{e}");
+        f.fetch(&remote("https://h/big.zip")).await.unwrap();
+        let mut progress = 0;
+        while let Ok(ev) = rx.try_recv() {
+            progress += usize::from(matches!(ev, Event::DownloadProgress { .. }));
+        }
+        assert_eq!(progress, 2, "one every 4 MiB");
     }
 }

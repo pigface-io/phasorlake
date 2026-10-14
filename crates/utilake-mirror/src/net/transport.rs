@@ -47,24 +47,17 @@ pub struct ReqwestTransport {
 
 impl ReqwestTransport {
     /// A client with the given user agent and timeouts.
-    pub fn new(
-        user_agent: &str,
-        connect_timeout: Duration,
-        read_timeout: Duration,
-    ) -> Result<Self, FetchError> {
+    pub fn new(user_agent: &str, connect_timeout: Duration, read_timeout: Duration) -> Self {
         let client = reqwest::Client::builder()
             .user_agent(user_agent)
             .connect_timeout(connect_timeout)
             .read_timeout(read_timeout)
             .build()
-            .map_err(|e| FetchError::Connect {
-                url: String::new(),
-                message: e.to_string(),
-            })?;
-        Ok(Self {
+            .expect("a client with rustls and these settings builds on every supported platform");
+        Self {
             client,
             timeout_secs: read_timeout.as_secs(),
-        })
+        }
     }
 }
 
@@ -314,17 +307,61 @@ mod tests {
             .collect()
             .await;
         assert_eq!(chunks, [&b"0123"[..], b"4567", b"89"]);
-        let real = ReqwestTransport::new(
+    }
+
+    #[tokio::test]
+    async fn the_real_transport_against_a_local_server() {
+        use crate::net::testserver::{Reply, Server};
+        let srv = Server::start();
+        srv.route("/ok", Reply::Ok(b"hello".to_vec()));
+        srv.route("/stall", Reply::Stall);
+        srv.route(
+            "/cut",
+            Reply::Truncate {
+                claimed: 10,
+                sent: b"abc".to_vec(),
+            },
+        );
+        srv.route(
+            "/slow",
+            Reply::StallBody {
+                claimed: 10,
+                sent: b"abc".to_vec(),
+            },
+        );
+        let t = ReqwestTransport::new(
             "nemweb-mirror-test",
-            Duration::from_secs(1),
-            Duration::from_secs(1),
-        )
-        .unwrap();
-        assert!(!real.is_offline());
-        let r = real.get("http://127.0.0.1:9/never").await;
+            Duration::from_secs(2),
+            Duration::from_millis(300),
+        );
+        assert!(!t.is_offline());
+        let r = t.get(&srv.url("/ok")).await.unwrap();
+        assert_eq!((r.status, r.content_length), (200, Some(5)));
+        assert_eq!(r.etag.as_deref(), Some("\"e\""));
+        assert_eq!(
+            r.last_modified.as_deref(),
+            Some("Mon, 12 Oct 2026 00:32:30 GMT")
+        );
+        let body: Vec<Bytes> = r.body.map(Result::unwrap).collect().await;
+        assert_eq!(body.concat(), b"hello");
+        assert_eq!(t.get(&srv.url("/none")).await.unwrap().status, 404);
         assert!(matches!(
-            r,
-            Err(FetchError::Connect { .. } | FetchError::Timeout { .. })
+            t.get(&srv.url("/stall")).await,
+            Err(FetchError::Timeout { secs: 0, .. })
         ));
+        // The first failure of a body, as the fetcher stops at it.
+        let first_error = |r: HttpResponse| async move {
+            let mut errors = r.body.filter_map(|c| async move { c.err() }).boxed();
+            errors.next().await.expect("the body fails")
+        };
+        let cut = first_error(t.get(&srv.url("/cut")).await.unwrap()).await;
+        assert!(!cut.is_empty() && !cut.contains("timed out"), "{cut}");
+        let slow = first_error(t.get(&srv.url("/slow")).await.unwrap()).await;
+        assert!(slow.contains("timed out after 0 seconds reading"), "{slow}");
+        let closed = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+        let url = format!("http://{}/x", closed.local_addr().unwrap());
+        drop(closed);
+        assert!(matches!(t.get(&url).await, Err(FetchError::Connect { .. })));
+        assert_eq!(srv.hits().len(), 5);
     }
 }

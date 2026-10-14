@@ -16,13 +16,14 @@ impl Mirror {
     /// Takes the run lock, or says that another run holds it.
     pub fn lock(&self) -> Result<RunLock, MirrorError> {
         let file = self.lock_file()?;
-        match file.try_lock() {
-            Ok(()) => Ok(RunLock { _file: file }),
-            Err(TryLockError::WouldBlock) => Err(MirrorError::Locked {
+        // Held by another run, or any other reason it cannot be taken: the
+        // cause says which.
+        file.try_lock()
+            .map(|()| RunLock { _file: file })
+            .map_err(|e| MirrorError::Locked {
                 path: self.lock_path().display().to_string(),
-            }),
-            Err(TryLockError::Error(e)) => Err(MirrorError::io(&self.lock_path())(e)),
-        }
+                cause: e.to_string(),
+            })
     }
 
     /// Whether a run holds the lock now.

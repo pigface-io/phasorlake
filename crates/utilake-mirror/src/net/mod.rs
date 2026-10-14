@@ -7,6 +7,8 @@ pub mod error;
 pub mod event;
 pub mod fetcher;
 pub mod source;
+#[cfg(test)]
+pub mod testserver;
 pub mod transport;
 
 pub use archive::{Archive, Archived, Sidecar, sha256_file};

@@ -21,6 +21,8 @@ pub mod map;
 pub mod net;
 pub mod status;
 pub mod summary;
+#[cfg(test)]
+pub mod testzip;
 
 pub use compare::{Comparison, Pair, Removed, Verdict, compare, pairs, remove};
 pub use crawl::{

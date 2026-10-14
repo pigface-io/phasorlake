@@ -47,11 +47,15 @@ pub enum MirrorError {
         /// The crawl directory.
         path: String,
     },
-    /// Another run holds the lock.
-    #[error("Another mirror run holds {path}; wait for it to end, or stop it.")]
+    /// The run lock cannot be taken, most often because another run holds it.
+    #[error(
+        "The run lock {path} cannot be taken ({cause}); another run most likely holds it: wait for it to end, or stop it."
+    )]
     Locked {
         /// The lock file.
         path: String,
+        /// Why.
+        cause: String,
     },
     /// The committed summary is not the summary of the current map.
     #[error(
@@ -115,7 +119,7 @@ impl Diagnose for MirrorError {
                 Diagnostic::error("mirror.crawl_incomplete", Category::Mirror, msg)
                     .with_file(path.clone())
             }
-            Self::Locked { path } => {
+            Self::Locked { path, .. } => {
                 Diagnostic::error("mirror.locked", Category::Mirror, msg).with_file(path.clone())
             }
             Self::SummaryStale { path } => {
@@ -151,6 +155,7 @@ mod tests {
             (
                 MirrorError::Locked {
                     path: "/m/lock".into(),
+                    cause: "held".into(),
                 },
                 "mirror.locked",
             ),

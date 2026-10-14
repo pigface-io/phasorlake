@@ -611,6 +611,29 @@ mod tests {
         std::fs::write(f.archive.path_for(&pair.zip), b"PK\x03\x04 broken").unwrap();
         let e = compare(&f.archive, pair, Path::new("/tmp")).unwrap_err();
         assert_eq!(e.diagnostic().code, "zip.open_failed");
+        // The directory lists an entry whose header is not there.
+        std::fs::write(
+            f.archive.path_for(&pair.zip),
+            crate::testzip::bad_second_header(),
+        )
+        .unwrap();
+        let e = compare(&f.archive, pair, Path::new("/tmp")).unwrap_err();
+        assert_eq!(e.diagnostic().code, "zip.open_failed");
+        // A zip without its sidecar is not removed.
+        std::fs::remove_file(f.archive.path_for(&pair.zip)).unwrap();
+        let f2 = fixture(false);
+        let pair2 = &pairs(&f2.mirror).unwrap()[0];
+        let cmp = compare(&f2.archive, pair2, &f2.mirror.dir().join("tmp")).unwrap();
+        std::fs::remove_file(Archive::sidecar_path(&f2.archive.path_for(&pair2.zip))).unwrap();
+        let e = remove(&f2.mirror, &f2.archive, &cmp).unwrap_err();
+        assert_eq!(e.diagnostic().code, "mirror.not_same");
+        // A record of removals that is a folder cannot be read.
+        std::fs::create_dir_all(f.mirror.removed_path()).unwrap();
+        assert_eq!(
+            f.mirror.removed().unwrap_err().diagnostic().code,
+            "mirror.io"
+        );
+        std::fs::remove_dir(f.mirror.removed_path()).unwrap();
         std::fs::write(f.mirror.removed_path(), "{}\n").unwrap();
         assert_eq!(
             f.mirror.removed().unwrap_err().diagnostic().code,

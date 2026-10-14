@@ -309,9 +309,8 @@ fn write_record<'r>(
 /// Writes `bytes` beside `path` and renames it into place, so a cut-off
 /// write never leaves a partial file under the final name.
 fn write_atomic(path: &Path, bytes: &[u8]) -> Result<(), MirrorError> {
-    if let Some(parent) = path.parent() {
-        std::fs::create_dir_all(parent).map_err(MirrorError::io(parent))?;
-    }
+    let parent = path.parent().unwrap_or(Path::new("."));
+    std::fs::create_dir_all(parent).map_err(MirrorError::io(parent))?;
     let mut part = path.as_os_str().to_owned();
     part.push(".part");
     let part = PathBuf::from(part);
@@ -546,5 +545,20 @@ mod tests {
         let blocker = dir.path().join("file");
         std::fs::write(&blocker, "").unwrap();
         assert!(write_atomic(&blocker.join("x"), b"").is_err());
+        assert!(write_atomic(&blocker.join("x/y"), b"").is_err());
+    }
+
+    #[tokio::test]
+    async fn a_kept_page_that_cannot_be_read_stops_the_crawl() {
+        let home = tempfile::tempdir().unwrap();
+        let mirror = Mirror::new(home.path().join("mirror"));
+        std::fs::create_dir_all(mirror.page_path(&roots()[0])).unwrap();
+        let t = site();
+        let f = fetcher(&t, &home.path().join("archive"));
+        let e = crawl(&f, &mirror, &roots(), false, |_| {})
+            .await
+            .unwrap_err();
+        assert_eq!(e.diagnostic().code, "mirror.io");
+        assert_eq!(t.request_count(), 0);
     }
 }

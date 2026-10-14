@@ -7,7 +7,6 @@
 //! replaces or deletes an archived file, which is the untransformed record
 //! the census and the lake are derived from. To fetch one again, delete it.
 
-use std::io::Read;
 use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
@@ -71,21 +70,25 @@ pub fn sha256_hex(bytes: &[u8]) -> String {
 /// file of any size takes the same memory. Blocking: call it off the
 /// async runtime.
 pub fn sha256_file(path: &Path) -> std::io::Result<(String, u64)> {
-    let mut f = std::fs::File::open(path)?;
-    let mut hasher = Sha256::new();
-    let mut buf = vec![0u8; 1 << 20];
-    let mut len = 0u64;
-    loop {
-        let n = match f.read(&mut buf) {
-            Ok(0) => break,
-            Ok(n) => n,
-            Err(e) if e.kind() == std::io::ErrorKind::Interrupted => continue,
-            Err(e) => return Err(e),
-        };
-        hasher.update(&buf[..n]);
-        len += n as u64;
+    /// A hasher as an `io::Write`, so `io::copy` drives it.
+    struct Hashing(Sha256);
+    impl std::io::Write for Hashing {
+        fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
+            self.0.update(buf);
+            Ok(buf.len())
+        }
+        fn flush(&mut self) -> std::io::Result<()> {
+            Ok(())
+        }
     }
-    Ok((hex(&hasher.finalize()), len))
+    let f = std::fs::File::open(path)?;
+    let mut hasher = Hashing(Sha256::new());
+    let len = std::io::copy(
+        &mut std::io::BufReader::with_capacity(1 << 20, f),
+        &mut hasher,
+    )?;
+    std::io::Write::flush(&mut hasher)?;
+    Ok((hex(&hasher.0.finalize()), len))
 }
 
 fn percent_decode(s: &str) -> String {
@@ -354,5 +357,21 @@ mod tests {
         )
         .unwrap();
         assert_eq!(Archive::read_sidecar(&path).unwrap().unwrap().size, 4);
+    }
+
+    #[test]
+    fn odd_paths_and_unreadable_places() {
+        let dir = tempfile::tempdir().unwrap();
+        let a = Archive::new(dir.path());
+        assert_eq!(a.path_for("https://"), dir.path().join("_"));
+        // A sidecar that is a folder cannot be read.
+        let path = dir.path().join("f.zip");
+        std::fs::create_dir_all(Archive::sidecar_path(&path)).unwrap();
+        let e = Archive::read_sidecar(&path).unwrap_err();
+        assert_eq!(e.diagnostic().code, "cache.io");
+        // A file is not a folder of entries; nor is a folder a file to hash.
+        std::fs::write(dir.path().join("plain"), b"x").unwrap();
+        assert!(a.entries_under(Some(&dir.path().join("plain"))).is_empty());
+        assert!(sha256_file(dir.path()).is_err());
     }
 }

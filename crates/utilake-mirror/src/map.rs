@@ -960,4 +960,72 @@ h/
         assert_eq!(human(28_670_000_000), "28.7 GB");
         assert_eq!(human(u64::MAX), "18446744.1 TB");
     }
+
+    #[test]
+    fn broken_zips_are_marked_and_the_map_carries_on() {
+        use crate::testzip;
+        let dir = tempfile::tempdir().unwrap();
+        let archive = Archive::new(dir.path());
+        let top = Top {
+            kind: NodeKind::File,
+            size: None,
+            modified: None,
+            state: Some(State::Archived),
+            same_as: None,
+        };
+        let mut lister = Lister::new(dir.path().join("tmp"));
+        let list = |name: &str, bytes: Option<&[u8]>, lister: &mut Lister| {
+            let key = vec!["h".to_owned(), name.to_owned()];
+            let path = dir.path().join("h").join(name);
+            std::fs::create_dir_all(dir.path().join("h")).unwrap();
+            match bytes {
+                Some(b) => std::fs::write(&path, b).unwrap(),
+                None => std::fs::create_dir_all(&path).unwrap(),
+            }
+            lister.top(&archive, &key, &top)
+        };
+        let codes = |nodes: &[Node]| -> Vec<Option<&'static str>> {
+            nodes
+                .iter()
+                .map(|n| n.error.as_ref().map(|e| e.code))
+                .collect()
+        };
+        // An entry that needs a password.
+        let n = list(
+            "secret.zip",
+            Some(&testzip::encrypted(testzip::stored("u.bin", b"abcd"))),
+            &mut lister,
+        );
+        assert_eq!(codes(&n), [None, Some("zip.bad_entry")]);
+        // An entry whose compressed bytes deflate rejects.
+        let text = vec![b'x'; 4096];
+        let n = list(
+            "data.zip",
+            Some(&testzip::corrupt_data(testzip::deflated("c.bin", &text))),
+            &mut lister,
+        );
+        assert_eq!(codes(&n), [None, Some("zip.bad_entry")]);
+        // An entry the directory lists but whose header is not there.
+        let n = list(
+            "header.zip",
+            Some(&testzip::bad_second_header()),
+            &mut lister,
+        );
+        assert_eq!(codes(&n), [None, None, Some("zip.bad_entry")]);
+        assert!(n[2].path.ends_with("header.zip!#1"), "{}", n[2].path);
+        // A big entry that starts as a zip but is not one, spooled to disk;
+        // and a folder where a file should be, read from disk.
+        lister.in_memory = 0;
+        std::fs::create_dir_all(dir.path().join("tmp")).unwrap();
+        let n = list(
+            "nested.zip",
+            Some(&testzip::stored("n.zip", b"PK\x03\x04 not a zip after all")),
+            &mut lister,
+        );
+        assert_eq!(codes(&n), [None, Some("zip.open_failed")]);
+        let n = list("plain.txt", Some(b"not a zip"), &mut lister);
+        assert_eq!(codes(&n), [None]);
+        let n = list("folder", None, &mut lister);
+        assert_eq!(codes(&n), [Some("mirror.io")]);
+    }
 }

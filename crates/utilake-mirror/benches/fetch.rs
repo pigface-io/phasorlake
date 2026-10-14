@@ -41,8 +41,10 @@ fn bench(c: &mut Criterion) {
                     Arc::new(Arc::clone(&transport)),
                     Archive::new(dir.path()),
                     FetcherConfig {
+                        attempts: 1,
+                        backoff: Duration::ZERO,
+                        max_backoff: Duration::ZERO,
                         min_interval: Duration::ZERO,
-                        ..Default::default()
                     },
                 );
                 (dir, fetcher)

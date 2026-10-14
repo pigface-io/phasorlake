@@ -7,6 +7,7 @@ Each entry names where a thing starts. Read those files before you edit.
 
 - Run tools through `just`, never with hand-picked flags. `just check` runs every hook, as CI does.
 - `unsafe` is forbidden; zips are read through `BufReader<File>` or from memory.
+- Every line of `crates/nemweb-mirror/src` is covered (`coverage.json`, 100%): new code comes with its tests, and code no test can reach is removed. The HTTP paths are tested against a local server (`crates/nemweb-mirror/src/net/testserver.rs`), never nemweb.
 - A coverage floor in `coverage.json` only goes up; a budget in `bench/budgets.json` only tightens. Loosening one needs a `coverage-floor:` or `bench-budget:` line in the commit message (`just budget-check`).
 - Every failure mode is a `Diagnostic` (`crates/nemweb-mirror/src/diag.rs`) with a stable `category.snake_name` code and a full-sentence message. Codes are never renamed; `docs/errors.md` is generated from them (`just errors-doc`).
 - Every HTTP request goes through `Fetcher` (`crates/nemweb-mirror/src/net/fetcher.rs`): pacing, retries, the 403/429 breaker. Never download from nemweb in a shell loop.

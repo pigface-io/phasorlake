@@ -40,8 +40,10 @@ impl Context {
             .context("No home directory: pass --home or set NEMWEB_MIRROR_HOME.")?;
         let config = Config::load(&home.config_file())
             .map_err(|e| anyhow::anyhow!("{}", e.diagnostic().render()))?;
-        let progress =
-            !cli.no_progress && !cli.json && std::io::IsTerminal::is_terminal(&std::io::stderr());
+        let progress = cli.progress
+            || (!cli.no_progress
+                && !cli.json
+                && std::io::IsTerminal::is_terminal(&std::io::stderr()));
         Ok(Self {
             home,
             config,
@@ -58,7 +60,7 @@ impl Context {
 
     /// A fetcher over the network, or offline, its requests the configured
     /// interval apart.
-    pub fn fetcher(&self) -> Result<Fetcher> {
+    pub fn fetcher(&self) -> Fetcher {
         let ua = format!(
             "nemweb-mirror/{} (+https://github.com/g0itb4/nemweb-mirror){}",
             env!("CARGO_PKG_VERSION"),
@@ -67,16 +69,20 @@ impl Context {
         let transport: Arc<dyn Transport> = if self.offline {
             Arc::new(OfflineTransport)
         } else {
-            Arc::new(
-                ReqwestTransport::new(&ua, Duration::from_secs(30), Duration::from_secs(120))
-                    .map_err(|e| anyhow::anyhow!("{e}"))?,
-            )
+            Arc::new(ReqwestTransport::new(
+                &ua,
+                Duration::from_secs(30),
+                Duration::from_secs(self.config.read_timeout_secs),
+            ))
         };
+        let backoff = Duration::from_millis(self.config.backoff_ms);
         let cfg = FetcherConfig {
+            attempts: self.config.attempts,
+            backoff,
+            max_backoff: backoff * 60,
             min_interval: Duration::from_millis(self.config.request_interval_ms),
-            ..Default::default()
         };
-        Ok(Fetcher::new(transport, self.archive(), cfg))
+        Fetcher::new(transport, self.archive(), cfg)
     }
 }
 
@@ -87,18 +93,13 @@ pub async fn run_command(cli: &Cli) -> Result<i32> {
     let mirror = Mirror::new(ctx.home.mirror());
     let result = match cmd {
         Command::Crawl { roots, fresh } => {
-            let fetcher = ctx.fetcher()?;
-            match mirror.lock() {
-                Ok(_lock) => crawl(ctx, &fetcher, &mirror, roots, *fresh).await,
-                Err(e) => Err(e),
-            }
+            let fetcher = ctx.fetcher();
+            locked(&mirror, crawl(ctx, &fetcher, &mirror, roots, *fresh)).await
         }
         Command::Download => {
-            let fetcher = ctx.fetcher()?;
-            match mirror.lock() {
-                Ok(_lock) => download(ctx, &fetcher, &mirror).await.map(|(code, _)| code),
-                Err(e) => Err(e),
-            }
+            let fetcher = ctx.fetcher();
+            let pass = async { download(ctx, &fetcher, &mirror).await.map(|(code, _)| code) };
+            locked(&mirror, pass).await
         }
         Command::Run {
             roots,
@@ -107,10 +108,7 @@ pub async fn run_command(cli: &Cli) -> Result<i32> {
             wait_minutes,
         } => {
             let wait = Duration::from_secs(wait_minutes * 60);
-            match mirror.lock() {
-                Ok(_lock) => run(ctx, &mirror, roots, *fresh, *refusals, wait).await?,
-                Err(e) => Err(e),
-            }
+            locked(&mirror, run(ctx, &mirror, roots, *fresh, *refusals, wait)).await
         }
         Command::Map { roots } => {
             let jobs = cli.jobs.unwrap_or_else(|| ctx.config.effective_jobs());
@@ -127,6 +125,15 @@ pub async fn run_command(cli: &Cli) -> Result<i32> {
             Ok(1)
         }
     }
+}
+
+/// `work`, with the run lock held; the work does not start without it.
+async fn locked(
+    mirror: &Mirror,
+    work: impl Future<Output = Result<i32, MirrorError>>,
+) -> Result<i32, MirrorError> {
+    let _lock = mirror.lock()?;
+    work.await
 }
 
 fn report(ctx: &Context, d: &nemweb_mirror::Diagnostic) {
@@ -156,18 +163,17 @@ async fn run(
     fresh: bool,
     refusals: u32,
     wait: Duration,
-) -> Result<Result<i32, MirrorError>> {
+) -> Result<i32, MirrorError> {
     let mut fresh = fresh;
     let mut refused = 0;
     loop {
-        let fetcher = ctx.fetcher()?;
-        let started = std::time::Instant::now();
+        let fetcher = ctx.fetcher();
         let attempt = async {
             crawl(ctx, &fetcher, mirror, given, fresh).await?;
             download(ctx, &fetcher, mirror).await
         };
         let d = match attempt.await {
-            Ok((code, false)) => return Ok(Ok(code)),
+            Ok((code, false)) => return Ok(code),
             // Files failed on the network: another pass fetches only those.
             Ok((_, true)) => nemweb_mirror::Diagnostic::error(
                 "mirror.files_failed",
@@ -175,15 +181,15 @@ async fn run(
                 "Some files failed on the network; the next pass fetches only those.",
             ),
             Err(MirrorError::Fetch(e)) if waits_out(&e) => e.diagnostic(),
-            Err(other) => return Ok(Err(other)),
+            Err(other) => return Err(other),
         };
-        // A run that got somewhere before failing starts the count again.
-        if started.elapsed() > wait {
+        // An attempt that got somewhere before failing starts the count again.
+        if fetcher.succeeded() > 0 {
             refused = 0;
         }
         if refused >= refusals {
             report(ctx, &d);
-            return Ok(Ok(1));
+            return Ok(1);
         }
         refused += 1;
         report(ctx, &d);
@@ -413,12 +419,11 @@ fn summary(
             });
         }
     } else {
-        if let Some(parent) = out.parent().filter(|p| !p.as_os_str().is_empty()) {
-            std::fs::create_dir_all(parent).map_err(|e| MirrorError::Io {
-                path: parent.display().to_string(),
-                source: e,
-            })?;
-        }
+        let parent = out.parent().unwrap_or(std::path::Path::new(""));
+        std::fs::create_dir_all(parent).map_err(|e| MirrorError::Io {
+            path: parent.display().to_string(),
+            source: e,
+        })?;
         std::fs::write(out, &text).map_err(|e| MirrorError::Io {
             path: out.display().to_string(),
             source: e,

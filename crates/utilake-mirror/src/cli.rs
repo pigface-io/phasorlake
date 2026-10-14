@@ -18,6 +18,9 @@ pub struct Cli {
     /// No progress line.
     #[arg(long, global = true)]
     pub no_progress: bool,
+    /// The progress line on stderr even when it is not a terminal.
+    #[arg(long, global = true)]
+    pub progress: bool,
     /// Never touch the network.
     #[arg(long, global = true)]
     pub offline: bool,
@@ -53,7 +56,7 @@ pub enum Command {
         #[arg(long)]
         fresh: bool,
         /// How many refusals or network failures in a row to wait out before
-        /// giving up; an attempt that ran longer than the wait starts the
+        /// giving up; an attempt in which any request succeeded starts the
         /// count again.
         #[arg(long, default_value_t = 8)]
         refusals: u32,
