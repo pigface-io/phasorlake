@@ -13,6 +13,7 @@ pub mod listing;
 pub mod lock;
 pub mod map;
 pub mod status;
+pub mod summary;
 
 pub use crawl::{
     CrawlSummary, Mirror, PageRead, Remote, RemoteKind, crawl, default_roots, read_record, root,
@@ -22,4 +23,5 @@ pub use error::MirrorError;
 pub use lock::RunLock;
 pub use map::{MapSummary, Node, NodeKind, State, map};
 pub use status::{RootStatus, Status, status};
+pub use summary::{fold, summary};
 pub use url::Url;

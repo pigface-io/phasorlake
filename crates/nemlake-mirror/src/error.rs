@@ -53,6 +53,14 @@ pub enum MirrorError {
         /// The lock file.
         path: String,
     },
+    /// The committed summary is not the summary of the current map.
+    #[error(
+        "{path} is not the summary of the current map; run `nemlake mirror summary` and commit it."
+    )]
+    SummaryStale {
+        /// The summary file.
+        path: String,
+    },
     /// A root is not a folder URL.
     #[error("The root {url} is not a folder: a root is an http(s) URL ending in `/`.")]
     Root {
@@ -96,9 +104,48 @@ impl Diagnose for MirrorError {
             Self::Locked { path } => {
                 Diagnostic::error("mirror.locked", Category::Mirror, msg).with_file(path.clone())
             }
+            Self::SummaryStale { path } => {
+                Diagnostic::error("mirror.summary_stale", Category::Mirror, msg)
+                    .with_file(path.clone())
+            }
             Self::Root { url } => {
                 Diagnostic::error("config.mirror_root", Category::Config, msg).with_url(url.clone())
             }
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn every_error_has_its_code_and_says_where() {
+        let cases = [
+            (
+                MirrorError::CrawlIncomplete {
+                    path: "/m/crawl".into(),
+                },
+                "mirror.crawl_incomplete",
+            ),
+            (
+                MirrorError::Locked {
+                    path: "/m/lock".into(),
+                },
+                "mirror.locked",
+            ),
+            (
+                MirrorError::SummaryStale {
+                    path: "nemweb/map.md".into(),
+                },
+                "mirror.summary_stale",
+            ),
+        ];
+        for (e, code) in cases {
+            let d = e.diagnostic();
+            assert_eq!(d.code, code);
+            assert!(d.file.is_some(), "{code}");
+            assert!(e.to_string().ends_with('.'), "{e}");
         }
     }
 }

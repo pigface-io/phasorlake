@@ -35,7 +35,7 @@ const SEEK_BUFFER: usize = 64 << 10;
 const WRITE_BUFFER: usize = 1 << 20;
 
 /// What a node is.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, serde::Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum NodeKind {
     /// A folder on nemweb, or inside a zip.
@@ -47,7 +47,7 @@ pub enum NodeKind {
 }
 
 /// Where a file of nemweb stands against the archive.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, serde::Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum State {
     /// Listed and archived.
@@ -680,7 +680,7 @@ pub fn tree_line(node: &Node) -> String {
 }
 
 /// Bytes for people: B, KB, MB, GB, TB in powers of 1000.
-fn human(n: u64) -> String {
+pub(crate) fn human(n: u64) -> String {
     const UNITS: [&str; 4] = ["KB", "MB", "GB", "TB"];
     if n < 1000 {
         return format!("{n} B");

@@ -284,6 +284,16 @@ pub enum MirrorCmd {
         #[arg(long = "root")]
         roots: Vec<String>,
     },
+    /// Fold the map into patterns (digit runs as `{n}`) and write it as
+    /// Markdown, small enough to commit.
+    Summary {
+        /// Where to write it.
+        #[arg(long, default_value = "nemweb/map.md")]
+        out: PathBuf,
+        /// Fail if the file there is not the summary of the current map.
+        #[arg(long)]
+        check: bool,
+    },
     /// Pages read, and files archived out of those listed, per root.
     Status {
         /// The roots the crawl used, when not the default ones.

@@ -145,6 +145,7 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 | `mirror.io` | `crates/nemlake-mirror/src/error.rs` |
 | `mirror.locked` | `crates/nemlake-mirror/src/error.rs` |
 | `mirror.record_corrupt` | `crates/nemlake-mirror/src/error.rs` |
+| `mirror.summary_stale` | `crates/nemlake-mirror/src/error.rs` |
 
 ## internal
 

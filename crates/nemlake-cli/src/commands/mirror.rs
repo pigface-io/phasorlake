@@ -47,6 +47,7 @@ pub async fn mirror(cli: &Cli, ctx: &Context, cmd: &MirrorCmd) -> Result<i32> {
             let jobs = cli.jobs.unwrap_or_else(|| ctx.config.effective_jobs());
             map(ctx, &mirror, roots, jobs)
         }
+        MirrorCmd::Summary { out, check } => summary(ctx, &mirror, out, *check),
         MirrorCmd::Status { roots } => status(ctx, &mirror, roots),
     };
     match result {
@@ -214,6 +215,50 @@ fn map(ctx: &Context, mirror: &Mirror, given: &[String], jobs: usize) -> Result<
         );
     }
     Ok(i32::from(s.errors > 0))
+}
+
+fn summary(
+    ctx: &Context,
+    mirror: &Mirror,
+    out: &std::path::Path,
+    check: bool,
+) -> Result<i32, MirrorError> {
+    let text = nemlake_mirror::summary(&mirror.dir().join("map/map.ndjson"))?;
+    if check {
+        if std::fs::read_to_string(out).ok().as_deref() != Some(text.as_str()) {
+            return Err(MirrorError::SummaryStale {
+                path: out.display().to_string(),
+            });
+        }
+    } else {
+        if let Some(parent) = out.parent().filter(|p| !p.as_os_str().is_empty()) {
+            std::fs::create_dir_all(parent).map_err(|e| MirrorError::Io {
+                path: parent.display().to_string(),
+                source: e,
+            })?;
+        }
+        std::fs::write(out, &text).map_err(|e| MirrorError::Io {
+            path: out.display().to_string(),
+            source: e,
+        })?;
+    }
+    if ctx.json {
+        render::json_line(&serde_json::json!({
+            "event": "summary_done",
+            "path": out,
+            "lines": text.lines().count(),
+            "checked": check,
+        }));
+    } else if check {
+        println!("{} is the summary of the current map", out.display());
+    } else {
+        println!(
+            "{} lines written to {}",
+            text.lines().count(),
+            out.display()
+        );
+    }
+    Ok(0)
 }
 
 fn status(ctx: &Context, mirror: &Mirror, given: &[String]) -> Result<i32, MirrorError> {
