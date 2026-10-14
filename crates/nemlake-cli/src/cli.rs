@@ -277,6 +277,13 @@ pub enum MirrorCmd {
         #[arg(long, default_value_t = 15)]
         wait_minutes: u64,
     },
+    /// Write the map of every folder and file, zips opened as folders, to
+    /// map.ndjson and tree.txt under the home's mirror folder; offline.
+    Map {
+        /// The roots the crawl used, when not the default ones.
+        #[arg(long = "root")]
+        roots: Vec<String>,
+    },
     /// Pages read, and files archived out of those listed, per root.
     Status {
         /// The roots the crawl used, when not the default ones.

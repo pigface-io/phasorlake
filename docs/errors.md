@@ -46,10 +46,10 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 
 | code | raised in |
 |---|---|
-| `zip.bad_entry` | `crates/nemlake-decode/src/archive.rs` |
-| `zip.nesting_too_deep` | `crates/nemlake-decode/src/archive.rs` |
+| `zip.bad_entry` | `crates/nemlake-mirror/src/map.rs` |
+| `zip.nesting_too_deep` | `crates/nemlake-mirror/src/map.rs` |
 | `zip.no_csv` | `crates/nemlake-decode/src/archive.rs` |
-| `zip.open_failed` | `crates/nemlake-decode/src/archive.rs` |
+| `zip.open_failed` | `crates/nemlake-mirror/src/map.rs` |
 | `zip.spool_failed` | `crates/nemlake-decode/src/archive.rs` |
 
 ## csv

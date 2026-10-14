@@ -9,12 +9,12 @@ use nemlake_acquire::{FetchError, Fetcher};
 use nemlake_core::Diagnose;
 use nemlake_mirror::{Mirror, MirrorError, Status, Url};
 
-use crate::cli::MirrorCmd;
+use crate::cli::{Cli, MirrorCmd};
 use crate::context::Context;
 use crate::render;
 
 /// `nemlake mirror ...`
-pub async fn mirror(ctx: &Context, cmd: &MirrorCmd) -> Result<i32> {
+pub async fn mirror(cli: &Cli, ctx: &Context, cmd: &MirrorCmd) -> Result<i32> {
     let mirror = Mirror::new(ctx.home.root().join("mirror"));
     let result = match cmd {
         MirrorCmd::Crawl { roots, fresh } => {
@@ -42,6 +42,10 @@ pub async fn mirror(ctx: &Context, cmd: &MirrorCmd) -> Result<i32> {
                 Ok(_lock) => run(ctx, &mirror, roots, *fresh, *refusals, wait).await?,
                 Err(e) => Err(e),
             }
+        }
+        MirrorCmd::Map { roots } => {
+            let jobs = cli.jobs.unwrap_or_else(|| ctx.config.effective_jobs());
+            map(ctx, &mirror, roots, jobs)
         }
         MirrorCmd::Status { roots } => status(ctx, &mirror, roots),
     };
@@ -189,6 +193,27 @@ async fn download(ctx: &Context, fetcher: &Fetcher, mirror: &Mirror) -> Result<i
         );
     }
     Ok(i32::from(!summary.failed.is_empty()))
+}
+
+fn map(ctx: &Context, mirror: &Mirror, given: &[String], jobs: usize) -> Result<i32, MirrorError> {
+    let roots = roots(ctx, given)?;
+    let s = nemlake_mirror::map(mirror, &ctx.archive(), &roots, jobs)?;
+    if ctx.json {
+        render::json_line(&serde_json::json!({ "event": "map_done", "summary": s }));
+    } else {
+        println!(
+            "{} folders, {} files, {} zips; {:.1} GB archived, {} not downloaded, {} no longer on nemweb, {} unreadable; written to {}",
+            s.dirs,
+            s.files,
+            s.zips,
+            s.archived_bytes as f64 / 1e9,
+            s.not_archived,
+            s.gone_upstream,
+            s.errors,
+            mirror.dir().join("map").display(),
+        );
+    }
+    Ok(i32::from(s.errors > 0))
 }
 
 fn status(ctx: &Context, mirror: &Mirror, given: &[String]) -> Result<i32, MirrorError> {

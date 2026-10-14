@@ -11,6 +11,7 @@ pub mod download;
 pub mod error;
 pub mod listing;
 pub mod lock;
+pub mod map;
 pub mod status;
 
 pub use crawl::{
@@ -19,5 +20,6 @@ pub use crawl::{
 pub use download::{DownloadSummary, FileDone, SOURCE, download};
 pub use error::MirrorError;
 pub use lock::RunLock;
+pub use map::{MapSummary, Node, NodeKind, State, map};
 pub use status::{RootStatus, Status, status};
 pub use url::Url;

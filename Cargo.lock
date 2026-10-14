@@ -1540,6 +1540,7 @@ version = "0.1.0"
 name = "nemlake-mirror"
 version = "0.1.0"
 dependencies = [
+ "crc32fast",
  "criterion",
  "futures",
  "memchr",
@@ -1551,6 +1552,7 @@ dependencies = [
  "thiserror",
  "tokio",
  "url",
+ "zip",
 ]
 
 [[package]]
