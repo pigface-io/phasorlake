@@ -27,6 +27,8 @@ pub struct RootStatus {
 /// The state of the mirror.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize)]
 pub struct Status {
+    /// Whether a mirror run holds the lock now.
+    pub running: bool,
     /// Listing pages kept by the current crawl.
     pub pages: usize,
     /// Whether the current crawl has read every page.
@@ -41,6 +43,7 @@ pub struct Status {
 /// against the files in the archive at their listed size.
 pub fn status(mirror: &Mirror, archive: &Archive, roots: &[Url]) -> Result<Status, MirrorError> {
     let mut status = Status {
+        running: mirror.running(),
         pages: count_pages(&mirror.crawl_dir().join("listings")),
         crawl_done: mirror.done_path().exists(),
         roots: roots

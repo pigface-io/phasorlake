@@ -39,6 +39,20 @@ pub enum MirrorError {
         /// Cause.
         message: String,
     },
+    /// Downloading needs a finished crawl.
+    #[error(
+        "The crawl in {path} is not finished; run `nemlake mirror crawl` (or `mirror run`) first."
+    )]
+    CrawlIncomplete {
+        /// The crawl directory.
+        path: String,
+    },
+    /// Another run holds the lock.
+    #[error("Another mirror run holds {path}; wait for it to end, or stop it.")]
+    Locked {
+        /// The lock file.
+        path: String,
+    },
     /// A root is not a folder URL.
     #[error("The root {url} is not a folder: a root is an http(s) URL ending in `/`.")]
     Root {
@@ -74,6 +88,13 @@ impl Diagnose for MirrorError {
                     .with_file(path.clone());
                 d.line = Some(*line);
                 d
+            }
+            Self::CrawlIncomplete { path } => {
+                Diagnostic::error("mirror.crawl_incomplete", Category::Mirror, msg)
+                    .with_file(path.clone())
+            }
+            Self::Locked { path } => {
+                Diagnostic::error("mirror.locked", Category::Mirror, msg).with_file(path.clone())
             }
             Self::Root { url } => {
                 Diagnostic::error("config.mirror_root", Category::Config, msg).with_url(url.clone())

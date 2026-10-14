@@ -7,13 +7,17 @@
 //! twice. [`status()`] counts how far that has got.
 
 pub mod crawl;
+pub mod download;
 pub mod error;
 pub mod listing;
+pub mod lock;
 pub mod status;
 
 pub use crawl::{
     CrawlSummary, Mirror, PageRead, Remote, RemoteKind, crawl, default_roots, read_record, root,
 };
+pub use download::{DownloadSummary, FileDone, SOURCE, download};
 pub use error::MirrorError;
+pub use lock::RunLock;
 pub use status::{RootStatus, Status, status};
 pub use url::Url;

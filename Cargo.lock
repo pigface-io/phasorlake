@@ -1541,6 +1541,7 @@ name = "nemlake-mirror"
 version = "0.1.0"
 dependencies = [
  "criterion",
+ "futures",
  "memchr",
  "nemlake-acquire",
  "nemlake-core",

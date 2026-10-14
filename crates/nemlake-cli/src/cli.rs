@@ -259,6 +259,24 @@ pub enum MirrorCmd {
         #[arg(long)]
         fresh: bool,
     },
+    /// Download every file of the finished crawl into the archive, each once.
+    Download,
+    /// Crawl (carrying on from a cut-off crawl), then download; when nemweb
+    /// refuses (HTTP 403/429), wait and start again.
+    Run {
+        /// Roots to crawl instead of nemweb's Data_Archive/ and Reports/ARCHIVE/.
+        #[arg(long = "root")]
+        roots: Vec<String>,
+        /// Move the current crawl aside and read every page again.
+        #[arg(long)]
+        fresh: bool,
+        /// How many times to wait out a refusal before giving up.
+        #[arg(long, default_value_t = 8)]
+        refusals: u32,
+        /// Minutes to wait after a refusal.
+        #[arg(long, default_value_t = 15)]
+        wait_minutes: u64,
+    },
     /// Pages read, and files archived out of those listed, per root.
     Status {
         /// The roots the crawl used, when not the default ones.

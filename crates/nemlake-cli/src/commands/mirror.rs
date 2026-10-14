@@ -2,9 +2,10 @@
 
 use std::fmt::Write as _;
 use std::io::Write as _;
+use std::time::Duration;
 
 use anyhow::Result;
-use nemlake_acquire::Fetcher;
+use nemlake_acquire::{FetchError, Fetcher};
 use nemlake_core::Diagnose;
 use nemlake_mirror::{Mirror, MirrorError, Status, Url};
 
@@ -18,21 +19,46 @@ pub async fn mirror(ctx: &Context, cmd: &MirrorCmd) -> Result<i32> {
     let result = match cmd {
         MirrorCmd::Crawl { roots, fresh } => {
             let fetcher = ctx.fetcher(None)?;
-            crawl(ctx, &fetcher, &mirror, roots, *fresh).await
+            match mirror.lock() {
+                Ok(_lock) => crawl(ctx, &fetcher, &mirror, roots, *fresh).await,
+                Err(e) => Err(e),
+            }
+        }
+        MirrorCmd::Download => {
+            let fetcher = ctx.fetcher(None)?;
+            match mirror.lock() {
+                Ok(_lock) => download(ctx, &fetcher, &mirror).await,
+                Err(e) => Err(e),
+            }
+        }
+        MirrorCmd::Run {
+            roots,
+            fresh,
+            refusals,
+            wait_minutes,
+        } => {
+            let wait = Duration::from_secs(wait_minutes * 60);
+            match mirror.lock() {
+                Ok(_lock) => run(ctx, &mirror, roots, *fresh, *refusals, wait).await?,
+                Err(e) => Err(e),
+            }
         }
         MirrorCmd::Status { roots } => status(ctx, &mirror, roots),
     };
     match result {
         Ok(code) => Ok(code),
         Err(e) => {
-            let d = e.diagnostic();
-            if ctx.json {
-                render::json_line(&d);
-            } else {
-                eprintln!("{}", d.render());
-            }
+            report(ctx, &e.diagnostic());
             Ok(1)
         }
+    }
+}
+
+fn report(ctx: &Context, d: &nemlake_core::Diagnostic) {
+    if ctx.json {
+        render::json_line(d);
+    } else {
+        eprintln!("{}", d.render());
     }
 }
 
@@ -41,6 +67,51 @@ fn roots(ctx: &Context, given: &[String]) -> Result<Vec<Url>, MirrorError> {
         nemlake_mirror::default_roots(&ctx.config.sources.nem_base_url)
     } else {
         given.iter().map(|r| nemlake_mirror::root(r)).collect()
+    }
+}
+
+/// Crawls, then downloads; a refusal waits `wait` and starts both again
+/// with a new fetcher, at most `refusals` times. The crawl carries on from
+/// its kept pages and the download skips archived files, so starting again
+/// repeats no request that succeeded.
+async fn run(
+    ctx: &Context,
+    mirror: &Mirror,
+    given: &[String],
+    fresh: bool,
+    refusals: u32,
+    wait: Duration,
+) -> Result<Result<i32, MirrorError>> {
+    let mut fresh = fresh;
+    let mut refused = 0;
+    loop {
+        let fetcher = ctx.fetcher(None)?;
+        let attempt = async {
+            crawl(ctx, &fetcher, mirror, given, fresh).await?;
+            download(ctx, &fetcher, mirror).await
+        };
+        match attempt.await {
+            Err(MirrorError::Fetch(e @ FetchError::Blocked { .. })) if refused < refusals => {
+                refused += 1;
+                report(ctx, &e.diagnostic());
+                if ctx.json {
+                    render::json_line(&serde_json::json!({
+                        "event": "waiting",
+                        "refusals": refused,
+                        "seconds": wait.as_secs(),
+                    }));
+                } else {
+                    eprintln!(
+                        "nemweb refused a request ({refused} of {refusals}); waiting {} minutes",
+                        wait.as_secs() / 60
+                    );
+                }
+                tokio::time::sleep(wait).await;
+                // The crawl moved aside already; a second move would lose it.
+                fresh = false;
+            }
+            other => return Ok(other),
+        }
     }
 }
 
@@ -86,6 +157,40 @@ async fn crawl(
     Ok(0)
 }
 
+async fn download(ctx: &Context, fetcher: &Fetcher, mirror: &Mirror) -> Result<i32, MirrorError> {
+    let json = ctx.json;
+    let progress = ctx.progress;
+    let summary = nemlake_mirror::download(fetcher, mirror, ctx.config.downloads, |f| {
+        if json {
+            render::json_line(&serde_json::json!({ "event": "file_done", "file": f }));
+        } else if progress {
+            let mut err = std::io::stderr().lock();
+            let _ = write!(err, "\r{}/{} files   ", f.done, f.total);
+            let _ = err.flush();
+        }
+    })
+    .await?;
+    for d in &summary.failed {
+        report(ctx, d);
+    }
+    if json {
+        render::json_line(&serde_json::json!({ "event": "download_done", "summary": summary }));
+    } else {
+        if progress {
+            eprintln!();
+        }
+        println!(
+            "{} files: {} archived already, {} downloaded ({:.1} GB), {} failed",
+            summary.files,
+            summary.cached,
+            summary.downloaded,
+            summary.bytes as f64 / 1e9,
+            summary.failed.len(),
+        );
+    }
+    Ok(i32::from(!summary.failed.is_empty()))
+}
+
 fn status(ctx: &Context, mirror: &Mirror, given: &[String]) -> Result<i32, MirrorError> {
     let roots = roots(ctx, given)?;
     let s = nemlake_mirror::status(mirror, &ctx.archive(), &roots)?;
@@ -98,12 +203,13 @@ fn status(ctx: &Context, mirror: &Mirror, given: &[String]) -> Result<i32, Mirro
 }
 
 fn status_text(s: &Status) -> String {
+    let run = if s.running { "running" } else { "not running" };
     let crawl = if s.crawl_done {
         "complete"
     } else {
         "in progress"
     };
-    let mut out = format!("crawl {crawl}: {} pages read\n", s.pages);
+    let mut out = format!("mirror {run}; crawl {crawl}: {} pages read\n", s.pages);
     if !s.crawl_done {
         return out;
     }

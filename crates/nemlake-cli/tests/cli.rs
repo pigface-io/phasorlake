@@ -1057,3 +1057,51 @@ fn the_mirror_crawls_kept_pages_and_reports_its_status() {
     let (code, _, _) = cli.code(&["mirror", "status"]);
     assert_eq!(code, 0);
 }
+
+/// `mirror run` crawls and downloads; offline, a file the archive lacks
+/// fails and one it holds is counted.
+#[test]
+fn the_mirror_downloads_what_the_crawl_listed() {
+    let cli = Cli::new();
+    let root = "https://h/A/";
+    let (code, _, err) = cli.code(&["--offline", "mirror", "download"]);
+    assert_eq!(code, 1);
+    assert!(err.contains("mirror.crawl_incomplete"), "{err}");
+
+    let pages = cli.home.path().join("mirror/crawl/listings/h/A");
+    std::fs::create_dir_all(&pages).unwrap();
+    std::fs::write(
+        pages.join("index.html"),
+        "<pre> Monday, October 12, 2026 10:45 AM 9 <A HREF=\"/A/a.zip\">a.zip</A><br></pre>",
+    )
+    .unwrap();
+    let (code, out, err) = cli.code(&["--offline", "mirror", "run", "--root", root]);
+    assert_eq!(code, 1);
+    assert!(
+        out.contains("1 files: 0 archived already, 0 downloaded (0.0 GB), 1 failed"),
+        "{out}"
+    );
+    assert!(err.contains("net.offline"), "{err}");
+
+    let dir = cli.home.path().join("archive/h/A");
+    std::fs::create_dir_all(&dir).unwrap();
+    std::fs::write(dir.join("a.zip"), b"zip bytes").unwrap();
+    std::fs::write(
+        dir.join("a.zip.json"),
+        format!(
+            r#"{{"url":"https://h/A/a.zip","size":9,"sha256":"{}","fetched_at":"2026-10-15T10:00:05Z","tool":"nemlake"}}"#,
+            nemlake_acquire::archive::sha256_hex(b"zip bytes")
+        ),
+    )
+    .unwrap();
+    let out = cli.ok(&["--offline", "--json", "mirror", "run", "--root", root]);
+    assert!(out.contains("\"event\":\"file_done\""), "{out}");
+    assert!(out.contains("\"cached\":1"), "{out}");
+    let out = cli.ok(&["--offline", "mirror", "download"]);
+    assert!(out.contains("1 archived already"), "{out}");
+    let status = cli.ok(&["mirror", "status", "--root", root]);
+    assert!(
+        status.contains("mirror not running; crawl complete"),
+        "{status}"
+    );
+}
