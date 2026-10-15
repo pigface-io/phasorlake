@@ -200,6 +200,9 @@ fn a_run_waits_out_failures_then_compare_map_and_summary() {
     let n_whole = zip_of(&[("N/t2.zip", &other), ("N/extra.txt", b"only here")]);
     srv.route("/A/N/", Reply::Ok(page(&[("/A/N/t2.zip", Some(t2.len()))])));
     srv.route("/A/N/t2.zip", Reply::Ok(t2.clone()));
+    // Peeking N.zip fails on the network the first time (both tries).
+    srv.route("/A/N.zip", Reply::Status(500));
+    srv.route("/A/N.zip", Reply::Status(500));
     srv.route("/A/N.zip", Reply::Ok(n_whole.clone()));
     srv.route("/A/", Reply::Status(403));
     srv.route(
@@ -245,6 +248,14 @@ fn a_run_waits_out_failures_then_compare_map_and_summary() {
         waiting.contains("0 compared, 2 waiting for downloads"),
         "{waiting}"
     );
+    let (code, out, _) = cli.code(&["--json", "peek"]);
+    assert_eq!(code, 1);
+    assert!(out.contains("\"event\":\"zip_peeked\""), "{out}");
+    assert!(out.contains("net.retries_exhausted"), "{out}");
+    let peeked = cli.run(&["--progress", "peek"]);
+    assert!(peeked.status.success());
+    assert!(String::from_utf8_lossy(&peeked.stderr).contains("1/1 zips peeked"));
+    assert!(String::from_utf8_lossy(&peeked.stdout).contains("1 zips peeked: 1 read"));
     let out = cli.run(&["--progress", "run", "--wait-minutes", "0", "--root", &root]);
     let (stdout, stderr) = (
         String::from_utf8_lossy(&out.stdout),
@@ -254,6 +265,7 @@ fn a_run_waits_out_failures_then_compare_map_and_summary() {
     assert!(stderr.contains("mirror.files_failed"), "{stderr}");
     assert!(stderr.contains("waiting 0 minutes"), "{stderr}");
     assert!(stderr.contains("/5 files"), "{stderr}");
+    assert!(stdout.contains("0 zips peeked"), "{stdout}");
     assert!(
         stdout.contains("5 files: 4 archived already, 0 removed as duplicates, 1 downloaded"),
         "{stdout}"

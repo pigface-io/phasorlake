@@ -16,6 +16,9 @@ what exists.
 - **Crawl**: reads every listing page under the roots and records every
   folder and file. Nothing is filtered, and a listing line it cannot read
   stops it, so no link is passed over quietly.
+- **Peek**: what every zip holds before it is downloaded: its central
+  directory, read by ranged requests from the end of the file. Nothing is
+  decompressed.
 - **Download**: every listed file, once, paced (one request per
   `request_interval_ms`), stopping when nemweb refuses (HTTP 403/429) and
   waiting it out. Each file is checked against its `Content-Length` and kept
@@ -48,6 +51,7 @@ the pages it kept, and archived files are never downloaded again.
 {home}/mirror/config.toml                downloads, request_interval_ms, attempts, backoff_ms, read_timeout_secs, base_url, user_agent_suffix, jobs
 {home}/mirror/crawl/listings/…           each listing page as served
 {home}/mirror/crawl/remote.ndjson        every folder and file the crawl found
+{home}/mirror/peek.ndjson                every zip's entries, read before download
 {home}/mirror/removed.ndjson             zips removed as the same as their folders
 {home}/mirror/map/map.ndjson, tree.txt   the catalog                              (docs/catalog.md)
 ```

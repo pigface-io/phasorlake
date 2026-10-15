@@ -19,6 +19,7 @@ pub mod listing;
 pub mod lock;
 pub mod map;
 pub mod net;
+pub mod peek;
 pub mod status;
 pub mod summary;
 #[cfg(test)]
@@ -34,6 +35,7 @@ pub use download::{DownloadSummary, FileDone, download};
 pub use error::MirrorError;
 pub use lock::RunLock;
 pub use map::{MapSummary, Node, NodeKind, State, map};
+pub use peek::{PeekSummary, Peeked, ZipPeeked, peek, read_peeks};
 pub use status::{RootStatus, Status, status};
 pub use summary::{fold, summary};
 pub use url::Url;

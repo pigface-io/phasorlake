@@ -101,6 +101,11 @@ pub async fn run_command(cli: &Cli) -> Result<i32> {
             let pass = async { download(ctx, &fetcher, &mirror).await.map(|(code, _)| code) };
             locked(&mirror, pass).await
         }
+        Command::Peek => {
+            let fetcher = ctx.fetcher();
+            let pass = async { peek(ctx, &fetcher, &mirror).await.map(|(code, _)| code) };
+            locked(&mirror, pass).await
+        }
         Command::Run {
             roots,
             fresh,
@@ -170,7 +175,12 @@ async fn run(
         let fetcher = ctx.fetcher();
         let attempt = async {
             crawl(ctx, &fetcher, mirror, given, fresh).await?;
-            download(ctx, &fetcher, mirror).await
+            // One fetcher paces both: peek's small requests fit between
+            // the downloads.
+            let (peeked, downloaded) =
+                tokio::join!(peek(ctx, &fetcher, mirror), download(ctx, &fetcher, mirror));
+            let ((p_code, p_net), (d_code, d_net)) = (peeked?, downloaded?);
+            Ok::<_, MirrorError>((p_code.max(d_code), p_net || d_net))
         };
         let d = match attempt.await {
             Ok((code, false)) => return Ok(code),
@@ -265,6 +275,54 @@ async fn crawl(
     Ok(0)
 }
 
+/// Peeks the zips not yet downloaded; the exit code, and whether a zip
+/// failed on the network, which passes with time.
+async fn peek(
+    ctx: &Context,
+    fetcher: &Fetcher,
+    mirror: &Mirror,
+) -> Result<(i32, bool), MirrorError> {
+    let json = ctx.json;
+    let progress = ctx.progress;
+    let summary = nemweb_mirror::peek(fetcher, mirror, |z| {
+        if json {
+            render::json_line(&serde_json::json!({ "event": "zip_peeked", "zip": z }));
+        } else if progress {
+            let mut err = std::io::stderr().lock();
+            let _ = write!(err, "\r{}/{} zips peeked   ", z.done, z.total);
+            let _ = err.flush();
+        }
+    })
+    .await?;
+    for d in &summary.failed {
+        report(ctx, d);
+    }
+    if json {
+        render::json_line(&serde_json::json!({ "event": "peek_done", "summary": summary }));
+    } else {
+        if progress {
+            eprintln!();
+        }
+        println!(
+            "{} zips peeked: {} read, {} not zips or damaged, {} failed",
+            summary.zips,
+            summary.read,
+            summary.unreadable,
+            summary.failed.len(),
+        );
+    }
+    let network = summary.failed.iter().any(passes_with_time);
+    Ok((i32::from(!summary.failed.is_empty()), network))
+}
+
+/// Whether a failure on the network may pass if asked again later.
+fn passes_with_time(d: &nemweb_mirror::Diagnostic) -> bool {
+    matches!(
+        d.code.as_ref(),
+        "net.retries_exhausted" | "net.timeout" | "net.connect" | "net.body"
+    )
+}
+
 /// Downloads the crawl's files; the exit code, and whether a file failed
 /// on the network, which passes with time.
 async fn download(
@@ -303,12 +361,7 @@ async fn download(
             summary.failed.len(),
         );
     }
-    let network = summary.failed.iter().any(|d| {
-        matches!(
-            d.code.as_ref(),
-            "net.retries_exhausted" | "net.timeout" | "net.connect" | "net.body"
-        )
-    });
+    let network = summary.failed.iter().any(passes_with_time);
     Ok((i32::from(!summary.failed.is_empty()), network))
 }
 

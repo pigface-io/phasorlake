@@ -46,8 +46,12 @@ pub enum Command {
     },
     /// Download every file of the finished crawl into the archive, each once.
     Download,
-    /// Crawl (carrying on from a cut-off crawl), then download; when nemweb
-    /// refuses (HTTP 403/429) or the network fails, wait and start again.
+    /// Read the central directory of every zip not yet downloaded, by
+    /// ranged requests, into peek.ndjson.
+    Peek,
+    /// Crawl (carrying on from a cut-off crawl), then peek and download
+    /// together; when nemweb refuses (HTTP 403/429) or the network fails,
+    /// wait and start again.
     Run {
         /// Roots to crawl instead of nemweb's Data_Archive/ and Reports/ARCHIVE/.
         #[arg(long = "root")]
