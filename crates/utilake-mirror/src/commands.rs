@@ -196,12 +196,13 @@ async fn run(ctx: &Context, mirror: &Mirror, plan: &RunPlan<'_>) -> Result<i32, 
     let mut fresh = plan.fresh;
     let mut refused = 0;
     loop {
-        let fetcher = ctx.fetcher();
+        let (tx, rx) = tokio::sync::mpsc::channel(4096);
+        let fetcher = ctx.fetcher().with_events(tx);
         let attempt = async {
             crawl(ctx, &fetcher, mirror, given, fresh).await?;
             // The counts `status` reads while this runs: counted once,
             // kept up to date from what peek and download do.
-            let tracker = RefCell::new(Tracker::start(ctx, mirror, given)?);
+            let tracker = RefCell::new(Tracker::start(ctx, mirror, given, rx)?);
             // One fetcher paces both: peek's small requests fit between
             // the downloads.
             let (peeked, downloaded) = tokio::join!(
@@ -654,14 +655,23 @@ pub struct Tracker {
     peeked_before: usize,
     written: std::time::Instant,
     every: Duration,
+    /// The fetcher's progress, and the bytes so far of each file in flight.
+    events: tokio::sync::mpsc::Receiver<nemweb_mirror::net::Event>,
+    flying: std::collections::HashMap<String, u64>,
 }
 
 impl Tracker {
     /// Counts everything once and writes it.
-    fn start(ctx: &Context, mirror: &Mirror, given: &[String]) -> Result<Self, MirrorError> {
+    fn start(
+        ctx: &Context,
+        mirror: &Mirror,
+        given: &[String],
+        events: tokio::sync::mpsc::Receiver<nemweb_mirror::net::Event>,
+    ) -> Result<Self, MirrorError> {
         let roots = roots(ctx, given)?;
         let mut status = nemweb_mirror::status(mirror, &ctx.archive(), &roots)?;
-        let peeked_before = nemweb_mirror::read_peeks(&mirror.peek_path())?.len();
+        // Listings that still hold: older ones are peeked again this pass.
+        let peeked_before = nemweb_mirror::peek::current(mirror)?.len();
         status.peek = Some(PeekCount {
             done: peeked_before,
             total: peeked_before,
@@ -672,16 +682,21 @@ impl Tracker {
             peeked_before,
             written: std::time::Instant::now(),
             every: Duration::from_secs(ctx.config.progress_every_secs),
+            events,
+            flying: std::collections::HashMap::new(),
         };
         t.write();
         Ok(t)
     }
 
     fn downloaded(&mut self, f: &nemweb_mirror::FileDone<'_>) {
+        // Its last progress may still be queued: take it before it is done.
+        self.drain();
+        self.flying.remove(f.url);
         if !f.cached {
             self.status.add_download(f.url, f.bytes);
-            self.tick();
         }
+        self.tick();
     }
 
     fn peeked(&mut self, done: usize, total: usize) {
@@ -692,7 +707,20 @@ impl Tracker {
         self.tick();
     }
 
+    /// Takes the fetcher's progress so far.
+    fn drain(&mut self) {
+        use nemweb_mirror::net::Event;
+        while let Ok(e) = self.events.try_recv() {
+            match e {
+                Event::DownloadStarted { url, .. } => self.flying.insert(url, 0),
+                Event::DownloadProgress { url, bytes } => self.flying.insert(url, bytes),
+            };
+        }
+    }
+
     fn tick(&mut self) {
+        self.drain();
+        self.status.downloading = Some(self.flying.values().sum());
         if self.written.elapsed() >= self.every {
             self.write();
             self.written = std::time::Instant::now();
@@ -748,6 +776,9 @@ fn status_text(s: &Status) -> String {
     }
     if let Some(p) = s.peek {
         let _ = writeln!(out, "zips peeked: {}/{}", p.done, p.total);
+    }
+    if let Some(b) = s.downloading.filter(|b| *b > 0) {
+        let _ = writeln!(out, "downloading now: {:.2} GB so far", b as f64 / 1e9);
     }
     if !s.crawl_done {
         return out;

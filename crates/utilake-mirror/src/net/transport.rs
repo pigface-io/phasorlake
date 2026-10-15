@@ -35,8 +35,13 @@ pub struct HttpResponse {
 pub struct Span {
     /// The first byte.
     pub start: u64,
-    /// One past the last byte.
+    /// One past the last byte; [`Span::TO_END`] for the rest of the file.
     pub end: u64,
+}
+
+impl Span {
+    /// An `end` that asks for everything from `start` on.
+    pub const TO_END: u64 = u64::MAX;
 }
 
 /// Moves bytes.
@@ -78,7 +83,12 @@ impl Transport for ReqwestTransport {
     async fn get(&self, url: &str, range: Option<Span>) -> Result<HttpResponse, FetchError> {
         let mut request = self.client.get(url);
         if let Some(r) = range {
-            request = request.header("Range", format!("bytes={}-{}", r.start, r.end - 1));
+            let last = if r.end == Span::TO_END {
+                String::new()
+            } else {
+                (r.end - 1).to_string()
+            };
+            request = request.header("Range", format!("bytes={}-{last}", r.start));
         }
         let resp = request.send().await.map_err(|e| {
             if e.is_timeout() {

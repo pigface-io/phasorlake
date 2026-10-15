@@ -195,11 +195,16 @@ impl Fetcher {
             source,
         })?;
         let part = Archive::part_path(&path);
-        let streamed = self
-            .get_with_retries(url, None, |resp| {
-                stream_to_file(url, resp, &part, self.events.clone())
-            })
-            .await?;
+        let streamed = match self.resume(url, &part).await? {
+            Some(s) => s,
+            None => {
+                self.get_with_retries(url, None, |resp| {
+                    stream_to_file(url, resp, &part, 0, self.events.clone())
+                })
+                .await?
+            }
+        };
+        let _ = std::fs::remove_file(part_meta(&part));
         std::fs::rename(&part, &path).map_err(|source| FetchError::CacheIo {
             path: path.display().to_string(),
             source,
@@ -226,6 +231,48 @@ impl Fetcher {
             etag: sidecar.etag,
             last_modified: sidecar.last_modified,
         })
+    }
+
+    /// The rest of a download a run before left in `part`: asked for from
+    /// where it stops, appended when the server answers with that range of
+    /// the same file (its size, ETag and Last-Modified as when the part was
+    /// begun). None when there is no part, or it cannot be continued: then
+    /// the file is downloaded from the start.
+    async fn resume(&self, url: &str, part: &Path) -> Result<Option<Streamed>, FetchError> {
+        let from = std::fs::metadata(part).map_or(0, |m| m.len());
+        let begun: Option<PartMeta> = std::fs::read(part_meta(part))
+            .ok()
+            .and_then(|b| serde_json::from_slice(&b).ok());
+        let Some(begun) = begun.filter(|_| from > 0) else {
+            return Ok(None);
+        };
+        let span = Span {
+            start: from,
+            end: Span::TO_END,
+        };
+        let attempt = self
+            .get_with_retries(url, Some(span), |resp| {
+                let same = resp.total_size == begun.size
+                    && resp.etag == begun.etag
+                    && resp.last_modified == begun.last_modified;
+                async move {
+                    if !same {
+                        return Ok(None);
+                    }
+                    stream_to_file(url, resp, part, from, self.events.clone())
+                        .await
+                        .map(Some)
+                }
+            })
+            .await;
+        match attempt {
+            Ok(done) => Ok(done),
+            // The whole file instead of the rest, or a range past its end.
+            Err(
+                FetchError::RangeUnsupported { .. } | FetchError::HttpStatus { status: 416, .. },
+            ) => Ok(None),
+            Err(e) => Err(e),
+        }
     }
 
     /// GETs `url` (only `range` of it, when given) and hands the answer to
@@ -369,18 +416,58 @@ struct Streamed {
     last_modified: Option<String>,
 }
 
+/// What a download said of the file when it began: kept beside its part,
+/// so a later run continues it only if the server still has that file.
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+struct PartMeta {
+    size: Option<u64>,
+    etag: Option<String>,
+    last_modified: Option<String>,
+}
+
+/// Where a part's [`PartMeta`] is kept.
+fn part_meta(part: &Path) -> PathBuf {
+    let mut s = part.as_os_str().to_owned();
+    s.push(".json");
+    PathBuf::from(s)
+}
+
 /// Writes the chunks it receives to `part` through a 1 MiB buffer, taking
 /// their sha256 and CRC-32 on the way, and makes the file durable; the
-/// hashes and the size. Runs on a blocking thread.
+/// hashes and the size. With `from`, the part's first `from` bytes are kept
+/// (and hashed first) and the chunks follow them. Runs on a blocking thread.
 fn spool(
     part: &Path,
+    from: u64,
     mut rx: tokio::sync::mpsc::Receiver<Bytes>,
 ) -> std::io::Result<(String, u32, u64)> {
-    let file = std::fs::File::create(part)?;
-    let mut out = std::io::BufWriter::with_capacity(WRITE_BUFFER, file);
     let mut hasher = Sha256::new();
     let mut crc = crc32fast::Hasher::new();
-    let mut size = 0u64;
+    let file = if from > 0 {
+        use std::io::{Read as _, Seek as _};
+        let mut f = std::fs::OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(part)?;
+        f.set_len(from)?;
+        let mut buf = vec![0u8; WRITE_BUFFER];
+        let mut kept = (&mut f).take(from);
+        loop {
+            match kept.read(&mut buf)? {
+                0 => break,
+                n => {
+                    hasher.update(&buf[..n]);
+                    crc.update(&buf[..n]);
+                }
+            }
+        }
+        f.seek(std::io::SeekFrom::End(0))?;
+        f
+    } else {
+        std::fs::File::create(part)?
+    };
+    let mut out = std::io::BufWriter::with_capacity(WRITE_BUFFER, file);
+    let mut size = from;
     while let Some(chunk) = rx.blocking_recv() {
         hasher.update(&chunk);
         crc.update(&chunk);
@@ -398,9 +485,20 @@ async fn stream_to_file(
     url: &str,
     resp: HttpResponse,
     part: &Path,
+    from: u64,
     events: Option<tokio::sync::mpsc::Sender<Event>>,
 ) -> Result<Streamed, FetchError> {
-    let total = resp.content_length;
+    // The whole file's size: what is kept plus what comes.
+    let total = resp.content_length.map(|n| n + from);
+    if from == 0 {
+        let meta = PartMeta {
+            size: total,
+            etag: resp.etag.clone(),
+            last_modified: resp.last_modified.clone(),
+        };
+        let text = serde_json::to_vec(&meta).expect("a PartMeta serialises");
+        let _ = std::fs::write(part_meta(part), text);
+    }
     if let Some(tx) = &events {
         let _ = tx.try_send(Event::DownloadStarted {
             url: url.to_owned(),
@@ -409,7 +507,7 @@ async fn stream_to_file(
     }
     let (tx, rx) = tokio::sync::mpsc::channel::<Bytes>(SPOOL_CHUNKS);
     let owned = part.to_owned();
-    let writer = tokio::task::spawn_blocking(move || spool(&owned, rx));
+    let writer = tokio::task::spawn_blocking(move || spool(&owned, from, rx));
     let mut body = resp.body;
     let mut received: u64 = 0;
     let mut last_event = 0u64;
@@ -441,12 +539,10 @@ async fn stream_to_file(
     let written = writer
         .await
         .unwrap_or_else(|e| Err(std::io::Error::other(e)));
-    let fail = |e: FetchError| {
-        let _ = std::fs::remove_file(part);
-        Err(e)
-    };
+    // A part cut off is kept, its bytes good so far, for a later run to
+    // continue; one of the wrong length is not.
     if let Some(message) = broken {
-        return fail(FetchError::Body {
+        return Err(FetchError::Body {
             url: url.to_owned(),
             received,
             message,
@@ -455,7 +551,7 @@ async fn stream_to_file(
     let (sha256, crc32, size) = match written {
         Ok(w) => w,
         Err(source) => {
-            return fail(FetchError::CacheIo {
+            return Err(FetchError::CacheIo {
                 path: part.display().to_string(),
                 source,
             });
@@ -464,7 +560,9 @@ async fn stream_to_file(
     if let Some(expected) = total
         && expected != size
     {
-        return fail(FetchError::ContentLength {
+        let _ = std::fs::remove_file(part);
+        let _ = std::fs::remove_file(part_meta(part));
+        return Err(FetchError::ContentLength {
             url: url.to_owned(),
             expected,
             received: size,
@@ -773,6 +871,106 @@ mod tests {
         assert!(matches!(
             off.fetch_range("https://h/z.zip", span).await,
             Err(FetchError::Offline { .. })
+        ));
+    }
+
+    #[tokio::test]
+    async fn a_cut_off_download_is_continued_where_it_stopped() {
+        let dir = tempfile::tempdir().unwrap();
+        let url = "https://h/r.zip";
+        let body: Vec<u8> = (0..50_000u32).map(|i| (i % 251) as u8).collect();
+        let t = Arc::new(StaticTransport::default());
+        let mut cut = Canned::ok(&body);
+        cut.fail_after = Some(20_000);
+        t.add(url, cut);
+        t.add(url, Canned::ok(&body));
+        let mut once = fast();
+        once.attempts = 1;
+        let f = Fetcher::new(Arc::new(t.clone()), Archive::new(dir.path()), once);
+        assert!(f.fetch(&remote(url)).await.is_err());
+        let path = f.archive().path_for(url);
+        let part = Archive::part_path(&path);
+        assert_eq!(std::fs::metadata(&part).unwrap().len(), 20_000);
+        assert!(part_meta(&part).exists());
+        // The next run asks only for the rest, and the file is whole.
+        let local = f.fetch(&remote(url)).await.unwrap();
+        assert_eq!(std::fs::read(&local.path).unwrap(), body);
+        assert_eq!(local.sha256, sha256_hex(&body));
+        let sc = Archive::read_sidecar(&local.path).unwrap().unwrap();
+        assert_eq!(sc.crc32, Some(crc32fast::hash(&body)));
+        assert!(!part.exists() && !part_meta(&part).exists());
+        assert_eq!(t.request_count(), 2);
+    }
+
+    #[tokio::test]
+    async fn a_part_that_cannot_be_continued_is_begun_again() {
+        let dir = tempfile::tempdir().unwrap();
+        let url = "https://h/s.zip";
+        let body = b"0123456789".to_vec();
+        let leave = |f: &Fetcher, bytes: &[u8], meta: Option<&str>| {
+            let part = Archive::part_path(&f.archive().path_for(url));
+            std::fs::create_dir_all(part.parent().unwrap()).unwrap();
+            std::fs::write(&part, bytes).unwrap();
+            match meta {
+                Some(m) => std::fs::write(part_meta(&part), m).unwrap(),
+                None => {
+                    let _ = std::fs::remove_file(part_meta(&part));
+                }
+            }
+        };
+        let same =
+            r#"{"size":10,"etag":"\"etag\"","last_modified":"Tue, 13 Feb 2024 08:27:00 GMT"}"#;
+        let fresh_fetch = |t: &Arc<StaticTransport>| {
+            Fetcher::new(Arc::new(t.clone()), Archive::new(dir.path()), fast())
+        };
+        // The file changed since: begun again.
+        let t = Arc::new(StaticTransport::default());
+        t.add(url, Canned::ok(&body));
+        let f = fresh_fetch(&t);
+        leave(
+            &f,
+            b"XXXX",
+            Some(r#"{"size":10,"etag":"\"other\"","last_modified":null}"#),
+        );
+        let local = f.fetch(&remote(url)).await.unwrap();
+        assert_eq!(std::fs::read(&local.path).unwrap(), body);
+        std::fs::remove_file(&local.path).unwrap();
+        std::fs::remove_file(Archive::sidecar_path(&local.path)).unwrap();
+        // A server that sends the whole file for a range: begun again.
+        let t = Arc::new(StaticTransport::default());
+        let mut whole = Canned::ok(&body);
+        whole.ranges = false;
+        t.add(url, whole);
+        let f = fresh_fetch(&t);
+        leave(&f, b"0123", Some(same));
+        let local = f.fetch(&remote(url)).await.unwrap();
+        assert_eq!(std::fs::read(&local.path).unwrap(), body);
+        std::fs::remove_file(&local.path).unwrap();
+        std::fs::remove_file(Archive::sidecar_path(&local.path)).unwrap();
+        // A range past the end (416), and a part with no record of how it
+        // began: begun again.
+        let t = Arc::new(StaticTransport::default());
+        t.add(url, Canned::status(416));
+        t.add(url, Canned::ok(&body));
+        let f = fresh_fetch(&t);
+        leave(&f, b"0123456789AB", Some(same));
+        let local = f.fetch(&remote(url)).await.unwrap();
+        assert_eq!(std::fs::read(&local.path).unwrap(), body);
+        std::fs::remove_file(&local.path).unwrap();
+        std::fs::remove_file(Archive::sidecar_path(&local.path)).unwrap();
+        leave(&f, b"0123", None);
+        let local = f.fetch(&remote(url)).await.unwrap();
+        assert_eq!(std::fs::read(&local.path).unwrap(), body);
+        std::fs::remove_file(&local.path).unwrap();
+        std::fs::remove_file(Archive::sidecar_path(&local.path)).unwrap();
+        // The resume itself refused: the error, not a fresh start.
+        let t = Arc::new(StaticTransport::default());
+        t.add(url, Canned::status(403));
+        let f = fresh_fetch(&t);
+        leave(&f, b"0123", Some(same));
+        assert!(matches!(
+            f.fetch(&remote(url)).await,
+            Err(FetchError::Blocked { .. })
         ));
     }
 }

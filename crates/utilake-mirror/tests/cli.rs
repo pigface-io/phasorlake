@@ -446,6 +446,7 @@ fn the_lock_the_home_and_the_config() {
     let mut kept = nemweb_mirror::Status {
         crawl_done: true,
         peek: Some(nemweb_mirror::PeekCount { done: 2, total: 5 }),
+        downloading: Some(1_500_000_000),
         ..nemweb_mirror::Status::default()
     };
     kept.pages = 7;
@@ -456,6 +457,7 @@ fn the_lock_the_home_and_the_config() {
         "{out}"
     );
     assert!(out.contains("7 pages read"), "{out}");
+    assert!(out.contains("downloading now: 1.50 GB so far"), "{out}");
     let full = cli.ok(&["status", "--full"]);
     assert!(!full.contains("kept by the run"), "{full}");
     drop(held);
@@ -548,12 +550,22 @@ fn a_duplicate_is_ruled_on_from_its_listing_and_never_downloaded() {
 fn a_run_keeps_its_counts_for_status() {
     let srv = Server::start();
     let z = zip_of(&[("a.csv", b"1\n")]);
-    srv.route("/Z/", Reply::Ok(page(&[("/Z/z.zip", Some(z.len()))])));
+    // A file big enough that the fetcher reports its progress on the way.
+    let big = vec![7u8; 9 << 20];
+    srv.route(
+        "/Z/",
+        Reply::Ok(page(&[
+            ("/Z/z.zip", Some(z.len())),
+            ("/Z/big.bin", Some(big.len())),
+        ])),
+    );
     srv.route("/Z/z.zip", Reply::Ok(z.clone()));
+    srv.route("/Z/big.bin", Reply::Ok(big));
     let cli = Cli::new();
     cli.config(FAST);
     cli.ok(&["run", "--delete-duplicates", "--root", &srv.url("/Z/")]);
     let kept = std::fs::read_to_string(cli.home.path().join("mirror/progress.json")).unwrap();
     assert!(kept.contains("\"peek\":{\"done\":1,\"total\":1}"), "{kept}");
-    assert!(kept.contains("\"archived_files\":1"), "{kept}");
+    assert!(kept.contains("\"archived_files\":2"), "{kept}");
+    assert!(kept.contains("\"downloading\":0"), "{kept}");
 }

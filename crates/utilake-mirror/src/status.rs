@@ -47,6 +47,9 @@ pub struct Status {
     /// Zips peeked, when a run counts them.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub peek: Option<PeekCount>,
+    /// Bytes of the files being downloaded now, when a run counts them.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub downloading: Option<u64>,
     /// Whether a mirror run holds the lock now.
     pub running: bool,
     /// Listing pages kept by the current crawl.
@@ -65,6 +68,7 @@ pub fn status(mirror: &Mirror, archive: &Archive, roots: &[Url]) -> Result<Statu
     let mut status = Status {
         as_of: None,
         peek: None,
+        downloading: None,
         running: mirror.running(),
         pages: count_pages(&mirror.crawl_dir().join("listings")),
         crawl_done: mirror.done_path().exists(),

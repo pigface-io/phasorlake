@@ -100,7 +100,7 @@ fn serve(stream: TcpStream, routes: &Routes, hits: &Mutex<Vec<String>>) {
     while reader.read_line(&mut header).is_ok_and(|n| n > 2) {
         if let Some(r) = header.trim().strip_prefix("range: bytes=") {
             let (a, b) = r.split_once('-').expect("a span");
-            range = Some((a.parse().expect("a start"), b.parse().expect("an end")));
+            range = Some((a.parse().expect("a start"), b.parse().unwrap_or(usize::MAX)));
         }
         header.clear();
     }
