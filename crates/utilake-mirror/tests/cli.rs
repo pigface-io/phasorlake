@@ -352,7 +352,7 @@ fn refusals_in_a_row_end_the_run() {
 fn what_stops_coming_times_out() {
     let srv = Server::start();
     srv.route("/S/", Reply::Stall);
-    srv.route("/D/", Reply::Ok(page(&[("/D/f.zip", Some(10))])));
+    srv.route("/D/", Reply::Whole(page(&[("/D/f.zip", Some(10))])));
     srv.route(
         "/D/f.zip",
         Reply::StallBody {

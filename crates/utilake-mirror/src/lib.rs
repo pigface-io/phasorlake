@@ -23,6 +23,7 @@ pub mod status;
 pub mod summary;
 #[cfg(test)]
 pub mod testzip;
+pub mod zipdir;
 
 pub use compare::{Comparison, Pair, Removed, Verdict, compare, pairs, remove};
 pub use crawl::{

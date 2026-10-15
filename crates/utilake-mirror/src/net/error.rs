@@ -69,6 +69,14 @@ pub enum FetchError {
         /// Cause.
         message: String,
     },
+    /// A ranged request was answered with the whole file.
+    #[error(
+        "{url} was asked for a range of its bytes and answered with the whole file; the server does not serve ranges."
+    )]
+    RangeUnsupported {
+        /// URL.
+        url: String,
+    },
     /// The server refuses this client.
     #[error(
         "The server refused {url} with HTTP {status}, first seen at {first_url}. AEMO's web server does this after too many requests in a short time, so nemweb-mirror sends it nothing more in this run. Wait a while before trying again; a larger `request_interval_ms` in the config file slows nemweb-mirror down."
@@ -164,6 +172,9 @@ impl Diagnose for FetchError {
             }
             Self::Body { url, .. } => {
                 Diagnostic::error("net.body", Category::Net, msg).with_url(url.clone())
+            }
+            Self::RangeUnsupported { url } => {
+                Diagnostic::error("net.range_unsupported", Category::Net, msg).with_url(url.clone())
             }
             Self::Blocked {
                 url,
@@ -297,6 +308,10 @@ mod tests {
                 "net.content_length_mismatch",
             ),
             (FetchError::Offline { url: "u".into() }, "net.offline"),
+            (
+                FetchError::RangeUnsupported { url: "u".into() },
+                "net.range_unsupported",
+            ),
             (
                 FetchError::Body {
                     url: "u".into(),

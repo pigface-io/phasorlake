@@ -16,4 +16,4 @@ pub use error::FetchError;
 pub use event::Event;
 pub use fetcher::{Fetcher, FetcherConfig, LocalFile};
 pub use source::RemoteFile;
-pub use transport::{HttpResponse, OfflineTransport, ReqwestTransport, Transport};
+pub use transport::{HttpResponse, OfflineTransport, ReqwestTransport, Span, Transport};

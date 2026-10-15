@@ -12,8 +12,11 @@ use std::time::Duration;
 /// What a path answers.
 #[derive(Debug, Clone)]
 pub enum Reply {
-    /// A 200 with this body, an ETag and a Last-Modified.
+    /// A 200 with this body, an ETag and a Last-Modified; to a ranged
+    /// request, a 206 with that range of it.
     Ok(Vec<u8>),
+    /// A 200 with this body, whatever range was asked for.
+    Whole(Vec<u8>),
     /// This status with a small HTML body.
     Status(u16),
     /// Reads the request and never answers.
@@ -93,7 +96,12 @@ fn serve(stream: TcpStream, routes: &Routes, hits: &Mutex<Vec<String>>) {
         .unwrap_or("/")
         .to_owned();
     let mut header = String::new();
+    let mut range: Option<(usize, usize)> = None;
     while reader.read_line(&mut header).is_ok_and(|n| n > 2) {
+        if let Some(r) = header.trim().strip_prefix("range: bytes=") {
+            let (a, b) = r.split_once('-').expect("a span");
+            range = Some((a.parse().expect("a start"), b.parse().expect("an end")));
+        }
         header.clear();
     }
     hits.lock().expect("not poisoned").push(path.clone());
@@ -112,7 +120,18 @@ fn serve(stream: TcpStream, routes: &Routes, hits: &Mutex<Vec<String>>) {
         )
     };
     match reply {
-        Reply::Ok(body) => {
+        Reply::Ok(body) => match range {
+            Some((a, b)) => {
+                let part = &body[a..=b.min(body.len() - 1)];
+                let _ = out.write_all(head(206, part.len()).as_bytes());
+                let _ = out.write_all(part);
+            }
+            None => {
+                let _ = out.write_all(head(200, body.len()).as_bytes());
+                let _ = out.write_all(&body);
+            }
+        },
+        Reply::Whole(body) => {
             let _ = out.write_all(head(200, body.len()).as_bytes());
             let _ = out.write_all(&body);
         }

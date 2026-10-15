@@ -20,7 +20,8 @@ Each entry names where a thing starts. Read those files before you edit.
 ## Features
 
 - **Home and config**: the archive and the mirror's records under the home, the config file in the records (`crates/nemweb-mirror/src/config.rs`).
-- **Net**: transports (reqwest, offline, canned for tests), the paced fetcher, the archive with sidecars. `crates/nemweb-mirror/src/net/`.
+- **Net**: transports (reqwest, offline, canned for tests), the paced fetcher with ranged requests, the archive with sidecars. `crates/nemweb-mirror/src/net/`.
+- **Zip directory**: a zip's entries from byte spans of it, zip64 too, nothing decompressed (`crates/nemweb-mirror/src/zipdir.rs`).
 - **Crawl**: the strict IIS listing reader (`crates/nemweb-mirror/src/listing.rs`) and the breadth-first crawl that keeps every page and writes the crawl record (`crates/nemweb-mirror/src/crawl.rs`).
 - **Download**: every crawled file through the fetcher, skipping archived and removed ones; a refusal or a full disk stops the pass (`crates/nemweb-mirror/src/download.rs`); one run at a time (`crates/nemweb-mirror/src/lock.rs`).
 - **Map**: the catalog, every folder, file and zip entry, zips within zips (`crates/nemweb-mirror/src/map.rs`); the committed pattern summary (`crates/nemweb-mirror/src/summary.rs`).

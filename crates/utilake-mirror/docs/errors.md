@@ -20,6 +20,7 @@ Every error and warning nemweb-mirror reports carries one of these codes. Codes 
 | `net.content_length_mismatch` | `crates/nemweb-mirror/src/net/error.rs` |
 | `net.http_status` | `crates/nemweb-mirror/src/net/error.rs` |
 | `net.offline` | `crates/nemweb-mirror/src/net/error.rs` |
+| `net.range_unsupported` | `crates/nemweb-mirror/src/net/error.rs` |
 | `net.retries_exhausted` | `crates/nemweb-mirror/src/commands.rs` |
 | `net.timeout` | `crates/nemweb-mirror/src/net/error.rs` |
 

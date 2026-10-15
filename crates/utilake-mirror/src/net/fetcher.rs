@@ -22,7 +22,7 @@ use tokio::sync::Mutex;
 use crate::net::archive::{Archive, Sidecar, hex};
 use crate::net::error::FetchError;
 use crate::net::source::RemoteFile;
-use crate::net::transport::{HttpResponse, Transport};
+use crate::net::transport::{HttpResponse, Span, Transport};
 
 /// A file on disk, ready to read.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -146,7 +146,16 @@ impl Fetcher {
     /// GETs a page (a directory listing, a report page) into memory.
     pub async fn fetch_listing(&self, url: &str) -> Result<Vec<u8>, FetchError> {
         self.ensure_online(url)?;
-        self.get_with_retries(url, |resp| read_all(url, resp)).await
+        self.get_with_retries(url, None, |resp| read_all(url, resp))
+            .await
+    }
+
+    /// Bytes `range` of a file, by a ranged request, into memory; not
+    /// archived. Paced, retried and refused like every request.
+    pub async fn fetch_range(&self, url: &str, range: Span) -> Result<Vec<u8>, FetchError> {
+        self.ensure_online(url)?;
+        self.get_with_retries(url, Some(range), |resp| read_all(url, resp))
+            .await
     }
 
     /// The archived copy of a remote file, or the file downloaded into the
@@ -173,7 +182,7 @@ impl Fetcher {
         })?;
         let part = Archive::part_path(&path);
         let streamed = self
-            .get_with_retries(url, |resp| {
+            .get_with_retries(url, None, |resp| {
                 stream_to_file(url, resp, &part, self.events.clone())
             })
             .await?;
@@ -202,10 +211,16 @@ impl Fetcher {
         })
     }
 
-    /// GETs `url` and hands a 200 to `consume`, pacing every attempt,
+    /// GETs `url` (only `range` of it, when given) and hands the answer to
+    /// `consume` (a 200, or a 206 for a range), pacing every attempt,
     /// retrying what is worth retrying with backoff, and tripping the
     /// breaker on a refusal.
-    async fn get_with_retries<T, F, Fut>(&self, url: &str, consume: F) -> Result<T, FetchError>
+    async fn get_with_retries<T, F, Fut>(
+        &self,
+        url: &str,
+        range: Option<Span>,
+        consume: F,
+    ) -> Result<T, FetchError>
     where
         F: Fn(HttpResponse) -> Fut,
         Fut: std::future::Future<Output = Result<T, FetchError>>,
@@ -225,9 +240,14 @@ impl Fetcher {
                 return Err(e);
             }
             self.pace().await;
-            let result = match self.transport.get(url).await {
+            let answered = if range.is_some() { 206 } else { 200 };
+            let result = match self.transport.get(url, range).await {
                 Err(e) => Err(e),
-                Ok(resp) if resp.status == 200 => consume(resp).await,
+                Ok(resp) if resp.status == answered => consume(resp).await,
+                // The whole file instead of the range: not read.
+                Ok(resp) if resp.status == 200 => Err(FetchError::RangeUnsupported {
+                    url: url.to_owned(),
+                }),
                 Ok(resp) if resp.status == 403 => {
                     let head = read_head(resp.body, 256).await;
                     let _ = self.blocked.set((403, url.to_owned(), head));
@@ -692,5 +712,30 @@ mod tests {
             progress += usize::from(matches!(ev, Event::DownloadProgress { .. }));
         }
         assert_eq!(progress, 2, "one every 4 MiB");
+    }
+
+    #[tokio::test]
+    async fn a_range_of_a_file_and_a_server_that_sends_it_all() {
+        let dir = tempfile::tempdir().unwrap();
+        let t = Arc::new(StaticTransport::default());
+        t.add("https://h/z.zip", Canned::ok(b"0123456789"));
+        let mut whole = Canned::ok(b"0123456789");
+        whole.ranges = false;
+        t.add("https://h/w.zip", whole);
+        let f = Fetcher::new(Arc::new(t.clone()), Archive::new(dir.path()), fast());
+        let span = Span { start: 6, end: 10 };
+        assert_eq!(
+            f.fetch_range("https://h/z.zip", span).await.unwrap(),
+            b"6789"
+        );
+        assert_eq!(f.succeeded(), 1);
+        let e = f.fetch_range("https://h/w.zip", span).await.unwrap_err();
+        assert!(matches!(e, FetchError::RangeUnsupported { .. }), "{e}");
+        assert_eq!(t.request_count(), 2, "not retried");
+        let off = Fetcher::new(Arc::new(OfflineTransport), Archive::new(dir.path()), fast());
+        assert!(matches!(
+            off.fetch_range("https://h/z.zip", span).await,
+            Err(FetchError::Offline { .. })
+        ));
     }
 }

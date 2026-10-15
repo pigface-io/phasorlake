@@ -80,6 +80,29 @@ fn day(home: &std::path::Path) -> (Mirror, Archive, u64) {
     (mirror, archive, day.len() as u64)
 }
 
+/// A zip's bytes in memory, read by span.
+struct Mem(Vec<u8>);
+
+impl nemweb_mirror::zipdir::Spans for Mem {
+    type Error = nemweb_mirror::zipdir::DirError;
+    async fn read(&mut self, start: u64, end: u64) -> Result<Vec<u8>, Self::Error> {
+        Ok(self.0[start as usize..end as usize].to_vec())
+    }
+}
+
+/// A month folder's worth of entries: 300 table zips in one zip.
+fn month_zip() -> Vec<u8> {
+    let entries: Vec<(String, Vec<u8>)> = (0..300)
+        .map(|i| {
+            (
+                format!("MMSDM_2026_09/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_ARCHIVE#TABLE{i}#FILE01#202609010000.zip"),
+                vec![b'z'; 64],
+            )
+        })
+        .collect();
+    zip_of(&entries)
+}
+
 fn bench(c: &mut Criterion) {
     let html = listing();
     let mut g = c.benchmark_group("mirror");
@@ -106,6 +129,21 @@ fn bench(c: &mut Criterion) {
                     .unwrap()
                     .zips,
             )
+        });
+    });
+
+    let zip = Mem(month_zip());
+    let len = zip.0.len() as u64;
+    let mut zip = zip;
+    g.throughput(Throughput::Bytes(
+        (zip.0.len() as u64).min(nemweb_mirror::zipdir::TAIL),
+    ));
+    g.bench_function("zipdir_parse", |b| {
+        b.iter(|| {
+            let entries =
+                futures::executor::block_on(nemweb_mirror::zipdir::read_directory(&mut zip, len))
+                    .unwrap();
+            black_box(entries.len())
         });
     });
     g.finish();

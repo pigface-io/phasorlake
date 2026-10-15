@@ -27,12 +27,21 @@ pub struct HttpResponse {
     pub body: BoxStream<'static, Result<Bytes, String>>,
 }
 
+/// Bytes `start..end` of a file, for a ranged request.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Span {
+    /// The first byte.
+    pub start: u64,
+    /// One past the last byte.
+    pub end: u64,
+}
+
 /// Moves bytes.
 #[async_trait]
 pub trait Transport: Send + Sync {
-    /// Performs a GET of `url` and returns the response with its body
-    /// streaming.
-    async fn get(&self, url: &str) -> Result<HttpResponse, FetchError>;
+    /// Performs a GET of `url`, of only `range` when given, and returns the
+    /// response with its body streaming.
+    async fn get(&self, url: &str, range: Option<Span>) -> Result<HttpResponse, FetchError>;
     /// Whether this transport never touches the network.
     fn is_offline(&self) -> bool {
         false
@@ -63,8 +72,12 @@ impl ReqwestTransport {
 
 #[async_trait]
 impl Transport for ReqwestTransport {
-    async fn get(&self, url: &str) -> Result<HttpResponse, FetchError> {
-        let resp = self.client.get(url).send().await.map_err(|e| {
+    async fn get(&self, url: &str, range: Option<Span>) -> Result<HttpResponse, FetchError> {
+        let mut request = self.client.get(url);
+        if let Some(r) = range {
+            request = request.header("Range", format!("bytes={}-{}", r.start, r.end - 1));
+        }
+        let resp = request.send().await.map_err(|e| {
             if e.is_timeout() {
                 FetchError::Timeout {
                     url: url.to_owned(),
@@ -112,7 +125,7 @@ pub struct OfflineTransport;
 
 #[async_trait]
 impl Transport for OfflineTransport {
-    async fn get(&self, url: &str) -> Result<HttpResponse, FetchError> {
+    async fn get(&self, url: &str, _: Option<Span>) -> Result<HttpResponse, FetchError> {
         Err(FetchError::Offline {
             url: url.to_owned(),
         })
@@ -139,6 +152,9 @@ pub struct Canned {
     pub fail_after: Option<usize>,
     /// Fail at connect with this message.
     pub connect_error: Option<String>,
+    /// Whether a ranged request gets its range (206) or, as from a server
+    /// that ignores ranges, the whole body (200).
+    pub ranges: bool,
 }
 
 impl Canned {
@@ -152,6 +168,7 @@ impl Canned {
             etag: Some("\"etag\"".into()),
             fail_after: None,
             connect_error: None,
+            ranges: true,
         }
     }
     /// A status with a small HTML body.
@@ -164,6 +181,7 @@ impl Canned {
             etag: None,
             fail_after: None,
             connect_error: None,
+            ranges: true,
         }
     }
 }
@@ -196,7 +214,7 @@ impl StaticTransport {
 
 #[async_trait]
 impl Transport for Arc<StaticTransport> {
-    async fn get(&self, url: &str) -> Result<HttpResponse, FetchError> {
+    async fn get(&self, url: &str, range: Option<Span>) -> Result<HttpResponse, FetchError> {
         self.requests
             .lock()
             .expect("not poisoned")
@@ -224,12 +242,20 @@ impl Transport for Arc<StaticTransport> {
                 message: m,
             });
         }
+        let (status, body) = match range {
+            Some(r) if canned.ranges && canned.status == 200 => {
+                let len = canned.body.len();
+                let end = usize::try_from(r.end).map_or(len, |e| e.min(len));
+                let start = usize::try_from(r.start).map_or(end, |s| s.min(end));
+                (206, canned.body.slice(start..end))
+            }
+            _ => (canned.status, canned.body),
+        };
         let content_length = match canned.claimed_length {
-            None => Some(canned.body.len() as u64),
+            None => Some(body.len() as u64),
             Some(0) => None,
             Some(n) => Some(n),
         };
-        let body = canned.body;
         let len = body.len();
         // Views of the one body, as a server's chunks would arrive.
         let chunks: Vec<Result<Bytes, String>> = match canned.fail_after {
@@ -243,7 +269,7 @@ impl Transport for Arc<StaticTransport> {
             }
         };
         Ok(HttpResponse {
-            status: canned.status,
+            status,
             content_length,
             etag: canned.etag,
             last_modified: Some("Tue, 13 Feb 2024 08:27:00 GMT".into()),
@@ -260,29 +286,29 @@ mod tests {
     async fn offline_and_static() {
         let off = OfflineTransport;
         assert!(off.is_offline());
-        let r = off.get("https://h/x").await;
+        let r = off.get("https://h/x", None).await;
         assert!(matches!(r, Err(FetchError::Offline { .. })));
         let t = Arc::new(StaticTransport::default());
         t.add("https://h/a", Canned::ok(b"abc"))
             .add("https://h/a", Canned::status(503));
         assert!(!t.is_offline());
-        let r = t.get("https://h/a").await.unwrap();
+        let r = t.get("https://h/a", None).await.unwrap();
         assert_eq!(r.status, 200);
         assert_eq!(r.content_length, Some(3));
         let body: Vec<u8> = r.body.map(|c| c.unwrap().to_vec()).concat().await;
         assert_eq!(body, b"abc");
-        let r = t.get("https://h/a").await.unwrap();
+        let r = t.get("https://h/a", None).await.unwrap();
         assert_eq!(r.status, 503, "second queued response");
-        let r = t.get("https://h/a").await.unwrap();
+        let r = t.get("https://h/a", None).await.unwrap();
         assert_eq!(r.status, 503, "last repeats");
-        let r = t.get("https://h/none").await.unwrap();
+        let r = t.get("https://h/none", None).await.unwrap();
         assert_eq!(r.status, 404);
         assert_eq!(t.request_count(), 4);
         let mut c = Canned::ok(b"abcdef");
         c.fail_after = Some(2);
         c.claimed_length = Some(99);
         t.add("https://h/b", c);
-        let r = t.get("https://h/b").await.unwrap();
+        let r = t.get("https://h/b", None).await.unwrap();
         assert_eq!(r.content_length, Some(99));
         let chunks: Vec<_> = r.body.collect().await;
         assert!(chunks[1].is_err());
@@ -291,7 +317,7 @@ mod tests {
         c.connect_error = Some("refused".into());
         t.add("https://h/c", c);
         assert!(matches!(
-            t.get("https://h/c").await,
+            t.get("https://h/c", None).await,
             Err(FetchError::Connect { .. })
         ));
         // Chunks are views of the one body, in order.
@@ -299,7 +325,7 @@ mod tests {
         c.chunk = 4;
         t.add("https://h/d", c);
         let chunks: Vec<Bytes> = t
-            .get("https://h/d")
+            .get("https://h/d", None)
             .await
             .unwrap()
             .body
@@ -307,6 +333,44 @@ mod tests {
             .collect()
             .await;
         assert_eq!(chunks, [&b"0123"[..], b"4567", b"89"]);
+    }
+
+    #[tokio::test]
+    async fn ranges_from_a_canned_body() {
+        let t = Arc::new(StaticTransport::default());
+        t.add("https://h/r", Canned::ok(b"0123456789"));
+        let body = |r: HttpResponse| async move {
+            r.body
+                .map(Result::unwrap)
+                .collect::<Vec<Bytes>>()
+                .await
+                .concat()
+        };
+        let r = t
+            .get("https://h/r", Some(Span { start: 2, end: 5 }))
+            .await
+            .unwrap();
+        assert_eq!((r.status, r.content_length), (206, Some(3)));
+        assert_eq!(body(r).await, b"234");
+        let r = t
+            .get("https://h/r", Some(Span { start: 20, end: 30 }))
+            .await
+            .unwrap();
+        assert_eq!((r.status, r.content_length), (206, Some(0)));
+        let mut whole = Canned::ok(b"0123456789");
+        whole.ranges = false;
+        t.add("https://h/w", whole);
+        let r = t
+            .get("https://h/w", Some(Span { start: 2, end: 5 }))
+            .await
+            .unwrap();
+        assert_eq!((r.status, r.content_length), (200, Some(10)));
+        assert!(
+            OfflineTransport
+                .get("https://h/r", Some(Span { start: 0, end: 1 }))
+                .await
+                .is_err()
+        );
     }
 
     #[tokio::test]
@@ -335,7 +399,7 @@ mod tests {
             Duration::from_millis(300),
         );
         assert!(!t.is_offline());
-        let r = t.get(&srv.url("/ok")).await.unwrap();
+        let r = t.get(&srv.url("/ok"), None).await.unwrap();
         assert_eq!((r.status, r.content_length), (200, Some(5)));
         assert_eq!(r.etag.as_deref(), Some("\"e\""));
         assert_eq!(
@@ -344,9 +408,9 @@ mod tests {
         );
         let body: Vec<Bytes> = r.body.map(Result::unwrap).collect().await;
         assert_eq!(body.concat(), b"hello");
-        assert_eq!(t.get(&srv.url("/none")).await.unwrap().status, 404);
+        assert_eq!(t.get(&srv.url("/none"), None).await.unwrap().status, 404);
         assert!(matches!(
-            t.get(&srv.url("/stall")).await,
+            t.get(&srv.url("/stall"), None).await,
             Err(FetchError::Timeout { secs: 0, .. })
         ));
         // The first failure of a body, as the fetcher stops at it.
@@ -354,14 +418,28 @@ mod tests {
             let mut errors = r.body.filter_map(|c| async move { c.err() }).boxed();
             errors.next().await.expect("the body fails")
         };
-        let cut = first_error(t.get(&srv.url("/cut")).await.unwrap()).await;
+        let cut = first_error(t.get(&srv.url("/cut"), None).await.unwrap()).await;
         assert!(!cut.is_empty() && !cut.contains("timed out"), "{cut}");
-        let slow = first_error(t.get(&srv.url("/slow")).await.unwrap()).await;
+        let slow = first_error(t.get(&srv.url("/slow"), None).await.unwrap()).await;
         assert!(slow.contains("timed out after 0 seconds reading"), "{slow}");
         let closed = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
         let url = format!("http://{}/x", closed.local_addr().unwrap());
         drop(closed);
-        assert!(matches!(t.get(&url).await, Err(FetchError::Connect { .. })));
-        assert_eq!(srv.hits().len(), 5);
+        assert!(matches!(
+            t.get(&url, None).await,
+            Err(FetchError::Connect { .. })
+        ));
+        srv.route("/whole", Reply::Whole(b"hello".to_vec()));
+        let r = t
+            .get(&srv.url("/ok"), Some(Span { start: 1, end: 4 }))
+            .await
+            .unwrap();
+        assert_eq!((r.status, r.content_length), (206, Some(3)));
+        let r = t
+            .get(&srv.url("/whole"), Some(Span { start: 1, end: 4 }))
+            .await
+            .unwrap();
+        assert_eq!((r.status, r.content_length), (200, Some(5)));
+        assert_eq!(srv.hits().len(), 7);
     }
 }
