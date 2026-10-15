@@ -201,7 +201,8 @@ impl Cli {
     }
 }
 
-const FAST: &str = "request_interval_ms = 0\nattempts = 2\nbackoff_ms = 1\n";
+const FAST: &str =
+    "request_interval_ms = 0\nattempts = 2\nbackoff_ms = 1\nprogress_every_secs = 0\n";
 
 /// A whole run against a local nemweb that refuses once and breaks a file
 /// once, then the duplicate zip compared away, mapped and summarised.
@@ -282,6 +283,12 @@ fn a_run_waits_out_failures_then_compare_map_and_summary() {
     assert!(stderr.contains("waiting 0 minutes"), "{stderr}");
     assert!(stderr.contains("/5 files"), "{stderr}");
     assert!(stdout.contains("0 zips peeked"), "{stdout}");
+    // The run kept its counts; with no run, status counts for itself.
+    let kept = std::fs::read_to_string(cli.home.path().join("mirror/progress.json")).unwrap();
+    assert!(
+        kept.contains("\"archived_files\"") && kept.contains("\"peek\""),
+        "{kept}"
+    );
     assert!(
         stdout.contains("5 files: 4 archived already, 0 removed as duplicates, 1 downloaded"),
         "{stdout}"
@@ -435,6 +442,22 @@ fn the_lock_the_home_and_the_config() {
     assert_eq!(code, 1);
     assert!(err.contains("mirror.locked"), "{err}");
     assert!(cli.ok(&["status"]).starts_with("mirror running"));
+    // A run's kept counts are what status shows while it runs.
+    let mut kept = nemweb_mirror::Status {
+        crawl_done: true,
+        peek: Some(nemweb_mirror::PeekCount { done: 2, total: 5 }),
+        ..nemweb_mirror::Status::default()
+    };
+    kept.pages = 7;
+    mirror.write_progress(&kept).unwrap();
+    let out = cli.ok(&["status"]);
+    assert!(
+        out.contains("counts kept by the run, as of") && out.contains("zips peeked: 2/5"),
+        "{out}"
+    );
+    assert!(out.contains("7 pages read"), "{out}");
+    let full = cli.ok(&["status", "--full"]);
+    assert!(!full.contains("kept by the run"), "{full}");
     drop(held);
     // No flags about progress: stderr is not a terminal, so no progress line.
     let plain = Command::new(env!("CARGO_BIN_EXE_nemweb-mirror"))
@@ -518,4 +541,19 @@ fn a_duplicate_is_ruled_on_from_its_listing_and_never_downloaded() {
         out.contains("1 archived already, 1 removed as duplicates"),
         "{out}"
     );
+}
+
+/// A run peeks and downloads together, and keeps its counts as it goes.
+#[test]
+fn a_run_keeps_its_counts_for_status() {
+    let srv = Server::start();
+    let z = zip_of(&[("a.csv", b"1\n")]);
+    srv.route("/Z/", Reply::Ok(page(&[("/Z/z.zip", Some(z.len()))])));
+    srv.route("/Z/z.zip", Reply::Ok(z.clone()));
+    let cli = Cli::new();
+    cli.config(FAST);
+    cli.ok(&["run", "--root", &srv.url("/Z/")]);
+    let kept = std::fs::read_to_string(cli.home.path().join("mirror/progress.json")).unwrap();
+    assert!(kept.contains("\"peek\":{\"done\":1,\"total\":1}"), "{kept}");
+    assert!(kept.contains("\"archived_files\":1"), "{kept}");
 }

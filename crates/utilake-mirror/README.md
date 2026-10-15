@@ -53,11 +53,12 @@ the pages it kept, and archived files are never downloaded again.
 
 ```
 {home}/archive/{host}/{path}             every file, with {path}.json beside it   (docs/archive.md)
-{home}/mirror/config.toml                downloads, request_interval_ms, attempts, backoff_ms, read_timeout_secs, base_url, user_agent_suffix, jobs
+{home}/mirror/config.toml                downloads, request_interval_ms, attempts, backoff_ms, read_timeout_secs, progress_every_secs, base_url, user_agent_suffix, jobs
 {home}/mirror/crawl/listings/…           each listing page as served
 {home}/mirror/crawl/remote.ndjson        every folder and file the crawl found
 {home}/mirror/peek.ndjson                every zip's entries, read before download
 {home}/mirror/removed.ndjson             zips removed as the same as their folders
+{home}/mirror/progress.json              a run's counts, which `status` reads while it runs
 {home}/mirror/map/map.ndjson, tree.txt   the catalog                              (docs/catalog.md)
 ```
 

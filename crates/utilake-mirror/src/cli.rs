@@ -113,5 +113,8 @@ pub enum Command {
         /// The roots the crawl used, when not the default ones.
         #[arg(long = "root")]
         roots: Vec<String>,
+        /// Count from the archive now, even while a run keeps counts.
+        #[arg(long)]
+        full: bool,
     },
 }

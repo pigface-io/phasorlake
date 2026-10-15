@@ -3,14 +3,14 @@
 use std::path::Path;
 
 use crate::net::Archive;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use url::Url;
 
 use crate::crawl::{Mirror, RemoteKind, read_record};
 use crate::error::MirrorError;
 
 /// Files listed and files archived under one root.
-#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize)]
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct RootStatus {
     /// The root.
     pub root: String,
@@ -28,9 +28,25 @@ pub struct RootStatus {
     pub removed_bytes: u64,
 }
 
+/// Zips whose listing is read, out of the zips to read.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub struct PeekCount {
+    /// Zips peeked, in the record.
+    pub done: usize,
+    /// Zips peeked, and zips still to peek.
+    pub total: usize,
+}
+
 /// The state of the mirror.
-#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize)]
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Status {
+    /// When a run wrote these counts, kept up to date as it goes; none
+    /// when they were counted just now.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub as_of: Option<String>,
+    /// Zips peeked, when a run counts them.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub peek: Option<PeekCount>,
     /// Whether a mirror run holds the lock now.
     pub running: bool,
     /// Listing pages kept by the current crawl.
@@ -47,6 +63,8 @@ pub struct Status {
 /// against the files in the archive at their listed size.
 pub fn status(mirror: &Mirror, archive: &Archive, roots: &[Url]) -> Result<Status, MirrorError> {
     let mut status = Status {
+        as_of: None,
+        peek: None,
         running: mirror.running(),
         pages: count_pages(&mirror.crawl_dir().join("listings")),
         crawl_done: mirror.done_path().exists(),
@@ -93,6 +111,51 @@ pub fn status(mirror: &Mirror, archive: &Archive, roots: &[Url]) -> Result<Statu
         }
     }
     Ok(status)
+}
+
+impl Status {
+    /// Counts a file downloaded, under its root.
+    pub fn add_download(&mut self, url: &str, bytes: u64) {
+        if let Some(root) = self.roots.iter_mut().find(|r| url.starts_with(&r.root)) {
+            root.archived_files += 1;
+            root.archived_bytes += bytes;
+        }
+    }
+}
+
+impl Mirror {
+    /// Where a run keeps its counts.
+    pub fn progress_path(&self) -> std::path::PathBuf {
+        self.dir().join("progress.json")
+    }
+
+    /// Writes a run's counts, stamped now, beside their final name and
+    /// renamed into place.
+    pub fn write_progress(&self, status: &Status) -> Result<(), MirrorError> {
+        let mut status = status.clone();
+        status.as_of = Some(crate::clock::now_utc_rfc3339());
+        let path = self.progress_path();
+        let part = self.dir().join("progress.json.part");
+        let text = serde_json::to_vec(&status).expect("a Status always serialises");
+        std::fs::write(&part, text).map_err(MirrorError::io(&part))?;
+        std::fs::rename(&part, &path).map_err(MirrorError::io(&path))
+    }
+
+    /// A run's latest counts, when there are any.
+    pub fn read_progress(&self) -> Result<Option<Status>, MirrorError> {
+        let path = self.progress_path();
+        match std::fs::read(&path) {
+            Ok(b) => serde_json::from_slice(&b)
+                .map(Some)
+                .map_err(|e| MirrorError::Record {
+                    path: path.display().to_string(),
+                    line: 1,
+                    message: e.to_string(),
+                }),
+            Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(None),
+            Err(e) => Err(MirrorError::io(&path)(e)),
+        }
+    }
 }
 
 fn count_pages(dir: &Path) -> usize {
@@ -179,5 +242,43 @@ mod tests {
             }
         );
         assert_eq!((s.roots[1].files, s.roots[1].archived_files), (1, 0));
+    }
+
+    #[test]
+    fn a_runs_counts_kept_and_read_back() {
+        let home = tempfile::tempdir().unwrap();
+        let mirror = Mirror::new(home.path());
+        assert_eq!(mirror.read_progress().unwrap(), None);
+        let mut s = Status {
+            roots: vec![RootStatus {
+                root: "https://h/A/".into(),
+                files: 2,
+                bytes: 7,
+                ..RootStatus::default()
+            }],
+            peek: Some(PeekCount { done: 1, total: 3 }),
+            ..Status::default()
+        };
+        s.add_download("https://h/A/x.zip", 3);
+        s.add_download("https://o/elsewhere.zip", 9);
+        mirror.write_progress(&s).unwrap();
+        let back = mirror.read_progress().unwrap().unwrap();
+        assert!(back.as_of.is_some());
+        assert_eq!(
+            (back.roots[0].archived_files, back.roots[0].archived_bytes),
+            (1, 3)
+        );
+        assert_eq!(back.peek, Some(PeekCount { done: 1, total: 3 }));
+        std::fs::write(mirror.progress_path(), "{").unwrap();
+        assert_eq!(
+            crate::Diagnose::diagnostic(&mirror.read_progress().unwrap_err()).code,
+            "mirror.record_corrupt"
+        );
+        std::fs::remove_file(mirror.progress_path()).unwrap();
+        std::fs::create_dir(mirror.progress_path()).unwrap();
+        assert!(mirror.read_progress().is_err());
+        assert!(mirror.write_progress(&s).is_err());
+        let gone = Mirror::new(home.path().join("none"));
+        assert!(gone.write_progress(&s).is_err());
     }
 }

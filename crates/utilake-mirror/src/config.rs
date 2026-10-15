@@ -72,6 +72,8 @@ pub struct Config {
     pub backoff_ms: u64,
     /// Seconds a request may wait for the next bytes before it fails.
     pub read_timeout_secs: u64,
+    /// Seconds between the counts a run writes for `status`.
+    pub progress_every_secs: u64,
 }
 
 impl Default for Config {
@@ -85,6 +87,7 @@ impl Default for Config {
             attempts: 5,
             backoff_ms: 500,
             read_timeout_secs: 120,
+            progress_every_secs: 5,
         }
     }
 }

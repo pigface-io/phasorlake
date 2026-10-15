@@ -38,6 +38,6 @@ pub use hash::{FileHashed, HashSummary, hash};
 pub use lock::RunLock;
 pub use map::{MapSummary, Node, NodeKind, State, map};
 pub use peek::{PeekSummary, Peeked, ZipPeeked, peek, read_peeks};
-pub use status::{RootStatus, Status, status};
+pub use status::{PeekCount, RootStatus, Status, status};
 pub use summary::{fold, summary};
 pub use url::Url;

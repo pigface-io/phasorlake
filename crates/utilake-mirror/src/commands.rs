@@ -13,7 +13,9 @@ use nemweb_mirror::config::{Config, Home};
 use nemweb_mirror::net::{
     Archive, FetchError, Fetcher, FetcherConfig, OfflineTransport, ReqwestTransport, Transport,
 };
-use nemweb_mirror::{Diagnose, Mirror, MirrorError, Status, Url};
+use std::cell::RefCell;
+
+use nemweb_mirror::{Diagnose, Mirror, MirrorError, PeekCount, Status, Url};
 
 use crate::cli::{Cli, Command};
 use crate::render;
@@ -99,7 +101,7 @@ pub async fn run_command(cli: &Cli) -> Result<i32> {
         Command::Download { only } => {
             let fetcher = ctx.fetcher();
             let pass = async {
-                download(ctx, &fetcher, &mirror, only)
+                download(ctx, &fetcher, &mirror, only, None)
                     .await
                     .map(|(code, _)| code)
             };
@@ -107,7 +109,11 @@ pub async fn run_command(cli: &Cli) -> Result<i32> {
         }
         Command::Peek => {
             let fetcher = ctx.fetcher();
-            let pass = async { peek(ctx, &fetcher, &mirror).await.map(|(code, _)| code) };
+            let pass = async {
+                peek(ctx, &fetcher, &mirror, None)
+                    .await
+                    .map(|(code, _)| code)
+            };
             locked(&mirror, pass).await
         }
         Command::Run {
@@ -127,7 +133,7 @@ pub async fn run_command(cli: &Cli) -> Result<i32> {
         Command::Compare { verify: true, .. } => verify(ctx, &mirror),
         Command::Compare { delete, .. } => compare(ctx, &mirror, *delete),
         Command::Summary { out, check } => summary(ctx, &mirror, out, *check),
-        Command::Status { roots } => status(ctx, &mirror, roots),
+        Command::Status { roots, full } => status(ctx, &mirror, roots, *full),
     };
     match result {
         Ok(code) => Ok(code),
@@ -181,12 +187,16 @@ async fn run(
         let fetcher = ctx.fetcher();
         let attempt = async {
             crawl(ctx, &fetcher, mirror, given, fresh).await?;
+            // The counts `status` reads while this runs: counted once,
+            // kept up to date from what peek and download do.
+            let tracker = RefCell::new(Tracker::start(ctx, mirror, given)?);
             // One fetcher paces both: peek's small requests fit between
             // the downloads.
             let (peeked, downloaded) = tokio::join!(
-                peek(ctx, &fetcher, mirror),
-                download(ctx, &fetcher, mirror, &[])
+                peek(ctx, &fetcher, mirror, Some(&tracker)),
+                download(ctx, &fetcher, mirror, &[], Some(&tracker))
             );
+            tracker.into_inner().write();
             let ((p_code, p_net), (d_code, d_net)) = (peeked?, downloaded?);
             Ok::<_, MirrorError>((p_code.max(d_code), p_net || d_net))
         };
@@ -289,10 +299,14 @@ async fn peek(
     ctx: &Context,
     fetcher: &Fetcher,
     mirror: &Mirror,
+    tracker: Option<&RefCell<Tracker>>,
 ) -> Result<(i32, bool), MirrorError> {
     let json = ctx.json;
     let progress = ctx.progress;
     let summary = nemweb_mirror::peek(fetcher, mirror, |z| {
+        if let Some(t) = tracker {
+            t.borrow_mut().peeked(z.done, z.total);
+        }
         if json {
             render::json_line(&serde_json::json!({ "event": "zip_peeked", "zip": z }));
         } else if progress {
@@ -338,10 +352,14 @@ async fn download(
     fetcher: &Fetcher,
     mirror: &Mirror,
     only: &[String],
+    tracker: Option<&RefCell<Tracker>>,
 ) -> Result<(i32, bool), MirrorError> {
     let json = ctx.json;
     let progress = ctx.progress;
     let summary = nemweb_mirror::download(fetcher, mirror, ctx.config.downloads, only, |f| {
+        if let Some(t) = tracker {
+            t.borrow_mut().downloaded(f);
+        }
         if json {
             render::json_line(&serde_json::json!({ "event": "file_done", "file": f }));
         } else if progress {
@@ -604,9 +622,83 @@ fn summary(
     Ok(0)
 }
 
-fn status(ctx: &Context, mirror: &Mirror, given: &[String]) -> Result<i32, MirrorError> {
-    let roots = roots(ctx, given)?;
-    let s = nemweb_mirror::status(mirror, &ctx.archive(), &roots)?;
+/// A run's counts, written to the mirror every few seconds for `status`.
+pub struct Tracker {
+    mirror: Mirror,
+    status: Status,
+    peeked_before: usize,
+    written: std::time::Instant,
+    every: Duration,
+}
+
+impl Tracker {
+    /// Counts everything once and writes it.
+    fn start(ctx: &Context, mirror: &Mirror, given: &[String]) -> Result<Self, MirrorError> {
+        let roots = roots(ctx, given)?;
+        let mut status = nemweb_mirror::status(mirror, &ctx.archive(), &roots)?;
+        let peeked_before = nemweb_mirror::read_peeks(&mirror.peek_path())?.len();
+        status.peek = Some(PeekCount {
+            done: peeked_before,
+            total: peeked_before,
+        });
+        let t = Self {
+            mirror: mirror.clone(),
+            status,
+            peeked_before,
+            written: std::time::Instant::now(),
+            every: Duration::from_secs(ctx.config.progress_every_secs),
+        };
+        t.write();
+        Ok(t)
+    }
+
+    fn downloaded(&mut self, f: &nemweb_mirror::FileDone<'_>) {
+        if !f.cached {
+            self.status.add_download(f.url, f.bytes);
+            self.tick();
+        }
+    }
+
+    fn peeked(&mut self, done: usize, total: usize) {
+        self.status.peek = Some(PeekCount {
+            done: self.peeked_before + done,
+            total: self.peeked_before + total,
+        });
+        self.tick();
+    }
+
+    fn tick(&mut self) {
+        if self.written.elapsed() >= self.every {
+            self.write();
+            self.written = std::time::Instant::now();
+        }
+    }
+
+    /// Counts that cannot be written leave `status` to count for itself.
+    fn write(&self) {
+        let _ = self.mirror.write_progress(&self.status);
+    }
+}
+
+fn status(
+    ctx: &Context,
+    mirror: &Mirror,
+    given: &[String],
+    full: bool,
+) -> Result<i32, MirrorError> {
+    // While a run holds the lock, its counts; else count now.
+    let kept = if !full && mirror.running() {
+        mirror.read_progress()?
+    } else {
+        None
+    };
+    let s = match kept {
+        Some(mut s) => {
+            s.running = true;
+            s
+        }
+        None => nemweb_mirror::status(mirror, &ctx.archive(), &roots(ctx, given)?)?,
+    };
     if ctx.json {
         render::json_line(&s);
     } else {
@@ -623,6 +715,15 @@ fn status_text(s: &Status) -> String {
         "in progress"
     };
     let mut out = format!("mirror {run}; crawl {crawl}: {} pages read\n", s.pages);
+    if let Some(at) = &s.as_of {
+        let _ = writeln!(
+            out,
+            "counts kept by the run, as of {at} (status --full counts now)"
+        );
+    }
+    if let Some(p) = s.peek {
+        let _ = writeln!(out, "zips peeked: {}/{}", p.done, p.total);
+    }
     if !s.crawl_done {
         return out;
     }
