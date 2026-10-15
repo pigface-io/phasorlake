@@ -15,6 +15,7 @@ pub mod crawl;
 pub mod diag;
 pub mod download;
 pub mod error;
+pub mod hash;
 pub mod listing;
 pub mod lock;
 pub mod map;
@@ -33,6 +34,7 @@ pub use crawl::{
 pub use diag::{Category, Diagnose, Diagnostic};
 pub use download::{DownloadSummary, FileDone, download};
 pub use error::MirrorError;
+pub use hash::{FileHashed, HashSummary, hash};
 pub use lock::RunLock;
 pub use map::{MapSummary, Node, NodeKind, State, map};
 pub use peek::{PeekSummary, Peeked, ZipPeeked, peek, read_peeks};

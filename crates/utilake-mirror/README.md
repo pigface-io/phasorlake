@@ -23,6 +23,9 @@ what exists.
   `request_interval_ms`), stopping when nemweb refuses (HTTP 403/429) and
   waiting it out. Each file is checked against its `Content-Length` and kept
   with a sidecar recording its URL, size and sha256.
+- **Hash**: every downloaded file has its CRC-32 (what zips record of
+  their entries) and sha256 in its sidecar; `hash` records the CRC-32 of
+  files downloaded before downloads did, checking each sha256 on the way.
 - **Map**: the catalog, offline: every zip opened as a folder, zips within
   zips too.
 - **Compare**: each month after 2014 is published twice, as a folder and as

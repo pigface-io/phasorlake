@@ -141,6 +141,22 @@ fn the_mirror_downloads_what_the_crawl_listed() {
     assert!(out.contains("\"cached\":1"), "{out}");
     let out = cli.ok(&["--offline", "download"]);
     assert!(out.contains("1 archived already"), "{out}");
+    // The CRC-32 its download predates is recorded; then nothing is left.
+    let out = cli.ok(&["--progress", "hash"]);
+    assert!(
+        out.contains("1 downloaded files: 1 read, 1 CRC-32s recorded, 0 not as recorded"),
+        "{out}"
+    );
+    let out = cli.ok(&["--json", "hash", "--all"]);
+    assert!(
+        out.contains("\"event\":\"file_hashed\"") && out.contains("\"recorded\":0"),
+        "{out}"
+    );
+    std::fs::write(dir.join("a.zip"), b"zip bytez").unwrap();
+    let (code, _, err) = cli.code(&["hash", "--all"]);
+    assert_eq!(code, 1);
+    assert!(err.contains("cache.sha256_mismatch"), "{err}");
+    std::fs::write(dir.join("a.zip"), b"zip bytes").unwrap();
     let status = cli.ok(&["status", "--root", root]);
     assert!(
         status.contains("mirror not running; crawl complete"),

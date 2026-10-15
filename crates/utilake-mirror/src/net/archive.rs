@@ -74,11 +74,29 @@ pub fn sha256_hex(bytes: &[u8]) -> String {
 /// file of any size takes the same memory. Blocking: call it off the
 /// async runtime.
 pub fn sha256_file(path: &Path) -> std::io::Result<(String, u64)> {
-    /// A hasher as an `io::Write`, so `io::copy` drives it.
-    struct Hashing(Sha256);
+    hashes_of(path).map(|h| (h.sha256, h.size))
+}
+
+/// A file's sha256, CRC-32 and size, from one read of it.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Hashes {
+    /// sha256 hex.
+    pub sha256: String,
+    /// CRC-32.
+    pub crc32: u32,
+    /// Bytes.
+    pub size: u64,
+}
+
+/// Reads the file at `path` once, in 1 MiB pieces, for its sha256 and
+/// CRC-32. Blocking: call it off the async runtime.
+pub fn hashes_of(path: &Path) -> std::io::Result<Hashes> {
+    /// Both hashers as an `io::Write`, so `io::copy` drives them.
+    struct Hashing(Sha256, crc32fast::Hasher);
     impl std::io::Write for Hashing {
         fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
             self.0.update(buf);
+            self.1.update(buf);
             Ok(buf.len())
         }
         fn flush(&mut self) -> std::io::Result<()> {
@@ -86,13 +104,17 @@ pub fn sha256_file(path: &Path) -> std::io::Result<(String, u64)> {
         }
     }
     let f = std::fs::File::open(path)?;
-    let mut hasher = Hashing(Sha256::new());
-    let len = std::io::copy(
+    let mut hasher = Hashing(Sha256::new(), crc32fast::Hasher::new());
+    let size = std::io::copy(
         &mut std::io::BufReader::with_capacity(1 << 20, f),
         &mut hasher,
     )?;
     std::io::Write::flush(&mut hasher)?;
-    Ok((hex(&hasher.0.finalize()), len))
+    Ok(Hashes {
+        sha256: hex(&hasher.0.finalize()),
+        crc32: hasher.1.finalize(),
+        size,
+    })
 }
 
 fn percent_decode(s: &str) -> String {

@@ -91,6 +91,13 @@ pub enum Command {
         #[arg(long)]
         verify: bool,
     },
+    /// Record the CRC-32 of every downloaded file that has none, reading it
+    /// once and checking its sha256 against its sidecar on the way.
+    Hash {
+        /// Read every downloaded file, recorded CRC or not.
+        #[arg(long)]
+        all: bool,
+    },
     /// Fold the map into patterns (digit runs as `{n}`) and write it as
     /// Markdown, small enough to commit.
     Summary {

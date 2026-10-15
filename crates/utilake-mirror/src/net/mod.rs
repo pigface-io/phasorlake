@@ -11,7 +11,7 @@ pub mod source;
 pub mod testserver;
 pub mod transport;
 
-pub use archive::{Archive, Archived, Sidecar, sha256_file};
+pub use archive::{Archive, Archived, Hashes, Sidecar, hashes_of, sha256_file};
 pub use error::FetchError;
 pub use event::Event;
 pub use fetcher::{Fetcher, FetcherConfig, LocalFile};

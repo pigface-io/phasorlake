@@ -123,6 +123,7 @@ pub async fn run_command(cli: &Cli) -> Result<i32> {
             let jobs = cli.jobs.unwrap_or_else(|| ctx.config.effective_jobs());
             map(ctx, &mirror, roots, jobs)
         }
+        Command::Hash { all } => hash(ctx, *all),
         Command::Compare { verify: true, .. } => verify(ctx, &mirror),
         Command::Compare { delete, .. } => compare(ctx, &mirror, *delete),
         Command::Summary { out, check } => summary(ctx, &mirror, out, *check),
@@ -393,6 +394,38 @@ fn map(ctx: &Context, mirror: &Mirror, given: &[String], jobs: usize) -> Result<
         );
     }
     Ok(i32::from(s.errors > 0))
+}
+
+fn hash(ctx: &Context, all: bool) -> Result<i32, MirrorError> {
+    let json = ctx.json;
+    let progress = ctx.progress;
+    let s = nemweb_mirror::hash(&ctx.archive(), all, |f| {
+        if json {
+            render::json_line(&serde_json::json!({ "event": "file_hashed", "file": f }));
+        } else if progress {
+            let mut err = std::io::stderr().lock();
+            let _ = write!(err, "\r{}/{} files read   ", f.done, f.total);
+            let _ = err.flush();
+        }
+    })?;
+    for d in &s.failed {
+        report(ctx, d);
+    }
+    if json {
+        render::json_line(&serde_json::json!({ "event": "hash_done", "summary": s }));
+    } else {
+        if progress {
+            eprintln!();
+        }
+        println!(
+            "{} downloaded files: {} read, {} CRC-32s recorded, {} not as recorded",
+            s.files,
+            s.read,
+            s.recorded,
+            s.failed.len()
+        );
+    }
+    Ok(i32::from(!s.failed.is_empty()))
 }
 
 fn verify(ctx: &Context, mirror: &Mirror) -> Result<i32, MirrorError> {
