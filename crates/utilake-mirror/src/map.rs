@@ -18,9 +18,10 @@ use serde::Serialize;
 use url::Url;
 use zip::ZipArchive;
 
+use crate::compare::Removed;
 use crate::crawl::{Mirror, RemoteKind, read_record};
 use crate::error::MirrorError;
-use crate::peek::{Peeked, current};
+use crate::peek::{Peeked, current, latest};
 use crate::zipdir::Entry;
 
 /// A nested zip up to this size is read into memory; a bigger one is
@@ -108,6 +109,23 @@ pub struct Node {
     /// sha256 hex of a downloaded file, from its sidecar.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub sha256: Option<String>,
+    /// The server's `ETag`: from the sidecar, or from the peek of a zip not
+    /// downloaded.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub etag: Option<String>,
+    /// The server's `Last-Modified`, from the same.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub last_modified: Option<String>,
+    /// When a zip not downloaded had its listing read.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub peeked_at: Option<String>,
+    /// For a removed zip: how many of its files were found the same as the
+    /// folder's, each listed under it with its CRC-32.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub matched: Option<usize>,
+    /// For a removed zip: when it was found the same.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub removed_at: Option<String>,
     /// Date and time as nemweb lists it, or as the zip records it.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub modified: Option<String>,
@@ -140,6 +158,11 @@ impl Node {
             compressed: None,
             crc32: None,
             sha256: None,
+            etag: None,
+            last_modified: None,
+            peeked_at: None,
+            matched: None,
+            removed_at: None,
             modified: None,
             state: None,
             same_as: None,
@@ -183,6 +206,8 @@ struct Top {
     same_as: Option<String>,
     /// What the zip holds, from its listing, when it is not downloaded.
     peek: Option<Peeked>,
+    /// The record of its removal, when it was removed.
+    removed: Option<Removed>,
 }
 
 /// Writes the map of the crawl record and the archive under `roots`,
@@ -248,6 +273,7 @@ fn tops(
     let mut listed = HashSet::new();
     let removed = mirror.removed()?;
     let mut peeks: HashMap<String, Peeked> = current(mirror)?;
+    let mut evidence: HashMap<String, Peeked> = latest(mirror)?;
     for r in read_record(&mirror.record_path())? {
         let kind = match r.kind {
             RemoteKind::External => continue,
@@ -276,9 +302,14 @@ fn tops(
                 modified: Some(r.modified),
                 state,
                 same_as: gone.map(|g| g.same_as.clone()),
-                peek: state
-                    .filter(|s| matches!(s, State::NotArchived | State::Removed))
-                    .and_then(|_| peeks.remove(&r.url)),
+                // A zip not downloaded shows its current listing; a removed
+                // one the listing its removal stood on.
+                peek: match state {
+                    Some(State::NotArchived) => peeks.remove(&r.url),
+                    Some(State::Removed) => evidence.remove(&r.url),
+                    _ => None,
+                },
+                removed: gone.cloned(),
             },
         );
         listed.insert(r.url);
@@ -292,6 +323,7 @@ fn tops(
             state: None,
             same_as: None,
             peek: None,
+            removed: None,
         });
         for a in archive.entries_under(Some(&archive.path_for(root.as_str()))) {
             if !listed.contains(&a.sidecar.url) {
@@ -305,6 +337,7 @@ fn tops(
                         state: Some(State::GoneUpstream),
                         same_as: None,
                         peek: None,
+                        removed: None,
                     },
                 );
             }
@@ -325,6 +358,7 @@ fn tops(
             state: None,
             same_as: None,
             peek: None,
+            removed: None,
         });
     }
     Ok(tops)
@@ -406,6 +440,15 @@ impl Lister {
         node.modified.clone_from(&top.modified);
         node.state = top.state;
         node.same_as.clone_from(&top.same_as);
+        if let Some(r) = &top.removed {
+            node.matched = Some(r.files);
+            node.removed_at = Some(r.removed_at.clone());
+        }
+        if let Some(p) = &top.peek {
+            node.etag.clone_from(&p.etag);
+            node.last_modified.clone_from(&p.last_modified);
+            node.peeked_at.clone_from(&p.peeked_at);
+        }
         if matches!(top.state, Some(State::NotArchived | State::Removed))
             || top.kind == NodeKind::Dir
         {
@@ -447,6 +490,8 @@ impl Lister {
         if let Ok(Some(s)) = Archive::read_sidecar(&file).map(|s| s.filter(|s| s.size == size)) {
             out[0].sha256 = Some(s.sha256);
             out[0].crc32 = s.crc32;
+            out[0].etag = s.etag;
+            out[0].last_modified = s.last_modified;
         }
         let at = out[0].clone();
         let listed = match source {
@@ -1127,6 +1172,7 @@ h/
             state: Some(State::Archived),
             same_as: None,
             peek: None,
+            removed: None,
         };
         let nodes = l.top(&f.archive, &key, &top);
         let paths: Vec<_> = nodes.iter().map(shown).collect();
@@ -1177,6 +1223,7 @@ h/
             state: Some(State::Archived),
             same_as: None,
             peek: None,
+            removed: None,
         };
         let mut lister = Lister::new(dir.path().join("tmp"));
         let list = |name: &str, bytes: Option<&[u8]>, lister: &mut Lister| {
@@ -1332,6 +1379,7 @@ h/
             state: Some(State::Archived),
             same_as: None,
             peek: None,
+            removed: None,
         };
         let mut lister = Lister::new(dir.path().join("tmp"));
         std::fs::create_dir_all(dir.path().join("tmp")).unwrap();
@@ -1402,6 +1450,7 @@ h/
             state: Some(State::Archived),
             same_as: None,
             peek: None,
+            removed: None,
         };
         let key = vec!["h".to_owned(), "w.zip".to_owned()];
         let nodes = Lister::new(dir.path().to_path_buf()).top(&archive, &key, &top);

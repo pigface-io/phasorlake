@@ -755,9 +755,18 @@ mod tests {
                 min_interval: Duration::ZERO,
             },
         );
-        let s = crate::download(&fetcher, &f.mirror, 1, &[], |_| {})
-            .await
-            .unwrap();
+        let s = crate::download(
+            &fetcher,
+            &f.mirror,
+            &crate::download::DownloadOptions {
+                downloads: 1,
+                only: &[],
+                delete_duplicates: false,
+            },
+            |_| {},
+        )
+        .await
+        .unwrap();
         assert_eq!((s.files, s.removed, s.cached), (5, 1, 3));
         assert!(
             !t.requests
@@ -794,6 +803,10 @@ mod tests {
             .find(|l| l.contains("\"h/A/M.zip\""))
             .unwrap();
         assert!(line.contains("\"same_as\":\"https://h/A/M/\""), "{line}");
+        assert!(
+            line.contains("\"matched\":2") && line.contains("\"removed_at\""),
+            "{line}"
+        );
     }
 
     #[test]

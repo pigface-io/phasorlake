@@ -29,6 +29,9 @@ zip's compressed bytes.
 | `compressed` | inside a zip | packed bytes |
 | `crc32` | inside a zip; downloaded files | CRC-32: as the zip records it, or from the file's sidecar |
 | `sha256` | downloaded files | from the file's sidecar |
+| `etag`, `last_modified` | downloaded files; zips peeked | the server's, from the sidecar or the peek |
+| `peeked_at` | zips not downloaded, or removed | when their listing was read |
+| `matched`, `removed_at` | removed zips | how many of its files were found the same as the folder's, and when |
 | `modified` | when known | as nemweb lists it, or as the zip records it (`YYYY-MM-DD HH:MM:SS`) |
 | `state` | files nemweb lists or listed | `archived`, `not_archived`, `gone_upstream` (archived, no longer listed) or `removed` (a duplicate, see `docs/archive.md`) |
 | `same_as` | removed | the folder holding the same files |

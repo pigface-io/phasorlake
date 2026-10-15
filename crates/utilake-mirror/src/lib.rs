@@ -32,7 +32,7 @@ pub use crawl::{
     CrawlSummary, Mirror, PageRead, Remote, RemoteKind, crawl, default_roots, read_record, root,
 };
 pub use diag::{Category, Diagnose, Diagnostic};
-pub use download::{DownloadSummary, FileDone, download};
+pub use download::{DownloadOptions, DownloadSummary, FileDone, download};
 pub use error::MirrorError;
 pub use hash::{FileHashed, HashSummary, hash};
 pub use lock::RunLock;

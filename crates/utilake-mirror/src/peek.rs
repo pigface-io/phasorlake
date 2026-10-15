@@ -297,6 +297,15 @@ pub fn current(mirror: &Mirror) -> Result<HashMap<String, Peeked>, MirrorError> 
     Ok(out)
 }
 
+/// The latest record of each zip peeked, current or not: the evidence a
+/// removal stood on is kept even after the crawl moves on.
+pub fn latest(mirror: &Mirror) -> Result<HashMap<String, Peeked>, MirrorError> {
+    Ok(read_peeks(&mirror.peek_path())?
+        .into_iter()
+        .map(|p| (p.url.clone(), p))
+        .collect())
+}
+
 /// Whether a URL names a zip.
 fn is_zip_name(url: &str) -> bool {
     url.len() >= 4 && url[url.len() - 4..].eq_ignore_ascii_case(".zip")

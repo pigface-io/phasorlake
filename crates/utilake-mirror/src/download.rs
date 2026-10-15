@@ -1,16 +1,17 @@
 //! Downloading every file of the crawl record into the archive.
 
-use std::collections::HashSet;
+use std::collections::HashMap;
 
 use futures::StreamExt as _;
 use serde::Serialize;
 use url::Url;
 
-use crate::compare::pairs;
+use crate::compare::{Pair, Verdict, compare, pairs, remove};
 use crate::crawl::{Mirror, RemoteKind, read_record};
 use crate::diag::{Diagnose as _, Diagnostic};
 use crate::error::MirrorError;
 use crate::net::{FetchError, Fetcher, RemoteFile};
+use crate::peek::{Peeked, current};
 
 /// One file dealt with.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -59,23 +60,26 @@ pub struct DownloadSummary {
 pub async fn download(
     fetcher: &Fetcher,
     mirror: &Mirror,
-    downloads: usize,
-    only: &[String],
+    options: &DownloadOptions<'_>,
     mut on_file: impl FnMut(&FileDone<'_>),
 ) -> Result<DownloadSummary, MirrorError> {
+    let (downloads, only) = (options.downloads, options.only);
     if !mirror.done_path().exists() {
         return Err(MirrorError::CrawlIncomplete {
             path: mirror.crawl_dir().display().to_string(),
         });
     }
     let removed = mirror.removed()?;
-    let paired: HashSet<String> = pairs(mirror)?.into_iter().map(|p| p.zip).collect();
+    let paired: HashMap<String, Pair> = pairs(mirror)?
+        .into_iter()
+        .map(|p| (p.zip.clone(), p))
+        .collect();
     let mut record = read_record(&mirror.record_path())?;
     // Only the files under the prefixes given, when any are.
     record.retain(|r| only.is_empty() || only.iter().any(|p| r.url.starts_with(p.as_str())));
     let listed = record.iter().filter(|r| r.kind == RemoteKind::File).count();
     // Stable: every other file in URL order, then the paired zips.
-    record.sort_by_key(|r| paired.contains(&r.url));
+    record.sort_by_key(|r| paired.contains_key(&r.url));
     let files: Vec<RemoteFile> = record
         .into_iter()
         .enumerate()
@@ -98,13 +102,20 @@ pub async fn download(
         ..DownloadSummary::default()
     };
     let paired = &paired;
+    // The listings, read once, when the first paired zip comes up: peek
+    // reads the paired zips' first, so by then they are there.
+    let listings: std::sync::OnceLock<HashMap<String, Peeked>> = std::sync::OnceLock::new();
+    let listings = &listings;
     let mut results = futures::stream::iter(&files)
         .map(|remote| async move {
-            // Found the same as its folder since the pass began?
-            if paired.contains(remote.url.as_str())
-                && mirror.removed()?.contains_key(remote.url.as_str())
-            {
-                return Ok((remote, None));
+            if let Some(pair) = paired.get(remote.url.as_str()) {
+                // Found the same as its folder since the pass began?
+                if mirror.removed()?.contains_key(&pair.zip) {
+                    return Ok((remote, None));
+                }
+                if options.delete_duplicates && the_same(mirror, fetcher, pair, listings)? {
+                    return Ok((remote, None));
+                }
             }
             Ok::<_, MirrorError>((remote, Some(fetcher.fetch(remote).await)))
         })
@@ -138,6 +149,49 @@ pub async fn download(
         }
     }
     Ok(summary)
+}
+
+/// How a download pass runs.
+#[derive(Debug, Clone, Copy)]
+pub struct DownloadOptions<'a> {
+    /// Downloads at a time.
+    pub downloads: usize,
+    /// Only the files whose URL starts with one of these, when any.
+    pub only: &'a [String],
+    /// Just before each zip beside a folder of the same name, compare its
+    /// listing with the folder and, when they are the same, record it
+    /// removed and do not download it.
+    pub delete_duplicates: bool,
+}
+
+/// Whether the zip of `pair`, not downloaded, is found the same as its
+/// folder from its listing, and so recorded removed.
+fn the_same(
+    mirror: &Mirror,
+    fetcher: &Fetcher,
+    pair: &Pair,
+    listings: &std::sync::OnceLock<HashMap<String, Peeked>>,
+) -> Result<bool, MirrorError> {
+    let archive = fetcher.archive();
+    if archive.path_for(&pair.zip).is_file() {
+        return Ok(false);
+    }
+    let listings = match listings.get() {
+        Some(l) => l,
+        None => {
+            let l = current(mirror)?;
+            listings.get_or_init(|| l)
+        }
+    };
+    let Some(entries) = listings.get(&pair.zip).and_then(|p| p.entries.as_deref()) else {
+        return Ok(false);
+    };
+    let cmp = compare(archive, pair, Some(entries), &mirror.dir().join("tmp"))?;
+    if cmp.verdict != Verdict::Same {
+        return Ok(false);
+    }
+    remove(mirror, archive, &cmp)?;
+    Ok(true)
 }
 
 /// Whether every later download would fail as this one did.
@@ -187,16 +241,36 @@ mod tests {
         t.add("https://h/A/y.zip", Canned::ok(b"yyyy"));
         let f = fetcher(&t, &archive);
 
-        let err = download(&f, &mirror, 2, &[], |_| {}).await.unwrap_err();
+        let err = download(
+            &f,
+            &mirror,
+            &DownloadOptions {
+                downloads: 2,
+                only: &[],
+                delete_duplicates: false,
+            },
+            ignore,
+        )
+        .await
+        .unwrap_err();
         assert_eq!(err.diagnostic().code, "mirror.crawl_incomplete");
 
         crawl(&f, &mirror, &[root("https://h/A/").unwrap()], false, |_| {})
             .await
             .unwrap();
         let mut seen = Vec::new();
-        let s = download(&f, &mirror, 2, &[], |d| {
-            seen.push((d.url.to_owned(), d.cached, d.total));
-        })
+        let s = download(
+            &f,
+            &mirror,
+            &DownloadOptions {
+                downloads: 2,
+                only: &[],
+                delete_duplicates: false,
+            },
+            |d| {
+                seen.push((d.url.to_owned(), d.cached, d.total));
+            },
+        )
         .await
         .unwrap();
         assert_eq!((s.files, s.cached, s.downloaded, s.bytes), (3, 0, 2, 7));
@@ -214,11 +288,33 @@ mod tests {
             (Some(4), Some("Monday, October 12, 2026 10:45 AM"))
         );
 
-        let s = download(&f, &mirror, 2, &[], |_| {}).await.unwrap();
+        let s = download(
+            &f,
+            &mirror,
+            &DownloadOptions {
+                downloads: 2,
+                only: &[],
+                delete_duplicates: false,
+            },
+            ignore,
+        )
+        .await
+        .unwrap();
         assert_eq!((s.cached, s.downloaded), (2, 0));
         // Only a part of the tree.
         let only = ["https://h/A/x".to_owned()];
-        let s = download(&f, &mirror, 2, &only, |_| {}).await.unwrap();
+        let s = download(
+            &f,
+            &mirror,
+            &DownloadOptions {
+                downloads: 2,
+                only: &only,
+                delete_duplicates: false,
+            },
+            ignore,
+        )
+        .await
+        .unwrap();
         assert_eq!((s.files, s.cached), (1, 1));
         assert_eq!(t.request_count(), 1 + 3 + 1);
     }
@@ -234,7 +330,18 @@ mod tests {
         crawl(&f, &mirror, &[root("https://h/A/").unwrap()], false, |_| {})
             .await
             .unwrap();
-        let err = download(&f, &mirror, 1, &[], |_| {}).await.unwrap_err();
+        let err = download(
+            &f,
+            &mirror,
+            &DownloadOptions {
+                downloads: 1,
+                only: &[],
+                delete_duplicates: false,
+            },
+            ignore,
+        )
+        .await
+        .unwrap_err();
         assert_eq!(err.diagnostic().code, "net.blocked");
     }
 
@@ -255,13 +362,29 @@ mod tests {
             .build()
             .unwrap();
         let d = rt
-            .block_on(download(&f, &mirror, 1, &[], |_| {}))
+            .block_on(download(
+                &f,
+                &mirror,
+                &DownloadOptions {
+                    downloads: 1,
+                    only: &[],
+                    delete_duplicates: false,
+                },
+                ignore,
+            ))
             .unwrap_err()
             .diagnostic();
         assert_eq!(
             (d.code.as_ref(), d.line),
             ("mirror.record_corrupt", Some(1))
         );
+    }
+
+    /// A file done, not looked at.
+    fn ignore(_: &FileDone<'_>) {}
+
+    fn root_url() -> url::Url {
+        crate::crawl::root("https://h/A/").unwrap()
     }
 
     #[tokio::test]
@@ -299,7 +422,7 @@ mod tests {
             .unwrap();
         // Once N's folder is down, N.zip is found the same as it.
         let removed = mirror.removed_path();
-        let s = download(&f, &mirror, 1, &[], |d| {
+        let s = download(&f, &mirror, &DownloadOptions { downloads: 1, only: &[], delete_duplicates: false }, |d| {
             if d.url == "https://h/A/N/a.zip" {
                 std::fs::write(
                     &removed,
@@ -323,7 +446,18 @@ mod tests {
         // A record of removals that cannot be read stops the pass.
         std::fs::write(&removed, "{").unwrap();
         std::fs::remove_file(f.archive().path_for("https://h/A/M.zip")).unwrap();
-        let e = download(&f, &mirror, 1, &[], |_| {}).await.unwrap_err();
+        let e = download(
+            &f,
+            &mirror,
+            &DownloadOptions {
+                downloads: 1,
+                only: &[],
+                delete_duplicates: false,
+            },
+            ignore,
+        )
+        .await
+        .unwrap_err();
         assert_eq!(e.diagnostic().code, "mirror.record_corrupt");
     }
 
@@ -358,5 +492,97 @@ mod tests {
         let bad = Mirror::new(&blocker);
         assert_eq!(bad.lock().unwrap_err().diagnostic().code, "mirror.io");
         assert!(!bad.running());
+    }
+
+    #[tokio::test]
+    async fn a_duplicate_found_from_its_listing_is_never_fetched() {
+        let line = |href: &str, size: Option<usize>| {
+            let what = size.map_or("&lt;dir&gt;".to_owned(), |s| s.to_string());
+            format!(" Monday, October 12, 2026 10:45 AM {what} <A HREF=\"{href}\">x</A><br>")
+        };
+        let a = crate::testzip::stored("A.CSV", b"a");
+        let t = Arc::new(StaticTransport::default());
+        let mut root = String::from("<pre>");
+        for name in ["M", "N", "O", "P"] {
+            root += &line(&format!("/A/{name}/"), None);
+            root += &line(&format!("/A/{name}.zip"), Some(9));
+            let page = format!(
+                "<pre>{}</pre>",
+                line(&format!("/A/{name}/a.zip"), Some(a.len()))
+            );
+            t.add(&format!("https://h/A/{name}/"), Canned::ok(page.as_bytes()));
+            t.add(&format!("https://h/A/{name}/a.zip"), Canned::ok(&a));
+            t.add(&format!("https://h/A/{name}.zip"), Canned::ok(b"wholezip!"));
+        }
+        root += "</pre>";
+        t.add("https://h/A/", Canned::ok(root.as_bytes()));
+        let home = tempfile::tempdir().unwrap();
+        let mirror = Mirror::new(home.path().join("mirror"));
+        let archive = home.path().join("archive");
+        let f = fetcher(&t, &archive);
+        crawl(&f, &mirror, &[root_url()], false, |_| {})
+            .await
+            .unwrap();
+        // M's listing matches its folder; N's does not; O has none; P is
+        // downloaded already.
+        let entry = |crc: u32| crate::zipdir::Entry {
+            name: "a.zip".into(),
+            size: a.len() as u64,
+            compressed: a.len() as u64,
+            crc32: crc,
+            method: 0,
+            modified: "m".into(),
+        };
+        let listing = |zip: &str, crc: u32| crate::peek::Peeked {
+            url: format!("https://h/A/{zip}"),
+            listed_size: Some(9),
+            listed_modified: Some("Monday, October 12, 2026 10:45 AM".into()),
+            entries: Some(vec![entry(crc)]),
+            ..Default::default()
+        };
+        let peeks = [
+            listing("M.zip", crc32fast::hash(&a)),
+            listing("N.zip", 1),
+            listing("P.zip", crc32fast::hash(&a)),
+        ];
+        let lines: String = peeks
+            .iter()
+            .map(|p| serde_json::to_string(p).unwrap() + "\n")
+            .collect();
+        std::fs::write(mirror.peek_path(), lines).unwrap();
+        let p = Archive::new(&archive).path_for("https://h/A/P.zip");
+        std::fs::create_dir_all(p.parent().unwrap()).unwrap();
+        std::fs::write(&p, b"wholezip!").unwrap();
+        Archive::write_sidecar(
+            &p,
+            &crate::net::Sidecar {
+                url: "https://h/A/P.zip".into(),
+                size: 9,
+                sha256: "x".into(),
+                crc32: None,
+                fetched_at: "t".into(),
+                etag: None,
+                last_modified: None,
+                listed_size: None,
+                listed_modified: None,
+                tool: "x".into(),
+            },
+        )
+        .unwrap();
+
+        let options = DownloadOptions {
+            downloads: 1,
+            only: &[],
+            delete_duplicates: true,
+        };
+        let s = download(&f, &mirror, &options, |_| {}).await.unwrap();
+        assert_eq!((s.files, s.removed, s.cached, s.downloaded), (8, 1, 1, 6));
+        let asked = t.requests.lock().unwrap().clone();
+        assert!(!asked.iter().any(|u| u.ends_with("/M.zip")), "{asked:?}");
+        assert!(asked.iter().any(|u| u.ends_with("/N.zip")));
+        assert!(asked.iter().any(|u| u.ends_with("/O.zip")));
+        let removed = mirror.removed().unwrap();
+        assert!(!removed["https://h/A/M.zip"].downloaded);
+        assert_eq!(removed.len(), 1);
     }
 }

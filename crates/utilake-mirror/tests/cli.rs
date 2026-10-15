@@ -522,7 +522,7 @@ fn a_duplicate_is_ruled_on_from_its_listing_and_never_downloaded() {
     std::fs::write(
         cli.home.path().join("mirror/peek.ndjson"),
         format!(
-            r#"{{"url":"https://h/A/M.zip","listed_size":20000000,"listed_modified":"Monday, October 12, 2026 10:45 AM","entries":[{{"name":"M/t.zip","size":{},"compressed":{},"crc32":{crc},"method":0,"modified":"m"}}]}}"#,
+            r#"{{"url":"https://h/A/M.zip","peeked_at":"2026-10-15T00:00:00Z","etag":"\"e1\"","last_modified":"Mon, 12 Oct 2026 00:32:30 GMT","listed_size":20000000,"listed_modified":"Monday, October 12, 2026 10:45 AM","entries":[{{"name":"M/t.zip","size":{},"compressed":{},"crc32":{crc},"method":0,"modified":"m"}}]}}"#,
             t.len(),
             t.len()
         ) + "\n",
@@ -552,7 +552,7 @@ fn a_run_keeps_its_counts_for_status() {
     srv.route("/Z/z.zip", Reply::Ok(z.clone()));
     let cli = Cli::new();
     cli.config(FAST);
-    cli.ok(&["run", "--root", &srv.url("/Z/")]);
+    cli.ok(&["run", "--delete-duplicates", "--root", &srv.url("/Z/")]);
     let kept = std::fs::read_to_string(cli.home.path().join("mirror/progress.json")).unwrap();
     assert!(kept.contains("\"peek\":{\"done\":1,\"total\":1}"), "{kept}");
     assert!(kept.contains("\"archived_files\":1"), "{kept}");

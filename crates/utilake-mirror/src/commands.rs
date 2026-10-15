@@ -101,7 +101,7 @@ pub async fn run_command(cli: &Cli) -> Result<i32> {
         Command::Download { only } => {
             let fetcher = ctx.fetcher();
             let pass = async {
-                download(ctx, &fetcher, &mirror, only, None)
+                download(ctx, &fetcher, &mirror, only, false, None)
                     .await
                     .map(|(code, _)| code)
             };
@@ -121,9 +121,17 @@ pub async fn run_command(cli: &Cli) -> Result<i32> {
             fresh,
             refusals,
             wait_minutes,
+            delete_duplicates,
         } => {
             let wait = Duration::from_secs(wait_minutes * 60);
-            locked(&mirror, run(ctx, &mirror, roots, *fresh, *refusals, wait)).await
+            let plan = RunPlan {
+                given: roots,
+                fresh: *fresh,
+                refusals: *refusals,
+                wait,
+                delete_duplicates: *delete_duplicates,
+            };
+            locked(&mirror, run(ctx, &mirror, &plan)).await
         }
         Command::Map { roots } => {
             let jobs = cli.jobs.unwrap_or_else(|| ctx.config.effective_jobs());
@@ -173,15 +181,19 @@ fn roots(ctx: &Context, given: &[String]) -> Result<Vec<Url>, MirrorError> {
 /// with a new fetcher, at most `refusals` times. The crawl carries on from
 /// its kept pages and the download skips archived files, so starting again
 /// repeats no request that succeeded.
-async fn run(
-    ctx: &Context,
-    mirror: &Mirror,
-    given: &[String],
+/// What `run` was asked to do.
+struct RunPlan<'a> {
+    given: &'a [String],
     fresh: bool,
     refusals: u32,
     wait: Duration,
-) -> Result<i32, MirrorError> {
-    let mut fresh = fresh;
+    delete_duplicates: bool,
+}
+
+async fn run(ctx: &Context, mirror: &Mirror, plan: &RunPlan<'_>) -> Result<i32, MirrorError> {
+    let (given, refusals, wait, delete_duplicates) =
+        (plan.given, plan.refusals, plan.wait, plan.delete_duplicates);
+    let mut fresh = plan.fresh;
     let mut refused = 0;
     loop {
         let fetcher = ctx.fetcher();
@@ -194,7 +206,14 @@ async fn run(
             // the downloads.
             let (peeked, downloaded) = tokio::join!(
                 peek(ctx, &fetcher, mirror, Some(&tracker)),
-                download(ctx, &fetcher, mirror, &[], Some(&tracker))
+                download(
+                    ctx,
+                    &fetcher,
+                    mirror,
+                    &[],
+                    delete_duplicates,
+                    Some(&tracker)
+                )
             );
             tracker.into_inner().write();
             let ((p_code, p_net), (d_code, d_net)) = (peeked?, downloaded?);
@@ -352,11 +371,17 @@ async fn download(
     fetcher: &Fetcher,
     mirror: &Mirror,
     only: &[String],
+    delete_duplicates: bool,
     tracker: Option<&RefCell<Tracker>>,
 ) -> Result<(i32, bool), MirrorError> {
     let json = ctx.json;
     let progress = ctx.progress;
-    let summary = nemweb_mirror::download(fetcher, mirror, ctx.config.downloads, only, |f| {
+    let options = nemweb_mirror::DownloadOptions {
+        downloads: ctx.config.downloads,
+        only,
+        delete_duplicates,
+    };
+    let summary = nemweb_mirror::download(fetcher, mirror, &options, |f| {
         if let Some(t) = tracker {
             t.borrow_mut().downloaded(f);
         }

@@ -71,6 +71,11 @@ pub enum Command {
         /// Minutes to wait after a refusal or a network failure.
         #[arg(long, default_value_t = 15)]
         wait_minutes: u64,
+        /// Just before each whole-month zip, compare its listing with its
+        /// folder, downloaded by then, and when they are the same record it
+        /// removed instead of downloading it.
+        #[arg(long)]
+        delete_duplicates: bool,
     },
     /// Write the map of every folder and file, zips opened as folders, to
     /// map.ndjson and tree.txt under {home}/mirror/map/; offline.
