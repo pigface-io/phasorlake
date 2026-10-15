@@ -48,6 +48,8 @@ know.
 ## Removed duplicates
 
 A zip removed by `nemweb-mirror compare --delete` is gone from the archive
-but recorded in `{home}/mirror/removed.ndjson`, one line per file:
-`url`, `size`, `sha256`, `same_as` (the folder holding the same files) and
-`removed_at`. Its files are the folder's files.
+or was never downloaded, and is recorded in `{home}/mirror/removed.ndjson`,
+one line per file: `url`, `size`, `sha256` (absent when it was never
+downloaded), `downloaded`, `same_as` (the folder holding the same files)
+and `removed_at`. Its files are the folder's files: every one of them, by
+path, size and CRC-32, from the zip itself or from its listing.

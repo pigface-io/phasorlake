@@ -8,7 +8,7 @@
 //! before what it holds, names in byte order), so two maps of the same
 //! archive are the same bytes.
 
-use std::collections::{BTreeMap, HashSet};
+use std::collections::{BTreeMap, HashMap, HashSet};
 use std::fs::File;
 use std::io::{BufReader, BufWriter, Cursor, Read, Seek, Write as _};
 use std::path::{Path, PathBuf};
@@ -20,12 +20,22 @@ use zip::ZipArchive;
 
 use crate::crawl::{Mirror, RemoteKind, read_record};
 use crate::error::MirrorError;
+use crate::peek::{Peeked, read_peeks};
+use crate::zipdir::Entry;
 
 /// A nested zip up to this size is read into memory; a bigger one is
 /// spooled to a temporary file.
 const NESTED_IN_MEMORY: u64 = 64 << 20;
 /// Zips nested deeper than this are not opened (`zip.nesting_too_deep`).
 pub const MAX_DEPTH: usize = 8;
+/// A zip inside a zip bigger than this, as declared, is not unpacked
+/// (`zip.too_big`).
+pub const MAX_NESTED: u64 = 16 << 30;
+/// Entries listed per archived file, zips within it included; a zip that
+/// would pass it is not listed (`zip.too_many_entries`).
+pub const MAX_ENTRIES: u64 = 10_000_000;
+/// The version of the catalog's format, on its first line.
+pub const CATALOG_FORMAT: u32 = 1;
 /// The bytes every zip with at least one entry starts with, and an empty one.
 const ZIP_MAGIC: [&[u8; 4]; 2] = [b"PK\x03\x04", b"PK\x05\x06"];
 /// The buffer of a zip read from disk, which is read by seeking: small,
@@ -95,6 +105,10 @@ pub struct Node {
     /// For a removed zip, the folder that holds the same files.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub same_as: Option<String>,
+    /// `needs_download`: a zip inside a zip known only from its listing,
+    /// whose own entries need the outer zip downloaded.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub contents: Option<&'static str>,
     /// Why it could not be read, when it could not.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub error: Option<NodeError>,
@@ -114,6 +128,7 @@ impl Node {
             modified: None,
             state: None,
             same_as: None,
+            contents: None,
             error: None,
             depth,
         }
@@ -149,6 +164,8 @@ struct Top {
     modified: Option<String>,
     state: Option<State>,
     same_as: Option<String>,
+    /// What the zip holds, from its listing, when it is not downloaded.
+    peek: Option<Peeked>,
 }
 
 /// Writes the map of the crawl record and the archive under `roots`,
@@ -172,7 +189,11 @@ pub fn map(
     }
     let ndjson_path = dir.join("map.ndjson");
     let tree_path = dir.join("tree.txt");
-    let mut out = Output::create(&ndjson_path, &tree_path)?;
+    let header = serde_json::json!({
+        "catalog_format": CATALOG_FORMAT,
+        "roots": roots.iter().map(Url::as_str).collect::<Vec<_>>(),
+    });
+    let mut out = Output::create(&ndjson_path, &tree_path, &header)?;
     let mut listers: Vec<Lister> = (0..workers.max(1))
         .map(|_| Lister::new(tmp.clone()))
         .collect();
@@ -209,6 +230,10 @@ fn tops(
     let mut tops = BTreeMap::new();
     let mut listed = HashSet::new();
     let removed = mirror.removed()?;
+    let mut peeks: HashMap<String, Peeked> = read_peeks(&mirror.peek_path())?
+        .into_iter()
+        .map(|p| (p.url.clone(), p))
+        .collect();
     for r in read_record(&mirror.record_path())? {
         let kind = match r.kind {
             RemoteKind::External => continue,
@@ -236,6 +261,9 @@ fn tops(
                 modified: Some(r.modified),
                 state,
                 same_as: gone.map(|g| g.same_as.clone()),
+                peek: state
+                    .filter(|s| matches!(s, State::NotArchived | State::Removed))
+                    .and_then(|_| peeks.remove(&r.url)),
             },
         );
         listed.insert(r.url);
@@ -251,6 +279,7 @@ fn tops(
                         modified: a.sidecar.last_modified,
                         state: Some(State::GoneUpstream),
                         same_as: None,
+                        peek: None,
                     },
                 );
             }
@@ -269,6 +298,7 @@ fn tops(
             modified: None,
             state: None,
             same_as: None,
+            peek: None,
         });
     }
     Ok(tops)
@@ -314,6 +344,10 @@ struct Lister {
     levels: Vec<Vec<u8>>,
     tmp: PathBuf,
     in_memory: u64,
+    max_nested: u64,
+    max_entries: u64,
+    /// Entries this archived file may still list.
+    entries_left: u64,
 }
 
 impl Lister {
@@ -322,6 +356,9 @@ impl Lister {
             levels: Vec::new(),
             tmp,
             in_memory: NESTED_IN_MEMORY,
+            max_nested: MAX_NESTED,
+            max_entries: MAX_ENTRIES,
+            entries_left: MAX_ENTRIES,
         }
     }
 
@@ -345,8 +382,13 @@ impl Lister {
         if matches!(top.state, Some(State::NotArchived | State::Removed))
             || top.kind == NodeKind::Dir
         {
-            return vec![node];
+            let mut out = vec![node];
+            if let Some(p) = &top.peek {
+                listed(&mut out, p);
+            }
+            return out;
         }
+        self.entries_left = self.max_entries;
         let file = archive.root().join(key.iter().collect::<PathBuf>());
         let mut out = vec![node];
         // A zip is read by seeking to each entry, and a `BufReader` drops
@@ -423,6 +465,17 @@ impl Lister {
             code: "zip.open_failed",
             message: format!("The zip could not be opened: {e}"),
         })?;
+        let n = z.len() as u64;
+        if n > self.entries_left {
+            return Err(NodeError {
+                code: "zip.too_many_entries",
+                message: format!(
+                    "The zip lists {n} entries, more than the {} one archived file may list.",
+                    self.max_entries
+                ),
+            });
+        }
+        self.entries_left -= n;
         // Every entry's name split into folders, in tree order; an entry
         // whose record cannot be read is reported after them.
         let mut entries: Vec<(Vec<String>, usize, bool)> = Vec::with_capacity(z.len());
@@ -452,16 +505,7 @@ impl Lister {
         entries.sort();
         let mut dirs_done: HashSet<Vec<String>> = HashSet::new();
         for (parts, i, is_dir) in entries {
-            for n in 1..parts.len() + usize::from(is_dir) {
-                let d = parts[..n].to_vec();
-                if dirs_done.insert(d.clone()) {
-                    out.push(Node::new(
-                        format!("{path}!{}", d.join("/")),
-                        NodeKind::Dir,
-                        depth + n,
-                    ));
-                }
-            }
+            folders(out, &mut dirs_done, path, depth, &parts, is_dir);
             if is_dir {
                 continue;
             }
@@ -531,20 +575,121 @@ impl Lister {
         if got < 4 || !ZIP_MAGIC.contains(&&magic) {
             return (node, Ok(None));
         }
-        let nested = if f.size() <= self.in_memory {
+        let size = f.size();
+        if size > self.max_nested {
+            return (
+                node,
+                Err(NodeError {
+                    code: "zip.too_big",
+                    message: format!(
+                        "The zip inside declares {size} bytes, more than the {} unpacked to list it.",
+                        self.max_nested
+                    ),
+                }),
+            );
+        }
+        // Never more than the declared size, plus one byte to notice a lie.
+        let mut f = f.take(size.saturating_sub(4) + 1);
+        let read = if size <= self.in_memory {
             let buf = self.level(level);
             buf.clear();
             buf.extend_from_slice(&magic);
-            f.read_to_end(buf).map(|_| Nested::Memory)
+            f.read_to_end(buf).map(|n| (n, Nested::Memory))
         } else {
             tempfile::tempfile_in(&self.tmp).and_then(|mut t| {
                 t.write_all(&magic)?;
-                std::io::copy(&mut f, &mut t)?;
+                let n = std::io::copy(&mut f, &mut t)?;
                 t.rewind()?;
-                Ok(Nested::Spooled(t))
+                Ok((usize::try_from(n).unwrap_or(usize::MAX), Nested::Spooled(t)))
             })
         };
-        (node, nested.map(Some).map_err(|e| bad(&e)))
+        match read {
+            Err(e) => (node, Err(bad(&e))),
+            Ok((n, _)) if n as u64 + 4 > size => (
+                node,
+                Err(NodeError {
+                    code: "zip.size_mismatch",
+                    message: format!("The entry holds more than the {size} bytes it declares."),
+                }),
+            ),
+            Ok((_, nested)) => (node, Ok(Some(nested))),
+        }
+    }
+}
+
+/// The folder nodes above an entry `parts` of the zip at `path`, each once;
+/// the entry's own when it is a folder.
+fn folders(
+    out: &mut Vec<Node>,
+    done: &mut HashSet<Vec<String>>,
+    path: &str,
+    depth: usize,
+    parts: &[String],
+    is_dir: bool,
+) {
+    for n in 1..parts.len() + usize::from(is_dir) {
+        let d = parts[..n].to_vec();
+        if done.insert(d.clone()) {
+            out.push(Node::new(
+                format!("{path}!{}", d.join("/")),
+                NodeKind::Dir,
+                depth + n,
+            ));
+        }
+    }
+}
+
+/// What a zip not downloaded holds, from its listing, under its node
+/// `out[0]`: its folders and files, a zip inside it marked as needing the
+/// download to list further.
+fn listed(out: &mut Vec<Node>, peek: &Peeked) {
+    let (path, depth) = (out[0].path.clone(), out[0].depth);
+    let Some(entries) = &peek.entries else {
+        if let Some(e) = peek.error.as_ref().filter(|e| e.code != "zip.not_a_zip") {
+            out[0].error = Some(NodeError {
+                code: "zip.bad_directory",
+                message: e.message.clone(),
+            });
+        }
+        return;
+    };
+    out[0].kind = NodeKind::Zip;
+    let mut sorted: Vec<(Vec<String>, &Entry)> = entries
+        .iter()
+        .map(|e| {
+            let parts = e
+                .name
+                .split('/')
+                .filter(|p| !p.is_empty())
+                .map(str::to_owned);
+            (parts.collect(), e)
+        })
+        .filter(|(parts, _): &(Vec<String>, &Entry)| !parts.is_empty())
+        .collect();
+    sorted.sort_by(|a, b| a.0.cmp(&b.0));
+    let mut done = HashSet::new();
+    for (parts, e) in sorted {
+        let is_dir = e.name.ends_with('/');
+        folders(out, &mut done, &path, depth, &parts, is_dir);
+        if is_dir {
+            continue;
+        }
+        let is_zip = e.name.len() >= 4 && e.name[e.name.len() - 4..].eq_ignore_ascii_case(".zip");
+        let mut node = Node::new(
+            format!("{path}!{}", parts.join("/")),
+            if is_zip {
+                NodeKind::Zip
+            } else {
+                NodeKind::File
+            },
+            depth + parts.len(),
+        );
+        node.size = Some(e.size);
+        node.compressed = Some(e.compressed);
+        node.crc32 = Some(e.crc32);
+        node.modified = Some(e.modified.clone());
+        node.contents = is_zip.then_some("needs_download");
+        out.push(node);
     }
 }
 
@@ -602,19 +747,25 @@ fn part(path: &Path) -> PathBuf {
 }
 
 impl Output {
-    fn create(ndjson: &Path, tree: &Path) -> Result<Self, MirrorError> {
+    fn create(ndjson: &Path, tree: &Path, header: &serde_json::Value) -> Result<Self, MirrorError> {
         let open = |p: &Path| {
             let p = part(p);
             File::create(&p)
                 .map(|f| BufWriter::with_capacity(WRITE_BUFFER, f))
                 .map_err(MirrorError::io(&p))
         };
-        Ok(Self {
+        let mut out = Self {
             ndjson: open(ndjson)?,
             tree: open(tree)?,
             summary: MapSummary::default(),
             line: Vec::with_capacity(512),
-        })
+        };
+        serde_json::to_writer(&mut out.line, header).expect("a header serialises");
+        out.line.push(b'\n');
+        out.ndjson
+            .write_all(&out.line)
+            .map_err(MirrorError::io(ndjson))?;
+        Ok(out)
     }
 
     fn write(&mut self, node: &Node) -> Result<(), MirrorError> {
@@ -693,6 +844,9 @@ pub fn tree_line(node: &Node) -> String {
         Some(State::GoneUpstream) => line.push_str(" [no longer on nemweb]"),
         Some(State::Removed) => line.push_str(" [removed: same as its folder]"),
         _ => {}
+    }
+    if node.contents.is_some() {
+        line.push_str(" [contents need the download]");
     }
     if let Some(e) = &node.error {
         line.push_str(" [");
@@ -924,6 +1078,7 @@ h/
             modified: None,
             state: Some(State::Archived),
             same_as: None,
+            peek: None,
         };
         let nodes = l.top(&f.archive, &key, &top);
         let paths: Vec<_> = nodes.iter().map(|n| n.path.as_str()).collect();
@@ -972,6 +1127,7 @@ h/
             modified: None,
             state: Some(State::Archived),
             same_as: None,
+            peek: None,
         };
         let mut lister = Lister::new(dir.path().join("tmp"));
         let list = |name: &str, bytes: Option<&[u8]>, lister: &mut Lister| {
@@ -1027,5 +1183,150 @@ h/
         assert_eq!(codes(&n), [None]);
         let n = list("folder", None, &mut lister);
         assert_eq!(codes(&n), [Some("mirror.io")]);
+    }
+
+    #[test]
+    fn the_catalog_says_its_format_and_lists_zips_not_downloaded() {
+        let f = fixture();
+        let entry = |name: &str| crate::zipdir::Entry {
+            name: name.into(),
+            size: 10,
+            compressed: 4,
+            crc32: 7,
+            method: 8,
+            modified: "2026-10-01 12:00:00".into(),
+        };
+        let peeks = [
+            crate::peek::Peeked {
+                url: "https://h/A/missing.zip".into(),
+                entries: Some(vec![
+                    entry("in/"),
+                    entry("in/a.csv"),
+                    entry("in/b.ZIP"),
+                    entry("/"),
+                ]),
+                error: None,
+            },
+            crate::peek::Peeked {
+                url: "https://h/A/b.txt".into(),
+                entries: Some(vec![entry("ignored, it is archived")]),
+                error: None,
+            },
+        ];
+        let lines: String = peeks
+            .iter()
+            .map(|p| serde_json::to_string(p).unwrap() + "\n")
+            .collect();
+        std::fs::write(f.mirror.peek_path(), lines).unwrap();
+        map(&f.mirror, &f.archive, &f.roots, 1).unwrap();
+        let ndjson = std::fs::read_to_string(f.mirror.dir().join("map/map.ndjson")).unwrap();
+        assert_eq!(
+            ndjson.lines().next().unwrap(),
+            r#"{"catalog_format":1,"roots":["https://h/A/"]}"#
+        );
+        let tree = std::fs::read_to_string(f.mirror.dir().join("map/tree.txt")).unwrap();
+        let expected = "    missing.zip/ (zip, 7 B) [not downloaded]
+      in/
+        a.csv  10 B (4 B packed)
+        b.ZIP/ (zip, 10 B (4 B packed)) [contents need the download]
+";
+        assert!(tree.contains(expected), "{tree}");
+        assert!(!tree.contains("ignored"), "{tree}");
+        let md = crate::summary(&f.mirror.dir().join("map/map.ndjson")).unwrap();
+        assert!(md.contains("b.ZIP/ (zip)"), "{md}");
+
+        // A listing that is damaged marks the zip; one of a file that is not
+        // a zip leaves it a file.
+        let bad = |code: &str| crate::peek::Peeked {
+            url: "https://h/A/missing.zip".into(),
+            entries: None,
+            error: Some(crate::peek::PeekError {
+                code: code.into(),
+                message: "m".into(),
+            }),
+        };
+        for (code, line) in [
+            (
+                "zip.bad_directory",
+                "    missing.zip  7 B [not downloaded] [zip.bad_directory]\n",
+            ),
+            ("zip.not_a_zip", "    missing.zip  7 B [not downloaded]\n"),
+        ] {
+            std::fs::write(
+                f.mirror.peek_path(),
+                serde_json::to_string(&bad(code)).unwrap() + "\n",
+            )
+            .unwrap();
+            map(&f.mirror, &f.archive, &f.roots, 1).unwrap();
+            let tree = std::fs::read_to_string(f.mirror.dir().join("map/tree.txt")).unwrap();
+            assert!(tree.contains(line), "{tree}");
+        }
+    }
+
+    #[test]
+    fn zips_that_would_cost_too_much_are_not_unpacked() {
+        use crate::testzip;
+        let dir = tempfile::tempdir().unwrap();
+        let archive = Archive::new(dir.path());
+        let top = Top {
+            kind: NodeKind::File,
+            size: None,
+            modified: None,
+            state: Some(State::Archived),
+            same_as: None,
+            peek: None,
+        };
+        let mut lister = Lister::new(dir.path().join("tmp"));
+        std::fs::create_dir_all(dir.path().join("tmp")).unwrap();
+        let list = |name: &str, bytes: &[u8], lister: &mut Lister| {
+            std::fs::create_dir_all(dir.path().join("h")).unwrap();
+            std::fs::write(dir.path().join("h").join(name), bytes).unwrap();
+            let key = vec!["h".to_owned(), name.to_owned()];
+            let nodes = lister.top(&archive, &key, &top);
+            nodes
+                .iter()
+                .map(|n| n.error.as_ref().map(|e| e.code))
+                .collect::<Vec<_>>()
+        };
+        let inner = testzip::stored("x.csv", b"x");
+        let outer = testzip::stored("n.zip", &inner);
+        // Bigger than the limit, as declared.
+        lister.max_nested = 10;
+        assert_eq!(
+            list("big.zip", &outer, &mut lister),
+            [None, Some("zip.too_big")]
+        );
+        lister.max_nested = MAX_NESTED;
+        // More entries than one archived file may list.
+        lister.max_entries = 1;
+        let two = testzip::bad_second_header();
+        assert_eq!(
+            list("many.zip", &two, &mut lister),
+            [Some("zip.too_many_entries")]
+        );
+        assert_eq!(
+            list("deep.zip", &outer, &mut lister),
+            [None, Some("zip.too_many_entries")],
+            "the zip inside would pass the limit"
+        );
+        lister.max_entries = MAX_ENTRIES;
+        // An entry holding more than it declares, in memory and spooled:
+        // deflate gives what it inflates, whatever the zip declared.
+        let lying = testzip::understated(&testzip::deflated("n.zip", &inner));
+        assert_eq!(
+            list("lie.zip", &lying, &mut lister),
+            [None, Some("zip.size_mismatch")]
+        );
+        lister.in_memory = 0;
+        assert_eq!(
+            list("lie2.zip", &lying, &mut lister),
+            [None, Some("zip.size_mismatch")]
+        );
+        // Nowhere to spool it.
+        lister.tmp = dir.path().join("no-such-dir");
+        assert_eq!(
+            list("nowhere.zip", &outer, &mut lister),
+            [None, Some("zip.bad_entry")]
+        );
     }
 }

@@ -6,8 +6,16 @@ file nemweb lists under the roots, every archived file nemweb no longer
 lists, and every folder and file inside every zip, zips within zips too.
 `tree.txt` beside it is the same nodes as an indented tree.
 
-Lines come in tree order: a folder before what it holds, names in byte
-order. The same archive gives the same bytes.
+The first line is a header, `{"catalog_format":1,"roots":[…]}`: the format
+version, raised on any change a reader would notice, and the roots crawled.
+Every other line is a node, in tree order: a folder before what it holds,
+names in byte order. The same archive and records give the same bytes.
+
+A zip not downloaded (or removed as a duplicate) is still listed with what
+it holds, from its central directory read by ranged requests (`peek`): its
+folders and files with their sizes and CRC-32. A zip inside it shows as a
+`zip` with `contents: "needs_download"`: its own entries are in the outer
+zip's compressed bytes.
 
 ## Node
 
@@ -21,6 +29,15 @@ order. The same archive gives the same bytes.
 | `modified` | when known | as nemweb lists it, or as the zip records it (`YYYY-MM-DD HH:MM:SS`) |
 | `state` | files nemweb lists or listed | `archived`, `not_archived`, `gone_upstream` (archived, no longer listed) or `removed` (a duplicate, see `docs/archive.md`) |
 | `same_as` | removed | the folder holding the same files |
+| `contents` | a zip known only from a listing | `needs_download`: its entries need the outer zip |
 | `error` | could not be read | `{code, message}`, the code from `docs/errors.md` |
 
-An entry is a zip when its bytes start as one, whatever its name.
+An entry of a downloaded zip is a zip when its bytes start as one, whatever
+its name; an entry known only from a listing, when its name ends in `.zip`.
+
+Zips are unpacked only as far as listing them needs, and never beyond these
+limits, each reported on the node: zips nested more than 8 deep
+(`zip.nesting_too_deep`), a zip inside a zip declaring more than 16 GiB
+(`zip.too_big`), an entry holding more than it declares
+(`zip.size_mismatch`), and more than 10 million entries in one downloaded
+file (`zip.too_many_entries`).

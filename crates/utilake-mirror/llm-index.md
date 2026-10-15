@@ -26,7 +26,7 @@ Each entry names where a thing starts. Read those files before you edit.
 - **Peek**: every zip not yet downloaded, its directory by ranged requests, the whole-month zips first, into the peek record (`crates/nemweb-mirror/src/peek.rs`); `run` peeks and downloads together on one fetcher.
 - **Download**: every crawled file through the fetcher, skipping archived and removed ones; a refusal or a full disk stops the pass (`crates/nemweb-mirror/src/download.rs`); one run at a time (`crates/nemweb-mirror/src/lock.rs`).
 - **Map**: the catalog, every folder, file and zip entry, zips within zips (`crates/nemweb-mirror/src/map.rs`); the committed pattern summary (`crates/nemweb-mirror/src/summary.rs`).
-- **Compare**: each zip beside a folder of the same name against that folder; `--delete` removes the same ones (`crates/nemweb-mirror/src/compare.rs`).
+- **Compare**: each zip beside a folder of the same name against that folder, from the zip or its peeked listing; `--delete` removes the same ones, downloaded or not (`crates/nemweb-mirror/src/compare.rs`).
 - **Status**: pages read, files archived out of those listed (`crates/nemweb-mirror/src/status.rs`).
 - **Command**: `crawl`, `peek`, `download`, `run`, `map`, `compare`, `summary`, `status`. `crates/nemweb-mirror/src/cli.rs`, `crates/nemweb-mirror/src/commands.rs`.
 - **Gates**: coverage (`just cover`), benchmarks (`just bench`), ratchet (`just budget-check`), agent index (`just llm-check`), error catalogue (`just errors-check`). `crates/xtask/src/`, `bench/budgets.json`, `coverage.json`.

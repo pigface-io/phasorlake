@@ -67,6 +67,10 @@ pub fn summary(map_ndjson: &Path) -> Result<String, MirrorError> {
     let mut totals = Pattern::default();
     for (i, line) in reader.lines().enumerate() {
         let line = line.map_err(MirrorError::io(map_ndjson))?;
+        // The catalog's header says which format and roots; not a node.
+        if line.starts_with("{\"catalog_format\"") {
+            continue;
+        }
         let node: Line<'_> = serde_json::from_str(&line).map_err(|e| MirrorError::Record {
             path: map_ndjson.display().to_string(),
             line: i as u64 + 1,

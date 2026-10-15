@@ -423,3 +423,63 @@ fn the_lock_the_home_and_the_config() {
     assert_eq!(out.status.code(), Some(2));
     assert!(String::from_utf8_lossy(&out.stderr).contains("No home directory"));
 }
+
+/// A whole-month zip whose listing matches its folder is removed before it
+/// is ever downloaded, and the download then leaves it alone.
+#[test]
+fn a_duplicate_is_ruled_on_from_its_listing_and_never_downloaded() {
+    let cli = Cli::new();
+    let root = "https://h/A/";
+    let pages = cli.home.path().join("mirror/crawl/listings/h/A");
+    std::fs::create_dir_all(pages.join("M")).unwrap();
+    let t = zip_of(&[("T.CSV", b"a\n")]);
+    std::fs::write(
+        pages.join("index.html"),
+        page(&[("/A/M/", None), ("/A/M.zip", Some(20_000_000))]),
+    )
+    .unwrap();
+    std::fs::write(
+        pages.join("M/index.html"),
+        page(&[("/A/M/t.zip", Some(t.len()))]),
+    )
+    .unwrap();
+    cli.ok(&["--offline", "crawl", "--root", root]);
+    let dir = cli.home.path().join("archive/h/A/M");
+    std::fs::create_dir_all(&dir).unwrap();
+    std::fs::write(dir.join("t.zip"), &t).unwrap();
+    std::fs::write(
+        dir.join("t.zip.json"),
+        format!(
+            r#"{{"url":"https://h/A/M/t.zip","size":{},"sha256":"x","fetched_at":"t","tool":"x"}}"#,
+            t.len()
+        ),
+    )
+    .unwrap();
+    let crc = {
+        let mut h = crc32fast::Hasher::new();
+        h.update(&t);
+        h.finalize()
+    };
+    std::fs::write(
+        cli.home.path().join("mirror/peek.ndjson"),
+        format!(
+            r#"{{"url":"https://h/A/M.zip","entries":[{{"name":"M/t.zip","size":{},"compressed":{},"crc32":{crc},"method":0,"modified":"m"}}]}}"#,
+            t.len(),
+            t.len()
+        ) + "\n",
+    )
+    .unwrap();
+    let out = cli.ok(&["compare", "--delete"]);
+    assert!(out.contains("listing") && out.contains("removed"), "{out}");
+    assert!(
+        out.contains("0.0 GB freed, 0.0 GB not to download"),
+        "{out}"
+    );
+    let removed = std::fs::read_to_string(cli.home.path().join("mirror/removed.ndjson")).unwrap();
+    assert!(removed.contains("\"downloaded\":false"), "{removed}");
+    let out = cli.ok(&["--offline", "download"]);
+    assert!(
+        out.contains("1 archived already, 1 removed as duplicates"),
+        "{out}"
+    );
+}

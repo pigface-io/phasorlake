@@ -391,13 +391,19 @@ fn compare(ctx: &Context, mirror: &Mirror, delete: bool) -> Result<i32, MirrorEr
     use nemweb_mirror::Verdict;
     let archive = ctx.archive();
     let removed = mirror.removed()?;
+    let listings: std::collections::HashMap<String, Vec<nemweb_mirror::zipdir::Entry>> =
+        nemweb_mirror::read_peeks(&mirror.peek_path())?
+            .into_iter()
+            .filter_map(|p| Some((p.url, p.entries?)))
+            .collect();
     let tmp = mirror.dir().join("tmp");
-    let (mut waiting, mut freed, mut rows) = (0usize, 0u64, Vec::new());
+    let (mut waiting, mut freed, mut spared, mut rows) = (0usize, 0u64, 0u64, Vec::new());
     for pair in nemweb_mirror::pairs(mirror)? {
         if removed.contains_key(&pair.zip) {
             continue;
         }
-        let cmp = nemweb_mirror::compare(&archive, &pair, &tmp)?;
+        let listing = listings.get(&pair.zip).map(Vec::as_slice);
+        let cmp = nemweb_mirror::compare(&archive, &pair, listing, &tmp)?;
         if cmp.verdict == Verdict::NotArchived {
             waiting += 1;
             continue;
@@ -405,7 +411,11 @@ fn compare(ctx: &Context, mirror: &Mirror, delete: bool) -> Result<i32, MirrorEr
         let mut action = "kept";
         if delete && cmp.verdict == Verdict::Same {
             let r = nemweb_mirror::remove(mirror, &archive, &cmp)?;
-            freed += r.size;
+            if r.downloaded {
+                freed += r.size;
+            } else {
+                spared += r.size;
+            }
             action = "removed";
         }
         if ctx.json {
@@ -414,13 +424,16 @@ fn compare(ctx: &Context, mirror: &Mirror, delete: bool) -> Result<i32, MirrorEr
             }));
         } else {
             let name = cmp.zip.rsplit('/').next().unwrap_or(&cmp.zip).to_owned();
+            let verdict = serde_json::to_value(cmp.verdict).expect("a verdict serialises");
             rows.push(vec![
                 name,
-                format!("{:?}", cmp.verdict).to_lowercase(),
+                verdict.as_str().unwrap_or_default().to_owned(),
+                if cmp.from_listing { "listing" } else { "zip" }.to_owned(),
                 cmp.same.to_string(),
                 cmp.repacked.to_string(),
                 cmp.only_in_zip.len().to_string(),
                 cmp.different.len().to_string(),
+                cmp.unsure.len().to_string(),
                 cmp.only_in_folder.len().to_string(),
                 action.to_owned(),
             ]);
@@ -439,10 +452,12 @@ fn compare(ctx: &Context, mirror: &Mirror, delete: bool) -> Result<i32, MirrorEr
                 &[
                     "zip",
                     "verdict",
+                    "from",
                     "same",
                     "repacked",
                     "only in zip",
                     "differ",
+                    "unsure",
                     "only in folder",
                     "action"
                 ],
@@ -450,9 +465,10 @@ fn compare(ctx: &Context, mirror: &Mirror, delete: bool) -> Result<i32, MirrorEr
             )
         );
         println!(
-            "{} compared, {waiting} waiting for downloads, {:.1} GB freed",
+            "{} compared, {waiting} waiting for downloads, {:.1} GB freed, {:.1} GB not to download",
             rows.len(),
-            freed as f64 / 1e9
+            freed as f64 / 1e9,
+            spared as f64 / 1e9
         );
     }
     Ok(0)

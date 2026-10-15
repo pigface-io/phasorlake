@@ -19,6 +19,7 @@ use zip::ZipArchive;
 
 use crate::crawl::{Mirror, RemoteKind, read_record};
 use crate::error::MirrorError;
+use crate::zipdir::Entry;
 
 const READ_BUFFER: usize = 1 << 20;
 /// A zip inside the zip up to this size is read into memory to list it; a
@@ -46,7 +47,11 @@ pub enum Verdict {
     Same,
     /// The zip holds files the folder lacks, or files that differ.
     Differs,
-    /// The zip or some file of the folder is not archived yet.
+    /// Known only from the zip's listing, a file of it is not byte for byte
+    /// the folder's: whether it is packed again needs the zip itself.
+    NeedsDownload,
+    /// Some file of the folder is not archived yet, or the zip is neither
+    /// archived nor peeked.
     NotArchived,
 }
 
@@ -57,6 +62,8 @@ pub struct Comparison {
     pub zip: String,
     /// The folder's URL.
     pub folder: String,
+    /// The zip's listed size.
+    pub zip_size: u64,
     /// What it found.
     pub verdict: Verdict,
     /// Files of the zip whose bytes are the folder's.
@@ -67,6 +74,11 @@ pub struct Comparison {
     pub only_in_zip: Vec<String>,
     /// Files of the zip whose content differs from the folder's.
     pub different: Vec<String>,
+    /// Files of the zip, known from its listing, that are not byte for byte
+    /// the folder's; the zip is needed to tell more.
+    pub unsure: Vec<String>,
+    /// Whether the zip was ruled on from its listing alone.
+    pub from_listing: bool,
     /// Files of the folder the zip does not hold.
     pub only_in_folder: Vec<String>,
     /// Files of the pair not archived yet.
@@ -81,12 +93,20 @@ pub struct Removed {
     pub url: String,
     /// Its size.
     pub size: u64,
-    /// Its sha256, from its sidecar.
-    pub sha256: String,
+    /// Its sha256, from its sidecar; none for a zip never downloaded.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sha256: Option<String>,
+    /// Whether it had been downloaded before it was found the same.
+    #[serde(default = "downloaded")]
+    pub downloaded: bool,
     /// The folder that holds the same files.
     pub same_as: String,
     /// When it was removed (UTC, RFC 3339).
     pub removed_at: String,
+}
+
+fn downloaded() -> bool {
+    true
 }
 
 impl Mirror {
@@ -169,16 +189,34 @@ struct Sum {
     crc32: u32,
 }
 
-/// Compares the zip of `pair` with its folder, both from the archive.
-pub fn compare(archive: &Archive, pair: &Pair, tmp: &Path) -> Result<Comparison, MirrorError> {
+/// One file of the zip: its name, size and CRC-32, and its index when the
+/// zip itself is at hand.
+struct ZipFile {
+    name: String,
+    sum: Sum,
+    index: Option<usize>,
+}
+
+/// Compares the zip of `pair` with its folder. The folder's files come
+/// from the archive; the zip's from the archive when it is there, else
+/// from its peeked listing (`listing`).
+pub fn compare(
+    archive: &Archive,
+    pair: &Pair,
+    listing: Option<&[Entry]>,
+    tmp: &Path,
+) -> Result<Comparison, MirrorError> {
     let mut cmp = Comparison {
         zip: pair.zip.clone(),
         folder: pair.folder.clone(),
+        zip_size: pair.zip_size,
         verdict: Verdict::Same,
         same: 0,
         repacked: 0,
         only_in_zip: Vec::new(),
         different: Vec::new(),
+        unsure: Vec::new(),
+        from_listing: false,
         only_in_folder: Vec::new(),
         not_archived: Vec::new(),
     };
@@ -194,51 +232,70 @@ pub fn compare(archive: &Archive, pair: &Pair, tmp: &Path) -> Result<Comparison,
         }
     }
     let zip_path = archive.path_for(&pair.zip);
-    if !zip_path.is_file() {
+    let mut zip = None;
+    let files: Vec<ZipFile> = if zip_path.is_file() {
+        let file = File::open(&zip_path).map_err(MirrorError::io(&zip_path))?;
+        let bad = |e: zip::result::ZipError| MirrorError::Zip {
+            path: zip_path.display().to_string(),
+            message: e.to_string(),
+        };
+        let mut z = ZipArchive::new(BufReader::with_capacity(64 << 10, file)).map_err(bad)?;
+        let mut files = Vec::with_capacity(z.len());
+        for i in 0..z.len() {
+            let f = z.by_index_raw(i).map_err(bad)?;
+            if !f.is_dir() {
+                files.push(ZipFile {
+                    name: f.name().to_owned(),
+                    sum: Sum {
+                        size: f.size(),
+                        crc32: f.crc32(),
+                    },
+                    index: Some(i),
+                });
+            }
+        }
+        zip = Some(z);
+        files
+    } else if let Some(entries) = listing {
+        cmp.from_listing = true;
+        entries
+            .iter()
+            .filter(|e| !e.name.ends_with('/'))
+            .map(|e| ZipFile {
+                name: e.name.clone(),
+                sum: Sum {
+                    size: e.size,
+                    crc32: e.crc32,
+                },
+                index: None,
+            })
+            .collect()
+    } else {
         cmp.not_archived.insert(0, pair.zip.clone());
-    }
+        Vec::new()
+    };
     if !cmp.not_archived.is_empty() {
         cmp.verdict = Verdict::NotArchived;
         return Ok(cmp);
     }
-    let file = File::open(&zip_path).map_err(MirrorError::io(&zip_path))?;
-    let mut z = ZipArchive::new(BufReader::with_capacity(64 << 10, file)).map_err(|e| {
-        MirrorError::Zip {
-            path: zip_path.display().to_string(),
-            message: e.to_string(),
-        }
-    })?;
     let mut matched: HashSet<String> = HashSet::new();
-    for i in 0..z.len() {
-        let (name, sum, is_dir) = {
-            let f = z.by_index_raw(i).map_err(|e| MirrorError::Zip {
-                path: zip_path.display().to_string(),
-                message: e.to_string(),
-            })?;
-            (
-                f.name().to_owned(),
-                Sum {
-                    size: f.size(),
-                    crc32: f.crc32(),
-                },
-                f.is_dir(),
-            )
-        };
-        if is_dir {
-            continue;
-        }
-        let Some(rel) = suffix_in(&name, &folder) else {
-            cmp.only_in_zip.push(name);
+    for f in files {
+        let Some(rel) = suffix_in(&f.name, &folder) else {
+            cmp.only_in_zip.push(f.name);
             continue;
         };
         let path = &folder[&rel];
         matched.insert(rel.clone());
-        if sum_of(path).map_err(MirrorError::io(path))? == sum {
+        if sum_of(path).map_err(MirrorError::io(path))? == f.sum {
             cmp.same += 1;
             continue;
         }
         // Other bytes: the same files inside, packed again?
-        let inner = list_entry(&mut z, i, tmp, NESTED_IN_MEMORY).ok();
+        let (Some(z), Some(i)) = (zip.as_mut(), f.index) else {
+            cmp.unsure.push(rel);
+            continue;
+        };
+        let inner = list_entry(z, i, tmp, NESTED_IN_MEMORY).ok();
         let theirs = File::open(path)
             .ok()
             .and_then(|f| list(BufReader::with_capacity(64 << 10, f)).ok());
@@ -254,12 +311,16 @@ pub fn compare(archive: &Archive, pair: &Pair, tmp: &Path) -> Result<Comparison,
         .collect();
     if !cmp.only_in_zip.is_empty() || !cmp.different.is_empty() {
         cmp.verdict = Verdict::Differs;
+    } else if !cmp.unsure.is_empty() {
+        cmp.verdict = Verdict::NeedsDownload;
     }
     Ok(cmp)
 }
 
 /// Removes the zip of a comparison that found it the same as its folder,
-/// recording it first; refuses any other comparison.
+/// recording it first: from the archive when it was downloaded, and from
+/// the download to come when it was ruled on from its listing. Refuses any
+/// other comparison.
 pub fn remove(
     mirror: &Mirror,
     archive: &Archive,
@@ -271,13 +332,17 @@ pub fn remove(
         });
     }
     let path = archive.path_for(&cmp.zip);
-    let sidecar = Archive::read_sidecar(&path)?.ok_or_else(|| MirrorError::NotSame {
-        url: cmp.zip.clone(),
-    })?;
+    let sidecar = Archive::read_sidecar(&path)?;
+    if !cmp.from_listing && sidecar.is_none() {
+        return Err(MirrorError::NotSame {
+            url: cmp.zip.clone(),
+        });
+    }
     let removed = Removed {
         url: cmp.zip.clone(),
-        size: sidecar.size,
-        sha256: sidecar.sha256,
+        size: sidecar.as_ref().map_or(cmp.zip_size, |s| s.size),
+        downloaded: sidecar.is_some(),
+        sha256: sidecar.map(|s| s.sha256),
         same_as: cmp.folder.clone(),
         removed_at: crate::clock::now_utc_rfc3339(),
     };
@@ -291,9 +356,11 @@ pub fn remove(
         .map_err(MirrorError::io(&record))?;
     f.write_all(&line).map_err(MirrorError::io(&record))?;
     f.sync_all().map_err(MirrorError::io(&record))?;
-    std::fs::remove_file(&path).map_err(MirrorError::io(&path))?;
-    let sc = Archive::sidecar_path(&path);
-    std::fs::remove_file(&sc).map_err(MirrorError::io(&sc))?;
+    if removed.downloaded {
+        std::fs::remove_file(&path).map_err(MirrorError::io(&path))?;
+        let sc = Archive::sidecar_path(&path);
+        std::fs::remove_file(&sc).map_err(MirrorError::io(&sc))?;
+    }
     Ok(removed)
 }
 
@@ -518,7 +585,7 @@ mod tests {
         assert_eq!(pairs[0].folder, "https://h/A/M/");
         assert_eq!(pairs[0].files.len(), 3);
         let tmp = f.mirror.dir().join("tmp");
-        let cmp = compare(&f.archive, &pairs[0], &tmp).unwrap();
+        let cmp = compare(&f.archive, &pairs[0], None, &tmp).unwrap();
         assert_eq!(cmp.verdict, Verdict::Same, "{cmp:?}");
         assert_eq!((cmp.same, cmp.repacked), (1, 1));
         assert_eq!(cmp.only_in_folder, ["S/CTL/T1.ctl"]);
@@ -579,7 +646,7 @@ mod tests {
     fn a_zip_with_more_than_its_folder_is_kept() {
         let f = fixture(true);
         let pair = &pairs(&f.mirror).unwrap()[0];
-        let cmp = compare(&f.archive, pair, &f.mirror.dir().join("tmp")).unwrap();
+        let cmp = compare(&f.archive, pair, None, &f.mirror.dir().join("tmp")).unwrap();
         assert_eq!(cmp.verdict, Verdict::Differs);
         assert_eq!(cmp.only_in_zip, ["M/README.txt"]);
         let e = remove(&f.mirror, &f.archive, &cmp).unwrap_err();
@@ -593,13 +660,13 @@ mod tests {
         let pair = &pairs(&f.mirror).unwrap()[0];
         let t1 = f.archive.path_for("https://h/A/M/S/DATA/T1%231.zip");
         std::fs::write(&t1, b"not the same").unwrap();
-        let cmp = compare(&f.archive, pair, &f.mirror.dir().join("tmp")).unwrap();
+        let cmp = compare(&f.archive, pair, None, &f.mirror.dir().join("tmp")).unwrap();
         assert_eq!(cmp.verdict, Verdict::Differs);
         assert_eq!(cmp.different, ["S/DATA/T1#1.zip"]);
 
         std::fs::remove_file(&t1).unwrap();
         std::fs::remove_file(f.archive.path_for(&pair.zip)).unwrap();
-        let cmp = compare(&f.archive, pair, &f.mirror.dir().join("tmp")).unwrap();
+        let cmp = compare(&f.archive, pair, None, &f.mirror.dir().join("tmp")).unwrap();
         assert_eq!(cmp.verdict, Verdict::NotArchived);
         assert_eq!(cmp.not_archived, ["https://h/A/M.zip", "S/DATA/T1#1.zip"]);
     }
@@ -609,7 +676,7 @@ mod tests {
         let f = fixture(false);
         let pair = &pairs(&f.mirror).unwrap()[0];
         std::fs::write(f.archive.path_for(&pair.zip), b"PK\x03\x04 broken").unwrap();
-        let e = compare(&f.archive, pair, Path::new("/tmp")).unwrap_err();
+        let e = compare(&f.archive, pair, None, Path::new("/tmp")).unwrap_err();
         assert_eq!(e.diagnostic().code, "zip.open_failed");
         // The directory lists an entry whose header is not there.
         std::fs::write(
@@ -617,13 +684,13 @@ mod tests {
             crate::testzip::bad_second_header(),
         )
         .unwrap();
-        let e = compare(&f.archive, pair, Path::new("/tmp")).unwrap_err();
+        let e = compare(&f.archive, pair, None, Path::new("/tmp")).unwrap_err();
         assert_eq!(e.diagnostic().code, "zip.open_failed");
         // A zip without its sidecar is not removed.
         std::fs::remove_file(f.archive.path_for(&pair.zip)).unwrap();
         let f2 = fixture(false);
         let pair2 = &pairs(&f2.mirror).unwrap()[0];
-        let cmp = compare(&f2.archive, pair2, &f2.mirror.dir().join("tmp")).unwrap();
+        let cmp = compare(&f2.archive, pair2, None, &f2.mirror.dir().join("tmp")).unwrap();
         std::fs::remove_file(Archive::sidecar_path(&f2.archive.path_for(&pair2.zip))).unwrap();
         let e = remove(&f2.mirror, &f2.archive, &cmp).unwrap_err();
         assert_eq!(e.diagnostic().code, "mirror.not_same");
@@ -657,5 +724,60 @@ mod tests {
         assert_eq!(a["X.CSV"].0, 1);
         assert_eq!(a, b);
         assert_eq!(percent_decoded("a%23b%2"), "a#b%2");
+    }
+
+    #[test]
+    fn a_zip_ruled_on_from_its_listing_is_never_downloaded() {
+        let f = fixture(false);
+        let pair = &pairs(&f.mirror).unwrap()[0];
+        let zip_path = f.archive.path_for(&pair.zip);
+        std::fs::remove_file(&zip_path).unwrap();
+        std::fs::remove_file(Archive::sidecar_path(&zip_path)).unwrap();
+        let entry = |name: &str, bytes: &[u8]| Entry {
+            name: name.into(),
+            size: bytes.len() as u64,
+            compressed: bytes.len() as u64,
+            crc32: crc32fast::hash(bytes),
+            method: 0,
+            modified: "m".into(),
+        };
+        let t1 = std::fs::read(f.archive.path_for("https://h/A/M/S/DATA/T1%231.zip")).unwrap();
+        let t2 = std::fs::read(f.archive.path_for("https://h/A/M/S/DATA/T2.zip")).unwrap();
+        let tmp = f.mirror.dir().join("tmp");
+        let mut listing = vec![
+            entry("M/S/DATA/", b""),
+            entry("M/S/DATA/T1#1.zip", &t1),
+            entry("M/S/DATA/T2.zip", &t2),
+        ];
+        let cmp = compare(&f.archive, pair, Some(&listing), &tmp).unwrap();
+        assert_eq!(
+            (cmp.verdict, cmp.from_listing, cmp.same),
+            (Verdict::Same, true, 2)
+        );
+        // Not byte for byte: only the zip itself could tell more.
+        listing[2] = entry("M/S/DATA/T2.zip", b"other bytes");
+        let unsure = compare(&f.archive, pair, Some(&listing), &tmp).unwrap();
+        assert_eq!(unsure.verdict, Verdict::NeedsDownload);
+        assert_eq!(unsure.unsure, ["S/DATA/T2.zip"]);
+        assert!(remove(&f.mirror, &f.archive, &unsure).is_err());
+        // A file the folder lacks settles it.
+        listing.push(entry("M/README.txt", b"r"));
+        let differs = compare(&f.archive, pair, Some(&listing), &tmp).unwrap();
+        assert_eq!(differs.verdict, Verdict::Differs);
+
+        let r = remove(&f.mirror, &f.archive, &cmp).unwrap();
+        assert_eq!(
+            (r.downloaded, r.sha256.as_deref(), r.size),
+            (false, None, pair.zip_size)
+        );
+        let back = &f.mirror.removed().unwrap()[&pair.zip];
+        assert!(!back.downloaded);
+        // A record written before this field existed was of a downloaded zip.
+        std::fs::write(
+            f.mirror.removed_path(),
+            "{\"url\":\"u\",\"size\":1,\"sha256\":\"s\",\"same_as\":\"f\",\"removed_at\":\"t\"}\n",
+        )
+        .unwrap();
+        assert!(f.mirror.removed().unwrap()["u"].downloaded);
     }
 }

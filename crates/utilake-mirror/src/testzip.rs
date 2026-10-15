@@ -66,3 +66,17 @@ pub fn corrupt_data(mut zip: Vec<u8>) -> Vec<u8> {
     zip[data] = 0xff;
     zip
 }
+
+/// The first entry's uncompressed size, in its local header and in the
+/// directory, declared 5 bytes short of what it holds.
+pub fn understated(zip: &[u8]) -> Vec<u8> {
+    let mut zip = zip.to_vec();
+    let size = u32::from_le_bytes(zip[22..26].try_into().expect("four bytes")) - 5;
+    zip[22..26].copy_from_slice(&size.to_le_bytes());
+    let cd = zip
+        .windows(4)
+        .position(|w| w == b"PK\x01\x02")
+        .expect("a directory");
+    zip[cd + 24..cd + 28].copy_from_slice(&size.to_le_bytes());
+    zip
+}

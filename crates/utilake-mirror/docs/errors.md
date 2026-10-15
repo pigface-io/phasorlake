@@ -42,11 +42,14 @@ Every error and warning nemweb-mirror reports carries one of these codes. Codes 
 
 | code | raised in |
 |---|---|
-| `zip.bad_directory` | `crates/nemweb-mirror/src/peek.rs` |
+| `zip.bad_directory` | `crates/nemweb-mirror/src/map.rs` |
 | `zip.bad_entry` | `crates/nemweb-mirror/src/map.rs` |
 | `zip.nesting_too_deep` | `crates/nemweb-mirror/src/map.rs` |
-| `zip.not_a_zip` | `crates/nemweb-mirror/src/peek.rs` |
+| `zip.not_a_zip` | `crates/nemweb-mirror/src/map.rs` |
 | `zip.open_failed` | `crates/nemweb-mirror/src/error.rs` |
+| `zip.size_mismatch` | `crates/nemweb-mirror/src/map.rs` |
+| `zip.too_big` | `crates/nemweb-mirror/src/map.rs` |
+| `zip.too_many_entries` | `crates/nemweb-mirror/src/map.rs` |
 
 ## mirror
 
