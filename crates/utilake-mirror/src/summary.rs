@@ -20,7 +20,9 @@ use crate::map::{NodeKind, State, human};
 #[derive(Deserialize)]
 struct Line<'a> {
     #[serde(borrow)]
-    path: Cow<'a, str>,
+    file: Cow<'a, str>,
+    #[serde(default, borrow)]
+    inside: Vec<Cow<'a, str>>,
     kind: NodeKind,
     size: Option<u64>,
     state: Option<State>,
@@ -76,13 +78,21 @@ pub fn summary(map_ndjson: &Path) -> Result<String, MirrorError> {
             line: i as u64 + 1,
             message: e.to_string(),
         })?;
+        // Every name of the file's path, then of each path inside it, each
+        // marked with what holds the next: `/` a folder, `!` a zip.
         key.clear();
-        let mut start = 0;
-        for (at, sep) in node.path.match_indices(['/', '!']) {
-            key.push(format!("{}{sep}", fold(&node.path[start..at])));
-            start = at + 1;
+        let mut names: Vec<(&str, char)> = Vec::new();
+        for (level, path) in std::iter::once(&node.file).chain(&node.inside).enumerate() {
+            if level > 0 {
+                let held = names.len() - 1;
+                names[held].1 = '!';
+            }
+            names.extend(path.split('/').map(|n| (n, '/')));
         }
-        let last = &node.path[start..];
+        let (last, _) = names.pop().expect("a path has a name");
+        for (name, sep) in names {
+            key.push(format!("{}{sep}", fold(name)));
+        }
         let mark = match node.kind {
             NodeKind::Dir => "/",
             NodeKind::Zip => "!",
@@ -196,17 +206,17 @@ mod tests {
         let dir = tempfile::tempdir().unwrap();
         let p = dir.path().join("map.ndjson");
         let lines = [
-            r#"{"path":"h","kind":"dir"}"#,
-            r#"{"path":"h/A","kind":"dir"}"#,
-            r#"{"path":"h/A/2025","kind":"dir"}"#,
-            r#"{"path":"h/A/2025/d_20250101.zip","kind":"zip","size":10,"state":"archived"}"#,
-            r#"{"path":"h/A/2025/d_20250101.zip!x_0001.csv","kind":"file","size":40,"compressed":9}"#,
-            r#"{"path":"h/A/2025/d_20250101.zip!x_0002.csv","kind":"file","size":50,"compressed":9}"#,
-            r#"{"path":"h/A/2025/d_20250102.zip","kind":"zip","size":12,"state":"archived"}"#,
-            r#"{"path":"h/A/2026","kind":"dir"}"#,
-            r#"{"path":"h/A/2026/d_20260101.zip","kind":"zip","size":7,"state":"not_archived"}"#,
-            r#"{"path":"h/A/README.txt","kind":"file","size":3,"state":"archived"}"#,
-            r#"{"path":"h/A/v2.txt","kind":"file","size":1,"state":"archived"}"#,
+            r#"{"file":"h","kind":"dir"}"#,
+            r#"{"file":"h/A","kind":"dir"}"#,
+            r#"{"file":"h/A/2025","kind":"dir"}"#,
+            r#"{"file":"h/A/2025/d_20250101.zip","kind":"zip","size":10,"state":"archived"}"#,
+            r#"{"file":"h/A/2025/d_20250101.zip","inside":["x_0001.csv"],"kind":"file","size":40,"compressed":9}"#,
+            r#"{"file":"h/A/2025/d_20250101.zip","inside":["x_0002.csv"],"kind":"file","size":50,"compressed":9}"#,
+            r#"{"file":"h/A/2025/d_20250102.zip","kind":"zip","size":12,"state":"archived"}"#,
+            r#"{"file":"h/A/2026","kind":"dir"}"#,
+            r#"{"file":"h/A/2026/d_20260101.zip","kind":"zip","size":7,"state":"not_archived"}"#,
+            r#"{"file":"h/A/README.txt","kind":"file","size":3,"state":"archived"}"#,
+            r#"{"file":"h/A/v2.txt","kind":"file","size":1,"state":"archived"}"#,
         ];
         std::fs::write(&p, lines.join("\n") + "\n").unwrap();
         let md = summary(&p).unwrap();

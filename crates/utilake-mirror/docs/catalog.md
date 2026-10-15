@@ -21,8 +21,9 @@ zip's compressed bytes.
 
 | field | when | meaning |
 |---|---|---|
-| `path` | always | the archive path (`docs/archive.md`) for what nemweb lists; then `!` and the entry's path inside each zip |
-| `url` | what nemweb lists or listed | its exact URL, as crawled or as its sidecar records it |
+| `file` | always | the file or folder nemweb lists, at its path under the archive (`docs/archive.md`); for an entry inside a zip, the zip's |
+| `url` | all but the folders above the roots | the exact URL of `file`, as crawled or as its sidecar records it |
+| `inside` | entries of zips | where inside `file`: one path per zip, outermost first, folders separated by `/` |
 | `kind` | always | `dir`, `file` or `zip` (a file that is also a folder of what it holds) |
 | `size` | files, zips | bytes; uncompressed inside a zip |
 | `compressed` | inside a zip | packed bytes |
@@ -34,17 +35,28 @@ zip's compressed bytes.
 | `contents` | a zip known only from a listing | `needs_download`: its entries need the outer zip |
 | `error` | could not be read | `{code, message}`, the code from `docs/errors.md` |
 
-## Paths, URLs and the tree
+## Provenance and the tree
 
-`/` separates folders and `!` steps into a zip; a `%` or `!` inside a name
-is written `%25` or `%21`, so a node's parent is always its path up to the
-last `/` or `!`, and the lines rebuild the tree in one pass. Names inside
-zips use `/` even where the zip, made on Windows, used `\`.
+Every row says where it came from in full: `file` is a real path under the
+archive, `url` the exact URL that file was downloaded from (the archive
+path is derived from it, but cannot always be turned back into it: `%23`
+becomes `#`, and what a file system cannot hold is replaced), and `inside`
+the path within each zip, outermost first:
 
-A path is not a URL (the archive decodes `%23` to `#` and replaces what a
-file system cannot hold), so every node nemweb lists carries its `url`; an
-entry inside a zip belongs to the node at its path before the first `!`.
-Path to URL and URL to path are both exact.
+```json
+{"file":"www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2009/MMSDM_2009_07.zip",
+ "url":"https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2009/MMSDM_2009_07.zip",
+ "inside":["MMSDM_2009_07/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_REGION_200907010000.zip",
+           "PUBLIC_DVD_REGION_200907010000.CSV"],
+ "kind":"file","size":1234,"compressed":321,"crc32":1234567890,"modified":"2009-08-03 10:00:00"}
+```
+
+No separator needs escaping and nothing is unsafe in a shell. A row's
+parent is the row with the same `file` and `inside` minus the last name of
+its last path (or minus that path, when it is a single name); a top-level
+row's parent drops the last name of `file`. Rows come parent first, so one
+pass rebuilds the tree. Names inside zips use `/` even where the zip, made
+on Windows, used `\`.
 
 ## Zips
 

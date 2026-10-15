@@ -82,13 +82,17 @@ pub struct NodeError {
 /// One folder or file.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct Node {
-    /// The path: the archive path for what nemweb lists, then `!` and the
-    /// name inside each zip.
-    pub path: String,
-    /// The exact URL, for what nemweb lists (or listed); an entry inside a
-    /// zip is its zip's, the node at its path before the first `!`.
+    /// The file or folder nemweb lists, at its path under the archive
+    /// (`docs/archive.md`); for an entry inside a zip, the zip's.
+    pub file: String,
+    /// The exact URL of `file`, as crawled or as its sidecar records it;
+    /// none only for the folders above the roots.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub url: Option<String>,
+    /// Where inside `file` it is: one path per zip, outermost first, each
+    /// with folders separated by `/`; empty for `file` itself.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub inside: Vec<String>,
     /// Folder, file or zip.
     pub kind: NodeKind,
     /// Size in bytes (uncompressed inside a zip).
@@ -126,10 +130,11 @@ pub struct Node {
 }
 
 impl Node {
-    fn new(path: String, kind: NodeKind, depth: usize) -> Self {
+    fn new(file: String, kind: NodeKind, depth: usize) -> Self {
         Self {
-            path,
+            file,
             url: None,
+            inside: Vec::new(),
             kind,
             size: None,
             compressed: None,
@@ -398,7 +403,7 @@ impl Lister {
     /// The node of a folder or file nemweb lists and, for an archived zip,
     /// the nodes of what it holds.
     fn top(&mut self, archive: &Archive, key: &[String], top: &Top) -> Vec<Node> {
-        let mut node = Node::new(joined(key), top.kind, key.len() - 1);
+        let mut node = Node::new(key.join("/"), top.kind, key.len() - 1);
         node.url.clone_from(&top.url);
         node.size = top.size;
         node.modified.clone_from(&top.modified);
@@ -446,12 +451,12 @@ impl Lister {
             out[0].sha256 = Some(s.sha256);
             out[0].crc32 = s.crc32;
         }
-        let (path, depth) = (out[0].path.clone(), out[0].depth);
+        let at = out[0].clone();
         let listed = match source {
             Source::Memory(buf) => {
                 let listed = starts_as_zip(&buf).then(|| {
                     out[0].kind = NodeKind::Zip;
-                    self.zip(Cursor::new(&buf[..]), &path, depth, 1, &mut out)
+                    self.zip(Cursor::new(&buf[..]), &at, 1, &mut out)
                 });
                 *self.level(0) = buf;
                 listed
@@ -459,7 +464,7 @@ impl Lister {
             Source::File(mut r) => match is_zip(&mut r).and_then(|z| r.rewind().map(|()| z)) {
                 Ok(true) => {
                     out[0].kind = NodeKind::Zip;
-                    Some(self.zip(r, &path, depth, 1, &mut out))
+                    Some(self.zip(r, &at, 1, &mut out))
                 }
                 Ok(false) => None,
                 Err(e) => Some(Err(NodeError {
@@ -474,13 +479,12 @@ impl Lister {
         out
     }
 
-    /// Appends every folder and file of the zip `r`, whose node is at
-    /// `path` and `depth`, `level` zips deep.
+    /// Appends every folder and file of the zip `r`, whose node is `at`,
+    /// `level` zips deep.
     fn zip<R: Read + Seek>(
         &mut self,
         r: R,
-        path: &str,
-        depth: usize,
+        at: &Node,
         level: usize,
         out: &mut Vec<Node>,
     ) -> Result<(), NodeError> {
@@ -528,39 +532,36 @@ impl Lister {
                         code: "zip.bad_entry",
                         message: format!("Entry {i} of the zip could not be read: {e}"),
                     }),
-                    ..Node::new(format!("{path}!#{i}"), NodeKind::File, depth + 1)
+                    ..child(at, &format!("#{i}"), NodeKind::File, 1)
                 }),
             }
         }
         entries.sort();
         let mut dirs_done: HashSet<Vec<String>> = HashSet::new();
         for (parts, i, is_dir) in entries {
-            folders(out, &mut dirs_done, path, depth, &parts, is_dir);
+            folders(out, &mut dirs_done, at, &parts, is_dir);
             if is_dir {
                 continue;
             }
-            let node_path = format!("{path}!{}", joined(&parts));
-            let node_depth = depth + parts.len();
-            let (mut node, nested) = self.entry(&mut z, i, node_path, node_depth, level);
-            let at = out.len();
+            let node = child(at, &parts.join("/"), NodeKind::File, parts.len());
+            let (mut node, nested) = self.entry(&mut z, i, node, level);
+            let here = out.len();
             match nested {
                 Ok(Some(Nested::Memory)) => {
                     node.kind = NodeKind::Zip;
-                    out.push(node);
+                    out.push(node.clone());
                     let bytes = std::mem::take(&mut self.levels[level]);
-                    let (p, d) = (out[at].path.clone(), out[at].depth);
-                    if let Err(e) = self.zip(Cursor::new(&bytes[..]), &p, d, level + 1, out) {
-                        out[at].error = Some(e);
+                    if let Err(e) = self.zip(Cursor::new(&bytes[..]), &node, level + 1, out) {
+                        out[here].error = Some(e);
                     }
                     self.levels[level] = bytes;
                 }
                 Ok(Some(Nested::Spooled(f))) => {
                     node.kind = NodeKind::Zip;
-                    out.push(node);
-                    let (p, d) = (out[at].path.clone(), out[at].depth);
+                    out.push(node.clone());
                     let r = BufReader::with_capacity(SEEK_BUFFER, f);
-                    if let Err(e) = self.zip(r, &p, d, level + 1, out) {
-                        out[at].error = Some(e);
+                    if let Err(e) = self.zip(r, &node, level + 1, out) {
+                        out[here].error = Some(e);
                     }
                 }
                 Ok(None) => out.push(node),
@@ -580,11 +581,9 @@ impl Lister {
         &mut self,
         z: &mut ZipArchive<R>,
         i: usize,
-        path: String,
-        depth: usize,
+        mut node: Node,
         level: usize,
     ) -> (Node, Result<Option<Nested>, NodeError>) {
-        let mut node = Node::new(path, NodeKind::File, depth);
         let bad = |e: &dyn std::fmt::Display| NodeError {
             code: "zip.bad_entry",
             message: format!("The entry could not be read: {e}"),
@@ -647,44 +646,31 @@ impl Lister {
     }
 }
 
-/// Names joined into a catalog path with `/`, each name's `%` and `!`
-/// escaped as `%25` and `%21`, so `/` and `!` in a path are always its
-/// separators and a node's parent is its path up to the last of them.
-fn joined(names: &[String]) -> String {
-    let mut out = String::new();
-    for (i, n) in names.iter().enumerate() {
-        if i > 0 {
-            out.push('/');
-        }
-        for c in n.chars() {
-            match c {
-                '%' => out.push_str("%25"),
-                '!' => out.push_str("%21"),
-                c => out.push(c),
-            }
-        }
+/// A node inside the zip whose node is `at`: at `rel` within it, `deeper`
+/// levels below it in the tree.
+fn child(at: &Node, rel: &str, kind: NodeKind, deeper: usize) -> Node {
+    let mut inside = at.inside.clone();
+    inside.push(rel.to_owned());
+    Node {
+        url: at.url.clone(),
+        inside,
+        ..Node::new(at.file.clone(), kind, at.depth + deeper)
     }
-    out
 }
 
-/// The folder nodes above an entry `parts` of the zip at `path`, each once;
-/// the entry's own when it is a folder.
+/// The folder nodes above an entry `parts` of the zip whose node is `at`,
+/// each once; the entry's own when it is a folder.
 fn folders(
     out: &mut Vec<Node>,
     done: &mut HashSet<Vec<String>>,
-    path: &str,
-    depth: usize,
+    at: &Node,
     parts: &[String],
     is_dir: bool,
 ) {
     for n in 1..parts.len() + usize::from(is_dir) {
         let d = parts[..n].to_vec();
         if done.insert(d.clone()) {
-            out.push(Node::new(
-                format!("{path}!{}", joined(&d)),
-                NodeKind::Dir,
-                depth + n,
-            ));
+            out.push(child(at, &d.join("/"), NodeKind::Dir, n));
         }
     }
 }
@@ -693,7 +679,6 @@ fn folders(
 /// `out[0]`: its folders and files, a zip inside it marked as needing the
 /// download to list further.
 fn listed(out: &mut Vec<Node>, peek: &Peeked) {
-    let (path, depth) = (out[0].path.clone(), out[0].depth);
     let Some(entries) = &peek.entries else {
         if let Some(e) = peek.error.as_ref().filter(|e| e.code != "zip.not_a_zip") {
             out[0].error = Some(NodeError {
@@ -704,6 +689,7 @@ fn listed(out: &mut Vec<Node>, peek: &Peeked) {
         return;
     };
     out[0].kind = NodeKind::Zip;
+    let at = out[0].clone();
     let mut sorted: Vec<(Vec<String>, &Entry)> = entries
         .iter()
         .map(|e| {
@@ -720,20 +706,17 @@ fn listed(out: &mut Vec<Node>, peek: &Peeked) {
     let mut done = HashSet::new();
     for (parts, e) in sorted {
         let is_dir = e.name.ends_with(['/', '\\']);
-        folders(out, &mut done, &path, depth, &parts, is_dir);
+        folders(out, &mut done, &at, &parts, is_dir);
         if is_dir {
             continue;
         }
         let is_zip = e.name.len() >= 4 && e.name[e.name.len() - 4..].eq_ignore_ascii_case(".zip");
-        let mut node = Node::new(
-            format!("{path}!{}", joined(&parts)),
-            if is_zip {
-                NodeKind::Zip
-            } else {
-                NodeKind::File
-            },
-            depth + parts.len(),
-        );
+        let kind = if is_zip {
+            NodeKind::Zip
+        } else {
+            NodeKind::File
+        };
+        let mut node = child(&at, &parts.join("/"), kind, parts.len());
         node.size = Some(e.size);
         node.compressed = Some(e.compressed);
         node.crc32 = Some(e.crc32);
@@ -865,9 +848,10 @@ impl Output {
 
 /// A node as one indented line of the tree.
 pub fn tree_line(node: &Node) -> String {
-    let name = node.path.rsplit(['/', '!']).next().unwrap_or(&node.path);
+    let last = node.inside.last().unwrap_or(&node.file);
+    let name = last.rsplit('/').next().unwrap_or(last);
     let mut line = "  ".repeat(node.depth);
-    line.push_str(&name.replace("%21", "!").replace("%25", "%"));
+    line.push_str(name);
     match node.kind {
         NodeKind::Dir => line.push('/'),
         NodeKind::Zip => line.push_str("/ (zip"),
@@ -924,6 +908,14 @@ pub(crate) fn human(n: u64) -> String {
 
 #[cfg(test)]
 mod tests {
+    /// A node as `file!inside!…`, for reading tests.
+    fn shown(n: &Node) -> String {
+        std::iter::once(n.file.as_str())
+            .chain(n.inside.iter().map(String::as_str))
+            .collect::<Vec<_>>()
+            .join("!")
+    }
+
     use std::io::Write as _;
 
     use zip::write::SimpleFileOptions;
@@ -1092,7 +1084,9 @@ h/
         let ndjson = std::fs::read_to_string(f.mirror.dir().join("map/map.ndjson")).unwrap();
         let x = ndjson.lines().find(|l| l.contains("x.csv")).unwrap();
         let x: serde_json::Value = serde_json::from_str(x).unwrap();
-        assert_eq!(x["path"], "h/A/a.zip!d/x.csv");
+        assert_eq!(x["file"], "h/A/a.zip");
+        assert_eq!(x["inside"], serde_json::json!(["d/x.csv"]));
+        assert_eq!(x["url"], "https://h/A/a.zip");
         assert_eq!(x["kind"], "file");
         assert_eq!(x["modified"], "2026-10-01 12:00:00");
         assert_eq!(x["crc32"], crc32fast::hash(b"x\n"));
@@ -1133,9 +1127,9 @@ h/
             peek: None,
         };
         let nodes = l.top(&f.archive, &key, &top);
-        let paths: Vec<_> = nodes.iter().map(|n| n.path.as_str()).collect();
+        let paths: Vec<_> = nodes.iter().map(shown).collect();
         assert!(
-            paths.contains(&"h/A/a.zip!inner.zip!deeper.zip!z.txt"),
+            paths.contains(&"h/A/a.zip!inner.zip!deeper.zip!z.txt".to_owned()),
             "{paths:?}"
         );
         assert!(nodes.iter().all(|n| n.error.is_none()));
@@ -1221,7 +1215,7 @@ h/
             &mut lister,
         );
         assert_eq!(codes(&n), [None, None, Some("zip.bad_entry")]);
-        assert!(n[2].path.ends_with("header.zip!#1"), "{}", n[2].path);
+        assert!(shown(&n[2]).ends_with("header.zip!#1"), "{}", shown(&n[2]));
         // A big entry that starts as a zip but is not one, spooled to disk;
         // and a folder where a file should be, read from disk.
         lister.in_memory = 0;
@@ -1402,15 +1396,15 @@ h/
         };
         let key = vec!["h".to_owned(), "w.zip".to_owned()];
         let nodes = Lister::new(dir.path().to_path_buf()).top(&archive, &key, &top);
-        let paths: Vec<_> = nodes.iter().map(|n| (n.path.as_str(), n.kind)).collect();
+        let paths: Vec<_> = nodes.iter().map(|n| (shown(n), n.kind)).collect();
         assert_eq!(
             paths,
             [
-                ("h/w.zip", NodeKind::Zip),
-                ("h/w.zip!M", NodeKind::Dir),
-                ("h/w.zip!M/E", NodeKind::Dir),
-                ("h/w.zip!M/S", NodeKind::Dir),
-                ("h/w.zip!M/S/t.csv", NodeKind::File),
+                ("h/w.zip".to_owned(), NodeKind::Zip),
+                ("h/w.zip!M".to_owned(), NodeKind::Dir),
+                ("h/w.zip!M/E".to_owned(), NodeKind::Dir),
+                ("h/w.zip!M/S".to_owned(), NodeKind::Dir),
+                ("h/w.zip!M/S/t.csv".to_owned(), NodeKind::File),
             ]
         );
         // A listing recorded before names were read with slashes.
@@ -1429,7 +1423,7 @@ h/
         };
         let mut out = vec![Node::new("h/p.zip".into(), NodeKind::File, 1)];
         listed(&mut out, &peeked);
-        let paths: Vec<_> = out.iter().map(|n| n.path.as_str()).collect();
+        let paths: Vec<_> = out.iter().map(shown).collect();
         assert_eq!(
             paths,
             [
@@ -1443,11 +1437,11 @@ h/
     }
 
     #[test]
-    fn names_with_separators_are_escaped_and_files_carry_their_hashes() {
-        assert_eq!(joined(&["a!b".to_owned(), "50%".to_owned()]), "a%21b/50%25");
-        let mut n = Node::new("h/a%21b".into(), NodeKind::File, 1);
+    fn names_are_kept_as_they_are_and_files_carry_their_hashes() {
+        let mut n = Node::new("h/z.zip".into(), NodeKind::File, 2);
+        n.inside = vec!["a!b/50% c.csv".into()];
         n.size = Some(1);
-        assert_eq!(tree_line(&n), "  a!b  1 B\n");
+        assert_eq!(tree_line(&n), "    50% c.csv  1 B\n");
         // A downloaded file shows its sidecar's hashes.
         let f = fixture();
         let path = f.archive.path_for("https://h/A/b.txt");
@@ -1480,12 +1474,12 @@ h/
         assert!(b.contains("\"url\":\"https://h/A/b.txt\""), "{b}");
         let root = ndjson
             .lines()
-            .find(|l| l.contains("\"path\":\"h/A\""))
+            .find(|l| l.contains("\"file\":\"h/A\""))
             .unwrap();
         assert!(root.contains("\"url\":\"https://h/A/\""), "{root}");
         let host = ndjson
             .lines()
-            .find(|l| l.contains("\"path\":\"h\""))
+            .find(|l| l.contains("\"file\":\"h\""))
             .unwrap();
         assert!(!host.contains("url"), "{host}");
         let gone = ndjson.lines().find(|l| l.contains("gone.txt")).unwrap();
