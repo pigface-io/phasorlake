@@ -246,6 +246,20 @@ impl Fetcher {
         let Some(begun) = begun.filter(|_| from > 0) else {
             return Ok(None);
         };
+        // Whole already, cut off just before it was renamed: no request.
+        if begun.size == Some(from) {
+            let h = crate::net::archive::hashes_of(part).map_err(|source| FetchError::CacheIo {
+                path: part.display().to_string(),
+                source,
+            })?;
+            return Ok(Some(Streamed {
+                sha256: h.sha256,
+                crc32: h.crc32,
+                size: h.size,
+                etag: begun.etag,
+                last_modified: begun.last_modified,
+            }));
+        }
         let span = Span {
             start: from,
             end: Span::TO_END,
@@ -947,6 +961,28 @@ mod tests {
         assert_eq!(std::fs::read(&local.path).unwrap(), body);
         std::fs::remove_file(&local.path).unwrap();
         std::fs::remove_file(Archive::sidecar_path(&local.path)).unwrap();
+        // A part already whole: finished without a request.
+        let t = Arc::new(StaticTransport::default());
+        let f = fresh_fetch(&t);
+        leave(&f, &body, Some(same));
+        let local = f.fetch(&remote(url)).await.unwrap();
+        assert_eq!(
+            (local.sha256.clone(), t.request_count()),
+            (sha256_hex(&body), 0)
+        );
+        std::fs::remove_file(&local.path).unwrap();
+        std::fs::remove_file(Archive::sidecar_path(&local.path)).unwrap();
+        // ...unless it cannot be read.
+        leave(&f, &body, Some(same));
+        let part = Archive::part_path(&f.archive().path_for(url));
+        use std::os::unix::fs::PermissionsExt as _;
+        std::fs::set_permissions(&part, std::fs::Permissions::from_mode(0o000)).unwrap();
+        assert!(matches!(
+            f.fetch(&remote(url)).await,
+            Err(FetchError::CacheIo { .. })
+        ));
+        std::fs::set_permissions(&part, std::fs::Permissions::from_mode(0o644)).unwrap();
+        std::fs::remove_file(&part).unwrap();
         // A range past the end (416), and a part with no record of how it
         // began: begun again.
         let t = Arc::new(StaticTransport::default());
