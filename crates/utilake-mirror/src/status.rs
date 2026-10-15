@@ -189,6 +189,7 @@ mod tests {
             size,
             modified: "m".to_owned(),
             listed_on: "https://h/A/".to_owned(),
+            crawled_at: None,
         }
     }
 

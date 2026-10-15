@@ -488,8 +488,8 @@ fn compare(ctx: &Context, mirror: &Mirror, delete: bool) -> Result<i32, MirrorEr
     let archive = ctx.archive();
     let removed = mirror.removed()?;
     let listings: std::collections::HashMap<String, Vec<nemweb_mirror::zipdir::Entry>> =
-        nemweb_mirror::read_peeks(&mirror.peek_path())?
-            .into_iter()
+        nemweb_mirror::peek::current(mirror)?
+            .into_values()
             .filter_map(|p| Some((p.url, p.entries?)))
             .collect();
     let tmp = mirror.dir().join("tmp");

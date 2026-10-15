@@ -14,6 +14,6 @@ pub mod transport;
 pub use archive::{Archive, Archived, Hashes, Sidecar, hashes_of, sha256_file};
 pub use error::FetchError;
 pub use event::Event;
-pub use fetcher::{Fetcher, FetcherConfig, LocalFile};
+pub use fetcher::{Fetcher, FetcherConfig, LocalFile, RangeRead};
 pub use source::RemoteFile;
 pub use transport::{HttpResponse, OfflineTransport, ReqwestTransport, Span, Transport};

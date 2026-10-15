@@ -522,7 +522,7 @@ fn a_duplicate_is_ruled_on_from_its_listing_and_never_downloaded() {
     std::fs::write(
         cli.home.path().join("mirror/peek.ndjson"),
         format!(
-            r#"{{"url":"https://h/A/M.zip","entries":[{{"name":"M/t.zip","size":{},"compressed":{},"crc32":{crc},"method":0,"modified":"m"}}]}}"#,
+            r#"{{"url":"https://h/A/M.zip","listed_size":20000000,"listed_modified":"Monday, October 12, 2026 10:45 AM","entries":[{{"name":"M/t.zip","size":{},"compressed":{},"crc32":{crc},"method":0,"modified":"m"}}]}}"#,
             t.len(),
             t.len()
         ) + "\n",

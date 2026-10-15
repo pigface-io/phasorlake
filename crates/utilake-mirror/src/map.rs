@@ -20,7 +20,7 @@ use zip::ZipArchive;
 
 use crate::crawl::{Mirror, RemoteKind, read_record};
 use crate::error::MirrorError;
-use crate::peek::{Peeked, read_peeks};
+use crate::peek::{Peeked, current};
 use crate::zipdir::Entry;
 
 /// A nested zip up to this size is read into memory; a bigger one is
@@ -247,10 +247,7 @@ fn tops(
     let mut tops = BTreeMap::new();
     let mut listed = HashSet::new();
     let removed = mirror.removed()?;
-    let mut peeks: HashMap<String, Peeked> = read_peeks(&mirror.peek_path())?
-        .into_iter()
-        .map(|p| (p.url.clone(), p))
-        .collect();
+    let mut peeks: HashMap<String, Peeked> = current(mirror)?;
     for r in read_record(&mirror.record_path())? {
         let kind = match r.kind {
             RemoteKind::External => continue,
@@ -979,6 +976,7 @@ mod tests {
             size: None,
             modified: "m".into(),
             listed_on: "https://h/A/".into(),
+            crawled_at: None,
         }];
         for (name, bytes) in files {
             let url = format!("https://h/A/{name}");
@@ -991,6 +989,7 @@ mod tests {
                 size: Some(bytes.len() as u64),
                 modified: "Monday, October 12, 2026 10:45 AM".into(),
                 listed_on: "https://h/A/".into(),
+                crawled_at: None,
             });
         }
         for (url, kind) in [
@@ -1004,6 +1003,7 @@ mod tests {
                 size: Some(7),
                 modified: "m".into(),
                 listed_on: "https://h/A/".into(),
+                crawled_at: None,
             });
         }
         let gone = archive.path_for("https://h/A/gone.txt");
@@ -1018,6 +1018,8 @@ mod tests {
                 fetched_at: "t".into(),
                 etag: None,
                 last_modified: Some("Mon, 12 Oct 2026 00:32:30 GMT".into()),
+                listed_size: None,
+                listed_modified: None,
                 tool: "nemlake".into(),
             },
         )
@@ -1246,6 +1248,8 @@ h/
         let peeks = [
             crate::peek::Peeked {
                 url: "https://h/A/missing.zip".into(),
+                listed_size: Some(7),
+                listed_modified: Some("m".into()),
                 entries: Some(vec![
                     entry("in/"),
                     entry("in/a.csv"),
@@ -1253,11 +1257,13 @@ h/
                     entry("/"),
                 ]),
                 error: None,
+                ..Default::default()
             },
             crate::peek::Peeked {
                 url: "https://h/A/b.txt".into(),
                 entries: Some(vec![entry("ignored, it is archived")]),
                 error: None,
+                ..Default::default()
             },
         ];
         let lines: String = peeks
@@ -1286,11 +1292,14 @@ h/
         // a zip leaves it a file.
         let bad = |code: &str| crate::peek::Peeked {
             url: "https://h/A/missing.zip".into(),
+            listed_size: Some(7),
+            listed_modified: Some("m".into()),
             entries: None,
             error: Some(crate::peek::PeekError {
                 code: code.into(),
                 message: "m".into(),
             }),
+            ..Default::default()
         };
         for (code, line) in [
             (
@@ -1420,6 +1429,7 @@ h/
             url: "u".into(),
             entries: Some(vec![entry("M\\S\\t.csv"), entry("M\\E\\")]),
             error: None,
+            ..Default::default()
         };
         let mut out = vec![Node::new("h/p.zip".into(), NodeKind::File, 1)];
         listed(&mut out, &peeked);
@@ -1455,6 +1465,8 @@ h/
                 fetched_at: "t".into(),
                 etag: None,
                 last_modified: None,
+                listed_size: None,
+                listed_modified: None,
                 tool: "x".into(),
             },
         )

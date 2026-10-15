@@ -70,6 +70,7 @@ fn day(home: &std::path::Path) -> (Mirror, Archive, u64) {
         size: Some(day.len() as u64),
         modified: "m".into(),
         listed_on: "https://h/A/".into(),
+        crawled_at: None,
     };
     std::fs::write(
         mirror.record_path(),

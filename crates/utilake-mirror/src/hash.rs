@@ -117,6 +117,8 @@ mod tests {
                 fetched_at: "t".into(),
                 etag: None,
                 last_modified: None,
+                listed_size: None,
+                listed_modified: None,
                 tool: "x".into(),
             },
         )

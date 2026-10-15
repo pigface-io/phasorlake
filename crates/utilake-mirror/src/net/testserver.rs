@@ -122,8 +122,13 @@ fn serve(stream: TcpStream, routes: &Routes, hits: &Mutex<Vec<String>>) {
     match reply {
         Reply::Ok(body) => match range {
             Some((a, b)) => {
-                let part = &body[a..=b.min(body.len() - 1)];
-                let _ = out.write_all(head(206, part.len()).as_bytes());
+                let last = b.min(body.len() - 1);
+                let part = &body[a..=last];
+                let mut h = head(206, part.len());
+                let range = format!("Content-Range: bytes {a}-{last}/{}\r\n\r\n", body.len());
+                h.truncate(h.len() - 2);
+                h.push_str(&range);
+                let _ = out.write_all(h.as_bytes());
                 let _ = out.write_all(part);
             }
             None => {

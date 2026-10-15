@@ -630,6 +630,8 @@ mod tests {
                 fetched_at: "t".into(),
                 etag: None,
                 last_modified: None,
+                listed_size: None,
+                listed_modified: None,
                 tool: "nemlake".into(),
             },
         )
@@ -673,6 +675,7 @@ mod tests {
                 size: None,
                 modified: "m".into(),
                 listed_on: "https://h/A/".into(),
+                crawled_at: None,
             },
             Remote {
                 url: "https://h/A/M.zip".into(),
@@ -680,6 +683,7 @@ mod tests {
                 size: Some(whole.len() as u64),
                 modified: "m".into(),
                 listed_on: "https://h/A/".into(),
+                crawled_at: None,
             },
             Remote {
                 url: "https://h/A/lone.zip".into(),
@@ -687,6 +691,7 @@ mod tests {
                 size: Some(1),
                 modified: "m".into(),
                 listed_on: "https://h/A/".into(),
+                crawled_at: None,
             },
         ];
         archive_file(&archive, "https://h/A/M.zip", &whole);
@@ -698,6 +703,7 @@ mod tests {
                 size: Some(bytes.len() as u64),
                 modified: "m".into(),
                 listed_on: "https://h/A/M/S/".into(),
+                crawled_at: None,
             });
         }
         std::fs::create_dir_all(mirror.crawl_dir()).unwrap();

@@ -113,6 +113,9 @@ pub struct Remote {
     pub modified: String,
     /// The folder whose page listed it.
     pub listed_on: String,
+    /// When that page was read from nemweb (UTC, RFC 3339).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub crawled_at: Option<String>,
 }
 
 /// What a crawl found.
@@ -191,15 +194,23 @@ pub async fn crawl(
             Err(e) => return Err(MirrorError::io(&page_path)(e)),
         };
         summary.pages += 1;
+        // A kept page was read from nemweb when it was written.
+        let crawled_at = std::fs::metadata(&page_path)
+            .and_then(|m| m.modified())
+            .ok()
+            .and_then(|t| t.duration_since(std::time::UNIX_EPOCH).ok())
+            .map(|d| crate::clock::rfc3339_from_unix(i64::try_from(d.as_secs()).unwrap_or(0)));
         let links = listing::parse(&html).map_err(|source| MirrorError::Listing {
             url: folder.to_string(),
             source,
         })?;
         for link in &links {
-            let remote = resolve(&folder, link, roots).map_err(|source| MirrorError::Listing {
-                url: folder.to_string(),
-                source,
-            })?;
+            let mut remote =
+                resolve(&folder, link, roots).map_err(|source| MirrorError::Listing {
+                    url: folder.to_string(),
+                    source,
+                })?;
+            remote.crawled_at.clone_from(&crawled_at);
             if remote.kind == RemoteKind::Dir && seen.insert(remote.url.clone()) {
                 queue.push_back(Url::parse(&remote.url).expect("resolved from a URL"));
             }
@@ -260,6 +271,7 @@ fn resolve(folder: &Url, link: &listing::Link, roots: &[Url]) -> Result<Remote, 
         size: link.size,
         modified: link.modified.clone(),
         listed_on: folder.to_string(),
+        crawled_at: None,
     })
 }
 
@@ -431,6 +443,7 @@ mod tests {
         );
         assert_eq!(record[4].size, Some(3));
         assert_eq!(record[4].listed_on, "https://h/A/");
+        assert!(record.iter().all(|r| r.crawled_at.is_some()));
         assert!(
             mirror
                 .page_path(&roots()[0])

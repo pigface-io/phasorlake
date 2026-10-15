@@ -35,6 +35,12 @@ pub struct Sidecar {
     /// The server's `Last-Modified`: when AEMO published the file.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub last_modified: Option<String>,
+    /// The size the listing gave it when it was downloaded.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub listed_size: Option<u64>,
+    /// The date and time the listing gave it when it was downloaded.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub listed_modified: Option<String>,
     /// The program and version that downloaded it, e.g. `nemweb-mirror/0.1.0`.
     #[serde(default)]
     pub tool: String,
@@ -355,6 +361,8 @@ mod tests {
             fetched_at: "2026-10-05T00:00:00Z".into(),
             etag: None,
             last_modified: Some("Tue, 13 Feb 2024 08:27:00 GMT".into()),
+            listed_size: None,
+            listed_modified: None,
             tool: "nemlake/test".into(),
         };
         Archive::write_sidecar(&path, &sidecar).unwrap();

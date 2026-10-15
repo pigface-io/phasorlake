@@ -150,12 +150,26 @@ impl Fetcher {
             .await
     }
 
-    /// Bytes `range` of a file, by a ranged request, into memory; not
-    /// archived. Paced, retried and refused like every request.
-    pub async fn fetch_range(&self, url: &str, range: Span) -> Result<Vec<u8>, FetchError> {
+    /// Bytes `range` of a file, by a ranged request, into memory, with what
+    /// the server said of the whole file; not archived. Paced, retried and
+    /// refused like every request.
+    pub async fn fetch_range(&self, url: &str, range: Span) -> Result<RangeRead, FetchError> {
         self.ensure_online(url)?;
-        self.get_with_retries(url, Some(range), |resp| read_all(url, resp))
-            .await
+        self.get_with_retries(url, Some(range), |resp| async move {
+            let (total_size, etag, last_modified) = (
+                resp.total_size,
+                resp.etag.clone(),
+                resp.last_modified.clone(),
+            );
+            let bytes = read_all(url, resp).await?;
+            Ok(RangeRead {
+                bytes,
+                total_size,
+                etag,
+                last_modified,
+            })
+        })
+        .await
     }
 
     /// The archived copy of a remote file, or the file downloaded into the
@@ -198,6 +212,8 @@ impl Fetcher {
             fetched_at: now_utc_rfc3339(),
             etag: streamed.etag,
             last_modified: streamed.last_modified,
+            listed_size: remote.size,
+            listed_modified: remote.modified.clone(),
             tool: format!("nemweb-mirror/{}", env!("CARGO_PKG_VERSION")),
         };
         Archive::write_sidecar(&path, &sidecar)?;
@@ -328,6 +344,20 @@ async fn read_all(url: &str, resp: HttpResponse) -> Result<Vec<u8>, FetchError> 
         });
     }
     Ok(out)
+}
+
+/// Bytes of a file got by a ranged request, and what the server said of
+/// the whole file.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RangeRead {
+    /// The bytes asked for.
+    pub bytes: Vec<u8>,
+    /// The whole file's size, from `Content-Range`.
+    pub total_size: Option<u64>,
+    /// The file's `ETag`.
+    pub etag: Option<String>,
+    /// The file's `Last-Modified`.
+    pub last_modified: Option<String>,
 }
 
 /// A completed download: its bytes' hash and size, and what the server said.
@@ -731,10 +761,10 @@ mod tests {
         t.add("https://h/w.zip", whole);
         let f = Fetcher::new(Arc::new(t.clone()), Archive::new(dir.path()), fast());
         let span = Span { start: 6, end: 10 };
-        assert_eq!(
-            f.fetch_range("https://h/z.zip", span).await.unwrap(),
-            b"6789"
-        );
+        let r = f.fetch_range("https://h/z.zip", span).await.unwrap();
+        assert_eq!((r.bytes.as_slice(), r.total_size), (&b"6789"[..], Some(10)));
+        assert_eq!(r.etag.as_deref(), Some("\"etag\""));
+        assert!(r.last_modified.is_some());
         assert_eq!(f.succeeded(), 1);
         let e = f.fetch_range("https://h/w.zip", span).await.unwrap_err();
         assert!(matches!(e, FetchError::RangeUnsupported { .. }), "{e}");

@@ -19,6 +19,9 @@ pub struct HttpResponse {
     pub status: u16,
     /// `Content-Length`.
     pub content_length: Option<u64>,
+    /// The whole file's size, from `Content-Range` (`bytes a-b/size`), when
+    /// a range was answered.
+    pub total_size: Option<u64>,
     /// `ETag`.
     pub etag: Option<String>,
     /// `Last-Modified`.
@@ -101,6 +104,7 @@ impl Transport for ReqwestTransport {
         Ok(HttpResponse {
             status: resp.status().as_u16(),
             content_length: resp.content_length(),
+            total_size: header("content-range").and_then(|r| total_of(&r)),
             etag: header("etag"),
             last_modified: header("last-modified"),
             body: resp
@@ -117,6 +121,11 @@ impl Transport for ReqwestTransport {
                 .boxed(),
         })
     }
+}
+
+/// The whole size in a `Content-Range` value: `bytes 0-99/1234` is 1234.
+fn total_of(range: &str) -> Option<u64> {
+    range.rsplit('/').next()?.parse().ok()
 }
 
 /// A transport that refuses every request.
@@ -225,6 +234,7 @@ impl Transport for Arc<StaticTransport> {
                 return Ok(HttpResponse {
                     status: 404,
                     content_length: Some(0),
+                    total_size: None,
                     etag: None,
                     last_modified: None,
                     body: futures::stream::empty().boxed(),
@@ -242,14 +252,14 @@ impl Transport for Arc<StaticTransport> {
                 message: m,
             });
         }
-        let (status, body) = match range {
+        let (status, body, total_size) = match range {
             Some(r) if canned.ranges && canned.status == 200 => {
                 let len = canned.body.len();
                 let end = usize::try_from(r.end).map_or(len, |e| e.min(len));
                 let start = usize::try_from(r.start).map_or(end, |s| s.min(end));
-                (206, canned.body.slice(start..end))
+                (206, canned.body.slice(start..end), Some(len as u64))
             }
-            _ => (canned.status, canned.body),
+            _ => (canned.status, canned.body, None),
         };
         let content_length = match canned.claimed_length {
             None => Some(body.len() as u64),
@@ -271,6 +281,7 @@ impl Transport for Arc<StaticTransport> {
         Ok(HttpResponse {
             status,
             content_length,
+            total_size,
             etag: canned.etag,
             last_modified: Some("Tue, 13 Feb 2024 08:27:00 GMT".into()),
             body: futures::stream::iter(chunks).boxed(),

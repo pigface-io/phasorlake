@@ -205,6 +205,14 @@ mod tests {
         seen.sort();
         assert_eq!(seen[0], ("https://h/A/x.zip".to_owned(), false, 3));
         assert_eq!(std::fs::read(archive.join("h/A/y.zip")).unwrap(), b"yyyy");
+        // The sidecar says what the listing said of it too.
+        let sc = Archive::read_sidecar(&archive.join("h/A/y.zip"))
+            .unwrap()
+            .unwrap();
+        assert_eq!(
+            (sc.listed_size, sc.listed_modified.as_deref()),
+            (Some(4), Some("Monday, October 12, 2026 10:45 AM"))
+        );
 
         let s = download(&f, &mirror, 2, &[], |_| {}).await.unwrap();
         assert_eq!((s.cached, s.downloaded), (2, 0));

@@ -37,11 +37,16 @@ Beside every file, `{path}.json`:
   "fetched_at": "2026-10-15T09:12:44Z",
   "etag": "\"…\"",
   "last_modified": "Mon, 12 Oct 2026 00:32:30 GMT",
+  "listed_size": 1469212391,
+  "listed_modified": "Monday, October 12, 2026 10:45 AM",
   "tool": "nemweb-mirror/0.1.0"
 }
 ```
 
-`etag` and `last_modified` are present when the server sent them. `crc32`
+`etag` and `last_modified` are present when the server sent them (nemweb
+sends `Last-Modified` and, for some files, an ETag). `listed_size` and
+`listed_modified` are what nemweb's listing said of the file when it was
+downloaded. `crc32`
 is written by the download, or by `compare` for a file downloaded before
 downloads recorded it; it is what zips record of their entries, so a file
 can be matched to a zip entry without reading either again. A file is

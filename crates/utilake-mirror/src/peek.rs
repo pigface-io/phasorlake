@@ -7,24 +7,42 @@
 //! same name (the whole-month zips) come first, so `compare` can rule on
 //! them before the download reaches them.
 
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::io::Write as _;
 use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
 
 use crate::compare::pairs;
-use crate::crawl::{Mirror, RemoteKind, read_record};
+use crate::crawl::{Mirror, Remote, RemoteKind, read_record};
 use crate::diag::Diagnose as _;
 use crate::error::MirrorError;
-use crate::net::{FetchError, Fetcher, Span};
+use crate::net::{FetchError, Fetcher, RangeRead, Span};
 use crate::zipdir::{self, DirError, Entry};
 
 /// What one zip holds, or why that could not be read.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Peeked {
     /// The zip's URL.
     pub url: String,
+    /// When its directory was read (UTC, RFC 3339).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub peeked_at: Option<String>,
+    /// The size the crawl listed it at when it was peeked.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub listed_size: Option<u64>,
+    /// The date the crawl listed it with when it was peeked.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub listed_modified: Option<String>,
+    /// Its size as the server gave it (`Content-Range`).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub size: Option<u64>,
+    /// The server's `ETag` for it.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub etag: Option<String>,
+    /// The server's `Last-Modified` for it.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub last_modified: Option<String>,
     /// Its entries, when its directory was read.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub entries: Option<Vec<Entry>>,
@@ -94,10 +112,12 @@ pub fn read_peeks(path: &Path) -> Result<Vec<Peeked>, MirrorError> {
         .collect()
 }
 
-/// A file's spans read by ranged requests.
+/// A file's spans read by ranged requests, keeping what the server said of
+/// the whole file the first time.
 struct Ranged<'a> {
     fetcher: &'a Fetcher,
     url: &'a str,
+    seen: Option<RangeRead>,
 }
 
 /// A read that failed: on the network, or in the directory.
@@ -115,10 +135,14 @@ impl From<DirError> for ReadError {
 impl zipdir::Spans for Ranged<'_> {
     type Error = ReadError;
     async fn read(&mut self, start: u64, end: u64) -> Result<Vec<u8>, ReadError> {
-        self.fetcher
+        let mut r = self
+            .fetcher
             .fetch_range(self.url, Span { start, end })
             .await
-            .map_err(ReadError::Fetch)
+            .map_err(ReadError::Fetch)?;
+        let bytes = std::mem::take(&mut r.bytes);
+        self.seen.get_or_insert(r);
+        Ok(bytes)
     }
 }
 
@@ -139,40 +163,49 @@ pub async fn peek(
         });
     }
     let path = mirror.peek_path();
-    let peeked: HashSet<String> = read_peeks(&path)?.into_iter().map(|p| p.url).collect();
+    let peeked = current(mirror)?;
     let removed = mirror.removed()?;
     let paired: HashSet<String> = pairs(mirror)?.into_iter().map(|p| p.zip).collect();
-    let mut zips: Vec<(String, u64)> = read_record(&mirror.record_path())?
+    let mut zips: Vec<Remote> = read_record(&mirror.record_path())?
         .into_iter()
         .filter(|r| r.kind == RemoteKind::File && is_zip_name(&r.url))
-        .filter(|r| !peeked.contains(&r.url) && !removed.contains_key(&r.url))
+        .filter(|r| !peeked.contains_key(&r.url) && !removed.contains_key(&r.url))
         .filter(|r| !fetcher.archive().path_for(&r.url).is_file())
-        .map(|r| (r.url, r.size.unwrap_or(0)))
         .collect();
     // Stable: the paired zips first, each group in URL order.
-    zips.sort_by_key(|(url, _)| !paired.contains(url));
+    zips.sort_by_key(|r| !paired.contains(&r.url));
     let mut summary = PeekSummary {
         zips: zips.len(),
         ..PeekSummary::default()
     };
-    for (done, (url, len)) in zips.iter().enumerate() {
-        let mut src = Ranged { fetcher, url };
-        let record = match zipdir::read_directory(&mut src, *len).await {
+    for (done, remote) in zips.iter().enumerate() {
+        let url = &remote.url;
+        let mut src = Ranged {
+            fetcher,
+            url,
+            seen: None,
+        };
+        let read = zipdir::read_directory(&mut src, remote.size.unwrap_or(0)).await;
+        let seen = src.seen.take();
+        let mut record = Peeked {
+            url: url.clone(),
+            peeked_at: Some(crate::clock::now_utc_rfc3339()),
+            listed_size: remote.size,
+            listed_modified: Some(remote.modified.clone()),
+            size: seen.as_ref().and_then(|s| s.total_size),
+            etag: seen.as_ref().and_then(|s| s.etag.clone()),
+            last_modified: seen.and_then(|s| s.last_modified),
+            entries: None,
+            error: None,
+        };
+        match read {
             Ok(entries) => {
                 summary.read += 1;
-                Peeked {
-                    url: url.clone(),
-                    entries: Some(entries),
-                    error: None,
-                }
+                record.entries = Some(entries);
             }
             Err(ReadError::Dir(e)) => {
                 summary.unreadable += 1;
-                Peeked {
-                    url: url.clone(),
-                    entries: None,
-                    error: Some(peek_error(&e)),
-                }
+                record.error = Some(peek_error(&e));
             }
             Err(ReadError::Fetch(e)) if matches!(e, FetchError::Blocked { .. }) => {
                 return Err(e.into());
@@ -181,7 +214,7 @@ pub async fn peek(
                 summary.failed.push(e.diagnostic());
                 continue;
             }
-        };
+        }
         append(&path, &record)?;
         on_zip(&ZipPeeked {
             url,
@@ -214,26 +247,54 @@ impl zipdir::Spans for OnDisk {
 /// central directory on disk, unless the record has it already: kept when
 /// a downloaded zip is removed, so what it held stays known.
 pub fn keep_listing(mirror: &Mirror, url: &str, path: &Path) -> Result<(), MirrorError> {
-    let record = mirror.peek_path();
-    if read_peeks(&record)?.iter().any(|p| p.url == url) {
+    if current(mirror)?.contains_key(url) {
         return Ok(());
     }
+    let listed = read_record(&mirror.record_path())?
+        .into_iter()
+        .find(|r| r.url == url);
+    let sidecar = crate::net::Archive::read_sidecar(path)?;
     let file = std::fs::File::open(path).map_err(MirrorError::io(path))?;
     let len = file.metadata().map_err(MirrorError::io(path))?.len();
     let read = futures::executor::block_on(zipdir::read_directory(&mut OnDisk(file), len));
-    let peeked = match read {
-        Ok(entries) => Peeked {
-            url: url.to_owned(),
-            entries: Some(entries),
-            error: None,
-        },
-        Err(e) => Peeked {
-            url: url.to_owned(),
-            entries: None,
-            error: Some(peek_error(&e)),
-        },
+    let (entries, error) = match read {
+        Ok(entries) => (Some(entries), None),
+        Err(e) => (None, Some(peek_error(&e))),
     };
-    append(&record, &peeked)
+    let peeked = Peeked {
+        url: url.to_owned(),
+        peeked_at: Some(crate::clock::now_utc_rfc3339()),
+        listed_size: listed.as_ref().and_then(|r| r.size),
+        listed_modified: listed.map(|r| r.modified),
+        size: Some(len),
+        etag: sidecar.as_ref().and_then(|s| s.etag.clone()),
+        last_modified: sidecar.and_then(|s| s.last_modified),
+        entries,
+        error,
+    };
+    append(&mirror.peek_path(), &peeked)
+}
+
+/// The listing of each zip that still holds: the latest record of it,
+/// taken when the crawl listed it at the size and date it lists it at now.
+/// A zip AEMO has published again since has none, and is peeked again.
+pub fn current(mirror: &Mirror) -> Result<HashMap<String, Peeked>, MirrorError> {
+    let listed: HashMap<String, (Option<u64>, String)> = read_record(&mirror.record_path())?
+        .into_iter()
+        .map(|r| (r.url, (r.size, r.modified)))
+        .collect();
+    let mut out = HashMap::new();
+    for p in read_peeks(&mirror.peek_path())? {
+        let holds = listed.get(&p.url).is_some_and(|(size, modified)| {
+            p.listed_size == *size && p.listed_modified.as_deref() == Some(modified.as_str())
+        });
+        if holds {
+            out.insert(p.url.clone(), p);
+        } else {
+            out.remove(&p.url);
+        }
+    }
+    Ok(out)
 }
 
 /// Whether a URL names a zip.
@@ -301,6 +362,7 @@ mod tests {
         let archive = home.path().join("archive");
         let a = testzip::stored("a.csv", b"1,2\n");
         let m = testzip::deflated("M/t.zip", b"x");
+        let m_len = m.len() as u64;
         let files: [(&str, &[u8]); 5] = [
             ("/A/a.zip", &a),
             ("/A/M.zip", &m),
@@ -351,6 +413,37 @@ mod tests {
         );
         assert_eq!(peeks[1].entries.as_ref().unwrap()[0].size, 4);
         assert_eq!(peeks[2].error.as_ref().unwrap().code, "zip.not_a_zip");
+        // Each says when, against which listing, and what the server said.
+        let m = &peeks[0];
+        assert!(m.peeked_at.is_some());
+        assert_eq!((m.listed_size, m.size), (Some(m_len), Some(m_len)));
+        assert_eq!(
+            m.listed_modified.as_deref(),
+            Some("Monday, October 12, 2026 10:45 AM")
+        );
+        assert_eq!(m.etag.as_deref(), Some("\"etag\""));
+        assert!(m.last_modified.is_some());
+        assert_eq!(current(&mirror).unwrap().len(), 3);
+
+        // AEMO publishes M.zip again: the crawl lists another size, its
+        // listing no longer holds, and it is peeked again.
+        let record = std::fs::read_to_string(mirror.record_path()).unwrap();
+        let republished = record.replace(
+            &format!("\"url\":\"https://h/A/M.zip\",\"kind\":\"file\",\"size\":{m_len}"),
+            &format!(
+                "\"url\":\"https://h/A/M.zip\",\"kind\":\"file\",\"size\":{}",
+                m_len + 1
+            ),
+        );
+        assert_ne!(record, republished);
+        std::fs::write(mirror.record_path(), &republished).unwrap();
+        assert!(!current(&mirror).unwrap().contains_key("https://h/A/M.zip"));
+        let mut again = Vec::new();
+        peek(&f, &mirror, |z| again.push(z.url.to_owned()))
+            .await
+            .unwrap();
+        assert!(again.contains(&"https://h/A/M.zip".to_owned()), "{again:?}");
+        assert!(current(&mirror).unwrap().contains_key("https://h/A/M.zip"));
 
         // Again: only the zip that failed is asked for.
         let before = t.request_count();
@@ -393,6 +486,7 @@ mod tests {
                     url: "u".into(),
                     entries: None,
                     error: None,
+                    ..Default::default()
                 }
             )
             .unwrap_err()
