@@ -1478,7 +1478,6 @@ dependencies = [
  "nemlake-conform",
  "nemlake-core",
  "nemlake-decode",
- "nemlake-mirror",
  "nemlake-pipeline",
  "nemlake-registry",
  "nemlake-writer",
@@ -1535,25 +1534,6 @@ dependencies = [
 [[package]]
 name = "nemlake-mdff"
 version = "0.1.0"
-
-[[package]]
-name = "nemlake-mirror"
-version = "0.1.0"
-dependencies = [
- "crc32fast",
- "criterion",
- "futures",
- "memchr",
- "nemlake-acquire",
- "nemlake-core",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror",
- "tokio",
- "url",
- "zip",
-]
 
 [[package]]
 name = "nemlake-pipeline"

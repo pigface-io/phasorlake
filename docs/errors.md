@@ -7,7 +7,6 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 | code | raised in |
 |---|---|
 | `config.bad_path` | `crates/nemlake-pipeline/src/run.rs` |
-| `config.mirror_root` | `crates/nemlake-mirror/src/error.rs` |
 | `config.parse` | `crates/nemlake-core/src/config.rs` |
 | `config.read` | `crates/nemlake-core/src/config.rs` |
 
@@ -21,7 +20,7 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 | `net.content_length_mismatch` | `crates/nemlake-acquire/src/error.rs` |
 | `net.http_status` | `crates/nemlake-acquire/src/error.rs` |
 | `net.offline` | `crates/nemlake-pipeline/src/report.rs` |
-| `net.retries_exhausted` | `crates/nemlake-cli/src/commands/mirror.rs` |
+| `net.retries_exhausted` | `crates/nemlake-acquire/src/error.rs` |
 | `net.timeout` | `crates/nemlake-acquire/src/error.rs` |
 
 ## listing
@@ -31,7 +30,6 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 | `listing.month_missing` | `crates/nemlake-acquire/src/error.rs` |
 | `listing.no_match` | `crates/nemlake-acquire/src/error.rs` |
 | `listing.parse_failed` | `crates/nemlake-acquire/src/error.rs` |
-| `listing.unparsed_line` | `crates/nemlake-mirror/src/error.rs` |
 
 ## cache
 
@@ -46,10 +44,10 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 
 | code | raised in |
 |---|---|
-| `zip.bad_entry` | `crates/nemlake-mirror/src/map.rs` |
-| `zip.nesting_too_deep` | `crates/nemlake-mirror/src/map.rs` |
+| `zip.bad_entry` | `crates/nemlake-decode/src/archive.rs` |
+| `zip.nesting_too_deep` | `crates/nemlake-decode/src/archive.rs` |
 | `zip.no_csv` | `crates/nemlake-decode/src/archive.rs` |
-| `zip.open_failed` | `crates/nemlake-mirror/src/error.rs` |
+| `zip.open_failed` | `crates/nemlake-decode/src/archive.rs` |
 | `zip.spool_failed` | `crates/nemlake-decode/src/archive.rs` |
 
 ## csv
@@ -137,18 +135,6 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 | `verify.orphan_quarantine` | `crates/nemlake-cli/src/commands/lake.rs` |
 | `verify.size_mismatch` | `crates/nemlake-cli/src/commands/lake.rs` |
 
-## mirror
-
-| code | raised in |
-|---|---|
-| `mirror.crawl_incomplete` | `crates/nemlake-mirror/src/error.rs` |
-| `mirror.files_failed` | `crates/nemlake-cli/src/commands/mirror.rs` |
-| `mirror.io` | `crates/nemlake-mirror/src/error.rs` |
-| `mirror.locked` | `crates/nemlake-mirror/src/error.rs` |
-| `mirror.not_same` | `crates/nemlake-mirror/src/error.rs` |
-| `mirror.record_corrupt` | `crates/nemlake-mirror/src/error.rs` |
-| `mirror.summary_stale` | `crates/nemlake-mirror/src/error.rs` |
-
 ## internal
 
 | code | raised in |
@@ -173,3 +159,12 @@ No longer raised; kept so the code is never reused.
 | `schema.decimal_fallback` | decimal mode read a column without precision as a float; decimal mode is gone and every number is a double |
 | `schema.rule_conflict` | a hand-written rule routed a column the file also carried; rules are gone, fixes go in an increment's columns |
 | `schema.census_unresolved` | a census shape neither declared nor read by a rule; now `schema.census_deviates` |
+| `config.mirror_root` | raised by the mirror of nemweb's archive folders, which moved to nemweb-mirror (github.com/g0itb4/nemweb-mirror) |
+| `listing.unparsed_line` | raised by the mirror of nemweb's archive folders, which moved to nemweb-mirror (github.com/g0itb4/nemweb-mirror) |
+| `mirror.crawl_incomplete` | raised by the mirror of nemweb's archive folders, which moved to nemweb-mirror (github.com/g0itb4/nemweb-mirror) |
+| `mirror.files_failed` | raised by the mirror of nemweb's archive folders, which moved to nemweb-mirror (github.com/g0itb4/nemweb-mirror) |
+| `mirror.io` | raised by the mirror of nemweb's archive folders, which moved to nemweb-mirror (github.com/g0itb4/nemweb-mirror) |
+| `mirror.locked` | raised by the mirror of nemweb's archive folders, which moved to nemweb-mirror (github.com/g0itb4/nemweb-mirror) |
+| `mirror.not_same` | raised by the mirror of nemweb's archive folders, which moved to nemweb-mirror (github.com/g0itb4/nemweb-mirror) |
+| `mirror.record_corrupt` | raised by the mirror of nemweb's archive folders, which moved to nemweb-mirror (github.com/g0itb4/nemweb-mirror) |
+| `mirror.summary_stale` | raised by the mirror of nemweb's archive folders, which moved to nemweb-mirror (github.com/g0itb4/nemweb-mirror) |

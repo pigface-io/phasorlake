@@ -43,8 +43,6 @@ pub enum Category {
     Manifest,
     /// `nemlake verify` findings.
     Verify,
-    /// `nemlake mirror`: the copy of nemweb's archive folders.
-    Mirror,
     /// A bug in nemlake (panic, broken invariant).
     Internal,
 }
@@ -64,13 +62,12 @@ impl Category {
             Self::Store => "store",
             Self::Manifest => "manifest",
             Self::Verify => "verify",
-            Self::Mirror => "mirror",
             Self::Internal => "internal",
         }
     }
 
     /// Every category, for documentation and exhaustiveness tests.
-    pub const ALL: [Self; 13] = [
+    pub const ALL: [Self; 12] = [
         Self::Config,
         Self::Net,
         Self::Listing,
@@ -82,7 +79,6 @@ impl Category {
         Self::Store,
         Self::Manifest,
         Self::Verify,
-        Self::Mirror,
         Self::Internal,
     ];
 }
@@ -557,7 +553,7 @@ mod tests {
         assert_eq!(back.line, d.line);
         assert_eq!(Category::Csv.to_string(), "csv");
         assert_eq!(Severity::Warning.to_string(), "warning");
-        assert_eq!(Category::ALL.len(), 13);
+        assert_eq!(Category::ALL.len(), 12);
     }
 
     #[test]

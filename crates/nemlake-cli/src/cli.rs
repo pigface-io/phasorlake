@@ -147,12 +147,6 @@ pub enum Command {
         #[command(subcommand)]
         cmd: WemCmd,
     },
-    /// A copy of every file under nemweb's archive folders, and its map.
-    Mirror {
-        /// The subcommand.
-        #[command(subcommand)]
-        cmd: MirrorCmd,
-    },
 }
 
 /// Markets to fetch.
@@ -245,71 +239,6 @@ pub enum ArchiveCmd {
     Ls,
     /// Hash every archived file again and compare with its record.
     Verify,
-}
-
-/// Mirror commands.
-#[derive(Subcommand, Debug)]
-pub enum MirrorCmd {
-    /// Read every listing page under the roots into the crawl record.
-    Crawl {
-        /// Roots to crawl instead of nemweb's Data_Archive/ and Reports/ARCHIVE/.
-        #[arg(long = "root")]
-        roots: Vec<String>,
-        /// Move the current crawl aside and read every page again.
-        #[arg(long)]
-        fresh: bool,
-    },
-    /// Download every file of the finished crawl into the archive, each once.
-    Download,
-    /// Crawl (carrying on from a cut-off crawl), then download; when nemweb
-    /// refuses (HTTP 403/429) or the network fails, wait and start again.
-    Run {
-        /// Roots to crawl instead of nemweb's Data_Archive/ and Reports/ARCHIVE/.
-        #[arg(long = "root")]
-        roots: Vec<String>,
-        /// Move the current crawl aside and read every page again.
-        #[arg(long)]
-        fresh: bool,
-        /// How many refusals or network failures in a row to wait out before
-        /// giving up; an attempt that ran longer than the wait starts the
-        /// count again.
-        #[arg(long, default_value_t = 8)]
-        refusals: u32,
-        /// Minutes to wait after a refusal or a network failure.
-        #[arg(long, default_value_t = 15)]
-        wait_minutes: u64,
-    },
-    /// Write the map of every folder and file, zips opened as folders, to
-    /// map.ndjson and tree.txt under the home's mirror folder; offline.
-    Map {
-        /// The roots the crawl used, when not the default ones.
-        #[arg(long = "root")]
-        roots: Vec<String>,
-    },
-    /// Compare each zip nemweb lists beside a folder of the same name (the
-    /// whole-month zips) with that folder, both archived.
-    Compare {
-        /// Remove each zip found the same as its folder, recording it so it
-        /// is not downloaded again and stays in the map.
-        #[arg(long)]
-        delete: bool,
-    },
-    /// Fold the map into patterns (digit runs as `{n}`) and write it as
-    /// Markdown, small enough to commit.
-    Summary {
-        /// Where to write it.
-        #[arg(long, default_value = "nemweb/map.md")]
-        out: PathBuf,
-        /// Fail if the file there is not the summary of the current map.
-        #[arg(long)]
-        check: bool,
-    },
-    /// Pages read, and files archived out of those listed, per root.
-    Status {
-        /// The roots the crawl used, when not the default ones.
-        #[arg(long = "root")]
-        roots: Vec<String>,
-    },
 }
 
 /// WEM commands.
