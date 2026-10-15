@@ -84,8 +84,12 @@ pub enum Command {
     Compare {
         /// Remove each zip found the same as its folder, recording it so it
         /// is not downloaded again and stays in the map.
-        #[arg(long)]
+        #[arg(long, conflicts_with = "verify")]
         delete: bool,
+        /// Instead, read every removed zip's folder files again and check
+        /// them against the zip's listing.
+        #[arg(long)]
+        verify: bool,
     },
     /// Fold the map into patterns (digit runs as `{n}`) and write it as
     /// Markdown, small enough to commit.

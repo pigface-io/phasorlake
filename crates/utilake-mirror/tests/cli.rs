@@ -294,6 +294,26 @@ fn a_run_waits_out_failures_then_compare_map_and_summary() {
     );
     let after = cli.ok(&["compare"]);
     assert!(after.contains("1 compared"), "{after}");
+    // The removal's evidence, checked again; then a folder file damaged.
+    let verified = cli.ok(&["compare", "--verify"]);
+    assert!(
+        verified.contains("holds") && verified.contains("1 removed zips checked, 0 no longer held"),
+        "{verified}"
+    );
+    let t1 = nemweb_mirror::net::Archive::new(cli.home.path().join("archive"))
+        .path_for(&srv.url("/A/M/S/t1.zip"));
+    let mut bytes = std::fs::read(&t1).unwrap();
+    bytes[0] ^= 1;
+    std::fs::write(&t1, &bytes).unwrap();
+    let (code, out, err) = cli.code(&["compare", "--verify"]);
+    assert_eq!(code, 1);
+    assert!(out.contains("BROKEN"), "{out}");
+    assert!(err.contains("is no longer the zip's"), "{err}");
+    let (code, out, _) = cli.code(&["--json", "compare", "--verify"]);
+    assert_eq!(code, 1);
+    assert!(out.contains("\"event\":\"verified\""), "{out}");
+    bytes[0] ^= 1;
+    std::fs::write(&t1, &bytes).unwrap();
     let status = cli.ok(&["status", "--root", &root]);
     assert!(status.contains("(1 removed)"), "{status}");
     let again = cli.ok(&["download"]);

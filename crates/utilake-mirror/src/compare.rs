@@ -13,7 +13,7 @@ use std::fs::File;
 use std::io::{BufReader, Cursor, Read, Seek, Write as _};
 use std::path::{Path, PathBuf};
 
-use crate::net::Archive;
+use crate::net::{Archive, Sidecar};
 use serde::{Deserialize, Serialize};
 use zip::ZipArchive;
 
@@ -101,6 +101,10 @@ pub struct Removed {
     pub downloaded: bool,
     /// The folder that holds the same files.
     pub same_as: String,
+    /// How many files of the zip were found the same as the folder's; each
+    /// is in the catalog on both sides, with its size and CRC-32.
+    #[serde(default)]
+    pub files: usize,
     /// When it was removed (UTC, RFC 3339).
     pub removed_at: String,
 }
@@ -293,7 +297,7 @@ pub fn compare(
     let seen: HashSet<String> = matched.iter().map(|(_, rel)| rel.clone()).collect();
     for (f, rel) in matched {
         let path = &folder[&rel];
-        if sum_of(path).map_err(MirrorError::io(path))? == f.sum {
+        if known_sum(path)? == f.sum {
             cmp.same += 1;
             continue;
         }
@@ -351,8 +355,14 @@ pub fn remove(
         downloaded: sidecar.is_some(),
         sha256: sidecar.map(|s| s.sha256),
         same_as: cmp.folder.clone(),
+        files: cmp.same + cmp.repacked,
         removed_at: crate::clock::now_utc_rfc3339(),
     };
+    // A downloaded zip's listing is kept before it goes, so its side of the
+    // comparison stays in the record and the catalog.
+    if removed.downloaded && !cmp.from_listing {
+        crate::peek::keep_listing(mirror, &cmp.zip, &path)?;
+    }
     let record = mirror.removed_path();
     let mut line = serde_json::to_vec(&removed).expect("a Removed always serialises");
     line.push(b'\n');
@@ -371,6 +381,98 @@ pub fn remove(
     Ok(removed)
 }
 
+/// A removed zip checked again against its folder.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize)]
+pub struct Verified {
+    /// The removed zip.
+    pub zip: String,
+    /// The folder found to hold the same files.
+    pub folder: String,
+    /// Files of the zip checked, read again from the folder.
+    pub checked: usize,
+    /// Folder files that no longer match the zip's size and CRC-32.
+    pub changed: Vec<String>,
+    /// Folder files that are no longer in the archive.
+    pub missing: Vec<String>,
+    /// Whether the zip's listing is not in the record, so nothing could be
+    /// checked.
+    pub no_listing: bool,
+}
+
+impl Verified {
+    /// Whether the folder still holds every file of the zip, the same.
+    pub fn holds(&self) -> bool {
+        self.changed.is_empty() && self.missing.is_empty() && !self.no_listing
+    }
+}
+
+/// Reads every removed zip's folder files again, in full, and checks each
+/// is still what the comparison saw: the CRC-32 recorded in its sidecar, or
+/// the zip's for its file. The zip's listing says which files to check.
+pub fn verify(mirror: &Mirror, archive: &Archive) -> Result<Vec<Verified>, MirrorError> {
+    let removed = mirror.removed()?;
+    let listings: HashMap<String, Vec<Entry>> = crate::peek::read_peeks(&mirror.peek_path())?
+        .into_iter()
+        .filter_map(|p| Some((p.url, p.entries?)))
+        .collect();
+    let mut out = Vec::new();
+    for pair in pairs(mirror)?
+        .into_iter()
+        .filter(|p| removed.contains_key(&p.zip))
+    {
+        let mut v = Verified {
+            zip: pair.zip.clone(),
+            folder: pair.folder.clone(),
+            ..Verified::default()
+        };
+        let Some(entries) = listings.get(&pair.zip) else {
+            v.no_listing = true;
+            out.push(v);
+            continue;
+        };
+        let folder: BTreeMap<String, PathBuf> = pair
+            .files
+            .iter()
+            .map(|(url, _)| {
+                (
+                    percent_decoded(&url[pair.folder.len()..]),
+                    archive.path_for(url),
+                )
+            })
+            .collect();
+        for e in entries.iter().filter(|e| !e.name.ends_with(['/', '\\'])) {
+            let name = e.name.replace('\\', "/");
+            let Some(rel) = suffix_in(&name, &folder) else {
+                v.missing.push(name);
+                continue;
+            };
+            v.checked += 1;
+            // What the comparison saw: the CRC compare recorded in the
+            // folder file's sidecar (a file packed again matched by what it
+            // holds, not its bytes), else the zip's.
+            let path = &folder[&rel];
+            let want = match Archive::read_sidecar(path) {
+                Ok(Some(Sidecar {
+                    size,
+                    crc32: Some(crc32),
+                    ..
+                })) => Sum { size, crc32 },
+                _ => Sum {
+                    size: e.size,
+                    crc32: e.crc32,
+                },
+            };
+            match sum_of(path) {
+                Ok(sum) if sum == want => {}
+                Ok(_) => v.changed.push(rel),
+                Err(_) => v.missing.push(rel),
+            }
+        }
+        out.push(v);
+    }
+    Ok(out)
+}
+
 /// The shortest tail of `name`, cut at a `/`, that is a path of `folder`.
 fn suffix_in(name: &str, folder: &BTreeMap<String, PathBuf>) -> Option<String> {
     let mut tail = name;
@@ -380,6 +482,33 @@ fn suffix_in(name: &str, folder: &BTreeMap<String, PathBuf>) -> Option<String> {
         }
         tail = &tail[tail.find('/')? + 1..];
     }
+}
+
+/// The size and CRC-32 of an archived file: from its sidecar when it holds
+/// them, else read in full and recorded there, so a file is read once.
+fn known_sum(path: &Path) -> Result<Sum, MirrorError> {
+    let sidecar = Archive::read_sidecar(path)?;
+    let len = std::fs::metadata(path)
+        .map_err(MirrorError::io(path))?
+        .len();
+    if let Some(Sidecar {
+        crc32: Some(crc32),
+        size,
+        ..
+    }) = &sidecar
+        && *size == len
+    {
+        return Ok(Sum {
+            size: len,
+            crc32: *crc32,
+        });
+    }
+    let sum = sum_of(path).map_err(MirrorError::io(path))?;
+    if let Some(mut s) = sidecar.filter(|s| s.size == sum.size) {
+        s.crc32 = Some(sum.crc32);
+        Archive::write_sidecar(path, &s)?;
+    }
+    Ok(sum)
 }
 
 /// The size and CRC-32 of a file, read in full.
@@ -497,6 +626,7 @@ mod tests {
                 url: url.into(),
                 size: bytes.len() as u64,
                 sha256: crate::net::archive::sha256_hex(bytes),
+                crc32: None,
                 fetched_at: "t".into(),
                 etag: None,
                 last_modified: None,
@@ -639,8 +769,19 @@ mod tests {
         let m = crate::map(&f.mirror, &f.archive, &roots, 1).unwrap();
         assert_eq!(m.removed, 1);
         let tree = std::fs::read_to_string(f.mirror.dir().join("map/tree.txt")).unwrap();
-        assert!(tree.contains("M.zip  "), "{tree}");
+        // Removed, its listing kept: the catalog still says what it held.
+        assert!(tree.contains("M.zip/ (zip, "), "{tree}");
         assert!(tree.contains("[removed: same as its folder]"), "{tree}");
+        assert!(tree.contains("T1#1.zip/ (zip, "), "{tree}");
+        assert_eq!(f.mirror.removed().unwrap()["https://h/A/M.zip"].files, 2);
+        // Kept once.
+        crate::peek::keep_listing(&f.mirror, "https://h/A/M.zip", Path::new("/none")).unwrap();
+        assert_eq!(
+            crate::peek::read_peeks(&f.mirror.peek_path())
+                .unwrap()
+                .len(),
+            1
+        );
         let ndjson = std::fs::read_to_string(f.mirror.dir().join("map/map.ndjson")).unwrap();
         let line = ndjson
             .lines()
@@ -836,5 +977,91 @@ mod tests {
         let cmp = compare(&f.archive, pair, Some(&listing), &tmp).unwrap();
         assert_eq!(cmp.verdict, Verdict::NotArchived);
         assert_eq!(cmp.not_archived, ["S/DATA/T2.zip"]);
+    }
+
+    #[test]
+    fn a_folder_file_is_read_once_its_crc_kept_in_its_sidecar() {
+        let f = fixture(false);
+        let pair = &pairs(&f.mirror).unwrap()[0];
+        let tmp = f.mirror.dir().join("tmp");
+        let t1 = f.archive.path_for("https://h/A/M/S/DATA/T1%231.zip");
+        assert!(Archive::read_sidecar(&t1).unwrap().unwrap().crc32.is_none());
+        compare(&f.archive, pair, None, &tmp).unwrap();
+        let crc = Archive::read_sidecar(&t1).unwrap().unwrap().crc32.unwrap();
+        assert_eq!(crc, crc32fast::hash(&std::fs::read(&t1).unwrap()));
+        // The kept CRC is used: bytes changed on disk at the same size go
+        // unnoticed by compare (verify reads them again).
+        let mut bytes = std::fs::read(&t1).unwrap();
+        bytes[0] ^= 1;
+        std::fs::write(&t1, &bytes).unwrap();
+        let cmp = compare(&f.archive, pair, None, &tmp).unwrap();
+        assert_eq!(cmp.verdict, Verdict::Same);
+        // A file whose sidecar is of another size is read again.
+        bytes.push(0);
+        std::fs::write(&t1, &bytes).unwrap();
+        let cmp = compare(&f.archive, pair, None, &tmp).unwrap();
+        assert_eq!(cmp.verdict, Verdict::Differs);
+    }
+
+    #[test]
+    fn verify_reads_the_folder_again_against_the_kept_listing() {
+        let f = fixture(false);
+        let pair = &pairs(&f.mirror).unwrap()[0];
+        let tmp = f.mirror.dir().join("tmp");
+        assert!(verify(&f.mirror, &f.archive).unwrap().is_empty());
+        let cmp = compare(&f.archive, pair, None, &tmp).unwrap();
+        remove(&f.mirror, &f.archive, &cmp).unwrap();
+        let v = &verify(&f.mirror, &f.archive).unwrap()[0];
+        assert!(v.holds(), "{v:?}");
+        assert_eq!(v.checked, 2);
+        // A sidecar without a recorded CRC: the zip's is what was seen.
+        let t1 = f.archive.path_for("https://h/A/M/S/DATA/T1%231.zip");
+        let mut sc = Archive::read_sidecar(&t1).unwrap().unwrap();
+        sc.crc32 = None;
+        Archive::write_sidecar(&t1, &sc).unwrap();
+        assert!(verify(&f.mirror, &f.archive).unwrap()[0].holds());
+        let mut bytes = std::fs::read(&t1).unwrap();
+        bytes[0] ^= 1;
+        std::fs::write(&t1, &bytes).unwrap();
+        std::fs::remove_file(f.archive.path_for("https://h/A/M/S/DATA/T2.zip")).unwrap();
+        let v = &verify(&f.mirror, &f.archive).unwrap()[0];
+        assert!(!v.holds());
+        assert_eq!(v.changed, ["S/DATA/T1#1.zip"]);
+        assert_eq!(v.missing, ["S/DATA/T2.zip"]);
+        // An entry whose folder file is not even listed, and a removal
+        // without a kept listing.
+        let mut peeks = crate::peek::read_peeks(&f.mirror.peek_path()).unwrap();
+        peeks[0].entries.as_mut().unwrap().push(Entry {
+            name: "M\\elsewhere.txt".into(),
+            size: 1,
+            compressed: 1,
+            crc32: 1,
+            method: 0,
+            modified: "m".into(),
+        });
+        let lines: String = peeks
+            .iter()
+            .map(|p| serde_json::to_string(p).unwrap() + "\n")
+            .collect();
+        std::fs::write(f.mirror.peek_path(), lines).unwrap();
+        let v = &verify(&f.mirror, &f.archive).unwrap()[0];
+        assert!(v.missing.contains(&"M/elsewhere.txt".to_owned()));
+        std::fs::remove_file(f.mirror.peek_path()).unwrap();
+        let v = &verify(&f.mirror, &f.archive).unwrap()[0];
+        assert!(v.no_listing && !v.holds());
+    }
+
+    #[test]
+    fn a_kept_listing_of_a_file_that_is_not_a_zip_or_cannot_be_read() {
+        let f = fixture(false);
+        let dir = f.mirror.dir();
+        let text = dir.join("text.zip");
+        std::fs::write(&text, b"not a zip").unwrap();
+        crate::peek::keep_listing(&f.mirror, "https://h/t.zip", &text).unwrap();
+        let p = crate::peek::read_peeks(&f.mirror.peek_path()).unwrap();
+        assert_eq!(p[0].error.as_ref().unwrap().code, "zip.not_a_zip");
+        let e =
+            crate::peek::keep_listing(&f.mirror, "https://h/u.zip", &dir.join("none")).unwrap_err();
+        assert_eq!(e.diagnostic().code, "mirror.io");
     }
 }

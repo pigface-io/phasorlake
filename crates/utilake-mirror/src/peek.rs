@@ -193,6 +193,49 @@ pub async fn peek(
     Ok(summary)
 }
 
+/// A file on disk, read by span; every span lies inside it, as the
+/// directory reader checks, so a read fails only with the disk.
+struct OnDisk(std::fs::File);
+
+impl zipdir::Spans for OnDisk {
+    type Error = DirError;
+    async fn read(&mut self, start: u64, end: u64) -> Result<Vec<u8>, DirError> {
+        use std::io::{Read as _, Seek as _, SeekFrom};
+        let mut buf = vec![0u8; usize::try_from(end - start).unwrap_or(0)];
+        self.0
+            .seek(SeekFrom::Start(start))
+            .and_then(|_| self.0.read_exact(&mut buf))
+            .map_err(|_| DirError::Damaged("the file could not be read"))?;
+        Ok(buf)
+    }
+}
+
+/// Records the listing of the zip `url` archived at `path`, read from its
+/// central directory on disk, unless the record has it already: kept when
+/// a downloaded zip is removed, so what it held stays known.
+pub fn keep_listing(mirror: &Mirror, url: &str, path: &Path) -> Result<(), MirrorError> {
+    let record = mirror.peek_path();
+    if read_peeks(&record)?.iter().any(|p| p.url == url) {
+        return Ok(());
+    }
+    let file = std::fs::File::open(path).map_err(MirrorError::io(path))?;
+    let len = file.metadata().map_err(MirrorError::io(path))?.len();
+    let read = futures::executor::block_on(zipdir::read_directory(&mut OnDisk(file), len));
+    let peeked = match read {
+        Ok(entries) => Peeked {
+            url: url.to_owned(),
+            entries: Some(entries),
+            error: None,
+        },
+        Err(e) => Peeked {
+            url: url.to_owned(),
+            entries: None,
+            error: Some(peek_error(&e)),
+        },
+    };
+    append(&record, &peeked)
+}
+
 /// Whether a URL names a zip.
 fn is_zip_name(url: &str) -> bool {
     url.len() >= 4 && url[url.len() - 4..].eq_ignore_ascii_case(".zip")

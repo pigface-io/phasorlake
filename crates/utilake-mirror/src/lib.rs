@@ -26,7 +26,7 @@ pub mod summary;
 pub mod testzip;
 pub mod zipdir;
 
-pub use compare::{Comparison, Pair, Removed, Verdict, compare, pairs, remove};
+pub use compare::{Comparison, Pair, Removed, Verdict, Verified, compare, pairs, remove, verify};
 pub use crawl::{
     CrawlSummary, Mirror, PageRead, Remote, RemoteKind, crawl, default_roots, read_record, root,
 };

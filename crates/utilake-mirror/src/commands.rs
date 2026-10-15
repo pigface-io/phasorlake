@@ -123,7 +123,8 @@ pub async fn run_command(cli: &Cli) -> Result<i32> {
             let jobs = cli.jobs.unwrap_or_else(|| ctx.config.effective_jobs());
             map(ctx, &mirror, roots, jobs)
         }
-        Command::Compare { delete } => compare(ctx, &mirror, *delete),
+        Command::Compare { verify: true, .. } => verify(ctx, &mirror),
+        Command::Compare { delete, .. } => compare(ctx, &mirror, *delete),
         Command::Summary { out, check } => summary(ctx, &mirror, out, *check),
         Command::Status { roots } => status(ctx, &mirror, roots),
     };
@@ -392,6 +393,43 @@ fn map(ctx: &Context, mirror: &Mirror, given: &[String], jobs: usize) -> Result<
         );
     }
     Ok(i32::from(s.errors > 0))
+}
+
+fn verify(ctx: &Context, mirror: &Mirror) -> Result<i32, MirrorError> {
+    let results = nemweb_mirror::verify(mirror, &ctx.archive())?;
+    let mut rows = Vec::new();
+    for v in &results {
+        if ctx.json {
+            render::json_line(&serde_json::json!({ "event": "verified", "verified": v }));
+        } else {
+            rows.push(vec![
+                v.zip.rsplit('/').next().unwrap_or(&v.zip).to_owned(),
+                if v.holds() { "holds" } else { "BROKEN" }.to_owned(),
+                v.checked.to_string(),
+                v.changed.len().to_string(),
+                v.missing.len().to_string(),
+                if v.no_listing { "no listing" } else { "" }.to_owned(),
+            ]);
+            for f in v.changed.iter().chain(&v.missing).take(5) {
+                eprintln!("{}: {f} is no longer the zip's", v.zip);
+            }
+        }
+    }
+    let broken = results.iter().filter(|v| !v.holds()).count();
+    if !ctx.json {
+        print!(
+            "{}",
+            render::table(
+                &["zip", "folder", "checked", "changed", "missing", ""],
+                &rows
+            )
+        );
+        println!(
+            "{} removed zips checked, {broken} no longer held by their folders",
+            results.len()
+        );
+    }
+    Ok(i32::from(broken > 0))
 }
 
 fn compare(ctx: &Context, mirror: &Mirror, delete: bool) -> Result<i32, MirrorError> {

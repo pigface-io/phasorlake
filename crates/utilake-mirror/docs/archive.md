@@ -33,6 +33,7 @@ Beside every file, `{path}.json`:
   "url": "https://www.nemweb.com.au/…/MMSDM_2009_07.zip",
   "size": 1469212391,
   "sha256": "…",
+  "crc32": 1234567890,
   "fetched_at": "2026-10-15T09:12:44Z",
   "etag": "\"…\"",
   "last_modified": "Mon, 12 Oct 2026 00:32:30 GMT",
@@ -40,7 +41,10 @@ Beside every file, `{path}.json`:
 }
 ```
 
-`etag` and `last_modified` are present when the server sent them. A file is
+`etag` and `last_modified` are present when the server sent them. `crc32`
+is written by the download, or by `compare` for a file downloaded before
+downloads recorded it; it is what zips record of their entries, so a file
+can be matched to a zip entry without reading either again. A file is
 archived when it and its sidecar exist, the sidecar's `url` is the file's
 URL and its `size` is the file's length. Readers ignore fields they do not
 know.
@@ -51,5 +55,8 @@ A zip removed by `nemweb-mirror compare --delete` is gone from the archive
 or was never downloaded, and is recorded in `{home}/mirror/removed.ndjson`,
 one line per file: `url`, `size`, `sha256` (absent when it was never
 downloaded), `downloaded`, `same_as` (the folder holding the same files)
-and `removed_at`. Its files are the folder's files: every one of them, by
+and `files` (how many of its files matched) and `removed_at`. Its listing is
+kept in `{home}/mirror/peek.ndjson` and in the catalog, and each folder
+file's CRC-32 in its sidecar, so `nemweb-mirror compare --verify` can read
+the folder again and check the removal still holds. Its files are the folder's files: every one of them, by
 path, size and CRC-32, from the zip itself or from its listing.

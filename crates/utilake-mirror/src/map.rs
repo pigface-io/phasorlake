@@ -85,6 +85,10 @@ pub struct Node {
     /// The path: the archive path for what nemweb lists, then `!` and the
     /// name inside each zip.
     pub path: String,
+    /// The exact URL, for what nemweb lists (or listed); an entry inside a
+    /// zip is its zip's, the node at its path before the first `!`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub url: Option<String>,
     /// Folder, file or zip.
     pub kind: NodeKind,
     /// Size in bytes (uncompressed inside a zip).
@@ -93,9 +97,13 @@ pub struct Node {
     /// Compressed size, inside a zip.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub compressed: Option<u64>,
-    /// CRC-32 as the zip records it.
+    /// CRC-32: as the zip records it for an entry; from its sidecar for a
+    /// downloaded file, when recorded there.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub crc32: Option<u32>,
+    /// sha256 hex of a downloaded file, from its sidecar.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub sha256: Option<String>,
     /// Date and time as nemweb lists it, or as the zip records it.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub modified: Option<String>,
@@ -121,10 +129,12 @@ impl Node {
     fn new(path: String, kind: NodeKind, depth: usize) -> Self {
         Self {
             path,
+            url: None,
             kind,
             size: None,
             compressed: None,
             crc32: None,
+            sha256: None,
             modified: None,
             state: None,
             same_as: None,
@@ -159,6 +169,8 @@ pub struct MapSummary {
 /// A file or folder nemweb lists, or an archived file it listed once.
 #[derive(Debug, Clone)]
 struct Top {
+    /// The URL, for what the crawl or the archive knows it by.
+    url: Option<String>,
     kind: NodeKind,
     size: Option<u64>,
     modified: Option<String>,
@@ -256,6 +268,7 @@ fn tops(
         tops.insert(
             key(&r.url),
             Top {
+                url: Some(r.url.clone()),
                 kind,
                 size: r.size,
                 modified: Some(r.modified),
@@ -269,11 +282,21 @@ fn tops(
         listed.insert(r.url);
     }
     for root in roots {
+        tops.entry(key(root.as_str())).or_insert(Top {
+            url: Some(root.to_string()),
+            kind: NodeKind::Dir,
+            size: None,
+            modified: None,
+            state: None,
+            same_as: None,
+            peek: None,
+        });
         for a in archive.entries_under(Some(&archive.path_for(root.as_str()))) {
             if !listed.contains(&a.sidecar.url) {
                 tops.insert(
                     key(&a.sidecar.url),
                     Top {
+                        url: Some(a.sidecar.url.clone()),
                         kind: NodeKind::File,
                         size: Some(a.sidecar.size),
                         modified: a.sidecar.last_modified,
@@ -293,6 +316,7 @@ fn tops(
     }
     for p in parents {
         tops.entry(p).or_insert(Top {
+            url: None,
             kind: NodeKind::Dir,
             size: None,
             modified: None,
@@ -374,7 +398,8 @@ impl Lister {
     /// The node of a folder or file nemweb lists and, for an archived zip,
     /// the nodes of what it holds.
     fn top(&mut self, archive: &Archive, key: &[String], top: &Top) -> Vec<Node> {
-        let mut node = Node::new(key.join("/"), top.kind, key.len() - 1);
+        let mut node = Node::new(joined(key), top.kind, key.len() - 1);
+        node.url.clone_from(&top.url);
         node.size = top.size;
         node.modified.clone_from(&top.modified);
         node.state = top.state;
@@ -417,6 +442,10 @@ impl Lister {
             }
         };
         out[0].size = Some(size);
+        if let Ok(Some(s)) = Archive::read_sidecar(&file).map(|s| s.filter(|s| s.size == size)) {
+            out[0].sha256 = Some(s.sha256);
+            out[0].crc32 = s.crc32;
+        }
         let (path, depth) = (out[0].path.clone(), out[0].depth);
         let listed = match source {
             Source::Memory(buf) => {
@@ -510,7 +539,7 @@ impl Lister {
             if is_dir {
                 continue;
             }
-            let node_path = format!("{path}!{}", parts.join("/"));
+            let node_path = format!("{path}!{}", joined(&parts));
             let node_depth = depth + parts.len();
             let (mut node, nested) = self.entry(&mut z, i, node_path, node_depth, level);
             let at = out.len();
@@ -618,6 +647,26 @@ impl Lister {
     }
 }
 
+/// Names joined into a catalog path with `/`, each name's `%` and `!`
+/// escaped as `%25` and `%21`, so `/` and `!` in a path are always its
+/// separators and a node's parent is its path up to the last of them.
+fn joined(names: &[String]) -> String {
+    let mut out = String::new();
+    for (i, n) in names.iter().enumerate() {
+        if i > 0 {
+            out.push('/');
+        }
+        for c in n.chars() {
+            match c {
+                '%' => out.push_str("%25"),
+                '!' => out.push_str("%21"),
+                c => out.push(c),
+            }
+        }
+    }
+    out
+}
+
 /// The folder nodes above an entry `parts` of the zip at `path`, each once;
 /// the entry's own when it is a folder.
 fn folders(
@@ -632,7 +681,7 @@ fn folders(
         let d = parts[..n].to_vec();
         if done.insert(d.clone()) {
             out.push(Node::new(
-                format!("{path}!{}", d.join("/")),
+                format!("{path}!{}", joined(&d)),
                 NodeKind::Dir,
                 depth + n,
             ));
@@ -677,7 +726,7 @@ fn listed(out: &mut Vec<Node>, peek: &Peeked) {
         }
         let is_zip = e.name.len() >= 4 && e.name[e.name.len() - 4..].eq_ignore_ascii_case(".zip");
         let mut node = Node::new(
-            format!("{path}!{}", parts.join("/")),
+            format!("{path}!{}", joined(&parts)),
             if is_zip {
                 NodeKind::Zip
             } else {
@@ -818,7 +867,7 @@ impl Output {
 pub fn tree_line(node: &Node) -> String {
     let name = node.path.rsplit(['/', '!']).next().unwrap_or(&node.path);
     let mut line = "  ".repeat(node.depth);
-    line.push_str(name);
+    line.push_str(&name.replace("%21", "!").replace("%25", "%"));
     match node.kind {
         NodeKind::Dir => line.push('/'),
         NodeKind::Zip => line.push_str("/ (zip"),
@@ -973,6 +1022,7 @@ mod tests {
                 url: "https://h/A/gone.txt".into(),
                 size: 3,
                 sha256: String::new(),
+                crc32: None,
                 fetched_at: "t".into(),
                 etag: None,
                 last_modified: Some("Mon, 12 Oct 2026 00:32:30 GMT".into()),
@@ -1074,6 +1124,7 @@ h/
             .map(|s| (*s).to_owned())
             .collect();
         let top = Top {
+            url: None,
             kind: NodeKind::File,
             size: None,
             modified: None,
@@ -1123,6 +1174,7 @@ h/
         let dir = tempfile::tempdir().unwrap();
         let archive = Archive::new(dir.path());
         let top = Top {
+            url: None,
             kind: NodeKind::File,
             size: None,
             modified: None,
@@ -1270,6 +1322,7 @@ h/
         let dir = tempfile::tempdir().unwrap();
         let archive = Archive::new(dir.path());
         let top = Top {
+            url: None,
             kind: NodeKind::File,
             size: None,
             modified: None,
@@ -1339,6 +1392,7 @@ h/
         let z = crate::testzip::windows(&[("M|S|t.csv", b"x"), ("M|E|", b""), ("|", b"")]);
         std::fs::write(dir.path().join("h/w.zip"), &z).unwrap();
         let top = Top {
+            url: None,
             kind: NodeKind::File,
             size: None,
             modified: None,
@@ -1386,5 +1440,55 @@ h/
                 "h/p.zip!M/S/t.csv"
             ]
         );
+    }
+
+    #[test]
+    fn names_with_separators_are_escaped_and_files_carry_their_hashes() {
+        assert_eq!(joined(&["a!b".to_owned(), "50%".to_owned()]), "a%21b/50%25");
+        let mut n = Node::new("h/a%21b".into(), NodeKind::File, 1);
+        n.size = Some(1);
+        assert_eq!(tree_line(&n), "  a!b  1 B\n");
+        // A downloaded file shows its sidecar's hashes.
+        let f = fixture();
+        let path = f.archive.path_for("https://h/A/b.txt");
+        Archive::write_sidecar(
+            &path,
+            &crate::net::Sidecar {
+                url: "https://h/A/b.txt".into(),
+                size: 5,
+                sha256: "abc".into(),
+                crc32: Some(9),
+                fetched_at: "t".into(),
+                etag: None,
+                last_modified: None,
+                tool: "x".into(),
+            },
+        )
+        .unwrap();
+        map(&f.mirror, &f.archive, &f.roots, 1).unwrap();
+        let ndjson = std::fs::read_to_string(f.mirror.dir().join("map/map.ndjson")).unwrap();
+        let b = ndjson
+            .lines()
+            .find(|l| l.contains("\"h/A/b.txt\""))
+            .unwrap();
+        assert!(
+            b.contains("\"crc32\":9") && b.contains("\"sha256\":\"abc\""),
+            "{b}"
+        );
+        // Every node nemweb lists keeps its exact URL; the host above the
+        // roots has none.
+        assert!(b.contains("\"url\":\"https://h/A/b.txt\""), "{b}");
+        let root = ndjson
+            .lines()
+            .find(|l| l.contains("\"path\":\"h/A\""))
+            .unwrap();
+        assert!(root.contains("\"url\":\"https://h/A/\""), "{root}");
+        let host = ndjson
+            .lines()
+            .find(|l| l.contains("\"path\":\"h\""))
+            .unwrap();
+        assert!(!host.contains("url"), "{host}");
+        let gone = ndjson.lines().find(|l| l.contains("gone.txt")).unwrap();
+        assert!(gone.contains("\"url\":\"https://h/A/gone.txt\""), "{gone}");
     }
 }

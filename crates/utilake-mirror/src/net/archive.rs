@@ -23,6 +23,10 @@ pub struct Sidecar {
     pub size: u64,
     /// sha256 hex of the bytes.
     pub sha256: String,
+    /// CRC-32 of the bytes, as zips record their entries': written by the
+    /// download, or by `compare` for a file downloaded before it was.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub crc32: Option<u32>,
     /// When the download completed, RFC 3339 UTC.
     pub fetched_at: String,
     /// The server's `ETag`.
@@ -325,6 +329,7 @@ mod tests {
             url: url.into(),
             size: 3,
             sha256: sha,
+            crc32: None,
             fetched_at: "2026-10-05T00:00:00Z".into(),
             etag: None,
             last_modified: Some("Tue, 13 Feb 2024 08:27:00 GMT".into()),

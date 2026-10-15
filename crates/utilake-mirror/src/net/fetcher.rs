@@ -194,6 +194,7 @@ impl Fetcher {
             url: url.to_owned(),
             size: streamed.size,
             sha256: streamed.sha256,
+            crc32: Some(streamed.crc32),
             fetched_at: now_utc_rfc3339(),
             etag: streamed.etag,
             last_modified: streamed.last_modified,
@@ -332,23 +333,27 @@ async fn read_all(url: &str, resp: HttpResponse) -> Result<Vec<u8>, FetchError> 
 /// A completed download: its bytes' hash and size, and what the server said.
 struct Streamed {
     sha256: String,
+    crc32: u32,
     size: u64,
     etag: Option<String>,
     last_modified: Option<String>,
 }
 
-/// Writes the chunks it receives to `part` through a 1 MiB buffer, hashing
-/// them on the way, and makes the file durable. Runs on a blocking thread.
+/// Writes the chunks it receives to `part` through a 1 MiB buffer, taking
+/// their sha256 and CRC-32 on the way, and makes the file durable; the
+/// hashes and the size. Runs on a blocking thread.
 fn spool(
     part: &Path,
     mut rx: tokio::sync::mpsc::Receiver<Bytes>,
-) -> std::io::Result<(String, u64)> {
+) -> std::io::Result<(String, u32, u64)> {
     let file = std::fs::File::create(part)?;
     let mut out = std::io::BufWriter::with_capacity(WRITE_BUFFER, file);
     let mut hasher = Sha256::new();
+    let mut crc = crc32fast::Hasher::new();
     let mut size = 0u64;
     while let Some(chunk) = rx.blocking_recv() {
         hasher.update(&chunk);
+        crc.update(&chunk);
         out.write_all(&chunk)?;
         size += chunk.len() as u64;
     }
@@ -356,7 +361,7 @@ fn spool(
         .into_inner()
         .map_err(std::io::IntoInnerError::into_error)?;
     file.sync_all()?;
-    Ok((hex(&hasher.finalize()), size))
+    Ok((hex(&hasher.finalize()), crc.finalize(), size))
 }
 
 async fn stream_to_file(
@@ -417,7 +422,7 @@ async fn stream_to_file(
             message,
         });
     }
-    let (sha256, size) = match written {
+    let (sha256, crc32, size) = match written {
         Ok(w) => w,
         Err(source) => {
             return fail(FetchError::CacheIo {
@@ -437,6 +442,7 @@ async fn stream_to_file(
     }
     Ok(Streamed {
         sha256,
+        crc32,
         size,
         etag: resp.etag,
         last_modified: resp.last_modified,
@@ -492,6 +498,7 @@ mod tests {
             sc.tool,
             format!("nemweb-mirror/{}", env!("CARGO_PKG_VERSION"))
         );
+        assert_eq!(sc.crc32, Some(crc32fast::hash(&body)));
         assert_eq!(
             sc.last_modified.as_deref(),
             Some("Tue, 13 Feb 2024 08:27:00 GMT")
