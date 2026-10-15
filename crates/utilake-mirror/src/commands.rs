@@ -96,9 +96,13 @@ pub async fn run_command(cli: &Cli) -> Result<i32> {
             let fetcher = ctx.fetcher();
             locked(&mirror, crawl(ctx, &fetcher, &mirror, roots, *fresh)).await
         }
-        Command::Download => {
+        Command::Download { only } => {
             let fetcher = ctx.fetcher();
-            let pass = async { download(ctx, &fetcher, &mirror).await.map(|(code, _)| code) };
+            let pass = async {
+                download(ctx, &fetcher, &mirror, only)
+                    .await
+                    .map(|(code, _)| code)
+            };
             locked(&mirror, pass).await
         }
         Command::Peek => {
@@ -177,8 +181,10 @@ async fn run(
             crawl(ctx, &fetcher, mirror, given, fresh).await?;
             // One fetcher paces both: peek's small requests fit between
             // the downloads.
-            let (peeked, downloaded) =
-                tokio::join!(peek(ctx, &fetcher, mirror), download(ctx, &fetcher, mirror));
+            let (peeked, downloaded) = tokio::join!(
+                peek(ctx, &fetcher, mirror),
+                download(ctx, &fetcher, mirror, &[])
+            );
             let ((p_code, p_net), (d_code, d_net)) = (peeked?, downloaded?);
             Ok::<_, MirrorError>((p_code.max(d_code), p_net || d_net))
         };
@@ -329,10 +335,11 @@ async fn download(
     ctx: &Context,
     fetcher: &Fetcher,
     mirror: &Mirror,
+    only: &[String],
 ) -> Result<(i32, bool), MirrorError> {
     let json = ctx.json;
     let progress = ctx.progress;
-    let summary = nemweb_mirror::download(fetcher, mirror, ctx.config.downloads, |f| {
+    let summary = nemweb_mirror::download(fetcher, mirror, ctx.config.downloads, only, |f| {
         if json {
             render::json_line(&serde_json::json!({ "event": "file_done", "file": f }));
         } else if progress {
@@ -397,7 +404,8 @@ fn compare(ctx: &Context, mirror: &Mirror, delete: bool) -> Result<i32, MirrorEr
             .filter_map(|p| Some((p.url, p.entries?)))
             .collect();
     let tmp = mirror.dir().join("tmp");
-    let (mut waiting, mut freed, mut spared, mut rows) = (0usize, 0u64, 0u64, Vec::new());
+    let (mut compared, mut waiting, mut freed, mut spared) = (0usize, 0usize, 0u64, 0u64);
+    let mut rows = Vec::new();
     for pair in nemweb_mirror::pairs(mirror)? {
         if removed.contains_key(&pair.zip) {
             continue;
@@ -408,6 +416,7 @@ fn compare(ctx: &Context, mirror: &Mirror, delete: bool) -> Result<i32, MirrorEr
             waiting += 1;
             continue;
         }
+        compared += 1;
         let mut action = "kept";
         if delete && cmp.verdict == Verdict::Same {
             let r = nemweb_mirror::remove(mirror, &archive, &cmp)?;
@@ -445,7 +454,15 @@ fn compare(ctx: &Context, mirror: &Mirror, delete: bool) -> Result<i32, MirrorEr
             }
         }
     }
-    if !ctx.json {
+    if ctx.json {
+        render::json_line(&serde_json::json!({
+            "event": "compare_done",
+            "compared": compared,
+            "waiting": waiting,
+            "freed_bytes": freed,
+            "not_downloaded_bytes": spared,
+        }));
+    } else {
         print!(
             "{}",
             render::table(
@@ -465,8 +482,7 @@ fn compare(ctx: &Context, mirror: &Mirror, delete: bool) -> Result<i32, MirrorEr
             )
         );
         println!(
-            "{} compared, {waiting} waiting for downloads, {:.1} GB freed, {:.1} GB not to download",
-            rows.len(),
+            "{compared} compared, {waiting} waiting for downloads, {:.1} GB freed, {:.1} GB not to download",
             freed as f64 / 1e9,
             spared as f64 / 1e9
         );

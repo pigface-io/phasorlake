@@ -220,17 +220,18 @@ pub fn compare(
         only_in_folder: Vec::new(),
         not_archived: Vec::new(),
     };
-    // The folder's files by their path under the folder.
-    let mut folder: BTreeMap<String, PathBuf> = BTreeMap::new();
-    for (url, _) in &pair.files {
-        let rel = percent_decoded(&url[pair.folder.len()..]);
-        let path = archive.path_for(url);
-        if path.is_file() {
-            folder.insert(rel, path);
-        } else {
-            cmp.not_archived.push(rel);
-        }
-    }
+    // The folder's files by their path under the folder, as listed; only
+    // those the zip's files match need be archived.
+    let folder: BTreeMap<String, PathBuf> = pair
+        .files
+        .iter()
+        .map(|(url, _)| {
+            (
+                percent_decoded(&url[pair.folder.len()..]),
+                archive.path_for(url),
+            )
+        })
+        .collect();
     let zip_path = archive.path_for(&pair.zip);
     let mut zip = None;
     let files: Vec<ZipFile> = if zip_path.is_file() {
@@ -243,9 +244,10 @@ pub fn compare(
         let mut files = Vec::with_capacity(z.len());
         for i in 0..z.len() {
             let f = z.by_index_raw(i).map_err(bad)?;
-            if !f.is_dir() {
+            // Zips made on Windows separate folders with `\`.
+            if !f.is_dir() && !f.name().ends_with('\\') {
                 files.push(ZipFile {
-                    name: f.name().to_owned(),
+                    name: f.name().replace('\\', "/"),
                     sum: Sum {
                         size: f.size(),
                         crc32: f.crc32(),
@@ -260,9 +262,9 @@ pub fn compare(
         cmp.from_listing = true;
         entries
             .iter()
-            .filter(|e| !e.name.ends_with('/'))
+            .filter(|e| !e.name.ends_with(['/', '\\']))
             .map(|e| ZipFile {
-                name: e.name.clone(),
+                name: e.name.replace('\\', "/"),
                 sum: Sum {
                     size: e.size,
                     crc32: e.crc32,
@@ -271,21 +273,26 @@ pub fn compare(
             })
             .collect()
     } else {
-        cmp.not_archived.insert(0, pair.zip.clone());
-        Vec::new()
+        cmp.not_archived.push(pair.zip.clone());
+        cmp.verdict = Verdict::NotArchived;
+        return Ok(cmp);
     };
+    // Every file of the zip at its folder path, which must be archived.
+    let mut matched: Vec<(ZipFile, String)> = Vec::with_capacity(files.len());
+    for f in files {
+        match suffix_in(&f.name, &folder) {
+            Some(rel) if folder[&rel].is_file() => matched.push((f, rel)),
+            Some(rel) => cmp.not_archived.push(rel),
+            None => cmp.only_in_zip.push(f.name),
+        }
+    }
     if !cmp.not_archived.is_empty() {
         cmp.verdict = Verdict::NotArchived;
         return Ok(cmp);
     }
-    let mut matched: HashSet<String> = HashSet::new();
-    for f in files {
-        let Some(rel) = suffix_in(&f.name, &folder) else {
-            cmp.only_in_zip.push(f.name);
-            continue;
-        };
+    let seen: HashSet<String> = matched.iter().map(|(_, rel)| rel.clone()).collect();
+    for (f, rel) in matched {
         let path = &folder[&rel];
-        matched.insert(rel.clone());
         if sum_of(path).map_err(MirrorError::io(path))? == f.sum {
             cmp.same += 1;
             continue;
@@ -306,7 +313,7 @@ pub fn compare(
     }
     cmp.only_in_folder = folder
         .keys()
-        .filter(|k| !matched.contains(*k))
+        .filter(|k| !seen.contains(*k))
         .cloned()
         .collect();
     if !cmp.only_in_zip.is_empty() || !cmp.different.is_empty() {
@@ -405,7 +412,7 @@ fn list<R: Read + Seek>(r: R) -> zip::result::ZipResult<Listing> {
     for i in 0..z.len() {
         let f = z.by_index_raw(i)?;
         if !f.is_dir() {
-            let name = f.name().rsplit('/').next().unwrap_or("").to_owned();
+            let name = f.name().rsplit(['/', '\\']).next().unwrap_or("").to_owned();
             out.insert(name, (f.size(), f.crc32()));
         }
     }
@@ -612,7 +619,7 @@ mod tests {
                 min_interval: Duration::ZERO,
             },
         );
-        let s = crate::download(&fetcher, &f.mirror, 1, |_| {})
+        let s = crate::download(&fetcher, &f.mirror, 1, &[], |_| {})
             .await
             .unwrap();
         assert_eq!((s.files, s.removed, s.cached), (5, 1, 3));
@@ -664,11 +671,15 @@ mod tests {
         assert_eq!(cmp.verdict, Verdict::Differs);
         assert_eq!(cmp.different, ["S/DATA/T1#1.zip"]);
 
+        // A file of the zip whose folder file is not downloaded: wait.
         std::fs::remove_file(&t1).unwrap();
-        std::fs::remove_file(f.archive.path_for(&pair.zip)).unwrap();
         let cmp = compare(&f.archive, pair, None, &f.mirror.dir().join("tmp")).unwrap();
         assert_eq!(cmp.verdict, Verdict::NotArchived);
-        assert_eq!(cmp.not_archived, ["https://h/A/M.zip", "S/DATA/T1#1.zip"]);
+        assert_eq!(cmp.not_archived, ["S/DATA/T1#1.zip"]);
+        // Neither downloaded nor peeked: wait for the zip.
+        std::fs::remove_file(f.archive.path_for(&pair.zip)).unwrap();
+        let cmp = compare(&f.archive, pair, None, &f.mirror.dir().join("tmp")).unwrap();
+        assert_eq!(cmp.not_archived, ["https://h/A/M.zip"]);
     }
 
     #[test]
@@ -779,5 +790,51 @@ mod tests {
         )
         .unwrap();
         assert!(f.mirror.removed().unwrap()["u"].downloaded);
+    }
+
+    #[test]
+    fn windows_names_and_a_folder_only_partly_downloaded() {
+        let f = fixture(false);
+        let pair = &pairs(&f.mirror).unwrap()[0];
+        let t1 = std::fs::read(f.archive.path_for("https://h/A/M/S/DATA/T1%231.zip")).unwrap();
+        // The zip holds only T1, made on Windows; the folder's other
+        // files need not be downloaded to rule on it.
+        let z = crate::testzip::windows(&[("M|S|DATA|T1#1.zip", &t1), ("M|S|", b"")]);
+        let zip_path = f.archive.path_for(&pair.zip);
+        std::fs::write(&zip_path, &z).unwrap();
+        std::fs::remove_file(f.archive.path_for("https://h/A/M/S/DATA/T2.zip")).unwrap();
+        let tmp = f.mirror.dir().join("tmp");
+        let cmp = compare(&f.archive, pair, None, &tmp).unwrap();
+        assert_eq!((cmp.verdict, cmp.same), (Verdict::Same, 1), "{cmp:?}");
+        // From its listing too, names as Windows wrote them.
+        std::fs::remove_file(&zip_path).unwrap();
+        let listing = [
+            Entry {
+                name: "M\\S\\DATA\\T1#1.zip".into(),
+                size: t1.len() as u64,
+                compressed: t1.len() as u64,
+                crc32: crc32fast::hash(&t1),
+                method: 0,
+                modified: "m".into(),
+            },
+            Entry {
+                name: "M\\S\\".into(),
+                size: 0,
+                compressed: 0,
+                crc32: 0,
+                method: 0,
+                modified: "m".into(),
+            },
+        ];
+        let cmp = compare(&f.archive, pair, Some(&listing), &tmp).unwrap();
+        assert_eq!((cmp.verdict, cmp.same), (Verdict::Same, 1), "{cmp:?}");
+        // A file of the zip whose folder file is not downloaded: wait.
+        let listing = [Entry {
+            name: "M/S/DATA/T2.zip".into(),
+            ..listing[0].clone()
+        }];
+        let cmp = compare(&f.archive, pair, Some(&listing), &tmp).unwrap();
+        assert_eq!(cmp.verdict, Verdict::NotArchived);
+        assert_eq!(cmp.not_archived, ["S/DATA/T2.zip"]);
     }
 }

@@ -483,14 +483,15 @@ impl Lister {
         for i in 0..z.len() {
             match z.by_index_raw(i) {
                 Ok(f) => {
+                    // Zips made on Windows separate folders with `\`.
                     let parts: Vec<String> = f
                         .name()
-                        .split('/')
+                        .split(['/', '\\'])
                         .filter(|p| !p.is_empty())
                         .map(str::to_owned)
                         .collect();
                     if !parts.is_empty() {
-                        entries.push((parts, i, f.is_dir()));
+                        entries.push((parts, i, f.is_dir() || f.name().ends_with('\\')));
                     }
                 }
                 Err(e) => unreadable.push(Node {
@@ -659,7 +660,7 @@ fn listed(out: &mut Vec<Node>, peek: &Peeked) {
         .map(|e| {
             let parts = e
                 .name
-                .split('/')
+                .split(['/', '\\'])
                 .filter(|p| !p.is_empty())
                 .map(str::to_owned);
             (parts.collect(), e)
@@ -669,7 +670,7 @@ fn listed(out: &mut Vec<Node>, peek: &Peeked) {
     sorted.sort_by(|a, b| a.0.cmp(&b.0));
     let mut done = HashSet::new();
     for (parts, e) in sorted {
-        let is_dir = e.name.ends_with('/');
+        let is_dir = e.name.ends_with(['/', '\\']);
         folders(out, &mut done, &path, depth, &parts, is_dir);
         if is_dir {
             continue;
@@ -1327,6 +1328,63 @@ h/
         assert_eq!(
             list("nowhere.zip", &outer, &mut lister),
             [None, Some("zip.bad_entry")]
+        );
+    }
+
+    #[test]
+    fn windows_folders_in_a_downloaded_zip_and_in_a_listing() {
+        let dir = tempfile::tempdir().unwrap();
+        let archive = Archive::new(dir.path());
+        std::fs::create_dir_all(dir.path().join("h")).unwrap();
+        let z = crate::testzip::windows(&[("M|S|t.csv", b"x"), ("M|E|", b""), ("|", b"")]);
+        std::fs::write(dir.path().join("h/w.zip"), &z).unwrap();
+        let top = Top {
+            kind: NodeKind::File,
+            size: None,
+            modified: None,
+            state: Some(State::Archived),
+            same_as: None,
+            peek: None,
+        };
+        let key = vec!["h".to_owned(), "w.zip".to_owned()];
+        let nodes = Lister::new(dir.path().to_path_buf()).top(&archive, &key, &top);
+        let paths: Vec<_> = nodes.iter().map(|n| (n.path.as_str(), n.kind)).collect();
+        assert_eq!(
+            paths,
+            [
+                ("h/w.zip", NodeKind::Zip),
+                ("h/w.zip!M", NodeKind::Dir),
+                ("h/w.zip!M/E", NodeKind::Dir),
+                ("h/w.zip!M/S", NodeKind::Dir),
+                ("h/w.zip!M/S/t.csv", NodeKind::File),
+            ]
+        );
+        // A listing recorded before names were read with slashes.
+        let entry = |name: &str| crate::zipdir::Entry {
+            name: name.into(),
+            size: 1,
+            compressed: 1,
+            crc32: 1,
+            method: 0,
+            modified: "m".into(),
+        };
+        let peeked = crate::peek::Peeked {
+            url: "u".into(),
+            entries: Some(vec![entry("M\\S\\t.csv"), entry("M\\E\\")]),
+            error: None,
+        };
+        let mut out = vec![Node::new("h/p.zip".into(), NodeKind::File, 1)];
+        listed(&mut out, &peeked);
+        let paths: Vec<_> = out.iter().map(|n| n.path.as_str()).collect();
+        assert_eq!(
+            paths,
+            [
+                "h/p.zip",
+                "h/p.zip!M",
+                "h/p.zip!M/E",
+                "h/p.zip!M/S",
+                "h/p.zip!M/S/t.csv"
+            ]
         );
     }
 }

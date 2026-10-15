@@ -80,3 +80,21 @@ pub fn understated(zip: &[u8]) -> Vec<u8> {
     zip[cd + 24..cd + 28].copy_from_slice(&size.to_le_bytes());
     zip
 }
+
+/// A zip made as Windows makes them: every `|` in `entries`' names becomes
+/// a `\\` (none may appear in their bytes).
+pub fn windows(entries: &[(&str, &[u8])]) -> Vec<u8> {
+    let mut w = zip::ZipWriter::new(Cursor::new(Vec::new()));
+    for (name, bytes) in entries {
+        w.start_file(*name, zip::write::SimpleFileOptions::default())
+            .unwrap();
+        w.write_all(bytes).unwrap();
+    }
+    let mut zip = w.finish().unwrap().into_inner();
+    for b in &mut zip {
+        if *b == b'|' {
+            *b = b'\\';
+        }
+    }
+    zip
+}

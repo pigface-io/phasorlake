@@ -21,7 +21,8 @@ const CENTRAL: &[u8; 4] = b"PK\x01\x02";
 /// One entry of a zip, as its central directory records it.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Entry {
-    /// The name, folders separated by `/`; a folder's ends in `/`.
+    /// The name, folders separated by `/` (a `\` in the zip is read as
+    /// one); a folder's ends in `/`.
     pub name: String,
     /// Uncompressed size, as declared.
     pub size: u64,
@@ -164,7 +165,8 @@ fn entries(mut cd: &[u8]) -> Result<Vec<Entry>, DirError> {
             extra = &extra[(4 + len).min(extra.len())..];
         }
         out.push(Entry {
-            name: String::from_utf8_lossy(&cd[46..46 + name_len]).into_owned(),
+            // Zips made on Windows separate folders with `\`.
+            name: String::from_utf8_lossy(&cd[46..46 + name_len]).replace('\\', "/"),
             size,
             compressed,
             crc32: u32_at(cd, 16),
@@ -390,5 +392,18 @@ mod tests {
             DirError::NotAZip(9).to_string(),
             "no end-of-central-directory record in the last 9 bytes: not a zip"
         );
+    }
+
+    #[tokio::test]
+    async fn windows_folders_read_as_slashes() {
+        let z = crate::testzip::windows(&[("M|S|t.csv", b"x"), ("M|", b"")]);
+        let names: Vec<String> = read(z)
+            .await
+            .0
+            .unwrap()
+            .into_iter()
+            .map(|e| e.name)
+            .collect();
+        assert_eq!(names, ["M/S/t.csv", "M/"]);
     }
 }

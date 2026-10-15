@@ -45,7 +45,11 @@ pub enum Command {
         fresh: bool,
     },
     /// Download every file of the finished crawl into the archive, each once.
-    Download,
+    Download {
+        /// Only the files whose URL starts with this; repeatable.
+        #[arg(long)]
+        only: Vec<String>,
+    },
     /// Read the central directory of every zip not yet downloaded, by
     /// ranged requests, into peek.ndjson.
     Peek,

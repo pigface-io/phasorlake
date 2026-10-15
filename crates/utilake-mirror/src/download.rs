@@ -47,6 +47,8 @@ pub struct DownloadSummary {
 /// Downloads every file of the finished crawl, `downloads` at a time,
 /// through the fetcher, which skips a file the archive already holds.
 ///
+/// With `only`, just the files whose URL starts with one of its prefixes.
+///
 /// A zip published beside a folder of the same name (a whole-month zip)
 /// comes last, after its folder, and is skipped when `compare --delete`
 /// has found it the same as the folder by the time its turn comes.
@@ -58,6 +60,7 @@ pub async fn download(
     fetcher: &Fetcher,
     mirror: &Mirror,
     downloads: usize,
+    only: &[String],
     mut on_file: impl FnMut(&FileDone<'_>),
 ) -> Result<DownloadSummary, MirrorError> {
     if !mirror.done_path().exists() {
@@ -68,6 +71,8 @@ pub async fn download(
     let removed = mirror.removed()?;
     let paired: HashSet<String> = pairs(mirror)?.into_iter().map(|p| p.zip).collect();
     let mut record = read_record(&mirror.record_path())?;
+    // Only the files under the prefixes given, when any are.
+    record.retain(|r| only.is_empty() || only.iter().any(|p| r.url.starts_with(p.as_str())));
     let listed = record.iter().filter(|r| r.kind == RemoteKind::File).count();
     // Stable: every other file in URL order, then the paired zips.
     record.sort_by_key(|r| paired.contains(&r.url));
@@ -182,14 +187,14 @@ mod tests {
         t.add("https://h/A/y.zip", Canned::ok(b"yyyy"));
         let f = fetcher(&t, &archive);
 
-        let err = download(&f, &mirror, 2, |_| {}).await.unwrap_err();
+        let err = download(&f, &mirror, 2, &[], |_| {}).await.unwrap_err();
         assert_eq!(err.diagnostic().code, "mirror.crawl_incomplete");
 
         crawl(&f, &mirror, &[root("https://h/A/").unwrap()], false, |_| {})
             .await
             .unwrap();
         let mut seen = Vec::new();
-        let s = download(&f, &mirror, 2, |d| {
+        let s = download(&f, &mirror, 2, &[], |d| {
             seen.push((d.url.to_owned(), d.cached, d.total));
         })
         .await
@@ -201,8 +206,12 @@ mod tests {
         assert_eq!(seen[0], ("https://h/A/x.zip".to_owned(), false, 3));
         assert_eq!(std::fs::read(archive.join("h/A/y.zip")).unwrap(), b"yyyy");
 
-        let s = download(&f, &mirror, 2, |_| {}).await.unwrap();
+        let s = download(&f, &mirror, 2, &[], |_| {}).await.unwrap();
         assert_eq!((s.cached, s.downloaded), (2, 0));
+        // Only a part of the tree.
+        let only = ["https://h/A/x".to_owned()];
+        let s = download(&f, &mirror, 2, &only, |_| {}).await.unwrap();
+        assert_eq!((s.files, s.cached), (1, 1));
         assert_eq!(t.request_count(), 1 + 3 + 1);
     }
 
@@ -217,7 +226,7 @@ mod tests {
         crawl(&f, &mirror, &[root("https://h/A/").unwrap()], false, |_| {})
             .await
             .unwrap();
-        let err = download(&f, &mirror, 1, |_| {}).await.unwrap_err();
+        let err = download(&f, &mirror, 1, &[], |_| {}).await.unwrap_err();
         assert_eq!(err.diagnostic().code, "net.blocked");
     }
 
@@ -238,7 +247,7 @@ mod tests {
             .build()
             .unwrap();
         let d = rt
-            .block_on(download(&f, &mirror, 1, |_| {}))
+            .block_on(download(&f, &mirror, 1, &[], |_| {}))
             .unwrap_err()
             .diagnostic();
         assert_eq!(
@@ -282,7 +291,7 @@ mod tests {
             .unwrap();
         // Once N's folder is down, N.zip is found the same as it.
         let removed = mirror.removed_path();
-        let s = download(&f, &mirror, 1, |d| {
+        let s = download(&f, &mirror, 1, &[], |d| {
             if d.url == "https://h/A/N/a.zip" {
                 std::fs::write(
                     &removed,
@@ -306,7 +315,7 @@ mod tests {
         // A record of removals that cannot be read stops the pass.
         std::fs::write(&removed, "{").unwrap();
         std::fs::remove_file(f.archive().path_for("https://h/A/M.zip")).unwrap();
-        let e = download(&f, &mirror, 1, |_| {}).await.unwrap_err();
+        let e = download(&f, &mirror, 1, &[], |_| {}).await.unwrap_err();
         assert_eq!(e.diagnostic().code, "mirror.record_corrupt");
     }
 
