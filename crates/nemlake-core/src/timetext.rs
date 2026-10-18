@@ -70,6 +70,23 @@ impl fmt::Display for Stamp {
     }
 }
 
+/// Written as its RFC 3339 text.
+impl serde::Serialize for Stamp {
+    fn serialize<S: serde::Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
+        s.collect_str(self)
+    }
+}
+
+/// Read from RFC 3339 text; text without an offset is refused.
+impl<'de> serde::Deserialize<'de> for Stamp {
+    fn deserialize<D: serde::Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
+        let text = <std::borrow::Cow<'de, str>>::deserialize(d)?;
+        parse_rfc3339(&text).ok_or_else(|| {
+            serde::de::Error::custom(format!("{text:?} is not RFC 3339 with an offset"))
+        })
+    }
+}
+
 /// A UTC instant in whole seconds as RFC 3339 in `offset_secs`.
 #[must_use]
 pub fn format_rfc3339(secs_utc: i64, offset_secs: i32) -> String {
@@ -462,6 +479,17 @@ mod tests {
         };
         assert_eq!(frac.rfc3339(), "2024-02-13T08:27:00.0005Z");
         assert_eq!(frac.to_string(), frac.rfc3339());
+    }
+
+    #[test]
+    fn serde_is_the_rfc3339_text() {
+        let s = Stamp::new(T, NEM_OFFSET_SECS);
+        let json = serde_json::to_string(&s).unwrap();
+        assert_eq!(json, "\"2024-02-13T18:27:00+10:00\"");
+        assert_eq!(serde_json::from_str::<Stamp>(&json).unwrap(), s);
+        let err = serde_json::from_str::<Stamp>("\"2024-02-13T18:27:00\"").unwrap_err();
+        assert!(err.to_string().contains("offset"), "{err}");
+        assert!(serde_json::from_str::<Stamp>("7").is_err());
     }
 
     #[test]
