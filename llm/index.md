@@ -14,6 +14,7 @@ Each entry names where a thing starts. Read those files before you edit.
 - Parquet is written only through `LakeWriter` (`crates/nemlake-writer/src/writer.rs`); a file exists only after rename, and the manifest row for it is written in the same step.
 - The manifest schema changes only by a new numbered file in `crates/nemlake-writer/src/manifest/migrations/`, never by editing an old one.
 - Every HTTP request goes through `Fetcher` (`crates/nemlake-acquire/src/fetcher.rs`): one user agent, pacing, retries, the archive, `--offline`. A file is downloaded whole, once; no cache, no ranged reads.
+- Every time value carries its zone; a naive one is a defect. In the lake: UTC nanoseconds typed `Timestamp(Nanosecond, Some("+10:00"))` (WEM `+08:00`), partitions cut in market time; `LakeWriter` refuses any other timestamp (`store.naive_timestamp`). As text: RFC 3339 with an offset, UTC for the tool's clock; a time read without one is market time (`crates/nemlake-core/src/timetext.rs`).
 - Fixtures under `testdata/` are AEMO public excerpts of at most 20 data rows each; attribution in `testdata/LICENCE.md`. Never commit a whole archive file.
 - Network tests run only with `NEMLAKE_NET_TESTS=1` (`just net-test`). Unit tests use a temp home.
 - Commits follow Conventional Commits (`feat:`, `fix:`, `chore:` …) with an imperative subject and no tool attribution.
