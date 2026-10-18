@@ -655,6 +655,7 @@ SETTLEMENTDATE DATE "yyyy/mm/dd hh24:mi:ss", DUID CHAR(20), SCADAVALUE FLOAT EXT
             fetched_at: "2026-10-05T00:00:00Z".into(),
             etag: None,
             last_modified: None,
+            listed_modified: None,
             tool: "test".into(),
         };
         Archive::write_sidecar(&path, &sidecar).unwrap();

@@ -278,7 +278,7 @@ impl MmsdmArchive {
                         table: named.then(|| table.clone()),
                         period: Some(ym),
                         size: e.size,
-                        modified: e.modified,
+                        modified: e.modified.and_then(|m| m.rfc3339()),
                     },
                 ));
             }
@@ -308,7 +308,7 @@ impl MmsdmArchive {
                     table: None,
                     period: Some(ym),
                     size: e.size,
-                    modified: e.modified,
+                    modified: e.modified.and_then(|m| m.rfc3339()),
                 });
             }
         }

@@ -12,6 +12,8 @@
 
 use async_trait::async_trait;
 use nemlake_core::YearMonth;
+use nemlake_core::nemtime::WEM_OFFSET_SECS;
+use nemlake_core::timetext;
 use serde::Deserialize;
 use url::Url;
 
@@ -35,7 +37,9 @@ pub struct ManifestEntry {
     /// forms are accepted.
     #[serde(deserialize_with = "int_or_str")]
     pub month: u8,
-    /// When AEMO generated it.
+    /// When AEMO generated it, RFC 3339. AEMO writes it as `Thu Nov 02
+    /// 2023 11:35:00Z`; [`parse_manifest`] rewrites it with its offset, and
+    /// drops a value that is not a time.
     #[serde(default)]
     pub generated_at: Option<String>,
 }
@@ -64,11 +68,20 @@ where
 
 /// Parses a manifest's YAML.
 pub fn parse_manifest(url: &str, text: &str) -> Result<Vec<ManifestEntry>, FetchError> {
-    serde_yaml_ng::from_str(text).map_err(|e| FetchError::Parse {
-        url: url.to_owned(),
-        what: "WEM manifest YAML",
-        message: e.to_string(),
-    })
+    let mut entries: Vec<ManifestEntry> =
+        serde_yaml_ng::from_str(text).map_err(|e| FetchError::Parse {
+            url: url.to_owned(),
+            what: "WEM manifest YAML",
+            message: e.to_string(),
+        })?;
+    for e in &mut entries {
+        // A time AEMO wrote without an offset would be WEM time.
+        e.generated_at = e
+            .generated_at
+            .as_deref()
+            .and_then(|s| timetext::normalise(s, WEM_OFFSET_SECS));
+    }
+    Ok(entries)
 }
 
 /// WEM datasets.
@@ -159,7 +172,27 @@ mod tests {
         assert_eq!(entries[0].year, 2023);
         assert_eq!(entries[0].month, 10);
         assert!(entries[0].url.ends_with("facility-scada-2023-10.csv"));
-        assert!(entries[0].generated_at.as_deref().unwrap().contains("2023"));
+        assert_eq!(
+            entries[0].generated_at.as_deref(),
+            Some("2023-11-02T11:35:00Z"),
+            "AEMO's `Thu Nov 02 2023 11:35:00Z`, as RFC 3339"
+        );
+        assert!(
+            entries
+                .iter()
+                .all(|e| e.generated_at.as_deref().is_none_or(timetext::is_rfc3339))
+        );
+        let odd = parse_manifest(
+            "m",
+            "- {url: u, year: 2023, month: 1, generatedAt: whenever}\n- {url: v, year: 2023, month: 2, generatedAt: 2023-02-01 09:00:00}\n",
+        )
+        .unwrap();
+        assert_eq!(odd[0].generated_at, None, "not a time: dropped");
+        assert_eq!(
+            odd[1].generated_at.as_deref(),
+            Some("2023-02-01T09:00:00+08:00"),
+            "no offset: WEM time"
+        );
         assert!(parse_manifest("m", "- nope: 1").is_err());
         assert!(WemDatafiles::new("::", vec![]).is_err());
     }

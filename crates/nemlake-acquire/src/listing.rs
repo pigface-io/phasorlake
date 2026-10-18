@@ -7,6 +7,8 @@
 //! ```
 
 use memchr::memmem;
+use nemlake_core::nemtime::NEM_OFFSET_SECS;
+use nemlake_core::timetext::{Stamp, parse_iis_listing};
 
 /// One link in a listing.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -17,10 +19,60 @@ pub struct Entry {
     pub name: String,
     /// Size in bytes when the line showed one.
     pub size: Option<u64>,
-    /// The date and time text before the size, trimmed.
-    pub modified: Option<String>,
+    /// The modified time the line showed, when it showed one.
+    pub modified: Option<ListedTime>,
     /// Whether the line marked it `<dir>`.
     pub is_dir: bool,
+}
+
+/// The time text of a listing line, kept in place (no allocation per
+/// line: the parser is measured) and read as an instant on demand. nemweb
+/// lists in market time (AEST), so the text is read in `+10:00`. The text
+/// itself is not reachable: a time leaves here only with its offset.
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub struct ListedTime {
+    len: u8,
+    bytes: [u8; Self::MAX],
+}
+
+impl ListedTime {
+    /// Longer than IIS's longest form, `Wednesday, September 30, 2026 10:45 AM`.
+    const MAX: usize = 40;
+
+    fn new(text: &[u8]) -> Option<Self> {
+        if text.is_empty() || text.len() > Self::MAX {
+            return None;
+        }
+        let mut bytes = [0u8; Self::MAX];
+        bytes[..text.len()].copy_from_slice(text);
+        Some(Self {
+            len: text.len() as u8,
+            bytes,
+        })
+    }
+
+    /// The instant, in `+10:00`; `None` when the text is not in a form IIS
+    /// writes a time in.
+    #[must_use]
+    pub fn stamp(&self) -> Option<Stamp> {
+        let text = std::str::from_utf8(&self.bytes[..usize::from(self.len)]).ok()?;
+        parse_iis_listing(text, NEM_OFFSET_SECS)
+    }
+
+    /// The instant as RFC 3339 in `+10:00`.
+    #[must_use]
+    pub fn rfc3339(&self) -> Option<String> {
+        self.stamp().map(|s| s.rfc3339())
+    }
+}
+
+impl std::fmt::Debug for ListedTime {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self.stamp() {
+            Some(s) => write!(f, "ListedTime({s})"),
+            None => f.write_str("ListedTime(not a time)"),
+        }
+    }
 }
 
 /// Bytes as text, borrowing when they are UTF-8 (they always are on nemweb).
@@ -128,7 +180,7 @@ pub fn parse(html: &[u8]) -> Vec<Entry> {
                     href: text(&html[href_start..href_start + href_len]).into_owned(),
                     name: text(name).into_owned(),
                     size,
-                    modified: (!modified.is_empty()).then(|| text(modified).into_owned()),
+                    modified: ListedTime::new(modified),
                     is_dir: dir_mark.is_some(),
                 });
             }
@@ -166,7 +218,17 @@ mod tests {
                 .href
                 .ends_with("/DATA/PUBLIC_DVD_DISPATCHPRICE_202401010000.zip")
         );
-        assert!(price.modified.as_deref().unwrap().contains("2024"));
+        assert_eq!(
+            price.modified.unwrap().rfc3339().as_deref(),
+            Some("2024-02-13T09:10:00+10:00"),
+            "the listed time, in market time"
+        );
+        assert!(
+            entries
+                .iter()
+                .all(|e| e.modified.is_some_and(|m| m.stamp().is_some())),
+            "every line of the fixture shows a time"
+        );
         assert!(!price.is_dir);
         assert!(
             entries.iter().all(|e| !e.name.starts_with('[')),
@@ -176,17 +238,35 @@ mod tests {
 
     #[test]
     fn parses_dirs_and_odd_markup() {
-        let html = br#"<pre><A HREF="/a/">[To Parent Directory]</A><br><br> 2/13/2024  8:27 AM        &lt;dir&gt; <A HREF="/a/sub/">sub</A><br> 2/13/2024  8:28 AM          123 <a href="/a/f.zip">f.zip</a><br>junk <A HREF="/a/g.csv">g.csv</A></pre>"#;
+        let html = br#"<pre><A HREF="/a/">[To Parent Directory]</A><br><br> 2/13/2024  8:27 AM        &lt;dir&gt; <A HREF="/a/sub/">sub</A><br> 2/13/2024  8:28 AM          123 <a href="/a/f.zip">f.zip</a><br>junk <A HREF="/a/g.csv">g.csv</A><br> Monday, October 12, 2026 10:45 AM          7 <A HREF="/a/h.zip">h.zip</A><br> soon          8 <A HREF="/a/i.zip">i.zip</A></pre>"#;
         let e = parse(html);
-        assert_eq!(e.len(), 3);
+        assert_eq!(e.len(), 5);
         assert!(e[0].is_dir);
         assert_eq!(e[0].name, "sub");
         assert_eq!(e[0].size, None);
-        assert_eq!(e[0].modified.as_deref(), Some("2/13/2024  8:27 AM"));
+        assert_eq!(
+            e[0].modified.and_then(|m| m.rfc3339()).as_deref(),
+            Some("2024-02-13T08:27:00+10:00")
+        );
+        assert_eq!(
+            format!("{:?}", e[0].modified.unwrap()),
+            "ListedTime(2024-02-13T08:27:00+10:00)"
+        );
         assert_eq!(e[1].size, Some(123));
         assert_eq!(e[1].name, "f.zip");
         assert_eq!(e[2].size, None);
         assert_eq!(e[2].modified, None);
+        // Both forms IIS writes a time in; text that is neither is no time,
+        // and nothing of it is readable.
+        assert_eq!(
+            e[3].modified.and_then(|m| m.rfc3339()).as_deref(),
+            Some("2026-10-12T10:45:00+10:00")
+        );
+        let soon = e[4].modified.unwrap();
+        assert_eq!((e[4].size, soon.stamp()), (Some(8), None));
+        assert_eq!(format!("{soon:?}"), "ListedTime(not a time)");
+        assert!(ListedTime::new(&[b'x'; 41]).is_none());
+        assert!(ListedTime::new(b"").is_none());
         assert!(parse(b"<html>nothing</html>").is_empty());
         assert!(parse(b"<A HREF=\"unterminated").is_empty());
     }

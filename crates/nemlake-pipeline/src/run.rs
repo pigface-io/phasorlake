@@ -101,7 +101,7 @@ fn archived(
                     table,
                     period: Some(month),
                     size: Some(sidecar.size),
-                    modified: None,
+                    modified: sidecar.listed_modified,
                 },
                 path,
                 sha256: sidecar.sha256,

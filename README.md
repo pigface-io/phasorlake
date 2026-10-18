@@ -155,8 +155,10 @@ path its URL spells out:
 
 The `.json` beside it records where the file came from: the URL, when the
 download completed, the server's `ETag` and `Last-Modified` (when AEMO
-published it), the size and sha256 of the bytes, and the nemlake version
-that fetched it.
+published it), the time the directory listing showed, the size and sha256
+of the bytes, and the nemlake version that fetched it. Every time in it is
+RFC 3339 with its offset: UTC for the clock and the server's headers,
+`+10:00` for what nemweb lists in market time.
 
 A file is downloaded once. Nothing in nemlake replaces or deletes an
 archived file; to fetch one again, delete it and its record. Everything in
