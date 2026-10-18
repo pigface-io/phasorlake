@@ -12,7 +12,7 @@ use anyhow::Result;
 const ENTRY: &str = "CLAUDE.md";
 const INDEX: &str = "llm/index.md";
 const ENTRY_BUDGET: (usize, usize) = (20, 1024);
-const INDEX_BUDGET: (usize, usize) = (90, 10 * 1024);
+const INDEX_BUDGET: (usize, usize) = (90, 9 * 1024);
 
 /// Code spans that look like paths: no spaces, a slash or an extension.
 pub fn path_spans(markdown: &str) -> BTreeSet<String> {
