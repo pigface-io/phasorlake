@@ -89,4 +89,49 @@ mod tests {
         assert_eq!(s.metadata()["nemlake:table"], "DISPATCH_UNIT_SCADA");
         assert_eq!(s.metadata()["nemlake:market"], "nem");
     }
+
+    /// Every timestamp of every schema the registry can produce carries
+    /// its market's offset, in nanoseconds. A timestamp without a zone is
+    /// a defect, and so is any other time type Arrow has.
+    #[test]
+    fn every_timestamp_of_every_table_carries_its_market_offset() {
+        let reg = crate::Registry::load_embedded();
+        assert_eq!(reg.market(Market::Nem).unwrap().arrow_tz(), "+10:00");
+        assert_eq!(reg.market(Market::Wem).unwrap().arrow_tz(), "+08:00");
+        let mut timestamps = 0usize;
+        let mut tables = 0usize;
+        for (id, table) in reg.tables() {
+            tables += 1;
+            let tz = reg.market_of(id).arrow_tz();
+            for f in reg.lake_schema(id).fields() {
+                let at = format!("{}.{} is {}", table.name, f.name(), f.data_type());
+                match f.data_type() {
+                    DataType::Timestamp(unit, zone) => {
+                        assert_eq!(*unit, arrow_schema::TimeUnit::Nanosecond, "{at}");
+                        assert_eq!(zone.as_deref(), Some(tz.as_str()), "{at}");
+                        timestamps += 1;
+                    }
+                    DataType::Date64
+                    | DataType::Time32(_)
+                    | DataType::Time64(_)
+                    | DataType::Duration(_)
+                    | DataType::Interval(_) => panic!("{at}: not a lake type"),
+                    _ => {}
+                }
+            }
+        }
+        assert!(
+            tables > 100 && timestamps > tables,
+            "{tables} tables, {timestamps} timestamps"
+        );
+        // The mapping itself, for every market the registry knows.
+        for m in [Market::Nem, Market::Wem] {
+            let def = reg.market(m).unwrap();
+            let DataType::Timestamp(unit, Some(zone)) = LakeType::TimestampNs.arrow(def) else {
+                panic!("{m:?}: a timestamp without a zone");
+            };
+            assert_eq!(unit, arrow_schema::TimeUnit::Nanosecond);
+            assert_eq!(zone.as_ref(), def.arrow_tz());
+        }
+    }
 }
