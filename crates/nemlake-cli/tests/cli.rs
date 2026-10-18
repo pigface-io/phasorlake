@@ -836,8 +836,9 @@ fn the_archive_lists_and_verifies_every_download() {
     assert!(
         out.contains("https://h/DATA/a.zip")
             && out.contains("2026-10-03T10:00:05Z")
+            && out.contains("Tue, 13 Feb 2024")
             && out.contains("2024-02-13T08:27:00Z"),
-        "the older record's HTTP date is shown as RFC 3339: {out}"
+        "the record's HTTP date as written, and the instant derived from it: {out}"
     );
     let out = cli.ok(&["--json", "archive", "ls"]);
     assert_eq!(out.lines().count(), 1, "{out}");

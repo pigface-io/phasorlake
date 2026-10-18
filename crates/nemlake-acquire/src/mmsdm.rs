@@ -193,6 +193,7 @@ impl MmsdmArchive {
                     period: Some(ym),
                     size: None,
                     modified: None,
+                    modified_at: None,
                 }),
                 support: Vec::new(),
             }),
@@ -278,7 +279,8 @@ impl MmsdmArchive {
                         table: named.then(|| table.clone()),
                         period: Some(ym),
                         size: e.size,
-                        modified: e.modified.and_then(|m| m.rfc3339()),
+                        modified: e.modified.map(|m| m.text().to_owned()),
+                        modified_at: e.modified.and_then(|m| m.stamp()),
                     },
                 ));
             }
@@ -308,7 +310,8 @@ impl MmsdmArchive {
                     table: None,
                     period: Some(ym),
                     size: e.size,
-                    modified: e.modified.and_then(|m| m.rfc3339()),
+                    modified: e.modified.map(|m| m.text().to_owned()),
+                    modified_at: e.modified.and_then(|m| m.stamp()),
                 });
             }
         }

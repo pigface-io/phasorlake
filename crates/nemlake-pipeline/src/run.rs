@@ -36,6 +36,7 @@ pub fn local_remote(path: &std::path::Path) -> Option<RemoteFile> {
         period,
         size: std::fs::metadata(&abs).ok().map(|m| m.len()),
         modified: None,
+        modified_at: None,
     })
 }
 
@@ -51,6 +52,7 @@ pub fn local_file(remote: RemoteFile, path: &std::path::Path) -> std::io::Result
         cached: true,
         etag: None,
         last_modified: None,
+        last_modified_at: None,
     })
 }
 
@@ -102,6 +104,7 @@ fn archived(
                     period: Some(month),
                     size: Some(sidecar.size),
                     modified: sidecar.listed_modified,
+                    modified_at: sidecar.listed_modified_at,
                 },
                 path,
                 sha256: sidecar.sha256,
@@ -109,6 +112,7 @@ fn archived(
                 cached: true,
                 etag: sidecar.etag,
                 last_modified: sidecar.last_modified,
+                last_modified_at: sidecar.last_modified_at,
             });
         }
     }
@@ -348,6 +352,10 @@ pub async fn run(
                         (Ok(l), Some(known)) => Fetched::Ok(LocalFile {
                             etag: known.etag,
                             last_modified: known.last_modified,
+                            last_modified_at: known
+                                .last_modified_at
+                                .as_deref()
+                                .and_then(nemlake_core::timetext::parse_rfc3339),
                             ..l
                         }),
                         (Ok(l), None) => Fetched::Ok(l),
@@ -628,6 +636,7 @@ async fn commit(
             size: local.size,
             etag: local.etag.clone(),
             last_modified: local.last_modified.clone(),
+            last_modified_at: local.last_modified_at.map(|s| s.rfc3339()),
         })
         .await
     {

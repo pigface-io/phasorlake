@@ -156,9 +156,24 @@ path its URL spells out:
 The `.json` beside it records where the file came from: the URL, when the
 download completed, the server's `ETag` and `Last-Modified` (when AEMO
 published it), the time the directory listing showed, the size and sha256
-of the bytes, and the nemlake version that fetched it. Every time in it is
-RFC 3339 with its offset: UTC for the clock and the server's headers,
-`+10:00` for what nemweb lists in market time.
+of the bytes, and the nemlake version that fetched it.
+
+Times in it, and in every record nemlake writes: every time field is RFC
+3339 with an offset, or stands beside one that is. `fetched_at` is when
+the download completed, UTC. `last_modified` and `listed_modified` are
+kept as the server and the listing wrote them; `last_modified_at` and
+`listed_modified_at` beside them are the same times with their offset: the
+HTTP date in UTC (`Z`), the listing's time in AEST (`+10:00`: nemweb lists
+in Australian Eastern Standard Time, which has no daylight saving). A
+sidecar written before the `_at` fields were kept lacks them;
+`Archive::read_sidecar` derives them from the text beside each
+(`Sidecar::derived`), and the sidecar on disk is left as it is. The
+convention holds everywhere a time comes in as text: the field keeps the
+text as it came, and its twin `{field}_at` holds the instant (`modified`
+and `modified_at` in listing output, `last_modified_at` in the manifest's
+`files`); a field whose name already ends in `_at` gets `{field}_utc`,
+the instant in UTC (the WEM manifest's `generated_at_utc`). A time
+written without an offset is a defect.
 
 A file is downloaded once. Nothing in nemlake replaces or deletes an
 archived file; to fetch one again, delete it and its record. Everything in

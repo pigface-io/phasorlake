@@ -1067,6 +1067,7 @@ fn a_recorded_source_becomes_a_file_to_read() {
         size: 1,
         etag: None,
         last_modified: None,
+        last_modified_at: None,
     };
     let archived = nemlake_pipeline::recorded_remote(&rec(
         "nem-mmsdm",
@@ -1358,6 +1359,7 @@ async fn fetch_only_downloads_and_ingest_reads_the_archived_month() {
                     period: Some(ym),
                     size: None,
                     modified: None,
+                    modified_at: None,
                 }])),
                 query: query(&[]),
             },
@@ -1427,6 +1429,7 @@ async fn remote_source_downloads_then_serves_from_cache_and_reports_fetch_failur
         period: Some(ym),
         size: None,
         modified: None,
+        modified_at: None,
     };
     let source = Arc::new(OneFile(vec![
         remote("PUBLIC_DVD_TRADINGPRICE_202401010000.zip", "TRADINGPRICE"),

@@ -11,7 +11,7 @@ use std::io::Read;
 use std::path::{Path, PathBuf};
 
 use nemlake_core::nemtime::NEM_OFFSET_SECS;
-use nemlake_core::timetext;
+use nemlake_core::timetext::{self, Stamp};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 
@@ -31,32 +31,54 @@ pub struct Sidecar {
     /// The server's `ETag`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub etag: Option<String>,
-    /// The server's `Last-Modified`: when AEMO published the file, RFC 3339
-    /// UTC. An older record holds the HTTP date itself; it is read as one.
+    /// The server's `Last-Modified`: when AEMO published the file, as the
+    /// server wrote it (an HTTP date).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub last_modified: Option<String>,
-    /// The modified time the directory listing showed, RFC 3339 in market
-    /// time (nemweb lists in AEST). An older mirror record holds the
-    /// listing's text without an offset; it is read as `+10:00`.
+    /// `last_modified` as an instant (UTC).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub last_modified_at: Option<Stamp>,
+    /// The modified time the directory listing showed, as the listing
+    /// wrote it.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub listed_modified: Option<String>,
+    /// `listed_modified` as an instant (AEST, `+10:00`: nemweb lists in
+    /// market time).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub listed_modified_at: Option<Stamp>,
     /// The program and version that downloaded it, e.g. `nemlake/0.1.0`.
     #[serde(default)]
     pub tool: String,
 }
 
 impl Sidecar {
-    /// Every time in the record as RFC 3339 with its offset, whichever
-    /// form it was written in. A time that cannot be read is dropped; a
-    /// `fetched_at` that cannot be read is the error returned.
-    fn with_times_normalised(mut self, path: &Path) -> Result<Self, FetchError> {
-        let read = |s: &str| timetext::normalise(s, NEM_OFFSET_SECS);
-        self.fetched_at = read(&self.fetched_at).ok_or_else(|| FetchError::SidecarCorrupt {
-            path: path.display().to_string(),
-            message: format!("fetched_at {:?} is not a time", self.fetched_at),
-        })?;
-        self.last_modified = self.last_modified.as_deref().and_then(read);
-        self.listed_modified = self.listed_modified.as_deref().and_then(read);
+    /// The sidecar with its `_at` instants derived from the text fields
+    /// beside them, where a record written before they were kept (by an
+    /// older nemlake or mirror) lacks them. The text fields stay as
+    /// written; a text that is not a time has no instant. A `fetched_at`
+    /// that is not a time with an offset is the error returned.
+    pub fn derived(mut self, path: &Path) -> Result<Self, FetchError> {
+        if !timetext::is_rfc3339(&self.fetched_at) {
+            return Err(FetchError::SidecarCorrupt {
+                path: path.display().to_string(),
+                message: format!(
+                    "fetched_at {:?} is not RFC 3339 with an offset",
+                    self.fetched_at
+                ),
+            });
+        }
+        if self.last_modified_at.is_none() {
+            self.last_modified_at = self
+                .last_modified
+                .as_deref()
+                .and_then(|s| timetext::parse(s, NEM_OFFSET_SECS));
+        }
+        if self.listed_modified_at.is_none() {
+            self.listed_modified_at = self
+                .listed_modified
+                .as_deref()
+                .and_then(|s| timetext::parse(s, NEM_OFFSET_SECS));
+        }
         Ok(self)
     }
 }
@@ -226,7 +248,7 @@ impl Archive {
                 path: sc.display().to_string(),
                 message: e.to_string(),
             })?;
-        sidecar.with_times_normalised(&sc).map(Some)
+        sidecar.derived(&sc).map(Some)
     }
 
     /// The archived file of a URL, if it and its sidecar are there and
@@ -348,17 +370,22 @@ mod tests {
             sha256: sha,
             fetched_at: "2026-10-05T00:00:00Z".into(),
             etag: None,
-            last_modified: Some("2024-02-13T08:27:00Z".into()),
-            listed_modified: Some("2024-02-13T18:27:00+10:00".into()),
+            last_modified: Some("Tue, 13 Feb 2024 08:27:00 GMT".into()),
+            last_modified_at: timetext::parse_rfc3339("2024-02-13T08:27:00Z"),
+            listed_modified: Some("2/13/2024  6:27 PM".into()),
+            listed_modified_at: timetext::parse_rfc3339("2024-02-13T18:27:00+10:00"),
             tool: "nemlake/test".into(),
         };
         Archive::write_sidecar(&path, &sidecar).unwrap();
         let found = a.lookup(url).unwrap().unwrap();
         assert_eq!(found.sidecar, sidecar);
-        // What the record holds as text parses with its offset.
+        // The text fields are written as they came; every `_at` field and
+        // `fetched_at` parse with their offset.
         let text = std::fs::read_to_string(Archive::sidecar_path(&path)).unwrap();
         let json: serde_json::Value = serde_json::from_str(&text).unwrap();
-        for key in ["fetched_at", "last_modified", "listed_modified"] {
+        assert_eq!(json["last_modified"], "Tue, 13 Feb 2024 08:27:00 GMT");
+        assert_eq!(json["listed_modified"], "2/13/2024  6:27 PM");
+        for key in ["fetched_at", "last_modified_at", "listed_modified_at"] {
             let s = json[key].as_str().unwrap();
             assert!(timetext::is_rfc3339(s), "{key}: {s}");
         }
@@ -389,13 +416,14 @@ mod tests {
     }
 
     #[test]
-    fn times_of_older_records_are_read_with_their_offset() {
+    fn older_records_gain_their_instants_on_read() {
         let dir = tempfile::tempdir().unwrap();
         let path = dir.path().join("f.zip");
         std::fs::write(&path, b"abc").unwrap();
-        // The mirror's record before it wrote RFC 3339: the HTTP date as
-        // the server sent it, and the listing's text in market time with
-        // no offset.
+        // The mirror's record before it kept the `_at` fields: the HTTP
+        // date as the server sent it, and the listing's text in market
+        // time with no offset. Both stay as written; the instants are
+        // derived beside them.
         std::fs::write(
             Archive::sidecar_path(&path),
             br#"{"url":"https://h/d/f.zip","size":3,"sha256":"x","crc32":1,"fetched_at":"2026-10-18T00:03:51Z","last_modified":"Mon, 18 May 2026 07:27:50 GMT","listed_size":3,"listed_modified":"Monday, May 18, 2026 05:27 PM","tool":"nemweb-mirror/0.1.0"}"#,
@@ -403,31 +431,53 @@ mod tests {
         .unwrap();
         let sc = Archive::read_sidecar(&path).unwrap().unwrap();
         assert_eq!(sc.fetched_at, "2026-10-18T00:03:51Z");
-        assert_eq!(sc.last_modified.as_deref(), Some("2026-05-18T07:27:50Z"));
+        assert_eq!(
+            sc.last_modified.as_deref(),
+            Some("Mon, 18 May 2026 07:27:50 GMT")
+        );
+        assert_eq!(
+            sc.last_modified_at.map(|s| s.rfc3339()).as_deref(),
+            Some("2026-05-18T07:27:50Z")
+        );
         assert_eq!(
             sc.listed_modified.as_deref(),
+            Some("Monday, May 18, 2026 05:27 PM")
+        );
+        assert_eq!(
+            sc.listed_modified_at.map(|s| s.rfc3339()).as_deref(),
             Some("2026-05-18T17:27:00+10:00")
         );
-        // The mirror's record once it writes RFC 3339 reads the same.
+        // The mirror's record with the `_at` fields reads the same, and
+        // what it wrote there is kept over what the text would give.
         std::fs::write(
             Archive::sidecar_path(&path),
-            br#"{"url":"https://h/d/f.zip","size":3,"sha256":"x","fetched_at":"2026-10-18T00:03:51Z","last_modified":"2026-05-18T07:27:50Z","listed_modified":"2026-05-18T17:27:00+10:00","tool":"nemweb-mirror/0.1.0"}"#,
+            br#"{"url":"https://h/d/f.zip","size":3,"sha256":"x","crc32":1,"fetched_at":"2026-10-18T00:03:51Z","last_modified":"Mon, 18 May 2026 07:27:50 GMT","last_modified_at":"2026-05-18T07:27:50Z","listed_size":3,"listed_modified":"Monday, May 18, 2026 05:27 PM","listed_modified_at":"2026-05-18T17:27:00+10:00","tool":"nemweb-mirror/0.1.0"}"#,
         )
         .unwrap();
         assert_eq!(Archive::read_sidecar(&path).unwrap().unwrap(), sc);
-        // A time that is not one is dropped; a zip entry's naive time is
-        // market time; a record whose fetched_at is not a time is corrupt.
+        // A text that is not a time has no instant; a zip entry's naive
+        // time is market time; an `_at` without an offset is corrupt, and
+        // so is a fetched_at that is not a time.
         std::fs::write(
             Archive::sidecar_path(&path),
             br#"{"url":"u","size":3,"sha256":"x","fetched_at":"2026-10-18T00:03:51Z","last_modified":"unknown","listed_modified":"2017-01-12 12:24:16"}"#,
         )
         .unwrap();
         let sc = Archive::read_sidecar(&path).unwrap().unwrap();
-        assert_eq!(sc.last_modified, None);
+        assert_eq!(sc.last_modified.as_deref(), Some("unknown"));
+        assert_eq!(sc.last_modified_at, None);
         assert_eq!(
-            sc.listed_modified.as_deref(),
+            sc.listed_modified_at.map(|s| s.rfc3339()).as_deref(),
             Some("2017-01-12T12:24:16+10:00")
         );
+        std::fs::write(
+            Archive::sidecar_path(&path),
+            br#"{"url":"u","size":3,"sha256":"x","fetched_at":"2026-10-18T00:03:51Z","last_modified_at":"2026-05-18T07:27:50"}"#,
+        )
+        .unwrap();
+        let err = Archive::read_sidecar(&path).unwrap_err();
+        assert_eq!(err.diagnostic().code, "cache.sidecar_corrupt");
+        assert!(err.to_string().contains("offset"), "{err}");
         std::fs::write(
             Archive::sidecar_path(&path),
             br#"{"url":"u","size":3,"sha256":"x","fetched_at":"t"}"#,

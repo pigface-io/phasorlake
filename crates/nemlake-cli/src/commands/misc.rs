@@ -26,13 +26,20 @@ pub fn archive(ctx: &Context, cmd: &ArchiveCmd) -> Result<i32> {
                             format!("{:.1} MB", e.sidecar.size as f64 / 1e6),
                             e.sidecar.fetched_at.clone(),
                             e.sidecar.last_modified.clone().unwrap_or_default(),
+                            e.sidecar
+                                .last_modified_at
+                                .map(|s| s.rfc3339())
+                                .unwrap_or_default(),
                             e.sidecar.url.clone(),
                         ]
                     })
                     .collect();
                 print!(
                     "{}",
-                    render::table(&["size", "fetched", "published", "url"], &rows)
+                    render::table(
+                        &["size", "fetched", "published", "published_at", "url"],
+                        &rows,
+                    )
                 );
                 println!(
                     "{} file(s), {:.1} MB, under {}",
@@ -100,11 +107,15 @@ pub async fn wem(ctx: &Context, cmd: &WemCmd) -> Result<i32> {
                         vec![
                             f.period.map(|p| p.to_string()).unwrap_or_default(),
                             f.modified.clone().unwrap_or_default(),
+                            f.modified_at.map(|s| s.rfc3339()).unwrap_or_default(),
                             f.url.to_string(),
                         ]
                     })
                     .collect();
-                print!("{}", render::table(&["period", "generated", "url"], &rows));
+                print!(
+                    "{}",
+                    render::table(&["period", "generated", "generated_at", "url"], &rows)
+                );
                 println!(
                     "{} file(s); downloading WEM data is not implemented yet",
                     files.len()

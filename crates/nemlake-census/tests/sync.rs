@@ -34,7 +34,9 @@ fn archive_ctl(archive: &Archive, month: &str, name: &str, bytes: &[u8]) {
             fetched_at: "2026-10-06T00:00:00Z".into(),
             etag: None,
             last_modified: None,
+            last_modified_at: None,
             listed_modified: None,
+            listed_modified_at: None,
             tool: "test".into(),
         },
     )

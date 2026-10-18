@@ -36,6 +36,10 @@ const MIGRATIONS: &[(&str, &str)] = &[
         "0005_drop_schemas_seen",
         include_str!("migrations/0005_drop_schemas_seen.sql"),
     ),
+    (
+        "0006_last_modified_at",
+        include_str!("migrations/0006_last_modified_at.sql"),
+    ),
 ];
 
 /// A row of `files`.
@@ -53,8 +57,11 @@ pub struct FileRecord {
     pub size: u64,
     /// ETag from the server.
     pub etag: Option<String>,
-    /// Last-Modified from the server, RFC 3339 UTC.
+    /// Last-Modified from the server, as sent (an HTTP date).
     pub last_modified: Option<String>,
+    /// `last_modified` as an instant, RFC 3339 UTC.
+    #[serde(default)]
+    pub last_modified_at: Option<String>,
 }
 
 /// How an ingest ended.
@@ -367,11 +374,11 @@ impl Manifest {
     /// Records (or updates) a fetched file; returns its id.
     pub fn record_file(&mut self, f: &FileRecord) -> Result<i64, ManifestError> {
         let r = self.conn.execute(
-            "INSERT INTO files (source, url, cache_path, sha256, size, etag, last_modified, fetched_at)
-             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)
+            "INSERT INTO files (source, url, cache_path, sha256, size, etag, last_modified, last_modified_at, fetched_at)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)
              ON CONFLICT(url) DO UPDATE SET cache_path = excluded.cache_path, sha256 = excluded.sha256, size = excluded.size,
-                 etag = excluded.etag, last_modified = excluded.last_modified, fetched_at = excluded.fetched_at",
-            params![f.source, f.url, f.cache_path, f.sha256, f.size as i64, f.etag, f.last_modified, now()],
+                 etag = excluded.etag, last_modified = excluded.last_modified, last_modified_at = excluded.last_modified_at, fetched_at = excluded.fetched_at",
+            params![f.source, f.url, f.cache_path, f.sha256, f.size as i64, f.etag, f.last_modified, f.last_modified_at, now()],
         );
         self.sql(r)?;
         let r = self
@@ -386,7 +393,7 @@ impl Manifest {
     pub fn file_by_url(&self, url: &str) -> Result<Option<(i64, FileRecord)>, ManifestError> {
         let r = self
             .conn
-            .query_row("SELECT id, source, url, cache_path, sha256, size, etag, last_modified FROM files WHERE url = ?1", [url], |r| {
+            .query_row("SELECT id, source, url, cache_path, sha256, size, etag, last_modified, last_modified_at FROM files WHERE url = ?1", [url], |r| {
                 Ok((
                     r.get::<_, i64>(0)?,
                     FileRecord {
@@ -397,6 +404,7 @@ impl Manifest {
                         size: r.get::<_, i64>(5)? as u64,
                         etag: r.get(6)?,
                         last_modified: r.get(7)?,
+                        last_modified_at: r.get(8)?,
                     },
                 ))
             })
@@ -408,7 +416,7 @@ impl Manifest {
     /// seen.
     pub fn list_files(&self) -> Result<Vec<FileRecord>, ManifestError> {
         let mut stmt = self.sql(self.conn.prepare(
-            "SELECT source, url, cache_path, sha256, size, etag, last_modified FROM files ORDER BY id",
+            "SELECT source, url, cache_path, sha256, size, etag, last_modified, last_modified_at FROM files ORDER BY id",
         ))?;
         self.sql(
             stmt.query_map([], |r| {
@@ -420,6 +428,7 @@ impl Manifest {
                     size: r.get::<_, i64>(4)? as u64,
                     etag: r.get(5)?,
                     last_modified: r.get(6)?,
+                    last_modified_at: r.get(7)?,
                 })
             })
             .and_then(Iterator::collect),
@@ -791,6 +800,7 @@ mod tests {
             size: 10,
             etag: Some("e".into()),
             last_modified: None,
+            last_modified_at: None,
         }
     }
 

@@ -2,6 +2,7 @@
 
 use async_trait::async_trait;
 use nemlake_core::YearMonth;
+use nemlake_core::timetext::Stamp;
 use serde::{Deserialize, Serialize};
 use url::Url;
 
@@ -35,8 +36,11 @@ pub struct RemoteFile {
     pub period: Option<YearMonth>,
     /// Size the listing reported.
     pub size: Option<u64>,
-    /// Modified time the listing reported, as text.
+    /// Modified time the listing (or the WEM manifest) reported, as text.
     pub modified: Option<String>,
+    /// `modified` as an instant: `+10:00` for what nemweb lists, UTC for
+    /// a WEM manifest. `None` when the text is not a time.
+    pub modified_at: Option<Stamp>,
 }
 
 impl RemoteFile {
@@ -92,6 +96,7 @@ mod tests {
             period: None,
             size: None,
             modified: None,
+            modified_at: None,
         };
         assert_eq!(r.file_name(), "PUBLIC_DVD_REGION_202401010000.zip");
         assert_eq!(r.stem(), "public_dvd_region_202401010000");

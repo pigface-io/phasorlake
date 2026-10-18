@@ -16,8 +16,7 @@ use futures::StreamExt;
 use futures::stream::BoxStream;
 use nemlake_core::clock::now_utc_rfc3339;
 use nemlake_core::event::Event;
-use nemlake_core::nemtime::NEM_OFFSET_SECS;
-use nemlake_core::timetext;
+use nemlake_core::timetext::{self, Stamp};
 use sha2::{Digest, Sha256};
 use tokio::sync::Mutex;
 
@@ -41,8 +40,10 @@ pub struct LocalFile {
     pub cached: bool,
     /// ETag.
     pub etag: Option<String>,
-    /// The server's `Last-Modified`, RFC 3339 UTC.
+    /// The server's `Last-Modified`, as sent (an HTTP date).
     pub last_modified: Option<String>,
+    /// `last_modified` as an instant (UTC).
+    pub last_modified_at: Option<Stamp>,
 }
 
 /// Knobs.
@@ -167,6 +168,7 @@ impl Fetcher {
                 cached: true,
                 etag: found.sidecar.etag,
                 last_modified: found.sidecar.last_modified,
+                last_modified_at: found.sidecar.last_modified_at,
             });
         }
         self.ensure_online(url)?;
@@ -193,12 +195,14 @@ impl Fetcher {
             sha256: streamed.sha256,
             fetched_at: now_utc_rfc3339(),
             etag: streamed.etag,
-            // The header is an HTTP date in GMT; the record keeps RFC 3339.
-            last_modified: streamed
+            // The header as sent (an HTTP date, GMT), and the instant beside it.
+            last_modified_at: streamed
                 .last_modified
                 .as_deref()
-                .and_then(|h| timetext::normalise(h, NEM_OFFSET_SECS)),
+                .and_then(timetext::parse_http_date),
+            last_modified: streamed.last_modified,
             listed_modified: remote.modified.clone(),
+            listed_modified_at: remote.modified_at,
             tool: format!("nemlake/{}", env!("CARGO_PKG_VERSION")),
         };
         Archive::write_sidecar(&path, &sidecar)?;
@@ -210,6 +214,7 @@ impl Fetcher {
             cached: false,
             etag: sidecar.etag,
             last_modified: sidecar.last_modified,
+            last_modified_at: sidecar.last_modified_at,
         })
     }
 
@@ -447,6 +452,7 @@ mod tests {
             period: Some(YearMonth::new(2024, 1).unwrap()),
             size: None,
             modified: None,
+            modified_at: None,
         }
     }
 
@@ -482,10 +488,16 @@ mod tests {
         assert_eq!(sc.tool, format!("nemlake/{}", env!("CARGO_PKG_VERSION")));
         assert_eq!(
             sc.last_modified.as_deref(),
+            Some("Tue, 13 Feb 2024 08:27:00 GMT"),
+            "the header as sent"
+        );
+        assert_eq!(
+            sc.last_modified_at.map(|s| s.rfc3339()).as_deref(),
             Some("2024-02-13T08:27:00Z"),
-            "the HTTP date `Tue, 13 Feb 2024 08:27:00 GMT`, as RFC 3339"
+            "and the same time as an instant"
         );
         assert_eq!(local.last_modified, sc.last_modified);
+        assert_eq!(local.last_modified_at, sc.last_modified_at);
         assert!(timetext::is_rfc3339(&sc.fetched_at));
         // Once archived, it is never asked for again.
         let again = f.fetch(&remote(url)).await.unwrap();

@@ -25,10 +25,11 @@ pub struct Entry {
     pub is_dir: bool,
 }
 
-/// The time text of a listing line, kept in place (no allocation per
-/// line: the parser is measured) and read as an instant on demand. nemweb
-/// lists in market time (AEST), so the text is read in `+10:00`. The text
-/// itself is not reachable: a time leaves here only with its offset.
+/// The time text of a listing line as IIS wrote it, kept in place (no
+/// allocation per line: the parser is measured) and read as an instant on
+/// demand. nemweb lists in market time (AEST), so the text is read in
+/// `+10:00`. What is recorded keeps the text and gains the instant beside
+/// it.
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub struct ListedTime {
     len: u8,
@@ -51,12 +52,17 @@ impl ListedTime {
         })
     }
 
+    /// The text as the listing wrote it.
+    #[must_use]
+    pub fn text(&self) -> &str {
+        std::str::from_utf8(&self.bytes[..usize::from(self.len)]).unwrap_or("")
+    }
+
     /// The instant, in `+10:00`; `None` when the text is not in a form IIS
     /// writes a time in.
     #[must_use]
     pub fn stamp(&self) -> Option<Stamp> {
-        let text = std::str::from_utf8(&self.bytes[..usize::from(self.len)]).ok()?;
-        parse_iis_listing(text, NEM_OFFSET_SECS)
+        parse_iis_listing(self.text(), NEM_OFFSET_SECS)
     }
 
     /// The instant as RFC 3339 in `+10:00`.
@@ -69,8 +75,8 @@ impl ListedTime {
 impl std::fmt::Debug for ListedTime {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self.stamp() {
-            Some(s) => write!(f, "ListedTime({s})"),
-            None => f.write_str("ListedTime(not a time)"),
+            Some(s) => write!(f, "ListedTime({:?} = {s})", self.text()),
+            None => write!(f, "ListedTime({:?}, not a time)", self.text()),
         }
     }
 }
@@ -248,9 +254,10 @@ mod tests {
             e[0].modified.and_then(|m| m.rfc3339()).as_deref(),
             Some("2024-02-13T08:27:00+10:00")
         );
+        assert_eq!(e[0].modified.unwrap().text(), "2/13/2024  8:27 AM");
         assert_eq!(
             format!("{:?}", e[0].modified.unwrap()),
-            "ListedTime(2024-02-13T08:27:00+10:00)"
+            "ListedTime(\"2/13/2024  8:27 AM\" = 2024-02-13T08:27:00+10:00)"
         );
         assert_eq!(e[1].size, Some(123));
         assert_eq!(e[1].name, "f.zip");
@@ -264,7 +271,7 @@ mod tests {
         );
         let soon = e[4].modified.unwrap();
         assert_eq!((e[4].size, soon.stamp()), (Some(8), None));
-        assert_eq!(format!("{soon:?}"), "ListedTime(not a time)");
+        assert_eq!(format!("{soon:?}"), "ListedTime(\"soon\", not a time)");
         assert!(ListedTime::new(&[b'x'; 41]).is_none());
         assert!(ListedTime::new(b"").is_none());
         assert!(parse(b"<html>nothing</html>").is_empty());

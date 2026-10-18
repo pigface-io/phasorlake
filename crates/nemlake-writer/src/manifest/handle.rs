@@ -254,6 +254,7 @@ mod tests {
                 size: 1,
                 etag: None,
                 last_modified: None,
+                last_modified_at: None,
             })
             .await
             .unwrap();
