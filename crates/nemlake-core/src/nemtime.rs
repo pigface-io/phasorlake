@@ -113,7 +113,7 @@ const fn is_leap(y: i32) -> bool {
 }
 
 #[inline]
-const fn days_in_month(y: i32, m: u32) -> u32 {
+pub(crate) const fn days_in_month(y: i32, m: u32) -> u32 {
     match m {
         1 | 3 | 5 | 7 | 8 | 10 | 12 => 31,
         4 | 6 | 9 | 11 => 30,
@@ -206,6 +206,8 @@ pub fn parse_seconds_nanos(s: &[u8], offset_secs: i32) -> Result<(i64, u32), Tim
 /// "no end" as `9999/12/31` or `2999/12/31`; such a value is clamped to the
 /// nearest end of the range and the flag returned is `true`, so the caller
 /// can report it. Clamping keeps `end > now` true, which a null would not.
+/// The clamped value is an instant like any other in its column, UTC
+/// nanoseconds under the market offset the column's type carries.
 #[inline]
 pub fn parse_nanos(s: &[u8], offset_secs: i32) -> Result<(i64, bool), TimestampError> {
     let (secs, nanos) = parse_seconds_nanos(s, offset_secs)?;

@@ -11,10 +11,7 @@ pub fn now_utc_rfc3339() -> String {
 
 /// A Unix timestamp as `YYYY-MM-DDTHH:MM:SSZ`.
 pub fn rfc3339_from_unix(secs: i64) -> String {
-    crate::nemtime::format_local_seconds(secs, 0)
-        .replace('/', "-")
-        .replacen(' ', "T", 1)
-        + "Z"
+    crate::timetext::format_rfc3339(secs, 0)
 }
 
 /// Seconds since the Unix epoch, now.
@@ -34,6 +31,10 @@ mod tests {
         assert_eq!(rfc3339_from_unix(1_704_067_200), "2024-01-01T00:00:00Z");
         let n = now_utc_rfc3339();
         assert_eq!(n.len(), 20);
+        // What the clock writes says its offset, UTC.
+        let read = crate::timetext::parse_rfc3339(&n).expect("the clock writes RFC 3339");
+        assert_eq!(read.offset_secs, 0);
+        assert!(read.secs_utc > 1_700_000_000);
         assert!(unix_now() > 1_700_000_000);
     }
 }

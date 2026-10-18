@@ -19,6 +19,7 @@ pub mod paths;
 pub mod period;
 pub mod report;
 pub mod shape;
+pub mod timetext;
 
 pub use diag::{Category, Diagnose, Diagnostic, Sample, Severity};
 pub use irow::{Fingerprint, IRow, IRowError, IRowScratch, normalize_name};
