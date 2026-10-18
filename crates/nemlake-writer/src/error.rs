@@ -46,9 +46,24 @@ pub enum StoreError {
     /// An unknown writer id.
     #[error("Writer {0} is not open.")]
     NoSuchWriter(u32),
-    /// The time column of a batch is not a timestamp.
-    #[error("Column {column} is the partition column but holds {observed}, not a timestamp.")]
+    /// The time column of a batch is not a timestamp with a zone.
+    #[error(
+        "Column {column} is the partition column but holds {observed}, not a timestamp with a zone."
+    )]
     PartitionColumnNotTimestamp {
+        /// Column.
+        column: String,
+        /// Its Arrow type.
+        observed: String,
+    },
+    /// A schema offered to the writer has a timestamp without a zone, or
+    /// in a unit other than nanoseconds. The lake holds one kind of
+    /// timestamp: nanoseconds since the epoch in UTC, with the market
+    /// offset in the type.
+    #[error(
+        "Column {column} has type {observed}; the lake writes a timestamp only as nanoseconds with its market offset."
+    )]
+    NaiveTimestamp {
         /// Column.
         column: String,
         /// Its Arrow type.
@@ -85,7 +100,12 @@ impl Diagnose for StoreError {
             Self::PartitionColumnNotTimestamp { column, observed } => {
                 Diagnostic::error("store.partition_column_not_timestamp", Category::Store, msg)
                     .with_column(column.clone())
-                    .expected_observed("a timestamp", observed.clone())
+                    .expected_observed("a timestamp with a zone", observed.clone())
+            }
+            Self::NaiveTimestamp { column, observed } => {
+                Diagnostic::error("store.naive_timestamp", Category::Store, msg)
+                    .with_column(column.clone())
+                    .expected_observed("Timestamp(Nanosecond, Some(offset))", observed.clone())
             }
         }
     }

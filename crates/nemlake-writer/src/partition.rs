@@ -3,23 +3,50 @@
 use arrow_array::cast::AsArray;
 use arrow_array::types::{TimestampNanosecondType, UInt32Type};
 use arrow_array::{Array, PrimitiveArray, RecordBatch};
-use arrow_schema::DataType;
+use arrow_schema::{DataType, Field, Schema, TimeUnit};
 use nemlake_core::nemtime::local_year_month;
 
 use crate::error::StoreError;
 use crate::writer::Partition;
 
-/// Splits `batch` into one batch per month of `time_col` (UTC micros,
-/// partitioned in market time). The common case, every row in one month,
-/// returns the batch itself without copying. Null time values go to
-/// [`Partition::Unknown`].
+/// Whether a type is the one timestamp the lake holds: nanoseconds with a
+/// zone. Anything that is not a timestamp passes.
+fn is_lake_timestamp_or_other(ty: &DataType) -> bool {
+    !matches!(ty, DataType::Timestamp(unit, tz) if *unit != TimeUnit::Nanosecond || tz.is_none())
+}
+
+/// The first field of `schema`, at any depth, whose type is a timestamp
+/// without a zone or in a unit other than nanoseconds: what the lake never
+/// writes.
+pub fn naive_timestamp(schema: &Schema) -> Option<&Field> {
+    fn find(field: &Field) -> Option<&Field> {
+        if !is_lake_timestamp_or_other(field.data_type()) {
+            return Some(field);
+        }
+        match field.data_type() {
+            DataType::List(f)
+            | DataType::LargeList(f)
+            | DataType::FixedSizeList(f, _)
+            | DataType::Map(f, _) => find(f),
+            DataType::Struct(fields) => fields.iter().find_map(|f| find(f)),
+            DataType::Dictionary(_, v) if !is_lake_timestamp_or_other(v) => Some(field),
+            _ => None,
+        }
+    }
+    schema.fields().iter().find_map(|f| find(f))
+}
+
+/// Splits `batch` into one batch per month of `time_col` (UTC nanoseconds
+/// in a column that carries the market offset, partitioned in market
+/// time). The common case, every row in one month, returns the batch
+/// itself without copying. Null time values go to [`Partition::Unknown`].
 pub fn split_by_month(
     batch: &RecordBatch,
     time_col: usize,
     offset_secs: i32,
 ) -> Result<Vec<(Partition, RecordBatch)>, StoreError> {
     let col = batch.column(time_col);
-    let DataType::Timestamp(arrow_schema::TimeUnit::Nanosecond, _) = col.data_type() else {
+    let DataType::Timestamp(TimeUnit::Nanosecond, Some(_)) = col.data_type() else {
         return Err(StoreError::PartitionColumnNotTimestamp {
             column: batch.schema().field(time_col).name().clone(),
             observed: col.data_type().to_string(),
@@ -234,5 +261,75 @@ mod tests {
             split_by_month(&b, 1, NEM_OFFSET_SECS),
             Err(StoreError::PartitionColumnNotTimestamp { .. })
         ));
+    }
+
+    #[test]
+    fn a_timestamp_without_a_zone_is_refused() {
+        let naive_ty = DataType::Timestamp(TimeUnit::Nanosecond, None);
+        let schema = Arc::new(Schema::new(vec![Field::new("T", naive_ty.clone(), true)]));
+        let ts = TimestampNanosecondArray::from(vec![Some(0i64)]);
+        let b = RecordBatch::try_new(schema, vec![Arc::new(ts)]).unwrap();
+        assert!(matches!(
+            split_by_month(&b, 0, NEM_OFFSET_SECS),
+            Err(StoreError::PartitionColumnNotTimestamp { .. })
+        ));
+        // Found at the top, under a nullable struct, in a list, in a
+        // dictionary, and in another unit.
+        let zoned = DataType::Timestamp(TimeUnit::Nanosecond, Some("+10:00".into()));
+        let ok = Schema::new(vec![
+            Field::new("T", zoned.clone(), false),
+            Field::new(
+                "S",
+                DataType::Struct(vec![Field::new("inner", zoned.clone(), true)].into()),
+                true,
+            ),
+            Field::new("D", DataType::Date32, true),
+            Field::new("N", DataType::Float64, true),
+        ]);
+        assert!(naive_timestamp(&ok).is_none());
+        // Each offender, and the name of the field reported: the nested
+        // one when the type is nested.
+        let offenders = [
+            ("top", Field::new("top", naive_ty.clone(), true)),
+            (
+                "inner",
+                Field::new(
+                    "s",
+                    DataType::Struct(vec![Field::new("inner", naive_ty.clone(), true)].into()),
+                    true,
+                ),
+            ),
+            (
+                "item",
+                Field::new(
+                    "l",
+                    DataType::List(Arc::new(Field::new("item", naive_ty.clone(), true))),
+                    true,
+                ),
+            ),
+            (
+                "dict",
+                Field::new(
+                    "dict",
+                    DataType::Dictionary(Box::new(DataType::Int32), Box::new(naive_ty)),
+                    true,
+                ),
+            ),
+            (
+                "micros",
+                Field::new(
+                    "micros",
+                    DataType::Timestamp(TimeUnit::Microsecond, Some("+10:00".into())),
+                    true,
+                ),
+            ),
+        ];
+        for (reported, f) in offenders {
+            let s = Schema::new(vec![Field::new("ok", zoned.clone(), false), f]);
+            assert_eq!(
+                naive_timestamp(&s).map(|f| f.name().as_str()),
+                Some(reported)
+            );
+        }
     }
 }

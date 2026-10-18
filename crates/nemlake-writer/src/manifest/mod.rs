@@ -53,7 +53,7 @@ pub struct FileRecord {
     pub size: u64,
     /// ETag from the server.
     pub etag: Option<String>,
-    /// Last-Modified from the server.
+    /// Last-Modified from the server, RFC 3339 UTC.
     pub last_modified: Option<String>,
 }
 
@@ -206,16 +206,10 @@ pub struct Manifest {
     path: String,
 }
 
+/// Now, RFC 3339 UTC to the second: the form of every time the manifest
+/// holds as text.
 fn now() -> String {
-    // RFC 3339 UTC to the second, without pulling a date crate into the hot
-    // path crates: the manifest is the only place wall-clock time matters.
-    let secs = std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .map_or(0, |d| d.as_secs()) as i64;
-    nemlake_core::nemtime::format_local_seconds(secs, 0)
-        .replace('/', "-")
-        .replacen(' ', "T", 1)
-        + "Z"
+    nemlake_core::clock::now_utc_rfc3339()
 }
 
 impl Manifest {

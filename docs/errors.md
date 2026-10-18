@@ -110,6 +110,7 @@ Every error and warning nemlake reports carries one of these codes. Codes are st
 | code | raised in |
 |---|---|
 | `store.io` | `crates/nemlake-writer/src/error.rs` |
+| `store.naive_timestamp` | `crates/nemlake-writer/src/error.rs` |
 | `store.parquet_write` | `crates/nemlake-writer/src/error.rs` |
 | `store.partition_column_not_timestamp` | `crates/nemlake-writer/src/error.rs` |
 | `store.quarantine_write` | `crates/nemlake-pipeline/src/ingest_file.rs` |

@@ -183,6 +183,12 @@ impl LakeWriter for ParquetHive {
         schema: SchemaRef,
         meta: &FileMeta,
     ) -> Result<WriterId, StoreError> {
+        if let Some(f) = crate::partition::naive_timestamp(&schema) {
+            return Err(StoreError::NaiveTimestamp {
+                column: f.name().clone(),
+                observed: f.data_type().to_string(),
+            });
+        }
         let dir = self.partition_dir(key);
         std::fs::create_dir_all(&dir).map_err(|source| StoreError::Io {
             path: dir.display().to_string(),
@@ -373,8 +379,8 @@ mod tests {
 
     use arrow_array::{Float64Array, StringArray, TimestampNanosecondArray};
     use arrow_schema::{DataType, Field, Schema, TimeUnit};
-    use nemlake_core::Fingerprint;
     use nemlake_core::nemtime::{NEM_OFFSET_SECS, parse_nanos};
+    use nemlake_core::{Diagnose, Fingerprint};
     use parquet::arrow::arrow_reader::ParquetRecordBatchReaderBuilder;
 
     use super::*;
@@ -534,6 +540,33 @@ mod tests {
             &DataType::Timestamp(TimeUnit::Nanosecond, Some("+10:00".into()))
         );
         assert_eq!(batches[0].column(2).null_count(), 1);
+    }
+
+    #[test]
+    fn a_timestamp_without_a_zone_is_never_written() {
+        let dir = tempfile::tempdir().unwrap();
+        let mut w = ParquetHive::new(dir.path());
+        for (name, ty) in [
+            ("NAIVE", DataType::Timestamp(TimeUnit::Nanosecond, None)),
+            (
+                "MICROS",
+                DataType::Timestamp(TimeUnit::Microsecond, Some("+10:00".into())),
+            ),
+        ] {
+            let s = Arc::new(Schema::new(vec![
+                Field::new("DUID", DataType::Utf8, false),
+                Field::new(name, ty, true),
+            ]));
+            let err = w.open(&key(1), s, &meta()).unwrap_err();
+            assert!(
+                matches!(&err, StoreError::NaiveTimestamp { column, .. } if column == name),
+                "{err}"
+            );
+            assert_eq!(err.diagnostic().code, "store.naive_timestamp");
+        }
+        // Nothing was created for a schema the lake refuses.
+        assert!(w.open.is_empty());
+        assert!(std::fs::read_dir(dir.path()).unwrap().next().is_none());
     }
 
     #[test]
