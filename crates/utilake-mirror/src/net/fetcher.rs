@@ -11,8 +11,8 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
-use crate::clock::now_utc_rfc3339;
 use crate::net::Event;
+use crate::stamp::Stamp;
 use bytes::Bytes;
 use futures::StreamExt;
 use futures::stream::BoxStream;
@@ -214,11 +214,16 @@ impl Fetcher {
             size: streamed.size,
             sha256: streamed.sha256,
             crc32: Some(streamed.crc32),
-            fetched_at: now_utc_rfc3339(),
+            fetched_at: Stamp::now().to_string(),
             etag: streamed.etag,
+            last_modified_at: streamed
+                .last_modified
+                .as_deref()
+                .and_then(Stamp::from_http_date),
             last_modified: streamed.last_modified,
             listed_size: remote.size,
             listed_modified: remote.modified.clone(),
+            listed_modified_at: remote.modified_at,
             tool: format!("nemweb-mirror/{}", env!("CARGO_PKG_VERSION")),
         };
         Archive::write_sidecar(&path, &sidecar)?;
@@ -436,7 +441,11 @@ struct Streamed {
 struct PartMeta {
     size: Option<u64>,
     etag: Option<String>,
+    /// The `Last-Modified` header as sent; what a later run compares.
     last_modified: Option<String>,
+    /// The same as an instant (UTC).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    last_modified_at: Option<Stamp>,
 }
 
 /// Where a part's [`PartMeta`] is kept.
@@ -509,6 +518,10 @@ async fn stream_to_file(
             size: total,
             etag: resp.etag.clone(),
             last_modified: resp.last_modified.clone(),
+            last_modified_at: resp
+                .last_modified
+                .as_deref()
+                .and_then(Stamp::from_http_date),
         };
         let text = serde_json::to_vec(&meta).expect("a PartMeta serialises");
         let _ = std::fs::write(part_meta(part), text);
@@ -604,6 +617,7 @@ mod tests {
             url: Url::parse(url).unwrap(),
             size: None,
             modified: None,
+            modified_at: None,
         }
     }
 
@@ -645,6 +659,15 @@ mod tests {
             sc.last_modified.as_deref(),
             Some("Tue, 13 Feb 2024 08:27:00 GMT")
         );
+        assert_eq!(
+            sc.last_modified_at.unwrap().to_string(),
+            "2024-02-13T08:27:00Z"
+        );
+        let written: serde_json::Value = serde_json::from_str(
+            &std::fs::read_to_string(Archive::sidecar_path(&local.path)).unwrap(),
+        )
+        .unwrap();
+        crate::stamp::check::assert_aware(&written);
         // Once archived, it is never asked for again.
         let again = f.fetch(&remote(url)).await.unwrap();
         assert!(again.cached);
@@ -905,7 +928,11 @@ mod tests {
         let path = f.archive().path_for(url);
         let part = Archive::part_path(&path);
         assert_eq!(std::fs::metadata(&part).unwrap().len(), 20_000);
-        assert!(part_meta(&part).exists());
+        let begun: serde_json::Value =
+            serde_json::from_slice(&std::fs::read(part_meta(&part)).unwrap()).unwrap();
+        assert_eq!(begun["last_modified"], "Tue, 13 Feb 2024 08:27:00 GMT");
+        assert_eq!(begun["last_modified_at"], "2024-02-13T08:27:00Z");
+        crate::stamp::check::assert_aware(&begun);
         // The next run asks only for the rest, and the file is whole.
         let local = f.fetch(&remote(url)).await.unwrap();
         assert_eq!(std::fs::read(&local.path).unwrap(), body);

@@ -37,8 +37,10 @@ Beside every file, `{path}.json`:
   "fetched_at": "2026-10-15T09:12:44Z",
   "etag": "\"…\"",
   "last_modified": "Mon, 12 Oct 2026 00:32:30 GMT",
+  "last_modified_at": "2026-10-12T00:32:30Z",
   "listed_size": 1469212391,
   "listed_modified": "Monday, October 12, 2026 10:45 AM",
+  "listed_modified_at": "2026-10-12T10:45:00+10:00",
   "tool": "nemweb-mirror/0.1.0"
 }
 ```
@@ -54,13 +56,26 @@ archived when it and its sidecar exist, the sidecar's `url` is the file's
 URL and its `size` is the file's length. Readers ignore fields they do not
 know.
 
+### Times
+
+Every time field is RFC 3339 with an offset, or stands beside one that is.
+`fetched_at` is when the download completed, UTC. `last_modified` and
+`listed_modified` are kept as the server and the listing wrote them;
+`last_modified_at` and `listed_modified_at` beside them are the same times
+with their offset: the HTTP date in UTC (`Z`), the listing's time in AEST
+(`+10:00`: nemweb lists in Australian Eastern Standard Time, which has no
+daylight saving). A sidecar written before the `_at` fields were kept
+lacks them; `Archive::read_sidecar` derives them from the text beside each
+(`Sidecar::derived`), and the sidecar on disk is left as it is. A time
+written without an offset is a defect.
+
 ## Removed duplicates
 
 A zip removed by `nemweb-mirror compare --delete` is gone from the archive
 or was never downloaded, and is recorded in `{home}/mirror/removed.ndjson`,
 one line per file: `url`, `size`, `sha256` (absent when it was never
 downloaded), `downloaded`, `same_as` (the folder holding the same files)
-and `files` (how many of its files matched) and `removed_at`. Its listing is
+and `files` (how many of its files matched) and `removed_at` (UTC). Its listing is
 kept in `{home}/mirror/peek.ndjson` and in the catalog, and each folder
 file's CRC-32 in its sidecar, so `nemweb-mirror compare --verify` can read
 the folder again and check the removal still holds. Its files are the folder's files: every one of them, by

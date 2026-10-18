@@ -27,6 +27,7 @@ fn bench(c: &mut Criterion) {
         url: Url::parse(url).unwrap(),
         size: Some(DOWNLOAD_BYTES as u64),
         modified: None,
+        modified_at: None,
     };
     let rt = tokio::runtime::Builder::new_multi_thread()
         .enable_all()

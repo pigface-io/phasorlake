@@ -69,6 +69,7 @@ fn day(home: &std::path::Path) -> (Mirror, Archive, u64) {
         kind: RemoteKind::File,
         size: Some(day.len() as u64),
         modified: "m".into(),
+        modified_at: None,
         listed_on: "https://h/A/".into(),
         crawled_at: None,
     };

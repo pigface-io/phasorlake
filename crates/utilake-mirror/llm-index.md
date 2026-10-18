@@ -12,6 +12,7 @@ Each entry names where a thing starts. Read those files before you edit.
 - Every failure mode is a `Diagnostic` (`crates/nemweb-mirror/src/diag.rs`) with a stable `category.snake_name` code and a full-sentence message. Codes are never renamed; `docs/errors.md` is generated from them (`just errors-doc`).
 - Every HTTP request goes through `Fetcher` (`crates/nemweb-mirror/src/net/fetcher.rs`): pacing, retries, the 403/429 breaker. Never download from nemweb in a shell loop.
 - The archive layout and sidecar are a contract with nemlake (`docs/archive.md`); the catalog format is versioned (`docs/catalog.md`).
+- Every time field is RFC 3339 with an offset (`Stamp`, `crates/nemweb-mirror/src/stamp.rs`); a time kept as text (`modified`, `last_modified`) has its `_at` instant beside it. Listing and zip times are AEST (`+10:00`), HTTP dates and the mirror's clock UTC. A naive time is a defect.
 - Nothing is filtered: every folder under a root is followed and every file is recorded. The listing reader stops on any line it cannot read.
 - An archived file is removed only by `compare --delete`, only when found the same as its folder, and only after it is recorded among the removed.
 - Fixtures under `testdata/` are AEMO pages kept byte for byte (`testdata/LICENCE.md`). Unit tests use a temp home; nothing touches the network.
@@ -21,6 +22,7 @@ Each entry names where a thing starts. Read those files before you edit.
 
 - **Home and config**: the archive and the mirror's records under the home, the config file in the records (`crates/nemweb-mirror/src/config.rs`).
 - **Net**: transports (reqwest, offline, canned for tests), the paced fetcher with ranged requests, the archive with sidecars. `crates/nemweb-mirror/src/net/`.
+- **Time**: `Stamp`, the one type every time field is written and read as, and the readers of the listing, DOS and HTTP date forms (`crates/nemweb-mirror/src/stamp.rs`).
 - **Zip directory**: a zip's entries from byte spans of it, zip64 too, nothing decompressed (`crates/nemweb-mirror/src/zipdir.rs`).
 - **Crawl**: the strict IIS listing reader (`crates/nemweb-mirror/src/listing.rs`) and the breadth-first crawl that keeps every page and writes the crawl record (`crates/nemweb-mirror/src/crawl.rs`).
 - **Peek**: every zip not yet downloaded, its directory by ranged requests, the whole-month zips first, into the peek record (`crates/nemweb-mirror/src/peek.rs`); `run` peeks and downloads together on one fetcher.

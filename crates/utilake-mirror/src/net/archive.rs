@@ -13,6 +13,7 @@ use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 
 use crate::net::error::FetchError;
+use crate::stamp::Stamp;
 
 /// Where an archived file came from and what its bytes are.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -35,15 +36,42 @@ pub struct Sidecar {
     /// The server's `Last-Modified`: when AEMO published the file.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub last_modified: Option<String>,
+    /// `last_modified` as an instant (UTC).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub last_modified_at: Option<Stamp>,
     /// The size the listing gave it when it was downloaded.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub listed_size: Option<u64>,
     /// The date and time the listing gave it when it was downloaded.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub listed_modified: Option<String>,
+    /// `listed_modified` as an instant (AEST).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub listed_modified_at: Option<Stamp>,
     /// The program and version that downloaded it, e.g. `nemweb-mirror/0.1.0`.
     #[serde(default)]
     pub tool: String,
+}
+
+impl Sidecar {
+    /// The sidecar with its `_at` instants derived from the text fields
+    /// beside them, where a sidecar written before they were kept lacks
+    /// them.
+    pub fn derived(mut self) -> Self {
+        if self.last_modified_at.is_none() {
+            self.last_modified_at = self
+                .last_modified
+                .as_deref()
+                .and_then(Stamp::from_http_date);
+        }
+        if self.listed_modified_at.is_none() {
+            self.listed_modified_at = self
+                .listed_modified
+                .as_deref()
+                .and_then(Stamp::from_listing);
+        }
+        self
+    }
 }
 
 /// An archived file with its sidecar.
@@ -224,7 +252,8 @@ impl Archive {
         PathBuf::from(s)
     }
 
-    /// The sidecar at `path`'s side, when there is one.
+    /// The sidecar at `path`'s side, when there is one, with its `_at`
+    /// instants.
     pub fn read_sidecar(path: &Path) -> Result<Option<Sidecar>, FetchError> {
         let sc = Self::sidecar_path(path);
         let text = match std::fs::read_to_string(&sc) {
@@ -232,8 +261,8 @@ impl Archive {
             Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Ok(None),
             Err(e) => return Err(io_err(&sc)(e)),
         };
-        serde_json::from_str(&text)
-            .map(Some)
+        serde_json::from_str::<Sidecar>(&text)
+            .map(|s| Some(s.derived()))
             .map_err(|e| FetchError::SidecarCorrupt {
                 path: sc.display().to_string(),
                 message: e.to_string(),
@@ -361,13 +390,38 @@ mod tests {
             fetched_at: "2026-10-05T00:00:00Z".into(),
             etag: None,
             last_modified: Some("Tue, 13 Feb 2024 08:27:00 GMT".into()),
+            last_modified_at: None,
             listed_size: None,
-            listed_modified: None,
+            listed_modified: Some("Monday, October 12, 2026 10:45 AM".into()),
+            listed_modified_at: None,
             tool: "nemlake/test".into(),
         };
         Archive::write_sidecar(&path, &sidecar).unwrap();
+        // A sidecar written without the instants reads back with them,
+        // derived from the text beside each; the text is as written.
         let found = a.lookup(url).unwrap().unwrap();
-        assert_eq!(found.sidecar, sidecar);
+        assert_eq!(
+            found.sidecar,
+            Sidecar {
+                last_modified_at: Some(Stamp::at(2024, 2, 13, 8, 27, 0, 0).unwrap()),
+                listed_modified_at: Some(
+                    Stamp::at(2026, 10, 12, 10, 45, 0, crate::stamp::AEST).unwrap()
+                ),
+                ..sidecar.clone()
+            }
+        );
+        let text = std::fs::read_to_string(Archive::sidecar_path(&path)).unwrap();
+        assert!(!text.contains("modified_at"), "{text}");
+        Archive::write_sidecar(&path, &found.sidecar).unwrap();
+        let written: serde_json::Value =
+            serde_json::from_str(&std::fs::read_to_string(Archive::sidecar_path(&path)).unwrap())
+                .unwrap();
+        assert_eq!(written["last_modified"], "Tue, 13 Feb 2024 08:27:00 GMT");
+        assert_eq!(written["last_modified_at"], "2024-02-13T08:27:00Z");
+        assert_eq!(written["listed_modified_at"], "2026-10-12T10:45:00+10:00");
+        crate::stamp::check::assert_aware(&written);
+        Archive::write_sidecar(&path, &sidecar).unwrap();
+        let found = a.lookup(url).unwrap().unwrap();
         Archive::verify(&found).unwrap();
         assert_eq!(a.entries_under(None).len(), 1);
         assert_eq!(a.entries_under(Some(&dir.path().join("h/d"))).len(), 1);
@@ -376,7 +430,7 @@ mod tests {
         assert!(a.lookup(url).unwrap().is_none());
         let changed = Archived {
             path: path.clone(),
-            sidecar: sidecar.clone(),
+            sidecar,
         };
         assert_eq!(
             Archive::verify(&changed).unwrap_err().diagnostic().code,

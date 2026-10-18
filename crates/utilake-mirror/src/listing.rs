@@ -11,6 +11,8 @@
 //! [`Unparsed`] error rather than a link quietly passed over, so a change
 //! in how AEMO lists its folders stops the crawl instead of losing files.
 
+use crate::stamp::Stamp;
+
 /// What a listed link is.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum LinkKind {
@@ -31,8 +33,10 @@ pub struct Link {
     pub kind: LinkKind,
     /// The size in bytes; files only.
     pub size: Option<u64>,
-    /// The date and time text in front of the size.
+    /// The date and time text in front of the size, as written.
     pub modified: String,
+    /// The same time as an instant: the listing's times are AEST.
+    pub modified_at: Stamp,
 }
 
 /// A listing that is not in the expected form: the first part that is not.
@@ -73,12 +77,14 @@ pub fn parse(html: &[u8]) -> Result<Vec<Link>, Unparsed> {
     let body = &html[body_start..close];
     let mut out = Vec::with_capacity(body.len() / 160);
     let mut parent_seen = false;
+    // Lines of a page mostly share a date: the last one read is kept.
+    let mut last_date: Option<(String, Stamp)> = None;
     for line in split_ci(body, b"<br>") {
         let line = trim(line);
         if line.is_empty() {
             continue;
         }
-        match parse_line(line)? {
+        match parse_line(line, &mut last_date)? {
             Line::Parent if !parent_seen && out.is_empty() => parent_seen = true,
             Line::Parent => return Err(Unparsed::new("a second parent link", line)),
             Line::Link(link) => out.push(link),
@@ -93,8 +99,9 @@ enum Line {
 }
 
 /// One `<br>`-separated line: `{date} {size|<dir>} <A HREF="{href}">{name}</A>`,
-/// or the parent link alone.
-fn parse_line(line: &[u8]) -> Result<Line, Unparsed> {
+/// or the parent link alone. `last_date` is the date text read before and
+/// its instant, reused when this line's is the same.
+fn parse_line(line: &[u8], last_date: &mut Option<(String, Stamp)>) -> Result<Line, Unparsed> {
     let at = find_ci(line, b"<a href=\"", 0)
         .ok_or_else(|| Unparsed::new("a listing line without a link", line))?;
     let href_start = at + b"<a href=\"".len();
@@ -141,12 +148,23 @@ fn parse_line(line: &[u8]) -> Result<Line, Unparsed> {
     if modified.is_empty() {
         return Err(Unparsed::new("a line without a date", line));
     }
+    let modified = String::from_utf8_lossy(modified).into_owned();
+    let modified_at = match last_date {
+        Some((text, at)) if *text == modified => *at,
+        _ => {
+            let at = Stamp::from_listing(&modified)
+                .ok_or_else(|| Unparsed::new("a line whose date cannot be read", line))?;
+            *last_date = Some((modified.clone(), at));
+            at
+        }
+    };
     Ok(Line::Link(Link {
         href: String::from_utf8_lossy(href).into_owned(),
         name: unescape(&String::from_utf8_lossy(text)),
         kind,
         size,
-        modified: String::from_utf8_lossy(modified).into_owned(),
+        modified,
+        modified_at,
     }))
 }
 
@@ -247,6 +265,10 @@ mod tests {
         );
         assert_eq!(links[1].href, "/Data_Archive/Wholesale_Electricity/MMSDM/");
         assert_eq!(links[1].modified, "Monday, October 12, 2026 10:45 AM");
+        assert_eq!(
+            links[1].modified_at.to_string(),
+            "2026-10-12T10:45:00+10:00"
+        );
     }
 
     #[test]
@@ -280,6 +302,10 @@ mod tests {
         assert_eq!(links[0].name, "a&b <1>.zip");
         assert_eq!(links[0].href, "/x/a&amp;b.zip");
         assert_eq!(links[0].modified, "2/13/2024  8:27 AM");
+        assert_eq!(
+            links[0].modified_at.to_string(),
+            "2024-02-13T08:27:00+10:00"
+        );
         assert!(parse(&page("")).unwrap().is_empty());
     }
 
@@ -339,6 +365,14 @@ mod tests {
         assert_eq!(
             line(" &lt;dir&gt; <A HREF=\"/a/\">a</A>"),
             "a line without a date"
+        );
+        assert_eq!(
+            line(" 13/40/2024 8:27 AM 5 <A HREF=\"/a\">a</A>"),
+            "a line whose date cannot be read"
+        );
+        assert_eq!(
+            line(" soon &lt;dir&gt; <A HREF=\"/a/\">a</A>"),
+            "a line whose date cannot be read"
         );
         assert_eq!(
             parse(b"<html><a href=\"/x\">x</a><pre></pre>")

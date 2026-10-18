@@ -22,6 +22,7 @@ use crate::compare::Removed;
 use crate::crawl::{Mirror, RemoteKind, read_record};
 use crate::error::MirrorError;
 use crate::peek::{Peeked, current, latest};
+use crate::stamp::{AEST, Stamp};
 use crate::zipdir::Entry;
 
 /// A nested zip up to this size is read into memory; a bigger one is
@@ -36,7 +37,7 @@ pub const MAX_NESTED: u64 = 16 << 30;
 /// would pass it is not listed (`zip.too_many_entries`).
 pub const MAX_ENTRIES: u64 = 10_000_000;
 /// The version of the catalog's format, on its first line.
-pub const CATALOG_FORMAT: u32 = 1;
+pub const CATALOG_FORMAT: u32 = 2;
 /// The bytes every zip with at least one entry starts with, and an empty one.
 const ZIP_MAGIC: [&[u8; 4]; 2] = [b"PK\x03\x04", b"PK\x05\x06"];
 /// The buffer of a zip read from disk, which is read by seeking: small,
@@ -116,19 +117,27 @@ pub struct Node {
     /// The server's `Last-Modified`, from the same.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub last_modified: Option<String>,
-    /// When a zip not downloaded had its listing read.
+    /// `last_modified` as an instant (UTC).
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub peeked_at: Option<String>,
+    pub last_modified_at: Option<Stamp>,
+    /// When a zip not downloaded had its listing read (UTC).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub peeked_at: Option<Stamp>,
     /// For a removed zip: how many of its files were found the same as the
     /// folder's, each listed under it with its CRC-32.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub matched: Option<usize>,
-    /// For a removed zip: when it was found the same.
+    /// For a removed zip: when it was found the same (UTC).
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub removed_at: Option<String>,
-    /// Date and time as nemweb lists it, or as the zip records it.
+    pub removed_at: Option<Stamp>,
+    /// Date and time as nemweb lists it, or as the zip records it; for a
+    /// file nemweb no longer lists, the server's `Last-Modified`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub modified: Option<String>,
+    /// `modified` as an instant: AEST for a listing's or a zip's time, UTC
+    /// for a `Last-Modified`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub modified_at: Option<Stamp>,
     /// For a file nemweb lists or listed: archived or not.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub state: Option<State>,
@@ -160,10 +169,12 @@ impl Node {
             sha256: None,
             etag: None,
             last_modified: None,
+            last_modified_at: None,
             peeked_at: None,
             matched: None,
             removed_at: None,
             modified: None,
+            modified_at: None,
             state: None,
             same_as: None,
             contents: None,
@@ -202,6 +213,7 @@ struct Top {
     kind: NodeKind,
     size: Option<u64>,
     modified: Option<String>,
+    modified_at: Option<Stamp>,
     state: Option<State>,
     same_as: Option<String>,
     /// What the zip holds, from its listing, when it is not downloaded.
@@ -300,6 +312,7 @@ fn tops(
                 kind,
                 size: r.size,
                 modified: Some(r.modified),
+                modified_at: r.modified_at,
                 state,
                 same_as: gone.map(|g| g.same_as.clone()),
                 // A zip not downloaded shows its current listing; a removed
@@ -320,6 +333,7 @@ fn tops(
             kind: NodeKind::Dir,
             size: None,
             modified: None,
+            modified_at: None,
             state: None,
             same_as: None,
             peek: None,
@@ -334,6 +348,7 @@ fn tops(
                         kind: NodeKind::File,
                         size: Some(a.sidecar.size),
                         modified: a.sidecar.last_modified,
+                        modified_at: a.sidecar.last_modified_at,
                         state: Some(State::GoneUpstream),
                         same_as: None,
                         peek: None,
@@ -355,6 +370,7 @@ fn tops(
             kind: NodeKind::Dir,
             size: None,
             modified: None,
+            modified_at: None,
             state: None,
             same_as: None,
             peek: None,
@@ -438,16 +454,18 @@ impl Lister {
         node.url.clone_from(&top.url);
         node.size = top.size;
         node.modified.clone_from(&top.modified);
+        node.modified_at = top.modified_at;
         node.state = top.state;
         node.same_as.clone_from(&top.same_as);
         if let Some(r) = &top.removed {
             node.matched = Some(r.files);
-            node.removed_at = Some(r.removed_at.clone());
+            node.removed_at = Some(r.removed_at);
         }
         if let Some(p) = &top.peek {
             node.etag.clone_from(&p.etag);
             node.last_modified.clone_from(&p.last_modified);
-            node.peeked_at.clone_from(&p.peeked_at);
+            node.last_modified_at = p.last_modified_at;
+            node.peeked_at = p.peeked_at;
         }
         if matches!(top.state, Some(State::NotArchived | State::Removed))
             || top.kind == NodeKind::Dir
@@ -492,6 +510,7 @@ impl Lister {
             out[0].crc32 = s.crc32;
             out[0].etag = s.etag;
             out[0].last_modified = s.last_modified;
+            out[0].last_modified_at = s.last_modified_at;
         }
         let at = out[0].clone();
         let listed = match source {
@@ -637,7 +656,19 @@ impl Lister {
         node.size = Some(f.size());
         node.compressed = Some(f.compressed_size());
         node.crc32 = Some(f.crc32());
-        node.modified = f.last_modified().map(|d| d.to_string());
+        // The zip's DOS time, as AEMO's machines set it: AEST.
+        if let Some(d) = f.last_modified() {
+            node.modified = Some(d.to_string());
+            node.modified_at = Stamp::at(
+                i64::from(d.year()),
+                d.month(),
+                d.day(),
+                d.hour(),
+                d.minute(),
+                d.second(),
+                AEST,
+            );
+        }
         let mut magic = [0u8; 4];
         let got = match read_up_to(&mut f, &mut magic) {
             Ok(n) => n,
@@ -763,6 +794,7 @@ fn listed(out: &mut Vec<Node>, peek: &Peeked) {
         node.compressed = Some(e.compressed);
         node.crc32 = Some(e.crc32);
         node.modified = Some(e.modified.clone());
+        node.modified_at = e.modified_at;
         node.contents = is_zip.then_some("needs_download");
         out.push(node);
     }
@@ -1019,7 +1051,8 @@ mod tests {
             url: "https://h/A/sub/".into(),
             kind: RemoteKind::Dir,
             size: None,
-            modified: "m".into(),
+            modified: "Monday, October 12, 2026 10:45 AM".into(),
+            modified_at: None,
             listed_on: "https://h/A/".into(),
             crawled_at: None,
         }];
@@ -1033,6 +1066,7 @@ mod tests {
                 kind: RemoteKind::File,
                 size: Some(bytes.len() as u64),
                 modified: "Monday, October 12, 2026 10:45 AM".into(),
+                modified_at: None,
                 listed_on: "https://h/A/".into(),
                 crawled_at: None,
             });
@@ -1046,7 +1080,8 @@ mod tests {
                 url: url.into(),
                 kind,
                 size: Some(7),
-                modified: "m".into(),
+                modified: "Monday, October 12, 2026 10:45 AM".into(),
+                modified_at: None,
                 listed_on: "https://h/A/".into(),
                 crawled_at: None,
             });
@@ -1063,8 +1098,10 @@ mod tests {
                 fetched_at: "t".into(),
                 etag: None,
                 last_modified: Some("Mon, 12 Oct 2026 00:32:30 GMT".into()),
+                last_modified_at: None,
                 listed_size: None,
                 listed_modified: None,
+                listed_modified_at: None,
                 tool: "nemlake".into(),
             },
         )
@@ -1136,12 +1173,23 @@ h/
         assert_eq!(x["url"], "https://h/A/a.zip");
         assert_eq!(x["kind"], "file");
         assert_eq!(x["modified"], "2026-10-01 12:00:00");
+        assert_eq!(x["modified_at"], "2026-10-01T12:00:00+10:00");
         assert_eq!(x["crc32"], crc32fast::hash(b"x\n"));
         let a = ndjson
             .lines()
             .find(|l| l.contains("\"h/A/a.zip\""))
             .unwrap();
         assert!(a.contains("\"state\":\"archived\""), "{a}");
+        let a: serde_json::Value = serde_json::from_str(a).unwrap();
+        assert_eq!(a["modified"], "Monday, October 12, 2026 10:45 AM");
+        assert_eq!(a["modified_at"], "2026-10-12T10:45:00+10:00");
+        // A file nemweb no longer lists carries its sidecar's Last-Modified.
+        let gone = ndjson.lines().find(|l| l.contains("gone.txt")).unwrap();
+        let gone: serde_json::Value = serde_json::from_str(gone).unwrap();
+        assert_eq!(gone["modified"], "Mon, 12 Oct 2026 00:32:30 GMT");
+        assert_eq!(gone["modified_at"], "2026-10-12T00:32:30Z");
+        // Every time field of the catalog is aware, or has its instant beside it.
+        crate::stamp::check::assert_aware_lines(&ndjson);
 
         // The same archive maps to the same bytes, on any number of threads.
         map(&f.mirror, &f.archive, &f.roots, 1).unwrap();
@@ -1169,6 +1217,7 @@ h/
             kind: NodeKind::File,
             size: None,
             modified: None,
+            modified_at: None,
             state: Some(State::Archived),
             same_as: None,
             peek: None,
@@ -1220,6 +1269,7 @@ h/
             kind: NodeKind::File,
             size: None,
             modified: None,
+            modified_at: None,
             state: Some(State::Archived),
             same_as: None,
             peek: None,
@@ -1291,12 +1341,15 @@ h/
             crc32: 7,
             method: 8,
             modified: "2026-10-01 12:00:00".into(),
+            modified_at: None,
         };
         let peeks = [
             crate::peek::Peeked {
                 url: "https://h/A/missing.zip".into(),
+                peeked_at: Some(Stamp::from_unix(1_791_765_900)),
                 listed_size: Some(7),
-                listed_modified: Some("m".into()),
+                listed_modified: Some("Monday, October 12, 2026 10:45 AM".into()),
+                last_modified: Some("Mon, 12 Oct 2026 00:32:30 GMT".into()),
                 entries: Some(vec![
                     entry("in/"),
                     entry("in/a.csv"),
@@ -1322,7 +1375,7 @@ h/
         let ndjson = std::fs::read_to_string(f.mirror.dir().join("map/map.ndjson")).unwrap();
         assert_eq!(
             ndjson.lines().next().unwrap(),
-            r#"{"catalog_format":1,"roots":["https://h/A/"]}"#
+            r#"{"catalog_format":2,"roots":["https://h/A/"]}"#
         );
         let tree = std::fs::read_to_string(f.mirror.dir().join("map/tree.txt")).unwrap();
         let expected = "    missing.zip/ (zip, 7 B) [not downloaded]
@@ -1332,6 +1385,21 @@ h/
 ";
         assert!(tree.contains(expected), "{tree}");
         assert!(!tree.contains("ignored"), "{tree}");
+        // The peek's times, text and instant, and its entries' (the peek
+        // record was written without the instants: the map derives them).
+        let missing = ndjson
+            .lines()
+            .find(|l| l.contains("\"h/A/missing.zip\"") && !l.contains("inside"))
+            .unwrap();
+        let missing: serde_json::Value = serde_json::from_str(missing).unwrap();
+        assert_eq!(missing["peeked_at"], "2026-10-12T00:45:00Z");
+        assert_eq!(missing["last_modified"], "Mon, 12 Oct 2026 00:32:30 GMT");
+        assert_eq!(missing["last_modified_at"], "2026-10-12T00:32:30Z");
+        let in_a = ndjson.lines().find(|l| l.contains("in/a.csv")).unwrap();
+        let in_a: serde_json::Value = serde_json::from_str(in_a).unwrap();
+        assert_eq!(in_a["modified"], "2026-10-01 12:00:00");
+        assert_eq!(in_a["modified_at"], "2026-10-01T12:00:00+10:00");
+        crate::stamp::check::assert_aware_lines(&ndjson);
         let md = crate::summary(&f.mirror.dir().join("map/map.ndjson")).unwrap();
         assert!(md.contains("b.ZIP/ (zip)"), "{md}");
 
@@ -1340,7 +1408,7 @@ h/
         let bad = |code: &str| crate::peek::Peeked {
             url: "https://h/A/missing.zip".into(),
             listed_size: Some(7),
-            listed_modified: Some("m".into()),
+            listed_modified: Some("Monday, October 12, 2026 10:45 AM".into()),
             entries: None,
             error: Some(crate::peek::PeekError {
                 code: code.into(),
@@ -1376,6 +1444,7 @@ h/
             kind: NodeKind::File,
             size: None,
             modified: None,
+            modified_at: None,
             state: Some(State::Archived),
             same_as: None,
             peek: None,
@@ -1447,6 +1516,7 @@ h/
             kind: NodeKind::File,
             size: None,
             modified: None,
+            modified_at: None,
             state: Some(State::Archived),
             same_as: None,
             peek: None,
@@ -1473,6 +1543,7 @@ h/
             crc32: 1,
             method: 0,
             modified: "m".into(),
+            modified_at: None,
         };
         let peeked = crate::peek::Peeked {
             url: "u".into(),
@@ -1514,8 +1585,10 @@ h/
                 fetched_at: "t".into(),
                 etag: None,
                 last_modified: None,
+                last_modified_at: None,
                 listed_size: None,
                 listed_modified: None,
+                listed_modified_at: None,
                 tool: "x".into(),
             },
         )

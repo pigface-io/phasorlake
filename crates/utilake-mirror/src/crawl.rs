@@ -16,6 +16,7 @@ use url::Url;
 
 use crate::error::MirrorError;
 use crate::listing::{self, LinkKind, Unparsed};
+use crate::stamp::Stamp;
 
 /// The folders nemweb keeps for good, under `base`: the long-term archive,
 /// and the dated archive of the last year or so of reports.
@@ -111,11 +112,27 @@ pub struct Remote {
     pub size: Option<u64>,
     /// The date and time, as listed.
     pub modified: String,
+    /// The listed date and time as an instant: the listing's times are
+    /// AEST. Derived from `modified` when a record written before it was
+    /// kept is read.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub modified_at: Option<Stamp>,
     /// The folder whose page listed it.
     pub listed_on: String,
-    /// When that page was read from nemweb (UTC, RFC 3339).
+    /// When that page was read from nemweb (UTC).
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub crawled_at: Option<String>,
+    pub crawled_at: Option<Stamp>,
+}
+
+impl Remote {
+    /// The record with `modified_at` derived from `modified` when it lacks
+    /// it.
+    pub fn derived(mut self) -> Self {
+        if self.modified_at.is_none() {
+            self.modified_at = Stamp::from_listing(&self.modified);
+        }
+        self
+    }
 }
 
 /// What a crawl found.
@@ -199,7 +216,7 @@ pub async fn crawl(
             .and_then(|m| m.modified())
             .ok()
             .and_then(|t| t.duration_since(std::time::UNIX_EPOCH).ok())
-            .map(|d| crate::clock::rfc3339_from_unix(i64::try_from(d.as_secs()).unwrap_or(0)));
+            .map(|d| Stamp::from_unix(i64::try_from(d.as_secs()).unwrap_or(0)));
         let links = listing::parse(&html).map_err(|source| MirrorError::Listing {
             url: folder.to_string(),
             source,
@@ -210,7 +227,7 @@ pub async fn crawl(
                     url: folder.to_string(),
                     source,
                 })?;
-            remote.crawled_at.clone_from(&crawled_at);
+            remote.crawled_at = crawled_at;
             if remote.kind == RemoteKind::Dir && seen.insert(remote.url.clone()) {
                 queue.push_back(Url::parse(&remote.url).expect("resolved from a URL"));
             }
@@ -270,6 +287,7 @@ fn resolve(folder: &Url, link: &listing::Link, roots: &[Url]) -> Result<Remote, 
         kind,
         size: link.size,
         modified: link.modified.clone(),
+        modified_at: Some(link.modified_at),
         listed_on: folder.to_string(),
         crawled_at: None,
     })
@@ -290,18 +308,21 @@ fn summarise(record: &[Remote]) -> CrawlSummary {
     s
 }
 
-/// The crawl record at `path`, in URL order.
+/// The crawl record at `path`, in URL order, each link with its
+/// `modified_at`.
 pub fn read_record(path: &Path) -> Result<Vec<Remote>, MirrorError> {
     let text = std::fs::read_to_string(path).map_err(MirrorError::io(path))?;
     text.lines()
         .enumerate()
         .filter(|(_, l)| !l.is_empty())
         .map(|(i, l)| {
-            serde_json::from_str(l).map_err(|e| MirrorError::Record {
-                path: path.display().to_string(),
-                line: i as u64 + 1,
-                message: e.to_string(),
-            })
+            serde_json::from_str::<Remote>(l)
+                .map(Remote::derived)
+                .map_err(|e| MirrorError::Record {
+                    path: path.display().to_string(),
+                    line: i as u64 + 1,
+                    message: e.to_string(),
+                })
         })
         .collect()
 }
@@ -444,6 +465,15 @@ mod tests {
         assert_eq!(record[4].size, Some(3));
         assert_eq!(record[4].listed_on, "https://h/A/");
         assert!(record.iter().all(|r| r.crawled_at.is_some()));
+        // The listing's text as written, and the same time as an instant.
+        assert_eq!(record[4].modified, "Monday, October 12, 2026 10:45 AM");
+        assert_eq!(
+            record[4].modified_at.unwrap().to_string(),
+            "2026-10-12T10:45:00+10:00"
+        );
+        crate::stamp::check::assert_aware_lines(
+            &std::fs::read_to_string(mirror.record_path()).unwrap(),
+        );
         assert!(
             mirror
                 .page_path(&roots()[0])
@@ -539,6 +569,28 @@ mod tests {
             let e = root(bad).unwrap_err();
             assert_eq!(e.diagnostic().code, "config.mirror_root");
         }
+    }
+
+    #[test]
+    fn a_record_written_without_the_instant_gets_it_when_read() {
+        let dir = tempfile::tempdir().unwrap();
+        let p = dir.path().join("remote.ndjson");
+        std::fs::write(
+            &p,
+            "{\"url\":\"https://h/A/\",\"kind\":\"dir\",\"modified\":\"Monday, October 12, 2026 10:45 AM\",\"listed_on\":\"https://h/\"}\n\
+             {\"url\":\"https://h/A/x\",\"kind\":\"file\",\"size\":1,\"modified\":\"m\",\"listed_on\":\"https://h/\",\"crawled_at\":\"2026-10-12T00:00:00Z\"}\n",
+        )
+        .unwrap();
+        let r = read_record(&p).unwrap();
+        assert_eq!(r[0].modified, "Monday, October 12, 2026 10:45 AM");
+        assert_eq!(
+            r[0].modified_at.unwrap().to_string(),
+            "2026-10-12T10:45:00+10:00"
+        );
+        assert!(r[0].crawled_at.is_none());
+        // Text no reader of a listing would have passed: kept, no instant.
+        assert_eq!((r[1].modified.as_str(), r[1].modified_at), ("m", None));
+        assert_eq!(r[1].crawled_at.unwrap().to_string(), "2026-10-12T00:00:00Z");
     }
 
     #[test]

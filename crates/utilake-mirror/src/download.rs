@@ -93,6 +93,7 @@ pub async fn download(
                 })?,
                 size: r.size,
                 modified: Some(r.modified),
+                modified_at: r.modified_at,
             })
         })
         .collect::<Result<_, MirrorError>>()?;
@@ -287,6 +288,10 @@ mod tests {
             (sc.listed_size, sc.listed_modified.as_deref()),
             (Some(4), Some("Monday, October 12, 2026 10:45 AM"))
         );
+        assert_eq!(
+            sc.listed_modified_at.unwrap().to_string(),
+            "2026-10-12T10:45:00+10:00"
+        );
 
         let s = download(
             &f,
@@ -426,7 +431,7 @@ mod tests {
             if d.url == "https://h/A/N/a.zip" {
                 std::fs::write(
                     &removed,
-                    "{\"url\":\"https://h/A/N.zip\",\"size\":1,\"sha256\":\"x\",\"same_as\":\"https://h/A/N/\",\"removed_at\":\"t\"}\n",
+                    "{\"url\":\"https://h/A/N.zip\",\"size\":1,\"sha256\":\"x\",\"same_as\":\"https://h/A/N/\",\"removed_at\":\"2026-10-15T00:59:33Z\"}\n",
                 )
                 .unwrap();
             }
@@ -532,6 +537,7 @@ mod tests {
             crc32: crc,
             method: 0,
             modified: "m".into(),
+            modified_at: None,
         };
         let listing = |zip: &str, crc: u32| crate::peek::Peeked {
             url: format!("https://h/A/{zip}"),
@@ -563,8 +569,10 @@ mod tests {
                 fetched_at: "t".into(),
                 etag: None,
                 last_modified: None,
+                last_modified_at: None,
                 listed_size: None,
                 listed_modified: None,
+                listed_modified_at: None,
                 tool: "x".into(),
             },
         )

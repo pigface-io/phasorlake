@@ -19,6 +19,7 @@ use zip::ZipArchive;
 
 use crate::crawl::{Mirror, RemoteKind, read_record};
 use crate::error::MirrorError;
+use crate::stamp::Stamp;
 use crate::zipdir::Entry;
 
 const READ_BUFFER: usize = 1 << 20;
@@ -105,8 +106,8 @@ pub struct Removed {
     /// is in the catalog on both sides, with its size and CRC-32.
     #[serde(default)]
     pub files: usize,
-    /// When it was removed (UTC, RFC 3339).
-    pub removed_at: String,
+    /// When it was removed (UTC).
+    pub removed_at: Stamp,
 }
 
 fn downloaded() -> bool {
@@ -356,7 +357,7 @@ pub fn remove(
         sha256: sidecar.map(|s| s.sha256),
         same_as: cmp.folder.clone(),
         files: cmp.same + cmp.repacked,
-        removed_at: crate::clock::now_utc_rfc3339(),
+        removed_at: Stamp::now(),
     };
     // A downloaded zip's listing is kept before it goes, so its side of the
     // comparison stays in the record and the catalog.
@@ -630,8 +631,10 @@ mod tests {
                 fetched_at: "t".into(),
                 etag: None,
                 last_modified: None,
+                last_modified_at: None,
                 listed_size: None,
                 listed_modified: None,
+                listed_modified_at: None,
                 tool: "nemlake".into(),
             },
         )
@@ -674,6 +677,7 @@ mod tests {
                 kind: RemoteKind::Dir,
                 size: None,
                 modified: "m".into(),
+                modified_at: None,
                 listed_on: "https://h/A/".into(),
                 crawled_at: None,
             },
@@ -682,6 +686,7 @@ mod tests {
                 kind: RemoteKind::File,
                 size: Some(whole.len() as u64),
                 modified: "m".into(),
+                modified_at: None,
                 listed_on: "https://h/A/".into(),
                 crawled_at: None,
             },
@@ -690,6 +695,7 @@ mod tests {
                 kind: RemoteKind::File,
                 size: Some(1),
                 modified: "m".into(),
+                modified_at: None,
                 listed_on: "https://h/A/".into(),
                 crawled_at: None,
             },
@@ -702,6 +708,7 @@ mod tests {
                 kind: RemoteKind::File,
                 size: Some(bytes.len() as u64),
                 modified: "m".into(),
+                modified_at: None,
                 listed_on: "https://h/A/M/S/".into(),
                 crawled_at: None,
             });
@@ -911,6 +918,7 @@ mod tests {
             crc32: crc32fast::hash(bytes),
             method: 0,
             modified: "m".into(),
+            modified_at: None,
         };
         let t1 = std::fs::read(f.archive.path_for("https://h/A/M/S/DATA/T1%231.zip")).unwrap();
         let t2 = std::fs::read(f.archive.path_for("https://h/A/M/S/DATA/T2.zip")).unwrap();
@@ -943,10 +951,14 @@ mod tests {
         );
         let back = &f.mirror.removed().unwrap()[&pair.zip];
         assert!(!back.downloaded);
+        assert_eq!(back.removed_at, r.removed_at);
+        crate::stamp::check::assert_aware_lines(
+            &std::fs::read_to_string(f.mirror.removed_path()).unwrap(),
+        );
         // A record written before this field existed was of a downloaded zip.
         std::fs::write(
             f.mirror.removed_path(),
-            "{\"url\":\"u\",\"size\":1,\"sha256\":\"s\",\"same_as\":\"f\",\"removed_at\":\"t\"}\n",
+            "{\"url\":\"u\",\"size\":1,\"sha256\":\"s\",\"same_as\":\"f\",\"removed_at\":\"2026-10-15T00:59:33Z\"}\n",
         )
         .unwrap();
         assert!(f.mirror.removed().unwrap()["u"].downloaded);
@@ -976,6 +988,7 @@ mod tests {
                 crc32: crc32fast::hash(&t1),
                 method: 0,
                 modified: "m".into(),
+                modified_at: None,
             },
             Entry {
                 name: "M\\S\\".into(),
@@ -984,6 +997,7 @@ mod tests {
                 crc32: 0,
                 method: 0,
                 modified: "m".into(),
+                modified_at: None,
             },
         ];
         let cmp = compare(&f.archive, pair, Some(&listing), &tmp).unwrap();
@@ -1057,6 +1071,7 @@ mod tests {
             crc32: 1,
             method: 0,
             modified: "m".into(),
+            modified_at: None,
         });
         let lines: String = peeks
             .iter()

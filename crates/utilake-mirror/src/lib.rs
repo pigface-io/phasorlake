@@ -8,7 +8,6 @@
 //! (`docs/catalog.md`), [`compare()`] finds the zips that repeat a folder,
 //! and [`status()`] counts how far it has got.
 
-pub mod clock;
 pub mod compare;
 pub mod config;
 pub mod crawl;
@@ -21,6 +20,7 @@ pub mod lock;
 pub mod map;
 pub mod net;
 pub mod peek;
+pub mod stamp;
 pub mod status;
 pub mod summary;
 #[cfg(test)]
@@ -38,6 +38,7 @@ pub use hash::{FileHashed, HashSummary, hash};
 pub use lock::RunLock;
 pub use map::{MapSummary, Node, NodeKind, State, map};
 pub use peek::{PeekSummary, Peeked, ZipPeeked, peek, read_peeks};
+pub use stamp::Stamp;
 pub use status::{PeekCount, RootStatus, Status, status};
 pub use summary::{fold, summary};
 pub use url::Url;

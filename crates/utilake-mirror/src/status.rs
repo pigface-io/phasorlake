@@ -8,6 +8,7 @@ use url::Url;
 
 use crate::crawl::{Mirror, RemoteKind, read_record};
 use crate::error::MirrorError;
+use crate::stamp::Stamp;
 
 /// Files listed and files archived under one root.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
@@ -43,7 +44,7 @@ pub struct Status {
     /// When a run wrote these counts, kept up to date as it goes; none
     /// when they were counted just now.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub as_of: Option<String>,
+    pub as_of: Option<Stamp>,
     /// Zips peeked, when a run counts them.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub peek: Option<PeekCount>,
@@ -137,7 +138,7 @@ impl Mirror {
     /// renamed into place.
     pub fn write_progress(&self, status: &Status) -> Result<(), MirrorError> {
         let mut status = status.clone();
-        status.as_of = Some(crate::clock::now_utc_rfc3339());
+        status.as_of = Some(Stamp::now());
         let path = self.progress_path();
         let part = self.dir().join("progress.json.part");
         let text = serde_json::to_vec(&status).expect("a Status always serialises");
@@ -192,6 +193,7 @@ mod tests {
             kind,
             size,
             modified: "m".to_owned(),
+            modified_at: None,
             listed_on: "https://h/A/".to_owned(),
             crawled_at: None,
         }
@@ -269,6 +271,9 @@ mod tests {
         mirror.write_progress(&s).unwrap();
         let back = mirror.read_progress().unwrap().unwrap();
         assert!(back.as_of.is_some());
+        let written: serde_json::Value =
+            serde_json::from_slice(&std::fs::read(mirror.progress_path()).unwrap()).unwrap();
+        crate::stamp::check::assert_aware(&written);
         assert_eq!(
             (back.roots[0].archived_files, back.roots[0].archived_bytes),
             (1, 3)

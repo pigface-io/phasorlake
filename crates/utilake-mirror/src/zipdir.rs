@@ -9,6 +9,8 @@
 
 use serde::{Deserialize, Serialize};
 
+use crate::stamp::{AEST, Stamp};
+
 /// The end record, the longest comment it may be followed by, and the
 /// zip64 locator that may come before it.
 pub const TAIL: u64 = 20 + 22 + 0xFFFF;
@@ -34,6 +36,21 @@ pub struct Entry {
     pub method: u16,
     /// Modified, `YYYY-MM-DD HH:MM:SS`, from the DOS date and time.
     pub modified: String,
+    /// The same time as an instant, AEST (AEMO packs its zips there); none
+    /// when the DOS fields are out of range.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub modified_at: Option<Stamp>,
+}
+
+impl Entry {
+    /// The entry with `modified_at` derived from `modified` when a record
+    /// written before it was kept lacks it.
+    pub fn derived(mut self) -> Self {
+        if self.modified_at.is_none() {
+            self.modified_at = Stamp::from_dos_text(&self.modified);
+        }
+        self
+    }
 }
 
 /// Why a directory could not be read.
@@ -129,6 +146,8 @@ fn zip64_directory(record: &[u8]) -> Result<(u64, u64), DirError> {
 /// Every record of a central directory.
 fn entries(mut cd: &[u8]) -> Result<Vec<Entry>, DirError> {
     let mut out = Vec::with_capacity(cd.len() / 80);
+    // Entries packed together share a time: the last one's is kept.
+    let mut last: Option<(u16, u16, String, Option<Stamp>)> = None;
     while !cd.is_empty() {
         if cd.len() < 46 || &cd[..4] != CENTRAL {
             return Err(DirError::Damaged(
@@ -164,6 +183,15 @@ fn entries(mut cd: &[u8]) -> Result<Vec<Entry>, DirError> {
             }
             extra = &extra[(4 + len).min(extra.len())..];
         }
+        let (date, time) = (u16_at(cd, 14), u16_at(cd, 12));
+        let (modified, modified_at) = match &last {
+            Some((d, t, text, at)) if (*d, *t) == (date, time) => (text.clone(), *at),
+            _ => {
+                let (text, at) = (dos_time(date, time), dos_stamp(date, time));
+                last = Some((date, time, text.clone(), at));
+                (text, at)
+            }
+        };
         out.push(Entry {
             // Zips made on Windows separate folders with `\`.
             name: String::from_utf8_lossy(&cd[46..46 + name_len]).replace('\\', "/"),
@@ -171,7 +199,8 @@ fn entries(mut cd: &[u8]) -> Result<Vec<Entry>, DirError> {
             compressed,
             crc32: u32_at(cd, 16),
             method: u16_at(cd, 10),
-            modified: dos_time(u16_at(cd, 14), u16_at(cd, 12)),
+            modified,
+            modified_at,
         });
         cd = &cd[end..];
     }
@@ -188,6 +217,19 @@ fn dos_time(date: u16, time: u16) -> String {
         time >> 11,
         (time >> 5) & 0x3F,
         (time & 0x1F) * 2
+    )
+}
+
+/// A DOS date and time as an instant in AEST.
+fn dos_stamp(date: u16, time: u16) -> Option<Stamp> {
+    Stamp::at(
+        1980 + i64::from(date >> 9),
+        ((date >> 5) & 0xF) as u8,
+        (date & 0x1F) as u8,
+        (time >> 11) as u8,
+        ((time >> 5) & 0x3F) as u8,
+        ((time & 0x1F) * 2) as u8,
+        AEST,
     )
 }
 
@@ -255,7 +297,26 @@ mod tests {
         assert!(e[1].compressed < 400);
         assert_eq!(e[1].crc32, crc32fast::hash(&b"x,y\n".repeat(100)));
         assert_eq!(e[1].modified, "2026-10-01 12:34:56");
+        assert_eq!(
+            e[1].modified_at.unwrap().to_string(),
+            "2026-10-01T12:34:56+10:00"
+        );
         assert_eq!((e[2].size, e[2].compressed, e[2].method), (3, 3, 0));
+        // A record written without the instant derives it; DOS fields out
+        // of range (month 0) leave none.
+        let old: Entry = serde_json::from_str(
+            r#"{"name":"a","size":1,"compressed":1,"crc32":1,"method":0,"modified":"2017-01-12 12:24:16"}"#,
+        )
+        .unwrap();
+        assert!(old.modified_at.is_none());
+        assert_eq!(
+            old.derived().modified_at.unwrap().to_string(),
+            "2017-01-12T12:24:16+10:00"
+        );
+        assert_eq!(dos_time(0, 0), "1980-00-00 00:00:00");
+        assert!(dos_stamp(0, 0).is_none());
+        let kept = e[1].clone().derived();
+        assert_eq!(kept.modified_at, e[1].modified_at);
     }
 
     #[tokio::test]
@@ -316,6 +377,10 @@ mod tests {
         assert_eq!(reads, 1);
         assert_eq!((e[0].size, e[0].compressed), (5_000_000_000, 4_000_000_000));
         assert_eq!(e[0].modified, "2025-01-01 00:00:00");
+        assert_eq!(
+            e[0].modified_at.unwrap().to_string(),
+            "2025-01-01T00:00:00+10:00"
+        );
         // The zip64 end record and the directory both outside the tail.
         let mut padded = vec![0u8; 70_000];
         let small = zip64(0xFFFF);

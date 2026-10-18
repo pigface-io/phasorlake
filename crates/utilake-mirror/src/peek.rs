@@ -18,6 +18,7 @@ use crate::crawl::{Mirror, Remote, RemoteKind, read_record};
 use crate::diag::Diagnose as _;
 use crate::error::MirrorError;
 use crate::net::{FetchError, Fetcher, RangeRead, Span};
+use crate::stamp::Stamp;
 use crate::zipdir::{self, DirError, Entry};
 
 /// What one zip holds, or why that could not be read.
@@ -25,15 +26,18 @@ use crate::zipdir::{self, DirError, Entry};
 pub struct Peeked {
     /// The zip's URL.
     pub url: String,
-    /// When its directory was read (UTC, RFC 3339).
+    /// When its directory was read (UTC).
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub peeked_at: Option<String>,
+    pub peeked_at: Option<Stamp>,
     /// The size the crawl listed it at when it was peeked.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub listed_size: Option<u64>,
-    /// The date the crawl listed it with when it was peeked.
+    /// The date the crawl listed it with when it was peeked, as listed.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub listed_modified: Option<String>,
+    /// `listed_modified` as an instant (AEST).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub listed_modified_at: Option<Stamp>,
     /// Its size as the server gave it (`Content-Range`).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub size: Option<u64>,
@@ -43,6 +47,9 @@ pub struct Peeked {
     /// The server's `Last-Modified` for it.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub last_modified: Option<String>,
+    /// `last_modified` as an instant (UTC).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub last_modified_at: Option<Stamp>,
     /// Its entries, when its directory was read.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub entries: Option<Vec<Entry>>,
@@ -58,6 +65,30 @@ pub struct PeekError {
     pub code: String,
     /// What happened.
     pub message: String,
+}
+
+impl Peeked {
+    /// The record with its `_at` instants, and its entries', derived from
+    /// the text fields beside them where a record written before they were
+    /// kept lacks them.
+    pub fn derived(mut self) -> Self {
+        if self.listed_modified_at.is_none() {
+            self.listed_modified_at = self
+                .listed_modified
+                .as_deref()
+                .and_then(Stamp::from_listing);
+        }
+        if self.last_modified_at.is_none() {
+            self.last_modified_at = self
+                .last_modified
+                .as_deref()
+                .and_then(Stamp::from_http_date);
+        }
+        if let Some(entries) = self.entries.take() {
+            self.entries = Some(entries.into_iter().map(Entry::derived).collect());
+        }
+        self
+    }
 }
 
 /// One zip peeked.
@@ -93,7 +124,8 @@ impl Mirror {
     }
 }
 
-/// Every zip peeked so far, in the order peeked.
+/// Every zip peeked so far, in the order peeked, each with its `_at`
+/// instants.
 pub fn read_peeks(path: &Path) -> Result<Vec<Peeked>, MirrorError> {
     let text = match std::fs::read_to_string(path) {
         Ok(t) => t,
@@ -103,11 +135,13 @@ pub fn read_peeks(path: &Path) -> Result<Vec<Peeked>, MirrorError> {
     text.lines()
         .enumerate()
         .map(|(i, l)| {
-            serde_json::from_str(l).map_err(|e| MirrorError::Record {
-                path: path.display().to_string(),
-                line: i as u64 + 1,
-                message: e.to_string(),
-            })
+            serde_json::from_str::<Peeked>(l)
+                .map(Peeked::derived)
+                .map_err(|e| MirrorError::Record {
+                    path: path.display().to_string(),
+                    line: i as u64 + 1,
+                    message: e.to_string(),
+                })
         })
         .collect()
 }
@@ -187,14 +221,17 @@ pub async fn peek(
         };
         let read = zipdir::read_directory(&mut src, remote.size.unwrap_or(0)).await;
         let seen = src.seen.take();
+        let last_modified = seen.as_ref().and_then(|s| s.last_modified.clone());
         let mut record = Peeked {
             url: url.clone(),
-            peeked_at: Some(crate::clock::now_utc_rfc3339()),
+            peeked_at: Some(Stamp::now()),
             listed_size: remote.size,
             listed_modified: Some(remote.modified.clone()),
+            listed_modified_at: remote.modified_at,
             size: seen.as_ref().and_then(|s| s.total_size),
-            etag: seen.as_ref().and_then(|s| s.etag.clone()),
-            last_modified: seen.and_then(|s| s.last_modified),
+            etag: seen.and_then(|s| s.etag),
+            last_modified_at: last_modified.as_deref().and_then(Stamp::from_http_date),
+            last_modified,
             entries: None,
             error: None,
         };
@@ -263,12 +300,14 @@ pub fn keep_listing(mirror: &Mirror, url: &str, path: &Path) -> Result<(), Mirro
     };
     let peeked = Peeked {
         url: url.to_owned(),
-        peeked_at: Some(crate::clock::now_utc_rfc3339()),
+        peeked_at: Some(Stamp::now()),
         listed_size: listed.as_ref().and_then(|r| r.size),
+        listed_modified_at: listed.as_ref().and_then(|r| r.modified_at),
         listed_modified: listed.map(|r| r.modified),
         size: Some(len),
         etag: sidecar.as_ref().and_then(|s| s.etag.clone()),
-        last_modified: sidecar.and_then(|s| s.last_modified),
+        last_modified: sidecar.as_ref().and_then(|s| s.last_modified.clone()),
+        last_modified_at: sidecar.and_then(|s| s.last_modified_at),
         entries,
         error,
     };
@@ -431,7 +470,42 @@ mod tests {
             Some("Monday, October 12, 2026 10:45 AM")
         );
         assert_eq!(m.etag.as_deref(), Some("\"etag\""));
-        assert!(m.last_modified.is_some());
+        assert_eq!(
+            m.last_modified.as_deref(),
+            Some("Tue, 13 Feb 2024 08:27:00 GMT")
+        );
+        // Each text time has its instant beside it: the listing's in AEST,
+        // the server's in UTC, the zip's entries' in AEST.
+        assert_eq!(
+            m.listed_modified_at.unwrap().to_string(),
+            "2026-10-12T10:45:00+10:00"
+        );
+        assert_eq!(
+            m.last_modified_at.unwrap().to_string(),
+            "2024-02-13T08:27:00Z"
+        );
+        assert!(entries[0].modified_at.is_some());
+        let text = std::fs::read_to_string(mirror.peek_path()).unwrap();
+        crate::stamp::check::assert_aware_lines(&text);
+        // A record written without the instants reads back with them.
+        let stripped: String = text
+            .lines()
+            .map(|l| {
+                let mut v: serde_json::Value = serde_json::from_str(l).unwrap();
+                let o = v.as_object_mut().unwrap();
+                o.remove("listed_modified_at");
+                o.remove("last_modified_at");
+                if let Some(es) = o.get_mut("entries").and_then(|e| e.as_array_mut()) {
+                    for e in es {
+                        e.as_object_mut().unwrap().remove("modified_at");
+                    }
+                }
+                v.to_string() + "\n"
+            })
+            .collect();
+        std::fs::write(mirror.peek_path(), &stripped).unwrap();
+        assert_eq!(read_peeks(&mirror.peek_path()).unwrap(), peeks);
+        std::fs::write(mirror.peek_path(), &text).unwrap();
         assert_eq!(current(&mirror).unwrap().len(), 3);
 
         // AEMO publishes M.zip again: the crawl lists another size, its

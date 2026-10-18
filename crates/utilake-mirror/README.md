@@ -65,6 +65,10 @@ the pages it kept, and archived files are never downloaded again.
 
 `nemweb/map.md` in this repo is the catalog folded into patterns.
 
+Every time field in these records is RFC 3339 with an offset, or has one
+beside it (`modified` as listed, `modified_at` as an instant): listing and
+zip times in AEST (`+10:00`), the server's and the mirror's own in UTC.
+
 ## Licence
 
 Apache-2.0; see `LICENSE` and `NOTICE`.
