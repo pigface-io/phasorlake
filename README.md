@@ -262,6 +262,15 @@ rows under `schemas/nem/census/` and `schemas/nem/shapes/`. That static map
 is committed. A new month goes forward with `just census-forward YYYY-MM`:
 download, census, sync the schemas to the month's control files, and gate
 the census against them (`just census-check`).
+The report folders (`Reports/ARCHIVE`, the last year or so, and
+`Reports/CURRENT`, the last days) publish the same tables as they are
+produced, so a layout AEMO has just changed shows there first.
+`just census-reports` reads every archived file under them, offline, and
+writes a tally per folder under `schemas/nem/census/reports/`: per month
+and shape, the CSVs that held it, their rows, and the first and last CSV
+by name. A CSV's month comes from the date in its name; its blocks are
+typed by that MMSDM month's control files, or the last month's before it.
+Its shapes join the same `schemas/nem/shapes/` files, with the months seen.
 Parquet is optional: `utilake ingest --from` writes it from the archive.
 
 ## Which months

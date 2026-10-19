@@ -19,5 +19,6 @@ pub mod dmreport;
 pub mod fixtures;
 pub mod migrate;
 pub mod pdr;
+pub mod reports;
 pub mod standing;
 pub mod sync;

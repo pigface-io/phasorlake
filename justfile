@@ -70,6 +70,10 @@ schema-fixtures month="2024-01":
 census from to=from *args:
     cargo run --release -q -p utilake-nem-census -- census --from {{from}} --to {{to}} "${@:3}"
 
+# record every block of every archived file under Reports/ARCHIVE and Reports/CURRENT, per folder, month and shape, into schemas/nem/census/reports/ and schemas/nem/shapes/; offline
+census-reports *args:
+    cargo run --release -q -p utilake-nem-census -- reports "$@"
+
 # write every table file again in the current schema_format, deriving what the format adds
 schema-migrate:
     cargo run --release -q -p utilake-nem-census -- migrate

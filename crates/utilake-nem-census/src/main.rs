@@ -54,6 +54,32 @@ enum Cmd {
         #[arg(long, default_value = "https://www.nemweb.com.au")]
         base: String,
     },
+    /// Record every block of every archived file under nemweb's report
+    /// folders (`Reports/ARCHIVE`, `Reports/CURRENT`), per folder, month
+    /// and shape, into `{schemas}/nem/census/reports/{ROOT}/{folder}.toml`,
+    /// and add each shape to `{schemas}/nem/shapes/{TABLE}.toml` with the
+    /// months it was seen. Blocks are typed by the control files of the
+    /// MMSDM month they fall in. A folder already recorded is skipped.
+    Reports {
+        /// Report roots to read (default both).
+        #[arg(long, value_name = "ROOT", default_values_t = utilake_nem_census::reports::ROOTS.map(String::from))]
+        root: Vec<String>,
+        /// Only folders whose path starts with this.
+        #[arg(long)]
+        folder: Option<String>,
+        /// Take the census of folders already recorded again.
+        #[arg(long)]
+        again: bool,
+        /// The utilake home whose archive is read (default `~/.utilake`).
+        #[arg(long, env = "UTILAKE_HOME")]
+        home: Option<PathBuf>,
+        /// The schemas directory to write into.
+        #[arg(long, default_value = "schemas")]
+        schemas: PathBuf,
+        /// Archive base URL, which names where the files are kept.
+        #[arg(long, default_value = "https://www.nemweb.com.au")]
+        base: String,
+    },
     /// Bring `{schemas}/nem/` up to the control files of each archived
     /// month, oldest first: a table a month's control file lays out anew
     /// gains an increment, a table the schemas lack is started. Nothing
@@ -180,6 +206,21 @@ fn main() -> ExitCode {
         } => census(
             from,
             to.unwrap_or(from),
+            again,
+            home.as_deref(),
+            &schemas,
+            &base,
+        ),
+        Cmd::Reports {
+            root,
+            folder,
+            again,
+            home,
+            schemas,
+            base,
+        } => reports(
+            &root,
+            folder.as_deref(),
             again,
             home.as_deref(),
             &schemas,
@@ -353,6 +394,77 @@ fn census(
             census.files.len(),
             census.problems.len()
         );
+    }
+    code
+}
+
+/// `reports`: one folder after another, each recorded once complete.
+fn reports(
+    roots: &[String],
+    folder: Option<&str>,
+    again: bool,
+    home: Option<&Path>,
+    schemas: &Path,
+    base: &str,
+) -> ExitCode {
+    use utilake_nem_census::reports::{
+        CtlSource, census_folder, folder_path, folders, record_folder, top_folders,
+    };
+    let (store, nem) = match archive(home, base) {
+        Ok(a) => a,
+        Err(code) => return code,
+    };
+    let tmp = match scratch() {
+        Ok(t) => t,
+        Err(code) => return code,
+    };
+    let registry = utilake_mms_registry::Registry::load_embedded();
+    let mut ctls = CtlSource::new(&store, &nem);
+    let mut code = ExitCode::SUCCESS;
+    for root in roots {
+        let probe = store.path_for(&format!("{}/Reports/{root}/x", base.trim_end_matches('/')));
+        let Some(dir) = probe.parent() else { continue };
+        let tops = top_folders(dir);
+        if tops.is_empty() {
+            eprintln!("Reports/{root}: nothing archived under {}", dir.display());
+        }
+        for top in tops {
+            let name = top
+                .file_name()
+                .map(|n| n.to_string_lossy().into_owned())
+                .unwrap_or_default();
+            if folder.is_some_and(|f| {
+                let first = f.split('/').next().unwrap_or(f);
+                !name.starts_with(first) && !first.starts_with(&name)
+            }) {
+                continue;
+            }
+            for (rel, files) in folders(&store, dir, &top) {
+                if folder.is_some_and(|f| !rel.starts_with(f)) {
+                    continue;
+                }
+                if !again && folder_path(schemas, root, &rel).is_file() {
+                    eprintln!("Reports/{root}/{rel}: recorded already");
+                    continue;
+                }
+                let (census, shapes) = census_folder(&registry, &mut ctls, &files, tmp.path());
+                for u in &census.unread {
+                    eprintln!("error: Reports/{root}/{rel}: {} {}", u.file, u.error);
+                    code = ExitCode::from(3);
+                }
+                let added = match record_folder(schemas, &registry, root, &rel, &census, &shapes) {
+                    Ok(n) => n,
+                    Err(e) => return fail(&e.diagnostic()),
+                };
+                eprintln!(
+                    "Reports/{root}/{rel}: {} files, {} CSVs, {} month-shape(s), {added} new shape(s), {} unread",
+                    census.files,
+                    census.csvs,
+                    census.blocks.len(),
+                    census.unread.len()
+                );
+            }
+        }
     }
     code
 }
