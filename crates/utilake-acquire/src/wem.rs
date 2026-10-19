@@ -14,7 +14,7 @@ use async_trait::async_trait;
 use serde::Deserialize;
 use url::Url;
 use utilake_core::YearMonth;
-use utilake_core::nemtime::WEM_OFFSET_SECS;
+use utilake_core::calendar::WEM_OFFSET_SECS;
 use utilake_core::timetext::{self, Stamp};
 
 use crate::error::FetchError;

@@ -13,9 +13,7 @@ use utilake_writer::{FileMeta, LakeWriter, ParquetHive, Partition, PartitionKey}
 const ROWS: usize = 262_144;
 
 fn batch(spill: bool) -> RecordBatch {
-    let base = utilake_core::nemtime::parse_nanos(b"2024/01/31 20:00:00", 36_000)
-        .unwrap()
-        .0;
+    let base = utilake_core::calendar::utc_nanos(2024, 1, 31, 20, 0, 0, 36_000);
     let ts: Vec<i64> = (0..ROWS)
         .map(|i| base + (i as i64) * 300_000_000_000 / if spill { 100 } else { 10_000 })
         .collect();

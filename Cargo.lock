@@ -2692,11 +2692,11 @@ dependencies = [
  "tokio",
  "tokio-util",
  "utilake-acquire",
- "utilake-conform",
  "utilake-core",
  "utilake-kit",
+ "utilake-mms-conform",
+ "utilake-mms-registry",
  "utilake-pipeline",
- "utilake-registry",
  "utilake-writer",
  "zip",
 ]
@@ -2716,9 +2716,9 @@ dependencies = [
  "url",
  "utilake-acquire",
  "utilake-core",
- "utilake-decode",
  "utilake-kit",
- "utilake-registry",
+ "utilake-mms-decode",
+ "utilake-mms-registry",
  "zip",
 ]
 
@@ -2737,36 +2737,20 @@ dependencies = [
  "tracing",
  "tracing-subscriber",
  "utilake-acquire",
- "utilake-conform",
  "utilake-core",
- "utilake-decode",
  "utilake-kit",
+ "utilake-mms-conform",
+ "utilake-mms-decode",
+ "utilake-mms-registry",
  "utilake-pipeline",
- "utilake-registry",
  "utilake-writer",
  "zip",
-]
-
-[[package]]
-name = "utilake-conform"
-version = "0.1.0"
-dependencies = [
- "arrow-array",
- "arrow-schema",
- "criterion",
- "tempfile",
- "utilake-acquire",
- "utilake-core",
- "utilake-decode",
- "utilake-kit",
- "utilake-registry",
 ]
 
 [[package]]
 name = "utilake-core"
 version = "0.1.0"
 dependencies = [
- "criterion",
  "fast-float2",
  "memchr",
  "proptest",
@@ -2776,17 +2760,6 @@ dependencies = [
  "thiserror",
  "toml",
  "xxhash-rust",
-]
-
-[[package]]
-name = "utilake-decode"
-version = "0.1.0"
-dependencies = [
- "memchr",
- "serde_json",
- "tempfile",
- "thiserror",
- "utilake-core",
 ]
 
 [[package]]
@@ -2812,6 +2785,53 @@ name = "utilake-mdff"
 version = "0.1.0"
 
 [[package]]
+name = "utilake-mms-conform"
+version = "0.1.0"
+dependencies = [
+ "arrow-array",
+ "arrow-schema",
+ "criterion",
+ "tempfile",
+ "utilake-acquire",
+ "utilake-core",
+ "utilake-kit",
+ "utilake-mms-decode",
+ "utilake-mms-registry",
+]
+
+[[package]]
+name = "utilake-mms-decode"
+version = "0.1.0"
+dependencies = [
+ "criterion",
+ "memchr",
+ "serde_json",
+ "tempfile",
+ "thiserror",
+ "utilake-core",
+]
+
+[[package]]
+name = "utilake-mms-registry"
+version = "0.1.0"
+dependencies = [
+ "arrow-schema",
+ "criterion",
+ "hashbrown 0.17.1",
+ "insta",
+ "postcard",
+ "serde",
+ "serde_json",
+ "sha2",
+ "tempfile",
+ "thiserror",
+ "toml",
+ "utilake-core",
+ "utilake-mms-decode",
+ "xxhash-rust",
+]
+
+[[package]]
 name = "utilake-pipeline"
 version = "0.1.0"
 dependencies = [
@@ -2827,31 +2847,13 @@ dependencies = [
  "tokio-util",
  "url",
  "utilake-acquire",
- "utilake-conform",
  "utilake-core",
  "utilake-kit",
- "utilake-registry",
+ "utilake-mms-conform",
+ "utilake-mms-decode",
+ "utilake-mms-registry",
  "utilake-writer",
  "zip",
-]
-
-[[package]]
-name = "utilake-registry"
-version = "0.1.0"
-dependencies = [
- "arrow-schema",
- "criterion",
- "hashbrown 0.17.1",
- "insta",
- "postcard",
- "serde",
- "serde_json",
- "sha2",
- "tempfile",
- "thiserror",
- "toml",
- "utilake-core",
- "xxhash-rust",
 ]
 
 [[package]]
@@ -3232,7 +3234,8 @@ dependencies = [
  "serde_json",
  "utilake-census",
  "utilake-core",
- "utilake-registry",
+ "utilake-mms-decode",
+ "utilake-mms-registry",
 ]
 
 [[package]]

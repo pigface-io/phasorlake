@@ -11,10 +11,10 @@
 resolver = "3"
 members = [
     "crates/utilake-core",
-    "crates/utilake-registry",
+    "crates/utilake-mms-registry",
     "crates/utilake-census",
-    "crates/utilake-decode",
-    "crates/utilake-conform",
+    "crates/utilake-mms-decode",
+    "crates/utilake-mms-conform",
     "crates/utilake-acquire",
     "crates/utilake-kit",
     "crates/utilake-writer",
@@ -26,10 +26,10 @@ members = [
 ]
 default-members = [
     "crates/utilake-core",
-    "crates/utilake-registry",
+    "crates/utilake-mms-registry",
     "crates/utilake-census",
-    "crates/utilake-decode",
-    "crates/utilake-conform",
+    "crates/utilake-mms-decode",
+    "crates/utilake-mms-conform",
     "crates/utilake-acquire",
     "crates/utilake-kit",
     "crates/utilake-writer",
@@ -71,9 +71,9 @@ uninlined_format_args = "deny"
 
 [workspace.dependencies]
 utilake-core = { path = "crates/utilake-core" }
-utilake-registry = { path = "crates/utilake-registry" }
-utilake-decode = { path = "crates/utilake-decode" }
-utilake-conform = { path = "crates/utilake-conform" }
+utilake-mms-registry = { path = "crates/utilake-mms-registry" }
+utilake-mms-decode = { path = "crates/utilake-mms-decode" }
+utilake-mms-conform = { path = "crates/utilake-mms-conform" }
 utilake-census = { path = "crates/utilake-census" }
 utilake-acquire = { path = "crates/utilake-acquire" }
 utilake-kit = { path = "crates/utilake-kit" }

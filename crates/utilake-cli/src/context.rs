@@ -12,8 +12,8 @@ use utilake_acquire::{
 use utilake_core::config::Config;
 use utilake_core::paths::Home;
 use utilake_kit::KitRegistry;
+use utilake_mms_registry::Registry;
 use utilake_pipeline::Deps;
-use utilake_registry::Registry;
 use utilake_writer::{ManifestHandle, ManifestThread};
 
 use crate::cli::Cli;
@@ -73,7 +73,7 @@ impl Context {
         // The one place that lists the kits a binary reads with.
         let nem = MmsdmArchive::new(&config.sources.nem_base_url)
             .map_err(|e| anyhow::anyhow!("{}", utilake_core::Diagnose::diagnostic(&e).render()))?;
-        let kits = Arc::new(KitRegistry::new(vec![utilake_conform::nem_kit(
+        let kits = Arc::new(KitRegistry::new(vec![utilake_mms_conform::nem_kit(
             registry.clone(),
             vec![Arc::new(nem)],
         )]));

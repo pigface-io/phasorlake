@@ -15,8 +15,8 @@ use tokio_util::sync::CancellationToken;
 use utilake_acquire::{Fetcher, FetcherConfig, OfflineTransport};
 use utilake_core::paths::Home;
 use utilake_kit::KitRegistry;
+use utilake_mms_registry::Registry;
 use utilake_pipeline::{Deps, Input, Plan, RunOptions, run};
-use utilake_registry::Registry;
 use utilake_writer::{Manifest, ManifestHandle};
 
 #[global_allocator]
@@ -92,7 +92,7 @@ fn ingest_once(dir: &Path, zip_path: &Path, registry: &Arc<Registry>) -> (Durati
             FetcherConfig::default(),
         ));
         let deps = Deps {
-            kits: Arc::new(KitRegistry::new(vec![utilake_conform::nem_kit(
+            kits: Arc::new(KitRegistry::new(vec![utilake_mms_conform::nem_kit(
                 registry.clone(),
                 Vec::new(),
             )])),

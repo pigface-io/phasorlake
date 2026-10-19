@@ -13,7 +13,7 @@
 
 use std::fmt;
 
-use crate::nemtime::{civil_from_days, days_from_civil, days_in_month};
+use crate::calendar::{civil_from_days, days_from_civil, days_in_month};
 
 /// An instant with the offset it was written in.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -451,7 +451,7 @@ fn local_seconds(y: i32, m: u32, d: u32, hh: u32, mm: u32, ss: u32) -> Option<i6
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::nemtime::{NEM_OFFSET_SECS, WEM_OFFSET_SECS};
+    use crate::calendar::{NEM_OFFSET_SECS, WEM_OFFSET_SECS};
 
     const T: i64 = 1_707_812_820; // 2024-02-13T08:27:00Z
 

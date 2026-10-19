@@ -141,7 +141,7 @@ impl CivilDay {
     /// does not have.
     pub fn new(year: i32, month: u8, day: u8) -> Option<Self> {
         let ym = YearMonth::new(year, month)?;
-        let days = crate::nemtime::days_in_month(ym.year, u32::from(ym.month));
+        let days = crate::calendar::days_in_month(ym.year, u32::from(ym.month));
         (day >= 1 && u32::from(day) <= days).then_some(Self { year, month, day })
     }
 

@@ -18,7 +18,8 @@ path = "src/main.rs"
 [dependencies]
 utilake-census.workspace = true
 utilake-core.workspace = true
-utilake-registry.workspace = true
+utilake-mms-decode.workspace = true
+utilake-mms-registry.workspace = true
 anyhow.workspace = true
 clap.workspace = true
 serde.workspace = true

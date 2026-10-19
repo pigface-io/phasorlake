@@ -20,12 +20,12 @@ use std::fmt::Write as _;
 use std::path::{Path, PathBuf};
 
 use utilake_core::{Category, Diagnostic, YearMonth};
-use utilake_registry::file_model::blob::SchemaSet;
-use utilake_registry::file_model::ctl::{CtlFile, parse, sha256};
-use utilake_registry::file_model::file::{CTL_DIR, TABLE_FILE, ctl_file_name, write_table};
-use utilake_registry::file_model::shapes::ShapeEntry;
-use utilake_registry::file_model::temporal::derive;
-use utilake_registry::file_model::{
+use utilake_mms_registry::file_model::blob::SchemaSet;
+use utilake_mms_registry::file_model::ctl::{CtlFile, parse, sha256};
+use utilake_mms_registry::file_model::file::{CTL_DIR, TABLE_FILE, ctl_file_name, write_table};
+use utilake_mms_registry::file_model::shapes::ShapeEntry;
+use utilake_mms_registry::file_model::temporal::derive;
+use utilake_mms_registry::file_model::{
     Column, ColumnId, Increment, LakeType, LoadMode, Market, Table, Temporal,
 };
 
@@ -414,9 +414,9 @@ impl Sync {
             },
             // Derived once the columns and their types are known, below.
             temporal: Temporal {
-                origin: utilake_registry::file_model::RoleOrigin::Derived,
+                origin: utilake_mms_registry::file_model::RoleOrigin::Derived,
                 entity: Vec::new(),
-                valid: utilake_registry::file_model::ValidAxis::Timeless,
+                valid: utilake_mms_registry::file_model::ValidAxis::Timeless,
                 order: Vec::new(),
                 cutoff: None,
             },

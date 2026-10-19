@@ -55,56 +55,56 @@ Every error and warning utilake reports carries one of these codes. Codes are st
 
 | code | raised in |
 |---|---|
-| `csv.block_mismatch` | `crates/utilake-decode/src/error.rs` |
-| `csv.data_before_header` | `crates/utilake-decode/src/error.rs` |
-| `csv.field_count_mismatch` | `crates/utilake-decode/src/error.rs` |
+| `csv.block_mismatch` | `crates/utilake-mms-decode/src/error.rs` |
+| `csv.data_before_header` | `crates/utilake-mms-decode/src/error.rs` |
+| `csv.field_count_mismatch` | `crates/utilake-mms-decode/src/error.rs` |
 | `csv.footer_count_mismatch` | `crates/utilake-pipeline/src/ingest_file.rs` |
-| `csv.header_malformed` | `crates/utilake-decode/src/error.rs` |
-| `csv.line_too_long` | `crates/utilake-decode/src/error.rs` |
+| `csv.header_malformed` | `crates/utilake-mms-decode/src/error.rs` |
+| `csv.line_too_long` | `crates/utilake-mms-decode/src/error.rs` |
 | `csv.read_failed` | `crates/utilake-pipeline/src/ingest_file.rs` |
-| `csv.row_too_short` | `crates/utilake-decode/src/error.rs` |
-| `csv.stopped_fail_fast` | `crates/utilake-decode/src/error.rs` |
-| `csv.too_many_bad_rows` | `crates/utilake-decode/src/error.rs` |
-| `csv.unknown_record` | `crates/utilake-decode/src/error.rs` |
+| `csv.row_too_short` | `crates/utilake-mms-decode/src/error.rs` |
+| `csv.stopped_fail_fast` | `crates/utilake-mms-decode/src/error.rs` |
+| `csv.too_many_bad_rows` | `crates/utilake-mms-decode/src/error.rs` |
+| `csv.unknown_record` | `crates/utilake-mms-decode/src/error.rs` |
 
 ## parse
 
 | code | raised in |
 |---|---|
-| `parse.boolean` | `crates/utilake-decode/src/error.rs` |
-| `parse.decimal` | `crates/utilake-decode/src/error.rs` |
-| `parse.float` | `crates/utilake-decode/src/error.rs` |
-| `parse.integer` | `crates/utilake-decode/src/error.rs` |
-| `parse.null_not_allowed` | `crates/utilake-decode/src/error.rs` |
-| `parse.timestamp` | `crates/utilake-decode/src/error.rs` |
-| `parse.utf8` | `crates/utilake-decode/src/error.rs` |
+| `parse.boolean` | `crates/utilake-mms-decode/src/error.rs` |
+| `parse.decimal` | `crates/utilake-mms-decode/src/error.rs` |
+| `parse.float` | `crates/utilake-mms-decode/src/error.rs` |
+| `parse.integer` | `crates/utilake-mms-decode/src/error.rs` |
+| `parse.null_not_allowed` | `crates/utilake-mms-decode/src/error.rs` |
+| `parse.timestamp` | `crates/utilake-mms-decode/src/error.rs` |
+| `parse.utf8` | `crates/utilake-mms-decode/src/error.rs` |
 
 ## schema
 
 | code | raised in |
 |---|---|
-| `schema.blob_corrupt` | `crates/utilake-registry/src/file_model/error.rs` |
-| `schema.breaking_change` | `crates/utilake-registry/src/file_model/error.rs` |
+| `schema.blob_corrupt` | `crates/utilake-mms-registry/src/file_model/error.rs` |
+| `schema.breaking_change` | `crates/utilake-mms-registry/src/file_model/error.rs` |
 | `schema.census_not_archived` | `crates/utilake-census/src/census.rs` |
 | `schema.census_unreadable` | `crates/utilake-census/src/census.rs` |
 | `schema.census_write` | `crates/utilake-census/src/census.rs` |
 | `schema.datamodel_page` | `crates/utilake-census/src/dmreport.rs` |
 | `schema.datamodel_parse` | `crates/utilake-census/src/datamodel.rs` |
 | `schema.datamodel_read` | `crates/utilake-census/src/datamodel.rs` |
-| `schema.deviates` | `crates/utilake-registry/src/error.rs` |
-| `schema.file_invalid` | `crates/utilake-registry/src/file_model/error.rs` |
-| `schema.file_parse` | `crates/utilake-registry/src/file_model/error.rs` |
-| `schema.file_read` | `crates/utilake-registry/src/file_model/error.rs` |
+| `schema.deviates` | `crates/utilake-mms-registry/src/error.rs` |
+| `schema.file_invalid` | `crates/utilake-mms-registry/src/file_model/error.rs` |
+| `schema.file_parse` | `crates/utilake-mms-registry/src/file_model/error.rs` |
+| `schema.file_read` | `crates/utilake-mms-registry/src/file_model/error.rs` |
 | `schema.fixture_read_failed` | `crates/utilake-census/src/fixtures.rs` |
 | `schema.fixture_write_failed` | `crates/utilake-census/src/fixtures.rs` |
 | `schema.migrate_io` | `crates/utilake-census/src/migrate.rs` |
-| `schema.missing_key` | `crates/utilake-registry/src/error.rs` |
-| `schema.no_columns` | `crates/utilake-registry/src/error.rs` |
+| `schema.missing_key` | `crates/utilake-mms-registry/src/error.rs` |
+| `schema.no_columns` | `crates/utilake-mms-registry/src/error.rs` |
 | `schema.pdr_read` | `crates/utilake-census/src/pdr.rs` |
 | `schema.standing_list` | `crates/utilake-census/src/main.rs` |
 | `schema.sync_write` | `crates/utilake-census/src/sync.rs` |
-| `schema.unknown_table` | `crates/utilake-registry/src/error.rs` |
-| `schema.unseen_version` | `crates/utilake-registry/src/resolve.rs` |
+| `schema.unknown_table` | `crates/utilake-mms-registry/src/error.rs` |
+| `schema.unseen_version` | `crates/utilake-mms-registry/src/resolve.rs` |
 
 ## store
 
@@ -141,7 +141,7 @@ Every error and warning utilake reports carries one of these codes. Codes are st
 
 | code | raised in |
 |---|---|
-| `internal.arrow` | `crates/utilake-decode/src/error.rs` |
+| `internal.arrow` | `crates/utilake-mms-decode/src/error.rs` |
 | `internal.no_such_writer` | `crates/utilake-writer/src/error.rs` |
 | `internal.panic` | `crates/utilake-pipeline/src/run.rs` |
 

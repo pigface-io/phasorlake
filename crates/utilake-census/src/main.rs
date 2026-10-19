@@ -222,7 +222,8 @@ fn main() -> ExitCode {
             Err(d) => fail(&d),
         },
         Cmd::PdrDiff { pdr, schemas } => {
-            let tables = match utilake_registry::file_model::blob::SchemaSet::read_dir(&schemas) {
+            let tables = match utilake_mms_registry::file_model::blob::SchemaSet::read_dir(&schemas)
+            {
                 Ok(set) => set.tables,
                 Err(e) => return fail(&e.diagnostic()),
             };
@@ -322,7 +323,7 @@ fn census(
         Ok(t) => t,
         Err(code) => return code,
     };
-    let registry = utilake_registry::Registry::load_embedded();
+    let registry = utilake_mms_registry::Registry::load_embedded();
     let mut code = ExitCode::SUCCESS;
     for month in from.range_inclusive(to) {
         if !again && census_path(schemas, month).is_file() {
@@ -467,7 +468,8 @@ fn sync(
         Ok(s) => s,
         Err(d) => return fail(&d),
     };
-    let shapes: Vec<_> = match utilake_registry::file_model::blob::SchemaSet::read_dir(schemas) {
+    let shapes: Vec<_> = match utilake_mms_registry::file_model::blob::SchemaSet::read_dir(schemas)
+    {
         Ok(set) => set.shapes.into_values().flatten().collect(),
         Err(e) => return fail(&e.diagnostic()),
     };

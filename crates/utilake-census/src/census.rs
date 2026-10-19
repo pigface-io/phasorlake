@@ -23,14 +23,14 @@ use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
 use utilake_acquire::{Archive, MmsdmArchive};
-use utilake_core::{
-    CanonicalShape, Category, Diagnose, Diagnostic, IRow, ShapeId, TypeClass, YearMonth,
-};
-use utilake_decode::scan::{Flow, Pos, ScanOptions, Sink, scan_with};
-use utilake_decode::{Row, RowError, RowFailure, SinkError};
-use utilake_registry::Registry;
-use utilake_registry::file_model::ctl::CtlFile;
-use utilake_registry::file_model::shapes::{ShapeEntry, parse_shapes, render_shapes};
+use utilake_core::{Category, Diagnose, Diagnostic, YearMonth};
+use utilake_mms_decode::IRow;
+use utilake_mms_decode::scan::{Flow, Pos, ScanOptions, Sink, scan_with};
+use utilake_mms_decode::{Row, RowError, RowFailure, SinkError};
+use utilake_mms_registry::Registry;
+use utilake_mms_registry::file_model::ctl::CtlFile;
+use utilake_mms_registry::file_model::shapes::{ShapeEntry, parse_shapes, render_shapes};
+use utilake_mms_registry::{CanonicalShape, ShapeId, TypeClass};
 
 /// Why the census of a month could not be taken or recorded.
 #[derive(Debug, thiserror::Error)]
@@ -153,7 +153,7 @@ impl Ctls {
             .into_iter()
             .filter_map(|(name, text)| {
                 let table = ctl_table(name)?;
-                let ctl = utilake_registry::file_model::ctl::parse(name, text).ok()?;
+                let ctl = utilake_mms_registry::file_model::ctl::parse(name, text).ok()?;
                 Some((table, ctl))
             })
             .collect();

@@ -11,16 +11,16 @@ use tokio_util::sync::CancellationToken;
 use url::Url;
 use utilake_acquire::transport::{Canned, StaticTransport};
 use utilake_acquire::{Archive, FetchError, Fetcher, FetcherConfig, Query, RemoteFile, Source};
-use utilake_conform::MmsCatalog;
 use utilake_core::TimeRange;
 use utilake_core::event::Event;
 use utilake_core::paths::Home;
 use utilake_kit::{Catalog as _, KitRegistry, Strictness};
-use utilake_pipeline::{Deps, Input, Plan, RunOptions, run};
-use utilake_registry::file_model::{
+use utilake_mms_conform::MmsCatalog;
+use utilake_mms_registry::file_model::{
     Column, ColumnId, Increment, LakeType, Market, RoleOrigin, Table, Temporal, ValidAxis,
 };
-use utilake_registry::{LoadMode, Registry};
+use utilake_mms_registry::{LoadMode, Registry};
+use utilake_pipeline::{Deps, Input, Plan, RunOptions, run};
 use utilake_writer::manifest::DiagFilter;
 use utilake_writer::{Manifest, ManifestHandle, ManifestThread};
 
@@ -60,7 +60,7 @@ impl Env {
 /// source: what names a local file's table and month.
 fn kits_for(registry: &Arc<Registry>) -> Arc<KitRegistry> {
     let nem = utilake_acquire::MmsdmArchive::new("https://h").unwrap();
-    Arc::new(KitRegistry::new(vec![utilake_conform::nem_kit(
+    Arc::new(KitRegistry::new(vec![utilake_mms_conform::nem_kit(
         registry.clone(),
         vec![Arc::new(nem)],
     )]))
@@ -168,7 +168,7 @@ fn overlay(registry: &Registry, root: &Path, t: &Table) -> Arc<Registry> {
     std::fs::create_dir_all(&dir).unwrap();
     std::fs::write(
         dir.join("table.toml"),
-        utilake_registry::file_model::file::write_table(&t),
+        utilake_mms_registry::file_model::file::write_table(&t),
     )
     .unwrap();
     Arc::new(registry.with_overlay(root).unwrap())
@@ -232,7 +232,7 @@ async fn a_table_without_a_time_column_is_partitioned_by_its_file_month() {
     let mut e = env();
     // Such a table, laid over the embedded registry as a user's would be.
     let cols = ["CONTRACTYEAR", "WEEKNO"];
-    let irow = utilake_core::IRow {
+    let irow = utilake_mms_decode::IRow {
         report_type: "UTILAKE_TEST",
         report_subtype: "NOTIME",
         version: 1,

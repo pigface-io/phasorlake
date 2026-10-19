@@ -7,7 +7,7 @@
 //! ```
 
 use memchr::memmem;
-use utilake_core::nemtime::NEM_OFFSET_SECS;
+use utilake_core::calendar::NEM_OFFSET_SECS;
 use utilake_core::timetext::{Stamp, parse_iis_listing};
 
 /// One link in a listing.

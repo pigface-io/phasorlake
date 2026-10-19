@@ -267,15 +267,15 @@ pub fn run(set: &str, do_tighten: bool) -> Result<bool> {
     // library's unit tests as a benchmark harness, which rejects criterion flags.
     let targets: &[(&str, &str)] = match set {
         "fast" => &[
-            ("utilake-conform", "scan"),
-            ("utilake-registry", "resolve"),
-            ("utilake-core", "values"),
+            ("utilake-mms-conform", "scan"),
+            ("utilake-mms-registry", "resolve"),
+            ("utilake-mms-decode", "values"),
             ("utilake-acquire", "fetch"),
         ],
         "full" => &[
-            ("utilake-conform", "scan"),
-            ("utilake-registry", "resolve"),
-            ("utilake-core", "values"),
+            ("utilake-mms-conform", "scan"),
+            ("utilake-mms-registry", "resolve"),
+            ("utilake-mms-decode", "values"),
             ("utilake-acquire", "fetch"),
             ("utilake-writer", "write"),
         ],

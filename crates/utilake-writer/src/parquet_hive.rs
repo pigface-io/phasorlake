@@ -380,7 +380,20 @@ mod tests {
     use arrow_array::{Float64Array, StringArray, TimestampNanosecondArray};
     use arrow_schema::{DataType, Field, Schema, TimeUnit};
     use parquet::arrow::arrow_reader::ParquetRecordBatchReaderBuilder;
-    use utilake_core::nemtime::{NEM_OFFSET_SECS, parse_nanos};
+    use utilake_core::calendar::{NEM_OFFSET_SECS, utc_nanos};
+
+    /// `yyyy/mm/dd hh:mm:ss` in NEM time as UTC nanoseconds.
+    fn nanos(text: &str) -> i64 {
+        let n = |s: &str| s.parse::<u32>().unwrap();
+        let (date, clock) = text.split_once(' ').unwrap();
+        let [y, m, d] = date.split('/').map(n).collect::<Vec<_>>()[..] else {
+            panic!("{text}")
+        };
+        let [hh, mm, ss] = clock.split(':').map(n).collect::<Vec<_>>()[..] else {
+            panic!("{text}")
+        };
+        utc_nanos(y as i32, m, d, hh, mm, ss, NEM_OFFSET_SECS)
+    }
     use utilake_core::{Diagnose, Fingerprint};
 
     use super::*;
@@ -399,10 +412,7 @@ mod tests {
     }
 
     fn batch(times: &[&str], ids: &[&str], vals: &[Option<f64>]) -> RecordBatch {
-        let ts: Vec<i64> = times
-            .iter()
-            .map(|t| parse_nanos(t.as_bytes(), NEM_OFFSET_SECS).unwrap().0)
-            .collect();
+        let ts: Vec<i64> = times.iter().map(|t| nanos(t)).collect();
         RecordBatch::try_new(
             schema(),
             vec![
@@ -482,19 +492,11 @@ mod tests {
         );
         assert_eq!(
             f.min_time,
-            Some(
-                parse_nanos(b"2024/01/01 00:05:00", NEM_OFFSET_SECS)
-                    .unwrap()
-                    .0
-            )
+            Some(utc_nanos(2024, 1, 1, 0, 5, 0, NEM_OFFSET_SECS))
         );
         assert_eq!(
             f.max_time,
-            Some(
-                parse_nanos(b"2024/01/01 00:15:00", NEM_OFFSET_SECS)
-                    .unwrap()
-                    .0
-            )
+            Some(utc_nanos(2024, 1, 1, 0, 15, 0, NEM_OFFSET_SECS))
         );
         assert!(
             f.path.ends_with(
@@ -582,11 +584,7 @@ mod tests {
         assert!(!f.sorted, "the second batch went backwards");
         assert_eq!(
             f.min_time,
-            Some(
-                parse_nanos(b"2024/02/01 00:00:00", NEM_OFFSET_SECS)
-                    .unwrap()
-                    .0
-            )
+            Some(utc_nanos(2024, 2, 1, 0, 0, 0, NEM_OFFSET_SECS))
         );
         // Schema mismatch.
         let id = w.open(&key(3), schema(), &meta()).unwrap();

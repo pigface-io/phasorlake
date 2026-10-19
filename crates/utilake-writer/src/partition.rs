@@ -4,7 +4,7 @@ use arrow_array::cast::AsArray;
 use arrow_array::types::{TimestampNanosecondType, UInt32Type};
 use arrow_array::{Array, PrimitiveArray, RecordBatch};
 use arrow_schema::{DataType, Field, Schema, TimeUnit};
-use utilake_core::nemtime::local_year_month;
+use utilake_core::calendar::local_year_month;
 
 use crate::error::StoreError;
 use crate::writer::Partition;
@@ -141,15 +141,25 @@ mod tests {
 
     use arrow_array::{Int64Array, TimestampNanosecondArray};
     use arrow_schema::{Field, Schema, TimeUnit};
-    use utilake_core::nemtime::{NEM_OFFSET_SECS, parse_nanos};
+    use utilake_core::calendar::{NEM_OFFSET_SECS, utc_nanos};
+
+    /// `yyyy/mm/dd hh:mm:ss` in NEM time as UTC nanoseconds.
+    fn nanos(text: &str) -> i64 {
+        let n = |s: &str| s.parse::<u32>().unwrap();
+        let (date, clock) = text.split_once(' ').unwrap();
+        let [y, m, d] = date.split('/').map(n).collect::<Vec<_>>()[..] else {
+            panic!("{text}")
+        };
+        let [hh, mm, ss] = clock.split(':').map(n).collect::<Vec<_>>()[..] else {
+            panic!("{text}")
+        };
+        utc_nanos(y as i32, m, d, hh, mm, ss, NEM_OFFSET_SECS)
+    }
 
     use super::*;
 
     fn batch(times: &[Option<&str>]) -> RecordBatch {
-        let vals: Vec<Option<i64>> = times
-            .iter()
-            .map(|t| t.map(|s| parse_nanos(s.as_bytes(), NEM_OFFSET_SECS).unwrap().0))
-            .collect();
+        let vals: Vec<Option<i64>> = times.iter().map(|t| t.map(nanos)).collect();
         let ts = TimestampNanosecondArray::from(vals).with_timezone("+10:00");
         let ids = Int64Array::from((0..times.len() as i64).collect::<Vec<_>>());
         let schema = Arc::new(Schema::new(vec![
@@ -226,22 +236,8 @@ mod tests {
                 .any(|(p, b)| *p == Partition::Unknown && b.num_rows() == 1)
         );
         let (min, max) = time_bounds(&b, 0);
-        assert_eq!(
-            min,
-            Some(
-                parse_nanos(b"2024/01/01 00:00:00", NEM_OFFSET_SECS)
-                    .unwrap()
-                    .0
-            )
-        );
-        assert_eq!(
-            max,
-            Some(
-                parse_nanos(b"2024/01/02 00:00:00", NEM_OFFSET_SECS)
-                    .unwrap()
-                    .0
-            )
-        );
+        assert_eq!(min, Some(utc_nanos(2024, 1, 1, 0, 0, 0, NEM_OFFSET_SECS)));
+        assert_eq!(max, Some(utc_nanos(2024, 1, 2, 0, 0, 0, NEM_OFFSET_SECS)));
         assert!(!is_sorted(&b, 0));
         let sorted = batch(&[
             Some("2024/01/01 00:00:00"),

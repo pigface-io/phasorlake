@@ -15,9 +15,11 @@ use std::path::Path;
 
 use anyhow::{Context as _, Result};
 use utilake_census::census::{census_dir, read_month};
-use utilake_core::{Category, Diagnostic, IRow, ShapeId, TypeClass, YearMonth};
-use utilake_registry::file_model::shapes::ShapeEntry;
-use utilake_registry::{Mode, Registry, ResolveOptions, Status};
+use utilake_core::{Category, Diagnostic, YearMonth};
+use utilake_mms_decode::IRow;
+use utilake_mms_registry::file_model::shapes::ShapeEntry;
+use utilake_mms_registry::{Mode, Registry, ResolveOptions, Status};
+use utilake_mms_registry::{ShapeId, TypeClass};
 
 /// Months as a list for a message.
 fn months_text(months: &BTreeSet<YearMonth>) -> String {
@@ -244,7 +246,7 @@ pub fn run() -> Result<bool> {
 
 #[cfg(test)]
 mod tests {
-    use utilake_registry::file_model::blob::SchemaSet;
+    use utilake_mms_registry::file_model::blob::SchemaSet;
 
     use super::*;
 

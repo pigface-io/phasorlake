@@ -8,9 +8,9 @@ use std::collections::BTreeMap;
 use std::path::Path;
 
 use utilake_core::Diagnostic;
-use utilake_registry::file_model::Table;
-use utilake_registry::file_model::ctl::{CtlFile, parse};
-use utilake_registry::file_model::file::CTL_DIR;
+use utilake_mms_registry::file_model::Table;
+use utilake_mms_registry::file_model::ctl::{CtlFile, parse};
+use utilake_mms_registry::file_model::file::CTL_DIR;
 
 /// How a PDR control file differs from one of ours: columns only one of
 /// them loads, and columns both load with other loader types.
@@ -133,7 +133,7 @@ pub fn report(pdr: &Path, nem: &Path, tables: &[Table]) -> Result<Vec<String>, B
 #[cfg(test)]
 mod tests {
     use super::*;
-    use utilake_registry::file_model::blob::SchemaSet;
+    use utilake_mms_registry::file_model::blob::SchemaSet;
 
     fn root() -> std::path::PathBuf {
         std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../..")

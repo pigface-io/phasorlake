@@ -12,7 +12,7 @@ use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
-use utilake_core::nemtime::NEM_OFFSET_SECS;
+use utilake_core::calendar::NEM_OFFSET_SECS;
 use utilake_core::timetext::{self, Stamp};
 
 use crate::error::FetchError;

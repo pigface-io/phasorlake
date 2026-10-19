@@ -18,9 +18,9 @@ path = "src/main.rs"
 [dependencies]
 utilake-core.workspace = true
 utilake-kit.workspace = true
-utilake-registry.workspace = true
-utilake-decode.workspace = true
-utilake-conform.workspace = true
+utilake-mms-registry.workspace = true
+utilake-mms-decode.workspace = true
+utilake-mms-conform.workspace = true
 utilake-acquire.workspace = true
 utilake-writer.workspace = true
 utilake-pipeline.workspace = true

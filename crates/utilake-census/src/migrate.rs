@@ -9,8 +9,8 @@
 use std::path::{Path, PathBuf};
 
 use utilake_core::{Category, Diagnose, Diagnostic};
-use utilake_registry::file_model::blob::SchemaSet;
-use utilake_registry::file_model::file::{TABLE_FILE, write_table};
+use utilake_mms_registry::file_model::blob::SchemaSet;
+use utilake_mms_registry::file_model::file::{TABLE_FILE, write_table};
 
 /// Rewrites, or with `check` only lists, every table file under `schemas`
 /// whose text is not what the current format writes. Returns those paths.

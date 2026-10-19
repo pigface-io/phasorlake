@@ -21,10 +21,5 @@ toml.workspace = true
 xxhash-rust.workspace = true
 
 [dev-dependencies]
-criterion.workspace = true
 proptest.workspace = true
 tempfile.workspace = true
-
-[[bench]]
-name = "values"
-harness = false

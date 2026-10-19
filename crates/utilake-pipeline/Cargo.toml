@@ -25,8 +25,9 @@ tokio-util.workspace = true
 url.workspace = true
 
 [dev-dependencies]
-utilake-conform.workspace = true
-utilake-registry.workspace = true
+utilake-mms-conform.workspace = true
+utilake-mms-decode.workspace = true
+utilake-mms-registry.workspace = true
 arrow-select.workspace = true
 async-trait.workspace = true
 parquet.workspace = true

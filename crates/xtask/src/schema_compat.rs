@@ -1,6 +1,6 @@
 //! The registry only changes in ways the lake survives. Every table file
 //! under `schemas/` at the base ref is compared with the working tree by
-//! the rules of `utilake_registry::file_model::compat`: no column id removed,
+//! the rules of `utilake_mms_registry::file_model::compat`: no column id removed,
 //! reused or moved, no type changed but by an Iceberg promotion, no
 //! increment removed or changed, no table deleted. A change that breaks one of them on purpose is explained
 //! by a `schema-break:` line in a commit message since the base.
@@ -9,10 +9,10 @@ use std::path::Path;
 use std::process::Command;
 
 use anyhow::{Context, Result};
-use utilake_registry::file_model::Table;
-use utilake_registry::file_model::blob::{SchemaSet, table_path_market};
-use utilake_registry::file_model::compat::breaking_changes;
-use utilake_registry::file_model::file::parse_table;
+use utilake_mms_registry::file_model::Table;
+use utilake_mms_registry::file_model::blob::{SchemaSet, table_path_market};
+use utilake_mms_registry::file_model::compat::breaking_changes;
+use utilake_mms_registry::file_model::file::parse_table;
 
 fn git(args: &[&str]) -> Result<Option<String>> {
     let out = Command::new("git")

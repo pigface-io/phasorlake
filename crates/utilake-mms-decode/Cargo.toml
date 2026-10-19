@@ -1,0 +1,26 @@
+[package]
+name = "utilake-mms-decode"
+description = "The MMS C/I/D row format: scanner and field splitter. Knows no registry."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+utilake-core.workspace = true
+memchr.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+criterion.workspace = true
+tempfile.workspace = true
+
+[[bench]]
+name = "values"
+harness = false

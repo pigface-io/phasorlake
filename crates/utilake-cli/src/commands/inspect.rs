@@ -3,11 +3,11 @@
 use std::path::Path;
 
 use anyhow::Result;
-use utilake_conform::inspect::{BlockSummary, InspectSink};
 use utilake_core::Diagnose;
-use utilake_decode::scan::{ScanOptions, scan};
 use utilake_kit::container::walk_csv_entries;
-use utilake_registry::{Mode, ResolveOptions};
+use utilake_mms_conform::inspect::{BlockSummary, InspectSink};
+use utilake_mms_decode::scan::{ScanOptions, scan};
+use utilake_mms_registry::{Mode, ResolveOptions};
 
 use crate::context::Context;
 use crate::render;
