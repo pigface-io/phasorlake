@@ -107,8 +107,10 @@ pub struct ZipPeeked<'a> {
 /// What a peek pass did.
 #[derive(Debug, Clone, Default, Serialize)]
 pub struct PeekSummary {
-    /// Zips to peek: listed, not archived, not removed, not peeked before.
+    /// Zips to peek: listed, not removed, not peeked before.
     pub zips: usize,
+    /// Of those, archived when their turn came, so not read.
+    pub archived: usize,
     /// Of those, read.
     pub read: usize,
     /// Of those, not zips or damaged.
@@ -200,15 +202,10 @@ pub async fn peek(
     let peeked = current(mirror)?;
     let removed = mirror.removed()?;
     let paired: HashSet<String> = pairs(mirror)?.into_iter().map(|p| p.zip).collect();
-    let mut listed = crate::net::Listed::default();
     let mut zips: Vec<Remote> = read_record(&mirror.record_path())?
         .into_iter()
         .filter(|r| r.kind == RemoteKind::File && is_zip_name(&r.url))
         .filter(|r| !peeked.contains_key(&r.url) && !removed.contains_key(&r.url))
-        .filter(|r| {
-            let path = fetcher.archive().path_for(&r.url);
-            !(listed.holds(&path) && path.is_file())
-        })
         .collect();
     // Stable: the paired zips first, each group in URL order.
     zips.sort_by_key(|r| !paired.contains(&r.url));
@@ -218,6 +215,13 @@ pub async fn peek(
     };
     for (done, remote) in zips.iter().enumerate() {
         let url = &remote.url;
+        // Archived, before the pass or by the download beside it: the
+        // archive has the zip whole. Asked here, not up front, since on
+        // exFAT each name not there costs a scan of its folder.
+        if fetcher.archive().path_for(url).is_file() {
+            summary.archived += 1;
+            continue;
+        }
         let mut src = Ranged {
             fetcher,
             url,
@@ -447,7 +451,10 @@ mod tests {
         let s = peek(&f, &mirror, |z| order.push(z.url.to_owned()))
             .await
             .unwrap();
-        assert_eq!((s.zips, s.read, s.unreadable, s.failed.len()), (4, 2, 1, 1));
+        assert_eq!(
+            (s.zips, s.archived, s.read, s.unreadable, s.failed.len()),
+            (5, 1, 2, 1, 1)
+        );
         assert_eq!(s.failed[0].code, "net.retries_exhausted");
         assert_eq!(
             order,
@@ -532,10 +539,11 @@ mod tests {
         assert!(again.contains(&"https://h/A/M.zip".to_owned()), "{again:?}");
         assert!(current(&mirror).unwrap().contains_key("https://h/A/M.zip"));
 
-        // Again: only the zip that failed is asked for.
+        // Again: only the zip that failed is asked for; the archived one is
+        // passed over without a request.
         let before = t.request_count();
         let s = peek(&f, &mirror, |_| {}).await.unwrap();
-        assert_eq!((s.zips, s.failed.len()), (1, 1));
+        assert_eq!((s.zips, s.archived, s.failed.len()), (2, 1, 1));
         assert_eq!(t.request_count(), before + 1);
 
         // Refused: the pass stops.

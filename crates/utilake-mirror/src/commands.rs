@@ -346,8 +346,9 @@ async fn peek(
             eprintln!();
         }
         println!(
-            "{} zips peeked: {} read, {} not zips or damaged, {} failed",
+            "{} zips peeked: {} archived, {} read, {} not zips or damaged, {} failed",
             summary.zips,
+            summary.archived,
             summary.read,
             summary.unreadable,
             summary.failed.len(),

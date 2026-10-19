@@ -272,7 +272,7 @@ fn a_run_waits_out_failures_then_compare_map_and_summary() {
     let peeked = cli.run(&["--progress", "peek"]);
     assert!(peeked.status.success());
     assert!(String::from_utf8_lossy(&peeked.stderr).contains("1/1 zips peeked"));
-    assert!(String::from_utf8_lossy(&peeked.stdout).contains("1 zips peeked: 1 read"));
+    assert!(String::from_utf8_lossy(&peeked.stdout).contains("1 zips peeked: 0 archived, 1 read"));
     let out = cli.run(&["--progress", "run", "--wait-minutes", "0", "--root", &root]);
     let (stdout, stderr) = (
         String::from_utf8_lossy(&out.stdout),
