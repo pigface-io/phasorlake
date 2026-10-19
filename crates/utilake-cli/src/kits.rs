@@ -13,5 +13,9 @@ pub fn assemble(config: &Config, registry: Arc<Registry>) -> Result<Arc<KitRegis
         .map_err(|e| anyhow::anyhow!("{e} (in the config file)"))?;
     let nem = utilake_nem::kit(registry, &nem.base_url)
         .map_err(|e| anyhow::anyhow!("{}", utilake_core::Diagnose::diagnostic(&e).render()))?;
-    Ok(Arc::new(KitRegistry::new(vec![nem])))
+    let wem = utilake_wem::WemConfig::from_sources(&config.sources)
+        .map_err(|e| anyhow::anyhow!("{e} (in the config file)"))?;
+    let wem = utilake_wem::kit(&wem)
+        .map_err(|e| anyhow::anyhow!("{}", utilake_core::Diagnose::diagnostic(&e).render()))?;
+    Ok(Arc::new(KitRegistry::new(vec![nem, wem])))
 }

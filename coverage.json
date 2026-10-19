@@ -15,6 +15,7 @@
     "crates/utilake-acquire/src": 85,
     "crates/utilake-kit/src": 90,
     "crates/utilake-nem/src": 85,
+    "crates/utilake-wem/src": 85,
     "crates/utilake-writer/src": 85,
     "crates/utilake-pipeline/src": 75,
     "crates/utilake-cli/src": 30,

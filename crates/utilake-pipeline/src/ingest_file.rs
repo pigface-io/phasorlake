@@ -13,7 +13,7 @@ use tokio::sync::mpsc;
 use utilake_acquire::LocalFile;
 use utilake_core::event::Event;
 use utilake_core::{Category, Diagnose, Diagnostic, Fingerprint, YearMonth};
-use utilake_kit::container::{Accepts, WalkError, walk_entries};
+use utilake_kit::container::{Accepts, WalkError, has_extension, walk_entries};
 use utilake_kit::quarantine::QuarantineWriter;
 use utilake_kit::{
     Block, BlockSink, DecodeCtx, DecodeOptions, Flow, KitRegistry, LoadMode, RowAt, SourceKit,
@@ -680,7 +680,20 @@ pub fn ingest_file(input: IngestInput) -> FileReport {
             entries,
         };
     };
-    if kit.decoder_for(&name).is_some() {
+    if kit.decoder_for(&name).is_none() && !has_extension(&name, ".zip") {
+        file_error = Some(
+            Diagnostic::error(
+                "config.no_decoder",
+                Category::Config,
+                format!(
+                    "The file {name} is not one the kit {} reads; no decoder accepts its name and it is not a zip.",
+                    kit.id
+                ),
+            )
+            .with_file(path.display().to_string())
+            .with_request(input.request.clone()),
+        );
+    } else if kit.decoder_for(&name).is_some() {
         match std::fs::File::open(&path) {
             Ok(mut f) => entries.push(ingest_entry(&input, kit, &name, &mut f, &mut scan_buf)),
             Err(e) => {

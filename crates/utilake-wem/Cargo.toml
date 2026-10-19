@@ -1,0 +1,26 @@
+[package]
+name = "utilake-wem"
+description = "The Wholesale Electricity Market kit: AEMO's WEM datafiles as a source, with no decoder yet."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+utilake-core.workspace = true
+utilake-acquire.workspace = true
+utilake-kit.workspace = true
+async-trait.workspace = true
+serde.workspace = true
+serde_yaml_ng.workspace = true
+toml.workspace = true
+url.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }

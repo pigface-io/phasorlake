@@ -17,9 +17,7 @@ use utilake_core::YearMonth;
 use utilake_core::calendar::WEM_OFFSET_SECS;
 use utilake_core::timetext::{self, Stamp};
 
-use crate::error::FetchError;
-use crate::fetcher::Fetcher;
-use crate::source::{Query, RemoteFile, Source};
+use utilake_acquire::{FetchError, Fetcher, Query, RemoteFile, Source};
 
 /// The source id.
 pub const SOURCE_ID: &str = "wem-datafiles";
@@ -120,10 +118,40 @@ impl WemDatafiles {
     }
 }
 
+/// What a datafile's name says: `{dataset}-YYYY-MM.csv`, as AEMO names
+/// them. `None` for any other name.
+pub fn describe_name(url: Url) -> Option<RemoteFile> {
+    let name = url
+        .path_segments()
+        .and_then(|mut s| s.next_back())
+        .filter(|s| !s.is_empty())?
+        .to_owned();
+    let stem = name.strip_suffix(".csv")?;
+    let (dataset, month) = stem.rsplit_once('-')?;
+    let (dataset, year) = dataset.rsplit_once('-')?;
+    if dataset.is_empty() || year.len() != 4 || month.len() != 2 {
+        return None;
+    }
+    let ym: YearMonth = format!("{year}-{month}").parse().ok()?;
+    Some(RemoteFile {
+        url,
+        source: SOURCE_ID,
+        table: Some(dataset.to_owned()),
+        period: Some(ym.into()),
+        size: None,
+        modified: None,
+        modified_at: None,
+    })
+}
+
 #[async_trait]
 impl Source for WemDatafiles {
     fn id(&self) -> &'static str {
         SOURCE_ID
+    }
+
+    fn describe(&self, url: &Url) -> Option<RemoteFile> {
+        describe_name(url.clone())
     }
 
     async fn list(&self, query: &Query, fetcher: &Fetcher) -> Result<Vec<RemoteFile>, FetchError> {
@@ -166,10 +194,38 @@ mod tests {
     use std::time::Duration;
 
     use super::*;
-    use crate::archive::Archive;
-    use crate::fetcher::FetcherConfig;
-    use crate::transport::{Canned, StaticTransport};
+    use utilake_acquire::transport::{Canned, StaticTransport};
+    use utilake_acquire::{Archive, FetcherConfig};
     use utilake_core::TimeRange;
+
+    #[test]
+    fn a_datafile_name_says_its_dataset_and_month() {
+        let r = describe_name(
+            Url::parse(
+                "https://data.wa.aemo.com.au/datafiles/facility-scada/facility-scada-2023-10.csv",
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        assert_eq!(r.table.as_deref(), Some("facility-scada"));
+        assert_eq!(r.period.unwrap().to_string(), "2023-10");
+        assert_eq!(r.source, SOURCE_ID);
+        for bad in [
+            "https://h/facility-scada.csv",
+            "https://h/facility-scada-2023-13.csv",
+            "https://h/-2023-10.csv",
+            "https://h/x-23-10.csv",
+            "https://h/facility-scada-2023-10.zip",
+            "https://h/",
+        ] {
+            assert!(describe_name(Url::parse(bad).unwrap()).is_none(), "{bad}");
+        }
+        let w = WemDatafiles::new("https://h", Vec::new()).unwrap();
+        assert!(
+            w.describe(&Url::parse("https://h/facility-scada-2023-10.csv").unwrap())
+                .is_some()
+        );
+    }
 
     #[test]
     fn parses_fixture_manifest() {

@@ -17,6 +17,7 @@ crates/utilake-mms-decode        L2  the MMS row format: scanner, field splitter
 crates/utilake-mms-conform       L2  resolves blocks through the registry, casts to typed Arrow batches; the MMS decoder and catalog of the kit ports
 crates/utilake-acquire       L3  the Source port, HTTP transport, archive (async)
 crates/utilake-nem           L3  the NEM kit: nemweb's monthly archive, AEMO's file names, its config and command line
+crates/utilake-wem           L3  the WEM kit: the datafiles source and config; no decoder yet
 crates/utilake-writer        L3  Parquet writer, partitioner, SQLite manifest actor
 crates/utilake-pipeline      L4  list → fetch → ingest → commit as tokio streams, over the kit ports only
 crates/utilake-cli           L5  the command: flags, rendering, exit codes

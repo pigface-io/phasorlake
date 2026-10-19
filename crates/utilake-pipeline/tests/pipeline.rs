@@ -57,10 +57,12 @@ impl Env {
 }
 
 /// The NEM kit over `registry`, with the archive at `https://h` as its
-/// source: what names a local file's table and month.
+/// source (what names a local file's table and month), and the WEM kit,
+/// which has no decoder.
 fn kits_for(registry: &Arc<Registry>) -> Arc<KitRegistry> {
     Arc::new(KitRegistry::new(vec![
         utilake_nem::kit(registry.clone(), "https://h").unwrap(),
+        utilake_wem::kit(&utilake_wem::WemConfig::default()).unwrap(),
     ]))
 }
 
@@ -1135,6 +1137,43 @@ fn a_recorded_source_becomes_a_file_to_read() {
     let mut broken = old;
     broken.plan_hash = "plan:0".into();
     assert!(!catalog.plans_current(&[broken]));
+}
+
+/// A file a kit's source names goes to that kit; a kit without a decoder
+/// refuses it, and says so.
+#[tokio::test]
+async fn a_file_of_a_kit_without_a_decoder_is_refused() {
+    let e = env();
+    let csv = e.home.root().join("facility-scada-2023-10.csv");
+    std::fs::write(&csv, "a,b\n1,2\n").unwrap();
+    let plan = Plan {
+        request: "ingest wem".into(),
+        input: Input::Local(vec![csv.clone()]),
+        options: RunOptions::default(),
+    };
+    let (rep, _) = run_plan(&e, plan).await;
+    assert_eq!(rep.exit_code, 1, "{:?}", rep.report.summary_lines());
+    let failed: Vec<_> = rep.report.failed().collect();
+    assert_eq!(failed.len(), 1);
+    assert_eq!(failed[0].failed_with.as_deref(), Some("config.no_decoder"));
+    // The same bytes under a name no kit claims go to the first kit that
+    // reads a CSV, which reads them as MMS rows.
+    let other = e.home.root().join("notes.csv");
+    std::fs::write(&other, "a,b\n1,2\n").unwrap();
+    let plan = Plan {
+        request: "ingest other".into(),
+        input: Input::Local(vec![other]),
+        options: RunOptions::default(),
+    };
+    let (rep, _) = run_plan(&e, plan).await;
+    assert_ne!(
+        rep.report
+            .failed()
+            .next()
+            .and_then(|f| f.failed_with.clone())
+            .as_deref(),
+        Some("config.no_decoder")
+    );
 }
 
 #[tokio::test]
