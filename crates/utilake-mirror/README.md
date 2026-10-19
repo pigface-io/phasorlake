@@ -6,8 +6,9 @@ A copy of every file under nemweb's archive folders, and the catalog of it.
 Operator (AEMO) publishes the National Electricity Market's data. Its
 `Data_Archive/` (the monthly MMSDM archive, NEMDE, FCAS causer-pays) and
 `Reports/ARCHIVE/` (about a year of daily reports) hold some 110,000 files and
-about 4.9 TB. nemweb-mirror downloads all of it, once, and writes a catalog
-of every folder, file and zip entry. [nemlake](https://github.com/g0itb4/nemlake)
+about 4.9 TB. Those two folders are the crawl roots; `Reports/CURRENT/`, which
+nemweb rewrites daily, is not mirrored. nemweb-mirror downloads all of it,
+once, and writes a catalog of every folder, file and zip entry. [nemlake](https://github.com/g0itb4/nemlake)
 reads that catalog and the archive; it knows what the data means, this knows
 what exists.
 
@@ -63,7 +64,8 @@ the pages it kept, and archived files are never downloaded again.
 {home}/mirror/map/map.ndjson, tree.txt   the catalog                              (docs/catalog.md)
 ```
 
-`nemweb/map.md` in this repo is the catalog folded into patterns.
+`nemweb-mirror summary` folds the catalog into patterns as Markdown; its
+default output is `nemweb/map.md`, written after `map`, not tracked in git.
 
 Every time field in these records is RFC 3339 with an offset, or has one
 beside it (`modified` as listed, `modified_at` as an instant): listing and
