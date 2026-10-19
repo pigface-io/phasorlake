@@ -27,7 +27,7 @@ pub fn local_remote(path: &std::path::Path) -> Option<RemoteFile> {
     let abs = std::path::absolute(path).ok()?;
     let url = Url::from_file_path(&abs).ok()?;
     let stem = abs.file_stem()?.to_string_lossy().to_ascii_uppercase();
-    let period = crate::ingest_file::period_from_stem(&stem);
+    let period = crate::ingest_file::period_from_stem(&stem).map(utilake_core::Period::from);
     let table = utilake_acquire::MmsdmArchive::parse_name(&abs.file_name()?.to_string_lossy());
     Some(RemoteFile {
         url,
@@ -73,7 +73,7 @@ fn archived(
     query: &utilake_acquire::Query,
 ) -> Result<Vec<LocalFile>, utilake_acquire::FetchError> {
     let mut out = Vec::new();
-    for month in query.from.range_inclusive(query.to) {
+    for month in query.range.months_iter() {
         for path in source.archived_files(archive, month)? {
             let name = path
                 .file_name()
@@ -101,7 +101,7 @@ fn archived(
                     url,
                     source: utilake_acquire::mmsdm::SOURCE_ID,
                     table,
-                    period: Some(month),
+                    period: Some(month.into()),
                     size: Some(sidecar.size),
                     modified: sidecar.listed_modified,
                     modified_at: sidecar.listed_modified_at,

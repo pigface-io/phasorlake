@@ -555,6 +555,7 @@ fn ingest_entry(
         .local
         .remote
         .period
+        .map(utilake_core::Period::month)
         .or_else(|| period_from_stem(&input.local.remote.stem().to_ascii_uppercase()));
     let initial = LakeSink {
         registry: &input.registry,

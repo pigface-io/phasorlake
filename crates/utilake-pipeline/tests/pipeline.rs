@@ -11,6 +11,7 @@ use tokio_util::sync::CancellationToken;
 use url::Url;
 use utilake_acquire::transport::{Canned, StaticTransport};
 use utilake_acquire::{Archive, FetchError, Fetcher, FetcherConfig, Query, RemoteFile, Source};
+use utilake_core::TimeRange;
 use utilake_core::event::Event;
 use utilake_core::paths::Home;
 use utilake_pipeline::{Deps, Input, Plan, RunOptions, run};
@@ -1344,8 +1345,7 @@ async fn fetch_only_downloads_and_ingest_reads_the_archived_month() {
     let query = |tables: &[&str]| Query {
         exclude: Vec::new(),
         tables: tables.iter().map(|t| (*t).to_owned()).collect(),
-        from: ym,
-        to: ym,
+        range: TimeRange::months(ym, ym),
     };
     let (rep, _) = run_plan(
         &e,
@@ -1356,7 +1356,7 @@ async fn fetch_only_downloads_and_ingest_reads_the_archived_month() {
                     url: url.clone(),
                     source: "nem-mmsdm",
                     table: Some("TRADINGPRICE".into()),
-                    period: Some(ym),
+                    period: Some(ym.into()),
                     size: None,
                     modified: None,
                     modified_at: None,
@@ -1426,7 +1426,7 @@ async fn remote_source_downloads_then_serves_from_cache_and_reports_fetch_failur
         url: Url::parse(&format!("https://h/{name}")).unwrap(),
         source: "nem-mmsdm",
         table: Some(table.into()),
-        period: Some(ym),
+        period: Some(ym.into()),
         size: None,
         modified: None,
         modified_at: None,
@@ -1438,8 +1438,7 @@ async fn remote_source_downloads_then_serves_from_cache_and_reports_fetch_failur
     let query = Query {
         exclude: Vec::new(),
         tables: vec![],
-        from: ym,
-        to: ym,
+        range: TimeRange::months(ym, ym),
     };
     let plan = || Plan {
         request: "fetch nem".into(),

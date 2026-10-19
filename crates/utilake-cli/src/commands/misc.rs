@@ -89,8 +89,7 @@ pub async fn wem(ctx: &Context, cmd: &WemCmd) -> Result<i32> {
                     &Query {
                         exclude: Vec::new(),
                         tables: vec![],
-                        from,
-                        to,
+                        range: utilake_core::TimeRange::months(from, to),
                     },
                     &fetcher,
                 )

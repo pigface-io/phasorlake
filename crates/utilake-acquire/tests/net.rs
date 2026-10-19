@@ -8,6 +8,7 @@ use std::time::Duration;
 use utilake_acquire::{
     Archive, Fetcher, FetcherConfig, MmsdmArchive, Query, ReqwestTransport, Source,
 };
+use utilake_core::TimeRange;
 use utilake_core::YearMonth;
 
 #[tokio::test]
@@ -35,8 +36,7 @@ async fn lists_and_downloads_the_smallest_zip() {
             &Query {
                 exclude: Vec::new(),
                 tables: vec![],
-                from: ym,
-                to: ym,
+                range: TimeRange::months(ym, ym),
             },
             &fetcher,
         )

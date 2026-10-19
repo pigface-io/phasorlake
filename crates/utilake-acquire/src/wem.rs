@@ -132,7 +132,7 @@ impl Source for WemDatafiles {
                 let Some(ym) = YearMonth::new(e.year, e.month) else {
                     continue;
                 };
-                if ym < query.from || ym > query.to {
+                if !query.range.contains(ym) {
                     continue;
                 }
                 let url = Url::parse(&e.url).map_err(|er| FetchError::Parse {
@@ -144,7 +144,7 @@ impl Source for WemDatafiles {
                     url,
                     source: SOURCE_ID,
                     table: Some(ds.clone()),
-                    period: Some(ym),
+                    period: Some(ym.into()),
                     size: None,
                     modified: e.generated_at,
                     modified_at: e.generated_at_utc,
@@ -165,6 +165,7 @@ mod tests {
     use crate::archive::Archive;
     use crate::fetcher::FetcherConfig;
     use crate::transport::{Canned, StaticTransport};
+    use utilake_core::TimeRange;
 
     #[test]
     fn parses_fixture_manifest() {
@@ -238,12 +239,17 @@ mod tests {
         let q = Query {
             exclude: Vec::new(),
             tables: vec![],
-            from: YearMonth::new(2023, 8).unwrap(),
-            to: YearMonth::new(2023, 9).unwrap(),
+            range: TimeRange::months(
+                YearMonth::new(2023, 8).unwrap(),
+                YearMonth::new(2023, 9).unwrap(),
+            ),
         };
         let files = w.list(&q, &f).await.unwrap();
         assert_eq!(files.len(), 2);
-        assert_eq!(files[0].period, Some(YearMonth::new(2023, 8).unwrap()));
+        assert_eq!(
+            files[0].period,
+            Some(YearMonth::new(2023, 8).unwrap().into())
+        );
         assert_eq!(files[0].table.as_deref(), Some("facility-scada"));
         assert!(files[1].url.as_str().ends_with("2023-09.csv"));
     }

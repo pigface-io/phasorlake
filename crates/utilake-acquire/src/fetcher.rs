@@ -449,7 +449,7 @@ mod tests {
             url: Url::parse(url).unwrap(),
             source: "nem-mmsdm",
             table: Some("REGION".into()),
-            period: Some(YearMonth::new(2024, 1).unwrap()),
+            period: Some(YearMonth::new(2024, 1).unwrap().into()),
             size: None,
             modified: None,
             modified_at: None,

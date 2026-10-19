@@ -7,6 +7,7 @@ use anyhow::Result;
 use tokio_util::sync::CancellationToken;
 use utilake_acquire::{MmsdmArchive, Query};
 use utilake_core::Diagnose;
+use utilake_core::TimeRange;
 use utilake_pipeline::{Input, Plan, RunOptions};
 use utilake_registry::Mode;
 
@@ -144,8 +145,7 @@ pub async fn fetch(cli: &Cli, ctx: &Context, market: &FetchMarket) -> Result<i32
                     query: Query {
                         exclude,
                         tables,
-                        from: *from,
-                        to,
+                        range: TimeRange::months(*from, to),
                     },
                 },
                 options: RunOptions {
@@ -227,8 +227,7 @@ pub async fn ingest_archived(
             query: Query {
                 tables: upper(tables),
                 exclude: upper(exclude),
-                from,
-                to,
+                range: TimeRange::months(from, to),
             },
         },
         options: options(cli, ctx, args, None, false),

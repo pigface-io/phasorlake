@@ -190,7 +190,7 @@ impl MmsdmArchive {
                     url,
                     source: SOURCE_ID,
                     table: None,
-                    period: Some(ym),
+                    period: Some(ym.into()),
                     size: None,
                     modified: None,
                     modified_at: None,
@@ -277,7 +277,7 @@ impl MmsdmArchive {
                         url,
                         source: SOURCE_ID,
                         table: named.then(|| table.clone()),
-                        period: Some(ym),
+                        period: Some(ym.into()),
                         size: e.size,
                         modified: e.modified.map(|m| m.text().to_owned()),
                         modified_at: e.modified.and_then(|m| m.stamp()),
@@ -308,7 +308,7 @@ impl MmsdmArchive {
                     url,
                     source: SOURCE_ID,
                     table: None,
-                    period: Some(ym),
+                    period: Some(ym.into()),
                     size: e.size,
                     modified: e.modified.map(|m| m.text().to_owned()),
                     modified_at: e.modified.and_then(|m| m.stamp()),
@@ -360,7 +360,7 @@ impl Source for MmsdmArchive {
         // when no month of the range has it: then the name is likely wrong.
         let mut found = vec![false; wanted.len()];
         let mut last_listing: Option<(String, Vec<String>)> = None;
-        for ym in query.from.range_inclusive(query.to) {
+        for ym in query.range.months_iter() {
             let month = self.month_files(ym, fetcher).await?;
             // A whole-month zip holds every table of the month.
             if let Some(whole) = month.whole {
@@ -406,11 +406,7 @@ impl Source for MmsdmArchive {
                 url,
                 entries,
                 table: w.clone(),
-                period: if query.from == query.to {
-                    query.from.to_string()
-                } else {
-                    format!("{}..{}", query.from, query.to)
-                },
+                period: query.range.to_string(),
                 nearest: if nearest.is_empty() {
                     "none".into()
                 } else {
@@ -434,6 +430,7 @@ mod tests {
     use crate::archive::Archive;
     use crate::fetcher::FetcherConfig;
     use crate::transport::{Canned, StaticTransport};
+    use utilake_core::TimeRange;
 
     #[test]
     fn urls_and_names() {
@@ -528,8 +525,7 @@ mod tests {
             let q = Query {
                 exclude: exclude.iter().map(|s| (*s).to_owned()).collect(),
                 tables: tables.iter().map(|s| (*s).to_owned()).collect(),
-                from: ym,
-                to: ym,
+                range: TimeRange::months(ym, ym),
             };
             let (a, f) = (&a, &f);
             async move { a.list(&q, f).await.unwrap() }
@@ -583,8 +579,7 @@ mod tests {
         let q = Query {
             exclude: Vec::new(),
             tables: vec!["dispatch_unit_scada".into(), "BIDPEROFFER".into()],
-            from: ym,
-            to: ym,
+            range: TimeRange::months(ym, ym),
         };
         let files = a.list(&q, &f).await.unwrap();
         let names: Vec<String> = files.iter().map(RemoteFile::file_name).collect();
@@ -598,7 +593,7 @@ mod tests {
         );
         assert_eq!(files[2].size, Some(22_576_818));
         assert_eq!(files[2].table.as_deref(), Some("DISPATCH_UNIT_SCADA"));
-        assert_eq!(files[2].period, Some(ym));
+        assert_eq!(files[2].period, Some(ym.into()));
         assert!(
             files[2]
                 .url
@@ -611,8 +606,7 @@ mod tests {
                 &Query {
                     exclude: Vec::new(),
                     tables: vec![],
-                    from: ym,
-                    to: ym,
+                    range: TimeRange::months(ym, ym),
                 },
                 &f,
             )
@@ -629,8 +623,7 @@ mod tests {
                 &Query {
                     exclude: Vec::new(),
                     tables: vec!["DISPATCH_UNIT_SCADAX".into()],
-                    from: ym,
-                    to: ym,
+                    range: TimeRange::months(ym, ym),
                 },
                 &f,
             )
@@ -656,8 +649,7 @@ mod tests {
                 &Query {
                     exclude: vec![],
                     tables: vec!["DISPATCH_UNIT_SCADA".into(), "NOPE".into()],
-                    from: ym,
-                    to: ym,
+                    range: TimeRange::months(ym, ym),
                 },
                 &f,
             )
@@ -673,8 +665,7 @@ mod tests {
                 &Query {
                     exclude: vec!["bidperoffer".into(), "PREDISPATCHPRICE".into()],
                     tables: vec![],
-                    from: ym,
-                    to: ym,
+                    range: TimeRange::months(ym, ym),
                 },
                 &f,
             )
@@ -691,8 +682,7 @@ mod tests {
                 &Query {
                     exclude: vec!["BIDPEROFFER".into()],
                     tables: vec!["DISPATCH_UNIT_SCADA".into(), "BIDPEROFFER".into()],
-                    from: ym,
-                    to: ym,
+                    range: TimeRange::months(ym, ym),
                 },
                 &f,
             )
@@ -709,8 +699,7 @@ mod tests {
                 &Query {
                     exclude: Vec::new(),
                     tables: vec![],
-                    from: ym2,
-                    to: ym2,
+                    range: TimeRange::months(ym2, ym2),
                 },
                 &f,
             )
@@ -728,8 +717,7 @@ mod tests {
                 &Query {
                     exclude: Vec::new(),
                     tables: vec![],
-                    from: ym3,
-                    to: ym3
+                    range: TimeRange::months(ym3, ym3),
                 },
                 &f
             )
@@ -769,8 +757,7 @@ mod tests {
                 &Query {
                     exclude: Vec::new(),
                     tables: vec![],
-                    from: ym,
-                    to: ym,
+                    range: TimeRange::months(ym, ym),
                 },
                 &f,
             )
@@ -782,8 +769,7 @@ mod tests {
                 &Query {
                     exclude: Vec::new(),
                     tables: vec!["BIDOFFERPERIOD".into()],
-                    from: ym,
-                    to: ym,
+                    range: TimeRange::months(ym, ym),
                 },
                 &f,
             )
@@ -795,8 +781,7 @@ mod tests {
                 &Query {
                     exclude: Vec::new(),
                     tables: vec!["dispatchprice".into()],
-                    from: ym,
-                    to: ym,
+                    range: TimeRange::months(ym, ym),
                 },
                 &f,
             )
@@ -904,8 +889,7 @@ mod tests {
                 &Query {
                     exclude: Vec::new(),
                     tables: vec!["REGION".into()],
-                    from: ym,
-                    to: ym,
+                    range: TimeRange::months(ym, ym),
                 },
                 &f,
             )
@@ -944,14 +928,13 @@ mod tests {
         let query = |tables: &[&str]| Query {
             exclude: Vec::new(),
             tables: tables.iter().map(|s| (*s).to_owned()).collect(),
-            from: ym,
-            to: ym,
+            range: TimeRange::months(ym, ym),
         };
         let all = a.list(&query(&[]), &f).await.unwrap();
         assert_eq!(all.len(), 1);
         assert_eq!(all[0].url.as_str(), zip_url);
         assert_eq!(all[0].table, None);
-        assert_eq!(all[0].period, Some(ym));
+        assert_eq!(all[0].period, Some(ym.into()));
         assert_eq!(a.list(&query(&["REGION"]), &f).await.unwrap(), all);
         let local = f.fetch(&all[0]).await.unwrap();
         assert_eq!(std::fs::read(&local.path).unwrap(), b"PK month zip bytes");
@@ -977,8 +960,7 @@ mod tests {
             Query {
                 exclude: Vec::new(),
                 tables: vec![],
-                from: ym,
-                to: ym,
+                range: TimeRange::months(ym, ym),
             }
         };
         // A month the year does not list.

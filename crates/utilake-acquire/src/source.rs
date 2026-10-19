@@ -3,8 +3,8 @@
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use url::Url;
-use utilake_core::YearMonth;
 use utilake_core::timetext::Stamp;
+use utilake_core::{Period, TimeRange};
 
 use crate::error::FetchError;
 use crate::fetcher::Fetcher;
@@ -17,10 +17,8 @@ pub struct Query {
     pub tables: Vec<String>,
     /// Table names to leave out, upper-case.
     pub exclude: Vec<String>,
-    /// First month.
-    pub from: YearMonth,
-    /// Last month, inclusive.
-    pub to: YearMonth,
+    /// The periods asked for, inclusive.
+    pub range: TimeRange,
 }
 
 /// A file a source wants fetched.
@@ -33,7 +31,7 @@ pub struct RemoteFile {
     /// The table it carries, when the source knows (archive files do).
     pub table: Option<String>,
     /// The period it covers.
-    pub period: Option<YearMonth>,
+    pub period: Option<Period>,
     /// Size the listing reported.
     pub size: Option<u64>,
     /// Modified time the listing (or the WEM manifest) reported, as text.
