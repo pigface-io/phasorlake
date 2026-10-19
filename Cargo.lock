@@ -2750,6 +2750,8 @@ dependencies = [
  "arrow-array",
  "arrow-schema",
  "async-trait",
+ "crc32fast",
+ "flate2",
  "serde",
  "serde_json",
  "tempfile",
