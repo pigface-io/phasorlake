@@ -3,13 +3,13 @@
     "crates/xtask/",
     "crates/utilake-bench/",
     "crates/utilake-cli/src/main.rs",
-    "crates/utilake-census/src/main.rs"
+    "crates/utilake-nem-census/src/main.rs"
   ],
   "floors": {
     "crates/utilake-core/src": 95,
     "crates/utilake-mms-registry/src": 85,
     "crates/utilake-mms-registry/src/file_model": 90,
-    "crates/utilake-census/src": 80,
+    "crates/utilake-nem-census/src": 80,
     "crates/utilake-mms-decode/src": 90,
     "crates/utilake-mms-conform/src": 90,
     "crates/utilake-acquire/src": 85,

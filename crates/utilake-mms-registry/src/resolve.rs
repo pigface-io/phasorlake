@@ -176,7 +176,7 @@ impl Registry {
                     "schema.unseen_version",
                     Category::Schema,
                     format!(
-                        "Table {}@{} has seen AEMO version(s) {:?}, not {}; the block is read by its columns all the same. `utilake-census sync` records the versions the census sees.",
+                        "Table {}@{} has seen AEMO version(s) {:?}, not {}; the block is read by its columns all the same. `utilake-nem-census sync` records the versions the census sees.",
                         t.name, inc.n, inc.aemo_versions, irow.version
                     ),
                 )
@@ -310,7 +310,7 @@ impl Registry {
                 "schema.unknown_table",
                 Category::Schema,
                 format!(
-                    "No table in the registry claims report pair ({}, {}). Its rows are kept as the file gives them, every column as text, under {}. `utilake-census sync` adds a table for it from the month's control file; ingest again once it is in.",
+                    "No table in the registry claims report pair ({}, {}). Its rows are kept as the file gives them, every column as text, under {}. `utilake-nem-census sync` adds a table for it from the month's control file; ingest again once it is in.",
                     irow.report_type,
                     irow.report_subtype,
                     self.table_dir(id)

@@ -14,12 +14,12 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
 
 use anyhow::{Context as _, Result};
-use utilake_census::census::{census_dir, read_month};
 use utilake_core::{Category, Diagnostic, YearMonth};
 use utilake_mms_decode::IRow;
 use utilake_mms_registry::file_model::shapes::ShapeEntry;
 use utilake_mms_registry::{Mode, Registry, ResolveOptions, Status};
 use utilake_mms_registry::{ShapeId, TypeClass};
+use utilake_nem_census::census::{census_dir, read_month};
 
 /// Months as a list for a message.
 fn months_text(months: &BTreeSet<YearMonth>) -> String {
@@ -88,7 +88,7 @@ pub fn check(
                     "schema.census_deviates",
                     Category::Schema,
                     format!(
-                        "Shape {id} ({}, {}), seen in {} ({file} and others), belongs to no table; `utilake-census sync` adds the table from the month's control file.",
+                        "Shape {id} ({}, {}), seen in {} ({file} and others), belongs to no table; `utilake-nem-census sync` adds the table from the month's control file.",
                         entry.report_type,
                         entry.report_subtype,
                         months_text(shape_months)

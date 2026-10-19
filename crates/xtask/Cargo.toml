@@ -16,7 +16,7 @@ name = "xtask"
 path = "src/main.rs"
 
 [dependencies]
-utilake-census.workspace = true
+utilake-nem-census.workspace = true
 utilake-core.workspace = true
 utilake-mms-decode.workspace = true
 utilake-mms-registry.workspace = true

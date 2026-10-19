@@ -1,4 +1,4 @@
-//! `utilake-census pdr-diff`: where AEMO's PDR control files (the loader
+//! `utilake-nem-census pdr-diff`: where AEMO's PDR control files (the loader
 //! files of the participant data replication, kept under `reference/pdr/`)
 //! and the control files of our increments disagree, table by table.
 //!

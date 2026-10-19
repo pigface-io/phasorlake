@@ -64,27 +64,27 @@ cover:
 
 # cut the bootstrap fixtures of a month from the local archive: every CTL, the head of every data file and the README (download the month first: `utilake fetch nem --from MONTH`)
 schema-fixtures month="2024-01":
-    cargo run --release -q -p utilake-census -- fixtures --month {{month}} --out testdata/bootstrap/MMSDM_{{replace(month, "-", "_")}}
+    cargo run --release -q -p utilake-nem-census -- fixtures --month {{month}} --out testdata/bootstrap/MMSDM_{{replace(month, "-", "_")}}
 
 # record every block of every archived file of each month (shape and rows) into schemas/nem/census/ and schemas/nem/shapes/; reads the local archive in full, offline
 census from to=from *args:
-    cargo run --release -q -p utilake-census -- census --from {{from}} --to {{to}} "${@:3}"
+    cargo run --release -q -p utilake-nem-census -- census --from {{from}} --to {{to}} "${@:3}"
 
 # write every table file again in the current schema_format, deriving what the format adds
 schema-migrate:
-    cargo run --release -q -p utilake-census -- migrate
+    cargo run --release -q -p utilake-nem-census -- migrate
 
 # bring schemas/nem/ up to the control files of each archived month: a table a month lays out anew gains an increment, a missing table is started; nothing there is changed (take the census of the months first)
 schema-sync from to=from:
-    cargo run --release -q -p utilake-census -- sync --from {{from}} --to {{to}}
+    cargo run --release -q -p utilake-nem-census -- sync --from {{from}} --to {{to}}
 
 # start every table's increments again from the control files of the archived months, in month order (the first pass over the whole archive); columns, ids and types stay
 schema-rebuild from="2009-07" to="2026-08":
-    cargo run --release -q -p utilake-census -- sync --rebuild --from {{from}} --to {{to}}
+    cargo run --release -q -p utilake-nem-census -- sync --rebuild --from {{from}} --to {{to}}
 
 # fail if syncing the archived months would change schemas/nem/ (a month not downloaded here is skipped)
 schema-sync-check from="2024-01" to="2026-08":
-    cargo run --release -q -p utilake-census -- sync --check --from {{from}} --to {{to}}
+    cargo run --release -q -p utilake-nem-census -- sync --check --from {{from}} --to {{to}}
 
 # a new month, end to end: download it once, record every block of every file, sync the schemas to its control files, gate the census against them
 census-forward month:
@@ -99,7 +99,7 @@ census-check:
 
 # read AEMO's MMS Data Model Report into testdata/bootstrap/datamodel/ (needs the network; a few hundred paced requests)
 schema-datamodel interval_ms="1200":
-    cargo run -q -p utilake-census -- datamodel --interval-ms {{interval_ms}} --out testdata/bootstrap/datamodel
+    cargo run -q -p utilake-nem-census -- datamodel --interval-ms {{interval_ms}} --out testdata/bootstrap/datamodel
 
 # the real nemweb: one small month listing and the smallest zip (needs the network)
 net-test:

@@ -1,4 +1,4 @@
-//! `utilake-census sync`: our schemas follow the control files AEMO
+//! `utilake-nem-census sync`: our schemas follow the control files AEMO
 //! publishes, one archived month after another.
 //!
 //! For each month, the control file of each table is compared with the

@@ -12,7 +12,7 @@ resolver = "3"
 members = [
     "crates/utilake-core",
     "crates/utilake-mms-registry",
-    "crates/utilake-census",
+    "crates/utilake-nem-census",
     "crates/utilake-mms-decode",
     "crates/utilake-mms-conform",
     "crates/utilake-acquire",
@@ -29,7 +29,7 @@ members = [
 default-members = [
     "crates/utilake-core",
     "crates/utilake-mms-registry",
-    "crates/utilake-census",
+    "crates/utilake-nem-census",
     "crates/utilake-mms-decode",
     "crates/utilake-mms-conform",
     "crates/utilake-acquire",
@@ -78,7 +78,7 @@ utilake-core = { path = "crates/utilake-core" }
 utilake-mms-registry = { path = "crates/utilake-mms-registry" }
 utilake-mms-decode = { path = "crates/utilake-mms-decode" }
 utilake-mms-conform = { path = "crates/utilake-mms-conform" }
-utilake-census = { path = "crates/utilake-census" }
+utilake-nem-census = { path = "crates/utilake-nem-census" }
 utilake-acquire = { path = "crates/utilake-acquire" }
 utilake-kit = { path = "crates/utilake-kit" }
 utilake-nem = { path = "crates/utilake-nem" }

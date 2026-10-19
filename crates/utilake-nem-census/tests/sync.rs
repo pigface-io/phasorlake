@@ -1,4 +1,4 @@
-//! `utilake-census sync` over an archive built from the bootstrap months'
+//! `utilake-nem-census sync` over an archive built from the bootstrap months'
 //! control files: the committed schemas are in step with them, and a
 //! month whose control file adds a column gains an increment.
 
@@ -75,7 +75,7 @@ fn copy_dir(from: &Path, to: &Path) {
 }
 
 fn sync(schemas: &Path, home: &Path, args: &[&str]) -> (i32, String, String) {
-    let out = Command::new(env!("CARGO_BIN_EXE_utilake-census"))
+    let out = Command::new(env!("CARGO_BIN_EXE_utilake-nem-census"))
         .current_dir(root())
         .arg("sync")
         .args(["--schemas", schemas.to_str().unwrap()])

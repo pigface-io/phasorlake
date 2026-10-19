@@ -2702,28 +2702,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "utilake-census"
-version = "0.1.0"
-dependencies = [
- "clap",
- "flate2",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror",
- "tokio",
- "toml",
- "url",
- "utilake-acquire",
- "utilake-core",
- "utilake-kit",
- "utilake-mms-decode",
- "utilake-mms-registry",
- "utilake-nem",
- "zip",
-]
-
-[[package]]
 name = "utilake-cli"
 version = "0.1.0"
 dependencies = [
@@ -2849,6 +2827,28 @@ dependencies = [
  "utilake-kit",
  "utilake-mms-conform",
  "utilake-mms-registry",
+]
+
+[[package]]
+name = "utilake-nem-census"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "flate2",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror",
+ "tokio",
+ "toml",
+ "url",
+ "utilake-acquire",
+ "utilake-core",
+ "utilake-kit",
+ "utilake-mms-decode",
+ "utilake-mms-registry",
+ "utilake-nem",
+ "zip",
 ]
 
 [[package]]
@@ -3270,10 +3270,10 @@ dependencies = [
  "clap",
  "serde",
  "serde_json",
- "utilake-census",
  "utilake-core",
  "utilake-mms-decode",
  "utilake-mms-registry",
+ "utilake-nem-census",
 ]
 
 [[package]]

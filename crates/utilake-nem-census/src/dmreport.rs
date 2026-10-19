@@ -343,7 +343,7 @@ async fn page(fetcher: &Fetcher, base: &str, name: &str) -> Result<(String, Page
 /// when the server refuses. Pages are read into memory, never archived.
 pub fn report_fetcher(interval: Duration) -> Result<Fetcher, FetchError> {
     let transport = utilake_acquire::transport::ReqwestTransport::new(
-        &format!("utilake-census/{}", env!("CARGO_PKG_VERSION")),
+        &format!("utilake-nem-census/{}", env!("CARGO_PKG_VERSION")),
         Duration::from_secs(20),
         Duration::from_secs(60),
     )?;

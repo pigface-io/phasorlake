@@ -1,5 +1,5 @@
 [package]
-name = "utilake-census"
+name = "utilake-nem-census"
 description = "Developer tool that keeps utilake schema files in step with the control files of AEMO's archive, and records its census."
 version.workspace = true
 edition.workspace = true
@@ -12,7 +12,7 @@ publish.workspace = true
 workspace = true
 
 [[bin]]
-name = "utilake-census"
+name = "utilake-nem-census"
 path = "src/main.rs"
 
 [dependencies]

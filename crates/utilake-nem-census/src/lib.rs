@@ -2,7 +2,7 @@
 //!
 //! [`census`] records every block of every archived file of every month,
 //! as metadata under `schemas/nem/census/` and `schemas/nem/shapes/`.
-//! `utilake-census sync` starts a table from a month's control file, the
+//! `utilake-nem-census sync` starts a table from a month's control file, the
 //! data model ([`datamodel`], read from AEMO's report by [`dmreport`]) and
 //! the README's list of standing-data tables ([`standing`]), and appends an
 //! increment when a month's control file lays a table out anew.

@@ -322,7 +322,7 @@ fn inline<T: AsRef<str>>(items: &[T]) -> String {
 /// Renders a table as TOML, deterministically.
 pub fn write_table(t: &Table) -> String {
     let mut out = format!(
-        "# Our schema of {}. Hand edits are welcome; `utilake-census sync` only appends increments and columns.\nschema_format = {SCHEMA_FORMAT}\nname = {}\n",
+        "# Our schema of {}. Hand edits are welcome; `utilake-nem-census sync` only appends increments and columns.\nschema_format = {SCHEMA_FORMAT}\nname = {}\n",
         t.name,
         q(&t.name)
     );

@@ -242,7 +242,7 @@ column, with a `note` saying why. Types change only by an Iceberg promotion
 is a new column.
 
 AEMO's PDR control files can be kept under `reference/pdr/` for
-comparison (`utilake-census pdr-diff`); resolution never reads them.
+comparison (`utilake-nem-census pdr-diff`); resolution never reads them.
 
 ## Your own tables
 

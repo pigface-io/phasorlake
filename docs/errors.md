@@ -85,24 +85,24 @@ Every error and warning utilake reports carries one of these codes. Codes are st
 |---|---|
 | `schema.blob_corrupt` | `crates/utilake-mms-registry/src/file_model/error.rs` |
 | `schema.breaking_change` | `crates/utilake-mms-registry/src/file_model/error.rs` |
-| `schema.census_not_archived` | `crates/utilake-census/src/census.rs` |
-| `schema.census_unreadable` | `crates/utilake-census/src/census.rs` |
-| `schema.census_write` | `crates/utilake-census/src/census.rs` |
-| `schema.datamodel_page` | `crates/utilake-census/src/dmreport.rs` |
-| `schema.datamodel_parse` | `crates/utilake-census/src/datamodel.rs` |
-| `schema.datamodel_read` | `crates/utilake-census/src/datamodel.rs` |
+| `schema.census_not_archived` | `crates/utilake-nem-census/src/census.rs` |
+| `schema.census_unreadable` | `crates/utilake-nem-census/src/census.rs` |
+| `schema.census_write` | `crates/utilake-nem-census/src/census.rs` |
+| `schema.datamodel_page` | `crates/utilake-nem-census/src/dmreport.rs` |
+| `schema.datamodel_parse` | `crates/utilake-nem-census/src/datamodel.rs` |
+| `schema.datamodel_read` | `crates/utilake-nem-census/src/datamodel.rs` |
 | `schema.deviates` | `crates/utilake-mms-registry/src/error.rs` |
 | `schema.file_invalid` | `crates/utilake-mms-registry/src/file_model/error.rs` |
 | `schema.file_parse` | `crates/utilake-mms-registry/src/file_model/error.rs` |
 | `schema.file_read` | `crates/utilake-mms-registry/src/file_model/error.rs` |
-| `schema.fixture_read_failed` | `crates/utilake-census/src/fixtures.rs` |
-| `schema.fixture_write_failed` | `crates/utilake-census/src/fixtures.rs` |
-| `schema.migrate_io` | `crates/utilake-census/src/migrate.rs` |
+| `schema.fixture_read_failed` | `crates/utilake-nem-census/src/fixtures.rs` |
+| `schema.fixture_write_failed` | `crates/utilake-nem-census/src/fixtures.rs` |
+| `schema.migrate_io` | `crates/utilake-nem-census/src/migrate.rs` |
 | `schema.missing_key` | `crates/utilake-mms-registry/src/error.rs` |
 | `schema.no_columns` | `crates/utilake-mms-registry/src/error.rs` |
-| `schema.pdr_read` | `crates/utilake-census/src/pdr.rs` |
-| `schema.standing_list` | `crates/utilake-census/src/main.rs` |
-| `schema.sync_write` | `crates/utilake-census/src/sync.rs` |
+| `schema.pdr_read` | `crates/utilake-nem-census/src/pdr.rs` |
+| `schema.standing_list` | `crates/utilake-nem-census/src/main.rs` |
+| `schema.sync_write` | `crates/utilake-nem-census/src/sync.rs` |
 | `schema.unknown_table` | `crates/utilake-mms-registry/src/error.rs` |
 | `schema.unseen_version` | `crates/utilake-mms-registry/src/resolve.rs` |
 

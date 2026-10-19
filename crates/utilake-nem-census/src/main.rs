@@ -1,4 +1,4 @@
-//! `utilake-census`: keep `schemas/` in step with AEMO's archive.
+//! `utilake-nem-census`: keep `schemas/` in step with AEMO's archive.
 //!
 //! `census` records every block of every archived file of a month, `sync`
 //! brings the schemas up to the month's control files, and `fixtures` cuts
@@ -6,9 +6,9 @@
 //! nem` fills:
 //!
 //! ```text
-//! utilake-census census --from 2024-01 --to 2024-12
-//! utilake-census sync --from 2024-01 --to 2024-12 [--check]
-//! utilake-census fixtures --month 2024-01 --out testdata/bootstrap/MMSDM_2024_01
+//! utilake-nem-census census --from 2024-01 --to 2024-12
+//! utilake-nem-census sync --from 2024-01 --to 2024-12 [--check]
+//! utilake-nem-census fixtures --month 2024-01 --out testdata/bootstrap/MMSDM_2024_01
 //! ```
 
 use std::path::{Path, PathBuf};
@@ -19,7 +19,7 @@ use utilake_core::Diagnose;
 
 #[derive(Parser)]
 #[command(
-    name = "utilake-census",
+    name = "utilake-nem-census",
     about = "Keep utilake schema files in step with AEMO's archive"
 )]
 struct Cli {
@@ -93,7 +93,7 @@ enum Cmd {
         #[arg(long, default_value = "testdata/bootstrap/MMSDM_2026_08/README.txt")]
         readme: PathBuf,
         /// Standing-data tables the README does not name.
-        #[arg(long, default_value = "crates/utilake-census/snapshot_tables.toml")]
+        #[arg(long, default_value = "crates/utilake-nem-census/snapshot_tables.toml")]
         snapshot_list: PathBuf,
     },
     /// Write every table file again in the current `schema_format`,
@@ -149,7 +149,7 @@ enum Cmd {
         #[arg(long, default_value_t = 1000)]
         interval_ms: u64,
         /// Where the report's pages live.
-        #[arg(long, default_value = utilake_census::dmreport::REPORT_BASE)]
+        #[arg(long, default_value = utilake_nem_census::dmreport::REPORT_BASE)]
         base: String,
     },
 }
@@ -204,30 +204,32 @@ fn main() -> ExitCode {
             &base,
             (&datamodel, &readme, &snapshot_list),
         ),
-        Cmd::Migrate { schemas, check } => match utilake_census::migrate::run(&schemas, check) {
-            Ok(changed) if check && !changed.is_empty() => {
-                for p in &changed {
-                    println!("would rewrite {}", p.display());
+        Cmd::Migrate { schemas, check } => {
+            match utilake_nem_census::migrate::run(&schemas, check) {
+                Ok(changed) if check && !changed.is_empty() => {
+                    for p in &changed {
+                        println!("would rewrite {}", p.display());
+                    }
+                    ExitCode::from(3)
                 }
-                ExitCode::from(3)
+                Ok(changed) => {
+                    println!(
+                        "{} table file(s) {}",
+                        changed.len(),
+                        if check { "out of date" } else { "rewritten" }
+                    );
+                    ExitCode::SUCCESS
+                }
+                Err(d) => fail(&d),
             }
-            Ok(changed) => {
-                println!(
-                    "{} table file(s) {}",
-                    changed.len(),
-                    if check { "out of date" } else { "rewritten" }
-                );
-                ExitCode::SUCCESS
-            }
-            Err(d) => fail(&d),
-        },
+        }
         Cmd::PdrDiff { pdr, schemas } => {
             let tables = match utilake_mms_registry::file_model::blob::SchemaSet::read_dir(&schemas)
             {
                 Ok(set) => set.tables,
                 Err(e) => return fail(&e.diagnostic()),
             };
-            match utilake_census::pdr::report(&pdr, &schemas.join("nem"), &tables) {
+            match utilake_nem_census::pdr::report(&pdr, &schemas.join("nem"), &tables) {
                 Ok(lines) => {
                     for l in &lines {
                         println!("{l}");
@@ -250,20 +252,22 @@ fn main() -> ExitCode {
             interval_ms,
             base,
         } => {
-            let fetcher = match utilake_census::dmreport::report_fetcher(
+            let fetcher = match utilake_nem_census::dmreport::report_fetcher(
                 std::time::Duration::from_millis(interval_ms),
             ) {
                 Ok(f) => f,
                 Err(e) => return fail(&e.diagnostic()),
             };
-            let report = match run_async(utilake_census::dmreport::fetch_report(&fetcher, &base)) {
-                Ok(r) => r,
-                Err(e) => return fail(&e.diagnostic()),
-            };
+            let report =
+                match run_async(utilake_nem_census::dmreport::fetch_report(&fetcher, &base)) {
+                    Ok(r) => r,
+                    Err(e) => return fail(&e.diagnostic()),
+                };
             let version = report.version.as_deref().unwrap_or("unversioned");
             let path = out.join(format!("mms_data_model_{version}.json"));
-            let written = std::fs::create_dir_all(&out)
-                .and_then(|()| std::fs::write(&path, utilake_census::dmreport::to_json(&report)));
+            let written = std::fs::create_dir_all(&out).and_then(|()| {
+                std::fs::write(&path, utilake_nem_census::dmreport::to_json(&report))
+            });
             match written {
                 Ok(()) => {
                     eprintln!(
@@ -314,7 +318,7 @@ fn census(
     schemas: &Path,
     base: &str,
 ) -> ExitCode {
-    use utilake_census::census::{census_month, census_path, month_files, record};
+    use utilake_nem_census::census::{census_month, census_path, month_files, record};
     let (store, nem) = match archive(home, base) {
         Ok(a) => a,
         Err(code) => return code,
@@ -369,11 +373,11 @@ fn fixtures(
         Ok(t) => t,
         Err(code) => return code,
     };
-    let files = match utilake_census::census::month_files(&store, &nem, month) {
+    let files = match utilake_nem_census::census::month_files(&store, &nem, month) {
         Ok(f) => f,
         Err(e) => return fail(&e.diagnostic()),
     };
-    match utilake_census::fixtures::write_fixtures(&files, tmp.path(), out, rows) {
+    match utilake_nem_census::fixtures::write_fixtures(&files, tmp.path(), out, rows) {
         Ok(w) => {
             for d in &w.problems {
                 eprintln!("error: {}", d.render());
@@ -406,7 +410,7 @@ fn facts(
     datamodel: &Path,
     readme: &Path,
     snapshot_list: &Path,
-) -> Result<utilake_census::sync::Facts, Box<utilake_core::Diagnostic>> {
+) -> Result<utilake_nem_census::sync::Facts, Box<utilake_core::Diagnostic>> {
     let unreadable = |path: &Path, cause: &dyn std::fmt::Display| {
         Box::new(
             utilake_core::Diagnostic::error(
@@ -420,11 +424,11 @@ fn facts(
             .with_file(path.display().to_string()),
         )
     };
-    let dm = utilake_census::datamodel::DataModel::load(datamodel)
+    let dm = utilake_nem_census::datamodel::DataModel::load(datamodel)
         .map_err(|e| Box::new(e.diagnostic()))?;
     let text = std::fs::read(readme).map_err(|e| unreadable(readme, &e))?;
     let mut snapshots: std::collections::BTreeSet<String> =
-        utilake_census::standing::readme_tables(&String::from_utf8_lossy(&text))
+        utilake_nem_census::standing::readme_tables(&String::from_utf8_lossy(&text))
             .into_iter()
             .collect();
     if snapshots.is_empty() {
@@ -436,7 +440,7 @@ fn facts(
             toml::from_str::<SnapshotList>(&t).map_err(|e| unreadable(snapshot_list, &e))
         })?;
     snapshots.extend(list.observed);
-    Ok(utilake_census::sync::Facts {
+    Ok(utilake_nem_census::sync::Facts {
         datamodel: Some(dm),
         snapshots,
     })
@@ -451,7 +455,7 @@ fn sync(
     base: &str,
     (datamodel, readme, snapshot_list): (&Path, &Path, &Path),
 ) -> ExitCode {
-    use utilake_census::sync::{Evidence, Sync, by_table, read_ctls};
+    use utilake_nem_census::sync::{Evidence, Sync, by_table, read_ctls};
     let facts = match facts(datamodel, readme, snapshot_list) {
         Ok(f) => f,
         Err(d) => return fail(&d),
@@ -478,10 +482,10 @@ fn sync(
     }
     let mut code = ExitCode::SUCCESS;
     for month in from.range_inclusive(to) {
-        let files = match utilake_census::census::month_files(&store, &nem, month) {
+        let files = match utilake_nem_census::census::month_files(&store, &nem, month) {
             Ok(f) => f,
             // A month not downloaded here says nothing either way.
-            Err(e @ utilake_census::census::CensusError::NotArchived { .. }) => {
+            Err(e @ utilake_nem_census::census::CensusError::NotArchived { .. }) => {
                 eprintln!("note: {month} skipped: {e}");
                 continue;
             }
@@ -494,7 +498,7 @@ fn sync(
             eprintln!("error: {}", d.render());
             code = ExitCode::from(3);
         }
-        let evidence = match utilake_census::census::read_month(schemas, month) {
+        let evidence = match utilake_nem_census::census::read_month(schemas, month) {
             Ok(Some(files)) => Evidence::new(&files, &shapes),
             Ok(None) => {
                 eprintln!(
