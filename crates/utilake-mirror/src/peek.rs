@@ -200,11 +200,15 @@ pub async fn peek(
     let peeked = current(mirror)?;
     let removed = mirror.removed()?;
     let paired: HashSet<String> = pairs(mirror)?.into_iter().map(|p| p.zip).collect();
+    let mut listed = crate::net::Listed::default();
     let mut zips: Vec<Remote> = read_record(&mirror.record_path())?
         .into_iter()
         .filter(|r| r.kind == RemoteKind::File && is_zip_name(&r.url))
         .filter(|r| !peeked.contains_key(&r.url) && !removed.contains_key(&r.url))
-        .filter(|r| !fetcher.archive().path_for(&r.url).is_file())
+        .filter(|r| {
+            let path = fetcher.archive().path_for(&r.url);
+            !(listed.holds(&path) && path.is_file())
+        })
         .collect();
     // Stable: the paired zips first, each group in URL order.
     zips.sort_by_key(|r| !paired.contains(&r.url));

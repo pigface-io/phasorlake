@@ -7,6 +7,8 @@
 //! replaces or deletes an archived file, which is the untransformed record
 //! the census and the lake are derived from. To fetch one again, delete it.
 
+use std::collections::{HashMap, HashSet};
+use std::ffi::OsString;
 use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
@@ -14,6 +16,32 @@ use sha2::{Digest, Sha256};
 
 use crate::net::error::FetchError;
 use crate::stamp::Stamp;
+
+/// The names each directory holds, read once per directory. On exFAT a
+/// lookup of a name that is not there scans the whole directory, so one
+/// read of a large folder answers every miss in it.
+#[derive(Debug, Default)]
+pub struct Listed {
+    dirs: HashMap<PathBuf, HashSet<OsString>>,
+}
+
+impl Listed {
+    /// Whether `path`'s directory holds its name. A directory that cannot
+    /// be read holds nothing.
+    pub fn holds(&mut self, path: &Path) -> bool {
+        let (Some(dir), Some(name)) = (path.parent(), path.file_name()) else {
+            return false;
+        };
+        self.dirs
+            .entry(dir.to_path_buf())
+            .or_insert_with(|| {
+                std::fs::read_dir(dir)
+                    .map(|rd| rd.filter_map(Result::ok).map(|e| e.file_name()).collect())
+                    .unwrap_or_default()
+            })
+            .contains(name)
+    }
+}
 
 /// Where an archived file came from and what its bytes are.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -338,6 +366,19 @@ impl Archive {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn listed_reads_each_directory_once() {
+        let dir = tempfile::tempdir().unwrap();
+        std::fs::write(dir.path().join("a"), b"").unwrap();
+        let mut listed = Listed::default();
+        assert!(listed.holds(&dir.path().join("a")));
+        // Read once: a file made since is not seen.
+        std::fs::write(dir.path().join("b"), b"").unwrap();
+        assert!(!listed.holds(&dir.path().join("b")));
+        assert!(!listed.holds(&dir.path().join("none/a")));
+        assert!(!listed.holds(Path::new("/")));
+    }
     use crate::diag::Diagnose as _;
 
     #[test]

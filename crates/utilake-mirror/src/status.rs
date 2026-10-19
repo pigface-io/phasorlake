@@ -2,7 +2,7 @@
 
 use std::path::Path;
 
-use crate::net::Archive;
+use crate::net::{Archive, Listed};
 use serde::{Deserialize, Serialize};
 use url::Url;
 
@@ -64,7 +64,9 @@ pub struct Status {
 }
 
 /// Counts the kept pages and, once the crawl is done, the files listed
-/// against the files in the archive at their listed size.
+/// against the files in the archive at their listed size: a file
+/// `held.ndjson` lists at that size without a look at the disk, any other
+/// only when its directory holds its name.
 pub fn status(mirror: &Mirror, archive: &Archive, roots: &[Url]) -> Result<Status, MirrorError> {
     let mut status = Status {
         as_of: None,
@@ -86,6 +88,8 @@ pub fn status(mirror: &Mirror, archive: &Archive, roots: &[Url]) -> Result<Statu
         return Ok(status);
     }
     let removed = mirror.removed()?;
+    let held = mirror.held()?;
+    let mut listed = Listed::default();
     for remote in read_record(&mirror.record_path())? {
         match remote.kind {
             RemoteKind::External => status.external += 1,
@@ -106,8 +110,10 @@ pub fn status(mirror: &Mirror, archive: &Archive, roots: &[Url]) -> Result<Statu
                     root.removed_bytes += size;
                     continue;
                 }
-                let archived = std::fs::metadata(archive.path_for(&remote.url))
-                    .is_ok_and(|m| m.is_file() && m.len() == size);
+                let path = archive.path_for(&remote.url);
+                let archived = held.get(&remote.url) == Some(&size)
+                    || (listed.holds(&path)
+                        && std::fs::metadata(&path).is_ok_and(|m| m.is_file() && m.len() == size));
                 if archived {
                     root.archived_files += 1;
                     root.archived_bytes += size;
