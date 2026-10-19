@@ -2715,6 +2715,7 @@ dependencies = [
  "utilake-acquire",
  "utilake-core",
  "utilake-decode",
+ "utilake-kit",
  "utilake-registry",
  "zip",
 ]
@@ -2737,6 +2738,7 @@ dependencies = [
  "utilake-conform",
  "utilake-core",
  "utilake-decode",
+ "utilake-kit",
  "utilake-pipeline",
  "utilake-registry",
  "utilake-writer",
@@ -2780,6 +2782,22 @@ dependencies = [
  "tempfile",
  "thiserror",
  "utilake-core",
+]
+
+[[package]]
+name = "utilake-kit"
+version = "0.1.0"
+dependencies = [
+ "arrow-array",
+ "arrow-schema",
+ "async-trait",
+ "serde",
+ "tempfile",
+ "thiserror",
+ "tokio",
+ "url",
+ "utilake-acquire",
+ "utilake-core",
  "zip",
 ]
 
@@ -2806,6 +2824,7 @@ dependencies = [
  "utilake-conform",
  "utilake-core",
  "utilake-decode",
+ "utilake-kit",
  "utilake-registry",
  "utilake-writer",
  "zip",
@@ -2846,6 +2865,7 @@ dependencies = [
  "thiserror",
  "tokio",
  "utilake-core",
+ "utilake-kit",
 ]
 
 [[package]]

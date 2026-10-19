@@ -15,6 +15,7 @@ workspace = true
 arrow-array.workspace = true
 arrow-schema.workspace = true
 utilake-core.workspace = true
+utilake-kit.workspace = true
 utilake-registry.workspace = true
 utilake-decode.workspace = true
 utilake-conform.workspace = true

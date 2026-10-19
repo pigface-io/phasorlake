@@ -1,6 +1,6 @@
 [package]
 name = "utilake-decode"
-description = "The MMS C/I/D row format: scanner, field splitter, zip walking. Knows no registry."
+description = "The MMS C/I/D row format: scanner, field splitter, quarantine. Knows no registry."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -15,8 +15,7 @@ workspace = true
 utilake-core.workspace = true
 memchr.workspace = true
 serde_json.workspace = true
-tempfile.workspace = true
 thiserror.workspace = true
-zip.workspace = true
 
 [dev-dependencies]
+tempfile.workspace = true

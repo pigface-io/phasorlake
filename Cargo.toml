@@ -16,6 +16,7 @@ members = [
     "crates/utilake-decode",
     "crates/utilake-conform",
     "crates/utilake-acquire",
+    "crates/utilake-kit",
     "crates/utilake-writer",
     "crates/utilake-pipeline",
     "crates/utilake-cli",
@@ -30,6 +31,7 @@ default-members = [
     "crates/utilake-decode",
     "crates/utilake-conform",
     "crates/utilake-acquire",
+    "crates/utilake-kit",
     "crates/utilake-writer",
     "crates/utilake-pipeline",
     "crates/utilake-cli",
@@ -74,6 +76,7 @@ utilake-decode = { path = "crates/utilake-decode" }
 utilake-conform = { path = "crates/utilake-conform" }
 utilake-census = { path = "crates/utilake-census" }
 utilake-acquire = { path = "crates/utilake-acquire" }
+utilake-kit = { path = "crates/utilake-kit" }
 utilake-writer = { path = "crates/utilake-writer" }
 utilake-pipeline = { path = "crates/utilake-pipeline" }
 

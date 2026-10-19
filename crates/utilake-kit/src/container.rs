@@ -1,5 +1,5 @@
-//! Walking a zip, including zips inside zips, and handing each CSV entry to
-//! a callback as a streaming reader.
+//! Walking a zip, including zips inside zips, and handing each entry a
+//! decoder accepts to a callback as a streaming reader.
 
 use std::fs::File;
 use std::io::{BufReader, Read, Seek, Write as _};
@@ -41,11 +41,13 @@ pub enum ArchiveError {
         /// Depth reached.
         depth: u8,
     },
-    /// No CSV at any depth.
-    #[error("The archive {path} has no .CSV entry at any depth.")]
+    /// No entry a decoder accepts, at any depth.
+    #[error("The archive {path} has no {wanted} entry at any depth.")]
     NoCsv {
         /// The file.
         path: String,
+        /// What was looked for, e.g. `.CSV`.
+        wanted: String,
     },
     /// Spooling a nested zip to disk failed.
     #[error("Spooling nested entry {entry} of {path} to {tmp} failed.")]
@@ -79,7 +81,7 @@ impl Diagnose for ArchiveError {
                     .with_file(path.clone())
                     .with_entry(entry.clone())
             }
-            Self::NoCsv { path } => {
+            Self::NoCsv { path, .. } => {
                 Diagnostic::error("zip.no_csv", Category::Zip, msg).with_file(path.clone())
             }
             Self::Spool {
@@ -105,20 +107,62 @@ pub struct Entry<'a> {
     pub reader: &'a mut dyn Read,
 }
 
-/// Walks every `.CSV` entry of the zip at `path`, nested zips included, in
-/// archive order. `on_entry` may return an error to stop the walk.
+/// Which entries a walk hands to `on_entry`: those whose name `accepts`,
+/// named for the message when there is none.
+#[derive(Clone, Copy)]
+pub struct Accepts<'a> {
+    /// Whether an entry name (nested names joined with `!`) is wanted.
+    pub accepts: &'a dyn Fn(&str) -> bool,
+    /// What is wanted, for the message when nothing is: `.CSV`.
+    pub wanted: &'a str,
+}
+
+/// Every `.CSV` entry.
+pub const CSV: Accepts<'static> = Accepts {
+    accepts: &|name| has_extension(name, ".csv"),
+    wanted: ".CSV",
+};
+
+/// Whether `name` ends in `ext`, in any case.
+pub fn has_extension(name: &str, ext: &str) -> bool {
+    name.len() >= ext.len() && name[name.len() - ext.len()..].eq_ignore_ascii_case(ext)
+}
+
+/// Walks every entry of the zip at `path` that `accepts` wants, nested
+/// zips included, in archive order. `on_entry` may return an error to stop
+/// the walk.
 ///
 /// A nested zip is walked in memory up to 64 MiB, else from a temporary
 /// file in `tmp_dir`, removed once read: the zip format needs a seekable
-/// central directory. Every other
-/// entry (a control file, a README) goes to `on_other` with its reader.
+/// central directory. Every other entry (a control file, a README) goes to
+/// `on_other` with its reader.
+pub fn walk_entries<E>(
+    path: &Path,
+    tmp_dir: &Path,
+    accepts: Accepts<'_>,
+    on_entry: &mut dyn FnMut(Entry<'_>) -> Result<(), E>,
+    on_other: &mut dyn FnMut(Entry<'_>),
+) -> Result<usize, WalkError<E>> {
+    walk(
+        path,
+        tmp_dir,
+        NESTED_IN_MEMORY,
+        0,
+        "",
+        accepts,
+        on_entry,
+        on_other,
+    )
+}
+
+/// [`walk_entries`] over every `.CSV` entry.
 pub fn walk_csv_entries<E>(
     path: &Path,
     tmp_dir: &Path,
     on_entry: &mut dyn FnMut(Entry<'_>) -> Result<(), E>,
     on_other: &mut dyn FnMut(Entry<'_>),
 ) -> Result<usize, WalkError<E>> {
-    walk(path, tmp_dir, NESTED_IN_MEMORY, 0, "", on_entry, on_other)
+    walk_entries(path, tmp_dir, CSV, on_entry, on_other)
 }
 
 /// Either the archive failed or the callback did.
@@ -141,12 +185,14 @@ const NESTED_IN_MEMORY: u64 = 64 << 20;
 /// Write buffer of a nested zip spooled to disk.
 const SPOOL_BUFFER: usize = 1 << 20;
 
+#[allow(clippy::too_many_arguments)]
 fn walk<E>(
     path: &Path,
     tmp_dir: &Path,
     in_memory: u64,
     depth: u8,
     prefix: &str,
+    accepts: Accepts<'_>,
     on_entry: &mut dyn FnMut(Entry<'_>) -> Result<(), E>,
     on_other: &mut dyn FnMut(Entry<'_>),
 ) -> Result<usize, WalkError<E>> {
@@ -161,7 +207,7 @@ fn walk<E>(
     let archive = zip::ZipArchive::new(BufReader::with_capacity(ZIP_READ_BUFFER, file))
         .map_err(|e| open(e.to_string()))?;
     walk_zip(
-        archive, &p, tmp_dir, in_memory, depth, prefix, on_entry, on_other,
+        archive, &p, tmp_dir, in_memory, depth, prefix, accepts, on_entry, on_other,
     )
 }
 
@@ -173,6 +219,7 @@ fn walk_zip<R: Read + Seek, E>(
     in_memory: u64,
     depth: u8,
     prefix: &str,
+    accepts: Accepts<'_>,
     on_entry: &mut dyn FnMut(Entry<'_>) -> Result<(), E>,
     on_other: &mut dyn FnMut(Entry<'_>),
 ) -> Result<usize, WalkError<E>> {
@@ -194,10 +241,7 @@ fn walk_zip<R: Read + Seek, E>(
         } else {
             format!("{prefix}!{name}")
         };
-        let is = |ext: &str| {
-            name.len() >= ext.len() && name[name.len() - ext.len()..].eq_ignore_ascii_case(ext)
-        };
-        if is(".csv") {
+        if (accepts.accepts)(&full) {
             let size = Some(entry.size());
             let mut reader = Counting {
                 inner: &mut entry,
@@ -215,7 +259,7 @@ fn walk_zip<R: Read + Seek, E>(
             }
             result.map_err(WalkError::Callback)?;
             found += 1;
-        } else if is(".zip") {
+        } else if has_extension(name, ".zip") {
             if depth + 1 > MAX_DEPTH {
                 return Err(WalkError::Archive(ArchiveError::TooDeep {
                     path: p.to_owned(),
@@ -249,6 +293,7 @@ fn walk_zip<R: Read + Seek, E>(
                     in_memory,
                     depth + 1,
                     &full,
+                    accepts,
                     on_entry,
                     on_other,
                 )?;
@@ -282,6 +327,7 @@ fn walk_zip<R: Read + Seek, E>(
                     in_memory,
                     depth + 1,
                     &full,
+                    accepts,
                     on_entry,
                     on_other,
                 )?;
@@ -297,6 +343,7 @@ fn walk_zip<R: Read + Seek, E>(
     if depth == 0 && found == 0 {
         return Err(WalkError::Archive(ArchiveError::NoCsv {
             path: p.to_owned(),
+            wanted: accepts.wanted.to_owned(),
         }));
     }
     Ok(found)
@@ -373,6 +420,7 @@ pub(crate) mod tests {
             in_memory,
             0,
             "",
+            CSV,
             &mut |e| {
                 let mut buf = Vec::new();
                 e.reader.read_to_end(&mut buf)?;
@@ -442,7 +490,11 @@ pub(crate) mod tests {
             "{e}"
         );
         assert_eq!(
-            utilake_core::Diagnose::diagnostic(&ArchiveError::NoCsv { path: "p".into() }).code,
+            utilake_core::Diagnose::diagnostic(&ArchiveError::NoCsv {
+                path: "p".into(),
+                wanted: ".CSV".into()
+            })
+            .code,
             "zip.no_csv"
         );
         // Depth: zip in zip in zip.

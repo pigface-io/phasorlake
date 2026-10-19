@@ -44,11 +44,11 @@ Every error and warning utilake reports carries one of these codes. Codes are st
 
 | code | raised in |
 |---|---|
-| `zip.bad_entry` | `crates/utilake-decode/src/archive.rs` |
-| `zip.nesting_too_deep` | `crates/utilake-decode/src/archive.rs` |
-| `zip.no_csv` | `crates/utilake-decode/src/archive.rs` |
-| `zip.open_failed` | `crates/utilake-decode/src/archive.rs` |
-| `zip.spool_failed` | `crates/utilake-decode/src/archive.rs` |
+| `zip.bad_entry` | `crates/utilake-kit/src/container.rs` |
+| `zip.nesting_too_deep` | `crates/utilake-kit/src/container.rs` |
+| `zip.no_csv` | `crates/utilake-kit/src/container.rs` |
+| `zip.open_failed` | `crates/utilake-kit/src/container.rs` |
+| `zip.spool_failed` | `crates/utilake-kit/src/container.rs` |
 
 ## csv
 

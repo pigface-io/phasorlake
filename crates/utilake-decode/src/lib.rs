@@ -10,12 +10,12 @@
 //! Layer L2, synchronous and allocation-free per row. [`scan()`] splits bytes
 //! into rows and drives a [`Sink`]: each I row reaches it as the block's
 //! shape (report pair, version, ordered column names), each D row as its
-//! fields, untyped. [`archive`] walks zips, including zips inside zips.
+//! fields, untyped. The zips the files come in are walked by
+//! `utilake-kit`'s `container`.
 //!
 //! Decode knows no registry: what a shape means, and how its text becomes
 //! typed columns, is `utilake-conform`'s business.
 
-pub mod archive;
 pub mod error;
 pub mod fields;
 pub mod quarantine;

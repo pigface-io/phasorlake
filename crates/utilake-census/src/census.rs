@@ -333,7 +333,7 @@ pub fn census_month(
                 Err(d) => problems.push(d),
             }
         } else if lower.ends_with(".zip") {
-            let walked = utilake_decode::archive::walk_csv_entries::<Box<Diagnostic>>(
+            let walked = utilake_kit::container::walk_csv_entries::<Box<Diagnostic>>(
                 path,
                 tmp,
                 &mut |e| {
@@ -361,14 +361,14 @@ pub fn census_month(
                 Ok(_) => {}
                 // A whole-month zip holds control files beside data zips;
                 // a zip of control files only has no CSV, and that is fine.
-                Err(utilake_decode::archive::WalkError::Archive(
-                    utilake_decode::archive::ArchiveError::NoCsv { .. },
+                Err(utilake_kit::container::WalkError::Archive(
+                    utilake_kit::container::ArchiveError::NoCsv { .. },
                 )) => {}
-                Err(utilake_decode::archive::WalkError::Archive(a)) => {
+                Err(utilake_kit::container::WalkError::Archive(a)) => {
                     problems.push(a.diagnostic());
                     raw.entry(name).or_default();
                 }
-                Err(utilake_decode::archive::WalkError::Callback(d)) => {
+                Err(utilake_kit::container::WalkError::Callback(d)) => {
                     problems.push(*d);
                     raw.entry(name).or_default();
                 }

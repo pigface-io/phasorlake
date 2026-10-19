@@ -14,10 +14,10 @@ use utilake_acquire::LocalFile;
 use utilake_conform::arrow_sink::{ArrowSink, BatchSink, BlockBatch};
 use utilake_core::event::Event;
 use utilake_core::{Category, Diagnose, Diagnostic, Fingerprint, IRow, YearMonth};
-use utilake_decode::archive::{WalkError, walk_csv_entries};
 use utilake_decode::quarantine::QuarantineWriter;
 use utilake_decode::scan::{Flow, Pos, ScanOptions, scan_with};
 use utilake_decode::{RowError, SinkError};
+use utilake_kit::container::{WalkError, walk_csv_entries};
 use utilake_registry::{LoadMode, Registry, ResolveOptions, Resolved, TableId};
 use utilake_writer::partition::split_by_month;
 use utilake_writer::{

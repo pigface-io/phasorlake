@@ -148,7 +148,7 @@ pub fn write_fixtures(
         }
         let mut heads = 0;
         let mut others: Vec<Diagnostic> = Vec::new();
-        let walked = utilake_decode::archive::walk_csv_entries::<Box<Diagnostic>>(
+        let walked = utilake_kit::container::walk_csv_entries::<Box<Diagnostic>>(
             path,
             tmp,
             &mut |e| {
@@ -182,11 +182,11 @@ pub fn write_fixtures(
         w.problems.extend(others);
         match walked {
             Ok(_)
-            | Err(utilake_decode::archive::WalkError::Archive(
-                utilake_decode::archive::ArchiveError::NoCsv { .. },
+            | Err(utilake_kit::container::WalkError::Archive(
+                utilake_kit::container::ArchiveError::NoCsv { .. },
             )) => {}
-            Err(utilake_decode::archive::WalkError::Archive(a)) => w.problems.push(a.diagnostic()),
-            Err(utilake_decode::archive::WalkError::Callback(d)) => w.problems.push(*d),
+            Err(utilake_kit::container::WalkError::Archive(a)) => w.problems.push(a.diagnostic()),
+            Err(utilake_kit::container::WalkError::Callback(d)) => w.problems.push(*d),
         }
     }
     Ok(w)

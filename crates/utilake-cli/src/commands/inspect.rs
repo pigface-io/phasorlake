@@ -5,8 +5,8 @@ use std::path::Path;
 use anyhow::Result;
 use utilake_conform::inspect::{BlockSummary, InspectSink};
 use utilake_core::Diagnose;
-use utilake_decode::archive::walk_csv_entries;
 use utilake_decode::scan::{ScanOptions, scan};
+use utilake_kit::container::walk_csv_entries;
 use utilake_registry::{Mode, ResolveOptions};
 
 use crate::context::Context;
@@ -59,10 +59,10 @@ fn scan_blocks(ctx: &Context, path: &Path) -> Result<Vec<(String, BlockSummary)>
             skipped.push(o.name);
         })
         .map_err(|e| match e {
-            utilake_decode::archive::WalkError::Archive(a) => {
+            utilake_kit::container::WalkError::Archive(a) => {
                 anyhow::anyhow!("{}", a.diagnostic().render())
             }
-            utilake_decode::archive::WalkError::Callback(c) => c,
+            utilake_kit::container::WalkError::Callback(c) => c,
         })?;
         if !skipped.is_empty() && !ctx.json {
             eprintln!(

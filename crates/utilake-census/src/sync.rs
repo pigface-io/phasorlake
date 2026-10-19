@@ -99,7 +99,7 @@ pub fn read_ctls(files: &[PathBuf], tmp: &Path) -> (Vec<(String, Vec<u8>)>, Vec<
                 read(name, &mut f, &mut out);
             }
         } else if lower.ends_with(".zip") {
-            let walked = utilake_decode::archive::walk_csv_entries::<Box<Diagnostic>>(
+            let walked = utilake_kit::container::walk_csv_entries::<Box<Diagnostic>>(
                 path,
                 tmp,
                 &mut |_| Ok(()),
@@ -112,13 +112,13 @@ pub fn read_ctls(files: &[PathBuf], tmp: &Path) -> (Vec<(String, Vec<u8>)>, Vec<
             );
             match walked {
                 Ok(_)
-                | Err(utilake_decode::archive::WalkError::Archive(
-                    utilake_decode::archive::ArchiveError::NoCsv { .. },
+                | Err(utilake_kit::container::WalkError::Archive(
+                    utilake_kit::container::ArchiveError::NoCsv { .. },
                 )) => {}
-                Err(utilake_decode::archive::WalkError::Archive(a)) => {
+                Err(utilake_kit::container::WalkError::Archive(a)) => {
                     problems.push(utilake_core::Diagnose::diagnostic(&a));
                 }
-                Err(utilake_decode::archive::WalkError::Callback(d)) => problems.push(*d),
+                Err(utilake_kit::container::WalkError::Callback(d)) => problems.push(*d),
             }
         }
     }
