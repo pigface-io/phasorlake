@@ -50,7 +50,9 @@ bin/nemweb-mirror map && bin/nemweb-mirror summary
 ```
 
 `run` can be stopped and started again at any time: the crawl carries on from
-the pages it kept, and archived files are never downloaded again.
+the pages it kept, and archived files are never downloaded again. A restart
+takes a file listed in `held.ndjson` as archived when its size on disk
+matches, without reading its sidecar.
 
 ## On disk
 
@@ -61,6 +63,7 @@ the pages it kept, and archived files are never downloaded again.
 {home}/mirror/crawl/remote.ndjson        every folder and file the crawl found
 {home}/mirror/peek.ndjson                every zip's entries, read before download, with when, against which listing, and the server's ETag and Last-Modified
 {home}/mirror/removed.ndjson             zips removed as the same as their folders
+{home}/mirror/held.ndjson                every file a download pass found archived or fetched, with its size
 {home}/mirror/progress.json              a run's counts, which `status` reads while it runs
 {home}/mirror/map/map.ndjson, tree.txt   the catalog                              (docs/catalog.md)
 ```

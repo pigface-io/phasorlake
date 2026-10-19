@@ -1,9 +1,11 @@
 //! Downloading every file of the crawl record into the archive.
 
 use std::collections::HashMap;
+use std::io::Write as _;
+use std::path::PathBuf;
 
 use futures::StreamExt as _;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use url::Url;
 
 use crate::compare::{Pair, Verdict, compare, pairs, remove};
@@ -70,6 +72,14 @@ pub async fn download(
         });
     }
     let removed = mirror.removed()?;
+    let held = mirror.held()?;
+    let held_path = mirror.held_path();
+    std::fs::create_dir_all(mirror.dir()).map_err(MirrorError::io(mirror.dir()))?;
+    let mut note = std::fs::OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(&held_path)
+        .map_err(MirrorError::io(&held_path))?;
     let paired: HashMap<String, Pair> = pairs(mirror)?
         .into_iter()
         .map(|p| (p.zip.clone(), p))
@@ -102,7 +112,7 @@ pub async fn download(
         removed: listed - files.len(),
         ..DownloadSummary::default()
     };
-    let paired = &paired;
+    let (paired, held) = (&paired, &held);
     // The listings, read once, when the first paired zip comes up: peek
     // reads the paired zips' first, so by then they are there.
     let listings: std::sync::OnceLock<HashMap<String, Peeked>> = std::sync::OnceLock::new();
@@ -118,7 +128,23 @@ pub async fn download(
                     return Ok((remote, None));
                 }
             }
-            Ok::<_, MirrorError>((remote, Some(fetcher.fetch(remote).await)))
+            let url = remote.url.as_str();
+            if let Some(&size) = held.get(url)
+                && std::fs::metadata(fetcher.archive().path_for(url)).is_ok_and(|m| m.len() == size)
+            {
+                let got = Got {
+                    cached: true,
+                    size,
+                    noted: true,
+                };
+                return Ok((remote, Some(Ok(got))));
+            }
+            let got = fetcher.fetch(remote).await.map(|l| Got {
+                cached: l.cached,
+                size: l.size,
+                noted: false,
+            });
+            Ok::<_, MirrorError>((remote, Some(got)))
         })
         .buffer_unordered(downloads.max(1));
     let mut done = 0;
@@ -137,6 +163,15 @@ pub async fn download(
                     summary.downloaded += 1;
                     summary.bytes += local.size;
                 }
+                if !local.noted {
+                    let line = serde_json::to_string(&Held {
+                        url: remote.url.as_str().to_owned(),
+                        size: local.size,
+                    })
+                    .expect("a Held always serialises");
+                    note.write_all(format!("{line}\n").as_bytes())
+                        .map_err(MirrorError::io(&held_path))?;
+                }
                 on_file(&FileDone {
                     url: remote.url.as_str(),
                     cached: local.cached,
@@ -150,6 +185,48 @@ pub async fn download(
         }
     }
     Ok(summary)
+}
+
+/// One file a download pass found in the archive, or put there.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+struct Held {
+    url: String,
+    size: u64,
+}
+
+impl Mirror {
+    /// The files download passes found in the archive or put there, one
+    /// line each. A later pass takes a file whose size on disk matches its
+    /// line as archived without reading its sidecar, which on a large
+    /// archive is most of the time a restart spends before downloading.
+    pub fn held_path(&self) -> PathBuf {
+        self.dir().join("held.ndjson")
+    }
+
+    /// Every held file's size, by URL. A line that does not read (the last
+    /// one, cut short when a pass was killed) is passed over: that file's
+    /// sidecar is read instead.
+    pub fn held(&self) -> Result<HashMap<String, u64>, MirrorError> {
+        let path = self.held_path();
+        let text = match std::fs::read_to_string(&path) {
+            Ok(t) => t,
+            Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Ok(HashMap::new()),
+            Err(e) => return Err(MirrorError::io(&path)(e)),
+        };
+        Ok(text
+            .lines()
+            .filter_map(|l| serde_json::from_str::<Held>(l).ok())
+            .map(|h| (h.url, h.size))
+            .collect())
+    }
+}
+
+/// How a file of the pass was dealt with.
+struct Got {
+    cached: bool,
+    size: u64,
+    /// Whether `held.ndjson` already says so.
+    noted: bool,
 }
 
 /// How a download pass runs.
@@ -322,6 +399,55 @@ mod tests {
         .unwrap();
         assert_eq!((s.files, s.cached), (1, 1));
         assert_eq!(t.request_count(), 1 + 3 + 1);
+    }
+
+    #[tokio::test]
+    async fn a_restart_takes_held_files_without_reading_their_sidecars() {
+        let home = tempfile::tempdir().unwrap();
+        let mirror = Mirror::new(home.path().join("mirror"));
+        let archive = home.path().join("archive");
+        let t = Arc::new(StaticTransport::default());
+        t.add("https://h/A/", Canned::ok(PAGE.as_bytes()));
+        t.add("https://h/A/x.zip", Canned::ok(b"xxx"));
+        t.add("https://h/A/y.zip", Canned::ok(b"yyyy"));
+        let f = fetcher(&t, &archive);
+        crawl(&f, &mirror, &[root("https://h/A/").unwrap()], false, |_| {})
+            .await
+            .unwrap();
+        let options = DownloadOptions {
+            downloads: 1,
+            only: &[],
+            delete_duplicates: false,
+        };
+        download(&f, &mirror, &options, ignore).await.unwrap();
+        let held = mirror.held().unwrap();
+        assert_eq!(
+            (held.get("https://h/A/x.zip"), held.get("https://h/A/y.zip")),
+            (Some(&3), Some(&4))
+        );
+
+        // A sidecar that does not read would stop a pass that read it.
+        std::fs::write(archive.join("h/A/x.zip.json"), "{").unwrap();
+        // A file whose size no longer matches is fetched again.
+        std::fs::write(archive.join("h/A/y.zip"), b"y").unwrap();
+        std::fs::remove_file(archive.join("h/A/y.zip.json")).unwrap();
+        // A line cut short by a kill is passed over.
+        let mut text = std::fs::read_to_string(mirror.held_path()).unwrap();
+        text.push_str("{\"url\":\"https://h/A/");
+        std::fs::write(mirror.held_path(), text).unwrap();
+        let s = download(&f, &mirror, &options, ignore).await.unwrap();
+        assert_eq!((s.cached, s.downloaded), (1, 1));
+        assert_eq!(std::fs::read(archive.join("h/A/y.zip")).unwrap(), b"yyyy");
+        // Only the fetched file gains a line.
+        let lines = std::fs::read_to_string(mirror.held_path()).unwrap();
+        assert_eq!(lines.matches("y.zip").count(), 2);
+        assert_eq!(lines.matches("x.zip").count(), 1);
+
+        // A ledger that cannot be read or written stops the pass.
+        std::fs::remove_file(mirror.held_path()).unwrap();
+        std::fs::create_dir(mirror.held_path()).unwrap();
+        let e = download(&f, &mirror, &options, ignore).await.unwrap_err();
+        assert!(e.to_string().contains("held.ndjson"), "{e}");
     }
 
     #[tokio::test]
