@@ -222,6 +222,53 @@ fn trim(b: &[u8]) -> &[u8] {
     b.trim_ascii()
 }
 
+/// An href with its HTML character references decoded, as a browser reads
+/// it: the five named ones and numeric ones (`&#x2B;` is `+`), so a `#`
+/// written as a reference is not taken for a fragment. A reference that
+/// is not one of these, or not a character, is kept as written.
+pub fn href_text(href: &str) -> String {
+    if !href.contains('&') {
+        return href.to_owned();
+    }
+    let mut out = String::with_capacity(href.len());
+    let mut rest = href;
+    while let Some(at) = rest.find('&') {
+        out.push_str(&rest[..at]);
+        rest = &rest[at..];
+        let decoded = rest.find(';').and_then(|end| {
+            let name = &rest[1..end];
+            let c = match name {
+                "amp" => Some('&'),
+                "lt" => Some('<'),
+                "gt" => Some('>'),
+                "quot" => Some('"'),
+                "apos" => Some('\''),
+                _ => {
+                    let n = name.strip_prefix('#')?;
+                    let code = match n.strip_prefix(['x', 'X']) {
+                        Some(hex) => u32::from_str_radix(hex, 16).ok()?,
+                        None => n.parse().ok()?,
+                    };
+                    char::from_u32(code)
+                }
+            }?;
+            Some((c, end + 1))
+        });
+        match decoded {
+            Some((c, len)) => {
+                out.push(c);
+                rest = &rest[len..];
+            }
+            None => {
+                out.push('&');
+                rest = &rest[1..];
+            }
+        }
+    }
+    out.push_str(rest);
+    out
+}
+
 /// The five entities IIS writes into link text.
 fn unescape(s: &str) -> String {
     if !s.contains('&') {
@@ -237,6 +284,25 @@ fn unescape(s: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn an_href_is_read_with_its_references_decoded() {
+        assert_eq!(
+            href_text("/R/Electricity&#x2B;Data&#x2B;Model&#43;Report.htm"),
+            "/R/Electricity+Data+Model+Report.htm"
+        );
+        assert_eq!(
+            href_text("/x/a&amp;b&lt;&gt;&quot;&apos;.zip"),
+            "/x/a&b<>\"'.zip"
+        );
+        assert_eq!(href_text("/plain.zip"), "/plain.zip");
+        // Not a reference, or not a character: kept as written.
+        assert_eq!(href_text("/a&b.zip"), "/a&b.zip");
+        assert_eq!(
+            href_text("/a&nbsp;b&;c&#xZZ;d&#xD800;e&#x2B"),
+            "/a&nbsp;b&;c&#xZZ;d&#xD800;e&#x2B"
+        );
+    }
 
     fn fixture(name: &str) -> Vec<u8> {
         std::fs::read(format!(

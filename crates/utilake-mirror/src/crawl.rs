@@ -259,7 +259,7 @@ fn resolve(folder: &Url, link: &listing::Link, roots: &[Url]) -> Result<Remote, 
         text: link.href.clone(),
     };
     let mut url = folder
-        .join(&link.href)
+        .join(&listing::href_text(&link.href))
         .map_err(|_| bad("an href that is not a URL"))?;
     if url.fragment().is_some() {
         return Err(bad(
