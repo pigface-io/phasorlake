@@ -132,9 +132,9 @@ Every error and warning utilake reports carries one of these codes. Codes are st
 
 | code | raised in |
 |---|---|
-| `verify.missing_file` | `crates/utilake-cli/src/commands/lake.rs` |
-| `verify.orphan_quarantine` | `crates/utilake-cli/src/commands/lake.rs` |
-| `verify.size_mismatch` | `crates/utilake-cli/src/commands/lake.rs` |
+| `verify.missing_file` | `crates/utilake-writer/src/verify.rs` |
+| `verify.orphan_quarantine` | `crates/utilake-writer/src/verify.rs` |
+| `verify.size_mismatch` | `crates/utilake-writer/src/verify.rs` |
 
 ## internal
 

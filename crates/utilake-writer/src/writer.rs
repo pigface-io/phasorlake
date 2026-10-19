@@ -66,13 +66,17 @@ pub struct PartitionKey {
 /// lake file can be read back and checked.
 #[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub struct Transform {
-    /// Report type of the block's I row.
-    pub report_type: String,
-    /// Report subtype of the block's I row.
-    pub report_subtype: String,
-    /// Version the I row was published with.
+    /// The family the source puts the block in: the report type of an MMS
+    /// I row. Recorded under the name the first files were written with.
+    #[serde(rename = "report_type")]
+    pub block_family: String,
+    /// The block's name within its family: the report subtype of an MMS I
+    /// row. Recorded under the name the first files were written with.
+    #[serde(rename = "report_subtype")]
+    pub block_name: String,
+    /// Version the source published the block with.
     pub source_version: u16,
-    /// Columns of the I row, in order.
+    /// Columns of the block's header, in order.
     pub source_columns: Vec<String>,
     /// The month of the source, `YYYY-MM`, when it is known. Rules can be
     /// bounded by months, so it is part of what was read by which rules.

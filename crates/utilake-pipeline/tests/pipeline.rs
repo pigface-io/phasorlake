@@ -419,7 +419,7 @@ async fn a_source_is_read_again_when_its_plan_changes() {
     assert_eq!(first.schema_source, "registry");
     assert_eq!(first.resolution, "conforms");
     assert_eq!(
-        (first.report_type.as_str(), first.report_subtype.as_str()),
+        (first.block_family.as_str(), first.block_name.as_str()),
         ("DISPATCH", "PRICE")
     );
     assert_eq!(first.source_version, 4);

@@ -542,8 +542,8 @@ impl Manifest {
                 i64::from(s.schema_version),
                 s.fingerprint,
                 now(),
-                t.report_type,
-                t.report_subtype,
+                t.block_family,
+                t.block_name,
                 i64::from(t.source_version),
                 t.source_columns.join(","),
                 t.plan_hash,
@@ -736,8 +736,8 @@ pub struct IngestShape {
 fn transform_from_row(r: &rusqlite::Row<'_>, at: usize) -> rusqlite::Result<Transform> {
     let columns: String = r.get(at + 3)?;
     Ok(Transform {
-        report_type: r.get(at)?,
-        report_subtype: r.get(at + 1)?,
+        block_family: r.get(at)?,
+        block_name: r.get(at + 1)?,
         source_version: r.get::<_, i64>(at + 2)? as u16,
         source_columns: if columns.is_empty() {
             vec![]
@@ -779,8 +779,8 @@ mod tests {
 
     fn transform() -> Transform {
         Transform {
-            report_type: "A".into(),
-            report_subtype: "B".into(),
+            block_family: "A".into(),
+            block_name: "B".into(),
             source_version: 3,
             source_columns: vec!["X".into(), "Y".into()],
             source_period: Some("2024-01".into()),

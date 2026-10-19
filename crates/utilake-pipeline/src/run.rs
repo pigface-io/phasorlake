@@ -97,8 +97,8 @@ pub fn plans_current(registry: &Registry, shapes: &[IngestShape]) -> bool {
         }
         let columns: Vec<&str> = t.source_columns.iter().map(String::as_str).collect();
         let irow = utilake_core::IRow {
-            report_type: &t.report_type,
-            report_subtype: &t.report_subtype,
+            report_type: &t.block_family,
+            report_subtype: &t.block_name,
             version: t.source_version,
             columns: &columns,
         };

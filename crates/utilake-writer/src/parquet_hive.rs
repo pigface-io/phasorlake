@@ -126,11 +126,11 @@ impl ParquetHive {
                 // The transform: what was read, and by which plan.
                 KeyValue::new(
                     "utilake.report_type".to_owned(),
-                    meta.transform.report_type.clone(),
+                    meta.transform.block_family.clone(),
                 ),
                 KeyValue::new(
                     "utilake.report_subtype".to_owned(),
-                    meta.transform.report_subtype.clone(),
+                    meta.transform.block_name.clone(),
                 ),
                 KeyValue::new(
                     "utilake.source_version".to_owned(),
@@ -426,8 +426,8 @@ mod tests {
             time_column: Some(0),
             part: 1,
             transform: Transform {
-                report_type: "DISPATCH".into(),
-                report_subtype: "UNIT_SCADA".into(),
+                block_family: "DISPATCH".into(),
+                block_name: "UNIT_SCADA".into(),
                 source_version: 1,
                 source_columns: vec!["SETTLEMENTDATE".into(), "DUID".into()],
                 source_period: Some("2024-01".into()),

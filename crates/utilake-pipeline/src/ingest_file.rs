@@ -314,8 +314,8 @@ impl BatchSink for LakeSink<'_> {
                     version: resolved.version,
                     fingerprint,
                     transform: Transform {
-                        report_type: irow.report_type.to_owned(),
-                        report_subtype: irow.report_subtype.to_owned(),
+                        block_family: irow.report_type.to_owned(),
+                        block_name: irow.report_subtype.to_owned(),
                         source_version: irow.version,
                         source_columns: irow.columns.iter().map(|c| (*c).to_owned()).collect(),
                         source_period: self.period.map(|p| p.to_string()),

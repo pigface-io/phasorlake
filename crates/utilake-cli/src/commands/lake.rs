@@ -1,6 +1,6 @@
 //! `fetch`, `ingest`, `verify`: the pipeline and the lake.
 
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use std::sync::Arc;
 
 use anyhow::Result;
@@ -246,82 +246,26 @@ pub async fn reingest(cli: &Cli, ctx: &Context, dry_run: bool, args: &IngestArgs
     run_plan(cli, ctx, plan).await
 }
 
-/// Files under `dir`, at any depth, whose path is not in `live`, sorted.
-fn orphan_quarantine(dir: &Path, live: &[String]) -> Vec<String> {
-    let mut found = Vec::new();
-    let mut stack = vec![dir.to_path_buf()];
-    while let Some(d) = stack.pop() {
-        let Ok(entries) = std::fs::read_dir(&d) else {
-            continue;
-        };
-        for e in entries.flatten() {
-            let p = e.path();
-            if p.is_dir() {
-                stack.push(p);
-            } else {
-                let s = p.display().to_string();
-                if !live.contains(&s) {
-                    found.push(s);
-                }
-            }
-        }
-    }
-    found.sort();
-    found
-}
-
 /// `utilake verify`: every output the manifest lists exists with its size,
 /// and every quarantine file belongs to a current ingest.
 pub async fn verify(ctx: &Context, table: Option<&str>) -> Result<i32> {
     let (manifest, thread) = ctx.manifest()?;
-    let ingests = manifest
-        .list_ingests(table.map(str::to_owned), false, 100_000)
+    let report = utilake_writer::verify_lake(&manifest, &ctx.home.quarantine(), table)
         .await
         .map_err(|e| anyhow::anyhow!("{}", e.diagnostic().render()))?;
-    let live = manifest
-        .live_quarantine()
-        .await
-        .map_err(|e| anyhow::anyhow!("{}", e.diagnostic().render()))?;
-    drop(thread);
-    let mut problems: Vec<Vec<String>> = Vec::new();
-    let mut files = 0usize;
-    for i in &ingests {
-        for o in &i.outputs {
-            files += 1;
-            match std::fs::metadata(Path::new(&o.path)) {
-                Ok(m) if m.len() == o.bytes => {}
-                Ok(m) => problems.push(vec![
-                    o.path.clone(),
-                    "verify.size_mismatch".into(),
-                    format!("manifest says {} bytes, disk has {}", o.bytes, m.len()),
-                ]),
-                Err(_) => problems.push(vec![
-                    o.path.clone(),
-                    "verify.missing_file".into(),
-                    "listed in the manifest but not on disk".into(),
-                ]),
-            }
-        }
-    }
-    // A quarantine file no current ingest recorded was left by a read that
-    // has since been superseded: its rows are in the lake or were read again.
-    let qdir = match table {
-        Some(t) => ctx.home.quarantine().join(t.to_ascii_lowercase()),
-        None => ctx.home.quarantine(),
-    };
-    problems.extend(orphan_quarantine(&qdir, &live).into_iter().map(|p| {
-        vec![
-            p,
-            "verify.orphan_quarantine".into(),
-            "no current ingest recorded this quarantine file; it is safe to delete".into(),
-        ]
-    }));
+    drop(manifest);
+    thread.join();
     if ctx.json {
-        render::json_line(&serde_json::json!({ "files": files, "problems": problems }));
-    } else if problems.is_empty() {
-        println!("{files} file(s) verified, no problems");
+        render::json_line(&serde_json::to_value(&report)?);
+    } else if report.is_clean() {
+        println!("{} file(s) verified, no problems", report.files);
     } else {
-        print!("{}", render::table(&["path", "code", "problem"], &problems));
+        let rows: Vec<Vec<String>> = report
+            .problems
+            .iter()
+            .map(|p| vec![p.path.clone(), p.code.clone(), p.problem.clone()])
+            .collect();
+        print!("{}", render::table(&["path", "code", "problem"], &rows));
     }
-    Ok(if problems.is_empty() { 0 } else { 1 })
+    Ok(if report.is_clean() { 0 } else { 1 })
 }
