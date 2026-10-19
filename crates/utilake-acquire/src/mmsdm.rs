@@ -30,7 +30,7 @@ use utilake_core::YearMonth;
 
 use crate::archive::Archive;
 use crate::error::FetchError;
-use crate::fetcher::Fetcher;
+use crate::fetcher::{Fetcher, LocalFile};
 use crate::listing;
 use crate::source::{Query, RemoteFile, Source};
 
@@ -346,8 +346,103 @@ impl MmsdmArchive {
     }
 }
 
+/// The archive month a data file's name says, for either naming scheme.
+pub fn period_of_name(name: &str) -> Option<YearMonth> {
+    utilake_core::archive_name::parse(name).map(|n| n.month)
+}
+
+/// What a data file's name says: its table and month, as a file of this
+/// source. `None` when the name follows neither scheme.
+pub fn describe_name(url: Url) -> Option<RemoteFile> {
+    let name = url
+        .path_segments()
+        .and_then(|mut s| s.next_back())
+        .filter(|s| !s.is_empty())?
+        .replace("%23", "#");
+    let lower = name.to_ascii_lowercase();
+    if !(lower.ends_with(".zip") || lower.ends_with(".csv")) {
+        return None;
+    }
+    let parsed = utilake_core::archive_name::parse(&name)?;
+    let table = if parsed.file.is_some() {
+        parsed.table.clone()
+    } else {
+        parsed.split_table().0.to_owned()
+    };
+    Some(RemoteFile {
+        url,
+        source: SOURCE_ID,
+        table: Some(table),
+        period: Some(parsed.month.into()),
+        size: None,
+        modified: None,
+        modified_at: None,
+    })
+}
+
 #[async_trait]
 impl Source for MmsdmArchive {
+    fn id(&self) -> &'static str {
+        SOURCE_ID
+    }
+
+    /// The archived data files (zips and CSVs) of the query's months, as
+    /// files to read: what their sidecars say, so nothing is hashed again.
+    /// A table filter applies to files named for one table; a whole-month
+    /// zip holds every table and is kept.
+    fn archived(&self, archive: &Archive, query: &Query) -> Result<Vec<LocalFile>, FetchError> {
+        let mut out = Vec::new();
+        for month in query.range.months_iter() {
+            for path in self.archived_files(archive, month)? {
+                let name = path
+                    .file_name()
+                    .map(|n| n.to_string_lossy().into_owned())
+                    .unwrap_or_default();
+                let lower = name.to_ascii_lowercase();
+                if !(lower.ends_with(".zip") || lower.ends_with(".csv")) {
+                    continue;
+                }
+                let table = Self::parse_name(&name);
+                if let Some(t) = &table {
+                    let named = |names: &[String]| names.iter().any(|n| n.eq_ignore_ascii_case(t));
+                    if (!query.tables.is_empty() && !named(&query.tables)) || named(&query.exclude)
+                    {
+                        continue;
+                    }
+                }
+                let Some(sidecar) = Archive::read_sidecar(&path)? else {
+                    continue;
+                };
+                let Ok(url) = Url::parse(&sidecar.url) else {
+                    continue;
+                };
+                out.push(LocalFile {
+                    remote: RemoteFile {
+                        url,
+                        source: SOURCE_ID,
+                        table,
+                        period: Some(month.into()),
+                        size: Some(sidecar.size),
+                        modified: sidecar.listed_modified,
+                        modified_at: sidecar.listed_modified_at,
+                    },
+                    path,
+                    sha256: sidecar.sha256,
+                    size: sidecar.size,
+                    cached: true,
+                    etag: sidecar.etag,
+                    last_modified: sidecar.last_modified,
+                    last_modified_at: sidecar.last_modified_at,
+                });
+            }
+        }
+        Ok(out)
+    }
+
+    fn describe(&self, url: &Url) -> Option<RemoteFile> {
+        describe_name(url.clone())
+    }
+
     async fn list(&self, query: &Query, fetcher: &Fetcher) -> Result<Vec<RemoteFile>, FetchError> {
         let mut out = Vec::new();
         let upper = |names: &[String]| -> Vec<String> {
@@ -431,6 +526,52 @@ mod tests {
     use crate::fetcher::FetcherConfig;
     use crate::transport::{Canned, StaticTransport};
     use utilake_core::TimeRange;
+
+    #[test]
+    fn a_name_says_its_table_and_month() {
+        let ym = YearMonth::new(2024, 1).unwrap();
+        assert_eq!(
+            period_of_name("PUBLIC_DVD_REGION_202401010000.zip"),
+            Some(ym)
+        );
+        assert_eq!(period_of_name("REGION_v1_head.csv"), None);
+        assert_eq!(
+            period_of_name("PUBLIC_ARCHIVE#DISPATCHPRICE#FILE01#202608010000.zip"),
+            YearMonth::new(2026, 8)
+        );
+        assert_eq!(period_of_name("PUBLIC_DVD_REGION_2024010100001.zip"), None);
+        let r = describe_name(
+            Url::parse("https://h/d/PUBLIC_DVD_BIDPEROFFER1_202401010000.zip").unwrap(),
+        )
+        .unwrap();
+        assert_eq!(
+            (r.table.as_deref(), r.period),
+            (Some("BIDPEROFFER"), Some(ym.into()))
+        );
+        assert_eq!(r.source, SOURCE_ID);
+        let r = describe_name(
+            Url::parse(
+                "https://h/PUBLIC_ARCHIVE%23P5MIN_UNITSOLUTION%23ALL%23FILE02%23202401010000.CSV",
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        assert_eq!(r.table.as_deref(), Some("P5MIN_UNITSOLUTION"));
+        for bad in [
+            "https://h/README.txt",
+            "https://h/PUBLIC_DVD_REGION_202401010000.ctl",
+            "https://h/",
+            "https://h/other.zip",
+        ] {
+            assert!(describe_name(Url::parse(bad).unwrap()).is_none(), "{bad}");
+        }
+        let a = MmsdmArchive::new("https://h").unwrap();
+        assert_eq!(a.id(), SOURCE_ID);
+        assert!(
+            a.describe(&Url::parse("https://h/PUBLIC_DVD_REGION_202401010000.zip").unwrap())
+                .is_some()
+        );
+    }
 
     #[test]
     fn urls_and_names() {

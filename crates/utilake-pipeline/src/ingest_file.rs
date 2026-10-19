@@ -541,10 +541,6 @@ fn entry_stem(entry: &str, source_stem: &str) -> String {
 
 /// The archive month in the name of an archive file, in either naming
 /// scheme (see [`utilake_core::archive_name`]).
-pub fn period_from_stem(stem: &str) -> Option<YearMonth> {
-    utilake_core::archive_name::parse(stem).map(|n| n.month)
-}
-
 fn ingest_entry(
     input: &IngestInput,
     entry: &str,
@@ -556,7 +552,7 @@ fn ingest_entry(
         .remote
         .period
         .map(utilake_core::Period::month)
-        .or_else(|| period_from_stem(&input.local.remote.stem().to_ascii_uppercase()));
+        .or_else(|| utilake_acquire::period_of_name(&input.local.remote.file_name()));
     let initial = LakeSink {
         registry: &input.registry,
         writer: ParquetHive::new(&input.lake_root),
@@ -726,24 +722,5 @@ pub fn ingest_file(input: IngestInput) -> FileReport {
         local: input.local,
         entries,
         file_error,
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn periods() {
-        assert_eq!(
-            period_from_stem("PUBLIC_DVD_REGION_202401010000"),
-            YearMonth::new(2024, 1)
-        );
-        assert_eq!(period_from_stem("REGION_v1_head"), None);
-        assert_eq!(
-            period_from_stem("PUBLIC_ARCHIVE#DISPATCHPRICE#FILE01#202608010000"),
-            YearMonth::new(2026, 8)
-        );
-        assert_eq!(period_from_stem("PUBLIC_DVD_REGION_2024010100001"), None);
     }
 }

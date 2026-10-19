@@ -19,7 +19,7 @@ pub mod wem;
 pub use archive::{Archive, Archived, Sidecar, sha256_file};
 pub use error::FetchError;
 pub use fetcher::{Fetcher, FetcherConfig, LocalFile};
-pub use mmsdm::MmsdmArchive;
+pub use mmsdm::{MmsdmArchive, describe_name, period_of_name};
 pub use source::{Query, RemoteFile, Source};
 pub use transport::{HttpResponse, OfflineTransport, ReqwestTransport, Transport};
 pub use wem::WemDatafiles;

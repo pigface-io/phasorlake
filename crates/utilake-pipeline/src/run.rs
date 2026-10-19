@@ -26,9 +26,15 @@ fn emit(tx: &mpsc::Sender<Event>, e: Event) {
 pub fn local_remote(path: &std::path::Path) -> Option<RemoteFile> {
     let abs = std::path::absolute(path).ok()?;
     let url = Url::from_file_path(&abs).ok()?;
-    let stem = abs.file_stem()?.to_string_lossy().to_ascii_uppercase();
-    let period = crate::ingest_file::period_from_stem(&stem).map(utilake_core::Period::from);
-    let table = utilake_acquire::MmsdmArchive::parse_name(&abs.file_name()?.to_string_lossy());
+    let name = abs.file_name()?.to_string_lossy();
+    let (table, period) =
+        utilake_acquire::describe_name(url.clone()).map_or((None, None), |r| (r.table, r.period));
+    // A zip or CSV named for no table is still a file to read: its tables
+    // are whatever its rows say.
+    let lower = name.to_ascii_lowercase();
+    if !(lower.ends_with(".zip") || lower.ends_with(".csv")) {
+        return None;
+    }
     Some(RemoteFile {
         url,
         source: "local",
@@ -61,62 +67,6 @@ async fn hash_local(remote: RemoteFile, path: std::path::PathBuf) -> std::io::Re
     tokio::task::spawn_blocking(move || local_file(remote, &path))
         .await
         .unwrap_or_else(|e| Err(std::io::Error::other(e)))
-}
-
-/// The archived data files (zips and CSVs) of `query`'s months, as files
-/// to read: what their sidecars say, so nothing is hashed again. A table
-/// filter applies to files named for one table; a whole-month zip holds
-/// every table and is kept.
-fn archived(
-    source: &utilake_acquire::MmsdmArchive,
-    archive: &utilake_acquire::Archive,
-    query: &utilake_acquire::Query,
-) -> Result<Vec<LocalFile>, utilake_acquire::FetchError> {
-    let mut out = Vec::new();
-    for month in query.range.months_iter() {
-        for path in source.archived_files(archive, month)? {
-            let name = path
-                .file_name()
-                .map(|n| n.to_string_lossy().into_owned())
-                .unwrap_or_default();
-            let lower = name.to_ascii_lowercase();
-            if !(lower.ends_with(".zip") || lower.ends_with(".csv")) {
-                continue;
-            }
-            let table = utilake_acquire::MmsdmArchive::parse_name(&name);
-            if let Some(t) = &table {
-                let named = |names: &[String]| names.iter().any(|n| n.eq_ignore_ascii_case(t));
-                if (!query.tables.is_empty() && !named(&query.tables)) || named(&query.exclude) {
-                    continue;
-                }
-            }
-            let Some(sidecar) = utilake_acquire::Archive::read_sidecar(&path)? else {
-                continue;
-            };
-            let Ok(url) = Url::parse(&sidecar.url) else {
-                continue;
-            };
-            out.push(LocalFile {
-                remote: RemoteFile {
-                    url,
-                    source: utilake_acquire::mmsdm::SOURCE_ID,
-                    table,
-                    period: Some(month.into()),
-                    size: Some(sidecar.size),
-                    modified: sidecar.listed_modified,
-                    modified_at: sidecar.listed_modified_at,
-                },
-                path,
-                sha256: sidecar.sha256,
-                size: sidecar.size,
-                cached: true,
-                etag: sidecar.etag,
-                last_modified: sidecar.last_modified,
-                last_modified_at: sidecar.last_modified_at,
-            });
-        }
-    }
-    Ok(out)
 }
 
 /// A source the manifest has recorded, as the file to read it from again.
@@ -245,7 +195,7 @@ pub async fn run(
                 .await;
             }
         },
-        Input::Archive { source, query } => match archived(source, deps.fetcher.archive(), query) {
+        Input::Archive { source, query } => match source.archived(deps.fetcher.archive(), query) {
             Ok(files) => files
                 .into_iter()
                 .map(|l| Listed {

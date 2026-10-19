@@ -1304,6 +1304,9 @@ struct OneFile(Vec<RemoteFile>);
 
 #[async_trait]
 impl Source for OneFile {
+    fn id(&self) -> &'static str {
+        "test-one"
+    }
     async fn list(&self, _q: &Query, _f: &Fetcher) -> Result<Vec<RemoteFile>, FetchError> {
         Ok(self.0.clone())
     }
@@ -1313,6 +1316,9 @@ struct Broken;
 
 #[async_trait]
 impl Source for Broken {
+    fn id(&self) -> &'static str {
+        "test-broken"
+    }
     async fn list(&self, _q: &Query, _f: &Fetcher) -> Result<Vec<RemoteFile>, FetchError> {
         Err(FetchError::Offline {
             url: "https://h/".into(),

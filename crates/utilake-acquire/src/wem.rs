@@ -122,6 +122,10 @@ impl WemDatafiles {
 
 #[async_trait]
 impl Source for WemDatafiles {
+    fn id(&self) -> &'static str {
+        SOURCE_ID
+    }
+
     async fn list(&self, query: &Query, fetcher: &Fetcher) -> Result<Vec<RemoteFile>, FetchError> {
         let mut out = Vec::new();
         for ds in &self.datasets {

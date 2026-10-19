@@ -56,12 +56,12 @@ pub enum Input {
         /// The query.
         query: Query,
     },
-    /// The archived files of the NEM archive's months of a query: what
-    /// `fetch` downloaded, read from disk, never from the network.
+    /// The archived files of a source for a query: what `fetch`
+    /// downloaded, read from disk, never from the network.
     Archive {
-        /// The archive's month layout.
-        source: Arc<utilake_acquire::MmsdmArchive>,
-        /// The months and tables.
+        /// The source whose archive is read.
+        source: Arc<dyn Source>,
+        /// The periods and tables.
         query: Query,
     },
     /// Local zips or CSVs.
