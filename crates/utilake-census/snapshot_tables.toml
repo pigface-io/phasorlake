@@ -1,0 +1,19 @@
+# Standing-data tables that AEMO's archive README does not name.
+#
+# A standing-data table's monthly archive file is the whole table as it
+# stood, not the rows of that month. The list of them is AEMO's own: the
+# README.txt in the DOCUMENTATION directory of every archive month, kept as
+# testdata/bootstrap/MMSDM_2026_08/README.txt and read by `utilake-census sync --readme`.
+# That README was last revised for data model v4.12 and misses tables added
+# since.
+#
+# A table belongs here only on evidence anyone can check: every row sampled
+# from its January 2024 file is there again in the sample of its August
+# 2026 file (five rows or more, compared on the columns both have). The
+# test `the_observed_list_is_borne_out_by_the_fixtures` holds each entry to
+# that. No table is here on anyone's say-so.
+observed = [
+    "DUALLOC",                 # 20 of 20 sampled rows repeat
+    "MARKET_PRICE_THRESHOLDS", # 16 of 16
+    "MTPASA_RESERVELIMIT_SET", # 14 of 14
+]

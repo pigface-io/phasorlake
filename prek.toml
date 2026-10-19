@@ -111,7 +111,7 @@ name = "bench: the fast set, held to bench/budgets.json"
 language = "system"
 entry = "just bench-fast"
 stages = ["pre-push"]
-files = '^(crates/nemlake-(core|decode|conform|registry|writer)/|bench/budgets\.json$)'
+files = '^(crates/utilake-(core|decode|conform|registry|writer)/|bench/budgets\.json$)'
 pass_filenames = false
 
 [[repos.hooks]]
@@ -138,7 +138,7 @@ name = "schemas: every recorded census month resolves against the registry"
 language = "system"
 entry = "just census-check"
 stages = ["pre-push"]
-files = '^(schemas/|crates/nemlake-(registry|census|core)/)'
+files = '^(schemas/|crates/utilake-(registry|census|core)/)'
 pass_filenames = false
 
 [[repos.hooks]]
@@ -147,5 +147,5 @@ name = "schemas: in step with the control files of every archived month"
 language = "system"
 entry = "just schema-sync-check"
 stages = ["pre-push"]
-files = '^(schemas/|crates/nemlake-(registry|census)/)'
+files = '^(schemas/|crates/utilake-(registry|census)/)'
 pass_filenames = false

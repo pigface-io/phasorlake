@@ -41,7 +41,7 @@ gives its id to another column or moves a name to another id.
 A column a file carries that its table does not have is kept as text under
 its own name, without an id; so is the text `{column}__raw` of values that
 did not fit their column. Adding the column to `table.toml` gives it an id,
-and `nemlake reingest` writes the files that carry it again.
+and `utilake reingest` writes the files that carry it again.
 
 ## Type changes
 

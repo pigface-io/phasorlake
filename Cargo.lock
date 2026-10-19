@@ -1407,196 +1407,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "nemlake-acquire"
-version = "0.1.0"
-dependencies = [
- "async-trait",
- "bytes",
- "crc32fast",
- "criterion",
- "flate2",
- "futures",
- "memchr",
- "nemlake-core",
- "reqwest",
- "serde",
- "serde_json",
- "serde_yaml_ng",
- "sha2",
- "tempfile",
- "thiserror",
- "tokio",
- "url",
- "zip",
-]
-
-[[package]]
-name = "nemlake-bench"
-version = "0.1.0"
-dependencies = [
- "nemlake-acquire",
- "nemlake-core",
- "nemlake-pipeline",
- "nemlake-registry",
- "nemlake-writer",
- "peak_alloc",
- "serde_json",
- "tempfile",
- "tokio",
- "tokio-util",
- "zip",
-]
-
-[[package]]
-name = "nemlake-census"
-version = "0.1.0"
-dependencies = [
- "clap",
- "flate2",
- "nemlake-acquire",
- "nemlake-core",
- "nemlake-decode",
- "nemlake-registry",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror",
- "tokio",
- "toml",
- "url",
- "zip",
-]
-
-[[package]]
-name = "nemlake-cli"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "clap",
- "indicatif",
- "nemlake-acquire",
- "nemlake-conform",
- "nemlake-core",
- "nemlake-decode",
- "nemlake-pipeline",
- "nemlake-registry",
- "nemlake-writer",
- "serde",
- "serde_json",
- "tempfile",
- "tokio",
- "tokio-util",
- "tracing",
- "tracing-subscriber",
- "zip",
-]
-
-[[package]]
-name = "nemlake-conform"
-version = "0.1.0"
-dependencies = [
- "arrow-array",
- "arrow-schema",
- "criterion",
- "nemlake-core",
- "nemlake-decode",
- "nemlake-registry",
-]
-
-[[package]]
-name = "nemlake-core"
-version = "0.1.0"
-dependencies = [
- "criterion",
- "fast-float2",
- "memchr",
- "proptest",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror",
- "toml",
- "xxhash-rust",
-]
-
-[[package]]
-name = "nemlake-decode"
-version = "0.1.0"
-dependencies = [
- "memchr",
- "nemlake-core",
- "serde_json",
- "tempfile",
- "thiserror",
- "zip",
-]
-
-[[package]]
-name = "nemlake-mdff"
-version = "0.1.0"
-
-[[package]]
-name = "nemlake-pipeline"
-version = "0.1.0"
-dependencies = [
- "arrow-array",
- "arrow-schema",
- "arrow-select",
- "async-trait",
- "futures",
- "nemlake-acquire",
- "nemlake-conform",
- "nemlake-core",
- "nemlake-decode",
- "nemlake-registry",
- "nemlake-writer",
- "parquet",
- "serde_json",
- "tempfile",
- "tokio",
- "tokio-util",
- "url",
- "zip",
-]
-
-[[package]]
-name = "nemlake-registry"
-version = "0.1.0"
-dependencies = [
- "arrow-schema",
- "criterion",
- "hashbrown 0.17.1",
- "insta",
- "nemlake-core",
- "postcard",
- "serde",
- "serde_json",
- "sha2",
- "tempfile",
- "thiserror",
- "toml",
- "xxhash-rust",
-]
-
-[[package]]
-name = "nemlake-writer"
-version = "0.1.0"
-dependencies = [
- "arrow-array",
- "arrow-schema",
- "arrow-select",
- "criterion",
- "nemlake-core",
- "parquet",
- "rusqlite",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror",
- "tokio",
-]
-
-[[package]]
 name = "nu-ansi-term"
 version = "0.50.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2849,6 +2659,196 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "06abde3611657adf66d383f00b093d7faecc7fa57071cce2578660c9f1010821"
 
 [[package]]
+name = "utilake-acquire"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "bytes",
+ "crc32fast",
+ "criterion",
+ "flate2",
+ "futures",
+ "memchr",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "serde_yaml_ng",
+ "sha2",
+ "tempfile",
+ "thiserror",
+ "tokio",
+ "url",
+ "utilake-core",
+ "zip",
+]
+
+[[package]]
+name = "utilake-bench"
+version = "0.1.0"
+dependencies = [
+ "peak_alloc",
+ "serde_json",
+ "tempfile",
+ "tokio",
+ "tokio-util",
+ "utilake-acquire",
+ "utilake-core",
+ "utilake-pipeline",
+ "utilake-registry",
+ "utilake-writer",
+ "zip",
+]
+
+[[package]]
+name = "utilake-census"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "flate2",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror",
+ "tokio",
+ "toml",
+ "url",
+ "utilake-acquire",
+ "utilake-core",
+ "utilake-decode",
+ "utilake-registry",
+ "zip",
+]
+
+[[package]]
+name = "utilake-cli"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "clap",
+ "indicatif",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "tokio",
+ "tokio-util",
+ "tracing",
+ "tracing-subscriber",
+ "utilake-acquire",
+ "utilake-conform",
+ "utilake-core",
+ "utilake-decode",
+ "utilake-pipeline",
+ "utilake-registry",
+ "utilake-writer",
+ "zip",
+]
+
+[[package]]
+name = "utilake-conform"
+version = "0.1.0"
+dependencies = [
+ "arrow-array",
+ "arrow-schema",
+ "criterion",
+ "utilake-core",
+ "utilake-decode",
+ "utilake-registry",
+]
+
+[[package]]
+name = "utilake-core"
+version = "0.1.0"
+dependencies = [
+ "criterion",
+ "fast-float2",
+ "memchr",
+ "proptest",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror",
+ "toml",
+ "xxhash-rust",
+]
+
+[[package]]
+name = "utilake-decode"
+version = "0.1.0"
+dependencies = [
+ "memchr",
+ "serde_json",
+ "tempfile",
+ "thiserror",
+ "utilake-core",
+ "zip",
+]
+
+[[package]]
+name = "utilake-mdff"
+version = "0.1.0"
+
+[[package]]
+name = "utilake-pipeline"
+version = "0.1.0"
+dependencies = [
+ "arrow-array",
+ "arrow-schema",
+ "arrow-select",
+ "async-trait",
+ "futures",
+ "parquet",
+ "serde_json",
+ "tempfile",
+ "tokio",
+ "tokio-util",
+ "url",
+ "utilake-acquire",
+ "utilake-conform",
+ "utilake-core",
+ "utilake-decode",
+ "utilake-registry",
+ "utilake-writer",
+ "zip",
+]
+
+[[package]]
+name = "utilake-registry"
+version = "0.1.0"
+dependencies = [
+ "arrow-schema",
+ "criterion",
+ "hashbrown 0.17.1",
+ "insta",
+ "postcard",
+ "serde",
+ "serde_json",
+ "sha2",
+ "tempfile",
+ "thiserror",
+ "toml",
+ "utilake-core",
+ "xxhash-rust",
+]
+
+[[package]]
+name = "utilake-writer"
+version = "0.1.0"
+dependencies = [
+ "arrow-array",
+ "arrow-schema",
+ "arrow-select",
+ "criterion",
+ "parquet",
+ "rusqlite",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror",
+ "tokio",
+ "utilake-core",
+]
+
+[[package]]
 name = "valuable"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3203,11 +3203,11 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "clap",
- "nemlake-census",
- "nemlake-core",
- "nemlake-registry",
  "serde",
  "serde_json",
+ "utilake-census",
+ "utilake-core",
+ "utilake-registry",
 ]
 
 [[package]]

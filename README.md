@@ -1,8 +1,10 @@
-# nemlake
+# utilake
 
 AEMO market data into a local Parquet lake, from one Rust binary.
+Pronounced *util-lake*: a lake for the utilities' data, the electricity
+markets first.
 
-`nemlake` downloads the National Electricity Market's monthly archive files
+`utilake` downloads the National Electricity Market's monthly archive files
 from nemweb, parses their `C`/`I`/`D` row format through a schema registry
 that knows every table version AEMO has published, and writes typed,
 Hive-partitioned Parquet that DuckDB, Polars and anything else that reads
@@ -13,20 +15,20 @@ a failure is explained.
 ## Quick start
 
 ```sh
-cargo install --path crates/nemlake-cli --locked
-nemlake fetch nem --table DISPATCH_UNIT_SCADA --from 2024-01
-nemlake ingest --from 2024-01 --table DISPATCH_UNIT_SCADA
+cargo install --path crates/utilake-cli --locked
+utilake fetch nem --table DISPATCH_UNIT_SCADA --from 2024-01
+utilake ingest --from 2024-01 --table DISPATCH_UNIT_SCADA
 ```
 
 `fetch` downloads into the archive, each file once; `ingest` writes Parquet
 from what is archived, without the network.
 
-The result lands under `~/.nemlake/lake/nem/dispatch_unit_scada/year=2024/month=01/`.
+The result lands under `~/.utilake/lake/nem/dispatch_unit_scada/year=2024/month=01/`.
 Query it:
 
 ```sql
 select count(*), typeof(settlementdate)
-from read_parquet('~/.nemlake/lake/nem/dispatch_unit_scada/**/*.parquet', hive_partitioning = true);
+from read_parquet('~/.utilake/lake/nem/dispatch_unit_scada/**/*.parquet', hive_partitioning = true);
 ```
 
 Run the same commands again and they finish in milliseconds: the archive has
@@ -36,27 +38,27 @@ the file, and the manifest knows it is already in the lake.
 
 | command | what it does |
 |---|---|
-| `nemlake fetch nem --from YYYY-MM [--to YYYY-MM] [--table T,T] [--exclude T,T] [--dry-run]` | list the archive and download each file not archived yet, with the month's control files and README. Without `--table`: every table the archive has for those months. `--dry-run` lists the files and totals their size |
-| `nemlake ingest --from YYYY-MM [--to YYYY-MM] [--table T,T] [--exclude T,T]` | write Parquet from the archived files of those months, no network |
-| `nemlake ingest <zip\|csv\|dir>...` | ingest local files, no network |
-| `nemlake reingest [--dry-run]` | read again, from disk, every source whose lake files are behind the current schemas; no network |
-| `nemlake inspect <file>` | every block in a file, its version and how the registry resolves it |
-| `nemlake ls [--table T] [--failed] [--runs]` | what the manifest knows |
-| `nemlake errors [--last] [--table T] [--code C]` | diagnostics recorded by past runs |
-| `nemlake verify` | every Parquet file the manifest lists exists with its size |
-| `nemlake schema list\|show\|increments\|validate` | the registry; `increments T` lists a table's increments with the columns each adds or drops |
-| `nemlake schema plan <type> <subtype> <version> --columns A,B,C [--month YYYY-MM]` | the conformance plan a shape is read with, as JSON: where each file column goes, its cast, what is written null |
-| `nemlake archive ls\|verify` | every downloaded file with where and when it came from; `verify` hashes each one again |
-| `nemlake wem manifest <dataset>` | a WEM dataset's file list (WEM ingestion comes later) |
+| `utilake fetch nem --from YYYY-MM [--to YYYY-MM] [--table T,T] [--exclude T,T] [--dry-run]` | list the archive and download each file not archived yet, with the month's control files and README. Without `--table`: every table the archive has for those months. `--dry-run` lists the files and totals their size |
+| `utilake ingest --from YYYY-MM [--to YYYY-MM] [--table T,T] [--exclude T,T]` | write Parquet from the archived files of those months, no network |
+| `utilake ingest <zip\|csv\|dir>...` | ingest local files, no network |
+| `utilake reingest [--dry-run]` | read again, from disk, every source whose lake files are behind the current schemas; no network |
+| `utilake inspect <file>` | every block in a file, its version and how the registry resolves it |
+| `utilake ls [--table T] [--failed] [--runs]` | what the manifest knows |
+| `utilake errors [--last] [--table T] [--code C]` | diagnostics recorded by past runs |
+| `utilake verify` | every Parquet file the manifest lists exists with its size |
+| `utilake schema list\|show\|increments\|validate` | the registry; `increments T` lists a table's increments with the columns each adds or drops |
+| `utilake schema plan <type> <subtype> <version> --columns A,B,C [--month YYYY-MM]` | the conformance plan a shape is read with, as JSON: where each file column goes, its cast, what is written null |
+| `utilake archive ls\|verify` | every downloaded file with where and when it came from; `verify` hashes each one again |
+| `utilake wem manifest <dataset>` | a WEM dataset's file list (WEM ingestion comes later) |
 
-Global flags: `--home DIR` (or `NEMLAKE_HOME`), `--json`, `-v`, `--offline`,
+Global flags: `--home DIR` (or `UTILAKE_HOME`), `--json`, `-v`, `--offline`,
 `--jobs N`, `--no-user-schemas`. Ingest flags: `--max-bad-rows N`, `--strict`,
 `--fail-fast`.
 
 ## How the data is laid out
 
 ```
-~/.nemlake/
+~/.utilake/
   lake/nem/{table}/year=YYYY/month=MM/{source}-v{version}-{shape8}-{sha8}.parquet   appended tables, partitioned by market-local month
   lake/nem/{table}/snapshot=YYYYMM/...                                     standing-data tables (REGION, PARTICIPANT, ...): each month's file is the whole table
   archive/{host}/{path of the URL}[.json]                                  every download as the server sent it, with its record
@@ -121,13 +123,13 @@ All three are written into the file's footer and into the manifest:
 
 | footer key | what it says |
 |---|---|
-| `nemlake.source_url`, `nemlake.source_sha256`, `nemlake.entry` | the source: where it came from, its hash, the CSV inside it |
-| `nemlake.report_type`, `nemlake.report_subtype`, `nemlake.source_version`, `nemlake.source_columns`, `nemlake.fingerprint` | the shape: the block's I row as AEMO published it |
-| `nemlake.source_period` | the month of the source, which decides the increment a block is read against |
-| `nemlake.plan` | the hash of the conformance plan the shape was read by: which file column feeds which lake column, that column's id, type and nullability, how the value is parsed, the key and time columns, the load mode, the directory |
-| `nemlake.shape_id` | the ids the census gives the shape (`just census`), when it has seen it |
-| `nemlake.schema_source` | where the table's definition came from: `registry` (built in), `user` (your own table file), `file` (nobody declared it, so the file's own header) |
-| `nemlake.resolution`, `nemlake.table`, `nemlake.schema_version` | how the shape matched: `conforms` (its columns are its increment's), `deviates` or `derived`; the table, and the increment (`TABLE@n`, our version; AEMO's is `source_version`) |
+| `utilake.source_url`, `utilake.source_sha256`, `utilake.entry` | the source: where it came from, its hash, the CSV inside it |
+| `utilake.report_type`, `utilake.report_subtype`, `utilake.source_version`, `utilake.source_columns`, `utilake.fingerprint` | the shape: the block's I row as AEMO published it |
+| `utilake.source_period` | the month of the source, which decides the increment a block is read against |
+| `utilake.plan` | the hash of the conformance plan the shape was read by: which file column feeds which lake column, that column's id, type and nullability, how the value is parsed, the key and time columns, the load mode, the directory |
+| `utilake.shape_id` | the ids the census gives the shape (`just census`), when it has seen it |
+| `utilake.schema_source` | where the table's definition came from: `registry` (built in), `user` (your own table file), `file` (nobody declared it, so the file's own header) |
+| `utilake.resolution`, `utilake.table`, `utilake.schema_version` | how the shape matched: `conforms` (its columns are its increment's), `deviates` or `derived`; the table, and the increment (`TABLE@n`, our version; AEMO's is `source_version`) |
 
 The plan hash changes when the output of that shape would: a column it
 carries gets another type, a table gets a schema where it had none, the
@@ -137,18 +139,18 @@ shape does not carry: its files simply lack that column, which reads as
 null. A source whose recorded hash is no longer what the current schemas
 give is behind: the next `fetch` or
 `ingest` that covers it reads it again instead of skipping it, and
-`nemlake reingest` does that for every source in the manifest, straight
+`utilake reingest` does that for every source in the manifest, straight
 from the archive. The Parquet files the earlier read wrote are replaced,
 and the run reports each such source as `manifest.rules_changed`.
-`nemlake reingest --dry-run` lists what is behind and changes nothing.
+`utilake reingest --dry-run` lists what is behind and changes nothing.
 
 ## The archive of downloads
 
-Every file nemlake downloads is kept exactly as the server sent it, at the
+Every file utilake downloads is kept exactly as the server sent it, at the
 path its URL spells out:
 
 ```
-~/.nemlake/archive/www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2024/MMSDM_2024_01/MMSDM_Historical_Data_SQLLoader/DATA/
+~/.utilake/archive/www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2024/MMSDM_2024_01/MMSDM_Historical_Data_SQLLoader/DATA/
   PUBLIC_DVD_DISPATCHPRICE_202401010000.zip
   PUBLIC_DVD_DISPATCHPRICE_202401010000.zip.json
 ```
@@ -156,9 +158,9 @@ path its URL spells out:
 The `.json` beside it records where the file came from: the URL, when the
 download completed, the server's `ETag` and `Last-Modified` (when AEMO
 published it), the time the directory listing showed, the size and sha256
-of the bytes, and the nemlake version that fetched it.
+of the bytes, and the utilake version that fetched it.
 
-Times in it, and in every record nemlake writes: every time field is RFC
+Times in it, and in every record utilake writes: every time field is RFC
 3339 with an offset, or stands beside one that is. `fetched_at` is when
 the download completed, UTC. `last_modified` and `listed_modified` are
 kept as the server and the listing wrote them; `last_modified_at` and
@@ -175,11 +177,11 @@ and `modified_at` in listing output, `last_modified_at` in the manifest's
 the instant in UTC (the WEM manifest's `generated_at_utc`). A time
 written without an offset is a defect.
 
-A file is downloaded once. Nothing in nemlake replaces or deletes an
+A file is downloaded once. Nothing in utilake replaces or deletes an
 archived file; to fetch one again, delete it and its record. Everything in
 the lake, and the census of every shape AEMO published (`just census`), is
-derived from the archive, which is what `nemlake reingest` does when a
-table's schema improves. `nemlake archive verify` hashes every
+derived from the archive, which is what `utilake reingest` does when a
+table's schema improves. `utilake archive verify` hashes every
 file against its record.
 
 ## Our schema, in increments
@@ -240,34 +242,34 @@ column, with a `note` saying why. Types change only by an Iceberg promotion
 is a new column.
 
 AEMO's PDR control files can be kept under `reference/pdr/` for
-comparison (`nemlake-census pdr-diff`); resolution never reads them.
+comparison (`utilake-census pdr-diff`); resolution never reads them.
 
 ## Your own tables
 
-A table of your own goes in `~/.nemlake/schemas/nem/{TABLE}/table.toml`,
+A table of your own goes in `~/.utilake/schemas/nem/{TABLE}/table.toml`,
 laid out like the ones above (control files are optional there). Every
 command uses it: one named after a built-in table replaces it, any other
 adds a table. `--no-user-schemas` runs without them. What was ingested
-before the table existed is brought up to it by `nemlake reingest`.
+before the table existed is brought up to it by `utilake reingest`.
 
 ## The census of every shape
 
-nemlake documents what AEMO published, from evidence. Every file of the
-archive is downloaded once (`nemlake fetch nem`), and `just census FROM TO`
+utilake documents what AEMO published, from evidence. Every file of the
+archive is downloaded once (`utilake fetch nem`), and `just census FROM TO`
 reads each archived file of those months in full, offline, recording every
 block (one per I row: a file of many tables has many) with its shape and
 rows under `schemas/nem/census/` and `schemas/nem/shapes/`. That static map
 is committed. A new month goes forward with `just census-forward YYYY-MM`:
 download, census, sync the schemas to the month's control files, and gate
 the census against them (`just census-check`).
-Parquet is optional: `nemlake ingest --from` writes it from the archive.
+Parquet is optional: `utilake ingest --from` writes it from the archive.
 
 ## Which months
 
 The archive begins in July 2009. From 2015 each month is a directory of
-per-table zips and nemlake downloads the ones asked for. Before 2015 a month
+per-table zips and utilake downloads the ones asked for. Before 2015 a month
 exists only as one zip of 1.4 to 2.1 GB holding those per-table zips;
-nemlake downloads it whole, once, and reads the per-table zips nested in it
+utilake downloads it whole, once, and reads the per-table zips nested in it
 from disk.
 
 File names changed along the way, from `PUBLIC_DVD_{TABLE}_{YYYYMM}010000.zip`
@@ -283,7 +285,7 @@ files carry columns their control file does not list; those files are
 kept and flagged until a census of every month settles them. A file of
 another month is read against the increment in force then.
 
-AEMO's web server blocks a client that asks too fast. nemlake leaves 250 ms
+AEMO's web server blocks a client that asks too fast. utilake leaves 250 ms
 between requests (`request_interval_ms` in `config.toml`), and when the
 server refuses it (HTTP 403, or 429 through every retry) it sends nothing
 more in that run and reports `net.blocked` for what is left.
@@ -304,7 +306,7 @@ for a schema that could not be resolved in strict mode. `docs/errors.md` lists
 every code.
 
 Errors and warnings are printed as JSON, one object a line, as they happen
-on stderr and again in the summary and in `nemlake errors`:
+on stderr and again in the summary and in `utilake errors`:
 
 ```json
 {"code":"parse.integer","category":"parse","severity":"error","message":"Column REGISTEREDCAPACITY: the value 13.55 is a number with a fraction or exponent, but the column is declared a whole number (Int64).","table":"DUDETAIL","version":7,"line":133,"column":"REGISTEREDCAPACITY","expected":"a whole number (Int64)","observed":"13.55","sample":{"text":"D,PARTICIPANT_REGISTRATION,DUDETAIL,7,..."}}

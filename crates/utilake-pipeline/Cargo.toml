@@ -1,0 +1,34 @@
+[package]
+name = "utilake-pipeline"
+description = "Orchestration of list, fetch, ingest and commit as tokio streams."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+arrow-array.workspace = true
+arrow-schema.workspace = true
+utilake-core.workspace = true
+utilake-registry.workspace = true
+utilake-decode.workspace = true
+utilake-conform.workspace = true
+utilake-acquire.workspace = true
+utilake-writer.workspace = true
+futures.workspace = true
+serde_json.workspace = true
+tokio = { workspace = true, features = ["rt-multi-thread", "sync", "macros", "time"] }
+tokio-util.workspace = true
+url.workspace = true
+
+[dev-dependencies]
+arrow-select.workspace = true
+async-trait.workspace = true
+parquet.workspace = true
+tempfile.workspace = true
+zip.workspace = true

@@ -28,12 +28,12 @@ check:
 
 # the release binary, into bin/
 build:
-    cargo build --release --locked -p nemlake-cli
-    mkdir -p bin && cp target/release/nemlake bin/nemlake
+    cargo build --release --locked -p utilake-cli
+    mkdir -p bin && cp target/release/utilake bin/utilake
 
 # run the release binary
 run *args:
-    cargo run --release -q -p nemlake-cli -- "$@"
+    cargo run --release -q -p utilake-cli -- "$@"
 
 # ── style and lint ───────────────────────────────────────────────────────────
 
@@ -62,33 +62,33 @@ cover:
     cargo llvm-cov --workspace --locked --lcov --output-path coverage/rust.lcov
     cargo run -q -p xtask -- covergate coverage/rust.lcov
 
-# cut the bootstrap fixtures of a month from the local archive: every CTL, the head of every data file and the README (download the month first: `nemlake fetch nem --from MONTH`)
+# cut the bootstrap fixtures of a month from the local archive: every CTL, the head of every data file and the README (download the month first: `utilake fetch nem --from MONTH`)
 schema-fixtures month="2024-01":
-    cargo run --release -q -p nemlake-census -- fixtures --month {{month}} --out testdata/bootstrap/MMSDM_{{replace(month, "-", "_")}}
+    cargo run --release -q -p utilake-census -- fixtures --month {{month}} --out testdata/bootstrap/MMSDM_{{replace(month, "-", "_")}}
 
 # record every block of every archived file of each month (shape and rows) into schemas/nem/census/ and schemas/nem/shapes/; reads the local archive in full, offline
 census from to=from *args:
-    cargo run --release -q -p nemlake-census -- census --from {{from}} --to {{to}} "${@:3}"
+    cargo run --release -q -p utilake-census -- census --from {{from}} --to {{to}} "${@:3}"
 
 # write every table file again in the current schema_format, deriving what the format adds
 schema-migrate:
-    cargo run --release -q -p nemlake-census -- migrate
+    cargo run --release -q -p utilake-census -- migrate
 
 # bring schemas/nem/ up to the control files of each archived month: a table a month lays out anew gains an increment, a missing table is started; nothing there is changed (take the census of the months first)
 schema-sync from to=from:
-    cargo run --release -q -p nemlake-census -- sync --from {{from}} --to {{to}}
+    cargo run --release -q -p utilake-census -- sync --from {{from}} --to {{to}}
 
 # start every table's increments again from the control files of the archived months, in month order (the first pass over the whole archive); columns, ids and types stay
 schema-rebuild from="2009-07" to="2026-08":
-    cargo run --release -q -p nemlake-census -- sync --rebuild --from {{from}} --to {{to}}
+    cargo run --release -q -p utilake-census -- sync --rebuild --from {{from}} --to {{to}}
 
 # fail if syncing the archived months would change schemas/nem/ (a month not downloaded here is skipped)
 schema-sync-check from="2024-01" to="2026-08":
-    cargo run --release -q -p nemlake-census -- sync --check --from {{from}} --to {{to}}
+    cargo run --release -q -p utilake-census -- sync --check --from {{from}} --to {{to}}
 
 # a new month, end to end: download it once, record every block of every file, sync the schemas to its control files, gate the census against them
 census-forward month:
-    cargo run --release -q -p nemlake-cli -- fetch nem --from {{month}}
+    cargo run --release -q -p utilake-cli -- fetch nem --from {{month}}
     just census {{month}}
     just schema-sync {{month}}
     just census-check
@@ -99,11 +99,11 @@ census-check:
 
 # read AEMO's MMS Data Model Report into testdata/bootstrap/datamodel/ (needs the network; a few hundred paced requests)
 schema-datamodel interval_ms="1200":
-    cargo run -q -p nemlake-census -- datamodel --interval-ms {{interval_ms}} --out testdata/bootstrap/datamodel
+    cargo run -q -p utilake-census -- datamodel --interval-ms {{interval_ms}} --out testdata/bootstrap/datamodel
 
 # the real nemweb: one small month listing and the smallest zip (needs the network)
 net-test:
-    NEMLAKE_NET_TESTS=1 cargo test --locked -p nemlake-acquire --test net -- --nocapture
+    UTILAKE_NET_TESTS=1 cargo test --locked -p utilake-acquire --test net -- --nocapture
 
 # ── benchmarks ───────────────────────────────────────────────────────────────
 

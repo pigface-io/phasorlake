@@ -14,10 +14,10 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
 
 use anyhow::{Context as _, Result};
-use nemlake_census::census::{census_dir, read_month};
-use nemlake_core::{Category, Diagnostic, IRow, ShapeId, TypeClass, YearMonth};
-use nemlake_registry::file_model::shapes::ShapeEntry;
-use nemlake_registry::{Mode, Registry, ResolveOptions, Status};
+use utilake_census::census::{census_dir, read_month};
+use utilake_core::{Category, Diagnostic, IRow, ShapeId, TypeClass, YearMonth};
+use utilake_registry::file_model::shapes::ShapeEntry;
+use utilake_registry::{Mode, Registry, ResolveOptions, Status};
 
 /// Months as a list for a message.
 fn months_text(months: &BTreeSet<YearMonth>) -> String {
@@ -86,7 +86,7 @@ pub fn check(
                     "schema.census_deviates",
                     Category::Schema,
                     format!(
-                        "Shape {id} ({}, {}), seen in {} ({file} and others), belongs to no table; `nemlake-census sync` adds the table from the month's control file.",
+                        "Shape {id} ({}, {}), seen in {} ({file} and others), belongs to no table; `utilake-census sync` adds the table from the month's control file.",
                         entry.report_type,
                         entry.report_subtype,
                         months_text(shape_months)
@@ -244,7 +244,7 @@ pub fn run() -> Result<bool> {
 
 #[cfg(test)]
 mod tests {
-    use nemlake_registry::file_model::blob::SchemaSet;
+    use utilake_registry::file_model::blob::SchemaSet;
 
     use super::*;
 

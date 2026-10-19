@@ -1,21 +1,21 @@
 {
   "exclude": [
     "crates/xtask/",
-    "crates/nemlake-bench/",
-    "crates/nemlake-cli/src/main.rs",
-    "crates/nemlake-census/src/main.rs"
+    "crates/utilake-bench/",
+    "crates/utilake-cli/src/main.rs",
+    "crates/utilake-census/src/main.rs"
   ],
   "floors": {
-    "crates/nemlake-core/src": 95,
-    "crates/nemlake-registry/src": 85,
-    "crates/nemlake-registry/src/file_model": 90,
-    "crates/nemlake-census/src": 80,
-    "crates/nemlake-decode/src": 90,
-    "crates/nemlake-conform/src": 90,
-    "crates/nemlake-acquire/src": 85,
-    "crates/nemlake-writer/src": 85,
-    "crates/nemlake-pipeline/src": 75,
-    "crates/nemlake-cli/src": 30,
-    "crates/nemlake-mdff/src": 98
+    "crates/utilake-core/src": 95,
+    "crates/utilake-registry/src": 85,
+    "crates/utilake-registry/src/file_model": 90,
+    "crates/utilake-census/src": 80,
+    "crates/utilake-decode/src": 90,
+    "crates/utilake-conform/src": 90,
+    "crates/utilake-acquire/src": 85,
+    "crates/utilake-writer/src": 85,
+    "crates/utilake-pipeline/src": 75,
+    "crates/utilake-cli/src": 30,
+    "crates/utilake-mdff/src": 98
   }
 }

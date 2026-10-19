@@ -9,16 +9,16 @@ of both stages on every file, which is exactly what CI runs.
 ## Layout
 
 ```
-crates/nemlake-core          L0  vocabulary: identifiers, time, numbers, diagnostics. No I/O.
-crates/nemlake-registry      L1  the table model (file_model) and the registry: build.rs validates schemas/, resolve() on the hot path
-crates/nemlake-census            the census of shapes, and the sync of schemas/ to the archive's control files
-crates/nemlake-decode        L2  the MMS row format: scanner, field splitter, zips; no registry
-crates/nemlake-conform       L2  resolves blocks through the registry, casts to typed Arrow batches
-crates/nemlake-acquire       L3  sources, HTTP transport, archive (async)
-crates/nemlake-writer        L3  Parquet writer, partitioner, SQLite manifest actor
-crates/nemlake-pipeline      L4  list → fetch → ingest → commit as tokio streams
-crates/nemlake-cli           L5  the command: flags, rendering, exit codes
-crates/nemlake-bench             end-to-end benchmark harness
+crates/utilake-core          L0  vocabulary: identifiers, time, numbers, diagnostics. No I/O.
+crates/utilake-registry      L1  the table model (file_model) and the registry: build.rs validates schemas/, resolve() on the hot path
+crates/utilake-census            the census of shapes, and the sync of schemas/ to the archive's control files
+crates/utilake-decode        L2  the MMS row format: scanner, field splitter, zips; no registry
+crates/utilake-conform       L2  resolves blocks through the registry, casts to typed Arrow batches
+crates/utilake-acquire       L3  sources, HTTP transport, archive (async)
+crates/utilake-writer        L3  Parquet writer, partitioner, SQLite manifest actor
+crates/utilake-pipeline      L4  list → fetch → ingest → commit as tokio streams
+crates/utilake-cli           L5  the command: flags, rendering, exit codes
+crates/utilake-bench             end-to-end benchmark harness
 crates/xtask                     the gates
 ```
 
@@ -33,11 +33,11 @@ worker; the async and sync worlds meet once per file.
 |---|---|---|
 | unit and integration | every crate, `cargo test` | `just test`, pre-commit |
 | coverage | `cargo llvm-cov` over the workspace | `just cover` against `coverage.json`, pre-push |
-| schema sync | `nemlake-census sync --check` over the archived months | `just schema-sync-check`, pre-push |
+| schema sync | `utilake-census sync --check` over the archived months | `just schema-sync-check`, pre-push |
 | census | every recorded block conforms to the increment in force, control-file types fit ours | `just census-check`, pre-push |
 | schema compatibility | table files at `origin/main` against the working tree | `just schema-compat`, pre-push |
-| benchmarks | criterion plus `nemlake-bench` | `just bench-fast` pre-push, `just bench` in CI, against `bench/budgets.json` |
-| network | `crates/nemlake-acquire/tests/net.rs` | `just net-test`, weekly in CI |
+| benchmarks | criterion plus `utilake-bench` | `just bench-fast` pre-push, `just bench` in CI, against `bench/budgets.json` |
+| network | `crates/utilake-acquire/tests/net.rs` | `just net-test`, weekly in CI |
 
 ## Floors and budgets
 
@@ -77,6 +77,6 @@ Commits with an imperative subject and carry no tool attribution.
 
 ## Licence
 
-nemlake is licensed under the Apache License 2.0 (`LICENSE`). A contribution
+utilake is licensed under the Apache License 2.0 (`LICENSE`). A contribution
 you submit for inclusion is under that licence, as its section 5 says, with
 no other terms.

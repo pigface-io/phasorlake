@@ -2,7 +2,7 @@
 //!
 //! Micro benchmarks are criterion benches in the crates; their medians are
 //! read from `target/criterion/*/new/estimates.json`. The end-to-end case
-//! runs the `nemlake-bench` harness, which ingests the fixture zip with a
+//! runs the `utilake-bench` harness, which ingests the fixture zip with a
 //! counting allocator and reports wall time, peak heap and allocations, under
 //! `/usr/bin/time` for the peak resident set size.
 //!
@@ -184,13 +184,13 @@ const E2E_RUNS: usize = 3;
 
 fn run_e2e(root: &Path) -> Result<Measurements> {
     let status = Command::new("cargo")
-        .args(["build", "--release", "-q", "-p", "nemlake-bench"])
+        .args(["build", "--release", "-q", "-p", "utilake-bench"])
         .current_dir(root)
         .status()?;
     if !status.success() {
-        bail!("building nemlake-bench failed");
+        bail!("building utilake-bench failed");
     }
-    let bin = root.join("target/release/nemlake-bench");
+    let bin = root.join("target/release/utilake-bench");
     let mut best: Measurements = BTreeMap::new();
     for _ in 0..E2E_RUNS {
         for (bench, keys) in run_e2e_once(root, &bin)? {
@@ -227,14 +227,14 @@ fn run_e2e_once(root: &Path, bin: &Path) -> Result<Measurements> {
     };
     if !out.status.success() {
         bail!(
-            "nemlake-bench failed: {}",
+            "utilake-bench failed: {}",
             String::from_utf8_lossy(&out.stderr)
         );
     }
     let stdout = String::from_utf8_lossy(&out.stdout);
     let stderr = String::from_utf8_lossy(&out.stderr);
     let mut measured: Measurements = serde_json::from_str(stdout.trim())
-        .context("nemlake-bench did not print JSON measurements")?;
+        .context("utilake-bench did not print JSON measurements")?;
     if let Some(rss) = parse_rss_mb(&stderr) {
         for keys in measured.values_mut() {
             keys.insert("max_rss_mb".into(), round3(rss));
@@ -267,17 +267,17 @@ pub fn run(set: &str, do_tighten: bool) -> Result<bool> {
     // library's unit tests as a benchmark harness, which rejects criterion flags.
     let targets: &[(&str, &str)] = match set {
         "fast" => &[
-            ("nemlake-conform", "scan"),
-            ("nemlake-registry", "resolve"),
-            ("nemlake-core", "values"),
-            ("nemlake-acquire", "fetch"),
+            ("utilake-conform", "scan"),
+            ("utilake-registry", "resolve"),
+            ("utilake-core", "values"),
+            ("utilake-acquire", "fetch"),
         ],
         "full" => &[
-            ("nemlake-conform", "scan"),
-            ("nemlake-registry", "resolve"),
-            ("nemlake-core", "values"),
-            ("nemlake-acquire", "fetch"),
-            ("nemlake-writer", "write"),
+            ("utilake-conform", "scan"),
+            ("utilake-registry", "resolve"),
+            ("utilake-core", "values"),
+            ("utilake-acquire", "fetch"),
+            ("utilake-writer", "write"),
         ],
         other => bail!("unknown set {other}; use fast or full"),
     };

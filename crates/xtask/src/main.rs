@@ -16,7 +16,7 @@ use std::process::ExitCode;
 use clap::{Parser, Subcommand};
 
 #[derive(Parser)]
-#[command(name = "xtask", about = "nemlake repository tooling")]
+#[command(name = "xtask", about = "utilake repository tooling")]
 struct Cli {
     #[command(subcommand)]
     cmd: Cmd,

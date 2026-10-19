@@ -1,6 +1,6 @@
 # gitleaks configuration. The default rules stay on; this file only adds
 # allowlists, and each one says why it is safe.
-title = "nemlake"
+title = "utilake"
 
 [extend]
 useDefault = true
