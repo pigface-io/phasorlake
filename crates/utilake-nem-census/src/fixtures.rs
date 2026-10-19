@@ -87,7 +87,7 @@ fn write(path: &Path, bytes: &[u8]) -> Result<(), Box<Diagnostic>> {
 }
 
 fn base_name(name: &str) -> &str {
-    name.rsplit(['/', '!']).next().unwrap_or(name)
+    name.rsplit(['/', '\\', '!']).next().unwrap_or(name)
 }
 
 /// Writes the fixtures of a month's archived `files` into `out`:

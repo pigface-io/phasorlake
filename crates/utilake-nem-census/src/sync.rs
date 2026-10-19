@@ -104,7 +104,7 @@ pub fn read_ctls(files: &[PathBuf], tmp: &Path) -> (Vec<(String, Vec<u8>)>, Vec<
                 tmp,
                 &mut |_| Ok(()),
                 &mut |e| {
-                    let base = e.name.rsplit(['/', '!']).next().unwrap_or(&e.name);
+                    let base = e.name.rsplit(['/', '\\', '!']).next().unwrap_or(&e.name);
                     if base.to_ascii_lowercase().ends_with(".ctl") {
                         read(base.to_owned(), e.reader, &mut out);
                     }

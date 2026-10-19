@@ -274,11 +274,58 @@ pub fn month_files(
 /// `PUBLIC_DVD_X_201201010000.zip`), else the file itself.
 fn file_key(outer: &Path, entry: &str) -> String {
     match entry.rsplit_once('!') {
-        Some((zip, _)) => zip.rsplit(['/', '!']).next().unwrap_or(zip).to_owned(),
+        Some((zip, _)) => zip
+            .rsplit(['/', '\\', '!'])
+            .next()
+            .unwrap_or(zip)
+            .to_owned(),
         None => outer
             .file_name()
             .map(|n| n.to_string_lossy().into_owned())
             .unwrap_or_default(),
+    }
+}
+
+/// The blocks of each file of a month, per archived file they were read
+/// out of: a month published both as a directory and as a whole-month zip
+/// (MMSDM 2020-02) holds most files twice.
+#[derive(Default)]
+struct Copies(BTreeMap<String, Vec<(String, Vec<RawBlock>)>>);
+
+impl Copies {
+    /// Blocks of file `key` read out of the archived file `source`; many
+    /// CSVs of one zip add to one copy.
+    fn add(&mut self, key: &str, source: &str, blocks: Vec<RawBlock>) {
+        let copies = self.0.entry(key.to_owned()).or_default();
+        match copies.iter_mut().find(|(s, _)| s == source) {
+            Some((_, b)) => b.extend(blocks),
+            None => copies.push((source.to_owned(), blocks)),
+        }
+    }
+
+    /// One entry per file: the copy that is the file itself (a month
+    /// directory's zip) else the first by source name. Another copy with
+    /// the same blocks (shape, version and rows of each) is the same file
+    /// and is dropped; one that differs is kept as `{source}!{key}`.
+    fn settle(self) -> BTreeMap<String, Vec<RawBlock>> {
+        let mut out = BTreeMap::new();
+        for (key, mut copies) in self.0 {
+            copies.sort_by(|a, b| (a.0 != key, &a.0).cmp(&(b.0 != key, &b.0)));
+            let mut kept: Vec<Vec<RawBlock>> = Vec::new();
+            for (i, (source, blocks)) in copies.into_iter().enumerate() {
+                if kept.contains(&blocks) {
+                    continue;
+                }
+                let name = if i == 0 {
+                    key.clone()
+                } else {
+                    format!("{source}!{key}")
+                };
+                out.insert(name, blocks.clone());
+                kept.push(blocks);
+            }
+        }
+        out
     }
 }
 
@@ -292,7 +339,7 @@ pub fn census_month(
     files: &[PathBuf],
     tmp: &Path,
 ) -> MonthCensus {
-    let mut raw: BTreeMap<String, Vec<RawBlock>> = BTreeMap::new();
+    let mut raw = Copies::default();
     // One read buffer for every file and entry of the month.
     let mut scan_buf = Vec::new();
     let mut ctls: Vec<(String, String)> = Vec::new();
@@ -323,12 +370,10 @@ pub fn census_month(
                 .caused_by(&e)
             }) {
                 Ok(f) => match read_blocks(f, &mut scan_buf) {
-                    Ok(b) => {
-                        raw.insert(name, b);
-                    }
+                    Ok(b) => raw.add(&name, &name, b),
                     Err(d) => {
                         problems.push(d.with_file(path.display().to_string()));
-                        raw.insert(name, Vec::new());
+                        raw.add(&name, &name, Vec::new());
                     }
                 },
                 Err(d) => problems.push(d),
@@ -343,13 +388,13 @@ pub fn census_month(
                         d.with_file(path.display().to_string())
                             .with_entry(e.name.clone())
                     })?;
-                    raw.entry(key).or_default().extend(blocks);
+                    raw.add(&key, &name, blocks);
                     Ok(())
                 },
                 &mut |e| {
                     let base = e
                         .name
-                        .rsplit(['/', '!'])
+                        .rsplit(['/', '\\', '!'])
                         .next()
                         .unwrap_or(&e.name)
                         .to_owned();
@@ -367,17 +412,18 @@ pub fn census_month(
                 )) => {}
                 Err(utilake_kit::container::WalkError::Archive(a)) => {
                     problems.push(a.diagnostic());
-                    raw.entry(name).or_default();
+                    raw.add(&name, &name, Vec::new());
                 }
                 Err(utilake_kit::container::WalkError::Callback(d)) => {
                     problems.push(*d);
-                    raw.entry(name).or_default();
+                    raw.add(&name, &name, Vec::new());
                 }
             }
         }
     }
     let ctls = Ctls::parse(ctls.iter().map(|(n, t)| (n.as_str(), t.as_str())));
     let files = raw
+        .settle()
         .into_iter()
         .map(|(name, blocks)| {
             let file_table = utilake_nem::names::parse(&name).map(|n| n.table);
@@ -830,6 +876,62 @@ SETTLEMENTDATE DATE "yyyy/mm/dd hh24:mi:ss", DUID CHAR(20), SCADAVALUE FLOAT EXT
                 .is_file()
         );
         assert!(out.join("README.txt").is_file());
+    }
+
+    #[test]
+    fn a_month_both_a_directory_and_a_zip_is_counted_once() {
+        let dir = tempfile::tempdir().unwrap();
+        let store = Archive::new(dir.path());
+        let nem = MmsdmArchive::new("https://h").unwrap();
+        let reg = Registry::load_embedded();
+        let month = YearMonth::new(2020, 2).unwrap();
+        let root = nem.month_root(month).unwrap();
+        let data = |name: &str| {
+            root.join(&format!("MMSDM_Historical_Data_SQLLoader/DATA/{name}"))
+                .unwrap()
+                .to_string()
+        };
+        let same = "PUBLIC_DVD_DISPATCH_UNIT_SCADA_202002010000.zip";
+        let other = "PUBLIC_DVD_P5MIN_X_202002010000.zip";
+        let scada = zip_of(&[("A.CSV", &three_tables(3))]);
+        put(&store, &data(same), &scada);
+        put(
+            &store,
+            &data(other),
+            &zip_of(&[("B.CSV", &three_tables(2))]),
+        );
+        // The whole-month zip names its entries with backslashes; one of
+        // its copies differs from the directory's.
+        let prefix = r"MMSDM_2020_02\MMSDM_Historical_Data_SQLLoader\DATA";
+        let whole = zip_of(&[
+            (&format!(r"{prefix}\{same}"), scada.as_slice()),
+            (
+                &format!(r"{prefix}\{other}"),
+                &zip_of(&[("B.CSV", &three_tables(5))]),
+            ),
+        ]);
+        put(
+            &store,
+            "https://h/Data_Archive/Wholesale_Electricity/MMSDM/2020/MMSDM_2020_02.zip",
+            &whole,
+        );
+        let files = month_files(&store, &nem, month).unwrap();
+        assert_eq!(files.len(), 3, "{files:?}");
+        let tmp = tempfile::tempdir().unwrap();
+        let census = census_month(&reg, month, &files, tmp.path());
+        assert!(census.problems.is_empty(), "{:?}", census.problems);
+        let names: Vec<&str> = census.files.keys().map(String::as_str).collect();
+        assert_eq!(
+            names,
+            [&format!("MMSDM_2020_02.zip!{other}"), same, other],
+            "the same copy once, a differing copy under its source"
+        );
+        assert_eq!(census.files[same].len(), 3);
+        assert_eq!(census.files[other][0].rows, 2);
+        assert_eq!(
+            census.files[&format!("MMSDM_2020_02.zip!{other}")][0].rows,
+            5
+        );
     }
 
     #[test]
