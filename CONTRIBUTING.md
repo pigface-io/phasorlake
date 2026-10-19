@@ -9,24 +9,36 @@ of both stages on every file, which is exactly what CI runs.
 ## Layout
 
 ```
-crates/utilake-core          L0  vocabulary: identifiers, time, numbers, diagnostics. No I/O.
-crates/utilake-mms-registry      L1  the table model (file_model) and the registry: build.rs validates schemas/, resolve() on the hot path
-crates/utilake-nem-census    the NEM kit's schema tool: the census of shapes, and the sync of schemas/ to the archive's control files
-crates/utilake-kit           L1  the ports a source kit implements (Decoder, Catalog, SourceKit), Transform, the zip walker
-crates/utilake-mms-decode        L2  the MMS row format: scanner, field splitter; no registry
-crates/utilake-mms-conform       L2  resolves blocks through the registry, casts to typed Arrow batches; the MMS decoder and catalog of the kit ports
-crates/utilake-acquire       L3  the Source port, HTTP transport, archive (async)
-crates/utilake-nem           L3  the NEM kit: nemweb's monthly archive, AEMO's file names, its config and command line
-crates/utilake-wem           L3  the WEM kit: the datafiles source and config; no decoder yet
-crates/utilake-writer        L3  Parquet writer, partitioner, SQLite manifest actor
-crates/utilake-pipeline      L4  list → fetch → ingest → commit as tokio streams, over the kit ports only
-crates/utilake-cli           L5  the command: flags, rendering, exit codes
+Generic, for every source:
+crates/utilake-core          L0  vocabulary: calendar and periods, numbers, names, fingerprints, diagnostics, config, home. No I/O.
+crates/utilake-acquire       L1  the Source port, HTTP transport with pacing and a breaker, the archive of downloads (async)
+crates/utilake-kit           L1  the ports a kit implements (Decoder, BlockSink, Catalog, SourceKit), Transform, the zip walker, quarantine
+crates/utilake-writer        L1  Parquet writer, partitioner, SQLite manifest actor, verify
+crates/utilake-pipeline      L2  list → fetch → decode → write → commit as tokio streams, over the kit ports only
+crates/utilake-cli           L3  the command: flags, rendering, exit codes; kits.rs lists the kits a binary reads with
+
+The MMS format (AEMO's C/I/D rows and SQL*Loader control files):
+crates/utilake-mms-decode    F   the I row, MMS timestamps, scanner, field splitter; no registry
+crates/utilake-mms-registry  F   the table model (file_model), the shape id, the registry: build.rs validates schemas/, resolve() on the hot path
+crates/utilake-mms-conform   F   resolves blocks through the registry, casts to typed Arrow batches; the kit's Decoder and Catalog
+
+The markets:
+crates/utilake-nem           M   the NEM kit: nemweb's monthly archive, AEMO's file names, [sources.nem], fetch nem, kit()
+crates/utilake-nem-census    M   the NEM kit's schema tool: the census of shapes, and the sync of schemas/ to the archive's control files
+crates/utilake-wem           M   the WEM kit: the datafiles source and [sources.wem]; no decoder yet
+crates/utilake-mdff          F   NEM12/13 meter data codes, std only, not yet used
+
+Tooling:
 crates/utilake-bench             end-to-end benchmark harness
 crates/xtask                     the gates
 ```
 
-Dependencies point down only. Nothing below the pipeline knows about tokio
-except the fetcher and the manifest's async handle. Parsing and Parquet
+Dependencies point down only, and across the three groups in one direction:
+the generic crates never depend on a format or a market crate (`cargo tree -p
+utilake-pipeline` names no `mms`, `nem` or `wem`); a market crate depends on
+the format it reads; the decoder never depends on the registry. Nothing below
+the pipeline knows about tokio except the fetcher and the manifest's async
+handle. Parsing and Parquet
 encoding are synchronous and run on blocking workers, one source file per
 worker; the async and sync worlds meet once per file.
 
