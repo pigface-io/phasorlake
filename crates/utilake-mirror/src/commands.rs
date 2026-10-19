@@ -92,7 +92,7 @@ impl Context {
 pub async fn run_command(cli: &Cli) -> Result<i32> {
     let ctx = &Context::new(cli)?;
     let cmd = &cli.command;
-    let mirror = Mirror::new(ctx.home.mirror());
+    let mirror = ctx.home.records();
     let result = match cmd {
         Command::Crawl { roots, fresh } => {
             let fetcher = ctx.fetcher();

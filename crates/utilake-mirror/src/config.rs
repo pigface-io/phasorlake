@@ -1,12 +1,15 @@
-//! The home and its config file, `{home}/mirror/config.toml`. Unknown keys
-//! are errors, so a typo never falls back to a default quietly.
+//! The home, the mirror's records under it, and its config file,
+//! `{home}/mirror/config.toml`. Unknown keys are errors, so a typo never
+//! falls back to a default quietly.
 
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
 use serde::{Deserialize, Serialize};
+use url::Url;
 
 use crate::diag::{Category, Diagnose, Diagnostic};
+use crate::net::Archive;
 use crate::watch::Cadence;
 
 /// Where the mirror keeps things: the archive of downloads and its own
@@ -49,6 +52,62 @@ impl Home {
     /// The config file.
     pub fn config_file(&self) -> PathBuf {
         self.mirror().join("config.toml")
+    }
+
+    /// The mirror's records, as a [`Mirror`].
+    pub fn records(&self) -> Mirror {
+        Mirror::new(self.mirror())
+    }
+}
+
+/// Where the mirror keeps its own files: `{home}/mirror`.
+#[derive(Debug, Clone)]
+pub struct Mirror {
+    dir: PathBuf,
+}
+
+impl Mirror {
+    /// The mirror at `dir`.
+    pub fn new(dir: impl Into<PathBuf>) -> Self {
+        Self { dir: dir.into() }
+    }
+
+    /// The mirror's directory.
+    pub fn dir(&self) -> &Path {
+        &self.dir
+    }
+
+    /// The current crawl.
+    pub fn crawl_dir(&self) -> PathBuf {
+        self.dir.join("crawl")
+    }
+
+    /// The crawl before the current one.
+    pub fn previous_crawl_dir(&self) -> PathBuf {
+        self.dir.join("crawl.prev")
+    }
+
+    /// The listing pages of the current crawl, kept as served, at their
+    /// URL's path.
+    pub fn pages(&self) -> Archive {
+        Archive::new(self.crawl_dir().join("listings"))
+    }
+
+    /// The record of every link of the current crawl.
+    pub fn record_path(&self) -> PathBuf {
+        self.crawl_dir().join("remote.ndjson")
+    }
+
+    /// Written when the current crawl has read every page.
+    pub fn done_path(&self) -> PathBuf {
+        self.crawl_dir().join("done")
+    }
+
+    /// Where the page of a folder URL is kept.
+    pub fn page_path(&self, folder: &Url) -> PathBuf {
+        let mut path = self.pages().path_for(folder.as_str());
+        path.push("index.html");
+        path
     }
 }
 
@@ -204,6 +263,22 @@ impl Diagnose for ConfigError {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn the_records_live_under_the_home() {
+        let h = Home::at("/h");
+        let m = h.records();
+        assert_eq!(m.dir(), Path::new("/h/mirror"));
+        assert_eq!(m.crawl_dir(), Path::new("/h/mirror/crawl"));
+        assert_eq!(m.previous_crawl_dir(), Path::new("/h/mirror/crawl.prev"));
+        assert_eq!(m.record_path(), Path::new("/h/mirror/crawl/remote.ndjson"));
+        assert_eq!(m.done_path(), Path::new("/h/mirror/crawl/done"));
+        assert!(
+            m.page_path(&Url::parse("https://www.nemweb.com.au/Reports/ARCHIVE/").unwrap())
+                .ends_with("listings/www.nemweb.com.au/Reports/ARCHIVE/index.html")
+        );
+        assert_eq!(m.pages().root(), Path::new("/h/mirror/crawl/listings"));
+    }
 
     #[test]
     fn home_layout_and_config() {

@@ -14,6 +14,7 @@ use crate::net::{Archive, Fetcher};
 use serde::{Deserialize, Serialize};
 use url::Url;
 
+pub use crate::config::Mirror;
 use crate::error::MirrorError;
 use crate::listing::{self, LinkKind, Unparsed};
 use crate::stamp::Stamp;
@@ -38,49 +39,7 @@ pub fn root(s: &str) -> Result<Url, MirrorError> {
         .ok_or_else(|| MirrorError::Root { url: s.to_owned() })
 }
 
-/// Where the mirror keeps its own files: `{home}/mirror`.
-#[derive(Debug, Clone)]
-pub struct Mirror {
-    dir: PathBuf,
-}
-
 impl Mirror {
-    /// The mirror at `dir`.
-    pub fn new(dir: impl Into<PathBuf>) -> Self {
-        Self { dir: dir.into() }
-    }
-
-    /// The mirror's directory.
-    pub fn dir(&self) -> &Path {
-        &self.dir
-    }
-
-    /// The current crawl.
-    pub fn crawl_dir(&self) -> PathBuf {
-        self.dir.join("crawl")
-    }
-
-    /// The crawl before the current one.
-    pub fn previous_crawl_dir(&self) -> PathBuf {
-        self.dir.join("crawl.prev")
-    }
-
-    /// The listing pages of the current crawl, kept as served, at their
-    /// URL's path.
-    pub fn pages(&self) -> Archive {
-        Archive::new(self.crawl_dir().join("listings"))
-    }
-
-    /// The record of every link of the current crawl.
-    pub fn record_path(&self) -> PathBuf {
-        self.crawl_dir().join("remote.ndjson")
-    }
-
-    /// Written when the current crawl has read every page.
-    pub fn done_path(&self) -> PathBuf {
-        self.crawl_dir().join("done")
-    }
-
     /// The current crawl record: the crawl's, with each folder a watch has
     /// read since in place of what the crawl read of it, and all under
     /// each folder gone from nemweb since out of it.
@@ -149,13 +108,6 @@ impl Mirror {
             std::fs::remove_dir_all(&dir).map_err(MirrorError::io(&dir))?;
         }
         write_atomic(&dir.join(FOLDER_GONE), folder.as_bytes())
-    }
-
-    /// Where the page of a folder URL is kept.
-    pub fn page_path(&self, folder: &Url) -> PathBuf {
-        let mut path = self.pages().path_for(folder.as_str());
-        path.push("index.html");
-        path
     }
 }
 
@@ -463,6 +415,7 @@ mod tests {
     use crate::net::{FetchError, FetcherConfig};
 
     use super::*;
+    use crate::net::Archive;
 
     fn page(lines: &[&str]) -> Vec<u8> {
         let mut body =
