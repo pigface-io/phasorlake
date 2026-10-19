@@ -11,7 +11,7 @@ use utilake_core::Diagnose;
 use utilake_core::event::{Event, Summary};
 use utilake_core::report::{DiagSink, Flow, Report, SourceOutcome, SourceStatus};
 use utilake_core::{Category, Diagnostic};
-use utilake_registry::{Mode, Registry, ResolveOptions};
+use utilake_kit::{KitRegistry, SourceKit, Transform};
 use utilake_writer::manifest::{FileRecord, IngestEnd, IngestShape, IngestStart, IngestStatus};
 
 use crate::ingest_file::{FileReport, IngestInput, ingest_file};
@@ -22,28 +22,42 @@ fn emit(tx: &mpsc::Sender<Event>, e: Event) {
     let _ = tx.try_send(e);
 }
 
-/// A local path as a `RemoteFile` with a `file://` URL.
-pub fn local_remote(path: &std::path::Path) -> Option<RemoteFile> {
+/// A local path as a `RemoteFile` with a `file://` URL, and the kit that
+/// reads it: the kit whose source recognises the name, which then says
+/// the file's table and period; else the first kit with a decoder for
+/// the name, or for a zip. `None` when no kit reads such a file.
+pub fn local_remote(
+    kits: &KitRegistry,
+    path: &std::path::Path,
+) -> Option<(&'static str, RemoteFile)> {
     let abs = std::path::absolute(path).ok()?;
     let url = Url::from_file_path(&abs).ok()?;
-    let name = abs.file_name()?.to_string_lossy();
-    let (table, period) =
-        utilake_acquire::describe_name(url.clone()).map_or((None, None), |r| (r.table, r.period));
-    // A zip or CSV named for no table is still a file to read: its tables
-    // are whatever its rows say.
-    let lower = name.to_ascii_lowercase();
-    if !(lower.ends_with(".zip") || lower.ends_with(".csv")) {
-        return None;
+    let name = abs.file_name()?.to_string_lossy().into_owned();
+    let size = std::fs::metadata(&abs).ok().map(|m| m.len());
+    if let Some((kit, mut remote)) = kits.claim(&url) {
+        remote.source = "local";
+        remote.size = size;
+        return Some((kit.id, remote));
     }
-    Some(RemoteFile {
-        url,
-        source: "local",
-        table,
-        period,
-        size: std::fs::metadata(&abs).ok().map(|m| m.len()),
-        modified: None,
-        modified_at: None,
-    })
+    // A zip is walked for the entries the decoders read; its own name
+    // says nothing. Any other file must have a decoder for its name.
+    let is_zip = utilake_kit::container::has_extension(&name, ".zip");
+    let kit = kits
+        .kits()
+        .iter()
+        .find(|k| is_zip || k.decoder_for(&name).is_some())?;
+    Some((
+        kit.id,
+        RemoteFile {
+            url,
+            source: "local",
+            table: None,
+            period: None,
+            size,
+            modified: None,
+            modified_at: None,
+        },
+    ))
 }
 
 /// Hashes a local file into a `LocalFile`, reading it in pieces. Blocking:
@@ -69,56 +83,40 @@ async fn hash_local(remote: RemoteFile, path: std::path::PathBuf) -> std::io::Re
         .unwrap_or_else(|e| Err(std::io::Error::other(e)))
 }
 
-/// A source the manifest has recorded, as the file to read it from again.
-/// `None` when its URL does not parse or its path names no file.
-pub fn recorded_remote(rec: &FileRecord) -> Option<RemoteFile> {
-    let mut remote = local_remote(std::path::Path::new(&rec.cache_path))?;
-    remote.url = Url::parse(&rec.url).ok()?;
-    remote.source = match rec.source.as_str() {
-        utilake_acquire::mmsdm::SOURCE_ID => utilake_acquire::mmsdm::SOURCE_ID,
-        utilake_acquire::wem::SOURCE_ID => utilake_acquire::wem::SOURCE_ID,
-        _ => "local",
+/// A source the manifest has recorded, as the file to read it from again,
+/// with the kit that reads it: the kit of the source recorded, else the
+/// kit that reads the file by its name. `None` when its URL does not
+/// parse, its path names no file, or no kit reads it.
+pub fn recorded_remote(kits: &KitRegistry, rec: &FileRecord) -> Option<(&'static str, RemoteFile)> {
+    let path = std::path::Path::new(&rec.cache_path);
+    let (kit, source) = match kits.source(&rec.source) {
+        Some((kit, source)) => (Some(kit.id), source.id()),
+        None => (None, "local"),
     };
-    Some(remote)
+    let (claimed, mut remote) = local_remote(kits, path)?;
+    remote.url = Url::parse(&rec.url).ok()?;
+    remote.source = source;
+    Some((kit.unwrap_or(claimed), remote))
 }
 
-/// Whether every shape that was read from a source would be read by the
-/// same rules today. The answer comes from the recorded shapes alone; the
-/// source is not opened.
-///
-/// Strictness is not part of the question: a shape the registry would
-/// refuse in strict mode is current when the permissive rules that wrote it
-/// have not changed.
-pub fn plans_current(registry: &Registry, shapes: &[IngestShape]) -> bool {
-    shapes.iter().all(|s| {
-        let t = &s.transform;
-        if t.plan_hash.is_empty() {
-            return false;
-        }
-        let columns: Vec<&str> = t.source_columns.iter().map(String::as_str).collect();
-        let irow = utilake_core::IRow {
-            report_type: &t.block_family,
-            report_subtype: &t.block_name,
-            version: t.source_version,
-            columns: &columns,
-        };
-        // The month the source was read as: it decides the increment.
-        let period = t.source_period.as_deref().and_then(|p| p.parse().ok());
-        registry
-            .resolve_in(
-                &irow,
-                ResolveOptions {
-                    mode: Mode::Permissive,
-                },
-                period,
-            )
-            .is_ok_and(|r| r.plan_hash().to_string() == t.plan_hash)
-    })
+/// The kit of a listed file: the kit whose source listed it, else the
+/// first kit, which an assembled binary always has.
+fn kit_of<'k>(kits: &'k KitRegistry, source_id: &str) -> Option<&'k SourceKit> {
+    kits.source(source_id)
+        .map(|(k, _)| k)
+        .or_else(|| kits.kits().first())
+}
+
+/// The transforms of recorded shapes.
+fn transforms(shapes: &[IngestShape]) -> Vec<Transform> {
+    shapes.iter().map(|s| s.transform.clone()).collect()
 }
 
 /// A file to fetch or read: where it is, and for a file already on disk
 /// its path and what the manifest knows of it.
 struct Listed {
+    /// The kit that reads the file.
+    kit: &'static str,
     remote: RemoteFile,
     path: Option<std::path::PathBuf>,
     known: Option<FileRecord>,
@@ -127,7 +125,7 @@ struct Listed {
 }
 
 enum Fetched {
-    Ok(LocalFile),
+    Ok(&'static str, LocalFile),
     Failed(RemoteFile, Box<Diagnostic>),
 }
 
@@ -167,6 +165,7 @@ pub async fn run(
             Ok(files) => files
                 .into_iter()
                 .map(|remote| Listed {
+                    kit: kit_of(&deps.kits, source.id()).map_or("none", |k| k.id),
                     remote,
                     path: None,
                     known: None,
@@ -199,6 +198,7 @@ pub async fn run(
             Ok(files) => files
                 .into_iter()
                 .map(|l| Listed {
+                    kit: kit_of(&deps.kits, source.id()).map_or("none", |k| k.id),
                     remote: l.remote.clone(),
                     path: Some(l.path.clone()),
                     known: None,
@@ -215,8 +215,9 @@ pub async fn run(
         Input::Local(paths) => {
             let mut out = Vec::new();
             for p in paths {
-                match local_remote(p) {
-                    Some(remote) => out.push(Listed {
+                match local_remote(&deps.kits, p) {
+                    Some((kit, remote)) => out.push(Listed {
+                        kit,
                         remote,
                         path: Some(p.clone()),
                         known: None,
@@ -226,7 +227,10 @@ pub async fn run(
                         let d = Diagnostic::error(
                             "config.bad_path",
                             Category::Config,
-                            format!("The path {} is not a file utilake can ingest.", p.display()),
+                            format!(
+                                "The path {} is not a file any kit of utilake reads.",
+                                p.display()
+                            ),
                         )
                         .with_file(p.display().to_string())
                         .with_request(request.clone());
@@ -257,11 +261,20 @@ pub async fn run(
                     .await
                     .ok()
                     .flatten();
-                if shapes.is_some_and(|s| plans_current(&deps.registry, &s)) {
+                let Some((kit, remote)) = recorded_remote(&deps.kits, &rec) else {
+                    continue;
+                };
+                let current = deps
+                    .kits
+                    .kit(kit)
+                    .zip(shapes.as_deref())
+                    .is_some_and(|(k, s)| k.catalog.plans_current(&transforms(s)));
+                if current {
                     continue;
                 }
-                if let Some(remote) = recorded_remote(&rec) {
+                {
                     out.push(Listed {
+                        kit,
                         remote,
                         path: Some(std::path::PathBuf::from(&rec.cache_path)),
                         known: Some(rec),
@@ -288,18 +301,25 @@ pub async fn run(
     let fetcher = deps.fetcher.clone();
     let req = request.clone();
     let fetched = futures::stream::iter(listed)
-        .map(|Listed { remote, path, known, archived }| {
+        .map(
+            |Listed {
+                 kit,
+                 remote,
+                 path,
+                 known,
+                 archived,
+             }| {
             let fetcher = fetcher.clone();
             let req = req.clone();
             async move {
                 if let Some(l) = archived {
-                    return Fetched::Ok(l);
+                    return Fetched::Ok(kit, l);
                 }
                 match path {
                     Some(p) => match (hash_local(remote.clone(), p.clone()).await, known) {
                         // What the server said of a recorded source stays
                         // with it when it is read again.
-                        (Ok(l), Some(known)) => Fetched::Ok(LocalFile {
+                        (Ok(l), Some(known)) => Fetched::Ok(kit, LocalFile {
                             etag: known.etag,
                             last_modified: known.last_modified,
                             last_modified_at: known
@@ -308,7 +328,7 @@ pub async fn run(
                                 .and_then(utilake_core::timetext::parse_rfc3339),
                             ..l
                         }),
-                        (Ok(l), None) => Fetched::Ok(l),
+                        (Ok(l), None) => Fetched::Ok(kit, l),
                         (Err(e), Some(_)) => Fetched::Failed(
                             remote.clone(),
                             Box::new(
@@ -341,7 +361,7 @@ pub async fn run(
                         ),
                     },
                     None => match fetcher.fetch(&remote).await {
-                        Ok(l) => Fetched::Ok(l),
+                        Ok(l) => Fetched::Ok(kit, l),
                         Err(e) => Fetched::Failed(
                             remote.clone(),
                             Box::new(e.diagnostic().with_request(req)),
@@ -354,7 +374,7 @@ pub async fn run(
         .take_until(cancel.cancelled());
 
     // 3. Ingest on blocking workers, bounded.
-    let registry = deps.registry.clone();
+    let kits = deps.kits.clone();
     let home = deps.home.clone();
     let options = plan.options.clone();
     let manifest = deps.manifest.clone();
@@ -362,7 +382,7 @@ pub async fn run(
     let req2 = request.clone();
     let ingested = fetched
         .map(|f| {
-            let registry = registry.clone();
+            let kits = kits.clone();
             let home = home.clone();
             let options = options.clone();
             let manifest = manifest.clone();
@@ -371,7 +391,7 @@ pub async fn run(
             async move {
                 match f {
                     Fetched::Failed(remote, d) => Step::FetchFailed(remote, d),
-                    Fetched::Ok(local) => {
+                    Fetched::Ok(kit, local) => {
                         emit(
                             &ev,
                             Event::DownloadDone {
@@ -391,7 +411,11 @@ pub async fn run(
                             .ingested_shapes(local.remote.url.as_str(), &local.sha256)
                             .await
                         {
-                            Ok(Some(shapes)) if plans_current(&registry, &shapes) => {
+                            Ok(Some(shapes))
+                                if kits.kit(kit).is_some_and(|k| {
+                                    k.catalog.plans_current(&transforms(&shapes))
+                                }) =>
+                            {
                                 return Step::Skipped(Box::new(local));
                             }
                             Ok(Some(_)) => rules_changed = true,
@@ -411,7 +435,8 @@ pub async fn run(
                         );
                         let input = IngestInput {
                             local,
-                            registry,
+                            kits,
+                            kit,
                             lake_root: home.lake(),
                             quarantine_root: home.quarantine(),
                             tmp_dir: home.tmp(),

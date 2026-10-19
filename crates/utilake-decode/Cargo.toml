@@ -1,6 +1,6 @@
 [package]
 name = "utilake-decode"
-description = "The MMS C/I/D row format: scanner, field splitter, quarantine. Knows no registry."
+description = "The MMS C/I/D row format: scanner and field splitter. Knows no registry."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true

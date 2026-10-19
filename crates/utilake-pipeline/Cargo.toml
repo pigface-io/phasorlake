@@ -16,9 +16,6 @@ arrow-array.workspace = true
 arrow-schema.workspace = true
 utilake-core.workspace = true
 utilake-kit.workspace = true
-utilake-registry.workspace = true
-utilake-decode.workspace = true
-utilake-conform.workspace = true
 utilake-acquire.workspace = true
 utilake-writer.workspace = true
 futures.workspace = true
@@ -28,6 +25,8 @@ tokio-util.workspace = true
 url.workspace = true
 
 [dev-dependencies]
+utilake-conform.workspace = true
+utilake-registry.workspace = true
 arrow-select.workspace = true
 async-trait.workspace = true
 parquet.workspace = true

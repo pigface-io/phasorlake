@@ -5,8 +5,11 @@ use std::sync::Arc;
 
 use utilake_acquire::{Fetcher, Query, Source};
 use utilake_core::paths::Home;
-use utilake_registry::{Mode, Registry};
+use utilake_kit::{KitRegistry, Strictness};
 use utilake_writer::ManifestHandle;
+
+/// Rows per batch by default.
+pub const DEFAULT_BATCH_ROWS: usize = 65_536;
 
 /// Knobs of a run.
 #[derive(Debug, Clone)]
@@ -15,8 +18,8 @@ pub struct RunOptions {
     pub jobs: usize,
     /// Downloads in flight.
     pub downloads: usize,
-    /// Registry strictness.
-    pub mode: Mode,
+    /// How strictly the catalog is applied.
+    pub mode: Strictness,
     /// Bad rows tolerated per entry.
     pub max_bad_rows: u64,
     /// Stop at the first failure.
@@ -36,12 +39,12 @@ impl Default for RunOptions {
         Self {
             jobs: 2,
             downloads: 4,
-            mode: Mode::Permissive,
+            mode: Strictness::Permissive,
             max_bad_rows: 0,
             fail_fast: false,
             dry_run: false,
             strict_footer: false,
-            batch_rows: utilake_conform::arrow_sink::DEFAULT_BATCH_ROWS,
+            batch_rows: DEFAULT_BATCH_ROWS,
             ingest: true,
         }
     }
@@ -86,8 +89,8 @@ pub struct Plan {
 /// What a run needs.
 #[derive(Clone)]
 pub struct Deps {
-    /// The registry.
-    pub registry: Arc<Registry>,
+    /// Every kit the binary was assembled with.
+    pub kits: Arc<KitRegistry>,
     /// The fetcher.
     pub fetcher: Arc<Fetcher>,
     /// The manifest.

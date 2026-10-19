@@ -13,6 +13,6 @@ pub mod plan;
 pub mod report;
 pub mod run;
 
-pub use plan::{Deps, Input, Plan, RunOptions};
+pub use plan::{DEFAULT_BATCH_ROWS, Deps, Input, Plan, RunOptions};
 pub use report::{RunReport, exit_code};
-pub use run::{plans_current, recorded_remote, run};
+pub use run::{local_remote, recorded_remote, run};

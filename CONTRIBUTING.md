@@ -14,10 +14,10 @@ crates/utilake-registry      L1  the table model (file_model) and the registry: 
 crates/utilake-census            the census of shapes, and the sync of schemas/ to the archive's control files
 crates/utilake-kit           L1  the ports a source kit implements (Decoder, Catalog, SourceKit), Transform, the zip walker
 crates/utilake-decode        L2  the MMS row format: scanner, field splitter; no registry
-crates/utilake-conform       L2  resolves blocks through the registry, casts to typed Arrow batches
+crates/utilake-conform       L2  resolves blocks through the registry, casts to typed Arrow batches; the MMS decoder and catalog of the kit ports
 crates/utilake-acquire       L3  sources, HTTP transport, archive (async)
 crates/utilake-writer        L3  Parquet writer, partitioner, SQLite manifest actor
-crates/utilake-pipeline      L4  list → fetch → ingest → commit as tokio streams
+crates/utilake-pipeline      L4  list → fetch → ingest → commit as tokio streams, over the kit ports only
 crates/utilake-cli           L5  the command: flags, rendering, exit codes
 crates/utilake-bench             end-to-end benchmark harness
 crates/xtask                     the gates

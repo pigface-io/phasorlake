@@ -5,11 +5,10 @@ use std::sync::Arc;
 
 use anyhow::Result;
 use tokio_util::sync::CancellationToken;
-use utilake_acquire::{MmsdmArchive, Query};
+use utilake_acquire::{Query, Source};
 use utilake_core::Diagnose;
 use utilake_core::TimeRange;
 use utilake_pipeline::{Input, Plan, RunOptions};
-use utilake_registry::Mode;
 
 use crate::cli::{Cli, FetchMarket, IngestArgs};
 use crate::context::Context;
@@ -26,15 +25,15 @@ fn options(
         jobs: cli.jobs.unwrap_or_else(|| ctx.config.effective_jobs()),
         downloads: downloads.unwrap_or(ctx.config.downloads).max(1),
         mode: if args.strict || ctx.config.strict {
-            Mode::Strict
+            utilake_kit::Strictness::Strict
         } else {
-            Mode::Permissive
+            utilake_kit::Strictness::Permissive
         },
         max_bad_rows: args.max_bad_rows.unwrap_or(ctx.config.max_bad_rows),
         fail_fast: args.fail_fast,
         dry_run,
         strict_footer: args.strict || ctx.config.strict,
-        batch_rows: utilake_conform::arrow_sink::DEFAULT_BATCH_ROWS,
+        batch_rows: utilake_pipeline::DEFAULT_BATCH_ROWS,
         ingest: true,
     }
 }
@@ -102,6 +101,14 @@ async fn run_plan(cli: &Cli, ctx: &Context, plan: Plan) -> Result<i32> {
     Ok(report.exit_code)
 }
 
+/// The NEM archive, as the kits were assembled with it.
+fn nem_source(ctx: &Context) -> Result<Arc<dyn Source>> {
+    ctx.kits
+        .source(utilake_acquire::mmsdm::SOURCE_ID)
+        .map(|(_, s)| s.clone())
+        .ok_or_else(|| anyhow::anyhow!("This binary was assembled without the NEM kit."))
+}
+
 /// `utilake fetch nem ...`
 pub async fn fetch(cli: &Cli, ctx: &Context, market: &FetchMarket) -> Result<i32> {
     match market {
@@ -113,10 +120,7 @@ pub async fn fetch(cli: &Cli, ctx: &Context, market: &FetchMarket) -> Result<i32
             dry_run,
             downloads,
         } => {
-            let source = Arc::new(
-                MmsdmArchive::new(&ctx.config.sources.nem_base_url)
-                    .map_err(|e| anyhow::anyhow!("{}", e.diagnostic().render()))?,
-            );
+            let source = nem_source(ctx)?;
             // No table named: every file the archive has for the months,
             // whether the registry declares its table or not.
             let tables: Vec<String> = table.iter().map(|t| t.to_ascii_uppercase()).collect();
@@ -208,10 +212,7 @@ pub async fn ingest_archived(
     if to < from {
         anyhow::bail!("--to {to} is before --from {from}.");
     }
-    let source = Arc::new(
-        MmsdmArchive::new(&ctx.config.sources.nem_base_url)
-            .map_err(|e| anyhow::anyhow!("{}", e.diagnostic().render()))?,
-    );
+    let source = nem_source(ctx)?;
     let upper = |v: &[String]| v.iter().map(|t| t.to_ascii_uppercase()).collect::<Vec<_>>();
     let plan = Plan {
         request: format!(

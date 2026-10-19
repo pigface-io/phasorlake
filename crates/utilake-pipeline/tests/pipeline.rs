@@ -11,14 +11,16 @@ use tokio_util::sync::CancellationToken;
 use url::Url;
 use utilake_acquire::transport::{Canned, StaticTransport};
 use utilake_acquire::{Archive, FetchError, Fetcher, FetcherConfig, Query, RemoteFile, Source};
+use utilake_conform::MmsCatalog;
 use utilake_core::TimeRange;
 use utilake_core::event::Event;
 use utilake_core::paths::Home;
+use utilake_kit::{Catalog as _, KitRegistry, Strictness};
 use utilake_pipeline::{Deps, Input, Plan, RunOptions, run};
 use utilake_registry::file_model::{
     Column, ColumnId, Increment, LakeType, Market, RoleOrigin, Table, Temporal, ValidAxis,
 };
-use utilake_registry::{LoadMode, Mode, Registry};
+use utilake_registry::{LoadMode, Registry};
 use utilake_writer::manifest::DiagFilter;
 use utilake_writer::{Manifest, ManifestHandle, ManifestThread};
 
@@ -40,9 +42,28 @@ fn make_zip(path: &Path, entries: &[(&str, &[u8])]) {
 struct Env {
     _dir: tempfile::TempDir,
     home: Home,
+    registry: Arc<Registry>,
     deps: Deps,
     transport: Arc<StaticTransport>,
     _thread: ManifestThread,
+}
+
+impl Env {
+    /// Reads with `registry` from now on.
+    fn set_registry(&mut self, registry: Arc<Registry>) {
+        self.deps.kits = kits_for(&registry);
+        self.registry = registry;
+    }
+}
+
+/// The NEM kit over `registry`, with the archive at `https://h` as its
+/// source: what names a local file's table and month.
+fn kits_for(registry: &Arc<Registry>) -> Arc<KitRegistry> {
+    let nem = utilake_acquire::MmsdmArchive::new("https://h").unwrap();
+    Arc::new(KitRegistry::new(vec![utilake_conform::nem_kit(
+        registry.clone(),
+        vec![Arc::new(nem)],
+    )]))
 }
 
 fn env() -> Env {
@@ -61,8 +82,9 @@ fn env() -> Env {
             min_interval: Duration::ZERO,
         },
     );
+    let registry = Registry::load_embedded();
     let deps = Deps {
-        registry: Registry::load_embedded(),
+        kits: kits_for(&registry),
         fetcher: Arc::new(fetcher),
         manifest,
         home: home.clone(),
@@ -70,6 +92,7 @@ fn env() -> Env {
     Env {
         _dir: dir,
         home,
+        registry,
         deps,
         transport,
         _thread: thread,
@@ -222,7 +245,7 @@ async fn a_table_without_a_time_column_is_partitioned_by_its_file_month() {
         &[("2009-07", &cols)],
         None,
     );
-    e.deps.registry = overlay(&e.deps.registry, &e.home.root().join("overlay"), &table);
+    e.set_registry(overlay(&e.registry, &e.home.root().join("overlay"), &table));
     let csv = "C,NEMP.WORLD,TEST\nI,UTILAKE_TEST,NOTIME,1,CONTRACTYEAR,WEEKNO\nD,UTILAKE_TEST,NOTIME,1,2024,9\nD,UTILAKE_TEST,NOTIME,1,2024,10\nC,\"END OF REPORT\",5\n";
     let dated = e.home.root().join("PUBLIC_DVD_NOTIME_202403010000.CSV");
     let undated = e.home.root().join("notime.csv");
@@ -370,9 +393,8 @@ async fn a_source_is_read_again_when_its_plan_changes() {
     let floats = e.deps.clone();
     // Another registry, in which RRP is text: another plan.
     let mut price = e
-        .deps
         .registry
-        .table(e.deps.registry.table_by_name("DISPATCHPRICE").unwrap())
+        .table(e.registry.table_by_name("DISPATCHPRICE").unwrap())
         .clone();
     price
         .columns
@@ -381,7 +403,11 @@ async fn a_source_is_read_again_when_its_plan_changes() {
         .unwrap()
         .ty = LakeType::String;
     let decimals = Deps {
-        registry: overlay(&e.deps.registry, &e.home.root().join("retyped"), &price),
+        kits: kits_for(&overlay(
+            &e.registry,
+            &e.home.root().join("retyped"),
+            &price,
+        )),
         ..e.deps.clone()
     };
     let go = |deps: &Deps, input: Input, dry_run: bool| {
@@ -513,7 +539,11 @@ async fn the_month_decides_the_increment() {
         Some("SETTLEMENTDATE"),
     );
     let deps = Deps {
-        registry: overlay(&e.deps.registry, &e.home.root().join("schemas"), &table),
+        kits: kits_for(&overlay(
+            &e.registry,
+            &e.home.root().join("schemas"),
+            &table,
+        )),
         ..e.deps.clone()
     };
     let file = |name: &str, stamp: &str, cols: &[&str]| {
@@ -539,7 +569,7 @@ async fn the_month_decides_the_increment() {
         "2024/03/01 00:05:00",
         &four,
     );
-    let go = |input: Input, mode: Mode, deps: &Deps| {
+    let go = |input: Input, mode: Strictness, deps: &Deps| {
         let deps = deps.clone();
         async move {
             let (tx, _rx) = tokio::sync::mpsc::channel(4096);
@@ -559,7 +589,7 @@ async fn the_month_decides_the_increment() {
             .await
         }
     };
-    let rep = go(Input::Local(vec![old, new]), Mode::Strict, &deps).await;
+    let rep = go(Input::Local(vec![old, new]), Strictness::Strict, &deps).await;
     assert_eq!(rep.exit_code, 0, "{:?}", rep.report.summary_lines());
     assert_eq!(rep.summary.bad_rows, 0);
     let path = |month: &str| {
@@ -592,14 +622,14 @@ async fn the_month_decides_the_increment() {
         "2024/05/01 00:05:00",
         &three,
     );
-    let rep = go(Input::Local(vec![late.clone()]), Mode::Strict, &deps).await;
+    let rep = go(Input::Local(vec![late.clone()]), Strictness::Strict, &deps).await;
     assert_ne!(rep.exit_code, 0);
     assert!(
         rep.report.by_code.contains_key("schema.deviates"),
         "{:?}",
         rep.report.by_code.keys()
     );
-    let rep = go(Input::Local(vec![late]), Mode::Permissive, &deps).await;
+    let rep = go(Input::Local(vec![late]), Strictness::Permissive, &deps).await;
     assert_eq!(rep.exit_code, 0, "{:?}", rep.report.summary_lines());
     let ingests = deps.manifest.list_ingests(None, false, 10).await.unwrap();
     let by_period = |p: &str| {
@@ -614,7 +644,7 @@ async fn the_month_decides_the_increment() {
 
     // With the manifest, every source is current; under the registry
     // without the table they are behind: they would be read from the file.
-    let rep = go(Input::Stale, Mode::Permissive, &deps).await;
+    let rep = go(Input::Stale, Strictness::Permissive, &deps).await;
     assert_eq!(rep.summary.listed, 0, "nothing is behind its plan");
     let (tx, _rx) = tokio::sync::mpsc::channel(4096);
     let rep = run(
@@ -802,7 +832,7 @@ async fn a_value_that_does_not_fit_keeps_its_row_with_the_text_beside_it() {
     let mut e = env();
     // DUDETAIL as a user's table file might have it: REGISTEREDCAPACITY a
     // whole number, as AEMO's NUMBER(6,0) says.
-    let registry = e.deps.registry.clone();
+    let registry = e.registry.clone();
     let mut table = registry
         .table(registry.table_by_name("DUDETAIL").unwrap())
         .clone();
@@ -812,16 +842,16 @@ async fn a_value_that_does_not_fit_keeps_its_row_with_the_text_beside_it() {
         .find(|c| c.name == "REGISTEREDCAPACITY")
         .unwrap();
     cap.ty = LakeType::Long;
-    e.deps.registry = overlay(&registry, &e.home.root().join("overlay"), &table);
+    e.set_registry(overlay(&registry, &e.home.root().join("overlay"), &table));
     let zip_path = dudetail_with_a_fraction(&e);
     let plan = |strict: bool| Plan {
         request: "ingest dudetail".into(),
         input: Input::Local(vec![zip_path.clone()]),
         options: RunOptions {
             mode: if strict {
-                Mode::Strict
+                Strictness::Strict
             } else {
-                Mode::Permissive
+                Strictness::Permissive
             },
             ..Default::default()
         },
@@ -963,7 +993,7 @@ C,\"END OF REPORT\",9\n";
 #[tokio::test]
 async fn a_census_column_is_written_with_its_field_id() {
     let mut e = env();
-    let registry = e.deps.registry.clone();
+    let registry = e.registry.clone();
     let mut table = registry
         .table(registry.table_by_name("DISPATCH_UNIT_SCADA").unwrap())
         .clone();
@@ -976,7 +1006,7 @@ async fn a_census_column_is_written_with_its_field_id() {
         note: Some("Seen beside the declared columns.".into()),
     });
     table.next_column_id += 1;
-    e.deps.registry = overlay(&registry, &e.home.root().join("overlay"), &table);
+    e.set_registry(overlay(&registry, &e.home.root().join("overlay"), &table));
     let p = e
         .home
         .root()
@@ -1059,7 +1089,7 @@ async fn reading_a_source_again_removes_its_old_quarantine() {
 /// What the manifest records of a source is enough to name it again.
 #[test]
 fn a_recorded_source_becomes_a_file_to_read() {
-    use utilake_writer::manifest::{FileRecord, IngestShape};
+    use utilake_writer::manifest::FileRecord;
     let rec = |source: &str, url: &str, path: &str| FileRecord {
         source: source.into(),
         url: url.into(),
@@ -1070,40 +1100,43 @@ fn a_recorded_source_becomes_a_file_to_read() {
         last_modified: None,
         last_modified_at: None,
     };
-    let archived = utilake_pipeline::recorded_remote(&rec(
-        "nem-mmsdm",
-        "https://h/2024/MMSDM_2024_01/DATA/PUBLIC_DVD_REGION_202401010000.zip",
-        "/archive/h/2024/MMSDM_2024_01/DATA/PUBLIC_DVD_REGION_202401010000.zip",
-    ))
+    let kits = kits_for(&Registry::load_embedded());
+    let (kit, archived) = utilake_pipeline::recorded_remote(
+        &kits,
+        &rec(
+            "nem-mmsdm",
+            "https://h/2024/MMSDM_2024_01/DATA/PUBLIC_DVD_REGION_202401010000.zip",
+            "/archive/h/2024/MMSDM_2024_01/DATA/PUBLIC_DVD_REGION_202401010000.zip",
+        ),
+    )
     .unwrap();
-    assert_eq!(archived.source, "nem-mmsdm");
+    assert_eq!((kit, archived.source), ("nem", "nem-mmsdm"));
     assert_eq!(archived.stem(), "public_dvd_region_202401010000");
     assert_eq!(archived.table.as_deref(), Some("REGION"));
     assert_eq!(archived.period.unwrap().to_string(), "2024-01");
-    let wem =
-        utilake_pipeline::recorded_remote(&rec("wem-datafiles", "https://w/a.csv", "/a/a.csv"))
+    let (kit, local) =
+        utilake_pipeline::recorded_remote(&kits, &rec("other", "file:///x/a.csv", "/x/a.csv"))
             .unwrap();
-    assert_eq!(wem.source, "wem-datafiles");
-    let local =
-        utilake_pipeline::recorded_remote(&rec("other", "file:///x/a.csv", "/x/a.csv")).unwrap();
-    assert_eq!(local.source, "local");
-    assert!(utilake_pipeline::recorded_remote(&rec("local", "not a url", "/x/a.csv")).is_none());
+    assert_eq!((kit, local.source), ("nem", "local"));
+    assert!(local.table.is_none());
+    assert!(
+        utilake_pipeline::recorded_remote(&kits, &rec("local", "not a url", "/x/a.csv")).is_none()
+    );
+    assert!(
+        utilake_pipeline::recorded_remote(&kits, &rec("local", "file:///x/a.txt", "/x/a.txt"))
+            .is_none()
+    );
+    assert!(utilake_pipeline::local_remote(&kits, Path::new("/x/a.ctl")).is_none());
 
     // An ingest recorded before rules were is never current.
-    let reg = Registry::load_embedded();
-    let old = IngestShape {
-        table: "T".into(),
-        transform: Default::default(),
-    };
-    assert!(!utilake_pipeline::plans_current(
-        &reg,
-        std::slice::from_ref(&old)
-    ));
-    assert!(utilake_pipeline::plans_current(&reg, &[]));
+    let catalog = MmsCatalog::new(Registry::load_embedded());
+    let old = utilake_kit::Transform::default();
+    assert!(!catalog.plans_current(std::slice::from_ref(&old)));
+    assert!(catalog.plans_current(&[]));
     // Nor is one whose shape no longer resolves.
     let mut broken = old;
-    broken.transform.plan_hash = "plan:0".into();
-    assert!(!utilake_pipeline::plans_current(&reg, &[broken]));
+    broken.plan_hash = "plan:0".into();
+    assert!(!catalog.plans_current(&[broken]));
 }
 
 #[tokio::test]

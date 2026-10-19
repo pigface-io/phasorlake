@@ -1,5 +1,5 @@
-//! One source file, end to end, on a blocking worker: walk its CSV entries,
-//! scan each through the registry into typed batches, write Parquet per
+//! One source file, end to end, on a blocking worker: walk the entries its
+//! kit's decoders read, decode each into typed batches, write Parquet per
 //! partition, quarantine bad rows. Nothing here touches the manifest or the
 //! network; the result is handed back for the async commit step.
 
@@ -11,14 +11,14 @@ use arrow_array::RecordBatch;
 use arrow_schema::{ArrowError, Field, Schema, SchemaRef};
 use tokio::sync::mpsc;
 use utilake_acquire::LocalFile;
-use utilake_conform::arrow_sink::{ArrowSink, BatchSink, BlockBatch};
 use utilake_core::event::Event;
-use utilake_core::{Category, Diagnose, Diagnostic, Fingerprint, IRow, YearMonth};
-use utilake_decode::quarantine::QuarantineWriter;
-use utilake_decode::scan::{Flow, Pos, ScanOptions, scan_with};
-use utilake_decode::{RowError, SinkError};
-use utilake_kit::container::{WalkError, walk_csv_entries};
-use utilake_registry::{LoadMode, Registry, ResolveOptions, Resolved, TableId};
+use utilake_core::{Category, Diagnose, Diagnostic, Fingerprint, YearMonth};
+use utilake_kit::container::{Accepts, WalkError, walk_entries};
+use utilake_kit::quarantine::QuarantineWriter;
+use utilake_kit::{
+    Block, BlockSink, DecodeCtx, DecodeOptions, Flow, KitRegistry, LoadMode, RowAt, SourceKit,
+    TableRef,
+};
 use utilake_writer::partition::split_by_month;
 use utilake_writer::{
     FileMeta, LakeWriter, ParquetHive, Partition, PartitionKey, Transform, WriterId, WrittenFile,
@@ -30,8 +30,10 @@ use crate::plan::RunOptions;
 pub struct IngestInput {
     /// The file.
     pub local: LocalFile,
-    /// The registry.
-    pub registry: Arc<Registry>,
+    /// Every kit.
+    pub kits: Arc<KitRegistry>,
+    /// The kit that reads this file.
+    pub kit: &'static str,
     /// `lake/` root.
     pub lake_root: PathBuf,
     /// `quarantine/` root.
@@ -54,8 +56,6 @@ pub struct IngestInput {
 pub struct IngestResult {
     /// Table.
     pub table: String,
-    /// Table handle.
-    pub table_id: TableId,
     /// Version the plan used.
     pub version: u16,
     /// Observed I-row fingerprint.
@@ -105,7 +105,7 @@ pub struct FileReport {
 
 /// What tells one open writer from another: table, version, column list
 /// and partition.
-type WriterKey = (TableId, u16, u128, Partition);
+type WriterKey = (String, u16, u128, Partition);
 
 /// Parquet writers all the workers of a run may hold open together. An
 /// operating system gives a process a few hundred open files by default
@@ -172,7 +172,6 @@ fn fitted(batch: &RecordBatch, schema: &SchemaRef) -> Result<RecordBatch, ArrowE
 
 /// Routes batches to Parquet writers and quarantines bad rows.
 struct LakeSink<'a> {
-    registry: &'a Registry,
     writer: ParquetHive,
     /// Open writers by table, version, shape and partition. The shape is
     /// part of the key because two column lists of one version may differ
@@ -232,11 +231,11 @@ impl LakeSink<'_> {
         wid: WriterId,
     ) -> Result<(), utilake_writer::StoreError> {
         let written = self.writer.close(wid)?;
-        let (table_id, version, shape, _) = key;
+        let (table, version, shape, _) = key;
         if let Some(r) = self
             .results
             .iter_mut()
-            .find(|r| r.table_id == table_id && r.version == version && r.fingerprint.0 == shape)
+            .find(|r| r.table == table && r.version == version && r.fingerprint.0 == shape)
         {
             r.outputs.push(written);
         }
@@ -250,8 +249,8 @@ impl LakeSink<'_> {
         let Some((key, wid)) = self
             .writers
             .iter()
-            .min_by_key(|(k, w)| (w.used, **k))
-            .map(|(k, w)| (*k, w.id))
+            .min_by_key(|(k, w)| (w.used, (*k).clone()))
+            .map(|(k, w)| (k.clone(), w.id))
         else {
             return Ok(());
         };
@@ -261,7 +260,7 @@ impl LakeSink<'_> {
 
     fn close_all(&mut self) -> Result<(), utilake_writer::StoreError> {
         let mut keys: Vec<_> = self.writers.drain().collect();
-        keys.sort_by_key(|(k, _)| *k);
+        keys.sort_by(|(a, _), (b, _)| a.cmp(b));
         for (key, w) in keys {
             self.close_one(key, w.id)?;
         }
@@ -295,35 +294,27 @@ impl LakeSink<'_> {
     }
 }
 
-impl BatchSink for LakeSink<'_> {
-    fn block_started(&mut self, irow: &IRow<'_>, resolved: &Resolved, _pos: Pos) {
-        let table = self.registry.table(resolved.table);
-        let fingerprint = irow.fingerprint();
+impl BlockSink for LakeSink<'_> {
+    fn block_started(
+        &mut self,
+        table: &Arc<TableRef>,
+        version: u16,
+        fingerprint: Fingerprint,
+        transform: &Arc<Transform>,
+        status: &str,
+    ) {
         // Two column lists of one increment are two shapes, read by two
         // plans: each is a result of its own.
         let idx = match self.results.iter().position(|r| {
-            r.table_id == resolved.table
-                && r.version == resolved.version
-                && r.fingerprint == fingerprint
+            r.table == table.name && r.version == version && r.fingerprint == fingerprint
         }) {
             Some(i) => i,
             None => {
                 self.results.push(IngestResult {
                     table: table.name.clone(),
-                    table_id: resolved.table,
-                    version: resolved.version,
+                    version,
                     fingerprint,
-                    transform: Transform {
-                        block_family: irow.report_type.to_owned(),
-                        block_name: irow.report_subtype.to_owned(),
-                        source_version: irow.version,
-                        source_columns: irow.columns.iter().map(|c| (*c).to_owned()).collect(),
-                        source_period: self.period.map(|p| p.to_string()),
-                        plan_hash: resolved.plan_hash().to_string(),
-                        schema_source: resolved.source.label().to_owned(),
-                        resolution: resolved.label().to_owned(),
-                        shape_id: shape_id(&self.registry.shape_ids(irow, self.period)),
-                    },
+                    transform: (**transform).clone(),
                     rows: 0,
                     bad_rows: 0,
                     outputs: vec![],
@@ -337,46 +328,55 @@ impl BatchSink for LakeSink<'_> {
             let _ = tx.try_send(Event::BlockResolved {
                 source: format!("{}!{}", self.local.remote.url, self.entry),
                 table: table.name.clone(),
-                version: resolved.version,
-                status: resolved.label().to_owned(),
+                version,
+                status: status.to_owned(),
             });
         }
     }
 
-    fn batch(&mut self, b: BlockBatch) -> Result<(), SinkError> {
-        let table = self.registry.table(b.table);
-        let market = self.registry.market_of(b.table);
+    fn batch(&mut self, b: Block) -> Result<(), Box<Diagnostic>> {
+        let table = b.table.clone();
         let Some(idx) = self.current else {
             return Ok(());
         };
         let rows = b.batch.num_rows() as u64;
-        let time_col = b.plan.time_column.map(usize::from);
-        let parts: Vec<(Partition, arrow_array::RecordBatch)> = match (b.plan.load_mode, time_col) {
-            (LoadMode::Snapshot, _) => vec![(
-                self.period
-                    .map_or(Partition::Unknown, |p| Partition::Snapshot {
-                        year: p.year(),
-                        month: p.month(),
-                    }),
-                b.batch,
-            )],
-            (LoadMode::Append, Some(tc)) => split_by_month(&b.batch, tc, market.utc_offset_secs)
-                .map_err(|e| SinkError::write(table.name.clone(), &e))?,
-            // No time of its own: the month of the file is all there is.
-            (LoadMode::Append, None) => vec![(
-                self.period
-                    .map_or(Partition::Unknown, |p| Partition::Month {
-                        year: p.year(),
-                        month: p.month(),
-                    }),
-                b.batch,
-            )],
+        let fail = |e: &(dyn std::error::Error + 'static)| {
+            Box::new(
+                Diagnostic::error(
+                    "store.write_failed",
+                    Category::Store,
+                    format!("Writing a batch of table {} failed: {e}", table.name),
+                )
+                .with_table(table.name.clone())
+                .caused_by(e),
+            )
         };
+        let parts: Vec<(Partition, arrow_array::RecordBatch)> =
+            match (table.load_mode, table.time_column) {
+                (LoadMode::Snapshot, _) => vec![(
+                    self.period
+                        .map_or(Partition::Unknown, |p| Partition::Snapshot {
+                            year: p.year(),
+                            month: p.month(),
+                        }),
+                    b.batch,
+                )],
+                (LoadMode::Append, Some(tc)) => {
+                    split_by_month(&b.batch, tc, table.utc_offset_secs).map_err(|e| fail(&e))?
+                }
+                // No time of its own: the month of the file is all there is.
+                (LoadMode::Append, None) => vec![(
+                    self.period
+                        .map_or(Partition::Unknown, |p| Partition::Month {
+                            year: p.year(),
+                            month: p.month(),
+                        }),
+                    b.batch,
+                )],
+            };
         for (partition, batch) in parts {
-            let key: WriterKey = (b.table, b.version, b.fingerprint.0, partition);
+            let key: WriterKey = (table.name.clone(), b.version, b.fingerprint.0, partition);
             self.tick += 1;
-            let fail =
-                |e: &(dyn std::error::Error + 'static)| SinkError::write(table.name.clone(), e);
             // A batch with a column, or a null, its file has no room for
             // finishes that file; the partition goes on in a further one
             // whose schema takes both.
@@ -389,8 +389,8 @@ impl BatchSink for LakeSink<'_> {
                     Some(wider) => {
                         let id = w.id;
                         self.writers.remove(&key);
-                        self.close_one(key, id).map_err(|e| fail(&e))?;
-                        self.next_schema.insert(key, Arc::new(wider));
+                        self.close_one(key.clone(), id).map_err(|e| fail(&e))?;
+                        self.next_schema.insert(key.clone(), Arc::new(wider));
                         None
                     }
                 },
@@ -406,21 +406,21 @@ impl BatchSink for LakeSink<'_> {
                         self.close_least_recent().map_err(|e| fail(&e))?;
                     }
                     let part = {
-                        let n = self.parts.entry(key).or_insert(0);
+                        let n = self.parts.entry(key.clone()).or_insert(0);
                         *n += 1;
                         *n
                     };
                     let pk = PartitionKey {
-                        market: table.market.to_string(),
-                        table_dir: self.registry.table_dir(b.table),
+                        market: table.market.clone(),
+                        table_dir: table.dir.clone(),
                         partition,
                     };
                     let meta = self.meta(
                         &table.name,
                         b.version,
                         b.fingerprint,
-                        time_col,
-                        self.results[idx].transform.clone(),
+                        table.time_column,
+                        (*b.transform).clone(),
                         part,
                     );
                     // A further file of a key starts as wide as the one
@@ -460,16 +460,12 @@ impl BatchSink for LakeSink<'_> {
         self.warnings.push(d);
     }
 
-    fn bad_row(&mut self, raw: &[u8], pos: Pos, err: &RowError) -> Flow {
+    fn bad_row(&mut self, raw: &[u8], _at: RowAt, mut d: Diagnostic) -> Flow {
         let (table, version) = match self.current {
             Some(i) => (self.results[i].table.clone(), Some(self.results[i].version)),
             None => ("unknown".to_owned(), None),
         };
-        let mut d = err
-            .diagnostic()
-            .at(pos.line, pos.byte_offset)
-            .with_sample(raw)
-            .with_table(table.clone());
+        d.table = Some(table.clone());
         d.version = version;
         if let Some(i) = self.current {
             self.results[i].bad_rows += 1;
@@ -503,17 +499,6 @@ impl BatchSink for LakeSink<'_> {
     }
 }
 
-/// The census ids of a shape as recorded with an ingest: comma-separated,
-/// `None` when the census has not seen it.
-fn shape_id(ids: &[utilake_core::ShapeId]) -> Option<String> {
-    (!ids.is_empty()).then(|| {
-        ids.iter()
-            .map(ToString::to_string)
-            .collect::<Vec<_>>()
-            .join(",")
-    })
-}
-
 /// The stem that names the Parquet files written from one entry of a
 /// source: the entry's own file name without its extension, lower-case and
 /// made safe for a path, so two CSVs of one zip never write the same file.
@@ -539,22 +524,44 @@ fn entry_stem(entry: &str, source_stem: &str) -> String {
     }
 }
 
-/// The archive month in the name of an archive file, in either naming
-/// scheme (see [`utilake_core::archive_name`]).
+/// Reads one entry through the kit's decoder into the lake.
 fn ingest_entry(
     input: &IngestInput,
+    kit: &SourceKit,
     entry: &str,
     reader: &mut dyn std::io::Read,
     scan_buf: &mut Vec<u8>,
 ) -> EntryReport {
-    let period = input
-        .local
-        .remote
-        .period
-        .map(utilake_core::Period::month)
-        .or_else(|| utilake_acquire::period_of_name(&input.local.remote.file_name()));
-    let initial = LakeSink {
-        registry: &input.registry,
+    let ctx = utilake_core::diag::Context {
+        request: Some(input.request.clone()),
+        url: Some(input.local.remote.url.to_string()),
+        file: Some(input.local.path.display().to_string()),
+        entry: Some(entry.to_owned()),
+        table: None,
+        version: None,
+    };
+    let mut report = EntryReport {
+        entry: entry.to_owned(),
+        results: vec![],
+        warnings: vec![],
+        row_errors: vec![],
+        error: None,
+    };
+    let Some(decoder) = kit.decoder_for(entry) else {
+        let mut d = Diagnostic::error(
+            "config.no_decoder",
+            Category::Config,
+            format!(
+                "The entry {entry} is not one the kit {} reads; no decoder accepts its name.",
+                kit.id
+            ),
+        );
+        d.fill_from(&ctx);
+        report.error = Some(d);
+        return report;
+    };
+    let period = input.local.remote.period.map(utilake_core::Period::month);
+    let mut sink = LakeSink {
         writer: ParquetHive::new(&input.lake_root),
         writers: HashMap::new(),
         parts: HashMap::new(),
@@ -573,40 +580,18 @@ fn ingest_entry(
         fail_fast: input.options.fail_fast,
         events: input.events.as_ref(),
     };
-    let resolve = ResolveOptions {
-        mode: input.options.mode,
-    };
-    let mut arrow = ArrowSink::new(&input.registry, resolve, input.options.batch_rows, initial)
-        .with_period(period);
-    let mut sink: LakeSink<'_>;
-    let scan_opts = ScanOptions {
+    let options = DecodeOptions {
+        strictness: input.options.mode,
         max_bad_rows: input.options.max_bad_rows,
-        ..Default::default()
+        batch_rows: input.options.batch_rows,
     };
-    let ctx = utilake_core::diag::Context {
-        request: Some(input.request.clone()),
-        url: Some(input.local.remote.url.to_string()),
-        file: Some(input.local.path.display().to_string()),
-        entry: Some(entry.to_owned()),
-        table: None,
-        version: None,
+    let dctx = DecodeCtx {
+        file: &input.local,
+        entry,
+        period: input.local.remote.period,
+        options: &options,
     };
-    let scanned = scan_with(reader, &mut arrow, &scan_opts, scan_buf);
-    let (recovered, flushed) = arrow.finish();
-    sink = recovered;
-    let scanned = match (scanned, flushed) {
-        (Ok(stats), Ok(())) => Ok(stats),
-        (Ok(_), Err(e)) => Err(e.diagnostic()),
-        (Err(e), _) => Err(e.diagnostic()),
-    };
-    let mut report = EntryReport {
-        entry: entry.to_owned(),
-        results: vec![],
-        warnings: vec![],
-        row_errors: vec![],
-        error: None,
-    };
-    match scanned {
+    match decoder.decode(reader, &dctx, &mut sink, scan_buf) {
         Ok(stats) => {
             if let Err(e) = sink.close_all() {
                 sink.abort_all();
@@ -642,7 +627,7 @@ fn ingest_entry(
         Err(mut d) => {
             sink.abort_all();
             d.fill_from(&ctx);
-            report.error = Some(d);
+            report.error = Some(*d);
         }
     }
     sink.finish_quarantine();
@@ -666,24 +651,38 @@ fn ingest_entry(
     report
 }
 
-/// Ingests one local file: a zip (entries walked, nested zips included) or
-/// a bare CSV.
+/// Ingests one local file: a file a decoder of the kit reads whole, or a
+/// zip whose entries (nested zips included) are walked for the ones a
+/// decoder reads.
 pub fn ingest_file(input: IngestInput) -> FileReport {
     // One read buffer for every entry of the file.
     let mut scan_buf = Vec::new();
     let path = input.local.path.clone();
-    let is_csv = path
-        .extension()
-        .is_some_and(|e| e.eq_ignore_ascii_case("csv"));
+    let name = path
+        .file_name()
+        .map(|n| n.to_string_lossy().into_owned())
+        .unwrap_or_default();
     let mut entries = Vec::new();
     let mut file_error = None;
-    if is_csv {
-        let name = path
-            .file_name()
-            .map(|n| n.to_string_lossy().into_owned())
-            .unwrap_or_default();
+    let Some(kit) = input.kits.kit(input.kit) else {
+        return FileReport {
+            file_error: Some(
+                Diagnostic::error(
+                    "config.no_decoder",
+                    Category::Config,
+                    format!("No kit named {} was assembled into this binary.", input.kit),
+                )
+                .with_file(path.display().to_string())
+                .with_request(input.request.clone()),
+            ),
+            rules_changed: input.rules_changed,
+            local: input.local,
+            entries,
+        };
+    };
+    if kit.decoder_for(&name).is_some() {
         match std::fs::File::open(&path) {
-            Ok(mut f) => entries.push(ingest_entry(&input, &name, &mut f, &mut scan_buf)),
+            Ok(mut f) => entries.push(ingest_entry(&input, kit, &name, &mut f, &mut scan_buf)),
             Err(e) => {
                 file_error = Some(
                     Diagnostic::error(
@@ -698,11 +697,16 @@ pub fn ingest_file(input: IngestInput) -> FileReport {
         }
     } else {
         let fail_fast = input.options.fail_fast;
-        let result: Result<usize, WalkError<()>> = walk_csv_entries(
+        let accepts = Accepts {
+            accepts: &|n: &str| kit.decoder_for(n).is_some(),
+            wanted: "readable",
+        };
+        let result: Result<usize, WalkError<()>> = walk_entries(
             &path,
             &input.tmp_dir,
+            accepts,
             &mut |e| {
-                let rep = ingest_entry(&input, &e.name, e.reader, &mut scan_buf);
+                let rep = ingest_entry(&input, kit, &e.name, e.reader, &mut scan_buf);
                 let stop = fail_fast && rep.error.is_some();
                 entries.push(rep);
                 if stop { Err(()) } else { Ok(()) }

@@ -17,6 +17,7 @@ utilake-acquire.workspace = true
 arrow-array.workspace = true
 arrow-schema.workspace = true
 serde.workspace = true
+serde_json.workspace = true
 tempfile.workspace = true
 thiserror.workspace = true
 url.workspace = true

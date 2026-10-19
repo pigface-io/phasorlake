@@ -15,11 +15,14 @@ workspace = true
 utilake-core.workspace = true
 utilake-decode.workspace = true
 utilake-registry.workspace = true
+utilake-kit.workspace = true
+utilake-acquire.workspace = true
 arrow-array.workspace = true
 arrow-schema.workspace = true
 
 [dev-dependencies]
 criterion.workspace = true
+tempfile.workspace = true
 
 [[bench]]
 name = "scan"

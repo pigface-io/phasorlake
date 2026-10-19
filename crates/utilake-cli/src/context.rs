@@ -7,10 +7,11 @@ use std::time::Duration;
 
 use anyhow::{Context as _, Result};
 use utilake_acquire::{
-    Archive, Fetcher, FetcherConfig, OfflineTransport, ReqwestTransport, Transport,
+    Archive, Fetcher, FetcherConfig, MmsdmArchive, OfflineTransport, ReqwestTransport, Transport,
 };
 use utilake_core::config::Config;
 use utilake_core::paths::Home;
+use utilake_kit::KitRegistry;
 use utilake_pipeline::Deps;
 use utilake_registry::Registry;
 use utilake_writer::{ManifestHandle, ManifestThread};
@@ -25,6 +26,8 @@ pub struct Context {
     pub config: Config,
     /// Registry.
     pub registry: Arc<Registry>,
+    /// Every kit this binary was assembled with.
+    pub kits: Arc<KitRegistry>,
     /// Whether to print JSON.
     pub json: bool,
     /// Whether to show progress.
@@ -67,10 +70,18 @@ impl Context {
         }
         let progress =
             !cli.no_progress && !cli.json && std::io::IsTerminal::is_terminal(&std::io::stderr());
+        // The one place that lists the kits a binary reads with.
+        let nem = MmsdmArchive::new(&config.sources.nem_base_url)
+            .map_err(|e| anyhow::anyhow!("{}", utilake_core::Diagnose::diagnostic(&e).render()))?;
+        let kits = Arc::new(KitRegistry::new(vec![utilake_conform::nem_kit(
+            registry.clone(),
+            vec![Arc::new(nem)],
+        )]));
         Ok(Self {
             home,
             config,
             registry,
+            kits,
             json: cli.json,
             progress,
             offline: cli.offline,
@@ -121,7 +132,7 @@ impl Context {
     /// Everything the pipeline needs.
     pub fn deps(&self, fetcher: Arc<Fetcher>, manifest: ManifestHandle) -> Deps {
         Deps {
-            registry: self.registry.clone(),
+            kits: self.kits.clone(),
             fetcher,
             manifest,
             home: self.home.clone(),

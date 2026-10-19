@@ -18,7 +18,6 @@
 
 pub mod error;
 pub mod fields;
-pub mod quarantine;
 pub mod scan;
 
 pub use error::{RowError, RowFailure, ScanError, SinkError};

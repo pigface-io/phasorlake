@@ -7,6 +7,7 @@ Every error and warning utilake reports carries one of these codes. Codes are st
 | code | raised in |
 |---|---|
 | `config.bad_path` | `crates/utilake-pipeline/src/run.rs` |
+| `config.no_decoder` | `crates/utilake-pipeline/src/ingest_file.rs` |
 | `config.parse` | `crates/utilake-core/src/config.rs` |
 | `config.read` | `crates/utilake-core/src/config.rs` |
 
@@ -116,7 +117,7 @@ Every error and warning utilake reports carries one of these codes. Codes are st
 | `store.quarantine_write` | `crates/utilake-pipeline/src/ingest_file.rs` |
 | `store.rename` | `crates/utilake-writer/src/error.rs` |
 | `store.schema_mismatch` | `crates/utilake-writer/src/error.rs` |
-| `store.write_failed` | `crates/utilake-decode/src/error.rs` |
+| `store.write_failed` | `crates/utilake-pipeline/src/ingest_file.rs` |
 
 ## manifest
 
