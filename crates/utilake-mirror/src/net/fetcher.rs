@@ -500,7 +500,7 @@ fn spool(
     let file = out
         .into_inner()
         .map_err(std::io::IntoInnerError::into_error)?;
-    file.sync_all()?;
+    crate::net::archive::to_disk(&file)?;
     Ok((hex(&hasher.finalize()), crc.finalize(), size))
 }
 

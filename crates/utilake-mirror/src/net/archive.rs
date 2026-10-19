@@ -17,6 +17,15 @@ use sha2::{Digest, Sha256};
 use crate::net::error::FetchError;
 use crate::stamp::Stamp;
 
+/// Hands a file's writes to the disk with `fsync`. On macOS
+/// `File::sync_all` and `sync_data` also flush the drive's own cache
+/// (`F_FULLFSYNC`), which on a USB disk costs most of a second per small
+/// file. What that flush adds guards only against a power cut, after which
+/// a file's bytes may not match the sha256 in its sidecar.
+pub fn to_disk(file: &std::fs::File) -> std::io::Result<()> {
+    rustix::fs::fsync(file).map_err(std::io::Error::from)
+}
+
 /// The names each directory holds, read once per directory. On exFAT a
 /// lookup of a name that is not there scans the whole directory, so one
 /// read of a large folder answers every miss in it.

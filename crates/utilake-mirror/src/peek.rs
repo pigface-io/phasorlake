@@ -379,7 +379,7 @@ fn append(path: &Path, record: &Peeked) -> Result<(), MirrorError> {
         .open(path)
         .map_err(MirrorError::io(path))?;
     f.write_all(&line).map_err(MirrorError::io(path))?;
-    f.sync_data().map_err(MirrorError::io(path))
+    crate::net::archive::to_disk(&f).map_err(MirrorError::io(path))
 }
 
 #[cfg(test)]
