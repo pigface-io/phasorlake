@@ -22,7 +22,7 @@ use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
-use utilake_acquire::{Archive, MmsdmArchive};
+use utilake_acquire::Archive;
 use utilake_core::{Category, Diagnose, Diagnostic, YearMonth};
 use utilake_mms_decode::IRow;
 use utilake_mms_decode::scan::{Flow, Pos, ScanOptions, Sink, scan_with};
@@ -31,6 +31,7 @@ use utilake_mms_registry::Registry;
 use utilake_mms_registry::file_model::ctl::CtlFile;
 use utilake_mms_registry::file_model::shapes::{ShapeEntry, parse_shapes, render_shapes};
 use utilake_mms_registry::{CanonicalShape, ShapeId, TypeClass};
+use utilake_nem::MmsdmArchive;
 
 /// Why the census of a month could not be taken or recorded.
 #[derive(Debug, thiserror::Error)]
@@ -115,7 +116,7 @@ pub fn ctl_table(file_name: &str) -> Option<String> {
     if !file_name.to_ascii_lowercase().ends_with(".ctl") {
         return None;
     }
-    utilake_core::archive_name::parse(file_name).map(|n| n.table)
+    utilake_nem::names::parse(file_name).map(|n| n.table)
 }
 
 /// The names under which a control file or a data stem may be looked up:
@@ -379,7 +380,7 @@ pub fn census_month(
     let files = raw
         .into_iter()
         .map(|(name, blocks)| {
-            let file_table = utilake_core::archive_name::parse(&name).map(|n| n.table);
+            let file_table = utilake_nem::names::parse(&name).map(|n| n.table);
             let shapes = blocks
                 .into_iter()
                 .map(|b| block_shape(registry, &ctls, file_table.as_deref(), b))

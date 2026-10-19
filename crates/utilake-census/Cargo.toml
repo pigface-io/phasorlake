@@ -21,6 +21,7 @@ utilake-kit.workspace = true
 utilake-acquire.workspace = true
 utilake-mms-registry.workspace = true
 utilake-mms-decode.workspace = true
+utilake-nem.workspace = true
 clap.workspace = true
 flate2.workspace = true
 tokio.workspace = true

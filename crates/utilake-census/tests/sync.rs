@@ -5,8 +5,8 @@
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-use utilake_acquire::MmsdmArchive;
 use utilake_acquire::archive::{Archive, Sidecar, sha256_hex};
+use utilake_nem::MmsdmArchive;
 
 fn root() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../..")

@@ -15,7 +15,8 @@ crates/utilake-census            the census of shapes, and the sync of schemas/ 
 crates/utilake-kit           L1  the ports a source kit implements (Decoder, Catalog, SourceKit), Transform, the zip walker
 crates/utilake-mms-decode        L2  the MMS row format: scanner, field splitter; no registry
 crates/utilake-mms-conform       L2  resolves blocks through the registry, casts to typed Arrow batches; the MMS decoder and catalog of the kit ports
-crates/utilake-acquire       L3  sources, HTTP transport, archive (async)
+crates/utilake-acquire       L3  the Source port, HTTP transport, archive (async)
+crates/utilake-nem           L3  the NEM kit: nemweb's monthly archive, AEMO's file names, its config and command line
 crates/utilake-writer        L3  Parquet writer, partitioner, SQLite manifest actor
 crates/utilake-pipeline      L4  list → fetch → ingest → commit as tokio streams, over the kit ports only
 crates/utilake-cli           L5  the command: flags, rendering, exit codes
@@ -38,7 +39,7 @@ worker; the async and sync worlds meet once per file.
 | census | every recorded block conforms to the increment in force, control-file types fit ours | `just census-check`, pre-push |
 | schema compatibility | table files at `origin/main` against the working tree | `just schema-compat`, pre-push |
 | benchmarks | criterion plus `utilake-bench` | `just bench-fast` pre-push, `just bench` in CI, against `bench/budgets.json` |
-| network | `crates/utilake-acquire/tests/net.rs` | `just net-test`, weekly in CI |
+| network | `crates/utilake-nem/tests/net.rs` | `just net-test`, weekly in CI |
 
 ## Floors and budgets
 

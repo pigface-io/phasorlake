@@ -153,27 +153,7 @@ pub enum Command {
 #[derive(Subcommand, Debug)]
 pub enum FetchMarket {
     /// The National Electricity Market monthly archive.
-    Nem {
-        /// Tables, comma separated (default: every table the archive has
-        /// for the months asked, declared in the registry or not).
-        #[arg(long, value_delimiter = ',')]
-        table: Vec<String>,
-        /// Tables to leave out, comma separated.
-        #[arg(long, value_delimiter = ',')]
-        exclude: Vec<String>,
-        /// First month, YYYY-MM.
-        #[arg(long)]
-        from: YearMonth,
-        /// Last month, YYYY-MM (default: same as --from).
-        #[arg(long)]
-        to: Option<YearMonth>,
-        /// List what would be fetched and stop.
-        #[arg(long)]
-        dry_run: bool,
-        /// Concurrent downloads.
-        #[arg(long)]
-        downloads: Option<usize>,
-    },
+    Nem(utilake_nem::cli::FetchNem),
 }
 
 /// Flags of ingest.
@@ -281,19 +261,12 @@ mod tests {
         .unwrap();
         match c.command {
             Command::Fetch {
-                market:
-                    FetchMarket::Nem {
-                        table,
-                        from,
-                        to,
-                        dry_run,
-                        ..
-                    },
+                market: FetchMarket::Nem(args),
             } => {
-                assert_eq!(table, ["A", "B"]);
-                assert_eq!(from.to_string(), "2024-01");
-                assert_eq!(to.unwrap().to_string(), "2024-02");
-                assert!(dry_run);
+                assert_eq!(args.table, ["A", "B"]);
+                assert_eq!(args.from.to_string(), "2024-01");
+                assert_eq!(args.to.unwrap().to_string(), "2024-02");
+                assert!(args.dry_run);
             }
             other => panic!("{other:?}"),
         }

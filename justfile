@@ -103,7 +103,7 @@ schema-datamodel interval_ms="1200":
 
 # the real nemweb: one small month listing and the smallest zip (needs the network)
 net-test:
-    UTILAKE_NET_TESTS=1 cargo test --locked -p utilake-acquire --test net -- --nocapture
+    UTILAKE_NET_TESTS=1 cargo test --locked -p utilake-nem --test net -- --nocapture
 
 # ── benchmarks ───────────────────────────────────────────────────────────────
 

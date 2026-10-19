@@ -59,11 +59,9 @@ impl Env {
 /// The NEM kit over `registry`, with the archive at `https://h` as its
 /// source: what names a local file's table and month.
 fn kits_for(registry: &Arc<Registry>) -> Arc<KitRegistry> {
-    let nem = utilake_acquire::MmsdmArchive::new("https://h").unwrap();
-    Arc::new(KitRegistry::new(vec![utilake_mms_conform::nem_kit(
-        registry.clone(),
-        vec![Arc::new(nem)],
-    )]))
+    Arc::new(KitRegistry::new(vec![
+        utilake_nem::kit(registry.clone(), "https://h").unwrap(),
+    ]))
 }
 
 fn env() -> Env {
@@ -1372,7 +1370,7 @@ async fn fetch_only_downloads_and_ingest_reads_the_archived_month() {
             &std::fs::read(fixtures().join("TRADINGPRICE_v2_head.csv")).unwrap(),
         )],
     );
-    let nem = utilake_acquire::MmsdmArchive::new("https://h").unwrap();
+    let nem = utilake_nem::MmsdmArchive::new("https://h").unwrap();
     let ym = utilake_core::YearMonth::new(2024, 1).unwrap();
     let url = nem
         .month_root(ym)

@@ -20,7 +20,7 @@
 //! One parser for both lives here so the fetcher, the pipeline and the
 //! schema bootstrap agree on what a name means.
 
-use crate::period::YearMonth;
+use utilake_core::YearMonth;
 
 /// What an archive file name says.
 #[derive(Debug, Clone, PartialEq, Eq)]

@@ -5,6 +5,7 @@
 pub mod cli;
 pub mod commands;
 pub mod context;
+pub mod kits;
 pub mod render;
 
 pub use cli::Cli;

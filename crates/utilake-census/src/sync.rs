@@ -139,7 +139,7 @@ impl Evidence {
         let by_id: BTreeMap<_, _> = shapes.iter().map(|e| (e.id, e)).collect();
         let mut blocks: BTreeMap<String, BTreeSet<(String, String, u16)>> = BTreeMap::new();
         for (file, entry) in files {
-            let Some(table) = utilake_core::archive_name::parse(file).map(|n| n.table) else {
+            let Some(table) = utilake_nem::names::parse(file).map(|n| n.table) else {
                 continue;
             };
             for id in entry.ids() {
@@ -157,7 +157,7 @@ impl Evidence {
     /// The blocks of the files a control file loads: those named for the
     /// table its `INFILE` names, or a split of it.
     fn of_ctl(&self, ctl: &CtlFile) -> BTreeSet<(String, String, u16)> {
-        let Some(infile) = utilake_core::archive_name::parse(&ctl.infile).map(|n| n.table) else {
+        let Some(infile) = utilake_nem::names::parse(&ctl.infile).map(|n| n.table) else {
             return BTreeSet::new();
         };
         let wanted = table_keys(&infile);

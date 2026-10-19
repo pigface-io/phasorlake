@@ -2696,6 +2696,7 @@ dependencies = [
  "utilake-kit",
  "utilake-mms-conform",
  "utilake-mms-registry",
+ "utilake-nem",
  "utilake-pipeline",
  "utilake-writer",
  "zip",
@@ -2719,6 +2720,7 @@ dependencies = [
  "utilake-kit",
  "utilake-mms-decode",
  "utilake-mms-registry",
+ "utilake-nem",
  "zip",
 ]
 
@@ -2742,6 +2744,7 @@ dependencies = [
  "utilake-mms-conform",
  "utilake-mms-decode",
  "utilake-mms-registry",
+ "utilake-nem",
  "utilake-pipeline",
  "utilake-writer",
  "zip",
@@ -2792,7 +2795,6 @@ dependencies = [
  "arrow-schema",
  "criterion",
  "tempfile",
- "utilake-acquire",
  "utilake-core",
  "utilake-kit",
  "utilake-mms-decode",
@@ -2832,6 +2834,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "utilake-nem"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "clap",
+ "serde",
+ "tempfile",
+ "tokio",
+ "toml",
+ "url",
+ "utilake-acquire",
+ "utilake-core",
+ "utilake-kit",
+ "utilake-mms-conform",
+ "utilake-mms-registry",
+]
+
+[[package]]
 name = "utilake-pipeline"
 version = "0.1.0"
 dependencies = [
@@ -2852,6 +2872,7 @@ dependencies = [
  "utilake-mms-conform",
  "utilake-mms-decode",
  "utilake-mms-registry",
+ "utilake-nem",
  "utilake-writer",
  "zip",
 ]

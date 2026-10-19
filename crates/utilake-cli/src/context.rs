@@ -7,7 +7,7 @@ use std::time::Duration;
 
 use anyhow::{Context as _, Result};
 use utilake_acquire::{
-    Archive, Fetcher, FetcherConfig, MmsdmArchive, OfflineTransport, ReqwestTransport, Transport,
+    Archive, Fetcher, FetcherConfig, OfflineTransport, ReqwestTransport, Transport,
 };
 use utilake_core::config::Config;
 use utilake_core::paths::Home;
@@ -54,7 +54,7 @@ impl Context {
         let config_path = cli.config.clone().unwrap_or_else(|| home.config_file());
         let config = Config::load(&config_path)
             .map_err(|e| anyhow::anyhow!("{}", utilake_core::Diagnose::diagnostic(&e).render()))?;
-        let mut registry = Registry::load_embedded();
+        let mut registry = utilake_nem::registry();
         // The user's own tables, when there are any: a file named after a
         // built-in table replaces it, others are added.
         let overlay = home.schemas();
@@ -70,13 +70,7 @@ impl Context {
         }
         let progress =
             !cli.no_progress && !cli.json && std::io::IsTerminal::is_terminal(&std::io::stderr());
-        // The one place that lists the kits a binary reads with.
-        let nem = MmsdmArchive::new(&config.sources.nem_base_url)
-            .map_err(|e| anyhow::anyhow!("{}", utilake_core::Diagnose::diagnostic(&e).render()))?;
-        let kits = Arc::new(KitRegistry::new(vec![utilake_mms_conform::nem_kit(
-            registry.clone(),
-            vec![Arc::new(nem)],
-        )]));
+        let kits = crate::kits::assemble(&config, registry.clone())?;
         Ok(Self {
             home,
             config,

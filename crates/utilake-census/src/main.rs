@@ -287,13 +287,13 @@ fn main() -> ExitCode {
 fn archive(
     home: Option<&Path>,
     base: &str,
-) -> Result<(utilake_acquire::Archive, utilake_acquire::MmsdmArchive), ExitCode> {
+) -> Result<(utilake_acquire::Archive, utilake_nem::MmsdmArchive), ExitCode> {
     let user_home = std::env::var_os("HOME").map(PathBuf::from);
     let Some(home) = utilake_core::paths::Home::resolve(home, user_home.as_deref()) else {
         eprintln!("error: no home directory; pass --home");
         return Err(ExitCode::from(2));
     };
-    let nem = utilake_acquire::MmsdmArchive::new(base).map_err(|e| fail(&e.diagnostic()))?;
+    let nem = utilake_nem::MmsdmArchive::new(base).map_err(|e| fail(&e.diagnostic()))?;
     Ok((utilake_acquire::Archive::new(home.archive()), nem))
 }
 

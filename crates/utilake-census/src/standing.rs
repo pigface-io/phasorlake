@@ -162,7 +162,7 @@ mod tests {
             .find(|p| {
                 p.file_name()
                     .and_then(|n| n.to_str())
-                    .and_then(utilake_core::archive_name::parse)
+                    .and_then(utilake_nem::names::parse)
                     .is_some_and(|n| n.table == table && n.file.is_none_or(|f| f == 1))
             })?;
         first_block(&String::from_utf8_lossy(&std::fs::read(path).unwrap()))

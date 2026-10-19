@@ -1,0 +1,28 @@
+[package]
+name = "utilake-nem"
+description = "The National Electricity Market kit: nemweb's monthly archive as a source, the MMS decoder and the registry's catalog, assembled for the pipeline."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+utilake-core.workspace = true
+utilake-acquire.workspace = true
+utilake-kit.workspace = true
+utilake-mms-conform.workspace = true
+utilake-mms-registry.workspace = true
+async-trait.workspace = true
+clap.workspace = true
+serde.workspace = true
+toml.workspace = true
+url.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }

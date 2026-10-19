@@ -104,7 +104,7 @@ async fn run_plan(cli: &Cli, ctx: &Context, plan: Plan) -> Result<i32> {
 /// The NEM archive, as the kits were assembled with it.
 fn nem_source(ctx: &Context) -> Result<Arc<dyn Source>> {
     ctx.kits
-        .source(utilake_acquire::mmsdm::SOURCE_ID)
+        .source(utilake_nem::SOURCE_ID)
         .map(|(_, s)| s.clone())
         .ok_or_else(|| anyhow::anyhow!("This binary was assembled without the NEM kit."))
 }
@@ -112,49 +112,40 @@ fn nem_source(ctx: &Context) -> Result<Arc<dyn Source>> {
 /// `utilake fetch nem ...`
 pub async fn fetch(cli: &Cli, ctx: &Context, market: &FetchMarket) -> Result<i32> {
     match market {
-        FetchMarket::Nem {
-            table,
-            exclude,
-            from,
-            to,
-            dry_run,
-            downloads,
-        } => {
+        FetchMarket::Nem(args) => {
             let source = nem_source(ctx)?;
             // No table named: every file the archive has for the months,
             // whether the registry declares its table or not.
-            let tables: Vec<String> = table.iter().map(|t| t.to_ascii_uppercase()).collect();
-            let exclude: Vec<String> = exclude.iter().map(|t| t.to_ascii_uppercase()).collect();
-            let to = to.unwrap_or(*from);
-            if to < *from {
+            let tables: Vec<String> = args.table.iter().map(|t| t.to_ascii_uppercase()).collect();
+            let exclude: Vec<String> = args
+                .exclude
+                .iter()
+                .map(|t| t.to_ascii_uppercase())
+                .collect();
+            let from = args.from;
+            let to = args.to.unwrap_or(from);
+            if to < from {
                 anyhow::bail!("--to {to} is before --from {from}.");
             }
-            let request = format!(
-                "fetch nem {}{} {from}..{to}",
-                if table.is_empty() {
-                    "*".to_owned()
-                } else {
-                    table.join(",")
-                },
-                if exclude.is_empty() {
-                    String::new()
-                } else {
-                    format!(" except {}", exclude.join(","))
-                }
-            );
             let plan = Plan {
-                request,
+                request: args.request(to),
                 input: Input::Remote {
                     source,
                     query: Query {
                         exclude,
                         tables,
-                        range: TimeRange::months(*from, to),
+                        range: TimeRange::months(from, to),
                     },
                 },
                 options: RunOptions {
                     ingest: false,
-                    ..options(cli, ctx, &IngestArgs::default(), *downloads, *dry_run)
+                    ..options(
+                        cli,
+                        ctx,
+                        &IngestArgs::default(),
+                        args.downloads,
+                        args.dry_run,
+                    )
                 },
             };
             run_plan(cli, ctx, plan).await

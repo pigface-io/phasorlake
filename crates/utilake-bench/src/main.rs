@@ -92,10 +92,9 @@ fn ingest_once(dir: &Path, zip_path: &Path, registry: &Arc<Registry>) -> (Durati
             FetcherConfig::default(),
         ));
         let deps = Deps {
-            kits: Arc::new(KitRegistry::new(vec![utilake_mms_conform::nem_kit(
-                registry.clone(),
-                Vec::new(),
-            )])),
+            kits: Arc::new(KitRegistry::new(vec![
+                utilake_nem::kit(registry.clone(), "https://h").expect("a kit"),
+            ])),
             fetcher,
             manifest,
             home: home.clone(),

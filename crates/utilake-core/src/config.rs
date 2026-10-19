@@ -29,14 +29,59 @@ pub struct Config {
     pub sources: Sources,
 }
 
-/// Base URLs, overridable for mirrors and tests.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(deny_unknown_fields, default)]
+/// Per-kit settings: `[sources.<kit>]` tables, each read by its kit with
+/// its own keys and defaults. The two `*_base_url` keys are what the file
+/// held under the tool's earlier name; a kit reads its own when its table
+/// is absent.
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct Sources {
-    /// NEM archive and reports.
-    pub nem_base_url: String,
-    /// WEM public data.
-    pub wem_base_url: String,
+    /// NEM base URL, as the earlier config wrote it.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub nem_base_url: Option<String>,
+    /// WEM base URL, as the earlier config wrote it.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub wem_base_url: Option<String>,
+    /// Every `[sources.<kit>]` table, by kit id.
+    #[serde(flatten)]
+    pub kits: std::collections::BTreeMap<String, toml::Table>,
+}
+
+/// Why a kit's table could not be read.
+#[derive(Debug, thiserror::Error)]
+pub enum SourcesError {
+    /// `[sources.<kit>]` is not a table.
+    #[error("sources.{kit} must be a table of the kit's settings")]
+    NotATable {
+        /// The kit.
+        kit: String,
+    },
+    /// The table has a key the kit does not know, or a value of the wrong type.
+    #[error("sources.{kit}: {source}")]
+    Parse {
+        /// The kit.
+        kit: String,
+        /// What toml said.
+        #[source]
+        source: toml::de::Error,
+    },
+}
+
+impl Sources {
+    /// The settings of kit `id`, when the file has its table.
+    pub fn kit<T: serde::de::DeserializeOwned>(&self, id: &str) -> Result<Option<T>, SourcesError> {
+        let Some(table) = self.kits.get(id) else {
+            return Ok(None);
+        };
+        table
+            .clone()
+            .try_into()
+            .map(Some)
+            .map_err(|source| SourcesError::Parse {
+                kit: id.to_owned(),
+                source,
+            })
+    }
 }
 
 impl Default for Config {
@@ -49,15 +94,6 @@ impl Default for Config {
             strict: false,
             user_agent_suffix: String::new(),
             sources: Sources::default(),
-        }
-    }
-}
-
-impl Default for Sources {
-    fn default() -> Self {
-        Self {
-            nem_base_url: "https://www.nemweb.com.au".to_owned(),
-            wem_base_url: "https://data.wa.aemo.com.au".to_owned(),
         }
     }
 }
@@ -156,8 +192,30 @@ mod tests {
             Config::parse("jobs = 3\n[sources]\nnem_base_url = \"http://localhost:1\"\n").unwrap();
         assert_eq!(c.jobs, 3);
         assert_eq!(c.effective_jobs(), 3);
-        assert_eq!(c.sources.nem_base_url, "http://localhost:1");
+        assert_eq!(
+            c.sources.nem_base_url.as_deref(),
+            Some("http://localhost:1")
+        );
         assert!(Config::default().effective_jobs() >= 1);
+        // A kit's table is read by the kit, with its own keys.
+        #[derive(Debug, PartialEq, serde::Deserialize)]
+        #[serde(deny_unknown_fields)]
+        struct Fake {
+            base_url: String,
+        }
+        let c = Config::parse("[sources.fake]\nbase_url = \"http://f\"\n").unwrap();
+        assert_eq!(
+            c.sources.kit::<Fake>("fake").unwrap(),
+            Some(Fake {
+                base_url: "http://f".into()
+            })
+        );
+        assert_eq!(c.sources.kit::<Fake>("other").unwrap(), None);
+        let c = Config::parse("[sources.fake]\nbase_url = 1\n").unwrap();
+        let e = c.sources.kit::<Fake>("fake").unwrap_err();
+        assert!(e.to_string().starts_with("sources.fake:"), "{e}");
+        // Anything under [sources] that is not a kit's table is a parse error.
+        assert!(Config::parse("[sources]\nfake = 1\n").is_err());
     }
 
     #[test]

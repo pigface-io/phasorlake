@@ -10,8 +10,8 @@ use utilake_core::{Diagnose, Diagnostic, Period, YearMonth};
 
 use utilake_kit::container::has_extension;
 use utilake_kit::{
-    Block, BlockSink, Catalog, DecodeCtx, DecodeStats, Decoder, Flow, LoadMode, RowAt, SourceKit,
-    Strictness, TableRef, Transform,
+    Block, BlockSink, Catalog, DecodeCtx, DecodeStats, Decoder, Flow, LoadMode, RowAt, Strictness,
+    TableRef, Transform,
 };
 use utilake_mms_decode::IRow;
 use utilake_mms_decode::error::{RowError, RowFailure, SinkError};
@@ -304,20 +304,6 @@ impl Catalog for MmsCatalog {
     }
 }
 
-/// The NEM kit over `registry`: its sources, the MMS decoder and the
-/// registry's catalog.
-pub fn nem_kit(
-    registry: Arc<Registry>,
-    sources: Vec<Arc<dyn utilake_acquire::Source>>,
-) -> SourceKit {
-    SourceKit {
-        id: "nem",
-        sources,
-        decoders: vec![Arc::new(MmsDecoder::new(registry.clone()))],
-        catalog: Arc::new(MmsCatalog::new(registry)),
-    }
-}
-
 /// A row failure as the bridge reports it; kept for the row loop's use.
 #[allow(dead_code)]
 fn _row_failure(_: RowFailure) {}
@@ -353,10 +339,8 @@ mod tests {
         assert!(Arc::clone(cat.registry()).table_by_name("REGION").is_some());
         let dir = tempfile::tempdir().unwrap();
         assert_eq!(cat.with_overlay(dir.path()).unwrap().market(), "nem");
-        let kit = nem_kit(registry, Vec::new());
-        assert_eq!(kit.id, "nem");
-        assert!(kit.decoder_for("A.CSV").is_some());
-        assert!(kit.decoder_for("A.ctl").is_none());
-        assert_eq!(kit.decoders[0].id(), "mms");
+        let dec = MmsDecoder::new(registry);
+        assert!(dec.accepts("A.CSV") && !dec.accepts("A.ctl"));
+        assert_eq!(dec.id(), "mms");
     }
 }

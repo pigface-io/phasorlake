@@ -17,6 +17,7 @@ path = "src/main.rs"
 
 [dependencies]
 utilake-core.workspace = true
+utilake-nem.workspace = true
 utilake-mms-conform.workspace = true
 utilake-kit.workspace = true
 utilake-acquire.workspace = true

@@ -28,11 +28,9 @@ use async_trait::async_trait;
 use url::Url;
 use utilake_core::YearMonth;
 
-use crate::archive::Archive;
-use crate::error::FetchError;
-use crate::fetcher::{Fetcher, LocalFile};
-use crate::listing;
-use crate::source::{Query, RemoteFile, Source};
+use utilake_acquire::{
+    Archive, FetchError, Fetcher, LocalFile, Query, RemoteFile, Source, listing,
+};
 
 /// The source id.
 pub const SOURCE_ID: &str = "nem-mmsdm";
@@ -330,7 +328,7 @@ impl MmsdmArchive {
     }
 
     /// The table a data zip carries, for either naming scheme (see
-    /// [`utilake_core::archive_name`]):
+    /// [`crate::names`]):
     /// `PUBLIC_DVD_BIDPEROFFER1_202401010000.zip` and
     /// `PUBLIC_ARCHIVE#BIDPEROFFER#FILE01#202608010000.zip` are both
     /// `BIDPEROFFER`.
@@ -338,7 +336,7 @@ impl MmsdmArchive {
         if !name.to_ascii_lowercase().ends_with(".zip") {
             return None;
         }
-        let parsed = utilake_core::archive_name::parse(name)?;
+        let parsed = crate::names::parse(name)?;
         if parsed.file.is_some() {
             return Some(parsed.table);
         }
@@ -348,7 +346,7 @@ impl MmsdmArchive {
 
 /// The archive month a data file's name says, for either naming scheme.
 pub fn period_of_name(name: &str) -> Option<YearMonth> {
-    utilake_core::archive_name::parse(name).map(|n| n.month)
+    crate::names::parse(name).map(|n| n.month)
 }
 
 /// What a data file's name says: its table and month, as a file of this
@@ -363,7 +361,7 @@ pub fn describe_name(url: Url) -> Option<RemoteFile> {
     if !(lower.ends_with(".zip") || lower.ends_with(".csv")) {
         return None;
     }
-    let parsed = utilake_core::archive_name::parse(&name)?;
+    let parsed = crate::names::parse(&name)?;
     let table = if parsed.file.is_some() {
         parsed.table.clone()
     } else {
@@ -522,9 +520,8 @@ mod tests {
     use std::time::Duration;
 
     use super::*;
-    use crate::archive::Archive;
-    use crate::fetcher::FetcherConfig;
-    use crate::transport::{Canned, StaticTransport};
+    use utilake_acquire::FetcherConfig;
+    use utilake_acquire::transport::{Canned, StaticTransport};
     use utilake_core::TimeRange;
 
     #[test]

@@ -1,15 +1,14 @@
-//! The real nemweb, opt-in: `UTILAKE_NET_TESTS=1 cargo test -p utilake-acquire --test net`.
+//! The real nemweb, opt-in: `UTILAKE_NET_TESTS=1 cargo test -p utilake-nem --test net`.
 //! Lists January 2024 and downloads the smallest zip in it twice, the second
 //! time from the archive.
 
 use std::sync::Arc;
 use std::time::Duration;
 
-use utilake_acquire::{
-    Archive, Fetcher, FetcherConfig, MmsdmArchive, Query, ReqwestTransport, Source,
-};
+use utilake_acquire::{Archive, Fetcher, FetcherConfig, Query, ReqwestTransport, Source};
 use utilake_core::TimeRange;
 use utilake_core::YearMonth;
+use utilake_nem::MmsdmArchive;
 
 #[tokio::test]
 async fn lists_and_downloads_the_smallest_zip() {

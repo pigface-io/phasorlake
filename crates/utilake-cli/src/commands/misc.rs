@@ -79,7 +79,13 @@ pub fn archive(ctx: &Context, cmd: &ArchiveCmd) -> Result<i32> {
 pub async fn wem(ctx: &Context, cmd: &WemCmd) -> Result<i32> {
     match cmd {
         WemCmd::Manifest { dataset, from, to } => {
-            let w = WemDatafiles::new(&ctx.config.sources.wem_base_url, vec![dataset.clone()])
+            let base = ctx
+                .config
+                .sources
+                .wem_base_url
+                .as_deref()
+                .unwrap_or("https://data.wa.aemo.com.au");
+            let w = WemDatafiles::new(base, vec![dataset.clone()])
                 .map_err(|e| anyhow::anyhow!("{}", e.diagnostic().render()))?;
             let fetcher = ctx.fetcher(None)?;
             let from = from.unwrap_or(YearMonth::new(2000, 1).expect("valid"));

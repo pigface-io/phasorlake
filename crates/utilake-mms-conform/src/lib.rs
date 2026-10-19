@@ -15,4 +15,4 @@ pub mod inspect;
 pub mod kit;
 
 pub use arrow_sink::{ArrowSink, BlockBatch};
-pub use kit::{MmsCatalog, MmsDecoder, nem_kit};
+pub use kit::{MmsCatalog, MmsDecoder};

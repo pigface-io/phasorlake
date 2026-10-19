@@ -16,7 +16,6 @@ utilake-core.workspace = true
 utilake-mms-decode.workspace = true
 utilake-mms-registry.workspace = true
 utilake-kit.workspace = true
-utilake-acquire.workspace = true
 arrow-array.workspace = true
 arrow-schema.workspace = true
 
