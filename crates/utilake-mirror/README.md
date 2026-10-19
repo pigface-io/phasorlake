@@ -32,7 +32,8 @@ what exists.
 - **Compare**: each month after 2014 is published twice, as a folder and as
   one zip; `compare` checks every file of the zip against the folder, from
   the zip or, before it is downloaded, from its listing, and `--delete`
-  removes the zips that hold nothing more, so most are never downloaded
+  removes the zips that hold no data the folder lacks (a readme or
+  disclaimer page does not count), so most are never downloaded
   (`run --delete-duplicates` does it as the download reaches each one);
   `--verify` reads the folders again and checks every removal still holds.
 

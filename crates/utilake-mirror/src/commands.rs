@@ -558,6 +558,7 @@ fn compare(ctx: &Context, mirror: &Mirror, delete: bool) -> Result<i32, MirrorEr
                 cmp.only_in_zip.len().to_string(),
                 cmp.different.len().to_string(),
                 cmp.unsure.len().to_string(),
+                cmp.ancillary.len().to_string(),
                 cmp.only_in_folder.len().to_string(),
                 action.to_owned(),
             ]);
@@ -590,6 +591,7 @@ fn compare(ctx: &Context, mirror: &Mirror, delete: bool) -> Result<i32, MirrorEr
                     "only in zip",
                     "differ",
                     "unsure",
+                    "pages",
                     "only in folder",
                     "action"
                 ],

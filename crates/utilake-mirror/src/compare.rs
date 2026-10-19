@@ -6,7 +6,10 @@
 //! `X.zip` the crawl lists beside a folder `X/`. Each file in the zip is
 //! matched to the folder's file at the same path (the zip may put the
 //! month's own folder, or something else, in front), first by size and
-//! CRC-32, then, for a zip packed again, by the files it holds.
+//! CRC-32, then, for a zip packed again, by the files it holds. A web page
+//! in the zip (`Readme.htm`, `disclaimer.htm`, `Index.htm`) is not data:
+//! one the folder lacks, or holds with other bytes, does not make the zip
+//! differ; it is listed in the comparison and in the removal record.
 
 use std::collections::{BTreeMap, HashMap, HashSet};
 use std::fs::File;
@@ -75,6 +78,9 @@ pub struct Comparison {
     pub only_in_zip: Vec<String>,
     /// Files of the zip whose content differs from the folder's.
     pub different: Vec<String>,
+    /// Web pages of the zip (`.htm`, `.html`) that the folder lacks or
+    /// holds with other bytes: not data, so not counted either way.
+    pub ancillary: Vec<String>,
     /// Files of the zip, known from its listing, that are not byte for byte
     /// the folder's; the zip is needed to tell more.
     pub unsure: Vec<String>,
@@ -106,8 +112,20 @@ pub struct Removed {
     /// is in the catalog on both sides, with its size and CRC-32.
     #[serde(default)]
     pub files: usize,
+    /// Web pages of the zip that the folder lacks or holds with other
+    /// bytes, left out of the comparison as not data.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ancillary: Vec<String>,
     /// When it was removed (UTC).
     pub removed_at: Stamp,
+}
+
+/// Whether a file of a zip is a web page rather than data: its name ends
+/// in `.htm` or `.html`, in any case.
+fn is_ancillary(name: &str) -> bool {
+    let file = name.rsplit('/').next().unwrap_or(name);
+    let lower = file.to_ascii_lowercase();
+    lower.ends_with(".htm") || lower.ends_with(".html")
 }
 
 fn downloaded() -> bool {
@@ -220,6 +238,7 @@ pub fn compare(
         repacked: 0,
         only_in_zip: Vec::new(),
         different: Vec::new(),
+        ancillary: Vec::new(),
         unsure: Vec::new(),
         from_listing: false,
         only_in_folder: Vec::new(),
@@ -287,6 +306,7 @@ pub fn compare(
     for f in files {
         match suffix_in(&f.name, &folder) {
             Some(rel) if folder[&rel].is_file() => matched.push((f, rel)),
+            _ if is_ancillary(&f.name) => cmp.ancillary.push(f.name),
             Some(rel) => cmp.not_archived.push(rel),
             None => cmp.only_in_zip.push(f.name),
         }
@@ -300,6 +320,10 @@ pub fn compare(
         let path = &folder[&rel];
         if known_sum(path)? == f.sum {
             cmp.same += 1;
+            continue;
+        }
+        if is_ancillary(&f.name) {
+            cmp.ancillary.push(f.name);
             continue;
         }
         // Other bytes: the same files inside, packed again?
@@ -357,6 +381,7 @@ pub fn remove(
         sha256: sidecar.map(|s| s.sha256),
         same_as: cmp.folder.clone(),
         files: cmp.same + cmp.repacked,
+        ancillary: cmp.ancillary.clone(),
         removed_at: Stamp::now(),
     };
     // A downloaded zip's listing is kept before it goes, so its side of the
@@ -441,8 +466,12 @@ pub fn verify(mirror: &Mirror, archive: &Archive) -> Result<Vec<Verified>, Mirro
                 )
             })
             .collect();
+        let left_out = &removed[&pair.zip].ancillary;
         for e in entries.iter().filter(|e| !e.name.ends_with(['/', '\\'])) {
             let name = e.name.replace('\\', "/");
+            if left_out.contains(&name) {
+                continue;
+            }
             let Some(rel) = suffix_in(&name, &folder) else {
                 v.missing.push(name);
                 continue;
@@ -826,6 +855,115 @@ mod tests {
         let e = remove(&f.mirror, &f.archive, &cmp).unwrap_err();
         assert_eq!(e.diagnostic().code, "mirror.not_same");
         assert!(f.archive.path_for(&pair.zip).exists());
+    }
+
+    #[test]
+    fn web_pages_in_the_zip_do_not_make_it_differ() {
+        let f = fixture(false);
+        let tmp = f.mirror.dir().join("tmp");
+        let t1 = std::fs::read(f.archive.path_for("https://h/A/M/S/DATA/T1%231.zip")).unwrap();
+        let t2 = std::fs::read(f.archive.path_for("https://h/A/M/S/DATA/T2.zip")).unwrap();
+        // The folder holds a disclaimer page; the zip holds it with other
+        // bytes, a readme page the folder lacks, and an index page whose
+        // folder file is listed but not archived.
+        let folder_page = "https://h/A/M/S/disclaimer.htm";
+        archive_file(&f.archive, folder_page, b"folder's words");
+        let index_page = "https://h/A/M/S/Index.HTM";
+        let mut record = std::fs::read_to_string(f.mirror.record_path()).unwrap();
+        for url in [folder_page, index_page] {
+            record += &(serde_json::to_string(&Remote {
+                url: url.into(),
+                kind: RemoteKind::File,
+                size: Some(1),
+                modified: "m".into(),
+                modified_at: None,
+                listed_on: "https://h/A/M/S/".into(),
+                crawled_at: None,
+            })
+            .unwrap()
+                + "\n");
+        }
+        std::fs::write(f.mirror.record_path(), record).unwrap();
+        let pair = &pairs(&f.mirror).unwrap()[0];
+        assert_eq!(pair.files.len(), 5);
+        let whole = zip_of(
+            &[
+                ("M/S/DATA/T1#1.zip", &t1[..]),
+                ("M/S/DATA/T2.zip", &t2[..]),
+                ("M/S/disclaimer.htm", b"zip's words"),
+                ("M/Readme.htm", b"only here"),
+                ("M/S/Index.HTM", b"i"),
+            ],
+            zip::CompressionMethod::Stored,
+        );
+        let zip_path = f.archive.path_for(&pair.zip);
+        std::fs::write(&zip_path, &whole).unwrap();
+        let cmp = compare(&f.archive, pair, None, &tmp).unwrap();
+        assert_eq!((cmp.verdict, cmp.same), (Verdict::Same, 2), "{cmp:?}");
+        assert_eq!(
+            cmp.ancillary,
+            ["M/Readme.htm", "M/S/Index.HTM", "M/S/disclaimer.htm"]
+        );
+        assert!(cmp.only_in_zip.is_empty() && cmp.not_archived.is_empty());
+        // From the listing alone the same pages are left out too.
+        let entry = |name: &str, bytes: &[u8]| Entry {
+            name: name.into(),
+            size: bytes.len() as u64,
+            compressed: bytes.len() as u64,
+            crc32: crc32fast::hash(bytes),
+            method: 0,
+            modified: "m".into(),
+            modified_at: None,
+        };
+        let listing = [
+            entry("M/S/DATA/T1#1.zip", &t1),
+            entry("M/S/DATA/T2.zip", &t2),
+            entry("M/S/disclaimer.htm", b"zip's words"),
+            entry("M/Readme.htm", b"only here"),
+        ];
+        std::fs::remove_file(&zip_path).unwrap();
+        std::fs::remove_file(Archive::sidecar_path(&zip_path)).unwrap();
+        let cmp = compare(&f.archive, pair, Some(&listing), &tmp).unwrap();
+        assert_eq!(
+            (cmp.verdict, cmp.unsure.len()),
+            (Verdict::Same, 0),
+            "{cmp:?}"
+        );
+        assert_eq!(cmp.ancillary, ["M/Readme.htm", "M/S/disclaimer.htm"]);
+        // Recorded with the removal, and left out again when verified.
+        let r = remove(&f.mirror, &f.archive, &cmp).unwrap();
+        assert_eq!(r.ancillary, cmp.ancillary);
+        let line = std::fs::read_to_string(f.mirror.removed_path()).unwrap();
+        assert!(
+            line.contains("\"ancillary\":[\"M/Readme.htm\",\"M/S/disclaimer.htm\"]"),
+            "{line}"
+        );
+        assert_eq!(
+            f.mirror.removed().unwrap()[&pair.zip].ancillary,
+            r.ancillary
+        );
+        let peek = crate::peek::Peeked {
+            url: pair.zip.clone(),
+            peeked_at: None,
+            listed_size: None,
+            listed_modified: None,
+            listed_modified_at: None,
+            size: None,
+            etag: None,
+            last_modified: None,
+            last_modified_at: None,
+            entries: Some(listing.to_vec()),
+            error: None,
+        };
+        std::fs::write(
+            f.mirror.peek_path(),
+            serde_json::to_string(&peek).unwrap() + "\n",
+        )
+        .unwrap();
+        let v = &verify(&f.mirror, &f.archive).unwrap()[0];
+        assert!(v.holds(), "{v:?}");
+        assert_eq!(v.checked, 2);
+        assert!(!is_ancillary("M/S/DATA/T1#1.zip") && is_ancillary("x/INDEX.HTML"));
     }
 
     #[test]

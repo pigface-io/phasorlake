@@ -75,8 +75,14 @@ A zip removed by `nemweb-mirror compare --delete` is gone from the archive
 or was never downloaded, and is recorded in `{home}/mirror/removed.ndjson`,
 one line per file: `url`, `size`, `sha256` (absent when it was never
 downloaded), `downloaded`, `same_as` (the folder holding the same files)
-and `files` (how many of its files matched) and `removed_at` (UTC). Its listing is
-kept in `{home}/mirror/peek.ndjson` and in the catalog, and each folder
-file's CRC-32 in its sidecar, so `nemweb-mirror compare --verify` can read
-the folder again and check the removal still holds. Its files are the folder's files: every one of them, by
-path, size and CRC-32, from the zip itself or from its listing.
+and `files` (how many of its files matched), `ancillary` (web pages of the
+zip left out of the comparison, when there were any) and `removed_at`
+(UTC). Its listing is kept in `{home}/mirror/peek.ndjson` and in the
+catalog, and each folder file's CRC-32 in its sidecar, so `nemweb-mirror
+compare --verify` can read the folder again and check the removal still
+holds. Its files are the folder's files: every one of them, by path, size
+and CRC-32, from the zip itself or from its listing, apart from web pages.
+A file of the zip named `.htm` or `.html` (`Readme.htm`, `disclaimer.htm`,
+`Index.htm`) is not data: one the folder lacks, or holds with other bytes,
+is listed as `ancillary` and does not keep the zip. Every data file still
+has to match.
