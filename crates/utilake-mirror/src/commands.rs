@@ -110,7 +110,7 @@ pub async fn run_command(cli: &Cli) -> Result<i32> {
         Command::Peek => {
             let fetcher = ctx.fetcher();
             let pass = async {
-                peek(ctx, &fetcher, &mirror, None)
+                peek(ctx, &fetcher, &mirror, false, None)
                     .await
                     .map(|(code, _)| code)
             };
@@ -206,7 +206,7 @@ async fn run(ctx: &Context, mirror: &Mirror, plan: &RunPlan<'_>) -> Result<i32, 
             // One fetcher paces both: peek's small requests fit between
             // the downloads.
             let (peeked, downloaded) = tokio::join!(
-                peek(ctx, &fetcher, mirror, Some(&tracker)),
+                peek(ctx, &fetcher, mirror, true, Some(&tracker)),
                 download(
                     ctx,
                     &fetcher,
@@ -319,11 +319,12 @@ async fn peek(
     ctx: &Context,
     fetcher: &Fetcher,
     mirror: &Mirror,
+    only_paired: bool,
     tracker: Option<&RefCell<Tracker>>,
 ) -> Result<(i32, bool), MirrorError> {
     let json = ctx.json;
     let progress = ctx.progress;
-    let summary = nemweb_mirror::peek(fetcher, mirror, |z| {
+    let summary = nemweb_mirror::peek(fetcher, mirror, only_paired, |z| {
         if let Some(t) = tracker {
             t.borrow_mut().peeked(z.done, z.total);
         }

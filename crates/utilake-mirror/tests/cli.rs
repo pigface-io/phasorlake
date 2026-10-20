@@ -545,27 +545,38 @@ fn a_duplicate_is_ruled_on_from_its_listing_and_never_downloaded() {
     );
 }
 
-/// A run peeks and downloads together, and keeps its counts as it goes.
+/// A run peeks the zips beside a folder of the same name and downloads,
+/// together, and keeps its counts as it goes.
 #[test]
 fn a_run_keeps_its_counts_for_status() {
     let srv = Server::start();
     let z = zip_of(&[("a.csv", b"1\n")]);
+    let other = zip_of(&[("b.csv", b"2\n")]);
     // A file big enough that the fetcher reports its progress on the way.
     let big = vec![7u8; 9 << 20];
     srv.route(
         "/Z/",
         Reply::Ok(page(&[
+            ("/Z/z/", None),
             ("/Z/z.zip", Some(z.len())),
+            ("/Z/other.zip", Some(other.len())),
             ("/Z/big.bin", Some(big.len())),
         ])),
     );
+    srv.route("/Z/z/", Reply::Ok(page(&[("/Z/z/a.csv", Some(2))])));
+    srv.route("/Z/z/a.csv", Reply::Ok(b"1\n".to_vec()));
     srv.route("/Z/z.zip", Reply::Ok(z.clone()));
+    srv.route("/Z/other.zip", Reply::Ok(other));
     srv.route("/Z/big.bin", Reply::Ok(big));
     let cli = Cli::new();
     cli.config(FAST);
     cli.ok(&["run", "--delete-duplicates", "--root", &srv.url("/Z/")]);
     let kept = std::fs::read_to_string(cli.home.path().join("mirror/progress.json")).unwrap();
+    // Only the zip beside its folder is peeked: it is found the same as the
+    // folder and not downloaded; the other zip is downloaded unpeeked.
     assert!(kept.contains("\"peek\":{\"done\":1,\"total\":1}"), "{kept}");
-    assert!(kept.contains("\"archived_files\":2"), "{kept}");
+    assert!(kept.contains("\"archived_files\":3"), "{kept}");
+    let removed = std::fs::read_to_string(cli.home.path().join("mirror/removed.ndjson")).unwrap();
+    assert!(removed.contains("/Z/z.zip"), "{removed}");
     assert!(kept.contains("\"downloading\":0"), "{kept}");
 }

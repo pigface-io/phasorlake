@@ -183,7 +183,10 @@ impl zipdir::Spans for Ranged<'_> {
 }
 
 /// Peeks every zip of the finished crawl that the archive does not hold,
-/// the paired zips first, one at a time (the fetcher paces them).
+/// the paired zips first, one at a time (the fetcher paces them). With
+/// `only_paired`, just the zips beside a folder of the same name: the only
+/// ones a pass may leave undownloaded, so the only ones whose listing is
+/// needed before their download.
 ///
 /// A zip that is not one, or whose directory is damaged, is recorded with
 /// why; a network failure is reported and asked again next pass; a refusal
@@ -191,6 +194,7 @@ impl zipdir::Spans for Ranged<'_> {
 pub async fn peek(
     fetcher: &Fetcher,
     mirror: &Mirror,
+    only_paired: bool,
     mut on_zip: impl FnMut(&ZipPeeked<'_>),
 ) -> Result<PeekSummary, MirrorError> {
     if !mirror.done_path().exists() {
@@ -206,6 +210,7 @@ pub async fn peek(
         .into_iter()
         .filter(|r| r.kind == RemoteKind::File && is_zip_name(&r.url))
         .filter(|r| !peeked.contains_key(&r.url) && !removed.contains_key(&r.url))
+        .filter(|r| !only_paired || paired.contains(&r.url))
         .collect();
     // Stable: the paired zips first, each group in URL order.
     zips.sort_by_key(|r| !paired.contains(&r.url));
@@ -448,7 +453,7 @@ mod tests {
         std::fs::write(archive.join("h/A/kept.zip"), b"archived").unwrap();
 
         let mut order = Vec::new();
-        let s = peek(&f, &mirror, |z| order.push(z.url.to_owned()))
+        let s = peek(&f, &mirror, false, |z| order.push(z.url.to_owned()))
             .await
             .unwrap();
         assert_eq!(
@@ -533,7 +538,7 @@ mod tests {
         std::fs::write(mirror.record_path(), &republished).unwrap();
         assert!(!current(&mirror).unwrap().contains_key("https://h/A/M.zip"));
         let mut again = Vec::new();
-        peek(&f, &mirror, |z| again.push(z.url.to_owned()))
+        peek(&f, &mirror, false, |z| again.push(z.url.to_owned()))
             .await
             .unwrap();
         assert!(again.contains(&"https://h/A/M.zip".to_owned()), "{again:?}");
@@ -542,7 +547,7 @@ mod tests {
         // Again: only the zip that failed is asked for; the archived one is
         // passed over without a request.
         let before = t.request_count();
-        let s = peek(&f, &mirror, |_| {}).await.unwrap();
+        let s = peek(&f, &mirror, false, |_| {}).await.unwrap();
         assert_eq!((s.zips, s.archived, s.failed.len()), (2, 1, 1));
         assert_eq!(t.request_count(), before + 1);
 
@@ -550,7 +555,7 @@ mod tests {
         let refusing = Arc::new(StaticTransport::default());
         refusing.add("https://h/A/flaky.zip", Canned::status(403));
         let f = fetcher(&refusing, &archive);
-        let e = peek(&f, &mirror, |_| {}).await.unwrap_err();
+        let e = peek(&f, &mirror, false, |_| {}).await.unwrap_err();
         assert_eq!(e.diagnostic().code, "net.blocked");
     }
 
@@ -560,13 +565,13 @@ mod tests {
         let mirror = Mirror::new(home.path().join("mirror"));
         let t = Arc::new(StaticTransport::default());
         let f = fetcher(&t, home.path());
-        let e = peek(&f, &mirror, |_| {}).await.unwrap_err();
+        let e = peek(&f, &mirror, false, |_| {}).await.unwrap_err();
         assert_eq!(e.diagnostic().code, "mirror.crawl_incomplete");
         std::fs::create_dir_all(mirror.crawl_dir()).unwrap();
         std::fs::write(mirror.done_path(), "").unwrap();
         std::fs::write(mirror.record_path(), "").unwrap();
         std::fs::write(mirror.peek_path(), "{\n").unwrap();
-        let e = peek(&f, &mirror, |_| {}).await.unwrap_err();
+        let e = peek(&f, &mirror, false, |_| {}).await.unwrap_err();
         assert_eq!(e.diagnostic().code, "mirror.record_corrupt");
         std::fs::remove_file(mirror.peek_path()).unwrap();
         std::fs::create_dir_all(mirror.peek_path()).unwrap();

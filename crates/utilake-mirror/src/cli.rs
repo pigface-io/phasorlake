@@ -53,8 +53,8 @@ pub enum Command {
     /// Read the central directory of every zip not yet downloaded, by
     /// ranged requests, into peek.ndjson.
     Peek,
-    /// Crawl (carrying on from a cut-off crawl), then peek and download
-    /// together; when nemweb refuses (HTTP 403/429) or the network fails,
+    /// Crawl (carrying on from a cut-off crawl), then peek the zips beside
+    /// a folder of the same name and download, together; when nemweb refuses (HTTP 403/429) or the network fails,
     /// wait and start again.
     Run {
         /// Roots to crawl instead of nemweb's Data_Archive/ and Reports/ARCHIVE/.
