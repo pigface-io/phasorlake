@@ -151,6 +151,20 @@ impl LakeType {
         }
     }
 
+    /// The lake type of an Iceberg type; `None` for a decimal, which the
+    /// lake does not write yet.
+    pub const fn of_iceberg(t: IcebergType) -> Option<Self> {
+        Some(match t {
+            IcebergType::String => Self::String,
+            IcebergType::Double => Self::Double,
+            IcebergType::Long => Self::Long,
+            IcebergType::Boolean => Self::Boolean,
+            IcebergType::Date => Self::Date,
+            IcebergType::TimestamptzNs => Self::TimestampNs,
+            IcebergType::Decimal { .. } => return None,
+        })
+    }
+
     /// Whether a column of this type may become `to` without rewriting a
     /// file: only an Iceberg promotion (`utilake_iceberg`).
     pub fn promotes_to(self, to: Self) -> bool {
@@ -410,6 +424,13 @@ pub(crate) mod tests {
         }
         assert_eq!(LakeType::TimestampNs.iceberg().name(), "timestamptz_ns");
         assert_eq!(LakeType::Long.iceberg(), IcebergType::Long);
+        for t in LakeType::ALL {
+            assert_eq!(LakeType::of_iceberg(t.iceberg()), Some(t));
+        }
+        assert_eq!(
+            LakeType::of_iceberg(IcebergType::decimal(20, 2).unwrap()),
+            None
+        );
         assert!(!LakeType::Long.promotes_to(LakeType::Double));
         assert!(!LakeType::Date.promotes_to(LakeType::TimestampNs));
         assert!(LakeType::String.holds(TypeClass::Timestamp));

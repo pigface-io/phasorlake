@@ -20,6 +20,7 @@
 //! [`export`] writes every table and shape as JSON Schema, with the months
 //! the census saw each in, for the public `nem-schemas` repository.
 
+pub mod audit;
 pub mod census;
 pub mod datamodel;
 pub mod ddl;
@@ -34,3 +35,4 @@ pub mod profile;
 pub mod reports;
 pub mod standing;
 pub mod sync;
+pub mod tables;

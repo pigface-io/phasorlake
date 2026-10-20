@@ -56,6 +56,9 @@ pub struct ShapeColumn {
     pub int_digits: u8,
     /// The most digits after it.
     pub scale: u8,
+    /// The most significant digits of any one value.
+    #[serde(default)]
+    pub sig_digits: u8,
     /// The longest value in bytes.
     pub max_len: u32,
     /// The least value of a number or time, as written.
@@ -73,6 +76,7 @@ impl ShapeColumn {
             kind: self.kind,
             int_digits: self.int_digits,
             scale: self.scale,
+            sig_digits: self.sig_digits,
         }
     }
 }
@@ -207,6 +211,7 @@ fn column(c: &ShapeColumn) -> String {
         ("nulls_since", c.nulls_since.as_ref().map(inline)),
         ("int_digits", Some(c.int_digits.to_string())),
         ("scale", Some(c.scale.to_string())),
+        ("sig_digits", Some(c.sig_digits.to_string())),
         ("max_len", Some(c.max_len.to_string())),
         ("min", c.min.as_ref().map(inline)),
         ("max", c.max.as_ref().map(inline)),
@@ -278,6 +283,7 @@ pub(crate) mod tests {
             nulls_since: None,
             int_digits: 0,
             scale: 0,
+            sig_digits: 0,
             max_len: 0,
             min: None,
             max: None,

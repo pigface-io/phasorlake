@@ -694,6 +694,9 @@ pub struct BlockRecord {
     pub int_digits: Vec<u8>,
     /// The most digits after it, per column.
     pub scale: Vec<u8>,
+    /// The most significant digits of any one value, per column.
+    #[serde(default)]
+    pub sig_digits: Vec<u8>,
     /// The longest value in bytes, per column.
     pub max_len: Vec<u32>,
     /// The least number or time, per column; empty for none.
@@ -724,6 +727,7 @@ impl BlockRecord {
             nulls: b.profile.iter().map(|p| p.nulls).collect(),
             int_digits: b.profile.iter().map(|p| p.int_digits).collect(),
             scale: b.profile.iter().map(|p| p.scale).collect(),
+            sig_digits: b.profile.iter().map(|p| p.sig_digits).collect(),
             max_len: b.profile.iter().map(|p| p.max_len).collect(),
             min: b.profile.iter().map(|p| text(&p.min)).collect(),
             max: b.profile.iter().map(|p| text(&p.max)).collect(),
@@ -752,6 +756,7 @@ impl BlockRecord {
                 .unwrap_or_default(),
             int_digits: self.int_digits.get(j).copied().unwrap_or(0),
             scale: self.scale.get(j).copied().unwrap_or(0),
+            sig_digits: self.sig_digits.get(j).copied().unwrap_or(0),
             max_len: self.max_len.get(j).copied().unwrap_or(0),
             min: some(self.min.get(j)),
             max: some(self.max.get(j)),

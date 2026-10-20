@@ -74,6 +74,14 @@ census from to=from *args:
 census-reports *args:
     cargo run --release -q -p utilake-nem-census -- reports "$@"
 
+# write every table's columns again from its shapes: ids in the order first seen, types from what every file held, nulls refused only by key columns that never held one
+census-tables:
+    cargo run --release -q -p utilake-nem-census -- tables
+
+# where AEMO's control files and data-model releases disagree with what every shape held, into schemas/nem/audit/
+census-audit:
+    cargo run --release -q -p utilake-nem-census -- audit
+
 # write every table's shapes file again from every census file recorded (census and census-reports do this when they end)
 census-fold:
     cargo run --release -q -p utilake-nem-census -- fold

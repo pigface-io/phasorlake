@@ -284,6 +284,7 @@ mod tests {
                     nulls_since: None,
                     int_digits: 0,
                     scale: 0,
+                    sig_digits: 0,
                     max_len: 0,
                     min: None,
                     max: None,

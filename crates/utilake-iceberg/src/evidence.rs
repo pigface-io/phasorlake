@@ -85,6 +85,9 @@ pub struct Evidence {
     pub int_digits: u8,
     /// The most digits seen after it.
     pub scale: u8,
+    /// The most significant digits of any one value: from its first
+    /// non-zero digit to its last digit.
+    pub sig_digits: u8,
 }
 
 impl Evidence {
@@ -94,6 +97,7 @@ impl Evidence {
             kind: self.kind.join(other.kind),
             int_digits: self.int_digits.max(other.int_digits),
             scale: self.scale.max(other.scale),
+            sig_digits: self.sig_digits.max(other.sig_digits),
         }
     }
 }
@@ -107,8 +111,10 @@ pub struct Choice {
     pub observed: bool,
 }
 
-/// The most significant digits a double holds exactly.
-const DOUBLE_DIGITS: u8 = 15;
+/// The most significant digits of a value a double gives back as written:
+/// every decimal of up to 15 digits, and every value a double was printed
+/// as (at most 17 digits, such as `239.99999999999997`).
+const DOUBLE_DIGITS: u8 = 17;
 /// The most digits a long holds in every case.
 const LONG_DIGITS: u8 = 18;
 
@@ -116,7 +122,9 @@ const LONG_DIGITS: u8 = 18;
 /// more than a promotion:
 ///
 /// - integers: `long`, or an exact decimal past 18 digits;
-/// - decimals of up to 15 significant digits: `double`, exact for them;
+/// - decimals of up to 17 significant digits: `double`, which gives back
+///   every one as written (up to 15 digits always; 16 and 17 as a double
+///   prints them, the form AEMO's float columns take);
 /// - longer decimals: `decimal(P, S)` with S the largest scale seen, fixed
 ///   for the life of the column; past 38 digits, text;
 /// - days `date`, times `timestamptz_ns`, anything else `string`;
@@ -133,7 +141,7 @@ pub fn type_for(e: Evidence, declared: Option<IcebergType>) -> Choice {
             };
         }
         Kind::Integer if e.int_digits <= LONG_DIGITS => IcebergType::Long,
-        Kind::Decimal if digits <= DOUBLE_DIGITS => IcebergType::Double,
+        Kind::Decimal if e.sig_digits <= DOUBLE_DIGITS => IcebergType::Double,
         Kind::Integer | Kind::Decimal if digits <= MAX_PRECISION => IcebergType::Decimal {
             precision: digits,
             scale: e.scale,
@@ -154,6 +162,7 @@ mod tests {
             kind,
             int_digits,
             scale,
+            sig_digits: int_digits + scale,
         }
     }
 
@@ -172,7 +181,15 @@ mod tests {
             assert_eq!(Kind::of_letter(k.letter()), Some(k));
         }
         assert_eq!(Kind::of_letter('?'), None);
-        assert_eq!(ev(Integer, 4, 0).join(ev(Decimal, 2, 5)), ev(Decimal, 4, 5));
+        assert_eq!(
+            ev(Integer, 4, 0).join(ev(Decimal, 2, 5)),
+            Evidence {
+                kind: Decimal,
+                int_digits: 4,
+                scale: 5,
+                sig_digits: 7
+            }
+        );
     }
 
     #[test]
@@ -190,6 +207,15 @@ mod tests {
             IcebergType::decimal(18, 6).unwrap()
         );
         assert_eq!(t(ev(Kind::Decimal, 30, 10)), IcebergType::String);
+        // A float printed in full: 4 digits before the point in one value,
+        // 17 after in another, never more than 17 in any one value.
+        let float = Evidence {
+            kind: Kind::Decimal,
+            int_digits: 4,
+            scale: 17,
+            sig_digits: 17,
+        };
+        assert_eq!(t(float), IcebergType::Double);
         assert_eq!(t(ev(Kind::Date, 0, 0)), IcebergType::Date);
         assert_eq!(t(ev(Kind::Timestamp, 0, 0)), IcebergType::TimestamptzNs);
         assert_eq!(t(ev(Kind::Text, 0, 0)), IcebergType::String);

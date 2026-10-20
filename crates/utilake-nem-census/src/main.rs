@@ -31,6 +31,22 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Cmd {
+    /// Write every table's columns again from its shapes: ids in the order
+    /// first seen, types chosen from what every file held, and nulls
+    /// refused only by key columns that never held one.
+    Tables {
+        /// The schemas directory.
+        #[arg(long, default_value = "schemas")]
+        schemas: PathBuf,
+    },
+    /// Hold AEMO's declarations (control files, data-model releases)
+    /// against what every shape's columns held, into
+    /// `{schemas}/nem/audit/{TABLE}.toml`.
+    Audit {
+        /// The schemas directory.
+        #[arg(long, default_value = "schemas")]
+        schemas: PathBuf,
+    },
     /// Write every table's shapes file again from every census file
     /// recorded (the census and reports commands do this when they end).
     Fold {
@@ -259,6 +275,25 @@ fn fail(d: &utilake_core::Diagnostic) -> ExitCode {
 fn main() -> ExitCode {
     let cli = Cli::parse();
     match cli.cmd {
+        Cmd::Tables { schemas } => match utilake_nem_census::tables::rewrite(&schemas) {
+            Ok(done) => {
+                for (table, c) in &done {
+                    for line in c.retyped.iter().chain(&c.nullability).chain(&c.decimals) {
+                        println!("{table}: {line}");
+                    }
+                }
+                eprintln!("tables: {} rewritten", done.len());
+                ExitCode::SUCCESS
+            }
+            Err(d) => fail(&d),
+        },
+        Cmd::Audit { schemas } => match utilake_nem_census::audit::audit(&schemas) {
+            Ok((tables, findings)) => {
+                eprintln!("audit: {findings} finding(s) in {tables} table(s)");
+                ExitCode::SUCCESS
+            }
+            Err(e) => fail(&e.diagnostic()),
+        },
         Cmd::Fold { schemas } => {
             match fold_shapes(&schemas, &utilake_mms_registry::Registry::load_embedded()) {
                 Ok(()) => ExitCode::SUCCESS,

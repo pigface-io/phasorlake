@@ -20,6 +20,8 @@ pub struct ColumnProfile {
     pub int_digits: u8,
     /// The most digits after it, as written.
     pub scale: u8,
+    /// The most significant digits of any one value.
+    pub sig_digits: u8,
     /// The longest value, in bytes.
     pub max_len: u32,
     /// The least value of a number or time column, as written.
@@ -35,11 +37,11 @@ impl ColumnProfile {
             self.nulls += 1;
             return;
         };
-        let (kind, int_digits, scale) = classify(v);
-        let was = self.kind;
-        self.kind = was.join(kind);
+        let (kind, int_digits, scale, sig) = classify(v);
+        self.kind = self.kind.join(kind);
         self.int_digits = self.int_digits.max(int_digits);
         self.scale = self.scale.max(scale);
+        self.sig_digits = self.sig_digits.max(sig);
         self.max_len = self.max_len.max(u32::try_from(v.len()).unwrap_or(u32::MAX));
         if self.kind == Kind::Text {
             self.min = None;
@@ -69,6 +71,7 @@ impl ColumnProfile {
         self.kind = self.kind.join(other.kind);
         self.int_digits = self.int_digits.max(other.int_digits);
         self.scale = self.scale.max(other.scale);
+        self.sig_digits = self.sig_digits.max(other.sig_digits);
         self.max_len = self.max_len.max(other.max_len);
         if self.kind == Kind::Text {
             self.min = None;
@@ -93,6 +96,7 @@ impl ColumnProfile {
             kind: self.kind,
             int_digits: self.int_digits,
             scale: self.scale,
+            sig_digits: self.sig_digits,
         }
     }
 }
@@ -154,12 +158,13 @@ fn cmp_plain(a: (bool, &[u8], &[u8]), b: (bool, &[u8], &[u8])) -> Ordering {
     }
 }
 
-/// The kind of one value, with its digits before and after the point.
-pub fn classify(v: &[u8]) -> (Kind, u8, u8) {
+/// The kind of one value, with its digits before and after the point and
+/// its significant digits.
+pub fn classify(v: &[u8]) -> (Kind, u8, u8, u8) {
     if let Some(k) = time_kind(v) {
-        return (k, 0, 0);
+        return (k, 0, 0, 0);
     }
-    number(v).unwrap_or((Kind::Text, 0, 0))
+    number(v).unwrap_or((Kind::Text, 0, 0, 0))
 }
 
 /// `YYYY/MM/DD` is a date; with ` HH:MM:SS` and an optional fraction, a
@@ -193,9 +198,10 @@ fn time_kind(v: &[u8]) -> Option<Kind> {
 /// A number: an optional sign, digits with at most one point, and an
 /// optional exponent. Its digits before and after the point are those of
 /// its value written out in full; leading zeros do not count.
-fn number(v: &[u8]) -> Option<(Kind, u8, u8)> {
+fn number(v: &[u8]) -> Option<(Kind, u8, u8, u8)> {
     let mut i = usize::from(matches!(v.first(), Some(b'-' | b'+')));
     let (mut int_len, mut frac_len, mut leading) = (0i32, 0i32, true);
+    let mut sig = 0i32;
     let mut point = false;
     let mut any = false;
     while let Some(&c) = v.get(i) {
@@ -205,8 +211,11 @@ fn number(v: &[u8]) -> Option<(Kind, u8, u8)> {
                 if point {
                     frac_len += 1;
                 } else if !(leading && c == b'0') {
-                    leading = false;
                     int_len += 1;
+                }
+                if !(leading && c == b'0') {
+                    leading = false;
+                    sig += 1;
                 }
             }
             b'.' if !point => point = true,
@@ -234,37 +243,43 @@ fn number(v: &[u8]) -> Option<(Kind, u8, u8)> {
         Kind::Integer
     };
     let cap = |n: i32| u8::try_from(n).unwrap_or(u8::MAX);
-    Some((kind, cap(int_digits), cap(scale)))
+    Some((kind, cap(int_digits), cap(scale), cap(sig)))
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
+    fn c3(v: &[u8]) -> (Kind, u8, u8) {
+        let (k, i, s, _) = classify(v);
+        (k, i, s)
+    }
+
     #[test]
     fn classifies_aemo_values() {
-        assert_eq!(classify(b"2024/08/01 00:05:00"), (Kind::Timestamp, 0, 0));
-        assert_eq!(
-            classify(b"2024/08/01 00:05:00.123"),
-            (Kind::Timestamp, 0, 0)
-        );
-        assert_eq!(classify(b"2024/08/01"), (Kind::Date, 0, 0));
-        assert_eq!(classify(b"2024/08/01 00:05"), (Kind::Text, 0, 0));
-        assert_eq!(classify(b"2024/08/01 00:05:00."), (Kind::Text, 0, 0));
-        assert_eq!(classify(b"2024/08/01X"), (Kind::Text, 0, 0));
-        assert_eq!(classify(b"123"), (Kind::Integer, 3, 0));
-        assert_eq!(classify(b"-0042"), (Kind::Integer, 2, 0));
-        assert_eq!(classify(b"0"), (Kind::Integer, 0, 0));
-        assert_eq!(classify(b"15500.12345"), (Kind::Decimal, 5, 5));
-        assert_eq!(classify(b".5"), (Kind::Decimal, 0, 1));
-        assert_eq!(classify(b"12."), (Kind::Decimal, 2, 0));
-        assert_eq!(classify(b"1.5E-05"), (Kind::Decimal, 0, 6));
-        assert_eq!(classify(b"2E+3"), (Kind::Decimal, 4, 0));
-        assert_eq!(classify(b"2E+x"), (Kind::Text, 0, 0));
-        assert_eq!(classify(b"."), (Kind::Text, 0, 0));
-        assert_eq!(classify(b"1.2.3"), (Kind::Text, 0, 0));
-        assert_eq!(classify(b"NSW1"), (Kind::Text, 0, 0));
-        assert_eq!(classify(&[0xff, b'1']), (Kind::Text, 0, 0));
+        assert_eq!(classify(b"239.99999999999997").3, 17);
+        assert_eq!(classify(b"0.000123").3, 3);
+        assert_eq!(classify(b"-0042").3, 2);
+        assert_eq!(classify(b"N").3, 0);
+        assert_eq!(c3(b"2024/08/01 00:05:00"), (Kind::Timestamp, 0, 0));
+        assert_eq!(c3(b"2024/08/01 00:05:00.123"), (Kind::Timestamp, 0, 0));
+        assert_eq!(c3(b"2024/08/01"), (Kind::Date, 0, 0));
+        assert_eq!(c3(b"2024/08/01 00:05"), (Kind::Text, 0, 0));
+        assert_eq!(c3(b"2024/08/01 00:05:00."), (Kind::Text, 0, 0));
+        assert_eq!(c3(b"2024/08/01X"), (Kind::Text, 0, 0));
+        assert_eq!(c3(b"123"), (Kind::Integer, 3, 0));
+        assert_eq!(c3(b"-0042"), (Kind::Integer, 2, 0));
+        assert_eq!(c3(b"0"), (Kind::Integer, 0, 0));
+        assert_eq!(c3(b"15500.12345"), (Kind::Decimal, 5, 5));
+        assert_eq!(c3(b".5"), (Kind::Decimal, 0, 1));
+        assert_eq!(c3(b"12."), (Kind::Decimal, 2, 0));
+        assert_eq!(c3(b"1.5E-05"), (Kind::Decimal, 0, 6));
+        assert_eq!(c3(b"2E+3"), (Kind::Decimal, 4, 0));
+        assert_eq!(c3(b"2E+x"), (Kind::Text, 0, 0));
+        assert_eq!(c3(b"."), (Kind::Text, 0, 0));
+        assert_eq!(c3(b"1.2.3"), (Kind::Text, 0, 0));
+        assert_eq!(c3(b"NSW1"), (Kind::Text, 0, 0));
+        assert_eq!(c3(&[0xff, b'1']), (Kind::Text, 0, 0));
     }
 
     #[test]
@@ -289,7 +304,8 @@ mod tests {
             Evidence {
                 kind: Kind::Decimal,
                 int_digits: 3,
-                scale: 1
+                scale: 1,
+                sig_digits: 3
             }
         );
 

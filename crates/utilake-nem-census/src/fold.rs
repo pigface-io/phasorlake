@@ -250,6 +250,7 @@ fn entry(id: ShapeId, a: ShapeAcc, spans: &[(ShapeId, YearMonth, YearMonth)]) ->
                 nulls_since: c.nulls_since.map(|(_, f)| f),
                 int_digits: c.profile.int_digits,
                 scale: c.profile.scale,
+                sig_digits: c.profile.sig_digits,
                 max_len: c.profile.max_len,
                 min: text(c.profile.min),
                 max: text(c.profile.max),
