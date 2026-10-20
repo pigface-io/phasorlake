@@ -307,14 +307,18 @@ impl Archive {
     }
 
     /// The archived file of a URL, if it and its sidecar are there and
-    /// the sidecar names the same URL and size.
+    /// the sidecar names the same URL and size. A sidecar that does not
+    /// read (cut short when a run was stopped as it wrote it) is no
+    /// sidecar: the file is downloaded again and the sidecar rewritten.
     pub fn lookup(&self, url: &str) -> Result<Option<Archived>, FetchError> {
         let path = self.path_for(url);
         let Ok(meta) = std::fs::metadata(&path) else {
             return Ok(None);
         };
-        let Some(sidecar) = Self::read_sidecar(&path)? else {
-            return Ok(None);
+        let sidecar = match Self::read_sidecar(&path) {
+            Ok(Some(s)) => s,
+            Ok(None) | Err(FetchError::SidecarCorrupt { .. }) => return Ok(None),
+            Err(e) => return Err(e),
         };
         if sidecar.url != url || sidecar.size != meta.len() {
             return Ok(None);
@@ -488,6 +492,14 @@ mod tests {
         );
         std::fs::write(Archive::sidecar_path(&path), b"{").unwrap();
         assert!(Archive::read_sidecar(&path).is_err());
+        // A sidecar cut short is no sidecar: the file is not archived.
+        std::fs::write(Archive::sidecar_path(&path), b"").unwrap();
+        assert!(a.lookup(url).unwrap().is_none());
+        // A sidecar that cannot be read at all is a fault, not a miss.
+        std::fs::remove_file(Archive::sidecar_path(&path)).unwrap();
+        std::fs::create_dir(Archive::sidecar_path(&path)).unwrap();
+        assert!(a.lookup(url).is_err());
+        std::fs::remove_dir(Archive::sidecar_path(&path)).unwrap();
         // A sidecar of an older nemlake, with fields this one does not
         // keep, still reads.
         std::fs::write(
