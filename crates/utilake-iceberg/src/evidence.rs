@@ -1,6 +1,6 @@
 //! The type of a column, chosen once from everything observed of it.
 
-use crate::types::{IcebergType, MAX_PRECISION};
+use crate::types::IcebergType;
 
 /// What a column's values were seen to be, on a widening lattice: `Empty`
 /// below everything, `Integer` below `Decimal`, `Date` below `Timestamp`,
@@ -111,44 +111,81 @@ pub struct Choice {
     pub observed: bool,
 }
 
-/// The most significant digits of a value a double gives back as written:
-/// every decimal of up to 15 digits, and every value a double was printed
-/// as (at most 17 digits, such as `239.99999999999997`).
-const DOUBLE_DIGITS: u8 = 17;
+/// What AEMO declares of a column (its control file, its data model), and
+/// whether it is in the table's key.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub struct Declared {
+    /// Declared whole: the model's `NUMERIC(p,0)`, or a control file's
+    /// `INTEGER EXTERNAL`.
+    pub whole: bool,
+    /// Declared with a fraction: the model's scale above 0, or a control
+    /// file's `FLOAT`/`DECIMAL EXTERNAL` with no model.
+    pub fractional: bool,
+    /// The model's precision, when it declares one.
+    pub precision: Option<u8>,
+    /// The model's scale, when it declares one.
+    pub scale: Option<u8>,
+    /// The type a column never seen with a value keeps.
+    pub fallback: Option<IcebergType>,
+    /// Part of the table's key: Iceberg refuses a float there.
+    pub key: bool,
+}
+
+/// The most digits a decimal stored as a 64-bit integer holds.
+const INT64_DIGITS: u8 = 18;
 /// The most digits a long holds in every case.
 const LONG_DIGITS: u8 = 18;
+/// Significant digits from which a value is a float printed in full
+/// (`239.99999999999997` has 17).
+const FLOAT_PRINTED: u8 = 16;
 
-/// The column's type from all of its evidence, so that no later value needs
-/// more than a promotion:
+/// The column's type from all of its evidence and its declaration, chosen
+/// once for the life of the column:
 ///
-/// - integers: `long`, or an exact decimal past 18 digits;
-/// - decimals of up to 17 significant digits: `double`, which gives back
-///   every one as written (up to 15 digits always; 16 and 17 as a double
-///   prints them, the form AEMO's float columns take);
-/// - longer decimals: `decimal(P, S)` with S the largest scale seen, fixed
-///   for the life of the column; past 38 digits, text;
+/// - numbers declared whole, or in the key, that held only whole numbers:
+///   `long`;
+/// - floats printed in full (more digits after the point than declared,
+///   16 or more significant): `double`;
+/// - other numbers: `decimal(P, S)` with S the larger of the declared and
+///   the largest observed scale, fixed for life, and P what the values and
+///   the declaration need, while it fits a 64-bit integer (18 digits);
+///   past that, `double`;
 /// - days `date`, times `timestamptz_ns`, anything else `string`;
 /// - never a value: the declared type, else `string`.
 ///
-/// A 32-bit float is never chosen: it rounds AEMO's prices and energies.
-pub fn type_for(e: Evidence, declared: Option<IcebergType>) -> Choice {
-    let digits = e.int_digits.saturating_add(e.scale);
+/// A whole-number column with nothing declaring it whole is a
+/// `decimal(P, 0)`, not a `long`: a later fraction is then a wider scale
+/// to decide, not a type Iceberg cannot change. A 32-bit float is never
+/// chosen.
+pub fn choose(e: Evidence, d: Declared) -> Choice {
+    let declared_scale = d.scale.unwrap_or(0);
+    let scale = e.scale.max(declared_scale);
+    let digits = e
+        .int_digits
+        .saturating_add(scale)
+        .max(d.precision.unwrap_or(0));
     let ty = match e.kind {
         Kind::Empty => {
             return Choice {
-                ty: declared.unwrap_or(IcebergType::String),
+                ty: d.fallback.unwrap_or(IcebergType::String),
                 observed: false,
             };
         }
-        Kind::Integer if e.int_digits <= LONG_DIGITS => IcebergType::Long,
-        Kind::Decimal if e.sig_digits <= DOUBLE_DIGITS => IcebergType::Double,
-        Kind::Integer | Kind::Decimal if digits <= MAX_PRECISION => IcebergType::Decimal {
-            precision: digits,
-            scale: e.scale,
+        Kind::Integer if (d.whole || d.key) && e.int_digits <= LONG_DIGITS => IcebergType::Long,
+        Kind::Decimal
+            if e.sig_digits >= FLOAT_PRINTED && d.scale.is_none_or(|s| e.scale > s) && !d.key =>
+        {
+            IcebergType::Double
+        }
+        Kind::Integer | Kind::Decimal if digits <= INT64_DIGITS => IcebergType::Decimal {
+            precision: digits.max(1),
+            scale,
         },
+        Kind::Integer | Kind::Decimal if d.key => IcebergType::String,
+        Kind::Integer | Kind::Decimal => IcebergType::Double,
         Kind::Date => IcebergType::Date,
         Kind::Timestamp => IcebergType::TimestamptzNs,
-        Kind::Integer | Kind::Decimal | Kind::Text => IcebergType::String,
+        Kind::Text => IcebergType::String,
     };
     Choice { ty, observed: true }
 }
@@ -193,45 +230,137 @@ mod tests {
     }
 
     #[test]
-    fn chooses_once_from_everything_seen() {
-        let t = |e| type_for(e, None).ty;
-        assert_eq!(t(ev(Kind::Integer, 10, 0)), IcebergType::Long);
+    fn whole_numbers_are_long_only_where_declared_whole_or_keyed() {
+        let whole = ev(Kind::Integer, 3, 0);
+        let c = |d: Declared| choose(whole, d).ty;
         assert_eq!(
-            t(ev(Kind::Integer, 20, 0)),
-            IcebergType::decimal(20, 0).unwrap()
+            c(Declared {
+                whole: true,
+                ..Declared::default()
+            }),
+            IcebergType::Long
         );
-        // RRP: 5 digits before the point, 5 after: a double holds it exactly.
-        assert_eq!(t(ev(Kind::Decimal, 5, 5)), IcebergType::Double);
         assert_eq!(
-            t(ev(Kind::Decimal, 12, 6)),
-            IcebergType::decimal(18, 6).unwrap()
+            c(Declared {
+                key: true,
+                ..Declared::default()
+            }),
+            IcebergType::Long
         );
-        assert_eq!(t(ev(Kind::Decimal, 30, 10)), IcebergType::String);
-        // A float printed in full: 4 digits before the point in one value,
-        // 17 after in another, never more than 17 in any one value.
+        // Nothing declares it whole: a decimal of scale 0, not a long.
+        assert_eq!(c(Declared::default()), IcebergType::decimal(3, 0).unwrap());
+        // Declared with a fraction: the declared scale, fixed for life.
+        let d = Declared {
+            fractional: true,
+            precision: Some(15),
+            scale: Some(5),
+            ..Declared::default()
+        };
+        assert_eq!(c(d), IcebergType::decimal(15, 5).unwrap());
+        // A long past 18 digits is no long.
+        let huge = ev(Kind::Integer, 20, 0);
+        assert_eq!(
+            choose(
+                huge,
+                Declared {
+                    whole: true,
+                    ..Declared::default()
+                }
+            )
+            .ty,
+            IcebergType::Double
+        );
+        assert_eq!(
+            choose(
+                huge,
+                Declared {
+                    key: true,
+                    ..Declared::default()
+                }
+            )
+            .ty,
+            IcebergType::String
+        );
+    }
+
+    #[test]
+    fn fractions_are_exact_decimals_and_printed_floats_doubles() {
+        // RRP: declared NUMERIC(15,5), seen with 5 places.
+        let rrp = ev(Kind::Decimal, 5, 5);
+        let d = Declared {
+            fractional: true,
+            precision: Some(15),
+            scale: Some(5),
+            ..Declared::default()
+        };
+        assert_eq!(choose(rrp, d).ty, IcebergType::decimal(15, 5).unwrap());
+        // Seen with more places than declared: the wider scale wins.
+        assert_eq!(
+            choose(ev(Kind::Decimal, 3, 7), d).ty,
+            IcebergType::decimal(15, 7).unwrap()
+        );
+        // A float printed in full: 17 significant digits, more places than
+        // declared.
         let float = Evidence {
             kind: Kind::Decimal,
             int_digits: 4,
             scale: 17,
             sig_digits: 17,
         };
-        assert_eq!(t(float), IcebergType::Double);
-        assert_eq!(t(ev(Kind::Date, 0, 0)), IcebergType::Date);
-        assert_eq!(t(ev(Kind::Timestamp, 0, 0)), IcebergType::TimestamptzNs);
-        assert_eq!(t(ev(Kind::Text, 0, 0)), IcebergType::String);
-        assert!(type_for(ev(Kind::Text, 0, 0), None).observed);
+        let six = Declared {
+            fractional: true,
+            precision: Some(6),
+            scale: Some(0),
+            ..Declared::default()
+        };
+        assert_eq!(choose(float, six).ty, IcebergType::Double);
+        assert_eq!(choose(float, Declared::default()).ty, IcebergType::Double);
+        // In a key it may not be a float: past 18 digits it is text.
+        assert_eq!(
+            choose(float, Declared { key: true, ..six }).ty,
+            IcebergType::String
+        );
+        // Too many digits for a 64-bit decimal, and not a printed float.
+        let long_dec = Evidence {
+            kind: Kind::Decimal,
+            int_digits: 12,
+            scale: 9,
+            sig_digits: 14,
+        };
+        assert_eq!(
+            choose(long_dec, Declared::default()).ty,
+            IcebergType::Double
+        );
+        assert_eq!(choose(ev(Kind::Date, 0, 0), d).ty, IcebergType::Date);
+        assert_eq!(
+            choose(ev(Kind::Timestamp, 0, 0), d).ty,
+            IcebergType::TimestamptzNs
+        );
+        assert_eq!(choose(ev(Kind::Text, 0, 0), d).ty, IcebergType::String);
+        assert!(choose(ev(Kind::Text, 0, 0), d).observed);
+        // A zero is a decimal of one digit.
+        assert_eq!(
+            choose(ev(Kind::Integer, 0, 0), Declared::default()).ty,
+            IcebergType::decimal(1, 0).unwrap()
+        );
     }
 
     #[test]
     fn a_column_never_seen_keeps_its_declared_type() {
-        let c = type_for(Evidence::default(), Some(IcebergType::Double));
+        let d = Declared {
+            fallback: Some(IcebergType::Double),
+            ..Declared::default()
+        };
         assert_eq!(
-            c,
+            choose(Evidence::default(), d),
             Choice {
                 ty: IcebergType::Double,
                 observed: false
             }
         );
-        assert_eq!(type_for(Evidence::default(), None).ty, IcebergType::String);
+        assert_eq!(
+            choose(Evidence::default(), Declared::default()).ty,
+            IcebergType::String
+        );
     }
 }

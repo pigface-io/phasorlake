@@ -168,7 +168,7 @@ fn property(class: TypeClass, lake: Option<LakeType>, nullable: bool) -> Value {
         (TypeClass::Timestamp, _) => (Some("string"), Some((TIMESTAMP_PATTERN, TIMESTAMP_FORMAT))),
         (TypeClass::Unknown, Some(lake)) => match lake {
             LakeType::String => (Some("string"), None),
-            LakeType::Double => (Some("number"), None),
+            LakeType::Double | LakeType::Decimal { .. } => (Some("number"), None),
             LakeType::Long => (Some("integer"), None),
             LakeType::Boolean => (Some("boolean"), None),
             LakeType::Date => (Some("string"), Some((DATE_PATTERN, DATE_FORMAT))),
@@ -377,7 +377,7 @@ fn declaration(t: &mut Map<String, Value>, x: &Table, d: &TableDoc<'_>) {
             let mut col = Map::new();
             col.insert("name".into(), json!(c.name));
             col.insert("id".into(), json!(c.id.0));
-            col.insert("lake_type".into(), json!(c.ty.as_str()));
+            col.insert("lake_type".into(), json!(c.ty.name()));
             col.insert("nullable".into(), json!(c.nullable));
             let from_release = d.facts.latest.and_then(|(v, m)| {
                 m.columns

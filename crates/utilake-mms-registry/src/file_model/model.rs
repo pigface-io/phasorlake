@@ -99,8 +99,9 @@ impl fmt::Display for ColumnId {
 /// | `boolean`      | `Boolean`                  | `boolean`        |
 /// | `date`         | `Date32`                   | `date`           |
 /// | `timestamp_ns` | `Timestamp(ns, market tz)` | `timestamptz_ns` |
+/// | `decimal(P,S)` | `Decimal128(P, S)`         | `decimal(P, S)`  |
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
+#[serde(try_from = "String", into = "String")]
 pub enum LakeType {
     /// Text.
     String,
@@ -114,29 +115,61 @@ pub enum LakeType {
     Date,
     /// An instant in nanoseconds, written in market time.
     TimestampNs,
+    /// An exact decimal: `precision` digits in all, `scale` after the
+    /// point, fixed for the life of the column. Up to 18 digits it is
+    /// stored as a 64-bit integer.
+    Decimal {
+        /// Digits in all, 1 to 38.
+        precision: u8,
+        /// Digits after the point.
+        scale: u8,
+    },
 }
 
 impl LakeType {
-    /// Every type, in the order of the table above.
-    pub const ALL: [Self; 6] = [
+    /// Every type, in the order of the table above, with one decimal.
+    pub const ALL: [Self; 7] = [
         Self::String,
         Self::Double,
         Self::Long,
         Self::Boolean,
         Self::Date,
         Self::TimestampNs,
+        Self::Decimal {
+            precision: 15,
+            scale: 5,
+        },
     ];
 
-    /// The name in `table.toml`.
-    pub const fn as_str(self) -> &'static str {
+    /// The name in `table.toml`: `decimal(15,5)` for a decimal.
+    pub fn name(self) -> String {
         match self {
-            Self::String => "string",
-            Self::Double => "double",
-            Self::Long => "long",
-            Self::Boolean => "boolean",
-            Self::Date => "date",
-            Self::TimestampNs => "timestamp_ns",
+            Self::String => "string".into(),
+            Self::Double => "double".into(),
+            Self::Long => "long".into(),
+            Self::Boolean => "boolean".into(),
+            Self::Date => "date".into(),
+            Self::TimestampNs => "timestamp_ns".into(),
+            Self::Decimal { precision, scale } => format!("decimal({precision},{scale})"),
         }
+    }
+
+    /// Reads a name from [`LakeType::name`].
+    pub fn parse(s: &str) -> Option<Self> {
+        Some(match s.trim() {
+            "string" => Self::String,
+            "double" => Self::Double,
+            "long" => Self::Long,
+            "boolean" => Self::Boolean,
+            "date" => Self::Date,
+            "timestamp_ns" => Self::TimestampNs,
+            other => {
+                let IcebergType::Decimal { precision, scale } = IcebergType::parse(other)? else {
+                    return None;
+                };
+                Self::Decimal { precision, scale }
+            }
+        })
     }
 
     /// The Iceberg V3 type.
@@ -148,21 +181,21 @@ impl LakeType {
             Self::Boolean => IcebergType::Boolean,
             Self::Date => IcebergType::Date,
             Self::TimestampNs => IcebergType::TimestamptzNs,
+            Self::Decimal { precision, scale } => IcebergType::Decimal { precision, scale },
         }
     }
 
-    /// The lake type of an Iceberg type; `None` for a decimal, which the
-    /// lake does not write yet.
-    pub const fn of_iceberg(t: IcebergType) -> Option<Self> {
-        Some(match t {
+    /// The lake type of an Iceberg type.
+    pub const fn of_iceberg(t: IcebergType) -> Self {
+        match t {
             IcebergType::String => Self::String,
             IcebergType::Double => Self::Double,
             IcebergType::Long => Self::Long,
             IcebergType::Boolean => Self::Boolean,
             IcebergType::Date => Self::Date,
             IcebergType::TimestamptzNs => Self::TimestampNs,
-            IcebergType::Decimal { .. } => return None,
-        })
+            IcebergType::Decimal { precision, scale } => Self::Decimal { precision, scale },
+        }
     }
 
     /// Whether a column of this type may become `to` without rewriting a
@@ -179,7 +212,10 @@ impl LakeType {
             (class, self),
             (TypeClass::Unknown, _)
                 | (_, Self::String)
-                | (TypeClass::Number | TypeClass::Integer, Self::Double)
+                | (
+                    TypeClass::Number | TypeClass::Integer,
+                    Self::Double | Self::Decimal { .. }
+                )
                 | (TypeClass::Integer, Self::Long)
                 | (TypeClass::Date, Self::Date | Self::TimestampNs)
                 | (TypeClass::Timestamp, Self::TimestampNs)
@@ -189,7 +225,23 @@ impl LakeType {
 
 impl fmt::Display for LakeType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.write_str(self.as_str())
+        f.write_str(&self.name())
+    }
+}
+
+impl TryFrom<String> for LakeType {
+    type Error = String;
+
+    fn try_from(s: String) -> Result<Self, String> {
+        Self::parse(&s).ok_or_else(|| {
+            format!("{s:?} is not a lake type (string, double, long, boolean, date, timestamp_ns, decimal(P,S))")
+        })
+    }
+}
+
+impl From<LakeType> for String {
+    fn from(t: LakeType) -> Self {
+        t.name()
     }
 }
 
@@ -418,19 +470,29 @@ pub(crate) mod tests {
     #[test]
     fn types_name_and_hold() {
         for t in LakeType::ALL {
-            assert_eq!(t.to_string(), t.as_str());
+            assert_eq!(LakeType::parse(&t.to_string()), Some(t));
+            assert_eq!(LakeType::try_from(t.name()), Ok(t));
             assert!(t.promotes_to(t));
             assert!(t.holds(TypeClass::Unknown));
         }
         assert_eq!(LakeType::TimestampNs.iceberg().name(), "timestamptz_ns");
         assert_eq!(LakeType::Long.iceberg(), IcebergType::Long);
         for t in LakeType::ALL {
-            assert_eq!(LakeType::of_iceberg(t.iceberg()), Some(t));
+            assert_eq!(LakeType::of_iceberg(t.iceberg()), t);
         }
-        assert_eq!(
-            LakeType::of_iceberg(IcebergType::decimal(20, 2).unwrap()),
-            None
+        assert!(
+            LakeType::try_from("float".to_owned())
+                .unwrap_err()
+                .contains("not a lake type")
         );
+        assert_eq!(LakeType::parse("timestamptz_ns"), None);
+        assert!(LakeType::ALL[6].holds(TypeClass::Number));
+        // A wider decimal of the same scale is an Iceberg promotion.
+        let d = |p, s| LakeType::Decimal {
+            precision: p,
+            scale: s,
+        };
+        assert!(d(9, 2).promotes_to(d(18, 2)) && !d(9, 2).promotes_to(d(18, 3)));
         assert!(!LakeType::Long.promotes_to(LakeType::Double));
         assert!(!LakeType::Date.promotes_to(LakeType::TimestampNs));
         assert!(LakeType::String.holds(TypeClass::Timestamp));

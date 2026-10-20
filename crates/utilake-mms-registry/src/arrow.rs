@@ -26,6 +26,9 @@ impl LakeType {
                 arrow_schema::TimeUnit::Nanosecond,
                 Some(Arc::from(market.arrow_tz())),
             ),
+            Self::Decimal { precision, scale } => {
+                DataType::Decimal128(precision, i8::try_from(scale).unwrap_or(i8::MAX))
+            }
         }
     }
 }
@@ -76,6 +79,7 @@ mod tests {
                 arrow_schema::TimeUnit::Nanosecond,
                 Some(Arc::from("+10:00")),
             ),
+            DataType::Decimal128(15, 5),
         ];
         assert_eq!(got, want);
     }

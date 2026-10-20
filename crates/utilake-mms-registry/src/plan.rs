@@ -35,6 +35,13 @@ pub enum Cast {
     Date32,
     /// `true`/`false`, `Y`/`N`, `1`/`0`.
     Boolean,
+    /// An exact decimal of this precision and scale, never rounded.
+    Decimal128 {
+        /// Digits in all.
+        precision: u8,
+        /// Digits after the point.
+        scale: u8,
+    },
 }
 
 impl Cast {
@@ -49,6 +56,7 @@ impl Cast {
             },
             LakeType::Date => Self::Date32,
             LakeType::Boolean => Self::Boolean,
+            LakeType::Decimal { precision, scale } => Self::Decimal128 { precision, scale },
         }
     }
 }

@@ -27,15 +27,28 @@ types alike:
 | `boolean` | `Boolean` | `BOOLEAN` | `boolean` |
 | `date` | `Date32` | `INT32 (DATE)` | `date` |
 | `timestamp_ns` | `Timestamp(ns, +10:00)` | `INT64 (TIMESTAMP(NANOS, isAdjustedToUTC))` | `timestamptz_ns` |
-| `decimal(P, S)` | `Decimal128(P, S)` | `FIXED_LEN_BYTE_ARRAY (DECIMAL(P, S))` | `decimal(P, S)` |
+| `decimal(P,S)` | `Decimal128(P, S)` | `INT32` (P ≤ 9), `INT64` (P ≤ 18) `(DECIMAL(P, S))` | `decimal(P, S)` |
 
 The contract lives in `crates/utilake-iceberg`. A column's type is chosen
-once, from everything observed of it over its whole history (`type_for`):
-whole numbers are `long`; numbers of up to 15 significant digits are
-`double`, which holds them exactly; longer ones are `decimal(P, S)` with S
-the largest scale seen, fixed for the life of the column. A 32-bit float is
-never chosen, since it would round AEMO's prices and energies. A column
-never seen with a value keeps its declared type.
+once, from everything observed of it over its whole history and from
+AEMO's declaration (`choose`):
+
+- a number declared whole (the data model's `NUMERIC(p,0)`, a control
+  file's `INTEGER EXTERNAL`) or in the key, that only held whole numbers:
+  `long`;
+- a float printed in full (more places than declared, 16 or more
+  significant digits, such as `239.99999999999997`): `double`;
+- any other number: an exact `decimal(P, S)`, S the larger of the declared
+  and the largest observed scale, fixed for the life of the column, while P
+  fits 18 digits (stored as a 64-bit integer, no larger than a double);
+  past that, `double`. A whole-number column nothing declares whole is a
+  `decimal(P, 0)`, so a later fraction is a scale to decide, not a type
+  Iceberg cannot change;
+- a column never seen with a value: the data model's type, else what it
+  was.
+
+A 32-bit float is never chosen, since it would round AEMO's prices and
+energies.
 
 ## A table as an Iceberg schema
 

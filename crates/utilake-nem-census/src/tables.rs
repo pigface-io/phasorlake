@@ -5,10 +5,11 @@
 //! every column in the order the archive first showed it, a fresh id each
 //! (ids are Iceberg field ids, so this is done once, before anything is
 //! published), the type chosen once from everything observed of the column
-//! (`utilake_iceberg::type_for`), and nullability from the data. A column
-//! that held only whole numbers but that a data-model release declares
-//! with a scale (`NUMERIC(15,5)`) stays `double`: a later value may have a
-//! fraction, and Iceberg never makes a `long` a `double`. A key
+//! with AEMO's declaration (`utilake_iceberg::choose`): a `long` only for
+//! whole numbers declared whole or in the key, an exact `decimal(P,S)` for
+//! the rest (the scale the larger of the declared and the observed), a
+//! `double` only for floats printed in full; and nullability from the
+//! data. A key
 //! column that every increment carries and that never held a null refuses
 //! nulls, every other column takes them. The key, time roles, load mode
 //! and increments stay as they are.
@@ -16,9 +17,10 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
 
-use utilake_iceberg::{Evidence, type_for};
+use utilake_iceberg::{Declared, Evidence, choose};
 use utilake_mms_registry::file_model::shapes::ShapeEntry;
 use utilake_mms_registry::file_model::{Column, ColumnId, LakeType, Table};
+use utilake_mms_registry::shape::TypeClass;
 
 /// What rewriting one table did.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
@@ -27,22 +29,26 @@ pub struct Rewritten {
     pub retyped: Vec<String>,
     /// Columns that now take nulls, or no longer do.
     pub nullability: Vec<String>,
-    /// Columns the data would type as an exact decimal, kept as text
-    /// until the lake writes decimals.
+    /// Columns typed as exact decimals, as `NAME: decimal(P,S)`.
     pub decimals: Vec<String>,
 }
 
+/// What a data-model release declares of a numeric column: precision and
+/// scale.
+pub type ModelNumeric = BTreeMap<String, (u8, u8)>;
+
 /// The table with its columns written from `shapes` (in the order first
-/// seen), and what changed; `scaled` names the columns a data-model
-/// release declares with a fraction.
+/// seen), and what changed; `model` holds the precision and scale the
+/// newest data-model release declares of its numeric columns.
 pub fn observed_table(
     t: &Table,
     shapes: &[ShapeEntry],
-    scaled: &BTreeSet<String>,
+    model: &ModelNumeric,
 ) -> (Table, Rewritten) {
     let mut order: Vec<String> = Vec::new();
     let mut evidence: BTreeMap<String, Evidence> = BTreeMap::new();
     let mut nulls: BTreeMap<String, u64> = BTreeMap::new();
+    let mut classes: BTreeMap<String, BTreeSet<TypeClass>> = BTreeMap::new();
     let mut sorted: Vec<&ShapeEntry> = shapes.iter().collect();
     sorted.sort_by(|a, b| (a.first_seen, &a.from.file).cmp(&(b.first_seen, &b.from.file)));
     for e in &sorted {
@@ -53,6 +59,7 @@ pub fn observed_table(
             let ev = evidence.entry(c.name.clone()).or_default();
             *ev = ev.join(c.evidence());
             *nulls.entry(c.name.clone()).or_default() += c.nulls;
+            classes.entry(c.name.clone()).or_default().insert(c.ctl);
         }
     }
     // Columns an increment or the table declares that no file held.
@@ -73,15 +80,31 @@ pub fn observed_table(
         .enumerate()
         .map(|(i, name)| {
             let before = t.column(name);
-            let declared = before.map(|c| c.ty.iceberg());
-            let mut choice = type_for(evidence.get(name).copied().unwrap_or_default(), declared);
-            if choice.ty == utilake_iceberg::IcebergType::Long && scaled.contains(name) {
-                choice.ty = utilake_iceberg::IcebergType::Double;
+            let ctl = classes.get(name);
+            let has = |c: TypeClass| ctl.is_some_and(|s| s.contains(&c));
+            let (precision, scale) = model
+                .get(name)
+                .map_or((None, None), |(p, s)| (Some(*p), Some(*s)));
+            let declared = Declared {
+                whole: scale == Some(0) || (has(TypeClass::Integer) && !has(TypeClass::Number)),
+                fractional: scale.is_some_and(|s| s > 0) || has(TypeClass::Number),
+                precision,
+                scale,
+                // A column never seen with a value takes what the model
+                // declares, else what it was.
+                fallback: match (precision, scale) {
+                    (Some(_), Some(0)) => Some(utilake_iceberg::IcebergType::Long),
+                    (Some(p), Some(s)) if p <= 18 => utilake_iceberg::IcebergType::decimal(p, s),
+                    _ => None,
+                }
+                .or_else(|| before.map(|c| c.ty.iceberg())),
+                key: t.primary_key.contains(name),
+            };
+            let choice = choose(evidence.get(name).copied().unwrap_or_default(), declared);
+            let ty = LakeType::of_iceberg(choice.ty);
+            if let LakeType::Decimal { .. } = ty {
+                out.decimals.push(format!("{name}: {ty}"));
             }
-            let ty = LakeType::of_iceberg(choice.ty).unwrap_or_else(|| {
-                out.decimals.push(format!("{name}: {}", choice.ty));
-                LakeType::String
-            });
             if let Some(b) = before
                 && b.ty != ty
             {
@@ -148,14 +171,24 @@ pub fn rewrite(schemas: &Path) -> Result<Vec<(String, Rewritten)>, Box<utilake_c
         if shapes.is_empty() {
             continue;
         }
-        let scaled: BTreeSet<String> = models
+        // The newest release that declares the table.
+        let numeric: ModelNumeric = models
             .iter()
-            .filter_map(|m| m.tables.get(&t.name))
-            .flat_map(|mt| &mt.columns)
-            .filter(|(_, ty, ..)| matches!(crate::audit::ModelType::parse(ty), crate::audit::ModelType::Numeric(_, s) if s > 0))
-            .map(|(n, ..)| n.to_ascii_uppercase())
-            .collect();
-        let (table, changes) = observed_table(&t, &shapes, &scaled);
+            .rev()
+            .find_map(|m| m.tables.get(&t.name))
+            .map(|mt| {
+                mt.columns
+                    .iter()
+                    .filter_map(|(n, ty, ..)| match crate::audit::ModelType::parse(ty) {
+                        crate::audit::ModelType::Numeric(p, s) => {
+                            Some((n.to_ascii_uppercase(), (p, s)))
+                        }
+                        _ => None,
+                    })
+                    .collect()
+            })
+            .unwrap_or_default();
+        let (table, changes) = observed_table(&t, &shapes, &numeric);
         crate::census::write_text(&dir.join("table.toml"), &write_table(&table))
             .map_err(|e| Box::new(e.diagnostic()))?;
         done.push((table.name.clone(), changes));
@@ -227,9 +260,10 @@ mod tests {
             vec![
                 col("SETTLEMENTDATE", Kind::Timestamp, 0),
                 col("DUID", Kind::Text, 0),
-                col("SCADAVALUE", Kind::Integer, 0),
+                col("SCADAVALUE", Kind::Decimal, 0),
                 col("LASTCHANGED", Kind::Timestamp, 2),
                 col("WIDE", Kind::Decimal, 0),
+                col("COUNT", Kind::Integer, 0),
             ],
         );
         let mut wide = later.clone();
@@ -243,48 +277,101 @@ mod tests {
                 col("SCADAVALUE", Kind::Integer, 0),
             ],
         );
-        let (out, changed) = observed_table(&t, &[wide, earlier], &BTreeSet::new());
+        let model = ModelNumeric::from([
+            ("SCADAVALUE".to_owned(), (15, 5)),
+            ("NEVER".to_owned(), (3, 0)),
+        ]);
+        let (out, changed) = observed_table(&t, &[wide, earlier], &model);
         let names: Vec<(&str, u32)> = out
             .columns
             .iter()
             .map(|c| (c.name.as_str(), c.id.0))
             .collect();
         assert_eq!(
-            &names[..5],
+            &names[..6],
             [
                 ("SETTLEMENTDATE", 1),
                 ("DUID", 2),
                 ("SCADAVALUE", 3),
                 ("LASTCHANGED", 4),
-                ("WIDE", 5)
+                ("WIDE", 5),
+                ("COUNT", 6)
             ],
             "in the order the archive first showed them"
         );
         assert_eq!(out.next_column_id as usize, out.columns.len() + 1);
         let ty = |n: &str| out.column(n).unwrap().ty;
-        assert_eq!(ty("SCADAVALUE"), LakeType::Long);
         assert_eq!(
-            ty("WIDE"),
-            LakeType::String,
-            "a 33-digit decimal waits for decimals"
+            ty("SCADAVALUE"),
+            LakeType::Decimal {
+                precision: 15,
+                scale: 5
+            },
+            "the model's scale"
+        );
+        assert_eq!(ty("WIDE"), LakeType::Double, "past 18 digits");
+        assert_eq!(
+            ty("COUNT"),
+            LakeType::Decimal {
+                precision: 3,
+                scale: 0
+            },
+            "nothing declares it whole"
         );
         assert!(
-            changed.decimals[0].starts_with("WIDE: decimal(31"),
+            changed
+                .decimals
+                .contains(&"SCADAVALUE: decimal(15,5)".to_owned()),
             "{changed:?}"
         );
         assert!(
             changed
                 .retyped
                 .iter()
-                .any(|r| r == "SCADAVALUE: double -> long"),
+                .any(|r| r == "SCADAVALUE: double -> decimal(15,5)"),
             "{changed:?}"
         );
         // The key refuses nulls only where every file had it, without one.
         assert!(!out.column("DUID").unwrap().nullable);
         assert!(out.column("LASTCHANGED").unwrap().nullable);
-        // A fraction declared by the model keeps a whole-number column a double.
-        let (kept, _) = observed_table(&t, &[later], &BTreeSet::from(["SCADAVALUE".to_owned()]));
-        assert_eq!(kept.column("SCADAVALUE").unwrap().ty, LakeType::Double);
+        // Declared whole: a long.
+        let whole = ModelNumeric::from([("COUNT".to_owned(), (6, 0))]);
+        let (o, _) = observed_table(&t, std::slice::from_ref(&later), &whole);
+        assert_eq!(o.column("COUNT").unwrap().ty, LakeType::Long);
+    }
+
+    #[test]
+    fn a_column_never_valued_takes_the_models_type() {
+        let mut t = scada();
+        t.increments[0].columns.push("NEVER".into());
+        let s = shape(
+            "2026-08",
+            vec![
+                col("SETTLEMENTDATE", Kind::Timestamp, 0),
+                col("NEVER", Kind::Empty, 1),
+            ],
+        );
+        let model = ModelNumeric::from([
+            ("NEVER".to_owned(), (8, 3)),
+            ("SCADAVALUE".to_owned(), (20, 2)),
+        ]);
+        let (out, _) = observed_table(&t, &[s], &model);
+        assert_eq!(
+            out.column("NEVER").unwrap().ty,
+            LakeType::Decimal {
+                precision: 8,
+                scale: 3
+            }
+        );
+        // Too wide for a 64-bit decimal: what it was.
+        assert_eq!(out.column("SCADAVALUE").unwrap().ty, LakeType::Double);
+        let zero = ModelNumeric::from([("NEVER".to_owned(), (3, 0))]);
+        let (out, _) = observed_table(
+            &t,
+            &[shape("2026-08", vec![col("NEVER", Kind::Empty, 1)])],
+            &zero,
+        );
+        assert_eq!(out.column("NEVER").unwrap().ty, LakeType::Long);
     }
 
     #[test]
@@ -299,7 +386,7 @@ mod tests {
                 col("LASTCHANGED", Kind::Timestamp, 0),
             ],
         );
-        let (out, changed) = observed_table(&t, &[s], &BTreeSet::new());
+        let (out, changed) = observed_table(&t, &[s], &ModelNumeric::new());
         assert!(out.column("DUID").unwrap().nullable);
         assert!(
             changed
