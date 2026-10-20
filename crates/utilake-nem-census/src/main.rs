@@ -9,6 +9,7 @@
 //! utilake-nem-census census --from 2024-01 --to 2024-12
 //! utilake-nem-census sync --from 2024-01 --to 2024-12 [--check]
 //! utilake-nem-census fixtures --month 2024-01 --out testdata/bootstrap/MMSDM_2024_01
+//! utilake-nem-census models --from 2022-10 --to 2026-09
 //! utilake-nem-census export --out ../nem-schemas [--check]
 //! ```
 
@@ -165,6 +166,28 @@ enum Cmd {
         #[arg(long, default_value = "https://www.nemweb.com.au")]
         base: String,
     },
+    /// Read the data-model create scripts the archive carries
+    /// (`DOCUMENTATION/MMS Data Model/v5.x/MMSDM_create_v5.x.zip`, from
+    /// 2022-10 on) into `{schemas}/nem/models/{version}.toml`, one file per
+    /// release with the months it shipped in, and `months.toml`. A version
+    /// already recorded only widens its months.
+    Models {
+        /// First month.
+        #[arg(long, value_name = "YYYY-MM")]
+        from: utilake_core::YearMonth,
+        /// Last month (default: the first).
+        #[arg(long, value_name = "YYYY-MM")]
+        to: Option<utilake_core::YearMonth>,
+        /// The utilake home whose archive is read (default `~/.utilake`).
+        #[arg(long, env = "UTILAKE_HOME")]
+        home: Option<PathBuf>,
+        /// The schemas directory to write into.
+        #[arg(long, default_value = "schemas")]
+        schemas: PathBuf,
+        /// Archive base URL, which names where the month's files are kept.
+        #[arg(long, default_value = "https://www.nemweb.com.au")]
+        base: String,
+    },
     /// Write every table and shape as JSON Schema into a `nem-schemas`
     /// checkout: `nem/{TABLE}/{shape}.schema.json` and `index.json` per
     /// table, `manifest.json`, `provenance.json` and `LICENCE.md`, from the
@@ -315,6 +338,13 @@ fn main() -> ExitCode {
             home,
             base,
         } => fixtures(month, &out, rows, home.as_deref(), &base),
+        Cmd::Models {
+            from,
+            to,
+            home,
+            schemas,
+            base,
+        } => models(from, to.unwrap_or(from), home.as_deref(), &schemas, &base),
         Cmd::Export {
             out,
             check,
@@ -543,6 +573,48 @@ fn fixtures(
         }
         Err(d) => fail(&d),
     }
+}
+
+/// `models`: one month after another, each release recorded once.
+fn models(
+    from: utilake_core::YearMonth,
+    to: utilake_core::YearMonth,
+    home: Option<&Path>,
+    schemas: &Path,
+    base: &str,
+) -> ExitCode {
+    use utilake_nem_census::models::{model_zips, record};
+    let (store, nem) = match archive(home, base) {
+        Ok(a) => a,
+        Err(code) => return code,
+    };
+    let mut code = ExitCode::SUCCESS;
+    for month in from.range_inclusive(to) {
+        let files = match utilake_nem_census::census::month_files(&store, &nem, month) {
+            Ok(f) => f,
+            Err(e @ utilake_nem_census::census::CensusError::NotArchived { .. }) => {
+                eprintln!("note: {month} skipped: {e}");
+                continue;
+            }
+            Err(e) => return fail(&e.diagnostic()),
+        };
+        let zips = model_zips(&files);
+        let r = match record(schemas, month, &zips) {
+            Ok(r) => r,
+            Err(e) => return fail(&e.diagnostic()),
+        };
+        for d in &r.problems {
+            eprintln!("error: {}", d.render());
+            code = ExitCode::from(3);
+        }
+        eprintln!(
+            "{month}: {} model zip(s), versions [{}], {} new",
+            zips.len(),
+            r.versions.join(", "),
+            r.new_versions.len()
+        );
+    }
+    code
 }
 
 /// `export`: render everything, then write it or compare it.

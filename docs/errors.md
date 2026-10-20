@@ -93,7 +93,7 @@ Every error and warning utilake reports carries one of these codes. Codes are st
 | `schema.datamodel_read` | `crates/utilake-nem-census/src/datamodel.rs` |
 | `schema.deviates` | `crates/utilake-mms-registry/src/error.rs` |
 | `schema.export_io` | `crates/utilake-nem-census/src/export/mod.rs` |
-| `schema.export_stale` | `crates/utilake-nem-census/src/export/tests.rs` |
+| `schema.export_stale` | `crates/utilake-nem-census/src/export/write.rs` |
 | `schema.export_unknown_shape` | `crates/utilake-nem-census/src/export/mod.rs` |
 | `schema.file_invalid` | `crates/utilake-mms-registry/src/file_model/error.rs` |
 | `schema.file_parse` | `crates/utilake-mms-registry/src/file_model/error.rs` |
@@ -102,6 +102,10 @@ Every error and warning utilake reports carries one of these codes. Codes are st
 | `schema.fixture_write_failed` | `crates/utilake-nem-census/src/fixtures.rs` |
 | `schema.migrate_io` | `crates/utilake-nem-census/src/migrate.rs` |
 | `schema.missing_key` | `crates/utilake-mms-registry/src/error.rs` |
+| `schema.model_differs` | `crates/utilake-nem-census/src/models.rs` |
+| `schema.model_unreadable` | `crates/utilake-nem-census/src/models.rs` |
+| `schema.model_write` | `crates/utilake-nem-census/src/models.rs` |
+| `schema.model_zip` | `crates/utilake-nem-census/src/models.rs` |
 | `schema.no_columns` | `crates/utilake-mms-registry/src/error.rs` |
 | `schema.pdr_read` | `crates/utilake-nem-census/src/pdr.rs` |
 | `schema.standing_list` | `crates/utilake-nem-census/src/main.rs` |

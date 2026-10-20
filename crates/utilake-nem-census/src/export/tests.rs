@@ -29,7 +29,7 @@ column = [
     {{ id = 1, name = "SETTLEMENTDATE", type = "timestamp_ns", nullable = false }},
     {{ id = 2, name = "DUID", type = "string", nullable = false }},
     {{ id = 3, name = "SCADAVALUE", type = "double", nullable = true }},
-    {{ id = 4, name = "LASTCHANGED", type = "timestamp_ns", nullable = true }},
+    {{ id = 4, name = "LASTCHANGED", type = "timestamp_ns", nullable = true, note = "kept as text" }},
 ]
 
 [temporal]
@@ -55,10 +55,13 @@ ctl = "002.ctl"
 ctl_sha256 = "{sha2}"
 aemo_ctl = "PUBLIC_ARCHIVE#UNIT#FILE01#202410.ctl"
 aemo_versions = [1]
+note = "LASTCHANGED arrived"
 columns = ["SETTLEMENTDATE", "DUID", "SCADAVALUE", "LASTCHANGED"]
 "#
     )
 }
+
+const REGION_CTL: &str = "-- Title:\tPUBLIC_DVD_REGION_201501.ctl\n--      PUBLIC\t\t\t       v4.23\t\nLOAD DATA\nINFILE PUBLIC_DVD_REGION_201501010000.csv\nAPPEND INTO TABLE REGION\nWHEN (1:1) = 'D'\nFIELDS TERMINATED BY ','\nOPTIONALLY ENCLOSED BY '\"'\nTRAILING NULLCOLS\n(\nFILLER1 FILLER,\nREGIONID CHAR(10),\nDESCRIPTION CHAR(64))\n";
 
 const REGION_TABLE: &str = r#"schema_format = 3
 name = "REGION"
@@ -81,6 +84,8 @@ order = []
 [[increment]]
 n = 1
 from = "2015-01"
+ctl = "001.ctl"
+ctl_sha256 = "REGION_SHA"
 aemo_versions = []
 columns = ["REGIONID", "DESCRIPTION"]
 "#;
@@ -107,7 +112,24 @@ origin = "hand"
 entity = []
 valid = { kind = "from", column = "EFFECTIVEDATE" }
 order = []
+
+[[increment]]
+n = 1
+from = "2024-11"
+ctl = "001.ctl"
+ctl_sha256 = "TYPES_SHA"
+aemo_versions = []
+columns = ["EFFECTIVEDATE", "S", "D", "L", "B", "DAY", "X"]
+
+[[increment]]
+n = 2
+from = "2025-06"
+aemo_versions = []
+columns = ["EFFECTIVEDATE", "S", "D", "L", "B", "DAY", "X", "Y"]
 "#;
+
+/// Not a control file: its increment types nothing.
+const TYPES_CTL: &str = "LOAD DATA INFILE a APPEND INTO TABLE T BOGUS (A FILLER)\n";
 
 const UNIT_SHAPES: &str = r#"[[shape]]
 id = "1111111111111111"
@@ -195,14 +217,23 @@ const CENSUS_2015_01: &str = r#""PUBLIC_DVD_UNIT_201501010000.zip" = "1111111111
 const CENSUS_2024_10: &str = r#"[["PUBLIC_ARCHIVE#UNIT#FILE01#202410010000.zip"]]
 shape = "1111111111111111"
 rows = 10
+first = "2024/10/01 00:05:00"
+last = "2024/10/03 00:00:00"
+time = "SETTLEMENTDATE"
 
 [["PUBLIC_ARCHIVE#UNIT#FILE01#202410010000.zip"]]
 shape = "2222222222222222"
 rows = 20
+first = "2024/10/03 00:05:00"
+last = "2024/10/20 00:00:00"
+time = "SETTLEMENTDATE"
 
 [["PUBLIC_ARCHIVE#UNIT#FILE02#202410010000.zip"]]
 shape = "2222222222222222"
 rows = 5
+first = "2024/10/20 00:05:00"
+last = "2024/10/31 23:55:00"
+time = "SETTLEMENTDATE"
 
 [["PUBLIC_ARCHIVE#REGION#FILE01#202410010000.zip"]]
 shape = "4444444444444444"
@@ -220,6 +251,9 @@ rows = 1
 const CENSUS_2024_11: &str = r#"[["PUBLIC_ARCHIVE#UNIT#FILE01#202411010000.zip"]]
 shape = "2222222222222222"
 rows = 30
+first = "2024/11/01 00:05:00"
+last = "2024/11/30 23:55:00"
+time = "SETTLEMENTDATE"
 
 [["PUBLIC_ARCHIVE#UNIT#FILE02#202411010000.zip"]]
 shape = "3333333333333333"
@@ -256,6 +290,50 @@ const DATAMODEL: &str = r#"{
 }
 "#;
 
+/// Two data-model releases: 5.7 widens UNIT's key and types SCADAVALUE
+/// more precisely; REGION is only in 5.6.
+const MODEL_56: &str = r#"version = "5.6"
+model = "AEMO Electricity Data Model v5.6.0.0 postgreSQL"
+created = "2022/09/01 00:00:00"
+script_sha256 = "56"
+first_seen = "2022-10"
+last_seen = "2024-10"
+
+[tables.REGION]
+comment = "Regions, as declared"
+primary_key = ["REGIONID"]
+columns = [
+    ["REGIONID", "VARCHAR(10)", false, "Region identifier"],
+    ["DESCRIPTION", "VARCHAR(64)", true, ""],
+]
+
+[tables.UNIT]
+primary_key = ["SETTLEMENTDATE", "DUID"]
+columns = [
+    ["SETTLEMENTDATE", "TIMESTAMP(0)", false, ""],
+    ["DUID", "VARCHAR(10)", false, "Unit, declared"],
+    ["SCADAVALUE", "NUMERIC(15,5)", true, ""],
+]
+"#;
+
+const MODEL_57: &str = r#"version = "5.7"
+model = "AEMO Electricity Data Model v5.7.0.0 postgreSQL"
+created = "2024/09/01 00:00:00"
+script_sha256 = "57"
+first_seen = "2024-10"
+last_seen = "2024-11"
+
+[tables.UNIT]
+comment = "Unit MW, as declared"
+primary_key = ["SETTLEMENTDATE", "DUID", "QUALITY"]
+columns = [
+    ["SETTLEMENTDATE", "TIMESTAMP(0)", false, ""],
+    ["DUID", "VARCHAR(10)", false, "Unit, declared"],
+    ["SCADAVALUE", "NUMERIC(18,8)", true, "MW, declared"],
+    ["QUALITY", "VARCHAR(4)", false, ""],
+]
+"#;
+
 fn put(path: &Path, text: &str) {
     std::fs::create_dir_all(path.parent().unwrap()).unwrap();
     std::fs::write(path, text).unwrap();
@@ -278,8 +356,16 @@ fn fixture(dir: &Path) -> Inputs {
         &nem.join("UNIT/table.toml"),
         &unit_table(&sha256(CTL_V423.as_bytes()), &sha256(CTL_BLANK.as_bytes())),
     );
-    put(&nem.join("REGION/table.toml"), REGION_TABLE);
-    put(&nem.join("TYPES/table.toml"), TYPES_TABLE);
+    put(&nem.join("REGION/ctl/001.ctl"), REGION_CTL);
+    put(
+        &nem.join("REGION/table.toml"),
+        &REGION_TABLE.replace("REGION_SHA", &sha256(REGION_CTL.as_bytes())),
+    );
+    put(&nem.join("TYPES/ctl/001.ctl"), TYPES_CTL);
+    put(
+        &nem.join("TYPES/table.toml"),
+        &TYPES_TABLE.replace("TYPES_SHA", &sha256(TYPES_CTL.as_bytes())),
+    );
     put(&nem.join("shapes/UNIT.toml"), UNIT_SHAPES);
     put(&nem.join("shapes/REGION.toml"), REGION_SHAPES);
     put(&nem.join("shapes/TYPES.toml"), TYPES_SHAPES);
@@ -288,8 +374,14 @@ fn fixture(dir: &Path) -> Inputs {
     put(&nem.join("census/2024-10.toml"), CENSUS_2024_10);
     put(&nem.join("census/2024-11.toml"), CENSUS_2024_11);
     put(&nem.join("census/notes.txt"), "not a month");
+    put(&nem.join("models/5.6.toml"), MODEL_56);
+    put(&nem.join("models/5.7.toml"), MODEL_57);
+    put(
+        &nem.join("models/months.toml"),
+        "[months]\n\"2022-10\" = [\"5.6\"]\n\"2024-10\" = [\"5.6\", \"5.7\"]\n",
+    );
     put(&nem.join("census/reports/ARCHIVE/x.toml"), "");
-    let datamodel = dir.join("datamodel.json");
+    let datamodel = dir.join("mms_data_model_v9.json");
     put(&datamodel, DATAMODEL);
     Inputs {
         schemas,
@@ -313,16 +405,16 @@ fn renders_one_document_per_shape_and_an_index_per_table() {
             "LICENCE.md",
             "manifest.json",
             "nem/OFFER_X/7777777777777777.schema.json",
-            "nem/OFFER_X/index.json",
+            "nem/OFFER_X/table.json",
             "nem/REGION/4444444444444444.schema.json",
-            "nem/REGION/index.json",
+            "nem/REGION/table.json",
             "nem/TYPES/5555555555555555.schema.json",
             "nem/TYPES/6666666666666666.schema.json",
-            "nem/TYPES/index.json",
+            "nem/TYPES/table.json",
             "nem/UNIT/1111111111111111.schema.json",
             "nem/UNIT/2222222222222222.schema.json",
             "nem/UNIT/3333333333333333.schema.json",
-            "nem/UNIT/index.json",
+            "nem/UNIT/table.json",
         ]
     );
     assert_eq!(r.problems.len(), 1, "{:?}", r.problems);
@@ -340,7 +432,9 @@ fn renders_one_document_per_shape_and_an_index_per_table() {
         "unit_3333",
         r.files["nem/UNIT/3333333333333333.schema.json"]
     );
-    insta::assert_snapshot!("unit_index", r.files["nem/UNIT/index.json"]);
+    insta::assert_snapshot!("unit_table", r.files["nem/UNIT/table.json"]);
+    insta::assert_snapshot!("region_table", r.files["nem/REGION/table.json"]);
+    insta::assert_snapshot!("offer_table", r.files["nem/OFFER_X/table.json"]);
     insta::assert_snapshot!(
         "region_4444",
         r.files["nem/REGION/4444444444444444.schema.json"]
@@ -358,9 +452,37 @@ fn renders_one_document_per_shape_and_an_index_per_table() {
         r.files["nem/OFFER_X/7777777777777777.schema.json"]
     );
     insta::assert_snapshot!("manifest", r.files["manifest.json"]);
+    let unit2: serde_json::Value =
+        serde_json::from_str(&r.files["nem/UNIT/2222222222222222.schema.json"]).unwrap();
+    assert_eq!(
+        unit2["x-seen"]["span"],
+        serde_json::json!({ "first": "2024/10/03 00:05:00", "last": "2024/11/30 23:55:00", "column": "SETTLEMENTDATE" }),
+        "blocks of two months fold to one span"
+    );
+    assert_eq!(
+        unit2["x-seen"]["months"][0],
+        serde_json::json!([
+            "2024-10",
+            25,
+            1,
+            "2024/10/03 00:05:00",
+            "2024/10/31 23:55:00"
+        ]),
+        "second shape of the month"
+    );
+    assert_eq!(
+        unit2["x-seen"]["months"][1],
+        serde_json::json!([
+            "2024-11",
+            30,
+            0,
+            "2024/11/01 00:05:00",
+            "2024/11/30 23:55:00"
+        ])
+    );
     assert_eq!(r.files["LICENCE.md"], LICENCE);
     let provenance: serde_json::Value = serde_json::from_str(&r.provenance).unwrap();
-    assert_eq!(provenance["datamodel"], "datamodel.json");
+    assert_eq!(provenance["datamodel"], "mms_data_model_v9.json");
     assert_eq!(provenance["generator"], "utilake-nem-census export");
     assert!(provenance["generated_at"].as_str().unwrap().ends_with('Z'));
     assert!(
@@ -397,7 +519,7 @@ fn write_owns_nem_and_check_tells_what_differs() {
     assert!(out.join("provenance.json").is_file());
     assert!(check(&out, &r).unwrap().is_empty());
 
-    put(&out.join("nem/UNIT/index.json"), "{}");
+    put(&out.join("nem/UNIT/table.json"), "{}");
     put(&out.join("nem/GONE/deep/old.schema.json"), "{}");
     put(&out.join("nem/UNIT/extra.json"), "{}");
     put(&out.join("unrelated.txt"), "kept: outside nem/");
@@ -406,7 +528,7 @@ fn write_owns_nem_and_check_tells_what_differs() {
     assert_eq!(
         listed,
         [
-            ("nem/UNIT/index.json", "differs"),
+            ("nem/UNIT/table.json", "differs"),
             ("nem/GONE/deep/old.schema.json", "extra"),
             ("nem/UNIT/extra.json", "extra"),
         ]
@@ -443,7 +565,7 @@ fn a_directory_that_cannot_be_read_is_a_diagnostic() {
     assert_eq!(write(&out, &r).unwrap_err().code, "schema.export_io");
 
     let out = dir.path().join("out2");
-    std::fs::create_dir_all(out.join("nem/UNIT/index.json")).unwrap();
+    std::fs::create_dir_all(out.join("nem/UNIT/table.json")).unwrap();
     assert_eq!(
         check(&out, &r).unwrap_err().code,
         "schema.export_io",
@@ -475,7 +597,19 @@ fn without_a_census_or_a_data_model_the_documents_still_render() {
     let unit: serde_json::Value =
         serde_json::from_str(&r.files["nem/UNIT/1111111111111111.schema.json"]).unwrap();
     assert_eq!(unit["x-seen"]["months"], serde_json::json!([]));
-    assert!(unit["x-table"].get("package").is_none());
+    let unit_table: serde_json::Value =
+        serde_json::from_str(&r.files["nem/UNIT/table.json"]).unwrap();
+    assert!(unit_table.get("package").is_none());
+    assert_eq!(unit["x-table"]["$ref"], "table.json");
+}
+
+#[test]
+fn report_types_are_spelt_as_the_scripts_spell_them() {
+    assert_eq!(logical_type("Number(15,5)"), "NUMERIC(15,5)");
+    assert_eq!(logical_type("varchar2(20)"), "VARCHAR(20)");
+    assert_eq!(logical_type("Date"), "TIMESTAMP(0)");
+    assert_eq!(logical_type("NUMBER (3, 0)"), "NUMERIC(3,0)");
+    assert_eq!(logical_type("timestamp(3)"), "TIMESTAMP(3)");
 }
 
 #[test]
@@ -526,7 +660,7 @@ fn the_committed_schemas_export_whole() {
             let path = format!("nem/{table}/{}.schema.json", e.id);
             assert!(r.files.contains_key(&path), "{path} missing");
         }
-        assert!(r.files.contains_key(&format!("nem/{table}/index.json")));
+        assert!(r.files.contains_key(&format!("nem/{table}/table.json")));
     }
     let manifest: serde_json::Value = serde_json::from_str(&r.files["manifest.json"]).unwrap();
     assert_eq!(manifest["tables"], set.shapes.len());

@@ -12,8 +12,6 @@ expression: "r.files[\"nem/TYPES/6666666666666666.schema.json\"]"
         "number",
         "null"
       ],
-      "x-column-id": 3,
-      "x-lake-type": "double",
       "x-type-class": "number"
     },
     "DAY": {
@@ -23,8 +21,6 @@ expression: "r.files[\"nem/TYPES/6666666666666666.schema.json\"]"
         "null"
       ],
       "x-aemo-format": "YYYY/MM/DD",
-      "x-column-id": 6,
-      "x-lake-type": "date",
       "x-type-class": "date"
     },
     "EFFECTIVEDATE": {
@@ -34,8 +30,6 @@ expression: "r.files[\"nem/TYPES/6666666666666666.schema.json\"]"
         "null"
       ],
       "x-aemo-format": "YYYY/MM/DD",
-      "x-column-id": 1,
-      "x-lake-type": "timestamp_ns",
       "x-type-class": "date"
     },
     "L": {
@@ -43,8 +37,6 @@ expression: "r.files[\"nem/TYPES/6666666666666666.schema.json\"]"
         "integer",
         "null"
       ],
-      "x-column-id": 4,
-      "x-lake-type": "long",
       "x-type-class": "number"
     },
     "S": {
@@ -52,14 +44,16 @@ expression: "r.files[\"nem/TYPES/6666666666666666.schema.json\"]"
         "integer",
         "null"
       ],
-      "x-column-id": 2,
-      "x-lake-type": "string",
       "x-type-class": "integer"
     }
   },
   "title": "TYPES, shape 6666666666666666",
   "type": "object",
   "x-format": 1,
+  "x-increment": {
+    "n": 1,
+    "status": "deviates"
+  },
   "x-market": "nem",
   "x-seen": {
     "first": "2024-11",
@@ -67,9 +61,13 @@ expression: "r.files[\"nem/TYPES/6666666666666666.schema.json\"]"
     "months": [
       [
         "2024-11",
-        1
+        1,
+        1,
+        null,
+        null
       ]
     ],
+    "span": null,
     "versions": [
       1
     ]
@@ -103,20 +101,8 @@ expression: "r.files[\"nem/TYPES/6666666666666666.schema.json\"]"
     "shape_format": 1
   },
   "x-table": {
+    "$ref": "table.json",
     "declared": true,
-    "load_mode": "snapshot",
-    "name": "TYPES",
-    "primary_key": [
-      "EFFECTIVEDATE"
-    ],
-    "temporal": {
-      "entity": [],
-      "order": [],
-      "origin": "hand",
-      "valid": {
-        "column": "EFFECTIVEDATE",
-        "kind": "from"
-      }
-    }
+    "name": "TYPES"
   }
 }

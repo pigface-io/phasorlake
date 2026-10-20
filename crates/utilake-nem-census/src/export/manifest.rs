@@ -27,6 +27,7 @@ pub fn render(
     base_url: &str,
     months: &BTreeSet<YearMonth>,
     counts: Counts,
+    versions: &[&str],
     files: &BTreeMap<String, String>,
 ) -> String {
     let hashes: BTreeMap<&str, String> = files
@@ -42,6 +43,7 @@ pub fn render(
         "market": "nem",
         "base_url": base_url,
         "months": span,
+        "models": versions,
         "tables": counts.tables,
         "declared_tables": counts.declared_tables,
         "shapes": counts.shapes,

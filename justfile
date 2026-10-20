@@ -97,6 +97,10 @@ census-forward month:
     just schema-sync {{month}}
     just census-check
 
+# record the data-model create scripts the archived months carry (2022-10 on) into schemas/nem/models/, one file per release
+census-models from to=from *args:
+    cargo run --release -q -p utilake-nem-census -- models --from {{from}} --to {{to}} "${@:3}"
+
 # write every table and shape as JSON Schema (from schemas/, every census month and the data model) into a nem-schemas checkout; its nem/ is owned whole
 schema-export dir="../nem-schemas":
     cargo run --release -q -p utilake-nem-census -- export --out {{dir}}

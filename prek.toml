@@ -22,8 +22,9 @@ hooks = [
     { id = "check-toml" },
     { id = "check-json" },
     { id = "check-merge-conflict" },
-    # The data-model JSON is the one large fixture; everything else is small.
-    { id = "check-added-large-files", args = ["--maxkb=200"], exclude = '^testdata/bootstrap/datamodel/' },
+    # The data-model JSON fixture and the data-model release records are
+    # large; everything else is small.
+    { id = "check-added-large-files", args = ["--maxkb=200"], exclude = '^(testdata/bootstrap/datamodel/|schemas/nem/models/)' },
     # ── Secrets (first line of defence; gitleaks is below) ──
     { id = "detect-private-key" },
 ]

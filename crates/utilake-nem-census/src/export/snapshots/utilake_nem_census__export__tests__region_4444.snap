@@ -13,14 +13,10 @@ expression: "r.files[\"nem/REGION/4444444444444444.schema.json\"]"
         "string",
         "null"
       ],
-      "x-column-id": 2,
-      "x-lake-type": "string",
       "x-type-class": "varchar"
     },
     "REGIONID": {
       "type": "string",
-      "x-column-id": 1,
-      "x-lake-type": "string",
       "x-type-class": "varchar"
     }
   },
@@ -31,7 +27,6 @@ expression: "r.files[\"nem/REGION/4444444444444444.schema.json\"]"
   "type": "object",
   "x-format": 1,
   "x-increment": {
-    "from": "2015-01",
     "n": 1,
     "status": "conforms"
   },
@@ -42,13 +37,20 @@ expression: "r.files[\"nem/REGION/4444444444444444.schema.json\"]"
     "months": [
       [
         "2015-01",
+        null,
+        0,
+        null,
         null
       ],
       [
         "2024-10",
-        5
+        5,
+        0,
+        null,
+        null
       ]
     ],
+    "span": null,
     "versions": [
       1
     ]
@@ -70,22 +72,8 @@ expression: "r.files[\"nem/REGION/4444444444444444.schema.json\"]"
     "shape_format": 1
   },
   "x-table": {
+    "$ref": "table.json",
     "declared": true,
-    "load_mode": "snapshot",
-    "name": "REGION",
-    "package": "MARKET_CONFIG",
-    "primary_key": [
-      "REGIONID"
-    ],
-    "temporal": {
-      "entity": [
-        "REGIONID"
-      ],
-      "order": [],
-      "origin": "derived",
-      "valid": {
-        "kind": "timeless"
-      }
-    }
+    "name": "REGION"
   }
 }

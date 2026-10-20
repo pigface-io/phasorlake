@@ -1,15 +1,22 @@
 //! `export`: every table and shape as JSON Schema, for the public
 //! `nem-schemas` repository.
 //!
-//! One document per table per shape (`nem/{TABLE}/{shape}.schema.json`):
-//! the shape's columns as properties, typed by the type class of the month's
-//! control file and, where the shape belongs to a declared table, by our
-//! lake type; the table's key, description and temporal roles; the increment
-//! the shape conforms to; and every month the census saw it in, with its
-//! rows. Beside them: `nem/{TABLE}/index.json`, `manifest.json` (content
-//! only, so a second run gives the same bytes), `provenance.json` (which
-//! commit wrote it, never compared) and `LICENCE.md`. The writer owns
-//! `nem/` whole: a shape that disappears upstream disappears here.
+//! Per table, `nem/{TABLE}/table.json` is the one place the table is
+//! described: its declaration and key, the key's history as the archived
+//! data-model releases declare it, every declared column with its lake
+//! type, the model's type and precision and its comment, every increment
+//! with the loader type of each column from AEMO's control file, and the
+//! list of its shapes. Per shape, `nem/{TABLE}/{shape}.schema.json` is a
+//! JSON Schema a row of that shape validates against (types, formats,
+//! what is required) with the shape's facts (`x-shape`, `x-seen`,
+//! `x-increment`) and a reference to the table document; column metadata
+//! is not repeated there. `x-seen` says every month the census saw the
+//! shape in, its rows, its place among the month's shapes, and the first
+//! and last time value its rows carried, so a shape's span is known to the
+//! row, not the month. Beside them: `manifest.json` (content only, so a
+//! second run gives the same bytes), `provenance.json` (which commit wrote
+//! it, never compared) and `LICENCE.md`. The writer owns `nem/` whole: a
+//! shape that disappears upstream disappears here.
 //!
 //! Everything is read from `schemas/` and the data-model JSON; nothing is
 //! typed by hand, so the output is regenerable by anyone with the archive.
@@ -19,12 +26,14 @@ use std::path::{Path, PathBuf};
 
 use utilake_core::{Category, Diagnose, Diagnostic, YearMonth};
 use utilake_mms_registry::file_model::blob::SchemaSet;
-use utilake_mms_registry::file_model::model::Table;
+use utilake_mms_registry::file_model::ctl;
+use utilake_mms_registry::file_model::model::{Increment, Table};
 use utilake_mms_registry::file_model::shapes::ShapeEntry;
 use utilake_mms_registry::shape::{ShapeId, TypeClass};
 
-use crate::census::{FileEntry, census_dir, read_month};
+use crate::census::{FileEntry, Span, census_dir, read_month};
 use crate::datamodel::{DataModel, DmTable};
+use crate::models::{self, Model};
 
 mod doc;
 mod manifest;
@@ -32,8 +41,8 @@ mod write;
 
 pub use write::{Stale, Written, check, write};
 
-/// The generation of the documents' layout: the `x-` keys and their
-/// meaning. Raised when a reader of format 1 would misread a document.
+/// The generation of the documents' layout: the files, the `x-` keys and
+/// their meaning. Raised when a reader of this format would misread a document.
 pub const FORMAT: u32 = 1;
 
 /// Where the documents are published: `$id` is this plus the file's path.
@@ -47,15 +56,33 @@ pub const LICENCE: &str = include_str!("../../templates/nem-schemas/LICENCE.md")
 pub struct Inputs {
     /// The schemas directory.
     pub schemas: PathBuf,
-    /// The data-model JSON, for packages, visibility and column comments.
+    /// The data-model report JSON, for packages, visibility, comments and
+    /// types where no archived create script covers a table.
     pub datamodel: Option<PathBuf>,
     /// The URL the documents will live under.
     pub base_url: String,
 }
 
-/// Every month a shape was seen in, with the rows the census counted. `None`
-/// rows: the month's census predates row counts.
-pub type Seen = BTreeMap<YearMonth, Option<u64>>;
+/// What the census saw of a shape in one month.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SeenMonth {
+    /// Rows over every block of the shape; `None` when the month's census
+    /// predates row counts.
+    pub rows: Option<u64>,
+    /// Position of the shape among the month's shapes, by first appearance
+    /// in file then block order: 0 for the first shape the month's files hold.
+    pub order: u16,
+    /// The least time value over the shape's blocks that month, as written,
+    /// when the census recorded spans.
+    pub first: Option<String>,
+    /// The greatest time value over the shape's blocks that month.
+    pub last: Option<String>,
+    /// The column the values are of.
+    pub column: Option<String>,
+}
+
+/// Every month a shape was seen in.
+pub type Seen = BTreeMap<YearMonth, SeenMonth>;
 
 /// One shape of one table, every version of it folded together.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -64,8 +91,6 @@ pub struct ShapeDoc<'a> {
     pub table: &'a str,
     /// The table's declaration, when it has one.
     pub declared: Option<&'a Table>,
-    /// The data model's entry, when it has one.
-    pub model: Option<&'a DmTable>,
     /// The shape's id.
     pub id: ShapeId,
     /// Report type.
@@ -84,6 +109,27 @@ pub struct ShapeDoc<'a> {
     pub seen: &'a Seen,
 }
 
+/// One increment with its control file read.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct IncrementDoc<'a> {
+    /// The increment.
+    pub increment: &'a Increment,
+    /// The data-model version the control file's history line names.
+    pub model_version: Option<String>,
+    /// Column name to loader type, as the control file writes it.
+    pub loader_types: BTreeMap<String, String>,
+}
+
+/// What the data-model releases say about one table: the key per release,
+/// first release first, and the newest release's columns.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct ModelFacts<'a> {
+    /// `(first month the release shipped, key columns, release version)`.
+    pub keys: Vec<(YearMonth, &'a [String], &'a str)>,
+    /// The newest release that declares the table.
+    pub latest: Option<(&'a str, &'a models::ModelTable)>,
+}
+
 /// The export, loaded and joined; [`Export::render`] writes it as text.
 #[derive(Debug)]
 pub struct Export {
@@ -93,6 +139,7 @@ pub struct Export {
     months: BTreeSet<YearMonth>,
     datamodel: DataModel,
     datamodel_path: Option<PathBuf>,
+    models: Vec<Model>,
     schemas: PathBuf,
     base_url: String,
     /// Census blocks that name a shape no shapes file records.
@@ -138,14 +185,26 @@ impl Diagnose for IoError {
 }
 
 impl Export {
-    /// Reads the schemas, every census month and the data model.
+    /// Reads the schemas, every census month, the recorded data-model
+    /// releases and the data-model report.
     pub fn load(inputs: &Inputs) -> Result<Self, Box<Diagnostic>> {
         let set = SchemaSet::read_dir(&inputs.schemas).map_err(|e| Box::new(e.diagnostic()))?;
         let datamodel = match &inputs.datamodel {
             Some(p) => DataModel::load(p).map_err(|e| Box::new(e.diagnostic()))?,
             None => DataModel::default(),
         };
-        let known: BTreeSet<ShapeId> = set.shapes.values().flatten().map(|e| e.id).collect();
+        let recorded =
+            models::read_models(&inputs.schemas).map_err(|e| Box::new(e.diagnostic()))?;
+        let models: Vec<Model> = models::by_first_seen(&recorded)
+            .into_iter()
+            .cloned()
+            .collect();
+        // Which shapes file holds each shape: the table a shape belongs to.
+        let table_of: BTreeMap<ShapeId, &str> = set
+            .shapes
+            .iter()
+            .flat_map(|(t, es)| es.iter().map(move |e| (e.id, t.as_str())))
+            .collect();
         let mut seen: BTreeMap<ShapeId, Seen> = BTreeMap::new();
         let mut months = BTreeSet::new();
         let mut problems = Vec::new();
@@ -155,17 +214,47 @@ impl Export {
                 .map_err(|e| Box::new(e.diagnostic()))?
                 .unwrap_or_default();
             months.insert(month);
+            // Per table, its shapes in the order the month's files and
+            // blocks hold them.
+            let mut order: BTreeMap<&str, BTreeMap<ShapeId, u16>> = BTreeMap::new();
             for (file, entry) in &files {
-                for (id, rows) in blocks(entry) {
-                    if !known.contains(&id) {
+                for block in blocks(entry) {
+                    let id = block.id;
+                    let Some(table) = table_of.get(&id) else {
                         problems.push(unknown_shape(month, file, id));
                         continue;
-                    }
-                    let slot = seen.entry(id).or_default().entry(month).or_insert(Some(0));
-                    *slot = match (*slot, rows) {
+                    };
+                    let of_table = order.entry(table).or_default();
+                    let next = of_table.len() as u16;
+                    let position = *of_table.entry(id).or_insert(next);
+                    let slot = seen
+                        .entry(id)
+                        .or_default()
+                        .entry(month)
+                        .or_insert(SeenMonth {
+                            rows: Some(0),
+                            order: position,
+                            first: None,
+                            last: None,
+                            column: None,
+                        });
+                    slot.rows = match (slot.rows, block.rows) {
                         (Some(have), Some(more)) => Some(have + more),
                         _ => None,
                     };
+                    if let Some(span) = block.span {
+                        slot.first = Some(
+                            slot.first
+                                .take()
+                                .map_or(span.first.clone(), |f| f.min(span.first)),
+                        );
+                        slot.last = Some(
+                            slot.last
+                                .take()
+                                .map_or(span.last.clone(), |l| l.max(span.last)),
+                        );
+                        slot.column.get_or_insert(span.column);
+                    }
                 }
             }
         }
@@ -180,6 +269,7 @@ impl Export {
             months,
             datamodel,
             datamodel_path: inputs.datamodel.clone(),
+            models,
             schemas: inputs.schemas.clone(),
             base_url: inputs.base_url.clone(),
             problems,
@@ -193,33 +283,40 @@ impl Export {
             ..Rendered::default()
         };
         let empty = Seen::new();
+        let report_version = self.report_version();
         let mut shape_count = 0usize;
         for (table, entries) in &self.shapes {
             let declared = self.tables.get(table);
-            let model = self.datamodel.tables.get(table);
+            let dm = self.datamodel.tables.get(table);
+            let facts = self.model_facts(table);
+            let increments = match declared {
+                Some(t) => self.increments(table, t)?,
+                None => Vec::new(),
+            };
             let mut docs = Vec::new();
             for doc in fold(table, entries, &self.seen, &empty) {
-                let doc = ShapeDoc {
-                    declared,
-                    model,
-                    ..doc
-                };
+                let doc = ShapeDoc { declared, ..doc };
                 let matched = doc::increment(&doc);
-                let version = match matched {
-                    Some(m) => self.model_version(table, m.increment.ctl.as_deref())?,
-                    None => None,
-                };
                 let path = format!("nem/{table}/{}.schema.json", doc.id);
                 let id = format!("{}{path}", self.base_url);
-                let text = doc::render(&doc, &id, matched.map(|m| (m, version.as_deref())));
-                out.files.insert(path, text);
-                docs.push((doc, matched.map(|m| m.n())));
+                let description = declared
+                    .and_then(|t| t.description.as_deref())
+                    .or_else(|| dm.and_then(|m| m.description.as_deref()));
+                out.files
+                    .insert(path, doc::render(&doc, &id, description, matched));
+                docs.push((doc, matched));
                 shape_count += 1;
             }
-            out.files.insert(
-                format!("nem/{table}/index.json"),
-                doc::index(table, declared.is_some(), &docs),
-            );
+            let text = doc::table(&doc::TableDoc {
+                name: table,
+                declared,
+                model: dm,
+                facts: &facts,
+                report_version: report_version.as_deref(),
+                increments: &increments,
+                shapes: &docs,
+            });
+            out.files.insert(format!("nem/{table}/table.json"), text);
         }
         let counts = manifest::Counts {
             tables: self.shapes.len(),
@@ -230,7 +327,9 @@ impl Export {
                 .count(),
             shapes: shape_count,
         };
-        let manifest = manifest::render(&self.base_url, &self.months, counts, &out.files);
+        let versions: Vec<&str> = self.models.iter().map(|m| m.version.as_str()).collect();
+        let manifest =
+            manifest::render(&self.base_url, &self.months, counts, &versions, &out.files);
         out.files.insert("manifest.json".to_owned(), manifest);
         out.files
             .insert("LICENCE.md".to_owned(), LICENCE.to_owned());
@@ -238,17 +337,61 @@ impl Export {
         Ok(out)
     }
 
-    /// The data-model version the control file names in its history line.
-    fn model_version(
+    /// The data-model report's version, from its file name
+    /// (`mms_data_model_v5.0.0.1.json` -> `v5.0.0.1`).
+    fn report_version(&self) -> Option<String> {
+        let stem = self.datamodel_path.as_ref()?.file_stem()?.to_str()?;
+        Some(
+            stem.strip_prefix("mms_data_model_")
+                .unwrap_or(stem)
+                .to_owned(),
+        )
+    }
+
+    /// What the releases declare for a table.
+    fn model_facts(&self, table: &str) -> ModelFacts<'_> {
+        let mut facts = ModelFacts::default();
+        for m in &self.models {
+            if let Some(t) = m.tables.get(table) {
+                facts.keys.push((m.first_seen, &t.primary_key, &m.version));
+                facts.latest = Some((&m.version, t));
+            }
+        }
+        facts
+    }
+
+    /// Each increment with its control file read: the model version its
+    /// history line names and the loader type of every column.
+    fn increments<'a>(
         &self,
         table: &str,
-        ctl: Option<&str>,
-    ) -> Result<Option<String>, Box<Diagnostic>> {
-        let Some(ctl) = ctl else { return Ok(None) };
-        let path = self.schemas.join("nem").join(table).join("ctl").join(ctl);
-        let text = std::fs::read_to_string(&path)
-            .map_err(|e| Box::new(IoError::new(&path, e).diagnostic()))?;
-        Ok(model_version(&text))
+        t: &'a Table,
+    ) -> Result<Vec<IncrementDoc<'a>>, Box<Diagnostic>> {
+        let mut out = Vec::with_capacity(t.increments.len());
+        for i in &t.increments {
+            let mut doc = IncrementDoc {
+                increment: i,
+                model_version: None,
+                loader_types: BTreeMap::new(),
+            };
+            if let Some(name) = &i.ctl {
+                let path = self.schemas.join("nem").join(table).join("ctl").join(name);
+                let text = std::fs::read_to_string(&path)
+                    .map_err(|e| Box::new(IoError::new(&path, e).diagnostic()))?;
+                doc.model_version = model_version(&text);
+                // A control file that does not parse types nothing; the
+                // registry's own gate reports it.
+                doc.loader_types = match ctl::parse(&path.display().to_string(), &text) {
+                    Ok(p) => p
+                        .data_columns()
+                        .map(|c| (c.name.to_ascii_uppercase(), c.ty.render()))
+                        .collect(),
+                    Err(_) => BTreeMap::new(),
+                };
+            }
+            out.push(doc);
+        }
+        Ok(out)
     }
 }
 
@@ -280,13 +423,40 @@ fn census_months(schemas: &Path) -> Result<Vec<YearMonth>, Box<Diagnostic>> {
     Ok(months)
 }
 
-/// A file's blocks as `(shape, rows)`; a census taken before rows were
-/// counted gives `None`.
-fn blocks(entry: &FileEntry) -> Vec<(ShapeId, Option<u64>)> {
+/// One block of a census file, however old the file's form.
+struct Block {
+    id: ShapeId,
+    /// `None` for a census taken before rows were counted.
+    rows: Option<u64>,
+    /// `None` for a census taken before spans were recorded.
+    span: Option<Span>,
+}
+
+/// A file's blocks.
+fn blocks(entry: &FileEntry) -> Vec<Block> {
+    let bare = |id: &ShapeId| Block {
+        id: *id,
+        rows: None,
+        span: None,
+    };
     match entry {
-        FileEntry::One(id) => vec![(*id, None)],
-        FileEntry::Many(ids) => ids.iter().map(|id| (*id, None)).collect(),
-        FileEntry::Blocks(blocks) => blocks.iter().map(|b| (b.shape, Some(b.rows))).collect(),
+        FileEntry::One(id) => vec![bare(id)],
+        FileEntry::Many(ids) => ids.iter().map(bare).collect(),
+        FileEntry::Blocks(blocks) => blocks
+            .iter()
+            .map(|b| Block {
+                id: b.shape,
+                rows: Some(b.rows),
+                span: match (&b.first, &b.last, &b.time) {
+                    (Some(first), Some(last), Some(column)) => Some(Span {
+                        first: first.clone(),
+                        last: last.clone(),
+                        column: column.clone(),
+                    }),
+                    _ => None,
+                },
+            })
+            .collect(),
     }
 }
 
@@ -318,7 +488,6 @@ fn fold<'a>(
             .or_insert_with(|| ShapeDoc {
                 table,
                 declared: None,
-                model: None,
                 id: e.id,
                 report_type: &e.report_type,
                 report_subtype: &e.report_subtype,
@@ -354,6 +523,27 @@ pub fn model_version(ctl: &str) -> Option<String> {
             && number.bytes().all(|b| b.is_ascii_digit() || b == b'.');
         shaped.then(|| (*version).to_owned())
     })
+}
+
+/// A data-model report type as the create scripts spell it, so the two
+/// sources read alike: `NUMBER` is `NUMERIC`, `VARCHAR2` is `VARCHAR`,
+/// `DATE` is `TIMESTAMP(0)`; everything is upper case without spaces.
+pub fn logical_type(oracle: &str) -> String {
+    let compact: String = oracle
+        .chars()
+        .filter(|c| !c.is_whitespace())
+        .collect::<String>()
+        .to_ascii_uppercase();
+    if compact == "DATE" {
+        return "TIMESTAMP(0)".to_owned();
+    }
+    if let Some(rest) = compact.strip_prefix("NUMBER") {
+        return format!("NUMERIC{rest}");
+    }
+    if let Some(rest) = compact.strip_prefix("VARCHAR2") {
+        return format!("VARCHAR{rest}");
+    }
+    compact
 }
 
 #[cfg(test)]

@@ -95,6 +95,8 @@ pub struct BlockShape {
     pub version: u16,
     /// Its D rows.
     pub rows: u64,
+    /// Where its rows lie in time, when a date-like column was there.
+    pub span: Option<Span>,
 }
 
 /// The census of one month: per file name, its blocks in file order. A
@@ -190,27 +192,103 @@ pub struct RawBlock {
     pub columns: Vec<String>,
     /// D rows.
     pub rows: u64,
+    /// For every column whose first value is written as a date
+    /// (`YYYY/MM/DD…`): its index, and the least and greatest value over
+    /// every D row, as written.
+    pub bounds: Vec<(usize, Vec<u8>, Vec<u8>)>,
 }
 
-/// A sink that keeps only the I rows of a header-only scan.
+/// Where a block's rows lie in time: the least and greatest value of its
+/// time column over every D row, as written (AEMO's `YYYY/MM/DD HH:MM:SS`
+/// orders as text).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Span {
+    /// The least value.
+    pub first: String,
+    /// The greatest value.
+    pub last: String,
+    /// The column the values are of.
+    pub column: String,
+}
+
+/// Columns that name the time an observation is for, most specific first:
+/// the span of a block whose table declares no time column is of the first
+/// of these it has.
+const TARGET_TIME: [&str; 9] = [
+    "INTERVAL_DATETIME",
+    "DATETIME",
+    "SETTLEMENTDATE",
+    "TRADINGDATE",
+    "DAY",
+    "EFFECTIVEDATE",
+    "START_DATE",
+    "STARTDATE",
+    "RUN_DATETIME",
+];
+
+/// Whether a field is written as a date: `YYYY/MM/DD` at least.
+fn date_like(v: &[u8]) -> bool {
+    v.len() >= 10
+        && v[4] == b'/'
+        && v[7] == b'/'
+        && [0, 1, 2, 3, 5, 6, 8, 9]
+            .iter()
+            .all(|&i| v[i].is_ascii_digit())
+}
+
+/// A sink that keeps the I rows, counts the D rows of each block and
+/// tracks the least and greatest value of every date-like column.
 #[derive(Default)]
-struct Blocks(Vec<RawBlock>);
+struct Blocks {
+    blocks: Vec<RawBlock>,
+    /// Whether the current block's first D row has been seen.
+    probed: bool,
+}
 
 impl Sink for Blocks {
     fn comment(&mut self, _: &Row<'_>, _: Pos) -> Result<(), SinkError> {
         Ok(())
     }
     fn header(&mut self, irow: &IRow<'_>, _: Pos) -> Result<(), SinkError> {
-        self.0.push(RawBlock {
+        self.blocks.push(RawBlock {
             report_type: irow.report_type.to_owned(),
             report_subtype: irow.report_subtype.to_owned(),
             version: irow.version,
             columns: irow.columns.iter().map(|c| (*c).to_owned()).collect(),
             rows: 0,
+            bounds: Vec::new(),
         });
+        self.probed = false;
         Ok(())
     }
-    fn row(&mut self, _: &Row<'_>, _: Pos) -> Result<(), RowFailure> {
+    fn row(&mut self, row: &Row<'_>, _: Pos) -> Result<(), RowFailure> {
+        let Some(b) = self.blocks.last_mut() else {
+            return Ok(());
+        };
+        b.rows += 1;
+        // Data fields follow the four D,type,subtype,version cells.
+        if !self.probed {
+            self.probed = true;
+            for j in 0..b.columns.len() {
+                if let Some(v) = row.get(4 + j)
+                    && date_like(v)
+                {
+                    b.bounds.push((j, v.to_vec(), v.to_vec()));
+                }
+            }
+            return Ok(());
+        }
+        for (j, min, max) in &mut b.bounds {
+            if let Some(v) = row.get(4 + *j) {
+                if v < min.as_slice() {
+                    min.clear();
+                    min.extend_from_slice(v);
+                } else if v > max.as_slice() {
+                    max.clear();
+                    max.extend_from_slice(v);
+                }
+            }
+        }
         Ok(())
     }
     fn bad_row(&mut self, _: &[u8], _: Pos, _: &RowError) -> Flow {
@@ -219,14 +297,10 @@ impl Sink for Blocks {
     fn footer(&mut self, _: Option<u64>, _: u64, _: Pos) -> Result<(), SinkError> {
         Ok(())
     }
-    fn block_rows(&mut self, rows: u64) {
-        if let Some(b) = self.0.last_mut() {
-            b.rows = rows;
-        }
-    }
 }
 
-/// Every block of one CSV stream, in order: I rows only, D rows counted.
+/// Every block of one CSV stream, in order: I rows, D rows counted and
+/// their date-like columns bounded.
 pub fn read_blocks(
     reader: impl std::io::Read,
     buf: &mut Vec<u8>,
@@ -236,14 +310,13 @@ pub fn read_blocks(
         reader,
         &mut blocks,
         &ScanOptions {
-            headers_only: true,
             max_bad_rows: u64::MAX,
             ..Default::default()
         },
         buf,
     )
     .map_err(|e| Box::new(e.diagnostic()))?;
-    Ok(blocks.0)
+    Ok(blocks.blocks)
 }
 
 /// Every archived file of `month` (see [`MmsdmArchive::archived_files`]);
@@ -449,11 +522,30 @@ pub fn block_shape(
     file_table: Option<&str>,
     b: RawBlock,
 ) -> BlockShape {
-    let table = registry
+    let declared = registry
         .declared_by_pair(&b.report_type, &b.report_subtype)
-        .map(|id| registry.table(id).name.as_str());
+        .map(|id| registry.table(id));
+    let table = declared.map(|t| t.name.as_str());
     let keys: Vec<&str> = table.into_iter().chain(file_table).collect();
     let ctl = ctls.for_table(&keys);
+    // The span is of the table's time column when it is there and dated,
+    // else of the first time-naming column, else of the first dated column.
+    let bounded = |name: &str| {
+        b.columns
+            .iter()
+            .position(|c| c == name)
+            .and_then(|j| b.bounds.iter().find(|(i, ..)| *i == j))
+    };
+    let span = declared
+        .and_then(|t| t.time_column.as_deref())
+        .and_then(bounded)
+        .or_else(|| TARGET_TIME.iter().find_map(|n| bounded(n)))
+        .or_else(|| b.bounds.first())
+        .map(|(j, min, max)| Span {
+            first: String::from_utf8_lossy(min).into_owned(),
+            last: String::from_utf8_lossy(max).into_owned(),
+            column: b.columns[*j].clone(),
+        });
     let class = |column: &str| {
         ctl.and_then(|c| {
             c.data_columns()
@@ -465,6 +557,7 @@ pub fn block_shape(
     BlockShape {
         version: b.version,
         rows: b.rows,
+        span,
         shape: CanonicalShape {
             columns: b.columns.iter().map(|c| (c.clone(), class(c))).collect(),
             report_type: b.report_type,
@@ -487,12 +580,21 @@ pub enum FileEntry {
 }
 
 /// One block of a file in a month's census.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct BlockEntry {
     /// Its shape.
     pub shape: ShapeId,
     /// Its D rows.
     pub rows: u64,
+    /// The least value of its time column, as written.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub first: Option<String>,
+    /// The greatest value of its time column, as written.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub last: Option<String>,
+    /// The time column the values are of.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub time: Option<String>,
 }
 
 impl FileEntry {
@@ -645,6 +747,9 @@ pub fn record(
                     .map(|b| BlockEntry {
                         shape: b.shape.id(),
                         rows: b.rows,
+                        first: b.span.as_ref().map(|s| s.first.clone()),
+                        last: b.span.as_ref().map(|s| s.last.clone()),
+                        time: b.span.as_ref().map(|s| s.column.clone()),
                     })
                     .collect(),
             ),
@@ -730,6 +835,75 @@ SETTLEMENTDATE DATE "yyyy/mm/dd hh24:mi:ss", DUID CHAR(20), SCADAVALUE FLOAT EXT
         Archive::write_sidecar(&path, &sidecar).unwrap();
     }
 
+    /// The span of a block is the least and greatest value of its time
+    /// column over every row, whatever order the rows come in; the column
+    /// is the table's declared one, else the first time-naming one, else
+    /// the first dated one.
+    #[test]
+    fn a_block_spans_its_rows_by_the_time_column() {
+        let reg = Registry::load_embedded();
+        let csv = b"C,x,y\r\n\
+I,DISPATCH,UNIT_SCADA,1,SETTLEMENTDATE,DUID,SCADAVALUE,LASTCHANGED\r\n\
+D,DISPATCH,UNIT_SCADA,1,\"2026/08/02 00:05:00\",U1,1.5,\"2026/09/01 10:00:00\"\r\n\
+D,DISPATCH,UNIT_SCADA,1,\"2026/08/01 00:05:00\",U2,2.5,\"2026/09/02 10:00:00\"\r\n\
+D,DISPATCH,UNIT_SCADA,1,\"2026/08/31 23:55:00\",U3,3.5,\"2026/08/31 10:00:00\"\r\n\
+I,UTILAKE_TEST,BYVOCAB,1,PRICE,TRADINGDATE,EFFECTIVEDATE\r\n\
+D,UTILAKE_TEST,BYVOCAB,1,1,2026/08/03,2020/01/01\r\n\
+D,UTILAKE_TEST,BYVOCAB,1,2,2026/08/01,2021/01/01\r\n\
+I,UTILAKE_TEST,FIRSTDATED,1,A,WHEN,B\r\n\
+D,UTILAKE_TEST,FIRSTDATED,1,x,2026/08/05,2026/08/09\r\n\
+D,UTILAKE_TEST,FIRSTDATED,1,y,2026/08/04,2026/08/08\r\n\
+I,UTILAKE_TEST,UNDATED,1,A,B\r\n\
+D,UTILAKE_TEST,UNDATED,1,1,2\r\n\
+C,\"END OF REPORT\",14\r\n";
+        let mut buf = Vec::new();
+        let blocks = read_blocks(&csv[..], &mut buf).unwrap();
+        assert_eq!(blocks.len(), 4);
+        assert_eq!(blocks[0].rows, 3);
+        assert_eq!(
+            blocks[0].bounds.len(),
+            2,
+            "SETTLEMENTDATE and LASTCHANGED are dated"
+        );
+        let ctls = Ctls::parse([(
+            "PUBLIC_ARCHIVE#DISPATCH_UNIT_SCADA#FILE01#202608.ctl",
+            SCADA_CTL,
+        )]);
+        let spans: Vec<Option<Span>> = blocks
+            .into_iter()
+            .map(|b| block_shape(&reg, &ctls, None, b).span)
+            .collect();
+        assert_eq!(
+            spans[0],
+            Some(Span {
+                first: "2026/08/01 00:05:00".into(),
+                last: "2026/08/31 23:55:00".into(),
+                column: "SETTLEMENTDATE".into()
+            }),
+            "the declared time column, min and max over unordered rows"
+        );
+        assert_eq!(
+            spans[1],
+            Some(Span {
+                first: "2026/08/01".into(),
+                last: "2026/08/03".into(),
+                column: "TRADINGDATE".into()
+            }),
+            "no declaration: TRADINGDATE outranks EFFECTIVEDATE in the vocabulary"
+        );
+        assert_eq!(
+            spans[2],
+            Some(Span {
+                first: "2026/08/04".into(),
+                last: "2026/08/05".into(),
+                column: "WHEN".into()
+            }),
+            "no known name: the first dated column"
+        );
+        assert_eq!(spans[3], None);
+        assert!(date_like(b"2026/08/01") && !date_like(b"2026-08-01") && !date_like(b"1.5"));
+    }
+
     #[test]
     fn every_block_of_every_archived_file_is_recorded_with_its_rows() {
         let dir = tempfile::tempdir().unwrap();
@@ -778,6 +952,18 @@ SETTLEMENTDATE DATE "yyyy/mm/dd hh24:mi:ss", DUID CHAR(20), SCADAVALUE FLOAT EXT
             [scada_rows as u64, 2, 1]
         );
         assert_eq!(
+            blocks[0].span,
+            Some(Span {
+                first: "2026/08/01 00:05:00".into(),
+                last: "2026/08/01 00:05:00".into(),
+                column: "SETTLEMENTDATE".into()
+            })
+        );
+        assert!(
+            blocks[1].span.is_none() && blocks[2].span.is_none(),
+            "no dated column"
+        );
+        assert_eq!(
             blocks[0].shape.columns,
             [
                 ("SETTLEMENTDATE".to_owned(), TypeClass::Timestamp),
@@ -807,7 +993,10 @@ SETTLEMENTDATE DATE "yyyy/mm/dd hh24:mi:ss", DUID CHAR(20), SCADAVALUE FLOAT EXT
                     .iter()
                     .map(|b| BlockEntry {
                         shape: b.shape.id(),
-                        rows: b.rows
+                        rows: b.rows,
+                        first: b.span.as_ref().map(|s| s.first.clone()),
+                        last: b.span.as_ref().map(|s| s.last.clone()),
+                        time: b.span.as_ref().map(|s| s.column.clone()),
                     })
                     .collect()
             )

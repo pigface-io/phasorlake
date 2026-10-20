@@ -13,15 +13,21 @@
 //! [`fixtures`] cuts the test fixtures of a month from the local archive:
 //! every control file, the README, and the head of every data file.
 //!
+//! [`models`] reads the create scripts the archive carries ([`ddl`]) into
+//! `schemas/nem/models/`, one file per data-model release: the one record
+//! of how AEMO's declared keys and types changed.
+//!
 //! [`export`] writes every table and shape as JSON Schema, with the months
 //! the census saw each in, for the public `nem-schemas` repository.
 
 pub mod census;
 pub mod datamodel;
+pub mod ddl;
 pub mod dmreport;
 pub mod export;
 pub mod fixtures;
 pub mod migrate;
+pub mod models;
 pub mod pdr;
 pub mod reports;
 pub mod standing;

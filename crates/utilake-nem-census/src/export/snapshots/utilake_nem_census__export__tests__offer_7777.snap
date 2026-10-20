@@ -37,13 +37,20 @@ expression: "r.files[\"nem/OFFER_X/7777777777777777.schema.json\"]"
     "months": [
       [
         "2024-10",
-        7
+        7,
+        0,
+        null,
+        null
       ],
       [
         "2024-11",
-        8
+        8,
+        0,
+        null,
+        null
       ]
     ],
+    "span": null,
     "versions": [
       1
     ]
@@ -69,6 +76,7 @@ expression: "r.files[\"nem/OFFER_X/7777777777777777.schema.json\"]"
     "shape_format": 1
   },
   "x-table": {
+    "$ref": "table.json",
     "declared": false,
     "name": "OFFER_X"
   }

@@ -12,8 +12,6 @@ expression: "r.files[\"nem/TYPES/5555555555555555.schema.json\"]"
         "boolean",
         "null"
       ],
-      "x-column-id": 5,
-      "x-lake-type": "boolean",
       "x-type-class": "unknown"
     },
     "D": {
@@ -21,8 +19,6 @@ expression: "r.files[\"nem/TYPES/5555555555555555.schema.json\"]"
         "number",
         "null"
       ],
-      "x-column-id": 3,
-      "x-lake-type": "double",
       "x-type-class": "unknown"
     },
     "DAY": {
@@ -32,8 +28,6 @@ expression: "r.files[\"nem/TYPES/5555555555555555.schema.json\"]"
         "null"
       ],
       "x-aemo-format": "YYYY/MM/DD",
-      "x-column-id": 6,
-      "x-lake-type": "date",
       "x-type-class": "unknown"
     },
     "EFFECTIVEDATE": {
@@ -43,8 +37,6 @@ expression: "r.files[\"nem/TYPES/5555555555555555.schema.json\"]"
         "null"
       ],
       "x-aemo-format": "YYYY/MM/DD HH24:MI:SS",
-      "x-column-id": 1,
-      "x-lake-type": "timestamp_ns",
       "x-type-class": "unknown"
     },
     "L": {
@@ -52,8 +44,6 @@ expression: "r.files[\"nem/TYPES/5555555555555555.schema.json\"]"
         "integer",
         "null"
       ],
-      "x-column-id": 4,
-      "x-lake-type": "long",
       "x-type-class": "unknown"
     },
     "S": {
@@ -61,8 +51,6 @@ expression: "r.files[\"nem/TYPES/5555555555555555.schema.json\"]"
         "string",
         "null"
       ],
-      "x-column-id": 2,
-      "x-lake-type": "string",
       "x-type-class": "unknown"
     },
     "X": {
@@ -72,6 +60,10 @@ expression: "r.files[\"nem/TYPES/5555555555555555.schema.json\"]"
   "title": "TYPES, shape 5555555555555555",
   "type": "object",
   "x-format": 1,
+  "x-increment": {
+    "n": 1,
+    "status": "conforms"
+  },
   "x-market": "nem",
   "x-seen": {
     "first": "2024-11",
@@ -79,9 +71,13 @@ expression: "r.files[\"nem/TYPES/5555555555555555.schema.json\"]"
     "months": [
       [
         "2024-11",
-        1
+        1,
+        0,
+        null,
+        null
       ]
     ],
+    "span": null,
     "versions": [
       1
     ]
@@ -123,20 +119,8 @@ expression: "r.files[\"nem/TYPES/5555555555555555.schema.json\"]"
     "shape_format": 1
   },
   "x-table": {
+    "$ref": "table.json",
     "declared": true,
-    "load_mode": "snapshot",
-    "name": "TYPES",
-    "primary_key": [
-      "EFFECTIVEDATE"
-    ],
-    "temporal": {
-      "entity": [],
-      "order": [],
-      "origin": "hand",
-      "valid": {
-        "column": "EFFECTIVEDATE",
-        "kind": "from"
-      }
-    }
+    "name": "TYPES"
   }
 }

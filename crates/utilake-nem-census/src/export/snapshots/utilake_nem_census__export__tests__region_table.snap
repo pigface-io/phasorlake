@@ -1,0 +1,87 @@
+---
+source: crates/utilake-nem-census/src/export/tests.rs
+expression: "r.files[\"nem/REGION/table.json\"]"
+---
+{
+  "columns": [
+    {
+      "comment": "Region identifier",
+      "id": 1,
+      "lake_type": "string",
+      "model_type": "VARCHAR(10)",
+      "model_type_source": "5.6",
+      "name": "REGIONID",
+      "nullable": false
+    },
+    {
+      "id": 2,
+      "lake_type": "string",
+      "model_type": "VARCHAR(64)",
+      "model_type_source": "5.6",
+      "name": "DESCRIPTION",
+      "nullable": true
+    }
+  ],
+  "declared": true,
+  "description": "Regions, as declared",
+  "increments": [
+    {
+      "aemo_model_version": "v4.23",
+      "columns": [
+        {
+          "loader_type": "CHAR(10)",
+          "name": "REGIONID"
+        },
+        {
+          "loader_type": "CHAR(64)",
+          "name": "DESCRIPTION"
+        }
+      ],
+      "ctl": "001.ctl",
+      "ctl_sha256": "cdc1be0bf882807bfed97fb027ed51c411d6afb117c824f8838310a867a6727b",
+      "from": "2015-01",
+      "n": 1
+    }
+  ],
+  "key_history": [
+    {
+      "columns": [
+        "REGIONID"
+      ],
+      "from": "2022-10",
+      "source": "MMSDM_create_v5.6.zip"
+    }
+  ],
+  "load_mode": "snapshot",
+  "name": "REGION",
+  "package": "MARKET_CONFIG",
+  "primary_key": [
+    "REGIONID"
+  ],
+  "shapes": [
+    {
+      "columns": 2,
+      "first": "2015-01",
+      "id": "4444444444444444",
+      "increment": 1,
+      "last": "2024-11",
+      "report_subtype": "REGION",
+      "report_type": "DISPATCH",
+      "status": "conforms",
+      "versions": [
+        1
+      ]
+    }
+  ],
+  "temporal": {
+    "entity": [
+      "REGIONID"
+    ],
+    "order": [],
+    "origin": "derived",
+    "valid": {
+      "kind": "timeless"
+    }
+  },
+  "x-format": 1
+}
