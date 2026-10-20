@@ -213,12 +213,72 @@ pub struct TableDoc<'a> {
     pub shapes: &'a [(ShapeDoc<'a>, Option<Matched<'a>>)],
 }
 
+/// The table as an Iceberg (format version 3) table: its schema, its
+/// partition spec, and its eras in the order the archive published them,
+/// each the schema updates that take the table from the columns published
+/// before it to its own (a column is added once and never dropped: a list
+/// without it leaves it null).
+fn iceberg(x: &Table, shapes: &[(ShapeDoc<'_>, Option<Matched<'_>>)]) -> Value {
+    let (schema, issue) = x.iceberg_schema();
+    let mut out = Map::new();
+    out.insert("format-version".into(), json!(3));
+    out.insert("schema".into(), schema.to_json());
+    out.insert("partition-spec".into(), x.partition_spec().to_json());
+    if let Some(e) = issue {
+        out.insert("x-key-issue".into(), json!(e.to_string()));
+    }
+    let mut seen: Vec<&str> = Vec::new();
+    let eras: Vec<Value> = shapes
+        .iter()
+        .map(|(s, _)| {
+            let names: Vec<&str> = s.columns.iter().map(|c| c.name.as_str()).collect();
+            let updates: Vec<Value> = names
+                .iter()
+                .filter(|n| !seen.contains(n))
+                .filter_map(|n| schema.by_name(n))
+                .map(|f| {
+                    json!({
+                        "action": "add-column",
+                        "field-id": f.id,
+                        "name": f.name,
+                        "type": f.ty.name(),
+                        "required": f.required,
+                    })
+                })
+                .collect();
+            let absent: Vec<&str> = seen
+                .iter()
+                .copied()
+                .filter(|n| !names.contains(n))
+                .collect();
+            for n in &names {
+                if !seen.contains(n) {
+                    seen.push(n);
+                }
+            }
+            json!({
+                "shape": s.id.to_string(),
+                "first": s.first.to_string(),
+                "last": s.last.to_string(),
+                "versions": s.versions,
+                "updates": updates,
+                "not-published": absent,
+            })
+        })
+        .collect();
+    out.insert("eras".into(), Value::Array(eras));
+    Value::Object(out)
+}
+
 /// `table.json`.
 pub fn table(d: &TableDoc<'_>) -> String {
     let mut t = Map::new();
     t.insert("name".into(), json!(d.name));
     t.insert("declared".into(), json!(d.declared.is_some()));
     t.insert("x-format".into(), json!(FORMAT));
+    if let Some(x) = d.declared {
+        t.insert("iceberg".into(), iceberg(x, d.shapes));
+    }
     let description = d
         .declared
         .and_then(|x| x.description.as_deref())

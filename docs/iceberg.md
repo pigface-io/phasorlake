@@ -46,6 +46,14 @@ partitions it by month of its time column. Iceberg refuses a key with a
 nullable or float column. Such a key is left out and the reason returned,
 until the column's type is chosen from its observed values.
 
+The export (`just schema-export`) writes each declared table's Iceberg
+schema and partition spec into its `table.json`, with its eras: one per
+column list the archive published, in order, each the `add-column`
+updates that take the table from the columns published before it to its
+own. A column is never dropped; a list without it leaves it null. A
+block whose column list the archive published, and whose columns the
+table has, conforms in strict mode whatever increment is in force.
+
 ## Field ids
 
 Iceberg identifies a column by its field id, not its name, and never reuses

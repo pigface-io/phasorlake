@@ -200,6 +200,34 @@ impl Registry {
                 .filter(|k| !irow.columns.contains(&k.as_str()))
                 .collect()
         };
+        // A column list the archive published for this table, all of whose
+        // columns the table has: the data says it is right, whatever
+        // increment its control file is in force. It conforms.
+        if missing_keys().is_empty()
+            && irow.columns.iter().all(|c| t.column(c).is_some())
+            && !self.shape_ids(irow, None).is_empty()
+        {
+            let d = self.deviation((id, inc.n, fp, irow.version), || Deviation {
+                plan: Arc::new(ConformancePlan::new(
+                    t,
+                    self.market_of(id),
+                    &shapes.lake,
+                    inc.n,
+                    irow.columns,
+                    &self.table_dir(id),
+                )),
+                status: Status::Conforms,
+                warnings: Vec::new(),
+            });
+            return Ok(Resolved {
+                table: id,
+                version: inc.n,
+                status: d.status.clone(),
+                plan: d.plan.clone(),
+                source: self.schema_source(id),
+                warnings,
+            });
+        }
         if opts.mode == Mode::Strict {
             if let Some(k) = missing_keys().first() {
                 return Err(ResolveError::MissingKey {
@@ -417,6 +445,35 @@ mod tests {
         assert_ne!(
             r.resolve(&scada(&THREE), opts).unwrap().plan_hash(),
             res.plan_hash()
+        );
+    }
+
+    /// A column list the archive published conforms in strict mode even
+    /// where the increment in force lists other columns.
+    #[test]
+    fn a_published_column_list_conforms() {
+        let mut shape = crate::file_model::shapes::tests::scada_entry();
+        let four = ["SETTLEMENTDATE", "DUID", "SCADAVALUE", "LASTCHANGED"];
+        shape.columns.push(shape.columns[0].clone());
+        shape.columns[3].name = "LASTCHANGED".into();
+        shape.id = shape.shape().id();
+        let r = Registry::from_set(SchemaSet {
+            tables: vec![unit_scada()],
+            shapes: [("DISPATCH_UNIT_SCADA".to_owned(), vec![shape])].into(),
+            ..Default::default()
+        });
+        let strict = ResolveOptions { mode: Mode::Strict };
+        let res = r
+            .resolve_in(&scada(&four), strict, month("2024-06"))
+            .unwrap();
+        assert_eq!((res.status, res.version), (Status::Conforms, 1));
+        assert!(res.warnings.is_empty());
+        assert_eq!(res.plan.routes.len(), 4);
+        // A list nobody published still deviates.
+        let three = ["DUID", "SETTLEMENTDATE", "SCADAVALUE"];
+        assert!(
+            r.resolve_in(&scada(&three), strict, month("2026-08"))
+                .is_err()
         );
     }
 

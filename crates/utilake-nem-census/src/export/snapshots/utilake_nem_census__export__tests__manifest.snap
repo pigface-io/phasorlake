@@ -21,14 +21,14 @@ expression: "r.files[\"manifest.json\"]"
     "nem/OFFER_X/7777777777777777.schema.json": "17643d4fa246884d52ad904471130931bbfe2379789ed56a626c68adcc675463",
     "nem/OFFER_X/table.json": "a01a24cace9b5be8d001773e8e8418efb93a2e5db39e9f474f4db65c9a2223d0",
     "nem/REGION/4444444444444444.schema.json": "8f0dac9401c21a4b8a9066c6179cf33dcb9816a095c4e7ede25aa5ac505d39dc",
-    "nem/REGION/table.json": "30af1519f90a0cbe9cd00126fb1e43e02ca31702aeb7306d03ee766ffc6f4bc2",
+    "nem/REGION/table.json": "6809d82fc8b936753931f3071ef41466905255a541c12d2f73f017049eb18953",
     "nem/TYPES/5555555555555555.schema.json": "41d660f8aab728db1a098b80515754901b3643aaf7511492881b4c6f4f38862a",
     "nem/TYPES/6666666666666666.schema.json": "a7db2cc47d2dd523d9b3d8954e51f9fa4747b8ff9d0bd9c20acd0675fb76de86",
-    "nem/TYPES/table.json": "82b2dbdd86f7e1241bfba357ea4c531614995181cb0cdfa11f9f2e1e0ffaac77",
+    "nem/TYPES/table.json": "e8cdcc9a77726897db5bcc0e7d76753077c4f245e6d53d2171dc7fde2e6228d7",
     "nem/UNIT/1111111111111111.schema.json": "4705ab5d8c767139865ba1f39718f16a740e74afde8bf226455051e9e09b7976",
     "nem/UNIT/2222222222222222.schema.json": "fea14e07b565f23821dc0eac46f44c14cc1b024e466e5df9f2f9391c283eaddc",
     "nem/UNIT/3333333333333333.schema.json": "420c0e44792cfe4f867a90c618a11e9409df6f1a9d6c40ddf330ee83bb3b43c2",
-    "nem/UNIT/table.json": "1e14f70bc93f36fbdcfc972fdd47ba2f013ce64659aa411b43c137b478dcd83a"
+    "nem/UNIT/table.json": "af400ec18b3fbd0ef6574782a46c6542e867c42d9cab8762591d2a9a5f29212c"
   },
   "shapes": 7,
   "tables": 4

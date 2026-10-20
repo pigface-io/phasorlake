@@ -41,6 +41,121 @@ expression: "r.files[\"nem/UNIT/table.json\"]"
   ],
   "declared": true,
   "description": "Unit MW from SCADA.",
+  "iceberg": {
+    "eras": [
+      {
+        "first": "2015-01",
+        "last": "2024-09",
+        "not-published": [],
+        "shape": "1111111111111111",
+        "updates": [
+          {
+            "action": "add-column",
+            "field-id": 1,
+            "name": "SETTLEMENTDATE",
+            "required": true,
+            "type": "timestamptz_ns"
+          },
+          {
+            "action": "add-column",
+            "field-id": 2,
+            "name": "DUID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "action": "add-column",
+            "field-id": 3,
+            "name": "SCADAVALUE",
+            "required": false,
+            "type": "double"
+          }
+        ],
+        "versions": [
+          1,
+          2
+        ]
+      },
+      {
+        "first": "2024-10",
+        "last": "2024-11",
+        "not-published": [],
+        "shape": "2222222222222222",
+        "updates": [
+          {
+            "action": "add-column",
+            "field-id": 4,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz_ns"
+          }
+        ],
+        "versions": [
+          1
+        ]
+      },
+      {
+        "first": "2024-11",
+        "last": "2024-11",
+        "not-published": [
+          "SCADAVALUE",
+          "LASTCHANGED"
+        ],
+        "shape": "3333333333333333",
+        "updates": [],
+        "versions": [
+          3
+        ]
+      }
+    ],
+    "format-version": 3,
+    "partition-spec": {
+      "fields": [
+        {
+          "field-id": 1000,
+          "name": "settlementdate_month",
+          "source-id": 1,
+          "transform": "month"
+        }
+      ],
+      "spec-id": 0
+    },
+    "schema": {
+      "fields": [
+        {
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz_ns"
+        },
+        {
+          "id": 2,
+          "name": "DUID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "SCADAVALUE",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "kept as text",
+          "id": 4,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz_ns"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  },
   "increments": [
     {
       "aemo_ctl": "PUBLIC_DVD_UNIT_201501.ctl",

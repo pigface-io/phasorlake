@@ -368,11 +368,12 @@ mod tests {
             Some("SETTLEMENTDATE,DUID,SCADAVALUE")
         );
         assert!(d.observed.as_deref().unwrap().ends_with(",QUALITY"));
-        // The 2026 shape is a deviation in 2024: the month decides.
+        // The 2026 shape in 2024: published, every column the table's, so
+        // it conforms whatever increment is in force.
         let now = entry(&DECLARED, 1, "2026-08");
         let r = registry(vec![now.clone()]);
         let found = check(&r, &census(&[("2024-06", "D.zip", now.id)]));
-        assert_eq!(found[0].code, "schema.census_deviates");
+        assert!(found.is_empty(), "{found:?}");
         // An id no shapes file records.
         let found = check(&r, &census(&[("2015-03", "D.zip", ShapeId(42))]));
         assert_eq!(found[0].code, "schema.census_unknown_shape");
