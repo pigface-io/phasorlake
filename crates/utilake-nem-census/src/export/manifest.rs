@@ -57,7 +57,11 @@ pub fn render(
 /// is written and never compared.
 pub fn provenance(schemas: &Path, datamodel: Option<&Path>) -> String {
     let git = |args: &[&str]| -> Option<String> {
+        // The repository of `schemas`, not one a git hook running us names.
         let out = Command::new("git")
+            .env_remove("GIT_DIR")
+            .env_remove("GIT_WORK_TREE")
+            .env_remove("GIT_INDEX_FILE")
             .arg("-C")
             .arg(schemas)
             .args(args)
