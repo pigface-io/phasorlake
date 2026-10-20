@@ -2858,6 +2858,7 @@ dependencies = [
  "url",
  "utilake-acquire",
  "utilake-core",
+ "utilake-iceberg",
  "utilake-kit",
  "utilake-mms-decode",
  "utilake-mms-registry",

@@ -18,6 +18,7 @@
 //! A month whose census file exists is done; running again continues with
 //! the months that are not.
 
+use crate::profile::ColumnProfile;
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
@@ -196,6 +197,8 @@ pub struct RawBlock {
     /// (`YYYY/MM/DD…`): its index, and the least and greatest value over
     /// every D row, as written.
     pub bounds: Vec<(usize, Vec<u8>, Vec<u8>)>,
+    /// Every column's profile, in column order, over every D row.
+    pub profile: Vec<ColumnProfile>,
 }
 
 /// Where a block's rows lie in time: the least and greatest value of its
@@ -257,6 +260,7 @@ impl Sink for Blocks {
             columns: irow.columns.iter().map(|c| (*c).to_owned()).collect(),
             rows: 0,
             bounds: Vec::new(),
+            profile: vec![ColumnProfile::default(); irow.columns.len()],
         });
         self.probed = false;
         Ok(())
@@ -267,6 +271,9 @@ impl Sink for Blocks {
         };
         b.rows += 1;
         // Data fields follow the four D,type,subtype,version cells.
+        for (j, p) in b.profile.iter_mut().enumerate() {
+            p.observe(row.get(4 + j));
+        }
         if !self.probed {
             self.probed = true;
             for j in 0..b.columns.len() {
@@ -865,6 +872,19 @@ C,\"END OF REPORT\",14\r\n";
             2,
             "SETTLEMENTDATE and LASTCHANGED are dated"
         );
+        // Every column is profiled from its rows, quoted or not.
+        let kinds: Vec<_> = blocks[0].profile.iter().map(|p| p.kind).collect();
+        assert_eq!(
+            kinds,
+            [
+                utilake_iceberg::Kind::Timestamp,
+                utilake_iceberg::Kind::Text,
+                utilake_iceberg::Kind::Decimal,
+                utilake_iceberg::Kind::Timestamp
+            ]
+        );
+        assert_eq!(blocks[1].profile[1].kind, utilake_iceberg::Kind::Date);
+        assert_eq!(blocks[3].profile[0].nulls, 0);
         let ctls = Ctls::parse([(
             "PUBLIC_ARCHIVE#DISPATCH_UNIT_SCADA#FILE01#202608.ctl",
             SCADA_CTL,

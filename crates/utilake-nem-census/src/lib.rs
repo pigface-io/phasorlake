@@ -29,6 +29,7 @@ pub mod fixtures;
 pub mod migrate;
 pub mod models;
 pub mod pdr;
+pub mod profile;
 pub mod reports;
 pub mod standing;
 pub mod sync;

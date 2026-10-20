@@ -17,6 +17,7 @@ path = "src/main.rs"
 
 [dependencies]
 utilake-core.workspace = true
+utilake-iceberg.workspace = true
 utilake-kit.workspace = true
 utilake-acquire.workspace = true
 utilake-mms-registry.workspace = true
