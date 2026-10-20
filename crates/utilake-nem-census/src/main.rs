@@ -31,11 +31,20 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Cmd {
-    /// Record every block of every archived file of each month: its shape
-    /// and rows, into `{schemas}/nem/census/{YYYY-MM}.toml` and
-    /// `{schemas}/nem/shapes/{TABLE}.toml`. Reads the local archive only;
-    /// download a month first with `utilake fetch nem`. A month already
-    /// recorded is skipped, so a run that stops can be run again.
+    /// Write every table's shapes file again from every census file
+    /// recorded (the census and reports commands do this when they end).
+    Fold {
+        /// The schemas directory.
+        #[arg(long, default_value = "schemas")]
+        schemas: PathBuf,
+    },
+    /// Record every block of every archived file of each month: its shape,
+    /// rows, time span and what each column held, with the file's sha256
+    /// and publish time, into `{schemas}/nem/census/{YYYY-MM}.toml`; then
+    /// fold every census into `{schemas}/nem/shapes/{TABLE}.toml`. Reads
+    /// the local archive only; download a month first with `utilake fetch
+    /// nem`. A month already recorded is skipped, so a run that stops can
+    /// be run again.
     Census {
         /// First month.
         #[arg(long, value_name = "YYYY-MM")]
@@ -46,6 +55,10 @@ enum Cmd {
         /// Take the census of months already recorded again.
         #[arg(long)]
         again: bool,
+        /// Leave the shapes as they are (`fold` them later): for several
+        /// censuses of other months run at once.
+        #[arg(long)]
+        no_fold: bool,
         /// The utilake home whose archive is read (default `~/.utilake`).
         #[arg(long, env = "UTILAKE_HOME")]
         home: Option<PathBuf>,
@@ -246,17 +259,23 @@ fn fail(d: &utilake_core::Diagnostic) -> ExitCode {
 fn main() -> ExitCode {
     let cli = Cli::parse();
     match cli.cmd {
+        Cmd::Fold { schemas } => {
+            match fold_shapes(&schemas, &utilake_mms_registry::Registry::load_embedded()) {
+                Ok(()) => ExitCode::SUCCESS,
+                Err(c) => c,
+            }
+        }
         Cmd::Census {
             from,
             to,
             again,
+            no_fold,
             home,
             schemas,
             base,
         } => census(
-            from,
-            to.unwrap_or(from),
-            again,
+            (from, to.unwrap_or(from)),
+            (again, no_fold),
             home.as_deref(),
             &schemas,
             &base,
@@ -416,9 +435,8 @@ fn scratch() -> Result<tempfile::TempDir, ExitCode> {
 
 /// `census`: one month after another, each recorded once complete.
 fn census(
-    from: utilake_core::YearMonth,
-    to: utilake_core::YearMonth,
-    again: bool,
+    (from, to): (utilake_core::YearMonth, utilake_core::YearMonth),
+    (again, no_fold): (bool, bool),
     home: Option<&Path>,
     schemas: &Path,
     base: &str,
@@ -448,18 +466,37 @@ fn census(
             eprintln!("error: {}", d.render());
             code = ExitCode::from(3);
         }
-        let added = match record(schemas, &registry, &census) {
+        let blocks = match record(schemas, &census) {
             Ok(n) => n,
             Err(e) => return fail(&e.diagnostic()),
         };
-        let blocks: usize = census.files.values().map(Vec::len).sum();
         eprintln!(
-            "{month}: {} files, {blocks} blocks, {added} new shape(s), {} file(s) unread",
+            "{month}: {} files, {blocks} blocks, {} file(s) unread",
             census.files.len(),
             census.problems.len()
         );
     }
-    code
+    if no_fold {
+        return code;
+    }
+    match fold_shapes(schemas, &registry) {
+        Ok(()) => code,
+        Err(c) => c,
+    }
+}
+
+/// Folds every census into the shapes files and says what it wrote.
+fn fold_shapes(schemas: &Path, registry: &utilake_mms_registry::Registry) -> Result<(), ExitCode> {
+    match utilake_nem_census::fold::fold(schemas, registry) {
+        Ok(f) => {
+            eprintln!(
+                "fold: {} month(s), {} table(s), {} shape(s)",
+                f.months, f.tables, f.shapes
+            );
+            Ok(())
+        }
+        Err(e) => Err(fail(&e.diagnostic())),
+    }
 }
 
 /// `reports`: one folder after another, each recorded once complete.
@@ -511,17 +548,16 @@ fn reports(
                     eprintln!("Reports/{root}/{rel}: recorded already");
                     continue;
                 }
-                let (census, shapes) = census_folder(&registry, &mut ctls, &files, tmp.path());
+                let census = census_folder(&registry, &mut ctls, &files, tmp.path());
                 for u in &census.unread {
                     eprintln!("error: Reports/{root}/{rel}: {} {}", u.file, u.error);
                     code = ExitCode::from(3);
                 }
-                let added = match record_folder(schemas, &registry, root, &rel, &census, &shapes) {
-                    Ok(n) => n,
-                    Err(e) => return fail(&e.diagnostic()),
-                };
+                if let Err(e) = record_folder(schemas, root, &rel, &census) {
+                    return fail(&e.diagnostic());
+                }
                 eprintln!(
-                    "Reports/{root}/{rel}: {} files, {} CSVs, {} month-shape(s), {added} new shape(s), {} unread",
+                    "Reports/{root}/{rel}: {} files, {} CSVs, {} month-shape(s), {} unread",
                     census.files,
                     census.csvs,
                     census.blocks.len(),
@@ -530,7 +566,10 @@ fn reports(
             }
         }
     }
-    code
+    match fold_shapes(schemas, &registry) {
+        Ok(()) => code,
+        Err(c) => c,
+    }
 }
 
 /// `fixtures`: one month's fixtures from the local archive.
@@ -745,11 +784,6 @@ fn sync(
         Ok(s) => s,
         Err(d) => return fail(&d),
     };
-    let shapes: Vec<_> = match utilake_mms_registry::file_model::blob::SchemaSet::read_dir(schemas)
-    {
-        Ok(set) => set.shapes.into_values().flatten().collect(),
-        Err(e) => return fail(&e.diagnostic()),
-    };
     if rebuild {
         s.rebuild();
     }
@@ -772,7 +806,7 @@ fn sync(
             code = ExitCode::from(3);
         }
         let evidence = match utilake_nem_census::census::read_month(schemas, month) {
-            Ok(Some(files)) => Evidence::new(&files, &shapes),
+            Ok(Some(files)) => Evidence::new(&files),
             Ok(None) => {
                 eprintln!(
                     "note: {month} has no census; new tables are skipped and no version is recorded (`just census {month}` first)"

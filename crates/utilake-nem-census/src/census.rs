@@ -30,7 +30,7 @@ use utilake_mms_decode::scan::{Flow, Pos, ScanOptions, Sink, scan_with};
 use utilake_mms_decode::{Row, RowError, RowFailure, SinkError};
 use utilake_mms_registry::Registry;
 use utilake_mms_registry::file_model::ctl::CtlFile;
-use utilake_mms_registry::file_model::shapes::{ShapeEntry, parse_shapes, render_shapes};
+use utilake_mms_registry::file_model::shapes::{ShapeEntry, parse_shapes};
 use utilake_mms_registry::{CanonicalShape, ShapeId, TypeClass};
 use utilake_nem::MmsdmArchive;
 
@@ -90,7 +90,7 @@ impl Diagnose for CensusError {
 /// One block of one file, as the census saw it.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct BlockShape {
-    /// The block's shape.
+    /// The block's shape: its report pair and column names.
     pub shape: CanonicalShape,
     /// The version AEMO stamped on it.
     pub version: u16,
@@ -98,6 +98,28 @@ pub struct BlockShape {
     pub rows: u64,
     /// Where its rows lie in time, when a date-like column was there.
     pub span: Option<Span>,
+    /// What the month's control file declares each column as, in column
+    /// order; `unknown` where none does.
+    pub ctl: Vec<TypeClass>,
+    /// What each column's values were, in column order.
+    pub profile: Vec<ColumnProfile>,
+}
+
+/// One file of a month and where it came from.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct FileCensus {
+    /// The archived file it was read out of: itself, or a whole-month zip.
+    pub source: String,
+    /// The sha256 of that archived file, from its sidecar.
+    pub sha256: Option<String>,
+    /// When AEMO published it (HTTP `Last-Modified`), RFC 3339, from its
+    /// sidecar.
+    pub published: Option<String>,
+    /// The kind of file by its name: `dvd`, `archive` or `other`, with
+    /// `#all` for a file of every run.
+    pub kind: String,
+    /// Its blocks, in file order.
+    pub blocks: Vec<BlockShape>,
 }
 
 /// The census of one month: per file name, its blocks in file order. A
@@ -106,8 +128,8 @@ pub struct BlockShape {
 pub struct MonthCensus {
     /// The month.
     pub month: Option<YearMonth>,
-    /// File name to blocks.
-    pub files: BTreeMap<String, Vec<BlockShape>>,
+    /// File name to what was read of it.
+    pub files: BTreeMap<String, FileCensus>,
     /// Files that could not be read, with the diagnostic.
     pub problems: Vec<Diagnostic>,
 }
@@ -387,7 +409,7 @@ impl Copies {
     /// directory's zip) else the first by source name. Another copy with
     /// the same blocks (shape, version and rows of each) is the same file
     /// and is dropped; one that differs is kept as `{source}!{key}`.
-    fn settle(self) -> BTreeMap<String, Vec<RawBlock>> {
+    fn settle(self) -> BTreeMap<String, (String, Vec<RawBlock>)> {
         let mut out = BTreeMap::new();
         for (key, mut copies) in self.0 {
             copies.sort_by(|a, b| (a.0 != key, &a.0).cmp(&(b.0 != key, &b.0)));
@@ -401,7 +423,7 @@ impl Copies {
                 } else {
                     format!("{source}!{key}")
                 };
-                out.insert(name, blocks.clone());
+                out.insert(name, (source, blocks.clone()));
                 kept.push(blocks);
             }
         }
@@ -420,6 +442,7 @@ pub fn census_month(
     tmp: &Path,
 ) -> MonthCensus {
     let mut raw = Copies::default();
+    let mut sources: BTreeMap<String, &Path> = BTreeMap::new();
     // One read buffer for every file and entry of the month.
     let mut scan_buf = Vec::new();
     let mut ctls: Vec<(String, String)> = Vec::new();
@@ -436,6 +459,16 @@ pub fn census_month(
             .map(|n| n.to_string_lossy().into_owned())
             .unwrap_or_default();
         let lower = name.to_ascii_lowercase();
+        // The month's documentation (the data model's create and upgrade
+        // scripts and their reports, recorded by `models`) is not market
+        // data.
+        if path
+            .components()
+            .any(|c| c.as_os_str().eq_ignore_ascii_case("DOCUMENTATION"))
+        {
+            continue;
+        }
+        sources.insert(name.clone(), path);
         if lower.ends_with(".ctl") {
             if let Ok(mut f) = std::fs::File::open(path) {
                 read_text(name, &mut f, &mut ctls);
@@ -505,13 +538,26 @@ pub fn census_month(
     let files = raw
         .settle()
         .into_iter()
-        .map(|(name, blocks)| {
+        .map(|(name, (source, blocks))| {
             let file_table = utilake_nem::names::parse(&name).map(|n| n.table);
-            let shapes = blocks
+            let blocks = blocks
                 .into_iter()
                 .map(|b| block_shape(registry, &ctls, file_table.as_deref(), b))
                 .collect();
-            (name, shapes)
+            let sidecar = sources
+                .get(&source)
+                .and_then(|p| Archive::read_sidecar(p).ok().flatten());
+            let kind = file_kind(&name);
+            (
+                name,
+                FileCensus {
+                    sha256: sidecar.as_ref().map(|s| s.sha256.clone()),
+                    published: sidecar.and_then(|s| s.last_modified_at.map(|t| t.to_string())),
+                    source,
+                    kind,
+                    blocks,
+                },
+            )
         })
         .collect();
     MonthCensus {
@@ -565,53 +611,169 @@ pub fn block_shape(
         version: b.version,
         rows: b.rows,
         span,
+        ctl: b.columns.iter().map(|c| class(c)).collect(),
+        profile: b.profile,
         shape: CanonicalShape {
-            columns: b.columns.iter().map(|c| (c.clone(), class(c))).collect(),
+            columns: b.columns,
             report_type: b.report_type,
             report_subtype: b.report_subtype,
         },
     }
 }
 
-/// One file's entry in a month's census: its blocks, in file order. The
-/// census of a month taken before row counts were kept has only ids.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum FileEntry {
-    /// A file of one block, without its rows.
-    One(ShapeId),
-    /// A file of several blocks, or none that could be read, without rows.
-    Many(Vec<ShapeId>),
-    /// Every block with its rows.
-    Blocks(Vec<BlockEntry>),
+/// The kind of a file by its name: `archive` (`PUBLIC_ARCHIVE#…`), `dvd`
+/// (`PUBLIC_DVD_…`) or `other`, with `#all` when it holds every run of a
+/// forecast (`#ALL#`, `_ALL_`).
+pub fn file_kind(name: &str) -> String {
+    let upper = name.to_ascii_uppercase();
+    let naming = if upper.starts_with("PUBLIC_ARCHIVE#") {
+        "archive"
+    } else if upper.starts_with("PUBLIC_DVD_") {
+        "dvd"
+    } else {
+        "other"
+    };
+    if upper.contains("#ALL#") || upper.contains("_ALL_") {
+        format!("{naming}#all")
+    } else {
+        naming.to_owned()
+    }
 }
 
-/// One block of a file in a month's census.
+/// One file's entry in a month's census.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct BlockEntry {
+#[serde(deny_unknown_fields)]
+pub struct FileRecord {
+    /// The archived file it was read out of.
+    pub source: String,
+    /// The sha256 of that archived file.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sha256: Option<String>,
+    /// When AEMO published it, RFC 3339.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub published: Option<String>,
+    /// `dvd`, `archive` or `other`, with `#all` for a file of every run.
+    pub kind: String,
+    /// Its blocks, in file order.
+    #[serde(default)]
+    pub block: Vec<BlockRecord>,
+}
+
+/// One block of a file in a month's census: its shape, and per column (in
+/// column order) what the control file declared and what the values were.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct BlockRecord {
     /// Its shape.
     pub shape: ShapeId,
+    /// Its report type and subtype.
+    pub report: (String, String),
+    /// The version AEMO stamped on it.
+    pub version: u16,
     /// Its D rows.
     pub rows: u64,
-    /// The least value of its time column, as written.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub first: Option<String>,
-    /// The greatest value of its time column, as written.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub last: Option<String>,
-    /// The time column the values are of.
+    /// The time column its span is of.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub time: Option<String>,
+    /// The least value of that column, as written.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub first: Option<String>,
+    /// The greatest value of that column, as written.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub last: Option<String>,
+    /// The column names.
+    pub columns: Vec<String>,
+    /// The declared class of each column, one letter each
+    /// (`TypeClass::letter`).
+    pub ctl: String,
+    /// The observed kind of each column, one letter each (`Kind::letter`).
+    pub kinds: String,
+    /// Rows without a value, per column.
+    pub nulls: Vec<u64>,
+    /// The most digits before the point, per column.
+    pub int_digits: Vec<u8>,
+    /// The most digits after it, per column.
+    pub scale: Vec<u8>,
+    /// The longest value in bytes, per column.
+    pub max_len: Vec<u32>,
+    /// The least number or time, per column; empty for none.
+    pub min: Vec<String>,
+    /// The greatest number or time, per column; empty for none.
+    pub max: Vec<String>,
 }
 
-impl FileEntry {
+impl BlockRecord {
+    /// The record of a block.
+    pub fn of(b: &BlockShape) -> Self {
+        let text = |v: &Option<Vec<u8>>| {
+            v.as_deref()
+                .map(|v| String::from_utf8_lossy(v).into_owned())
+                .unwrap_or_default()
+        };
+        Self {
+            shape: b.shape.id(),
+            report: (b.shape.report_type.clone(), b.shape.report_subtype.clone()),
+            version: b.version,
+            rows: b.rows,
+            time: b.span.as_ref().map(|s| s.column.clone()),
+            first: b.span.as_ref().map(|s| s.first.clone()),
+            last: b.span.as_ref().map(|s| s.last.clone()),
+            columns: b.shape.columns.clone(),
+            ctl: b.ctl.iter().map(|c| c.letter()).collect(),
+            kinds: b.profile.iter().map(|p| p.kind.letter()).collect(),
+            nulls: b.profile.iter().map(|p| p.nulls).collect(),
+            int_digits: b.profile.iter().map(|p| p.int_digits).collect(),
+            scale: b.profile.iter().map(|p| p.scale).collect(),
+            max_len: b.profile.iter().map(|p| p.max_len).collect(),
+            min: b.profile.iter().map(|p| text(&p.min)).collect(),
+            max: b.profile.iter().map(|p| text(&p.max)).collect(),
+        }
+    }
+
+    /// The declared class of column `j`.
+    pub fn ctl_of(&self, j: usize) -> TypeClass {
+        self.ctl
+            .chars()
+            .nth(j)
+            .and_then(TypeClass::of_letter)
+            .unwrap_or(TypeClass::Unknown)
+    }
+
+    /// The profile of column `j`, as recorded.
+    pub fn profile_of(&self, j: usize) -> ColumnProfile {
+        let some = |v: Option<&String>| v.filter(|s| !s.is_empty()).map(|s| s.as_bytes().to_vec());
+        ColumnProfile {
+            nulls: self.nulls.get(j).copied().unwrap_or(0),
+            kind: self
+                .kinds
+                .chars()
+                .nth(j)
+                .and_then(utilake_iceberg::Kind::of_letter)
+                .unwrap_or_default(),
+            int_digits: self.int_digits.get(j).copied().unwrap_or(0),
+            scale: self.scale.get(j).copied().unwrap_or(0),
+            max_len: self.max_len.get(j).copied().unwrap_or(0),
+            min: some(self.min.get(j)),
+            max: some(self.max.get(j)),
+        }
+    }
+}
+
+impl FileRecord {
+    /// The record of a file.
+    pub fn of(f: &FileCensus) -> Self {
+        Self {
+            source: f.source.clone(),
+            sha256: f.sha256.clone(),
+            published: f.published.clone(),
+            kind: f.kind.clone(),
+            block: f.blocks.iter().map(BlockRecord::of).collect(),
+        }
+    }
+
     /// The ids, in file order.
     pub fn ids(&self) -> Vec<ShapeId> {
-        match self {
-            Self::One(id) => vec![*id],
-            Self::Many(ids) => ids.clone(),
-            Self::Blocks(blocks) => blocks.iter().map(|b| b.shape).collect(),
-        }
+        self.block.iter().map(|b| b.shape).collect()
     }
 }
 
@@ -656,7 +818,7 @@ pub(crate) fn write_text(path: &Path, text: &str) -> Result<(), CensusError> {
 pub fn read_month(
     root: &Path,
     month: YearMonth,
-) -> Result<Option<BTreeMap<String, FileEntry>>, CensusError> {
+) -> Result<Option<BTreeMap<String, FileRecord>>, CensusError> {
     let path = census_path(root, month);
     let Some(text) = read_text(&path)? else {
         return Ok(None);
@@ -681,103 +843,33 @@ pub fn read_shapes(root: &Path, table: &str) -> Result<Vec<ShapeEntry>, CensusEr
     })
 }
 
-/// Adds each `(month, shape, version)` seen to its table's shapes file:
-/// a shape known already widens the months it was seen, a new one is
-/// added. The table is the one declared for the report pair, else
-/// `{TYPE}_{SUBTYPE}`. Returns how many shapes were new.
-pub(crate) fn add_shapes<'a>(
-    root: &Path,
-    registry: &Registry,
-    seen: impl IntoIterator<Item = (YearMonth, &'a CanonicalShape, u16)>,
-) -> Result<usize, CensusError> {
-    let mut by_table: BTreeMap<String, Vec<(YearMonth, &CanonicalShape, u16)>> = BTreeMap::new();
-    for (month, s, version) in seen {
-        let table = registry
-            .declared_by_pair(&s.report_type, &s.report_subtype)
-            .map_or_else(
-                || format!("{}_{}", s.report_type, s.report_subtype),
-                |id| registry.table(id).name.clone(),
-            );
-        by_table.entry(table).or_default().push((month, s, version));
-    }
-    let mut added = 0;
-    for (table, seen) in by_table {
-        let mut shapes = read_shapes(root, &table)?;
-        for (month, shape, version) in seen {
-            let id = shape.id();
-            match shapes
-                .iter_mut()
-                .find(|e| e.id == id && e.version == version)
-            {
-                Some(e) => {
-                    e.first_seen = e.first_seen.min(month);
-                    e.last_seen = e.last_seen.max(month);
-                }
-                None => {
-                    added += 1;
-                    shapes.push(ShapeEntry {
-                        id,
-                        report_type: shape.report_type.clone(),
-                        report_subtype: shape.report_subtype.clone(),
-                        version,
-                        columns: shape.columns.clone(),
-                        first_seen: month,
-                        last_seen: month,
-                    });
-                }
-            }
-        }
-        shapes.sort_by_key(|e| (e.first_seen, e.version, e.id));
-        write_text(
-            &shapes_dir(root).join(format!("{table}.toml")),
-            &render_shapes(&shapes),
-        )?;
-    }
-    Ok(added)
+/// The table a block of this report pair is recorded under: the one the
+/// registry declares for the pair, else `{TYPE}_{SUBTYPE}`.
+pub fn table_of(registry: &Registry, report_type: &str, report_subtype: &str) -> String {
+    registry
+        .declared_by_pair(report_type, report_subtype)
+        .map_or_else(
+            || format!("{report_type}_{report_subtype}"),
+            |id| registry.table(id).name.clone(),
+        )
 }
 
-/// Records a month's census: its census file, and every shape it saw in
-/// its table's shapes file. Returns how many shapes were new.
-pub fn record(
-    root: &Path,
-    registry: &Registry,
-    census: &MonthCensus,
-) -> Result<usize, CensusError> {
+/// Records a month's census in its census file; the shapes are folded from
+/// every census file afterwards (`crate::fold`). Returns how many blocks
+/// were recorded.
+pub fn record(root: &Path, census: &MonthCensus) -> Result<usize, CensusError> {
     let month = census.month.expect("a month's census knows its month");
-    let mut entries: BTreeMap<&str, FileEntry> = BTreeMap::new();
-    for (name, blocks) in &census.files {
-        entries.insert(
-            name,
-            FileEntry::Blocks(
-                blocks
-                    .iter()
-                    .map(|b| BlockEntry {
-                        shape: b.shape.id(),
-                        rows: b.rows,
-                        first: b.span.as_ref().map(|s| s.first.clone()),
-                        last: b.span.as_ref().map(|s| s.last.clone()),
-                        time: b.span.as_ref().map(|s| s.column.clone()),
-                    })
-                    .collect(),
-            ),
-        );
-    }
+    let entries: BTreeMap<&str, FileRecord> = census
+        .files
+        .iter()
+        .map(|(name, f)| (name.as_str(), FileRecord::of(f)))
+        .collect();
     let text = format!(
-        "# Generated by `utilake-nem-census census`: the blocks of every file of {month}.\n{}",
+        "# Generated by `utilake-nem-census census`: every block of every file of {month}, where the file came from, and what each column held.\n{}",
         toml::to_string(&entries).expect("a census serialises")
     );
-    let added = add_shapes(
-        root,
-        registry,
-        census
-            .files
-            .values()
-            .flatten()
-            .map(|b| (month, &b.shape, b.version)),
-    )?;
-    // The census file last: a month is done once it exists.
     write_text(&census_path(root, month), &text)?;
-    Ok(added)
+    Ok(census.files.values().map(|f| f.blocks.len()).sum())
 }
 
 #[cfg(test)]
@@ -955,17 +1047,36 @@ C,\"END OF REPORT\",14\r\n";
             &at("CTL/PUBLIC_ARCHIVE#DISPATCH_UNIT_SCADA#FILE01#202608.ctl"),
             SCADA_CTL.as_bytes(),
         );
+        // The month's documentation is not market data.
+        put(
+            &store,
+            &at("DOCUMENTATION/MMS%20Data%20Model/v5.6/MMSDM_create_v5.6.zip"),
+            &zip_of(&[("PDR.CSV", &three_tables(1))]),
+        );
         let files = month_files(&store, &nem, month).unwrap();
-        assert_eq!(files.len(), 3, "{files:?}");
+        assert_eq!(files.len(), 4, "{files:?}");
         let tmp = tempfile::tempdir().unwrap();
         let census = census_month(&reg, month, &files, tmp.path());
         assert_eq!(census.problems.len(), 1, "{:?}", census.problems);
+        assert!(!census.files.contains_key("MMSDM_create_v5.6.zip"));
         assert!(
-            census.files["PUBLIC_ARCHIVE#BAD#FILE01#202608010000.zip"].is_empty(),
+            census.files["PUBLIC_ARCHIVE#BAD#FILE01#202608010000.zip"]
+                .blocks
+                .is_empty(),
             "{:?}",
             census.files.keys().collect::<Vec<_>>()
         );
-        let blocks = &census.files[zip_name];
+        let file = &census.files[zip_name];
+        assert_eq!(
+            (file.source.as_str(), file.kind.as_str()),
+            (zip_name, "archive")
+        );
+        assert_eq!(
+            file.sha256.as_ref().map(String::len),
+            Some(64),
+            "from the sidecar"
+        );
+        let blocks = &file.blocks;
         assert_eq!(blocks.len(), 3);
         assert_eq!(
             blocks.iter().map(|b| b.rows).collect::<Vec<_>>(),
@@ -985,59 +1096,60 @@ C,\"END OF REPORT\",14\r\n";
         );
         assert_eq!(
             blocks[0].shape.columns,
-            [
-                ("SETTLEMENTDATE".to_owned(), TypeClass::Timestamp),
-                ("DUID".to_owned(), TypeClass::Varchar),
-                ("SCADAVALUE".to_owned(), TypeClass::Number)
-            ]
+            ["SETTLEMENTDATE", "DUID", "SCADAVALUE"]
         );
+        assert_eq!(
+            blocks[0].ctl,
+            [TypeClass::Timestamp, TypeClass::Varchar, TypeClass::Number]
+        );
+        assert_eq!(blocks[0].profile[2].kind, utilake_iceberg::Kind::Decimal);
         assert_eq!(blocks[1].shape.report_subtype, "EXTRA");
         assert_eq!(blocks[2].shape.report_subtype, "LAST");
-        assert!(
-            blocks[2]
-                .shape
-                .columns
-                .iter()
-                .all(|(_, c)| *c == TypeClass::Unknown)
-        );
+        assert!(blocks[2].ctl.iter().all(|c| *c == TypeClass::Unknown));
 
-        // Recorded: every block with its rows; each table's shapes file
-        // holds its shape once; a second month only moves the months seen.
+        // Recorded: every block with its rows and profile, read back as
+        // it was; the fold gives each table's shape once, from the first
+        // month to the last.
         let schemas = dir.path().join("schemas");
-        assert_eq!(record(&schemas, &reg, &census).unwrap(), 3);
+        assert_eq!(record(&schemas, &census).unwrap(), 3);
         let recorded = read_month(&schemas, month).unwrap().unwrap();
-        assert_eq!(
-            recorded[zip_name],
-            FileEntry::Blocks(
-                blocks
-                    .iter()
-                    .map(|b| BlockEntry {
-                        shape: b.shape.id(),
-                        rows: b.rows,
-                        first: b.span.as_ref().map(|s| s.first.clone()),
-                        last: b.span.as_ref().map(|s| s.last.clone()),
-                        time: b.span.as_ref().map(|s| s.column.clone()),
-                    })
-                    .collect()
-            )
-        );
+        assert_eq!(recorded[zip_name], FileRecord::of(file));
+        assert_eq!(recorded[zip_name].ids().len(), 3);
+        let b = &recorded[zip_name].block[0];
+        assert_eq!(b.profile_of(2), blocks[0].profile[2]);
+        assert_eq!(b.ctl_of(0), TypeClass::Timestamp);
+        assert_eq!(b.ctl_of(9), TypeClass::Unknown);
+        assert_eq!(b.profile_of(9), ColumnProfile::default());
         let mut earlier = census.clone();
         earlier.month = YearMonth::new(2026, 6);
-        assert_eq!(record(&schemas, &reg, &earlier).unwrap(), 0);
+        assert_eq!(record(&schemas, &earlier).unwrap(), 3);
+        let folded = crate::fold::fold(&schemas, &reg).unwrap();
+        assert_eq!((folded.months, folded.tables, folded.shapes), (2, 3, 3));
         let shapes = read_shapes(&schemas, "DISPATCH_UNIT_SCADA").unwrap();
         assert_eq!(shapes.len(), 1);
         assert_eq!(shapes[0].first_seen.to_string(), "2026-06");
         assert_eq!(shapes[0].last_seen.to_string(), "2026-08");
+        assert_eq!(shapes[0].files, 2);
+        assert_eq!(shapes[0].rows, 2 * scada_rows as u64);
+        assert_eq!(
+            shapes[0].from.data_time.as_deref(),
+            Some("2026-08-01T00:05:00+10:00")
+        );
         assert_eq!(read_shapes(&schemas, "UTILAKE_TEST_LAST").unwrap().len(), 1);
         assert!(read_shapes(&schemas, "NOBODY").unwrap().is_empty());
-        // The same census again writes the same bytes.
+        // The same census again folds to the same bytes; a month removed
+        // takes its months away.
         let before =
             std::fs::read_to_string(shapes_dir(&schemas).join("DISPATCH_UNIT_SCADA.toml")).unwrap();
-        record(&schemas, &reg, &census).unwrap();
+        crate::fold::fold(&schemas, &reg).unwrap();
         assert_eq!(
             std::fs::read_to_string(shapes_dir(&schemas).join("DISPATCH_UNIT_SCADA.toml")).unwrap(),
             before
         );
+        std::fs::remove_file(census_path(&schemas, YearMonth::new(2026, 6).unwrap())).unwrap();
+        crate::fold::fold(&schemas, &reg).unwrap();
+        let shapes = read_shapes(&schemas, "DISPATCH_UNIT_SCADA").unwrap();
+        assert_eq!(shapes[0].first_seen.to_string(), "2026-08");
         // A month not in the archive says to download it.
         let e = month_files(&store, &nem, YearMonth::new(2020, 1).unwrap()).unwrap_err();
         assert_eq!(e.diagnostic().code, "schema.census_not_archived");
@@ -1084,10 +1196,15 @@ C,\"END OF REPORT\",14\r\n";
         let tmp = tempfile::tempdir().unwrap();
         let census = census_month(&reg, month, &files, tmp.path());
         assert!(census.problems.is_empty(), "{:?}", census.problems);
-        let blocks = &census.files["PUBLIC_DVD_DISPATCH_UNIT_SCADA_201201010000.zip"];
+        let file = &census.files["PUBLIC_DVD_DISPATCH_UNIT_SCADA_201201010000.zip"];
+        assert_eq!(
+            (file.source.as_str(), file.kind.as_str()),
+            ("MMSDM_2012_01.zip", "dvd")
+        );
+        let blocks = &file.blocks;
         assert_eq!(blocks.len(), 3);
         assert_eq!(blocks[0].rows, 3);
-        assert_eq!(blocks[0].shape.columns[0].1, TypeClass::Timestamp);
+        assert_eq!(blocks[0].ctl[0], TypeClass::Timestamp);
 
         // The fixtures of the month come out of the same zip.
         let out = dir.path().join("fixtures");
@@ -1155,21 +1272,30 @@ C,\"END OF REPORT\",14\r\n";
             [&format!("MMSDM_2020_02.zip!{other}"), same, other],
             "the same copy once, a differing copy under its source"
         );
-        assert_eq!(census.files[same].len(), 3);
-        assert_eq!(census.files[other][0].rows, 2);
+        assert_eq!(census.files[same].blocks.len(), 3);
+        assert_eq!(census.files[other].blocks[0].rows, 2);
+        let copy = &census.files[&format!("MMSDM_2020_02.zip!{other}")];
         assert_eq!(
-            census.files[&format!("MMSDM_2020_02.zip!{other}")][0].rows,
-            5
+            (copy.blocks[0].rows, copy.source.as_str()),
+            (5, "MMSDM_2020_02.zip")
         );
     }
 
     #[test]
-    fn a_census_recorded_before_row_counts_still_reads() {
-        let old: BTreeMap<String, FileEntry> =
-            toml::from_str("\"a.zip\" = \"9c77fb0f8b590880\"\n\"b.zip\" = [\"9c77fb0f8b590880\", \"af3df42662b718de\"]\n")
-                .unwrap();
-        assert_eq!(old["a.zip"].ids().len(), 1);
-        assert_eq!(old["b.zip"].ids().len(), 2);
+    fn names_tell_kinds_and_tables() {
+        assert_eq!(
+            file_kind("PUBLIC_ARCHIVE#DISPATCHLOAD#FILE01#202608010000.zip"),
+            "archive"
+        );
+        assert_eq!(
+            file_kind("PUBLIC_ARCHIVE#PREDISPATCHPRICE#ALL#FILE01#202608010000.zip"),
+            "archive#all"
+        );
+        assert_eq!(
+            file_kind("PUBLIC_DVD_P5MIN_REGIONSOLUTION_ALL_201901010000.zip"),
+            "dvd#all"
+        );
+        assert_eq!(file_kind("MMSDM_2020_02.zip"), "other");
         assert!(ctl_table("readme.txt").is_none());
         assert!(ctl_serves("PREDISPATCHPRICE_D", "PREDISPATCHPRICE", true));
         assert!(!ctl_serves("REGIONAPC", "REGION", true));

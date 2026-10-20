@@ -28,10 +28,10 @@ use utilake_core::{Category, Diagnose, Diagnostic, YearMonth};
 use utilake_mms_registry::file_model::blob::SchemaSet;
 use utilake_mms_registry::file_model::ctl;
 use utilake_mms_registry::file_model::model::{Increment, Table};
-use utilake_mms_registry::file_model::shapes::ShapeEntry;
-use utilake_mms_registry::shape::{ShapeId, TypeClass};
+use utilake_mms_registry::file_model::shapes::{ShapeColumn, ShapeEntry};
+use utilake_mms_registry::shape::ShapeId;
 
-use crate::census::{FileEntry, Span, census_dir, read_month};
+use crate::census::{FileRecord, Span, census_dir, read_month};
 use crate::datamodel::{DataModel, DmTable};
 use crate::models::{self, Model};
 
@@ -104,7 +104,7 @@ pub struct ShapeDoc<'a> {
     /// The last month any version was seen.
     pub last: YearMonth,
     /// Columns in file order.
-    pub columns: &'a [(String, TypeClass)],
+    pub columns: &'a [ShapeColumn],
     /// Months and rows from the census.
     pub seen: &'a Seen,
 }
@@ -238,10 +238,7 @@ impl Export {
                             last: None,
                             column: None,
                         });
-                    slot.rows = match (slot.rows, block.rows) {
-                        (Some(have), Some(more)) => Some(have + more),
-                        _ => None,
-                    };
+                    slot.rows = slot.rows.map(|have| have + block.rows);
                     if let Some(span) = block.span {
                         slot.first = Some(
                             slot.first
@@ -423,41 +420,31 @@ fn census_months(schemas: &Path) -> Result<Vec<YearMonth>, Box<Diagnostic>> {
     Ok(months)
 }
 
-/// One block of a census file, however old the file's form.
+/// One block of a census file.
 struct Block {
     id: ShapeId,
-    /// `None` for a census taken before rows were counted.
-    rows: Option<u64>,
-    /// `None` for a census taken before spans were recorded.
+    rows: u64,
     span: Option<Span>,
 }
 
 /// A file's blocks.
-fn blocks(entry: &FileEntry) -> Vec<Block> {
-    let bare = |id: &ShapeId| Block {
-        id: *id,
-        rows: None,
-        span: None,
-    };
-    match entry {
-        FileEntry::One(id) => vec![bare(id)],
-        FileEntry::Many(ids) => ids.iter().map(bare).collect(),
-        FileEntry::Blocks(blocks) => blocks
-            .iter()
-            .map(|b| Block {
-                id: b.shape,
-                rows: Some(b.rows),
-                span: match (&b.first, &b.last, &b.time) {
-                    (Some(first), Some(last), Some(column)) => Some(Span {
-                        first: first.clone(),
-                        last: last.clone(),
-                        column: column.clone(),
-                    }),
-                    _ => None,
-                },
-            })
-            .collect(),
-    }
+fn blocks(entry: &FileRecord) -> Vec<Block> {
+    entry
+        .block
+        .iter()
+        .map(|b| Block {
+            id: b.shape,
+            rows: b.rows,
+            span: match (&b.first, &b.last, &b.time) {
+                (Some(first), Some(last), Some(column)) => Some(Span {
+                    first: first.clone(),
+                    last: last.clone(),
+                    column: column.clone(),
+                }),
+                _ => None,
+            },
+        })
+        .collect()
 }
 
 fn unknown_shape(month: YearMonth, file: &str, id: ShapeId) -> Diagnostic {
@@ -469,40 +456,29 @@ fn unknown_shape(month: YearMonth, file: &str, id: ShapeId) -> Diagnostic {
     .with_file(file.to_owned())
 }
 
-/// One document per id: the versions of a shape, folded.
+/// One document per shape: a shapes file holds each id once, with every
+/// version it was seen under.
 fn fold<'a>(
     table: &'a str,
     entries: &'a [ShapeEntry],
     seen: &'a BTreeMap<ShapeId, Seen>,
     empty: &'a Seen,
 ) -> Vec<ShapeDoc<'a>> {
-    let mut by_id: BTreeMap<ShapeId, ShapeDoc<'a>> = BTreeMap::new();
-    for e in entries {
-        by_id
-            .entry(e.id)
-            .and_modify(|d| {
-                d.versions.push(e.version);
-                d.first = d.first.min(e.first_seen);
-                d.last = d.last.max(e.last_seen);
-            })
-            .or_insert_with(|| ShapeDoc {
-                table,
-                declared: None,
-                id: e.id,
-                report_type: &e.report_type,
-                report_subtype: &e.report_subtype,
-                versions: vec![e.version],
-                first: e.first_seen,
-                last: e.last_seen,
-                columns: &e.columns,
-                seen: seen.get(&e.id).unwrap_or(empty),
-            });
-    }
-    let mut docs: Vec<ShapeDoc<'a>> = by_id.into_values().collect();
-    for d in &mut docs {
-        d.versions.sort_unstable();
-        d.versions.dedup();
-    }
+    let mut docs: Vec<ShapeDoc<'a>> = entries
+        .iter()
+        .map(|e| ShapeDoc {
+            table,
+            declared: None,
+            id: e.id,
+            report_type: &e.report_type,
+            report_subtype: &e.report_subtype,
+            versions: e.versions.clone(),
+            first: e.first_seen,
+            last: e.last_seen,
+            columns: &e.columns,
+            seen: seen.get(&e.id).unwrap_or(empty),
+        })
+        .collect();
     docs.sort_by_key(|d| (d.first, d.id));
     docs
 }

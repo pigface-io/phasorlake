@@ -1,16 +1,15 @@
-//! What one file actually is: its report pair and its ordered columns,
-//! each with the class of type AEMO's control file loads it as.
+//! What one file actually is: its report pair and its ordered column names.
 //!
 //! A [`ShapeId`] is derived from that content and nothing else, so two
 //! files with the same id are the same shape whenever and wherever they
-//! were published, and a shape is never given an id by hand. It sits beside
-//! the name-only [`Fingerprint`](utilake_core::Fingerprint), which resolution keys
-//! on: the fingerprint tells column lists apart, the shape id also tells
-//! apart the same list loaded as other types.
+//! were published, and a shape is never given an id by hand. Types are not
+//! part of it: what a column holds is observed from its values and recorded
+//! beside the shape (`file_model::shapes`), so a column that is empty in one
+//! month and full in the next is one shape, not two.
 //!
-//! AEMO's version number is not part of the shape: AEMO has published one
-//! column list under several versions and several under one, so it is an
-//! attribute recorded beside the id.
+//! AEMO's version number is not part of the shape either: AEMO has
+//! published one column list under several versions and several under one,
+//! so the versions are recorded beside the id.
 
 use std::fmt;
 
@@ -18,10 +17,11 @@ use serde::{Deserialize, Serialize};
 
 /// The generation of the canonical form. Any change to [`CanonicalShape::bytes`]
 /// changes every id, so it raises this number and is a breaking change.
-pub const SHAPE_FORMAT: u32 = 1;
+pub const SHAPE_FORMAT: u32 = 2;
 
-/// The class of type a column is loaded as, from the control file of its
-/// month: what kind of value it holds, not its length or precision.
+/// The class of type AEMO's control file of a month declares a column as:
+/// what kind of value it holds, not its length or precision. A declaration,
+/// recorded beside what the values were observed to be.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum TypeClass {
@@ -40,7 +40,34 @@ pub enum TypeClass {
 }
 
 impl TypeClass {
-    /// The class's name in census files and canonical bytes.
+    /// Every class.
+    pub const ALL: [Self; 6] = [
+        Self::Varchar,
+        Self::Number,
+        Self::Integer,
+        Self::Date,
+        Self::Timestamp,
+        Self::Unknown,
+    ];
+
+    /// One letter per class, for compact census records.
+    pub const fn letter(self) -> char {
+        match self {
+            Self::Varchar => 'v',
+            Self::Number => 'n',
+            Self::Integer => 'i',
+            Self::Date => 'D',
+            Self::Timestamp => 't',
+            Self::Unknown => '?',
+        }
+    }
+
+    /// The class of a letter from [`TypeClass::letter`].
+    pub fn of_letter(c: char) -> Option<Self> {
+        Self::ALL.into_iter().find(|k| k.letter() == c)
+    }
+
+    /// The class's name in census and shapes files.
     pub const fn as_str(self) -> &'static str {
         match self {
             Self::Varchar => "varchar",
@@ -88,14 +115,14 @@ pub struct CanonicalShape {
     pub report_type: String,
     /// Report subtype, normalised.
     pub report_subtype: String,
-    /// Columns in file order: normalised name and type class.
-    pub columns: Vec<(String, TypeClass)>,
+    /// Column names in file order, normalised.
+    pub columns: Vec<String>,
 }
 
 impl CanonicalShape {
     /// The canonical bytes: the format, the report pair, then each column
-    /// as name and class. Fields end with `0x1F`, records with `0x1E`;
-    /// neither can occur in a normalised name.
+    /// name. Fields end with `0x1F`, records with `0x1E`; neither can occur
+    /// in a normalised name.
     pub fn bytes(&self) -> Vec<u8> {
         let mut b = Vec::with_capacity(32 + self.columns.len() * 24);
         let field = |b: &mut Vec<u8>, s: &str| {
@@ -111,9 +138,8 @@ impl CanonicalShape {
         field(&mut b, &self.report_type);
         field(&mut b, &self.report_subtype);
         b.push(0x1E);
-        for (name, class) in &self.columns {
+        for name in &self.columns {
             field(&mut b, name);
-            field(&mut b, class.as_str());
             b.push(0x1E);
         }
         b
@@ -178,46 +204,39 @@ impl From<ShapeId> for String {
 mod tests {
     use super::*;
 
-    fn scada(columns: &[(&str, TypeClass)]) -> CanonicalShape {
+    fn scada(columns: &[&str]) -> CanonicalShape {
         CanonicalShape {
             report_type: "DISPATCH".into(),
             report_subtype: "UNIT_SCADA".into(),
-            columns: columns.iter().map(|(n, c)| ((*n).to_owned(), *c)).collect(),
+            columns: columns.iter().map(|n| (*n).to_owned()).collect(),
         }
     }
 
-    const COLUMNS: [(&str, TypeClass); 3] = [
-        ("SETTLEMENTDATE", TypeClass::Timestamp),
-        ("DUID", TypeClass::Varchar),
-        ("SCADAVALUE", TypeClass::Number),
-    ];
+    const COLUMNS: [&str; 3] = ["SETTLEMENTDATE", "DUID", "SCADAVALUE"];
 
     /// A canonicalisation that changes by accident fails here; one that
     /// changes on purpose raises SHAPE_FORMAT and updates this id.
     #[test]
     fn the_id_of_a_known_shape_is_pinned() {
         let s = scada(&COLUMNS);
-        assert_eq!(SHAPE_FORMAT, 1);
-        assert_eq!(s.id().to_string(), "2251ec37b51ac46e");
+        assert_eq!(SHAPE_FORMAT, 2);
+        assert_eq!(s.id().to_string(), PINNED);
         assert_eq!(s.id(), scada(&COLUMNS).id());
     }
 
+    const PINNED: &str = "c9a60b6ab1eb80ad";
+
     #[test]
-    fn order_types_and_pair_are_part_of_the_id() {
+    fn order_names_and_pair_are_the_id() {
         let base = scada(&COLUMNS).id();
         let mut reordered = COLUMNS;
         reordered.swap(1, 2);
         assert_ne!(scada(&reordered).id(), base);
-        let mut retyped = COLUMNS;
-        retyped[2].1 = TypeClass::Varchar;
-        assert_ne!(scada(&retyped).id(), base);
         let mut other = scada(&COLUMNS);
         other.report_subtype = "UNIT_SCADA2".into();
         assert_ne!(other.id(), base);
         // A name boundary is not a place to hide a column.
-        let joined = scada(&[("AB", TypeClass::Varchar)]);
-        let split = scada(&[("A", TypeClass::Varchar), ("B", TypeClass::Varchar)]);
-        assert_ne!(joined.id(), split.id());
+        assert_ne!(scada(&["AB"]).id(), scada(&["A", "B"]).id());
     }
 
     #[test]
@@ -230,16 +249,11 @@ mod tests {
         let json = serde_json::to_string(&id).unwrap();
         assert_eq!(serde_json::from_str::<ShapeId>(&json).unwrap(), id);
         assert!(serde_json::from_str::<ShapeId>("\"zz\"").is_err());
-        for c in [
-            TypeClass::Varchar,
-            TypeClass::Number,
-            TypeClass::Integer,
-            TypeClass::Date,
-            TypeClass::Timestamp,
-            TypeClass::Unknown,
-        ] {
+        for c in TypeClass::ALL {
             assert_eq!(c.to_string().parse::<TypeClass>().unwrap(), c);
+            assert_eq!(TypeClass::of_letter(c.letter()), Some(c));
         }
+        assert_eq!(TypeClass::of_letter('x'), None);
         assert!("float".parse::<TypeClass>().is_err());
     }
 }

@@ -21,7 +21,7 @@ const TIMESTAMP_FORMAT: &str = "YYYY/MM/DD HH24:MI:SS";
 /// which the shape then deviates from. `None` for an undeclared table.
 pub fn increment<'a>(doc: &ShapeDoc<'a>) -> Option<Matched<'a>> {
     let table = doc.declared?;
-    let names = doc.columns.iter().map(|(n, _)| n.as_str());
+    let names = doc.columns.iter().map(|c| c.name.as_str());
     if let Some(i) = table
         .increments
         .iter()
@@ -72,7 +72,7 @@ pub fn render(
     let required: Vec<&str> = doc
         .columns
         .iter()
-        .filter_map(|(n, _)| doc.declared.and_then(|t| t.column(n)))
+        .filter_map(|c| doc.declared.and_then(|t| t.column(&c.name)))
         .filter(|c| !c.nullable)
         .map(|c| c.name.as_str())
         .collect();
@@ -82,7 +82,8 @@ pub fn render(
     let properties: Map<String, Value> = doc
         .columns
         .iter()
-        .map(|(name, class)| {
+        .map(|c| {
+            let (name, class) = (&c.name, &c.ctl);
             let decl = doc.declared.and_then(|t| t.column(name));
             (
                 name.clone(),
@@ -104,7 +105,7 @@ pub fn render(
             "shape_format": SHAPE_FORMAT,
             "report_type": doc.report_type,
             "report_subtype": doc.report_subtype,
-            "columns": doc.columns.iter().map(|(n, c)| json!([n, c.as_str()])).collect::<Vec<_>>(),
+            "columns": doc.columns.iter().map(|c| json!([c.name, c.ctl.as_str()])).collect::<Vec<_>>(),
         }),
     );
     if let Some(m) = matched {

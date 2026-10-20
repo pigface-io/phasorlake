@@ -81,7 +81,8 @@ pub fn check(
             );
             continue;
         };
-        let names: Vec<&str> = entry.columns.iter().map(|(n, _)| n.as_str()).collect();
+        let names: Vec<&str> = entry.names().collect();
+        let version = entry.versions.last().copied().unwrap_or(0);
         let Some(tid) = registry.declared_by_pair(&entry.report_type, &entry.report_subtype) else {
             out.push(
                 Diagnostic::error(
@@ -94,7 +95,7 @@ pub fn check(
                         months_text(shape_months)
                     ),
                 )
-                .with_version(entry.version)
+                .with_version(version)
                 .with_entry(file.clone()),
             );
             continue;
@@ -103,7 +104,7 @@ pub fn check(
         let irow = IRow {
             report_type: &entry.report_type,
             report_subtype: &entry.report_subtype,
-            version: entry.version,
+            version,
             columns: &names,
         };
         for &month in shape_months {
@@ -133,7 +134,7 @@ pub fn check(
                             String::new(),
                         )
                         .with_table(t.name.clone())
-                        .with_version(entry.version)
+                        .with_version(version)
                         .with_entry(file.clone());
                         d.message = format!(
                             "Shape {id} of table {} deviates from {}@{}: missing {missing:?}, not listed {extra:?}{}. If the files are right, edit increment {}'s columns in {}.",
@@ -151,7 +152,8 @@ pub fn check(
                     .0
                     .insert(month);
             }
-            for (name, class) in &entry.columns {
+            for sc in &entry.columns {
+                let (name, class) = (&sc.name, &sc.ctl);
                 if let Some(c) = t.column(name)
                     && !c.ty.holds(*class)
                 {
@@ -251,14 +253,42 @@ mod tests {
     use super::*;
 
     fn entry(columns: &[(&str, TypeClass)], version: u16, month: &str) -> ShapeEntry {
+        use utilake_mms_registry::file_model::shapes::{Mark, ShapeColumn};
+        let mark = Mark {
+            month: month.parse().unwrap(),
+            file: "F".into(),
+            sha256: None,
+            published: None,
+            data_time: None,
+        };
         let mut e = ShapeEntry {
             id: ShapeId(0),
             report_type: "DISPATCH".into(),
             report_subtype: "UNIT_SCADA".into(),
-            version,
+            versions: vec![version],
+            file_kinds: vec!["dvd".into()],
             first_seen: month.parse().unwrap(),
             last_seen: month.parse().unwrap(),
-            columns: columns.iter().map(|(n, c)| ((*n).to_owned(), *c)).collect(),
+            from: mark.clone(),
+            to: mark,
+            files: 1,
+            rows: 1,
+            concurrent_with: Vec::new(),
+            columns: columns
+                .iter()
+                .map(|(n, c)| ShapeColumn {
+                    name: (*n).to_owned(),
+                    ctl: *c,
+                    kind: utilake_iceberg::Kind::Empty,
+                    nulls: 0,
+                    nulls_since: None,
+                    int_digits: 0,
+                    scale: 0,
+                    max_len: 0,
+                    min: None,
+                    max: None,
+                })
+                .collect(),
         };
         e.id = e.shape().id();
         e

@@ -18,16 +18,16 @@ expression: "r.files[\"manifest.json\"]"
     "last": "2024-11"
   },
   "sha256": {
-    "nem/OFFER_X/7777777777777777.schema.json": "93cbe78228a25de460249ab6dded7e9970fe5b9a47080df3153fdb9edf7a7bbb",
+    "nem/OFFER_X/7777777777777777.schema.json": "17643d4fa246884d52ad904471130931bbfe2379789ed56a626c68adcc675463",
     "nem/OFFER_X/table.json": "a01a24cace9b5be8d001773e8e8418efb93a2e5db39e9f474f4db65c9a2223d0",
-    "nem/REGION/4444444444444444.schema.json": "8487b92764ebb3a02de60d18b36ed45702575e1f0f3c29ab78e0a8a3b0ce8b7b",
+    "nem/REGION/4444444444444444.schema.json": "8f0dac9401c21a4b8a9066c6179cf33dcb9816a095c4e7ede25aa5ac505d39dc",
     "nem/REGION/table.json": "30af1519f90a0cbe9cd00126fb1e43e02ca31702aeb7306d03ee766ffc6f4bc2",
-    "nem/TYPES/5555555555555555.schema.json": "dfd0f2c67dd60c59c7bef1fb5cf6d5317e0717608ed53c922602e1d5bbd17f3d",
-    "nem/TYPES/6666666666666666.schema.json": "39b837137fb7b3642cfc78ef1567096b2c3f4489edbc91eeaf85d9d5d467a4fb",
+    "nem/TYPES/5555555555555555.schema.json": "41d660f8aab728db1a098b80515754901b3643aaf7511492881b4c6f4f38862a",
+    "nem/TYPES/6666666666666666.schema.json": "a7db2cc47d2dd523d9b3d8954e51f9fa4747b8ff9d0bd9c20acd0675fb76de86",
     "nem/TYPES/table.json": "82b2dbdd86f7e1241bfba357ea4c531614995181cb0cdfa11f9f2e1e0ffaac77",
-    "nem/UNIT/1111111111111111.schema.json": "a8da99ffd5ca8a44159ccd2ec2a51c90a619dcf7d5daaf2cf39b57f58b7b024a",
-    "nem/UNIT/2222222222222222.schema.json": "63415d69079dada92ec9fb75e86076bc449def6ceb5f1a779cbc03e6d3d572b3",
-    "nem/UNIT/3333333333333333.schema.json": "f2f064a3c935390c477f9404f18bc89b88e0dea9c805ba67fa30a18e7e779159",
+    "nem/UNIT/1111111111111111.schema.json": "4705ab5d8c767139865ba1f39718f16a740e74afde8bf226455051e9e09b7976",
+    "nem/UNIT/2222222222222222.schema.json": "fea14e07b565f23821dc0eac46f44c14cc1b024e466e5df9f2f9391c283eaddc",
+    "nem/UNIT/3333333333333333.schema.json": "420c0e44792cfe4f867a90c618a11e9409df6f1a9d6c40ddf330ee83bb3b43c2",
     "nem/UNIT/table.json": "1e14f70bc93f36fbdcfc972fdd47ba2f013ce64659aa411b43c137b478dcd83a"
   },
   "shapes": 7,

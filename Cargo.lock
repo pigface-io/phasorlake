@@ -3286,6 +3286,7 @@ dependencies = [
  "serde",
  "serde_json",
  "utilake-core",
+ "utilake-iceberg",
  "utilake-mms-decode",
  "utilake-mms-registry",
  "utilake-nem-census",

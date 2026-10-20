@@ -44,7 +44,7 @@ expression: "r.files[\"nem/UNIT/1111111111111111.schema.json\"]"
     "months": [
       [
         "2015-01",
-        null,
+        1,
         0,
         null,
         null
@@ -85,7 +85,7 @@ expression: "r.files[\"nem/UNIT/1111111111111111.schema.json\"]"
     "id": "1111111111111111",
     "report_subtype": "UNIT",
     "report_type": "DISPATCH",
-    "shape_format": 1
+    "shape_format": 2
   },
   "x-table": {
     "$ref": "table.json",

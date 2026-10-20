@@ -18,6 +18,7 @@ path = "src/main.rs"
 [dependencies]
 utilake-nem-census.workspace = true
 utilake-core.workspace = true
+utilake-iceberg.workspace = true
 utilake-mms-decode.workspace = true
 utilake-mms-registry.workspace = true
 anyhow.workspace = true

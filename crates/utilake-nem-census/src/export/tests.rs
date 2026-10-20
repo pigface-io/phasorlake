@@ -135,141 +135,418 @@ const UNIT_SHAPES: &str = r#"[[shape]]
 id = "1111111111111111"
 report_type = "DISPATCH"
 report_subtype = "UNIT"
-version = 1
+versions = [1, 2]
+file_kinds = ["archive"]
 first_seen = "2015-01"
-last_seen = "2020-12"
-columns = [["SETTLEMENTDATE", "timestamp"], ["DUID", "varchar"], ["SCADAVALUE", "number"]]
-
-[[shape]]
-id = "1111111111111111"
-report_type = "DISPATCH"
-report_subtype = "UNIT"
-version = 2
-first_seen = "2021-01"
 last_seen = "2024-09"
-columns = [["SETTLEMENTDATE", "timestamp"], ["DUID", "varchar"], ["SCADAVALUE", "number"]]
+from = { month = "2015-01", file = "F" }
+to = { month = "2024-09", file = "F" }
+files = 1
+rows = 1
+concurrent_with = []
+columns = [
+    { name = "SETTLEMENTDATE", ctl = "timestamp", kind = "timestamp", nulls = 0, int_digits = 0, scale = 0, max_len = 0 },
+    { name = "DUID", ctl = "varchar", kind = "text", nulls = 0, int_digits = 0, scale = 0, max_len = 0 },
+    { name = "SCADAVALUE", ctl = "number", kind = "decimal", nulls = 0, int_digits = 0, scale = 0, max_len = 0 },
+]
 
 [[shape]]
 id = "2222222222222222"
 report_type = "DISPATCH"
 report_subtype = "UNIT"
-version = 1
+versions = [1]
+file_kinds = ["archive"]
 first_seen = "2024-10"
 last_seen = "2024-11"
-columns = [["SETTLEMENTDATE", "timestamp"], ["DUID", "varchar"], ["SCADAVALUE", "number"], ["LASTCHANGED", "timestamp"]]
+from = { month = "2024-10", file = "F" }
+to = { month = "2024-11", file = "F" }
+files = 1
+rows = 1
+concurrent_with = []
+columns = [
+    { name = "SETTLEMENTDATE", ctl = "timestamp", kind = "timestamp", nulls = 0, int_digits = 0, scale = 0, max_len = 0 },
+    { name = "DUID", ctl = "varchar", kind = "text", nulls = 0, int_digits = 0, scale = 0, max_len = 0 },
+    { name = "SCADAVALUE", ctl = "number", kind = "decimal", nulls = 0, int_digits = 0, scale = 0, max_len = 0 },
+    { name = "LASTCHANGED", ctl = "timestamp", kind = "timestamp", nulls = 0, int_digits = 0, scale = 0, max_len = 0 },
+]
 
 [[shape]]
 id = "3333333333333333"
 report_type = "DISPATCH"
 report_subtype = "UNIT"
-version = 3
+versions = [3]
+file_kinds = ["archive"]
 first_seen = "2024-11"
 last_seen = "2024-11"
-columns = [["SETTLEMENTDATE", "timestamp"], ["DUID", "varchar"], ["QUALITY", "unknown"]]
+from = { month = "2024-11", file = "F" }
+to = { month = "2024-11", file = "F" }
+files = 1
+rows = 1
+concurrent_with = []
+columns = [
+    { name = "SETTLEMENTDATE", ctl = "timestamp", kind = "timestamp", nulls = 0, int_digits = 0, scale = 0, max_len = 0 },
+    { name = "DUID", ctl = "varchar", kind = "text", nulls = 0, int_digits = 0, scale = 0, max_len = 0 },
+    { name = "QUALITY", ctl = "unknown", kind = "empty", nulls = 0, int_digits = 0, scale = 0, max_len = 0 },
+]
 "#;
 
 const REGION_SHAPES: &str = r#"[[shape]]
 id = "4444444444444444"
 report_type = "DISPATCH"
 report_subtype = "REGION"
-version = 1
+versions = [1]
+file_kinds = ["archive"]
 first_seen = "2015-01"
 last_seen = "2024-11"
-columns = [["REGIONID", "varchar"], ["DESCRIPTION", "varchar"]]
+from = { month = "2015-01", file = "F" }
+to = { month = "2024-11", file = "F" }
+files = 1
+rows = 1
+concurrent_with = []
+columns = [
+    { name = "REGIONID", ctl = "varchar", kind = "text", nulls = 0, int_digits = 0, scale = 0, max_len = 0 },
+    { name = "DESCRIPTION", ctl = "varchar", kind = "text", nulls = 0, int_digits = 0, scale = 0, max_len = 0 },
+]
 "#;
 
 const TYPES_SHAPES: &str = r#"[[shape]]
 id = "5555555555555555"
 report_type = "TEST"
 report_subtype = "TYPES"
-version = 1
+versions = [1]
+file_kinds = ["archive"]
 first_seen = "2024-11"
 last_seen = "2024-11"
-columns = [["EFFECTIVEDATE", "unknown"], ["S", "unknown"], ["D", "unknown"], ["L", "unknown"], ["B", "unknown"], ["DAY", "unknown"], ["X", "unknown"]]
+from = { month = "2024-11", file = "F" }
+to = { month = "2024-11", file = "F" }
+files = 1
+rows = 1
+concurrent_with = []
+columns = [
+    { name = "EFFECTIVEDATE", ctl = "unknown", kind = "empty", nulls = 0, int_digits = 0, scale = 0, max_len = 0 },
+    { name = "S", ctl = "unknown", kind = "empty", nulls = 0, int_digits = 0, scale = 0, max_len = 0 },
+    { name = "D", ctl = "unknown", kind = "empty", nulls = 0, int_digits = 0, scale = 0, max_len = 0 },
+    { name = "L", ctl = "unknown", kind = "empty", nulls = 0, int_digits = 0, scale = 0, max_len = 0 },
+    { name = "B", ctl = "unknown", kind = "empty", nulls = 0, int_digits = 0, scale = 0, max_len = 0 },
+    { name = "DAY", ctl = "unknown", kind = "empty", nulls = 0, int_digits = 0, scale = 0, max_len = 0 },
+    { name = "X", ctl = "unknown", kind = "empty", nulls = 0, int_digits = 0, scale = 0, max_len = 0 },
+]
 
 [[shape]]
 id = "6666666666666666"
 report_type = "TEST"
 report_subtype = "TYPES"
-version = 1
+versions = [1]
+file_kinds = ["archive"]
 first_seen = "2024-11"
 last_seen = "2024-11"
-columns = [["EFFECTIVEDATE", "date"], ["S", "integer"], ["D", "number"], ["L", "number"], ["DAY", "date"]]
+from = { month = "2024-11", file = "F" }
+to = { month = "2024-11", file = "F" }
+files = 1
+rows = 1
+concurrent_with = []
+columns = [
+    { name = "EFFECTIVEDATE", ctl = "date", kind = "date", nulls = 0, int_digits = 0, scale = 0, max_len = 0 },
+    { name = "S", ctl = "integer", kind = "integer", nulls = 0, int_digits = 0, scale = 0, max_len = 0 },
+    { name = "D", ctl = "number", kind = "decimal", nulls = 0, int_digits = 0, scale = 0, max_len = 0 },
+    { name = "L", ctl = "number", kind = "decimal", nulls = 0, int_digits = 0, scale = 0, max_len = 0 },
+    { name = "DAY", ctl = "date", kind = "date", nulls = 0, int_digits = 0, scale = 0, max_len = 0 },
+]
 "#;
 
 const OFFER_SHAPES: &str = r#"[[shape]]
 id = "7777777777777777"
 report_type = "OFFER"
 report_subtype = "X"
-version = 1
+versions = [1]
+file_kinds = ["archive"]
 first_seen = "2024-10"
 last_seen = "2024-11"
-columns = [["OFFERDATE", "timestamp"], ["PRICE", "number"], ["NOTE", "unknown"]]
+from = { month = "2024-10", file = "F" }
+to = { month = "2024-11", file = "F" }
+files = 1
+rows = 1
+concurrent_with = []
+columns = [
+    { name = "OFFERDATE", ctl = "timestamp", kind = "timestamp", nulls = 0, int_digits = 0, scale = 0, max_len = 0 },
+    { name = "PRICE", ctl = "number", kind = "decimal", nulls = 0, int_digits = 0, scale = 0, max_len = 0 },
+    { name = "NOTE", ctl = "unknown", kind = "empty", nulls = 0, int_digits = 0, scale = 0, max_len = 0 },
+]
 "#;
 
-/// A census before rows were counted: one file of one block, one of two.
-const CENSUS_2015_01: &str = r#""PUBLIC_DVD_UNIT_201501010000.zip" = "1111111111111111"
-"PUBLIC_DVD_REGION_201501010000.zip" = ["4444444444444444", "4444444444444444"]
-"#;
+/// One file of one block, one of two.
+const CENSUS_2015_01: &str = r#"["PUBLIC_DVD_UNIT_201501010000.zip"]
+source = "PUBLIC_DVD_UNIT_201501010000.zip"
+kind = "dvd"
 
-/// Two blocks of one table in one file, a legacy entry beside a counted one,
-/// and a shape no shapes file knows.
-const CENSUS_2024_10: &str = r#"[["PUBLIC_ARCHIVE#UNIT#FILE01#202410010000.zip"]]
+[["PUBLIC_DVD_UNIT_201501010000.zip".block]]
 shape = "1111111111111111"
+report = ["DISPATCH", "UNIT"]
+version = 2
+rows = 1
+columns = ["SETTLEMENTDATE", "DUID", "SCADAVALUE"]
+ctl = "tvn"
+kinds = "tsd"
+nulls = [0, 0, 0]
+int_digits = [0, 0, 0]
+scale = [0, 0, 0]
+max_len = [0, 0, 0]
+min = ["", "", ""]
+max = ["", "", ""]
+
+["PUBLIC_DVD_REGION_201501010000.zip"]
+source = "PUBLIC_DVD_REGION_201501010000.zip"
+kind = "dvd"
+
+[["PUBLIC_DVD_REGION_201501010000.zip".block]]
+shape = "4444444444444444"
+report = ["DISPATCH", "REGION"]
+version = 1
+rows = 1
+columns = ["REGIONID", "DESCRIPTION"]
+ctl = "vv"
+kinds = "ss"
+nulls = [0, 0]
+int_digits = [0, 0]
+scale = [0, 0]
+max_len = [0, 0]
+min = ["", ""]
+max = ["", ""]
+
+[["PUBLIC_DVD_REGION_201501010000.zip".block]]
+shape = "4444444444444444"
+report = ["DISPATCH", "REGION"]
+version = 1
+rows = 1
+columns = ["REGIONID", "DESCRIPTION"]
+ctl = "vv"
+kinds = "ss"
+nulls = [0, 0]
+int_digits = [0, 0]
+scale = [0, 0]
+max_len = [0, 0]
+min = ["", ""]
+max = ["", ""]
+"#;
+
+/// Two blocks of one table in one file, and a shape no shapes file knows.
+const CENSUS_2024_10: &str = r#"["PUBLIC_ARCHIVE#UNIT#FILE01#202410010000.zip"]
+source = "PUBLIC_ARCHIVE#UNIT#FILE01#202410010000.zip"
+kind = "archive"
+
+[["PUBLIC_ARCHIVE#UNIT#FILE01#202410010000.zip".block]]
+shape = "1111111111111111"
+report = ["DISPATCH", "UNIT"]
+version = 2
 rows = 10
+time = "SETTLEMENTDATE"
 first = "2024/10/01 00:05:00"
 last = "2024/10/03 00:00:00"
-time = "SETTLEMENTDATE"
+columns = ["SETTLEMENTDATE", "DUID", "SCADAVALUE"]
+ctl = "tvn"
+kinds = "tsd"
+nulls = [0, 0, 0]
+int_digits = [0, 0, 0]
+scale = [0, 0, 0]
+max_len = [0, 0, 0]
+min = ["", "", ""]
+max = ["", "", ""]
 
-[["PUBLIC_ARCHIVE#UNIT#FILE01#202410010000.zip"]]
+[["PUBLIC_ARCHIVE#UNIT#FILE01#202410010000.zip".block]]
 shape = "2222222222222222"
+report = ["DISPATCH", "UNIT"]
+version = 1
 rows = 20
+time = "SETTLEMENTDATE"
 first = "2024/10/03 00:05:00"
 last = "2024/10/20 00:00:00"
-time = "SETTLEMENTDATE"
+columns = ["SETTLEMENTDATE", "DUID", "SCADAVALUE", "LASTCHANGED"]
+ctl = "tvnt"
+kinds = "tsdt"
+nulls = [0, 0, 0, 0]
+int_digits = [0, 0, 0, 0]
+scale = [0, 0, 0, 0]
+max_len = [0, 0, 0, 0]
+min = ["", "", "", ""]
+max = ["", "", "", ""]
 
-[["PUBLIC_ARCHIVE#UNIT#FILE02#202410010000.zip"]]
+["PUBLIC_ARCHIVE#UNIT#FILE02#202410010000.zip"]
+source = "PUBLIC_ARCHIVE#UNIT#FILE02#202410010000.zip"
+kind = "archive"
+
+[["PUBLIC_ARCHIVE#UNIT#FILE02#202410010000.zip".block]]
 shape = "2222222222222222"
+report = ["DISPATCH", "UNIT"]
+version = 1
 rows = 5
+time = "SETTLEMENTDATE"
 first = "2024/10/20 00:05:00"
 last = "2024/10/31 23:55:00"
-time = "SETTLEMENTDATE"
+columns = ["SETTLEMENTDATE", "DUID", "SCADAVALUE", "LASTCHANGED"]
+ctl = "tvnt"
+kinds = "tsdt"
+nulls = [0, 0, 0, 0]
+int_digits = [0, 0, 0, 0]
+scale = [0, 0, 0, 0]
+max_len = [0, 0, 0, 0]
+min = ["", "", "", ""]
+max = ["", "", "", ""]
 
-[["PUBLIC_ARCHIVE#REGION#FILE01#202410010000.zip"]]
+["PUBLIC_ARCHIVE#REGION#FILE01#202410010000.zip"]
+source = "PUBLIC_ARCHIVE#REGION#FILE01#202410010000.zip"
+kind = "archive"
+
+[["PUBLIC_ARCHIVE#REGION#FILE01#202410010000.zip".block]]
 shape = "4444444444444444"
+report = ["DISPATCH", "REGION"]
+version = 1
 rows = 5
+columns = ["REGIONID", "DESCRIPTION"]
+ctl = "vv"
+kinds = "ss"
+nulls = [0, 0]
+int_digits = [0, 0]
+scale = [0, 0]
+max_len = [0, 0]
+min = ["", ""]
+max = ["", ""]
 
-[["PUBLIC_ARCHIVE#OFFER#FILE01#202410010000.zip"]]
+["PUBLIC_ARCHIVE#OFFER#FILE01#202410010000.zip"]
+source = "PUBLIC_ARCHIVE#OFFER#FILE01#202410010000.zip"
+kind = "archive"
+
+[["PUBLIC_ARCHIVE#OFFER#FILE01#202410010000.zip".block]]
 shape = "7777777777777777"
+report = ["OFFER", "X"]
+version = 1
 rows = 7
+columns = ["OFFERDATE", "PRICE", "NOTE"]
+ctl = "tn?"
+kinds = "td-"
+nulls = [0, 0, 0]
+int_digits = [0, 0, 0]
+scale = [0, 0, 0]
+max_len = [0, 0, 0]
+min = ["", "", ""]
+max = ["", "", ""]
 
-[["PUBLIC_ARCHIVE#LOST#FILE01#202410010000.zip"]]
+["PUBLIC_ARCHIVE#LOST#FILE01#202410010000.zip"]
+source = "PUBLIC_ARCHIVE#LOST#FILE01#202410010000.zip"
+kind = "archive"
+
+[["PUBLIC_ARCHIVE#LOST#FILE01#202410010000.zip".block]]
 shape = "9999999999999999"
+report = ["LOST", "X"]
+version = 1
 rows = 1
+columns = ["A"]
+ctl = "?"
+kinds = "-"
+nulls = [0]
+int_digits = [0]
+scale = [0]
+max_len = [0]
+min = [""]
+max = [""]
 "#;
 
-const CENSUS_2024_11: &str = r#"[["PUBLIC_ARCHIVE#UNIT#FILE01#202411010000.zip"]]
+const CENSUS_2024_11: &str = r#"["PUBLIC_ARCHIVE#UNIT#FILE01#202411010000.zip"]
+source = "PUBLIC_ARCHIVE#UNIT#FILE01#202411010000.zip"
+kind = "archive"
+
+[["PUBLIC_ARCHIVE#UNIT#FILE01#202411010000.zip".block]]
 shape = "2222222222222222"
+report = ["DISPATCH", "UNIT"]
+version = 1
 rows = 30
+time = "SETTLEMENTDATE"
 first = "2024/11/01 00:05:00"
 last = "2024/11/30 23:55:00"
-time = "SETTLEMENTDATE"
+columns = ["SETTLEMENTDATE", "DUID", "SCADAVALUE", "LASTCHANGED"]
+ctl = "tvnt"
+kinds = "tsdt"
+nulls = [0, 0, 0, 0]
+int_digits = [0, 0, 0, 0]
+scale = [0, 0, 0, 0]
+max_len = [0, 0, 0, 0]
+min = ["", "", "", ""]
+max = ["", "", "", ""]
 
-[["PUBLIC_ARCHIVE#UNIT#FILE02#202411010000.zip"]]
+["PUBLIC_ARCHIVE#UNIT#FILE02#202411010000.zip"]
+source = "PUBLIC_ARCHIVE#UNIT#FILE02#202411010000.zip"
+kind = "archive"
+
+[["PUBLIC_ARCHIVE#UNIT#FILE02#202411010000.zip".block]]
 shape = "3333333333333333"
+report = ["DISPATCH", "UNIT"]
+version = 3
 rows = 3
+columns = ["SETTLEMENTDATE", "DUID", "QUALITY"]
+ctl = "tv?"
+kinds = "ts-"
+nulls = [0, 0, 0]
+int_digits = [0, 0, 0]
+scale = [0, 0, 0]
+max_len = [0, 0, 0]
+min = ["", "", ""]
+max = ["", "", ""]
 
-[["PUBLIC_ARCHIVE#TYPES#FILE01#202411010000.zip"]]
+["PUBLIC_ARCHIVE#TYPES#FILE01#202411010000.zip"]
+source = "PUBLIC_ARCHIVE#TYPES#FILE01#202411010000.zip"
+kind = "archive"
+
+[["PUBLIC_ARCHIVE#TYPES#FILE01#202411010000.zip".block]]
 shape = "5555555555555555"
+report = ["TEST", "TYPES"]
+version = 1
 rows = 1
+columns = ["EFFECTIVEDATE", "S", "D", "L", "B", "DAY", "X"]
+ctl = "???????"
+kinds = "-------"
+nulls = [0, 0, 0, 0, 0, 0, 0]
+int_digits = [0, 0, 0, 0, 0, 0, 0]
+scale = [0, 0, 0, 0, 0, 0, 0]
+max_len = [0, 0, 0, 0, 0, 0, 0]
+min = ["", "", "", "", "", "", ""]
+max = ["", "", "", "", "", "", ""]
 
-[["PUBLIC_ARCHIVE#TYPES#FILE02#202411010000.zip"]]
+["PUBLIC_ARCHIVE#TYPES#FILE02#202411010000.zip"]
+source = "PUBLIC_ARCHIVE#TYPES#FILE02#202411010000.zip"
+kind = "archive"
+
+[["PUBLIC_ARCHIVE#TYPES#FILE02#202411010000.zip".block]]
 shape = "6666666666666666"
+report = ["TEST", "TYPES"]
+version = 1
 rows = 1
+columns = ["EFFECTIVEDATE", "S", "D", "L", "DAY"]
+ctl = "DinnD"
+kinds = "DiddD"
+nulls = [0, 0, 0, 0, 0]
+int_digits = [0, 0, 0, 0, 0]
+scale = [0, 0, 0, 0, 0]
+max_len = [0, 0, 0, 0, 0]
+min = ["", "", "", "", ""]
+max = ["", "", "", "", ""]
 
-[["PUBLIC_ARCHIVE#OFFER#FILE01#202411010000.zip"]]
+["PUBLIC_ARCHIVE#OFFER#FILE01#202411010000.zip"]
+source = "PUBLIC_ARCHIVE#OFFER#FILE01#202411010000.zip"
+kind = "archive"
+
+[["PUBLIC_ARCHIVE#OFFER#FILE01#202411010000.zip".block]]
 shape = "7777777777777777"
+report = ["OFFER", "X"]
+version = 1
 rows = 8
+columns = ["OFFERDATE", "PRICE", "NOTE"]
+ctl = "tn?"
+kinds = "td-"
+nulls = [0, 0, 0]
+int_digits = [0, 0, 0]
+scale = [0, 0, 0]
+max_len = [0, 0, 0]
+min = ["", "", ""]
+max = ["", "", ""]
 "#;
 
 const DATAMODEL: &str = r#"{

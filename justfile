@@ -66,13 +66,17 @@ cover:
 schema-fixtures month="2024-01":
     cargo run --release -q -p utilake-nem-census -- fixtures --month {{month}} --out testdata/bootstrap/MMSDM_{{replace(month, "-", "_")}}
 
-# record every block of every archived file of each month (shape and rows) into schemas/nem/census/ and schemas/nem/shapes/; reads the local archive in full, offline
+# record every block of every archived file of each month (shape, rows, span, each column's profile, the file's sha256 and publish time) into schemas/nem/census/, then fold schemas/nem/shapes/; reads the local archive in full, offline
 census from to=from *args:
     cargo run --release -q -p utilake-nem-census -- census --from {{from}} --to {{to}} "${@:3}"
 
-# record every block of every archived file under Reports/ARCHIVE and Reports/CURRENT, per folder, month and shape, into schemas/nem/census/reports/ and schemas/nem/shapes/; offline
+# record every block of every archived file under Reports/ARCHIVE and Reports/CURRENT, per folder, month and shape, with each column's profile, into schemas/nem/census/reports/, then fold the shapes; offline
 census-reports *args:
     cargo run --release -q -p utilake-nem-census -- reports "$@"
+
+# write every table's shapes file again from every census file recorded (census and census-reports do this when they end)
+census-fold:
+    cargo run --release -q -p utilake-nem-census -- fold
 
 # write every table file again in the current schema_format, deriving what the format adds
 schema-migrate:

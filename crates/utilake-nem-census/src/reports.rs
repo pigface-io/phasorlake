@@ -12,11 +12,12 @@
 //!
 //! A folder holds many thousands of five-minute files, so the census of a
 //! folder is a tally, not a list: per month and shape, how many CSVs held
-//! it and their rows, and the first and last CSV by name. It is written to
-//! `{root}/nem/census/reports/{ARCHIVE|CURRENT}/{folder}.toml`, and every
-//! shape seen is added to `{root}/nem/shapes/{TABLE}.toml` with the months
-//! it was seen, beside the MMSDM census's. A folder already recorded is
-//! skipped unless taken again.
+//! it, the first and last CSV by name, and the block record of them all
+//! (rows, time span, and each column's declared class and observed
+//! profile, merged). It is written to
+//! `{root}/nem/census/reports/{ARCHIVE|CURRENT}/{folder}.toml`; the fold
+//! (`crate::fold`) takes it in beside the MMSDM census. A folder already
+//! recorded is skipped unless taken again.
 
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
@@ -24,12 +25,14 @@ use std::path::{Path, PathBuf};
 use serde::{Deserialize, Serialize};
 use utilake_acquire::Archive;
 use utilake_core::{Diagnostic, YearMonth};
-use utilake_mms_registry::{CanonicalShape, Registry, ShapeId};
+use utilake_mms_registry::{Registry, ShapeId, TypeClass};
 use utilake_nem::MmsdmArchive;
 
 use crate::census::{
-    BlockShape, CensusError, Ctls, add_shapes, block_shape, census_dir, read_blocks, write_text,
+    BlockRecord, BlockShape, CensusError, Ctls, FileRecord, Span, block_shape, census_dir,
+    read_blocks, table_of, write_text,
 };
+use crate::fold::Fold;
 
 /// The report roots under `Reports/`.
 pub const ROOTS: [&str; 2] = ["ARCHIVE", "CURRENT"];
@@ -37,25 +40,20 @@ pub const ROOTS: [&str; 2] = ["ARCHIVE", "CURRENT"];
 /// How far back a report month looks for an MMSDM month's control files.
 const CTL_LOOKBACK_MONTHS: usize = 24;
 
-/// One shape in one month of a folder.
+/// One shape and version in one month of a folder.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Tally {
     /// The month of the CSVs.
     pub month: YearMonth,
-    /// Their shape.
-    pub shape: ShapeId,
-    /// The version AEMO stamped on it.
-    pub version: u16,
-    /// `REPORT_TYPE,REPORT_SUBTYPE`.
-    pub report: String,
     /// CSVs that held a block of it.
     pub csvs: u64,
-    /// Their D rows.
-    pub rows: u64,
     /// The first CSV, by name.
-    pub first: String,
+    pub first_csv: String,
     /// The last CSV, by name.
-    pub last: String,
+    pub last_csv: String,
+    /// Their blocks as one: rows summed, span and profiles merged.
+    #[serde(flatten)]
+    pub block: BlockRecord,
 }
 
 /// A file of a folder that could not be read.
@@ -210,40 +208,61 @@ impl<'a> CtlSource<'a> {
     }
 }
 
+/// One shape and version of a month, gathering.
+struct Acc {
+    csvs: u64,
+    first_csv: String,
+    last_csv: String,
+    merged: BlockShape,
+}
+
 /// What a folder's census gathers before it is written.
 #[derive(Default)]
 struct Gather {
     census: FolderCensus,
-    seen: BTreeMap<(YearMonth, ShapeId, u16), (Tally, CanonicalShape)>,
+    seen: BTreeMap<(YearMonth, ShapeId, u16), Acc>,
     undated: u64,
 }
 
 impl Gather {
-    fn add(&mut self, month: YearMonth, csv: &str, b: &BlockShape) {
-        let id = b.shape.id();
-        let entry = self.seen.entry((month, id, b.version)).or_insert_with(|| {
-            (
-                Tally {
-                    month,
-                    shape: id,
-                    version: b.version,
-                    report: format!("{},{}", b.shape.report_type, b.shape.report_subtype),
-                    csvs: 0,
-                    rows: 0,
-                    first: csv.to_owned(),
-                    last: csv.to_owned(),
+    fn add(&mut self, month: YearMonth, csv: &str, b: BlockShape) {
+        let key = (month, b.shape.id(), b.version);
+        let Some(a) = self.seen.get_mut(&key) else {
+            self.seen.insert(
+                key,
+                Acc {
+                    csvs: 1,
+                    first_csv: csv.to_owned(),
+                    last_csv: csv.to_owned(),
+                    merged: b,
                 },
-                b.shape.clone(),
-            )
-        });
-        let t = &mut entry.0;
-        t.csvs += 1;
-        t.rows += b.rows;
-        if csv < t.first.as_str() {
-            csv.clone_into(&mut t.first);
+            );
+            return;
+        };
+        a.csvs += 1;
+        if csv < a.first_csv.as_str() {
+            csv.clone_into(&mut a.first_csv);
         }
-        if csv > t.last.as_str() {
-            csv.clone_into(&mut t.last);
+        if csv > a.last_csv.as_str() {
+            csv.clone_into(&mut a.last_csv);
+        }
+        let m = &mut a.merged;
+        m.rows += b.rows;
+        m.span = match (m.span.take(), b.span) {
+            (Some(x), Some(y)) => Some(Span {
+                first: x.first.min(y.first),
+                last: x.last.max(y.last),
+                column: x.column,
+            }),
+            (x, y) => x.or(y),
+        };
+        for (p, q) in m.profile.iter_mut().zip(&b.profile) {
+            p.merge(q);
+        }
+        for (c, d) in m.ctl.iter_mut().zip(b.ctl) {
+            if d != TypeClass::Unknown {
+                *c = d;
+            }
         }
     }
 }
@@ -259,7 +278,7 @@ pub fn census_folder(
     ctls: &mut CtlSource<'_>,
     files: &[PathBuf],
     tmp: &Path,
-) -> (FolderCensus, Vec<(YearMonth, CanonicalShape, u16)>) {
+) -> FolderCensus {
     let mut g = Gather::default();
     let mut scan_buf = Vec::new();
     for path in files {
@@ -282,7 +301,7 @@ pub fn census_folder(
                 let c = ctls.for_month(Some(month));
                 for raw in blocks {
                     let b = block_shape(registry, c, None, raw);
-                    g.add(month, base(csv), &b);
+                    g.add(month, base(csv), b);
                 }
                 Ok(())
             };
@@ -333,12 +352,16 @@ pub fn census_folder(
             error: format!("{} CSV(s) whose month no name or record gives", g.undated),
         });
     }
-    let mut shapes = Vec::new();
-    for ((month, _, version), (tally, shape)) in g.seen {
-        shapes.push((month, shape, version));
-        g.census.blocks.push(tally);
+    for ((month, ..), a) in g.seen {
+        g.census.blocks.push(Tally {
+            month,
+            csvs: a.csvs,
+            first_csv: a.first_csv,
+            last_csv: a.last_csv,
+            block: BlockRecord::of(&a.merged),
+        });
     }
-    (g.census, shapes)
+    g.census
 }
 
 /// The folders directly under `dir`, in name order (macOS `._` files
@@ -396,28 +419,77 @@ pub fn folder_path(schemas: &Path, root: &str, rel: &str) -> PathBuf {
         .join(format!("{name}.toml"))
 }
 
-/// Writes the census of a folder and adds its shapes; returns how many
-/// shapes were new.
+/// Writes the census of a folder; the shapes are folded afterwards.
 pub fn record_folder(
     schemas: &Path,
-    registry: &Registry,
     root: &str,
     rel: &str,
     census: &FolderCensus,
-    shapes: &[(YearMonth, CanonicalShape, u16)],
-) -> Result<usize, CensusError> {
-    let added = add_shapes(
-        schemas,
-        registry,
-        shapes.iter().map(|(m, s, v)| (*m, s, *v)),
-    )?;
+) -> Result<(), CensusError> {
     let text = format!(
-        "# Generated by `utilake-nem-census reports`: every shape of Reports/{root}/{rel}, per month.\n{}",
+        "# Generated by `utilake-nem-census reports`: every shape of Reports/{root}/{rel}, per month, and what each column held.\n{}",
         toml::to_string(census).expect("a folder census serialises")
     );
-    // The census file last: a folder is done once it exists.
-    write_text(&folder_path(schemas, root, rel), &text)?;
-    Ok(added)
+    write_text(&folder_path(schemas, root, rel), &text)
+}
+
+/// Every folder census recorded under a report root, by its path below the
+/// root (`/`-separated, without `.toml`).
+fn recorded_folders(schemas: &Path, root: &str) -> Vec<String> {
+    let base = census_dir(schemas).join("reports").join(root);
+    let mut out = Vec::new();
+    let mut stack = vec![base.clone()];
+    while let Some(d) = stack.pop() {
+        let Ok(rd) = std::fs::read_dir(&d) else {
+            continue;
+        };
+        for p in rd.filter_map(Result::ok).map(|e| e.path()) {
+            if p.is_dir() {
+                stack.push(p);
+            } else if let Some(rel) = p
+                .strip_prefix(&base)
+                .ok()
+                .and_then(|r| r.to_str())
+                .and_then(|r| r.strip_suffix(".toml"))
+            {
+                out.push(rel.replace('\\', "/"));
+            }
+        }
+    }
+    out.sort();
+    out
+}
+
+/// Takes every recorded folder census into a fold: each tally is a run of
+/// CSVs from its first to its last, of kind `reports/{ROOT}`.
+pub fn fold_into(schemas: &Path, registry: &Registry, fold: &mut Fold) -> Result<(), CensusError> {
+    for root in ROOTS {
+        for rel in recorded_folders(schemas, root) {
+            let Some(census) = read_folder(schemas, root, &rel)? else {
+                continue;
+            };
+            for t in &census.blocks {
+                let b = &t.block;
+                let table = table_of(registry, &b.report.0, &b.report.1);
+                let file = FileRecord {
+                    source: format!("Reports/{root}/{rel}"),
+                    sha256: None,
+                    published: None,
+                    kind: format!("reports/{}", root.to_ascii_lowercase()),
+                    block: Vec::new(),
+                };
+                fold.run(
+                    &table,
+                    t.month,
+                    (&t.first_csv, &t.last_csv),
+                    t.csvs,
+                    &file,
+                    b,
+                );
+            }
+        }
+    }
+    Ok(())
 }
 
 /// The census of a folder as written, if it was.
@@ -579,7 +651,7 @@ mod tests {
                 .for_table(&["DISPATCH_UNIT_SCADA"])
                 .is_none()
         );
-        let (census, shapes) = census_folder(&reg, &mut ctls, &all["Dispatch_SCADA"], tmp.path());
+        let census = census_folder(&reg, &mut ctls, &all["Dispatch_SCADA"], tmp.path());
         assert_eq!((census.files, census.other), (8, 1));
         assert_eq!(census.csvs, 5, "two nested, three loose");
         let unread: Vec<&str> = census.unread.iter().map(|u| u.file.as_str()).collect();
@@ -596,7 +668,7 @@ mod tests {
         let scada: Vec<&Tally> = census
             .blocks
             .iter()
-            .filter(|t| t.report == "DISPATCH,UNIT_SCADA")
+            .filter(|t| t.block.report == ("DISPATCH".into(), "UNIT_SCADA".into()))
             .collect();
         let months: Vec<String> = scada.iter().map(|t| t.month.to_string()).collect();
         let published = published_month(&store.path_for(&format!("{folder}/PUBLIC_UNDATED.CSV")))
@@ -617,22 +689,22 @@ mod tests {
             .iter()
             .find(|t| t.month.to_string() == "2026-08")
             .unwrap();
-        assert_eq!((aug.csvs, aug.rows), (2, 5));
+        assert_eq!((aug.csvs, aug.block.rows), (2, 5));
         assert_eq!(
-            aug.first,
+            aug.first_csv,
             "PUBLIC_DISPATCHSCADA_202608010005_0000000001.CSV"
         );
-        assert_eq!(aug.last, "PUBLIC_DISPATCHSCADA_202608010010_0000000001.CSV");
+        assert_eq!(
+            aug.last_csv,
+            "PUBLIC_DISPATCHSCADA_202608010010_0000000001.CSV"
+        );
+        // The two CSVs' blocks are one record: rows summed, values merged.
+        assert_eq!(aug.block.nulls, [0, 0, 0]);
+        assert_eq!(aug.block.max[2], "2.5");
         // Typed in 2026-08 and 2026-10 (looking back), unknown in 2026-07.
         let typed = |m: &str| {
             let t = scada.iter().find(|t| t.month.to_string() == m).unwrap();
-            shapes
-                .iter()
-                .find(|(sm, s, _)| sm.to_string() == m && s.id() == t.shape)
-                .unwrap()
-                .1
-                .columns[0]
-                .1
+            t.block.ctl_of(0)
         };
         assert_eq!(typed("2026-08"), TypeClass::Timestamp);
         assert_eq!(typed("2026-10"), TypeClass::Timestamp);
@@ -640,16 +712,9 @@ mod tests {
 
         // Recorded: the folder file, and each shape with its months.
         let schemas = dir.path().join("schemas");
-        let added = record_folder(
-            &schemas,
-            &reg,
-            "ARCHIVE",
-            "Dispatch_SCADA",
-            &census,
-            &shapes,
-        )
-        .unwrap();
-        assert!(added >= 3, "{added}");
+        record_folder(&schemas, "ARCHIVE", "Dispatch_SCADA", &census).unwrap();
+        let folded = crate::fold::fold(&schemas, &reg).unwrap();
+        assert!(folded.shapes >= 3, "{folded:?}");
         assert_eq!(
             read_folder(&schemas, "ARCHIVE", "Dispatch_SCADA")
                 .unwrap()

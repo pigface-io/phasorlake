@@ -73,7 +73,7 @@ expression: "r.files[\"nem/OFFER_X/7777777777777777.schema.json\"]"
     "id": "7777777777777777",
     "report_subtype": "X",
     "report_type": "OFFER",
-    "shape_format": 1
+    "shape_format": 2
   },
   "x-table": {
     "$ref": "table.json",

@@ -5,7 +5,20 @@ use crate::types::{IcebergType, MAX_PRECISION};
 /// What a column's values were seen to be, on a widening lattice: `Empty`
 /// below everything, `Integer` below `Decimal`, `Date` below `Timestamp`,
 /// and `Text` above everything.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Default)]
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    Hash,
+    PartialOrd,
+    Ord,
+    Default,
+    serde::Serialize,
+    serde::Deserialize,
+)]
+#[serde(rename_all = "snake_case")]
 pub enum Kind {
     /// No value was ever seen.
     #[default]
@@ -23,6 +36,33 @@ pub enum Kind {
 }
 
 impl Kind {
+    /// Every kind, bottom of the lattice first.
+    pub const ALL: [Self; 6] = [
+        Self::Empty,
+        Self::Integer,
+        Self::Decimal,
+        Self::Date,
+        Self::Timestamp,
+        Self::Text,
+    ];
+
+    /// One letter per kind, for compact records: `-`, `i`, `d`, `D`, `t`, `s`.
+    pub const fn letter(self) -> char {
+        match self {
+            Self::Empty => '-',
+            Self::Integer => 'i',
+            Self::Decimal => 'd',
+            Self::Date => 'D',
+            Self::Timestamp => 't',
+            Self::Text => 's',
+        }
+    }
+
+    /// The kind of a letter from [`Kind::letter`].
+    pub fn of_letter(c: char) -> Option<Self> {
+        Self::ALL.into_iter().find(|k| k.letter() == c)
+    }
+
     /// The least kind that holds both.
     pub fn join(self, other: Self) -> Self {
         use Kind::{Date, Decimal, Empty, Integer, Text, Timestamp};
@@ -128,6 +168,10 @@ mod tests {
         assert_eq!(Text.join(Integer), Text);
         assert_eq!(Decimal.join(Decimal), Decimal);
         assert_eq!(Evidence::default().kind, Empty);
+        for k in Kind::ALL {
+            assert_eq!(Kind::of_letter(k.letter()), Some(k));
+        }
+        assert_eq!(Kind::of_letter('?'), None);
         assert_eq!(ev(Integer, 4, 0).join(ev(Decimal, 2, 5)), ev(Decimal, 4, 5));
     }
 

@@ -23,13 +23,12 @@ use utilake_core::{Category, Diagnostic, YearMonth};
 use utilake_mms_registry::file_model::blob::SchemaSet;
 use utilake_mms_registry::file_model::ctl::{CtlFile, parse, sha256};
 use utilake_mms_registry::file_model::file::{CTL_DIR, TABLE_FILE, ctl_file_name, write_table};
-use utilake_mms_registry::file_model::shapes::ShapeEntry;
 use utilake_mms_registry::file_model::temporal::derive;
 use utilake_mms_registry::file_model::{
     Column, ColumnId, Increment, LakeType, LoadMode, Market, Table, Temporal,
 };
 
-use crate::census::{FileEntry, table_keys};
+use crate::census::{FileRecord, table_keys};
 use crate::datamodel::DataModel;
 
 /// Columns that partition a table by month, in the order they are chosen.
@@ -133,22 +132,18 @@ pub struct Evidence {
 }
 
 impl Evidence {
-    /// The census of a month (file name to shape ids) with every shape
-    /// the census recorded.
-    pub fn new(files: &BTreeMap<String, FileEntry>, shapes: &[ShapeEntry]) -> Self {
-        let by_id: BTreeMap<_, _> = shapes.iter().map(|e| (e.id, e)).collect();
+    /// The census of a month, file name to record.
+    pub fn new(files: &BTreeMap<String, FileRecord>) -> Self {
         let mut blocks: BTreeMap<String, BTreeSet<(String, String, u16)>> = BTreeMap::new();
         for (file, entry) in files {
             let Some(table) = utilake_nem::names::parse(file).map(|n| n.table) else {
                 continue;
             };
-            for id in entry.ids() {
-                if let Some(e) = by_id.get(&id) {
-                    blocks
-                        .entry(table.to_ascii_uppercase())
-                        .or_default()
-                        .insert((e.report_type.clone(), e.report_subtype.clone(), e.version));
-                }
+            for b in &entry.block {
+                blocks
+                    .entry(table.to_ascii_uppercase())
+                    .or_default()
+                    .insert((b.report.0.clone(), b.report.1.clone(), b.version));
             }
         }
         Self { blocks }
@@ -616,13 +611,7 @@ mod tests {
         let month = crate::census::read_month(&schemas, "2026-08".parse().unwrap())
             .unwrap()
             .unwrap();
-        let shapes: Vec<ShapeEntry> = SchemaSet::read_dir(&schemas)
-            .unwrap()
-            .shapes
-            .into_values()
-            .flatten()
-            .collect();
-        Evidence::new(&month, &shapes)
+        Evidence::new(&month)
     }
 
     /// The committed schemas are what syncing the bootstrap months gives:
