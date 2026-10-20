@@ -92,6 +92,9 @@ Every error and warning utilake reports carries one of these codes. Codes are st
 | `schema.datamodel_parse` | `crates/utilake-nem-census/src/datamodel.rs` |
 | `schema.datamodel_read` | `crates/utilake-nem-census/src/datamodel.rs` |
 | `schema.deviates` | `crates/utilake-mms-registry/src/error.rs` |
+| `schema.export_io` | `crates/utilake-nem-census/src/export/mod.rs` |
+| `schema.export_stale` | `crates/utilake-nem-census/src/export/tests.rs` |
+| `schema.export_unknown_shape` | `crates/utilake-nem-census/src/export/mod.rs` |
 | `schema.file_invalid` | `crates/utilake-mms-registry/src/file_model/error.rs` |
 | `schema.file_parse` | `crates/utilake-mms-registry/src/file_model/error.rs` |
 | `schema.file_read` | `crates/utilake-mms-registry/src/file_model/error.rs` |

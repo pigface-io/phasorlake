@@ -9,6 +9,7 @@
 //! utilake-nem-census census --from 2024-01 --to 2024-12
 //! utilake-nem-census sync --from 2024-01 --to 2024-12 [--check]
 //! utilake-nem-census fixtures --month 2024-01 --out testdata/bootstrap/MMSDM_2024_01
+//! utilake-nem-census export --out ../nem-schemas [--check]
 //! ```
 
 use std::path::{Path, PathBuf};
@@ -164,6 +165,32 @@ enum Cmd {
         #[arg(long, default_value = "https://www.nemweb.com.au")]
         base: String,
     },
+    /// Write every table and shape as JSON Schema into a `nem-schemas`
+    /// checkout: `nem/{TABLE}/{shape}.schema.json` and `index.json` per
+    /// table, `manifest.json`, `provenance.json` and `LICENCE.md`, from the
+    /// schemas, every census month and the data model. The checkout's
+    /// `nem/` is owned whole: a shape no longer recorded is removed.
+    Export {
+        /// The checkout to write into.
+        #[arg(long)]
+        out: PathBuf,
+        /// Compare instead of writing: list every file that is missing,
+        /// differs or should not be there, and exit 3 if any.
+        #[arg(long)]
+        check: bool,
+        /// The schemas directory.
+        #[arg(long, default_value = "schemas")]
+        schemas: PathBuf,
+        /// The data-model JSON, for packages, visibility and column comments.
+        #[arg(
+            long,
+            default_value = "testdata/bootstrap/datamodel/mms_data_model_v5.0.0.1.json"
+        )]
+        datamodel: PathBuf,
+        /// Where the documents are published; each `$id` is this plus the file's path.
+        #[arg(long, default_value = utilake_nem_census::export::DEFAULT_BASE_URL)]
+        base_url: String,
+    },
     /// Read AEMO's MMS Data Model Report and write it as JSON, which a new
     /// table takes its key and description from (network: one request per package and per
     /// table, a few hundred in all).
@@ -288,6 +315,13 @@ fn main() -> ExitCode {
             home,
             base,
         } => fixtures(month, &out, rows, home.as_deref(), &base),
+        Cmd::Export {
+            out,
+            check,
+            schemas,
+            datamodel,
+            base_url,
+        } => export(&out, check, &schemas, &datamodel, base_url),
         Cmd::Datamodel {
             out,
             interval_ms,
@@ -506,6 +540,61 @@ fn fixtures(
             } else {
                 ExitCode::from(3)
             }
+        }
+        Err(d) => fail(&d),
+    }
+}
+
+/// `export`: render everything, then write it or compare it.
+fn export(out: &Path, check: bool, schemas: &Path, datamodel: &Path, base_url: String) -> ExitCode {
+    use utilake_nem_census::export::{Export, Inputs};
+    let inputs = Inputs {
+        schemas: schemas.to_path_buf(),
+        datamodel: Some(datamodel.to_path_buf()),
+        base_url,
+    };
+    let rendered = match Export::load(&inputs).and_then(|e| e.render()) {
+        Ok(r) => r,
+        Err(d) => return fail(&d),
+    };
+    for d in &rendered.problems {
+        eprintln!("warning: {}", d.render());
+    }
+    let mut code = if rendered.problems.is_empty() {
+        ExitCode::SUCCESS
+    } else {
+        ExitCode::from(3)
+    };
+    if check {
+        let stale = match utilake_nem_census::export::check(out, &rendered) {
+            Ok(s) => s,
+            Err(d) => return fail(&d),
+        };
+        for s in &stale {
+            eprintln!("error: {}", s.diagnostic().render());
+        }
+        if stale.is_empty() {
+            eprintln!(
+                "{} file(s) current in {}",
+                rendered.files.len(),
+                out.display()
+            );
+        } else {
+            eprintln!("{} file(s) stale in {}", stale.len(), out.display());
+            code = ExitCode::from(3);
+        }
+        return code;
+    }
+    match utilake_nem_census::export::write(out, &rendered) {
+        Ok(w) => {
+            eprintln!(
+                "{} file(s) written, {} kept, {} removed in {}",
+                w.written,
+                w.kept,
+                w.removed,
+                out.display()
+            );
+            code
         }
         Err(d) => fail(&d),
     }

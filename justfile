@@ -97,6 +97,21 @@ census-forward month:
     just schema-sync {{month}}
     just census-check
 
+# write every table and shape as JSON Schema (from schemas/, every census month and the data model) into a nem-schemas checkout; its nem/ is owned whole
+schema-export dir="../nem-schemas":
+    cargo run --release -q -p utilake-nem-census -- export --out {{dir}}
+
+# fail (exit 3) if the checkout is not what schema-export would write
+schema-export-check dir="../nem-schemas":
+    cargo run --release -q -p utilake-nem-census -- export --out {{dir}} --check
+
+# regenerate the checkout and show what changed; the commit there is yours
+schemas-publish dir="../nem-schemas":
+    just schema-export {{dir}}
+    git -C {{dir}} status --short | head -40
+    git -C {{dir}} diff --stat | tail -1
+    @echo "review, then: git -C {{dir}} add -A && git -C {{dir}} commit"
+
 # every recorded census block against our schema: its table exists, it conforms to the increment in force that month, each control-file type fits our column's (passes when no census is recorded)
 census-check:
     cargo run -q -p xtask -- census-check

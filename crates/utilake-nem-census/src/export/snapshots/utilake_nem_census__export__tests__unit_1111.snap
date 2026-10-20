@@ -1,0 +1,118 @@
+---
+source: crates/utilake-nem-census/src/export/tests.rs
+expression: "r.files[\"nem/UNIT/1111111111111111.schema.json\"]"
+---
+{
+  "$id": "https://example.test/schemas/nem/UNIT/1111111111111111.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Unit MW from SCADA.",
+  "properties": {
+    "DUID": {
+      "description": "Dispatchable unit identifier",
+      "type": "string",
+      "x-column-id": 2,
+      "x-lake-type": "string",
+      "x-type-class": "varchar"
+    },
+    "SCADAVALUE": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "x-column-id": 3,
+      "x-lake-type": "double",
+      "x-type-class": "number"
+    },
+    "SETTLEMENTDATE": {
+      "description": "Market date and time starting at 04:05",
+      "pattern": "^\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2}$",
+      "type": "string",
+      "x-aemo-format": "YYYY/MM/DD HH24:MI:SS",
+      "x-column-id": 1,
+      "x-lake-type": "timestamp_ns",
+      "x-type-class": "timestamp"
+    }
+  },
+  "required": [
+    "SETTLEMENTDATE",
+    "DUID"
+  ],
+  "title": "UNIT, shape 1111111111111111",
+  "type": "object",
+  "x-format": 1,
+  "x-increment": {
+    "aemo_ctl": "PUBLIC_DVD_UNIT_201501.ctl",
+    "aemo_model_version": "v4.23",
+    "ctl": "001.ctl",
+    "ctl_sha256": "f184aa48b8dc9b15be0a9428fd655e70b62c4eb9a9a900ab1d2f71a4bc53f97d",
+    "from": "2015-01",
+    "n": 1,
+    "status": "conforms"
+  },
+  "x-market": "nem",
+  "x-seen": {
+    "first": "2015-01",
+    "last": "2024-09",
+    "months": [
+      [
+        "2015-01",
+        null
+      ],
+      [
+        "2024-10",
+        10
+      ]
+    ],
+    "versions": [
+      1,
+      2
+    ]
+  },
+  "x-shape": {
+    "columns": [
+      [
+        "SETTLEMENTDATE",
+        "timestamp"
+      ],
+      [
+        "DUID",
+        "varchar"
+      ],
+      [
+        "SCADAVALUE",
+        "number"
+      ]
+    ],
+    "id": "1111111111111111",
+    "report_subtype": "UNIT",
+    "report_type": "DISPATCH",
+    "shape_format": 1
+  },
+  "x-table": {
+    "declared": true,
+    "load_mode": "append",
+    "name": "UNIT",
+    "package": "DISPATCH",
+    "primary_key": [
+      "SETTLEMENTDATE",
+      "DUID"
+    ],
+    "temporal": {
+      "cutoff": "LASTCHANGED",
+      "entity": [
+        "DUID"
+      ],
+      "order": [
+        "LASTCHANGED"
+      ],
+      "origin": "derived",
+      "valid": {
+        "column": "SETTLEMENTDATE",
+        "kind": "interval_end"
+      }
+    },
+    "time_column": "SETTLEMENTDATE",
+    "visibility": "Public"
+  }
+}

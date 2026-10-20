@@ -1,0 +1,106 @@
+---
+source: crates/utilake-nem-census/src/export/tests.rs
+expression: "r.files[\"nem/UNIT/3333333333333333.schema.json\"]"
+---
+{
+  "$id": "https://example.test/schemas/nem/UNIT/3333333333333333.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Unit MW from SCADA.",
+  "properties": {
+    "DUID": {
+      "description": "Dispatchable unit identifier",
+      "type": "string",
+      "x-column-id": 2,
+      "x-lake-type": "string",
+      "x-type-class": "varchar"
+    },
+    "QUALITY": {
+      "x-type-class": "unknown"
+    },
+    "SETTLEMENTDATE": {
+      "description": "Market date and time starting at 04:05",
+      "pattern": "^\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2}$",
+      "type": "string",
+      "x-aemo-format": "YYYY/MM/DD HH24:MI:SS",
+      "x-column-id": 1,
+      "x-lake-type": "timestamp_ns",
+      "x-type-class": "timestamp"
+    }
+  },
+  "required": [
+    "SETTLEMENTDATE",
+    "DUID"
+  ],
+  "title": "UNIT, shape 3333333333333333",
+  "type": "object",
+  "x-format": 1,
+  "x-increment": {
+    "aemo_ctl": "PUBLIC_ARCHIVE#UNIT#FILE01#202410.ctl",
+    "ctl": "002.ctl",
+    "ctl_sha256": "454f90da112e585c116c76bb1e32917f88e8a4202a0dc978f80455ffb21fda5e",
+    "from": "2024-10",
+    "n": 2,
+    "status": "deviates"
+  },
+  "x-market": "nem",
+  "x-seen": {
+    "first": "2024-11",
+    "last": "2024-11",
+    "months": [
+      [
+        "2024-11",
+        3
+      ]
+    ],
+    "versions": [
+      3
+    ]
+  },
+  "x-shape": {
+    "columns": [
+      [
+        "SETTLEMENTDATE",
+        "timestamp"
+      ],
+      [
+        "DUID",
+        "varchar"
+      ],
+      [
+        "QUALITY",
+        "unknown"
+      ]
+    ],
+    "id": "3333333333333333",
+    "report_subtype": "UNIT",
+    "report_type": "DISPATCH",
+    "shape_format": 1
+  },
+  "x-table": {
+    "declared": true,
+    "load_mode": "append",
+    "name": "UNIT",
+    "package": "DISPATCH",
+    "primary_key": [
+      "SETTLEMENTDATE",
+      "DUID"
+    ],
+    "temporal": {
+      "cutoff": "LASTCHANGED",
+      "entity": [
+        "DUID"
+      ],
+      "order": [
+        "LASTCHANGED"
+      ],
+      "origin": "derived",
+      "valid": {
+        "column": "SETTLEMENTDATE",
+        "kind": "interval_end"
+      }
+    },
+    "time_column": "SETTLEMENTDATE",
+    "visibility": "Public"
+  }
+}

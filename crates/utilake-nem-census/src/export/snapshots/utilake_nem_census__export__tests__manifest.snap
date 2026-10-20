@@ -1,0 +1,31 @@
+---
+source: crates/utilake-nem-census/src/export/tests.rs
+expression: "r.files[\"manifest.json\"]"
+---
+{
+  "base_url": "https://example.test/schemas/",
+  "declared_tables": 3,
+  "files": 11,
+  "format": 1,
+  "market": "nem",
+  "months": {
+    "count": 3,
+    "first": "2015-01",
+    "last": "2024-11"
+  },
+  "sha256": {
+    "nem/OFFER_X/7777777777777777.schema.json": "ab9cebd01c93040f4ba0d3073bcfd939c508bede60e018b8b1cad39f5e8cea65",
+    "nem/OFFER_X/index.json": "c7357315c2a9158f1f890b7b7100295ffbac4cf2f262e4f6930db3f79235855b",
+    "nem/REGION/4444444444444444.schema.json": "f85daa13cab642ae22d70690f7e9cc6455032ff05fe25cd941851b15b96003c6",
+    "nem/REGION/index.json": "7fe47b1259f15d3f459fe33f9077e141f1acfae4160b4f5b79830ea341996baa",
+    "nem/TYPES/5555555555555555.schema.json": "4ff8c28b264ea41c435da1c523b99ae3bb8d4ae82123ccee4294b19a7f73ca7c",
+    "nem/TYPES/6666666666666666.schema.json": "b9afcb91f375cfa4c7e2d12828d63e095ca15e5ad2c58b2775bc922d3c18e70e",
+    "nem/TYPES/index.json": "4920afc050099d9aa8629876e8d11535e3d49f47d566d954325b9f6f445b735b",
+    "nem/UNIT/1111111111111111.schema.json": "f22f33902abe67d46ad01f76d2354f67ebc961eb070bfb0140176c561a742072",
+    "nem/UNIT/2222222222222222.schema.json": "09c6271f54f36346207d42177f0726f70961b0caed0c1696044e5db417ceb61c",
+    "nem/UNIT/3333333333333333.schema.json": "972c67f6363b6738d37ac5ea0e928b7d3748b54865e21aa076c79bd5230107eb",
+    "nem/UNIT/index.json": "9bea1d71e835ed2ee73440659b2b8f22058f0d293a048e657fd0f4c6ff3a6258"
+  },
+  "shapes": 7,
+  "tables": 4
+}

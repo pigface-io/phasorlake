@@ -2837,6 +2837,7 @@ version = "0.1.0"
 dependencies = [
  "clap",
  "flate2",
+ "insta",
  "serde",
  "serde_json",
  "tempfile",

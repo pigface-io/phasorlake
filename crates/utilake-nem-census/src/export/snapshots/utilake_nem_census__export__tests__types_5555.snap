@@ -1,0 +1,142 @@
+---
+source: crates/utilake-nem-census/src/export/tests.rs
+expression: "r.files[\"nem/TYPES/5555555555555555.schema.json\"]"
+---
+{
+  "$id": "https://example.test/schemas/nem/TYPES/5555555555555555.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "B": {
+      "type": [
+        "boolean",
+        "null"
+      ],
+      "x-column-id": 5,
+      "x-lake-type": "boolean",
+      "x-type-class": "unknown"
+    },
+    "D": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "x-column-id": 3,
+      "x-lake-type": "double",
+      "x-type-class": "unknown"
+    },
+    "DAY": {
+      "pattern": "^\\d{4}/\\d{2}/\\d{2}$",
+      "type": [
+        "string",
+        "null"
+      ],
+      "x-aemo-format": "YYYY/MM/DD",
+      "x-column-id": 6,
+      "x-lake-type": "date",
+      "x-type-class": "unknown"
+    },
+    "EFFECTIVEDATE": {
+      "pattern": "^\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2}$",
+      "type": [
+        "string",
+        "null"
+      ],
+      "x-aemo-format": "YYYY/MM/DD HH24:MI:SS",
+      "x-column-id": 1,
+      "x-lake-type": "timestamp_ns",
+      "x-type-class": "unknown"
+    },
+    "L": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "x-column-id": 4,
+      "x-lake-type": "long",
+      "x-type-class": "unknown"
+    },
+    "S": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "x-column-id": 2,
+      "x-lake-type": "string",
+      "x-type-class": "unknown"
+    },
+    "X": {
+      "x-type-class": "unknown"
+    }
+  },
+  "title": "TYPES, shape 5555555555555555",
+  "type": "object",
+  "x-format": 1,
+  "x-market": "nem",
+  "x-seen": {
+    "first": "2024-11",
+    "last": "2024-11",
+    "months": [
+      [
+        "2024-11",
+        1
+      ]
+    ],
+    "versions": [
+      1
+    ]
+  },
+  "x-shape": {
+    "columns": [
+      [
+        "EFFECTIVEDATE",
+        "unknown"
+      ],
+      [
+        "S",
+        "unknown"
+      ],
+      [
+        "D",
+        "unknown"
+      ],
+      [
+        "L",
+        "unknown"
+      ],
+      [
+        "B",
+        "unknown"
+      ],
+      [
+        "DAY",
+        "unknown"
+      ],
+      [
+        "X",
+        "unknown"
+      ]
+    ],
+    "id": "5555555555555555",
+    "report_subtype": "TYPES",
+    "report_type": "TEST",
+    "shape_format": 1
+  },
+  "x-table": {
+    "declared": true,
+    "load_mode": "snapshot",
+    "name": "TYPES",
+    "primary_key": [
+      "EFFECTIVEDATE"
+    ],
+    "temporal": {
+      "entity": [],
+      "order": [],
+      "origin": "hand",
+      "valid": {
+        "column": "EFFECTIVEDATE",
+        "kind": "from"
+      }
+    }
+  }
+}

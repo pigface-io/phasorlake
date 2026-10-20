@@ -12,10 +12,14 @@
 //!
 //! [`fixtures`] cuts the test fixtures of a month from the local archive:
 //! every control file, the README, and the head of every data file.
+//!
+//! [`export`] writes every table and shape as JSON Schema, with the months
+//! the census saw each in, for the public `nem-schemas` repository.
 
 pub mod census;
 pub mod datamodel;
 pub mod dmreport;
+pub mod export;
 pub mod fixtures;
 pub mod migrate;
 pub mod pdr;
