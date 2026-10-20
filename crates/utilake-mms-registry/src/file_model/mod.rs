@@ -10,7 +10,8 @@
 //! lake columns with exact types and stable ids, which persist, and its
 //! increments (`TABLE@n`), each the file shape of one AEMO control file
 //! kept byte for byte under `{TABLE}/ctl/`. [`validate`] holds the
-//! invariants, [`compat`] what the lake survives, [`blob`] the packed set,
+//! invariants, [`compat`] what the lake survives, [`iceberg`] the table as
+//! an Iceberg schema, [`blob`] the packed set,
 //! and [`ctl`] the parser of AEMO's SQL*Loader control files.
 
 pub mod blob;
@@ -18,6 +19,7 @@ pub mod compat;
 pub mod ctl;
 pub mod error;
 pub mod file;
+pub mod iceberg;
 pub mod model;
 pub mod shapes;
 pub mod temporal;

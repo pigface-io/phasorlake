@@ -37,6 +37,15 @@ the largest scale seen, fixed for the life of the column. A 32-bit float is
 never chosen, since it would round AEMO's prices and energies. A column
 never seen with a value keeps its declared type.
 
+## A table as an Iceberg schema
+
+`Table::iceberg_schema` (`crates/utilake-mms-registry/src/file_model/iceberg.rs`)
+gives a table's columns as Iceberg fields, with their ids, types and
+nullability, and its primary key as identifier fields; `Table::partition_spec`
+partitions it by month of its time column. Iceberg refuses a key with a
+nullable or float column. Such a key is left out and the reason returned,
+until the column's type is chosen from its observed values.
+
 ## Field ids
 
 Iceberg identifies a column by its field id, not its name, and never reuses

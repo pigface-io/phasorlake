@@ -2,6 +2,7 @@
 //! control files set.
 
 use std::fmt;
+use utilake_iceberg::IcebergType;
 
 use crate::shape::TypeClass;
 use serde::{Deserialize, Serialize};
@@ -139,22 +140,21 @@ impl LakeType {
     }
 
     /// The Iceberg V3 type.
-    pub const fn iceberg(self) -> &'static str {
+    pub const fn iceberg(self) -> IcebergType {
         match self {
-            Self::String => "string",
-            Self::Double => "double",
-            Self::Long => "long",
-            Self::Boolean => "boolean",
-            Self::Date => "date",
-            Self::TimestampNs => "timestamptz_ns",
+            Self::String => IcebergType::String,
+            Self::Double => IcebergType::Double,
+            Self::Long => IcebergType::Long,
+            Self::Boolean => IcebergType::Boolean,
+            Self::Date => IcebergType::Date,
+            Self::TimestampNs => IcebergType::TimestamptzNs,
         }
     }
 
     /// Whether a column of this type may become `to` without rewriting a
-    /// file: only an Iceberg promotion, and none of ours is one, so only
-    /// the same type.
+    /// file: only an Iceberg promotion (`utilake_iceberg`).
     pub fn promotes_to(self, to: Self) -> bool {
-        self == to
+        self.iceberg().promotes_to(to.iceberg())
     }
 
     /// Whether values a control file loads as `class` are read into this
@@ -408,8 +408,8 @@ pub(crate) mod tests {
             assert!(t.promotes_to(t));
             assert!(t.holds(TypeClass::Unknown));
         }
-        assert_eq!(LakeType::TimestampNs.iceberg(), "timestamptz_ns");
-        assert_eq!(LakeType::Long.iceberg(), "long");
+        assert_eq!(LakeType::TimestampNs.iceberg().name(), "timestamptz_ns");
+        assert_eq!(LakeType::Long.iceberg(), IcebergType::Long);
         assert!(!LakeType::Long.promotes_to(LakeType::Double));
         assert!(!LakeType::Date.promotes_to(LakeType::TimestampNs));
         assert!(LakeType::String.holds(TypeClass::Timestamp));

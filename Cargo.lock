@@ -2819,6 +2819,7 @@ dependencies = [
  "thiserror",
  "toml",
  "utilake-core",
+ "utilake-iceberg",
  "utilake-mms-decode",
  "xxhash-rust",
 ]
