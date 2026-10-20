@@ -5,9 +5,11 @@ new source adds crates and changes none.
 
 ## Three groups
 
-- **Generic** (`utilake-core`, `utilake-acquire`, `utilake-kit`,
-  `utilake-writer`, `utilake-pipeline`, `utilake-cli`): what every source
-  shares. The pipeline runs over the ports in `utilake-kit` and names no
+- **Generic** (`utilake-core`, `utilake-iceberg`, `utilake-acquire`,
+  `utilake-kit`, `utilake-writer`, `utilake-pipeline`, `utilake-cli`): what
+  every source shares. `utilake-iceberg` is the lake's Iceberg contract
+  (types, field ids, legal updates, partition spec), on `utilake-core`
+  alone. The pipeline runs over the ports in `utilake-kit` and names no
   format: a `Source` lists and describes files, a `Decoder` reads an entry
   into `Block`s for a `BlockSink`, a `Catalog` declares the tables, and a
   `SourceKit` bundles them for one market. The compiler holds the rule:

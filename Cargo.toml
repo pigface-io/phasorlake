@@ -23,11 +23,13 @@ members = [
     "crates/utilake-pipeline",
     "crates/utilake-cli",
     "crates/utilake-mdff",
+    "crates/utilake-iceberg",
     "crates/utilake-bench",
     "crates/xtask",
 ]
 default-members = [
     "crates/utilake-core",
+    "crates/utilake-iceberg",
     "crates/utilake-mms-registry",
     "crates/utilake-nem-census",
     "crates/utilake-mms-decode",
@@ -75,6 +77,7 @@ uninlined_format_args = "deny"
 
 [workspace.dependencies]
 utilake-core = { path = "crates/utilake-core" }
+utilake-iceberg = { path = "crates/utilake-iceberg" }
 utilake-mms-registry = { path = "crates/utilake-mms-registry" }
 utilake-mms-decode = { path = "crates/utilake-mms-decode" }
 utilake-mms-conform = { path = "crates/utilake-mms-conform" }

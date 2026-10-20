@@ -100,6 +100,11 @@ Every error and warning utilake reports carries one of these codes. Codes are st
 | `schema.file_read` | `crates/utilake-mms-registry/src/file_model/error.rs` |
 | `schema.fixture_read_failed` | `crates/utilake-nem-census/src/fixtures.rs` |
 | `schema.fixture_write_failed` | `crates/utilake-nem-census/src/fixtures.rs` |
+| `schema.iceberg_duplicate_name` | `crates/utilake-iceberg/src/update.rs` |
+| `schema.iceberg_identifier` | `crates/utilake-iceberg/src/update.rs` |
+| `schema.iceberg_not_a_promotion` | `crates/utilake-iceberg/src/update.rs` |
+| `schema.iceberg_required_forbidden` | `crates/utilake-iceberg/src/update.rs` |
+| `schema.iceberg_unknown_field` | `crates/utilake-iceberg/src/update.rs` |
 | `schema.migrate_io` | `crates/utilake-nem-census/src/migrate.rs` |
 | `schema.missing_key` | `crates/utilake-mms-registry/src/error.rs` |
 | `schema.model_differs` | `crates/utilake-nem-census/src/models.rs` |

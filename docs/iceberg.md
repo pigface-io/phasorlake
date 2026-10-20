@@ -27,6 +27,15 @@ types alike:
 | `boolean` | `Boolean` | `BOOLEAN` | `boolean` |
 | `date` | `Date32` | `INT32 (DATE)` | `date` |
 | `timestamp_ns` | `Timestamp(ns, +10:00)` | `INT64 (TIMESTAMP(NANOS, isAdjustedToUTC))` | `timestamptz_ns` |
+| `decimal(P, S)` | `Decimal128(P, S)` | `FIXED_LEN_BYTE_ARRAY (DECIMAL(P, S))` | `decimal(P, S)` |
+
+The contract lives in `crates/utilake-iceberg`. A column's type is chosen
+once, from everything observed of it over its whole history (`type_for`):
+whole numbers are `long`; numbers of up to 15 significant digits are
+`double`, which holds them exactly; longer ones are `decimal(P, S)` with S
+the largest scale seen, fixed for the life of the column. A 32-bit float is
+never chosen, since it would round AEMO's prices and energies. A column
+never seen with a value keeps its declared type.
 
 ## Field ids
 
@@ -47,6 +56,8 @@ and `utilake reingest` writes the files that carry it again.
 
 A column's type changes only by an Iceberg promotion, which Iceberg applies
 in metadata alone: int to long, float to double, a decimal to a larger
-precision. None of our types promotes to another (`long` to `double` is not
-a promotion, nor `date` to `timestamp_ns`), so `just schema-compat` refuses
-any type change: values of another type go to a new column.
+precision of the same scale. Of our types only the decimal promotes (`long`
+to `double` is not a promotion, nor `date` to `timestamp_ns`), so any other
+type change is refused (`Schema::apply`, `just schema-compat`): values of
+another type go to a new column. A column may become optional, never
+required; a key column stays required.

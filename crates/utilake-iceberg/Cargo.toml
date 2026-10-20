@@ -1,0 +1,18 @@
+[package]
+name = "utilake-iceberg"
+description = "The Iceberg format version 3 contract of the lake: types, schemas with stable field ids, the legal schema updates, the type rule from observed values and the month partition spec."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+utilake-core.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
