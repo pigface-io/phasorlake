@@ -6,11 +6,30 @@
 name: setup
 description: Install the toolchain and just
 
+inputs:
+  schemas-key:
+    description: >-
+      A read-only deploy key of github.com/g0itb4/utilake-schemas, which
+      cargo fetches utilake-iceberg from while that repository is private.
+    required: true
+
 runs:
   using: composite
   steps:
     # rust-toolchain.toml names the version and the components; rustup reads it on first use.
     - run: rustup show
+      shell: bash
+    # cargo fetches utilake-iceberg with git over SSH (.cargo/config.toml).
+    # The key reads that one repository and is gone with the runner.
+    - name: Read utilake-schemas
+      env:
+        KEY: ${{ inputs.schemas-key }}
+      run: |
+        mkdir -p ~/.ssh && chmod 700 ~/.ssh
+        printf '%s\n' "$KEY" > ~/.ssh/utilake_schemas && chmod 600 ~/.ssh/utilake_schemas
+        printf 'Host github.com\n  IdentityFile ~/.ssh/utilake_schemas\n  IdentitiesOnly yes\n' >> ~/.ssh/config
+        # GitHub's published host key, not one asked of the network.
+        echo 'github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl' >> ~/.ssh/known_hosts
       shell: bash
     - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2
     - uses: extractions/setup-just@dd310ad5a97d8e7b41793f8ef055398d51ad4de6 # v2
