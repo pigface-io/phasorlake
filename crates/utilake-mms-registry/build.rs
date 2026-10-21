@@ -1,5 +1,6 @@
 //! Validates `schemas/` and packs it into `$OUT_DIR/registry.bin`, and the
-//! census's shapes into `$OUT_DIR/shapes.bin`.
+//! census's shapes into `$OUT_DIR/shapes.bin` and each table's Iceberg
+//! history into `$OUT_DIR/iceberg.bin`.
 //!
 //! A schema file that breaks an invariant fails the build with the issue
 //! list, so no binary ever ships a registry the validator rejects.
@@ -54,4 +55,5 @@ fn main() {
     let out_dir = PathBuf::from(std::env::var("OUT_DIR").expect("cargo sets OUT_DIR"));
     std::fs::write(out_dir.join("registry.bin"), set.encode()).expect("write registry.bin");
     std::fs::write(out_dir.join("shapes.bin"), set.encode_shapes()).expect("write shapes.bin");
+    std::fs::write(out_dir.join("iceberg.bin"), set.encode_histories()).expect("write iceberg.bin");
 }

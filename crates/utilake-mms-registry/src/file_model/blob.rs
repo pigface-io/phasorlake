@@ -14,6 +14,7 @@ use serde::{Deserialize, Serialize};
 use crate::file_model::ctl::sha256;
 use crate::file_model::error::SchemaFileError;
 use crate::file_model::file::{CTL_DIR, TABLE_FILE, read_market, read_table};
+use crate::file_model::history::{History, history_issues, read_history};
 use crate::file_model::model::{Market, MarketDef, Table};
 use crate::file_model::shapes::{ShapeEntry, read_shapes, shape_issues};
 use crate::file_model::validate::{Issue, issue, validate_set, validate_table};
@@ -30,6 +31,10 @@ pub struct SchemaSet {
     /// shape never decodes them.
     #[serde(skip)]
     pub shapes: BTreeMap<String, Vec<ShapeEntry>>,
+    /// Each table's history as an Iceberg table, by table name. Packed on
+    /// its own ([`SchemaSet::encode_histories`]).
+    #[serde(skip)]
+    pub histories: BTreeMap<String, History>,
     /// What reading found wrong with the control files: one missing, or
     /// not the bytes its hash names.
     #[serde(skip)]
@@ -37,7 +42,7 @@ pub struct SchemaSet {
 }
 
 /// Directories under a market that hold the census's records, not tables.
-pub const CENSUS_DIRS: [&str; 2] = ["census", "shapes"];
+pub const CENSUS_DIRS: [&str; 3] = ["census", "shapes", "iceberg"];
 
 /// The market a table file is under, when `path` (`/`-separated, ending
 /// `{market}/{TABLE}/table.toml`) is one.
@@ -135,6 +140,13 @@ impl SchemaSet {
             let name = p.file_name().and_then(|n| n.to_str()).unwrap_or("");
             if name == "shapes" {
                 self.read_shapes_dir(&p)?;
+            } else if name == "iceberg" {
+                for f in sorted_entries(&p)? {
+                    if f.extension().is_some_and(|e| e == "json") {
+                        let h = read_history(&f)?;
+                        self.histories.insert(h.table.clone(), h);
+                    }
+                }
             } else if !CENSUS_DIRS.contains(&name) && p.join(TABLE_FILE).is_file() {
                 let t = read_table(&p, market)?;
                 self.file_issues.extend(ctl_issues(&p, &t));
@@ -177,6 +189,16 @@ impl SchemaSet {
                     }),
             );
         }
+        for (table, h) in &self.histories {
+            let issues = match self.tables.iter().find(|t| &t.name == table) {
+                Some(t) => history_issues(t, h),
+                None => Vec::new(),
+            };
+            out.extend(issues.into_iter().map(|message| Issue {
+                table: table.clone(),
+                message,
+            }));
+        }
         let mut markets: Vec<Market> = self.markets.iter().map(|m| m.market).collect();
         markets.sort();
         let before = markets.len();
@@ -210,6 +232,16 @@ impl SchemaSet {
         postcard::to_allocvec(&self.shapes).expect("shapes always serialise")
     }
 
+    /// Encodes the histories as a postcard blob of their own.
+    pub fn encode_histories(&self) -> Vec<u8> {
+        postcard::to_allocvec(&self.histories).expect("histories always serialise")
+    }
+
+    /// Decodes a blob of histories.
+    pub fn decode_histories(bytes: &[u8]) -> Result<BTreeMap<String, History>, SchemaFileError> {
+        postcard::from_bytes(bytes).map_err(SchemaFileError::Blob)
+    }
+
     /// Decodes a blob of shapes.
     pub fn decode_shapes(
         bytes: &[u8],
@@ -225,6 +257,52 @@ impl SchemaSet {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn reads_and_checks_each_tables_history() {
+        let dir = tempfile::tempdir().unwrap();
+        let nem = dir.path().join("nem");
+        let t = crate::file_model::model::tests::unit_scada();
+        std::fs::create_dir_all(nem.join(&t.name)).unwrap();
+        std::fs::write(
+            nem.join(&t.name).join(crate::file_model::file::TABLE_FILE),
+            crate::file_model::file::write_table(&t),
+        )
+        .unwrap();
+        let ice = nem.join("iceberg");
+        std::fs::create_dir_all(&ice).unwrap();
+        let mut h = crate::file_model::history::tests::scada_history();
+        let json = |h: &crate::file_model::history::History| serde_json::to_string(h).unwrap();
+        std::fs::write(ice.join("DISPATCH_UNIT_SCADA.json"), json(&h)).unwrap();
+        let mut other = h.clone();
+        other.table = "NOT_A_TABLE".into();
+        std::fs::write(ice.join("NOT_A_TABLE.json"), json(&other)).unwrap();
+        std::fs::write(ice.join("README"), "not a history").unwrap();
+        let set = SchemaSet::read_dir(dir.path()).unwrap();
+        assert_eq!(set.histories.len(), 2);
+        assert!(
+            !set.validate().iter().any(|i| i.message.contains("history")),
+            "{:?}",
+            set.validate()
+        );
+        assert_eq!(
+            SchemaSet::decode_histories(&set.encode_histories()).unwrap(),
+            set.histories
+        );
+        assert!(SchemaSet::decode_histories(&[0xff]).is_err());
+        // A field whose id is not its column's is an issue of the table.
+        h.schemas[0].fields[0].id = 9;
+        std::fs::write(ice.join("DISPATCH_UNIT_SCADA.json"), json(&h)).unwrap();
+        let issues = SchemaSet::read_dir(dir.path()).unwrap().validate();
+        assert!(
+            issues
+                .iter()
+                .any(|i| i.table == "DISPATCH_UNIT_SCADA" && i.message.contains("has 9")),
+            "{issues:?}"
+        );
+        std::fs::write(ice.join("DISPATCH_UNIT_SCADA.json"), "{").unwrap();
+        assert!(SchemaSet::read_dir(dir.path()).is_err());
+    }
+
     use super::*;
     use crate::file_model::file::{write_market, write_table};
     use crate::file_model::model::TimestampFormat;

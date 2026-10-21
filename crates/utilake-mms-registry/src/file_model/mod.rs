@@ -19,6 +19,7 @@ pub mod compat;
 pub mod ctl;
 pub mod error;
 pub mod file;
+pub mod history;
 pub mod iceberg;
 pub mod model;
 pub mod shapes;

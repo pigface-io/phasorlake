@@ -74,6 +74,9 @@ pub struct Resolved {
     pub table: TableId,
     /// The increment of the table the block was read against: our version.
     pub version: u16,
+    /// The Iceberg schema of the table's history whose columns are the
+    /// block's; none for a column list the census has not folded.
+    pub schema: Option<u32>,
     /// How it matched.
     pub status: Status,
     /// The plan to conform with.
@@ -169,6 +172,7 @@ impl Registry {
         };
         let inc = &t.increments[k];
         let (inc_fp, own) = &shapes.increments[k];
+        let schema = self.schema_id(id, irow);
         let mut warnings = Vec::new();
         if !inc.aemo_versions.is_empty() && !inc.aemo_versions.contains(&irow.version) {
             warnings.push(
@@ -188,6 +192,7 @@ impl Registry {
             return Ok(Resolved {
                 table: id,
                 version: inc.n,
+                schema,
                 status: Status::Conforms,
                 plan: own.clone(),
                 source: self.schema_source(id),
@@ -205,7 +210,7 @@ impl Registry {
         // increment its control file is in force. It conforms.
         if missing_keys().is_empty()
             && irow.columns.iter().all(|c| t.column(c).is_some())
-            && !self.shape_ids(irow, None).is_empty()
+            && (schema.is_some() || !self.shape_ids(irow, None).is_empty())
         {
             let d = self.deviation((id, inc.n, fp, irow.version), || Deviation {
                 plan: Arc::new(ConformancePlan::new(
@@ -222,6 +227,7 @@ impl Registry {
             return Ok(Resolved {
                 table: id,
                 version: inc.n,
+                schema,
                 status: d.status.clone(),
                 plan: d.plan.clone(),
                 source: self.schema_source(id),
@@ -312,6 +318,7 @@ impl Registry {
         Ok(Resolved {
             table: id,
             version: inc.n,
+            schema,
             status: d.status.clone(),
             plan: d.plan.clone(),
             source: self.schema_source(id),
@@ -355,6 +362,7 @@ impl Registry {
         Resolved {
             table: id,
             version: 1,
+            schema: None,
             status: Status::Derived,
             plan: d.plan.clone(),
             source: self.schema_source(id),
@@ -397,6 +405,36 @@ mod tests {
 
     fn month(s: &str) -> Option<YearMonth> {
         s.parse().ok()
+    }
+
+    #[test]
+    fn a_column_list_of_the_history_names_its_schema_and_conforms() {
+        let history = crate::file_model::history::tests::scada_history();
+        let r = Registry::from_set(SchemaSet {
+            tables: vec![unit_scada()],
+            histories: std::collections::BTreeMap::from([(history.table.clone(), history)]),
+            ..Default::default()
+        });
+        let opts = ResolveOptions::default();
+        let res = r.resolve_in(&scada(&FOUR), opts, month("2026-08")).unwrap();
+        assert_eq!((res.status, res.schema), (Status::Conforms, Some(0)));
+        // Another order the census folded: its own schema, and conforms.
+        let moved = ["DUID", "SETTLEMENTDATE", "SCADAVALUE", "LASTCHANGED"];
+        let res = r
+            .resolve_in(&scada(&moved), opts, month("2026-08"))
+            .unwrap();
+        assert_eq!((res.status, res.schema), (Status::Conforms, Some(1)));
+        // With no history, the same order deviates and names no schema.
+        let res = reg()
+            .resolve_in(&scada(&moved), opts, month("2026-08"))
+            .unwrap();
+        assert!(
+            matches!(res.status, Status::Deviates { .. }),
+            "{:?}",
+            res.status
+        );
+        assert_eq!(res.schema, None);
+        assert_eq!(r.histories().len(), 1);
     }
 
     #[test]

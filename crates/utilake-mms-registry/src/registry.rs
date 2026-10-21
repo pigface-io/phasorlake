@@ -5,6 +5,7 @@ use std::path::Path;
 use std::sync::{Arc, Mutex, OnceLock};
 
 use crate::file_model::blob::SchemaSet;
+use crate::file_model::history::History;
 use crate::file_model::shapes::ShapeEntry;
 use crate::file_model::{
     Column, ColumnId, Increment, LakeType, LoadMode, Market, MarketDef, SchemaFileError, Table,
@@ -98,6 +99,11 @@ pub struct Registry {
     /// Census shapes by report pair and fingerprint of their names, built
     /// on first use.
     census_index: OnceLock<HashMap<(String, String, Fingerprint), Vec<CensusShape>>>,
+    /// Each table's history as an Iceberg table, by table name; for the
+    /// embedded registry decoded from its blob on first use.
+    histories: OnceLock<BTreeMap<String, History>>,
+    /// The blob the histories are decoded from, when not given.
+    history_blob: &'static [u8],
 }
 
 /// What resolution needs of a census shape: its id and when it was seen.
@@ -171,6 +177,9 @@ const EMBEDDED_BLOB: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/registry.
 /// The census's shapes `build.rs` packed from `schemas/`.
 const EMBEDDED_SHAPES: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/shapes.bin"));
 
+/// Each table's Iceberg history `build.rs` packed from `schemas/`.
+const EMBEDDED_HISTORIES: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/iceberg.bin"));
+
 /// The embedded blob, for benchmarks and tools that decode it themselves.
 pub fn embedded_blob() -> &'static [u8] {
     EMBEDDED_BLOB
@@ -185,6 +194,7 @@ impl Registry {
                     .expect("build.rs validated and packed the embedded registry");
                 let mut registry = Self::from_set(set);
                 registry.census_blob = EMBEDDED_SHAPES;
+                registry.history_blob = EMBEDDED_HISTORIES;
                 Arc::new(registry)
             })
             .clone()
@@ -227,10 +237,13 @@ impl Registry {
         for (table, theirs) in over.shapes {
             shapes.insert(table, theirs);
         }
+        let mut histories = self.histories().clone();
+        histories.extend(over.histories);
         let set = SchemaSet {
             markets,
             tables,
             shapes,
+            histories,
             file_issues: over.file_issues,
         };
         let issues = set.validate();
@@ -294,7 +307,33 @@ impl Registry {
             },
             census_blob: &[],
             census_index: OnceLock::new(),
+            histories: if set.histories.is_empty() {
+                OnceLock::new()
+            } else {
+                OnceLock::from(set.histories)
+            },
+            history_blob: &[],
         }
+    }
+
+    /// Each table's history as an Iceberg table, by table name.
+    pub fn histories(&self) -> &BTreeMap<String, History> {
+        self.histories.get_or_init(|| {
+            if self.history_blob.is_empty() {
+                BTreeMap::new()
+            } else {
+                SchemaSet::decode_histories(self.history_blob)
+                    .expect("build.rs validated and packed the histories")
+            }
+        })
+    }
+
+    /// The Iceberg schema a block of table `id` is written under: the one
+    /// of the table's history whose columns are the block's, in order.
+    pub fn schema_id(&self, id: TableId, irow: &IRow<'_>) -> Option<u32> {
+        self.histories()
+            .get(&self.table(id).name)?
+            .schema_of(irow.columns)
     }
 
     /// The census's shapes of each table, by table name.

@@ -278,7 +278,7 @@ fn main() -> ExitCode {
         Cmd::Tables { schemas } => match utilake_nem_census::tables::rewrite(&schemas) {
             Ok(done) => {
                 for (table, c) in &done {
-                    for line in c.retyped.iter().chain(&c.nullability).chain(&c.decimals) {
+                    for line in c.retyped.iter().chain(&c.nullability).chain(&c.renumbered) {
                         println!("{table}: {line}");
                     }
                 }
