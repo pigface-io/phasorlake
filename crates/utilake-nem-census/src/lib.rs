@@ -28,6 +28,7 @@ pub mod dmreport;
 pub mod export;
 pub mod fixtures;
 pub mod fold;
+pub mod history;
 pub mod migrate;
 pub mod models;
 pub mod pdr;

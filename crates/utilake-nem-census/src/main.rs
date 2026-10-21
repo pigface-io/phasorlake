@@ -525,8 +525,8 @@ fn fold_shapes(schemas: &Path, registry: &utilake_mms_registry::Registry) -> Res
     match utilake_nem_census::fold::fold(schemas, registry) {
         Ok(f) => {
             eprintln!(
-                "fold: {} month(s), {} table(s), {} shape(s)",
-                f.months, f.tables, f.shapes
+                "fold: {} month(s), {} table(s), {} shape(s), {} Iceberg schema(s), {} run(s)",
+                f.months, f.tables, f.shapes, f.schemas, f.runs
             );
             Ok(())
         }

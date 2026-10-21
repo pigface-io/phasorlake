@@ -792,6 +792,12 @@ pub fn shapes_dir(root: &Path) -> PathBuf {
     root.join("nem").join("shapes")
 }
 
+/// Where each table's history as an Iceberg table is written.
+#[must_use]
+pub fn history_dir(root: &Path) -> PathBuf {
+    root.join("nem").join("iceberg")
+}
+
 /// The census file of `month`.
 pub fn census_path(root: &Path, month: YearMonth) -> PathBuf {
     census_dir(root).join(format!("{month}.toml"))

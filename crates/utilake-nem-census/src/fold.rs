@@ -16,8 +16,10 @@ use utilake_mms_registry::file_model::shapes::{Mark, ShapeColumn, ShapeEntry, re
 use utilake_mms_registry::shape::{ShapeId, TypeClass};
 
 use crate::census::{
-    BlockRecord, CensusError, FileRecord, census_dir, read_month, shapes_dir, table_of, write_text,
+    BlockRecord, CensusError, FileRecord, census_dir, history_dir, read_month, shapes_dir,
+    table_of, write_text,
 };
+use crate::history::{Declarations, History, Numeric};
 use crate::profile::ColumnProfile;
 
 /// What a fold wrote.
@@ -29,6 +31,10 @@ pub struct Folded {
     pub tables: usize,
     /// Distinct shapes over every table.
     pub shapes: usize,
+    /// Iceberg schemas over every table.
+    pub schemas: usize,
+    /// Runs over every table.
+    pub runs: usize,
 }
 
 /// AEMO's `YYYY/MM/DD[ HH:MM:SS[.f]]` as RFC 3339 in market time.
@@ -181,17 +187,20 @@ impl Fold {
         }
     }
 
-    /// Takes in every block of a month's census.
+    /// Takes in every block of a month's census, here and in `history`.
     pub fn month(
         &mut self,
         registry: &Registry,
         month: YearMonth,
         files: &BTreeMap<String, FileRecord>,
+        history: &mut History,
     ) {
         for (file, f) in files {
-            for b in &f.block {
+            for (i, b) in f.block.iter().enumerate() {
                 let table = table_of(registry, &b.report.0, &b.report.1);
                 self.block(&table, month, file, f, b);
+                let index = u32::try_from(i).unwrap_or(u32::MAX);
+                history.block(&table, month, (file, index), f, b);
             }
         }
     }
@@ -285,25 +294,12 @@ pub fn recorded_months(root: &Path) -> Result<Vec<YearMonth>, CensusError> {
     Ok(months)
 }
 
-/// Folds every recorded census into the shapes files: each table's file is
-/// written again, and a shapes file of a table no census holds any more is
-/// removed.
-pub fn fold(root: &Path, registry: &Registry) -> Result<Folded, CensusError> {
-    let mut acc = Fold::default();
-    let months = recorded_months(root)?;
-    for &month in &months {
-        if let Some(files) = read_month(root, month)? {
-            acc.month(registry, month, &files);
-        }
-    }
-    crate::reports::fold_into(root, registry, &mut acc)?;
-    let shapes = acc.shapes();
-    let dir = shapes_dir(root);
-    let keep: BTreeSet<String> = shapes.keys().map(|t| format!("{t}.toml")).collect();
-    if let Ok(rd) = std::fs::read_dir(&dir) {
+/// Removes the files of `dir` ending in `ext` whose names `keep` lacks.
+fn prune(dir: &Path, ext: &str, keep: &BTreeSet<String>) -> Result<(), CensusError> {
+    if let Ok(rd) = std::fs::read_dir(dir) {
         for e in rd.filter_map(Result::ok) {
             let name = e.file_name().to_string_lossy().into_owned();
-            if name.ends_with(".toml") && !keep.contains(&name) {
+            if name.ends_with(ext) && !keep.contains(&name) {
                 std::fs::remove_file(e.path()).map_err(|source| CensusError::Write {
                     path: e.path().display().to_string(),
                     source,
@@ -311,14 +307,89 @@ pub fn fold(root: &Path, registry: &Registry) -> Result<Folded, CensusError> {
             }
         }
     }
+    Ok(())
+}
+
+/// What AEMO declares beyond the control files: each registered table's
+/// key, and the numeric columns of every data-model release recorded.
+pub fn declarations(root: &Path, registry: &Registry) -> Result<Declarations, CensusError> {
+    use utilake_core::Diagnose as _;
+    let models = crate::models::read_models(root).map_err(|e| CensusError::Read {
+        path: crate::models::models_dir(root).display().to_string(),
+        message: e.diagnostic().message,
+    })?;
+    let releases = crate::models::by_first_seen(&models)
+        .into_iter()
+        .map(|m| {
+            let tables = m
+                .tables
+                .iter()
+                .map(|(name, t)| {
+                    let numeric: Numeric = t
+                        .columns
+                        .iter()
+                        .filter_map(|(n, ty, ..)| match crate::audit::ModelType::parse(ty) {
+                            crate::audit::ModelType::Numeric(p, s) => {
+                                Some((n.to_ascii_uppercase(), (p, s)))
+                            }
+                            _ => None,
+                        })
+                        .collect();
+                    (name.clone(), numeric)
+                })
+                .collect();
+            (m.first_seen, tables)
+        })
+        .collect();
+    let keys = registry
+        .tables()
+        .map(|(_, t)| (t.name.clone(), t.primary_key.clone()))
+        .collect();
+    Ok(Declarations { keys, releases })
+}
+
+/// Folds every recorded census into the shapes files and each table's
+/// history as an Iceberg table: each table's files are written again, and
+/// those of a table no census holds any more are removed.
+pub fn fold(root: &Path, registry: &Registry) -> Result<Folded, CensusError> {
+    let mut acc = Fold::default();
+    let mut history = History::default();
+    let months = recorded_months(root)?;
+    for &month in &months {
+        if let Some(files) = read_month(root, month)? {
+            acc.month(registry, month, &files, &mut history);
+        }
+    }
+    crate::reports::fold_into(root, registry, &mut acc, &mut history)?;
+    let shapes = acc.shapes();
+    let dir = shapes_dir(root);
+    prune(
+        &dir,
+        ".toml",
+        &shapes.keys().map(|t| format!("{t}.toml")).collect(),
+    )?;
     let mut folded = Folded {
         months: months.len(),
         tables: shapes.len(),
-        shapes: 0,
+        ..Folded::default()
     };
     for (table, entries) in &shapes {
         folded.shapes += entries.len();
         write_text(&dir.join(format!("{table}.toml")), &render_shapes(entries))?;
+    }
+    let tables = history.finish(&declarations(root, registry)?);
+    let dir = history_dir(root);
+    prune(
+        &dir,
+        ".json",
+        &tables.keys().map(|t| format!("{t}.json")).collect(),
+    )?;
+    for (table, h) in &tables {
+        folded.schemas += h.schemas.len();
+        folded.runs += h.runs.len();
+        let mut text = serde_json::to_string_pretty(&h.to_json(table)).unwrap_or_default();
+        text.push('\n');
+        write_text(&dir.join(format!("{table}.json")), &text)?;
     }
     Ok(folded)
 }
