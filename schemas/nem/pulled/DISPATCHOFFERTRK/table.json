@@ -1,0 +1,164 @@
+{
+  "columns": [
+    {
+      "comment": "Date and time of the dispatch interval (e.g. five minute dispatch interval ending 28/09/2000 16:35)",
+      "id": 1,
+      "model_type": "TIMESTAMP(0)",
+      "name": "SETTLEMENTDATE"
+    },
+    {
+      "comment": "Dispatchable unit identifier",
+      "id": 2,
+      "model_type": "VARCHAR(10)",
+      "name": "DUID"
+    },
+    {
+      "comment": "Bid type Identifier - the ancillary service to which the bid applies",
+      "id": 3,
+      "model_type": "VARCHAR(10)",
+      "name": "BIDTYPE"
+    },
+    {
+      "comment": "Settlement date of bid applied",
+      "id": 4,
+      "model_type": "TIMESTAMP(0)",
+      "name": "BIDSETTLEMENTDATE"
+    },
+    {
+      "comment": "Time this bid was processed and loaded",
+      "id": 5,
+      "model_type": "TIMESTAMP(3)",
+      "name": "BIDOFFERDATE"
+    },
+    {
+      "comment": "Last date and time record changed",
+      "id": 6,
+      "model_type": "TIMESTAMP(0)",
+      "name": "LASTCHANGED"
+    }
+  ],
+  "declared": true,
+  "description": "DISPATCHOFFERTRK is the energy and ancillary service bid tracking table for the Dispatch process. The table identifies which bids from BIDDAYOFFER and BIDOFFERPERIOD were applied for a given unit and bid type for each dispatch interval.",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 202,
+        "from": {
+          "data-time": "2009-07-01T00:05:00+10:00",
+          "file": "PUBLIC_DVD_DISPATCHOFFERTRK_200907010000.zip",
+          "release": "2009-07",
+          "sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261"
+        },
+        "kinds": [
+          "archive",
+          "dvd"
+        ],
+        "overlaps": false,
+        "report": [
+          "DISPATCH",
+          "OFFERTRK"
+        ],
+        "rows": 2056015482,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2026-05-01T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#DISPATCHOFFERTRK#FILE01#202604010000.zip",
+          "release": "2026-04",
+          "sha256": "105e6dce21b095a0d675768ab4186b46428792ab6e7bdfd9c4d22c25e7490d38"
+        },
+        "updates": [],
+        "version": 1
+      }
+    ],
+    "schema-files": {
+      "0": "schema-828a49bd49b24071.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "SETTLEMENTDATE",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 2,
+            "name": "DUID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 3,
+            "name": "BIDTYPE",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 4,
+            "name": "BIDSETTLEMENTDATE",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 5,
+            "name": "BIDOFFERDATE",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 6,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2,
+          3
+        ],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "table": "DISPATCHOFFERTRK"
+  },
+  "load_mode": "append",
+  "name": "DISPATCHOFFERTRK",
+  "package": "DISPATCH",
+  "primary_key": [
+    "SETTLEMENTDATE",
+    "DUID",
+    "BIDTYPE"
+  ],
+  "report_pairs": [
+    [
+      "DISPATCH",
+      "OFFERTRK"
+    ]
+  ],
+  "temporal": {
+    "cutoff": "LASTCHANGED",
+    "entity": [
+      "DUID",
+      "BIDTYPE"
+    ],
+    "order": [
+      "LASTCHANGED"
+    ],
+    "origin": "derived",
+    "valid": {
+      "column": "SETTLEMENTDATE",
+      "kind": "interval_end"
+    }
+  },
+  "time_column": "SETTLEMENTDATE",
+  "visibility": "PUBLIC",
+  "x-format": 2
+}

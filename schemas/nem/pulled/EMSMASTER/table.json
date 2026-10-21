@@ -1,0 +1,149 @@
+{
+  "columns": [
+    {
+      "comment": "ID defining data source",
+      "id": 1,
+      "model_type": "VARCHAR(21)",
+      "name": "SPD_ID"
+    },
+    {
+      "comment": "ID describing type of data source",
+      "id": 2,
+      "model_type": "VARCHAR(1)",
+      "name": "SPD_TYPE"
+    },
+    {
+      "comment": "The detailed description of the SCADA point associated with the SPD_ID",
+      "id": 3,
+      "model_type": "VARCHAR(255)",
+      "name": "DESCRIPTION"
+    },
+    {
+      "comment": "The Grouping associated with the SPD ID - most often a RegionID",
+      "id": 4,
+      "model_type": "VARCHAR(20)",
+      "name": "GROUPING_ID"
+    },
+    {
+      "comment": "Last date and time record changed",
+      "id": 5,
+      "model_type": "TIMESTAMP(0)",
+      "name": "LASTCHANGED"
+    }
+  ],
+  "declared": true,
+  "description": "EMSMASTER provides a description of the SCADA measurements that are associated with the SPD_ID points utilised in generic equation RHS terms",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 202,
+        "from": {
+          "data-time": "2006-05-25T10:11:34+10:00",
+          "file": "PUBLIC_DVD_EMSMASTER_200907010000.zip",
+          "release": "2009-07",
+          "sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261"
+        },
+        "kinds": [
+          "archive",
+          "dvd"
+        ],
+        "overlaps": false,
+        "report": [
+          "GENERIC_CONSTRAINT",
+          "EMSMASTER"
+        ],
+        "rows": 841986,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2026-05-06T14:57:03+10:00",
+          "file": "PUBLIC_ARCHIVE#EMSMASTER#FILE01#202604010000.zip",
+          "release": "2026-04",
+          "sha256": "c3233cb71cb1c3640632b4185febd82a22900016264b41648c1bd27f387cad23"
+        },
+        "updates": [],
+        "version": 1
+      }
+    ],
+    "schema-files": {
+      "0": "schema-b0f8ad21803fbeab.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "SPD_ID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 2,
+            "name": "SPD_TYPE",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 3,
+            "name": "DESCRIPTION",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 4,
+            "name": "GROUPING_ID",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 5,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2
+        ],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "table": "EMSMASTER"
+  },
+  "load_mode": "snapshot",
+  "name": "EMSMASTER",
+  "package": "GENERIC_CONSTRAINT",
+  "primary_key": [
+    "SPD_ID",
+    "SPD_TYPE"
+  ],
+  "report_pairs": [
+    [
+      "GENERIC_CONSTRAINT",
+      "EMSMASTER"
+    ]
+  ],
+  "temporal": {
+    "cutoff": "LASTCHANGED",
+    "entity": [
+      "SPD_ID",
+      "SPD_TYPE"
+    ],
+    "order": [
+      "LASTCHANGED"
+    ],
+    "origin": "derived",
+    "valid": {
+      "kind": "timeless"
+    }
+  },
+  "time_column": null,
+  "visibility": "PUBLIC",
+  "x-format": 2
+}

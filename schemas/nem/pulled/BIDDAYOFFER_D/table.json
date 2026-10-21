@@ -1,0 +1,687 @@
+{
+  "columns": [
+    {
+      "comment": "Market date for which the bid applied",
+      "id": 1,
+      "model_type": "TIMESTAMP(0)",
+      "name": "SETTLEMENTDATE"
+    },
+    {
+      "comment": "Dispatchable unit identifier",
+      "id": 2,
+      "model_type": "VARCHAR(10)",
+      "name": "DUID"
+    },
+    {
+      "comment": "Bid Type Identifier",
+      "id": 3,
+      "model_type": "VARCHAR(10)",
+      "name": "BIDTYPE"
+    },
+    {
+      "comment": "Market date for which the bid was submitted.",
+      "id": 4,
+      "model_type": "TIMESTAMP(0)",
+      "name": "BIDSETTLEMENTDATE"
+    },
+    {
+      "comment": "Offer date and time",
+      "id": 5,
+      "model_type": "TIMESTAMP(0)",
+      "name": "OFFERDATE"
+    },
+    {
+      "comment": "Version No. for given offer date",
+      "id": 6,
+      "model_type": "NUMERIC(22,0)",
+      "name": "VERSIONNO"
+    },
+    {
+      "comment": "Unique participant identifier",
+      "id": 7,
+      "model_type": "VARCHAR(10)",
+      "name": "PARTICIPANTID"
+    },
+    {
+      "comment": "Maximum energy available from Energy Constrained Plant. (Energy Bids Only)",
+      "id": 8,
+      "model_type": "NUMERIC(12,6)",
+      "name": "DAILYENERGYCONSTRAINT"
+    },
+    {
+      "comment": "Explanation for all rebids and inflexibilities",
+      "id": 9,
+      "model_type": "VARCHAR(500)",
+      "name": "REBIDEXPLANATION"
+    },
+    {
+      "comment": "Price for Availability Band 1",
+      "id": 10,
+      "model_type": "NUMERIC(9,2)",
+      "name": "PRICEBAND1"
+    },
+    {
+      "comment": "Price for Availability Band 2",
+      "id": 11,
+      "model_type": "NUMERIC(9,2)",
+      "name": "PRICEBAND2"
+    },
+    {
+      "comment": "Price for Availability Band 3",
+      "id": 12,
+      "model_type": "NUMERIC(9,2)",
+      "name": "PRICEBAND3"
+    },
+    {
+      "comment": "Price for Availability Band 4",
+      "id": 13,
+      "model_type": "NUMERIC(9,2)",
+      "name": "PRICEBAND4"
+    },
+    {
+      "comment": "Price for Availability Band 5",
+      "id": 14,
+      "model_type": "NUMERIC(9,2)",
+      "name": "PRICEBAND5"
+    },
+    {
+      "comment": "Price for Availability Band 6",
+      "id": 15,
+      "model_type": "NUMERIC(9,2)",
+      "name": "PRICEBAND6"
+    },
+    {
+      "comment": "Price for Availability Band 7",
+      "id": 16,
+      "model_type": "NUMERIC(9,2)",
+      "name": "PRICEBAND7"
+    },
+    {
+      "comment": "Price for Availability Band 8",
+      "id": 17,
+      "model_type": "NUMERIC(9,2)",
+      "name": "PRICEBAND8"
+    },
+    {
+      "comment": "Price for Availability Band 9",
+      "id": 18,
+      "model_type": "NUMERIC(9,2)",
+      "name": "PRICEBAND9"
+    },
+    {
+      "comment": "Price for Availability Band 10",
+      "id": 19,
+      "model_type": "NUMERIC(9,2)",
+      "name": "PRICEBAND10"
+    },
+    {
+      "comment": "Minimum MW load fast start plant",
+      "id": 20,
+      "model_type": "NUMERIC(22,0)",
+      "name": "MINIMUMLOAD"
+    },
+    {
+      "comment": "Time to synchronise in minutes (Energy Bids Only)",
+      "id": 21,
+      "model_type": "NUMERIC(22,0)",
+      "name": "T1"
+    },
+    {
+      "comment": "Time to minimum load in minutes (Energy Bids Only)",
+      "id": 22,
+      "model_type": "NUMERIC(22,0)",
+      "name": "T2"
+    },
+    {
+      "comment": "Time at minimum load in minutes (Energy Bids Only)",
+      "id": 23,
+      "model_type": "NUMERIC(22,0)",
+      "name": "T3"
+    },
+    {
+      "comment": "Time to shutdown in minutes (Energy Bids Only)",
+      "id": 24,
+      "model_type": "NUMERIC(22,0)",
+      "name": "T4"
+    },
+    {
+      "comment": "ON/OFF for loads (Energy Bids Only)",
+      "id": 25,
+      "model_type": "VARCHAR(3)",
+      "name": "NORMALSTATUS"
+    },
+    {
+      "comment": "Last date and time record changed",
+      "id": 26,
+      "model_type": "TIMESTAMP(0)",
+      "name": "LASTCHANGED"
+    },
+    {
+      "comment": "Mandatory Restriction Scaling Factor",
+      "id": 27,
+      "model_type": "NUMERIC(16,6)",
+      "name": "MR_FACTOR"
+    },
+    {
+      "comment": "Daily if processed before BidCutOff of previous day, otherwise REBID",
+      "id": 28,
+      "model_type": "VARCHAR(20)",
+      "name": "ENTRYTYPE"
+    },
+    {
+      "comment": "The power flow direction to which this offer applies: GEN, LOAD or BIDIRECTIONAL",
+      "id": 29,
+      "model_type": "VARCHAR(20)",
+      "name": "DIRECTION"
+    }
+  ],
+  "declared": true,
+  "description": "BIDDAYOFFER_D shows the public summary of the energy and FCAS offers applicable in the Dispatch for the\nintervals identified. BIDDAYOFFER_D is the parent table to BIDPEROFFER_D.",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 58,
+        "from": {
+          "data-time": "2009-07-01T00:00:00+10:00",
+          "file": "PUBLIC_DVD_BIDDAYOFFER_D_200907010000.zip",
+          "release": "2009-07",
+          "sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261"
+        },
+        "kinds": [
+          "dvd"
+        ],
+        "overlaps": false,
+        "report": [
+          "BID",
+          "BIDDAYOFFER_D"
+        ],
+        "rows": 1737889,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2014-04-30T00:00:00+10:00",
+          "file": "PUBLIC_DVD_BIDDAYOFFER_D_201404010000.zip",
+          "release": "2014-04",
+          "sha256": "2c1ad633b7f181cbd1bb1c9a4ce226428383d48171e36bca37a41caef2243d7d"
+        },
+        "updates": [],
+        "version": 1
+      },
+      {
+        "changes": [
+          "version"
+        ],
+        "files": 82,
+        "from": {
+          "data-time": "2014-05-01T00:00:00+10:00",
+          "file": "PUBLIC_DVD_BIDDAYOFFER_D_201405010000.zip",
+          "release": "2014-05",
+          "sha256": "910155f5be43d874fdd1b2517c6547ce7546d4cfbd829c11bcb98edcb02a88c5"
+        },
+        "kinds": [
+          "dvd"
+        ],
+        "overlaps": false,
+        "report": [
+          "BID",
+          "BIDDAYOFFER_D"
+        ],
+        "rows": 2475444,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2021-02-28T00:00:00+10:00",
+          "file": "PUBLIC_DVD_BIDDAYOFFER_D_202102010000.zip",
+          "release": "2021-02",
+          "sha256": "352208bab60de04fb8e06abfa89bbf86f3dba964573607eff04d22a5d032d524"
+        },
+        "updates": [],
+        "version": 2
+      },
+      {
+        "changes": [
+          "schema",
+          "version"
+        ],
+        "files": 21,
+        "from": {
+          "data-time": "2024-08-01T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#BIDDAYOFFER_D#FILE01#202408010000.zip",
+          "release": "2024-08",
+          "sha256": "9ba0c185c2e20125acd03b749034b04c1e13022b566318f3669ddc552a139a2d"
+        },
+        "kinds": [
+          "archive"
+        ],
+        "overlaps": false,
+        "report": [
+          "BID",
+          "BIDDAYOFFER_D"
+        ],
+        "rows": 1230458,
+        "schema-id": 1,
+        "to": {
+          "data-time": "2026-04-30T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#BIDDAYOFFER_D#FILE01#202604010000.zip",
+          "release": "2026-04",
+          "sha256": "7478a27acfde09dc5d53877bb361c63079f945ceacad999b1bcff35be62cf25b"
+        },
+        "updates": [
+          {
+            "action": "add",
+            "field-id": 29
+          }
+        ],
+        "version": 3
+      }
+    ],
+    "schema-files": {
+      "0": "schema-fa6faed18d5ebaf8.json",
+      "1": "schema-a3f844afd1b3b60b.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "SETTLEMENTDATE",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 2,
+            "name": "DUID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 3,
+            "name": "BIDTYPE",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 4,
+            "name": "BIDSETTLEMENTDATE",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 5,
+            "name": "OFFERDATE",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 6,
+            "name": "VERSIONNO",
+            "required": false,
+            "type": "double"
+          },
+          {
+            "id": 7,
+            "name": "PARTICIPANTID",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 8,
+            "name": "DAILYENERGYCONSTRAINT",
+            "required": false,
+            "type": "decimal(12, 6)"
+          },
+          {
+            "id": 9,
+            "name": "REBIDEXPLANATION",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 10,
+            "name": "PRICEBAND1",
+            "required": false,
+            "type": "decimal(9, 2)"
+          },
+          {
+            "id": 11,
+            "name": "PRICEBAND2",
+            "required": false,
+            "type": "decimal(9, 2)"
+          },
+          {
+            "id": 12,
+            "name": "PRICEBAND3",
+            "required": false,
+            "type": "decimal(9, 2)"
+          },
+          {
+            "id": 13,
+            "name": "PRICEBAND4",
+            "required": false,
+            "type": "decimal(9, 2)"
+          },
+          {
+            "id": 14,
+            "name": "PRICEBAND5",
+            "required": false,
+            "type": "decimal(9, 2)"
+          },
+          {
+            "id": 15,
+            "name": "PRICEBAND6",
+            "required": false,
+            "type": "decimal(9, 2)"
+          },
+          {
+            "id": 16,
+            "name": "PRICEBAND7",
+            "required": false,
+            "type": "decimal(9, 2)"
+          },
+          {
+            "id": 17,
+            "name": "PRICEBAND8",
+            "required": false,
+            "type": "decimal(9, 2)"
+          },
+          {
+            "id": 18,
+            "name": "PRICEBAND9",
+            "required": false,
+            "type": "decimal(9, 2)"
+          },
+          {
+            "id": 19,
+            "name": "PRICEBAND10",
+            "required": false,
+            "type": "decimal(9, 2)"
+          },
+          {
+            "id": 20,
+            "name": "MINIMUMLOAD",
+            "required": false,
+            "type": "double"
+          },
+          {
+            "id": 21,
+            "name": "T1",
+            "required": false,
+            "type": "double"
+          },
+          {
+            "id": 22,
+            "name": "T2",
+            "required": false,
+            "type": "double"
+          },
+          {
+            "id": 23,
+            "name": "T3",
+            "required": false,
+            "type": "double"
+          },
+          {
+            "id": 24,
+            "name": "T4",
+            "required": false,
+            "type": "double"
+          },
+          {
+            "id": 25,
+            "name": "NORMALSTATUS",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 26,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 27,
+            "name": "MR_FACTOR",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 28,
+            "name": "ENTRYTYPE",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2,
+          3
+        ],
+        "schema-id": 0,
+        "type": "struct"
+      },
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "SETTLEMENTDATE",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 2,
+            "name": "DUID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 3,
+            "name": "BIDTYPE",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 29,
+            "name": "DIRECTION",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 4,
+            "name": "BIDSETTLEMENTDATE",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 5,
+            "name": "OFFERDATE",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 6,
+            "name": "VERSIONNO",
+            "required": false,
+            "type": "double"
+          },
+          {
+            "id": 7,
+            "name": "PARTICIPANTID",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 8,
+            "name": "DAILYENERGYCONSTRAINT",
+            "required": false,
+            "type": "decimal(12, 6)"
+          },
+          {
+            "id": 9,
+            "name": "REBIDEXPLANATION",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 10,
+            "name": "PRICEBAND1",
+            "required": false,
+            "type": "decimal(9, 2)"
+          },
+          {
+            "id": 11,
+            "name": "PRICEBAND2",
+            "required": false,
+            "type": "decimal(9, 2)"
+          },
+          {
+            "id": 12,
+            "name": "PRICEBAND3",
+            "required": false,
+            "type": "decimal(9, 2)"
+          },
+          {
+            "id": 13,
+            "name": "PRICEBAND4",
+            "required": false,
+            "type": "decimal(9, 2)"
+          },
+          {
+            "id": 14,
+            "name": "PRICEBAND5",
+            "required": false,
+            "type": "decimal(9, 2)"
+          },
+          {
+            "id": 15,
+            "name": "PRICEBAND6",
+            "required": false,
+            "type": "decimal(9, 2)"
+          },
+          {
+            "id": 16,
+            "name": "PRICEBAND7",
+            "required": false,
+            "type": "decimal(9, 2)"
+          },
+          {
+            "id": 17,
+            "name": "PRICEBAND8",
+            "required": false,
+            "type": "decimal(9, 2)"
+          },
+          {
+            "id": 18,
+            "name": "PRICEBAND9",
+            "required": false,
+            "type": "decimal(9, 2)"
+          },
+          {
+            "id": 19,
+            "name": "PRICEBAND10",
+            "required": false,
+            "type": "decimal(9, 2)"
+          },
+          {
+            "id": 20,
+            "name": "MINIMUMLOAD",
+            "required": false,
+            "type": "double"
+          },
+          {
+            "id": 21,
+            "name": "T1",
+            "required": false,
+            "type": "double"
+          },
+          {
+            "id": 22,
+            "name": "T2",
+            "required": false,
+            "type": "double"
+          },
+          {
+            "id": 23,
+            "name": "T3",
+            "required": false,
+            "type": "double"
+          },
+          {
+            "id": 24,
+            "name": "T4",
+            "required": false,
+            "type": "double"
+          },
+          {
+            "id": 25,
+            "name": "NORMALSTATUS",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 26,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 27,
+            "name": "MR_FACTOR",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 28,
+            "name": "ENTRYTYPE",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2,
+          3
+        ],
+        "schema-id": 1,
+        "type": "struct"
+      }
+    ],
+    "table": "BIDDAYOFFER_D"
+  },
+  "load_mode": "append",
+  "name": "BIDDAYOFFER_D",
+  "package": "BIDS",
+  "primary_key": [
+    "SETTLEMENTDATE",
+    "DUID",
+    "BIDTYPE"
+  ],
+  "report_pairs": [
+    [
+      "BID",
+      "BIDDAYOFFER_D"
+    ]
+  ],
+  "temporal": {
+    "cutoff": "LASTCHANGED",
+    "entity": [
+      "DUID",
+      "BIDTYPE"
+    ],
+    "order": [
+      "OFFERDATE",
+      "VERSIONNO",
+      "LASTCHANGED"
+    ],
+    "origin": "derived",
+    "valid": {
+      "column": "SETTLEMENTDATE",
+      "kind": "interval_end"
+    }
+  },
+  "time_column": "SETTLEMENTDATE",
+  "visibility": "PUBLIC",
+  "x-format": 2
+}

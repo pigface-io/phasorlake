@@ -1,0 +1,109 @@
+{
+  "columns": [
+    {
+      "comment": "5-minute Predispatch Run",
+      "id": 1,
+      "model_type": "TIMESTAMP(0)",
+      "name": "RUN_DATETIME"
+    },
+    {
+      "comment": "Generic Constraint identifier (synonymous with GenConID)",
+      "id": 2,
+      "model_type": "VARCHAR(20)",
+      "name": "CONSTRAINTID"
+    }
+  ],
+  "declared": true,
+  "description": "P5MIN Blocked Constraints lists any constraints that were blocked in a P5MIN run. If no constraints are blocked, there will be no rows for that 5 minute predispatch run.",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 11,
+        "from": {
+          "data-time": "2024-09-24T12:45:00+10:00",
+          "file": "PUBLIC_ARCHIVE#P5MIN_BLOCKEDCONSTRAINT#FILE01#202409010000.zip",
+          "release": "2024-09",
+          "sha256": "8fa6ca84543488604282024134a62174266d9ba62fca16c0d84a31a22776e5c0"
+        },
+        "kinds": [
+          "archive"
+        ],
+        "overlaps": false,
+        "report": [
+          "P5MIN",
+          "BLOCKED_CONSTRAINTS"
+        ],
+        "rows": 7378,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2026-03-28T21:45:00+10:00",
+          "file": "PUBLIC_ARCHIVE#P5MIN_BLOCKEDCONSTRAINT#FILE01#202603010000.zip",
+          "release": "2026-03",
+          "sha256": "8439de5401c59771a2ced9bbf889a6a7a571985750aae54c9849b026675f5a59"
+        },
+        "updates": [],
+        "version": 1
+      }
+    ],
+    "schema-files": {
+      "0": "schema-3567fc181c25370b.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "RUN_DATETIME",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 2,
+            "name": "CONSTRAINTID",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2
+        ],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "table": "P5MIN_BLOCKEDCONSTRAINT"
+  },
+  "load_mode": "append",
+  "name": "P5MIN_BLOCKEDCONSTRAINT",
+  "package": "P5MIN",
+  "primary_key": [
+    "RUN_DATETIME",
+    "CONSTRAINTID"
+  ],
+  "report_pairs": [
+    [
+      "P5MIN",
+      "BLOCKED_CONSTRAINTS"
+    ]
+  ],
+  "temporal": {
+    "entity": [
+      "CONSTRAINTID"
+    ],
+    "order": [],
+    "origin": "derived",
+    "valid": {
+      "column": "RUN_DATETIME",
+      "kind": "instant"
+    }
+  },
+  "time_column": "RUN_DATETIME",
+  "visibility": "PUBLIC",
+  "x-format": 2
+}

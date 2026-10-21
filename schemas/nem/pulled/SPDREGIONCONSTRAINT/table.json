@@ -1,0 +1,181 @@
+{
+  "columns": [
+    {
+      "comment": "Region Identifier",
+      "id": 1,
+      "model_type": "VARCHAR(10)",
+      "name": "REGIONID"
+    },
+    {
+      "comment": "Effective date of this record",
+      "id": 2,
+      "model_type": "TIMESTAMP(0)",
+      "name": "EFFECTIVEDATE"
+    },
+    {
+      "comment": "Version no of this record for the effective date",
+      "id": 3,
+      "model_type": "NUMERIC(3,0)",
+      "name": "VERSIONNO"
+    },
+    {
+      "comment": "Generic Constraint Identifier",
+      "id": 4,
+      "model_type": "VARCHAR(20)",
+      "name": "GENCONID"
+    },
+    {
+      "comment": "Constraint factor; one of (-1, 1)",
+      "id": 5,
+      "model_type": "NUMERIC(16,6)",
+      "name": "FACTOR"
+    },
+    {
+      "comment": "Last date and time record changed",
+      "id": 6,
+      "model_type": "TIMESTAMP(0)",
+      "name": "LASTCHANGED"
+    },
+    {
+      "comment": "AS Service type - relates to the BidType table; one of (RAISE6SEC, RAISE60SEC, RAISE5MIN, LOWER6SEC, LOWER60SEC, LOWER5MIN, RAISEREG, LOWERREG)",
+      "id": 7,
+      "model_type": "VARCHAR(10)",
+      "name": "BIDTYPE"
+    }
+  ],
+  "declared": true,
+  "description": "SPDREGIONCONSTRAINT contains details on region demand constraint factors used in dispatch. SPDREGIONCONSTRAINTsets a LHS value.",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 20,
+        "from": {
+          "data-time": "2024-08-01T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#SPDREGIONCONSTRAINT#FILE01#202408010000.zip",
+          "release": "2024-08",
+          "sha256": "b4486d793400d83721dd51df4dfeec084f4febd05a1af054caf9155ac0a06fb4"
+        },
+        "kinds": [
+          "archive"
+        ],
+        "overlaps": false,
+        "report": [
+          "SPDRC",
+          "NULL"
+        ],
+        "rows": 4526,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2026-04-28T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#SPDREGIONCONSTRAINT#FILE01#202604010000.zip",
+          "release": "2026-04",
+          "sha256": "8d43a405aed439282a577c5b6f64f53e1d952b7aa6b5f0ed260b25edfbdf76c2"
+        },
+        "updates": [],
+        "version": 2
+      }
+    ],
+    "schema-files": {
+      "0": "schema-1d4b15e653a20e2f.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "REGIONID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 2,
+            "name": "EFFECTIVEDATE",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 3,
+            "name": "VERSIONNO",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 4,
+            "name": "GENCONID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 5,
+            "name": "FACTOR",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 6,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 7,
+            "name": "BIDTYPE",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2,
+          3,
+          4,
+          7
+        ],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "table": "SPDREGIONCONSTRAINT"
+  },
+  "load_mode": "append",
+  "name": "SPDREGIONCONSTRAINT",
+  "package": "GENERIC_CONSTRAINT",
+  "primary_key": [
+    "REGIONID",
+    "EFFECTIVEDATE",
+    "VERSIONNO",
+    "GENCONID",
+    "BIDTYPE"
+  ],
+  "report_pairs": [
+    [
+      "SPDRC",
+      "NULL"
+    ]
+  ],
+  "temporal": {
+    "cutoff": "LASTCHANGED",
+    "entity": [
+      "REGIONID",
+      "GENCONID",
+      "BIDTYPE"
+    ],
+    "order": [
+      "VERSIONNO",
+      "LASTCHANGED"
+    ],
+    "origin": "derived",
+    "valid": {
+      "column": "EFFECTIVEDATE",
+      "kind": "from"
+    }
+  },
+  "time_column": "EFFECTIVEDATE",
+  "visibility": "PUBLIC",
+  "x-format": 2
+}

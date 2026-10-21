@@ -1,0 +1,358 @@
+{
+  "columns": [
+    {
+      "comment": "SRA Contracted Year",
+      "id": 1,
+      "model_type": "NUMERIC(4,0)",
+      "name": "CONTRACTYEAR"
+    },
+    {
+      "comment": "SRA Contracted Quarter",
+      "id": 2,
+      "model_type": "NUMERIC(1,0)",
+      "name": "QUARTER"
+    },
+    {
+      "comment": "Version of data for other key data - a higher version for same key data takes precedence",
+      "id": 3,
+      "model_type": "NUMERIC(3,0)",
+      "name": "VERSIONNO"
+    },
+    {
+      "comment": "Contracted Interconnector Identifier",
+      "id": 4,
+      "model_type": "VARCHAR(10)",
+      "name": "INTERCONNECTORID"
+    },
+    {
+      "comment": "Nominated source region for Interconnector",
+      "id": 5,
+      "model_type": "VARCHAR(10)",
+      "name": "FROMREGIONID"
+    },
+    {
+      "comment": "Number of units on the interconnector",
+      "id": 6,
+      "model_type": "NUMERIC(5,0)",
+      "name": "MAXIMUMUNITS"
+    },
+    {
+      "comment": "Percentage of the total residue for each Unit",
+      "id": 7,
+      "model_type": "NUMERIC(8,5)",
+      "name": "PROPORTION"
+    },
+    {
+      "comment": "Daily auction fee",
+      "id": 8,
+      "model_type": "NUMERIC(17,5)",
+      "name": "AUCTIONFEE"
+    },
+    {
+      "comment": "Authorisation date",
+      "id": 9,
+      "model_type": "TIMESTAMP(0)",
+      "name": "CHANGEDATE"
+    },
+    {
+      "comment": "Name of person authorising this data set",
+      "id": 10,
+      "model_type": "VARCHAR(15)",
+      "name": "CHANGEDBY"
+    },
+    {
+      "comment": "Last date and time record changed",
+      "id": 11,
+      "model_type": "TIMESTAMP(0)",
+      "name": "LASTCHANGED"
+    },
+    {
+      "comment": "Fees for Cancelled Units.",
+      "id": 12,
+      "model_type": "NUMERIC(18,8)",
+      "name": "AUCTIONFEE_SALES"
+    }
+  ],
+  "declared": true,
+  "description": "AUCTION_IC_ALLOCATIONS supports the Settlement Residue Auction by providing the basis for setting up contracts for individual tranches. AUCTION_IC_ALLOCATIONS shows the default definitions for the total number of units and proportion applicable to each directional interconnector for a specified auction quarter.",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 79,
+        "from": {
+          "data-time": "2009-09-02T14:43:02+10:00",
+          "file": "PUBLIC_DVD_AUCTION_IC_ALLOCATIONS_200909010000.zip",
+          "release": "2009-09",
+          "sha256": "9cf326f7fabd7b91220c5950a2de3fdb28d9c7b97f1a4045f8075ad7b3abaaf5"
+        },
+        "kinds": [
+          "dvd"
+        ],
+        "overlaps": false,
+        "report": [
+          "IRAUCTION_CONFIG",
+          "AUCTION_IC_ALLOCATIONS"
+        ],
+        "rows": 1816,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2019-08-19T10:54:30+10:00",
+          "file": "PUBLIC_DVD_AUCTION_IC_ALLOCATIONS_201908010000.zip",
+          "release": "2019-08",
+          "sha256": "7e40307884f350043d858630861ca76e1d1f00a3b6370bae20e38f2f5aed0072"
+        },
+        "updates": [],
+        "version": 1
+      },
+      {
+        "changes": [
+          "schema",
+          "version"
+        ],
+        "files": 54,
+        "from": {
+          "data-time": "2019-10-01T00:00:00+10:00",
+          "file": "PUBLIC_DVD_AUCTION_IC_ALLOCATIONS_201910010000.zip",
+          "release": "2019-10",
+          "sha256": "1e7a473b260e9d2b7a2858667c3fd905777e72b5e0384cfa21cbd34db673b0e1"
+        },
+        "kinds": [
+          "archive",
+          "dvd"
+        ],
+        "overlaps": false,
+        "report": [
+          "IRAUCTION_CONFIG",
+          "AUCTION_IC_ALLOCATIONS"
+        ],
+        "rows": 841,
+        "schema-id": 1,
+        "to": {
+          "data-time": "2026-04-01T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#AUCTION_IC_ALLOCATIONS#FILE01#202603010000.zip",
+          "release": "2026-03",
+          "sha256": "1196ee5921e679b10521bd8af81685f3f7f032d9ce55385cb706734814582f4f"
+        },
+        "updates": [
+          {
+            "action": "add",
+            "field-id": 12
+          }
+        ],
+        "version": 2
+      }
+    ],
+    "schema-files": {
+      "0": "schema-0fb6b38af747cf54.json",
+      "1": "schema-aa987b565e8dc592.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "CONTRACTYEAR",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 2,
+            "name": "QUARTER",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 3,
+            "name": "VERSIONNO",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 4,
+            "name": "INTERCONNECTORID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 5,
+            "name": "FROMREGIONID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 6,
+            "name": "MAXIMUMUNITS",
+            "required": false,
+            "type": "decimal(5, 0)"
+          },
+          {
+            "id": 7,
+            "name": "PROPORTION",
+            "required": false,
+            "type": "decimal(8, 5)"
+          },
+          {
+            "id": 8,
+            "name": "AUCTIONFEE",
+            "required": false,
+            "type": "decimal(17, 5)"
+          },
+          {
+            "id": 9,
+            "name": "CHANGEDATE",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 10,
+            "name": "CHANGEDBY",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 11,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "schema-id": 0,
+        "type": "struct"
+      },
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "CONTRACTYEAR",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 2,
+            "name": "QUARTER",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 3,
+            "name": "VERSIONNO",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 4,
+            "name": "INTERCONNECTORID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 5,
+            "name": "FROMREGIONID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 6,
+            "name": "MAXIMUMUNITS",
+            "required": false,
+            "type": "decimal(5, 0)"
+          },
+          {
+            "id": 7,
+            "name": "PROPORTION",
+            "required": false,
+            "type": "decimal(8, 5)"
+          },
+          {
+            "id": 8,
+            "name": "AUCTIONFEE",
+            "required": false,
+            "type": "decimal(17, 5)"
+          },
+          {
+            "id": 9,
+            "name": "CHANGEDATE",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 10,
+            "name": "CHANGEDBY",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 11,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 12,
+            "name": "AUCTIONFEE_SALES",
+            "required": false,
+            "type": "decimal(18, 8)"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "schema-id": 1,
+        "type": "struct"
+      }
+    ],
+    "table": "AUCTION_IC_ALLOCATIONS"
+  },
+  "load_mode": "append",
+  "name": "AUCTION_IC_ALLOCATIONS",
+  "package": "IRAUCTION",
+  "primary_key": [
+    "CONTRACTYEAR",
+    "QUARTER",
+    "VERSIONNO",
+    "INTERCONNECTORID",
+    "FROMREGIONID"
+  ],
+  "report_pairs": [
+    [
+      "IRAUCTION_CONFIG",
+      "AUCTION_IC_ALLOCATIONS"
+    ]
+  ],
+  "temporal": {
+    "cutoff": "LASTCHANGED",
+    "entity": [
+      "CONTRACTYEAR",
+      "QUARTER",
+      "INTERCONNECTORID",
+      "FROMREGIONID"
+    ],
+    "order": [
+      "VERSIONNO",
+      "LASTCHANGED"
+    ],
+    "origin": "derived",
+    "valid": {
+      "kind": "timeless"
+    }
+  },
+  "time_column": "LASTCHANGED",
+  "visibility": "PUBLIC",
+  "x-format": 2
+}

@@ -1,0 +1,160 @@
+{
+  "columns": [
+    {
+      "comment": "30-minute interval period, 1 to 48 from the start of the calendar day",
+      "id": 1,
+      "model_type": "TIMESTAMP(0)",
+      "name": "PERIODDATE"
+    },
+    {
+      "comment": "Region Identifier",
+      "id": 2,
+      "model_type": "VARCHAR(10)",
+      "name": "REGIONID"
+    },
+    {
+      "comment": "The 30-minute interval period, 1 to 48",
+      "id": 3,
+      "model_type": "NUMERIC(3,0)",
+      "name": "PERIODID"
+    },
+    {
+      "comment": "Regional reference price for this period",
+      "id": 4,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP"
+    },
+    {
+      "comment": "Result of Manifestly Incorrect Inputs Price Status and OCD_Status - either \"FIRM\" or \"NOT FIRM\". Only FIRM if the Dispatch Interval is resolved for both MII and OCD",
+      "id": 5,
+      "model_type": "VARCHAR(20)",
+      "name": "PRICE_CONFIDENCE"
+    },
+    {
+      "comment": "Last date and time record changed",
+      "id": 6,
+      "model_type": "TIMESTAMP(0)",
+      "name": "LASTCHANGED"
+    }
+  ],
+  "declared": true,
+  "description": "Reflects the 30-minute average price (the pre-5MS trading price).",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 21,
+        "from": {
+          "data-time": "2024-08-01T00:25:03+10:00",
+          "file": "PUBLIC_ARCHIVE#AVERAGEPRICE30#FILE01#202408010000.zip",
+          "release": "2024-08",
+          "sha256": "74dfba20a643f8cae9efcd8e76cd0d2b2495cf902bf79cef30c45e5d90ea1239"
+        },
+        "kinds": [
+          "archive"
+        ],
+        "overlaps": false,
+        "report": [
+          "TRADING",
+          "AVERAGEPRICE30"
+        ],
+        "rows": 153120,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2026-04-30T23:55:05+10:00",
+          "file": "PUBLIC_ARCHIVE#AVERAGEPRICE30#FILE01#202604010000.zip",
+          "release": "2026-04",
+          "sha256": "b90c244f3e028f9c122b0699b0fb037870acaf046e0c2aee8a8f5beaf8e12605"
+        },
+        "updates": [],
+        "version": 1
+      }
+    ],
+    "schema-files": {
+      "0": "schema-5b79cb1ede2f671d.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "PERIODDATE",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 2,
+            "name": "REGIONID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 3,
+            "name": "PERIODID",
+            "required": false,
+            "type": "decimal(3, 0)"
+          },
+          {
+            "id": 4,
+            "name": "RRP",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 5,
+            "name": "PRICE_CONFIDENCE",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 6,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2
+        ],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "table": "AVERAGEPRICE30"
+  },
+  "load_mode": "append",
+  "name": "AVERAGEPRICE30",
+  "package": "TRADING_DATA",
+  "primary_key": [
+    "PERIODDATE",
+    "REGIONID"
+  ],
+  "report_pairs": [
+    [
+      "TRADING",
+      "AVERAGEPRICE30"
+    ]
+  ],
+  "temporal": {
+    "cutoff": "LASTCHANGED",
+    "entity": [
+      "REGIONID"
+    ],
+    "order": [
+      "LASTCHANGED"
+    ],
+    "origin": "derived",
+    "valid": {
+      "column": "PERIODDATE",
+      "kind": "instant"
+    }
+  },
+  "time_column": "LASTCHANGED",
+  "visibility": "PUBLIC",
+  "x-format": 2
+}

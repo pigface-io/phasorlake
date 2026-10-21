@@ -1,0 +1,205 @@
+{
+  "columns": [
+    {
+      "comment": "MVAr Interval - a timestamp of when instructions issued",
+      "id": 1,
+      "model_type": "TIMESTAMP(0)",
+      "name": "RUN_DATETIME"
+    },
+    {
+      "comment": "Either 'SIGNAL' (childless) or 'INSTRUCTION'",
+      "id": 2,
+      "model_type": "VARCHAR(20)",
+      "name": "FILE_TYPE"
+    },
+    {
+      "comment": "Datetime the file was published by VDS - Versions differ from Run_DateTime only for Supplemental runs",
+      "id": 3,
+      "model_type": "TIMESTAMP(0)",
+      "name": "VERSION_DATETIME"
+    },
+    {
+      "comment": "State Estimator start time, when a snapshot is taken of SCADA values",
+      "id": 4,
+      "model_type": "TIMESTAMP(0)",
+      "name": "SE_DATETIME"
+    },
+    {
+      "comment": "VDS solver solution category. Valid values: SUCCESS, WARNING, FAILURE",
+      "id": 5,
+      "model_type": "VARCHAR(60)",
+      "name": "SOLUTION_CATEGORY"
+    },
+    {
+      "comment": "VDS solver solution status. Valid values: NOACTCNV [Solved with no instructions], NOVIOACT, CONVERGE, UNMANAGE, UNMANCTG, CTGDIV, SENHDIV [Failed with too many violations], BCDIV",
+      "id": 6,
+      "model_type": "VARCHAR(60)",
+      "name": "SOLUTION_STATUS"
+    },
+    {
+      "comment": "The current VDS operating mode. Valid values: AUTO, AUTO-VERFIED, MANUAL",
+      "id": 7,
+      "model_type": "VARCHAR(60)",
+      "name": "OPERATING_MODE"
+    },
+    {
+      "comment": "Unstructured code and message from AEMO",
+      "id": 8,
+      "model_type": "VARCHAR(100)",
+      "name": "OPERATING_STATUS"
+    },
+    {
+      "comment": "Estimated expiry time of current Instruction set",
+      "id": 9,
+      "model_type": "TIMESTAMP(0)",
+      "name": "EST_EXPIRY"
+    },
+    {
+      "comment": "Estimated issue time of next Instruction set",
+      "id": 10,
+      "model_type": "TIMESTAMP(0)",
+      "name": "EST_NEXT_INSTRUCTION"
+    }
+  ],
+  "declared": true,
+  "description": "Parent record for Voltage Instructions (MVAr Dispatch). 'SIGNAL' records will have no children; 'INSTRUCTION' records will have children",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 21,
+        "from": {
+          "data-time": "2024-08-01T00:00:12+10:00",
+          "file": "PUBLIC_ARCHIVE#VOLTAGE_INSTRUCTION_TRK#FILE01#202408010000.zip",
+          "release": "2024-08",
+          "sha256": "dbc916da71cd009f8efe56d03a33608064c6b1331d6e21eb07c420d493cc3181"
+        },
+        "kinds": [
+          "archive"
+        ],
+        "overlaps": false,
+        "report": [
+          "VOLTAGE_INSTRUCTION",
+          "TRACK"
+        ],
+        "rows": 144013,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2026-04-30T23:51:23+10:00",
+          "file": "PUBLIC_ARCHIVE#VOLTAGE_INSTRUCTION_TRK#FILE01#202604010000.zip",
+          "release": "2026-04",
+          "sha256": "0b9c8ded2f30821179e7c9aa920e6b0ff1752d1ec5b19cb27a3188b6709fc6f1"
+        },
+        "updates": [],
+        "version": 2
+      }
+    ],
+    "schema-files": {
+      "0": "schema-60f03e3de7ff8868.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "RUN_DATETIME",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 2,
+            "name": "FILE_TYPE",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 3,
+            "name": "VERSION_DATETIME",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 4,
+            "name": "SE_DATETIME",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 5,
+            "name": "SOLUTION_CATEGORY",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 6,
+            "name": "SOLUTION_STATUS",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 7,
+            "name": "OPERATING_MODE",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 8,
+            "name": "OPERATING_STATUS",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 9,
+            "name": "EST_EXPIRY",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 10,
+            "name": "EST_NEXT_INSTRUCTION",
+            "required": false,
+            "type": "timestamptz"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          3
+        ],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "table": "VOLTAGE_INSTRUCTION_TRK"
+  },
+  "load_mode": "append",
+  "name": "VOLTAGE_INSTRUCTION_TRK",
+  "package": "VOLTAGE_INSTRUCTIONS",
+  "primary_key": [
+    "RUN_DATETIME",
+    "VERSION_DATETIME"
+  ],
+  "report_pairs": [
+    [
+      "VOLTAGE_INSTRUCTION",
+      "TRACK"
+    ]
+  ],
+  "temporal": {
+    "entity": [],
+    "order": [
+      "VERSION_DATETIME"
+    ],
+    "origin": "derived",
+    "valid": {
+      "column": "RUN_DATETIME",
+      "kind": "instant"
+    }
+  },
+  "time_column": "RUN_DATETIME",
+  "visibility": "PUBLIC",
+  "x-format": 2
+}

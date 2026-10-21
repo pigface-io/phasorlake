@@ -1,0 +1,464 @@
+{
+  "columns": [
+    {
+      "comment": "Date processing of the run begins.",
+      "id": 1,
+      "model_type": "TIMESTAMP(0)",
+      "name": "RUN_DATETIME"
+    },
+    {
+      "comment": "Unique run id.",
+      "id": 2,
+      "model_type": "NUMERIC(4)",
+      "name": "RUN_NO"
+    },
+    {
+      "comment": "Type of run. Always RELIABILITY",
+      "id": 3,
+      "model_type": "VARCHAR(20)",
+      "name": "RUNTYPE"
+    },
+    {
+      "comment": "Demand POE type used. Value are POE10, POE50",
+      "id": 4,
+      "model_type": "VARCHAR(20)",
+      "name": "DEMAND_POE_TYPE"
+    },
+    {
+      "comment": "Period data is aggregated over. Values are YEAR, MONTH",
+      "id": 5,
+      "model_type": "VARCHAR(20)",
+      "name": "AGGREGATION_PERIOD"
+    },
+    {
+      "comment": "Datetime of day at end of period (i.e. last day of month or year reported)",
+      "id": 6,
+      "model_type": "TIMESTAMP(0)",
+      "name": "PERIOD_ENDING"
+    },
+    {
+      "comment": "The unique region identifier",
+      "id": 7,
+      "model_type": "VARCHAR(20)",
+      "name": "REGIONID"
+    },
+    {
+      "comment": "Native demand calculated from Operational As Generated trace supplied by Energy Forecasting",
+      "id": 8,
+      "model_type": "NUMERIC(12,2)",
+      "name": "NATIVEDEMAND"
+    },
+    {
+      "comment": "Unserved energy period amount at the 10th percentile of iterations and reference years (MWh)",
+      "id": 9,
+      "model_type": "NUMERIC(12,2)",
+      "name": "USE_PERCENTILE10"
+    },
+    {
+      "comment": "Unserved energy period amount at the 20th percentile of iterations and reference years (MWh)",
+      "id": 10,
+      "model_type": "NUMERIC(12,2)",
+      "name": "USE_PERCENTILE20"
+    },
+    {
+      "comment": "Unserved energy period amount at the 30th percentile of iterations and reference years (MWh)",
+      "id": 11,
+      "model_type": "NUMERIC(12,2)",
+      "name": "USE_PERCENTILE30"
+    },
+    {
+      "comment": "Unserved energy period amount at the 40th percentile of iterations and reference years (MWh)",
+      "id": 12,
+      "model_type": "NUMERIC(12,2)",
+      "name": "USE_PERCENTILE40"
+    },
+    {
+      "comment": "Unserved energy period amount at the 50th percentile of iterations and reference years (MWh)",
+      "id": 13,
+      "model_type": "NUMERIC(12,2)",
+      "name": "USE_PERCENTILE50"
+    },
+    {
+      "comment": "Unserved energy period amount at the 60th percentile of iterations and reference years (MWh)",
+      "id": 14,
+      "model_type": "NUMERIC(12,2)",
+      "name": "USE_PERCENTILE60"
+    },
+    {
+      "comment": "Unserved energy period amount at the 70th percentile of iterations and reference years (MWh)",
+      "id": 15,
+      "model_type": "NUMERIC(12,2)",
+      "name": "USE_PERCENTILE70"
+    },
+    {
+      "comment": "Unserved energy period amount at the 80th percentile of iterations and reference years (MWh)",
+      "id": 16,
+      "model_type": "NUMERIC(12,2)",
+      "name": "USE_PERCENTILE80"
+    },
+    {
+      "comment": "Unserved energy period amount at the 90th percentile of iterations and reference years (MWh)",
+      "id": 17,
+      "model_type": "NUMERIC(12,2)",
+      "name": "USE_PERCENTILE90"
+    },
+    {
+      "comment": "Unserved energy period amount at the 100th percentile of iterations and reference years (MWh)",
+      "id": 18,
+      "model_type": "NUMERIC(12,2)",
+      "name": "USE_PERCENTILE100"
+    },
+    {
+      "comment": "Average period unserved energy across iterations and reference years (MWh)",
+      "id": 19,
+      "model_type": "NUMERIC(12,2)",
+      "name": "USE_AVERAGE"
+    },
+    {
+      "comment": "Total number of iterations and reference years performed",
+      "id": 20,
+      "model_type": "NUMERIC(12,2)",
+      "name": "NUMBEROFITERATIONS"
+    },
+    {
+      "comment": "Number of iterations and reference years showing unserved energy",
+      "id": 21,
+      "model_type": "NUMERIC(12,2)",
+      "name": "USE_NUMBEROFITERATIONS"
+    },
+    {
+      "comment": "Maximum unserved energy event size across all half hourly intervals and iterations and reference years that have unserved energy>0 (MW)",
+      "id": 22,
+      "model_type": "NUMERIC(12,2)",
+      "name": "USE_EVENT_MAX"
+    },
+    {
+      "comment": "Upper quartile unserved energy event size across all half hourly intervals and iterations and reference years that have unserved energy>0 (MW)",
+      "id": 23,
+      "model_type": "NUMERIC(12,2)",
+      "name": "USE_EVENT_UPPERQUARTILE"
+    },
+    {
+      "comment": "Median unserved energy event size across all half hourly intervals and iterations and reference years that have unserved energy>0 (MW)",
+      "id": 24,
+      "model_type": "NUMERIC(12,2)",
+      "name": "USE_EVENT_MEDIAN"
+    },
+    {
+      "comment": "Lower quartile unserved energy event size across all half hourly intervals and iterations and reference years that have unserved energy>0 (MW)",
+      "id": 25,
+      "model_type": "NUMERIC(12,2)",
+      "name": "USE_EVENT_LOWERQUARTILE"
+    },
+    {
+      "comment": "Minimum unserved energy event size across all half hourly intervals and iterations and reference years that have unserved energy>0 (MW)",
+      "id": 26,
+      "model_type": "NUMERIC(12,2)",
+      "name": "USE_EVENT_MIN"
+    },
+    {
+      "comment": "Fixed Values of 0.696 for 50 POE and 0.304 for 10 POE.",
+      "id": 27,
+      "model_type": "NUMERIC(16,6)",
+      "name": "WEIGHT"
+    },
+    {
+      "comment": "Weighted average USE per region = (USE_AVERAGE_POE10/NATIVE_DEMAND_POE_10*WEIGHT_POE_10 + USE_AVERAGE_POE50/NATIVE_DEMAND_POE_50*WEIGHT_POE_50)*100",
+      "id": 28,
+      "model_type": "NUMERIC(16,6)",
+      "name": "USE_WEIGHTED_AVG"
+    },
+    {
+      "comment": "LRC Condition reported (Value=1) if USE_WEIGHTED_AVG >= 0.002% otherwise (Value=0)",
+      "id": 29,
+      "model_type": "NUMERIC(12,2)",
+      "name": "LRC"
+    },
+    {
+      "comment": "Last date and time record changed",
+      "id": 30,
+      "model_type": "TIMESTAMP(0)",
+      "name": "LASTCHANGED"
+    }
+  ],
+  "declared": true,
+  "description": "Region Results summary over aggregation periods.",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 96,
+        "from": {
+          "data-time": "2018-05-14T10:59:49+10:00",
+          "file": "PUBLIC_DVD_MTPASA_REGIONSUMMARY_201805010000.zip",
+          "release": "2018-05",
+          "sha256": "50ef37b846d480516d53413a509720d8f5d85dee8d8a42231bb89b900dcc8c81"
+        },
+        "kinds": [
+          "archive",
+          "dvd"
+        ],
+        "overlaps": false,
+        "report": [
+          "MTPASA",
+          "REGIONSUMMARY"
+        ],
+        "rows": 117340,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2026-04-26T20:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#MTPASA_REGIONSUMMARY#FILE01#202604010000.zip",
+          "release": "2026-04",
+          "sha256": "0b09456b1292acf4bcde8abe415983bf59839b874a04423b863721e131fedebd"
+        },
+        "updates": [],
+        "version": 1
+      }
+    ],
+    "schema-files": {
+      "0": "schema-4a07647bac2a5a2e.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "RUN_DATETIME",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 2,
+            "name": "RUN_NO",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 3,
+            "name": "RUNTYPE",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 4,
+            "name": "DEMAND_POE_TYPE",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 5,
+            "name": "AGGREGATION_PERIOD",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 6,
+            "name": "PERIOD_ENDING",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 7,
+            "name": "REGIONID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 8,
+            "name": "NATIVEDEMAND",
+            "required": false,
+            "type": "decimal(12, 2)"
+          },
+          {
+            "id": 9,
+            "name": "USE_PERCENTILE10",
+            "required": false,
+            "type": "decimal(12, 2)"
+          },
+          {
+            "id": 10,
+            "name": "USE_PERCENTILE20",
+            "required": false,
+            "type": "decimal(12, 2)"
+          },
+          {
+            "id": 11,
+            "name": "USE_PERCENTILE30",
+            "required": false,
+            "type": "decimal(12, 2)"
+          },
+          {
+            "id": 12,
+            "name": "USE_PERCENTILE40",
+            "required": false,
+            "type": "decimal(12, 2)"
+          },
+          {
+            "id": 13,
+            "name": "USE_PERCENTILE50",
+            "required": false,
+            "type": "decimal(12, 2)"
+          },
+          {
+            "id": 14,
+            "name": "USE_PERCENTILE60",
+            "required": false,
+            "type": "decimal(12, 2)"
+          },
+          {
+            "id": 15,
+            "name": "USE_PERCENTILE70",
+            "required": false,
+            "type": "decimal(12, 2)"
+          },
+          {
+            "id": 16,
+            "name": "USE_PERCENTILE80",
+            "required": false,
+            "type": "decimal(12, 2)"
+          },
+          {
+            "id": 17,
+            "name": "USE_PERCENTILE90",
+            "required": false,
+            "type": "decimal(12, 2)"
+          },
+          {
+            "id": 18,
+            "name": "USE_PERCENTILE100",
+            "required": false,
+            "type": "decimal(12, 2)"
+          },
+          {
+            "id": 19,
+            "name": "USE_AVERAGE",
+            "required": false,
+            "type": "decimal(12, 2)"
+          },
+          {
+            "id": 20,
+            "name": "NUMBEROFITERATIONS",
+            "required": false,
+            "type": "decimal(12, 2)"
+          },
+          {
+            "id": 21,
+            "name": "USE_NUMBEROFITERATIONS",
+            "required": false,
+            "type": "decimal(12, 2)"
+          },
+          {
+            "id": 22,
+            "name": "USE_EVENT_MAX",
+            "required": false,
+            "type": "decimal(12, 2)"
+          },
+          {
+            "id": 23,
+            "name": "USE_EVENT_UPPERQUARTILE",
+            "required": false,
+            "type": "decimal(12, 2)"
+          },
+          {
+            "id": 24,
+            "name": "USE_EVENT_MEDIAN",
+            "required": false,
+            "type": "decimal(12, 2)"
+          },
+          {
+            "id": 25,
+            "name": "USE_EVENT_LOWERQUARTILE",
+            "required": false,
+            "type": "decimal(12, 2)"
+          },
+          {
+            "id": 26,
+            "name": "USE_EVENT_MIN",
+            "required": false,
+            "type": "decimal(12, 2)"
+          },
+          {
+            "id": 27,
+            "name": "WEIGHT",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 28,
+            "name": "USE_WEIGHTED_AVG",
+            "required": false,
+            "type": "double"
+          },
+          {
+            "id": 29,
+            "name": "LRC",
+            "required": false,
+            "type": "decimal(12, 2)"
+          },
+          {
+            "id": 30,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "table": "MTPASA_REGIONSUMMARY"
+  },
+  "load_mode": "append",
+  "name": "MTPASA_REGIONSUMMARY",
+  "package": "MTPASA",
+  "primary_key": [
+    "RUN_DATETIME",
+    "RUN_NO",
+    "RUNTYPE",
+    "DEMAND_POE_TYPE",
+    "AGGREGATION_PERIOD",
+    "PERIOD_ENDING",
+    "REGIONID"
+  ],
+  "report_pairs": [
+    [
+      "MTPASA",
+      "REGIONSUMMARY"
+    ]
+  ],
+  "temporal": {
+    "cutoff": "RUN_DATETIME",
+    "entity": [
+      "RUNTYPE",
+      "DEMAND_POE_TYPE",
+      "AGGREGATION_PERIOD",
+      "REGIONID"
+    ],
+    "order": [
+      "RUN_DATETIME",
+      "RUN_NO",
+      "LASTCHANGED"
+    ],
+    "origin": "derived",
+    "valid": {
+      "column": "PERIOD_ENDING",
+      "kind": "interval_end"
+    }
+  },
+  "time_column": "RUN_DATETIME",
+  "visibility": "PUBLIC",
+  "x-format": 2
+}

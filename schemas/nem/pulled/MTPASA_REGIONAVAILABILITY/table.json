@@ -1,0 +1,307 @@
+{
+  "columns": [
+    {
+      "comment": "Date Time the report was published.",
+      "id": 1,
+      "model_type": "TIMESTAMP(0)",
+      "name": "PUBLISH_DATETIME"
+    },
+    {
+      "comment": "Date on which the aggregation applies.",
+      "id": 2,
+      "model_type": "TIMESTAMP(0)",
+      "name": "DAY"
+    },
+    {
+      "comment": "NEM Region.",
+      "id": 3,
+      "model_type": "VARCHAR(20)",
+      "name": "REGIONID"
+    },
+    {
+      "comment": "Aggregate of the offered PASA Availability for all Scheduled generators in this region.",
+      "id": 4,
+      "model_type": "NUMERIC(12,0)",
+      "name": "PASAAVAILABILITY_SCHEDULED"
+    },
+    {
+      "comment": "Date Time of the latest offer used in the aggregation for this region and date.",
+      "id": 5,
+      "model_type": "TIMESTAMP(0)",
+      "name": "LATEST_OFFER_DATETIME"
+    },
+    {
+      "comment": "Region energy unconstrained MW capacity",
+      "id": 6,
+      "model_type": "NUMERIC(12,0)",
+      "name": "ENERGYUNCONSTRAINEDCAPACITY"
+    },
+    {
+      "comment": "Region energy constrained MW capacity",
+      "id": 7,
+      "model_type": "NUMERIC(12,0)",
+      "name": "ENERGYCONSTRAINEDCAPACITY"
+    },
+    {
+      "comment": "Allowance made for non-scheduled generation in the demand forecast (MW)",
+      "id": 8,
+      "model_type": "NUMERIC(12,2)",
+      "name": "NONSCHEDULEDGENERATION"
+    },
+    {
+      "comment": "10% probability demand (ex non-scheduled demand)",
+      "id": 9,
+      "model_type": "NUMERIC(12,2)",
+      "name": "DEMAND10"
+    },
+    {
+      "comment": "50% probability demand (ex non-scheduled demand)",
+      "id": 10,
+      "model_type": "NUMERIC(12,2)",
+      "name": "DEMAND50"
+    },
+    {
+      "comment": "Total weekly operational as generated consumption (POE 10)",
+      "id": 11,
+      "model_type": "NUMERIC(12,2)",
+      "name": "ENERGYREQDEMAND10"
+    },
+    {
+      "comment": "Total weekly operational as generated consumption (POE 50)",
+      "id": 12,
+      "model_type": "NUMERIC(12,2)",
+      "name": "ENERGYREQDEMAND50"
+    },
+    {
+      "comment": "Last date and time record changed",
+      "id": 13,
+      "model_type": "TIMESTAMP(0)",
+      "name": "LASTCHANGED"
+    },
+    {
+      "comment": "Minimum of the Operational Load as Generated (OPGEN) peaks that occur in all ref years for the P10 traces (MW).",
+      "id": 14,
+      "model_type": "NUMERIC(12,2)",
+      "name": "DEMAND10MIN"
+    },
+    {
+      "comment": "Maximum of the Operational Load as Generated (OPGEN) peaks that occur in all ref years for the P10 traces (MW).",
+      "id": 15,
+      "model_type": "NUMERIC(12,2)",
+      "name": "DEMAND10MAX"
+    },
+    {
+      "comment": "Minimum of the Operational Load as Generated (OPGEN) peaks that occur in all ref years for the P50 traces (MW).",
+      "id": 16,
+      "model_type": "NUMERIC(12,2)",
+      "name": "DEMAND50MIN"
+    },
+    {
+      "comment": "Maximum of the Operational Load as Generated (OPGEN) peaks that occur in all ref years for the P50 traces (MW).",
+      "id": 17,
+      "model_type": "NUMERIC(12,2)",
+      "name": "DEMAND50MAX"
+    },
+    {
+      "comment": "Split of the CARRYOVER component of aggregate capacity vs the currently reported capacity.",
+      "id": 18,
+      "model_type": "NUMERIC(12,0)",
+      "name": "CARRYOVERCAPACITY"
+    }
+  ],
+  "declared": true,
+  "description": "Stores the Region-aggregate offered PASA Availability of scheduled generators for each day over the Medium Term PASA period. The data in this table is an aggregate of input data to the MT PASA process it is not part of the MTPASA solution. The aggregate availability does not reflect any energy limitations in the MT PASA offers.",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 21,
+        "from": {
+          "data-time": "2024-08-04T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#MTPASA_REGIONAVAILABILITY#FILE01#202408010000.zip",
+          "release": "2024-08",
+          "sha256": "7097556f54c92dca874b06a9712c73c0ab00e02b45638c81f8c98c323ab8cecf"
+        },
+        "kinds": [
+          "archive"
+        ],
+        "overlaps": false,
+        "report": [
+          "MTPASA",
+          "REGIONAVAILABILITY"
+        ],
+        "rows": 12194675,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2029-04-29T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#MTPASA_REGIONAVAILABILITY#FILE01#202604010000.zip",
+          "release": "2026-04",
+          "sha256": "6354b6a7bfee6725f15b2a9b7ef9ea51efd4291e23495b75166bab265886e0db"
+        },
+        "updates": [],
+        "version": 4
+      }
+    ],
+    "schema-files": {
+      "0": "schema-7ab18905cb767dff.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "PUBLISH_DATETIME",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 2,
+            "name": "DAY",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 3,
+            "name": "REGIONID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 4,
+            "name": "PASAAVAILABILITY_SCHEDULED",
+            "required": false,
+            "type": "decimal(12, 0)"
+          },
+          {
+            "id": 5,
+            "name": "LATEST_OFFER_DATETIME",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 6,
+            "name": "ENERGYUNCONSTRAINEDCAPACITY",
+            "required": false,
+            "type": "decimal(12, 0)"
+          },
+          {
+            "id": 7,
+            "name": "ENERGYCONSTRAINEDCAPACITY",
+            "required": false,
+            "type": "decimal(12, 0)"
+          },
+          {
+            "id": 8,
+            "name": "NONSCHEDULEDGENERATION",
+            "required": false,
+            "type": "decimal(12, 2)"
+          },
+          {
+            "id": 9,
+            "name": "DEMAND10",
+            "required": false,
+            "type": "decimal(12, 2)"
+          },
+          {
+            "id": 10,
+            "name": "DEMAND50",
+            "required": false,
+            "type": "decimal(12, 2)"
+          },
+          {
+            "id": 11,
+            "name": "ENERGYREQDEMAND10",
+            "required": false,
+            "type": "decimal(12, 2)"
+          },
+          {
+            "id": 12,
+            "name": "ENERGYREQDEMAND50",
+            "required": false,
+            "type": "decimal(12, 2)"
+          },
+          {
+            "id": 13,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 14,
+            "name": "DEMAND10MIN",
+            "required": false,
+            "type": "decimal(12, 2)"
+          },
+          {
+            "id": 15,
+            "name": "DEMAND10MAX",
+            "required": false,
+            "type": "decimal(12, 2)"
+          },
+          {
+            "id": 16,
+            "name": "DEMAND50MIN",
+            "required": false,
+            "type": "decimal(12, 2)"
+          },
+          {
+            "id": 17,
+            "name": "DEMAND50MAX",
+            "required": false,
+            "type": "decimal(12, 2)"
+          },
+          {
+            "id": 18,
+            "name": "CARRYOVERCAPACITY",
+            "required": false,
+            "type": "decimal(12, 0)"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2,
+          3
+        ],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "table": "MTPASA_REGIONAVAILABILITY"
+  },
+  "load_mode": "append",
+  "name": "MTPASA_REGIONAVAILABILITY",
+  "package": "MTPASA",
+  "primary_key": [
+    "PUBLISH_DATETIME",
+    "DAY",
+    "REGIONID"
+  ],
+  "report_pairs": [
+    [
+      "MTPASA",
+      "REGIONAVAILABILITY"
+    ]
+  ],
+  "temporal": {
+    "cutoff": "PUBLISH_DATETIME",
+    "entity": [
+      "REGIONID"
+    ],
+    "order": [
+      "PUBLISH_DATETIME",
+      "LASTCHANGED"
+    ],
+    "origin": "derived",
+    "valid": {
+      "column": "DAY",
+      "kind": "instant"
+    }
+  },
+  "time_column": "DAY",
+  "visibility": "PUBLIC",
+  "x-format": 2
+}

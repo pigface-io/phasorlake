@@ -1,0 +1,172 @@
+{
+  "columns": [
+    {
+      "comment": "ID uniquely identifying this substation",
+      "id": 1,
+      "model_type": "VARCHAR(30)",
+      "name": "SUBSTATIONID"
+    },
+    {
+      "comment": "The record is valid from this date (inclusive)",
+      "id": 2,
+      "model_type": "TIMESTAMP(3)",
+      "name": "VALIDFROM"
+    },
+    {
+      "comment": "The record is valid up until this date (exclusive)",
+      "id": 3,
+      "model_type": "TIMESTAMP(3)",
+      "name": "VALIDTO"
+    },
+    {
+      "comment": "Description of the substation",
+      "id": 4,
+      "model_type": "VARCHAR(100)",
+      "name": "DESCRIPTION"
+    },
+    {
+      "comment": "The NEM region the substation is in",
+      "id": 5,
+      "model_type": "VARCHAR(10)",
+      "name": "REGIONID"
+    },
+    {
+      "comment": "The TNSP who is responsible for this substation",
+      "id": 6,
+      "model_type": "VARCHAR(30)",
+      "name": "OWNERID"
+    },
+    {
+      "comment": "The time that this record was last changed.",
+      "id": 7,
+      "model_type": "TIMESTAMP(3)",
+      "name": "LASTCHANGED"
+    }
+  ],
+  "declared": true,
+  "description": "NETWORK_SUBSTATIONDETAIL sets out the attributes of sub-stations across time",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 21,
+        "from": {
+          "data-time": "2003-04-28T16:51:18.000+10:00",
+          "file": "PUBLIC_ARCHIVE#NETWORK_SUBSTATIONDETAIL#FILE01#202408010000.zip",
+          "release": "2024-08",
+          "sha256": "12bd724b5b3dd3eaa26496c752e72610b58e4a77a3c1bb99ec58dde5e202cba4"
+        },
+        "kinds": [
+          "archive"
+        ],
+        "overlaps": false,
+        "report": [
+          "NETWORK",
+          "SUBSTATIONDETAIL"
+        ],
+        "rows": 23061,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2999-01-01T00:00:10.000+10:00",
+          "file": "PUBLIC_ARCHIVE#NETWORK_SUBSTATIONDETAIL#FILE01#202604010000.zip",
+          "release": "2026-04",
+          "sha256": "69a62271c21d73520af6395b0fbe2686958890f6f5901c660e8c727aa8435660"
+        },
+        "updates": [],
+        "version": 2
+      }
+    ],
+    "schema-files": {
+      "0": "schema-1c95b95c3758109a.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "SUBSTATIONID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 2,
+            "name": "VALIDFROM",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 3,
+            "name": "VALIDTO",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 4,
+            "name": "DESCRIPTION",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 5,
+            "name": "REGIONID",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 6,
+            "name": "OWNERID",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 7,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2
+        ],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "table": "NETWORK_SUBSTATIONDETAIL"
+  },
+  "load_mode": "append",
+  "name": "NETWORK_SUBSTATIONDETAIL",
+  "package": "NETWORK",
+  "primary_key": [
+    "SUBSTATIONID",
+    "VALIDFROM"
+  ],
+  "report_pairs": [
+    [
+      "NETWORK",
+      "SUBSTATIONDETAIL"
+    ]
+  ],
+  "temporal": {
+    "cutoff": "LASTCHANGED",
+    "entity": [
+      "SUBSTATIONID"
+    ],
+    "order": [
+      "LASTCHANGED"
+    ],
+    "origin": "derived",
+    "valid": {
+      "column": "VALIDFROM",
+      "kind": "from"
+    }
+  },
+  "time_column": "LASTCHANGED",
+  "visibility": "PUBLIC",
+  "x-format": 2
+}

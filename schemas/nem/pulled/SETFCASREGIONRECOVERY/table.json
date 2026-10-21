@@ -1,0 +1,385 @@
+{
+  "columns": [
+    {
+      "comment": "Settlement Date of trading interval",
+      "id": 1,
+      "model_type": "TIMESTAMP(0)",
+      "name": "SETTLEMENTDATE"
+    },
+    {
+      "comment": "Settlement run no",
+      "id": 2,
+      "model_type": "NUMERIC(3,0)",
+      "name": "VERSIONNO"
+    },
+    {
+      "comment": "FCAS Service Type",
+      "id": 3,
+      "model_type": "VARCHAR(10)",
+      "name": "BIDTYPE"
+    },
+    {
+      "comment": "RegionID",
+      "id": 4,
+      "model_type": "VARCHAR(10)",
+      "name": "REGIONID"
+    },
+    {
+      "comment": "Settlements Trading Interval.",
+      "id": 5,
+      "model_type": "NUMERIC(3,0)",
+      "name": "PERIODID"
+    },
+    {
+      "comment": "Generator Regional Energy Amount. NULL for Settlement dates post the IESS rule effective date",
+      "id": 6,
+      "model_type": "NUMERIC(16,6)",
+      "name": "GENERATORREGIONENERGY"
+    },
+    {
+      "comment": "Customer Region Energy Amount. NULL for Settlement dates post the IESS rule effective date",
+      "id": 7,
+      "model_type": "NUMERIC(16,6)",
+      "name": "CUSTOMERREGIONENERGY"
+    },
+    {
+      "comment": "The NEM Regional Recovery Amount for FCAS",
+      "id": 8,
+      "model_type": "NUMERIC(18,8)",
+      "name": "REGIONRECOVERY"
+    },
+    {
+      "comment": "Last Date record changed",
+      "id": 9,
+      "model_type": "TIMESTAMP(0)",
+      "name": "LASTCHANGED"
+    },
+    {
+      "comment": "The Regional ACE MWh value used for the FCAS Recovery. NULL for Settlement dates prior to the IESS rule effective date",
+      "id": 10,
+      "model_type": "NUMERIC(18,8)",
+      "name": "REGION_ACE_MWH"
+    },
+    {
+      "comment": "The Regional ASOE MWh value used for the FCAS Recovery. NULL for Settlement dates prior to the IESS rule effective date",
+      "id": 11,
+      "model_type": "NUMERIC(18,8)",
+      "name": "REGION_ASOE_MWH"
+    },
+    {
+      "comment": "The Total Dollar Amount for the Region recovered using the ACE MWh Values. NULL for Settlement dates prior to the IESS rule effective date",
+      "id": 12,
+      "model_type": "NUMERIC(18,8)",
+      "name": "REGIONRECOVERYAMOUNT_ACE"
+    },
+    {
+      "comment": "The Total Dollar Amount for the Region recovered using the ASOE MWh Values. NULL for Settlement dates prior to the IESS rule effective date",
+      "id": 13,
+      "model_type": "NUMERIC(18,8)",
+      "name": "REGIONRECOVERYAMOUNT_ASOE"
+    },
+    {
+      "comment": "The Total Dollar Amount for the Region (RegionRecoveryAmountACE + RegionRecoveryAmountASOE). NULL for Settlement dates prior to the IESS rule effective date",
+      "id": 14,
+      "model_type": "NUMERIC(18,8)",
+      "name": "REGIONRECOVERYAMOUNT"
+    }
+  ],
+  "declared": true,
+  "description": "The FCAS Recovery amount from each NEM Region and the Energy MWh used for the FCAS Recovery calculation from Participants",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 180,
+        "from": {
+          "data-time": "2008-12-14T00:00:00+10:00",
+          "file": "PUBLIC_DVD_SETFCASREGIONRECOVERY_200907010000.zip",
+          "release": "2009-07",
+          "sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261"
+        },
+        "kinds": [
+          "dvd"
+        ],
+        "overlaps": false,
+        "report": [
+          "SETTLEMENTS",
+          "FCASREGIONRECOVERY"
+        ],
+        "rows": 177855161,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2024-01-06T00:00:00+10:00",
+          "file": "PUBLIC_DVD_SETFCASREGIONRECOVERY_202407010000.zip",
+          "release": "2024-07",
+          "sha256": "b7ddce7c94f9359531f6ec61ee9521321775b5c1ac0cab3aa632e3f41c5a98a7"
+        },
+        "updates": [],
+        "version": 5
+      },
+      {
+        "changes": [
+          "schema",
+          "version"
+        ],
+        "files": 21,
+        "from": {
+          "data-time": "2023-12-31T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#SETFCASREGIONRECOVERY#FILE01#202408010000.zip",
+          "release": "2024-08",
+          "sha256": "0eadadf1597001d13241ccdf2fd8c427bdaf42dfc42ebd58eee41e27028c169d"
+        },
+        "kinds": [
+          "archive"
+        ],
+        "overlaps": true,
+        "report": [
+          "SETTLEMENTS",
+          "FCASREGIONRECOVERY"
+        ],
+        "rows": 36472572,
+        "schema-id": 1,
+        "to": {
+          "data-time": "2026-04-29T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#SETFCASREGIONRECOVERY#FILE01#202604010000.zip",
+          "release": "2026-04",
+          "sha256": "9e7b721f34e33faa53c0f439c202428a9d6946b563a440d504337a32891d4e28"
+        },
+        "updates": [
+          {
+            "action": "add",
+            "field-id": 10
+          },
+          {
+            "action": "add",
+            "field-id": 11
+          },
+          {
+            "action": "add",
+            "field-id": 12
+          },
+          {
+            "action": "add",
+            "field-id": 13
+          },
+          {
+            "action": "add",
+            "field-id": 14
+          }
+        ],
+        "version": 6
+      }
+    ],
+    "schema-files": {
+      "0": "schema-7799650e202d9f6f.json",
+      "1": "schema-3a00839fd58fea26.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "SETTLEMENTDATE",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 2,
+            "name": "VERSIONNO",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 3,
+            "name": "BIDTYPE",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 4,
+            "name": "REGIONID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 5,
+            "name": "PERIODID",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 6,
+            "name": "GENERATORREGIONENERGY",
+            "required": false,
+            "type": "decimal(16, 8)"
+          },
+          {
+            "id": 7,
+            "name": "CUSTOMERREGIONENERGY",
+            "required": false,
+            "type": "decimal(16, 8)"
+          },
+          {
+            "id": 8,
+            "name": "REGIONRECOVERY",
+            "required": false,
+            "type": "decimal(18, 8)"
+          },
+          {
+            "id": 9,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "schema-id": 0,
+        "type": "struct"
+      },
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "SETTLEMENTDATE",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 2,
+            "name": "VERSIONNO",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 3,
+            "name": "BIDTYPE",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 4,
+            "name": "REGIONID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 5,
+            "name": "PERIODID",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 6,
+            "name": "GENERATORREGIONENERGY",
+            "required": false,
+            "type": "decimal(16, 8)"
+          },
+          {
+            "id": 7,
+            "name": "CUSTOMERREGIONENERGY",
+            "required": false,
+            "type": "decimal(16, 8)"
+          },
+          {
+            "id": 8,
+            "name": "REGIONRECOVERY",
+            "required": false,
+            "type": "decimal(18, 8)"
+          },
+          {
+            "id": 9,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 10,
+            "name": "REGION_ACE_MWH",
+            "required": false,
+            "type": "decimal(18, 8)"
+          },
+          {
+            "id": 11,
+            "name": "REGION_ASOE_MWH",
+            "required": false,
+            "type": "decimal(18, 8)"
+          },
+          {
+            "id": 12,
+            "name": "REGIONRECOVERYAMOUNT_ACE",
+            "required": false,
+            "type": "decimal(18, 8)"
+          },
+          {
+            "id": 13,
+            "name": "REGIONRECOVERYAMOUNT_ASOE",
+            "required": false,
+            "type": "decimal(18, 8)"
+          },
+          {
+            "id": 14,
+            "name": "REGIONRECOVERYAMOUNT",
+            "required": false,
+            "type": "decimal(18, 8)"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "schema-id": 1,
+        "type": "struct"
+      }
+    ],
+    "table": "SETFCASREGIONRECOVERY"
+  },
+  "load_mode": "append",
+  "name": "SETFCASREGIONRECOVERY",
+  "package": "SETTLEMENT_DATA",
+  "primary_key": [
+    "SETTLEMENTDATE",
+    "VERSIONNO",
+    "BIDTYPE",
+    "REGIONID",
+    "PERIODID"
+  ],
+  "report_pairs": [
+    [
+      "SETTLEMENTS",
+      "FCASREGIONRECOVERY"
+    ]
+  ],
+  "temporal": {
+    "cutoff": "LASTCHANGED",
+    "entity": [
+      "BIDTYPE",
+      "REGIONID",
+      "PERIODID"
+    ],
+    "order": [
+      "VERSIONNO",
+      "LASTCHANGED"
+    ],
+    "origin": "derived",
+    "valid": {
+      "column": "SETTLEMENTDATE",
+      "kind": "interval_end"
+    }
+  },
+  "time_column": "SETTLEMENTDATE",
+  "visibility": "PUBLIC",
+  "x-format": 2
+}

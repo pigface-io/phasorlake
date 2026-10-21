@@ -1,0 +1,5483 @@
+{
+  "columns": [
+    {
+      "comment": "Market date and time starting at 04:05",
+      "id": 1,
+      "model_type": "TIMESTAMP(0)",
+      "name": "SETTLEMENTDATE"
+    },
+    {
+      "comment": "Dispatch run no; always 1",
+      "id": 2,
+      "model_type": "NUMERIC(3,0)",
+      "name": "RUNNO"
+    },
+    {
+      "comment": "Region Identifier",
+      "id": 3,
+      "model_type": "VARCHAR(10)",
+      "name": "REGIONID"
+    },
+    {
+      "comment": "Dispatch period identifier, from 001 to 288 in format YYYYMMDDPPP.",
+      "id": 4,
+      "model_type": "NUMERIC(22,0)",
+      "name": "DISPATCHINTERVAL"
+    },
+    {
+      "comment": "Manual Intervention flag",
+      "id": 5,
+      "model_type": "NUMERIC(2,0)",
+      "name": "INTERVENTION"
+    },
+    {
+      "comment": "Demand (less loads)",
+      "id": 6,
+      "model_type": "NUMERIC(15,5)",
+      "name": "TOTALDEMAND"
+    },
+    {
+      "comment": "Aggregate generation bid available in region",
+      "id": 7,
+      "model_type": "NUMERIC(15,5)",
+      "name": "AVAILABLEGENERATION"
+    },
+    {
+      "comment": "Aggregate load bid available in region",
+      "id": 8,
+      "model_type": "NUMERIC(15,5)",
+      "name": "AVAILABLELOAD"
+    },
+    {
+      "comment": "5 minute forecast adjust",
+      "id": 9,
+      "model_type": "NUMERIC(15,5)",
+      "name": "DEMANDFORECAST"
+    },
+    {
+      "comment": "Dispatched Generation",
+      "id": 10,
+      "model_type": "NUMERIC(15,5)",
+      "name": "DISPATCHABLEGENERATION"
+    },
+    {
+      "comment": "Dispatched Load (add to total demand to get inherent region demand).",
+      "id": 11,
+      "model_type": "NUMERIC(15,5)",
+      "name": "DISPATCHABLELOAD"
+    },
+    {
+      "comment": "Net interconnector flow from the regional reference node",
+      "id": 12,
+      "model_type": "NUMERIC(15,5)",
+      "name": "NETINTERCHANGE"
+    },
+    {
+      "comment": "MW quantity of excess",
+      "id": 13,
+      "model_type": "NUMERIC(15,5)",
+      "name": "EXCESSGENERATION"
+    },
+    {
+      "comment": "Not used since Dec 2003. Lower 5 min MW dispatch",
+      "id": 14,
+      "model_type": "NUMERIC(15,5)",
+      "name": "LOWER5MINDISPATCH"
+    },
+    {
+      "comment": "Not used since Dec 2003. Lower 5 min MW imported",
+      "id": 15,
+      "model_type": "NUMERIC(15,5)",
+      "name": "LOWER5MINIMPORT"
+    },
+    {
+      "comment": "Lower 5 min local dispatch",
+      "id": 16,
+      "model_type": "NUMERIC(15,5)",
+      "name": "LOWER5MINLOCALDISPATCH"
+    },
+    {
+      "comment": "Not used since Dec 2003. Local price of lower 5 min",
+      "id": 17,
+      "model_type": "NUMERIC(15,5)",
+      "name": "LOWER5MINLOCALPRICE"
+    },
+    {
+      "comment": "Not used since Dec 2003. Lower 5 min local requirement",
+      "id": 18,
+      "model_type": "NUMERIC(15,5)",
+      "name": "LOWER5MINLOCALREQ"
+    },
+    {
+      "comment": "Not used since Dec 2003. Regional price of lower 5 min",
+      "id": 19,
+      "model_type": "NUMERIC(15,5)",
+      "name": "LOWER5MINPRICE"
+    },
+    {
+      "comment": "Not used since Dec 2003. Lower 5 min total requirement",
+      "id": 20,
+      "model_type": "NUMERIC(15,5)",
+      "name": "LOWER5MINREQ"
+    },
+    {
+      "comment": "Not used since Dec 2003. Supply price of lower 5 min",
+      "id": 21,
+      "model_type": "NUMERIC(15,5)",
+      "name": "LOWER5MINSUPPLYPRICE"
+    },
+    {
+      "comment": "Not used since Dec 2003. Lower 60 sec MW dispatch",
+      "id": 22,
+      "model_type": "NUMERIC(15,5)",
+      "name": "LOWER60SECDISPATCH"
+    },
+    {
+      "comment": "Not used since Dec 2003. Lower 60 sec MW imported",
+      "id": 23,
+      "model_type": "NUMERIC(15,5)",
+      "name": "LOWER60SECIMPORT"
+    },
+    {
+      "comment": "Lower 60 sec local dispatch",
+      "id": 24,
+      "model_type": "NUMERIC(15,5)",
+      "name": "LOWER60SECLOCALDISPATCH"
+    },
+    {
+      "comment": "Not used since Dec 2003. Local price of lower 60 sec",
+      "id": 25,
+      "model_type": "NUMERIC(15,5)",
+      "name": "LOWER60SECLOCALPRICE"
+    },
+    {
+      "comment": "Not used since Dec 2003. Lower 60 sec local requirement",
+      "id": 26,
+      "model_type": "NUMERIC(15,5)",
+      "name": "LOWER60SECLOCALREQ"
+    },
+    {
+      "comment": "Not used since Dec 2003. Regional price of lower 60 sec",
+      "id": 27,
+      "model_type": "NUMERIC(15,5)",
+      "name": "LOWER60SECPRICE"
+    },
+    {
+      "comment": "Not used since Dec 2003. Lower 60 sec total requirement",
+      "id": 28,
+      "model_type": "NUMERIC(15,5)",
+      "name": "LOWER60SECREQ"
+    },
+    {
+      "comment": "Not used since Dec 2003. Supply price of lower 60 sec",
+      "id": 29,
+      "model_type": "NUMERIC(15,5)",
+      "name": "LOWER60SECSUPPLYPRICE"
+    },
+    {
+      "comment": "Not used since Dec 2003. Lower 6 sec MW dispatch",
+      "id": 30,
+      "model_type": "NUMERIC(15,5)",
+      "name": "LOWER6SECDISPATCH"
+    },
+    {
+      "comment": "Not used since Dec 2003. Lower 6 sec MW imported",
+      "id": 31,
+      "model_type": "NUMERIC(15,5)",
+      "name": "LOWER6SECIMPORT"
+    },
+    {
+      "comment": "Lower 6 sec local dispatch",
+      "id": 32,
+      "model_type": "NUMERIC(15,5)",
+      "name": "LOWER6SECLOCALDISPATCH"
+    },
+    {
+      "comment": "Not used since Dec 2003. Local price of lower 6 sec",
+      "id": 33,
+      "model_type": "NUMERIC(15,5)",
+      "name": "LOWER6SECLOCALPRICE"
+    },
+    {
+      "comment": "Not used since Dec 2003. Lower 6 sec local requirement",
+      "id": 34,
+      "model_type": "NUMERIC(15,5)",
+      "name": "LOWER6SECLOCALREQ"
+    },
+    {
+      "comment": "Not used since Dec 2003. Regional price of lower 6 sec",
+      "id": 35,
+      "model_type": "NUMERIC(15,5)",
+      "name": "LOWER6SECPRICE"
+    },
+    {
+      "comment": "Not used since Dec 2003. Lower 6 sec total requirement",
+      "id": 36,
+      "model_type": "NUMERIC(15,5)",
+      "name": "LOWER6SECREQ"
+    },
+    {
+      "comment": "Not used since Dec 2003. Supply price of lower 6 sec",
+      "id": 37,
+      "model_type": "NUMERIC(15,5)",
+      "name": "LOWER6SECSUPPLYPRICE"
+    },
+    {
+      "comment": "Not used since Dec 2003. Raise 5 min MW dispatch",
+      "id": 38,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RAISE5MINDISPATCH"
+    },
+    {
+      "comment": "Not used since Dec 2003. Raise 5 min MW imported",
+      "id": 39,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RAISE5MINIMPORT"
+    },
+    {
+      "comment": "Raise 5 min local dispatch",
+      "id": 40,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RAISE5MINLOCALDISPATCH"
+    },
+    {
+      "comment": "Not used since Dec 2003. Raise price of lower 5 min",
+      "id": 41,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RAISE5MINLOCALPRICE"
+    },
+    {
+      "comment": "Not used since Dec 2003. Raise 5 min local requirement",
+      "id": 42,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RAISE5MINLOCALREQ"
+    },
+    {
+      "comment": "Not used since Dec 2003. Regional price of raise 5 min",
+      "id": 43,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RAISE5MINPRICE"
+    },
+    {
+      "comment": "Not used since Dec 2003. Raise 5 min total requirement",
+      "id": 44,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RAISE5MINREQ"
+    },
+    {
+      "comment": "Not used since Dec 2003. Supply price of raise 5 min",
+      "id": 45,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RAISE5MINSUPPLYPRICE"
+    },
+    {
+      "comment": "Not used since Dec 2003. Raise 60 sec MW dispatch",
+      "id": 46,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RAISE60SECDISPATCH"
+    },
+    {
+      "comment": "Not used since Dec 2003. Raise 60 sec MW imported",
+      "id": 47,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RAISE60SECIMPORT"
+    },
+    {
+      "comment": "Raise 60 sec local dispatch",
+      "id": 48,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RAISE60SECLOCALDISPATCH"
+    },
+    {
+      "comment": "Not used since Dec 2003. Local price of raise 60 sec",
+      "id": 49,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RAISE60SECLOCALPRICE"
+    },
+    {
+      "comment": "Not used since Dec 2003. Raise 60 sec local requirement",
+      "id": 50,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RAISE60SECLOCALREQ"
+    },
+    {
+      "comment": "Not used since Dec 2003. Regional price of raise 60 sec",
+      "id": 51,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RAISE60SECPRICE"
+    },
+    {
+      "comment": "Not used since Dec 2003. Raise 60 sec total requirement",
+      "id": 52,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RAISE60SECREQ"
+    },
+    {
+      "comment": "Not used since Dec 2003. Supply price of raise 60 sec",
+      "id": 53,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RAISE60SECSUPPLYPRICE"
+    },
+    {
+      "comment": "Not used since Dec 2003. Raise 6 sec MW dispatch",
+      "id": 54,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RAISE6SECDISPATCH"
+    },
+    {
+      "comment": "Not used since Dec 2003. Raise 6 sec MW imported",
+      "id": 55,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RAISE6SECIMPORT"
+    },
+    {
+      "comment": "Raise 6 sec local dispatch",
+      "id": 56,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RAISE6SECLOCALDISPATCH"
+    },
+    {
+      "comment": "Not used since Dec 2003. Local price of raise 6 sec",
+      "id": 57,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RAISE6SECLOCALPRICE"
+    },
+    {
+      "comment": "Not used since Dec 2003. Raise 6 sec local requirement",
+      "id": 58,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RAISE6SECLOCALREQ"
+    },
+    {
+      "comment": "Not used since Dec 2003. Regional price of raise 6 sec",
+      "id": 59,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RAISE6SECPRICE"
+    },
+    {
+      "comment": "Not used since Dec 2003. Raise 6 sec total requirement",
+      "id": 60,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RAISE6SECREQ"
+    },
+    {
+      "comment": "Not used since Dec 2003. Supply price of raise 6 sec",
+      "id": 61,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RAISE6SECSUPPLYPRICE"
+    },
+    {
+      "comment": "Calculated dispatch error",
+      "id": 62,
+      "model_type": "NUMERIC(15,5)",
+      "name": "AGGEGATEDISPATCHERROR"
+    },
+    {
+      "comment": "Calculated dispatch error",
+      "id": 63,
+      "model_type": "NUMERIC(15,5)",
+      "name": "AGGREGATEDISPATCHERROR"
+    },
+    {
+      "comment": "Last date and time record changed",
+      "id": 64,
+      "model_type": "TIMESTAMP(0)",
+      "name": "LASTCHANGED"
+    },
+    {
+      "comment": "Sum of initial generation and import for region",
+      "id": 65,
+      "model_type": "NUMERIC(15,5)",
+      "name": "INITIALSUPPLY"
+    },
+    {
+      "comment": "Sum of cleared generation and import for region",
+      "id": 66,
+      "model_type": "NUMERIC(15,5)",
+      "name": "CLEAREDSUPPLY"
+    },
+    {
+      "comment": "Not used since Dec 2003. Lower Regulation MW imported",
+      "id": 67,
+      "model_type": "NUMERIC(15,5)",
+      "name": "LOWERREGIMPORT"
+    },
+    {
+      "comment": "Lower Regulation local dispatch",
+      "id": 68,
+      "model_type": "NUMERIC(15,5)",
+      "name": "LOWERREGLOCALDISPATCH"
+    },
+    {
+      "comment": "Not used since Dec 2003. Lower Regulation local requirement",
+      "id": 69,
+      "model_type": "NUMERIC(15,5)",
+      "name": "LOWERREGLOCALREQ"
+    },
+    {
+      "comment": "Not used since Dec 2003. Lower Regulation total requirement",
+      "id": 70,
+      "model_type": "NUMERIC(15,5)",
+      "name": "LOWERREGREQ"
+    },
+    {
+      "comment": "Not used since Dec 2003. Raise Regulation MW imported",
+      "id": 71,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RAISEREGIMPORT"
+    },
+    {
+      "comment": "Raise Regulation local dispatch",
+      "id": 72,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RAISEREGLOCALDISPATCH"
+    },
+    {
+      "comment": "Not used since Dec 2003. Raise Regulation local requirement",
+      "id": 73,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RAISEREGLOCALREQ"
+    },
+    {
+      "comment": "Not used since Dec 2003. Raise Regulation total requirement",
+      "id": 74,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RAISEREGREQ"
+    },
+    {
+      "comment": "Not used since Dec 2003. Violation (MW) of Raise 5 min local requirement",
+      "id": 75,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RAISE5MINLOCALVIOLATION"
+    },
+    {
+      "comment": "Not used since Dec 2003. Violation (MW) of Raise Reg local requirement",
+      "id": 76,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RAISEREGLOCALVIOLATION"
+    },
+    {
+      "comment": "Not used since Dec 2003. Violation (MW) of Raise 60 sec local requirement",
+      "id": 77,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RAISE60SECLOCALVIOLATION"
+    },
+    {
+      "comment": "Not used since Dec 2003. Violation (MW) of Raise 6 sec local requirement",
+      "id": 78,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RAISE6SECLOCALVIOLATION"
+    },
+    {
+      "comment": "Not used since Dec 2003. Violation (MW) of Lower 5 min local requirement",
+      "id": 79,
+      "model_type": "NUMERIC(15,5)",
+      "name": "LOWER5MINLOCALVIOLATION"
+    },
+    {
+      "comment": "Not used since Dec 2003. Violation (MW) of Lower Reg local requirement",
+      "id": 80,
+      "model_type": "NUMERIC(15,5)",
+      "name": "LOWERREGLOCALVIOLATION"
+    },
+    {
+      "comment": "Not used since Dec 2003. Violation (MW) of Lower 60 sec local requirement",
+      "id": 81,
+      "model_type": "NUMERIC(15,5)",
+      "name": "LOWER60SECLOCALVIOLATION"
+    },
+    {
+      "comment": "Not used since Dec 2003. Violation (MW) of Lower 6 sec local requirement",
+      "id": 82,
+      "model_type": "NUMERIC(15,5)",
+      "name": "LOWER6SECLOCALVIOLATION"
+    },
+    {
+      "comment": "Not used since Dec 2003. Violation (MW) of Raise 5 min requirement",
+      "id": 83,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RAISE5MINVIOLATION"
+    },
+    {
+      "comment": "Not used since Dec 2003. Violation (MW) of Raise Reg requirement",
+      "id": 84,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RAISEREGVIOLATION"
+    },
+    {
+      "comment": "Not used since Dec 2003. Violation (MW) of Raise 60 seconds requirement",
+      "id": 85,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RAISE60SECVIOLATION"
+    },
+    {
+      "comment": "Not used since Dec 2003. Violation (MW) of Raise 6 seconds requirement",
+      "id": 86,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RAISE6SECVIOLATION"
+    },
+    {
+      "comment": "Not used since Dec 2003. Violation (MW) of Lower 5 min requirement",
+      "id": 87,
+      "model_type": "NUMERIC(15,5)",
+      "name": "LOWER5MINVIOLATION"
+    },
+    {
+      "comment": "Not used since Dec 2003. Violation (MW) of Lower Reg requirement",
+      "id": 88,
+      "model_type": "NUMERIC(15,5)",
+      "name": "LOWERREGVIOLATION"
+    },
+    {
+      "comment": "Not used since Dec 2003. Violation (MW) of Lower 60 seconds requirement",
+      "id": 89,
+      "model_type": "NUMERIC(15,5)",
+      "name": "LOWER60SECVIOLATION"
+    },
+    {
+      "comment": "Not used since Dec 2003. Violation (MW) of Lower 6 seconds requirement",
+      "id": 90,
+      "model_type": "NUMERIC(15,5)",
+      "name": "LOWER6SECVIOLATION"
+    },
+    {
+      "comment": "trapezium adjusted raise 6sec availability",
+      "id": 91,
+      "model_type": "NUMERIC(16,6)",
+      "name": "RAISE6SECACTUALAVAILABILITY"
+    },
+    {
+      "comment": "trapezium adjusted raise 60sec availability",
+      "id": 92,
+      "model_type": "NUMERIC(16,6)",
+      "name": "RAISE60SECACTUALAVAILABILITY"
+    },
+    {
+      "comment": "trapezium adjusted raise 5min availability",
+      "id": 93,
+      "model_type": "NUMERIC(16,6)",
+      "name": "RAISE5MINACTUALAVAILABILITY"
+    },
+    {
+      "comment": "trapezium adjusted raise reg availability",
+      "id": 94,
+      "model_type": "NUMERIC(16,6)",
+      "name": "RAISEREGACTUALAVAILABILITY"
+    },
+    {
+      "comment": "trapezium adjusted lower 6sec availability",
+      "id": 95,
+      "model_type": "NUMERIC(16,6)",
+      "name": "LOWER6SECACTUALAVAILABILITY"
+    },
+    {
+      "comment": "trapezium adjusted lower 60sec availability",
+      "id": 96,
+      "model_type": "NUMERIC(16,6)",
+      "name": "LOWER60SECACTUALAVAILABILITY"
+    },
+    {
+      "comment": "trapezium adjusted lower 5min availability",
+      "id": 97,
+      "model_type": "NUMERIC(16,6)",
+      "name": "LOWER5MINACTUALAVAILABILITY"
+    },
+    {
+      "comment": "trapezium adjusted lower reg availability",
+      "id": 98,
+      "model_type": "NUMERIC(16,6)",
+      "name": "LOWERREGACTUALAVAILABILITY"
+    },
+    {
+      "comment": "Not in use after 17 Feb 2006. Total short term generation capacity reserve used in assessing lack of reserve condition",
+      "id": 99,
+      "model_type": "NUMERIC(16,6)",
+      "name": "LORSURPLUS"
+    },
+    {
+      "comment": "Not in use after 17 Feb 2006. Total short term generation capacity reserve above the stated low reserve condition requirement",
+      "id": 100,
+      "model_type": "NUMERIC(16,6)",
+      "name": "LRCSURPLUS"
+    },
+    {
+      "comment": "Allowance made for non-scheduled generation in the demand forecast (MW).",
+      "id": 101,
+      "model_type": "NUMERIC(15,5)",
+      "name": "TOTALINTERMITTENTGENERATION"
+    },
+    {
+      "comment": "Sum of Cleared Scheduled generation, imported generation (at the region boundary) and allowances made for non-scheduled generation (MW).",
+      "id": 102,
+      "model_type": "NUMERIC(15,5)",
+      "name": "DEMAND_AND_NONSCHEDGEN"
+    },
+    {
+      "comment": "Regional aggregated Unconstrained Intermittent Generation Forecast of Semi-scheduled generation (MW).",
+      "id": 103,
+      "model_type": "NUMERIC(15,5)",
+      "name": "UIGF"
+    },
+    {
+      "comment": "Regional aggregated Semi-Schedule generator Cleared MW",
+      "id": 104,
+      "model_type": "NUMERIC(15,5)",
+      "name": "SEMISCHEDULE_CLEAREDMW"
+    },
+    {
+      "comment": "Regional aggregated Semi-Schedule generator Cleared MW where Semi-Dispatch cap is enforced",
+      "id": 105,
+      "model_type": "NUMERIC(15,5)",
+      "name": "SEMISCHEDULE_COMPLIANCEMW"
+    },
+    {
+      "comment": "Regional aggregated Unconstrained Intermittent Generation Forecast of Semi-scheduled generation (MW) where the primary fuel source is solar",
+      "id": 106,
+      "model_type": "NUMERIC(15,5)",
+      "name": "SS_SOLAR_UIGF"
+    },
+    {
+      "comment": "Regional aggregated Unconstrained Intermittent Generation Forecast of Semi-scheduled generation (MW) where the primary fuel source is wind",
+      "id": 107,
+      "model_type": "NUMERIC(15,5)",
+      "name": "SS_WIND_UIGF"
+    },
+    {
+      "comment": "Regional aggregated Semi-Schedule generator Cleared MW where the primary fuel source is solar",
+      "id": 108,
+      "model_type": "NUMERIC(15,5)",
+      "name": "SS_SOLAR_CLEAREDMW"
+    },
+    {
+      "comment": "Regional aggregated Semi-Schedule generator Cleared MW where the primary fuel source is wind",
+      "id": 109,
+      "model_type": "NUMERIC(15,5)",
+      "name": "SS_WIND_CLEAREDMW"
+    },
+    {
+      "comment": "Regional aggregated Semi-Schedule generator Cleared MW where Semi-Dispatch cap is enforced and the primary fuel source is solar",
+      "id": 110,
+      "model_type": "NUMERIC(15,5)",
+      "name": "SS_SOLAR_COMPLIANCEMW"
+    },
+    {
+      "comment": "Regional aggregated Semi-Schedule generator Cleared MW where Semi-Dispatch cap is enforced and the primary fuel source is wind",
+      "id": 111,
+      "model_type": "NUMERIC(15,5)",
+      "name": "SS_WIND_COMPLIANCEMW"
+    },
+    {
+      "comment": "Regional aggregated MW value at start of interval for Wholesale Demand Response (WDR) units",
+      "id": 112,
+      "model_type": "NUMERIC(15,5)",
+      "name": "WDR_INITIALMW"
+    },
+    {
+      "comment": "Regional aggregated available MW for Wholesale Demand Response (WDR) units",
+      "id": 113,
+      "model_type": "NUMERIC(15,5)",
+      "name": "WDR_AVAILABLE"
+    },
+    {
+      "comment": "Regional aggregated dispatched MW for Wholesale Demand Response (WDR) units",
+      "id": 114,
+      "model_type": "NUMERIC(15,5)",
+      "name": "WDR_DISPATCHED"
+    },
+    {
+      "comment": "Total Raise1Sec Dispatched in Region - RegionSolution element R1Dispatch attribute",
+      "id": 115,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RAISE1SECLOCALDISPATCH"
+    },
+    {
+      "comment": "Total Lower1Sec Dispatched in Region - RegionSolution element L1Dispatch attribute",
+      "id": 116,
+      "model_type": "NUMERIC(15,5)",
+      "name": "LOWER1SECLOCALDISPATCH"
+    },
+    {
+      "comment": "Trapezium adjusted Raise1Sec availability (summated from UnitSolution)",
+      "id": 117,
+      "model_type": "NUMERIC(16,6)",
+      "name": "RAISE1SECACTUALAVAILABILITY"
+    },
+    {
+      "comment": "Trapezium adjusted Lower1Sec availability (summated from UnitSolution)",
+      "id": 118,
+      "model_type": "NUMERIC(16,6)",
+      "name": "LOWER1SECACTUALAVAILABILITY"
+    },
+    {
+      "comment": "For Semi-Scheduled units. Aggregate Energy Availability from Solar units in that region",
+      "id": 119,
+      "model_type": "NUMERIC(15,5)",
+      "name": "SS_SOLAR_AVAILABILITY"
+    },
+    {
+      "comment": "For Semi-Scheduled units. Aggregate Energy Availability from Wind units in that region",
+      "id": 120,
+      "model_type": "NUMERIC(15,5)",
+      "name": "SS_WIND_AVAILABILITY"
+    },
+    {
+      "comment": "Regional aggregated energy storage where the DUID type is BDU (MWh)",
+      "id": 121,
+      "model_type": "NUMERIC(15,5)",
+      "name": "BDU_ENERGY_STORAGE"
+    },
+    {
+      "comment": "Total available load side BDU summated for region (MW)",
+      "id": 122,
+      "model_type": "NUMERIC(15,5)",
+      "name": "BDU_MIN_AVAIL"
+    },
+    {
+      "comment": "Total available generation side BDU summated for region (MW)",
+      "id": 123,
+      "model_type": "NUMERIC(15,5)",
+      "name": "BDU_MAX_AVAIL"
+    },
+    {
+      "comment": "Regional aggregated cleared MW where the DUID type is BDU. Net of export (Generation)",
+      "id": 124,
+      "model_type": "NUMERIC(15,5)",
+      "name": "BDU_CLEAREDMW_GEN"
+    },
+    {
+      "comment": "Regional aggregated cleared MW where the DUID type is BDU. Net of import (Load)",
+      "id": 125,
+      "model_type": "NUMERIC(15,5)",
+      "name": "BDU_CLEAREDMW_LOAD"
+    },
+    {
+      "comment": "Energy Storage for BDU at the start of the interval(MWh) - Region Aggregated",
+      "id": 126,
+      "model_type": "NUMERIC(15,5)",
+      "name": "BDU_INITIAL_ENERGY_STORAGE"
+    },
+    {
+      "comment": "Energy storage for Daily Energy Constrained Scheduled Generating Units at the start of the interval(MWh) - Region Aggregated",
+      "id": 127,
+      "model_type": "NUMERIC(15,5)",
+      "name": "DECGEN_INITIAL_ENERGY_STORAGE"
+    }
+  ],
+  "declared": true,
+  "description": "DISPATCHREGIONSUM sets out the 5-minute solution for each dispatch run for each region, including the Frequency Control Ancillary Services (FCAS) services provided. Additional fields are for the Raise Regulation and Lower Regulation Ancillary Services plus improvements to demand calculations.",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 134,
+        "from": {
+          "data-time": "2009-07-01T00:05:00+10:00",
+          "file": "PUBLIC_DVD_DISPATCHREGIONSUM_200907010000.zip",
+          "release": "2009-07",
+          "sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261"
+        },
+        "kinds": [
+          "dvd"
+        ],
+        "overlaps": false,
+        "report": [
+          "DISPATCH",
+          "REGIONSUM"
+        ],
+        "rows": 6138530,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2020-09-01T00:00:00+10:00",
+          "file": "PUBLIC_DVD_DISPATCHREGIONSUM_202008010000.zip",
+          "release": "2020-08",
+          "sha256": "af751ee538beda3c46e7d977b6ccf8add7132f40591caf5f151c60fe4af68fd4"
+        },
+        "updates": [],
+        "version": 4
+      },
+      {
+        "changes": [
+          "schema"
+        ],
+        "files": 7,
+        "from": {
+          "data-time": "2020-09-01T00:05:00+10:00",
+          "file": "PUBLIC_DVD_DISPATCHREGIONSUM_202009010000.zip",
+          "release": "2020-09",
+          "sha256": "9495c19d405187205fe919f133ae965ac948bb17ee9e83383c609fcfa682694d"
+        },
+        "kinds": [
+          "dvd"
+        ],
+        "overlaps": false,
+        "report": [
+          "DISPATCH",
+          "REGIONSUM"
+        ],
+        "rows": 305365,
+        "schema-id": 1,
+        "to": {
+          "data-time": "2021-04-01T00:00:00+10:00",
+          "file": "PUBLIC_DVD_DISPATCHREGIONSUM_202103010000.zip",
+          "release": "2021-03",
+          "sha256": "2bceef3d0ca9e19a3ecdc3fab1c9d5dad0a55fc61f471e6457717eddf7dd264b"
+        },
+        "updates": [
+          {
+            "action": "add",
+            "field-id": 106
+          },
+          {
+            "action": "add",
+            "field-id": 107
+          },
+          {
+            "action": "add",
+            "field-id": 108
+          },
+          {
+            "action": "add",
+            "field-id": 109
+          },
+          {
+            "action": "add",
+            "field-id": 110
+          },
+          {
+            "action": "add",
+            "field-id": 111
+          }
+        ],
+        "version": 4
+      },
+      {
+        "changes": [
+          "version"
+        ],
+        "files": 6,
+        "from": {
+          "data-time": "2021-04-01T00:05:00+10:00",
+          "file": "PUBLIC_DVD_DISPATCHREGIONSUM_202104010000.zip",
+          "release": "2021-04",
+          "sha256": "11b3ff7318c8df84440f518faef25558cc7f6dbc8746d0707b9b30032d0cac58"
+        },
+        "kinds": [
+          "dvd"
+        ],
+        "overlaps": false,
+        "report": [
+          "DISPATCH",
+          "REGIONSUM"
+        ],
+        "rows": 263660,
+        "schema-id": 1,
+        "to": {
+          "data-time": "2021-10-01T00:00:00+10:00",
+          "file": "PUBLIC_DVD_DISPATCHREGIONSUM_202109010000.zip",
+          "release": "2021-09",
+          "sha256": "e67ed93fea098a121188b8bffd8889b8c4f9cdd2093aeb75ffdc6cdbeaf42169"
+        },
+        "updates": [],
+        "version": 5
+      },
+      {
+        "changes": [
+          "schema"
+        ],
+        "files": 31,
+        "from": {
+          "data-time": "2021-10-01T00:05:00+10:00",
+          "file": "PUBLIC_DVD_DISPATCHREGIONSUM_202110010000.zip",
+          "release": "2021-10",
+          "sha256": "7b2f812c17b2905bf8466d8d052b2fc30db1c6cfab1c5e7ab7d27e77448c808c"
+        },
+        "kinds": [
+          "dvd"
+        ],
+        "overlaps": false,
+        "report": [
+          "DISPATCH",
+          "REGIONSUM"
+        ],
+        "rows": 1375295,
+        "schema-id": 2,
+        "to": {
+          "data-time": "2024-05-01T00:00:00+10:00",
+          "file": "PUBLIC_DVD_DISPATCHREGIONSUM_202404010000.zip",
+          "release": "2024-04",
+          "sha256": "27dc9fb1a4e3054349f20876eb04d538e51c47b22c8a9bdd593567b3429a0a81"
+        },
+        "updates": [
+          {
+            "action": "add",
+            "field-id": 112
+          },
+          {
+            "action": "add",
+            "field-id": 113
+          },
+          {
+            "action": "add",
+            "field-id": 114
+          }
+        ],
+        "version": 5
+      },
+      {
+        "changes": [
+          "schema",
+          "version"
+        ],
+        "files": 3,
+        "from": {
+          "data-time": "2024-05-01T00:05:00+10:00",
+          "file": "PUBLIC_DVD_DISPATCHREGIONSUM_202405010000.zip",
+          "release": "2024-05",
+          "sha256": "3644c22a6cd9b83da8bffe5303ed46b70ff90713314b3fdbe9c2d30f3f6412cd"
+        },
+        "kinds": [
+          "dvd"
+        ],
+        "overlaps": false,
+        "report": [
+          "DISPATCH",
+          "REGIONSUM"
+        ],
+        "rows": 132480,
+        "schema-id": 3,
+        "to": {
+          "data-time": "2024-08-01T00:00:00+10:00",
+          "file": "PUBLIC_DVD_DISPATCHREGIONSUM_202407010000.zip",
+          "release": "2024-07",
+          "sha256": "09a314d4f16e36763191e753f8ecff7d48be3dd7dbd7d0bc2f9817b829433087"
+        },
+        "updates": [
+          {
+            "action": "add",
+            "field-id": 115
+          },
+          {
+            "action": "add",
+            "field-id": 116
+          },
+          {
+            "action": "add",
+            "field-id": 117
+          },
+          {
+            "action": "add",
+            "field-id": 118
+          },
+          {
+            "action": "add",
+            "field-id": 119
+          },
+          {
+            "action": "add",
+            "field-id": 120
+          },
+          {
+            "action": "add",
+            "field-id": 121
+          },
+          {
+            "action": "add",
+            "field-id": 122
+          },
+          {
+            "action": "add",
+            "field-id": 123
+          },
+          {
+            "action": "add",
+            "field-id": 124
+          },
+          {
+            "action": "add",
+            "field-id": 125
+          }
+        ],
+        "version": 8
+      },
+      {
+        "changes": [
+          "schema"
+        ],
+        "files": 8,
+        "from": {
+          "data-time": "2024-08-01T00:05:00+10:00",
+          "file": "PUBLIC_ARCHIVE#DISPATCHREGIONSUM#FILE01#202408010000.zip",
+          "release": "2024-08",
+          "sha256": "a65b04d980134633041613237a55455b7c834b1c061605fe08475b31b118c68d"
+        },
+        "kinds": [
+          "archive"
+        ],
+        "overlaps": false,
+        "report": [
+          "DISPATCH",
+          "REGIONSUM"
+        ],
+        "rows": 349980,
+        "schema-id": 4,
+        "to": {
+          "data-time": "2025-04-01T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#DISPATCHREGIONSUM#FILE01#202503010000.zip",
+          "release": "2025-03",
+          "sha256": "1db803f56f412a43897899aaa0d5988552716c1d8b7667016be1eedd11d2369f"
+        },
+        "updates": [
+          {
+            "action": "move",
+            "field-id": 119
+          },
+          {
+            "action": "move",
+            "field-id": 120
+          }
+        ],
+        "version": 8
+      },
+      {
+        "changes": [
+          "schema"
+        ],
+        "files": 2,
+        "from": {
+          "data-time": "2025-04-01T00:05:00+10:00",
+          "file": "PUBLIC_ARCHIVE#DISPATCHREGIONSUM#FILE01#202504010000.zip",
+          "release": "2025-04",
+          "sha256": "7aff4926cabc29758dc7b9428018db1062196721b5956d5027464b20c5b7c1b1"
+        },
+        "kinds": [
+          "archive"
+        ],
+        "overlaps": false,
+        "report": [
+          "DISPATCH",
+          "REGIONSUM"
+        ],
+        "rows": 87840,
+        "schema-id": 5,
+        "to": {
+          "data-time": "2025-06-01T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#DISPATCHREGIONSUM#FILE01#202505010000.zip",
+          "release": "2025-05",
+          "sha256": "89a3d7b9d793d164adeeeef7c4234f3a6a512aa63236ff0d1a3193d3d5eb5186"
+        },
+        "updates": [
+          {
+            "action": "add",
+            "field-id": 126
+          },
+          {
+            "action": "add",
+            "field-id": 127
+          }
+        ],
+        "version": 8
+      },
+      {
+        "changes": [
+          "version"
+        ],
+        "files": 11,
+        "from": {
+          "data-time": "2025-06-01T00:05:00+10:00",
+          "file": "PUBLIC_ARCHIVE#DISPATCHREGIONSUM#FILE01#202506010000.zip",
+          "release": "2025-06",
+          "sha256": "08b2080b7e1e6dc91da5cd4fdfbccb9f93a156efda2cdeb80ad9c69a73d46c72"
+        },
+        "kinds": [
+          "archive"
+        ],
+        "overlaps": false,
+        "report": [
+          "DISPATCH",
+          "REGIONSUM"
+        ],
+        "rows": 480960,
+        "schema-id": 5,
+        "to": {
+          "data-time": "2026-05-01T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#DISPATCHREGIONSUM#FILE01#202604010000.zip",
+          "release": "2026-04",
+          "sha256": "c80bcbc144e50907908d5f32025316f5858c4de47e9b816ad64f75733124c9b5"
+        },
+        "updates": [],
+        "version": 9
+      }
+    ],
+    "schema-files": {
+      "0": "schema-0aac7ebe3dc66238.json",
+      "1": "schema-c5f381647aa0aac1.json",
+      "2": "schema-ee5274cd4df66503.json",
+      "3": "schema-34412e04724b7ad5.json",
+      "4": "schema-081f8afade17724b.json",
+      "5": "schema-f6c605ca32707bab.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "SETTLEMENTDATE",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 2,
+            "name": "RUNNO",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 3,
+            "name": "REGIONID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 4,
+            "name": "DISPATCHINTERVAL",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 5,
+            "name": "INTERVENTION",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 6,
+            "name": "TOTALDEMAND",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 7,
+            "name": "AVAILABLEGENERATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 8,
+            "name": "AVAILABLELOAD",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 9,
+            "name": "DEMANDFORECAST",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 10,
+            "name": "DISPATCHABLEGENERATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 11,
+            "name": "DISPATCHABLELOAD",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 12,
+            "name": "NETINTERCHANGE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 13,
+            "name": "EXCESSGENERATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 14,
+            "name": "LOWER5MINDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 15,
+            "name": "LOWER5MINIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 16,
+            "name": "LOWER5MINLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 17,
+            "name": "LOWER5MINLOCALPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 18,
+            "name": "LOWER5MINLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 19,
+            "name": "LOWER5MINPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 20,
+            "name": "LOWER5MINREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 21,
+            "name": "LOWER5MINSUPPLYPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 22,
+            "name": "LOWER60SECDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 23,
+            "name": "LOWER60SECIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 24,
+            "name": "LOWER60SECLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 25,
+            "name": "LOWER60SECLOCALPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 26,
+            "name": "LOWER60SECLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 27,
+            "name": "LOWER60SECPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 28,
+            "name": "LOWER60SECREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 29,
+            "name": "LOWER60SECSUPPLYPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 30,
+            "name": "LOWER6SECDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 31,
+            "name": "LOWER6SECIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 32,
+            "name": "LOWER6SECLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 33,
+            "name": "LOWER6SECLOCALPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 34,
+            "name": "LOWER6SECLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 35,
+            "name": "LOWER6SECPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 36,
+            "name": "LOWER6SECREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 37,
+            "name": "LOWER6SECSUPPLYPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 38,
+            "name": "RAISE5MINDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 39,
+            "name": "RAISE5MINIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 40,
+            "name": "RAISE5MINLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 41,
+            "name": "RAISE5MINLOCALPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 42,
+            "name": "RAISE5MINLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 43,
+            "name": "RAISE5MINPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 44,
+            "name": "RAISE5MINREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 45,
+            "name": "RAISE5MINSUPPLYPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 46,
+            "name": "RAISE60SECDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 47,
+            "name": "RAISE60SECIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 48,
+            "name": "RAISE60SECLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 49,
+            "name": "RAISE60SECLOCALPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 50,
+            "name": "RAISE60SECLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 51,
+            "name": "RAISE60SECPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 52,
+            "name": "RAISE60SECREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 53,
+            "name": "RAISE60SECSUPPLYPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 54,
+            "name": "RAISE6SECDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 55,
+            "name": "RAISE6SECIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 56,
+            "name": "RAISE6SECLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 57,
+            "name": "RAISE6SECLOCALPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 58,
+            "name": "RAISE6SECLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 59,
+            "name": "RAISE6SECPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 60,
+            "name": "RAISE6SECREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 61,
+            "name": "RAISE6SECSUPPLYPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 62,
+            "name": "AGGEGATEDISPATCHERROR",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 63,
+            "name": "AGGREGATEDISPATCHERROR",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 64,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 65,
+            "name": "INITIALSUPPLY",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 66,
+            "name": "CLEAREDSUPPLY",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 67,
+            "name": "LOWERREGIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 68,
+            "name": "LOWERREGLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 69,
+            "name": "LOWERREGLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 70,
+            "name": "LOWERREGREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 71,
+            "name": "RAISEREGIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 72,
+            "name": "RAISEREGLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 73,
+            "name": "RAISEREGLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 74,
+            "name": "RAISEREGREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 75,
+            "name": "RAISE5MINLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 76,
+            "name": "RAISEREGLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 77,
+            "name": "RAISE60SECLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 78,
+            "name": "RAISE6SECLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 79,
+            "name": "LOWER5MINLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 80,
+            "name": "LOWERREGLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 81,
+            "name": "LOWER60SECLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 82,
+            "name": "LOWER6SECLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 83,
+            "name": "RAISE5MINVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 84,
+            "name": "RAISEREGVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 85,
+            "name": "RAISE60SECVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 86,
+            "name": "RAISE6SECVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 87,
+            "name": "LOWER5MINVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 88,
+            "name": "LOWERREGVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 89,
+            "name": "LOWER60SECVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 90,
+            "name": "LOWER6SECVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 91,
+            "name": "RAISE6SECACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 92,
+            "name": "RAISE60SECACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 93,
+            "name": "RAISE5MINACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 94,
+            "name": "RAISEREGACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 95,
+            "name": "LOWER6SECACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 96,
+            "name": "LOWER60SECACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 97,
+            "name": "LOWER5MINACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 98,
+            "name": "LOWERREGACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 99,
+            "name": "LORSURPLUS",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 100,
+            "name": "LRCSURPLUS",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 101,
+            "name": "TOTALINTERMITTENTGENERATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 102,
+            "name": "DEMAND_AND_NONSCHEDGEN",
+            "required": false,
+            "type": "decimal(15, 6)"
+          },
+          {
+            "id": 103,
+            "name": "UIGF",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 104,
+            "name": "SEMISCHEDULE_CLEAREDMW",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 105,
+            "name": "SEMISCHEDULE_COMPLIANCEMW",
+            "required": false,
+            "type": "decimal(15, 5)"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "schema-id": 0,
+        "type": "struct"
+      },
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "SETTLEMENTDATE",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 2,
+            "name": "RUNNO",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 3,
+            "name": "REGIONID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 4,
+            "name": "DISPATCHINTERVAL",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 5,
+            "name": "INTERVENTION",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 6,
+            "name": "TOTALDEMAND",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 7,
+            "name": "AVAILABLEGENERATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 8,
+            "name": "AVAILABLELOAD",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 9,
+            "name": "DEMANDFORECAST",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 10,
+            "name": "DISPATCHABLEGENERATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 11,
+            "name": "DISPATCHABLELOAD",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 12,
+            "name": "NETINTERCHANGE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 13,
+            "name": "EXCESSGENERATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 14,
+            "name": "LOWER5MINDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 15,
+            "name": "LOWER5MINIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 16,
+            "name": "LOWER5MINLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 17,
+            "name": "LOWER5MINLOCALPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 18,
+            "name": "LOWER5MINLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 19,
+            "name": "LOWER5MINPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 20,
+            "name": "LOWER5MINREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 21,
+            "name": "LOWER5MINSUPPLYPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 22,
+            "name": "LOWER60SECDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 23,
+            "name": "LOWER60SECIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 24,
+            "name": "LOWER60SECLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 25,
+            "name": "LOWER60SECLOCALPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 26,
+            "name": "LOWER60SECLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 27,
+            "name": "LOWER60SECPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 28,
+            "name": "LOWER60SECREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 29,
+            "name": "LOWER60SECSUPPLYPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 30,
+            "name": "LOWER6SECDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 31,
+            "name": "LOWER6SECIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 32,
+            "name": "LOWER6SECLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 33,
+            "name": "LOWER6SECLOCALPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 34,
+            "name": "LOWER6SECLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 35,
+            "name": "LOWER6SECPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 36,
+            "name": "LOWER6SECREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 37,
+            "name": "LOWER6SECSUPPLYPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 38,
+            "name": "RAISE5MINDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 39,
+            "name": "RAISE5MINIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 40,
+            "name": "RAISE5MINLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 41,
+            "name": "RAISE5MINLOCALPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 42,
+            "name": "RAISE5MINLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 43,
+            "name": "RAISE5MINPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 44,
+            "name": "RAISE5MINREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 45,
+            "name": "RAISE5MINSUPPLYPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 46,
+            "name": "RAISE60SECDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 47,
+            "name": "RAISE60SECIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 48,
+            "name": "RAISE60SECLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 49,
+            "name": "RAISE60SECLOCALPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 50,
+            "name": "RAISE60SECLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 51,
+            "name": "RAISE60SECPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 52,
+            "name": "RAISE60SECREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 53,
+            "name": "RAISE60SECSUPPLYPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 54,
+            "name": "RAISE6SECDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 55,
+            "name": "RAISE6SECIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 56,
+            "name": "RAISE6SECLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 57,
+            "name": "RAISE6SECLOCALPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 58,
+            "name": "RAISE6SECLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 59,
+            "name": "RAISE6SECPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 60,
+            "name": "RAISE6SECREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 61,
+            "name": "RAISE6SECSUPPLYPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 62,
+            "name": "AGGEGATEDISPATCHERROR",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 63,
+            "name": "AGGREGATEDISPATCHERROR",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 64,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 65,
+            "name": "INITIALSUPPLY",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 66,
+            "name": "CLEAREDSUPPLY",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 67,
+            "name": "LOWERREGIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 68,
+            "name": "LOWERREGLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 69,
+            "name": "LOWERREGLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 70,
+            "name": "LOWERREGREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 71,
+            "name": "RAISEREGIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 72,
+            "name": "RAISEREGLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 73,
+            "name": "RAISEREGLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 74,
+            "name": "RAISEREGREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 75,
+            "name": "RAISE5MINLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 76,
+            "name": "RAISEREGLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 77,
+            "name": "RAISE60SECLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 78,
+            "name": "RAISE6SECLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 79,
+            "name": "LOWER5MINLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 80,
+            "name": "LOWERREGLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 81,
+            "name": "LOWER60SECLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 82,
+            "name": "LOWER6SECLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 83,
+            "name": "RAISE5MINVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 84,
+            "name": "RAISEREGVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 85,
+            "name": "RAISE60SECVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 86,
+            "name": "RAISE6SECVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 87,
+            "name": "LOWER5MINVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 88,
+            "name": "LOWERREGVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 89,
+            "name": "LOWER60SECVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 90,
+            "name": "LOWER6SECVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 91,
+            "name": "RAISE6SECACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 92,
+            "name": "RAISE60SECACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 93,
+            "name": "RAISE5MINACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 94,
+            "name": "RAISEREGACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 95,
+            "name": "LOWER6SECACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 96,
+            "name": "LOWER60SECACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 97,
+            "name": "LOWER5MINACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 98,
+            "name": "LOWERREGACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 99,
+            "name": "LORSURPLUS",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 100,
+            "name": "LRCSURPLUS",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 101,
+            "name": "TOTALINTERMITTENTGENERATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 102,
+            "name": "DEMAND_AND_NONSCHEDGEN",
+            "required": false,
+            "type": "decimal(15, 6)"
+          },
+          {
+            "id": 103,
+            "name": "UIGF",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 104,
+            "name": "SEMISCHEDULE_CLEAREDMW",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 105,
+            "name": "SEMISCHEDULE_COMPLIANCEMW",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 106,
+            "name": "SS_SOLAR_UIGF",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 107,
+            "name": "SS_WIND_UIGF",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 108,
+            "name": "SS_SOLAR_CLEAREDMW",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 109,
+            "name": "SS_WIND_CLEAREDMW",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 110,
+            "name": "SS_SOLAR_COMPLIANCEMW",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 111,
+            "name": "SS_WIND_COMPLIANCEMW",
+            "required": false,
+            "type": "decimal(15, 5)"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "schema-id": 1,
+        "type": "struct"
+      },
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "SETTLEMENTDATE",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 2,
+            "name": "RUNNO",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 3,
+            "name": "REGIONID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 4,
+            "name": "DISPATCHINTERVAL",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 5,
+            "name": "INTERVENTION",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 6,
+            "name": "TOTALDEMAND",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 7,
+            "name": "AVAILABLEGENERATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 8,
+            "name": "AVAILABLELOAD",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 9,
+            "name": "DEMANDFORECAST",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 10,
+            "name": "DISPATCHABLEGENERATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 11,
+            "name": "DISPATCHABLELOAD",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 12,
+            "name": "NETINTERCHANGE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 13,
+            "name": "EXCESSGENERATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 14,
+            "name": "LOWER5MINDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 15,
+            "name": "LOWER5MINIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 16,
+            "name": "LOWER5MINLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 17,
+            "name": "LOWER5MINLOCALPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 18,
+            "name": "LOWER5MINLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 19,
+            "name": "LOWER5MINPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 20,
+            "name": "LOWER5MINREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 21,
+            "name": "LOWER5MINSUPPLYPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 22,
+            "name": "LOWER60SECDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 23,
+            "name": "LOWER60SECIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 24,
+            "name": "LOWER60SECLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 25,
+            "name": "LOWER60SECLOCALPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 26,
+            "name": "LOWER60SECLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 27,
+            "name": "LOWER60SECPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 28,
+            "name": "LOWER60SECREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 29,
+            "name": "LOWER60SECSUPPLYPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 30,
+            "name": "LOWER6SECDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 31,
+            "name": "LOWER6SECIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 32,
+            "name": "LOWER6SECLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 33,
+            "name": "LOWER6SECLOCALPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 34,
+            "name": "LOWER6SECLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 35,
+            "name": "LOWER6SECPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 36,
+            "name": "LOWER6SECREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 37,
+            "name": "LOWER6SECSUPPLYPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 38,
+            "name": "RAISE5MINDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 39,
+            "name": "RAISE5MINIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 40,
+            "name": "RAISE5MINLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 41,
+            "name": "RAISE5MINLOCALPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 42,
+            "name": "RAISE5MINLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 43,
+            "name": "RAISE5MINPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 44,
+            "name": "RAISE5MINREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 45,
+            "name": "RAISE5MINSUPPLYPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 46,
+            "name": "RAISE60SECDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 47,
+            "name": "RAISE60SECIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 48,
+            "name": "RAISE60SECLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 49,
+            "name": "RAISE60SECLOCALPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 50,
+            "name": "RAISE60SECLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 51,
+            "name": "RAISE60SECPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 52,
+            "name": "RAISE60SECREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 53,
+            "name": "RAISE60SECSUPPLYPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 54,
+            "name": "RAISE6SECDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 55,
+            "name": "RAISE6SECIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 56,
+            "name": "RAISE6SECLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 57,
+            "name": "RAISE6SECLOCALPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 58,
+            "name": "RAISE6SECLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 59,
+            "name": "RAISE6SECPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 60,
+            "name": "RAISE6SECREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 61,
+            "name": "RAISE6SECSUPPLYPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 62,
+            "name": "AGGEGATEDISPATCHERROR",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 63,
+            "name": "AGGREGATEDISPATCHERROR",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 64,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 65,
+            "name": "INITIALSUPPLY",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 66,
+            "name": "CLEAREDSUPPLY",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 67,
+            "name": "LOWERREGIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 68,
+            "name": "LOWERREGLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 69,
+            "name": "LOWERREGLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 70,
+            "name": "LOWERREGREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 71,
+            "name": "RAISEREGIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 72,
+            "name": "RAISEREGLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 73,
+            "name": "RAISEREGLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 74,
+            "name": "RAISEREGREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 75,
+            "name": "RAISE5MINLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 76,
+            "name": "RAISEREGLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 77,
+            "name": "RAISE60SECLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 78,
+            "name": "RAISE6SECLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 79,
+            "name": "LOWER5MINLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 80,
+            "name": "LOWERREGLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 81,
+            "name": "LOWER60SECLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 82,
+            "name": "LOWER6SECLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 83,
+            "name": "RAISE5MINVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 84,
+            "name": "RAISEREGVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 85,
+            "name": "RAISE60SECVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 86,
+            "name": "RAISE6SECVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 87,
+            "name": "LOWER5MINVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 88,
+            "name": "LOWERREGVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 89,
+            "name": "LOWER60SECVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 90,
+            "name": "LOWER6SECVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 91,
+            "name": "RAISE6SECACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 92,
+            "name": "RAISE60SECACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 93,
+            "name": "RAISE5MINACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 94,
+            "name": "RAISEREGACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 95,
+            "name": "LOWER6SECACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 96,
+            "name": "LOWER60SECACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 97,
+            "name": "LOWER5MINACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 98,
+            "name": "LOWERREGACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 99,
+            "name": "LORSURPLUS",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 100,
+            "name": "LRCSURPLUS",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 101,
+            "name": "TOTALINTERMITTENTGENERATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 102,
+            "name": "DEMAND_AND_NONSCHEDGEN",
+            "required": false,
+            "type": "decimal(15, 6)"
+          },
+          {
+            "id": 103,
+            "name": "UIGF",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 104,
+            "name": "SEMISCHEDULE_CLEAREDMW",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 105,
+            "name": "SEMISCHEDULE_COMPLIANCEMW",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 106,
+            "name": "SS_SOLAR_UIGF",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 107,
+            "name": "SS_WIND_UIGF",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 108,
+            "name": "SS_SOLAR_CLEAREDMW",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 109,
+            "name": "SS_WIND_CLEAREDMW",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 110,
+            "name": "SS_SOLAR_COMPLIANCEMW",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 111,
+            "name": "SS_WIND_COMPLIANCEMW",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 112,
+            "name": "WDR_INITIALMW",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 113,
+            "name": "WDR_AVAILABLE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 114,
+            "name": "WDR_DISPATCHED",
+            "required": false,
+            "type": "decimal(15, 5)"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "schema-id": 2,
+        "type": "struct"
+      },
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "SETTLEMENTDATE",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 2,
+            "name": "RUNNO",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 3,
+            "name": "REGIONID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 4,
+            "name": "DISPATCHINTERVAL",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 5,
+            "name": "INTERVENTION",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 6,
+            "name": "TOTALDEMAND",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 7,
+            "name": "AVAILABLEGENERATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 8,
+            "name": "AVAILABLELOAD",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 9,
+            "name": "DEMANDFORECAST",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 10,
+            "name": "DISPATCHABLEGENERATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 11,
+            "name": "DISPATCHABLELOAD",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 12,
+            "name": "NETINTERCHANGE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 13,
+            "name": "EXCESSGENERATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 14,
+            "name": "LOWER5MINDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 15,
+            "name": "LOWER5MINIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 16,
+            "name": "LOWER5MINLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 17,
+            "name": "LOWER5MINLOCALPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 18,
+            "name": "LOWER5MINLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 19,
+            "name": "LOWER5MINPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 20,
+            "name": "LOWER5MINREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 21,
+            "name": "LOWER5MINSUPPLYPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 22,
+            "name": "LOWER60SECDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 23,
+            "name": "LOWER60SECIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 24,
+            "name": "LOWER60SECLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 25,
+            "name": "LOWER60SECLOCALPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 26,
+            "name": "LOWER60SECLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 27,
+            "name": "LOWER60SECPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 28,
+            "name": "LOWER60SECREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 29,
+            "name": "LOWER60SECSUPPLYPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 30,
+            "name": "LOWER6SECDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 31,
+            "name": "LOWER6SECIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 32,
+            "name": "LOWER6SECLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 33,
+            "name": "LOWER6SECLOCALPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 34,
+            "name": "LOWER6SECLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 35,
+            "name": "LOWER6SECPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 36,
+            "name": "LOWER6SECREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 37,
+            "name": "LOWER6SECSUPPLYPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 38,
+            "name": "RAISE5MINDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 39,
+            "name": "RAISE5MINIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 40,
+            "name": "RAISE5MINLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 41,
+            "name": "RAISE5MINLOCALPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 42,
+            "name": "RAISE5MINLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 43,
+            "name": "RAISE5MINPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 44,
+            "name": "RAISE5MINREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 45,
+            "name": "RAISE5MINSUPPLYPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 46,
+            "name": "RAISE60SECDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 47,
+            "name": "RAISE60SECIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 48,
+            "name": "RAISE60SECLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 49,
+            "name": "RAISE60SECLOCALPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 50,
+            "name": "RAISE60SECLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 51,
+            "name": "RAISE60SECPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 52,
+            "name": "RAISE60SECREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 53,
+            "name": "RAISE60SECSUPPLYPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 54,
+            "name": "RAISE6SECDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 55,
+            "name": "RAISE6SECIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 56,
+            "name": "RAISE6SECLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 57,
+            "name": "RAISE6SECLOCALPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 58,
+            "name": "RAISE6SECLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 59,
+            "name": "RAISE6SECPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 60,
+            "name": "RAISE6SECREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 61,
+            "name": "RAISE6SECSUPPLYPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 62,
+            "name": "AGGEGATEDISPATCHERROR",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 63,
+            "name": "AGGREGATEDISPATCHERROR",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 64,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 65,
+            "name": "INITIALSUPPLY",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 66,
+            "name": "CLEAREDSUPPLY",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 67,
+            "name": "LOWERREGIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 68,
+            "name": "LOWERREGLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 69,
+            "name": "LOWERREGLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 70,
+            "name": "LOWERREGREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 71,
+            "name": "RAISEREGIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 72,
+            "name": "RAISEREGLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 73,
+            "name": "RAISEREGLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 74,
+            "name": "RAISEREGREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 75,
+            "name": "RAISE5MINLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 76,
+            "name": "RAISEREGLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 77,
+            "name": "RAISE60SECLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 78,
+            "name": "RAISE6SECLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 79,
+            "name": "LOWER5MINLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 80,
+            "name": "LOWERREGLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 81,
+            "name": "LOWER60SECLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 82,
+            "name": "LOWER6SECLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 83,
+            "name": "RAISE5MINVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 84,
+            "name": "RAISEREGVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 85,
+            "name": "RAISE60SECVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 86,
+            "name": "RAISE6SECVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 87,
+            "name": "LOWER5MINVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 88,
+            "name": "LOWERREGVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 89,
+            "name": "LOWER60SECVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 90,
+            "name": "LOWER6SECVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 91,
+            "name": "RAISE6SECACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 92,
+            "name": "RAISE60SECACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 93,
+            "name": "RAISE5MINACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 94,
+            "name": "RAISEREGACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 95,
+            "name": "LOWER6SECACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 96,
+            "name": "LOWER60SECACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 97,
+            "name": "LOWER5MINACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 98,
+            "name": "LOWERREGACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 99,
+            "name": "LORSURPLUS",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 100,
+            "name": "LRCSURPLUS",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 101,
+            "name": "TOTALINTERMITTENTGENERATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 102,
+            "name": "DEMAND_AND_NONSCHEDGEN",
+            "required": false,
+            "type": "decimal(15, 6)"
+          },
+          {
+            "id": 103,
+            "name": "UIGF",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 104,
+            "name": "SEMISCHEDULE_CLEAREDMW",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 105,
+            "name": "SEMISCHEDULE_COMPLIANCEMW",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 106,
+            "name": "SS_SOLAR_UIGF",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 107,
+            "name": "SS_WIND_UIGF",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 108,
+            "name": "SS_SOLAR_CLEAREDMW",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 109,
+            "name": "SS_WIND_CLEAREDMW",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 110,
+            "name": "SS_SOLAR_COMPLIANCEMW",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 111,
+            "name": "SS_WIND_COMPLIANCEMW",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 112,
+            "name": "WDR_INITIALMW",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 113,
+            "name": "WDR_AVAILABLE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 114,
+            "name": "WDR_DISPATCHED",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 115,
+            "name": "RAISE1SECLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 116,
+            "name": "LOWER1SECLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 117,
+            "name": "RAISE1SECACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 118,
+            "name": "LOWER1SECACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 119,
+            "name": "SS_SOLAR_AVAILABILITY",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 120,
+            "name": "SS_WIND_AVAILABILITY",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 121,
+            "name": "BDU_ENERGY_STORAGE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 122,
+            "name": "BDU_MIN_AVAIL",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 123,
+            "name": "BDU_MAX_AVAIL",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 124,
+            "name": "BDU_CLEAREDMW_GEN",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 125,
+            "name": "BDU_CLEAREDMW_LOAD",
+            "required": false,
+            "type": "decimal(15, 5)"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "schema-id": 3,
+        "type": "struct"
+      },
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "SETTLEMENTDATE",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 2,
+            "name": "RUNNO",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 3,
+            "name": "REGIONID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 4,
+            "name": "DISPATCHINTERVAL",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 5,
+            "name": "INTERVENTION",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 6,
+            "name": "TOTALDEMAND",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 7,
+            "name": "AVAILABLEGENERATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 8,
+            "name": "AVAILABLELOAD",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 9,
+            "name": "DEMANDFORECAST",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 10,
+            "name": "DISPATCHABLEGENERATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 11,
+            "name": "DISPATCHABLELOAD",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 12,
+            "name": "NETINTERCHANGE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 13,
+            "name": "EXCESSGENERATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 14,
+            "name": "LOWER5MINDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 15,
+            "name": "LOWER5MINIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 16,
+            "name": "LOWER5MINLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 17,
+            "name": "LOWER5MINLOCALPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 18,
+            "name": "LOWER5MINLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 19,
+            "name": "LOWER5MINPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 20,
+            "name": "LOWER5MINREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 21,
+            "name": "LOWER5MINSUPPLYPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 22,
+            "name": "LOWER60SECDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 23,
+            "name": "LOWER60SECIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 24,
+            "name": "LOWER60SECLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 25,
+            "name": "LOWER60SECLOCALPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 26,
+            "name": "LOWER60SECLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 27,
+            "name": "LOWER60SECPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 28,
+            "name": "LOWER60SECREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 29,
+            "name": "LOWER60SECSUPPLYPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 30,
+            "name": "LOWER6SECDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 31,
+            "name": "LOWER6SECIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 32,
+            "name": "LOWER6SECLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 33,
+            "name": "LOWER6SECLOCALPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 34,
+            "name": "LOWER6SECLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 35,
+            "name": "LOWER6SECPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 36,
+            "name": "LOWER6SECREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 37,
+            "name": "LOWER6SECSUPPLYPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 38,
+            "name": "RAISE5MINDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 39,
+            "name": "RAISE5MINIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 40,
+            "name": "RAISE5MINLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 41,
+            "name": "RAISE5MINLOCALPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 42,
+            "name": "RAISE5MINLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 43,
+            "name": "RAISE5MINPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 44,
+            "name": "RAISE5MINREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 45,
+            "name": "RAISE5MINSUPPLYPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 46,
+            "name": "RAISE60SECDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 47,
+            "name": "RAISE60SECIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 48,
+            "name": "RAISE60SECLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 49,
+            "name": "RAISE60SECLOCALPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 50,
+            "name": "RAISE60SECLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 51,
+            "name": "RAISE60SECPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 52,
+            "name": "RAISE60SECREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 53,
+            "name": "RAISE60SECSUPPLYPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 54,
+            "name": "RAISE6SECDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 55,
+            "name": "RAISE6SECIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 56,
+            "name": "RAISE6SECLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 57,
+            "name": "RAISE6SECLOCALPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 58,
+            "name": "RAISE6SECLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 59,
+            "name": "RAISE6SECPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 60,
+            "name": "RAISE6SECREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 61,
+            "name": "RAISE6SECSUPPLYPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 62,
+            "name": "AGGEGATEDISPATCHERROR",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 63,
+            "name": "AGGREGATEDISPATCHERROR",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 64,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 65,
+            "name": "INITIALSUPPLY",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 66,
+            "name": "CLEAREDSUPPLY",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 67,
+            "name": "LOWERREGIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 68,
+            "name": "LOWERREGLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 69,
+            "name": "LOWERREGLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 70,
+            "name": "LOWERREGREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 71,
+            "name": "RAISEREGIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 72,
+            "name": "RAISEREGLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 73,
+            "name": "RAISEREGLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 74,
+            "name": "RAISEREGREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 75,
+            "name": "RAISE5MINLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 76,
+            "name": "RAISEREGLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 77,
+            "name": "RAISE60SECLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 78,
+            "name": "RAISE6SECLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 79,
+            "name": "LOWER5MINLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 80,
+            "name": "LOWERREGLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 81,
+            "name": "LOWER60SECLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 82,
+            "name": "LOWER6SECLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 83,
+            "name": "RAISE5MINVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 84,
+            "name": "RAISEREGVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 85,
+            "name": "RAISE60SECVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 86,
+            "name": "RAISE6SECVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 87,
+            "name": "LOWER5MINVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 88,
+            "name": "LOWERREGVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 89,
+            "name": "LOWER60SECVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 90,
+            "name": "LOWER6SECVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 91,
+            "name": "RAISE6SECACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 92,
+            "name": "RAISE60SECACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 93,
+            "name": "RAISE5MINACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 94,
+            "name": "RAISEREGACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 95,
+            "name": "LOWER6SECACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 96,
+            "name": "LOWER60SECACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 97,
+            "name": "LOWER5MINACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 98,
+            "name": "LOWERREGACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 99,
+            "name": "LORSURPLUS",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 100,
+            "name": "LRCSURPLUS",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 101,
+            "name": "TOTALINTERMITTENTGENERATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 102,
+            "name": "DEMAND_AND_NONSCHEDGEN",
+            "required": false,
+            "type": "decimal(15, 6)"
+          },
+          {
+            "id": 103,
+            "name": "UIGF",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 104,
+            "name": "SEMISCHEDULE_CLEAREDMW",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 105,
+            "name": "SEMISCHEDULE_COMPLIANCEMW",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 106,
+            "name": "SS_SOLAR_UIGF",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 107,
+            "name": "SS_WIND_UIGF",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 108,
+            "name": "SS_SOLAR_CLEAREDMW",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 109,
+            "name": "SS_WIND_CLEAREDMW",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 110,
+            "name": "SS_SOLAR_COMPLIANCEMW",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 111,
+            "name": "SS_WIND_COMPLIANCEMW",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 112,
+            "name": "WDR_INITIALMW",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 113,
+            "name": "WDR_AVAILABLE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 114,
+            "name": "WDR_DISPATCHED",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 119,
+            "name": "SS_SOLAR_AVAILABILITY",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 120,
+            "name": "SS_WIND_AVAILABILITY",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 115,
+            "name": "RAISE1SECLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 116,
+            "name": "LOWER1SECLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 117,
+            "name": "RAISE1SECACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 118,
+            "name": "LOWER1SECACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 121,
+            "name": "BDU_ENERGY_STORAGE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 122,
+            "name": "BDU_MIN_AVAIL",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 123,
+            "name": "BDU_MAX_AVAIL",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 124,
+            "name": "BDU_CLEAREDMW_GEN",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 125,
+            "name": "BDU_CLEAREDMW_LOAD",
+            "required": false,
+            "type": "decimal(15, 5)"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "schema-id": 4,
+        "type": "struct"
+      },
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "SETTLEMENTDATE",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 2,
+            "name": "RUNNO",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 3,
+            "name": "REGIONID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 4,
+            "name": "DISPATCHINTERVAL",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 5,
+            "name": "INTERVENTION",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 6,
+            "name": "TOTALDEMAND",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 7,
+            "name": "AVAILABLEGENERATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 8,
+            "name": "AVAILABLELOAD",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 9,
+            "name": "DEMANDFORECAST",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 10,
+            "name": "DISPATCHABLEGENERATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 11,
+            "name": "DISPATCHABLELOAD",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 12,
+            "name": "NETINTERCHANGE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 13,
+            "name": "EXCESSGENERATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 14,
+            "name": "LOWER5MINDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 15,
+            "name": "LOWER5MINIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 16,
+            "name": "LOWER5MINLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 17,
+            "name": "LOWER5MINLOCALPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 18,
+            "name": "LOWER5MINLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 19,
+            "name": "LOWER5MINPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 20,
+            "name": "LOWER5MINREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 21,
+            "name": "LOWER5MINSUPPLYPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 22,
+            "name": "LOWER60SECDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 23,
+            "name": "LOWER60SECIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 24,
+            "name": "LOWER60SECLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 25,
+            "name": "LOWER60SECLOCALPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 26,
+            "name": "LOWER60SECLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 27,
+            "name": "LOWER60SECPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 28,
+            "name": "LOWER60SECREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 29,
+            "name": "LOWER60SECSUPPLYPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 30,
+            "name": "LOWER6SECDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 31,
+            "name": "LOWER6SECIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 32,
+            "name": "LOWER6SECLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 33,
+            "name": "LOWER6SECLOCALPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 34,
+            "name": "LOWER6SECLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 35,
+            "name": "LOWER6SECPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 36,
+            "name": "LOWER6SECREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 37,
+            "name": "LOWER6SECSUPPLYPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 38,
+            "name": "RAISE5MINDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 39,
+            "name": "RAISE5MINIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 40,
+            "name": "RAISE5MINLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 41,
+            "name": "RAISE5MINLOCALPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 42,
+            "name": "RAISE5MINLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 43,
+            "name": "RAISE5MINPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 44,
+            "name": "RAISE5MINREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 45,
+            "name": "RAISE5MINSUPPLYPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 46,
+            "name": "RAISE60SECDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 47,
+            "name": "RAISE60SECIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 48,
+            "name": "RAISE60SECLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 49,
+            "name": "RAISE60SECLOCALPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 50,
+            "name": "RAISE60SECLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 51,
+            "name": "RAISE60SECPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 52,
+            "name": "RAISE60SECREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 53,
+            "name": "RAISE60SECSUPPLYPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 54,
+            "name": "RAISE6SECDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 55,
+            "name": "RAISE6SECIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 56,
+            "name": "RAISE6SECLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 57,
+            "name": "RAISE6SECLOCALPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 58,
+            "name": "RAISE6SECLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 59,
+            "name": "RAISE6SECPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 60,
+            "name": "RAISE6SECREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 61,
+            "name": "RAISE6SECSUPPLYPRICE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 62,
+            "name": "AGGEGATEDISPATCHERROR",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 63,
+            "name": "AGGREGATEDISPATCHERROR",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 64,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 65,
+            "name": "INITIALSUPPLY",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 66,
+            "name": "CLEAREDSUPPLY",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 67,
+            "name": "LOWERREGIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 68,
+            "name": "LOWERREGLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 69,
+            "name": "LOWERREGLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 70,
+            "name": "LOWERREGREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 71,
+            "name": "RAISEREGIMPORT",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 72,
+            "name": "RAISEREGLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 73,
+            "name": "RAISEREGLOCALREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 74,
+            "name": "RAISEREGREQ",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 75,
+            "name": "RAISE5MINLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 76,
+            "name": "RAISEREGLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 77,
+            "name": "RAISE60SECLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 78,
+            "name": "RAISE6SECLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 79,
+            "name": "LOWER5MINLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 80,
+            "name": "LOWERREGLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 81,
+            "name": "LOWER60SECLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 82,
+            "name": "LOWER6SECLOCALVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 83,
+            "name": "RAISE5MINVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 84,
+            "name": "RAISEREGVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 85,
+            "name": "RAISE60SECVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 86,
+            "name": "RAISE6SECVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 87,
+            "name": "LOWER5MINVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 88,
+            "name": "LOWERREGVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 89,
+            "name": "LOWER60SECVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 90,
+            "name": "LOWER6SECVIOLATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 91,
+            "name": "RAISE6SECACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 92,
+            "name": "RAISE60SECACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 93,
+            "name": "RAISE5MINACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 94,
+            "name": "RAISEREGACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 95,
+            "name": "LOWER6SECACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 96,
+            "name": "LOWER60SECACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 97,
+            "name": "LOWER5MINACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 98,
+            "name": "LOWERREGACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 99,
+            "name": "LORSURPLUS",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 100,
+            "name": "LRCSURPLUS",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 101,
+            "name": "TOTALINTERMITTENTGENERATION",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 102,
+            "name": "DEMAND_AND_NONSCHEDGEN",
+            "required": false,
+            "type": "decimal(15, 6)"
+          },
+          {
+            "id": 103,
+            "name": "UIGF",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 104,
+            "name": "SEMISCHEDULE_CLEAREDMW",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 105,
+            "name": "SEMISCHEDULE_COMPLIANCEMW",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 106,
+            "name": "SS_SOLAR_UIGF",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 107,
+            "name": "SS_WIND_UIGF",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 108,
+            "name": "SS_SOLAR_CLEAREDMW",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 109,
+            "name": "SS_WIND_CLEAREDMW",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 110,
+            "name": "SS_SOLAR_COMPLIANCEMW",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 111,
+            "name": "SS_WIND_COMPLIANCEMW",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 112,
+            "name": "WDR_INITIALMW",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 113,
+            "name": "WDR_AVAILABLE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 114,
+            "name": "WDR_DISPATCHED",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 119,
+            "name": "SS_SOLAR_AVAILABILITY",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 120,
+            "name": "SS_WIND_AVAILABILITY",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 115,
+            "name": "RAISE1SECLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 116,
+            "name": "LOWER1SECLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 117,
+            "name": "RAISE1SECACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 118,
+            "name": "LOWER1SECACTUALAVAILABILITY",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 121,
+            "name": "BDU_ENERGY_STORAGE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 122,
+            "name": "BDU_MIN_AVAIL",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 123,
+            "name": "BDU_MAX_AVAIL",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 124,
+            "name": "BDU_CLEAREDMW_GEN",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 125,
+            "name": "BDU_CLEAREDMW_LOAD",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 126,
+            "name": "BDU_INITIAL_ENERGY_STORAGE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 127,
+            "name": "DECGEN_INITIAL_ENERGY_STORAGE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "schema-id": 5,
+        "type": "struct"
+      }
+    ],
+    "table": "DISPATCHREGIONSUM"
+  },
+  "load_mode": "append",
+  "name": "DISPATCHREGIONSUM",
+  "package": "DISPATCH",
+  "primary_key": [
+    "SETTLEMENTDATE",
+    "RUNNO",
+    "REGIONID",
+    "DISPATCHINTERVAL",
+    "INTERVENTION"
+  ],
+  "report_pairs": [
+    [
+      "DISPATCH",
+      "REGIONSUM"
+    ]
+  ],
+  "temporal": {
+    "cutoff": "LASTCHANGED",
+    "entity": [
+      "REGIONID",
+      "DISPATCHINTERVAL",
+      "INTERVENTION"
+    ],
+    "order": [
+      "RUNNO",
+      "LASTCHANGED"
+    ],
+    "origin": "derived",
+    "valid": {
+      "column": "SETTLEMENTDATE",
+      "kind": "interval_end"
+    }
+  },
+  "time_column": "SETTLEMENTDATE",
+  "visibility": "PUBLIC",
+  "x-format": 2
+}

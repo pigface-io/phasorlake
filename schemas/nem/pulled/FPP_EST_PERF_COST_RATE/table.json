@@ -1,0 +1,188 @@
+{
+  "columns": [
+    {
+      "comment": "Date and time of the trading interval (DD/MM/YYYY HH24:MI:SS) fixed to the UTC+10 time zone (NEM time)",
+      "id": 1,
+      "model_type": "TIMESTAMP(0)",
+      "name": "INTERVAL_DATETIME"
+    },
+    {
+      "comment": "Constraint ID (binding constraint ID from FCAS data used in FPP calculations)",
+      "id": 2,
+      "model_type": "VARCHAR(20)",
+      "name": "CONSTRAINTID"
+    },
+    {
+      "comment": "The version number. In most cases this version will be the FPP run number from the FPP database, however there are some cases (like a new pricing run of the constraint FCAS processor received by the FPP system) where the version number listed here will be the financial estimate run number from the FPP database (this number is a different sequence from the FPP run number because there is no recalculation of performance or contribution, just changes to pricing / p regulation hence only the financial estimation is performed).",
+      "id": 3,
+      "model_type": "NUMERIC(10)",
+      "name": "VERSIONNO"
+    },
+    {
+      "comment": "Bid type (the bid type saved in relation to constraint ID from FCAS data used in FPP calculations)",
+      "id": 4,
+      "model_type": "VARCHAR(10)",
+      "name": "BIDTYPE"
+    },
+    {
+      "comment": "Relevant regions (a comma separated list of the relevant regions for the constraint from FCAS data)",
+      "id": 5,
+      "model_type": "VARCHAR(200)",
+      "name": "RELEVANT_REGIONS"
+    },
+    {
+      "comment": "The payment rate for FPP in AUD / MWHz (the denominator used is the sum of positive performance for the constraint calculated by contribution factor calculation). This value will be either 0 (nil), or a positive value (credit) only. For details on the calculation, please see FPP procedure and supporting documentation.",
+      "id": 6,
+      "model_type": "NUMERIC(18,8)",
+      "name": "FPP_PAYMENT_RATE"
+    },
+    {
+      "comment": "The recovery rate for FPP in AUD / MWHz (the denominator used is the absolute sum of negative performance for the constraint calculated by the contribution factor calculation). This value will be either 0 (nil), or a negative value (debit) only. For details on the calculation, please see FPP procedure and supporting documentation.",
+      "id": 7,
+      "model_type": "NUMERIC(18,8)",
+      "name": "FPP_RECOVERY_RATE"
+    },
+    {
+      "comment": "The rate for used FCAS in AUD / MWHz (the denominator used is the absolute sum of negative performance for the constraint calculated by the negative contribution factor calculation). This value will be either 0 (nil), or a negative value (debit) only. For details on the calculation, please see FPP procedure and supporting documentation.",
+      "id": 8,
+      "model_type": "NUMERIC(18,8)",
+      "name": "USED_FCAS_RATE"
+    },
+    {
+      "comment": "The rate for unused FCAS in AUD / MWHz (the denominator used is the absolute sum of negative performance for the constraint calculated by the default contribution factor calculation). This value will be either 0 (nil), or a negative value (debit) only. For details on the calculation, please see FPP procedure and supporting documentation.",
+      "id": 9,
+      "model_type": "NUMERIC(18,8)",
+      "name": "UNUSED_FCAS_RATE"
+    }
+  ],
+  "declared": true,
+  "description": "This report delivers the estimated performance cost rate for each constraint for each 5 minute trading interval",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 17,
+        "from": {
+          "data-time": "2024-12-09T11:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#FPP_EST_PERF_COST_RATE#FILE01#202412010000.zip",
+          "release": "2024-12",
+          "sha256": "1cd6c89bb1f9fef08e16687d8ec5d258591c0a1c19589d645f50b79e89a80666"
+        },
+        "kinds": [
+          "archive"
+        ],
+        "overlaps": false,
+        "report": [
+          "FPP",
+          "EST_PERF_COST_RATE"
+        ],
+        "rows": 5314438,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2026-05-08T16:25:00+10:00",
+          "file": "PUBLIC_ARCHIVE#FPP_EST_PERF_COST_RATE#FILE01#202604010000.zip",
+          "release": "2026-04",
+          "sha256": "58ffd5c27bc62335804416869b8add80f44480b803c2be725b68434fa8b1cddf"
+        },
+        "updates": [],
+        "version": 1
+      }
+    ],
+    "schema-files": {
+      "0": "schema-9a5599f1641e9b5e.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "INTERVAL_DATETIME",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 2,
+            "name": "CONSTRAINTID",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 3,
+            "name": "VERSIONNO",
+            "required": false,
+            "type": "decimal(10, 0)"
+          },
+          {
+            "id": 4,
+            "name": "BIDTYPE",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 5,
+            "name": "RELEVANT_REGIONS",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 6,
+            "name": "FPP_PAYMENT_RATE",
+            "required": false,
+            "type": "decimal(18, 8)"
+          },
+          {
+            "id": 7,
+            "name": "FPP_RECOVERY_RATE",
+            "required": false,
+            "type": "decimal(18, 8)"
+          },
+          {
+            "id": 8,
+            "name": "USED_FCAS_RATE",
+            "required": false,
+            "type": "decimal(18, 8)"
+          },
+          {
+            "id": 9,
+            "name": "UNUSED_FCAS_RATE",
+            "required": false,
+            "type": "decimal(18, 8)"
+          }
+        ],
+        "identifier-field-ids": [],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "table": "FPP_EST_PERF_COST_RATE"
+  },
+  "load_mode": "append",
+  "name": "FPP_EST_PERF_COST_RATE",
+  "package": null,
+  "primary_key": [],
+  "report_pairs": [
+    [
+      "FPP",
+      "EST_PERF_COST_RATE"
+    ]
+  ],
+  "temporal": {
+    "cutoff": "LASTCHANGED",
+    "entity": [],
+    "order": [
+      "VERSIONNO",
+      "LASTCHANGED"
+    ],
+    "origin": "derived",
+    "valid": {
+      "kind": "timeless"
+    }
+  },
+  "time_column": "INTERVAL_DATETIME",
+  "visibility": "PUBLIC",
+  "x-format": 2
+}

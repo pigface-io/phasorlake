@@ -1,0 +1,239 @@
+{
+  "columns": [
+    {
+      "comment": "Date processing of the run begins.",
+      "id": 1,
+      "model_type": "TIMESTAMP(0)",
+      "name": "RUN_DATETIME"
+    },
+    {
+      "comment": "Unique run id.",
+      "id": 2,
+      "model_type": "NUMERIC(4)",
+      "name": "RUN_NO"
+    },
+    {
+      "comment": "Type of run. Always RELIABILITY",
+      "id": 3,
+      "model_type": "VARCHAR(20)",
+      "name": "RUNTYPE"
+    },
+    {
+      "comment": "Demand POE type used. Value is POE10 or POE50",
+      "id": 4,
+      "model_type": "VARCHAR(20)",
+      "name": "DEMAND_POE_TYPE"
+    },
+    {
+      "comment": "Period data is aggregated over. Values are YEAR",
+      "id": 5,
+      "model_type": "VARCHAR(20)",
+      "name": "AGGREGATION_PERIOD"
+    },
+    {
+      "comment": "Datetime of day at end of period (i.e. last day of year reported)",
+      "id": 6,
+      "model_type": "TIMESTAMP(0)",
+      "name": "PERIOD_ENDING"
+    },
+    {
+      "comment": "The unique region identifier",
+      "id": 7,
+      "model_type": "VARCHAR(20)",
+      "name": "REGIONID"
+    },
+    {
+      "comment": "Iteration ID, only produced for iterations showing unserved energy>0",
+      "id": 8,
+      "model_type": "NUMERIC(5)",
+      "name": "USE_ITERATION_ID"
+    },
+    {
+      "comment": "Number of half hours showing unserved energy over year, for iteration",
+      "id": 9,
+      "model_type": "NUMERIC(12,2)",
+      "name": "USE_ITERATION_EVENT_NUMBER"
+    },
+    {
+      "comment": "Average unserved energy event size for iteration over year (MW)",
+      "id": 10,
+      "model_type": "NUMERIC(12,2)",
+      "name": "USE_ITERATION_EVENT_AVERAGE"
+    },
+    {
+      "comment": "Last date and time record changed",
+      "id": 11,
+      "model_type": "TIMESTAMP(0)",
+      "name": "LASTCHANGED"
+    }
+  ],
+  "declared": true,
+  "description": "Region results for Unserved Energy (USE)",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 96,
+        "from": {
+          "data-time": "2018-05-14T10:59:49+10:00",
+          "file": "PUBLIC_DVD_MTPASA_REGIONITERATION_201805010000.zip",
+          "release": "2018-05",
+          "sha256": "626fe49bdafdb85534bcbe8f315e5fbde9e8fb08cd999c6d9d232e35be546838"
+        },
+        "kinds": [
+          "archive",
+          "dvd"
+        ],
+        "overlaps": false,
+        "report": [
+          "MTPASA",
+          "REGIONITERATION"
+        ],
+        "rows": 1341998,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2026-04-26T20:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#MTPASA_REGIONITERATION#FILE01#202604010000.zip",
+          "release": "2026-04",
+          "sha256": "ffbe19df0d5fe2ebf4684d86e4070ae9b799482c20564de11d3ad4bc98544c29"
+        },
+        "updates": [],
+        "version": 1
+      }
+    ],
+    "schema-files": {
+      "0": "schema-e1bc4a6292954903.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "RUN_DATETIME",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 2,
+            "name": "RUN_NO",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 3,
+            "name": "RUNTYPE",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 4,
+            "name": "DEMAND_POE_TYPE",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 5,
+            "name": "AGGREGATION_PERIOD",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 6,
+            "name": "PERIOD_ENDING",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 7,
+            "name": "REGIONID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 8,
+            "name": "USE_ITERATION_ID",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 9,
+            "name": "USE_ITERATION_EVENT_NUMBER",
+            "required": false,
+            "type": "decimal(12, 2)"
+          },
+          {
+            "id": 10,
+            "name": "USE_ITERATION_EVENT_AVERAGE",
+            "required": false,
+            "type": "decimal(12, 2)"
+          },
+          {
+            "id": 11,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "table": "MTPASA_REGIONITERATION"
+  },
+  "load_mode": "append",
+  "name": "MTPASA_REGIONITERATION",
+  "package": "MTPASA",
+  "primary_key": [
+    "RUN_DATETIME",
+    "RUN_NO",
+    "RUNTYPE",
+    "DEMAND_POE_TYPE",
+    "AGGREGATION_PERIOD",
+    "PERIOD_ENDING",
+    "REGIONID",
+    "USE_ITERATION_ID"
+  ],
+  "report_pairs": [
+    [
+      "MTPASA",
+      "REGIONITERATION"
+    ]
+  ],
+  "temporal": {
+    "cutoff": "RUN_DATETIME",
+    "entity": [
+      "RUNTYPE",
+      "DEMAND_POE_TYPE",
+      "AGGREGATION_PERIOD",
+      "REGIONID",
+      "USE_ITERATION_ID"
+    ],
+    "order": [
+      "RUN_DATETIME",
+      "RUN_NO",
+      "LASTCHANGED"
+    ],
+    "origin": "derived",
+    "valid": {
+      "column": "PERIOD_ENDING",
+      "kind": "interval_end"
+    }
+  },
+  "time_column": "RUN_DATETIME",
+  "visibility": "PUBLIC",
+  "x-format": 2
+}

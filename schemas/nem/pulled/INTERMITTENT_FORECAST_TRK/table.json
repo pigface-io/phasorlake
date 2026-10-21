@@ -1,0 +1,147 @@
+{
+  "columns": [
+    {
+      "comment": "DateTime of the Dispatch run (dispatch interval ending)",
+      "id": 1,
+      "model_type": "TIMESTAMP(0)",
+      "name": "SETTLEMENTDATE"
+    },
+    {
+      "comment": "Tracks to INTERMITTENT_DS_RUN.DUID",
+      "id": 2,
+      "model_type": "VARCHAR(20)",
+      "name": "DUID"
+    },
+    {
+      "comment": "Tracks to INTERMITTENT_DS_RUN.ORIGIN, except when the forecast used is either SCADA or FCST or Last Target",
+      "id": 3,
+      "model_type": "VARCHAR(20)",
+      "name": "ORIGIN"
+    },
+    {
+      "comment": "Tracks to INTERMITTENT_DS_RUN.FORECAST_PRIORITY, except for -1 which denotes SCADA or FCST, and 0 which denotes Last Target",
+      "id": 4,
+      "model_type": "NUMERIC(10,0)",
+      "name": "FORECAST_PRIORITY"
+    },
+    {
+      "comment": "Tracks to INTERMITTENT_DS_RUN.OFFERDATETIME",
+      "id": 5,
+      "model_type": "TIMESTAMP(0)",
+      "name": "OFFERDATETIME"
+    }
+  ],
+  "declared": true,
+  "description": "Uniquely tracks which Intermittent Generation forecast was used for the DUID in which Dispatch run",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 21,
+        "from": {
+          "data-time": "2024-08-01T00:05:00+10:00",
+          "file": "PUBLIC_ARCHIVE#INTERMITTENT_FORECAST_TRK#FILE01#202408010000.zip",
+          "release": "2024-08",
+          "sha256": "51abb2ce8bb72243265c7b9ec66a22408c029605b39d56bde660d6907e64b98d"
+        },
+        "kinds": [
+          "archive"
+        ],
+        "overlaps": false,
+        "report": [
+          "DISPATCH",
+          "INTERMITTENT_FORECAST_TRK"
+        ],
+        "rows": 34485209,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2026-05-01T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#INTERMITTENT_FORECAST_TRK#FILE01#202604010000.zip",
+          "release": "2026-04",
+          "sha256": "dde761304d6e1b5d2b389d85be7bb2e6ea1d7466d8085b7c0aa33ed08ceee165"
+        },
+        "updates": [],
+        "version": 1
+      }
+    ],
+    "schema-files": {
+      "0": "schema-14f9eebdebd4233e.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "SETTLEMENTDATE",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 2,
+            "name": "DUID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 3,
+            "name": "ORIGIN",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 4,
+            "name": "FORECAST_PRIORITY",
+            "required": false,
+            "type": "decimal(10, 0)"
+          },
+          {
+            "id": 5,
+            "name": "OFFERDATETIME",
+            "required": false,
+            "type": "timestamptz"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2
+        ],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "table": "INTERMITTENT_FORECAST_TRK"
+  },
+  "load_mode": "append",
+  "name": "INTERMITTENT_FORECAST_TRK",
+  "package": "DISPATCH",
+  "primary_key": [
+    "SETTLEMENTDATE",
+    "DUID"
+  ],
+  "report_pairs": [
+    [
+      "DISPATCH",
+      "INTERMITTENT_FORECAST_TRK"
+    ]
+  ],
+  "temporal": {
+    "entity": [
+      "DUID"
+    ],
+    "order": [
+      "OFFERDATETIME"
+    ],
+    "origin": "derived",
+    "valid": {
+      "column": "SETTLEMENTDATE",
+      "kind": "interval_end"
+    }
+  },
+  "time_column": "SETTLEMENTDATE",
+  "visibility": "PUBLIC",
+  "x-format": 2
+}

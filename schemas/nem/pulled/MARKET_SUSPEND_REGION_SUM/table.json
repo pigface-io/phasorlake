@@ -1,0 +1,160 @@
+{
+  "columns": [
+    {
+      "comment": "Unique identifier for this suspension event",
+      "id": 1,
+      "model_type": "VARCHAR(20)",
+      "name": "SUSPENSION_ID"
+    },
+    {
+      "comment": "Region(s) covered by the Suspension event",
+      "id": 2,
+      "model_type": "VARCHAR(20)",
+      "name": "REGIONID"
+    },
+    {
+      "comment": "Initial interval of the Suspension event",
+      "id": 3,
+      "model_type": "TIMESTAMP(0)",
+      "name": "INITIAL_INTERVAL"
+    },
+    {
+      "comment": "Last Dispatch interval for the Suspension event for this Region",
+      "id": 4,
+      "model_type": "TIMESTAMP(0)",
+      "name": "END_REGION_INTERVAL"
+    },
+    {
+      "comment": "Last Dispatch interval for the Suspension event",
+      "id": 5,
+      "model_type": "TIMESTAMP(0)",
+      "name": "END_SUSPENSION_INTERVAL"
+    },
+    {
+      "comment": "Last DateTime the Suspension was administered",
+      "id": 6,
+      "model_type": "TIMESTAMP(0)",
+      "name": "LASTCHANGED"
+    }
+  ],
+  "declared": true,
+  "description": "Summary of Market Suspension timings",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 21,
+        "from": {
+          "data-time": "2022-02-18T15:38:41+10:00",
+          "file": "PUBLIC_ARCHIVE#MARKET_SUSPEND_REGION_SUM#FILE01#202408010000.zip",
+          "release": "2024-08",
+          "sha256": "e82d5d848f5be64c00a222ee0925968a500838fe10897151a4b0f5eb24ea9d71"
+        },
+        "kinds": [
+          "archive"
+        ],
+        "overlaps": false,
+        "report": [
+          "FORCE_MAJEURE",
+          "MARKET_SUSPEND_REGION_SUM"
+        ],
+        "rows": 296,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2026-03-23T17:54:23+10:00",
+          "file": "PUBLIC_ARCHIVE#MARKET_SUSPEND_REGION_SUM#FILE01#202604010000.zip",
+          "release": "2026-04",
+          "sha256": "3a7ff75f76eaa7edcbc67495eef58f8ba7b2b50916df576352c8b1923f0ec38f"
+        },
+        "updates": [],
+        "version": 1
+      }
+    ],
+    "schema-files": {
+      "0": "schema-6c290f377bd62520.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "SUSPENSION_ID",
+            "required": true,
+            "type": "decimal(13, 1)"
+          },
+          {
+            "id": 2,
+            "name": "REGIONID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 3,
+            "name": "INITIAL_INTERVAL",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 4,
+            "name": "END_REGION_INTERVAL",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 5,
+            "name": "END_SUSPENSION_INTERVAL",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 6,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2
+        ],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "table": "MARKET_SUSPEND_REGION_SUM"
+  },
+  "load_mode": "append",
+  "name": "MARKET_SUSPEND_REGION_SUM",
+  "package": "FORCE_MAJEURE",
+  "primary_key": [
+    "SUSPENSION_ID",
+    "REGIONID"
+  ],
+  "report_pairs": [
+    [
+      "FORCE_MAJEURE",
+      "MARKET_SUSPEND_REGION_SUM"
+    ]
+  ],
+  "temporal": {
+    "cutoff": "LASTCHANGED",
+    "entity": [
+      "SUSPENSION_ID",
+      "REGIONID"
+    ],
+    "order": [
+      "LASTCHANGED"
+    ],
+    "origin": "derived",
+    "valid": {
+      "kind": "timeless"
+    }
+  },
+  "time_column": "LASTCHANGED",
+  "visibility": "PUBLIC",
+  "x-format": 2
+}

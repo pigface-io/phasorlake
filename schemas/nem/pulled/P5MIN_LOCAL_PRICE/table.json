@@ -1,0 +1,150 @@
+{
+  "columns": [
+    {
+      "comment": "Unique Timestamp Identifier for this study",
+      "id": 1,
+      "model_type": "TIMESTAMP(0)",
+      "name": "RUN_DATETIME"
+    },
+    {
+      "comment": "The unique identifier for the interval within this study",
+      "id": 2,
+      "model_type": "TIMESTAMP(0)",
+      "name": "INTERVAL_DATETIME"
+    },
+    {
+      "comment": "Dispatchable unit identifier",
+      "id": 3,
+      "model_type": "VARCHAR(20)",
+      "name": "DUID"
+    },
+    {
+      "comment": "Aggregate Constraint contribution cost of this unit: Sum(MarginalValue x Factor) for all relevant Constraints",
+      "id": 4,
+      "model_type": "NUMERIC(10,2)",
+      "name": "LOCAL_PRICE_ADJUSTMENT"
+    },
+    {
+      "comment": "Key for Local_Price_Adjustment: 2 = at least one Outage Constraint; 1 = at least 1 System Normal Constraint (and no Outage Constraint); 0 = No System Normal or Outage Constraints",
+      "id": 5,
+      "model_type": "NUMERIC(1,0)",
+      "name": "LOCALLY_CONSTRAINED"
+    }
+  ],
+  "declared": true,
+  "description": "Sets out local pricing offsets associated with each DUID connection point for each dispatch period",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 21,
+        "from": {
+          "data-time": "2024-08-01T05:05:00+10:00",
+          "file": "PUBLIC_ARCHIVE#P5MIN_LOCAL_PRICE#FILE01#202408010000.zip",
+          "release": "2024-08",
+          "sha256": "1a816f726cd2da235f7325de3a035d552b1a1fc135031c9a1ef5cc37ebcfadb7"
+        },
+        "kinds": [
+          "archive"
+        ],
+        "overlaps": false,
+        "report": [
+          "P5MIN",
+          "LOCAL_PRICE"
+        ],
+        "rows": 96028391,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2026-05-01T00:55:00+10:00",
+          "file": "PUBLIC_ARCHIVE#P5MIN_LOCAL_PRICE#FILE01#202604010000.zip",
+          "release": "2026-04",
+          "sha256": "f37bce60e6621dc8bc82a5812a05259a2da84fe6e8a34617e49b898a84e83842"
+        },
+        "updates": [],
+        "version": 1
+      }
+    ],
+    "schema-files": {
+      "0": "schema-094d44fab24d8bd2.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "RUN_DATETIME",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 2,
+            "name": "INTERVAL_DATETIME",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 3,
+            "name": "DUID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 4,
+            "name": "LOCAL_PRICE_ADJUSTMENT",
+            "required": false,
+            "type": "decimal(10, 2)"
+          },
+          {
+            "id": 5,
+            "name": "LOCALLY_CONSTRAINED",
+            "required": false,
+            "type": "decimal(1, 0)"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2,
+          3
+        ],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "table": "P5MIN_LOCAL_PRICE"
+  },
+  "load_mode": "append",
+  "name": "P5MIN_LOCAL_PRICE",
+  "package": "P5MIN",
+  "primary_key": [
+    "RUN_DATETIME",
+    "INTERVAL_DATETIME",
+    "DUID"
+  ],
+  "report_pairs": [
+    [
+      "P5MIN",
+      "LOCAL_PRICE"
+    ]
+  ],
+  "temporal": {
+    "cutoff": "RUN_DATETIME",
+    "entity": [
+      "DUID"
+    ],
+    "order": [
+      "RUN_DATETIME"
+    ],
+    "origin": "derived",
+    "valid": {
+      "column": "INTERVAL_DATETIME",
+      "kind": "interval_end"
+    }
+  },
+  "time_column": "INTERVAL_DATETIME",
+  "visibility": "PUBLIC",
+  "x-format": 2
+}

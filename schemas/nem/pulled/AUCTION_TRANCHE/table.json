@@ -1,0 +1,215 @@
+{
+  "columns": [
+    {
+      "comment": "SRA Contracted Year",
+      "id": 1,
+      "model_type": "NUMERIC(4,0)",
+      "name": "CONTRACTYEAR"
+    },
+    {
+      "comment": "SRA Contracted Quarter",
+      "id": 2,
+      "model_type": "NUMERIC(1,0)",
+      "name": "QUARTER"
+    },
+    {
+      "comment": "Version of data for other key data - a higher version for same key data will take precedence",
+      "id": 3,
+      "model_type": "NUMERIC(3,0)",
+      "name": "VERSIONNO"
+    },
+    {
+      "comment": "Label identifying the arbitrary segmented share of the Interconnector flow",
+      "id": 4,
+      "model_type": "NUMERIC(2,0)",
+      "name": "TRANCHE"
+    },
+    {
+      "comment": "Default date of the auction",
+      "id": 5,
+      "model_type": "TIMESTAMP(0)",
+      "name": "AUCTIONDATE"
+    },
+    {
+      "comment": "Default date participants notified of details",
+      "id": 6,
+      "model_type": "TIMESTAMP(0)",
+      "name": "NOTIFYDATE"
+    },
+    {
+      "comment": "Percentage of units allocated to the tranche",
+      "id": 7,
+      "model_type": "NUMERIC(18,8)",
+      "name": "UNITALLOCATION"
+    },
+    {
+      "comment": "Date of changing this record",
+      "id": 8,
+      "model_type": "TIMESTAMP(0)",
+      "name": "CHANGEDATE"
+    },
+    {
+      "comment": "Name of person who changed this record",
+      "id": 9,
+      "model_type": "VARCHAR(15)",
+      "name": "CHANGEDBY"
+    },
+    {
+      "comment": "Date and time record was last changed",
+      "id": 10,
+      "model_type": "TIMESTAMP(0)",
+      "name": "LASTCHANGED"
+    }
+  ],
+  "declared": true,
+  "description": "AUCTION_TRANCHE supports the Settlement Residue Auction, by holding the default definitions for the percentage number of units allocated and dates applicable to each tranche for a specified auction quarter. This information provides the basis for setting up contracts for individual tranches.",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 74,
+        "from": {
+          "data-time": "2009-09-02T14:43:02+10:00",
+          "file": "PUBLIC_DVD_AUCTION_TRANCHE_200909010000.zip",
+          "release": "2009-09",
+          "sha256": "9cf326f7fabd7b91220c5950a2de3fdb28d9c7b97f1a4045f8075ad7b3abaaf5"
+        },
+        "kinds": [
+          "archive",
+          "dvd"
+        ],
+        "overlaps": false,
+        "report": [
+          "IRAUCTION_CONFIG",
+          "AUCTION_TRANCHE"
+        ],
+        "rows": 2772,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2026-04-01T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#AUCTION_TRANCHE#FILE01#202603010000.zip",
+          "release": "2026-03",
+          "sha256": "b5a15f1ce80ba9d442369178621d0d2793df359fb39158db806130e5e9f0f4aa"
+        },
+        "updates": [],
+        "version": 1
+      }
+    ],
+    "schema-files": {
+      "0": "schema-eb3cb7ba0ada4917.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "CONTRACTYEAR",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 2,
+            "name": "QUARTER",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 3,
+            "name": "VERSIONNO",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 4,
+            "name": "TRANCHE",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 5,
+            "name": "AUCTIONDATE",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 6,
+            "name": "NOTIFYDATE",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 7,
+            "name": "UNITALLOCATION",
+            "required": false,
+            "type": "decimal(18, 8)"
+          },
+          {
+            "id": 8,
+            "name": "CHANGEDATE",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 9,
+            "name": "CHANGEDBY",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 10,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "table": "AUCTION_TRANCHE"
+  },
+  "load_mode": "append",
+  "name": "AUCTION_TRANCHE",
+  "package": "IRAUCTION",
+  "primary_key": [
+    "CONTRACTYEAR",
+    "QUARTER",
+    "VERSIONNO",
+    "TRANCHE"
+  ],
+  "report_pairs": [
+    [
+      "IRAUCTION_CONFIG",
+      "AUCTION_TRANCHE"
+    ]
+  ],
+  "temporal": {
+    "cutoff": "LASTCHANGED",
+    "entity": [
+      "CONTRACTYEAR",
+      "QUARTER",
+      "TRANCHE"
+    ],
+    "order": [
+      "VERSIONNO",
+      "LASTCHANGED"
+    ],
+    "origin": "derived",
+    "valid": {
+      "kind": "timeless"
+    }
+  },
+  "time_column": "LASTCHANGED",
+  "visibility": "PUBLIC",
+  "x-format": 2
+}

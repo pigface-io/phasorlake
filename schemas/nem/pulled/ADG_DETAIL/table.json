@@ -1,0 +1,165 @@
+{
+  "columns": [
+    {
+      "comment": "Identifies the Aggregate Dispatch Group",
+      "id": 1,
+      "model_type": "VARCHAR(20)",
+      "name": "ADG_ID"
+    },
+    {
+      "comment": "Effective calendar date of record",
+      "id": 2,
+      "model_type": "TIMESTAMP(0)",
+      "name": "EFFECTIVEDATE"
+    },
+    {
+      "comment": "Date and time of the version of Dispatchable Unit details",
+      "id": 3,
+      "model_type": "TIMESTAMP(0)",
+      "name": "VERSION_DATETIME"
+    },
+    {
+      "comment": "Conformance Type for the Aggregate Dispatch Group.   One of the following: CAP, MIXED, TARGET",
+      "id": 4,
+      "model_type": "VARCHAR(20)",
+      "name": "ADG_TYPE"
+    },
+    {
+      "comment": "Date record authorised",
+      "id": 5,
+      "model_type": "TIMESTAMP(0)",
+      "name": "AUTHORISEDDATE"
+    },
+    {
+      "comment": "User authorising record",
+      "id": 6,
+      "model_type": "VARCHAR(15)",
+      "name": "AUTHORISEDBY"
+    },
+    {
+      "comment": "Last date and time record changed",
+      "id": 7,
+      "model_type": "TIMESTAMP(0)",
+      "name": "LASTCHANGED"
+    }
+  ],
+  "declared": true,
+  "description": "Table for tracking evolving Aggregate Dispatch Group attributes",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 22,
+        "from": {
+          "data-time": "2023-08-09T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#ADG_DETAIL#FILE01#202408010000.zip",
+          "release": "2024-08",
+          "sha256": "3b82aa3b8b792cd99731ed4f869dff854cc13662dbd0e304e650652644d6fe4d"
+        },
+        "kinds": [
+          "archive",
+          "other"
+        ],
+        "overlaps": false,
+        "report": [
+          "PARTICIPANT_REGISTRATION",
+          "ADG_DETAIL"
+        ],
+        "rows": 621,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2026-01-20T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE_ADG_DETAIL_FILE01_202604010000.zip",
+          "release": "2026-04",
+          "sha256": "84faeef0bc73afea402dccd6dac6e22b0db034727709ed0c8e6054c6ebfb7503"
+        },
+        "updates": [],
+        "version": 1
+      }
+    ],
+    "schema-files": {
+      "0": "schema-03e40ac27ff2e8d3.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "ADG_ID",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 2,
+            "name": "EFFECTIVEDATE",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 3,
+            "name": "VERSION_DATETIME",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 4,
+            "name": "ADG_TYPE",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 5,
+            "name": "AUTHORISEDDATE",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 6,
+            "name": "AUTHORISEDBY",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 7,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          }
+        ],
+        "identifier-field-ids": [],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "table": "ADG_DETAIL"
+  },
+  "load_mode": "append",
+  "name": "ADG_DETAIL",
+  "package": null,
+  "primary_key": [],
+  "report_pairs": [
+    [
+      "PARTICIPANT_REGISTRATION",
+      "ADG_DETAIL"
+    ]
+  ],
+  "temporal": {
+    "cutoff": "LASTCHANGED",
+    "entity": [],
+    "order": [
+      "VERSION_DATETIME",
+      "LASTCHANGED"
+    ],
+    "origin": "derived",
+    "valid": {
+      "kind": "timeless"
+    }
+  },
+  "time_column": "EFFECTIVEDATE",
+  "visibility": "PUBLIC",
+  "x-format": 2
+}

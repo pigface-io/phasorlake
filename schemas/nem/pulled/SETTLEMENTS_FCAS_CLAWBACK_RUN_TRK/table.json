@@ -1,0 +1,148 @@
+{
+  "columns": [
+    {
+      "comment": null,
+      "id": 1,
+      "model_type": null,
+      "name": "SETTLEMENTDATE"
+    },
+    {
+      "comment": null,
+      "id": 2,
+      "model_type": null,
+      "name": "VERSIONNO"
+    },
+    {
+      "comment": null,
+      "id": 3,
+      "model_type": null,
+      "name": "INTERVAL_DATETIME"
+    },
+    {
+      "comment": null,
+      "id": 4,
+      "model_type": null,
+      "name": "RUNNO"
+    },
+    {
+      "comment": null,
+      "id": 5,
+      "model_type": null,
+      "name": "CLAWBACK_DATE"
+    },
+    {
+      "comment": null,
+      "id": 6,
+      "model_type": null,
+      "name": "PREV_DATA_SOURCE"
+    },
+    {
+      "comment": null,
+      "id": 7,
+      "model_type": null,
+      "name": "LASTCHANGED"
+    }
+  ],
+  "declared": false,
+  "description": null,
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 4,
+        "from": {
+          "data-time": "2025-07-06T07:50:00+10:00",
+          "file": "PUBLIC_ARCHIVE#SET_FCAS_CLAWBACK_RUN_TRK#FILE01#202601010000.zip",
+          "release": "2026-01",
+          "sha256": "7ae6cfef2822db4f4fce7677ac6bc6face49a7f31bf24652915a20f37270465f"
+        },
+        "kinds": [
+          "archive"
+        ],
+        "overlaps": false,
+        "report": [
+          "SETTLEMENTS",
+          "FCAS_CLAWBACK_RUN_TRK"
+        ],
+        "rows": 14784,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2026-03-23T18:20:00+10:00",
+          "file": "PUBLIC_ARCHIVE#SET_FCAS_CLAWBACK_RUN_TRK#FILE01#202604010000.zip",
+          "release": "2026-04",
+          "sha256": "97146864df4844fe43f6f4143e0a9c8914c99dd1a44e4de7dcf730ef0a73dd02"
+        },
+        "updates": [],
+        "version": 1
+      }
+    ],
+    "schema-files": {
+      "0": "schema-388a9c2f0de31a5e.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "SETTLEMENTDATE",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 2,
+            "name": "VERSIONNO",
+            "required": false,
+            "type": "decimal(2, 0)"
+          },
+          {
+            "id": 3,
+            "name": "INTERVAL_DATETIME",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 4,
+            "name": "RUNNO",
+            "required": false,
+            "type": "decimal(1, 0)"
+          },
+          {
+            "id": 5,
+            "name": "CLAWBACK_DATE",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 6,
+            "name": "PREV_DATA_SOURCE",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 7,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          }
+        ],
+        "identifier-field-ids": [],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "table": "SETTLEMENTS_FCAS_CLAWBACK_RUN_TRK"
+  },
+  "load_mode": null,
+  "name": "SETTLEMENTS_FCAS_CLAWBACK_RUN_TRK",
+  "package": null,
+  "primary_key": null,
+  "report_pairs": null,
+  "temporal": null,
+  "time_column": null,
+  "visibility": null,
+  "x-format": 2
+}

@@ -1,0 +1,160 @@
+{
+  "columns": [
+    {
+      "comment": "Date time interval for operational demand value",
+      "id": 1,
+      "model_type": "TIMESTAMP(0)",
+      "name": "INTERVAL_DATETIME"
+    },
+    {
+      "comment": "Region identifier",
+      "id": 2,
+      "model_type": "VARCHAR(20)",
+      "name": "REGIONID"
+    },
+    {
+      "comment": "Average 30-minute measured operational demand MW value (unadjusted)",
+      "id": 3,
+      "model_type": "NUMERIC(10,0)",
+      "name": "OPERATIONAL_DEMAND"
+    },
+    {
+      "comment": "Last date and time record changed",
+      "id": 4,
+      "model_type": "TIMESTAMP(0)",
+      "name": "LASTCHANGED"
+    },
+    {
+      "comment": "Adjustment value containing the estimated amount of activated RERT and involuntary load shedding that occurred as a result of a NER 4.8.9 instruction for load shedding from AEMO.",
+      "id": 5,
+      "model_type": "NUMERIC(10,0)",
+      "name": "OPERATIONAL_DEMAND_ADJUSTMENT"
+    },
+    {
+      "comment": "Estimated average 30-minute MW amount of Wholesale Demand Response that occurred",
+      "id": 6,
+      "model_type": "NUMERIC(10)",
+      "name": "WDR_ESTIMATE"
+    }
+  ],
+  "declared": true,
+  "description": "Shows Actual Operational Demand for a particular date time interval.",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 21,
+        "from": {
+          "data-time": "2024-08-01T00:30:00+10:00",
+          "file": "PUBLIC_ARCHIVE#DEMANDOPERATIONALACTUAL#FILE01#202408010000.zip",
+          "release": "2024-08",
+          "sha256": "ed1b0ce1467a9b675da1372ba9986537b49f3695feb8e85dd864beb2007e6ae6"
+        },
+        "kinds": [
+          "archive"
+        ],
+        "overlaps": false,
+        "report": [
+          "OPERATIONAL_DEMAND",
+          "ACTUAL"
+        ],
+        "rows": 153120,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2026-05-01T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#DEMANDOPERATIONALACTUAL#FILE01#202604010000.zip",
+          "release": "2026-04",
+          "sha256": "0070ea94e4eb1017f20c5fda84af8ee540851d87c6f0e8b1271a422451247eb2"
+        },
+        "updates": [],
+        "version": 3
+      }
+    ],
+    "schema-files": {
+      "0": "schema-2d5afbb2a5f7522b.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "INTERVAL_DATETIME",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 2,
+            "name": "REGIONID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 3,
+            "name": "OPERATIONAL_DEMAND",
+            "required": false,
+            "type": "decimal(10, 0)"
+          },
+          {
+            "id": 4,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 5,
+            "name": "OPERATIONAL_DEMAND_ADJUSTMENT",
+            "required": false,
+            "type": "decimal(10, 0)"
+          },
+          {
+            "id": 6,
+            "name": "WDR_ESTIMATE",
+            "required": false,
+            "type": "decimal(10, 0)"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2
+        ],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "table": "DEMANDOPERATIONALACTUAL"
+  },
+  "load_mode": "append",
+  "name": "DEMANDOPERATIONALACTUAL",
+  "package": "DEMAND_FORECASTS",
+  "primary_key": [
+    "INTERVAL_DATETIME",
+    "REGIONID"
+  ],
+  "report_pairs": [
+    [
+      "OPERATIONAL_DEMAND",
+      "ACTUAL"
+    ]
+  ],
+  "temporal": {
+    "cutoff": "LASTCHANGED",
+    "entity": [
+      "REGIONID"
+    ],
+    "order": [
+      "LASTCHANGED"
+    ],
+    "origin": "derived",
+    "valid": {
+      "column": "INTERVAL_DATETIME",
+      "kind": "interval_end"
+    }
+  },
+  "time_column": "INTERVAL_DATETIME",
+  "visibility": "PUBLIC",
+  "x-format": 2
+}

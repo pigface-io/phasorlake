@@ -8,6 +8,7 @@ mod errors_doc;
 mod llm_check;
 mod ratchet;
 mod schema_compat;
+mod schemas;
 
 use std::path::PathBuf;
 use std::process::ExitCode;
@@ -49,6 +50,18 @@ enum Cmd {
         #[arg(long, default_value = "origin/main")]
         base: String,
     },
+    /// Copy utilake-schemas' NEM tables and manifest at a commit into
+    /// schemas/nem/pulled/.
+    SchemasPull {
+        /// The commit, or anything git names one by.
+        rev: String,
+        /// The utilake-schemas checkout to read it from.
+        #[arg(long, default_value = "../utilake-schemas")]
+        from: PathBuf,
+    },
+    /// Fail unless schemas/nem/pulled/ is its manifest's, of the commit
+    /// Cargo.lock takes utilake-iceberg from.
+    SchemasCheck,
     /// Check llm/index.md: size, and every path and recipe it names exists.
     LlmCheck,
     /// Regenerate or check docs/errors.md from the diagnostic codes in the source.
@@ -69,6 +82,8 @@ fn main() -> ExitCode {
         Cmd::Bench { set, tighten } => bench::run(&set, tighten),
         Cmd::Ratchet { base } => ratchet::run(&base),
         Cmd::SchemaCompat { base } => schema_compat::run(&base),
+        Cmd::SchemasPull { rev, from } => schemas::pull(&rev, &from),
+        Cmd::SchemasCheck => schemas::check(),
         Cmd::LlmCheck => llm_check::run(),
         Cmd::ErrorsDoc { write, check } => errors_doc::run(write, check),
     };

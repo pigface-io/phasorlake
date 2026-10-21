@@ -1,0 +1,281 @@
+{
+  "columns": [
+    {
+      "comment": "Date processing of the run begins.",
+      "id": 1,
+      "model_type": "TIMESTAMP(0)",
+      "name": "RUN_DATETIME"
+    },
+    {
+      "comment": "Unique run id.",
+      "id": 2,
+      "model_type": "NUMERIC(4)",
+      "name": "RUN_NO"
+    },
+    {
+      "comment": "Type of run. Always RELIABILITY",
+      "id": 3,
+      "model_type": "VARCHAR(20)",
+      "name": "RUNTYPE"
+    },
+    {
+      "comment": "Demand POE type used. Value is POE10",
+      "id": 4,
+      "model_type": "VARCHAR(20)",
+      "name": "DEMAND_POE_TYPE"
+    },
+    {
+      "comment": "Day this result is for",
+      "id": 5,
+      "model_type": "TIMESTAMP(0)",
+      "name": "DAY"
+    },
+    {
+      "comment": "The unique identifier for the interconnector",
+      "id": 6,
+      "model_type": "VARCHAR(20)",
+      "name": "INTERCONNECTORID"
+    },
+    {
+      "comment": "Half hourly period reported, selected as period of maximum NEM scheduled demand (calculated as maximum of scheduled demands, averaged across iterations and reference years)",
+      "id": 7,
+      "model_type": "NUMERIC(3,0)",
+      "name": "PERIODID"
+    },
+    {
+      "comment": "The 90th percentile for flows, across iterations and reference years. Positive values indicate exporting, negative values indicate importing (MW)",
+      "id": 8,
+      "model_type": "NUMERIC(12,2)",
+      "name": "FLOW90"
+    },
+    {
+      "comment": "The 50th percentile for flows, across iterations and reference years. Positive values indicate exporting, negative values indicate importing (MW)",
+      "id": 9,
+      "model_type": "NUMERIC(12,2)",
+      "name": "FLOW50"
+    },
+    {
+      "comment": "The 10th percentile for flows, across iterations and reference years. Positive values indicate exporting, negative values indicate importing (MW)",
+      "id": 10,
+      "model_type": "NUMERIC(12,2)",
+      "name": "FLOW10"
+    },
+    {
+      "comment": "Proportion of iterations and reference years with interconnector constrained when exporting",
+      "id": 11,
+      "model_type": "NUMERIC(8,5)",
+      "name": "PROBABILITYOFBINDINGEXPORT"
+    },
+    {
+      "comment": "Proportion of iterations and reference years with interconnector constrained when importing",
+      "id": 12,
+      "model_type": "NUMERIC(8,5)",
+      "name": "PROBABILITYOFBINDINGIMPORT"
+    },
+    {
+      "comment": "Calculated Interconnector limit of exporting energy on the basis of invoked constraints and static interconnector export limit, averaged across iterations and reference years",
+      "id": 13,
+      "model_type": "NUMERIC(12,2)",
+      "name": "CALCULATEDEXPORTLIMIT"
+    },
+    {
+      "comment": "Calculated Interconnector limit of importing energy on the basis of invoked constraints and static interconnector import limit, averaged across iterations and reference years",
+      "id": 14,
+      "model_type": "NUMERIC(12,2)",
+      "name": "CALCULATEDIMPORTLIMIT"
+    },
+    {
+      "comment": "Last date and time record changed",
+      "id": 15,
+      "model_type": "TIMESTAMP(0)",
+      "name": "LASTCHANGED"
+    }
+  ],
+  "declared": true,
+  "description": "Interconnector results for interval of max demand per day",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 96,
+        "from": {
+          "data-time": "2018-05-14T10:59:49+10:00",
+          "file": "PUBLIC_DVD_MTPASA_INTERCONNECTORRESULT_201805010000.zip",
+          "release": "2018-05",
+          "sha256": "f17e40a75b5f1d7ffe97f51aa3e602d4ebfdbbd3ea8029105d845260358fc586"
+        },
+        "kinds": [
+          "archive",
+          "dvd"
+        ],
+        "overlaps": false,
+        "report": [
+          "MTPASA",
+          "INTERCONNECTORRESULT"
+        ],
+        "rows": 1907460,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2026-04-26T20:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#MTPASA_INTERCONNECTORRESULT#FILE01#202604010000.zip",
+          "release": "2026-04",
+          "sha256": "b657f7c119abc24378ca26e674ea091da7f853ba5acda3d40fd20d9b0cb1569e"
+        },
+        "updates": [],
+        "version": 1
+      }
+    ],
+    "schema-files": {
+      "0": "schema-68169a4b7b09e743.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "RUN_DATETIME",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 2,
+            "name": "RUN_NO",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 3,
+            "name": "RUNTYPE",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 4,
+            "name": "DEMAND_POE_TYPE",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 5,
+            "name": "DAY",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 6,
+            "name": "INTERCONNECTORID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 7,
+            "name": "PERIODID",
+            "required": false,
+            "type": "decimal(3, 0)"
+          },
+          {
+            "id": 8,
+            "name": "FLOW90",
+            "required": false,
+            "type": "decimal(12, 2)"
+          },
+          {
+            "id": 9,
+            "name": "FLOW50",
+            "required": false,
+            "type": "decimal(12, 2)"
+          },
+          {
+            "id": 10,
+            "name": "FLOW10",
+            "required": false,
+            "type": "decimal(12, 2)"
+          },
+          {
+            "id": 11,
+            "name": "PROBABILITYOFBINDINGEXPORT",
+            "required": false,
+            "type": "decimal(8, 5)"
+          },
+          {
+            "id": 12,
+            "name": "PROBABILITYOFBINDINGIMPORT",
+            "required": false,
+            "type": "decimal(8, 5)"
+          },
+          {
+            "id": 13,
+            "name": "CALCULATEDEXPORTLIMIT",
+            "required": false,
+            "type": "decimal(12, 2)"
+          },
+          {
+            "id": 14,
+            "name": "CALCULATEDIMPORTLIMIT",
+            "required": false,
+            "type": "decimal(12, 2)"
+          },
+          {
+            "id": 15,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "table": "MTPASA_INTERCONNECTORRESULT"
+  },
+  "load_mode": "append",
+  "name": "MTPASA_INTERCONNECTORRESULT",
+  "package": "MTPASA",
+  "primary_key": [
+    "RUN_DATETIME",
+    "RUN_NO",
+    "RUNTYPE",
+    "DEMAND_POE_TYPE",
+    "DAY",
+    "INTERCONNECTORID"
+  ],
+  "report_pairs": [
+    [
+      "MTPASA",
+      "INTERCONNECTORRESULT"
+    ]
+  ],
+  "temporal": {
+    "cutoff": "RUN_DATETIME",
+    "entity": [
+      "RUNTYPE",
+      "DEMAND_POE_TYPE",
+      "INTERCONNECTORID"
+    ],
+    "order": [
+      "RUN_DATETIME",
+      "RUN_NO",
+      "LASTCHANGED"
+    ],
+    "origin": "derived",
+    "valid": {
+      "column": "DAY",
+      "kind": "instant"
+    }
+  },
+  "time_column": "RUN_DATETIME",
+  "visibility": "PUBLIC",
+  "x-format": 2
+}

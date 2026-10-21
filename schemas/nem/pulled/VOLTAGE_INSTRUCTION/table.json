@@ -1,0 +1,245 @@
+{
+  "columns": [
+    {
+      "comment": "MVAr Interval – a timestamp of when instructions issued",
+      "id": 1,
+      "model_type": "TIMESTAMP(0)",
+      "name": "RUN_DATETIME"
+    },
+    {
+      "comment": "The unique identifier for reference within AEMO –matches equipment names between NOS and EMS",
+      "id": 2,
+      "model_type": "VARCHAR(60)",
+      "name": "EMS_ID"
+    },
+    {
+      "comment": "The NEM id of the participant who owns the equipment",
+      "id": 3,
+      "model_type": "VARCHAR(20)",
+      "name": "PARTICIPANTID"
+    },
+    {
+      "comment": "The id of the station where the control equipment resides",
+      "id": 4,
+      "model_type": "VARCHAR(60)",
+      "name": "STATION_ID"
+    },
+    {
+      "comment": "The company/participant preferred name of an equipment",
+      "id": 5,
+      "model_type": "VARCHAR(60)",
+      "name": "DEVICE_ID"
+    },
+    {
+      "comment": "One of REACTOR, CAPACITOR, GEN, SVC, TRANS or GRPGEN but may be extended to other types",
+      "id": 6,
+      "model_type": "VARCHAR(20)",
+      "name": "DEVICE_TYPE"
+    },
+    {
+      "comment": "One of VOLTAGE, TAP, MVAR, SWITCH or COMMIT but may be extended to other types",
+      "id": 7,
+      "model_type": "VARCHAR(20)",
+      "name": "CONTROL_TYPE"
+    },
+    {
+      "comment": "Instruction for the device, for this interval null denotes no instruction",
+      "id": 8,
+      "model_type": "NUMERIC(20,5)",
+      "name": "TARGET"
+    },
+    {
+      "comment": "[0,1] Denotes if the Device is currently conforming",
+      "id": 9,
+      "model_type": "NUMERIC(1,0)",
+      "name": "CONFORMING"
+    },
+    {
+      "comment": "Verbose summary of instruction",
+      "id": 10,
+      "model_type": "VARCHAR(400)",
+      "name": "INSTRUCTION_SUMMARY"
+    },
+    {
+      "comment": "Datetime the file was published by VDS - Versions differ from Run_DateTime only for Supplemental runs",
+      "id": 11,
+      "model_type": "TIMESTAMP(0)",
+      "name": "VERSION_DATETIME"
+    },
+    {
+      "comment": "Order for execution of Instruction",
+      "id": 12,
+      "model_type": "NUMERIC(4,0)",
+      "name": "INSTRUCTION_SEQUENCE"
+    },
+    {
+      "comment": "Additional information pertaining to a particular instruction, e.g. Previously issued instruction revoked",
+      "id": 13,
+      "model_type": "VARCHAR(60)",
+      "name": "ADDITIONAL_NOTES"
+    }
+  ],
+  "declared": true,
+  "description": "Child record for Voltage Instructions (MVAr Dispatch)",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 21,
+        "from": {
+          "data-time": "2024-08-01T00:28:00+10:00",
+          "file": "PUBLIC_ARCHIVE#VOLTAGE_INSTRUCTION#FILE01#202408010000.zip",
+          "release": "2024-08",
+          "sha256": "596d8fe58427e27844a805041d1715418a4cfd4f16d6ffeb56b5f5f4268c22df"
+        },
+        "kinds": [
+          "archive"
+        ],
+        "overlaps": false,
+        "report": [
+          "VOLTAGE_INSTRUCTION",
+          "INSTRUCTION"
+        ],
+        "rows": 32913461,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2026-04-30T23:26:17+10:00",
+          "file": "PUBLIC_ARCHIVE#VOLTAGE_INSTRUCTION#FILE01#202604010000.zip",
+          "release": "2026-04",
+          "sha256": "fa1f0830cde520d1b6340ec45f4561f73fd08e58c342d80c1f4a050e9e3b04d9"
+        },
+        "updates": [],
+        "version": 2
+      }
+    ],
+    "schema-files": {
+      "0": "schema-df003b9281cd0114.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "RUN_DATETIME",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 2,
+            "name": "EMS_ID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 3,
+            "name": "PARTICIPANTID",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 4,
+            "name": "STATION_ID",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 5,
+            "name": "DEVICE_ID",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 6,
+            "name": "DEVICE_TYPE",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 7,
+            "name": "CONTROL_TYPE",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 8,
+            "name": "TARGET",
+            "required": false,
+            "type": "double"
+          },
+          {
+            "id": 9,
+            "name": "CONFORMING",
+            "required": false,
+            "type": "decimal(1, 0)"
+          },
+          {
+            "id": 10,
+            "name": "INSTRUCTION_SUMMARY",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 11,
+            "name": "VERSION_DATETIME",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 12,
+            "name": "INSTRUCTION_SEQUENCE",
+            "required": false,
+            "type": "decimal(4, 0)"
+          },
+          {
+            "id": 13,
+            "name": "ADDITIONAL_NOTES",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2,
+          11
+        ],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "table": "VOLTAGE_INSTRUCTION"
+  },
+  "load_mode": "append",
+  "name": "VOLTAGE_INSTRUCTION",
+  "package": "VOLTAGE_INSTRUCTIONS",
+  "primary_key": [
+    "RUN_DATETIME",
+    "EMS_ID",
+    "VERSION_DATETIME"
+  ],
+  "report_pairs": [
+    [
+      "VOLTAGE_INSTRUCTION",
+      "INSTRUCTION"
+    ]
+  ],
+  "temporal": {
+    "entity": [
+      "EMS_ID"
+    ],
+    "order": [
+      "VERSION_DATETIME"
+    ],
+    "origin": "derived",
+    "valid": {
+      "column": "RUN_DATETIME",
+      "kind": "instant"
+    }
+  },
+  "time_column": "RUN_DATETIME",
+  "visibility": "PUBLIC",
+  "x-format": 2
+}

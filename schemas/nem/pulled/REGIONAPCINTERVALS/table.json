@@ -1,0 +1,203 @@
+{
+  "columns": [
+    {
+      "comment": "Region Identifier",
+      "id": 1,
+      "model_type": "VARCHAR(10)",
+      "name": "REGIONID"
+    },
+    {
+      "comment": "Date the APC profile applies from",
+      "id": 2,
+      "model_type": "TIMESTAMP(0)",
+      "name": "EFFECTIVEDATE"
+    },
+    {
+      "comment": "Version number for the same date",
+      "id": 3,
+      "model_type": "NUMERIC(3,0)",
+      "name": "VERSIONNO"
+    },
+    {
+      "comment": "30-minute period",
+      "id": 4,
+      "model_type": "NUMERIC(3,0)",
+      "name": "PERIODID"
+    },
+    {
+      "comment": "Administered price cap in $",
+      "id": 5,
+      "model_type": "NUMERIC(16,6)",
+      "name": "APCVALUE"
+    },
+    {
+      "comment": "Last date and time record changed",
+      "id": 6,
+      "model_type": "TIMESTAMP(0)",
+      "name": "LASTCHANGED"
+    },
+    {
+      "comment": "not used",
+      "id": 7,
+      "model_type": "NUMERIC(3,0)",
+      "name": "APCTYPE"
+    },
+    {
+      "comment": "FCAS Administered price cap in $",
+      "id": 8,
+      "model_type": "NUMERIC(16,6)",
+      "name": "FCASAPCVALUE"
+    },
+    {
+      "comment": "Administered price floor in $",
+      "id": 9,
+      "model_type": "NUMERIC(16,6)",
+      "name": "APFVALUE"
+    }
+  ],
+  "declared": true,
+  "description": "REGIONAPCINTERVALS contains Administered Price profiles (Energy and FCAS) applicable to each interval for a region.",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 202,
+        "from": {
+          "data-time": "1998-11-27T00:00:00+10:00",
+          "file": "PUBLIC_DVD_REGIONAPCINTERVALS_200907010000.zip",
+          "release": "2009-07",
+          "sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261"
+        },
+        "kinds": [
+          "archive",
+          "dvd"
+        ],
+        "overlaps": false,
+        "report": [
+          "AP",
+          "REGIONAPCINTERVALS"
+        ],
+        "rows": 577920,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2022-12-01T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#REGIONAPCINTERVALS#FILE01#202604010000.zip",
+          "release": "2026-04",
+          "sha256": "7c9a94b237b7e7006235a21576043c4d6d2fe6b4eb7679955fcc5c31b1795332"
+        },
+        "updates": [],
+        "version": 1
+      }
+    ],
+    "schema-files": {
+      "0": "schema-68b8584352b05387.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "REGIONID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 2,
+            "name": "EFFECTIVEDATE",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 3,
+            "name": "VERSIONNO",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 4,
+            "name": "PERIODID",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 5,
+            "name": "APCVALUE",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 6,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 7,
+            "name": "APCTYPE",
+            "required": false,
+            "type": "long"
+          },
+          {
+            "id": 8,
+            "name": "FCASAPCVALUE",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 9,
+            "name": "APFVALUE",
+            "required": false,
+            "type": "decimal(16, 6)"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "table": "REGIONAPCINTERVALS"
+  },
+  "load_mode": "snapshot",
+  "name": "REGIONAPCINTERVALS",
+  "package": "FORCE_MAJEURE",
+  "primary_key": [
+    "REGIONID",
+    "EFFECTIVEDATE",
+    "VERSIONNO",
+    "PERIODID"
+  ],
+  "report_pairs": [
+    [
+      "AP",
+      "REGIONAPCINTERVALS"
+    ]
+  ],
+  "temporal": {
+    "cutoff": "LASTCHANGED",
+    "entity": [
+      "REGIONID",
+      "PERIODID"
+    ],
+    "order": [
+      "VERSIONNO",
+      "LASTCHANGED"
+    ],
+    "origin": "derived",
+    "valid": {
+      "column": "EFFECTIVEDATE",
+      "kind": "from"
+    }
+  },
+  "time_column": null,
+  "visibility": "PUBLIC",
+  "x-format": 2
+}

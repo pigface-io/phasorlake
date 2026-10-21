@@ -1,0 +1,190 @@
+{
+  "columns": [
+    {
+      "comment": "Billing contract year",
+      "id": 1,
+      "model_type": "NUMERIC(4)",
+      "name": "CONTRACTYEAR"
+    },
+    {
+      "comment": "Billing week no",
+      "id": 2,
+      "model_type": "NUMERIC(3)",
+      "name": "WEEKNO"
+    },
+    {
+      "comment": "Billing run no",
+      "id": 3,
+      "model_type": "NUMERIC(3)",
+      "name": "BILLRUNNO"
+    },
+    {
+      "comment": "Settlement Date (Calendar)",
+      "id": 4,
+      "model_type": "TIMESTAMP(0)",
+      "name": "SETTLEMENTDATE"
+    },
+    {
+      "comment": "Region identifier",
+      "id": 5,
+      "model_type": "VARCHAR(20)",
+      "name": "REGIONID"
+    },
+    {
+      "comment": "Total sent out energy for region (MWh)",
+      "id": 6,
+      "model_type": "NUMERIC(18,8)",
+      "name": "SENTOUTENERGY"
+    },
+    {
+      "comment": "Total generator emissions for region (Co2-e)",
+      "id": 7,
+      "model_type": "NUMERIC(18,8)",
+      "name": "GENERATOREMISSIONS"
+    },
+    {
+      "comment": "Carbon Dioxide Intensity index for region (CO2-e/MWh)",
+      "id": 8,
+      "model_type": "NUMERIC(18,8)",
+      "name": "INTENSITYINDEX"
+    }
+  ],
+  "declared": true,
+  "description": "Carbon Dioxide Intensity Index publication table",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 174,
+        "from": {
+          "data-time": "2011-09-25T00:00:00+10:00",
+          "file": "PUBLIC_DVD_BILLING_CO2E_PUBLICATION_201110010000.zip",
+          "release": "2011-10",
+          "sha256": "7751def4d7617062adf8e6e096cfc2cea79698468b1a2794efd59527b8e86412"
+        },
+        "kinds": [
+          "archive",
+          "dvd"
+        ],
+        "overlaps": false,
+        "report": [
+          "BILLING",
+          "BILLING_CO2E_PUBLICATION"
+        ],
+        "rows": 122966,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2026-04-18T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#BILLING_CO2E_PUBLICATION#FILE01#202604010000.zip",
+          "release": "2026-04",
+          "sha256": "99ac148dc8412e71ee607b8e0e509603b3559f248244c57d1cfed82b9f0238b1"
+        },
+        "updates": [],
+        "version": 1
+      }
+    ],
+    "schema-files": {
+      "0": "schema-d7ce71564795abbb.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "CONTRACTYEAR",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 2,
+            "name": "WEEKNO",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 3,
+            "name": "BILLRUNNO",
+            "required": false,
+            "type": "decimal(3, 0)"
+          },
+          {
+            "id": 4,
+            "name": "SETTLEMENTDATE",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 5,
+            "name": "REGIONID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 6,
+            "name": "SENTOUTENERGY",
+            "required": false,
+            "type": "decimal(18, 8)"
+          },
+          {
+            "id": 7,
+            "name": "GENERATOREMISSIONS",
+            "required": false,
+            "type": "decimal(18, 8)"
+          },
+          {
+            "id": 8,
+            "name": "INTENSITYINDEX",
+            "required": false,
+            "type": "decimal(18, 16)"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2,
+          4,
+          5
+        ],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "table": "BILLING_CO2E_PUBLICATION"
+  },
+  "load_mode": "append",
+  "name": "BILLING_CO2E_PUBLICATION",
+  "package": "BILLING_RUN",
+  "primary_key": [
+    "CONTRACTYEAR",
+    "WEEKNO",
+    "SETTLEMENTDATE",
+    "REGIONID"
+  ],
+  "report_pairs": [
+    [
+      "BILLING",
+      "BILLING_CO2E_PUBLICATION"
+    ]
+  ],
+  "temporal": {
+    "entity": [
+      "CONTRACTYEAR",
+      "WEEKNO",
+      "REGIONID"
+    ],
+    "order": [
+      "BILLRUNNO"
+    ],
+    "origin": "derived",
+    "valid": {
+      "column": "SETTLEMENTDATE",
+      "kind": "interval_end"
+    }
+  },
+  "time_column": "SETTLEMENTDATE",
+  "visibility": "PUBLIC",
+  "x-format": 2
+}

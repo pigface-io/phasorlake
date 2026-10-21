@@ -1,0 +1,138 @@
+{
+  "columns": [
+    {
+      "comment": "Billing contract year",
+      "id": 1,
+      "model_type": "NUMERIC(4)",
+      "name": "CONTRACTYEAR"
+    },
+    {
+      "comment": "Billing week no",
+      "id": 2,
+      "model_type": "NUMERIC(3)",
+      "name": "WEEKNO"
+    },
+    {
+      "comment": "Billing run no",
+      "id": 3,
+      "model_type": "NUMERIC(3)",
+      "name": "BILLRUNNO"
+    },
+    {
+      "comment": "Last changed date time",
+      "id": 4,
+      "model_type": "TIMESTAMP(0)",
+      "name": "LASTCHANGED"
+    }
+  ],
+  "declared": true,
+  "description": "Carbon Dioxide Intensity Index publication tracking table",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 174,
+        "from": {
+          "data-time": "2011-10-07T11:13:05+10:00",
+          "file": "PUBLIC_DVD_BILLING_CO2E_PUBLICATION_TRK_201110010000.zip",
+          "release": "2011-10",
+          "sha256": "7751def4d7617062adf8e6e096cfc2cea79698468b1a2794efd59527b8e86412"
+        },
+        "kinds": [
+          "archive",
+          "dvd"
+        ],
+        "overlaps": false,
+        "report": [
+          "BILLING",
+          "BILLING_CO2E_PUBLICATION_TRK"
+        ],
+        "rows": 757,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2026-04-24T09:09:11+10:00",
+          "file": "PUBLIC_ARCHIVE#BILLING_CO2E_PUBLICATION_TRK#FILE01#202604010000.zip",
+          "release": "2026-04",
+          "sha256": "aa3be1e20174f98932bd87142c8b96652ac7a2cfb2550dd71c6ec05e142a2047"
+        },
+        "updates": [],
+        "version": 1
+      }
+    ],
+    "schema-files": {
+      "0": "schema-78cf0226465dfcf2.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "CONTRACTYEAR",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 2,
+            "name": "WEEKNO",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 3,
+            "name": "BILLRUNNO",
+            "required": false,
+            "type": "decimal(3, 0)"
+          },
+          {
+            "id": 4,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2
+        ],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "table": "BILLING_CO2E_PUBLICATION_TRK"
+  },
+  "load_mode": "append",
+  "name": "BILLING_CO2E_PUBLICATION_TRK",
+  "package": "BILLING_RUN",
+  "primary_key": [
+    "CONTRACTYEAR",
+    "WEEKNO"
+  ],
+  "report_pairs": [
+    [
+      "BILLING",
+      "BILLING_CO2E_PUBLICATION_TRK"
+    ]
+  ],
+  "temporal": {
+    "cutoff": "LASTCHANGED",
+    "entity": [
+      "CONTRACTYEAR",
+      "WEEKNO"
+    ],
+    "order": [
+      "BILLRUNNO",
+      "LASTCHANGED"
+    ],
+    "origin": "derived",
+    "valid": {
+      "kind": "timeless"
+    }
+  },
+  "time_column": "LASTCHANGED",
+  "visibility": "PUBLIC",
+  "x-format": 2
+}

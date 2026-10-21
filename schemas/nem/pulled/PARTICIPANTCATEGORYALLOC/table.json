@@ -1,0 +1,125 @@
+{
+  "columns": [
+    {
+      "comment": "Category unique identifier",
+      "id": 1,
+      "model_type": "VARCHAR(10)",
+      "name": "PARTICIPANTCATEGORYID"
+    },
+    {
+      "comment": "Unique participant identifier",
+      "id": 2,
+      "model_type": "VARCHAR(10)",
+      "name": "PARTICIPANTID"
+    },
+    {
+      "comment": "Last date and time record changed",
+      "id": 3,
+      "model_type": "TIMESTAMP(0)",
+      "name": "LASTCHANGED"
+    }
+  ],
+  "declared": true,
+  "description": "PARTICIPANTCATEGORYALLOC sets out the assignment of participants to particular categories.",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 202,
+        "from": {
+          "data-time": "1998-06-30T22:01:23+10:00",
+          "file": "PUBLIC_DVD_PARTICIPANTCATEGORYALLOC_200907010000.zip",
+          "release": "2009-07",
+          "sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261"
+        },
+        "kinds": [
+          "archive",
+          "dvd"
+        ],
+        "overlaps": false,
+        "report": [
+          "PARTICIPANT_REGISTRATION",
+          "PARTICIPANTCATEGORYALLOC"
+        ],
+        "rows": 171050,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2026-05-06T13:23:15+10:00",
+          "file": "PUBLIC_ARCHIVE#PARTICIPANTCATEGORYALLOC#FILE01#202604010000.zip",
+          "release": "2026-04",
+          "sha256": "c6f8b498ae709beb4be5fa824c04ffebab66c2f6c6d8e6a9788e1f66d8681ac2"
+        },
+        "updates": [],
+        "version": 1
+      }
+    ],
+    "schema-files": {
+      "0": "schema-87d6383551f3258e.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "PARTICIPANTCATEGORYID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 2,
+            "name": "PARTICIPANTID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 3,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2
+        ],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "table": "PARTICIPANTCATEGORYALLOC"
+  },
+  "load_mode": "snapshot",
+  "name": "PARTICIPANTCATEGORYALLOC",
+  "package": "PARTICIPANT_REGISTRATION",
+  "primary_key": [
+    "PARTICIPANTCATEGORYID",
+    "PARTICIPANTID"
+  ],
+  "report_pairs": [
+    [
+      "PARTICIPANT_REGISTRATION",
+      "PARTICIPANTCATEGORYALLOC"
+    ]
+  ],
+  "temporal": {
+    "cutoff": "LASTCHANGED",
+    "entity": [
+      "PARTICIPANTCATEGORYID",
+      "PARTICIPANTID"
+    ],
+    "order": [
+      "LASTCHANGED"
+    ],
+    "origin": "derived",
+    "valid": {
+      "kind": "timeless"
+    }
+  },
+  "time_column": null,
+  "visibility": "PUBLIC",
+  "x-format": 2
+}

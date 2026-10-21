@@ -1,0 +1,405 @@
+{
+  "columns": [
+    {
+      "comment": "The run date and time of the dispatch case that was the trigger for the constraint FCAS processor execution",
+      "id": 1,
+      "model_type": "TIMESTAMP(0)",
+      "name": "RUN_DATETIME"
+    },
+    {
+      "comment": "The dispatch case run number that was the trigger for the constraint FCAS processor execution",
+      "id": 2,
+      "model_type": "NUMERIC(5)",
+      "name": "RUNNO"
+    },
+    {
+      "comment": "Date and time of the trading interval (DD/MM/YYYY HH24:MI:SS) fixed to the UTC+10 time zone (NEM time)",
+      "id": 3,
+      "model_type": "TIMESTAMP(0)",
+      "name": "INTERVAL_DATETIME"
+    },
+    {
+      "comment": "Constraint ID (binding constraint ID from FCAS data used in FPP calculations)",
+      "id": 4,
+      "model_type": "VARCHAR(20)",
+      "name": "CONSTRAINTID"
+    },
+    {
+      "comment": "The version number. In most cases this version will be the FPP run number from the FPP database, however there are some cases (like a new pricing run of the constraint FCAS processor received by the FPP system) where the version number listed here will be the financial estimate run number from the FPP database (this number is a different sequence from the FPP run number because there is no recalculation of performance or contribution, just changes to pricing / p regulation hence only the financial estimation is performed).",
+      "id": 5,
+      "model_type": "NUMERIC(10)",
+      "name": "VERSIONNO"
+    },
+    {
+      "comment": "Bid type (the bid type saved in relation to constraint ID from FCAS data used in FPP calculations, i.e. RAISEREG or LOWERREG)",
+      "id": 6,
+      "model_type": "VARCHAR(10)",
+      "name": "BIDTYPE"
+    },
+    {
+      "comment": "Relevant regions (a comma separated list of the relevant regions for the constraint from FCAS data)",
+      "id": 7,
+      "model_type": "VARCHAR(200)",
+      "name": "RELEVANT_REGIONS"
+    },
+    {
+      "comment": "Enabled regulation MW used in the FPP calculation (from FPP database)",
+      "id": 8,
+      "model_type": "NUMERIC(18,8)",
+      "name": "REGULATION_MW"
+    },
+    {
+      "comment": "Marginal value in AUD/MW per hour related to the constraint (from FCAS data used for FPP calculations)",
+      "id": 9,
+      "model_type": "NUMERIC(18,8)",
+      "name": "CONSTRAINT_MARGINAL_VALUE"
+    },
+    {
+      "comment": "P regulation value in AUD/MW per hour related to the constraint (from FCAS data used for FPP calculations also known as adjusted marginal value)",
+      "id": 10,
+      "model_type": "NUMERIC(18,8)",
+      "name": "P_REGULATION"
+    },
+    {
+      "comment": "Base cost in AUD related to the constraint (from FCAS data used for FPP calculations)",
+      "id": 11,
+      "model_type": "NUMERIC(18,8)",
+      "name": "BASE_COST"
+    },
+    {
+      "comment": "TSFCAS in AUD related to the constraint (FCAS recovery amount related to the constraint also known as adjusted cost)",
+      "id": 12,
+      "model_type": "NUMERIC(18,8)",
+      "name": "TSFCAS"
+    },
+    {
+      "comment": "Total amount of FPP in AUD changing hands related to the constraint (note that this is not the sum of FPP)",
+      "id": 13,
+      "model_type": "NUMERIC(18,8)",
+      "name": "TOTAL_FPP"
+    },
+    {
+      "comment": "RCR MW (the calculated requirement for corrective response from FPP database). Note that this is a join back to the FPP_RCR table.",
+      "id": 14,
+      "model_type": "NUMERIC(18,5)",
+      "name": "RCR"
+    },
+    {
+      "comment": "Usage (calculation of the proportion of regulation FCAS that was calculated to be used). Note that this is a join back to the FPP_USAGE table.",
+      "id": 15,
+      "model_type": "NUMERIC(18,8)",
+      "name": "USAGE"
+    },
+    {
+      "comment": "Usage (calculation of the proportion of regulation FCAS that was calculated to be used). Note that this is a join back to the FPP_USAGE table.",
+      "id": 16,
+      "model_type": "NUMERIC(18,8)",
+      "name": "USAGE_VALUE"
+    }
+  ],
+  "declared": true,
+  "description": "This report delivers a summary of FCAS requirements as used by the FPP calculation (i.e. only RAISEREG / LOWERREG bid types)",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 4,
+        "from": {
+          "data-time": "2024-12-09T11:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202412010000.zip",
+          "release": "2024-12",
+          "sha256": "959faa941faff464ef4edf9230a2241fbc89767afdbb0cf05909c63db2dba46f"
+        },
+        "kinds": [
+          "archive"
+        ],
+        "overlaps": false,
+        "report": [
+          "FPP",
+          "FCAS_SUMMARY"
+        ],
+        "rows": 365146,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2025-04-08T15:50:00+10:00",
+          "file": "PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202503010000.zip",
+          "release": "2025-03",
+          "sha256": "068ee8068661f469dae27927d2ba8f205fe48d3f060d33a82ae64eccce6b9198"
+        },
+        "updates": [],
+        "version": 1
+      },
+      {
+        "changes": [
+          "schema"
+        ],
+        "files": 13,
+        "from": {
+          "data-time": "2024-12-09T11:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202504010000.zip",
+          "release": "2025-04",
+          "sha256": "e0f2c6b1e99f2f4c7fff75d4f2a8ad5987b8728196cd4800f7b05520ce064101"
+        },
+        "kinds": [
+          "archive"
+        ],
+        "overlaps": true,
+        "report": [
+          "FPP",
+          "FCAS_SUMMARY"
+        ],
+        "rows": 4949133,
+        "schema-id": 1,
+        "to": {
+          "data-time": "2026-05-08T15:35:00+10:00",
+          "file": "PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202604010000.zip",
+          "release": "2026-04",
+          "sha256": "71b886649ebde9306c018383dc650b29ce130974127c9f7c360b6036691d4abf"
+        },
+        "updates": [
+          {
+            "action": "delete",
+            "field-id": 15
+          },
+          {
+            "action": "add",
+            "field-id": 16
+          }
+        ],
+        "version": 1
+      }
+    ],
+    "schema-files": {
+      "0": "schema-11113c0c9ae00cd5.json",
+      "1": "schema-b47b960b30c07dda.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "RUN_DATETIME",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 2,
+            "name": "RUNNO",
+            "required": false,
+            "type": "decimal(5, 0)"
+          },
+          {
+            "id": 3,
+            "name": "INTERVAL_DATETIME",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 4,
+            "name": "CONSTRAINTID",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 5,
+            "name": "VERSIONNO",
+            "required": false,
+            "type": "decimal(10, 0)"
+          },
+          {
+            "id": 6,
+            "name": "BIDTYPE",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 7,
+            "name": "RELEVANT_REGIONS",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 8,
+            "name": "REGULATION_MW",
+            "required": false,
+            "type": "decimal(18, 8)"
+          },
+          {
+            "id": 9,
+            "name": "CONSTRAINT_MARGINAL_VALUE",
+            "required": false,
+            "type": "decimal(18, 8)"
+          },
+          {
+            "id": 10,
+            "name": "P_REGULATION",
+            "required": false,
+            "type": "decimal(18, 8)"
+          },
+          {
+            "id": 11,
+            "name": "BASE_COST",
+            "required": false,
+            "type": "decimal(18, 8)"
+          },
+          {
+            "id": 12,
+            "name": "TSFCAS",
+            "required": false,
+            "type": "decimal(18, 8)"
+          },
+          {
+            "id": 13,
+            "name": "TOTAL_FPP",
+            "required": false,
+            "type": "decimal(18, 8)"
+          },
+          {
+            "id": 14,
+            "name": "RCR",
+            "required": false,
+            "type": "decimal(18, 5)"
+          },
+          {
+            "id": 15,
+            "name": "USAGE",
+            "required": false,
+            "type": "decimal(18, 8)"
+          }
+        ],
+        "identifier-field-ids": [],
+        "schema-id": 0,
+        "type": "struct"
+      },
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "RUN_DATETIME",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 2,
+            "name": "RUNNO",
+            "required": false,
+            "type": "decimal(5, 0)"
+          },
+          {
+            "id": 3,
+            "name": "INTERVAL_DATETIME",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 4,
+            "name": "CONSTRAINTID",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 5,
+            "name": "VERSIONNO",
+            "required": false,
+            "type": "decimal(10, 0)"
+          },
+          {
+            "id": 6,
+            "name": "BIDTYPE",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 7,
+            "name": "RELEVANT_REGIONS",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 8,
+            "name": "REGULATION_MW",
+            "required": false,
+            "type": "decimal(18, 8)"
+          },
+          {
+            "id": 9,
+            "name": "CONSTRAINT_MARGINAL_VALUE",
+            "required": false,
+            "type": "decimal(18, 8)"
+          },
+          {
+            "id": 10,
+            "name": "P_REGULATION",
+            "required": false,
+            "type": "decimal(18, 8)"
+          },
+          {
+            "id": 11,
+            "name": "BASE_COST",
+            "required": false,
+            "type": "decimal(18, 8)"
+          },
+          {
+            "id": 12,
+            "name": "TSFCAS",
+            "required": false,
+            "type": "decimal(18, 8)"
+          },
+          {
+            "id": 13,
+            "name": "TOTAL_FPP",
+            "required": false,
+            "type": "decimal(18, 8)"
+          },
+          {
+            "id": 14,
+            "name": "RCR",
+            "required": false,
+            "type": "decimal(18, 5)"
+          },
+          {
+            "id": 16,
+            "name": "USAGE_VALUE",
+            "required": false,
+            "type": "decimal(18, 8)"
+          }
+        ],
+        "identifier-field-ids": [],
+        "schema-id": 1,
+        "type": "struct"
+      }
+    ],
+    "table": "FPP_FCAS_SUMMARY"
+  },
+  "load_mode": "append",
+  "name": "FPP_FCAS_SUMMARY",
+  "package": null,
+  "primary_key": [],
+  "report_pairs": [
+    [
+      "FPP",
+      "FCAS_SUMMARY"
+    ]
+  ],
+  "temporal": {
+    "cutoff": "LASTCHANGED",
+    "entity": [],
+    "order": [
+      "RUN_DATETIME",
+      "VERSIONNO",
+      "RUNNO",
+      "LASTCHANGED"
+    ],
+    "origin": "derived",
+    "valid": {
+      "kind": "timeless"
+    }
+  },
+  "time_column": "INTERVAL_DATETIME",
+  "visibility": "PUBLIC",
+  "x-format": 2
+}

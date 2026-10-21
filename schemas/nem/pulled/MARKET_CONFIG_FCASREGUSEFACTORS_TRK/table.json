@@ -1,0 +1,112 @@
+{
+  "columns": [
+    {
+      "comment": null,
+      "id": 1,
+      "model_type": null,
+      "name": "EFFECTIVEDATE"
+    },
+    {
+      "comment": null,
+      "id": 2,
+      "model_type": null,
+      "name": "VERSIONNO"
+    },
+    {
+      "comment": null,
+      "id": 3,
+      "model_type": null,
+      "name": "AUTHORISEDDATE"
+    },
+    {
+      "comment": null,
+      "id": 4,
+      "model_type": null,
+      "name": "LASTCHANGED"
+    }
+  ],
+  "declared": false,
+  "description": null,
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 21,
+        "from": {
+          "data-time": "2024-02-29T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#FCAS_REGU_USAGE_FACTORS_TRK#FILE01#202408010000.zip",
+          "release": "2024-08",
+          "sha256": "e0b201082a6c9d9ecead6e8777f81f19b591a30d914b1f7b0a0a7e3d8f6bc1a0"
+        },
+        "kinds": [
+          "archive"
+        ],
+        "overlaps": false,
+        "report": [
+          "MARKET_CONFIG",
+          "FCASREGUSEFACTORS_TRK"
+        ],
+        "rows": 21,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2024-02-29T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#FCAS_REGU_USAGE_FACTORS_TRK#FILE01#202604010000.zip",
+          "release": "2026-04",
+          "sha256": "0a9a17d5f073c98a977e90e33368c9e0d10632989ea90d4e8112c2677ceac548"
+        },
+        "updates": [],
+        "version": 1
+      }
+    ],
+    "schema-files": {
+      "0": "schema-0f549c85120f9ba1.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "EFFECTIVEDATE",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 2,
+            "name": "VERSIONNO",
+            "required": false,
+            "type": "decimal(1, 0)"
+          },
+          {
+            "id": 3,
+            "name": "AUTHORISEDDATE",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 4,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          }
+        ],
+        "identifier-field-ids": [],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "table": "MARKET_CONFIG_FCASREGUSEFACTORS_TRK"
+  },
+  "load_mode": null,
+  "name": "MARKET_CONFIG_FCASREGUSEFACTORS_TRK",
+  "package": null,
+  "primary_key": null,
+  "report_pairs": null,
+  "temporal": null,
+  "time_column": null,
+  "visibility": null,
+  "x-format": 2
+}

@@ -88,6 +88,16 @@ budget-check base="origin/main":
 schema-compat base="origin/main":
     cargo run -q -p xtask -- schema-compat --base {{ base }}
 
+# ── schemas ──────────────────────────────────────────────────────────────────
+
+# copy utilake-schemas' NEM tables and manifest at REV into schemas/nem/pulled/
+schemas-pull rev from="../utilake-schemas":
+    cargo run -q -p xtask -- schemas-pull {{ rev }} --from {{ from }}
+
+# fail unless schemas/nem/pulled/ is its manifest's, at the rev Cargo.lock pins
+schemas-check:
+    cargo run -q -p xtask -- schemas-check
+
 # ── repository hygiene ───────────────────────────────────────────────────────
 
 # llm/index.md is loaded into every agent session through CLAUDE.md: it stays

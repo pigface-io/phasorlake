@@ -1,0 +1,670 @@
+{
+  "columns": [
+    {
+      "comment": "Definitive Run from which this solution derives",
+      "id": 1,
+      "model_type": "TIMESTAMP(0)",
+      "name": "RUN_DATETIME"
+    },
+    {
+      "comment": "Region",
+      "id": 2,
+      "model_type": "VARCHAR(20)",
+      "name": "REGIONID"
+    },
+    {
+      "comment": "The unique identifier for the interval within this study",
+      "id": 3,
+      "model_type": "TIMESTAMP(0)",
+      "name": "INTERVAL_DATETIME"
+    },
+    {
+      "comment": "Whether an Intervention constraint was defined in this run",
+      "id": 4,
+      "model_type": "NUMERIC(1,0)",
+      "name": "INTERVENTION"
+    },
+    {
+      "comment": "Flag to indicate if the sensitivity run contains an active intervention constraint: 0 = No, 1 = Yes",
+      "id": 5,
+      "model_type": "NUMERIC(1,0)",
+      "name": "INTERVENTION_ACTIVE"
+    },
+    {
+      "comment": "Regional Reference price for scenario 1",
+      "id": 6,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP1"
+    },
+    {
+      "comment": "Regional Reference price for scenario 2",
+      "id": 7,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP2"
+    },
+    {
+      "comment": "Regional Reference price for scenario 3",
+      "id": 8,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP3"
+    },
+    {
+      "comment": "Regional Reference price for scenario 4",
+      "id": 9,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP4"
+    },
+    {
+      "comment": "Regional Reference price for scenario 5",
+      "id": 10,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP5"
+    },
+    {
+      "comment": "Regional Reference price for scenario 6",
+      "id": 11,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP6"
+    },
+    {
+      "comment": "Regional Reference price for scenario 7",
+      "id": 12,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP7"
+    },
+    {
+      "comment": "Regional Reference price for scenario 8",
+      "id": 13,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP8"
+    },
+    {
+      "comment": "Regional Reference price for scenario 9",
+      "id": 14,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP9"
+    },
+    {
+      "comment": "Regional Reference price for scenario 10",
+      "id": 15,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP10"
+    },
+    {
+      "comment": "Regional Reference price for scenario 11",
+      "id": 16,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP11"
+    },
+    {
+      "comment": "Regional Reference price for scenario 12",
+      "id": 17,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP12"
+    },
+    {
+      "comment": "Regional Reference price for scenario 13",
+      "id": 18,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP13"
+    },
+    {
+      "comment": "Regional Reference price for scenario 14",
+      "id": 19,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP14"
+    },
+    {
+      "comment": "Regional Reference price for scenario 15",
+      "id": 20,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP15"
+    },
+    {
+      "comment": "Regional Reference price for scenario 16",
+      "id": 21,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP16"
+    },
+    {
+      "comment": "Regional Reference price for scenario 17",
+      "id": 22,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP17"
+    },
+    {
+      "comment": "Regional Reference price for scenario 18",
+      "id": 23,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP18"
+    },
+    {
+      "comment": "Regional Reference price for scenario 19",
+      "id": 24,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP19"
+    },
+    {
+      "comment": "Regional Reference price for scenario 20",
+      "id": 25,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP20"
+    },
+    {
+      "comment": "Regional Reference price for scenario 21",
+      "id": 26,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP21"
+    },
+    {
+      "comment": "Regional Reference price for scenario 22",
+      "id": 27,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP22"
+    },
+    {
+      "comment": "Regional Reference price for scenario 23",
+      "id": 28,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP23"
+    },
+    {
+      "comment": "Regional Reference price for scenario 24",
+      "id": 29,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP24"
+    },
+    {
+      "comment": "Regional Reference price for scenario 25",
+      "id": 30,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP25"
+    },
+    {
+      "comment": "Regional Reference price for scenario 26",
+      "id": 31,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP26"
+    },
+    {
+      "comment": "Regional Reference price for scenario 27",
+      "id": 32,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP27"
+    },
+    {
+      "comment": "Regional Reference price for scenario 28",
+      "id": 33,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP28"
+    },
+    {
+      "comment": "Regional Reference price for scenario 29",
+      "id": 34,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP29"
+    },
+    {
+      "comment": "Regional Reference price for scenario 30",
+      "id": 35,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP30"
+    },
+    {
+      "comment": "Regional Reference price for scenario 31",
+      "id": 36,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP31"
+    },
+    {
+      "comment": "Regional Reference price for scenario 32",
+      "id": 37,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP32"
+    },
+    {
+      "comment": "Regional Reference price for scenario 33",
+      "id": 38,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP33"
+    },
+    {
+      "comment": "Regional Reference price for scenario 34",
+      "id": 39,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP34"
+    },
+    {
+      "comment": "Regional Reference price for scenario 35",
+      "id": 40,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP35"
+    },
+    {
+      "comment": "Regional Reference price for scenario 36",
+      "id": 41,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP36"
+    },
+    {
+      "comment": "Regional Reference price for scenario 37",
+      "id": 42,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP37"
+    },
+    {
+      "comment": "Regional Reference price for scenario 38",
+      "id": 43,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP38"
+    },
+    {
+      "comment": "Regional Reference price for scenario 39",
+      "id": 44,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP39"
+    },
+    {
+      "comment": "Regional Reference price for scenario 40",
+      "id": 45,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP40"
+    },
+    {
+      "comment": "Regional Reference price for scenario 41",
+      "id": 46,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP41"
+    },
+    {
+      "comment": "Regional Reference price for scenario 42",
+      "id": 47,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP42"
+    },
+    {
+      "comment": "Regional Reference price for scenario 43",
+      "id": 48,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RRP43"
+    },
+    {
+      "comment": "Timestamp when this record was last modified",
+      "id": 49,
+      "model_type": "TIMESTAMP(0)",
+      "name": "LASTCHANGED"
+    }
+  ],
+  "declared": true,
+  "description": "Price Sensitivies for 5MinPD solution. New solution every 5 minutes. Current Scenarios defined in P5MIN_SCENARIODEMANDTRK/P5MIN_SCENARIODEMAND",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 21,
+        "from": {
+          "data-time": "2024-08-01T00:05:00+10:00",
+          "file": "PUBLIC_ARCHIVE#P5MIN_PRICESENSITIVITIES#FILE01#202408010000.zip",
+          "release": "2024-08",
+          "sha256": "3d93d07196ffd692a1137446c97bd8da30565ea2050c490f562c25fa712ed012"
+        },
+        "kinds": [
+          "archive"
+        ],
+        "overlaps": false,
+        "report": [
+          "P5MIN",
+          "PRICESENSITIVITIES"
+        ],
+        "rows": 11023800,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2026-05-01T00:55:00+10:00",
+          "file": "PUBLIC_ARCHIVE#P5MIN_PRICESENSITIVITIES#FILE01#202604010000.zip",
+          "release": "2026-04",
+          "sha256": "440096533b48e874166520b07ee7da0e8912c86b56f808c313bebab02e032ada"
+        },
+        "updates": [],
+        "version": 1
+      }
+    ],
+    "schema-files": {
+      "0": "schema-2bc073c2897839c2.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "RUN_DATETIME",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 2,
+            "name": "REGIONID",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 3,
+            "name": "INTERVAL_DATETIME",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 4,
+            "name": "INTERVENTION",
+            "required": false,
+            "type": "decimal(1, 0)"
+          },
+          {
+            "id": 5,
+            "name": "INTERVENTION_ACTIVE",
+            "required": false,
+            "type": "decimal(1, 0)"
+          },
+          {
+            "id": 6,
+            "name": "RRP1",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 7,
+            "name": "RRP2",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 8,
+            "name": "RRP3",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 9,
+            "name": "RRP4",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 10,
+            "name": "RRP5",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 11,
+            "name": "RRP6",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 12,
+            "name": "RRP7",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 13,
+            "name": "RRP8",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 14,
+            "name": "RRP9",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 15,
+            "name": "RRP10",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 16,
+            "name": "RRP11",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 17,
+            "name": "RRP12",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 18,
+            "name": "RRP13",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 19,
+            "name": "RRP14",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 20,
+            "name": "RRP15",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 21,
+            "name": "RRP16",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 22,
+            "name": "RRP17",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 23,
+            "name": "RRP18",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 24,
+            "name": "RRP19",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 25,
+            "name": "RRP20",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 26,
+            "name": "RRP21",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 27,
+            "name": "RRP22",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 28,
+            "name": "RRP23",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 29,
+            "name": "RRP24",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 30,
+            "name": "RRP25",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 31,
+            "name": "RRP26",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 32,
+            "name": "RRP27",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 33,
+            "name": "RRP28",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 34,
+            "name": "RRP29",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 35,
+            "name": "RRP30",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 36,
+            "name": "RRP31",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 37,
+            "name": "RRP32",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 38,
+            "name": "RRP33",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 39,
+            "name": "RRP34",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 40,
+            "name": "RRP35",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 41,
+            "name": "RRP36",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 42,
+            "name": "RRP37",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 43,
+            "name": "RRP38",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 44,
+            "name": "RRP39",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 45,
+            "name": "RRP40",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 46,
+            "name": "RRP41",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 47,
+            "name": "RRP42",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 48,
+            "name": "RRP43",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 49,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          }
+        ],
+        "identifier-field-ids": [],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "table": "P5MIN_PRICESENSITIVITIES"
+  },
+  "load_mode": "append",
+  "name": "P5MIN_PRICESENSITIVITIES",
+  "package": null,
+  "primary_key": [],
+  "report_pairs": [
+    [
+      "P5MIN",
+      "PRICESENSITIVITIES"
+    ]
+  ],
+  "temporal": {
+    "cutoff": "LASTCHANGED",
+    "entity": [
+      "INTERVENTION"
+    ],
+    "order": [
+      "RUN_DATETIME",
+      "LASTCHANGED"
+    ],
+    "origin": "derived",
+    "valid": {
+      "kind": "timeless"
+    }
+  },
+  "time_column": "INTERVAL_DATETIME",
+  "visibility": "PUBLIC",
+  "x-format": 2
+}

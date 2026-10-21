@@ -1,0 +1,151 @@
+{
+  "columns": [
+    {
+      "comment": "Unique Instruction Identifier",
+      "id": 1,
+      "model_type": "VARCHAR(20)",
+      "name": "INSTRUCTION_ID"
+    },
+    {
+      "comment": "Dispatchable Unit Identifier",
+      "id": 2,
+      "model_type": "VARCHAR(20)",
+      "name": "DUID"
+    },
+    {
+      "comment": "The first Dispatch Interval the unit is enabled for SSM Services.",
+      "id": 3,
+      "model_type": "TIMESTAMP(0)",
+      "name": "ENABLEMENT_START_INTERVAL"
+    },
+    {
+      "comment": "The last Dispatch Interval the unit is enabled for SSM Services.",
+      "id": 4,
+      "model_type": "TIMESTAMP(0)",
+      "name": "ENABLEMENT_END_INTERVAL"
+    },
+    {
+      "comment": "Reason for the enablement.",
+      "id": 5,
+      "model_type": "VARCHAR(40)",
+      "name": "ENABLEMENT_REASON"
+    },
+    {
+      "comment": "Last time record was changed.",
+      "id": 6,
+      "model_type": "TIMESTAMP(0)",
+      "name": "LASTCHANGED"
+    }
+  ],
+  "declared": true,
+  "description": "SSM Contract Enablement Periods",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 6,
+        "from": {
+          "data-time": "2025-12-02T12:00:16+10:00",
+          "file": "PUBLIC_ARCHIVE#SSM_ENABLEMENT_PERIOD#FILE01#202511010000.zip",
+          "release": "2025-11",
+          "sha256": "66eba899473cf20567db8388ca225e8c74b228560ed7c1396e13ebd7de70c98d"
+        },
+        "kinds": [
+          "archive"
+        ],
+        "overlaps": false,
+        "report": [
+          "SSM",
+          "ENABLEMENT_PERIOD"
+        ],
+        "rows": 1185,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2026-05-08T12:00:25+10:00",
+          "file": "PUBLIC_ARCHIVE#SSM_ENABLEMENT_PERIOD#FILE01#202604010000.zip",
+          "release": "2026-04",
+          "sha256": "e689bff21a763a66dedc411497b5216c9f58659cce8e8300000be86dcdccb0df"
+        },
+        "updates": [],
+        "version": 1
+      }
+    ],
+    "schema-files": {
+      "0": "schema-e16dae03b432de5e.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "INSTRUCTION_ID",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 2,
+            "name": "DUID",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 3,
+            "name": "ENABLEMENT_START_INTERVAL",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 4,
+            "name": "ENABLEMENT_END_INTERVAL",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 5,
+            "name": "ENABLEMENT_REASON",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 6,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          }
+        ],
+        "identifier-field-ids": [],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "table": "SSM_ENABLEMENT_PERIOD"
+  },
+  "load_mode": "append",
+  "name": "SSM_ENABLEMENT_PERIOD",
+  "package": null,
+  "primary_key": [],
+  "report_pairs": [
+    [
+      "SSM",
+      "ENABLEMENT_PERIOD"
+    ]
+  ],
+  "temporal": {
+    "cutoff": "LASTCHANGED",
+    "entity": [],
+    "order": [
+      "LASTCHANGED"
+    ],
+    "origin": "derived",
+    "valid": {
+      "kind": "timeless"
+    }
+  },
+  "time_column": "LASTCHANGED",
+  "visibility": "PUBLIC",
+  "x-format": 2
+}

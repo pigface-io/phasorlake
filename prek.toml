@@ -14,17 +14,17 @@ default_stages = ["pre-commit"]
 [[repos]]
 repo = "builtin"
 hooks = [
-    # AEMO's files are kept byte for byte: fixtures, and control files
-    # whose hash a table records.
-    { id = "trailing-whitespace", exclude = '^(testdata/|schemas/.*/ctl/|reference/)' },
-    { id = "end-of-file-fixer", exclude = '^(testdata/|schemas/.*/ctl/|reference/)' },
+    # Files kept byte for byte: AEMO's fixtures, the tables pulled from
+    # utilake-schemas (whose manifest holds their hashes), and references.
+    { id = "trailing-whitespace", exclude = '^(testdata/|schemas/.*/ctl/|schemas/nem/pulled/|reference/)' },
+    { id = "end-of-file-fixer", exclude = '^(testdata/|schemas/.*/ctl/|schemas/nem/pulled/|reference/)' },
     { id = "check-yaml" },
     { id = "check-toml" },
     { id = "check-json" },
     { id = "check-merge-conflict" },
-    # The data-model JSON fixture and the data-model release records are
-    # large; everything else is small.
-    { id = "check-added-large-files", args = ["--maxkb=200"], exclude = '^(testdata/bootstrap/datamodel/|schemas/nem/models/)' },
+    # The data-model JSON fixture, the data-model release records and the
+    # pulled tables are large; everything else is small.
+    { id = "check-added-large-files", args = ["--maxkb=200"], exclude = '^(testdata/bootstrap/datamodel/|schemas/nem/models/|schemas/nem/pulled/)' },
     # ── Secrets (first line of defence; gitleaks is below) ──
     { id = "detect-private-key" },
 ]
@@ -64,6 +64,14 @@ name = "docs: every diagnostic code is in docs/errors.md"
 language = "system"
 entry = "just errors-check"
 files = '^(crates/.*\.rs|docs/errors\.md)$'
+pass_filenames = false
+
+[[repos.hooks]]
+id = "schemas-check"
+name = "schemas: the pulled tables are their manifest's, at the locked rev"
+language = "system"
+entry = "just schemas-check"
+files = '^(schemas/nem/pulled/|Cargo\.lock$)'
 pass_filenames = false
 
 # On every commit, not only when the index changes: a file renamed anywhere

@@ -1,0 +1,1144 @@
+{
+  "columns": [
+    {
+      "comment": null,
+      "id": 1,
+      "model_type": null,
+      "name": "SETTLEMENTDATE"
+    },
+    {
+      "comment": null,
+      "id": 2,
+      "model_type": null,
+      "name": "RUNNO"
+    },
+    {
+      "comment": null,
+      "id": 3,
+      "model_type": null,
+      "name": "REGIONID"
+    },
+    {
+      "comment": null,
+      "id": 4,
+      "model_type": null,
+      "name": "PERIODID"
+    },
+    {
+      "comment": null,
+      "id": 5,
+      "model_type": null,
+      "name": "TOTALDEMAND"
+    },
+    {
+      "comment": null,
+      "id": 6,
+      "model_type": null,
+      "name": "AVAILABLEGENERATION"
+    },
+    {
+      "comment": null,
+      "id": 7,
+      "model_type": null,
+      "name": "AVAILABLELOAD"
+    },
+    {
+      "comment": null,
+      "id": 8,
+      "model_type": null,
+      "name": "DEMANDFORECAST"
+    },
+    {
+      "comment": null,
+      "id": 9,
+      "model_type": null,
+      "name": "DISPATCHABLEGENERATION"
+    },
+    {
+      "comment": null,
+      "id": 10,
+      "model_type": null,
+      "name": "DISPATCHABLELOAD"
+    },
+    {
+      "comment": null,
+      "id": 11,
+      "model_type": null,
+      "name": "NETINTERCHANGE"
+    },
+    {
+      "comment": null,
+      "id": 12,
+      "model_type": null,
+      "name": "EXCESSGENERATION"
+    },
+    {
+      "comment": null,
+      "id": 13,
+      "model_type": null,
+      "name": "LOWER5MINDISPATCH"
+    },
+    {
+      "comment": null,
+      "id": 14,
+      "model_type": null,
+      "name": "LOWER5MINIMPORT"
+    },
+    {
+      "comment": null,
+      "id": 15,
+      "model_type": null,
+      "name": "LOWER5MINLOCALDISPATCH"
+    },
+    {
+      "comment": null,
+      "id": 16,
+      "model_type": null,
+      "name": "LOWER5MINLOCALPRICE"
+    },
+    {
+      "comment": null,
+      "id": 17,
+      "model_type": null,
+      "name": "LOWER5MINLOCALREQ"
+    },
+    {
+      "comment": null,
+      "id": 18,
+      "model_type": null,
+      "name": "LOWER5MINPRICE"
+    },
+    {
+      "comment": null,
+      "id": 19,
+      "model_type": null,
+      "name": "LOWER5MINREQ"
+    },
+    {
+      "comment": null,
+      "id": 20,
+      "model_type": null,
+      "name": "LOWER5MINSUPPLYPRICE"
+    },
+    {
+      "comment": null,
+      "id": 21,
+      "model_type": null,
+      "name": "LOWER60SECDISPATCH"
+    },
+    {
+      "comment": null,
+      "id": 22,
+      "model_type": null,
+      "name": "LOWER60SECIMPORT"
+    },
+    {
+      "comment": null,
+      "id": 23,
+      "model_type": null,
+      "name": "LOWER60SECLOCALDISPATCH"
+    },
+    {
+      "comment": null,
+      "id": 24,
+      "model_type": null,
+      "name": "LOWER60SECLOCALPRICE"
+    },
+    {
+      "comment": null,
+      "id": 25,
+      "model_type": null,
+      "name": "LOWER60SECLOCALREQ"
+    },
+    {
+      "comment": null,
+      "id": 26,
+      "model_type": null,
+      "name": "LOWER60SECPRICE"
+    },
+    {
+      "comment": null,
+      "id": 27,
+      "model_type": null,
+      "name": "LOWER60SECREQ"
+    },
+    {
+      "comment": null,
+      "id": 28,
+      "model_type": null,
+      "name": "LOWER60SECSUPPLYPRICE"
+    },
+    {
+      "comment": null,
+      "id": 29,
+      "model_type": null,
+      "name": "LOWER6SECDISPATCH"
+    },
+    {
+      "comment": null,
+      "id": 30,
+      "model_type": null,
+      "name": "LOWER6SECIMPORT"
+    },
+    {
+      "comment": null,
+      "id": 31,
+      "model_type": null,
+      "name": "LOWER6SECLOCALDISPATCH"
+    },
+    {
+      "comment": null,
+      "id": 32,
+      "model_type": null,
+      "name": "LOWER6SECLOCALPRICE"
+    },
+    {
+      "comment": null,
+      "id": 33,
+      "model_type": null,
+      "name": "LOWER6SECLOCALREQ"
+    },
+    {
+      "comment": null,
+      "id": 34,
+      "model_type": null,
+      "name": "LOWER6SECPRICE"
+    },
+    {
+      "comment": null,
+      "id": 35,
+      "model_type": null,
+      "name": "LOWER6SECREQ"
+    },
+    {
+      "comment": null,
+      "id": 36,
+      "model_type": null,
+      "name": "LOWER6SECSUPPLYPRICE"
+    },
+    {
+      "comment": null,
+      "id": 37,
+      "model_type": null,
+      "name": "RAISE5MINDISPATCH"
+    },
+    {
+      "comment": null,
+      "id": 38,
+      "model_type": null,
+      "name": "RAISE5MINIMPORT"
+    },
+    {
+      "comment": null,
+      "id": 39,
+      "model_type": null,
+      "name": "RAISE5MINLOCALDISPATCH"
+    },
+    {
+      "comment": null,
+      "id": 40,
+      "model_type": null,
+      "name": "RAISE5MINLOCALPRICE"
+    },
+    {
+      "comment": null,
+      "id": 41,
+      "model_type": null,
+      "name": "RAISE5MINLOCALREQ"
+    },
+    {
+      "comment": null,
+      "id": 42,
+      "model_type": null,
+      "name": "RAISE5MINPRICE"
+    },
+    {
+      "comment": null,
+      "id": 43,
+      "model_type": null,
+      "name": "RAISE5MINREQ"
+    },
+    {
+      "comment": null,
+      "id": 44,
+      "model_type": null,
+      "name": "RAISE5MINSUPPLYPRICE"
+    },
+    {
+      "comment": null,
+      "id": 45,
+      "model_type": null,
+      "name": "RAISE60SECDISPATCH"
+    },
+    {
+      "comment": null,
+      "id": 46,
+      "model_type": null,
+      "name": "RAISE60SECIMPORT"
+    },
+    {
+      "comment": null,
+      "id": 47,
+      "model_type": null,
+      "name": "RAISE60SECLOCALDISPATCH"
+    },
+    {
+      "comment": null,
+      "id": 48,
+      "model_type": null,
+      "name": "RAISE60SECLOCALPRICE"
+    },
+    {
+      "comment": null,
+      "id": 49,
+      "model_type": null,
+      "name": "RAISE60SECLOCALREQ"
+    },
+    {
+      "comment": null,
+      "id": 50,
+      "model_type": null,
+      "name": "RAISE60SECPRICE"
+    },
+    {
+      "comment": null,
+      "id": 51,
+      "model_type": null,
+      "name": "RAISE60SECREQ"
+    },
+    {
+      "comment": null,
+      "id": 52,
+      "model_type": null,
+      "name": "RAISE60SECSUPPLYPRICE"
+    },
+    {
+      "comment": null,
+      "id": 53,
+      "model_type": null,
+      "name": "RAISE6SECDISPATCH"
+    },
+    {
+      "comment": null,
+      "id": 54,
+      "model_type": null,
+      "name": "RAISE6SECIMPORT"
+    },
+    {
+      "comment": null,
+      "id": 55,
+      "model_type": null,
+      "name": "RAISE6SECLOCALDISPATCH"
+    },
+    {
+      "comment": null,
+      "id": 56,
+      "model_type": null,
+      "name": "RAISE6SECLOCALPRICE"
+    },
+    {
+      "comment": null,
+      "id": 57,
+      "model_type": null,
+      "name": "RAISE6SECLOCALREQ"
+    },
+    {
+      "comment": null,
+      "id": 58,
+      "model_type": null,
+      "name": "RAISE6SECPRICE"
+    },
+    {
+      "comment": null,
+      "id": 59,
+      "model_type": null,
+      "name": "RAISE6SECREQ"
+    },
+    {
+      "comment": null,
+      "id": 60,
+      "model_type": null,
+      "name": "RAISE6SECSUPPLYPRICE"
+    },
+    {
+      "comment": null,
+      "id": 61,
+      "model_type": null,
+      "name": "LASTCHANGED"
+    },
+    {
+      "comment": null,
+      "id": 62,
+      "model_type": null,
+      "name": "INITIALSUPPLY"
+    },
+    {
+      "comment": null,
+      "id": 63,
+      "model_type": null,
+      "name": "CLEAREDSUPPLY"
+    },
+    {
+      "comment": null,
+      "id": 64,
+      "model_type": null,
+      "name": "LOWERREGIMPORT"
+    },
+    {
+      "comment": null,
+      "id": 65,
+      "model_type": null,
+      "name": "LOWERREGLOCALDISPATCH"
+    },
+    {
+      "comment": null,
+      "id": 66,
+      "model_type": null,
+      "name": "LOWERREGLOCALREQ"
+    },
+    {
+      "comment": null,
+      "id": 67,
+      "model_type": null,
+      "name": "LOWERREGREQ"
+    },
+    {
+      "comment": null,
+      "id": 68,
+      "model_type": null,
+      "name": "RAISEREGIMPORT"
+    },
+    {
+      "comment": null,
+      "id": 69,
+      "model_type": null,
+      "name": "RAISEREGLOCALDISPATCH"
+    },
+    {
+      "comment": null,
+      "id": 70,
+      "model_type": null,
+      "name": "RAISEREGLOCALREQ"
+    },
+    {
+      "comment": null,
+      "id": 71,
+      "model_type": null,
+      "name": "RAISEREGREQ"
+    },
+    {
+      "comment": null,
+      "id": 72,
+      "model_type": null,
+      "name": "RAISE5MINLOCALVIOLATION"
+    },
+    {
+      "comment": null,
+      "id": 73,
+      "model_type": null,
+      "name": "RAISEREGLOCALVIOLATION"
+    },
+    {
+      "comment": null,
+      "id": 74,
+      "model_type": null,
+      "name": "RAISE60SECLOCALVIOLATION"
+    },
+    {
+      "comment": null,
+      "id": 75,
+      "model_type": null,
+      "name": "RAISE6SECLOCALVIOLATION"
+    },
+    {
+      "comment": null,
+      "id": 76,
+      "model_type": null,
+      "name": "LOWER5MINLOCALVIOLATION"
+    },
+    {
+      "comment": null,
+      "id": 77,
+      "model_type": null,
+      "name": "LOWERREGLOCALVIOLATION"
+    },
+    {
+      "comment": null,
+      "id": 78,
+      "model_type": null,
+      "name": "LOWER60SECLOCALVIOLATION"
+    },
+    {
+      "comment": null,
+      "id": 79,
+      "model_type": null,
+      "name": "LOWER6SECLOCALVIOLATION"
+    },
+    {
+      "comment": null,
+      "id": 80,
+      "model_type": null,
+      "name": "RAISE5MINVIOLATION"
+    },
+    {
+      "comment": null,
+      "id": 81,
+      "model_type": null,
+      "name": "RAISEREGVIOLATION"
+    },
+    {
+      "comment": null,
+      "id": 82,
+      "model_type": null,
+      "name": "RAISE60SECVIOLATION"
+    },
+    {
+      "comment": null,
+      "id": 83,
+      "model_type": null,
+      "name": "RAISE6SECVIOLATION"
+    },
+    {
+      "comment": null,
+      "id": 84,
+      "model_type": null,
+      "name": "LOWER5MINVIOLATION"
+    },
+    {
+      "comment": null,
+      "id": 85,
+      "model_type": null,
+      "name": "LOWERREGVIOLATION"
+    },
+    {
+      "comment": null,
+      "id": 86,
+      "model_type": null,
+      "name": "LOWER60SECVIOLATION"
+    },
+    {
+      "comment": null,
+      "id": 87,
+      "model_type": null,
+      "name": "LOWER6SECVIOLATION"
+    },
+    {
+      "comment": null,
+      "id": 88,
+      "model_type": null,
+      "name": "TOTALINTERMITTENTGENERATION"
+    },
+    {
+      "comment": null,
+      "id": 89,
+      "model_type": null,
+      "name": "DEMAND_AND_NONSCHEDGEN"
+    },
+    {
+      "comment": null,
+      "id": 90,
+      "model_type": null,
+      "name": "UIGF"
+    }
+  ],
+  "declared": false,
+  "description": null,
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 147,
+        "from": {
+          "data-time": "2009-07-01T00:30:00+10:00",
+          "file": "PUBLIC_DVD_TRADINGREGIONSUM_200907010000.zip",
+          "release": "2009-07",
+          "sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261"
+        },
+        "kinds": [
+          "dvd"
+        ],
+        "overlaps": false,
+        "report": [
+          "TRADING",
+          "REGIONSUM"
+        ],
+        "rows": 1075680,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2021-10-01T00:00:00+10:00",
+          "file": "PUBLIC_DVD_TRADINGREGIONSUM_202109010000.zip",
+          "release": "2021-09",
+          "sha256": "969a162f869f3c7a749be13fb36bc5cfe27c640204db2abaa4dcc9923b3f75ca"
+        },
+        "updates": [],
+        "version": 4
+      }
+    ],
+    "schema-files": {
+      "0": "schema-fb589213721cd05e.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "SETTLEMENTDATE",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 2,
+            "name": "RUNNO",
+            "required": false,
+            "type": "decimal(1, 0)"
+          },
+          {
+            "id": 3,
+            "name": "REGIONID",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 4,
+            "name": "PERIODID",
+            "required": false,
+            "type": "decimal(2, 0)"
+          },
+          {
+            "id": 5,
+            "name": "TOTALDEMAND",
+            "required": false,
+            "type": "decimal(7, 2)"
+          },
+          {
+            "id": 6,
+            "name": "AVAILABLEGENERATION",
+            "required": false,
+            "type": "decimal(7, 2)"
+          },
+          {
+            "id": 7,
+            "name": "AVAILABLELOAD",
+            "required": false,
+            "type": "decimal(5, 2)"
+          },
+          {
+            "id": 8,
+            "name": "DEMANDFORECAST",
+            "required": false,
+            "type": "decimal(5, 2)"
+          },
+          {
+            "id": 9,
+            "name": "DISPATCHABLEGENERATION",
+            "required": false,
+            "type": "decimal(7, 2)"
+          },
+          {
+            "id": 10,
+            "name": "DISPATCHABLELOAD",
+            "required": false,
+            "type": "decimal(5, 2)"
+          },
+          {
+            "id": 11,
+            "name": "NETINTERCHANGE",
+            "required": false,
+            "type": "decimal(6, 2)"
+          },
+          {
+            "id": 12,
+            "name": "EXCESSGENERATION",
+            "required": false,
+            "type": "decimal(5, 2)"
+          },
+          {
+            "id": 13,
+            "name": "LOWER5MINDISPATCH",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 14,
+            "name": "LOWER5MINIMPORT",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 15,
+            "name": "LOWER5MINLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(5, 2)"
+          },
+          {
+            "id": 16,
+            "name": "LOWER5MINLOCALPRICE",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 17,
+            "name": "LOWER5MINLOCALREQ",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 18,
+            "name": "LOWER5MINPRICE",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 19,
+            "name": "LOWER5MINREQ",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 20,
+            "name": "LOWER5MINSUPPLYPRICE",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 21,
+            "name": "LOWER60SECDISPATCH",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 22,
+            "name": "LOWER60SECIMPORT",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 23,
+            "name": "LOWER60SECLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(5, 2)"
+          },
+          {
+            "id": 24,
+            "name": "LOWER60SECLOCALPRICE",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 25,
+            "name": "LOWER60SECLOCALREQ",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 26,
+            "name": "LOWER60SECPRICE",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 27,
+            "name": "LOWER60SECREQ",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 28,
+            "name": "LOWER60SECSUPPLYPRICE",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 29,
+            "name": "LOWER6SECDISPATCH",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 30,
+            "name": "LOWER6SECIMPORT",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 31,
+            "name": "LOWER6SECLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(5, 2)"
+          },
+          {
+            "id": 32,
+            "name": "LOWER6SECLOCALPRICE",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 33,
+            "name": "LOWER6SECLOCALREQ",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 34,
+            "name": "LOWER6SECPRICE",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 35,
+            "name": "LOWER6SECREQ",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 36,
+            "name": "LOWER6SECSUPPLYPRICE",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 37,
+            "name": "RAISE5MINDISPATCH",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 38,
+            "name": "RAISE5MINIMPORT",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 39,
+            "name": "RAISE5MINLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(5, 2)"
+          },
+          {
+            "id": 40,
+            "name": "RAISE5MINLOCALPRICE",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 41,
+            "name": "RAISE5MINLOCALREQ",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 42,
+            "name": "RAISE5MINPRICE",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 43,
+            "name": "RAISE5MINREQ",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 44,
+            "name": "RAISE5MINSUPPLYPRICE",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 45,
+            "name": "RAISE60SECDISPATCH",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 46,
+            "name": "RAISE60SECIMPORT",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 47,
+            "name": "RAISE60SECLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(5, 2)"
+          },
+          {
+            "id": 48,
+            "name": "RAISE60SECLOCALPRICE",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 49,
+            "name": "RAISE60SECLOCALREQ",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 50,
+            "name": "RAISE60SECPRICE",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 51,
+            "name": "RAISE60SECREQ",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 52,
+            "name": "RAISE60SECSUPPLYPRICE",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 53,
+            "name": "RAISE6SECDISPATCH",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 54,
+            "name": "RAISE6SECIMPORT",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 55,
+            "name": "RAISE6SECLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(5, 2)"
+          },
+          {
+            "id": 56,
+            "name": "RAISE6SECLOCALPRICE",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 57,
+            "name": "RAISE6SECLOCALREQ",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 58,
+            "name": "RAISE6SECPRICE",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 59,
+            "name": "RAISE6SECREQ",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 60,
+            "name": "RAISE6SECSUPPLYPRICE",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 61,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 62,
+            "name": "INITIALSUPPLY",
+            "required": false,
+            "type": "decimal(7, 2)"
+          },
+          {
+            "id": 63,
+            "name": "CLEAREDSUPPLY",
+            "required": false,
+            "type": "decimal(7, 2)"
+          },
+          {
+            "id": 64,
+            "name": "LOWERREGIMPORT",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 65,
+            "name": "LOWERREGLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(5, 2)"
+          },
+          {
+            "id": 66,
+            "name": "LOWERREGLOCALREQ",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 67,
+            "name": "LOWERREGREQ",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 68,
+            "name": "RAISEREGIMPORT",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 69,
+            "name": "RAISEREGLOCALDISPATCH",
+            "required": false,
+            "type": "decimal(5, 2)"
+          },
+          {
+            "id": 70,
+            "name": "RAISEREGLOCALREQ",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 71,
+            "name": "RAISEREGREQ",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 72,
+            "name": "RAISE5MINLOCALVIOLATION",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 73,
+            "name": "RAISEREGLOCALVIOLATION",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 74,
+            "name": "RAISE60SECLOCALVIOLATION",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 75,
+            "name": "RAISE6SECLOCALVIOLATION",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 76,
+            "name": "LOWER5MINLOCALVIOLATION",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 77,
+            "name": "LOWERREGLOCALVIOLATION",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 78,
+            "name": "LOWER60SECLOCALVIOLATION",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 79,
+            "name": "LOWER6SECLOCALVIOLATION",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 80,
+            "name": "RAISE5MINVIOLATION",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 81,
+            "name": "RAISEREGVIOLATION",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 82,
+            "name": "RAISE60SECVIOLATION",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 83,
+            "name": "RAISE6SECVIOLATION",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 84,
+            "name": "LOWER5MINVIOLATION",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 85,
+            "name": "LOWERREGVIOLATION",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 86,
+            "name": "LOWER60SECVIOLATION",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 87,
+            "name": "LOWER6SECVIOLATION",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 88,
+            "name": "TOTALINTERMITTENTGENERATION",
+            "required": false,
+            "type": "decimal(6, 2)"
+          },
+          {
+            "id": 89,
+            "name": "DEMAND_AND_NONSCHEDGEN",
+            "required": false,
+            "type": "decimal(7, 2)"
+          },
+          {
+            "id": 90,
+            "name": "UIGF",
+            "required": false,
+            "type": "decimal(6, 2)"
+          }
+        ],
+        "identifier-field-ids": [],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "table": "TRADING_REGIONSUM"
+  },
+  "load_mode": null,
+  "name": "TRADING_REGIONSUM",
+  "package": null,
+  "primary_key": null,
+  "report_pairs": null,
+  "temporal": null,
+  "time_column": null,
+  "visibility": null,
+  "x-format": 2
+}

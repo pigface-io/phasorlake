@@ -1,0 +1,513 @@
+{
+  "columns": [
+    {
+      "comment": "Unique identifier for this administered pricing event",
+      "id": 1,
+      "model_type": "NUMERIC(22,0)",
+      "name": "APEVENTID"
+    },
+    {
+      "comment": "Date-Time of the first Dispatch Interval to which the administered event applies",
+      "id": 2,
+      "model_type": "VARCHAR(10)",
+      "name": "REGIONID"
+    },
+    {
+      "comment": "Date Time of the final Dispatch Interval to which the administered event applies",
+      "id": 3,
+      "model_type": "TIMESTAMP(0)",
+      "name": "LASTCHANGED"
+    },
+    {
+      "comment": "flag indicating if the apevent covers an energy AP",
+      "id": 4,
+      "model_type": "NUMERIC(1,0)",
+      "name": "ENERGYAPFLAG"
+    },
+    {
+      "comment": "flag indicating if the apevent covers a raise6sec AP",
+      "id": 5,
+      "model_type": "NUMERIC(1,0)",
+      "name": "RAISE6SECAPFLAG"
+    },
+    {
+      "comment": "flag indicating if the apevent covers a raise60sec AP",
+      "id": 6,
+      "model_type": "NUMERIC(1,0)",
+      "name": "RAISE60SECAPFLAG"
+    },
+    {
+      "comment": "flag indicating if the apevent covers a raise5min AP",
+      "id": 7,
+      "model_type": "NUMERIC(1,0)",
+      "name": "RAISE5MINAPFLAG"
+    },
+    {
+      "comment": "flag indicating if the apevent covers a raisereg AP",
+      "id": 8,
+      "model_type": "NUMERIC(1,0)",
+      "name": "RAISEREGAPFLAG"
+    },
+    {
+      "comment": "flag indicating if the apevent covers a lower6sec AP",
+      "id": 9,
+      "model_type": "NUMERIC(1,0)",
+      "name": "LOWER6SECAPFLAG"
+    },
+    {
+      "comment": "flag indicating if the apevent covers a lower60sec AP\nflag indicating if the apevent covers a lower5min AP\nflag indicating if the apevent covers a lowerreg AP\nflag indicating if the apevent covers a lower60sec AP",
+      "id": 10,
+      "model_type": "NUMERIC(1,0)",
+      "name": "LOWER60SECAPFLAG"
+    },
+    {
+      "comment": "flag indicating if the apevent covers a lower5min AP",
+      "id": 11,
+      "model_type": "NUMERIC(1,0)",
+      "name": "LOWER5MINAPFLAG"
+    },
+    {
+      "comment": "flag indicating if the apevent covers a lowerreg AP",
+      "id": 12,
+      "model_type": "NUMERIC(1,0)",
+      "name": "LOWERREGAPFLAG"
+    },
+    {
+      "comment": "Flag indicating if the APEvent covers a Raise1Sec AP",
+      "id": 13,
+      "model_type": "NUMERIC(3,0)",
+      "name": "RAISE1SECAPFLAG"
+    },
+    {
+      "comment": "Flag indicating if the APEvent covers a Lower1Sec AP",
+      "id": 14,
+      "model_type": "NUMERIC(3,0)",
+      "name": "LOWER1SECAPFLAG"
+    }
+  ],
+  "declared": true,
+  "description": "APEVENTREGION is the Region detail for an administered pricing event defined through APEVENT.",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 13,
+        "from": {
+          "data-time": "2009-11-13T16:26:21+10:00",
+          "file": "PUBLIC_DVD_APEVENTREGION_200911010000.zip",
+          "release": "2009-11",
+          "sha256": "8f91e576b2516bb624e724efdcad603438a749cf2ba6b611377dd3862bbbf0fb"
+        },
+        "kinds": [
+          "dvd"
+        ],
+        "overlaps": false,
+        "report": [
+          "AP",
+          "APEVENTREGION"
+        ],
+        "rows": 148,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2022-11-25T03:55:10+10:00",
+          "file": "PUBLIC_DVD_APEVENTREGION_202211010000.zip",
+          "release": "2022-11",
+          "sha256": "6667a0343faa89a913f210c177608c925aaad2045f8b8972ebf8ff8bc51f3565"
+        },
+        "updates": [],
+        "version": 1
+      },
+      {
+        "changes": [
+          "schema"
+        ],
+        "files": 1,
+        "from": {
+          "data-time": "2024-05-08T19:45:12+10:00",
+          "file": "PUBLIC_DVD_APEVENTREGION_202405010000.zip",
+          "release": "2024-05",
+          "sha256": "1fe5ba8e84da74182c35dcce62bbfd8ba539cd5438ec6f76256da0af1c0ccf2d"
+        },
+        "kinds": [
+          "dvd"
+        ],
+        "overlaps": false,
+        "report": [
+          "AP",
+          "APEVENTREGION"
+        ],
+        "rows": 7,
+        "schema-id": 1,
+        "to": {
+          "data-time": "2024-05-14T03:55:10+10:00",
+          "file": "PUBLIC_DVD_APEVENTREGION_202405010000.zip",
+          "release": "2024-05",
+          "sha256": "1fe5ba8e84da74182c35dcce62bbfd8ba539cd5438ec6f76256da0af1c0ccf2d"
+        },
+        "updates": [
+          {
+            "action": "add",
+            "field-id": 13
+          },
+          {
+            "action": "add",
+            "field-id": 14
+          }
+        ],
+        "version": 1
+      },
+      {
+        "changes": [
+          "schema",
+          "version"
+        ],
+        "files": 21,
+        "from": {
+          "data-time": "2008-03-17T16:57:03+10:00",
+          "file": "PUBLIC_ARCHIVE#APEVENTREGION#FILE01#202408010000.zip",
+          "release": "2024-08",
+          "sha256": "7fe28f5d32a784fba702be4089698fd7f93c36fbca0b774fa40ed03337a8c7fa"
+        },
+        "kinds": [
+          "archive"
+        ],
+        "overlaps": true,
+        "report": [
+          "AP",
+          "APEVENTREGION"
+        ],
+        "rows": 3633,
+        "schema-id": 2,
+        "to": {
+          "data-time": "2025-08-23T03:55:16+10:00",
+          "file": "PUBLIC_ARCHIVE#APEVENTREGION#FILE01#202604010000.zip",
+          "release": "2026-04",
+          "sha256": "2b961d180521c59350681925d42bd96e7e7f639ebf211bf56f1d1a72d26162e3"
+        },
+        "updates": [
+          {
+            "action": "move",
+            "field-id": 13
+          },
+          {
+            "action": "move",
+            "field-id": 14
+          }
+        ],
+        "version": 2
+      }
+    ],
+    "schema-files": {
+      "0": "schema-360911ff3b3e07b3.json",
+      "1": "schema-7797c74beac3f9d6.json",
+      "2": "schema-82853559cf4dbd7e.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "APEVENTID",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 2,
+            "name": "REGIONID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 3,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 4,
+            "name": "ENERGYAPFLAG",
+            "required": false,
+            "type": "decimal(1, 0)"
+          },
+          {
+            "id": 5,
+            "name": "RAISE6SECAPFLAG",
+            "required": false,
+            "type": "decimal(1, 0)"
+          },
+          {
+            "id": 6,
+            "name": "RAISE60SECAPFLAG",
+            "required": false,
+            "type": "decimal(1, 0)"
+          },
+          {
+            "id": 7,
+            "name": "RAISE5MINAPFLAG",
+            "required": false,
+            "type": "decimal(1, 0)"
+          },
+          {
+            "id": 8,
+            "name": "RAISEREGAPFLAG",
+            "required": false,
+            "type": "decimal(1, 0)"
+          },
+          {
+            "id": 9,
+            "name": "LOWER6SECAPFLAG",
+            "required": false,
+            "type": "decimal(1, 0)"
+          },
+          {
+            "id": 10,
+            "name": "LOWER60SECAPFLAG",
+            "required": false,
+            "type": "decimal(1, 0)"
+          },
+          {
+            "id": 11,
+            "name": "LOWER5MINAPFLAG",
+            "required": false,
+            "type": "decimal(1, 0)"
+          },
+          {
+            "id": 12,
+            "name": "LOWERREGAPFLAG",
+            "required": false,
+            "type": "decimal(1, 0)"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2
+        ],
+        "schema-id": 0,
+        "type": "struct"
+      },
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "APEVENTID",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 2,
+            "name": "REGIONID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 3,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 4,
+            "name": "ENERGYAPFLAG",
+            "required": false,
+            "type": "decimal(1, 0)"
+          },
+          {
+            "id": 13,
+            "name": "RAISE1SECAPFLAG",
+            "required": false,
+            "type": "decimal(3, 0)"
+          },
+          {
+            "id": 5,
+            "name": "RAISE6SECAPFLAG",
+            "required": false,
+            "type": "decimal(1, 0)"
+          },
+          {
+            "id": 6,
+            "name": "RAISE60SECAPFLAG",
+            "required": false,
+            "type": "decimal(1, 0)"
+          },
+          {
+            "id": 7,
+            "name": "RAISE5MINAPFLAG",
+            "required": false,
+            "type": "decimal(1, 0)"
+          },
+          {
+            "id": 8,
+            "name": "RAISEREGAPFLAG",
+            "required": false,
+            "type": "decimal(1, 0)"
+          },
+          {
+            "id": 14,
+            "name": "LOWER1SECAPFLAG",
+            "required": false,
+            "type": "decimal(3, 0)"
+          },
+          {
+            "id": 9,
+            "name": "LOWER6SECAPFLAG",
+            "required": false,
+            "type": "decimal(1, 0)"
+          },
+          {
+            "id": 10,
+            "name": "LOWER60SECAPFLAG",
+            "required": false,
+            "type": "decimal(1, 0)"
+          },
+          {
+            "id": 11,
+            "name": "LOWER5MINAPFLAG",
+            "required": false,
+            "type": "decimal(1, 0)"
+          },
+          {
+            "id": 12,
+            "name": "LOWERREGAPFLAG",
+            "required": false,
+            "type": "decimal(1, 0)"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2
+        ],
+        "schema-id": 1,
+        "type": "struct"
+      },
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "APEVENTID",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 2,
+            "name": "REGIONID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 3,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 4,
+            "name": "ENERGYAPFLAG",
+            "required": false,
+            "type": "decimal(1, 0)"
+          },
+          {
+            "id": 5,
+            "name": "RAISE6SECAPFLAG",
+            "required": false,
+            "type": "decimal(1, 0)"
+          },
+          {
+            "id": 6,
+            "name": "RAISE60SECAPFLAG",
+            "required": false,
+            "type": "decimal(1, 0)"
+          },
+          {
+            "id": 7,
+            "name": "RAISE5MINAPFLAG",
+            "required": false,
+            "type": "decimal(1, 0)"
+          },
+          {
+            "id": 8,
+            "name": "RAISEREGAPFLAG",
+            "required": false,
+            "type": "decimal(1, 0)"
+          },
+          {
+            "id": 9,
+            "name": "LOWER6SECAPFLAG",
+            "required": false,
+            "type": "decimal(1, 0)"
+          },
+          {
+            "id": 10,
+            "name": "LOWER60SECAPFLAG",
+            "required": false,
+            "type": "decimal(1, 0)"
+          },
+          {
+            "id": 11,
+            "name": "LOWER5MINAPFLAG",
+            "required": false,
+            "type": "decimal(1, 0)"
+          },
+          {
+            "id": 12,
+            "name": "LOWERREGAPFLAG",
+            "required": false,
+            "type": "decimal(1, 0)"
+          },
+          {
+            "id": 13,
+            "name": "RAISE1SECAPFLAG",
+            "required": false,
+            "type": "decimal(3, 0)"
+          },
+          {
+            "id": 14,
+            "name": "LOWER1SECAPFLAG",
+            "required": false,
+            "type": "decimal(3, 0)"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2
+        ],
+        "schema-id": 2,
+        "type": "struct"
+      }
+    ],
+    "table": "APEVENTREGION"
+  },
+  "load_mode": "append",
+  "name": "APEVENTREGION",
+  "package": "FORCE_MAJEURE",
+  "primary_key": [
+    "APEVENTID",
+    "REGIONID"
+  ],
+  "report_pairs": [
+    [
+      "AP",
+      "APEVENTREGION"
+    ]
+  ],
+  "temporal": {
+    "cutoff": "LASTCHANGED",
+    "entity": [
+      "APEVENTID",
+      "REGIONID"
+    ],
+    "order": [
+      "LASTCHANGED"
+    ],
+    "origin": "derived",
+    "valid": {
+      "kind": "timeless"
+    }
+  },
+  "time_column": "LASTCHANGED",
+  "visibility": "PUBLIC",
+  "x-format": 2
+}

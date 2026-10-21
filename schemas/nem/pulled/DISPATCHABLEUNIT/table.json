@@ -1,0 +1,134 @@
+{
+  "columns": [
+    {
+      "comment": "Dispatchable Unit Identifier",
+      "id": 1,
+      "model_type": "VARCHAR(10)",
+      "name": "DUID"
+    },
+    {
+      "comment": "Dispatchable Unit full description",
+      "id": 2,
+      "model_type": "VARCHAR(20)",
+      "name": "DUNAME"
+    },
+    {
+      "comment": "Identifies LOAD, GENERATOR or BIDIRECTIONAL",
+      "id": 3,
+      "model_type": "VARCHAR(20)",
+      "name": "UNITTYPE"
+    },
+    {
+      "comment": "Last date and time record changed",
+      "id": 4,
+      "model_type": "TIMESTAMP(0)",
+      "name": "LASTCHANGED"
+    }
+  ],
+  "declared": true,
+  "description": "DISPATCHABLEUNIT sets out the unit name and type of each dispatchable unit in the market.",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 202,
+        "from": {
+          "data-time": "2004-06-22T10:59:26+10:00",
+          "file": "PUBLIC_DVD_DISPATCHABLEUNIT_200907010000.zip",
+          "release": "2009-07",
+          "sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261"
+        },
+        "kinds": [
+          "archive",
+          "dvd"
+        ],
+        "overlaps": false,
+        "report": [
+          "PARTICIPANT_REGISTRATION",
+          "DISPATCHABLEUNIT"
+        ],
+        "rows": 132712,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2026-04-24T14:53:25+10:00",
+          "file": "PUBLIC_ARCHIVE#DISPATCHABLEUNIT#FILE01#202604010000.zip",
+          "release": "2026-04",
+          "sha256": "b80ee3b37aa0db868880546c8f1366aef35c29d6a9725018777af0f450fa715b"
+        },
+        "updates": [],
+        "version": 1
+      }
+    ],
+    "schema-files": {
+      "0": "schema-ca413c18b4f8ea89.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "DUID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 2,
+            "name": "DUNAME",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 3,
+            "name": "UNITTYPE",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 4,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          }
+        ],
+        "identifier-field-ids": [
+          1
+        ],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "table": "DISPATCHABLEUNIT"
+  },
+  "load_mode": "snapshot",
+  "name": "DISPATCHABLEUNIT",
+  "package": "PARTICIPANT_REGISTRATION",
+  "primary_key": [
+    "DUID"
+  ],
+  "report_pairs": [
+    [
+      "PARTICIPANT_REGISTRATION",
+      "DISPATCHABLEUNIT"
+    ]
+  ],
+  "temporal": {
+    "cutoff": "LASTCHANGED",
+    "entity": [
+      "DUID"
+    ],
+    "order": [
+      "LASTCHANGED"
+    ],
+    "origin": "derived",
+    "valid": {
+      "kind": "timeless"
+    }
+  },
+  "time_column": null,
+  "visibility": "PUBLIC",
+  "x-format": 2
+}

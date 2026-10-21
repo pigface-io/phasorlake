@@ -1,0 +1,347 @@
+{
+  "columns": [
+    {
+      "comment": "Billing contract year",
+      "id": 1,
+      "model_type": "NUMERIC(4)",
+      "name": "CONTRACTYEAR"
+    },
+    {
+      "comment": "Billing week no",
+      "id": 2,
+      "model_type": "NUMERIC(3)",
+      "name": "WEEKNO"
+    },
+    {
+      "comment": "Billing run no",
+      "id": 3,
+      "model_type": "NUMERIC(3)",
+      "name": "BILLRUNNO"
+    },
+    {
+      "comment": "Direction identifier",
+      "id": 4,
+      "model_type": "VARCHAR(20)",
+      "name": "DIRECTION_ID"
+    },
+    {
+      "comment": "Region Identifier",
+      "id": 5,
+      "model_type": "VARCHAR(20)",
+      "name": "REGIONID"
+    },
+    {
+      "comment": "Direction description",
+      "id": 6,
+      "model_type": "VARCHAR(200)",
+      "name": "DIRECTION_DESC"
+    },
+    {
+      "comment": "The service for which the direction occurred (ENERGY, ANCILLARY, NON_ENERGY_NON_AS, etc)",
+      "id": 7,
+      "model_type": "VARCHAR(20)",
+      "name": "DIRECTION_TYPE_ID"
+    },
+    {
+      "comment": "Settlement day on which the direction starts",
+      "id": 8,
+      "model_type": "TIMESTAMP(0)",
+      "name": "DIRECTION_START_DATE"
+    },
+    {
+      "comment": "Settlement day on which the direction ends.  The same value for all regions",
+      "id": 9,
+      "model_type": "TIMESTAMP(0)",
+      "name": "DIRECTION_END_DATE"
+    },
+    {
+      "comment": "Dispatch interval in which the direction starts.  The same value for all regions",
+      "id": 10,
+      "model_type": "TIMESTAMP(0)",
+      "name": "DIRECTION_START_INTERVAL"
+    },
+    {
+      "comment": "Dispatch interval in which the direction ends.  The same value for all regions",
+      "id": 11,
+      "model_type": "TIMESTAMP(0)",
+      "name": "DIRECTION_END_INTERVAL"
+    },
+    {
+      "comment": "The final compensation amount for the direction.  The same value for all regions",
+      "id": 12,
+      "model_type": "NUMERIC(18,8)",
+      "name": "COMPENSATION_AMOUNT"
+    },
+    {
+      "comment": "The interest amount calculated on the final compensation amount for the direction.  The same value for all regions",
+      "id": 13,
+      "model_type": "NUMERIC(18,8)",
+      "name": "INTEREST_AMOUNT"
+    },
+    {
+      "comment": "The independent expert fee amount for the direction.  The same value for all regions",
+      "id": 14,
+      "model_type": "NUMERIC(18,8)",
+      "name": "INDEPENDENT_EXPERT_FEE"
+    },
+    {
+      "comment": "The total recovery amount for the direction.  The same value for all regions",
+      "id": 15,
+      "model_type": "NUMERIC(18,8)",
+      "name": "CRA"
+    },
+    {
+      "comment": "The total customer energy for this region, over the duration of the direction. NULL for Billing Week post the IESS rule effective date.",
+      "id": 16,
+      "model_type": "NUMERIC(18,8)",
+      "name": "REGIONAL_CUSTOMER_ENERGY"
+    },
+    {
+      "comment": "The total generator energy for this region, over the duration of the direction. NULL for Billing Week post the IESS rule effective date.",
+      "id": 17,
+      "model_type": "NUMERIC(18,8)",
+      "name": "REGIONAL_GENERATOR_ENERGY"
+    },
+    {
+      "comment": "The regional benefit factor allocated to this region for the direction",
+      "id": 18,
+      "model_type": "NUMERIC(18,8)",
+      "name": "REGIONAL_BENEFIT_FACTOR"
+    },
+    {
+      "comment": "The Sum of ACE MWh value for the Region over the duration of the direction. NULL for Billing Week prior to the IESS rule effective date",
+      "id": 19,
+      "model_type": "NUMERIC(18,8)",
+      "name": "REGION_ACE_MWH"
+    },
+    {
+      "comment": "The Sum of ASOE MWh value for the Region over the duration of the direction. NULL for Billing Week prior to the IESS rule effective date",
+      "id": 20,
+      "model_type": "NUMERIC(18,8)",
+      "name": "REGION_ASOE_MWH"
+    },
+    {
+      "comment": "The Direction Service ID associated with the Direction Type ID. Eg For FCAS Direction Type, Direction Service could be any contingency service.",
+      "id": 21,
+      "model_type": "VARCHAR(20)",
+      "name": "DIRECTION_SERVICE_ID"
+    }
+  ],
+  "declared": true,
+  "description": "Billing reconciliation result table for both provisional and final directions",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 21,
+        "from": {
+          "data-time": "2023-12-31T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#BILLING_DIRECTION_RECON_OTHER#FILE01#202408010000.zip",
+          "release": "2024-08",
+          "sha256": "f49046dedba7d000c3b8087371a6ad16f7326df210ebd898861ff48555452be2"
+        },
+        "kinds": [
+          "archive"
+        ],
+        "overlaps": false,
+        "report": [
+          "BILLING",
+          "BILLING_DIRECTION_RECON_OTHER"
+        ],
+        "rows": 9785,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2026-04-03T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#BILLING_DIRECTION_RECON_OTHER#FILE01#202604010000.zip",
+          "release": "2026-04",
+          "sha256": "b922c4f75e6286f90a89ee3edd108a56cd3307ccbdd377e9e6f14618942ebda0"
+        },
+        "updates": [],
+        "version": 2
+      }
+    ],
+    "schema-files": {
+      "0": "schema-fb0458b2bc7fe14e.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "CONTRACTYEAR",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 2,
+            "name": "WEEKNO",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 3,
+            "name": "BILLRUNNO",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 4,
+            "name": "DIRECTION_ID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 5,
+            "name": "REGIONID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 6,
+            "name": "DIRECTION_DESC",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 7,
+            "name": "DIRECTION_TYPE_ID",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 8,
+            "name": "DIRECTION_START_DATE",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 9,
+            "name": "DIRECTION_END_DATE",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 10,
+            "name": "DIRECTION_START_INTERVAL",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 11,
+            "name": "DIRECTION_END_INTERVAL",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 12,
+            "name": "COMPENSATION_AMOUNT",
+            "required": false,
+            "type": "decimal(18, 8)"
+          },
+          {
+            "id": 13,
+            "name": "INTEREST_AMOUNT",
+            "required": false,
+            "type": "decimal(18, 8)"
+          },
+          {
+            "id": 14,
+            "name": "INDEPENDENT_EXPERT_FEE",
+            "required": false,
+            "type": "decimal(18, 8)"
+          },
+          {
+            "id": 15,
+            "name": "CRA",
+            "required": false,
+            "type": "decimal(18, 8)"
+          },
+          {
+            "id": 16,
+            "name": "REGIONAL_CUSTOMER_ENERGY",
+            "required": false,
+            "type": "decimal(18, 8)"
+          },
+          {
+            "id": 17,
+            "name": "REGIONAL_GENERATOR_ENERGY",
+            "required": false,
+            "type": "decimal(18, 8)"
+          },
+          {
+            "id": 18,
+            "name": "REGIONAL_BENEFIT_FACTOR",
+            "required": false,
+            "type": "decimal(18, 8)"
+          },
+          {
+            "id": 19,
+            "name": "REGION_ACE_MWH",
+            "required": false,
+            "type": "decimal(18, 8)"
+          },
+          {
+            "id": 20,
+            "name": "REGION_ASOE_MWH",
+            "required": false,
+            "type": "decimal(18, 8)"
+          },
+          {
+            "id": 21,
+            "name": "DIRECTION_SERVICE_ID",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "table": "BILLING_DIRECTION_RECON_OTHER"
+  },
+  "load_mode": "append",
+  "name": "BILLING_DIRECTION_RECON_OTHER",
+  "package": "BILLING_RUN",
+  "primary_key": [
+    "CONTRACTYEAR",
+    "WEEKNO",
+    "BILLRUNNO",
+    "DIRECTION_ID",
+    "REGIONID"
+  ],
+  "report_pairs": [
+    [
+      "BILLING",
+      "BILLING_DIRECTION_RECON_OTHER"
+    ]
+  ],
+  "temporal": {
+    "entity": [
+      "CONTRACTYEAR",
+      "WEEKNO",
+      "DIRECTION_ID",
+      "REGIONID"
+    ],
+    "order": [
+      "BILLRUNNO"
+    ],
+    "origin": "derived",
+    "valid": {
+      "kind": "timeless"
+    }
+  },
+  "time_column": "DIRECTION_START_DATE",
+  "visibility": "PUBLIC",
+  "x-format": 2
+}

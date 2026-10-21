@@ -1,0 +1,166 @@
+{
+  "columns": [
+    {
+      "comment": "End date and time of the dispatch interval",
+      "id": 1,
+      "model_type": "TIMESTAMP(0)",
+      "name": "SETTLEMENTDATE"
+    },
+    {
+      "comment": "Dispatch run no",
+      "id": 2,
+      "model_type": "NUMERIC(3,0)",
+      "name": "RUNNO"
+    },
+    {
+      "comment": "Constraint identifier",
+      "id": 3,
+      "model_type": "VARCHAR(20)",
+      "name": "CONSTRAINTID"
+    },
+    {
+      "comment": "Relaxed RHS used in attempt to avoid constraint violation",
+      "id": 4,
+      "model_type": "NUMERIC(16,6)",
+      "name": "RHS"
+    },
+    {
+      "comment": "Last date and time record changed",
+      "id": 5,
+      "model_type": "TIMESTAMP(0)",
+      "name": "LASTCHANGED"
+    },
+    {
+      "comment": "Version Number",
+      "id": 6,
+      "model_type": "NUMERIC(3,0)",
+      "name": "VERSIONNO"
+    }
+  ],
+  "declared": true,
+  "description": "CONSTRAINTRELAXATION_OCD contains details of interconnector constraints and unit ancillary service constraints relaxed in the over-constrained dispatch (OCD) re-run for this interval (if there was one).\nNote: INTERVENTION is not included in CONSTRAINTRELAXATION_OCD, since the relaxation of the same constraint is the same amount in both intervened and non-intervened cases.",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 21,
+        "from": {
+          "data-time": "2024-08-06T04:25:00+10:00",
+          "file": "PUBLIC_ARCHIVE#CONSTRAINTRELAXATION_OCD#FILE01#202408010000.zip",
+          "release": "2024-08",
+          "sha256": "4926434120f9f86ec0d92eb242dc9d4e9de3d7491cd6c94ce05272bf85124239"
+        },
+        "kinds": [
+          "archive"
+        ],
+        "overlaps": false,
+        "report": [
+          "PRICELOAD",
+          "CONSTRAINTRELAXATION"
+        ],
+        "rows": 304,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2026-04-20T17:30:00+10:00",
+          "file": "PUBLIC_ARCHIVE#CONSTRAINTRELAXATION_OCD#FILE01#202604010000.zip",
+          "release": "2026-04",
+          "sha256": "168e35388cad2f3e0c4f30fc33077ae004ed518480da64ef372a2f968530793b"
+        },
+        "updates": [],
+        "version": 1
+      }
+    ],
+    "schema-files": {
+      "0": "schema-4961a30d2372f20a.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "SETTLEMENTDATE",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 2,
+            "name": "RUNNO",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 3,
+            "name": "CONSTRAINTID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 4,
+            "name": "RHS",
+            "required": false,
+            "type": "decimal(16, 6)"
+          },
+          {
+            "id": 5,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 6,
+            "name": "VERSIONNO",
+            "required": true,
+            "type": "long"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2,
+          3,
+          6
+        ],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "table": "CONSTRAINTRELAXATION_OCD"
+  },
+  "load_mode": "append",
+  "name": "CONSTRAINTRELAXATION_OCD",
+  "package": "DISPATCH",
+  "primary_key": [
+    "SETTLEMENTDATE",
+    "RUNNO",
+    "CONSTRAINTID",
+    "VERSIONNO"
+  ],
+  "report_pairs": [
+    [
+      "PRICELOAD",
+      "CONSTRAINTRELAXATION"
+    ]
+  ],
+  "temporal": {
+    "cutoff": "LASTCHANGED",
+    "entity": [
+      "CONSTRAINTID"
+    ],
+    "order": [
+      "RUNNO",
+      "VERSIONNO",
+      "LASTCHANGED"
+    ],
+    "origin": "derived",
+    "valid": {
+      "column": "SETTLEMENTDATE",
+      "kind": "interval_end"
+    }
+  },
+  "time_column": "SETTLEMENTDATE",
+  "visibility": "PUBLIC",
+  "x-format": 2
+}

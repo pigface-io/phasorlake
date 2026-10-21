@@ -1,0 +1,148 @@
+{
+  "columns": [
+    {
+      "comment": "The From Date of the SAPS Pricing Application Period",
+      "id": 1,
+      "model_type": "TIMESTAMP(0)",
+      "name": "FROMDATE"
+    },
+    {
+      "comment": "The To Date of the SAPS Pricing Application Period",
+      "id": 2,
+      "model_type": "TIMESTAMP(0)",
+      "name": "TODATE"
+    },
+    {
+      "comment": "The Region ID for which the calculated SAPS Price is applicable",
+      "id": 3,
+      "model_type": "VARCHAR(20)",
+      "name": "REGIONID"
+    },
+    {
+      "comment": "The Date time of the record generation",
+      "id": 4,
+      "model_type": "TIMESTAMP(0)",
+      "name": "VERSION_DATETIME"
+    },
+    {
+      "comment": "The Region Reference Price for SAPS in the Region",
+      "id": 5,
+      "model_type": "NUMERIC(18,8)",
+      "name": "SAPS_RRP"
+    },
+    {
+      "comment": "Whether the SAPS Price is Firm or Non-Firm",
+      "id": 6,
+      "model_type": "NUMERIC(3,0)",
+      "name": "ISFIRM"
+    },
+    {
+      "comment": "The Last Changed Date time of the record",
+      "id": 7,
+      "model_type": "TIMESTAMP(0)",
+      "name": "LASTCHANGED"
+    }
+  ],
+  "declared": false,
+  "description": "The Settlement Price for SAPS Energy in each Region",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 21,
+        "from": {
+          "data-time": "2023-07-01T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#SETCFG_SAPS_SETT_PRICE#FILE01#202408010000.zip",
+          "release": "2024-08",
+          "sha256": "641dd9955549429bfaef625000a1500eab5c71d6d54a1176415432ba2ab1d728"
+        },
+        "kinds": [
+          "archive"
+        ],
+        "overlaps": false,
+        "report": [
+          "SETCFG",
+          "SAPS_SETT_PRICE"
+        ],
+        "rows": 18500,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2026-07-01T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#SETCFG_SAPS_SETT_PRICE#FILE01#202604010000.zip",
+          "release": "2026-04",
+          "sha256": "14ac2b35d9a887c2b5822289293b71ae6e5496b53aeae9ce6cae395edf9fe512"
+        },
+        "updates": [],
+        "version": 1
+      }
+    ],
+    "schema-files": {
+      "0": "schema-0f2b020382f2fc1d.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "FROMDATE",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 2,
+            "name": "TODATE",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 3,
+            "name": "REGIONID",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 4,
+            "name": "VERSION_DATETIME",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 5,
+            "name": "SAPS_RRP",
+            "required": false,
+            "type": "decimal(18, 8)"
+          },
+          {
+            "id": 6,
+            "name": "ISFIRM",
+            "required": false,
+            "type": "decimal(3, 0)"
+          },
+          {
+            "id": 7,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          }
+        ],
+        "identifier-field-ids": [],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "table": "SETCFG_SAPS_SETT_PRICE"
+  },
+  "load_mode": null,
+  "name": "SETCFG_SAPS_SETT_PRICE",
+  "package": null,
+  "primary_key": null,
+  "report_pairs": null,
+  "temporal": null,
+  "time_column": null,
+  "visibility": null,
+  "x-format": 2
+}

@@ -1,0 +1,205 @@
+{
+  "columns": [
+    {
+      "comment": "Dispatch interval that the prices were loaded to",
+      "id": 1,
+      "model_type": "TIMESTAMP(0)",
+      "name": "SETTLEMENTDATE"
+    },
+    {
+      "comment": "Dispatch run no; always 1",
+      "id": 2,
+      "model_type": "NUMERIC(3)",
+      "name": "RUNNO"
+    },
+    {
+      "comment": "Intervention 0/1",
+      "id": 3,
+      "model_type": "NUMERIC(2)",
+      "name": "INTERVENTION"
+    },
+    {
+      "comment": "ConstraintID/GenconID",
+      "id": 4,
+      "model_type": "VARCHAR(20)",
+      "name": "CONSTRAINTID"
+    },
+    {
+      "comment": "VersionNo",
+      "id": 5,
+      "model_type": "NUMERIC(3)",
+      "name": "VERSIONNO"
+    },
+    {
+      "comment": "The datetime that the record was last changed",
+      "id": 6,
+      "model_type": "TIMESTAMP(0)",
+      "name": "LASTCHANGED"
+    },
+    {
+      "comment": "RHS from OCD re-run",
+      "id": 7,
+      "model_type": "NUMERIC(15,5)",
+      "name": "RHS"
+    },
+    {
+      "comment": "marginalvalue from OCD re-run",
+      "id": 8,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MARGINALVALUE"
+    },
+    {
+      "comment": "The violation degree of this constraint in the solution result",
+      "id": 9,
+      "model_type": "NUMERIC(15,5)",
+      "name": "VIOLATIONDEGREE"
+    }
+  ],
+  "declared": true,
+  "description": "FCAS constraint solution from OCD re-run.",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 5,
+        "from": {
+          "data-time": "2024-10-28T15:05:00+10:00",
+          "file": "PUBLIC_ARCHIVE#DISPATCH_CONSTRAINT_FCAS_OCD#FILE01#202410010000.zip",
+          "release": "2024-10",
+          "sha256": "ec200ce4ff51e2ffbc840ab51dd9d632dcb431e920472158d6e56b84934d2155"
+        },
+        "kinds": [
+          "archive"
+        ],
+        "overlaps": false,
+        "report": [
+          "PRICELOAD",
+          "CONSTRAINT_FCAS_OCD"
+        ],
+        "rows": 1853,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2026-02-17T13:30:00+10:00",
+          "file": "PUBLIC_ARCHIVE#DISPATCH_CONSTRAINT_FCAS_OCD#FILE01#202602010000.zip",
+          "release": "2026-02",
+          "sha256": "86b6b970ab542e71bedf37f58140715bcc894ff1e13d5577485b0cea2826ea57"
+        },
+        "updates": [],
+        "version": 1
+      }
+    ],
+    "schema-files": {
+      "0": "schema-2f0af29d847f224f.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "SETTLEMENTDATE",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 2,
+            "name": "RUNNO",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 3,
+            "name": "INTERVENTION",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 4,
+            "name": "CONSTRAINTID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 5,
+            "name": "VERSIONNO",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 6,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 7,
+            "name": "RHS",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 8,
+            "name": "MARGINALVALUE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 9,
+            "name": "VIOLATIONDEGREE",
+            "required": false,
+            "type": "decimal(15, 5)"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "table": "DISPATCH_CONSTRAINT_FCAS_OCD"
+  },
+  "load_mode": "append",
+  "name": "DISPATCH_CONSTRAINT_FCAS_OCD",
+  "package": "DISPATCH",
+  "primary_key": [
+    "SETTLEMENTDATE",
+    "RUNNO",
+    "INTERVENTION",
+    "CONSTRAINTID",
+    "VERSIONNO"
+  ],
+  "report_pairs": [
+    [
+      "PRICELOAD",
+      "CONSTRAINT_FCAS_OCD"
+    ]
+  ],
+  "temporal": {
+    "cutoff": "LASTCHANGED",
+    "entity": [
+      "INTERVENTION",
+      "CONSTRAINTID"
+    ],
+    "order": [
+      "RUNNO",
+      "VERSIONNO",
+      "LASTCHANGED"
+    ],
+    "origin": "derived",
+    "valid": {
+      "column": "SETTLEMENTDATE",
+      "kind": "interval_end"
+    }
+  },
+  "time_column": "SETTLEMENTDATE",
+  "visibility": "PUBLIC",
+  "x-format": 2
+}

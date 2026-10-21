@@ -1,0 +1,284 @@
+{
+  "columns": [
+    {
+      "comment": "Year of the run",
+      "id": 1,
+      "model_type": "NUMERIC(4,0)",
+      "name": "CONTRACTYEAR"
+    },
+    {
+      "comment": "Week number of the run",
+      "id": 2,
+      "model_type": "NUMERIC(3,0)",
+      "name": "WEEKNO"
+    },
+    {
+      "comment": "Sequential run number",
+      "id": 3,
+      "model_type": "NUMERIC(3,0)",
+      "name": "BILLRUNNO"
+    },
+    {
+      "comment": "The billing run type, PRELIM, FINAL, REVISE or INTERIM",
+      "id": 4,
+      "model_type": "VARCHAR(6)",
+      "name": "STATUS"
+    },
+    {
+      "comment": "Flag",
+      "id": 5,
+      "model_type": "VARCHAR(1)",
+      "name": "ADJ_CLEARED"
+    },
+    {
+      "comment": "null, since not used",
+      "id": 6,
+      "model_type": "TIMESTAMP(0)",
+      "name": "AUTHORISEDDATE"
+    },
+    {
+      "comment": "null, since not used",
+      "id": 7,
+      "model_type": "VARCHAR(10)",
+      "name": "AUTHORISEDBY"
+    },
+    {
+      "comment": "When the results were posted",
+      "id": 8,
+      "model_type": "TIMESTAMP(0)",
+      "name": "POSTDATE"
+    },
+    {
+      "comment": "Who posted the results",
+      "id": 9,
+      "model_type": "VARCHAR(10)",
+      "name": "POSTBY"
+    },
+    {
+      "comment": "Last date and time record changed",
+      "id": 10,
+      "model_type": "TIMESTAMP(0)",
+      "name": "LASTCHANGED"
+    },
+    {
+      "comment": "null, since not used",
+      "id": 11,
+      "model_type": "TIMESTAMP(0)",
+      "name": "RECEIPTPOSTDATE"
+    },
+    {
+      "comment": "null, since not used",
+      "id": 12,
+      "model_type": "VARCHAR(10)",
+      "name": "RECEIPTPOSTBY"
+    },
+    {
+      "comment": "When the payment was posted",
+      "id": 13,
+      "model_type": "TIMESTAMP(0)",
+      "name": "PAYMENTPOSTDATE"
+    },
+    {
+      "comment": "Who posted the payment",
+      "id": 14,
+      "model_type": "VARCHAR(10)",
+      "name": "PAYMENTPOSTBY"
+    },
+    {
+      "comment": "Payment shortfall amount",
+      "id": 15,
+      "model_type": "NUMERIC(16,6)",
+      "name": "SHORTFALL"
+    },
+    {
+      "comment": "Not Used",
+      "id": 16,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MAKEUP"
+    }
+  ],
+  "declared": true,
+  "description": "BILLINGRUNTRK identifies the Statement type (i.e. Status of PRELIM, FINAL, REVISE) and date of the BillRunNo posted, per WeekNo. This provides a further extension of tracking data from the BILLINGDAYTRK table.",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 202,
+        "from": {
+          "data-time": "2009-06-19T08:39:42+10:00",
+          "file": "PUBLIC_DVD_BILLINGRUNTRK_200907010000.zip",
+          "release": "2009-07",
+          "sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261"
+        },
+        "kinds": [
+          "archive",
+          "dvd"
+        ],
+        "overlaps": false,
+        "report": [
+          "BILLING",
+          "RUNTRK"
+        ],
+        "rows": 9691,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2026-04-30T12:36:25+10:00",
+          "file": "PUBLIC_ARCHIVE#BILLINGRUNTRK#FILE01#202604010000.zip",
+          "release": "2026-04",
+          "sha256": "0e8df01382edc03a467c857b0a61b77c88243e5fd53eff258732cac1cd3b8763"
+        },
+        "updates": [],
+        "version": 5
+      }
+    ],
+    "schema-files": {
+      "0": "schema-c66dd3bdb793b2cd.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "CONTRACTYEAR",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 2,
+            "name": "WEEKNO",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 3,
+            "name": "BILLRUNNO",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 4,
+            "name": "STATUS",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 5,
+            "name": "ADJ_CLEARED",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 6,
+            "name": "AUTHORISEDDATE",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 7,
+            "name": "AUTHORISEDBY",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 8,
+            "name": "POSTDATE",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 9,
+            "name": "POSTBY",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 10,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 11,
+            "name": "RECEIPTPOSTDATE",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 12,
+            "name": "RECEIPTPOSTBY",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 13,
+            "name": "PAYMENTPOSTDATE",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 14,
+            "name": "PAYMENTPOSTBY",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 15,
+            "name": "SHORTFALL",
+            "required": false,
+            "type": "decimal(16, 8)"
+          },
+          {
+            "id": 16,
+            "name": "MAKEUP",
+            "required": false,
+            "type": "decimal(15, 8)"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2,
+          3
+        ],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "table": "BILLINGRUNTRK"
+  },
+  "load_mode": "append",
+  "name": "BILLINGRUNTRK",
+  "package": "BILLING_RUN",
+  "primary_key": [
+    "CONTRACTYEAR",
+    "WEEKNO",
+    "BILLRUNNO"
+  ],
+  "report_pairs": [
+    [
+      "BILLING",
+      "RUNTRK"
+    ]
+  ],
+  "temporal": {
+    "cutoff": "LASTCHANGED",
+    "entity": [
+      "CONTRACTYEAR",
+      "WEEKNO"
+    ],
+    "order": [
+      "BILLRUNNO",
+      "LASTCHANGED"
+    ],
+    "origin": "derived",
+    "valid": {
+      "kind": "timeless"
+    }
+  },
+  "time_column": "LASTCHANGED",
+  "visibility": "PUBLIC",
+  "x-format": 2
+}

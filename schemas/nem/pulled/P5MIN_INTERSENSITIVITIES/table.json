@@ -1,0 +1,670 @@
+{
+  "columns": [
+    {
+      "comment": "Definitive Run from which this solution derives",
+      "id": 1,
+      "model_type": "TIMESTAMP(0)",
+      "name": "RUN_DATETIME"
+    },
+    {
+      "comment": "Interconnector identifier",
+      "id": 2,
+      "model_type": "VARCHAR(20)",
+      "name": "INTERCONNECTORID"
+    },
+    {
+      "comment": "The unique identifier for the interval within this study",
+      "id": 3,
+      "model_type": "TIMESTAMP(0)",
+      "name": "INTERVAL_DATETIME"
+    },
+    {
+      "comment": "Flag to indicate if this result set was sourced from the pricing run (INTERVENTION=0) or the physical run (INTERVENTION=1). In the event there is not intervention in the market, both pricing and physical runs correspond to INTERVENTION=0)",
+      "id": 4,
+      "model_type": "NUMERIC(1,0)",
+      "name": "INTERVENTION"
+    },
+    {
+      "comment": "Flag to indicate if the sensitivity run contains an active intervention constraint: 0 = No, 1 = Yes",
+      "id": 5,
+      "model_type": "NUMERIC(1,0)",
+      "name": "INTERVENTION_ACTIVE"
+    },
+    {
+      "comment": "MW Flow value. Flow1 = MW flow for given Interconnector for Scenario 1",
+      "id": 6,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW1"
+    },
+    {
+      "comment": "MW Flow value. Flow2 = MW flow for given Interconnector for Scenario 2",
+      "id": 7,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW2"
+    },
+    {
+      "comment": "MW Flow value. Flow3 = MW flow for given Interconnector for Scenario 3",
+      "id": 8,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW3"
+    },
+    {
+      "comment": "MW Flow value. Flow4 = MW flow for given Interconnector for Scenario 4",
+      "id": 9,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW4"
+    },
+    {
+      "comment": "MW Flow value. Flow5 = MW flow for given Interconnector for Scenario 5",
+      "id": 10,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW5"
+    },
+    {
+      "comment": "MW Flow value. Flow6 = MW flow for given Interconnector for Scenario 6",
+      "id": 11,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW6"
+    },
+    {
+      "comment": "MW Flow value. Flow7 = MW flow for given Interconnector for Scenario 7",
+      "id": 12,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW7"
+    },
+    {
+      "comment": "MW Flow value. Flow8 = MW flow for given Interconnector for Scenario 8",
+      "id": 13,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW8"
+    },
+    {
+      "comment": "MW Flow value. Flow9 = MW flow for given Interconnector for Scenario 9",
+      "id": 14,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW9"
+    },
+    {
+      "comment": "MW Flow value. Flow10 = MW flow for given Interconnector for Scenario 10",
+      "id": 15,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW10"
+    },
+    {
+      "comment": "MW Flow value. Flow11 = MW flow for given Interconnector for Scenario 11",
+      "id": 16,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW11"
+    },
+    {
+      "comment": "MW Flow value. Flow12 = MW flow for given Interconnector for Scenario 12",
+      "id": 17,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW12"
+    },
+    {
+      "comment": "MW Flow value. Flow13 = MW flow for given Interconnector for Scenario 13",
+      "id": 18,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW13"
+    },
+    {
+      "comment": "MW Flow value. Flow14 = MW flow for given Interconnector for Scenario 14",
+      "id": 19,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW14"
+    },
+    {
+      "comment": "MW Flow value. Flow15 = MW flow for given Interconnector for Scenario 15",
+      "id": 20,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW15"
+    },
+    {
+      "comment": "MW Flow value. Flow16 = MW flow for given Interconnector for Scenario 16",
+      "id": 21,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW16"
+    },
+    {
+      "comment": "MW Flow value. Flow17 = MW flow for given Interconnector for Scenario 17",
+      "id": 22,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW17"
+    },
+    {
+      "comment": "MW Flow value. Flow18 = MW flow for given Interconnector for Scenario 18",
+      "id": 23,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW18"
+    },
+    {
+      "comment": "MW Flow value. Flow19 = MW flow for given Interconnector for Scenario 19",
+      "id": 24,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW19"
+    },
+    {
+      "comment": "MW Flow value. Flow20 = MW flow for given Interconnector for Scenario 20",
+      "id": 25,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW20"
+    },
+    {
+      "comment": "MW Flow value. Flow21 = MW flow for given Interconnector for Scenario 21",
+      "id": 26,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW21"
+    },
+    {
+      "comment": "MW Flow value. Flow22 = MW flow for given Interconnector for Scenario 22",
+      "id": 27,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW22"
+    },
+    {
+      "comment": "MW Flow value. Flow23 = MW flow for given Interconnector for Scenario 23",
+      "id": 28,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW23"
+    },
+    {
+      "comment": "MW Flow value. Flow24 = MW flow for given Interconnector for Scenario 24",
+      "id": 29,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW24"
+    },
+    {
+      "comment": "MW Flow value. Flow25 = MW flow for given Interconnector for Scenario 25",
+      "id": 30,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW25"
+    },
+    {
+      "comment": "MW Flow value. Flow26 = MW flow for given Interconnector for Scenario 26",
+      "id": 31,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW26"
+    },
+    {
+      "comment": "MW Flow value. Flow27 = MW flow for given Interconnector for Scenario 27",
+      "id": 32,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW27"
+    },
+    {
+      "comment": "MW Flow value. Flow28 = MW flow for given Interconnector for Scenario 28",
+      "id": 33,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW28"
+    },
+    {
+      "comment": "MW Flow value. Flow29 = MW flow for given Interconnector for Scenario 29",
+      "id": 34,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW29"
+    },
+    {
+      "comment": "MW Flow value. Flow30 = MW flow for given Interconnector for Scenario 30",
+      "id": 35,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW30"
+    },
+    {
+      "comment": "MW Flow value. Flow31 = MW flow for given Interconnector for Scenario 31",
+      "id": 36,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW31"
+    },
+    {
+      "comment": "MW Flow value. Flow32 = MW flow for given Interconnector for Scenario 32",
+      "id": 37,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW32"
+    },
+    {
+      "comment": "MW Flow value. Flow33 = MW flow for given Interconnector for Scenario 33",
+      "id": 38,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW33"
+    },
+    {
+      "comment": "MW Flow value. Flow34 = MW flow for given Interconnector for Scenario 34",
+      "id": 39,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW34"
+    },
+    {
+      "comment": "MW Flow value. Flow35 = MW flow for given Interconnector for Scenario 35",
+      "id": 40,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW35"
+    },
+    {
+      "comment": "MW Flow value. Flow36 = MW flow for given Interconnector for Scenario 36",
+      "id": 41,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW36"
+    },
+    {
+      "comment": "MW Flow value. Flow37 = MW flow for given Interconnector for Scenario 37",
+      "id": 42,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW37"
+    },
+    {
+      "comment": "MW Flow value. Flow38 = MW flow for given Interconnector for Scenario 38",
+      "id": 43,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW38"
+    },
+    {
+      "comment": "MW Flow value. Flow39 = MW flow for given Interconnector for Scenario 39",
+      "id": 44,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW39"
+    },
+    {
+      "comment": "MW Flow value. Flow40 = MW flow for given Interconnector for Scenario 40",
+      "id": 45,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW40"
+    },
+    {
+      "comment": "MW Flow value. Flow41 = MW flow for given Interconnector for Scenario 41",
+      "id": 46,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW41"
+    },
+    {
+      "comment": "MW Flow value. Flow42 = MW flow for given Interconnector for Scenario 42",
+      "id": 47,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW42"
+    },
+    {
+      "comment": "MW Flow value. Flow43 = MW flow for given Interconnector for Scenario 43",
+      "id": 48,
+      "model_type": "NUMERIC(15,5)",
+      "name": "MWFLOW43"
+    },
+    {
+      "comment": "Timestamp when this record was last modified",
+      "id": 49,
+      "model_type": "TIMESTAMP(0)",
+      "name": "LASTCHANGED"
+    }
+  ],
+  "declared": true,
+  "description": "Price Sensitivies for 5MinPD solution. New solution every 5 minutes. Current Scenarios defined in P5MIN_SCENARIODEMANDTRK/P5MIN_SCENARIODEMAND",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 21,
+        "from": {
+          "data-time": "2024-08-01T00:05:00+10:00",
+          "file": "PUBLIC_ARCHIVE#P5MIN_INTERSENSITIVITIES#FILE01#202408010000.zip",
+          "release": "2024-08",
+          "sha256": "4d82483c6ed04dc4756b41a7a4f52885cbffb4740357e6557cd4f32581e9cad5"
+        },
+        "kinds": [
+          "archive"
+        ],
+        "overlaps": false,
+        "report": [
+          "P5MIN",
+          "INTERSENSITIVITIES"
+        ],
+        "rows": 13228560,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2026-05-01T00:55:00+10:00",
+          "file": "PUBLIC_ARCHIVE#P5MIN_INTERSENSITIVITIES#FILE01#202604010000.zip",
+          "release": "2026-04",
+          "sha256": "371bb8ee974163e34f2f706c93be7af7834ced4cf81415a09a8fe4fd95fbe261"
+        },
+        "updates": [],
+        "version": 1
+      }
+    ],
+    "schema-files": {
+      "0": "schema-69bee77e7adbec0d.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "RUN_DATETIME",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 2,
+            "name": "INTERCONNECTORID",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 3,
+            "name": "INTERVAL_DATETIME",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 4,
+            "name": "INTERVENTION",
+            "required": false,
+            "type": "decimal(1, 0)"
+          },
+          {
+            "id": 5,
+            "name": "INTERVENTION_ACTIVE",
+            "required": false,
+            "type": "decimal(1, 0)"
+          },
+          {
+            "id": 6,
+            "name": "MWFLOW1",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 7,
+            "name": "MWFLOW2",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 8,
+            "name": "MWFLOW3",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 9,
+            "name": "MWFLOW4",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 10,
+            "name": "MWFLOW5",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 11,
+            "name": "MWFLOW6",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 12,
+            "name": "MWFLOW7",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 13,
+            "name": "MWFLOW8",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 14,
+            "name": "MWFLOW9",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 15,
+            "name": "MWFLOW10",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 16,
+            "name": "MWFLOW11",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 17,
+            "name": "MWFLOW12",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 18,
+            "name": "MWFLOW13",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 19,
+            "name": "MWFLOW14",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 20,
+            "name": "MWFLOW15",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 21,
+            "name": "MWFLOW16",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 22,
+            "name": "MWFLOW17",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 23,
+            "name": "MWFLOW18",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 24,
+            "name": "MWFLOW19",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 25,
+            "name": "MWFLOW20",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 26,
+            "name": "MWFLOW21",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 27,
+            "name": "MWFLOW22",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 28,
+            "name": "MWFLOW23",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 29,
+            "name": "MWFLOW24",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 30,
+            "name": "MWFLOW25",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 31,
+            "name": "MWFLOW26",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 32,
+            "name": "MWFLOW27",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 33,
+            "name": "MWFLOW28",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 34,
+            "name": "MWFLOW29",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 35,
+            "name": "MWFLOW30",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 36,
+            "name": "MWFLOW31",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 37,
+            "name": "MWFLOW32",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 38,
+            "name": "MWFLOW33",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 39,
+            "name": "MWFLOW34",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 40,
+            "name": "MWFLOW35",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 41,
+            "name": "MWFLOW36",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 42,
+            "name": "MWFLOW37",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 43,
+            "name": "MWFLOW38",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 44,
+            "name": "MWFLOW39",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 45,
+            "name": "MWFLOW40",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 46,
+            "name": "MWFLOW41",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 47,
+            "name": "MWFLOW42",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 48,
+            "name": "MWFLOW43",
+            "required": false,
+            "type": "decimal(15, 5)"
+          },
+          {
+            "id": 49,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          }
+        ],
+        "identifier-field-ids": [],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "table": "P5MIN_INTERSENSITIVITIES"
+  },
+  "load_mode": "append",
+  "name": "P5MIN_INTERSENSITIVITIES",
+  "package": null,
+  "primary_key": [],
+  "report_pairs": [
+    [
+      "P5MIN",
+      "INTERSENSITIVITIES"
+    ]
+  ],
+  "temporal": {
+    "cutoff": "LASTCHANGED",
+    "entity": [
+      "INTERVENTION"
+    ],
+    "order": [
+      "RUN_DATETIME",
+      "LASTCHANGED"
+    ],
+    "origin": "derived",
+    "valid": {
+      "kind": "timeless"
+    }
+  },
+  "time_column": "INTERVAL_DATETIME",
+  "visibility": "PUBLIC",
+  "x-format": 2
+}

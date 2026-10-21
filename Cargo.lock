@@ -2848,7 +2848,7 @@ dependencies = [
 [[package]]
 name = "utilake-iceberg"
 version = "0.1.0"
-source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=6629dc4ae55128a9ea25e3f90a716dce9e07800d#6629dc4ae55128a9ea25e3f90a716dce9e07800d"
+source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=46676f97c9af7d720a17ffca12fb5172808c1600#46676f97c9af7d720a17ffca12fb5172808c1600"
 dependencies = [
  "serde",
  "serde_json",
@@ -3380,6 +3380,8 @@ dependencies = [
  "clap",
  "serde",
  "serde_json",
+ "sha2",
+ "tempfile",
  "utilake-core",
  "utilake-iceberg",
  "utilake-mms-decode",

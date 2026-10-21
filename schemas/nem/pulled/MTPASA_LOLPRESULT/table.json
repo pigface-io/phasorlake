@@ -1,0 +1,242 @@
+{
+  "columns": [
+    {
+      "comment": "Date processing of the run begins.",
+      "id": 1,
+      "model_type": "TIMESTAMP(0)",
+      "name": "RUN_DATETIME"
+    },
+    {
+      "comment": "Unique run id.",
+      "id": 2,
+      "model_type": "NUMERIC(4)",
+      "name": "RUN_NO"
+    },
+    {
+      "comment": "Type of run. Always LOLP",
+      "id": 3,
+      "model_type": "VARCHAR(20)",
+      "name": "RUNTYPE"
+    },
+    {
+      "comment": "Day this result is for",
+      "id": 4,
+      "model_type": "TIMESTAMP(0)",
+      "name": "DAY"
+    },
+    {
+      "comment": "The unique region identifier",
+      "id": 5,
+      "model_type": "VARCHAR(20)",
+      "name": "REGIONID"
+    },
+    {
+      "comment": "The half hourly interval period with the highest LOLP, or highest region demand if LOLP = 0 for all intervals (1..48)",
+      "id": 6,
+      "model_type": "NUMERIC(3,0)",
+      "name": "WORST_INTERVAL_PERIODID"
+    },
+    {
+      "comment": "The Abstract Operational Demand for the worst interval in this region (MW)",
+      "id": 7,
+      "model_type": "NUMERIC(12,2)",
+      "name": "WORST_INTERVAL_DEMAND"
+    },
+    {
+      "comment": "The half hourly aggregate intermittent generation for the worst interval in this region (MW)",
+      "id": 8,
+      "model_type": "NUMERIC(12,2)",
+      "name": "WORST_INTERVAL_INTGEN"
+    },
+    {
+      "comment": "The half hourly aggregate demand side participation for the worst interval period in this region (MW)",
+      "id": 9,
+      "model_type": "NUMERIC(12,2)",
+      "name": "WORST_INTERVAL_DSP"
+    },
+    {
+      "comment": "Loss of Load Probability for the worst interval in this region",
+      "id": 10,
+      "model_type": "NUMERIC(8,5)",
+      "name": "LOSSOFLOADPROBABILITY"
+    },
+    {
+      "comment": "Loss of Load Magnitude for the worst interval in this region. Values are LOW, MEDIUM, HIGH",
+      "id": 11,
+      "model_type": "VARCHAR(20)",
+      "name": "LOSSOFLOADMAGNITUDE"
+    },
+    {
+      "comment": "Last date and time record changed",
+      "id": 12,
+      "model_type": "TIMESTAMP(0)",
+      "name": "LASTCHANGED"
+    }
+  ],
+  "declared": true,
+  "description": "Results for Loss of Load Probability (LOLP) run per day",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 96,
+        "from": {
+          "data-time": "2018-05-14T10:59:49+10:00",
+          "file": "PUBLIC_DVD_MTPASA_LOLPRESULT_201805010000.zip",
+          "release": "2018-05",
+          "sha256": "20531510a03e8654b07a2eff7b45cfd001c4d328b7d1ec5db61fb6d1f20d9016"
+        },
+        "kinds": [
+          "archive",
+          "dvd"
+        ],
+        "overlaps": false,
+        "report": [
+          "MTPASA",
+          "LOLPRESULT"
+        ],
+        "rows": 1588400,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2026-04-26T20:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#MTPASA_LOLPRESULT#FILE01#202604010000.zip",
+          "release": "2026-04",
+          "sha256": "dfa3cebce91f33862ca15539f8cf32310e3319d80dacc2d040185bda5963f94d"
+        },
+        "updates": [],
+        "version": 1
+      }
+    ],
+    "schema-files": {
+      "0": "schema-1258cb847fbe447e.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "RUN_DATETIME",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 2,
+            "name": "RUN_NO",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 3,
+            "name": "RUNTYPE",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 4,
+            "name": "DAY",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 5,
+            "name": "REGIONID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 6,
+            "name": "WORST_INTERVAL_PERIODID",
+            "required": false,
+            "type": "decimal(3, 0)"
+          },
+          {
+            "id": 7,
+            "name": "WORST_INTERVAL_DEMAND",
+            "required": false,
+            "type": "decimal(12, 2)"
+          },
+          {
+            "id": 8,
+            "name": "WORST_INTERVAL_INTGEN",
+            "required": false,
+            "type": "decimal(12, 2)"
+          },
+          {
+            "id": 9,
+            "name": "WORST_INTERVAL_DSP",
+            "required": false,
+            "type": "decimal(12, 2)"
+          },
+          {
+            "id": 10,
+            "name": "LOSSOFLOADPROBABILITY",
+            "required": false,
+            "type": "decimal(8, 5)"
+          },
+          {
+            "id": 11,
+            "name": "LOSSOFLOADMAGNITUDE",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 12,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "table": "MTPASA_LOLPRESULT"
+  },
+  "load_mode": "append",
+  "name": "MTPASA_LOLPRESULT",
+  "package": "MTPASA",
+  "primary_key": [
+    "RUN_DATETIME",
+    "RUN_NO",
+    "RUNTYPE",
+    "DAY",
+    "REGIONID"
+  ],
+  "report_pairs": [
+    [
+      "MTPASA",
+      "LOLPRESULT"
+    ]
+  ],
+  "temporal": {
+    "cutoff": "RUN_DATETIME",
+    "entity": [
+      "RUNTYPE",
+      "REGIONID"
+    ],
+    "order": [
+      "RUN_DATETIME",
+      "RUN_NO",
+      "LASTCHANGED"
+    ],
+    "origin": "derived",
+    "valid": {
+      "column": "DAY",
+      "kind": "instant"
+    }
+  },
+  "time_column": "RUN_DATETIME",
+  "visibility": "PUBLIC",
+  "x-format": 2
+}

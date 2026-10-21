@@ -1,0 +1,208 @@
+{
+  "columns": [
+    {
+      "comment": "ID defining this data source for use in constraints",
+      "id": 1,
+      "model_type": "VARCHAR(21)",
+      "name": "SPD_ID"
+    },
+    {
+      "comment": "The date that this record is applies from (inclusive)",
+      "id": 2,
+      "model_type": "TIMESTAMP(0)",
+      "name": "VALIDFROM"
+    },
+    {
+      "comment": "The date that this record applies until (exclusive)",
+      "id": 3,
+      "model_type": "TIMESTAMP(0)",
+      "name": "VALIDTO"
+    },
+    {
+      "comment": "The region that this rating is for",
+      "id": 4,
+      "model_type": "VARCHAR(10)",
+      "name": "REGIONID"
+    },
+    {
+      "comment": "The substation the equipment is located at",
+      "id": 5,
+      "model_type": "VARCHAR(30)",
+      "name": "SUBSTATIONID"
+    },
+    {
+      "comment": "The type of equipment. Valid values are:\nLINE = Line\nTRANS = Transformer\nCB = Circuit breaker\nISOL = Isolator\nCAP = Capacitor\nREAC = Reactor\nUNIT = Unit",
+      "id": 6,
+      "model_type": "VARCHAR(10)",
+      "name": "EQUIPMENTTYPE"
+    },
+    {
+      "comment": "A unique identifier for this equipment at this substation, and based on its type",
+      "id": 7,
+      "model_type": "VARCHAR(30)",
+      "name": "EQUIPMENTID"
+    },
+    {
+      "comment": "The rating level of the value used, one of:\nNORM = Continuous rating value. Applied under pre-contingent conditions.\nEMER = Continuous rating value. Applied under pre-contingent conditions\nLDSH = Load Shedding",
+      "id": 8,
+      "model_type": "VARCHAR(10)",
+      "name": "RATINGLEVEL"
+    },
+    {
+      "comment": "One of:\n1 = Normally uses dynamic ratings\n0 = No dynamic ratings, static ratings are used",
+      "id": 9,
+      "model_type": "NUMERIC(1,0)",
+      "name": "ISDYNAMIC"
+    },
+    {
+      "comment": "The time that this record was last changed",
+      "id": 10,
+      "model_type": "TIMESTAMP(0)",
+      "name": "LASTCHANGED"
+    }
+  ],
+  "declared": true,
+  "description": "NETWORK_RATING defines a list of the equipment ratings that may be used as inputs to market constraints.\nIf the rating is flagged as dynamic then in real-time the rating will be dynamically determined and the static value will be used as a fallback value should the dynamic value fail.\nNote:\nIn some rare cases equipment has ratings provided from more than one TNSP. This is identified by a different SPD Id. The value used in the NEM is normally the more restrictive of the two values.",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 21,
+        "from": {
+          "data-time": "2007-07-09T12:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#NETWORK_RATING#FILE01#202408010000.zip",
+          "release": "2024-08",
+          "sha256": "3c5168180570804fe66cff03e62dcf60c0f4ee62256bff5ade3fafd304e667fa"
+        },
+        "kinds": [
+          "archive"
+        ],
+        "overlaps": false,
+        "report": [
+          "NETWORK",
+          "RATING"
+        ],
+        "rows": 68529,
+        "schema-id": 0,
+        "to": {
+          "data-time": "9999-12-31T17:10:00+10:00",
+          "file": "PUBLIC_ARCHIVE#NETWORK_RATING#FILE01#202604010000.zip",
+          "release": "2026-04",
+          "sha256": "b5a26c7bea9f5a188ff8ba4a39702b3b5df7c093c0968609affde3dfea3b4f49"
+        },
+        "updates": [],
+        "version": 1
+      }
+    ],
+    "schema-files": {
+      "0": "schema-0e922612515e8122.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "SPD_ID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 2,
+            "name": "VALIDFROM",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 3,
+            "name": "VALIDTO",
+            "required": false,
+            "type": "timestamptz"
+          },
+          {
+            "id": 4,
+            "name": "REGIONID",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 5,
+            "name": "SUBSTATIONID",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 6,
+            "name": "EQUIPMENTTYPE",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 7,
+            "name": "EQUIPMENTID",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 8,
+            "name": "RATINGLEVEL",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 9,
+            "name": "ISDYNAMIC",
+            "required": false,
+            "type": "decimal(1, 0)"
+          },
+          {
+            "id": 10,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2
+        ],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "table": "NETWORK_RATING"
+  },
+  "load_mode": "append",
+  "name": "NETWORK_RATING",
+  "package": "NETWORK",
+  "primary_key": [
+    "SPD_ID",
+    "VALIDFROM"
+  ],
+  "report_pairs": [
+    [
+      "NETWORK",
+      "RATING"
+    ]
+  ],
+  "temporal": {
+    "cutoff": "LASTCHANGED",
+    "entity": [
+      "SPD_ID"
+    ],
+    "order": [
+      "LASTCHANGED"
+    ],
+    "origin": "derived",
+    "valid": {
+      "column": "VALIDFROM",
+      "kind": "from"
+    }
+  },
+  "time_column": "LASTCHANGED",
+  "visibility": "PUBLIC",
+  "x-format": 2
+}

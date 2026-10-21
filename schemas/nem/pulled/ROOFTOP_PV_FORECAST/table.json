@@ -1,0 +1,188 @@
+{
+  "columns": [
+    {
+      "comment": "Date time this forecast was produced",
+      "id": 1,
+      "model_type": "TIMESTAMP(0)",
+      "name": "VERSION_DATETIME"
+    },
+    {
+      "comment": "Region identifier",
+      "id": 2,
+      "model_type": "VARCHAR(20)",
+      "name": "REGIONID"
+    },
+    {
+      "comment": "The forecast half-hour interval (time ending)",
+      "id": 3,
+      "model_type": "TIMESTAMP(0)",
+      "name": "INTERVAL_DATETIME"
+    },
+    {
+      "comment": "The average forecast value in MW at the interval end",
+      "id": 4,
+      "model_type": "NUMERIC(12,3)",
+      "name": "POWERMEAN"
+    },
+    {
+      "comment": "50% probability of exceedance forecast value in MW at the interval end",
+      "id": 5,
+      "model_type": "NUMERIC(12,3)",
+      "name": "POWERPOE50"
+    },
+    {
+      "comment": "90% probability of exceedance forecast value in MW at the interval end",
+      "id": 6,
+      "model_type": "NUMERIC(12,3)",
+      "name": "POWERPOELOW"
+    },
+    {
+      "comment": "10% probability of exceedance forecast value in MW at the interval end",
+      "id": 7,
+      "model_type": "NUMERIC(12,3)",
+      "name": "POWERPOEHIGH"
+    },
+    {
+      "comment": "Last date and time record changed",
+      "id": 8,
+      "model_type": "TIMESTAMP(0)",
+      "name": "LASTCHANGED"
+    }
+  ],
+  "declared": true,
+  "description": "Regional forecasts of Rooftop Solar generation across the half-hour intervals over 8 days. AEMO plans to remove this table in a Data Model version release after 5.6.",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 117,
+        "from": {
+          "data-time": "2016-08-01T00:30:00+10:00",
+          "file": "PUBLIC_DVD_ROOFTOP_PV_FORECAST_201608010000.zip",
+          "release": "2016-08",
+          "sha256": "7c15b7e00e7eeae609aafbfb500e848e05a1d4b448e968a78fb312eef5214e40"
+        },
+        "kinds": [
+          "archive",
+          "dvd"
+        ],
+        "overlaps": false,
+        "report": [
+          "ROOFTOP",
+          "FORECAST"
+        ],
+        "rows": 318876865,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2026-05-09T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#ROOFTOP_PV_FORECAST#FILE01#202604010000.zip",
+          "release": "2026-04",
+          "sha256": "6ac4477651c1dd6893a35849dd3cdd3869ed4063d2ef02534ca16e746de644ec"
+        },
+        "updates": [],
+        "version": 1
+      }
+    ],
+    "schema-files": {
+      "0": "schema-5b244ba456aa6594.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "VERSION_DATETIME",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 2,
+            "name": "REGIONID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 3,
+            "name": "INTERVAL_DATETIME",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 4,
+            "name": "POWERMEAN",
+            "required": false,
+            "type": "decimal(12, 3)"
+          },
+          {
+            "id": 5,
+            "name": "POWERPOE50",
+            "required": false,
+            "type": "decimal(12, 3)"
+          },
+          {
+            "id": 6,
+            "name": "POWERPOELOW",
+            "required": false,
+            "type": "decimal(12, 3)"
+          },
+          {
+            "id": 7,
+            "name": "POWERPOEHIGH",
+            "required": false,
+            "type": "decimal(12, 3)"
+          },
+          {
+            "id": 8,
+            "name": "LASTCHANGED",
+            "required": false,
+            "type": "timestamptz"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2,
+          3
+        ],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "table": "ROOFTOP_PV_FORECAST"
+  },
+  "load_mode": "append",
+  "name": "ROOFTOP_PV_FORECAST",
+  "package": "DEMAND_FORECASTS",
+  "primary_key": [
+    "VERSION_DATETIME",
+    "REGIONID",
+    "INTERVAL_DATETIME"
+  ],
+  "report_pairs": [
+    [
+      "ROOFTOP",
+      "FORECAST"
+    ]
+  ],
+  "temporal": {
+    "cutoff": "VERSION_DATETIME",
+    "entity": [
+      "REGIONID"
+    ],
+    "order": [
+      "VERSION_DATETIME",
+      "LASTCHANGED"
+    ],
+    "origin": "derived",
+    "valid": {
+      "column": "INTERVAL_DATETIME",
+      "kind": "interval_end"
+    }
+  },
+  "time_column": "INTERVAL_DATETIME",
+  "visibility": "PUBLIC",
+  "x-format": 2
+}

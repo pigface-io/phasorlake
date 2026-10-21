@@ -1,0 +1,138 @@
+{
+  "columns": [
+    {
+      "comment": "The interest account ID for calculating the interest payment",
+      "id": 1,
+      "model_type": "VARCHAR(20)",
+      "name": "INTEREST_ACCT_ID"
+    },
+    {
+      "comment": "The effective date of the interest rate change",
+      "id": 2,
+      "model_type": "TIMESTAMP(0)",
+      "name": "EFFECTIVEDATE"
+    },
+    {
+      "comment": "Date Time this record was added",
+      "id": 3,
+      "model_type": "TIMESTAMP(0)",
+      "name": "VERSION_DATETIME"
+    },
+    {
+      "comment": "The interest rate for the interest account ID as on the effective date.",
+      "id": 4,
+      "model_type": "NUMERIC(18,8)",
+      "name": "INTEREST_RATE"
+    }
+  ],
+  "declared": true,
+  "description": "The security deposit interest rate on a daily basis. This is the public table published when the business enter and authorise a new daily interest rate",
+  "iceberg": {
+    "breaking": [],
+    "format-version": 3,
+    "runs": [
+      {
+        "changes": [
+          "first"
+        ],
+        "files": 21,
+        "from": {
+          "data-time": "2018-02-07T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#SECDEPOSIT_INTEREST_RATE#FILE01#202408010000.zip",
+          "release": "2024-08",
+          "sha256": "5293125f014546764bd86ff07a2fad3d78aa9ada948b409b21d4c84aee698f2c"
+        },
+        "kinds": [
+          "archive"
+        ],
+        "overlaps": false,
+        "report": [
+          "BILLING_CONFIG",
+          "SECDEPOSIT_INTEREST_RATE"
+        ],
+        "rows": 756,
+        "schema-id": 0,
+        "to": {
+          "data-time": "2021-05-05T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#SECDEPOSIT_INTEREST_RATE#FILE01#202604010000.zip",
+          "release": "2026-04",
+          "sha256": "fc6fe1b21361036db2bdd14ba6771a5044304c6eacbfc39ffc455a9560d500fa"
+        },
+        "updates": [],
+        "version": 1
+      }
+    ],
+    "schema-files": {
+      "0": "schema-571368517df1cecf.json"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "INTEREST_ACCT_ID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 2,
+            "name": "EFFECTIVEDATE",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 3,
+            "name": "VERSION_DATETIME",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 4,
+            "name": "INTEREST_RATE",
+            "required": false,
+            "type": "decimal(18, 8)"
+          }
+        ],
+        "identifier-field-ids": [
+          1,
+          2,
+          3
+        ],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "table": "SECDEPOSIT_INTEREST_RATE"
+  },
+  "load_mode": "append",
+  "name": "SECDEPOSIT_INTEREST_RATE",
+  "package": "BILLING_CONFIG",
+  "primary_key": [
+    "INTEREST_ACCT_ID",
+    "EFFECTIVEDATE",
+    "VERSION_DATETIME"
+  ],
+  "report_pairs": [
+    [
+      "BILLING_CONFIG",
+      "SECDEPOSIT_INTEREST_RATE"
+    ]
+  ],
+  "temporal": {
+    "cutoff": "VERSION_DATETIME",
+    "entity": [
+      "INTEREST_ACCT_ID"
+    ],
+    "order": [
+      "VERSION_DATETIME"
+    ],
+    "origin": "derived",
+    "valid": {
+      "column": "EFFECTIVEDATE",
+      "kind": "from"
+    }
+  },
+  "time_column": "EFFECTIVEDATE",
+  "visibility": "PUBLIC",
+  "x-format": 2
+}
