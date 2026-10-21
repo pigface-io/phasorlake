@@ -25,6 +25,7 @@ utilake-mms-decode.workspace = true
 utilake-nem.workspace = true
 clap.workspace = true
 flate2.workspace = true
+jiff.workspace = true
 tokio.workspace = true
 serde.workspace = true
 serde_json.workspace = true

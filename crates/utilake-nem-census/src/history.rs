@@ -2,30 +2,45 @@
 //! record: its schemas, and the runs of AEMO files written under them.
 //!
 //! Every block the census recorded is one observation. A table's
-//! observations are taken in data order (the first time value of the block,
-//! then when AEMO published the file, then the file's name, then the block's
-//! place in it), and each is given the schema its columns need:
+//! observations are taken in the order AEMO released them: the month of
+//! the release (the MMSDM archive month a file belongs to, a report CSV's
+//! month), then where the block's data ends (its last time value, as an
+//! instant), then the file's name, then the block's place in it. This is
+//! the order an Iceberg table commits them in. It is also the only order
+//! that holds the history still when files restate the past: each month's
+//! `FPP_USAGE` file holds every interval since 2024-12-09, and the
+//! `FPP_CONTRIBUTION_FACTOR` files of 2026-05 on restate 2025 in a new
+//! layout; by data alone those interleave with the files before them. A
+//! file's recorded publication time cannot order them either: it is when
+//! the server last touched the file, and AEMO touched most of the archive
+//! again in 2026-04. Each run keeps the exact span of its data. Each observation is given the
+//! schema its columns need:
 //!
-//! - **Field ids are never minted twice.** A column keeps its id for as long
-//!   as its type can widen to hold what arrives, also across files that
-//!   leave it out: a table that alternates between two column lists keeps
-//!   two schemas, not a new one per file. Only a type Iceberg cannot reach
-//!   from the old one (a number that becomes text) takes a new id, and is
-//!   recorded as breaking with its file and time.
-//! - **Types only widen.** A column's type is [`choose`] over everything
-//!   seen of it so far and what that month's control file and data-model
-//!   release declare. A wider type promotes the field; a narrower
-//!   declaration later keeps the wider type.
+//! - **One field per lineage.** A column's lineage is its observations
+//!   until its values turn from a number or a date to text (or between the
+//!   two). The lineage is one field: its id is never minted twice, also
+//!   across files that leave the column out, so a table that alternates
+//!   between two column lists keeps two schemas, not a new one per file. A
+//!   new lineage is a new field, recorded as breaking with its file and
+//!   time.
+//! - **One type per field.** A field's type is [`choose`] over everything
+//!   its lineage holds and the widest that the control files and data-model
+//!   releases of its months declare. Choosing it from the values seen so far
+//!   instead would re-type a column whose first months were all null, and
+//!   would turn more digits after the point into a new field (Iceberg
+//!   cannot widen a scale); nulls fit any type, and a column's values are
+//!   all known when the census is folded.
 //! - **A key column is required** until a file holds a row without it, and
 //!   optional from then on.
 //! - **Schemas are interned:** one with the same columns, order and key as
 //!   an earlier one is that one, with its id.
 //!
-//! Consecutive observations with the same schema, report version, report
-//! pair and kind of file fold into a run. A run says what changed at its
-//! start (`schema`, `version`, `kind`, `report`), the Iceberg updates from
-//! the run before it, and whether its data overlaps the run before (two
-//! kinds of file published side by side). Nothing in a run is merged away:
+//! Consecutive observations with the same schema, report version and
+//! report pair fold into a run, with the kinds of file it came in (the
+//! same data published as archive and DVD files is one run, not one per
+//! file). A run says what changed at its start (`schema`, `version`,
+//! `report`), the Iceberg updates from the run before it, and whether its
+//! data overlaps the run before. Nothing in a run is merged away:
 //! its first and last file, files and rows are kept, so every change has
 //! the file and the time it happened at.
 
@@ -33,7 +48,7 @@ use std::collections::BTreeMap;
 
 use serde_json::{Value, json};
 use utilake_core::YearMonth;
-use utilake_iceberg::{Declared, Evidence, Field, IcebergType, Schema, choose};
+use utilake_iceberg::{Declared, Evidence, Field, IcebergType, Kind, Schema, choose};
 use utilake_mms_registry::shape::TypeClass;
 
 use crate::census::{BlockRecord, FileRecord};
@@ -86,7 +101,8 @@ pub struct Mark {
 /// One observation: a block, or a run of report files of one shape.
 #[derive(Debug, Clone)]
 struct Obs {
-    key: (String, String, String, u32),
+    /// Release month, data end in seconds, file, block.
+    key: (YearMonth, i64, String, u32),
     month: YearMonth,
     report: (String, String),
     version: u16,
@@ -116,8 +132,6 @@ pub enum Change {
     Schema,
     /// Another AEMO version of the report.
     Version,
-    /// Another kind of file.
-    Kind,
     /// Another report pair.
     Report,
 }
@@ -129,7 +143,6 @@ impl Change {
             Self::First => "first",
             Self::Schema => "schema",
             Self::Version => "version",
-            Self::Kind => "kind",
             Self::Report => "report",
         }
     }
@@ -146,8 +159,6 @@ pub enum Step {
     Delete(u32),
     /// A field whose place among the others changed.
     Move(u32),
-    /// A field's type widened.
-    Promote(u32, IcebergType, IcebergType),
     /// A field that now takes nulls.
     MakeOptional(u32),
     /// The key's fields.
@@ -180,8 +191,8 @@ pub struct Run {
     pub report: (String, String),
     /// AEMO's version of the report.
     pub version: u16,
-    /// The kind of file.
-    pub kind: String,
+    /// The kinds of file it came in, sorted.
+    pub kinds: Vec<String>,
     /// Its first observation.
     pub from: Mark,
     /// Its last.
@@ -244,6 +255,7 @@ impl History {
         b: &BlockRecord,
     ) {
         let start = b.first.as_deref().and_then(market_time);
+        let end = b.last.as_deref().and_then(market_time);
         let mark = |file: &str, data_time: Option<String>| Mark {
             file: file.to_owned(),
             sha256: f.sha256.clone(),
@@ -251,24 +263,19 @@ impl History {
             data_time,
         };
         // Blocks without a time sort at the start of their month.
-        let at = start
-            .clone()
-            .unwrap_or_else(|| format!("{month}-01T00:00:00+10:00"));
+        let ends_at = instant(end.as_deref())
+            .or_else(|| instant(Some(&format!("{month}-01T00:00:00+10:00"))))
+            .unwrap_or_default();
         let n = b.columns.len();
         let profiles: Vec<_> = (0..n).map(|j| b.profile_of(j)).collect();
         self.tables.entry(table.to_owned()).or_default().push(Obs {
-            key: (
-                at,
-                f.published.clone().unwrap_or_default(),
-                first.to_owned(),
-                index,
-            ),
+            key: (month, ends_at, first.to_owned(), index),
             month,
             report: b.report.clone(),
             version: b.version,
             kind: f.kind.clone(),
             from: mark(first, start),
-            to: mark(last, b.last.as_deref().and_then(market_time)),
+            to: mark(last, end),
             files,
             rows: b.rows,
             columns: b.columns.clone(),
@@ -295,13 +302,12 @@ impl History {
     }
 }
 
-/// A field as the walk knows it.
-#[derive(Debug, Clone)]
-struct Known {
-    id: u32,
-    ty: IcebergType,
-    required: bool,
-    evidence: Evidence,
+/// An RFC 3339 time as seconds since 1970.
+fn instant(text: Option<&str>) -> Option<i64> {
+    text?
+        .parse::<jiff::Timestamp>()
+        .ok()
+        .map(jiff::Timestamp::as_second)
 }
 
 fn declared(ctl: TypeClass, numeric: Option<(u8, u8)>, key: bool) -> Declared {
@@ -311,80 +317,117 @@ fn declared(ctl: TypeClass, numeric: Option<(u8, u8)>, key: bool) -> Declared {
         fractional: scale.is_some_and(|s| s > 0) || ctl == TypeClass::Number,
         precision,
         scale,
-        fallback: match (precision, scale) {
-            (Some(_), Some(0)) => Some(IcebergType::Long),
-            (Some(p), Some(s)) if p <= 18 => IcebergType::decimal(p, s),
-            _ => None,
-        },
+        fallback: fallback(precision, scale),
         key,
     }
 }
 
+fn fallback(precision: Option<u8>, scale: Option<u8>) -> Option<IcebergType> {
+    match (precision, scale) {
+        (Some(_), Some(0)) => Some(IcebergType::Long),
+        (Some(p), Some(s)) if p <= 18 => IcebergType::decimal(p, s),
+        _ => None,
+    }
+}
+
+/// The widest of two declarations: whole only if never declared with a
+/// fraction, the larger precision and scale.
+fn widest(a: Declared, b: Declared) -> Declared {
+    let precision = a.precision.max(b.precision);
+    let scale = a.scale.max(b.scale);
+    let fractional = a.fractional || b.fractional;
+    Declared {
+        whole: (a.whole || b.whole) && !fractional,
+        fractional,
+        precision,
+        scale,
+        fallback: fallback(precision, scale).or(b.fallback).or(a.fallback),
+        key: a.key || b.key,
+    }
+}
+
+/// Whether values of kind `new` end a lineage of kind `old`: a number or a
+/// date (or the other) that turns to text.
+fn ends(old: Kind, new: Kind) -> bool {
+    old != Kind::Empty && new != Kind::Empty && old != Kind::Text && old.join(new) == Kind::Text
+}
+
+/// A column's observations from one field.
+#[derive(Debug, Clone, Copy)]
+struct Lineage {
+    /// The first observation it holds.
+    start: usize,
+    evidence: Evidence,
+    declared: Declared,
+}
+
 fn fold_table(table: &str, key: &[String], d: &Declarations, obs: &[Obs]) -> TableHistory {
-    let mut known: BTreeMap<String, Known> = BTreeMap::new();
+    // Each column's lineages, over every observation.
+    let mut lineages: BTreeMap<&str, Vec<Lineage>> = BTreeMap::new();
+    for (i, o) in obs.iter().enumerate() {
+        let numeric = d.numeric(table, o.month);
+        for (j, name) in o.columns.iter().enumerate() {
+            let decl = declared(
+                o.ctl[j],
+                numeric.and_then(|n| n.get(name)).copied(),
+                key.contains(name),
+            );
+            let seen = o.evidence[j];
+            let v = lineages.entry(name).or_default();
+            match v.last_mut() {
+                Some(l) if !ends(l.evidence.kind, seen.kind) => {
+                    l.evidence = l.evidence.join(seen);
+                    l.declared = widest(l.declared, decl);
+                }
+                _ => v.push(Lineage {
+                    start: i,
+                    evidence: seen,
+                    declared: decl,
+                }),
+            }
+        }
+    }
+    let mut ids: BTreeMap<(&str, usize), (u32, IcebergType)> = BTreeMap::new();
+    let mut required: BTreeMap<u32, bool> = BTreeMap::new();
     let mut last_id = 0u32;
     let mut out = TableHistory {
         schemas: Vec::new(),
         runs: Vec::new(),
         breaking: Vec::new(),
     };
-    for o in obs {
-        let numeric = d.numeric(table, o.month);
+    for (i, o) in obs.iter().enumerate() {
         let mut fields = Vec::with_capacity(o.columns.len());
         for (j, name) in o.columns.iter().enumerate() {
-            let is_key = key.contains(name);
-            let decl = declared(o.ctl[j], numeric.and_then(|n| n.get(name)).copied(), is_key);
-            let seen = o.evidence[j];
-            let holds_nulls = o.nulls[j] > 0;
-            let k = match known.get_mut(name) {
+            let v = &lineages[name.as_str()];
+            let n = v.partition_point(|l| l.start <= i) - 1;
+            let (id, ty) = match ids.get(&(name.as_str(), n)) {
+                Some(f) => *f,
                 None => {
                     last_id += 1;
-                    known.insert(
-                        name.clone(),
-                        Known {
-                            id: last_id,
-                            ty: choose(seen, decl).ty,
-                            required: is_key && !holds_nulls,
-                            evidence: seen,
-                        },
-                    );
-                    &known[name]
-                }
-                Some(k) => {
-                    let joined = k.evidence.join(seen);
-                    let ty = choose(joined, decl).ty;
-                    if k.ty.promotes_to(ty) {
-                        k.ty = ty;
-                        k.evidence = joined;
-                    } else if ty.promotes_to(k.ty) {
-                        k.evidence = joined;
-                    } else {
-                        last_id += 1;
-                        let fresh = choose(seen, decl).ty;
+                    let ty = choose(v[n].evidence, v[n].declared).ty;
+                    if let Some(&(old_id, old_type)) =
+                        n.checked_sub(1).and_then(|p| ids.get(&(name.as_str(), p)))
+                    {
                         out.breaking.push(Breaking {
                             column: name.clone(),
-                            old_id: k.id,
-                            old_type: k.ty,
+                            old_id,
+                            old_type,
                             new_id: last_id,
-                            new_type: fresh,
+                            new_type: ty,
                             at: o.from.clone(),
                         });
-                        *k = Known {
-                            id: last_id,
-                            ty: fresh,
-                            required: is_key && !holds_nulls,
-                            evidence: seen,
-                        };
                     }
-                    k.required &= !holds_nulls;
-                    k
+                    ids.insert((name.as_str(), n), (last_id, ty));
+                    (last_id, ty)
                 }
             };
+            let req = required.entry(id).or_insert_with(|| key.contains(name));
+            *req &= o.nulls[j] == 0;
             fields.push(Field {
-                id: k.id,
+                id,
                 name: name.clone(),
-                ty: k.ty,
-                required: k.required,
+                ty,
+                required: *req,
                 doc: None,
             });
         }
@@ -422,9 +465,11 @@ fn extend(out: &mut TableHistory, id: u32, o: &Obs) {
     if let Some(r) = out.runs.last_mut()
         && r.schema == id
         && r.version == o.version
-        && r.kind == o.kind
         && r.report == o.report
     {
+        if let Err(at) = r.kinds.binary_search(&o.kind) {
+            r.kinds.insert(at, o.kind.clone());
+        }
         // The run ends where its latest data ends (no time sorts first).
         if o.to.data_time >= r.to.data_time {
             r.to = o.to.clone();
@@ -442,9 +487,6 @@ fn extend(out: &mut TableHistory, id: u32, o: &Obs) {
             }
             if r.version != o.version {
                 changes.push(Change::Version);
-            }
-            if r.kind != o.kind {
-                changes.push(Change::Kind);
             }
             if r.report != o.report {
                 changes.push(Change::Report);
@@ -467,7 +509,7 @@ fn extend(out: &mut TableHistory, id: u32, o: &Obs) {
         schema: id,
         report: o.report.clone(),
         version: o.version,
-        kind: o.kind.clone(),
+        kinds: vec![o.kind.clone()],
         from: o.from.clone(),
         to: o.to.clone(),
         files: o.files,
@@ -519,9 +561,6 @@ pub fn steps(a: &Schema, b: &Schema, earlier: &[&Schema]) -> Vec<Step> {
             }
             None => out.push(Step::Add(f.id)),
             Some(old) => {
-                if old.ty != f.ty {
-                    out.push(Step::Promote(f.id, old.ty, f.ty));
-                }
                 if old.required && !f.required {
                     out.push(Step::MakeOptional(f.id));
                 }
@@ -570,9 +609,6 @@ fn step_json(s: &Step) -> Value {
         Step::Restore(id) => json!({"action": "restore", "field-id": id}),
         Step::Delete(id) => json!({"action": "delete", "field-id": id}),
         Step::Move(id) => json!({"action": "move", "field-id": id}),
-        Step::Promote(id, from, to) => {
-            json!({"action": "promote", "field-id": id, "from": from.name(), "to": to.name()})
-        }
         Step::MakeOptional(id) => json!({"action": "make-optional", "field-id": id}),
         Step::SetIdentifier(ids) => json!({"action": "set-identifier-fields", "field-ids": ids}),
     }
@@ -589,7 +625,7 @@ impl TableHistory {
                 "schema-id": r.schema,
                 "report": [r.report.0, r.report.1],
                 "version": r.version,
-                "kind": r.kind,
+                "kinds": r.kinds,
                 "from": mark_json(&r.from),
                 "to": mark_json(&r.to),
                 "files": r.files,
@@ -612,7 +648,6 @@ impl TableHistory {
 
 #[cfg(test)]
 mod tests {
-    use utilake_iceberg::Kind;
     use utilake_mms_registry::shape::ShapeId;
 
     use super::*;
@@ -672,12 +707,18 @@ mod tests {
         m.parse().unwrap()
     }
 
+    fn span_of(m: &str) -> (String, String) {
+        (
+            format!("{}/{}/01 00:05:00", &m[..4], &m[5..]),
+            format!("{}/{}/28 00:00:00", &m[..4], &m[5..]),
+        )
+    }
+
     /// One block per month, in the order given, each spanning that month.
     fn months(blocks: &[(&str, u16, &str, &[Col<'_>])]) -> TableHistory {
         let mut h = History::default();
         for (i, (m, version, kind, cols)) in blocks.iter().enumerate() {
-            let start = format!("{}/{}/01 00:05:00", &m[..4], &m[5..]);
-            let end = format!("{}/{}/28 00:00:00", &m[..4], &m[5..]);
+            let (start, end) = span_of(m);
             h.block(
                 "DISPATCHPRICE",
                 month(m),
@@ -720,29 +761,44 @@ mod tests {
     }
 
     #[test]
-    fn types_only_widen_and_a_type_no_promotion_reaches_is_a_new_field() {
-        let wide = ("RRP", Kind::Decimal, 9, 2, 0);
+    fn a_column_keeps_one_type_until_its_values_turn_to_text() {
+        let wide = ("RRP", Kind::Decimal, 9, 3, 0);
         let text = ("RRP", Kind::Text, 0, 0, 0);
         let h = months(&[
             ("2024-01", 1, "dvd", &[T, R, P]),
             ("2024-02", 1, "dvd", &[T, R, wide]),
             ("2024-03", 1, "dvd", &[T, R, P]),
             ("2024-04", 1, "dvd", &[T, R, text]),
+            ("2024-05", 1, "dvd", &[T, R, P]),
         ]);
-        let d = |p| IcebergType::decimal(p, 2).unwrap();
-        assert_eq!(h.schemas[0].by_name("RRP").unwrap().ty, d(5));
-        assert_eq!(h.runs[1].steps, [Step::Promote(3, d(5), d(11))]);
-        // Smaller values later keep the wider type: the same schema.
-        assert_eq!(schemas_of(&h), [0, 1, 2]);
-        assert_eq!(h.runs.len(), 3, "March folds into February's run");
-        assert_eq!(h.runs[1].files, 2);
+        // The widest the lineage holds, from its first file: no change for
+        // more digits, and none Iceberg could not make for a wider scale.
+        let rrp = |s: usize| h.schemas[s].by_name("RRP").map(|f| (f.id, f.ty));
+        let wide_ty = IcebergType::decimal(12, 3).unwrap();
+        assert_eq!(rrp(0), Some((3, wide_ty)));
+        assert_eq!(h.runs[0].files, 3);
+        // Text ends the lineage: a new field, and text holds what follows.
+        assert_eq!(rrp(1), Some((4, IcebergType::String)));
+        assert_eq!(schemas_of(&h), [0, 1]);
         let b = &h.breaking[0];
-        assert_eq!(
-            (b.old_id, b.new_id, b.new_type),
-            (3, 4, IcebergType::String)
-        );
+        assert_eq!((b.old_id, b.old_type), (3, wide_ty));
+        assert_eq!((b.new_id, b.new_type), (4, IcebergType::String));
         assert_eq!(b.at.file, "F3.zip");
-        assert_eq!(h.runs[2].steps, [Step::Delete(3), Step::Add(4)]);
+        assert_eq!(h.runs[1].steps, [Step::Delete(3), Step::Add(4)]);
+    }
+
+    #[test]
+    fn a_column_null_at_first_takes_the_type_its_values_have_later() {
+        let empty = ("LASTCHANGED", Kind::Empty, 0, 0, 5);
+        let times = ("LASTCHANGED", Kind::Timestamp, 0, 0, 0);
+        let h = months(&[
+            ("2024-10", 1, "dvd", &[T, R, empty]),
+            ("2024-11", 1, "dvd", &[T, R, times]),
+        ]);
+        assert!(h.breaking.is_empty());
+        assert_eq!(schemas_of(&h), [0]);
+        let f = h.schemas[0].by_name("LASTCHANGED").unwrap();
+        assert_eq!((f.id, f.ty), (3, IcebergType::Timestamptz));
     }
 
     #[test]
@@ -770,34 +826,32 @@ mod tests {
     }
 
     #[test]
-    fn versions_kinds_and_reports_change_runs_not_schemas() {
+    fn versions_and_reports_change_runs_not_schemas() {
         let h = months(&[
             ("2024-01", 1, "dvd", &[T, R, P]),
             ("2024-02", 2, "dvd", &[T, R, P]),
             ("2024-03", 2, "archive", &[T, R, P]),
         ]);
-        assert_eq!(schemas_of(&h), [0, 0, 0]);
+        assert_eq!(schemas_of(&h), [0, 0]);
         assert_eq!(h.runs[1].changes, [Change::Version]);
-        assert_eq!(h.runs[2].changes, [Change::Kind]);
         assert!(h.runs[1].steps.is_empty());
+        // The same data as DVD and archive files is one run of both kinds.
+        assert_eq!(h.runs[1].kinds, ["archive", "dvd"]);
+        assert_eq!(h.runs[1].files, 2);
 
         let mut hist = History::default();
         let mut other = block(1, None, &[T, R, P]);
         other.report = ("DISPATCH".into(), "PRICE2".into());
+        let rec = record("dvd", None);
+        let jan = month("2024-01");
         hist.block(
             "DISPATCHPRICE",
-            month("2024-01"),
+            jan,
             ("A.zip", 0),
-            &record("dvd", None),
+            &rec,
             &block(1, None, &[T, R, P]),
         );
-        hist.block(
-            "DISPATCHPRICE",
-            month("2024-01"),
-            ("A.zip", 1),
-            &record("dvd", None),
-            &other,
-        );
+        hist.block("DISPATCHPRICE", jan, ("A.zip", 1), &rec, &other);
         let h = hist.finish(&decl()).remove("DISPATCHPRICE").unwrap();
         assert_eq!(h.runs[1].changes, [Change::Report]);
         assert_eq!(h.runs[0].from.data_time, None);
@@ -807,85 +861,74 @@ mod tests {
     fn observations_go_in_data_order_and_overlaps_are_marked() {
         let mut h = History::default();
         let rec = record("dvd", Some("2024-02-03T00:00:00Z"));
+        let feb = month("2024-02");
         // Taken out of order: the later data first.
-        h.block(
-            "DISPATCHPRICE",
-            month("2024-02"),
-            ("B.zip", 0),
-            &rec,
-            &block(
-                1,
-                Some(("2024/02/01 00:05:00", "2024/02/29 00:00:00")),
-                &[T, R, X, P],
-            ),
+        let b = block(
+            1,
+            Some(("2024/02/01 00:05:00", "2024/02/29 00:00:00")),
+            &[T, R, X, P],
         );
-        h.block(
-            "DISPATCHPRICE",
-            month("2024-01"),
-            ("A.zip", 0),
-            &rec,
-            &block(
-                1,
-                Some(("2024/01/01 00:05:00", "2024/02/10 00:00:00")),
-                &[T, R, P],
-            ),
+        h.block("DISPATCHPRICE", feb, ("B.zip", 0), &rec, &b);
+        let a = block(
+            1,
+            Some(("2024/01/01 00:05:00", "2024/02/10 00:00:00")),
+            &[T, R, P],
         );
-        // A report run of one shape, with its own kind.
+        h.block("DISPATCHPRICE", month("2024-01"), ("A.zip", 0), &rec, &a);
+        // A report run of B's shape, of another kind.
+        let r = block(
+            1,
+            Some(("2024/02/05 00:05:00", "2024/03/01 00:00:00")),
+            &[T, R, X, P],
+        );
+        let reports = record("reports/current", None);
         h.run(
             "DISPATCHPRICE",
-            month("2024-02"),
+            feb,
             ("PUBLIC_1.CSV", "PUBLIC_9.CSV", 9),
-            &record("reports/current", None),
-            &block(
-                1,
-                Some(("2024/02/05 00:05:00", "2024/02/06 00:00:00")),
-                &[T, R, X, P],
-            ),
+            &reports,
+            &r,
         );
         let t = h.finish(&decl()).remove("DISPATCHPRICE").unwrap();
         assert_eq!(t.runs[0].from.file, "A.zip");
         assert_eq!(t.runs[1].from.file, "B.zip");
         assert!(t.runs[1].overlaps, "B starts before A's data ends");
-        assert_eq!(t.runs[2].files, 9);
-        assert_eq!(t.runs[2].to.file, "PUBLIC_9.CSV");
-        assert_eq!(t.runs[2].changes, [Change::Kind]);
-        assert!(t.runs[2].overlaps);
+        // The report run has B's schema: one run of 10 files of two kinds.
+        assert_eq!(t.runs.len(), 2);
+        assert_eq!(t.runs[1].files, 10);
+        assert_eq!(t.runs[1].kinds, ["dvd", "reports/current"]);
+        assert_eq!(
+            t.runs[1].to.file, "PUBLIC_9.CSV",
+            "the report run ends last"
+        );
     }
 
     #[test]
     fn a_run_ends_where_its_latest_data_ends() {
         let mut h = History::default();
         let rec = record("dvd", None);
-        h.block(
-            "DISPATCHPRICE",
-            month("2024-01"),
-            ("A.zip", 0),
-            &rec,
-            &block(
-                1,
-                Some(("2024/01/01 00:05:00", "2024/03/01 00:00:00")),
-                &[T, R, P],
-            ),
+        let jan = month("2024-01");
+        let long = block(
+            1,
+            Some(("2024/01/01 00:05:00", "2024/03/01 00:00:00")),
+            &[T, R, P],
         );
-        h.block(
-            "DISPATCHPRICE",
-            month("2024-01"),
-            ("B.zip", 0),
-            &rec,
-            &block(
-                1,
-                Some(("2024/01/02 00:05:00", "2024/01/03 00:00:00")),
-                &[T, R, P],
-            ),
+        let short = block(
+            1,
+            Some(("2024/01/02 00:05:00", "2024/01/03 00:00:00")),
+            &[T, R, P],
         );
+        h.block("DISPATCHPRICE", jan, ("A.zip", 0), &rec, &long);
+        h.block("DISPATCHPRICE", jan, ("B.zip", 0), &rec, &short);
         let t = h.finish(&decl()).remove("DISPATCHPRICE").unwrap();
         assert_eq!(t.runs.len(), 1);
+        assert_eq!(t.runs[0].from.file, "B.zip", "B ends first, so it leads");
         assert_eq!(t.runs[0].to.file, "A.zip");
         assert_eq!(t.runs[0].rows, 20);
     }
 
     #[test]
-    fn declarations_of_the_month_set_the_type() {
+    fn the_widest_declaration_of_a_lineage_sets_its_type() {
         let mut d = decl();
         let release = |p, s| {
             BTreeMap::from([(
@@ -900,32 +943,76 @@ mod tests {
         ];
         let mut h = History::default();
         for m in ["2024-01", "2024-03", "2024-05", "2024-07"] {
-            let start = format!("{}/{}/01 00:05:00", &m[..4], &m[5..]);
-            h.block(
-                "DISPATCHPRICE",
-                month(m),
-                (m, 0),
-                &record("dvd", None),
-                &block(1, Some((&start, &start)), &[T, R, P]),
-            );
+            let (start, end) = span_of(m);
+            let b = block(1, Some((&start, &end)), &[T, R, P]);
+            h.block("DISPATCHPRICE", month(m), (m, 0), &record("dvd", None), &b);
         }
         let t = h.finish(&d).remove("DISPATCHPRICE").unwrap();
-        let d = |p| IcebergType::decimal(p, 5).unwrap();
-        // Before the first release, the first release that declares it.
-        assert_eq!(t.schemas[0].by_name("RRP").unwrap().ty, d(15));
-        assert_eq!(t.runs[1].steps, [Step::Promote(3, d(15), d(18))]);
-        // A narrower declaration later keeps the wider type.
-        assert_eq!(t.runs.len(), 2);
-        assert_eq!(t.runs[1].files, 2);
+        let rrp = t.schemas[0].by_name("RRP").unwrap().ty;
+        assert_eq!(rrp, IcebergType::decimal(18, 5).unwrap());
+        assert_eq!((t.runs.len(), t.runs[0].files), (1, 4));
+        // Before the first release, the first that declares the table.
+        let first = d.numeric("DISPATCHPRICE", month("2024-01")).unwrap();
+        assert_eq!(first["RRP"], (15, 5));
+        assert_eq!(d.numeric("NONE", month("2024-01")), None);
         // A whole number the model declares whole, never seen: a long.
         let whole = declared(TypeClass::Unknown, Some((10, 0)), false);
         assert_eq!(choose(Evidence::default(), whole).ty, IcebergType::Long);
         assert_eq!(declared(TypeClass::Integer, None, false).fallback, None);
-        assert!(
-            declared(TypeClass::Number, Some((40, 2)), false)
-                .fallback
-                .is_none()
+        let huge = declared(TypeClass::Number, Some((40, 2)), false);
+        assert!(huge.fallback.is_none());
+        // Declared whole, then with a fraction: no longer whole.
+        let w = widest(
+            declared(TypeClass::Integer, None, true),
+            declared(TypeClass::Number, None, false),
         );
+        assert!(!w.whole && w.fractional && w.key);
+        assert!(ends(Kind::Integer, Kind::Text) && ends(Kind::Date, Kind::Decimal));
+        assert!(!ends(Kind::Text, Kind::Integer) && !ends(Kind::Empty, Kind::Text));
+        assert!(!ends(Kind::Integer, Kind::Empty) && !ends(Kind::Integer, Kind::Decimal));
+    }
+
+    #[test]
+    fn files_go_in_the_order_they_were_released_even_when_they_restate_the_past() {
+        let lc = ("LASTCHANGED", Kind::Timestamp, 0, 0, 0);
+        let mut h = History::default();
+        // Monthly releases, each holding everything since January, then a
+        // June release in a new layout that restates January only. The
+        // server touched every file on one day, which orders nothing.
+        let touched = record("archive", Some("2026-04-17T23:21:00Z"));
+        for (file, release, end, cols) in [
+            ("JAN.zip", "2024-01", "2024/01/31 00:00:00", &[T, R, P][..]),
+            (
+                "BACKFILL.zip",
+                "2024-06",
+                "2024/01/31 00:00:00",
+                &[T, R, P, lc][..],
+            ),
+            ("MAR.zip", "2024-03", "2024/03/31 00:00:00", &[T, R, P][..]),
+            ("FEB.zip", "2024-02", "2024/02/28 00:00:00", &[T, R, P][..]),
+        ] {
+            let b = block(1, Some(("2024/01/01 00:05:00", end)), cols);
+            h.block("DISPATCHPRICE", month(release), (file, 0), &touched, &b);
+        }
+        let t = h.finish(&decl()).remove("DISPATCHPRICE").unwrap();
+        let files: Vec<&str> = t.runs.iter().map(|r| r.from.file.as_str()).collect();
+        assert_eq!(files, ["JAN.zip", "BACKFILL.zip"]);
+        assert_eq!(
+            (t.runs[0].files, t.runs[0].to.file.as_str()),
+            (3, "MAR.zip")
+        );
+        let backfill = &t.runs[1];
+        assert_eq!(
+            backfill.from.data_time.as_deref(),
+            Some("2024-01-01T00:05:00+10:00")
+        );
+        assert!(backfill.overlaps, "it restates data the run before holds");
+        assert_eq!(
+            instant(Some("2024-01-01T10:00:00+10:00")),
+            instant(Some("2024-01-01T00:00:00Z"))
+        );
+        assert_eq!(instant(Some("not a time")), None);
+        assert_eq!(instant(None), None);
     }
 
     #[test]
@@ -934,12 +1021,7 @@ mod tests {
         let null_region = ("REGIONID", Kind::Text, 0, 0, 2);
         let h = months(&[
             ("2024-01", 1, "dvd", &[T, R, P, X]),
-            (
-                "2024-02",
-                1,
-                "dvd",
-                &[X, T, null_region, ("RRP", Kind::Decimal, 9, 2, 0)],
-            ),
+            ("2024-02", 1, "dvd", &[X, T, null_region, P]),
             ("2024-03", 1, "dvd", &[T, R, X]),
             ("2024-04", 1, "dvd", &[T, R, X, text]),
             ("2024-05", 1, "dvd", &[T, R, text]),
@@ -949,21 +1031,16 @@ mod tests {
         assert_eq!(v["table"], "DISPATCHPRICE");
         assert_eq!(v["format-version"], 3);
         assert_eq!(v["runs"][0]["changes"], json!(["first"]));
+        assert_eq!(v["runs"][0]["kinds"], json!(["dvd"]));
         let actions: Vec<String> = v["runs"]
             .as_array()
             .unwrap()
             .iter()
-            .flat_map(|r| {
-                r["updates"]
-                    .as_array()
-                    .unwrap()
-                    .iter()
-                    .map(|u| u["action"].as_str().unwrap().to_owned())
-            })
+            .flat_map(|r| r["updates"].as_array().unwrap().iter())
+            .map(|u| u["action"].as_str().unwrap().to_owned())
             .collect();
         for a in [
             "move",
-            "promote",
             "make-optional",
             "set-identifier-fields",
             "delete",
@@ -978,10 +1055,9 @@ mod tests {
             Change::First,
             Change::Schema,
             Change::Version,
-            Change::Kind,
             Change::Report,
         ]
         .map(Change::as_str);
-        assert_eq!(names, ["first", "schema", "version", "kind", "report"]);
+        assert_eq!(names, ["first", "schema", "version", "report"]);
     }
 }

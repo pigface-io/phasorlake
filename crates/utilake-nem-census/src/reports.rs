@@ -740,21 +740,22 @@ mod tests {
         record_folder(&schemas, "ARCHIVE", "Dispatch_SCADA", &census).unwrap();
         let folded = crate::fold::fold(&schemas, &reg).unwrap();
         assert!(folded.shapes >= 3, "{folded:?}");
-        // Each table's history as an Iceberg table, one run per report run.
+        // Each table's history as an Iceberg table: the three report runs
+        // share one schema, so one run of six CSVs.
         let text = std::fs::read_to_string(
             crate::census::history_dir(&schemas).join("DISPATCH_UNIT_SCADA.json"),
         )
         .unwrap();
         let history: serde_json::Value = serde_json::from_str(&text).unwrap();
         let runs = history["runs"].as_array().unwrap();
-        assert_eq!(runs.len(), 3, "{text}");
+        assert_eq!(runs.len(), 1, "{text}");
         assert_eq!(
             runs[0]["from"]["file"],
             "PUBLIC_DISPATCHSCADA_202607310005_1.CSV"
         );
-        assert_eq!(runs[1]["files"], 3);
-        assert_eq!(runs[0]["kind"], "reports/archive");
-        assert!(folded.runs >= 3 && folded.schemas >= 3, "{folded:?}");
+        assert_eq!(runs[0]["files"], 6);
+        assert_eq!(runs[0]["kinds"], serde_json::json!(["reports/archive"]));
+        assert!(folded.runs >= 3, "{folded:?}");
         assert_eq!(
             read_folder(&schemas, "ARCHIVE", "Dispatch_SCADA")
                 .unwrap()
