@@ -11,12 +11,14 @@
 
 mod evidence;
 mod partition;
+mod plan;
 mod schema;
 mod types;
 mod update;
 
 pub use evidence::{Choice, Declared, Evidence, Kind, choose};
 pub use partition::{PartitionField, PartitionSpec};
+pub use plan::{Column, DataFile, PlanError, Read, Target, duckdb_sql, plan};
 pub use schema::{Field, Schema};
 pub use types::IcebergType;
 pub use update::{Update, UpdateError};

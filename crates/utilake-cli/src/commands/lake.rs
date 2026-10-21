@@ -305,6 +305,64 @@ pub async fn iceberg(ctx: &Context, table: Option<&str>) -> Result<i32> {
     Ok(code)
 }
 
+/// An instant as microseconds since 1970: RFC 3339, or a date at midnight UTC.
+fn micros(text: &str) -> Result<i64> {
+    let ts = text
+        .parse::<jiff::Timestamp>()
+        .or_else(|_| {
+            text.parse::<jiff::civil::Date>()
+                .and_then(|d| d.to_zoned(jiff::tz::TimeZone::UTC))
+                .map(|z| z.timestamp())
+        })
+        .map_err(|_| anyhow::anyhow!("{text:?} is not an RFC 3339 time or a date"))?;
+    Ok(ts.as_microsecond())
+}
+
+pub async fn sql(
+    ctx: &Context,
+    table: &str,
+    (from, to): (&str, &str),
+    as_of: Option<u32>,
+) -> Result<i32> {
+    let interval = (micros(from)?, micros(to)?);
+    let r = &ctx.registry;
+    let id = r
+        .table_by_name(table)
+        .ok_or_else(|| anyhow::anyhow!("no table {table}"))?;
+    let h = r
+        .histories()
+        .get(table)
+        .ok_or_else(|| anyhow::anyhow!("table {table} has no history; fold the census first"))?;
+    let schemas = h.iceberg_schemas();
+    let latest = schemas.iter().map(|s| s.schema_id).max().unwrap_or(0);
+    let (manifest, thread) = ctx.manifest()?;
+    let outputs = manifest
+        .live_outputs(Some(table))
+        .await
+        .map_err(|e| anyhow::anyhow!("{}", e.diagnostic().render()))?;
+    drop(manifest);
+    thread.join();
+    let files: Vec<utilake_iceberg::DataFile> = outputs
+        .iter()
+        .map(|o| utilake_iceberg::DataFile {
+            path: o.path.clone(),
+            schema_id: o.schema_id.unwrap_or(latest),
+            min_us: o.min_time.map(|t| t.div_euclid(1_000)),
+            max_us: o.max_time.map(|t| t.div_euclid(1_000)),
+        })
+        .collect();
+    let target = as_of.map_or(
+        utilake_iceberg::Target::Latest,
+        utilake_iceberg::Target::AsOf,
+    );
+    let reads = utilake_iceberg::plan(&schemas, &files, interval, target)?;
+    println!(
+        "{}",
+        utilake_iceberg::duckdb_sql(&reads, r.table(id).time_column.as_deref(), interval)
+    );
+    Ok(0)
+}
+
 pub async fn verify(ctx: &Context, table: Option<&str>) -> Result<i32> {
     let (manifest, thread) = ctx.manifest()?;
     let report = utilake_writer::verify_lake(&manifest, &ctx.home.quarantine(), table)

@@ -163,6 +163,10 @@ pub struct LiveOutput {
     pub url: String,
     /// The entry of the source file.
     pub entry: String,
+    /// Its least time value, nanoseconds since 1970.
+    pub min_time: Option<i64>,
+    /// Its greatest.
+    pub max_time: Option<i64>,
 }
 
 /// A row of `ingests` with its outputs, for listings.
@@ -542,7 +546,7 @@ impl Manifest {
     /// month, then source file, entry and output.
     pub fn live_outputs(&self, table: Option<&str>) -> Result<Vec<LiveOutput>, ManifestError> {
         let mut stmt = self.sql(self.conn.prepare(
-            "SELECT i.table_name, o.parquet_path, o.rows, o.bytes, i.schema_id, i.source_version, i.source_period, f.url, i.entry
+            "SELECT i.table_name, o.parquet_path, o.rows, o.bytes, i.schema_id, i.source_version, i.source_period, f.url, i.entry, o.min_time, o.max_time
              FROM outputs o JOIN ingests i ON o.ingest_id = i.id JOIN files f ON i.file_id = f.id
              WHERE i.status = 'ok' AND (?1 IS NULL OR i.table_name = ?1)
              ORDER BY i.table_name, i.source_period, f.url, i.entry, o.id",
@@ -559,6 +563,8 @@ impl Manifest {
                     source_period: r.get(6)?,
                     url: r.get(7)?,
                     entry: r.get(8)?,
+                    min_time: r.get(9)?,
+                    max_time: r.get(10)?,
                 })
             })
             .and_then(Iterator::collect),
@@ -963,6 +969,7 @@ mod tests {
             (live[0].url.as_str(), live[0].entry.as_str()),
             ("https://h/a.zip", "A.CSV")
         );
+        assert_eq!((live[0].min_time, live[0].max_time), (Some(10), Some(20)));
         assert_eq!(m.live_outputs(None).unwrap(), live);
         assert!(m.live_outputs(Some("NONE")).unwrap().is_empty());
         let recs = m.list_ingests(None, false, 10).unwrap();

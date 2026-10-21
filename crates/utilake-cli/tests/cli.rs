@@ -121,6 +121,94 @@ fn ingest_ls_errors_verify_round_trip() {
     let (_, out, _) = cli.code(&["verify", "--table", "DISPATCH_UNIT_SCADA"]);
     assert!(!out.contains("orphan"), "another table's quarantine: {out}");
     std::fs::remove_file(qdir.join("left_over.jsonl")).unwrap();
+    // With a history for SCADA in the user's schemas: its Iceberg table,
+    // and the query that reads an interval of it.
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../schemas/nem/DISPATCH_UNIT_SCADA");
+    let scada_table = utilake_mms_registry::file_model::file::read_table(
+        &root,
+        utilake_mms_registry::file_model::Market::Nem,
+    )
+    .unwrap();
+    let fields: Vec<serde_json::Value> = scada_table
+        .columns
+        .iter()
+        .map(|c| {
+            serde_json::json!({
+                "id": c.id.0, "name": c.name, "type": c.ty.iceberg().name(), "required": !c.nullable,
+            })
+        })
+        .collect();
+    let history = serde_json::json!({
+        "table": "DISPATCH_UNIT_SCADA",
+        "schemas": [{"schema-id": 0, "fields": fields, "identifier-field-ids": [1]}],
+        "runs": [],
+    });
+    let hdir = cli.home.path().join("schemas/nem/iceberg");
+    std::fs::create_dir_all(&hdir).unwrap();
+    std::fs::write(hdir.join("DISPATCH_UNIT_SCADA.json"), history.to_string()).unwrap();
+    let built = cli.ok(&["--json", "iceberg", "--table", "DISPATCH_UNIT_SCADA"]);
+    assert!(built.contains("\"snapshots\":\"1\""), "{built}");
+    let meta = cli
+        .home
+        .path()
+        .join("lake/nem/dispatch_unit_scada/metadata/version-hint.text");
+    assert!(meta.is_file());
+    let sql = cli.ok(&[
+        "sql",
+        "DISPATCH_UNIT_SCADA",
+        "--from",
+        "2023-12-31T14:00:00Z",
+        "--to",
+        "2024-02-01",
+    ]);
+    // 2024-01-01 00:00 in market time is 2023-12-31 14:00 in UTC.
+    assert!(
+        sql.contains("read_parquet(")
+            && sql.contains("WHERE \"SETTLEMENTDATE\" >= make_timestamptz(1704031200000000)"),
+        "{sql}"
+    );
+    let (code, _, err) = cli.code(&[
+        "sql",
+        "DISPATCH_UNIT_SCADA",
+        "--from",
+        "soon",
+        "--to",
+        "2024-02-01",
+    ]);
+    assert!(code != 0 && err.contains("not an RFC 3339"), "{err}");
+    let (code, _, err) = cli.code(&[
+        "sql",
+        "REGION",
+        "--from",
+        "2024-01-01",
+        "--to",
+        "2024-02-01",
+    ]);
+    assert!(code != 0 && err.contains("no history"), "{err}");
+    let (code, _, err) = cli.code(&[
+        "sql",
+        "NOBODY",
+        "--from",
+        "2024-01-01",
+        "--to",
+        "2024-02-01",
+    ]);
+    assert!(code != 0 && err.contains("no table"), "{err}");
+    let (code, _, _) = cli.code(&[
+        "sql",
+        "DISPATCH_UNIT_SCADA",
+        "--from",
+        "2024-01-01",
+        "--to",
+        "2024-02-01",
+        "--as-of",
+        "9",
+    ]);
+    assert!(code != 0);
+    // The lake's checks leave the Iceberg metadata beside the files alone.
+    assert!(cli.ok(&["verify"]).contains("no problems"));
+    std::fs::remove_dir_all(cli.home.path().join("schemas")).unwrap();
+    std::fs::remove_dir_all(meta.parent().unwrap()).unwrap();
     // Snapshot partition for REGION, month partition for SCADA.
     let lake = cli.home.path().join("lake/nem");
     assert!(lake.join("region/snapshot=202401").is_dir());

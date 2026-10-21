@@ -256,6 +256,8 @@ mod tests {
             source_period: Some(period.into()),
             url: format!("https://h/{period}.zip"),
             entry: "E.CSV".into(),
+            min_time: None,
+            max_time: None,
         }
     }
 

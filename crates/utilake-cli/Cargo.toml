@@ -16,7 +16,9 @@ name = "utilake"
 path = "src/main.rs"
 
 [dependencies]
+jiff.workspace = true
 utilake-core.workspace = true
+utilake-iceberg.workspace = true
 utilake-nem.workspace = true
 utilake-wem.workspace = true
 utilake-kit.workspace = true

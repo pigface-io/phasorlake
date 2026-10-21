@@ -129,6 +129,21 @@ pub enum Command {
         #[arg(long)]
         table: Option<String>,
     },
+    /// The DuckDB query that reads a table over an interval, every file
+    /// projected onto one of its Iceberg schemas by field id.
+    Sql {
+        /// The table.
+        table: String,
+        /// From this instant (RFC 3339, or a date in UTC), inclusive.
+        #[arg(long)]
+        from: String,
+        /// To this instant, exclusive.
+        #[arg(long)]
+        to: String,
+        /// The schema to read as (default: the latest).
+        #[arg(long)]
+        as_of: Option<u32>,
+    },
     /// Check the lake against the manifest.
     Verify {
         /// Only this table.
