@@ -6,7 +6,7 @@ markets first.
 
 `utilake` downloads the National Electricity Market's monthly archive files
 from nemweb, parses their `C`/`I`/`D` row format through a schema registry
-that knows every table version AEMO has published, and writes typed,
+that knows every schema each table's files have had, and writes typed,
 Hive-partitioned Parquet that DuckDB, Polars and anything else that reads
 Parquet can query directly. A SQLite manifest records every file fetched,
 every ingest, every output and every error, so a second run is a no-op and
@@ -46,7 +46,7 @@ the file, and the manifest knows it is already in the lake.
 | `utilake ls [--table T] [--failed] [--runs]` | what the manifest knows |
 | `utilake errors [--last] [--table T] [--code C]` | diagnostics recorded by past runs |
 | `utilake verify` | every Parquet file the manifest lists exists with its size |
-| `utilake schema list\|show\|increments\|validate` | the registry; `increments T` lists a table's increments with the columns each adds or drops |
+| `utilake schema list\|show\|history\|validate` | the registry; `history T` lists a table's schemas, with the columns each adds or drops, and the runs of files under each (`--json`: its Iceberg history) |
 | `utilake schema plan <type> <subtype> <version> --columns A,B,C [--month YYYY-MM]` | the conformance plan a shape is read with, as JSON: where each file column goes, its cast, what is written null |
 | `utilake archive ls\|verify` | every downloaded file with where and when it came from; `verify` hashes each one again |
 | `utilake wem manifest <dataset>` | a WEM dataset's file list (WEM ingestion comes later) |
@@ -69,8 +69,8 @@ Global flags: `--home DIR` (or `UTILAKE_HOME`), `--json`, `-v`, `--offline`,
 
 Every Parquet file carries the lake schema of its table: every column the
 table has ever had, each with its id as `PARQUET:field_id`, so files of
-every increment read as one table and a later Iceberg catalogue can adopt
-the column ids unchanged.
+every schema read as one table and an Iceberg catalogue adopts the column
+ids unchanged.
 
 Nothing a file carries is skipped. A table no schema declares is ingested
 from its own header, every column as text, under
@@ -80,22 +80,24 @@ name; a column the file lacks is null. Each case is reported
 (`schema.unknown_table`, `schema.deviates`). `--strict` refuses such files
 instead.
 
-Types are exact, as Parquet and Iceberg name them, and ours: a table's
-`table.toml` says each column's type, whatever a later control file says.
+Types are exact, one to one with Iceberg's: each column has the type its
+field has in the table's history, which the census chose from everything
+AEMO published in that column and from AEMO's declarations.
 
-| `type` | Arrow | Iceberg V3 | a new column gets it from |
-|---|---|---|---|
-| `string` | `Utf8` | `string` | `CHAR(n)` |
-| `double` | `Float64` | `double` | `FLOAT`, `DECIMAL` and `INTEGER EXTERNAL` |
-| `long` | `Int64` | `long` | (only by hand) |
-| `boolean` | `Boolean` | `boolean` | (only by hand) |
-| `date` | `Date32` | `date` | `DATE`/`TIMESTAMP` without an hour |
-| `timestamp`    | `Timestamp(µs, +10:00)` | `timestamptz`    | `DATE`/`TIMESTAMP` with an hour |
+| `type` | Arrow | Iceberg V3 |
+|---|---|---|
+| `string` | `Utf8` | `string` |
+| `double` | `Float64` | `double` |
+| `long` | `Int64` | `long` |
+| `boolean` | `Boolean` | `boolean` |
+| `date` | `Date32` | `date` |
+| `timestamp` | `Timestamp(µs, +10:00)` | `timestamptz` |
+| `decimal(P,S)` | `Decimal128(P, S)` | `decimal(P, S)` |
 
-Every number is a `double`: AEMO's control files load numbers as
-`FLOAT EXTERNAL`, its data puts fractions in columns the data model
-declares `NUMBER(p,0)`, and a `double` holds every whole number of up to 15
-digits exactly. NEM time is fixed AEST.
+Most numbers are `decimal(P,S)` (RRP is `decimal(15,5)`), read exactly
+and never rounded; counters such as RUNNO are `long`. AEMO writes a few
+small values in exponent form (`-3E-05`); they are read exactly too when
+the column's scale holds them. NEM time is fixed AEST.
 
 Every timestamp in the lake is microseconds since the epoch in UTC, one unit
 with no exceptions: Iceberg's `timestamptz`, which every Iceberg reader
@@ -126,15 +128,15 @@ All three are written into the file's footer and into the manifest:
 |---|---|
 | `utilake.source_url`, `utilake.source_sha256`, `utilake.entry` | the source: where it came from, its hash, the CSV inside it |
 | `utilake.report_type`, `utilake.report_subtype`, `utilake.source_version`, `utilake.source_columns`, `utilake.fingerprint` | the shape: the block's I row as AEMO published it |
-| `utilake.source_period` | the month of the source, which decides the increment a block is read against |
+| `utilake.source_period` | the month the source was released in, which picks among the runs of the table's history that fit a block |
 | `utilake.plan` | the hash of the conformance plan the shape was read by: which file column feeds which lake column, that column's id, type and nullability, how the value is parsed, the key and time columns, the load mode, the directory |
-| `utilake.shape_id` | the id the census gives the shape, when it has seen it |
+| `utilake.shape_id` | the id the census gives the shape: the block's report pair and columns, hashed with the census's own canonical bytes, so it can be looked up in the census |
 | `utilake.schema_source` | where the table's definition came from: `registry` (built in), `user` (your own table file), `file` (nobody declared it, so the file's own header) |
-| `utilake.resolution`, `utilake.table`, `utilake.schema_version` | how the shape matched: `conforms` (its columns are its increment's), `deviates` or `derived`; the table, and the increment (`TABLE@n`, our version; AEMO's is `source_version`) |
+| `utilake.resolution`, `utilake.table`, `utilake.schema_version` | how the shape matched: `conforms` (a run of the table's history has its columns), `deviates` or `derived`; the table, and the schema of its history the block was read with (AEMO's version is `source_version`) |
 
 The plan hash changes when the output of that shape would: a column it
 carries gets another type, a table gets a schema where it had none, the
-increment it is read against changes. It does not
+schema it is read with changes. It does not
 change when a description is edited, nor when the table gains a column the
 shape does not carry: its files simply lack that column, which reads as
 null. A source whose recorded hash is no longer what the current schemas
@@ -184,66 +186,103 @@ the lake is derived from the archive, which is what `utilake reingest` does when
 table's schema improves. `utilake archive verify` hashes every
 file against its record.
 
-## Our schema, in increments
+## Our schemas: the shared histories
 
-Each table is a directory under `schemas/nem/`:
+A table's schemas are its history as an Iceberg table, which
+utilake-schemas folds from its census of
+every file AEMO published (github.com/g0itb4/utilake-schemas) and publishes
+as `nem/{TABLE}/table.json` with a manifest of their hashes. utilake keeps a
+copy, taken at one commit and never edited:
 
 ```
-schemas/nem/DISPATCH_UNIT_SCADA/
-  table.toml      our schema: persists, hand-editable
-  ctl/001.ctl     AEMO's control file of increment 1, byte for byte as archived
-  ctl/002.ctl     ... of increment 2
+schemas/nem/pulled/
+  SOURCE                          the utilake-schemas commit it was taken at
+  manifest.json                   the sha256 of every file published then
+  DISPATCH_UNIT_SCADA/table.json  the table, and its history under `iceberg`
+  ...
 ```
+
+`just schemas-pull REV` takes the copy at a commit of a utilake-schemas
+checkout (`../utilake-schemas` unless you name another), whatever its
+working tree holds. `just schemas-check`, a hook and part of `just check`,
+holds every file to the manifest and `SOURCE` to the commit `Cargo.lock`
+takes the `utilake-iceberg` crate from, so the histories and the code that
+reads them are always of one commit. A newer census is a pull and a bump of
+that rev, together.
+
+A history has schemas, each the fields of its files in file order, and
+runs, each the files AEMO released in a row under one schema, version and
+report pair:
+
+```json
+"schemas": [{"schema-id": 1, "identifier-field-ids": [1, 2], "fields": [
+    {"id": 1, "name": "SETTLEMENTDATE", "type": "timestamptz", "required": true},
+    {"id": 2, "name": "DUID", "type": "string", "required": true},
+    {"id": 3, "name": "SCADAVALUE", "type": "decimal(16, 6)", "required": false},
+    {"id": 4, "name": "LASTCHANGED", "type": "timestamptz", "required": false}]}],
+"runs": [{"schema-id": 1, "report": ["DISPATCH", "UNIT_SCADA"], "version": 1,
+          "from": {"release": "2024-10", ...}, "to": {"release": "2026-04", ...}, ...}]
+```
+
+The table's columns are the fields, by id, each typed by its Iceberg type;
+a column takes nulls unless every schema requires it. A block is read with
+the schema `History::resolve` names for its report pair, AEMO version,
+columns in order and the month its source was released in (with no month
+known, the latest run's): of the runs whose schema has exactly its columns,
+those of its version first, the last released by that month, else the
+first. Such a block conforms; the census guarantees every block it saw
+does. A block no run fits deviates: it is kept whole (a column the table
+lacks as text of its own, a column the file lacks as null), compared with
+the schema in force for its pair then and reported, and `--strict` refuses
+it. A renamed column is a new column.
+
+Where AEMO's files have columns the history has not seen, the fix is the
+census's, in utilake-schemas; until then a table of your own reads them.
+
+## Your own tables
+
+A table of your own goes in `~/.utilake/schemas/nem/{TABLE}/`. Every command
+uses it: one named after a built-in table replaces it, any other adds a
+table. `--no-user-schemas` runs without them. What was ingested before the
+table existed is brought up to it by `utilake reingest`.
+
+It is either a `table.json` of the pulled form, such as a newer one from
+utilake-schemas, or a `table.toml` written by hand. `utilake schema show T`
+prints any table as one, a start for your own:
 
 ```toml
-schema_format = 2
+schema_format = 4
 name = "DISPATCH_UNIT_SCADA"
 report_pairs = [["DISPATCH", "UNIT_SCADA"]]
 load_mode = "append"
-dedupe = "pk_lastchanged"
 primary_key = ["SETTLEMENTDATE", "DUID"]
 time_column = "SETTLEMENTDATE"
-next_column_id = 5
 
 column = [      # one per lake column, ever; an id is never reused
     { id = 1, name = "SETTLEMENTDATE", type = "timestamp", nullable = false },
     { id = 2, name = "DUID", type = "string", nullable = false },
-    { id = 3, name = "SCADAVALUE", type = "double", nullable = true },
+    { id = 3, name = "SCADAVALUE", type = "decimal(16,6)", nullable = true },
     { id = 4, name = "LASTCHANGED", type = "timestamp", nullable = true },
 ]
 
-[[increment]]   # DISPATCH_UNIT_SCADA@2, in force from 2026-08 until the next
-n = 2
-from = "2026-08"
-ctl = "002.ctl"
-ctl_sha256 = "1ae68ab0..."
-aemo_ctl = "PUBLIC_ARCHIVE#DISPATCH_UNIT_SCADA#FILE01#202608.ctl"
-aemo_versions = [1]    # the I-row versions seen under it
+[temporal]
+origin = "derived"
+entity = ["DUID"]
+valid = { kind = "interval_end", column = "SETTLEMENTDATE" }
+order = ["LASTCHANGED"]
+cutoff = "LASTCHANGED"
+
+[[schema]]      # one per column list its files carry
+id = 1
+from = "2024-10"       # the month its files start; the NEM's first if left out
+versions = [1]         # the AEMO versions they come under
 columns = ["SETTLEMENTDATE", "DUID", "SCADAVALUE", "LASTCHANGED"]   # file order
 ```
 
-The columns and their types are ours and persist. An increment is the file
-shape one AEMO control file sets from a month on: our version, apart from
-AEMO's. A block of month M is read against the increment in force at M
-(with no month known: the increment with its columns, else the latest). It
-conforms when its columns are the increment's; otherwise it deviates, is
-kept whole (a column the table lacks as text of its own, a column the file
-lacks as null) and is reported, and `--strict` refuses it. A renamed column
-is a new column.
-
-Where the files differ from their control file, the fix is yours, in
-`table.toml`: edit the increment's `columns`, a column's `type`, or add a
-column, with a `note` saying why. Types change only by an Iceberg promotion
-(`just schema-compat`), and none of ours is one: a column of another type
-is a new column.
-
-## Your own tables
-
-A table of your own goes in `~/.utilake/schemas/nem/{TABLE}/table.toml`,
-laid out like the ones above (control files are optional there). Every
-command uses it: one named after a built-in table replaces it, any other
-adds a table. `--no-user-schemas` runs without them. What was ingested
-before the table existed is brought up to it by `utilake reingest`.
+Its schemas become the table's history, one run per schema, report pair
+and version from `from`, and its blocks resolve through it as a pulled
+table's do. A `table.toml` of an older format, with `[[increment]]`
+lists, is refused with how to write it now.
 
 ## The census of every shape
 
@@ -251,9 +290,10 @@ The census of every file AEMO published, each table's Iceberg history folded
 from it, and the JSON Schema export live in the utilake-schemas repository
 (github.com/g0itb4/utilake-schemas): MMSDM months and the report folders
 (`Reports/ARCHIVE`, `Reports/CURRENT`), including each version of a file
-nemweb rewrote in place. utilake takes its `utilake-iceberg` crate, the
-Iceberg contract both repositories share, at the rev `Cargo.toml` pins.
-Parquet is optional: `utilake ingest --from` writes it from the archive.
+nemweb rewrote in place. utilake reads the histories it publishes
+(`schemas/nem/pulled/`) with its `utilake-iceberg` crate, the Iceberg
+contract both repositories share, at the rev `Cargo.toml` pins. Every block
+utilake reads carries the census's id of its shape (`utilake.shape_id`).
 
 ## Which months
 
@@ -266,15 +306,15 @@ from disk.
 File names changed along the way, from `PUBLIC_DVD_{TABLE}_{YYYYMM}010000.zip`
 to `PUBLIC_ARCHIVE#{TABLE}#FILE{NN}#{YYYYMM}010000.zip`; both are read.
 
-The increments come from the control files of every month from January
-2015 to August 2026, built in one pass, so each
-starts in the month its layout first appeared; 2009 to 2014 follow once
-those months are downloaded. Every file of August 2026 conforms to its
-increment. In January 2024 the `_ALL` files of three P5MIN tables carry
-other columns than the files their control files load, and five tables'
-files carry columns their control file does not list; those files are
-kept and flagged until a census of every month settles them. A file of
-another month is read against the increment in force then.
+The histories cover the census's months, July 2009 to April 2026, so
+every file of those months resolves to the schema its run has, the `_ALL`
+files of the P5MIN tables included. A later file whose columns no run has
+deviates until the census reaches its month: of August 2026, the files of
+22 tables do (LASTCHANGED on the FPP tables, a new column or three on
+BILLINGCALENDAR, BILLINGRUNTRK, GENCONDATA and NEGATIVE_RESIDUE). The 39
+tables the census found that the data model does not declare are not in
+the registry; their files are kept as text, as for any table nobody
+declares.
 
 AEMO's web server blocks a client that asks too fast. utilake leaves 250 ms
 between requests (`request_interval_ms` in `config.toml`), and when the
@@ -288,7 +328,7 @@ the way on a thread of their own.
 ## Errors
 
 Every error and warning carries a stable code (`csv.field_count_mismatch`,
-`net.content_length_mismatch`, `schema.version_drift`, ...), a full-sentence
+`net.content_length_mismatch`, `schema.deviates`, ...), a full-sentence
 message and the context: the request, the URL, the archived file, the zip entry,
 the table and version, the line and byte offset, and a sample of the offending
 input. A run attempts every file and reports each failure; the exit code says
@@ -325,12 +365,11 @@ numbers may not regress below live in `bench/budgets.json`.
 ## Status
 
 Working today: the NEM monthly archive from July 2009 on, Parquet + manifest,
-every table of the August 2026 and January 2024 archives (241) in the
-registry, each in increments set by AEMO's control files, downloads that
-resume where they stopped, and a lake that can be read again from the
-archive when a schema changes. Next: download the whole archive and sync
-the increments of every month from July 2009; then live 5-minute feeds
-and compaction; then WEM and an Iceberg writer.
+every table the data model declares (241) in the registry, each with the
+Iceberg history utilake-schemas folds from the census of every file,
+downloads that resume where they stopped, and a lake that can be read
+again from the archive when a schema changes. Next: live 5-minute feeds
+and compaction; then WEM.
 
 ## Developing
 

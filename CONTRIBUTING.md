@@ -19,7 +19,7 @@ crates/utilake-cli           L3  the command: flags, rendering, exit codes; kits
 
 The MMS format (AEMO's C/I/D rows and SQL*Loader control files):
 crates/utilake-mms-decode    F   the I row, MMS timestamps, scanner, field splitter; no registry
-crates/utilake-mms-registry  F   the table model (file_model), the shape id, the registry: build.rs validates schemas/, resolve() on the hot path
+crates/utilake-mms-registry  F   the table model (file_model), the shape id, the registry: build.rs validates schemas/ (the pulled histories), resolve() on the hot path
 crates/utilake-mms-conform   F   resolves blocks through the registry, casts to typed Arrow batches; the kit's Decoder and Catalog
 
 The markets:
@@ -47,7 +47,7 @@ worker; the async and sync worlds meet once per file.
 |---|---|---|
 | unit and integration | every crate, `cargo test` | `just test`, pre-commit |
 | coverage | `cargo llvm-cov` over the workspace | `just cover` against `coverage.json`, pre-push |
-| schema compatibility | table files at `origin/main` against the working tree | `just schema-compat`, pre-push |
+| pulled schemas | `schemas/nem/pulled/` against its manifest and the rev in `Cargo.lock` | `just schemas-check`, pre-commit |
 | benchmarks | criterion plus `utilake-bench` | `just bench-fast` pre-push, `just bench` in CI, against `bench/budgets.json` |
 | network | `crates/utilake-nem/tests/net.rs` | `just net-test`, weekly in CI |
 
@@ -59,13 +59,14 @@ latest measurement when that is better, never the other way. `just budget-check`
 fails when either moved the wrong way against `origin/main`, unless a commit in
 the range explains it with a `coverage-floor:` or `bench-budget:` line.
 
-The registry has the same ratchet. A table file may gain columns and
-increments, fix an increment's columns, or make a column nullable. It may
-not delete a table, delete, rename or renumber a column, change a type
-other than by an Iceberg promotion (none of ours is one), or remove an
-increment or change its month or control file. `just schema-compat` checks that against
-`origin/main`; a break made on purpose is explained with a `schema-break:`
-line in a commit message.
+The NEM tables are not edited here. They are the histories utilake-schemas
+publishes, and what a history may change from one commit to the next is
+held there (its `compat` check). Here they move only together with the
+crate that reads them: `just schemas-pull REV` copies the tables at a
+commit into `schemas/nem/pulled/`, the `utilake-iceberg` rev in
+`Cargo.toml` moves to the same commit, and `just schemas-check` fails until
+both agree and every file is its manifest's. A commit that changes what
+the lake holds explains it with a `schema-break:` line.
 
 Benchmark categories: `parse` (scanner, typed path, timestamp, float),
 `registry` (resolve, load), `store` (Parquet write, partition split) and

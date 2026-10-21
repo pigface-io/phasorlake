@@ -6,8 +6,8 @@ One model runs through the census, the registry, the lake and the export:
 | Term | What it is | Where |
 |---|---|---|
 | **Field** | An Iceberg field: an id never minted twice, a name, one type, whether it is required | `utilake-iceberg` (utilake-schemas) `src/schema.rs` |
-| **Schema** | The fields a file of the table holds, in file order, and the key; an id per distinct schema | `schemas/nem/iceberg/<TABLE>.json` |
-| **Block** | One block of one AEMO file: its header, rows, data span and the profile of its values | `schemas/nem/census/` |
+| **Schema** | The fields a file of the table holds, in file order, and the key; an id per distinct schema | `iceberg.schemas` of `schemas/nem/pulled/<TABLE>/table.json` |
+| **Block** | One block of one AEMO file: its header, rows, data span and the profile of its values | the census of utilake-schemas (`evidence/census/`) |
 | **Run** | Consecutive blocks under one schema, AEMO version and report pair | the history's `runs` |
 | **Snapshot** | One run of the lake's files, committed to the table | `{lake}/nem/<table>/metadata/` |
 
@@ -47,12 +47,18 @@ came in, and whether its data overlaps the run before.
 
 ## Resolution and the lake
 
-The registry embeds the histories (`iceberg.bin`). A block resolves to the
-schema whose columns, in order, are the block's, and conforms;
-`table.toml`'s columns are the history's fields, so a plan writes every
-value under its Iceberg field id (`PARQUET:field_id`), and validation
-refuses a column whose id or type is not its field's. Every ingest records
-its schema id in the Parquet footer and the manifest.
+utilake-schemas publishes each table's history in its `table.json`;
+utilake keeps a copy at one commit in `schemas/nem/pulled/`, held to the
+manifest and to the `utilake-iceberg` rev of `Cargo.lock` by
+`just schemas-check`, and the registry embeds it. A table's columns are
+the history's fields by id, typed by their Iceberg types, so a plan writes
+every value under its Iceberg field id (`PARQUET:field_id`). A block
+resolves to the schema `History::resolve` names for its report pair, AEMO
+version, columns in order and source month, and conforms; the fold
+guarantees that every block of the census resolves to its run's fields. A
+block no run fits deviates. Every ingest records its schema id
+(`utilake.schema_version`) and the census's id of its shape
+(`utilake.shape_id`) in the Parquet footer and the manifest.
 
 Timestamps are microseconds in UTC (`Timestamp(µs, +10:00)` in Arrow,
 `TIMESTAMP(MICROS, isAdjustedToUTC)` in Parquet): Iceberg's `timestamptz`,
