@@ -281,7 +281,6 @@ pub async fn iceberg(ctx: &Context, table: Option<&str>) -> Result<i32> {
             .join(r.table(id).market.to_string())
             .join(r.table_dir(id));
         let built = utilake_writer::iceberg::build_table(&dir, &t, &outs)
-            .await
             .map_err(|e| anyhow::anyhow!("{}", e.diagnostic().render()))?;
         rows.push(vec![
             name.to_owned(),

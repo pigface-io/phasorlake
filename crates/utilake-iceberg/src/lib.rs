@@ -7,12 +7,13 @@
 //! once over everything observed of it and AEMO's declaration ([`choose`]), so that later data
 //! never needs more than a legal promotion.
 //!
-//! Std, serde and the core diagnostics only; no I/O.
+//! Std, serde, SHA-256 and the core diagnostics only; no I/O.
 
 mod evidence;
 mod partition;
 mod plan;
 mod schema;
+pub mod table;
 mod types;
 mod update;
 

@@ -77,13 +77,20 @@ edit. Every schema is added in id order, so the table's ids are the
 history's; each run of outputs under one schema and version is one
 snapshot, with its first and last source file, months and version in the
 summary. The store (`crates/utilake-iceberg-store`) is a single writer:
-versioned metadata files and a `version-hint.text` swapped by rename,
-written with the library's manifest writers; the same facts write the same
-bytes. The tables are not partitioned: lake files split by market-time
-month, and Iceberg's month transform is the UTC month.
+versioned metadata files and a `version-hint.text` swapped by rename. The
+bytes come from `utilake_iceberg::table`, written by hand to the spec: the
+metadata as JSON, manifests and manifest lists as Avro object container
+files with the spec's field ids, no compression, and a sync marker hashed
+from the content, so the same facts write the same bytes. The tables are
+not partitioned: lake files split by market-time month, and Iceberg's
+month transform is the UTC month.
+
+The pointer in `version-hint.text` is the catalog: it needs no server, and
+the tables publish as plain files.
 
 pyiceberg (`StaticTable`) and DuckDB (`iceberg_scan('<dir>')`) read them,
-across schemas, by field id.
+across schemas, by field id; `scripts/iceberg-readers.py` checks a table
+the store's test keeps with both, and every manifest with fastavro.
 
 ## Reading an interval
 

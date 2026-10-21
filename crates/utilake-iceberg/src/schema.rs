@@ -55,6 +55,40 @@ impl Schema {
         self.fields == other.fields && key(self) == key(other)
     }
 
+    /// A schema as Iceberg table metadata writes it, when it is one this
+    /// crate's types can hold. `last_column_id` is the largest field id in
+    /// it: the table's metadata knows the true one.
+    pub fn from_json(v: &Value) -> Option<Self> {
+        let fields = v
+            .get("fields")?
+            .as_array()?
+            .iter()
+            .map(|f| {
+                Some(Field {
+                    id: u32::try_from(f.get("id")?.as_u64()?).ok()?,
+                    name: f.get("name")?.as_str()?.to_owned(),
+                    ty: IcebergType::parse(f.get("type")?.as_str()?)?,
+                    required: f.get("required")?.as_bool()?,
+                    doc: f.get("doc").and_then(Value::as_str).map(str::to_owned),
+                })
+            })
+            .collect::<Option<Vec<_>>>()?;
+        let identifier_field_ids = match v.get("identifier-field-ids") {
+            None => Vec::new(),
+            Some(ids) => ids
+                .as_array()?
+                .iter()
+                .map(|i| i.as_u64().and_then(|i| u32::try_from(i).ok()))
+                .collect::<Option<Vec<_>>>()?,
+        };
+        Some(Self {
+            schema_id: u32::try_from(v.get("schema-id")?.as_u64()?).ok()?,
+            last_column_id: fields.iter().map(|f| f.id).max().unwrap_or(0),
+            fields,
+            identifier_field_ids,
+        })
+    }
+
     /// The schema as Iceberg table metadata writes it.
     pub fn to_json(&self) -> Value {
         json!({
@@ -115,6 +149,21 @@ mod tests {
             })
         );
         assert_eq!(s.by_name("RRP").map(|f| f.id), Some(3));
+        assert_eq!(Schema::from_json(&s.to_json()), Some(s.clone()));
+        let mut v = s.to_json();
+        v.as_object_mut().unwrap().remove("identifier-field-ids");
+        assert_eq!(
+            Schema::from_json(&v).map(|s| s.identifier_field_ids),
+            Some(vec![])
+        );
+        for bad in [
+            json!({}),
+            json!({"schema-id": 0, "fields": [{"id": 1, "name": "A", "type": "uuid", "required": true}]}),
+            json!({"schema-id": 0, "fields": [], "identifier-field-ids": ["a"]}),
+            json!({"schema-id": -1, "fields": []}),
+        ] {
+            assert_eq!(Schema::from_json(&bad), None, "{bad}");
+        }
         assert!(s.field(2).is_none());
     }
 

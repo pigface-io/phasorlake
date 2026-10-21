@@ -25,7 +25,7 @@
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
-use utilake_iceberg::{PartitionSpec, Schema};
+use utilake_iceberg::Schema;
 use utilake_iceberg_store::{Append, NewFile, Result, Store};
 
 use crate::manifest::LiveOutput;
@@ -96,7 +96,7 @@ fn month_ms(period: Option<&str>) -> i64 {
 
 /// Builds the Iceberg metadata of table `t` in `dir`, from `outputs` (its
 /// live outputs in manifest order). Any metadata already there is replaced.
-pub async fn build_table(dir: &Path, t: &TableSchemas, outputs: &[LiveOutput]) -> Result<Built> {
+pub fn build_table(dir: &Path, t: &TableSchemas, outputs: &[LiveOutput]) -> Result<Built> {
     let meta = dir.join("metadata");
     if meta.exists() {
         std::fs::remove_dir_all(&meta)?;
@@ -106,7 +106,7 @@ pub async fn build_table(dir: &Path, t: &TableSchemas, outputs: &[LiveOutput]) -
         return Ok(Built::default());
     };
     let mut at = month_ms(outputs.first().and_then(|o| o.source_period.as_deref()));
-    store.create(&t.uuid, first, &PartitionSpec::by_month(None), at)?;
+    store.create(&t.uuid, first, at)?;
     for s in &t.schemas[1..] {
         at += 1;
         store.set_schema(s, at)?;
@@ -151,22 +151,20 @@ pub async fn build_table(dir: &Path, t: &TableSchemas, outputs: &[LiveOutput]) -
         }
         built.snapshots += 1;
         at += 1;
-        store
-            .append(Append {
-                files: run
-                    .iter()
-                    .map(|o| NewFile {
-                        path: PathBuf::from(&o.path),
-                        rows: o.rows,
-                        bytes: o.bytes,
-                        month: None,
-                    })
-                    .collect(),
-                snapshot_id: i64::try_from(built.snapshots).unwrap_or(i64::MAX),
-                at_ms: at,
-                properties,
-            })
-            .await?;
+        let append = Append {
+            files: run
+                .iter()
+                .map(|o| NewFile {
+                    path: PathBuf::from(&o.path),
+                    rows: o.rows,
+                    bytes: o.bytes,
+                })
+                .collect(),
+            snapshot_id: i64::try_from(built.snapshots).unwrap_or(i64::MAX),
+            at_ms: at,
+            properties,
+        };
+        store.append(append)?;
         built.files += run.len();
         built.rows += run.iter().map(|o| o.rows).sum::<u64>();
         i = j;
@@ -261,8 +259,8 @@ mod tests {
         }
     }
 
-    #[tokio::test]
-    async fn runs_of_one_schema_and_version_are_snapshots() {
+    #[test]
+    fn runs_of_one_schema_and_version_are_snapshots() {
         let tmp = tempfile::tempdir().unwrap();
         let dir = tmp.path().join("nem").join("dispatchprice");
         std::fs::create_dir_all(&dir).unwrap();
@@ -286,7 +284,7 @@ mod tests {
             uuid: table_uuid("DISPATCHPRICE"),
             schemas: schemas(),
         };
-        let built = build_table(&dir, &t, &outs).await.unwrap();
+        let built = build_table(&dir, &t, &outs).unwrap();
         assert_eq!(
             built,
             Built {
@@ -296,16 +294,14 @@ mod tests {
             }
         );
         let (version, meta) = Store::at(&dir).current().unwrap();
-        let mut ids: Vec<i32> = meta.schemas_iter().map(|s| s.schema_id()).collect();
-        ids.sort_unstable();
+        let ids: Vec<u32> = meta.schemas.iter().map(|s| s.schema_id).collect();
         assert_eq!(ids, [0, 1], "the history's schemas, with its ids");
-        let mut snaps: Vec<_> = meta.snapshots().collect();
-        snaps.sort_by_key(|s| s.sequence_number());
+        let snaps = &meta.snapshots;
         assert_eq!(
-            snaps.iter().map(|s| s.schema_id()).collect::<Vec<_>>(),
-            [Some(0), Some(1), Some(1), Some(1)]
+            snaps.iter().map(|s| s.schema_id).collect::<Vec<_>>(),
+            [0, 1, 1, 1]
         );
-        let props = |i: usize| &snaps[i].summary().additional_properties;
+        let props = |i: usize| &snaps[i].summary;
         assert_eq!(props(0)["utilake.first-file"], "https://h/2024-06.zip");
         assert_eq!(props(0)["utilake.last-period"], "2024-07");
         assert_eq!(props(2)["utilake.version"], "2");
@@ -313,23 +309,20 @@ mod tests {
         assert!(
             snaps
                 .windows(2)
-                .all(|w| w[0].timestamp_ms() < w[1].timestamp_ms())
+                .all(|w| w[0].timestamp_ms < w[1].timestamp_ms)
         );
         // Built again from the same facts: the same bytes.
         let read =
             || std::fs::read(dir.join(format!("metadata/v{version}.metadata.json"))).unwrap();
         let first = read();
-        build_table(&dir, &t, &outs).await.unwrap();
+        build_table(&dir, &t, &outs).unwrap();
         assert!(first == read(), "a rebuild wrote other metadata");
         // No schemas, no table.
         let none = TableSchemas {
             schemas: Vec::new(),
             ..t
         };
-        assert_eq!(
-            build_table(&dir, &none, &outs).await.unwrap(),
-            Built::default()
-        );
+        assert_eq!(build_table(&dir, &none, &outs).unwrap(), Built::default());
         assert!(!dir.join("metadata").exists());
     }
 
