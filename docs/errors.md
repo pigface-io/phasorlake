@@ -122,6 +122,10 @@ Every error and warning utilake reports carries one of these codes. Codes are st
 
 | code | raised in |
 |---|---|
+| `store.iceberg_io` | `crates/utilake-iceberg-store/src/lib.rs` |
+| `store.iceberg_metadata` | `crates/utilake-iceberg-store/src/lib.rs` |
+| `store.iceberg_partition` | `crates/utilake-iceberg-store/src/lib.rs` |
+| `store.iceberg_refused` | `crates/utilake-iceberg-store/src/lib.rs` |
 | `store.io` | `crates/utilake-writer/src/error.rs` |
 | `store.naive_timestamp` | `crates/utilake-writer/src/error.rs` |
 | `store.parquet_write` | `crates/utilake-writer/src/error.rs` |

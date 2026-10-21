@@ -35,7 +35,7 @@ impl PartitionSpec {
     /// for any other column, or no column.
     pub fn by_month(time: Option<&Field>) -> Self {
         let fields = time
-            .filter(|f| matches!(f.ty, IcebergType::Date | IcebergType::TimestamptzNs))
+            .filter(|f| matches!(f.ty, IcebergType::Date | IcebergType::Timestamptz))
             .map(|f| PartitionField {
                 source_id: f.id,
                 field_id: FIRST_PARTITION_FIELD_ID,
@@ -77,7 +77,7 @@ mod tests {
 
     #[test]
     fn months_of_the_valid_time() {
-        let spec = PartitionSpec::by_month(Some(&field(IcebergType::TimestamptzNs)));
+        let spec = PartitionSpec::by_month(Some(&field(IcebergType::Timestamptz)));
         assert_eq!(
             spec.to_json(),
             json!({"spec-id": 0, "fields": [

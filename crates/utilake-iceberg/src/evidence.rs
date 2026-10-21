@@ -150,7 +150,7 @@ const FLOAT_PRINTED: u8 = 16;
 ///   the largest observed scale, fixed for life, and P what the values and
 ///   the declaration need, while it fits a 64-bit integer (18 digits);
 ///   past that, `double`;
-/// - days `date`, times `timestamptz_ns`, anything else `string`;
+/// - days `date`, times `timestamptz`, anything else `string`;
 /// - never a value: the declared type, else `string`.
 ///
 /// A whole-number column with nothing declaring it whole is a
@@ -184,7 +184,7 @@ pub fn choose(e: Evidence, d: Declared) -> Choice {
         Kind::Integer | Kind::Decimal if d.key => IcebergType::String,
         Kind::Integer | Kind::Decimal => IcebergType::Double,
         Kind::Date => IcebergType::Date,
-        Kind::Timestamp => IcebergType::TimestamptzNs,
+        Kind::Timestamp => IcebergType::Timestamptz,
         Kind::Text => IcebergType::String,
     };
     Choice { ty, observed: true }
@@ -334,7 +334,7 @@ mod tests {
         assert_eq!(choose(ev(Kind::Date, 0, 0), d).ty, IcebergType::Date);
         assert_eq!(
             choose(ev(Kind::Timestamp, 0, 0), d).ty,
-            IcebergType::TimestamptzNs
+            IcebergType::Timestamptz
         );
         assert_eq!(choose(ev(Kind::Text, 0, 0), d).ty, IcebergType::String);
         assert!(choose(ev(Kind::Text, 0, 0), d).observed);

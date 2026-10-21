@@ -54,7 +54,7 @@ expression: "r.files[\"nem/UNIT/table.json\"]"
             "field-id": 1,
             "name": "SETTLEMENTDATE",
             "required": true,
-            "type": "timestamptz_ns"
+            "type": "timestamptz"
           },
           {
             "action": "add-column",
@@ -87,7 +87,7 @@ expression: "r.files[\"nem/UNIT/table.json\"]"
             "field-id": 4,
             "name": "LASTCHANGED",
             "required": false,
-            "type": "timestamptz_ns"
+            "type": "timestamptz"
           }
         ],
         "versions": [
@@ -126,7 +126,7 @@ expression: "r.files[\"nem/UNIT/table.json\"]"
           "id": 1,
           "name": "SETTLEMENTDATE",
           "required": true,
-          "type": "timestamptz_ns"
+          "type": "timestamptz"
         },
         {
           "id": 2,
@@ -145,7 +145,7 @@ expression: "r.files[\"nem/UNIT/table.json\"]"
           "id": 4,
           "name": "LASTCHANGED",
           "required": false,
-          "type": "timestamptz_ns"
+          "type": "timestamptz"
         }
       ],
       "identifier-field-ids": [

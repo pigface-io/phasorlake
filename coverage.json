@@ -8,6 +8,7 @@
   "floors": {
     "crates/utilake-core/src": 95,
     "crates/utilake-iceberg/src": 100,
+    "crates/utilake-iceberg-store/src": 100,
     "crates/utilake-mms-registry/src": 85,
     "crates/utilake-mms-registry/src/file_model": 90,
     "crates/utilake-nem-census/src": 80,

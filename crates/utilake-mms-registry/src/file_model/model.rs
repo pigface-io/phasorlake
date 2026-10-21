@@ -98,7 +98,7 @@ impl fmt::Display for ColumnId {
 /// | `long`         | `Int64`                    | `long`           |
 /// | `boolean`      | `Boolean`                  | `boolean`        |
 /// | `date`         | `Date32`                   | `date`           |
-/// | `timestamp_ns` | `Timestamp(ns, market tz)` | `timestamptz_ns` |
+/// | `timestamp_ns` | `Timestamp(ns, market tz)` | `timestamptz`    |
 /// | `decimal(P,S)` | `Decimal128(P, S)`         | `decimal(P, S)`  |
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(try_from = "String", into = "String")]
@@ -180,7 +180,7 @@ impl LakeType {
             Self::Long => IcebergType::Long,
             Self::Boolean => IcebergType::Boolean,
             Self::Date => IcebergType::Date,
-            Self::TimestampNs => IcebergType::TimestamptzNs,
+            Self::TimestampNs => IcebergType::Timestamptz,
             Self::Decimal { precision, scale } => IcebergType::Decimal { precision, scale },
         }
     }
@@ -193,7 +193,7 @@ impl LakeType {
             IcebergType::Long => Self::Long,
             IcebergType::Boolean => Self::Boolean,
             IcebergType::Date => Self::Date,
-            IcebergType::TimestamptzNs => Self::TimestampNs,
+            IcebergType::Timestamptz => Self::TimestampNs,
             IcebergType::Decimal { precision, scale } => Self::Decimal { precision, scale },
         }
     }
@@ -475,7 +475,7 @@ pub(crate) mod tests {
             assert!(t.promotes_to(t));
             assert!(t.holds(TypeClass::Unknown));
         }
-        assert_eq!(LakeType::TimestampNs.iceberg().name(), "timestamptz_ns");
+        assert_eq!(LakeType::TimestampNs.iceberg().name(), "timestamptz");
         assert_eq!(LakeType::Long.iceberg(), IcebergType::Long);
         for t in LakeType::ALL {
             assert_eq!(LakeType::of_iceberg(t.iceberg()), t);
@@ -485,7 +485,7 @@ pub(crate) mod tests {
                 .unwrap_err()
                 .contains("not a lake type")
         );
-        assert_eq!(LakeType::parse("timestamptz_ns"), None);
+        assert_eq!(LakeType::parse("timestamptz"), None);
         assert!(LakeType::ALL[6].holds(TypeClass::Number));
         // A wider decimal of the same scale is an Iceberg promotion.
         let d = |p, s| LakeType::Decimal {
@@ -494,7 +494,10 @@ pub(crate) mod tests {
         };
         assert!(d(9, 2).promotes_to(d(18, 2)) && !d(9, 2).promotes_to(d(18, 3)));
         assert!(!LakeType::Long.promotes_to(LakeType::Double));
-        assert!(!LakeType::Date.promotes_to(LakeType::TimestampNs));
+        assert!(
+            LakeType::Date.promotes_to(LakeType::TimestampNs),
+            "a date becomes a time in v3"
+        );
         assert!(LakeType::String.holds(TypeClass::Timestamp));
         assert!(LakeType::Double.holds(TypeClass::Integer));
         assert!(LakeType::Long.holds(TypeClass::Integer));

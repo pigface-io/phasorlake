@@ -73,7 +73,7 @@ pub enum UpdateError {
     },
     /// A type change that is not a promotion.
     #[error(
-        "Column {name} cannot change from {from} to {to}: Iceberg promotes only a decimal to a larger precision of the same scale. Values of the new type need a new column."
+        "Column {name} cannot change from {from} to {to}: Iceberg promotes only a decimal to a larger precision of the same scale, or a date to a time. Values of the new type need a new column."
     )]
     NotAPromotion {
         /// The column.
@@ -252,7 +252,7 @@ mod tests {
     fn keyed() -> Schema {
         let mut s = Schema::default()
             .apply_all(&[
-                add("T", IcebergType::TimestamptzNs),
+                add("T", IcebergType::Timestamptz),
                 add("V", IcebergType::Double),
             ])
             .unwrap();

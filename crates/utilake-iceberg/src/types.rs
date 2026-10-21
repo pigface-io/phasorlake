@@ -24,17 +24,20 @@ pub enum IcebergType {
     },
     /// A day.
     Date,
-    /// An instant in nanoseconds, adjusted to UTC.
-    TimestamptzNs,
+    /// An instant in microseconds, adjusted to UTC. AEMO times are whole
+    /// seconds, and readers that refuse `timestamptz_ns` (DuckDB's) read this.
+    Timestamptz,
     /// Text.
     String,
 }
 
 impl IcebergType {
     /// Whether a column of this type may become `to` in metadata alone:
-    /// the same type, or a decimal of larger precision and the same scale.
+    /// the same type, a decimal of larger precision and the same scale, or a
+    /// date that becomes a time (format version 3).
     pub fn promotes_to(self, to: Self) -> bool {
         match (self, to) {
+            (Self::Date, Self::Timestamptz) => true,
             (
                 Self::Decimal { precision, scale },
                 Self::Decimal {
@@ -60,7 +63,7 @@ impl IcebergType {
             Self::Double => "double".into(),
             Self::Decimal { precision, scale } => format!("decimal({precision}, {scale})"),
             Self::Date => "date".into(),
-            Self::TimestamptzNs => "timestamptz_ns".into(),
+            Self::Timestamptz => "timestamptz".into(),
             Self::String => "string".into(),
         }
     }
@@ -72,7 +75,7 @@ impl IcebergType {
             "long" => Self::Long,
             "double" => Self::Double,
             "date" => Self::Date,
-            "timestamptz_ns" => Self::TimestamptzNs,
+            "timestamptz" => Self::Timestamptz,
             "string" => Self::String,
             other => {
                 let inner = other.strip_prefix("decimal(")?.strip_suffix(')')?;
@@ -108,7 +111,7 @@ mod tests {
             IcebergType::Long,
             IcebergType::Double,
             IcebergType::Date,
-            IcebergType::TimestamptzNs,
+            IcebergType::Timestamptz,
             IcebergType::String,
             IcebergType::Decimal {
                 precision: 18,
@@ -143,7 +146,8 @@ mod tests {
         assert!(!d(10, 2).promotes_to(d(18, 3)));
         assert!(IcebergType::Long.promotes_to(IcebergType::Long));
         assert!(!IcebergType::Long.promotes_to(IcebergType::Double));
-        assert!(!IcebergType::Date.promotes_to(IcebergType::TimestamptzNs));
+        assert!(IcebergType::Date.promotes_to(IcebergType::Timestamptz));
+        assert!(!IcebergType::Timestamptz.promotes_to(IcebergType::Date));
         assert!(!IcebergType::Double.promotes_to(d(18, 2)));
     }
 
@@ -151,6 +155,6 @@ mod tests {
     fn a_float_is_no_identifier() {
         assert!(!IcebergType::Double.can_identify());
         assert!(IcebergType::Long.can_identify());
-        assert!(IcebergType::TimestamptzNs.can_identify());
+        assert!(IcebergType::Timestamptz.can_identify());
     }
 }

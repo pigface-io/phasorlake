@@ -44,6 +44,17 @@ impl Schema {
         self.fields.iter().find(|f| f.name == name)
     }
 
+    /// Whether `other` has the same columns (ids, names, types, nullability,
+    /// docs, order) and the same key, whatever ids the two schemas carry.
+    pub fn same_as(&self, other: &Self) -> bool {
+        let key = |s: &Self| {
+            let mut ids = s.identifier_field_ids.clone();
+            ids.sort_unstable();
+            ids
+        };
+        self.fields == other.fields && key(self) == key(other)
+    }
+
     /// The schema as Iceberg table metadata writes it.
     pub fn to_json(&self) -> Value {
         json!({
@@ -78,7 +89,7 @@ mod tests {
                 Field {
                     id: 1,
                     name: "SETTLEMENTDATE".into(),
-                    ty: IcebergType::TimestamptzNs,
+                    ty: IcebergType::Timestamptz,
                     required: true,
                     doc: Some("Interval end".into()),
                 },
@@ -98,12 +109,46 @@ mod tests {
             json!({
                 "type": "struct", "schema-id": 2, "identifier-field-ids": [1],
                 "fields": [
-                    {"id": 1, "name": "SETTLEMENTDATE", "required": true, "type": "timestamptz_ns", "doc": "Interval end"},
+                    {"id": 1, "name": "SETTLEMENTDATE", "required": true, "type": "timestamptz", "doc": "Interval end"},
                     {"id": 3, "name": "RRP", "required": false, "type": "double"},
                 ]
             })
         );
         assert_eq!(s.by_name("RRP").map(|f| f.id), Some(3));
         assert!(s.field(2).is_none());
+    }
+
+    #[test]
+    fn sameness_ignores_ids_and_key_order() {
+        let field = |id, name: &str| Field {
+            id,
+            name: name.into(),
+            ty: IcebergType::Long,
+            required: true,
+            doc: None,
+        };
+        let a = Schema {
+            schema_id: 0,
+            fields: vec![field(1, "A"), field(2, "B")],
+            identifier_field_ids: vec![1, 2],
+            last_column_id: 2,
+        };
+        let b = Schema {
+            schema_id: 7,
+            identifier_field_ids: vec![2, 1],
+            last_column_id: 9,
+            ..a.clone()
+        };
+        assert!(a.same_as(&b));
+        let moved = Schema {
+            fields: vec![field(2, "B"), field(1, "A")],
+            ..a.clone()
+        };
+        assert!(!a.same_as(&moved));
+        let rekeyed = Schema {
+            identifier_field_ids: vec![1],
+            ..a.clone()
+        };
+        assert!(!a.same_as(&rekeyed));
     }
 }
