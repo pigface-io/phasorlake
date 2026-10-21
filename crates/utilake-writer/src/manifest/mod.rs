@@ -40,6 +40,10 @@ const MIGRATIONS: &[(&str, &str)] = &[
         "0006_last_modified_at",
         include_str!("migrations/0006_last_modified_at.sql"),
     ),
+    (
+        "0007_schema_id",
+        include_str!("migrations/0007_schema_id.sql"),
+    ),
 ];
 
 /// A row of `files`.
@@ -455,7 +459,7 @@ impl Manifest {
             return Ok(None);
         }
         let mut stmt = self.sql(self.conn.prepare(
-            "SELECT status, table_name, report_type, report_subtype, source_version, source_columns, plan_hash, schema_source, resolution, source_period, shape_id
+            "SELECT status, table_name, report_type, report_subtype, source_version, source_columns, plan_hash, schema_source, resolution, source_period, shape_id, schema_id
              FROM ingests WHERE file_id = ?1 AND status != 'superseded' ORDER BY id",
         ))?;
         let rows: Vec<(String, IngestShape)> = self.sql(
@@ -532,8 +536,8 @@ impl Manifest {
         let t = &s.transform;
         let r = self.conn.execute(
             "INSERT INTO ingests (run_id, file_id, entry, table_name, schema_version, fingerprint, status, started_at,
-                                  report_type, report_subtype, source_version, source_columns, plan_hash, schema_source, resolution, source_period, shape_id)
-             VALUES (?1, ?2, ?3, ?4, ?5, ?6, 'running', ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16)",
+                                  report_type, report_subtype, source_version, source_columns, plan_hash, schema_source, resolution, source_period, shape_id, schema_id)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, 'running', ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17)",
             params![
                 s.run_id,
                 s.file_id,
@@ -550,7 +554,8 @@ impl Manifest {
                 t.schema_source,
                 t.resolution,
                 t.source_period,
-                t.shape_id
+                t.shape_id,
+                t.schema_id
             ],
         );
         self.sql(r)?;
@@ -640,7 +645,7 @@ impl Manifest {
     ) -> Result<Vec<IngestRecord>, ManifestError> {
         let sql = format!(
             "SELECT i.id, i.run_id, f.url, i.entry, i.table_name, i.schema_version, i.status, i.rows, i.bad_rows, i.started_at, i.finished_at, i.error_code,
-                    i.fingerprint, i.report_type, i.report_subtype, i.source_version, i.source_columns, i.plan_hash, i.schema_source, i.resolution, i.source_period, i.shape_id
+                    i.fingerprint, i.report_type, i.report_subtype, i.source_version, i.source_columns, i.plan_hash, i.schema_source, i.resolution, i.source_period, i.shape_id, i.schema_id
              FROM ingests i JOIN files f ON i.file_id = f.id
              WHERE (?1 IS NULL OR i.table_name = ?1) AND (?2 = 0 OR i.status = 'failed')
              ORDER BY i.id DESC LIMIT {}",
@@ -732,7 +737,7 @@ pub struct IngestShape {
 
 /// Reads the nine transform columns of an `ingests` row, starting at
 /// `at`: report type, report subtype, source version, source columns,
-/// plan hash, schema source, resolution, source period, shape id.
+/// plan hash, schema source, resolution, source period, shape id, schema id.
 fn transform_from_row(r: &rusqlite::Row<'_>, at: usize) -> rusqlite::Result<Transform> {
     let columns: String = r.get(at + 3)?;
     Ok(Transform {
@@ -749,6 +754,7 @@ fn transform_from_row(r: &rusqlite::Row<'_>, at: usize) -> rusqlite::Result<Tran
         resolution: r.get(at + 6)?,
         source_period: r.get(at + 7)?,
         shape_id: r.get(at + 8)?,
+        schema_id: r.get(at + 9)?,
     })
 }
 
@@ -788,6 +794,7 @@ mod tests {
             schema_source: "registry".into(),
             resolution: "exact".into(),
             shape_id: Some("0123456789abcdef".into()),
+            schema_id: Some(3),
         }
     }
 
@@ -1231,7 +1238,7 @@ mod tests {
         let shapes = m.ingested_shapes("file:///x.csv", "sha").unwrap().unwrap();
         let t = &shapes[0].transform;
         assert_eq!(t.plan_hash, "rules:abc");
-        assert_eq!(t.shape_id, None);
+        assert_eq!((t.shape_id.clone(), t.schema_id), (None, None));
         assert_eq!(t.source_columns, ["X", "Y"]);
         assert_eq!(t.source_period.as_deref(), Some("2024-01"));
         // A new ingest records both.

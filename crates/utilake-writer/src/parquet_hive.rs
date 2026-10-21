@@ -157,6 +157,12 @@ impl ParquetHive {
                     "utilake.shape_id".to_owned(),
                     meta.transform.shape_id.clone().unwrap_or_default(),
                 ),
+                KeyValue::new(
+                    "utilake.schema_id".to_owned(),
+                    meta.transform
+                        .schema_id
+                        .map_or_else(String::new, |s| s.to_string()),
+                ),
             ]));
         // Measures never benefit from dictionaries; ids do.
         for f in schema.fields() {
@@ -443,6 +449,7 @@ mod tests {
                 source_period: Some("2024-01".into()),
                 plan_hash: "plan:00000000000000000000000000000abc".into(),
                 shape_id: Some("0123456789abcdef".into()),
+                schema_id: Some(3),
                 schema_source: "registry".into(),
                 resolution: "exact".into(),
             },
@@ -532,6 +539,7 @@ mod tests {
             "plan:00000000000000000000000000000abc"
         );
         assert_eq!(value("utilake.shape_id"), "0123456789abcdef");
+        assert_eq!(value("utilake.schema_id"), "3");
         assert_eq!(value("utilake.schema_source"), "registry");
         assert_eq!(value("utilake.resolution"), "exact");
         assert!(f.sorted);

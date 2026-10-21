@@ -103,6 +103,7 @@ impl BatchSink for Bridge<'_> {
             schema_source: resolved.source.label().to_owned(),
             resolution: resolved.label().to_owned(),
             shape_id: shape_id(&registry.shape_ids(irow, self.period)),
+            schema_id: resolved.schema,
         });
         self.out.block_started(
             &table,

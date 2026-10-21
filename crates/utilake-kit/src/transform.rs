@@ -37,4 +37,8 @@ pub struct Transform {
     /// seen it.
     #[serde(default)]
     pub shape_id: Option<String>,
+    /// The Iceberg schema of the table's history whose columns are the
+    /// block's, when the census has folded that column list.
+    #[serde(default)]
+    pub schema_id: Option<u32>,
 }
