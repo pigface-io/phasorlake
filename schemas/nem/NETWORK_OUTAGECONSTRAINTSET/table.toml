@@ -11,8 +11,8 @@ next_column_id = 5
 column = [
     { id = 1, name = "OUTAGEID", type = "double", nullable = false },
     { id = 2, name = "GENCONSETID", type = "string", nullable = false },
-    { id = 3, name = "STARTINTERVAL", type = "timestamp_ns", nullable = true },
-    { id = 4, name = "ENDINTERVAL", type = "timestamp_ns", nullable = true },
+    { id = 3, name = "STARTINTERVAL", type = "timestamp", nullable = true },
+    { id = 4, name = "ENDINTERVAL", type = "timestamp", nullable = true },
 ]
 
 [temporal]

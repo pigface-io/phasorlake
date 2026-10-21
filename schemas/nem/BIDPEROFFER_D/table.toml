@@ -11,13 +11,13 @@ time_column = "SETTLEMENTDATE"
 next_column_id = 33
 
 column = [
-    { id = 1, name = "SETTLEMENTDATE", type = "timestamp_ns", nullable = false },
+    { id = 1, name = "SETTLEMENTDATE", type = "timestamp", nullable = false },
     { id = 2, name = "DUID", type = "string", nullable = false },
     { id = 3, name = "BIDTYPE", type = "string", nullable = false },
     { id = 4, name = "DIRECTION", type = "string", nullable = true },
-    { id = 5, name = "INTERVAL_DATETIME", type = "timestamp_ns", nullable = false },
-    { id = 6, name = "BIDSETTLEMENTDATE", type = "timestamp_ns", nullable = true },
-    { id = 7, name = "OFFERDATE", type = "timestamp_ns", nullable = true },
+    { id = 5, name = "INTERVAL_DATETIME", type = "timestamp", nullable = false },
+    { id = 6, name = "BIDSETTLEMENTDATE", type = "timestamp", nullable = true },
+    { id = 7, name = "OFFERDATE", type = "timestamp", nullable = true },
     { id = 8, name = "PERIODID", type = "double", nullable = true },
     { id = 9, name = "VERSIONNO", type = "double", nullable = true },
     { id = 10, name = "MAXAVAIL", type = "double", nullable = true },
@@ -38,7 +38,7 @@ column = [
     { id = 25, name = "BANDAVAIL8", type = "double", nullable = true },
     { id = 26, name = "BANDAVAIL9", type = "double", nullable = true },
     { id = 27, name = "BANDAVAIL10", type = "double", nullable = true },
-    { id = 28, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 28, name = "LASTCHANGED", type = "timestamp", nullable = true },
     { id = 29, name = "PASAAVAILABILITY", type = "double", nullable = true },
     { id = 30, name = "MR_CAPACITY", type = "double", nullable = true },
     { id = 31, name = "ENERGYLIMIT", type = "double", nullable = true },

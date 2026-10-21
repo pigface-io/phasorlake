@@ -11,9 +11,9 @@ time_column = "INTERVAL_DATETIME"
 next_column_id = 120
 
 column = [
-    { id = 1, name = "RUN_DATETIME", type = "timestamp_ns", nullable = false },
+    { id = 1, name = "RUN_DATETIME", type = "timestamp", nullable = false },
     { id = 2, name = "INTERVENTION", type = "double", nullable = true },
-    { id = 3, name = "INTERVAL_DATETIME", type = "timestamp_ns", nullable = false },
+    { id = 3, name = "INTERVAL_DATETIME", type = "timestamp", nullable = false },
     { id = 4, name = "REGIONID", type = "string", nullable = false },
     { id = 5, name = "RRP", type = "double", nullable = true },
     { id = 6, name = "ROP", type = "double", nullable = true },
@@ -100,7 +100,7 @@ column = [
     { id = 87, name = "LOWERREGVIOLATION", type = "double", nullable = true },
     { id = 88, name = "LOWER60SECVIOLATION", type = "double", nullable = true },
     { id = 89, name = "LOWER6SECVIOLATION", type = "double", nullable = true },
-    { id = 90, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 90, name = "LASTCHANGED", type = "timestamp", nullable = true },
     { id = 91, name = "TOTALINTERMITTENTGENERATION", type = "double", nullable = true },
     { id = 92, name = "DEMAND_AND_NONSCHEDGEN", type = "double", nullable = true },
     { id = 93, name = "UIGF", type = "double", nullable = true },

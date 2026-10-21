@@ -13,11 +13,11 @@ column = [
     { id = 2, name = "SRA_QUARTER", type = "double", nullable = false },
     { id = 3, name = "SRA_RUNNO", type = "double", nullable = false },
     { id = 4, name = "RUNTYPE", type = "string", nullable = true },
-    { id = 5, name = "RUNDATE", type = "timestamp_ns", nullable = true },
-    { id = 6, name = "POSTEDDATE", type = "timestamp_ns", nullable = true },
+    { id = 5, name = "RUNDATE", type = "timestamp", nullable = true },
+    { id = 6, name = "POSTEDDATE", type = "timestamp", nullable = true },
     { id = 7, name = "INTEREST_VERSIONNO", type = "double", nullable = true },
     { id = 8, name = "MAKEUP_VERSIONNO", type = "double", nullable = true },
-    { id = 9, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 9, name = "LASTCHANGED", type = "timestamp", nullable = true },
 ]
 
 [temporal]

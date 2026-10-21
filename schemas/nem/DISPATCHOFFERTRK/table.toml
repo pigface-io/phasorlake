@@ -9,12 +9,12 @@ time_column = "SETTLEMENTDATE"
 next_column_id = 7
 
 column = [
-    { id = 1, name = "SETTLEMENTDATE", type = "timestamp_ns", nullable = false },
+    { id = 1, name = "SETTLEMENTDATE", type = "timestamp", nullable = false },
     { id = 2, name = "DUID", type = "string", nullable = false },
     { id = 3, name = "BIDTYPE", type = "string", nullable = false },
-    { id = 4, name = "BIDSETTLEMENTDATE", type = "timestamp_ns", nullable = true },
-    { id = 5, name = "BIDOFFERDATE", type = "timestamp_ns", nullable = true },
-    { id = 6, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 4, name = "BIDSETTLEMENTDATE", type = "timestamp", nullable = true },
+    { id = 5, name = "BIDOFFERDATE", type = "timestamp", nullable = true },
+    { id = 6, name = "LASTCHANGED", type = "timestamp", nullable = true },
 ]
 
 [temporal]

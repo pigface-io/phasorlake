@@ -12,7 +12,7 @@ column = [
     { id = 1, name = "CONTRACTYEAR", type = "double", nullable = false },
     { id = 2, name = "WEEKNO", type = "double", nullable = false },
     { id = 3, name = "BILLRUNNO", type = "double", nullable = true },
-    { id = 4, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 4, name = "LASTCHANGED", type = "timestamp", nullable = true },
 ]
 
 [temporal]

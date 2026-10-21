@@ -7,7 +7,7 @@ expression: "r.files[\"nem/UNIT/table.json\"]"
     {
       "comment": "Market date and time starting at 04:05",
       "id": 1,
-      "lake_type": "timestamp_ns",
+      "lake_type": "timestamp",
       "model_type": "TIMESTAMP(0)",
       "model_type_source": "5.7",
       "name": "SETTLEMENTDATE",
@@ -33,7 +33,7 @@ expression: "r.files[\"nem/UNIT/table.json\"]"
     },
     {
       "id": 4,
-      "lake_type": "timestamp_ns",
+      "lake_type": "timestamp",
       "name": "LASTCHANGED",
       "note": "kept as text",
       "nullable": true

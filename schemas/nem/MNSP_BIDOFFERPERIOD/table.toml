@@ -9,8 +9,8 @@ time_column = "TRADINGDATE"
 next_column_id = 20
 
 column = [
-    { id = 1, name = "TRADINGDATE", type = "timestamp_ns", nullable = false },
-    { id = 2, name = "OFFERDATETIME", type = "timestamp_ns", nullable = false },
+    { id = 1, name = "TRADINGDATE", type = "timestamp", nullable = false },
+    { id = 2, name = "OFFERDATETIME", type = "timestamp", nullable = false },
     { id = 3, name = "LINKID", type = "string", nullable = false },
     { id = 4, name = "PERIODID", type = "double", nullable = false },
     { id = 5, name = "MAXAVAIL", type = "double", nullable = true },

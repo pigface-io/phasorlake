@@ -172,7 +172,7 @@ fn property(class: TypeClass, lake: Option<LakeType>, nullable: bool) -> Value {
             LakeType::Long => (Some("integer"), None),
             LakeType::Boolean => (Some("boolean"), None),
             LakeType::Date => (Some("string"), Some((DATE_PATTERN, DATE_FORMAT))),
-            LakeType::TimestampNs => (Some("string"), Some((TIMESTAMP_PATTERN, TIMESTAMP_FORMAT))),
+            LakeType::Timestamp => (Some("string"), Some((TIMESTAMP_PATTERN, TIMESTAMP_FORMAT))),
         },
         (TypeClass::Unknown, None) => (None, None),
     };

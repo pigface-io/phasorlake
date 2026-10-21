@@ -11,7 +11,7 @@ time_column = "EFFECTIVEDATE"
 next_column_id = 30
 
 column = [
-    { id = 1, name = "EFFECTIVEDATE", type = "timestamp_ns", nullable = false },
+    { id = 1, name = "EFFECTIVEDATE", type = "timestamp", nullable = false },
     { id = 2, name = "VERSIONNO", type = "double", nullable = false },
     { id = 3, name = "GENCONID", type = "string", nullable = false },
     { id = 4, name = "CONSTRAINTTYPE", type = "string", nullable = true },
@@ -19,10 +19,10 @@ column = [
     { id = 6, name = "DESCRIPTION", type = "string", nullable = true },
     { id = 7, name = "STATUS", type = "string", nullable = true },
     { id = 8, name = "GENERICCONSTRAINTWEIGHT", type = "double", nullable = true },
-    { id = 9, name = "AUTHORISEDDATE", type = "timestamp_ns", nullable = true },
+    { id = 9, name = "AUTHORISEDDATE", type = "timestamp", nullable = true },
     { id = 10, name = "AUTHORISEDBY", type = "string", nullable = true },
     { id = 11, name = "DYNAMICRHS", type = "double", nullable = true },
-    { id = 12, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 12, name = "LASTCHANGED", type = "timestamp", nullable = true },
     { id = 13, name = "DISPATCH", type = "string", nullable = true },
     { id = 14, name = "PREDISPATCH", type = "string", nullable = true },
     { id = 15, name = "STPASA", type = "string", nullable = true },

@@ -8,7 +8,7 @@ time_column = "RUN_DATETIME"
 next_column_id = 22
 
 column = [
-    { id = 1, name = "RUN_DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 1, name = "RUN_DATETIME", type = "timestamp", nullable = true },
     { id = 2, name = "RUN_NO", type = "double", nullable = true },
     { id = 3, name = "PASAVERSION", type = "string", nullable = true },
     { id = 4, name = "RESERVECONDITION", type = "double", nullable = true },
@@ -18,7 +18,7 @@ column = [
     { id = 8, name = "MAXSURPLUSRESERVEOPTION", type = "double", nullable = true },
     { id = 9, name = "MAXSPARECAPACITYOPTION", type = "double", nullable = true },
     { id = 10, name = "INTERCONNECTORFLOWPENALTY", type = "double", nullable = true },
-    { id = 11, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 11, name = "LASTCHANGED", type = "timestamp", nullable = true },
     { id = 12, name = "RUNTYPE", type = "string", nullable = true },
     { id = 13, name = "RELIABILITYLRCDEMANDOPTION", type = "double", nullable = true },
     { id = 14, name = "OUTAGELRCDEMANDOPTION", type = "double", nullable = true },

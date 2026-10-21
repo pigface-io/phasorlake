@@ -9,10 +9,10 @@ time_column = "PUBLISH_DATETIME"
 next_column_id = 5
 
 column = [
-    { id = 1, name = "PUBLISH_DATETIME", type = "timestamp_ns", nullable = false },
-    { id = 2, name = "STARTDATE", type = "timestamp_ns", nullable = true },
-    { id = 3, name = "ENDDATE", type = "timestamp_ns", nullable = true },
-    { id = 4, name = "LATEST_OFFER_DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 1, name = "PUBLISH_DATETIME", type = "timestamp", nullable = false },
+    { id = 2, name = "STARTDATE", type = "timestamp", nullable = true },
+    { id = 3, name = "ENDDATE", type = "timestamp", nullable = true },
+    { id = 4, name = "LATEST_OFFER_DATETIME", type = "timestamp", nullable = true },
 ]
 
 [temporal]

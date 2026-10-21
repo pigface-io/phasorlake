@@ -10,12 +10,12 @@ next_column_id = 12
 
 column = [
     { id = 1, name = "GENCONSETID", type = "string", nullable = false },
-    { id = 2, name = "EFFECTIVEDATE", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "EFFECTIVEDATE", type = "timestamp", nullable = false },
     { id = 3, name = "VERSIONNO", type = "double", nullable = false },
     { id = 4, name = "DESCRIPTION", type = "string", nullable = true },
     { id = 5, name = "AUTHORISEDBY", type = "string", nullable = true },
-    { id = 6, name = "AUTHORISEDDATE", type = "timestamp_ns", nullable = true },
-    { id = 7, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 6, name = "AUTHORISEDDATE", type = "timestamp", nullable = true },
+    { id = 7, name = "LASTCHANGED", type = "timestamp", nullable = true },
     { id = 10, name = "SYSTEMNORMAL", type = "string", nullable = true },
     { id = 8, name = "COVERAGE", type = "string", nullable = true },
     { id = 9, name = "MODIFICATIONS", type = "string", nullable = true },

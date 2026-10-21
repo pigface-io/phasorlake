@@ -9,12 +9,12 @@ time_column = "RUN_DATETIME"
 next_column_id = 31
 
 column = [
-    { id = 1, name = "RUN_DATETIME", type = "timestamp_ns", nullable = false },
+    { id = 1, name = "RUN_DATETIME", type = "timestamp", nullable = false },
     { id = 2, name = "RUN_NO", type = "double", nullable = false },
     { id = 3, name = "RUNTYPE", type = "string", nullable = false },
     { id = 4, name = "DEMAND_POE_TYPE", type = "string", nullable = false },
     { id = 5, name = "AGGREGATION_PERIOD", type = "string", nullable = false },
-    { id = 6, name = "PERIOD_ENDING", type = "timestamp_ns", nullable = false },
+    { id = 6, name = "PERIOD_ENDING", type = "timestamp", nullable = false },
     { id = 7, name = "REGIONID", type = "string", nullable = false },
     { id = 8, name = "NATIVEDEMAND", type = "double", nullable = true },
     { id = 9, name = "USE_PERCENTILE10", type = "double", nullable = true },
@@ -38,7 +38,7 @@ column = [
     { id = 27, name = "WEIGHT", type = "double", nullable = true },
     { id = 28, name = "USE_WEIGHTED_AVG", type = "double", nullable = true },
     { id = 29, name = "LRC", type = "double", nullable = true },
-    { id = 30, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 30, name = "LASTCHANGED", type = "timestamp", nullable = true },
 ]
 
 [temporal]

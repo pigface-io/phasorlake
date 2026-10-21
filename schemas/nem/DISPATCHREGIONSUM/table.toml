@@ -9,7 +9,7 @@ time_column = "SETTLEMENTDATE"
 next_column_id = 128
 
 column = [
-    { id = 1, name = "SETTLEMENTDATE", type = "timestamp_ns", nullable = false },
+    { id = 1, name = "SETTLEMENTDATE", type = "timestamp", nullable = false },
     { id = 2, name = "RUNNO", type = "double", nullable = false },
     { id = 3, name = "REGIONID", type = "string", nullable = false },
     { id = 4, name = "DISPATCHINTERVAL", type = "double", nullable = false },
@@ -72,7 +72,7 @@ column = [
     { id = 61, name = "RAISE6SECSUPPLYPRICE", type = "double", nullable = true },
     { id = 62, name = "AGGEGATEDISPATCHERROR", type = "double", nullable = true },
     { id = 63, name = "AGGREGATEDISPATCHERROR", type = "double", nullable = true },
-    { id = 64, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 64, name = "LASTCHANGED", type = "timestamp", nullable = true },
     { id = 65, name = "INITIALSUPPLY", type = "double", nullable = true },
     { id = 66, name = "CLEAREDSUPPLY", type = "double", nullable = true },
     { id = 67, name = "LOWERREGIMPORT", type = "double", nullable = true },

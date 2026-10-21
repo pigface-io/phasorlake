@@ -10,8 +10,8 @@ next_column_id = 5
 
 column = [
     { id = 1, name = "INTEREST_ACCT_ID", type = "string", nullable = false },
-    { id = 2, name = "EFFECTIVEDATE", type = "timestamp_ns", nullable = false },
-    { id = 3, name = "VERSION_DATETIME", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "EFFECTIVEDATE", type = "timestamp", nullable = false },
+    { id = 3, name = "VERSION_DATETIME", type = "timestamp", nullable = false },
     { id = 4, name = "INTEREST_RATE", type = "double", nullable = true },
 ]
 

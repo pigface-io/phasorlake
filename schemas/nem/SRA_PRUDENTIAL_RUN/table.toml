@@ -9,7 +9,7 @@ time_column = "PRUDENTIAL_DATE"
 next_column_id = 3
 
 column = [
-    { id = 1, name = "PRUDENTIAL_DATE", type = "timestamp_ns", nullable = false },
+    { id = 1, name = "PRUDENTIAL_DATE", type = "timestamp", nullable = false },
     { id = 2, name = "PRUDENTIAL_RUNNO", type = "double", nullable = false },
 ]
 

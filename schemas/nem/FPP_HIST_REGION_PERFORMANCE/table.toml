@@ -9,16 +9,16 @@ next_column_id = 12
 
 column = [
     { id = 1, name = "REGIONID", type = "string", nullable = true },
-    { id = 2, name = "EFFECTIVE_START_DATETIME", type = "timestamp_ns", nullable = true },
-    { id = 3, name = "EFFECTIVE_END_DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 2, name = "EFFECTIVE_START_DATETIME", type = "timestamp", nullable = true },
+    { id = 3, name = "EFFECTIVE_END_DATETIME", type = "timestamp", nullable = true },
     { id = 4, name = "VERSIONNO", type = "double", nullable = true },
-    { id = 5, name = "HIST_PERIOD_START_DATETIME", type = "timestamp_ns", nullable = true },
-    { id = 6, name = "HIST_PERIOD_END_DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 5, name = "HIST_PERIOD_START_DATETIME", type = "timestamp", nullable = true },
+    { id = 6, name = "HIST_PERIOD_END_DATETIME", type = "timestamp", nullable = true },
     { id = 7, name = "REG_HIST_RAISE_PERFORMANCE", type = "double", nullable = true },
     { id = 8, name = "REG_HIST_LOWER_PERFORMANCE", type = "double", nullable = true },
     { id = 9, name = "FPP_HIST_RAISE_PERFORMANCE", type = "double", nullable = true },
     { id = 10, name = "FPP_HIST_LOWER_PERFORMANCE", type = "double", nullable = true },
-    { id = 11, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 11, name = "LASTCHANGED", type = "timestamp", nullable = true },
 ]
 
 [temporal]

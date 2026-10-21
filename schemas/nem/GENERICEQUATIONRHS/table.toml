@@ -10,7 +10,7 @@ next_column_id = 15
 
 column = [
     { id = 1, name = "EQUATIONID", type = "string", nullable = false },
-    { id = 2, name = "EFFECTIVEDATE", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "EFFECTIVEDATE", type = "timestamp", nullable = false },
     { id = 3, name = "VERSIONNO", type = "double", nullable = false },
     { id = 4, name = "TERMID", type = "double", nullable = false },
     { id = 5, name = "GROUPID", type = "double", nullable = true },
@@ -22,7 +22,7 @@ column = [
     { id = 11, name = "PARAMETERTERM1", type = "string", nullable = true },
     { id = 12, name = "PARAMETERTERM2", type = "string", nullable = true },
     { id = 13, name = "PARAMETERTERM3", type = "string", nullable = true },
-    { id = 14, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 14, name = "LASTCHANGED", type = "timestamp", nullable = true },
 ]
 
 [temporal]

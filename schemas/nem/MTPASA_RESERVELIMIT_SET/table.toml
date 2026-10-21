@@ -8,13 +8,13 @@ primary_key = ["EFFECTIVEDATE", "VERSION_DATETIME"]
 next_column_id = 8
 
 column = [
-    { id = 1, name = "EFFECTIVEDATE", type = "timestamp_ns", nullable = false },
-    { id = 2, name = "VERSION_DATETIME", type = "timestamp_ns", nullable = false },
+    { id = 1, name = "EFFECTIVEDATE", type = "timestamp", nullable = false },
+    { id = 2, name = "VERSION_DATETIME", type = "timestamp", nullable = false },
     { id = 3, name = "RESERVELIMIT_SET_ID", type = "string", nullable = true },
     { id = 4, name = "DESCRIPTION", type = "string", nullable = true },
-    { id = 5, name = "AUTHORISEDDATE", type = "timestamp_ns", nullable = true },
+    { id = 5, name = "AUTHORISEDDATE", type = "timestamp", nullable = true },
     { id = 6, name = "AUTHORISEDBY", type = "string", nullable = true },
-    { id = 7, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 7, name = "LASTCHANGED", type = "timestamp", nullable = true },
 ]
 
 [temporal]

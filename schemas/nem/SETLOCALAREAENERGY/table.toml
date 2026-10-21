@@ -9,7 +9,7 @@ time_column = "SETTLEMENTDATE"
 next_column_id = 11
 
 column = [
-    { id = 1, name = "SETTLEMENTDATE", type = "timestamp_ns", nullable = false },
+    { id = 1, name = "SETTLEMENTDATE", type = "timestamp", nullable = false },
     { id = 2, name = "SETTLEMENTRUNNO", type = "double", nullable = false },
     { id = 3, name = "LOCALAREAID", type = "string", nullable = false },
     { id = 4, name = "PERIODID", type = "double", nullable = false },
@@ -18,7 +18,7 @@ column = [
     { id = 7, name = "TME", type = "double", nullable = true },
     { id = 8, name = "ADME", type = "double", nullable = true },
     { id = 9, name = "ADMELA", type = "double", nullable = true },
-    { id = 10, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 10, name = "LASTCHANGED", type = "timestamp", nullable = true },
 ]
 
 [temporal]

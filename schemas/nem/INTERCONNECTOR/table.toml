@@ -13,7 +13,7 @@ column = [
     { id = 3, name = "RSOID", type = "string", nullable = true },
     { id = 4, name = "REGIONTO", type = "string", nullable = true },
     { id = 5, name = "DESCRIPTION", type = "string", nullable = true },
-    { id = 6, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 6, name = "LASTCHANGED", type = "timestamp", nullable = true },
 ]
 
 [temporal]

@@ -9,10 +9,10 @@ time_column = "INTERVAL_DATETIME"
 next_column_id = 11
 
 column = [
-    { id = 1, name = "RUN_DATETIME", type = "timestamp_ns", nullable = false },
+    { id = 1, name = "RUN_DATETIME", type = "timestamp", nullable = false },
     { id = 2, name = "DUID", type = "string", nullable = false },
-    { id = 3, name = "OFFERDATETIME", type = "timestamp_ns", nullable = false },
-    { id = 4, name = "INTERVAL_DATETIME", type = "timestamp_ns", nullable = false },
+    { id = 3, name = "OFFERDATETIME", type = "timestamp", nullable = false },
+    { id = 4, name = "INTERVAL_DATETIME", type = "timestamp", nullable = false },
     { id = 5, name = "ORIGIN", type = "string", nullable = false },
     { id = 6, name = "FORECAST_PRIORITY", type = "double", nullable = false },
     { id = 7, name = "FORECAST_MEAN", type = "double", nullable = true },

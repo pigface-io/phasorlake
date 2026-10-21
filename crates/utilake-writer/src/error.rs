@@ -105,7 +105,7 @@ impl Diagnose for StoreError {
             Self::NaiveTimestamp { column, observed } => {
                 Diagnostic::error("store.naive_timestamp", Category::Store, msg)
                     .with_column(column.clone())
-                    .expected_observed("Timestamp(Nanosecond, Some(offset))", observed.clone())
+                    .expected_observed("Timestamp(Microsecond, Some(offset))", observed.clone())
             }
         }
     }

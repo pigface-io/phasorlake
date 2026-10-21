@@ -22,8 +22,8 @@ impl LakeType {
             Self::Long => DataType::Int64,
             Self::Boolean => DataType::Boolean,
             Self::Date => DataType::Date32,
-            Self::TimestampNs => DataType::Timestamp(
-                arrow_schema::TimeUnit::Nanosecond,
+            Self::Timestamp => DataType::Timestamp(
+                arrow_schema::TimeUnit::Microsecond,
                 Some(Arc::from(market.arrow_tz())),
             ),
             Self::Decimal { precision, scale } => {
@@ -76,7 +76,7 @@ mod tests {
             DataType::Boolean,
             DataType::Date32,
             DataType::Timestamp(
-                arrow_schema::TimeUnit::Nanosecond,
+                arrow_schema::TimeUnit::Microsecond,
                 Some(Arc::from("+10:00")),
             ),
             DataType::Decimal128(15, 5),
@@ -111,7 +111,7 @@ mod tests {
                 let at = format!("{}.{} is {}", table.name, f.name(), f.data_type());
                 match f.data_type() {
                     DataType::Timestamp(unit, zone) => {
-                        assert_eq!(*unit, arrow_schema::TimeUnit::Nanosecond, "{at}");
+                        assert_eq!(*unit, arrow_schema::TimeUnit::Microsecond, "{at}");
                         assert_eq!(zone.as_deref(), Some(tz.as_str()), "{at}");
                         timestamps += 1;
                     }
@@ -131,10 +131,10 @@ mod tests {
         // The mapping itself, for every market the registry knows.
         for m in [Market::Nem, Market::Wem] {
             let def = reg.market(m).unwrap();
-            let DataType::Timestamp(unit, Some(zone)) = LakeType::TimestampNs.arrow(def) else {
+            let DataType::Timestamp(unit, Some(zone)) = LakeType::Timestamp.arrow(def) else {
                 panic!("{m:?}: a timestamp without a zone");
             };
-            assert_eq!(unit, arrow_schema::TimeUnit::Nanosecond);
+            assert_eq!(unit, arrow_schema::TimeUnit::Microsecond);
             assert_eq!(zone.as_ref(), def.arrow_tz());
         }
     }

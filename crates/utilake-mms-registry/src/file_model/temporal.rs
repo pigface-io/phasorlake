@@ -147,7 +147,7 @@ const SCENARIO: &str = "INTERVENTION";
 const LAST_CHANGED: &str = "LASTCHANGED";
 
 fn is_time(c: &Column) -> bool {
-    matches!(c.ty, LakeType::TimestampNs | LakeType::Date)
+    matches!(c.ty, LakeType::Timestamp | LakeType::Date)
 }
 
 /// The roles of a table, from its primary key and columns.
@@ -257,7 +257,7 @@ impl Temporal<String> {
                 && !is_time(c)
             {
                 problems.push(format!(
-                    "temporal {role} {n} is {}, not a time; a {role} column is timestamp_ns or date",
+                    "temporal {role} {n} is {}, not a time; a {role} column is timestamp or date",
                     c.ty
                 ));
             }
@@ -331,7 +331,7 @@ mod tests {
         n.iter().map(|s| (*s).to_owned()).collect()
     }
 
-    const TS: LakeType = LakeType::TimestampNs;
+    const TS: LakeType = LakeType::Timestamp;
     const S: LakeType = LakeType::String;
     const D: LakeType = LakeType::Double;
 

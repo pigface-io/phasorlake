@@ -9,8 +9,8 @@ next_column_id = 4
 
 column = [
     { id = 1, name = "GROUPID", type = "double", nullable = true },
-    { id = 2, name = "CREATEDDATE", type = "timestamp_ns", nullable = true },
-    { id = 3, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 2, name = "CREATEDDATE", type = "timestamp", nullable = true },
+    { id = 3, name = "LASTCHANGED", type = "timestamp", nullable = true },
 ]
 
 [temporal]

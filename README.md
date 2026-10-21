@@ -90,17 +90,18 @@ Types are exact, as Parquet and Iceberg name them, and ours: a table's
 | `long` | `Int64` | `long` | (only by hand) |
 | `boolean` | `Boolean` | `boolean` | (only by hand) |
 | `date` | `Date32` | `date` | `DATE`/`TIMESTAMP` without an hour |
-| `timestamp_ns` | `Timestamp(ns, +10:00)` | `timestamptz_ns` | `DATE`/`TIMESTAMP` with an hour |
+| `timestamp`    | `Timestamp(µs, +10:00)` | `timestamptz`    | `DATE`/`TIMESTAMP` with an hour |
 
 Every number is a `double`: AEMO's control files load numbers as
 `FLOAT EXTERNAL`, its data puts fractions in columns the data model
 declares `NUMBER(p,0)`, and a `double` holds every whole number of up to 15
 digits exactly. NEM time is fixed AEST.
 
-Every timestamp in the lake is nanoseconds since the epoch in UTC, one unit
-with no exceptions, and a fractional second is kept to the last digit, so a
-later Iceberg table of the lake is format V3, the first with `timestamp_ns`
-(see `docs/iceberg.md`). That unit spans 1677-09-21 to 2262-04-11. AEMO
+Every timestamp in the lake is microseconds since the epoch in UTC, one unit
+with no exceptions: Iceberg's `timestamptz`, which every Iceberg reader
+reads (DuckDB's refuses `timestamptz_ns`), and AEMO's fractional seconds
+have at most three digits (see `docs/iceberg.md`). Values are clamped to the
+range nanoseconds span, 1677-09-21 to 2262-04-11. AEMO
 writes "no end" as `9999/12/31` or `2999/12/31`; such a value is stored as
 the last instant of the range,
 so `END_DATE > now()` still holds, and each column it happens in is
@@ -206,10 +207,10 @@ time_column = "SETTLEMENTDATE"
 next_column_id = 5
 
 column = [      # one per lake column, ever; an id is never reused
-    { id = 1, name = "SETTLEMENTDATE", type = "timestamp_ns", nullable = false },
+    { id = 1, name = "SETTLEMENTDATE", type = "timestamp", nullable = false },
     { id = 2, name = "DUID", type = "string", nullable = false },
     { id = 3, name = "SCADAVALUE", type = "double", nullable = true },
-    { id = 4, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 4, name = "LASTCHANGED", type = "timestamp", nullable = true },
 ]
 
 [[increment]]   # DISPATCH_UNIT_SCADA@2, in force from 2026-08 until the next

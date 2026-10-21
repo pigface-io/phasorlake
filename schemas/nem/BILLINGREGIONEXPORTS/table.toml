@@ -18,7 +18,7 @@ column = [
     { id = 7, name = "VALUE", type = "double", nullable = true },
     { id = 8, name = "SURPLUSENERGY", type = "double", nullable = true },
     { id = 9, name = "SURPLUSVALUE", type = "double", nullable = true },
-    { id = 10, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 10, name = "LASTCHANGED", type = "timestamp", nullable = true },
 ]
 
 [temporal]

@@ -8,9 +8,9 @@ time_column = "INTERVAL_DATETIME"
 next_column_id = 18
 
 column = [
-    { id = 1, name = "RUN_DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 1, name = "RUN_DATETIME", type = "timestamp", nullable = true },
     { id = 2, name = "RUNNO", type = "double", nullable = true },
-    { id = 3, name = "INTERVAL_DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 3, name = "INTERVAL_DATETIME", type = "timestamp", nullable = true },
     { id = 4, name = "CONSTRAINTID", type = "string", nullable = true },
     { id = 5, name = "VERSIONNO", type = "double", nullable = true },
     { id = 6, name = "BIDTYPE", type = "string", nullable = true },
@@ -23,7 +23,7 @@ column = [
     { id = 13, name = "TOTAL_FPP", type = "double", nullable = true },
     { id = 14, name = "RCR", type = "double", nullable = true },
     { id = 15, name = "USAGE_VALUE", type = "double", nullable = true },
-    { id = 16, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 16, name = "LASTCHANGED", type = "timestamp", nullable = true },
     { id = 17, name = "USAGE", type = "double", nullable = true },
 ]
 

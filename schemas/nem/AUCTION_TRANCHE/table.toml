@@ -13,12 +13,12 @@ column = [
     { id = 2, name = "QUARTER", type = "double", nullable = false },
     { id = 3, name = "VERSIONNO", type = "double", nullable = false },
     { id = 4, name = "TRANCHE", type = "double", nullable = false },
-    { id = 5, name = "AUCTIONDATE", type = "timestamp_ns", nullable = true },
-    { id = 6, name = "NOTIFYDATE", type = "timestamp_ns", nullable = true },
+    { id = 5, name = "AUCTIONDATE", type = "timestamp", nullable = true },
+    { id = 6, name = "NOTIFYDATE", type = "timestamp", nullable = true },
     { id = 7, name = "UNITALLOCATION", type = "double", nullable = true },
-    { id = 8, name = "CHANGEDATE", type = "timestamp_ns", nullable = true },
+    { id = 8, name = "CHANGEDATE", type = "timestamp", nullable = true },
     { id = 9, name = "CHANGEDBY", type = "string", nullable = true },
-    { id = 10, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 10, name = "LASTCHANGED", type = "timestamp", nullable = true },
 ]
 
 [temporal]

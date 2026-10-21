@@ -8,10 +8,10 @@ time_column = "LASTCHANGED"
 next_column_id = 5
 
 column = [
-    { id = 1, name = "END_TRADINGDATE", type = "timestamp_ns", nullable = true },
+    { id = 1, name = "END_TRADINGDATE", type = "timestamp", nullable = true },
     { id = 2, name = "ENABLEMENT_REASON", type = "string", nullable = true },
     { id = 3, name = "ESTIMATED_COSTS", type = "double", nullable = true },
-    { id = 4, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 4, name = "LASTCHANGED", type = "timestamp", nullable = true },
 ]
 
 [temporal]

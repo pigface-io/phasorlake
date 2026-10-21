@@ -9,11 +9,11 @@ next_column_id = 10
 
 column = [
     { id = 1, name = "REGIONID", type = "string", nullable = false },
-    { id = 2, name = "EFFECTIVEDATE", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "EFFECTIVEDATE", type = "timestamp", nullable = false },
     { id = 3, name = "VERSIONNO", type = "double", nullable = false },
     { id = 4, name = "PERIODID", type = "double", nullable = false },
     { id = 5, name = "APCVALUE", type = "double", nullable = true },
-    { id = 6, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 6, name = "LASTCHANGED", type = "timestamp", nullable = true },
     { id = 7, name = "APCTYPE", type = "double", nullable = true },
     { id = 8, name = "FCASAPCVALUE", type = "double", nullable = true },
     { id = 9, name = "APFVALUE", type = "double", nullable = true },

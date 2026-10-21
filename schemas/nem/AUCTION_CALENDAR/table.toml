@@ -11,16 +11,16 @@ next_column_id = 13
 column = [
     { id = 1, name = "CONTRACTYEAR", type = "double", nullable = false },
     { id = 2, name = "QUARTER", type = "double", nullable = false },
-    { id = 3, name = "STARTDATE", type = "timestamp_ns", nullable = true },
-    { id = 4, name = "ENDDATE", type = "timestamp_ns", nullable = true },
-    { id = 5, name = "NOTIFYDATE", type = "timestamp_ns", nullable = true },
-    { id = 6, name = "PAYMENTDATE", type = "timestamp_ns", nullable = true },
-    { id = 7, name = "RECONCILIATIONDATE", type = "timestamp_ns", nullable = true },
-    { id = 8, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
-    { id = 9, name = "PRELIMPURCHASESTMTDATE", type = "timestamp_ns", nullable = true },
-    { id = 10, name = "PRELIMPROCEEDSSTMTDATE", type = "timestamp_ns", nullable = true },
-    { id = 11, name = "FINALPURCHASESTMTDATE", type = "timestamp_ns", nullable = true },
-    { id = 12, name = "FINALPROCEEDSSTMTDATE", type = "timestamp_ns", nullable = true },
+    { id = 3, name = "STARTDATE", type = "timestamp", nullable = true },
+    { id = 4, name = "ENDDATE", type = "timestamp", nullable = true },
+    { id = 5, name = "NOTIFYDATE", type = "timestamp", nullable = true },
+    { id = 6, name = "PAYMENTDATE", type = "timestamp", nullable = true },
+    { id = 7, name = "RECONCILIATIONDATE", type = "timestamp", nullable = true },
+    { id = 8, name = "LASTCHANGED", type = "timestamp", nullable = true },
+    { id = 9, name = "PRELIMPURCHASESTMTDATE", type = "timestamp", nullable = true },
+    { id = 10, name = "PRELIMPROCEEDSSTMTDATE", type = "timestamp", nullable = true },
+    { id = 11, name = "FINALPURCHASESTMTDATE", type = "timestamp", nullable = true },
+    { id = 12, name = "FINALPROCEEDSSTMTDATE", type = "timestamp", nullable = true },
 ]
 
 [temporal]

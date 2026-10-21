@@ -427,7 +427,7 @@ impl Sync {
         }
         t.temporal = derive(&t.primary_key, &t.columns);
         if !snapshot {
-            let timed = |c: &&Column| matches!(c.ty, LakeType::TimestampNs | LakeType::Date);
+            let timed = |c: &&Column| matches!(c.ty, LakeType::Timestamp | LakeType::Date);
             t.time_column = TIME_CANDIDATES
                 .iter()
                 .find_map(|n| t.columns.iter().filter(timed).find(|c| c.name == *n))

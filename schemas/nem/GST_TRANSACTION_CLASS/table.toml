@@ -8,11 +8,11 @@ primary_key = ["EFFECTIVEDATE", "VERSIONNO", "TRANSACTION_TYPE", "BAS_CLASS"]
 next_column_id = 6
 
 column = [
-    { id = 1, name = "EFFECTIVEDATE", type = "timestamp_ns", nullable = false },
+    { id = 1, name = "EFFECTIVEDATE", type = "timestamp", nullable = false },
     { id = 2, name = "VERSIONNO", type = "double", nullable = false },
     { id = 3, name = "TRANSACTION_TYPE", type = "string", nullable = false },
     { id = 4, name = "BAS_CLASS", type = "string", nullable = false },
-    { id = 5, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 5, name = "LASTCHANGED", type = "timestamp", nullable = true },
 ]
 
 [temporal]

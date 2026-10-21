@@ -10,14 +10,14 @@ next_column_id = 14
 
 column = [
     { id = 1, name = "GENSETID", type = "string", nullable = false },
-    { id = 2, name = "EFFECTIVEDATE", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "EFFECTIVEDATE", type = "timestamp", nullable = false },
     { id = 3, name = "VERSIONNO", type = "double", nullable = false },
     { id = 4, name = "UNIT_GROUPING_LABEL", type = "string", nullable = false },
     { id = 5, name = "UNIT_COUNT", type = "double", nullable = true },
     { id = 6, name = "UNIT_SIZE", type = "double", nullable = true },
     { id = 7, name = "UNIT_MAX_SIZE", type = "double", nullable = true },
     { id = 8, name = "AGGREGATION_FLAG", type = "double", nullable = true },
-    { id = 9, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 9, name = "LASTCHANGED", type = "timestamp", nullable = true },
     { id = 10, name = "UNITMINSIZE", type = "double", nullable = true },
     { id = 11, name = "MAXSTORAGECAPACITY", type = "double", nullable = true },
     { id = 12, name = "REGISTEREDCAPACITY", type = "double", nullable = true },

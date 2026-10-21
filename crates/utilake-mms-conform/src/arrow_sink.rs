@@ -692,7 +692,7 @@ pub(crate) fn collect<R: std::io::Read>(
 
 #[cfg(test)]
 mod tests {
-    use arrow_array::{Array, Float64Array, StringArray, TimestampNanosecondArray};
+    use arrow_array::{Array, Float64Array, StringArray, TimestampMicrosecondArray};
     use utilake_mms_registry::Mode;
 
     use super::*;
@@ -730,13 +730,13 @@ mod tests {
         let ts = b
             .column(0)
             .as_any()
-            .downcast_ref::<TimestampNanosecondArray>()
+            .downcast_ref::<TimestampMicrosecondArray>()
             .unwrap();
         assert_eq!(ts.timezone(), Some("+10:00"));
         let expected = utilake_mms_decode::mmstime::parse_nanos(b"2024/01/01 00:05:00", 36_000)
             .unwrap()
             .0;
-        assert_eq!(ts.value(0), expected);
+        assert_eq!(ts.value(0), expected / 1_000, "microseconds");
         let duid = b.column(1).as_any().downcast_ref::<StringArray>().unwrap();
         assert_eq!(duid.value(0), "BUTLERSG");
         let mw = b.column(2).as_any().downcast_ref::<Float64Array>().unwrap();
@@ -892,14 +892,14 @@ mod tests {
             .batch
             .column(0)
             .as_any()
-            .downcast_ref::<TimestampNanosecondArray>()
+            .downcast_ref::<TimestampMicrosecondArray>()
             .unwrap();
-        assert_eq!(ts.value(0), i64::MAX);
-        assert_eq!(ts.value(1), i64::MAX);
+        assert_eq!(ts.value(0), i64::MAX / 1_000);
+        assert_eq!(ts.value(1), i64::MAX / 1_000);
         let whole = utilake_mms_decode::mmstime::parse_nanos(b"2024/01/01 00:05:00", 36_000)
             .unwrap()
             .0;
-        assert_eq!(ts.value(2), whole + 250_000_000);
+        assert_eq!(ts.value(2), whole / 1_000 + 250_000);
         // One warning for the column, with how many and the first of them.
         let clamped: Vec<_> = out
             .warnings

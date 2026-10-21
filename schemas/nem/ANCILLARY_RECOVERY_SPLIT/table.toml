@@ -8,12 +8,12 @@ primary_key = ["EFFECTIVEDATE", "VERSIONNO", "SERVICE", "PAYMENTTYPE"]
 next_column_id = 8
 
 column = [
-    { id = 1, name = "EFFECTIVEDATE", type = "timestamp_ns", nullable = false },
+    { id = 1, name = "EFFECTIVEDATE", type = "timestamp", nullable = false },
     { id = 2, name = "VERSIONNO", type = "double", nullable = false },
     { id = 3, name = "SERVICE", type = "string", nullable = false },
     { id = 4, name = "PAYMENTTYPE", type = "string", nullable = false },
     { id = 5, name = "CUSTOMER_PORTION", type = "double", nullable = true },
-    { id = 6, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 6, name = "LASTCHANGED", type = "timestamp", nullable = true },
     { id = 7, name = "ACE_PORTION", type = "double", nullable = true },
 ]
 

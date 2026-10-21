@@ -10,12 +10,12 @@ next_column_id = 8
 
 column = [
     { id = 1, name = "PREDISPATCHSEQNO", type = "string", nullable = true },
-    { id = 2, name = "DATETIME", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "DATETIME", type = "timestamp", nullable = false },
     { id = 3, name = "DUID", type = "string", nullable = false },
     { id = 4, name = "PERIODID", type = "string", nullable = true },
     { id = 5, name = "LOCAL_PRICE_ADJUSTMENT", type = "double", nullable = true },
     { id = 6, name = "LOCALLY_CONSTRAINED", type = "double", nullable = true },
-    { id = 7, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 7, name = "LASTCHANGED", type = "timestamp", nullable = true },
 ]
 
 [temporal]

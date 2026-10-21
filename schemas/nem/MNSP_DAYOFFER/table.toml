@@ -11,8 +11,8 @@ time_column = "SETTLEMENTDATE"
 next_column_id = 25
 
 column = [
-    { id = 1, name = "SETTLEMENTDATE", type = "timestamp_ns", nullable = false },
-    { id = 2, name = "OFFERDATE", type = "timestamp_ns", nullable = false },
+    { id = 1, name = "SETTLEMENTDATE", type = "timestamp", nullable = false },
+    { id = 2, name = "OFFERDATE", type = "timestamp", nullable = false },
     { id = 3, name = "VERSIONNO", type = "double", nullable = false },
     { id = 4, name = "PARTICIPANTID", type = "string", nullable = false },
     { id = 5, name = "LINKID", type = "string", nullable = false },
@@ -28,7 +28,7 @@ column = [
     { id = 15, name = "PRICEBAND8", type = "double", nullable = true },
     { id = 16, name = "PRICEBAND9", type = "double", nullable = true },
     { id = 17, name = "PRICEBAND10", type = "double", nullable = true },
-    { id = 18, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 18, name = "LASTCHANGED", type = "timestamp", nullable = true },
     { id = 19, name = "REBID_EVENT_TIME", type = "string", nullable = true },
     { id = 20, name = "REBID_AWARE_TIME", type = "string", nullable = true },
     { id = 21, name = "REBID_DECISION_TIME", type = "string", nullable = true },

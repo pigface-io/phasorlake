@@ -9,9 +9,9 @@ next_column_id = 5
 
 column = [
     { id = 1, name = "PREDISPATCHSEQNO", type = "string", nullable = true },
-    { id = 2, name = "RUN_DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 2, name = "RUN_DATETIME", type = "timestamp", nullable = true },
     { id = 3, name = "RUNNO", type = "double", nullable = true },
-    { id = 4, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 4, name = "LASTCHANGED", type = "timestamp", nullable = true },
 ]
 
 [temporal]

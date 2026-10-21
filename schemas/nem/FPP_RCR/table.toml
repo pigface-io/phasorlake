@@ -8,13 +8,13 @@ time_column = "INTERVAL_DATETIME"
 next_column_id = 8
 
 column = [
-    { id = 1, name = "INTERVAL_DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 1, name = "INTERVAL_DATETIME", type = "timestamp", nullable = true },
     { id = 2, name = "CONSTRAINTID", type = "string", nullable = true },
     { id = 3, name = "VERSIONNO", type = "double", nullable = true },
     { id = 4, name = "BIDTYPE", type = "string", nullable = true },
     { id = 5, name = "RCR", type = "double", nullable = true },
     { id = 6, name = "RCR_REASON_FLAG", type = "double", nullable = true },
-    { id = 7, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 7, name = "LASTCHANGED", type = "timestamp", nullable = true },
 ]
 
 [temporal]

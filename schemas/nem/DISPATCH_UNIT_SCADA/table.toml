@@ -9,10 +9,10 @@ time_column = "SETTLEMENTDATE"
 next_column_id = 5
 
 column = [
-    { id = 1, name = "SETTLEMENTDATE", type = "timestamp_ns", nullable = false },
+    { id = 1, name = "SETTLEMENTDATE", type = "timestamp", nullable = false },
     { id = 2, name = "DUID", type = "string", nullable = false },
     { id = 3, name = "SCADAVALUE", type = "double", nullable = true },
-    { id = 4, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 4, name = "LASTCHANGED", type = "timestamp", nullable = true },
 ]
 
 [temporal]

@@ -9,14 +9,14 @@ next_column_id = 30
 
 column = [
     { id = 1, name = "DUID", type = "string", nullable = false },
-    { id = 2, name = "START_DATE", type = "timestamp_ns", nullable = false },
-    { id = 3, name = "END_DATE", type = "timestamp_ns", nullable = true },
+    { id = 2, name = "START_DATE", type = "timestamp", nullable = false },
+    { id = 3, name = "END_DATE", type = "timestamp", nullable = true },
     { id = 4, name = "DISPATCHTYPE", type = "string", nullable = true },
     { id = 5, name = "CONNECTIONPOINTID", type = "string", nullable = true },
     { id = 6, name = "REGIONID", type = "string", nullable = true },
     { id = 7, name = "STATIONID", type = "string", nullable = true },
     { id = 8, name = "PARTICIPANTID", type = "string", nullable = true },
-    { id = 9, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 9, name = "LASTCHANGED", type = "timestamp", nullable = true },
     { id = 10, name = "TRANSMISSIONLOSSFACTOR", type = "double", nullable = true },
     { id = 11, name = "STARTTYPE", type = "string", nullable = true },
     { id = 12, name = "DISTRIBUTIONLOSSFACTOR", type = "double", nullable = true },

@@ -10,12 +10,12 @@ next_column_id = 8
 
 column = [
     { id = 1, name = "SUBSTATIONID", type = "string", nullable = false },
-    { id = 2, name = "VALIDFROM", type = "timestamp_ns", nullable = false },
-    { id = 3, name = "VALIDTO", type = "timestamp_ns", nullable = true },
+    { id = 2, name = "VALIDFROM", type = "timestamp", nullable = false },
+    { id = 3, name = "VALIDTO", type = "timestamp", nullable = true },
     { id = 4, name = "DESCRIPTION", type = "string", nullable = true },
     { id = 5, name = "REGIONID", type = "string", nullable = true },
     { id = 6, name = "OWNERID", type = "string", nullable = true },
-    { id = 7, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 7, name = "LASTCHANGED", type = "timestamp", nullable = true },
 ]
 
 [temporal]

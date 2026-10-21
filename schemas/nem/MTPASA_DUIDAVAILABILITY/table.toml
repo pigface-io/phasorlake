@@ -8,13 +8,13 @@ time_column = "DAY"
 next_column_id = 11
 
 column = [
-    { id = 1, name = "PUBLISH_DATETIME", type = "timestamp_ns", nullable = true },
-    { id = 2, name = "DAY", type = "timestamp_ns", nullable = true },
+    { id = 1, name = "PUBLISH_DATETIME", type = "timestamp", nullable = true },
+    { id = 2, name = "DAY", type = "timestamp", nullable = true },
     { id = 3, name = "REGIONID", type = "string", nullable = true },
     { id = 4, name = "DUID", type = "string", nullable = true },
     { id = 5, name = "PASAAVAILABILITY", type = "double", nullable = true },
-    { id = 6, name = "LATEST_OFFER_DATETIME", type = "timestamp_ns", nullable = true },
-    { id = 7, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 6, name = "LATEST_OFFER_DATETIME", type = "timestamp", nullable = true },
+    { id = 7, name = "LASTCHANGED", type = "timestamp", nullable = true },
     { id = 8, name = "CARRYOVERSTATUS", type = "double", nullable = true },
     { id = 9, name = "PASAUNITSTATE", type = "string", nullable = true },
     { id = 10, name = "PASARECALLTIME", type = "double", nullable = true },

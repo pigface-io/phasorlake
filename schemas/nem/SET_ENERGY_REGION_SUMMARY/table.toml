@@ -8,7 +8,7 @@ time_column = "SETTLEMENTDATE"
 next_column_id = 14
 
 column = [
-    { id = 1, name = "SETTLEMENTDATE", type = "timestamp_ns", nullable = true },
+    { id = 1, name = "SETTLEMENTDATE", type = "timestamp", nullable = true },
     { id = 2, name = "VERSIONNO", type = "double", nullable = true },
     { id = 3, name = "PERIODID", type = "double", nullable = true },
     { id = 4, name = "REGIONID", type = "string", nullable = true },
@@ -20,7 +20,7 @@ column = [
     { id = 10, name = "ASOE_AMOUNT", type = "double", nullable = true },
     { id = 11, name = "TOTAL_MWH", type = "double", nullable = true },
     { id = 12, name = "TOTAL_AMOUNT", type = "double", nullable = true },
-    { id = 13, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 13, name = "LASTCHANGED", type = "timestamp", nullable = true },
 ]
 
 [temporal]

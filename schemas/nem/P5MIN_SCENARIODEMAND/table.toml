@@ -8,8 +8,8 @@ time_column = "EFFECTIVEDATE"
 next_column_id = 6
 
 column = [
-    { id = 1, name = "EFFECTIVEDATE", type = "timestamp_ns", nullable = true },
-    { id = 2, name = "VERSION_DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 1, name = "EFFECTIVEDATE", type = "timestamp", nullable = true },
+    { id = 2, name = "VERSION_DATETIME", type = "timestamp", nullable = true },
     { id = 3, name = "SCENARIO", type = "double", nullable = true },
     { id = 4, name = "REGIONID", type = "string", nullable = true },
     { id = 5, name = "DELTAMW", type = "double", nullable = true },

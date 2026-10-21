@@ -9,11 +9,11 @@ time_column = "SETTLEMENTDATE"
 next_column_id = 6
 
 column = [
-    { id = 1, name = "SETTLEMENTDATE", type = "timestamp_ns", nullable = false },
+    { id = 1, name = "SETTLEMENTDATE", type = "timestamp", nullable = false },
     { id = 2, name = "DUID", type = "string", nullable = false },
     { id = 3, name = "ORIGIN", type = "string", nullable = true },
     { id = 4, name = "FORECAST_PRIORITY", type = "double", nullable = true },
-    { id = 5, name = "OFFERDATETIME", type = "timestamp_ns", nullable = true },
+    { id = 5, name = "OFFERDATETIME", type = "timestamp", nullable = true },
 ]
 
 [temporal]

@@ -140,11 +140,11 @@ fn keys(t: &Table, out: &mut Vec<Issue>) {
     if let Some(tc) = &t.time_column {
         match t.column(tc) {
             None => out.push(issue(t, format!("time_column {tc} is not a column"))),
-            Some(c) if !matches!(c.ty, LakeType::TimestampNs | LakeType::Date) => {
+            Some(c) if !matches!(c.ty, LakeType::Timestamp | LakeType::Date) => {
                 out.push(issue(
                     t,
                     format!(
-                        "time_column {tc} has type {}; it must be timestamp_ns or date",
+                        "time_column {tc} has type {}; it must be timestamp or date",
                         c.ty
                     ),
                 ));
@@ -331,7 +331,7 @@ mod tests {
         assert!(has(&t, "lists DUID twice") && has(&t, "NOPE, which is not a column"));
         let mut t = unit_scada();
         t.time_column = Some("DUID".into());
-        assert!(has(&t, "must be timestamp_ns or date"));
+        assert!(has(&t, "must be timestamp or date"));
         t.time_column = Some("NOPE".into());
         assert!(has(&t, "time_column NOPE is not a column"));
         let mut t = unit_scada();

@@ -10,7 +10,7 @@ next_column_id = 4
 column = [
     { id = 1, name = "PARTICIPANTCATEGORYID", type = "string", nullable = false },
     { id = 2, name = "DESCRIPTION", type = "string", nullable = true },
-    { id = 3, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 3, name = "LASTCHANGED", type = "timestamp", nullable = true },
 ]
 
 [temporal]

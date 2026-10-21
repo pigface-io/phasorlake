@@ -10,14 +10,14 @@ next_column_id = 10
 
 column = [
     { id = 1, name = "APEVENTID", type = "double", nullable = false },
-    { id = 2, name = "EFFECTIVEFROMINTERVAL", type = "timestamp_ns", nullable = true },
-    { id = 3, name = "EFFECTIVETOINTERVAL", type = "timestamp_ns", nullable = true },
+    { id = 2, name = "EFFECTIVEFROMINTERVAL", type = "timestamp", nullable = true },
+    { id = 3, name = "EFFECTIVETOINTERVAL", type = "timestamp", nullable = true },
     { id = 4, name = "REASON", type = "string", nullable = true },
     { id = 5, name = "STARTAUTHORISEDBY", type = "string", nullable = true },
-    { id = 6, name = "STARTAUTHORISEDDATE", type = "timestamp_ns", nullable = true },
+    { id = 6, name = "STARTAUTHORISEDDATE", type = "timestamp", nullable = true },
     { id = 7, name = "ENDAUTHORISEDBY", type = "string", nullable = true },
-    { id = 8, name = "ENDAUTHORISEDDATE", type = "timestamp_ns", nullable = true },
-    { id = 9, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 8, name = "ENDAUTHORISEDDATE", type = "timestamp", nullable = true },
+    { id = 9, name = "LASTCHANGED", type = "timestamp", nullable = true },
 ]
 
 [temporal]

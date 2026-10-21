@@ -9,10 +9,10 @@ time_column = "INTERVAL_DATETIME"
 next_column_id = 7
 
 column = [
-    { id = 1, name = "INTERVAL_DATETIME", type = "timestamp_ns", nullable = false },
+    { id = 1, name = "INTERVAL_DATETIME", type = "timestamp", nullable = false },
     { id = 2, name = "REGIONID", type = "string", nullable = false },
     { id = 3, name = "OPERATIONAL_DEMAND", type = "double", nullable = true },
-    { id = 4, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 4, name = "LASTCHANGED", type = "timestamp", nullable = true },
     { id = 5, name = "OPERATIONAL_DEMAND_ADJUSTMENT", type = "double", nullable = true },
     { id = 6, name = "WDR_ESTIMATE", type = "double", nullable = true },
 ]

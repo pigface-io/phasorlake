@@ -9,8 +9,8 @@ time_column = "SETTLEMENTDATE"
 next_column_id = 17
 
 column = [
-    { id = 1, name = "SETTLEMENTDATE", type = "timestamp_ns", nullable = false },
-    { id = 2, name = "NRM_DATETIME", type = "timestamp_ns", nullable = false },
+    { id = 1, name = "SETTLEMENTDATE", type = "timestamp", nullable = false },
+    { id = 2, name = "NRM_DATETIME", type = "timestamp", nullable = false },
     { id = 3, name = "DIRECTIONAL_INTERCONNECTORID", type = "string", nullable = false },
     { id = 4, name = "NRM_ACTIVATED_FLAG", type = "double", nullable = true },
     { id = 5, name = "CUMUL_NEGRESIDUE_AMOUNT", type = "double", nullable = true },
@@ -19,8 +19,8 @@ column = [
     { id = 8, name = "NEGRESIDUE_PD_NEXT_TI", type = "double", nullable = true },
     { id = 9, name = "PRICE_REVISION", type = "string", nullable = true },
     { id = 10, name = "PREDISPATCHSEQNO", type = "string", nullable = true },
-    { id = 11, name = "EVENT_ACTIVATED_DI", type = "timestamp_ns", nullable = true },
-    { id = 12, name = "EVENT_DEACTIVATED_DI", type = "timestamp_ns", nullable = true },
+    { id = 11, name = "EVENT_ACTIVATED_DI", type = "timestamp", nullable = true },
+    { id = 12, name = "EVENT_DEACTIVATED_DI", type = "timestamp", nullable = true },
     { id = 13, name = "DI_NOTBINDING_COUNT", type = "double", nullable = true },
     { id = 14, name = "DI_VIOLATED_COUNT", type = "double", nullable = true },
     { id = 15, name = "NRMCONSTRAINT_BLOCKED_FLAG", type = "double", nullable = true },

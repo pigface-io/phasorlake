@@ -11,12 +11,12 @@ time_column = "SETTLEMENTDATE"
 next_column_id = 30
 
 column = [
-    { id = 1, name = "SETTLEMENTDATE", type = "timestamp_ns", nullable = false },
+    { id = 1, name = "SETTLEMENTDATE", type = "timestamp", nullable = false },
     { id = 2, name = "DUID", type = "string", nullable = false },
     { id = 3, name = "BIDTYPE", type = "string", nullable = false },
     { id = 4, name = "DIRECTION", type = "string", nullable = true },
-    { id = 5, name = "BIDSETTLEMENTDATE", type = "timestamp_ns", nullable = true },
-    { id = 6, name = "OFFERDATE", type = "timestamp_ns", nullable = true },
+    { id = 5, name = "BIDSETTLEMENTDATE", type = "timestamp", nullable = true },
+    { id = 6, name = "OFFERDATE", type = "timestamp", nullable = true },
     { id = 7, name = "VERSIONNO", type = "double", nullable = true },
     { id = 8, name = "PARTICIPANTID", type = "string", nullable = true },
     { id = 9, name = "DAILYENERGYCONSTRAINT", type = "double", nullable = true },
@@ -37,7 +37,7 @@ column = [
     { id = 24, name = "T3", type = "double", nullable = true },
     { id = 25, name = "T4", type = "double", nullable = true },
     { id = 26, name = "NORMALSTATUS", type = "string", nullable = true },
-    { id = 27, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 27, name = "LASTCHANGED", type = "timestamp", nullable = true },
     { id = 28, name = "MR_FACTOR", type = "double", nullable = true },
     { id = 29, name = "ENTRYTYPE", type = "string", nullable = true },
 ]

@@ -98,7 +98,7 @@ impl fmt::Display for ColumnId {
 /// | `long`         | `Int64`                    | `long`           |
 /// | `boolean`      | `Boolean`                  | `boolean`        |
 /// | `date`         | `Date32`                   | `date`           |
-/// | `timestamp_ns` | `Timestamp(ns, market tz)` | `timestamptz`    |
+/// | `timestamp`    | `Timestamp(µs, market tz)` | `timestamptz`    |
 /// | `decimal(P,S)` | `Decimal128(P, S)`         | `decimal(P, S)`  |
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(try_from = "String", into = "String")]
@@ -114,7 +114,7 @@ pub enum LakeType {
     /// A day.
     Date,
     /// An instant in nanoseconds, written in market time.
-    TimestampNs,
+    Timestamp,
     /// An exact decimal: `precision` digits in all, `scale` after the
     /// point, fixed for the life of the column. Up to 18 digits it is
     /// stored as a 64-bit integer.
@@ -134,7 +134,7 @@ impl LakeType {
         Self::Long,
         Self::Boolean,
         Self::Date,
-        Self::TimestampNs,
+        Self::Timestamp,
         Self::Decimal {
             precision: 15,
             scale: 5,
@@ -149,7 +149,7 @@ impl LakeType {
             Self::Long => "long".into(),
             Self::Boolean => "boolean".into(),
             Self::Date => "date".into(),
-            Self::TimestampNs => "timestamp_ns".into(),
+            Self::Timestamp => "timestamp".into(),
             Self::Decimal { precision, scale } => format!("decimal({precision},{scale})"),
         }
     }
@@ -162,7 +162,8 @@ impl LakeType {
             "long" => Self::Long,
             "boolean" => Self::Boolean,
             "date" => Self::Date,
-            "timestamp_ns" => Self::TimestampNs,
+            // Files written before the lake kept microseconds say `_ns`.
+            "timestamp" | "timestamp_ns" => Self::Timestamp,
             other => {
                 let IcebergType::Decimal { precision, scale } = IcebergType::parse(other)? else {
                     return None;
@@ -180,7 +181,7 @@ impl LakeType {
             Self::Long => IcebergType::Long,
             Self::Boolean => IcebergType::Boolean,
             Self::Date => IcebergType::Date,
-            Self::TimestampNs => IcebergType::Timestamptz,
+            Self::Timestamp => IcebergType::Timestamptz,
             Self::Decimal { precision, scale } => IcebergType::Decimal { precision, scale },
         }
     }
@@ -193,7 +194,7 @@ impl LakeType {
             IcebergType::Long => Self::Long,
             IcebergType::Boolean => Self::Boolean,
             IcebergType::Date => Self::Date,
-            IcebergType::Timestamptz => Self::TimestampNs,
+            IcebergType::Timestamptz => Self::Timestamp,
             IcebergType::Decimal { precision, scale } => Self::Decimal { precision, scale },
         }
     }
@@ -217,8 +218,8 @@ impl LakeType {
                     Self::Double | Self::Decimal { .. }
                 )
                 | (TypeClass::Integer, Self::Long)
-                | (TypeClass::Date, Self::Date | Self::TimestampNs)
-                | (TypeClass::Timestamp, Self::TimestampNs)
+                | (TypeClass::Date, Self::Date | Self::Timestamp)
+                | (TypeClass::Timestamp, Self::Timestamp)
         )
     }
 }
@@ -234,7 +235,7 @@ impl TryFrom<String> for LakeType {
 
     fn try_from(s: String) -> Result<Self, String> {
         Self::parse(&s).ok_or_else(|| {
-            format!("{s:?} is not a lake type (string, double, long, boolean, date, timestamp_ns, decimal(P,S))")
+            format!("{s:?} is not a lake type (string, double, long, boolean, date, timestamp, decimal(P,S))")
         })
     }
 }
@@ -390,10 +391,10 @@ pub(crate) mod tests {
             time_column: Some("SETTLEMENTDATE".into()),
             next_column_id: 5,
             columns: vec![
-                col(1, "SETTLEMENTDATE", LakeType::TimestampNs, false),
+                col(1, "SETTLEMENTDATE", LakeType::Timestamp, false),
                 col(2, "DUID", LakeType::String, false),
                 col(3, "SCADAVALUE", LakeType::Double, true),
-                col(4, "LASTCHANGED", LakeType::TimestampNs, true),
+                col(4, "LASTCHANGED", LakeType::Timestamp, true),
             ],
             increments: vec![
                 Increment {
@@ -475,7 +476,7 @@ pub(crate) mod tests {
             assert!(t.promotes_to(t));
             assert!(t.holds(TypeClass::Unknown));
         }
-        assert_eq!(LakeType::TimestampNs.iceberg().name(), "timestamptz");
+        assert_eq!(LakeType::Timestamp.iceberg().name(), "timestamptz");
         assert_eq!(LakeType::Long.iceberg(), IcebergType::Long);
         for t in LakeType::ALL {
             assert_eq!(LakeType::of_iceberg(t.iceberg()), t);
@@ -495,14 +496,14 @@ pub(crate) mod tests {
         assert!(d(9, 2).promotes_to(d(18, 2)) && !d(9, 2).promotes_to(d(18, 3)));
         assert!(!LakeType::Long.promotes_to(LakeType::Double));
         assert!(
-            LakeType::Date.promotes_to(LakeType::TimestampNs),
+            LakeType::Date.promotes_to(LakeType::Timestamp),
             "a date becomes a time in v3"
         );
         assert!(LakeType::String.holds(TypeClass::Timestamp));
         assert!(LakeType::Double.holds(TypeClass::Integer));
         assert!(LakeType::Long.holds(TypeClass::Integer));
         assert!(!LakeType::Long.holds(TypeClass::Number));
-        assert!(LakeType::TimestampNs.holds(TypeClass::Date));
+        assert!(LakeType::Timestamp.holds(TypeClass::Date));
         assert!(!LakeType::Date.holds(TypeClass::Timestamp));
         assert!(!LakeType::Double.holds(TypeClass::Varchar));
         assert!(!LakeType::Boolean.holds(TypeClass::Number));

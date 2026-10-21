@@ -8,8 +8,8 @@ time_column = "INTERVAL_DATETIME"
 next_column_id = 11
 
 column = [
-    { id = 1, name = "RUN_DATETIME", type = "timestamp_ns", nullable = true },
-    { id = 2, name = "INTERVAL_DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 1, name = "RUN_DATETIME", type = "timestamp", nullable = true },
+    { id = 2, name = "INTERVAL_DATETIME", type = "timestamp", nullable = true },
     { id = 3, name = "DUID", type = "string", nullable = true },
     { id = 4, name = "GENERATION_MAX_AVAILABILITY", type = "double", nullable = true },
     { id = 5, name = "GENERATION_PASA_AVAILABILITY", type = "double", nullable = true },
@@ -17,7 +17,7 @@ column = [
     { id = 7, name = "LOAD_MAX_AVAILABILITY", type = "double", nullable = true },
     { id = 8, name = "LOAD_PASA_AVAILABILITY", type = "double", nullable = true },
     { id = 9, name = "LOAD_RECALL_PERIOD", type = "double", nullable = true },
-    { id = 10, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 10, name = "LASTCHANGED", type = "timestamp", nullable = true },
 ]
 
 [temporal]

@@ -19,7 +19,7 @@ column = [
     { id = 8, name = "MEANRESERVEPRICE", type = "double", nullable = true },
     { id = 9, name = "SCALEFACTOR", type = "double", nullable = true },
     { id = 10, name = "ACTUALRESERVEPRICE", type = "double", nullable = true },
-    { id = 11, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 11, name = "LASTCHANGED", type = "timestamp", nullable = true },
 ]
 
 [temporal]

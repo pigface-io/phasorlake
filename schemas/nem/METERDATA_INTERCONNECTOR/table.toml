@@ -10,12 +10,12 @@ next_column_id = 8
 
 column = [
     { id = 1, name = "CASE_ID", type = "double", nullable = false },
-    { id = 2, name = "SETTLEMENTDATE", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "SETTLEMENTDATE", type = "timestamp", nullable = false },
     { id = 3, name = "INTERCONNECTORID", type = "string", nullable = false },
     { id = 4, name = "PERIODID", type = "double", nullable = false },
     { id = 5, name = "IMPORTVALUE", type = "double", nullable = true },
     { id = 6, name = "EXPORTVALUE", type = "double", nullable = true },
-    { id = 7, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 7, name = "LASTCHANGED", type = "timestamp", nullable = true },
 ]
 
 [temporal]

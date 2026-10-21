@@ -10,10 +10,10 @@ next_column_id = 17
 column = [
     { id = 1, name = "GROUPSERVICEID", type = "double", nullable = true },
     { id = 2, name = "GROUPID", type = "double", nullable = true },
-    { id = 3, name = "VERSIONFROM", type = "timestamp_ns", nullable = true },
-    { id = 4, name = "VERSIONTO", type = "timestamp_ns", nullable = true },
-    { id = 5, name = "STARTDATE", type = "timestamp_ns", nullable = true },
-    { id = 6, name = "ENDDATE", type = "timestamp_ns", nullable = true },
+    { id = 3, name = "VERSIONFROM", type = "timestamp", nullable = true },
+    { id = 4, name = "VERSIONTO", type = "timestamp", nullable = true },
+    { id = 5, name = "STARTDATE", type = "timestamp", nullable = true },
+    { id = 6, name = "ENDDATE", type = "timestamp", nullable = true },
     { id = 7, name = "MARKET", type = "string", nullable = true },
     { id = 8, name = "SERVICETYPE", type = "string", nullable = true },
     { id = 9, name = "ENTITYTYPE", type = "string", nullable = true },
@@ -22,8 +22,8 @@ column = [
     { id = 12, name = "MRCREASON", type = "string", nullable = true },
     { id = 13, name = "MAXIMUMRAMPRATEPERMIN", type = "double", nullable = true },
     { id = 14, name = "REGION", type = "string", nullable = true },
-    { id = 15, name = "APPROVEDDATE", type = "timestamp_ns", nullable = true },
-    { id = 16, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 15, name = "APPROVEDDATE", type = "timestamp", nullable = true },
+    { id = 16, name = "LASTCHANGED", type = "timestamp", nullable = true },
 ]
 
 [temporal]

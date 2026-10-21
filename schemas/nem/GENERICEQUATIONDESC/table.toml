@@ -10,7 +10,7 @@ next_column_id = 10
 column = [
     { id = 1, name = "EQUATIONID", type = "string", nullable = false },
     { id = 2, name = "DESCRIPTION", type = "string", nullable = true },
-    { id = 3, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 3, name = "LASTCHANGED", type = "timestamp", nullable = true },
     { id = 4, name = "IMPACT", type = "string", nullable = true },
     { id = 5, name = "SOURCE", type = "string", nullable = true },
     { id = 6, name = "LIMITTYPE", type = "string", nullable = true },

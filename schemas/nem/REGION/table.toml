@@ -11,7 +11,7 @@ column = [
     { id = 1, name = "REGIONID", type = "string", nullable = false },
     { id = 2, name = "DESCRIPTION", type = "string", nullable = true },
     { id = 3, name = "REGIONSTATUS", type = "string", nullable = true },
-    { id = 4, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 4, name = "LASTCHANGED", type = "timestamp", nullable = true },
 ]
 
 [temporal]

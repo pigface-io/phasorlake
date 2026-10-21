@@ -7,12 +7,12 @@ data files, none is rewritten. These are the rules that keep that possible.
 
 ## Format version 3
 
-Every timestamp in the lake is nanoseconds since the epoch in UTC
-(`Timestamp(ns, +10:00)` in Arrow, `TIMESTAMP(NANOS, isAdjustedToUTC)` in
-Parquet). Iceberg's `timestamp_ns` and `timestamptz_ns` types exist only from
-format version 3; version 2 knows microseconds only. The target is therefore
-Iceberg format version 3. The time unit is not changed to suit version 2:
-AEMO publishes fractional seconds, and a microsecond lake would drop them.
+Every timestamp in the lake is microseconds since the epoch in UTC
+(`Timestamp(µs, +10:00)` in Arrow, `TIMESTAMP(MICROS, isAdjustedToUTC)` in
+Parquet): Iceberg's `timestamptz`. AEMO's times are whole seconds or carry
+at most three fractional digits, and every Iceberg reader reads
+`timestamptz`; DuckDB's refuses `timestamptz_ns`. The tables are format
+version 3.
 
 ## Types
 
@@ -26,7 +26,7 @@ types alike:
 | `long` | `Int64` | `INT64` | `long` |
 | `boolean` | `Boolean` | `BOOLEAN` | `boolean` |
 | `date` | `Date32` | `INT32 (DATE)` | `date` |
-| `timestamp_ns` | `Timestamp(ns, +10:00)` | `INT64 (TIMESTAMP(NANOS, isAdjustedToUTC))` | `timestamptz_ns` |
+| `timestamp` | `Timestamp(µs, +10:00)` | `INT64 (TIMESTAMP(MICROS, isAdjustedToUTC))` | `timestamptz` |
 | `decimal(P,S)` | `Decimal128(P, S)` | `INT32` (P ≤ 9), `INT64` (P ≤ 18) `(DECIMAL(P, S))` | `decimal(P, S)` |
 
 The contract lives in `crates/utilake-iceberg`. A column's type is chosen
@@ -87,7 +87,7 @@ and `utilake reingest` writes the files that carry it again.
 A column's type changes only by an Iceberg promotion, which Iceberg applies
 in metadata alone: int to long, float to double, a decimal to a larger
 precision of the same scale. Of our types only the decimal promotes (`long`
-to `double` is not a promotion, nor `date` to `timestamp_ns`), so any other
+to `double` is not a promotion), so any other
 type change is refused (`Schema::apply`, `just schema-compat`): values of
 another type go to a new column. A column may become optional, never
 required; a key column stays required.

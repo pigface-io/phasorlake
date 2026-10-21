@@ -10,7 +10,7 @@ next_column_id = 23
 column = [
     { id = 1, name = "RESERVEOVERALLLOADFACTOR", type = "double", nullable = true },
     { id = 2, name = "FROMREGIONLOSSSHARE", type = "double", nullable = true },
-    { id = 3, name = "EFFECTIVEDATE", type = "timestamp_ns", nullable = false },
+    { id = 3, name = "EFFECTIVEDATE", type = "timestamp", nullable = false },
     { id = 4, name = "VERSIONNO", type = "double", nullable = false },
     { id = 5, name = "INTERCONNECTORID", type = "string", nullable = false },
     { id = 6, name = "MAXMWIN", type = "double", nullable = true },
@@ -19,7 +19,7 @@ column = [
     { id = 9, name = "LOSSFLOWCOEFFICIENT", type = "double", nullable = true },
     { id = 10, name = "EMSMEASURAND", type = "string", nullable = true },
     { id = 11, name = "AUTHORISEDBY", type = "string", nullable = true },
-    { id = 12, name = "AUTHORISEDDATE", type = "timestamp_ns", nullable = true },
+    { id = 12, name = "AUTHORISEDDATE", type = "timestamp", nullable = true },
     { id = 13, name = "DYNAMICRHS", type = "string", nullable = true },
     { id = 14, name = "IMPORTLIMIT", type = "double", nullable = true },
     { id = 15, name = "EXPORTLIMIT", type = "double", nullable = true },
@@ -27,7 +27,7 @@ column = [
     { id = 17, name = "NONPHYSICALLOSSFACTOR", type = "double", nullable = true },
     { id = 18, name = "OVERLOADFACTOR60SEC", type = "double", nullable = true },
     { id = 19, name = "OVERLOADFACTOR6SEC", type = "double", nullable = true },
-    { id = 20, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 20, name = "LASTCHANGED", type = "timestamp", nullable = true },
     { id = 21, name = "FCASSUPPORTUNAVAILABLE", type = "double", nullable = true },
     { id = 22, name = "ICTYPE", type = "string", nullable = true },
 ]

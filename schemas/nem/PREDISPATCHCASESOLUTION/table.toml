@@ -27,7 +27,7 @@ column = [
     { id = 16, name = "TOTALASPROFILEVIOLATION", type = "double", nullable = true },
     { id = 17, name = "TOTALENERGYCONSTRVIOLATION", type = "double", nullable = true },
     { id = 18, name = "TOTALENERGYOFFERVIOLATION", type = "double", nullable = true },
-    { id = 19, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 19, name = "LASTCHANGED", type = "timestamp", nullable = true },
     { id = 20, name = "INTERVENTION", type = "double", nullable = true },
 ]
 

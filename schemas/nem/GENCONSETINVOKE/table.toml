@@ -11,18 +11,18 @@ time_column = "LASTCHANGED"
 next_column_id = 15
 
 column = [
-    { id = 2, name = "STARTDATE", type = "timestamp_ns", nullable = true },
+    { id = 2, name = "STARTDATE", type = "timestamp", nullable = true },
     { id = 3, name = "STARTPERIOD", type = "double", nullable = true },
     { id = 4, name = "GENCONSETID", type = "string", nullable = true },
-    { id = 5, name = "ENDDATE", type = "timestamp_ns", nullable = true },
+    { id = 5, name = "ENDDATE", type = "timestamp", nullable = true },
     { id = 6, name = "ENDPERIOD", type = "double", nullable = true },
     { id = 7, name = "STARTAUTHORISEDBY", type = "string", nullable = true },
     { id = 8, name = "ENDAUTHORISEDBY", type = "string", nullable = true },
     { id = 9, name = "INTERVENTION", type = "string", nullable = true },
     { id = 10, name = "ASCONSTRAINTTYPE", type = "string", nullable = true },
-    { id = 11, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
-    { id = 12, name = "STARTINTERVALDATETIME", type = "timestamp_ns", nullable = true },
-    { id = 13, name = "ENDINTERVALDATETIME", type = "timestamp_ns", nullable = true },
+    { id = 11, name = "LASTCHANGED", type = "timestamp", nullable = true },
+    { id = 12, name = "STARTINTERVALDATETIME", type = "timestamp", nullable = true },
+    { id = 13, name = "ENDINTERVALDATETIME", type = "timestamp", nullable = true },
     { id = 14, name = "SYSTEMNORMAL", type = "string", nullable = true },
     { id = 1, name = "INVOCATION_ID", type = "double", nullable = false },
 ]

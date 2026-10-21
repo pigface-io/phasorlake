@@ -11,7 +11,7 @@ next_column_id = 15
 column = [
     { id = 1, name = "APEVENTID", type = "double", nullable = false },
     { id = 2, name = "REGIONID", type = "string", nullable = false },
-    { id = 3, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 3, name = "LASTCHANGED", type = "timestamp", nullable = true },
     { id = 4, name = "ENERGYAPFLAG", type = "double", nullable = true },
     { id = 5, name = "RAISE6SECAPFLAG", type = "double", nullable = true },
     { id = 6, name = "RAISE60SECAPFLAG", type = "double", nullable = true },

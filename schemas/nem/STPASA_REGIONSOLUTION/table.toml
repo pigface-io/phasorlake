@@ -9,8 +9,8 @@ time_column = "INTERVAL_DATETIME"
 next_column_id = 46
 
 column = [
-    { id = 1, name = "RUN_DATETIME", type = "timestamp_ns", nullable = false },
-    { id = 2, name = "INTERVAL_DATETIME", type = "timestamp_ns", nullable = false },
+    { id = 1, name = "RUN_DATETIME", type = "timestamp", nullable = false },
+    { id = 2, name = "INTERVAL_DATETIME", type = "timestamp", nullable = false },
     { id = 3, name = "REGIONID", type = "string", nullable = false },
     { id = 4, name = "DEMAND10", type = "double", nullable = true },
     { id = 5, name = "DEMAND50", type = "double", nullable = true },
@@ -29,7 +29,7 @@ column = [
     { id = 18, name = "LORCONDITION", type = "double", nullable = true },
     { id = 19, name = "AGGREGATECAPACITYAVAILABLE", type = "double", nullable = true },
     { id = 20, name = "AGGREGATESCHEDULEDLOAD", type = "double", nullable = true },
-    { id = 21, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 21, name = "LASTCHANGED", type = "timestamp", nullable = true },
     { id = 22, name = "AGGREGATEPASAAVAILABILITY", type = "double", nullable = true },
     { id = 23, name = "RUNTYPE", type = "string", nullable = false },
     { id = 24, name = "ENERGYREQDEMAND10", type = "double", nullable = true },

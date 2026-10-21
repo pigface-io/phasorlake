@@ -10,10 +10,10 @@ next_column_id = 7
 column = [
     { id = 1, name = "WDRRRPERIOD", type = "string", nullable = true },
     { id = 2, name = "REGIONID", type = "string", nullable = true },
-    { id = 3, name = "VERSION_DATETIME", type = "timestamp_ns", nullable = true },
-    { id = 4, name = "STARTDATE", type = "timestamp_ns", nullable = true },
-    { id = 5, name = "ENDDATE", type = "timestamp_ns", nullable = true },
-    { id = 6, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 3, name = "VERSION_DATETIME", type = "timestamp", nullable = true },
+    { id = 4, name = "STARTDATE", type = "timestamp", nullable = true },
+    { id = 5, name = "ENDDATE", type = "timestamp", nullable = true },
+    { id = 6, name = "LASTCHANGED", type = "timestamp", nullable = true },
 ]
 
 [temporal]

@@ -11,9 +11,9 @@ time_column = "INTERVAL_DATETIME"
 next_column_id = 43
 
 column = [
-    { id = 1, name = "RUN_DATETIME", type = "timestamp_ns", nullable = false },
+    { id = 1, name = "RUN_DATETIME", type = "timestamp", nullable = false },
     { id = 2, name = "INTERVENTION", type = "double", nullable = true },
-    { id = 3, name = "INTERVAL_DATETIME", type = "timestamp_ns", nullable = false },
+    { id = 3, name = "INTERVAL_DATETIME", type = "timestamp", nullable = false },
     { id = 4, name = "DUID", type = "string", nullable = false },
     { id = 5, name = "CONNECTIONPOINTID", type = "string", nullable = true },
     { id = 6, name = "TRADETYPE", type = "double", nullable = true },
@@ -39,7 +39,7 @@ column = [
     { id = 26, name = "LOWER60SECFLAGS", type = "double", nullable = true },
     { id = 27, name = "LOWER5MINFLAGS", type = "double", nullable = true },
     { id = 28, name = "LOWERREGFLAGS", type = "double", nullable = true },
-    { id = 29, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 29, name = "LASTCHANGED", type = "timestamp", nullable = true },
     { id = 30, name = "SEMIDISPATCHCAP", type = "double", nullable = true },
     { id = 31, name = "DISPATCHMODETIME", type = "double", nullable = true },
     { id = 32, name = "LOWER1SEC", type = "double", nullable = true },

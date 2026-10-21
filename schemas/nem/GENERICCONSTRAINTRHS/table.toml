@@ -12,7 +12,7 @@ next_column_id = 16
 
 column = [
     { id = 1, name = "GENCONID", type = "string", nullable = false },
-    { id = 2, name = "EFFECTIVEDATE", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "EFFECTIVEDATE", type = "timestamp", nullable = false },
     { id = 3, name = "VERSIONNO", type = "double", nullable = false },
     { id = 4, name = "SCOPE", type = "string", nullable = false },
     { id = 5, name = "TERMID", type = "double", nullable = false },
@@ -25,7 +25,7 @@ column = [
     { id = 12, name = "PARAMETERTERM1", type = "string", nullable = true },
     { id = 13, name = "PARAMETERTERM2", type = "string", nullable = true },
     { id = 14, name = "PARAMETERTERM3", type = "string", nullable = true },
-    { id = 15, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 15, name = "LASTCHANGED", type = "timestamp", nullable = true },
 ]
 
 [temporal]

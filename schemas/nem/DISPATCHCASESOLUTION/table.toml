@@ -9,7 +9,7 @@ time_column = "SETTLEMENTDATE"
 next_column_id = 25
 
 column = [
-    { id = 1, name = "SETTLEMENTDATE", type = "timestamp_ns", nullable = false },
+    { id = 1, name = "SETTLEMENTDATE", type = "timestamp", nullable = false },
     { id = 2, name = "RUNNO", type = "double", nullable = false },
     { id = 3, name = "INTERVENTION", type = "double", nullable = true },
     { id = 4, name = "CASESUBTYPE", type = "string", nullable = true },
@@ -29,7 +29,7 @@ column = [
     { id = 18, name = "TOTALASPROFILEVIOLATION", type = "double", nullable = true },
     { id = 19, name = "TOTALFASTSTARTVIOLATION", type = "double", nullable = true },
     { id = 20, name = "TOTALENERGYOFFERVIOLATION", type = "double", nullable = true },
-    { id = 21, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 21, name = "LASTCHANGED", type = "timestamp", nullable = true },
     { id = 22, name = "SWITCHRUNINITIALSTATUS", type = "double", nullable = true },
     { id = 23, name = "SWITCHRUNBESTSTATUS", type = "double", nullable = true },
     { id = 24, name = "SWITCHRUNBESTSTATUS_INT", type = "double", nullable = true },

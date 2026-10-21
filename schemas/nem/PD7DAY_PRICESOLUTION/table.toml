@@ -8,9 +8,9 @@ time_column = "INTERVAL_DATETIME"
 next_column_id = 19
 
 column = [
-    { id = 1, name = "RUN_DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 1, name = "RUN_DATETIME", type = "timestamp", nullable = true },
     { id = 2, name = "INTERVENTION", type = "double", nullable = true },
-    { id = 3, name = "INTERVAL_DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 3, name = "INTERVAL_DATETIME", type = "timestamp", nullable = true },
     { id = 4, name = "REGIONID", type = "string", nullable = true },
     { id = 5, name = "RRP", type = "double", nullable = true },
     { id = 6, name = "LOWER1SECRRP", type = "double", nullable = true },
@@ -23,7 +23,7 @@ column = [
     { id = 13, name = "RAISE60SECRRP", type = "double", nullable = true },
     { id = 14, name = "RAISE5MINRRP", type = "double", nullable = true },
     { id = 15, name = "RAISEREGRRP", type = "double", nullable = true },
-    { id = 16, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 16, name = "LASTCHANGED", type = "timestamp", nullable = true },
     { id = 17, name = "BDU_INITIAL_ENERGY_STORAGE", type = "double", nullable = true },
     { id = 18, name = "DECGEN_INITIAL_ENERGY_STORAGE", type = "double", nullable = true },
 ]

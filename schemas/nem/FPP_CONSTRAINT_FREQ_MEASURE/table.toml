@@ -8,8 +8,8 @@ time_column = "INTERVAL_DATETIME"
 next_column_id = 11
 
 column = [
-    { id = 1, name = "INTERVAL_DATETIME", type = "timestamp_ns", nullable = true },
-    { id = 2, name = "MEASUREMENT_DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 1, name = "INTERVAL_DATETIME", type = "timestamp", nullable = true },
+    { id = 2, name = "MEASUREMENT_DATETIME", type = "timestamp", nullable = true },
     { id = 3, name = "CONSTRAINTID", type = "string", nullable = true },
     { id = 4, name = "VERSIONNO", type = "double", nullable = true },
     { id = 5, name = "BIDTYPE", type = "string", nullable = true },
@@ -17,7 +17,7 @@ column = [
     { id = 7, name = "FM_LOWER_HZ", type = "double", nullable = true },
     { id = 8, name = "USED_IN_RCR_FLAG", type = "double", nullable = true },
     { id = 9, name = "CORRELATION_FLAG", type = "double", nullable = true },
-    { id = 10, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 10, name = "LASTCHANGED", type = "timestamp", nullable = true },
 ]
 
 [temporal]

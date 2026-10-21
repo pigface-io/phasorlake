@@ -11,7 +11,7 @@ time_column = "RUN_DATETIME"
 next_column_id = 20
 
 column = [
-    { id = 1, name = "RUN_DATETIME", type = "timestamp_ns", nullable = false },
+    { id = 1, name = "RUN_DATETIME", type = "timestamp", nullable = false },
     { id = 3, name = "STARTINTERVAL_DATETIME", type = "string", nullable = true },
     { id = 4, name = "TOTALOBJECTIVE", type = "double", nullable = true },
     { id = 5, name = "NONPHYSICALLOSSES", type = "double", nullable = true },
@@ -28,7 +28,7 @@ column = [
     { id = 16, name = "TOTALENERGYOFFERVIOLATION", type = "double", nullable = true },
     { id = 17, name = "TOTALASPROFILEVIOLATION", type = "double", nullable = true },
     { id = 18, name = "TOTALFASTSTARTVIOLATION", type = "double", nullable = true },
-    { id = 19, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 19, name = "LASTCHANGED", type = "timestamp", nullable = true },
     { id = 2, name = "INTERVENTION", type = "double", nullable = true },
 ]
 

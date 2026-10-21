@@ -11,13 +11,13 @@ next_column_id = 10
 
 column = [
     { id = 1, name = "BIDTYPE", type = "string", nullable = false },
-    { id = 2, name = "EFFECTIVEDATE", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "EFFECTIVEDATE", type = "timestamp", nullable = false },
     { id = 3, name = "VERSIONNO", type = "double", nullable = false },
     { id = 4, name = "DESCRIPTION", type = "string", nullable = true },
     { id = 5, name = "NUMBEROFBANDS", type = "double", nullable = true },
     { id = 6, name = "NUMDAYSAHEADPRICELOCKED", type = "double", nullable = true },
     { id = 7, name = "VALIDATIONRULE", type = "string", nullable = true },
-    { id = 8, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 8, name = "LASTCHANGED", type = "timestamp", nullable = true },
     { id = 9, name = "SPDALIAS", type = "string", nullable = true },
 ]
 

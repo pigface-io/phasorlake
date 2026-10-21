@@ -9,15 +9,15 @@ next_column_id = 11
 
 column = [
     { id = 1, name = "REGIONID", type = "string", nullable = false },
-    { id = 2, name = "STARTDATE", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "STARTDATE", type = "timestamp", nullable = false },
     { id = 3, name = "STARTPERIOD", type = "double", nullable = false },
-    { id = 4, name = "ENDDATE", type = "timestamp_ns", nullable = true },
+    { id = 4, name = "ENDDATE", type = "timestamp", nullable = true },
     { id = 5, name = "ENDPERIOD", type = "double", nullable = true },
     { id = 6, name = "RRP", type = "double", nullable = true },
     { id = 7, name = "DESCRIPTION", type = "string", nullable = true },
     { id = 8, name = "AUTHORISESTART", type = "string", nullable = true },
     { id = 9, name = "AUTHORISEEND", type = "string", nullable = true },
-    { id = 10, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 10, name = "LASTCHANGED", type = "timestamp", nullable = true },
 ]
 
 [temporal]

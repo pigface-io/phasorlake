@@ -13,10 +13,10 @@ column = [
     { id = 2, name = "DUID", type = "string", nullable = false },
     { id = 3, name = "BIDTYPE", type = "string", nullable = false },
     { id = 4, name = "PERIODID", type = "string", nullable = false },
-    { id = 5, name = "BIDSETTLEMENTDATE", type = "timestamp_ns", nullable = true },
-    { id = 6, name = "BIDOFFERDATE", type = "timestamp_ns", nullable = true },
-    { id = 7, name = "DATETIME", type = "timestamp_ns", nullable = true },
-    { id = 8, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 5, name = "BIDSETTLEMENTDATE", type = "timestamp", nullable = true },
+    { id = 6, name = "BIDOFFERDATE", type = "timestamp", nullable = true },
+    { id = 7, name = "DATETIME", type = "timestamp", nullable = true },
+    { id = 8, name = "LASTCHANGED", type = "timestamp", nullable = true },
 ]
 
 [temporal]

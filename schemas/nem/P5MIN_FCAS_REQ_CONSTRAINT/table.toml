@@ -8,9 +8,9 @@ time_column = "INTERVAL_DATETIME"
 next_column_id = 17
 
 column = [
-    { id = 1, name = "RUN_DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 1, name = "RUN_DATETIME", type = "timestamp", nullable = true },
     { id = 2, name = "RUNNO", type = "double", nullable = true },
-    { id = 3, name = "INTERVAL_DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 3, name = "INTERVAL_DATETIME", type = "timestamp", nullable = true },
     { id = 4, name = "CONSTRAINTID", type = "string", nullable = true },
     { id = 5, name = "REGIONID", type = "string", nullable = true },
     { id = 6, name = "BIDTYPE", type = "string", nullable = true },

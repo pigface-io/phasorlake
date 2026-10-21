@@ -9,7 +9,7 @@ next_column_id = 35
 
 column = [
     { id = 1, name = "DUID", type = "string", nullable = false },
-    { id = 2, name = "EFFECTIVEDATE", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "EFFECTIVEDATE", type = "timestamp", nullable = false },
     { id = 3, name = "VERSIONNO", type = "double", nullable = false },
     { id = 4, name = "CONNECTIONPOINTID", type = "string", nullable = true },
     { id = 5, name = "VOLTLEVEL", type = "string", nullable = true },
@@ -22,8 +22,8 @@ column = [
     { id = 12, name = "PHYSICALDETAILSFLAG", type = "string", nullable = true },
     { id = 13, name = "SPINNINGRESERVEFLAG", type = "string", nullable = true },
     { id = 14, name = "AUTHORISEDBY", type = "string", nullable = true },
-    { id = 15, name = "AUTHORISEDDATE", type = "timestamp_ns", nullable = true },
-    { id = 16, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 15, name = "AUTHORISEDDATE", type = "timestamp", nullable = true },
+    { id = 16, name = "LASTCHANGED", type = "timestamp", nullable = true },
     { id = 17, name = "INTERMITTENTFLAG", type = "string", nullable = true },
     { id = 18, name = "SEMISCHEDULE_FLAG", type = "string", nullable = true },
     { id = 19, name = "MAXRATEOFCHANGEUP", type = "double", nullable = true },

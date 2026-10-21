@@ -8,7 +8,7 @@ primary_key = ["EFFECTIVEDATE", "VERSIONNO", "SCENARIO", "REGIONID"]
 next_column_id = 6
 
 column = [
-    { id = 1, name = "EFFECTIVEDATE", type = "timestamp_ns", nullable = false },
+    { id = 1, name = "EFFECTIVEDATE", type = "timestamp", nullable = false },
     { id = 2, name = "VERSIONNO", type = "double", nullable = false },
     { id = 3, name = "SCENARIO", type = "double", nullable = false },
     { id = 4, name = "REGIONID", type = "string", nullable = false },

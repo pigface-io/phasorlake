@@ -3,7 +3,7 @@
 use std::hint::black_box;
 use std::sync::Arc;
 
-use arrow_array::{Float64Array, RecordBatch, StringArray, TimestampNanosecondArray};
+use arrow_array::{Float64Array, RecordBatch, StringArray, TimestampMicrosecondArray};
 use arrow_schema::{DataType, Field, Schema, TimeUnit};
 use criterion::{Criterion, Throughput, criterion_group, criterion_main};
 use utilake_core::Fingerprint;
@@ -15,12 +15,12 @@ const ROWS: usize = 262_144;
 fn batch(spill: bool) -> RecordBatch {
     let base = utilake_core::calendar::utc_nanos(2024, 1, 31, 20, 0, 0, 36_000);
     let ts: Vec<i64> = (0..ROWS)
-        .map(|i| base + (i as i64) * 300_000_000_000 / if spill { 100 } else { 10_000 })
+        .map(|i| (base + (i as i64) * 300_000_000_000 / if spill { 100 } else { 10_000 }) / 1_000)
         .collect();
     let schema = Arc::new(Schema::new(vec![
         Field::new(
             "SETTLEMENTDATE",
-            DataType::Timestamp(TimeUnit::Nanosecond, Some("+10:00".into())),
+            DataType::Timestamp(TimeUnit::Microsecond, Some("+10:00".into())),
             false,
         ),
         Field::new("DUID", DataType::Utf8, false),
@@ -30,7 +30,7 @@ fn batch(spill: bool) -> RecordBatch {
     RecordBatch::try_new(
         schema,
         vec![
-            Arc::new(TimestampNanosecondArray::from(ts).with_timezone("+10:00")),
+            Arc::new(TimestampMicrosecondArray::from(ts).with_timezone("+10:00")),
             Arc::new(StringArray::from(duids)),
             Arc::new(Float64Array::from(
                 (0..ROWS)

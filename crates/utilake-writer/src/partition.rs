@@ -1,7 +1,7 @@
 //! Splitting a batch by the market-local month of its time column.
 
 use arrow_array::cast::AsArray;
-use arrow_array::types::{TimestampNanosecondType, UInt32Type};
+use arrow_array::types::{TimestampMicrosecondType, UInt32Type};
 use arrow_array::{Array, PrimitiveArray, RecordBatch};
 use arrow_schema::{DataType, Field, Schema, TimeUnit};
 use utilake_core::calendar::local_year_month;
@@ -9,14 +9,14 @@ use utilake_core::calendar::local_year_month;
 use crate::error::StoreError;
 use crate::writer::Partition;
 
-/// Whether a type is the one timestamp the lake holds: nanoseconds with a
-/// zone. Anything that is not a timestamp passes.
+/// Whether a type is the one timestamp the lake holds: microseconds with a
+/// zone (Iceberg's `timestamptz`). Anything that is not a timestamp passes.
 fn is_lake_timestamp_or_other(ty: &DataType) -> bool {
-    !matches!(ty, DataType::Timestamp(unit, tz) if *unit != TimeUnit::Nanosecond || tz.is_none())
+    !matches!(ty, DataType::Timestamp(unit, tz) if *unit != TimeUnit::Microsecond || tz.is_none())
 }
 
 /// The first field of `schema`, at any depth, whose type is a timestamp
-/// without a zone or in a unit other than nanoseconds: what the lake never
+/// without a zone or in a unit other than microseconds: what the lake never
 /// writes.
 pub fn naive_timestamp(schema: &Schema) -> Option<&Field> {
     fn find(field: &Field) -> Option<&Field> {
@@ -36,7 +36,7 @@ pub fn naive_timestamp(schema: &Schema) -> Option<&Field> {
     schema.fields().iter().find_map(|f| find(f))
 }
 
-/// Splits `batch` into one batch per month of `time_col` (UTC nanoseconds
+/// Splits `batch` into one batch per month of `time_col` (UTC microseconds
 /// in a column that carries the market offset, partitioned in market
 /// time). The common case, every row in one month, returns the batch
 /// itself without copying. Null time values go to [`Partition::Unknown`].
@@ -46,13 +46,13 @@ pub fn split_by_month(
     offset_secs: i32,
 ) -> Result<Vec<(Partition, RecordBatch)>, StoreError> {
     let col = batch.column(time_col);
-    let DataType::Timestamp(TimeUnit::Nanosecond, Some(_)) = col.data_type() else {
+    let DataType::Timestamp(TimeUnit::Microsecond, Some(_)) = col.data_type() else {
         return Err(StoreError::PartitionColumnNotTimestamp {
             column: batch.schema().field(time_col).name().clone(),
             observed: col.data_type().to_string(),
         });
     };
-    let ts: &PrimitiveArray<TimestampNanosecondType> = col.as_primitive();
+    let ts: &PrimitiveArray<TimestampMicrosecondType> = col.as_primitive();
     if batch.num_rows() == 0 {
         return Ok(vec![]);
     }
@@ -60,7 +60,7 @@ pub fn split_by_month(
         if ts.is_null(i) {
             Partition::Unknown
         } else {
-            let (y, m) = local_year_month(ts.value(i), offset_secs);
+            let (y, m) = local_year_month(ts.value(i).saturating_mul(1_000), offset_secs);
             Partition::Month {
                 year: y,
                 month: m as u8,
@@ -101,15 +101,16 @@ pub fn split_by_month(
     Ok(out)
 }
 
-/// Minimum and maximum of a timestamp column, ignoring nulls.
+/// Minimum and maximum of a timestamp column, ignoring nulls, in
+/// nanoseconds as the manifest records them.
 pub fn time_bounds(batch: &RecordBatch, time_col: usize) -> (Option<i64>, Option<i64>) {
     let col = batch.column(time_col);
-    let Some(ts) = col.as_primitive_opt::<TimestampNanosecondType>() else {
+    let Some(ts) = col.as_primitive_opt::<TimestampMicrosecondType>() else {
         return (None, None);
     };
     let mut min = None;
     let mut max = None;
-    for v in ts.iter().flatten() {
+    for v in ts.iter().flatten().map(|v| v.saturating_mul(1_000)) {
         min = Some(min.map_or(v, |m: i64| m.min(v)));
         max = Some(max.map_or(v, |m: i64| m.max(v)));
     }
@@ -120,7 +121,7 @@ pub fn time_bounds(batch: &RecordBatch, time_col: usize) -> (Option<i64>, Option
 pub fn is_sorted(batch: &RecordBatch, time_col: usize) -> bool {
     let Some(ts) = batch
         .column(time_col)
-        .as_primitive_opt::<TimestampNanosecondType>()
+        .as_primitive_opt::<TimestampMicrosecondType>()
     else {
         return false;
     };
@@ -139,7 +140,7 @@ pub fn is_sorted(batch: &RecordBatch, time_col: usize) -> bool {
 mod tests {
     use std::sync::Arc;
 
-    use arrow_array::{Int64Array, TimestampNanosecondArray};
+    use arrow_array::{Int64Array, TimestampMicrosecondArray};
     use arrow_schema::{Field, Schema, TimeUnit};
     use utilake_core::calendar::{NEM_OFFSET_SECS, utc_nanos};
 
@@ -159,13 +160,13 @@ mod tests {
     use super::*;
 
     fn batch(times: &[Option<&str>]) -> RecordBatch {
-        let vals: Vec<Option<i64>> = times.iter().map(|t| t.map(nanos)).collect();
-        let ts = TimestampNanosecondArray::from(vals).with_timezone("+10:00");
+        let vals: Vec<Option<i64>> = times.iter().map(|t| t.map(|t| nanos(t) / 1_000)).collect();
+        let ts = TimestampMicrosecondArray::from(vals).with_timezone("+10:00");
         let ids = Int64Array::from((0..times.len() as i64).collect::<Vec<_>>());
         let schema = Arc::new(Schema::new(vec![
             Field::new(
                 "SETTLEMENTDATE",
-                DataType::Timestamp(TimeUnit::Nanosecond, Some("+10:00".into())),
+                DataType::Timestamp(TimeUnit::Microsecond, Some("+10:00".into())),
                 true,
             ),
             Field::new("ID", DataType::Int64, false),
@@ -261,9 +262,9 @@ mod tests {
 
     #[test]
     fn a_timestamp_without_a_zone_is_refused() {
-        let naive_ty = DataType::Timestamp(TimeUnit::Nanosecond, None);
+        let naive_ty = DataType::Timestamp(TimeUnit::Microsecond, None);
         let schema = Arc::new(Schema::new(vec![Field::new("T", naive_ty.clone(), true)]));
-        let ts = TimestampNanosecondArray::from(vec![Some(0i64)]);
+        let ts = TimestampMicrosecondArray::from(vec![Some(0i64)]);
         let b = RecordBatch::try_new(schema, vec![Arc::new(ts)]).unwrap();
         assert!(matches!(
             split_by_month(&b, 0, NEM_OFFSET_SECS),
@@ -271,7 +272,7 @@ mod tests {
         ));
         // Found at the top, under a nullable struct, in a list, in a
         // dictionary, and in another unit.
-        let zoned = DataType::Timestamp(TimeUnit::Nanosecond, Some("+10:00".into()));
+        let zoned = DataType::Timestamp(TimeUnit::Microsecond, Some("+10:00".into()));
         let ok = Schema::new(vec![
             Field::new("T", zoned.clone(), false),
             Field::new(
@@ -312,10 +313,10 @@ mod tests {
                 ),
             ),
             (
-                "micros",
+                "nanos",
                 Field::new(
-                    "micros",
-                    DataType::Timestamp(TimeUnit::Microsecond, Some("+10:00".into())),
+                    "nanos",
+                    DataType::Timestamp(TimeUnit::Nanosecond, Some("+10:00".into())),
                     true,
                 ),
             ),

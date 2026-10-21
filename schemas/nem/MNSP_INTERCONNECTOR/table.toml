@@ -9,7 +9,7 @@ next_column_id = 16
 
 column = [
     { id = 1, name = "LINKID", type = "string", nullable = false },
-    { id = 2, name = "EFFECTIVEDATE", type = "timestamp_ns", nullable = false },
+    { id = 2, name = "EFFECTIVEDATE", type = "timestamp", nullable = false },
     { id = 3, name = "VERSIONNO", type = "double", nullable = false },
     { id = 4, name = "INTERCONNECTORID", type = "string", nullable = true },
     { id = 5, name = "FROMREGION", type = "string", nullable = true },
@@ -18,9 +18,9 @@ column = [
     { id = 8, name = "TLF", type = "double", nullable = true },
     { id = 9, name = "LHSFACTOR", type = "double", nullable = true },
     { id = 10, name = "METERFLOWCONSTANT", type = "double", nullable = true },
-    { id = 11, name = "AUTHORISEDDATE", type = "timestamp_ns", nullable = true },
+    { id = 11, name = "AUTHORISEDDATE", type = "timestamp", nullable = true },
     { id = 12, name = "AUTHORISEDBY", type = "string", nullable = true },
-    { id = 13, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 13, name = "LASTCHANGED", type = "timestamp", nullable = true },
     { id = 14, name = "FROM_REGION_TLF", type = "double", nullable = true },
     { id = 15, name = "TO_REGION_TLF", type = "double", nullable = true },
 ]

@@ -57,7 +57,7 @@ pub enum LoaderType {
 impl LoaderType {
     /// The lake type a column this loader type brings in starts with;
     /// `None` for a filler. Every number is a `double`; a date with an
-    /// hour is a `timestamp_ns`.
+    /// hour is a `timestamp`.
     pub fn default_type(&self) -> Option<LakeType> {
         Some(match self {
             Self::Filler => return None,
@@ -65,12 +65,12 @@ impl LoaderType {
             Self::FloatExternal | Self::DecimalExternal | Self::IntegerExternal => LakeType::Double,
             Self::Date(f) | Self::Timestamp(Some(f)) => {
                 if f.to_ascii_lowercase().contains("hh") {
-                    LakeType::TimestampNs
+                    LakeType::Timestamp
                 } else {
                     LakeType::Date
                 }
             }
-            Self::Timestamp(None) => LakeType::TimestampNs,
+            Self::Timestamp(None) => LakeType::Timestamp,
         })
     }
 
@@ -578,7 +578,7 @@ SCADAVALUE FLOAT EXTERNAL)
         }
         assert_eq!(
             ty(LoaderType::Date("yyyy/mm/dd hh24:mi:ss".into())),
-            Some(LakeType::TimestampNs)
+            Some(LakeType::Timestamp)
         );
         assert_eq!(
             ty(LoaderType::Date("yyyy/mm/dd".into())),
@@ -588,7 +588,7 @@ SCADAVALUE FLOAT EXTERNAL)
             ty(LoaderType::Timestamp(Some("YYYY/MM/DD".into()))),
             Some(LakeType::Date)
         );
-        assert_eq!(ty(LoaderType::Timestamp(None)), Some(LakeType::TimestampNs));
+        assert_eq!(ty(LoaderType::Timestamp(None)), Some(LakeType::Timestamp));
     }
 
     #[test]

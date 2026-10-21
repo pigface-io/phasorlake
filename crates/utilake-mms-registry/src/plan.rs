@@ -51,7 +51,7 @@ impl Cast {
             LakeType::String => Self::Utf8,
             LakeType::Double => Self::Float64,
             LakeType::Long => Self::Int64,
-            LakeType::TimestampNs => Self::TimestampNanos {
+            LakeType::Timestamp => Self::TimestampNanos {
                 offset_secs: market.utc_offset_secs,
             },
             LakeType::Date => Self::Date32,

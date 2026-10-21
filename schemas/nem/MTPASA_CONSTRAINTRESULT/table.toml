@@ -9,13 +9,13 @@ time_column = "RUN_DATETIME"
 next_column_id = 16
 
 column = [
-    { id = 1, name = "RUN_DATETIME", type = "timestamp_ns", nullable = false },
+    { id = 1, name = "RUN_DATETIME", type = "timestamp", nullable = false },
     { id = 2, name = "RUN_NO", type = "double", nullable = false },
     { id = 3, name = "RUNTYPE", type = "string", nullable = false },
     { id = 4, name = "DEMAND_POE_TYPE", type = "string", nullable = false },
-    { id = 5, name = "DAY", type = "timestamp_ns", nullable = false },
+    { id = 5, name = "DAY", type = "timestamp", nullable = false },
     { id = 6, name = "CONSTRAINTID", type = "string", nullable = false },
-    { id = 7, name = "EFFECTIVEDATE", type = "timestamp_ns", nullable = true },
+    { id = 7, name = "EFFECTIVEDATE", type = "timestamp", nullable = true },
     { id = 8, name = "VERSIONNO", type = "double", nullable = true },
     { id = 9, name = "PERIODID", type = "double", nullable = true },
     { id = 10, name = "PROBABILITYOFBINDING", type = "double", nullable = true },
@@ -23,7 +23,7 @@ column = [
     { id = 12, name = "CONSTRAINTVIOLATION90", type = "double", nullable = true },
     { id = 13, name = "CONSTRAINTVIOLATION50", type = "double", nullable = true },
     { id = 14, name = "CONSTRAINTVIOLATION10", type = "double", nullable = true },
-    { id = 15, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 15, name = "LASTCHANGED", type = "timestamp", nullable = true },
 ]
 
 [temporal]

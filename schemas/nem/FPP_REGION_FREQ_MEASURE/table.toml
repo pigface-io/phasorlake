@@ -8,15 +8,15 @@ time_column = "INTERVAL_DATETIME"
 next_column_id = 10
 
 column = [
-    { id = 1, name = "INTERVAL_DATETIME", type = "timestamp_ns", nullable = true },
-    { id = 2, name = "MEASUREMENT_DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 1, name = "INTERVAL_DATETIME", type = "timestamp", nullable = true },
+    { id = 2, name = "MEASUREMENT_DATETIME", type = "timestamp", nullable = true },
     { id = 3, name = "REGIONID", type = "string", nullable = true },
     { id = 4, name = "VERSIONNO", type = "double", nullable = true },
     { id = 5, name = "FREQ_DEVIATION_HZ", type = "double", nullable = true },
     { id = 6, name = "HZ_QUALITY_FLAG", type = "double", nullable = true },
     { id = 7, name = "FREQ_MEASURE_HZ", type = "double", nullable = true },
     { id = 8, name = "FM_ALIGNMENT_FLAG", type = "double", nullable = true },
-    { id = 9, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 9, name = "LASTCHANGED", type = "timestamp", nullable = true },
 ]
 
 [temporal]

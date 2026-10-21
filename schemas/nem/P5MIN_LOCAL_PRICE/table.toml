@@ -9,8 +9,8 @@ time_column = "INTERVAL_DATETIME"
 next_column_id = 6
 
 column = [
-    { id = 1, name = "RUN_DATETIME", type = "timestamp_ns", nullable = false },
-    { id = 2, name = "INTERVAL_DATETIME", type = "timestamp_ns", nullable = false },
+    { id = 1, name = "RUN_DATETIME", type = "timestamp", nullable = false },
+    { id = 2, name = "INTERVAL_DATETIME", type = "timestamp", nullable = false },
     { id = 3, name = "DUID", type = "string", nullable = false },
     { id = 4, name = "LOCAL_PRICE_ADJUSTMENT", type = "double", nullable = true },
     { id = 5, name = "LOCALLY_CONSTRAINED", type = "double", nullable = true },

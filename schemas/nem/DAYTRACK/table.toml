@@ -9,13 +9,13 @@ time_column = "SETTLEMENTDATE"
 next_column_id = 11
 
 column = [
-    { id = 1, name = "SETTLEMENTDATE", type = "timestamp_ns", nullable = false },
+    { id = 1, name = "SETTLEMENTDATE", type = "timestamp", nullable = false },
     { id = 2, name = "REGIONID", type = "string", nullable = true },
     { id = 3, name = "EXANTERUNSTATUS", type = "string", nullable = true },
     { id = 4, name = "EXANTERUNNO", type = "double", nullable = true },
     { id = 5, name = "EXPOSTRUNSTATUS", type = "string", nullable = true },
     { id = 6, name = "EXPOSTRUNNO", type = "double", nullable = false },
-    { id = 7, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 7, name = "LASTCHANGED", type = "timestamp", nullable = true },
     { id = 8, name = "SETTLEMENTINTERVALLENGTH", type = "double", nullable = true },
     { id = 9, name = "METER_CASEID", type = "double", nullable = true },
     { id = 10, name = "METER_RUNTYPE", type = "string", nullable = true },

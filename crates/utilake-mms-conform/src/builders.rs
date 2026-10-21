@@ -3,7 +3,7 @@
 use arrow_array::ArrayRef;
 use arrow_array::builder::{
     ArrayBuilder, BooleanBuilder, Date32Builder, Decimal128Builder, Float64Builder, Int64Builder,
-    StringBuilder, TimestampNanosecondBuilder,
+    StringBuilder, TimestampMicrosecondBuilder,
 };
 use arrow_schema::DataType;
 use utilake_core::num;
@@ -132,8 +132,9 @@ pub enum ColumnBuilder {
     F64(Float64Builder),
     /// `i64`.
     I64(Int64Builder),
-    /// Timestamp nanoseconds with a zone.
-    Ts(TimestampNanosecondBuilder),
+    /// Timestamp microseconds with a zone: AEMO's times are whole seconds,
+    /// and Iceberg's `timestamptz` is microseconds.
+    Ts(TimestampMicrosecondBuilder),
     /// Days.
     Date(Date32Builder),
     /// Booleans.
@@ -150,7 +151,7 @@ impl ColumnBuilder {
             DataType::Float64 => Self::F64(Float64Builder::with_capacity(capacity)),
             DataType::Int64 => Self::I64(Int64Builder::with_capacity(capacity)),
             DataType::Timestamp(_, tz) => Self::Ts(
-                TimestampNanosecondBuilder::with_capacity(capacity).with_timezone_opt(tz.clone()),
+                TimestampMicrosecondBuilder::with_capacity(capacity).with_timezone_opt(tz.clone()),
             ),
             DataType::Date32 => Self::Date(Date32Builder::with_capacity(capacity)),
             DataType::Boolean => Self::Bool(BooleanBuilder::with_capacity(capacity)),
@@ -190,7 +191,10 @@ impl ColumnBuilder {
             }
             (Self::F64(b), Parsed::F64(v)) => b.append_value(v),
             (Self::I64(b), Parsed::I64(v)) => b.append_value(v),
-            (Self::Ts(b), Parsed::I64(v) | Parsed::Clamped(v)) => b.append_value(v),
+            // The parser gives nanoseconds.
+            (Self::Ts(b), Parsed::I64(v) | Parsed::Clamped(v)) => {
+                b.append_value(v.div_euclid(1_000));
+            }
             (Self::Date(b), Parsed::I64(v)) => b.append_value(v as i32),
             (Self::Bool(b), Parsed::Bool(v)) => b.append_value(v),
             (Self::Dec(b), Parsed::Dec(v)) => b.append_value(v),
@@ -345,7 +349,7 @@ mod tests {
 
     #[test]
     fn builders_round_trip() {
-        let tz = DataType::Timestamp(arrow_schema::TimeUnit::Nanosecond, Some("+10:00".into()));
+        let tz = DataType::Timestamp(arrow_schema::TimeUnit::Microsecond, Some("+10:00".into()));
         let types = [
             DataType::Utf8,
             DataType::Float64,

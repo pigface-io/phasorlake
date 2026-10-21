@@ -17,9 +17,9 @@ column = [
     { id = 6, name = "MAXIMUMUNITS", type = "double", nullable = true },
     { id = 7, name = "PROPORTION", type = "double", nullable = true },
     { id = 8, name = "AUCTIONFEE", type = "double", nullable = true },
-    { id = 9, name = "CHANGEDATE", type = "timestamp_ns", nullable = true },
+    { id = 9, name = "CHANGEDATE", type = "timestamp", nullable = true },
     { id = 10, name = "CHANGEDBY", type = "string", nullable = true },
-    { id = 11, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 11, name = "LASTCHANGED", type = "timestamp", nullable = true },
     { id = 12, name = "AUCTIONFEE_SALES", type = "double", nullable = true },
 ]
 

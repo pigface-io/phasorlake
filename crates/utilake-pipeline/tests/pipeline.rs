@@ -130,7 +130,7 @@ fn text_table(
                 id: ColumnId(i as u32 + 1),
                 name: (*c).into(),
                 ty: if Some(*c) == time_column {
-                    LakeType::TimestampNs
+                    LakeType::Timestamp
                 } else {
                     LakeType::String
                 },

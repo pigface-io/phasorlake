@@ -10,10 +10,10 @@ next_column_id = 7
 column = [
     { id = 1, name = "INSTRUCTION_ID", type = "string", nullable = true },
     { id = 2, name = "DUID", type = "string", nullable = true },
-    { id = 3, name = "ENABLEMENT_START_INTERVAL", type = "timestamp_ns", nullable = true },
-    { id = 4, name = "ENABLEMENT_END_INTERVAL", type = "timestamp_ns", nullable = true },
+    { id = 3, name = "ENABLEMENT_START_INTERVAL", type = "timestamp", nullable = true },
+    { id = 4, name = "ENABLEMENT_END_INTERVAL", type = "timestamp", nullable = true },
     { id = 5, name = "ENABLEMENT_REASON", type = "string", nullable = true },
-    { id = 6, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 6, name = "LASTCHANGED", type = "timestamp", nullable = true },
 ]
 
 [temporal]

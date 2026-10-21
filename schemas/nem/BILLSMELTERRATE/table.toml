@@ -8,14 +8,14 @@ primary_key = ["EFFECTIVEDATE", "VERSIONNO", "CONTRACTYEAR"]
 next_column_id = 9
 
 column = [
-    { id = 1, name = "EFFECTIVEDATE", type = "timestamp_ns", nullable = false },
+    { id = 1, name = "EFFECTIVEDATE", type = "timestamp", nullable = false },
     { id = 2, name = "VERSIONNO", type = "double", nullable = false },
     { id = 3, name = "CONTRACTYEAR", type = "double", nullable = false },
     { id = 4, name = "RAR1", type = "double", nullable = true },
     { id = 5, name = "RAR2", type = "double", nullable = true },
-    { id = 6, name = "AUTHORISEDDATE", type = "timestamp_ns", nullable = true },
+    { id = 6, name = "AUTHORISEDDATE", type = "timestamp", nullable = true },
     { id = 7, name = "AUTHORISEDBY", type = "string", nullable = true },
-    { id = 8, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 8, name = "LASTCHANGED", type = "timestamp", nullable = true },
 ]
 
 [temporal]

@@ -377,7 +377,7 @@ pub fn sweep_tmp(lake_root: &Path) -> std::io::Result<usize> {
 mod tests {
     use std::sync::Arc;
 
-    use arrow_array::{Float64Array, StringArray, TimestampNanosecondArray};
+    use arrow_array::{Float64Array, StringArray, TimestampMicrosecondArray};
     use arrow_schema::{DataType, Field, Schema, TimeUnit};
     use parquet::arrow::arrow_reader::ParquetRecordBatchReaderBuilder;
     use utilake_core::calendar::{NEM_OFFSET_SECS, utc_nanos};
@@ -403,7 +403,7 @@ mod tests {
         Arc::new(Schema::new(vec![
             Field::new(
                 "SETTLEMENTDATE",
-                DataType::Timestamp(TimeUnit::Nanosecond, Some("+10:00".into())),
+                DataType::Timestamp(TimeUnit::Microsecond, Some("+10:00".into())),
                 false,
             ),
             Field::new("DUID", DataType::Utf8, false),
@@ -412,11 +412,11 @@ mod tests {
     }
 
     fn batch(times: &[&str], ids: &[&str], vals: &[Option<f64>]) -> RecordBatch {
-        let ts: Vec<i64> = times.iter().map(|t| nanos(t)).collect();
+        let ts: Vec<i64> = times.iter().map(|t| nanos(t) / 1_000).collect();
         RecordBatch::try_new(
             schema(),
             vec![
-                Arc::new(TimestampNanosecondArray::from(ts).with_timezone("+10:00")),
+                Arc::new(TimestampMicrosecondArray::from(ts).with_timezone("+10:00")),
                 Arc::new(StringArray::from(ids.to_vec())),
                 Arc::new(Float64Array::from(vals.to_vec())),
             ],
@@ -539,7 +539,7 @@ mod tests {
         assert_eq!(batches.iter().map(RecordBatch::num_rows).sum::<usize>(), 3);
         assert_eq!(
             batches[0].schema().field(0).data_type(),
-            &DataType::Timestamp(TimeUnit::Nanosecond, Some("+10:00".into()))
+            &DataType::Timestamp(TimeUnit::Microsecond, Some("+10:00".into()))
         );
         assert_eq!(batches[0].column(2).null_count(), 1);
     }
@@ -549,10 +549,10 @@ mod tests {
         let dir = tempfile::tempdir().unwrap();
         let mut w = ParquetHive::new(dir.path());
         for (name, ty) in [
-            ("NAIVE", DataType::Timestamp(TimeUnit::Nanosecond, None)),
+            ("NAIVE", DataType::Timestamp(TimeUnit::Microsecond, None)),
             (
-                "MICROS",
-                DataType::Timestamp(TimeUnit::Microsecond, Some("+10:00".into())),
+                "NANOS",
+                DataType::Timestamp(TimeUnit::Nanosecond, Some("+10:00".into())),
             ),
         ] {
             let s = Arc::new(Schema::new(vec![

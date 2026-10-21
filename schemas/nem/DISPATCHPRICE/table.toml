@@ -9,7 +9,7 @@ time_column = "SETTLEMENTDATE"
 next_column_id = 67
 
 column = [
-    { id = 1, name = "SETTLEMENTDATE", type = "timestamp_ns", nullable = false },
+    { id = 1, name = "SETTLEMENTDATE", type = "timestamp", nullable = false },
     { id = 2, name = "RUNNO", type = "double", nullable = false },
     { id = 3, name = "REGIONID", type = "string", nullable = false },
     { id = 4, name = "DISPATCHINTERVAL", type = "string", nullable = false },
@@ -19,7 +19,7 @@ column = [
     { id = 8, name = "ROP", type = "double", nullable = true },
     { id = 9, name = "APCFLAG", type = "double", nullable = true },
     { id = 10, name = "MARKETSUSPENDEDFLAG", type = "double", nullable = true },
-    { id = 11, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 11, name = "LASTCHANGED", type = "timestamp", nullable = true },
     { id = 12, name = "RAISE6SECRRP", type = "double", nullable = true },
     { id = 13, name = "RAISE6SECROP", type = "double", nullable = true },
     { id = 14, name = "RAISE6SECAPCFLAG", type = "double", nullable = true },

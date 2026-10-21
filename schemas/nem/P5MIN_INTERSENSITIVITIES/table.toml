@@ -8,9 +8,9 @@ time_column = "INTERVAL_DATETIME"
 next_column_id = 50
 
 column = [
-    { id = 1, name = "RUN_DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 1, name = "RUN_DATETIME", type = "timestamp", nullable = true },
     { id = 2, name = "INTERCONNECTORID", type = "string", nullable = true },
-    { id = 3, name = "INTERVAL_DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 3, name = "INTERVAL_DATETIME", type = "timestamp", nullable = true },
     { id = 4, name = "INTERVENTION", type = "double", nullable = true },
     { id = 5, name = "INTERVENTION_ACTIVE", type = "double", nullable = true },
     { id = 6, name = "MWFLOW1", type = "double", nullable = true },
@@ -56,7 +56,7 @@ column = [
     { id = 46, name = "MWFLOW41", type = "double", nullable = true },
     { id = 47, name = "MWFLOW42", type = "double", nullable = true },
     { id = 48, name = "MWFLOW43", type = "double", nullable = true },
-    { id = 49, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 49, name = "LASTCHANGED", type = "timestamp", nullable = true },
 ]
 
 [temporal]

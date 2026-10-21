@@ -8,7 +8,7 @@ time_column = "INTERVAL_DATETIME"
 next_column_id = 16
 
 column = [
-    { id = 1, name = "INTERVAL_DATETIME", type = "timestamp_ns", nullable = true },
+    { id = 1, name = "INTERVAL_DATETIME", type = "timestamp", nullable = true },
     { id = 2, name = "CONSTRAINTID", type = "string", nullable = true },
     { id = 3, name = "FPP_UNITID", type = "string", nullable = true },
     { id = 4, name = "VERSIONNO", type = "double", nullable = true },
@@ -22,7 +22,7 @@ column = [
     { id = 12, name = "NCF_ABS_NEGATIVE_PERF_TOTAL", type = "double", nullable = true },
     { id = 13, name = "PARTICIPANTID", type = "string", nullable = true },
     { id = 14, name = "SETTLEMENTS_UNITID", type = "string", nullable = true },
-    { id = 15, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 15, name = "LASTCHANGED", type = "timestamp", nullable = true },
 ]
 
 [temporal]

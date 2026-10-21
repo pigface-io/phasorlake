@@ -9,16 +9,16 @@ time_column = "SETTLEMENTDATE"
 next_column_id = 12
 
 column = [
-    { id = 1, name = "EFFECTIVEDATE", type = "timestamp_ns", nullable = true },
-    { id = 2, name = "SETTLEMENTDATE", type = "timestamp_ns", nullable = false },
+    { id = 1, name = "EFFECTIVEDATE", type = "timestamp", nullable = true },
+    { id = 2, name = "SETTLEMENTDATE", type = "timestamp", nullable = false },
     { id = 3, name = "REGIONID", type = "string", nullable = false },
-    { id = 4, name = "OFFERDATE", type = "timestamp_ns", nullable = false },
+    { id = 4, name = "OFFERDATE", type = "timestamp", nullable = false },
     { id = 5, name = "PERIODID", type = "double", nullable = false },
     { id = 6, name = "VERSIONNO", type = "double", nullable = false },
     { id = 7, name = "RESDEMAND", type = "double", nullable = true },
     { id = 8, name = "DEMAND90PROBABILITY", type = "double", nullable = true },
     { id = 9, name = "DEMAND10PROBABILITY", type = "double", nullable = true },
-    { id = 10, name = "LASTCHANGED", type = "timestamp_ns", nullable = true },
+    { id = 10, name = "LASTCHANGED", type = "timestamp", nullable = true },
     { id = 11, name = "MR_SCHEDULE", type = "double", nullable = true },
 ]
 
