@@ -37,7 +37,7 @@ pub struct Cli {
 pub enum Command {
     /// Read every listing page under the roots into the crawl record.
     Crawl {
-        /// Roots to crawl instead of nemweb's Data_Archive/ and Reports/ARCHIVE/.
+        /// Roots to crawl instead of nemweb's Data_Archive/, Reports/ARCHIVE/ and Reports/CURRENT/.
         #[arg(long = "root")]
         roots: Vec<String>,
         /// Move the current crawl aside and read every page again.
@@ -57,7 +57,7 @@ pub enum Command {
     /// a folder of the same name and download, together; when nemweb refuses (HTTP 403/429) or the network fails,
     /// wait and start again.
     Run {
-        /// Roots to crawl instead of nemweb's Data_Archive/ and Reports/ARCHIVE/.
+        /// Roots to crawl instead of nemweb's Data_Archive/, Reports/ARCHIVE/ and Reports/CURRENT/.
         #[arg(long = "root")]
         roots: Vec<String>,
         /// Move the current crawl aside and read every page again.

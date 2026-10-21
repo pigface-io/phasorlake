@@ -6,8 +6,10 @@ A copy of every file under nemweb's archive folders, and the catalog of it.
 Operator (AEMO) publishes the National Electricity Market's data. Its
 `Data_Archive/` (the monthly MMSDM archive, NEMDE, FCAS causer-pays) and
 `Reports/ARCHIVE/` (about a year of daily reports) hold some 110,000 files and
-about 4.9 TB. Those two folders are the crawl roots; `Reports/CURRENT/`, which
-nemweb rewrites daily, is not mirrored. nemweb-mirror downloads all of it,
+about 4.9 TB. `Reports/CURRENT/` holds about 120,000 newer report files,
+about 50 GB; nemweb rewrites it daily and drops each file after days or weeks,
+some of them without archiving them, and only it gives each file's publish
+time. Those three folders are the crawl roots. nemweb-mirror downloads all of it,
 once, and writes a catalog of every folder, file and zip entry. [nemlake](https://github.com/g0itb4/nemlake)
 reads that catalog and the archive; it knows what the data means, this knows
 what exists.

@@ -1,6 +1,6 @@
 # nemweb-mirror: index for agents
 
-A copy of every file under nemweb's Data_Archive and Reports/ARCHIVE folders, and the catalog of it that nemlake reads. One crate, `crates/nemweb-mirror` (a library and the binary), and `crates/xtask` for the gates. Async at the edges (HTTP), sync in the zip reading.
+A copy of every file under nemweb's Data_Archive, Reports/ARCHIVE and Reports/CURRENT folders, and the catalog of it that nemlake reads. One crate, `crates/nemweb-mirror` (a library and the binary), and `crates/xtask` for the gates. Async at the edges (HTTP), sync in the zip reading.
 Each entry names where a thing starts. Read those files before you edit.
 
 ## Rules a hook or CI enforces

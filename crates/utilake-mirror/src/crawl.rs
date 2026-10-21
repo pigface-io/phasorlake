@@ -18,11 +18,12 @@ use crate::error::MirrorError;
 use crate::listing::{self, LinkKind, Unparsed};
 use crate::stamp::Stamp;
 
-/// The folders nemweb keeps for good, under `base`: the long-term archive,
-/// and the dated archive of the last year or so of reports.
+/// The folders mirrored, under `base`: the long-term archive, the dated
+/// archive of the last year or so of reports, and the current reports,
+/// which nemweb rewrites daily and drops after a few days or weeks.
 pub fn default_roots(base: &str) -> Result<Vec<Url>, MirrorError> {
     let base = base.trim_end_matches('/');
-    ["Data_Archive/", "Reports/ARCHIVE/"]
+    ["Data_Archive/", "Reports/ARCHIVE/", "Reports/CURRENT/"]
         .iter()
         .map(|p| root(&format!("{base}/{p}")))
         .collect()
@@ -565,6 +566,8 @@ mod tests {
         let r = default_roots("https://www.nemweb.com.au/").unwrap();
         assert_eq!(r[0].as_str(), "https://www.nemweb.com.au/Data_Archive/");
         assert_eq!(r[1].as_str(), "https://www.nemweb.com.au/Reports/ARCHIVE/");
+        assert_eq!(r[2].as_str(), "https://www.nemweb.com.au/Reports/CURRENT/");
+        assert_eq!(r.len(), 3);
         for bad in ["https://h/A", "ftp://h/A/", "https://h/A/?q", "not a url"] {
             let e = root(bad).unwrap_err();
             assert_eq!(e.diagnostic().code, "config.mirror_root");
