@@ -28,7 +28,7 @@ expression: "r.files[\"nem/UNIT/3333333333333333.schema.json\"]"
   ],
   "title": "UNIT, shape 3333333333333333",
   "type": "object",
-  "x-format": 1,
+  "x-format": 2,
   "x-increment": {
     "n": 2,
     "status": "deviates"

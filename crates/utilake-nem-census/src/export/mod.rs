@@ -36,6 +36,7 @@ use crate::datamodel::{DataModel, DmTable};
 use crate::models::{self, Model};
 
 mod doc;
+mod iceberg;
 mod manifest;
 mod write;
 
@@ -43,7 +44,7 @@ pub use write::{Stale, Written, check, write};
 
 /// The generation of the documents' layout: the files, the `x-` keys and
 /// their meaning. Raised when a reader of this format would misread a document.
-pub const FORMAT: u32 = 1;
+pub const FORMAT: u32 = 2;
 
 /// Where the documents are published: `$id` is this plus the file's path.
 pub const DEFAULT_BASE_URL: &str = "https://raw.githubusercontent.com/pigface-io/nem-schemas/main/";
@@ -144,6 +145,8 @@ pub struct Export {
     base_url: String,
     /// Census blocks that name a shape no shapes file records.
     problems: Vec<Diagnostic>,
+    /// Each table's history as an Iceberg table, as the fold wrote it.
+    histories: BTreeMap<String, serde_json::Value>,
 }
 
 /// Everything one run produces: the files the generator owns, by path
@@ -270,6 +273,7 @@ impl Export {
             schemas: inputs.schemas.clone(),
             base_url: inputs.base_url.clone(),
             problems,
+            histories: histories(&inputs.schemas),
         })
     }
 
@@ -282,6 +286,7 @@ impl Export {
         let empty = Seen::new();
         let report_version = self.report_version();
         let mut shape_count = 0usize;
+        let mut schema_count = 0usize;
         for (table, entries) in &self.shapes {
             let declared = self.tables.get(table);
             let dm = self.datamodel.tables.get(table);
@@ -304,6 +309,12 @@ impl Export {
                 docs.push((doc, matched));
                 shape_count += 1;
             }
+            let history = self.histories.get(table).map(|h| {
+                let (files, block) = iceberg::render(&self.base_url, table, h);
+                schema_count += files.len();
+                out.files.extend(files);
+                block
+            });
             let text = doc::table(&doc::TableDoc {
                 name: table,
                 declared,
@@ -312,6 +323,7 @@ impl Export {
                 report_version: report_version.as_deref(),
                 increments: &increments,
                 shapes: &docs,
+                history: history.as_ref(),
             });
             out.files.insert(format!("nem/{table}/table.json"), text);
         }
@@ -323,6 +335,7 @@ impl Export {
                 .filter(|t| self.tables.contains_key(*t))
                 .count(),
             shapes: shape_count,
+            schemas: schema_count,
         };
         let versions: Vec<&str> = self.models.iter().map(|m| m.version.as_str()).collect();
         let manifest =
@@ -393,6 +406,23 @@ impl Export {
 }
 
 /// The months with a census file, ascending.
+/// Each table's history as the fold wrote it, by table name, every key
+/// kept; none when the census was not folded. The schema set read and
+/// parsed each file already ([`SchemaSet::read_dir`] refuses one that does
+/// not parse), so this only takes them in whole.
+fn histories(schemas: &Path) -> BTreeMap<String, serde_json::Value> {
+    let Ok(rd) = std::fs::read_dir(crate::census::history_dir(schemas)) else {
+        return BTreeMap::new();
+    };
+    rd.filter_map(Result::ok)
+        .map(|e| e.path())
+        .filter(|p| p.extension().is_some_and(|e| e == "json"))
+        .filter_map(|p| std::fs::read_to_string(p).ok())
+        .filter_map(|t| serde_json::from_str::<serde_json::Value>(&t).ok())
+        .filter_map(|v| Some((v["table"].as_str()?.to_owned(), v)))
+        .collect()
+}
+
 fn census_months(schemas: &Path) -> Result<Vec<YearMonth>, Box<Diagnostic>> {
     let dir = census_dir(schemas);
     let entries = match std::fs::read_dir(&dir) {

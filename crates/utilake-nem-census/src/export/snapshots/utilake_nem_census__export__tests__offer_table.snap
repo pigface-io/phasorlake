@@ -20,5 +20,5 @@ expression: "r.files[\"nem/OFFER_X/table.json\"]"
       ]
     }
   ],
-  "x-format": 1
+  "x-format": 2
 }

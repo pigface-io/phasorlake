@@ -29,7 +29,7 @@ expression: "r.files[\"nem/OFFER_X/7777777777777777.schema.json\"]"
   },
   "title": "OFFER_X, shape 7777777777777777",
   "type": "object",
-  "x-format": 1,
+  "x-format": 2,
   "x-market": "nem",
   "x-seen": {
     "first": "2024-10",

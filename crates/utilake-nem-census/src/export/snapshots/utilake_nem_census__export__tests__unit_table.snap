@@ -293,5 +293,5 @@ expression: "r.files[\"nem/UNIT/table.json\"]"
   },
   "time_column": "SETTLEMENTDATE",
   "visibility": "Public",
-  "x-format": 1
+  "x-format": 2
 }

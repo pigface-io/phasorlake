@@ -25,7 +25,7 @@ expression: "r.files[\"nem/REGION/4444444444444444.schema.json\"]"
   ],
   "title": "REGION, shape 4444444444444444",
   "type": "object",
-  "x-format": 1,
+  "x-format": 2,
   "x-increment": {
     "n": 1,
     "status": "conforms"

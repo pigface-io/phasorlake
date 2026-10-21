@@ -211,6 +211,9 @@ pub struct TableDoc<'a> {
     pub increments: &'a [IncrementDoc<'a>],
     /// The shapes, with the increment each matched.
     pub shapes: &'a [(ShapeDoc<'a>, Option<Matched<'a>>)],
+    /// The table's history as an Iceberg table, with its schema documents
+    /// named, when the census folded one.
+    pub history: Option<&'a Value>,
 }
 
 /// The table as an Iceberg (format version 3) table: its schema, its
@@ -276,7 +279,9 @@ pub fn table(d: &TableDoc<'_>) -> String {
     t.insert("name".into(), json!(d.name));
     t.insert("declared".into(), json!(d.declared.is_some()));
     t.insert("x-format".into(), json!(FORMAT));
-    if let Some(x) = d.declared {
+    if let Some(h) = d.history {
+        t.insert("iceberg".into(), h.clone());
+    } else if let Some(x) = d.declared {
         t.insert("iceberg".into(), iceberg(x, d.shapes));
     }
     let description = d

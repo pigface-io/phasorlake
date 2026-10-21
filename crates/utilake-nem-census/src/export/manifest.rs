@@ -19,6 +19,8 @@ pub struct Counts {
     pub declared_tables: usize,
     /// Documents, one per shape id.
     pub shapes: usize,
+    /// Documents, one per Iceberg schema.
+    pub schemas: usize,
 }
 
 /// The manifest: format, months covered, counts, and the SHA-256 of every
@@ -47,6 +49,7 @@ pub fn render(
         "tables": counts.tables,
         "declared_tables": counts.declared_tables,
         "shapes": counts.shapes,
+        "iceberg_schemas": counts.schemas,
         "files": hashes.len(),
         "sha256": hashes,
     }))

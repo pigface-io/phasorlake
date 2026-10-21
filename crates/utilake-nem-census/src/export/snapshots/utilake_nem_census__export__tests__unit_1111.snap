@@ -32,7 +32,7 @@ expression: "r.files[\"nem/UNIT/1111111111111111.schema.json\"]"
   ],
   "title": "UNIT, shape 1111111111111111",
   "type": "object",
-  "x-format": 1,
+  "x-format": 2,
   "x-increment": {
     "n": 1,
     "status": "conforms"

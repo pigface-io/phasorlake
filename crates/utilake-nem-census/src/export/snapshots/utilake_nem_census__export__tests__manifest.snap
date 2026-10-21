@@ -6,7 +6,8 @@ expression: "r.files[\"manifest.json\"]"
   "base_url": "https://example.test/schemas/",
   "declared_tables": 3,
   "files": 11,
-  "format": 1,
+  "format": 2,
+  "iceberg_schemas": 0,
   "market": "nem",
   "models": [
     "5.6",
@@ -18,17 +19,17 @@ expression: "r.files[\"manifest.json\"]"
     "last": "2024-11"
   },
   "sha256": {
-    "nem/OFFER_X/7777777777777777.schema.json": "17643d4fa246884d52ad904471130931bbfe2379789ed56a626c68adcc675463",
-    "nem/OFFER_X/table.json": "a01a24cace9b5be8d001773e8e8418efb93a2e5db39e9f474f4db65c9a2223d0",
-    "nem/REGION/4444444444444444.schema.json": "8f0dac9401c21a4b8a9066c6179cf33dcb9816a095c4e7ede25aa5ac505d39dc",
-    "nem/REGION/table.json": "6809d82fc8b936753931f3071ef41466905255a541c12d2f73f017049eb18953",
-    "nem/TYPES/5555555555555555.schema.json": "41d660f8aab728db1a098b80515754901b3643aaf7511492881b4c6f4f38862a",
-    "nem/TYPES/6666666666666666.schema.json": "a7db2cc47d2dd523d9b3d8954e51f9fa4747b8ff9d0bd9c20acd0675fb76de86",
-    "nem/TYPES/table.json": "2e467e84276702dde545058263f34259f8d353f0c4fdc7b33a86dd73acd88719",
-    "nem/UNIT/1111111111111111.schema.json": "4705ab5d8c767139865ba1f39718f16a740e74afde8bf226455051e9e09b7976",
-    "nem/UNIT/2222222222222222.schema.json": "fea14e07b565f23821dc0eac46f44c14cc1b024e466e5df9f2f9391c283eaddc",
-    "nem/UNIT/3333333333333333.schema.json": "420c0e44792cfe4f867a90c618a11e9409df6f1a9d6c40ddf330ee83bb3b43c2",
-    "nem/UNIT/table.json": "e2ff56929e419e3c3e122318bef2c12954da2ca225d60b8f4fb7b0f78fc1730c"
+    "nem/OFFER_X/7777777777777777.schema.json": "41228e2566915b93a6975761ca591a3ae94daacde28e6e91582cc8a295714634",
+    "nem/OFFER_X/table.json": "cafecfe010f6b29c63c0a067be5f79a63600ee68a251fdcd20e31736e710bd78",
+    "nem/REGION/4444444444444444.schema.json": "7a5e320940e4d3a2c95b5f2e3087fb455d908d1f698b4261d28cd36c2f9c9fe7",
+    "nem/REGION/table.json": "afc8b17d20df438a405204cea54471f274f5a02a7a125f33aa15f9e6fbba2662",
+    "nem/TYPES/5555555555555555.schema.json": "ecf79b12071af35c0450ce5dadc91dfcf9f98f9b7e0f9d44462c1ee42ec149ed",
+    "nem/TYPES/6666666666666666.schema.json": "ae4dd697a2e9b01b9a5fb9decd2081e04c25c550b50e81da0f078991f6b214ca",
+    "nem/TYPES/table.json": "20c7ff0251650c69723080f8c2b97a68c22b90706f396de550ade252d16e9931",
+    "nem/UNIT/1111111111111111.schema.json": "eb205bbea16bcbb6ae3d7ed83a8151a403d56b5bb156f3c681aeabe064567e76",
+    "nem/UNIT/2222222222222222.schema.json": "a5d336aab9345f46ba4463f4408d0348eacd933b5c9b5a0375b21a4b89e22919",
+    "nem/UNIT/3333333333333333.schema.json": "51ca1ea1bf8368314f6a0f6019381e94352ea27c850d66e92ea769fea3fd418a",
+    "nem/UNIT/table.json": "b7b3cd33d74e934abdbfd642ff5287f9b016605b8d7eff34fde7e6baf02932c7"
   },
   "shapes": 7,
   "tables": 4

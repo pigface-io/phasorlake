@@ -954,3 +954,51 @@ fn the_committed_schemas_export_whole() {
         r.problems.len()
     );
 }
+
+const UNIT_HISTORY: &str = r#"{
+  "table": "UNIT", "format-version": 3,
+  "schemas": [{"schema-id": 0, "type": "struct", "identifier-field-ids": [1], "fields": [
+    {"id": 1, "name": "SETTLEMENTDATE", "type": "timestamptz", "required": true},
+    {"id": 2, "name": "DUID", "type": "string", "required": true},
+    {"id": 3, "name": "SCADAVALUE", "type": "double", "required": false}]}],
+  "runs": [{"schema-id": 0, "version": 1, "kinds": ["dvd"], "files": 2, "rows": 7,
+            "from": {"file": "PUBLIC_DVD_UNIT_201501010000.zip", "sha256": null, "published": null, "data-time": "2015-01-01T00:05:00+10:00"},
+            "to": {"file": "PUBLIC_ARCHIVE#UNIT#FILE01#202410010000.zip", "sha256": null, "published": null, "data-time": null},
+            "changes": ["first"], "updates": [], "overlaps": false}],
+  "breaking": []
+}"#;
+
+#[test]
+fn a_folded_history_gives_its_schemas_documents() {
+    let dir = tempfile::tempdir().unwrap();
+    let inputs = fixture(dir.path());
+    let ice = inputs.schemas.join("nem/iceberg");
+    put(&ice.join("UNIT.json"), UNIT_HISTORY);
+    put(&ice.join("README.md"), "not a history");
+    let r = Export::load(&inputs).unwrap().render().unwrap();
+    let docs: Vec<&String> = r
+        .files
+        .keys()
+        .filter(|p| p.starts_with("nem/UNIT/schema-"))
+        .collect();
+    assert_eq!(docs.len(), 1, "{docs:?}");
+    let doc: serde_json::Value = serde_json::from_str(&r.files[docs[0]]).unwrap();
+    assert_eq!(doc["x-schema-id"], 0);
+    assert_eq!(doc["x-format"], 2);
+    let table: serde_json::Value = serde_json::from_str(&r.files["nem/UNIT/table.json"]).unwrap();
+    assert_eq!(table["iceberg"]["runs"][0]["files"], 2);
+    assert_eq!(
+        table["iceberg"]["schema-files"]["0"],
+        serde_json::json!(docs[0].rsplit('/').next().unwrap())
+    );
+    // A table without a history keeps the schema its declaration gives.
+    let region: serde_json::Value =
+        serde_json::from_str(&r.files["nem/REGION/table.json"]).unwrap();
+    assert!(region["iceberg"].get("runs").is_none());
+    let manifest: serde_json::Value = serde_json::from_str(&r.files["manifest.json"]).unwrap();
+    assert_eq!(manifest["iceberg_schemas"], 1);
+    // A history that does not parse is refused with the schemas.
+    put(&ice.join("BAD.json"), "{");
+    let e = Export::load(&inputs).unwrap_err();
+    assert!(e.message.contains("BAD.json"), "{}", e.message);
+}

@@ -49,7 +49,7 @@ expression: "r.files[\"nem/TYPES/6666666666666666.schema.json\"]"
   },
   "title": "TYPES, shape 6666666666666666",
   "type": "object",
-  "x-format": 1,
+  "x-format": 2,
   "x-increment": {
     "n": 1,
     "status": "deviates"
