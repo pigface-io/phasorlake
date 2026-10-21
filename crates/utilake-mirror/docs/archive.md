@@ -32,11 +32,39 @@ such as `AS_PAYMENTS_SUMMARY_2026.CSV` and most gas reports under
 nemweb later lists the file with another size or time, that version is
 downloaded beside it as `{path}@{at}`, `at` the listed time in compact RFC
 3339 (`AS_PAYMENTS_SUMMARY_2026.CSV@20261021T115300+1000`), with its own
-sidecar at `{path}@{at}.json`, whose `url` is the file's URL. A version
-whose bytes are the same as the first is not kept. Nothing archived is
-moved or written over, so a path, once written, always holds the same
-bytes. `{home}/mirror/held.ndjson` names the version each file was last
-found or downloaded in.
+sidecar at `{path}@{at}.json`, whose `url` is the file's URL. A version is
+kept only when its data is new: a download with the bytes of any version
+archived already, or a zip that holds the same files as one (names,
+CRC-32 and sizes) packed again, is not kept, and its folder's journal
+says so. Nothing archived is moved or written over, so a path, once
+written, always holds the same bytes. `{home}/mirror/held.ndjson` names
+the version each file was last found or downloaded in. `nemweb-mirror
+versions` compares each version with the ones before it; `--prune`
+removes those kept before downloads compared with every version, noting
+each in the journal first.
+
+## Journal
+
+Each folder has a journal, `{home}/mirror/journal/{host}/{path}/changes.ndjson`
+(the folder's URL as a path, as for the archive), one JSON line per event,
+appended and never written over:
+
+| `event` | when |
+|---|---|
+| `new` | a file downloaded for the first time |
+| `version` | listed again with new data, kept as `file` |
+| `same` | listed again with the bytes of `file`, a version archived already |
+| `repacked` | a zip listed again with other bytes (`sha256`), the files of `file` |
+| `dropped` | no longer listed (a watch saw it go) |
+| `folder_gone` | the folder no longer served (HTTP 404) |
+
+Fields: `seen_at` (UTC), `url`, `event`, and when known `file` (the
+archived file holding the bytes or the files), `sha256` and `size` (of the
+bytes nemweb served), `listed_modified` with `listed_modified_at`, and
+`last_modified` with `last_modified_at`. A `same` or `repacked` line is a
+listing time or `Last-Modified` nemweb gave with no new data. Lines of a
+file whose bytes do not change between two listings are the evidence of
+each rewrite nemweb made of it.
 
 ## Sidecar
 

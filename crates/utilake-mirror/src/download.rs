@@ -9,10 +9,11 @@ use serde::{Deserialize, Serialize};
 use url::Url;
 
 use crate::compare::{Pair, Verdict, compare, pairs, remove};
-use crate::crawl::{Mirror, RemoteKind, read_record};
+use crate::crawl::{Mirror, RemoteKind};
 use crate::diag::{Diagnose as _, Diagnostic};
 use crate::error::MirrorError;
-use crate::net::{Archive, FetchError, Fetcher, RemoteFile};
+use crate::journal::{Change, Event};
+use crate::net::{Archive, FetchError, Fetcher, LocalFile, RemoteFile};
 use crate::peek::{Peeked, current};
 use crate::stamp::Stamp;
 
@@ -85,7 +86,7 @@ pub async fn download(
         .into_iter()
         .map(|p| (p.zip.clone(), p))
         .collect();
-    let mut record = read_record(&mirror.record_path())?;
+    let mut record = mirror.record()?;
     // Only the files under the prefixes given, when any are.
     record.retain(|r| only.is_empty() || only.iter().any(|p| r.url.starts_with(p.as_str())));
     if let Some(folders) = options.folders {
@@ -93,6 +94,11 @@ pub async fn download(
         record.retain(|r| folders.contains(r.listed_on.as_str()));
     }
     let listed = record.iter().filter(|r| r.kind == RemoteKind::File).count();
+    // Each file's folder, whose journal notes what became of it.
+    let folders: HashMap<String, String> = record
+        .iter()
+        .map(|r| (r.url.clone(), r.listed_on.clone()))
+        .collect();
     // Stable: every other file in URL order, then the paired zips.
     record.sort_by_key(|r| paired.contains_key(&r.url));
     let files: Vec<RemoteFile> = record
@@ -150,22 +156,25 @@ pub async fn download(
                     cached: true,
                     size: h.size,
                     note,
+                    event: None,
                 };
                 return Ok((remote, Some(Ok(got))));
             }
             let got = fetcher.fetch(remote).await.map(|l| {
                 let base = archive.path_for(url);
+                let name = l.path.file_name().map(|n| n.to_string_lossy().into_owned());
+                let event = event_of(remote, &l, l.path == base, name.clone());
                 Got {
                     cached: l.cached,
                     size: l.size,
                     note: Some(Held {
                         url: url.to_owned(),
                         size: l.size,
+                        listed_size: remote.size.filter(|&s| s != l.size),
                         modified_at: remote.modified_at,
-                        file: (l.path != base)
-                            .then(|| l.path.file_name().map(|n| n.to_string_lossy().into_owned()))
-                            .flatten(),
+                        file: name.filter(|_| l.path != base),
                     }),
+                    event,
                 }
             });
             Ok::<_, MirrorError>((remote, Some(got)))
@@ -186,6 +195,11 @@ pub async fn download(
                 } else {
                     summary.downloaded += 1;
                     summary.bytes += local.size;
+                }
+                if let Some(event) = &local.event
+                    && let Some(folder) = folders.get(remote.url.as_str())
+                {
+                    mirror.note(folder, event)?;
                 }
                 if let Some(held) = &local.note {
                     let line = serde_json::to_string(held).expect("a Held always serialises");
@@ -215,6 +229,10 @@ pub struct Held {
     pub url: String,
     /// Its bytes.
     pub size: u64,
+    /// The size nemweb listed it with, when not `size`: a zip packed again
+    /// whose files are those of the version archived.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub listed_size: Option<u64>,
     /// The time nemweb listed it with. A line written before lines kept it
     /// has none.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -246,7 +264,7 @@ impl Held {
         size: Option<u64>,
         modified_at: Option<Stamp>,
     ) -> bool {
-        if size.is_some_and(|s| s != self.size) {
+        if size.is_some_and(|s| s != self.listed_size.unwrap_or(self.size)) {
             return false;
         }
         match (self.modified_at, modified_at) {
@@ -295,6 +313,36 @@ struct Got {
     size: u64,
     /// The line to add to `held.ndjson`, when it does not say so already.
     note: Option<Held>,
+    /// The line to add to its folder's journal, when it was downloaded.
+    event: Option<Event>,
+}
+
+/// The journal's line of a file downloaded: new, a later version, or the
+/// same as a version archived already; none when nothing was asked of
+/// nemweb.
+fn event_of(
+    remote: &RemoteFile,
+    l: &LocalFile,
+    first: bool,
+    file: Option<String>,
+) -> Option<Event> {
+    let (event, sha256, size, last_modified) = match &l.same_as {
+        Some(s) if s.repacked => (Change::Repacked, &s.sha256, s.size, &s.last_modified),
+        Some(s) => (Change::Same, &s.sha256, s.size, &s.last_modified),
+        None if l.cached => return None,
+        None if first => (Change::New, &l.sha256, l.size, &l.last_modified),
+        None => (Change::Version, &l.sha256, l.size, &l.last_modified),
+    };
+    Some(Event {
+        file,
+        sha256: Some(sha256.clone()),
+        size: Some(size),
+        listed_modified: remote.modified.clone(),
+        listed_modified_at: remote.modified_at,
+        last_modified_at: last_modified.as_deref().and_then(Stamp::from_http_date),
+        last_modified: last_modified.clone(),
+        ..Event::now(remote.url.as_str(), event)
+    })
 }
 
 /// How a download pass runs.
@@ -597,6 +645,21 @@ mod tests {
             held["https://h/A/x.zip"].path(&a),
             archive.join("h/A/x.zip")
         );
+        // The folder's journal: both new, then x the same, y a version.
+        let journal = mirror.journal("https://h/A/").unwrap();
+        let events: Vec<(&str, Change)> = journal
+            .iter()
+            .map(|e| (e.url.rsplit('/').next().unwrap(), e.event))
+            .collect();
+        let mut first = events[..2].to_vec();
+        first.sort_unstable_by_key(|e| e.0);
+        assert_eq!(first, [("x.zip", Change::New), ("y.zip", Change::New)]);
+        let mut later = events[2..].to_vec();
+        later.sort_unstable_by_key(|e| e.0);
+        assert_eq!(later, [("x.zip", Change::Same), ("y.zip", Change::Version)]);
+        let y_later = journal.iter().find(|e| e.event == Change::Version).unwrap();
+        assert_eq!(y_later.file.as_deref(), Some("y.zip@20261013T115300+1000"));
+        assert_eq!(y_later.size, Some(5));
         // From then on, each is the version listed, with no request.
         let s = download(&f, &mirror, &options, ignore).await.unwrap();
         assert_eq!((s.cached, s.downloaded), (2, 0));

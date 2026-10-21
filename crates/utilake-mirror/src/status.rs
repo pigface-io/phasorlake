@@ -6,7 +6,7 @@ use crate::net::{Archive, Listed};
 use serde::{Deserialize, Serialize};
 use url::Url;
 
-use crate::crawl::{Mirror, RemoteKind, read_record};
+use crate::crawl::{Mirror, RemoteKind};
 use crate::error::MirrorError;
 use crate::stamp::Stamp;
 
@@ -91,7 +91,7 @@ pub fn status(mirror: &Mirror, archive: &Archive, roots: &[Url]) -> Result<Statu
     let removed = mirror.removed()?;
     let held = mirror.held()?;
     let mut listed = Listed::default();
-    for remote in read_record(&mirror.record_path())? {
+    for remote in mirror.record()? {
         match remote.kind {
             RemoteKind::External => status.external += 1,
             RemoteKind::Dir => {}

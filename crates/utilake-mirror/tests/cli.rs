@@ -688,6 +688,31 @@ fn a_watch_keeps_each_version_and_what_is_new() {
         b"five!"
     );
 
+    // A version the same as one before it, as kept before a download
+    // compared with every version: found, then pruned.
+    let dup = g.join("r.csv@20261015T090000+1000");
+    std::fs::copy(g.join("r.csv@20261014T090000+1000"), &dup).unwrap();
+    std::fs::copy(
+        g.join("r.csv@20261014T090000+1000.json"),
+        g.join("r.csv@20261015T090000+1000.json"),
+    )
+    .unwrap();
+    let out = cli.ok(&["versions"]);
+    assert!(out.contains("1 files with 4 versions: 1 the same bytes as one before, 0 zips packed again; 0 removed"), "{out}");
+    let out = cli.ok(&["--json", "versions", "--prune"]);
+    assert!(out.contains("\"event\":\"version_same\""), "{out}");
+    assert!(out.contains("\"removed\":1"), "{out}");
+    assert!(!dup.exists());
+    let journal = std::fs::read_to_string(
+        cli.home
+            .path()
+            .join("mirror/journal")
+            .join(&host)
+            .join("G/changes.ndjson"),
+    )
+    .unwrap();
+    assert!(journal.contains("\"event\":\"same\""), "{journal}");
+
     // Between rounds, the watch sleeps until a folder is due.
     cli.config(&every(1, 0));
     let out = cli.ok(&["--json", "watch", "--root", &root, "--rounds", "2"]);

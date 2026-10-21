@@ -64,6 +64,39 @@ pub enum DirError {
     Damaged(&'static str),
 }
 
+/// A file on disk, read by span; every span lies inside it, as the
+/// directory reader checks, so a read fails only with the disk.
+pub struct OnDisk(pub std::fs::File);
+
+impl Spans for OnDisk {
+    type Error = DirError;
+    async fn read(&mut self, start: u64, end: u64) -> Result<Vec<u8>, DirError> {
+        use std::io::{Read as _, Seek as _, SeekFrom};
+        let mut buf = vec![0u8; usize::try_from(end - start).unwrap_or(0)];
+        self.0
+            .seek(SeekFrom::Start(start))
+            .and_then(|_| self.0.read_exact(&mut buf))
+            .map_err(|_| DirError::Damaged("the file could not be read"))?;
+        Ok(buf)
+    }
+}
+
+/// What the zip at `path` holds: each file's name, CRC-32 and size, in
+/// name order, folders left out; none when it is not a zip that reads.
+/// Two zips that hold the same are the same data however they are packed.
+pub async fn contents(path: &std::path::Path) -> Option<Vec<(String, u32, u64)>> {
+    let file = std::fs::File::open(path).ok()?;
+    let len = file.metadata().ok()?.len();
+    let entries = read_directory(&mut OnDisk(file), len).await.ok()?;
+    let mut files: Vec<(String, u32, u64)> = entries
+        .into_iter()
+        .filter(|e| !e.name.ends_with('/'))
+        .map(|e| (e.name, e.crc32, e.size))
+        .collect();
+    files.sort();
+    Some(files)
+}
+
 /// Something byte spans of a file can be read from.
 pub trait Spans {
     /// Why a read failed.

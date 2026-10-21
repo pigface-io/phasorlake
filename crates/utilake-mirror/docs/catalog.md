@@ -10,6 +10,10 @@ The first line is a header, `{"catalog_format":3,"roots":[…]}`: the format
 version, raised on any change a reader would notice, and the roots crawled.
 Format 2 adds the `_at` fields (see Times) to format 1 and changes nothing
 else. Format 3 adds the `version` state.
+The crawl record the catalog reads is the crawl's, with each folder a watch
+has read since in place of what the crawl read of it
+(`{home}/mirror/crawl/folders/{host}/{path}/listing.json`), and what was
+under each folder gone from nemweb since left out (`…/gone`).
 Every other line is a node, in tree order: a folder before what it holds,
 names in byte order. The same archive and records give the same bytes.
 

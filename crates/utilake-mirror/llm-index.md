@@ -30,9 +30,10 @@ Each entry names where a thing starts. Read those files before you edit.
 - **Map**: the catalog, every folder, file and zip entry, zips within zips (`crates/nemweb-mirror/src/map.rs`); the committed pattern summary (`crates/nemweb-mirror/src/summary.rs`).
 - **Compare**: each zip beside a folder of the same name against that folder, from the zip or its peeked listing; web pages in the zip (readme, disclaimer, index) are not data and do not keep it; `--delete` removes the same ones, downloaded or not; `--verify` checks them again (`crates/nemweb-mirror/src/compare.rs`).
 - **Watch**: each folder's listing read again on its own schedule, faster while it changes, and what is new or rewritten downloaded (`crates/nemweb-mirror/src/watch.rs`; the loop in `crates/nemweb-mirror/src/commands.rs`).
+- **Versions and journal**: a version kept only with new data, by bytes or a zip's files; each folder's journal of events (`crates/nemweb-mirror/src/journal.rs`); `versions --prune` (`crates/nemweb-mirror/src/versions.rs`).
 - **Hash**: every downloaded file's CRC-32 in its sidecar, recorded at download or by `hash`, which reads a file once and checks its sha256 (`crates/nemweb-mirror/src/hash.rs`).
 - **Status**: pages read, files archived out of those listed; a run keeps these counts in progress.json for `status` to read while it runs (`crates/nemweb-mirror/src/status.rs`).
-- **Command**: `crawl`, `peek`, `download`, `run`, `watch`, `hash`, `map`, `compare`, `summary`, `status`. `crates/nemweb-mirror/src/cli.rs`, `crates/nemweb-mirror/src/commands.rs`.
+- **Command**: `crawl`, `peek`, `download`, `run`, `watch`, `versions`, `hash`, `map`, `compare`, `summary`, `status`. `crates/nemweb-mirror/src/cli.rs`, `crates/nemweb-mirror/src/commands.rs`.
 - **Gates**: coverage (`just cover`), benchmarks (`just bench`), ratchet (`just budget-check`), agent index (`just llm-check`), error catalogue (`just errors-check`). `crates/xtask/src/`, `bench/budgets.json`, `coverage.json`.
 
 ## Documents

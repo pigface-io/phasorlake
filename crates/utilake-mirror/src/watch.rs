@@ -17,10 +17,9 @@ use std::time::{Duration, Instant};
 use serde::Serialize;
 use url::Url;
 
-use crate::crawl::{
-    Mirror, Remote, RemoteKind, read_page, read_record, root, write_atomic, write_record,
-};
+use crate::crawl::{Mirror, Remote, RemoteKind, read_page, root, write_atomic};
 use crate::error::MirrorError;
+use crate::journal::{Change, Event};
 use crate::net::{FetchError, Fetcher};
 use crate::stamp::Stamp;
 
@@ -194,23 +193,23 @@ pub async fn refresh(
             path: mirror.crawl_dir().display().to_string(),
         });
     }
-    let path = mirror.record_path();
-    let mut record: BTreeMap<String, Remote> = read_record(&path)?
+    let mut record: BTreeMap<String, Remote> = mirror
+        .record()?
         .into_iter()
         .map(|r| (r.url.clone(), r))
         .collect();
     let mut out = Refreshed::default();
     let mut queue: VecDeque<String> = folders.iter().cloned().collect();
     let mut failed = None;
-    let mut changes = false;
     while let Some(folder) = queue.pop_front() {
         let url = root(&folder)?;
         let html = match fetcher.fetch_listing(&folder).await {
             Ok(html) => html,
             Err(FetchError::HttpStatus { status: 404, .. }) => {
-                record.retain(|u, _| !u.starts_with(&folder));
+                record.retain(|u, _| u == &folder || !u.starts_with(&folder));
+                mirror.folder_gone(&folder)?;
+                mirror.note(&folder, &Event::now(&folder, Change::FolderGone))?;
                 out.removed.push(folder);
-                changes = true;
                 continue;
             }
             Err(e) => {
@@ -220,40 +219,52 @@ pub async fn refresh(
         };
         write_atomic(&mirror.page_path(&url), &html)?;
         let now = read_page(&url, &html, roots, Some(Stamp::now()))?;
-        let before: BTreeMap<String, Listed> = record
+        let before: BTreeMap<String, Remote> = record
             .values()
             .filter(|r| r.listed_on == folder)
-            .map(|r| (r.url.clone(), listed(r)))
+            .map(|r| (r.url.clone(), r.clone()))
             .collect();
-        let after: BTreeMap<String, Listed> =
-            now.iter().map(|r| (r.url.clone(), listed(r))).collect();
-        let changed = before != after;
+        let listed_before: BTreeMap<&String, Listed> =
+            before.iter().map(|(u, r)| (u, listed(r))).collect();
+        let listed_now: BTreeMap<&String, Listed> =
+            now.iter().map(|r| (&r.url, listed(r))).collect();
+        let changed = listed_before != listed_now;
         if changed {
-            changes = true;
-            for (u, (kind, ..)) in &before {
-                if !after.contains_key(u) && *kind == RemoteKind::Dir {
+            for (u, r) in &before {
+                if listed_now.contains_key(u) {
+                    continue;
+                }
+                if r.kind == RemoteKind::Dir {
                     record.retain(|v, _| !v.starts_with(u.as_str()));
+                    mirror.folder_gone(u)?;
                     out.removed.push(u.clone());
+                } else {
+                    // A file, or a link out of the roots, no longer listed.
+                    let event = Event {
+                        size: r.size,
+                        listed_modified: Some(r.modified.clone()),
+                        listed_modified_at: r.modified_at,
+                        ..Event::now(u, Change::Dropped)
+                    };
+                    mirror.note(&folder, &event)?;
                 }
                 record.remove(u);
             }
-            for r in now {
-                let was = before.get(&r.url);
+            for r in &now {
+                let was = listed_before.get(&r.url);
                 match r.kind {
-                    RemoteKind::File if was != Some(&listed(&r)) => out.files.push(r.url.clone()),
+                    RemoteKind::File if was != Some(&listed(r)) => out.files.push(r.url.clone()),
                     RemoteKind::Dir if was.is_none() => {
                         queue.push_back(r.url.clone());
                         out.added.push(r.url.clone());
                     }
                     _ => {}
                 }
-                record.insert(r.url.clone(), r);
             }
+            mirror.put_folder(&folder, now.clone())?;
+            record.extend(now.into_iter().map(|r| (r.url.clone(), r)));
         }
         out.folders.push((folder, changed));
-    }
-    if changes {
-        write_record(&path, record.values())?;
     }
     match failed {
         Some(e) => Err(e),
@@ -371,6 +382,7 @@ mod tests {
             (MON, DIR, "/A/old/"),
             (MON, "3", "/A/x.csv"),
             (MON, "4", "/A/y.csv"),
+            (MON, "6", "/A/dropped.csv"),
         ]);
         // x rewritten, y the same, a new file and folder, old/ gone.
         let second = page(&[
@@ -435,7 +447,8 @@ mod tests {
                 "https://h/A/new/n.csv"
             ]
         );
-        let urls: Vec<String> = read_record(&mirror.record_path())
+        let urls: Vec<String> = mirror
+            .record()
             .unwrap()
             .into_iter()
             .map(|r| r.url)
@@ -443,6 +456,7 @@ mod tests {
         assert_eq!(
             urls,
             [
+                "https://h/A/b/",
                 "https://h/A/new/",
                 "https://h/A/new/n.csv",
                 "https://h/A/w.csv",
@@ -450,6 +464,14 @@ mod tests {
                 "https://h/A/y.csv"
             ]
         );
+        let journal = mirror.journal("https://h/A/").unwrap();
+        assert_eq!(journal.len(), 1);
+        assert_eq!(
+            (journal[0].url.as_str(), journal[0].event, journal[0].size),
+            ("https://h/A/dropped.csv", Change::Dropped, Some(6))
+        );
+        let gone = mirror.journal("https://h/A/b/").unwrap();
+        assert_eq!(gone[0].event, Change::FolderGone);
         let kept = std::fs::read(mirror.page_path(&roots[0])).unwrap();
         assert_eq!(kept, second);
 
@@ -463,7 +485,8 @@ mod tests {
         .await
         .unwrap_err();
         assert!(e.to_string().contains("403"), "{e}");
-        let n = read_record(&mirror.record_path())
+        let n = mirror
+            .record()
             .unwrap()
             .into_iter()
             .find(|r| r.url == "https://h/A/new/n.csv")

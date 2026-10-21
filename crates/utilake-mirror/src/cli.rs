@@ -104,6 +104,14 @@ pub enum Command {
         #[arg(long)]
         delete_duplicates: bool,
     },
+    /// Each file nemweb rewrote in place, each version against the ones
+    /// before it: new data, the same bytes, or a zip packed again; offline.
+    Versions {
+        /// Remove each version the same as one before it, noting it in its
+        /// folder's journal first.
+        #[arg(long)]
+        prune: bool,
+    },
     /// Write the map of every folder and file, zips opened as folders, to
     /// map.ndjson and tree.txt under {home}/mirror/map/; offline.
     Map {

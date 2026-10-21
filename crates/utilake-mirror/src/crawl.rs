@@ -81,12 +81,96 @@ impl Mirror {
         self.crawl_dir().join("done")
     }
 
+    /// The current crawl record: the crawl's, with each folder a watch has
+    /// read since in place of what the crawl read of it, and all under
+    /// each folder gone from nemweb since out of it.
+    pub fn record(&self) -> Result<Vec<Remote>, MirrorError> {
+        let mut record: BTreeMap<String, Remote> = read_record(&self.record_path())?
+            .into_iter()
+            .map(|r| (r.url.clone(), r))
+            .collect();
+        let mut stack = vec![self.crawl_dir().join("folders")];
+        let (mut listings, mut gone) = (Vec::new(), Vec::new());
+        while let Some(dir) = stack.pop() {
+            let Ok(entries) = std::fs::read_dir(&dir) else {
+                continue;
+            };
+            for path in entries.flatten().map(|e| e.path()) {
+                match path.file_name().and_then(|n| n.to_str()) {
+                    Some(FOLDER_LISTING) => listings.push(path),
+                    Some(FOLDER_GONE) => gone.push(path),
+                    _ => stack.push(path),
+                }
+            }
+        }
+        for path in gone {
+            let url = std::fs::read_to_string(&path).map_err(MirrorError::io(&path))?;
+            record.retain(|u, _| u == &url || !u.starts_with(url.as_str()));
+        }
+        for path in listings {
+            let text = std::fs::read_to_string(&path).map_err(MirrorError::io(&path))?;
+            let read: FolderRead =
+                serde_json::from_str(&text).map_err(|e| MirrorError::Record {
+                    path: path.display().to_string(),
+                    line: 1,
+                    message: e.to_string(),
+                })?;
+            record.retain(|_, r| r.listed_on != read.folder);
+            record.extend(read.links.into_iter().map(|r| (r.url.clone(), r.derived())));
+        }
+        Ok(record.into_values().collect())
+    }
+
+    /// Where a watch keeps what it read of a folder since the crawl.
+    fn folder_dir(&self, folder: &str) -> PathBuf {
+        Archive::new(self.crawl_dir().join("folders")).path_for(folder)
+    }
+
+    /// Records `links` as what `folder` lists now, in place of what the
+    /// crawl read of it.
+    pub fn put_folder(&self, folder: &str, links: Vec<Remote>) -> Result<(), MirrorError> {
+        let dir = self.folder_dir(folder);
+        let gone = dir.join(FOLDER_GONE);
+        if gone.exists() {
+            std::fs::remove_file(&gone).map_err(MirrorError::io(&gone))?;
+        }
+        let read = FolderRead {
+            folder: folder.to_owned(),
+            links,
+        };
+        let text = serde_json::to_vec(&read).expect("a folder read always serialises");
+        write_atomic(&dir.join(FOLDER_LISTING), &text)
+    }
+
+    /// Records `folder` gone from nemweb, with all under it.
+    pub fn folder_gone(&self, folder: &str) -> Result<(), MirrorError> {
+        let dir = self.folder_dir(folder);
+        if dir.exists() {
+            std::fs::remove_dir_all(&dir).map_err(MirrorError::io(&dir))?;
+        }
+        write_atomic(&dir.join(FOLDER_GONE), folder.as_bytes())
+    }
+
     /// Where the page of a folder URL is kept.
     pub fn page_path(&self, folder: &Url) -> PathBuf {
         let mut path = self.pages().path_for(folder.as_str());
         path.push("index.html");
         path
     }
+}
+
+/// The file of a folder a watch read since the crawl: [`FolderRead`].
+const FOLDER_LISTING: &str = "listing.json";
+/// The file of a folder gone from nemweb since the crawl: its URL.
+const FOLDER_GONE: &str = "gone";
+
+/// What a watch read of one folder.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct FolderRead {
+    /// The folder.
+    folder: String,
+    /// Every link its page lists.
+    links: Vec<Remote>,
 }
 
 /// What a recorded link is.
@@ -191,7 +275,7 @@ pub async fn crawl(
         std::fs::rename(&crawl_dir, &prev).map_err(MirrorError::io(&crawl_dir))?;
     }
     if mirror.done_path().exists() {
-        let mut summary = summarise(&read_record(&mirror.record_path())?);
+        let mut summary = summarise(&mirror.record()?);
         summary.already_done = true;
         return Ok(summary);
     }
@@ -464,7 +548,7 @@ mod tests {
         );
         assert_eq!(seen[0], ("https://h/A/".to_owned(), false, 4, 1, 1));
         assert_eq!(seen[2].0, "https://h/A/b/c/");
-        let record = read_record(&mirror.record_path()).unwrap();
+        let record = mirror.record().unwrap();
         let urls: Vec<_> = record.iter().map(|r| (r.url.as_str(), r.kind)).collect();
         assert_eq!(
             urls,
@@ -574,6 +658,86 @@ mod tests {
             .await
             .unwrap_err();
         assert!(err.to_string().contains("an href that is not a URL"));
+    }
+
+    #[test]
+    fn a_watch_puts_each_folder_it_reads_over_the_crawl() {
+        let home = tempfile::tempdir().unwrap();
+        let mirror = Mirror::new(home.path());
+        let link = |url: &str, kind, on: &str| Remote {
+            url: url.to_owned(),
+            kind,
+            size: Some(1),
+            modified: "Monday, October 12, 2026 10:45 AM".to_owned(),
+            modified_at: None,
+            listed_on: on.to_owned(),
+            crawled_at: None,
+        };
+        let crawled = [
+            link("https://h/A/a.csv", RemoteKind::File, "https://h/A/"),
+            link("https://h/A/b/", RemoteKind::Dir, "https://h/A/"),
+            link("https://h/A/b/c.csv", RemoteKind::File, "https://h/A/b/"),
+            link("https://h/A/d/", RemoteKind::Dir, "https://h/A/"),
+            link("https://h/A/d/e.csv", RemoteKind::File, "https://h/A/d/"),
+        ];
+        write_record(&mirror.record_path(), crawled.iter()).unwrap();
+        let urls = |m: &Mirror| {
+            m.record()
+                .unwrap()
+                .into_iter()
+                .map(|r| r.url)
+                .collect::<Vec<_>>()
+        };
+        assert_eq!(urls(&mirror).len(), 5);
+
+        // A: a.csv gone, n.csv new; b/ gone from nemweb; d/ read again.
+        mirror
+            .put_folder(
+                "https://h/A/",
+                vec![
+                    link("https://h/A/b/", RemoteKind::Dir, "https://h/A/"),
+                    link("https://h/A/d/", RemoteKind::Dir, "https://h/A/"),
+                    link("https://h/A/n.csv", RemoteKind::File, "https://h/A/"),
+                ],
+            )
+            .unwrap();
+        mirror.put_folder("https://h/A/b/", vec![]).unwrap();
+        mirror.folder_gone("https://h/A/b/").unwrap();
+        let r = mirror.record().unwrap();
+        assert_eq!(
+            r.iter().map(|r| r.url.as_str()).collect::<Vec<_>>(),
+            [
+                "https://h/A/b/",
+                "https://h/A/d/",
+                "https://h/A/d/e.csv",
+                "https://h/A/n.csv"
+            ]
+        );
+        assert!(r[0].modified_at.is_some());
+        // b/ back: its gone mark is lifted.
+        mirror
+            .put_folder(
+                "https://h/A/b/",
+                vec![link(
+                    "https://h/A/b/f.csv",
+                    RemoteKind::File,
+                    "https://h/A/b/",
+                )],
+            )
+            .unwrap();
+        assert!(urls(&mirror).contains(&"https://h/A/b/f.csv".to_owned()));
+        // A listing that does not read stops the record.
+        let bad = home.path().join("crawl/folders/h/A/d");
+        std::fs::create_dir_all(&bad).unwrap();
+        std::fs::write(bad.join("listing.json"), "{").unwrap();
+        let e = mirror.record().unwrap_err();
+        assert!(e.to_string().contains("listing.json"), "{e}");
+        std::fs::remove_file(bad.join("listing.json")).unwrap();
+        std::fs::create_dir(bad.join("listing.json")).unwrap();
+        assert!(mirror.record().is_err());
+        std::fs::remove_dir(bad.join("listing.json")).unwrap();
+        std::fs::create_dir(bad.join("gone")).unwrap();
+        assert!(mirror.record().is_err());
     }
 
     #[test]

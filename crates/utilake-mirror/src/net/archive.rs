@@ -304,6 +304,31 @@ impl Archive {
         PathBuf::from(s)
     }
 
+    /// Every version of `url` archived: the file at `path`, the first,
+    /// then each `{name}@{at}` beside it, in name order, so in the order
+    /// nemweb listed them.
+    pub fn versions(path: &Path, url: &str) -> Result<Vec<Archived>, FetchError> {
+        let mut out: Vec<Archived> = Self::lookup_at(path.to_path_buf(), url)?
+            .into_iter()
+            .collect();
+        let dir = path.parent().unwrap_or(Path::new("."));
+        let name = path.file_name().unwrap_or_default().to_string_lossy();
+        let prefix = format!("{name}@");
+        let Ok(entries) = std::fs::read_dir(dir) else {
+            return Ok(out);
+        };
+        let mut names: Vec<String> = entries
+            .flatten()
+            .map(|e| e.file_name().to_string_lossy().into_owned())
+            .filter(|n| n.starts_with(&prefix) && !n.ends_with(".json") && !n.ends_with(".part"))
+            .collect();
+        names.sort();
+        for n in names {
+            out.extend(Self::lookup_at(dir.join(n), url)?);
+        }
+        Ok(out)
+    }
+
     /// The in-progress path of a download.
     pub fn part_path(path: &Path) -> PathBuf {
         let mut s = path.as_os_str().to_owned();

@@ -42,6 +42,23 @@ pub struct LocalFile {
     pub etag: Option<String>,
     /// Last-Modified.
     pub last_modified: Option<String>,
+    /// When the bytes downloaded were not kept: how they are the same as
+    /// the version archived already that `path` is.
+    pub same_as: Option<Same>,
+}
+
+/// A download the same as a version archived already, not kept.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Same {
+    /// A zip that holds the same files (names, CRC-32 and sizes) packed
+    /// again, rather than the same bytes.
+    pub repacked: bool,
+    /// sha256 hex of the bytes downloaded.
+    pub sha256: String,
+    /// Their size.
+    pub size: u64,
+    /// The server's `Last-Modified` for them.
+    pub last_modified: Option<String>,
 }
 
 impl LocalFile {
@@ -55,6 +72,7 @@ impl LocalFile {
             cached: true,
             etag: found.sidecar.etag,
             last_modified: found.sidecar.last_modified,
+            same_as: None,
         }
     }
 }
@@ -195,8 +213,9 @@ impl Fetcher {
     /// archived copy is not the version the listing gives (another size or
     /// listed time, `Sidecar::is_listed_as`), that version is downloaded
     /// beside it (`Archive::version_path`) and the first is kept as it
-    /// is. A version whose bytes turn out the same as the first is not
-    /// kept: the first is the file, as `cached`.
+    /// is. A download that is the same as a version archived already, by
+    /// its bytes or, for a zip, by what it holds, is not kept: that
+    /// version is the file, as `cached`, with `same_as` saying how.
     pub async fn fetch(&self, remote: &RemoteFile) -> Result<LocalFile, FetchError> {
         let url = remote.url.as_str();
         let first = self.archive.lookup(url)?;
@@ -233,9 +252,20 @@ impl Fetcher {
             }
         };
         let _ = std::fs::remove_file(part_meta(&part));
-        if let Some(found) = first.filter(|f| f.sidecar.sha256 == streamed.sha256) {
+        if first.is_some()
+            && let Some((held, repacked)) = self.held_as(url, &part, &streamed.sha256).await?
+        {
+            let same = Same {
+                repacked,
+                sha256: streamed.sha256,
+                size: streamed.size,
+                last_modified: streamed.last_modified,
+            };
             let _ = std::fs::remove_file(&part);
-            return Ok(LocalFile::cached(remote, found));
+            return Ok(LocalFile {
+                same_as: Some(same),
+                ..LocalFile::cached(remote, held)
+            });
         }
         std::fs::rename(&part, &path).map_err(|source| FetchError::CacheIo {
             path: path.display().to_string(),
@@ -267,7 +297,31 @@ impl Fetcher {
             cached: false,
             etag: sidecar.etag,
             last_modified: sidecar.last_modified,
+            same_as: None,
         })
+    }
+
+    /// The version of `url` archived already that the download at `part`
+    /// is the same as: by its bytes, or, for a zip, by what it holds.
+    async fn held_as(
+        &self,
+        url: &str,
+        part: &Path,
+        sha256: &str,
+    ) -> Result<Option<(Archived, bool)>, FetchError> {
+        let versions = Archive::versions(&self.archive.path_for(url), url)?;
+        if let Some(v) = versions.iter().find(|v| v.sidecar.sha256 == sha256) {
+            return Ok(Some((v.clone(), false)));
+        }
+        let Some(holds) = crate::zipdir::contents(part).await else {
+            return Ok(None);
+        };
+        for v in versions {
+            if crate::zipdir::contents(&v.path).await.as_ref() == Some(&holds) {
+                return Ok(Some((v, true)));
+            }
+        }
+        Ok(None)
     }
 
     /// The rest of a download a run before left in `part`: asked for from
@@ -717,7 +771,9 @@ mod tests {
         let dir = tempfile::tempdir().unwrap();
         let url = "https://h/Reports/CURRENT/A/s.csv";
         let t = Arc::new(StaticTransport::default());
-        t.add(url, Canned::ok(b"one")).add(url, Canned::ok(b"two!"));
+        t.add(url, Canned::ok(b"one"))
+            .add(url, Canned::ok(b"two!"))
+            .add(url, Canned::ok(b"two!"));
         let f = Fetcher::new(Arc::new(t.clone()), Archive::new(dir.path()), fast());
         let listed = |size, at: &str| RemoteFile {
             size: Some(size),
@@ -750,6 +806,60 @@ mod tests {
         };
         assert_eq!(f.fetch(&untimed).await.unwrap().path, first.path);
         assert_eq!(t.request_count(), 2);
+        // Listed again with the bytes of the second: not kept a third time.
+        let third = f
+            .fetch(&listed(4, "Wednesday, October 14, 2026 09:00 AM"))
+            .await
+            .unwrap();
+        assert!(third.cached);
+        assert_eq!(third.path, second.path);
+        let same = third.same_as.unwrap();
+        assert!(!same.repacked);
+        assert_eq!((same.sha256, same.size), (sha256_hex(b"two!"), 4));
+        assert!(same.last_modified.is_some());
+        assert!(
+            !dir.path()
+                .join("h/Reports/CURRENT/A/s.csv@20261014T090000+1000")
+                .exists()
+        );
+
+        // A zip packed again with the same files is not kept either.
+        let zip = "https://h/Reports/CURRENT/A/z.zip";
+        let (a, b) = (
+            crate::testzip::stored("a.csv", b"x,y\n"),
+            crate::testzip::deflated("a.csv", b"x,y\n"),
+        );
+        assert_ne!(a, b);
+        let c = crate::testzip::stored("a.csv", b"new data\n");
+        t.add(zip, Canned::ok(&a))
+            .add(zip, Canned::ok(&b))
+            .add(zip, Canned::ok(&c));
+        let listed_zip = |at: &str| RemoteFile {
+            modified_at: Stamp::from_listing(at),
+            ..remote(zip)
+        };
+        let z1 = f
+            .fetch(&listed_zip("Monday, October 12, 2026 10:45 AM"))
+            .await
+            .unwrap();
+        let z2 = f
+            .fetch(&listed_zip("Tuesday, October 13, 2026 11:53 AM"))
+            .await
+            .unwrap();
+        assert_eq!(z2.path, z1.path);
+        let same = z2.same_as.unwrap();
+        assert!(same.repacked);
+        assert_eq!(same.sha256, sha256_hex(&b));
+        // New files in it: a version.
+        let z3 = f
+            .fetch(&listed_zip("Wednesday, October 14, 2026 09:00 AM"))
+            .await
+            .unwrap();
+        assert!(z3.same_as.is_none() && !z3.cached);
+        assert_ne!(z3.path, z1.path);
+        // Versions of a file in a folder that is not there: none.
+        let none = Archive::versions(&dir.path().join("no/such/a.csv"), zip).unwrap();
+        assert!(none.is_empty());
     }
 
     #[tokio::test]

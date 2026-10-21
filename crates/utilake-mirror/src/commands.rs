@@ -149,6 +149,8 @@ pub async fn run_command(cli: &Cli) -> Result<i32> {
             };
             locked(&mirror, watch(ctx, &mirror, &plan)).await
         }
+        Command::Versions { prune: true } => locked(&mirror, versions(ctx, &mirror, true)).await,
+        Command::Versions { prune: false } => versions(ctx, &mirror, false).await,
         Command::Map { roots } => {
             let jobs = cli.jobs.unwrap_or_else(|| ctx.config.effective_jobs());
             map(ctx, &mirror, roots, jobs)
@@ -296,7 +298,8 @@ async fn watch(ctx: &Context, mirror: &Mirror, plan: &WatchPlan<'_>) -> Result<i
             path: mirror.crawl_dir().display().to_string(),
         });
     }
-    let folders = nemweb_mirror::read_record(&mirror.record_path())?
+    let folders = mirror
+        .record()?
         .into_iter()
         .filter(|r| r.kind == nemweb_mirror::RemoteKind::Dir)
         .map(|r| r.url)
@@ -400,6 +403,32 @@ async fn watch(ctx: &Context, mirror: &Mirror, plan: &WatchPlan<'_>) -> Result<i
         event(ctx, "waiting", &format!("{} seconds", plan.wait.as_secs()));
         tokio::time::sleep(plan.wait).await;
         fetcher = ctx.fetcher();
+    }
+    Ok(0)
+}
+
+/// Each version of each file nemweb rewrote in place against the ones
+/// before it, and with `prune` those the same removed.
+async fn versions(ctx: &Context, mirror: &Mirror, prune: bool) -> Result<i32, MirrorError> {
+    let json = ctx.json;
+    let s = nemweb_mirror::versions(mirror, &ctx.archive(), prune, |e| {
+        if json {
+            render::json_line(&serde_json::json!({ "event": "version_same", "line": e }));
+        }
+    })
+    .await?;
+    if json {
+        render::json_line(&serde_json::json!({ "event": "versions_done", "summary": s }));
+    } else {
+        println!(
+            "{} files with {} versions: {} the same bytes as one before, {} zips packed again; {} removed ({:.1} MB)",
+            s.files,
+            s.versions,
+            s.same,
+            s.repacked,
+            s.removed,
+            s.bytes as f64 / 1e6,
+        );
     }
     Ok(0)
 }

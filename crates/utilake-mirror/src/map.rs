@@ -19,7 +19,7 @@ use url::Url;
 use zip::ZipArchive;
 
 use crate::compare::Removed;
-use crate::crawl::{Mirror, RemoteKind, read_record};
+use crate::crawl::{Mirror, RemoteKind};
 use crate::error::MirrorError;
 use crate::peek::{Peeked, current, latest};
 use crate::stamp::{AEST, Stamp};
@@ -291,7 +291,7 @@ fn tops(
     let removed = mirror.removed()?;
     let mut peeks: HashMap<String, Peeked> = current(mirror)?;
     let mut evidence: HashMap<String, Peeked> = latest(mirror)?;
-    for r in read_record(&mirror.record_path())? {
+    for r in mirror.record()? {
         let kind = match r.kind {
             RemoteKind::External => continue,
             RemoteKind::Dir => NodeKind::Dir,

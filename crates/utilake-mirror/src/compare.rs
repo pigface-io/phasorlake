@@ -20,7 +20,7 @@ use crate::net::{Archive, Sidecar};
 use serde::{Deserialize, Serialize};
 use zip::ZipArchive;
 
-use crate::crawl::{Mirror, RemoteKind, read_record};
+use crate::crawl::{Mirror, RemoteKind};
 use crate::error::MirrorError;
 use crate::stamp::Stamp;
 use crate::zipdir::Entry;
@@ -169,7 +169,7 @@ pub fn pairs(mirror: &Mirror) -> Result<Vec<Pair>, MirrorError> {
             path: mirror.crawl_dir().display().to_string(),
         });
     }
-    let record = read_record(&mirror.record_path())?;
+    let record = mirror.record()?;
     let dirs: HashSet<&str> = record
         .iter()
         .filter(|r| r.kind == RemoteKind::Dir)

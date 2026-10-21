@@ -14,7 +14,7 @@ use std::path::{Path, PathBuf};
 use serde::{Deserialize, Serialize};
 
 use crate::compare::pairs;
-use crate::crawl::{Mirror, Remote, RemoteKind, read_record};
+use crate::crawl::{Mirror, Remote, RemoteKind};
 use crate::diag::Diagnose as _;
 use crate::error::MirrorError;
 use crate::net::{FetchError, Fetcher, RangeRead, Span};
@@ -206,7 +206,8 @@ pub async fn peek(
     let peeked = current(mirror)?;
     let removed = mirror.removed()?;
     let paired: HashSet<String> = pairs(mirror)?.into_iter().map(|p| p.zip).collect();
-    let mut zips: Vec<Remote> = read_record(&mirror.record_path())?
+    let mut zips: Vec<Remote> = mirror
+        .record()?
         .into_iter()
         .filter(|r| r.kind == RemoteKind::File && is_zip_name(&r.url))
         .filter(|r| !peeked.contains_key(&r.url) && !removed.contains_key(&r.url))
@@ -276,23 +277,6 @@ pub async fn peek(
     Ok(summary)
 }
 
-/// A file on disk, read by span; every span lies inside it, as the
-/// directory reader checks, so a read fails only with the disk.
-struct OnDisk(std::fs::File);
-
-impl zipdir::Spans for OnDisk {
-    type Error = DirError;
-    async fn read(&mut self, start: u64, end: u64) -> Result<Vec<u8>, DirError> {
-        use std::io::{Read as _, Seek as _, SeekFrom};
-        let mut buf = vec![0u8; usize::try_from(end - start).unwrap_or(0)];
-        self.0
-            .seek(SeekFrom::Start(start))
-            .and_then(|_| self.0.read_exact(&mut buf))
-            .map_err(|_| DirError::Damaged("the file could not be read"))?;
-        Ok(buf)
-    }
-}
-
 /// Records the listing of the zip `url` archived at `path`, read from its
 /// central directory on disk, unless the record has it already: kept when
 /// a downloaded zip is removed, so what it held stays known.
@@ -300,13 +284,11 @@ pub fn keep_listing(mirror: &Mirror, url: &str, path: &Path) -> Result<(), Mirro
     if current(mirror)?.contains_key(url) {
         return Ok(());
     }
-    let listed = read_record(&mirror.record_path())?
-        .into_iter()
-        .find(|r| r.url == url);
+    let listed = mirror.record()?.into_iter().find(|r| r.url == url);
     let sidecar = crate::net::Archive::read_sidecar(path)?;
     let file = std::fs::File::open(path).map_err(MirrorError::io(path))?;
     let len = file.metadata().map_err(MirrorError::io(path))?.len();
-    let read = futures::executor::block_on(zipdir::read_directory(&mut OnDisk(file), len));
+    let read = futures::executor::block_on(zipdir::read_directory(&mut zipdir::OnDisk(file), len));
     let (entries, error) = match read {
         Ok(entries) => (Some(entries), None),
         Err(e) => (None, Some(peek_error(&e))),
@@ -331,7 +313,8 @@ pub fn keep_listing(mirror: &Mirror, url: &str, path: &Path) -> Result<(), Mirro
 /// taken when the crawl listed it at the size and date it lists it at now.
 /// A zip AEMO has published again since has none, and is peeked again.
 pub fn current(mirror: &Mirror) -> Result<HashMap<String, Peeked>, MirrorError> {
-    let listed: HashMap<String, (Option<u64>, String)> = read_record(&mirror.record_path())?
+    let listed: HashMap<String, (Option<u64>, String)> = mirror
+        .record()?
         .into_iter()
         .map(|r| (r.url, (r.size, r.modified)))
         .collect();
