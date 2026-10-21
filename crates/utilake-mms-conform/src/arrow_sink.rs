@@ -27,7 +27,7 @@ use crate::builders::{ColumnBuilder, Fault, Parsed, parse_field};
 pub struct BlockBatch {
     /// The table.
     pub table: TableId,
-    /// The table's increment the plan was based on.
+    /// The schema of the table's history the plan was based on.
     pub version: u16,
     /// The plan the rows were conformed with.
     pub plan: Arc<ConformancePlan>,
@@ -159,8 +159,8 @@ impl From<Block> for BlockBuffers {
 pub struct ArrowSink<'r, B: BatchSink> {
     registry: &'r Registry,
     opts: ResolveOptions,
-    /// The month of the source being read, when it is known: it decides
-    /// the increment a block is read against.
+    /// The month of the source being read, when it is known: it picks
+    /// among the runs of a table's history that fit a block.
     period: Option<utilake_core::YearMonth>,
     batch_rows: usize,
     out: B,
@@ -186,6 +186,7 @@ pub const DEFAULT_BATCH_ROWS: usize = 65_536;
 fn expected(ty: &DataType) -> String {
     match ty {
         DataType::Float64 => "a number (Float64)".into(),
+        DataType::Decimal128(p, s) => format!("a number of {p} digits, {s} after the point"),
         DataType::Int64 => "a whole number (Int64)".into(),
         DataType::Timestamp(..) => "a timestamp yyyy/mm/dd hh24:mi:ss".into(),
         DataType::Date32 => "a date yyyy/mm/dd".into(),
@@ -211,7 +212,7 @@ impl<'r, B: BatchSink> ArrowSink<'r, B> {
     }
 
     /// Says which month the source being read is of, so that each block
-    /// is read against the increment in force then.
+    /// is read with the schema of the run released by then.
     #[must_use]
     pub fn with_period(mut self, period: Option<utilake_core::YearMonth>) -> Self {
         self.period = period;
@@ -692,7 +693,7 @@ pub(crate) fn collect<R: std::io::Read>(
 
 #[cfg(test)]
 mod tests {
-    use arrow_array::{Array, Float64Array, StringArray, TimestampMicrosecondArray};
+    use arrow_array::{Array, Decimal128Array, StringArray, TimestampMicrosecondArray};
     use utilake_mms_registry::Mode;
 
     use super::*;
@@ -739,9 +740,17 @@ mod tests {
         assert_eq!(ts.value(0), expected / 1_000, "microseconds");
         let duid = b.column(1).as_any().downcast_ref::<StringArray>().unwrap();
         assert_eq!(duid.value(0), "BUTLERSG");
-        let mw = b.column(2).as_any().downcast_ref::<Float64Array>().unwrap();
-        assert!((mw.value(0) - 9.199_999).abs() < 1e-9);
-        assert_eq!(out.blocks, vec![(String::new(), 1, "conforms")]);
+        // SCADAVALUE is decimal(16, 6) in the table's history: exact.
+        let mw = b
+            .column(2)
+            .as_any()
+            .downcast_ref::<Decimal128Array>()
+            .unwrap();
+        assert_eq!(
+            (mw.value(0), mw.precision(), mw.scale()),
+            (9_199_999, 16, 6)
+        );
+        assert_eq!(out.blocks, vec![(String::new(), 0, "conforms")]);
         assert!(out.warnings.is_empty());
         assert_eq!(
             b.schema().metadata()["utilake:table"],
@@ -1161,7 +1170,10 @@ D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",E,2\n";
         assert_eq!(scada.column.as_deref(), Some("SCADAVALUE"));
         assert_eq!(scada.line, Some(4));
         assert_eq!(scada.observed.as_deref(), Some("notanumber"));
-        assert_eq!(scada.expected.as_deref(), Some("a number (Float64)"));
+        assert_eq!(
+            scada.expected.as_deref(),
+            Some("a number of 16 digits, 6 after the point")
+        );
         assert!(
             scada.message.starts_with("2 value(s) of column SCADAVALUE"),
             "{}",
@@ -1245,7 +1257,7 @@ D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",,1\n";
                 .collect::<Vec<_>>(),
             [7, 7, 6]
         );
-        // The head carries the columns of DISPATCHPRICE@4.
-        assert_eq!(out.batches[0].version, 4);
+        // The head carries the columns of DISPATCHPRICE's schema 1.
+        assert_eq!(out.batches[0].version, 1);
     }
 }

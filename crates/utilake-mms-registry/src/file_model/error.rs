@@ -1,4 +1,4 @@
-//! Errors of reading, validating and comparing schema files.
+//! Errors of reading and validating schema files.
 
 use utilake_core::{Category, Diagnose, Diagnostic};
 
@@ -14,12 +14,12 @@ pub enum SchemaFileError {
         #[source]
         source: std::io::Error,
     },
-    /// The file is not valid TOML for a table.
+    /// The file is not a table definition (TOML by hand, JSON pulled).
     #[error("The schema file {path} is not a valid table definition: {message}")]
     Parse {
         /// The file.
         path: String,
-        /// TOML's message, naming the key.
+        /// The parser's message, naming the key.
         message: String,
         /// Line, when known.
         line: Option<u64>,
@@ -32,14 +32,6 @@ pub enum SchemaFileError {
         /// The table.
         table: String,
         /// What is wrong, naming the key.
-        message: String,
-    },
-    /// A change between two registries is not allowed.
-    #[error("Table {table} changed incompatibly: {message}")]
-    Breaking {
-        /// The table.
-        table: String,
-        /// What is wrong.
         message: String,
     },
     /// The compiled blob could not be decoded.
@@ -65,10 +57,6 @@ impl Diagnose for SchemaFileError {
             Self::Invalid { path, table, .. } => {
                 Diagnostic::error("schema.file_invalid", Category::Schema, msg)
                     .with_file(path.clone())
-                    .with_table(table.clone())
-            }
-            Self::Breaking { table, .. } => {
-                Diagnostic::error("schema.breaking_change", Category::Schema, msg)
                     .with_table(table.clone())
             }
             Self::Blob(e) => {
@@ -99,11 +87,6 @@ mod tests {
             line: Some(4),
         };
         assert_eq!(e.diagnostic().line, Some(4));
-        let e = SchemaFileError::Breaking {
-            table: "T".into(),
-            message: "m".into(),
-        };
-        assert_eq!(e.diagnostic().code, "schema.breaking_change");
         let e = SchemaFileError::Read {
             path: "p".into(),
             source: std::io::Error::other("x"),

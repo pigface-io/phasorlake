@@ -1,11 +1,13 @@
 //! Resolving an I row to a conformance plan: which lake column each I-row
 //! field feeds and how to cast it (see [`crate::plan`]).
 //!
-//! A block of report pair P in a source of month M is read against the
-//! increment of P's table in force at M; with no month known, against the
-//! increment whose columns are the block's, else the latest. It conforms
-//! when its columns are the increment's, and deviates otherwise: a column
-//! the table has not is kept as text, a lake column the file lacks is null.
+//! A block is read with the schema of its table's history that
+//! `History::resolve` names for its report pair, AEMO version, columns in
+//! order and the month its source was released in (with no month known,
+//! the latest run's). Such a block conforms. A block no run of the history
+//! fits deviates: it is compared with the schema in force for its pair
+//! then, a column the table has not is kept as text, and a lake column the
+//! file lacks is null; strict mode refuses it.
 
 use std::sync::Arc;
 
@@ -15,13 +17,13 @@ use utilake_mms_decode::IRow;
 
 use crate::error::ResolveError;
 use crate::plan::{ConformancePlan, PlanHash};
-use crate::registry::{Deviation, Registry, SchemaSource, TableId};
+use crate::registry::{Registry, Resolution, SchemaSource, TableId};
 
 /// Strictness of resolution.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum Mode {
-    /// Only blocks that conform to their increment; a deviation or an
-    /// unknown table is an error.
+    /// Only blocks the table's history reads; a deviation or an unknown
+    /// table is an error.
     Strict,
     /// A deviation is a warning and an unknown table is derived from the
     /// file; nothing the file carries is lost.
@@ -39,14 +41,15 @@ pub struct ResolveOptions {
 /// How the I row matched the registry.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Status {
-    /// The block's columns are its increment's.
+    /// A run of the table's history fits the block.
     Conforms,
-    /// The block's columns differ from its increment's.
+    /// No run fits: the block's columns differ from those of the schema in
+    /// force for its pair.
     Deviates {
-        /// Increment columns the I row lacks (written null).
+        /// Columns of that schema the I row lacks (written null).
         missing: Vec<String>,
-        /// I-row columns the increment does not list: a column of the
-        /// table feeds it, any other is kept as text.
+        /// I-row columns the schema does not list: a column of the table
+        /// feeds it, any other is kept as text.
         extra: Vec<String>,
         /// The columns both have come in another order.
         reordered: bool,
@@ -72,10 +75,11 @@ impl Status {
 pub struct Resolved {
     /// The table.
     pub table: TableId,
-    /// The increment of the table the block was read against: our version.
+    /// The schema of the table's history the block was read against: the
+    /// one it resolved to, or for a deviation the one in force.
     pub version: u16,
-    /// The Iceberg schema of the table's history whose columns are the
-    /// block's; none for a column list the census has not folded.
+    /// The Iceberg schema of the table's history the block resolved to;
+    /// none when it deviates.
     pub schema: Option<u32>,
     /// How it matched.
     pub status: Status,
@@ -119,14 +123,17 @@ fn compare(want: &[String], have: &[&str]) -> (Vec<String>, Vec<String>, bool) {
     (missing, extra, reordered)
 }
 
+/// The release that stands for "not known": after every run's.
+pub(crate) const LATEST: &str = "9999-12";
+
 impl Registry {
     /// Resolves an I row of a source whose month is not known: against the
-    /// increment whose columns are the block's, else the latest.
+    /// latest run of the table's history that fits it.
     pub fn resolve(&self, irow: &IRow<'_>, opts: ResolveOptions) -> Result<Resolved, ResolveError> {
         self.resolve_in(irow, opts, None)
     }
 
-    /// Resolves an I row of a source of month `period`.
+    /// Resolves an I row of a source released in month `period`.
     pub fn resolve_in(
         &self,
         irow: &IRow<'_>,
@@ -144,6 +151,26 @@ impl Registry {
             report_type: irow.report_type.to_owned(),
             report_subtype: irow.report_subtype.to_owned(),
         };
+        let fp = irow.fingerprint();
+        // The hot path: a column list one schema of the history has, of a
+        // version the history has, is read with that schema.
+        if let Some((id, k)) = self.pair(irow.report_type, irow.report_subtype) {
+            let shapes = self.shapes(id.0 as usize);
+            if let Some(&schema) = shapes.exact.get(&(k, fp))
+                && shapes.versions.contains(&(k, irow.version))
+                && let Some(plan) = shapes.plan(schema)
+            {
+                return Ok(Resolved {
+                    table: id,
+                    version: schema,
+                    schema: Some(u32::from(schema)),
+                    status: Status::Conforms,
+                    plan: plan.clone(),
+                    source: self.schema_source(id),
+                    warnings: Vec::new(),
+                });
+            }
+        }
         let id = match self.table_by_pair(irow.report_type, irow.report_subtype) {
             Some(id) => id,
             None if opts.mode == Mode::Strict => return Err(unknown()),
@@ -159,171 +186,155 @@ impl Registry {
             }
             return Ok(self.resolve_derived(id, irow));
         }
+        let key = (id, fp, irow.version, period);
+        let r = self.resolution(key, || self.resolve_block(id, irow, period));
+        if opts.mode == Mode::Strict
+            && let Status::Deviates {
+                missing,
+                extra,
+                reordered,
+            } = &r.status
+        {
+            let t = self.table(id);
+            if let Some(k) = t
+                .primary_key
+                .iter()
+                .find(|k| !irow.columns.contains(&k.as_str()))
+            {
+                return Err(ResolveError::MissingKey {
+                    table: t.name.clone(),
+                    schema: r.version,
+                    column: k.clone(),
+                });
+            }
+            return Err(ResolveError::Deviates {
+                table: t.name.clone(),
+                schema: r.version,
+                expected: self.expected(id, r.version).join(","),
+                observed: irow.columns.join(","),
+                missing: missing.clone(),
+                extra: extra.clone(),
+                reordered: *reordered,
+            });
+        }
+        Ok(Resolved {
+            table: id,
+            version: r.version,
+            schema: r.schema,
+            status: r.status.clone(),
+            plan: r.plan.clone(),
+            source: self.schema_source(id),
+            warnings: r.warnings.clone(),
+        })
+    }
+
+    /// The columns of schema `schema` of table `id`, in file order.
+    fn expected(&self, id: TableId, schema: u16) -> Vec<String> {
+        let t = self.table(id);
+        t.schema(schema)
+            .map(|s| t.schema_columns(s).into_iter().map(str::to_owned).collect())
+            .unwrap_or_default()
+    }
+
+    /// What a block of a table of the registry resolves to, the first
+    /// time its shape is seen.
+    fn resolve_block(&self, id: TableId, irow: &IRow<'_>, period: Option<YearMonth>) -> Resolution {
         let t = self.table(id);
         let shapes = self.shapes(id.0 as usize);
-        let fp = irow.fingerprint();
-        let k = match period {
-            Some(m) => t.increments.iter().rposition(|i| i.from <= m).unwrap_or(0),
-            None => shapes
-                .increments
-                .iter()
-                .rposition(|(f, _)| *f == fp)
-                .unwrap_or(t.increments.len() - 1),
-        };
-        let inc = &t.increments[k];
-        let (inc_fp, own) = &shapes.increments[k];
-        let schema = self.schema_id(id, irow);
+        let pair = (irow.report_type, irow.report_subtype);
+        let release = period.map_or_else(|| LATEST.to_owned(), |m| m.to_string());
+        let fits = shapes
+            .history
+            .resolve([pair.0, pair.1], irow.version, irow.columns, &release)
+            .and_then(|s| u16::try_from(s).ok())
+            .and_then(|s| shapes.plan(s).map(|p| (s, p)));
         let mut warnings = Vec::new();
-        if !inc.aemo_versions.is_empty() && !inc.aemo_versions.contains(&irow.version) {
+        if !t.has_version(pair, irow.version) {
             warnings.push(
                 Diagnostic::warning(
                     "schema.unseen_version",
                     Category::Schema,
                     format!(
-                        "Table {}@{} has seen AEMO version(s) {:?}, not {}; the block is read by its columns all the same. `utilake-nem-census sync` records the versions the census sees.",
-                        t.name, inc.n, inc.aemo_versions, irow.version
+                        "Table {} has no run of AEMO version {} of ({}, {}); the block is read by its columns all the same.",
+                        t.name, irow.version, pair.0, pair.1
                     ),
                 )
                 .with_table(t.name.clone())
                 .with_version(irow.version),
             );
         }
-        if *inc_fp == fp {
-            return Ok(Resolved {
-                table: id,
-                version: inc.n,
-                schema,
+        if let Some((schema, plan)) = fits {
+            return Resolution {
+                plan: plan.clone(),
                 status: Status::Conforms,
-                plan: own.clone(),
-                source: self.schema_source(id),
+                version: schema,
+                schema: Some(u32::from(schema)),
                 warnings,
-            });
+            };
         }
-        let missing_keys = || -> Vec<&String> {
-            t.primary_key
-                .iter()
-                .filter(|k| !irow.columns.contains(&k.as_str()))
-                .collect()
-        };
-        // A column list the archive published for this table, all of whose
-        // columns the table has: the data says it is right, whatever
-        // increment its control file is in force. It conforms.
-        if missing_keys().is_empty()
-            && irow.columns.iter().all(|c| t.column(c).is_some())
-            && (schema.is_some() || !self.shape_ids(irow, None).is_empty())
-        {
-            let d = self.deviation((id, inc.n, fp, irow.version), || Deviation {
-                plan: Arc::new(ConformancePlan::new(
-                    t,
-                    self.market_of(id),
-                    &shapes.lake,
-                    inc.n,
-                    irow.columns,
-                    &self.table_dir(id),
-                )),
-                status: Status::Conforms,
-                warnings: Vec::new(),
-            });
-            return Ok(Resolved {
-                table: id,
-                version: inc.n,
-                schema,
-                status: d.status.clone(),
-                plan: d.plan.clone(),
-                source: self.schema_source(id),
-                warnings,
-            });
+        // Permissive: nothing the file carries is lost.
+        let reference = t.reference_schema(pair, period).unwrap_or(0);
+        let expected = self.expected(id, reference);
+        let (missing, extra, reordered) = compare(&expected, irow.columns);
+        let plan = Arc::new(ConformancePlan::new(
+            t,
+            self.market_of(id),
+            &shapes.lake,
+            reference,
+            irow.columns,
+            &self.table_dir(id),
+        ));
+        let mut d = Diagnostic::warning(
+            "schema.deviates",
+            Category::Schema,
+            format!(
+                "No run of table {}'s history has this file's {} columns{}. Against schema {}, the one in force, with {} columns: {} missing (written null), {} not listed (a column of the table feeds its own, any other is kept as text under its own name). If the file is right, the census has not seen it; a table of your own can read it.",
+                t.name,
+                irow.columns.len(),
+                if reordered { " in this order" } else { "" },
+                reference,
+                expected.len(),
+                missing.len(),
+                extra.len(),
+            ),
+        )
+        .with_table(t.name.clone())
+        .with_version(irow.version);
+        d.expected = Some(expected.join(","));
+        d.observed = Some(irow.columns.join(","));
+        warnings.push(d);
+        let keys: Vec<&str> = t
+            .primary_key
+            .iter()
+            .map(String::as_str)
+            .filter(|k| !irow.columns.contains(k))
+            .collect();
+        if !keys.is_empty() {
+            warnings.push(
+                Diagnostic::warning(
+                    "schema.missing_key",
+                    Category::Schema,
+                    format!(
+                        "This file of table {} lacks primary-key column(s) {}; its rows are kept with those columns null, and cannot be told apart by key.",
+                        t.name,
+                        keys.join(", ")
+                    ),
+                )
+                .with_table(t.name.clone())
+                .with_version(irow.version),
+            );
         }
-        if opts.mode == Mode::Strict {
-            if let Some(k) = missing_keys().first() {
-                return Err(ResolveError::MissingKey {
-                    table: t.name.clone(),
-                    increment: inc.n,
-                    column: (*k).clone(),
-                });
-            }
-            let (missing, extra, reordered) = compare(&inc.columns, irow.columns);
-            return Err(ResolveError::Deviates {
-                table: t.name.clone(),
-                increment: inc.n,
-                expected: inc.columns.join(","),
-                observed: irow.columns.join(","),
+        Resolution {
+            plan,
+            status: Status::Deviates {
                 missing,
                 extra,
                 reordered,
-            });
-        }
-        // Permissive: nothing the file carries is lost. What this shape is
-        // and says is worked out the first time it is seen.
-        let d = self.deviation((id, inc.n, fp, irow.version), || {
-            let (missing, extra, reordered) = compare(&inc.columns, irow.columns);
-            let plan = Arc::new(ConformancePlan::new(
-                t,
-                self.market_of(id),
-                &shapes.lake,
-                inc.n,
-                irow.columns,
-                &self.table_dir(id),
-            ));
-            let mut d = Diagnostic::warning(
-                "schema.deviates",
-                Category::Schema,
-                format!(
-                    "This file of table {} has {} columns where {}@{} lists {}: {} missing (written null), {} not listed (a column of the table feeds its own, any other is kept as text under its own name){}. If the file is right, fix the increment's columns in its table.toml.",
-                    t.name,
-                    irow.columns.len(),
-                    t.name,
-                    inc.n,
-                    inc.columns.len(),
-                    missing.len(),
-                    extra.len(),
-                    if reordered { ", order differs" } else { "" }
-                ),
-            )
-            .with_table(t.name.clone())
-            .with_version(irow.version);
-            d.expected = Some(inc.columns.join(","));
-            d.observed = Some(irow.columns.join(","));
-            let mut warnings = vec![d];
-            let keys = missing_keys();
-            if !keys.is_empty() {
-                warnings.push(
-                    Diagnostic::warning(
-                        "schema.missing_key",
-                        Category::Schema,
-                        format!(
-                            "This file of table {} lacks primary-key column(s) {}; its rows are kept with those columns null, and cannot be told apart by key.",
-                            t.name,
-                            keys.iter()
-                                .map(|k| k.as_str())
-                                .collect::<Vec<_>>()
-                                .join(", ")
-                        ),
-                    )
-                    .with_table(t.name.clone())
-                    .with_version(irow.version),
-                );
-            }
-            Deviation {
-                plan,
-                status: Status::Deviates {
-                    missing,
-                    extra,
-                    reordered,
-                },
-                warnings,
-            }
-        });
-        warnings.extend(d.warnings.iter().cloned());
-        Ok(Resolved {
-            table: id,
-            version: inc.n,
-            schema,
-            status: d.status.clone(),
-            plan: d.plan.clone(),
-            source: self.schema_source(id),
+            },
+            version: reference,
+            schema: None,
             warnings,
-        })
+        }
     }
 
     /// The plan of an I row onto a table derived from the file: every
@@ -332,12 +343,12 @@ impl Registry {
     fn resolve_derived(&self, id: TableId, irow: &IRow<'_>) -> Resolved {
         let t = self.table(id);
         let market = self.market_of(id);
-        let d = self.deviation((id, 1, irow.fingerprint(), irow.version), || {
+        let d = self.resolution((id, irow.fingerprint(), irow.version, None), || {
             let plan = Arc::new(ConformancePlan::new(
                 t,
                 market,
                 self.lake_schema(id),
-                1,
+                0,
                 irow.columns,
                 &self.table_dir(id),
             ));
@@ -345,7 +356,7 @@ impl Registry {
                 "schema.unknown_table",
                 Category::Schema,
                 format!(
-                    "No table in the registry claims report pair ({}, {}). Its rows are kept as the file gives them, every column as text, under {}. `utilake-nem-census sync` adds a table for it from the month's control file; ingest again once it is in.",
+                    "No table in the registry claims report pair ({}, {}). Its rows are kept as the file gives them, every column as text, under {}. Once utilake-schemas publishes a table for it, a utilake built with it reads the pair typed; ingest again then.",
                     irow.report_type,
                     irow.report_subtype,
                     self.table_dir(id)
@@ -353,15 +364,17 @@ impl Registry {
             )
             .with_table(t.name.clone())
             .with_version(irow.version);
-            Deviation {
+            Resolution {
                 plan,
                 status: Status::Derived,
+                version: 0,
+                schema: None,
                 warnings: vec![warning],
             }
         });
         Resolved {
             table: id,
-            version: 1,
+            version: 0,
             schema: None,
             status: Status::Derived,
             plan: d.plan.clone(),
@@ -375,7 +388,7 @@ impl Registry {
 mod tests {
     use super::*;
     use crate::file_model::blob::SchemaSet;
-    use crate::file_model::model::tests::unit_scada;
+    use crate::file_model::model::tests::{run, unit_scada};
     use crate::plan::{Cast, ColumnRoute, Origin};
 
     fn route(r: &ColumnRoute) -> (Option<u16>, Cast, bool) {
@@ -408,45 +421,18 @@ mod tests {
     }
 
     #[test]
-    fn a_column_list_of_the_history_names_its_schema_and_conforms() {
-        let history = crate::file_model::history::tests::scada_history();
-        let r = Registry::from_set(SchemaSet {
-            tables: vec![unit_scada()],
-            histories: std::collections::BTreeMap::from([(history.table.clone(), history)]),
-            ..Default::default()
-        });
-        let opts = ResolveOptions::default();
-        let res = r.resolve_in(&scada(&FOUR), opts, month("2026-08")).unwrap();
-        assert_eq!((res.status, res.schema), (Status::Conforms, Some(0)));
-        // Another order the census folded: its own schema, and conforms.
-        let moved = ["DUID", "SETTLEMENTDATE", "SCADAVALUE", "LASTCHANGED"];
-        let res = r
-            .resolve_in(&scada(&moved), opts, month("2026-08"))
-            .unwrap();
-        assert_eq!((res.status, res.schema), (Status::Conforms, Some(1)));
-        // With no history, the same order deviates and names no schema.
-        let res = reg()
-            .resolve_in(&scada(&moved), opts, month("2026-08"))
-            .unwrap();
-        assert!(
-            matches!(res.status, Status::Deviates { .. }),
-            "{:?}",
-            res.status
-        );
-        assert_eq!(res.schema, None);
-        assert_eq!(r.histories().len(), 1);
-    }
-
-    #[test]
-    fn a_block_conforms_to_the_increment_in_force() {
+    fn a_block_conforms_to_the_schema_its_history_names() {
         let r = reg();
         let opts = ResolveOptions::default();
         let res = r.resolve_in(&scada(&FOUR), opts, month("2026-08")).unwrap();
-        assert_eq!((res.status.clone(), res.version), (Status::Conforms, 2));
+        assert_eq!(
+            (res.status.clone(), res.version, res.schema),
+            (Status::Conforms, 1, Some(1))
+        );
         assert_eq!(res.label(), "conforms");
         assert!(res.warnings.is_empty());
         let p = &res.plan;
-        assert_eq!(p.increment, 2);
+        assert_eq!(p.schema, 1);
         assert_eq!(
             route(&p.routes[0]),
             (
@@ -470,49 +456,48 @@ mod tests {
             .resolve_in(&scada(&FOUR), strict, month("2030-01"))
             .unwrap();
         assert!(Arc::ptr_eq(&again.plan, &res.plan));
-        // The older increment, in its months and before any.
-        for m in ["2024-01", "2026-07", "2009-07"] {
+        // The columns decide, whatever the month: the older schema in its
+        // months, before any and after.
+        for m in ["2024-01", "2026-07", "2009-07", "2030-01"] {
             let old = r.resolve_in(&scada(&THREE), strict, month(m)).unwrap();
-            assert_eq!((old.status, old.version), (Status::Conforms, 1), "{m}");
+            assert_eq!((old.status, old.version), (Status::Conforms, 0), "{m}");
             assert_eq!(old.plan.missing, [3]);
         }
-        // With no month known, the increment with the block's columns.
-        assert_eq!(r.resolve(&scada(&THREE), opts).unwrap().version, 1);
-        assert_eq!(r.resolve(&scada(&FOUR), opts).unwrap().version, 2);
-        // Two increments, two plans.
+        // The 2026 columns in a 2024 source are the 2026 schema.
+        let early = r
+            .resolve_in(&scada(&FOUR), strict, month("2024-06"))
+            .unwrap();
+        assert_eq!(early.version, 1);
+        // With no month known, the latest run that fits.
+        assert_eq!(r.resolve(&scada(&THREE), opts).unwrap().version, 0);
+        assert_eq!(r.resolve(&scada(&FOUR), opts).unwrap().version, 1);
+        // Two schemas, two plans.
         assert_ne!(
             r.resolve(&scada(&THREE), opts).unwrap().plan_hash(),
             res.plan_hash()
         );
     }
 
-    /// A column list the archive published conforms in strict mode even
-    /// where the increment in force lists other columns.
+    /// Two runs of one column list: the last released by the month.
     #[test]
-    fn a_published_column_list_conforms() {
-        let mut shape = crate::file_model::shapes::tests::scada_entry();
-        let four = ["SETTLEMENTDATE", "DUID", "SCADAVALUE", "LASTCHANGED"];
-        shape.columns.push(shape.columns[0].clone());
-        shape.columns[3].name = "LASTCHANGED".into();
-        shape.id = shape.shape().id();
+    fn the_month_picks_among_runs_of_one_column_list() {
+        let mut t = unit_scada();
+        let mut again = t.schemas[0].clone();
+        again.id = 2;
+        t.schemas.push(again);
+        t.runs.push(run(2, 1, "2026-10", "2026-12"));
         let r = Registry::from_set(SchemaSet {
-            tables: vec![unit_scada()],
-            shapes: [("DISPATCH_UNIT_SCADA".to_owned(), vec![shape])].into(),
+            tables: vec![t],
             ..Default::default()
         });
-        let strict = ResolveOptions { mode: Mode::Strict };
-        let res = r
-            .resolve_in(&scada(&four), strict, month("2024-06"))
-            .unwrap();
-        assert_eq!((res.status, res.version), (Status::Conforms, 1));
-        assert!(res.warnings.is_empty());
-        assert_eq!(res.plan.routes.len(), 4);
-        // A list nobody published still deviates.
-        let three = ["DUID", "SETTLEMENTDATE", "SCADAVALUE"];
-        assert!(
-            r.resolve_in(&scada(&three), strict, month("2026-08"))
-                .is_err()
-        );
+        let opts = ResolveOptions::default();
+        let at = |m| {
+            r.resolve_in(&scada(&THREE), opts, month(m))
+                .unwrap()
+                .version
+        };
+        assert_eq!((at("2025-01"), at("2026-10")), (0, 2));
+        assert_eq!(r.resolve(&scada(&THREE), opts).unwrap().version, 2);
     }
 
     #[test]
@@ -520,28 +505,6 @@ mod tests {
         let r = reg();
         let opts = ResolveOptions::default();
         let strict = ResolveOptions { mode: Mode::Strict };
-        // The 2026 shape in a 2024 source: LASTCHANGED is not listed there,
-        // but it is a column of the table, which feeds its own.
-        let res = r.resolve_in(&scada(&FOUR), opts, month("2024-06")).unwrap();
-        assert_eq!(
-            res.status,
-            Status::Deviates {
-                missing: vec![],
-                extra: vec!["LASTCHANGED".into()],
-                reordered: false
-            }
-        );
-        assert_eq!(res.version, 1);
-        assert_eq!(res.warnings[0].code, "schema.deviates");
-        assert_eq!(res.plan.routes[3].origin, Origin::Declared);
-        assert_eq!(res.plan.increment, 1);
-        let e = r
-            .resolve_in(&scada(&FOUR), strict, month("2024-06"))
-            .unwrap_err();
-        assert!(
-            matches!(e, ResolveError::Deviates { increment: 1, .. }),
-            "{e}"
-        );
         // A column nobody knows is kept as text; one the file lacks is null.
         let odd = ["DUID", "SETTLEMENTDATE", "NOBODY_KNOWS"];
         let res = r.resolve_in(&scada(&odd), opts, month("2026-08")).unwrap();
@@ -553,7 +516,11 @@ mod tests {
                 reordered: true
             }
         );
+        assert_eq!((res.version, res.schema), (1, None));
+        assert_eq!(res.warnings[0].code, "schema.deviates");
+        assert!(res.warnings[0].message.contains("in this order"));
         let p = &res.plan;
+        assert_eq!(p.schema, 1);
         assert_eq!(p.routes[2].origin, Origin::FileExtra);
         assert_eq!(p.routes[2].target_field_id, None);
         assert_eq!(p.fields[4].origin, Origin::FileExtra);
@@ -561,6 +528,24 @@ mod tests {
         // The same shape again is the same plan.
         let again = r.resolve_in(&scada(&odd), opts, month("2026-08")).unwrap();
         assert!(Arc::ptr_eq(&again.plan, &res.plan));
+        let e = r
+            .resolve_in(&scada(&odd), strict, month("2026-08"))
+            .unwrap_err();
+        assert!(matches!(e, ResolveError::Deviates { schema: 1, .. }), "{e}");
+        // Against the schema in force in its month.
+        let res = r.resolve_in(&scada(&odd), opts, month("2024-06")).unwrap();
+        assert_eq!(res.version, 0);
+        // The columns of a schema, but a column more: a column of the
+        // table feeds its own.
+        let five = [
+            "SETTLEMENTDATE",
+            "DUID",
+            "SCADAVALUE",
+            "LASTCHANGED",
+            "LASTCHANGED",
+        ];
+        let res = r.resolve(&scada(&five), opts).unwrap();
+        assert_eq!(res.plan.routes[3].origin, Origin::Declared);
         // A block without a key column: kept with a warning, or refused.
         let keyless = ["SETTLEMENTDATE", "SCADAVALUE"];
         let res = r.resolve(&scada(&keyless), opts).unwrap();
@@ -572,6 +557,20 @@ mod tests {
         assert!(!res.plan.fields.is_empty());
         let e = r.resolve(&scada(&keyless), strict).unwrap_err();
         assert!(matches!(e, ResolveError::MissingKey { ref column, .. } if column == "DUID"));
+        // Another report pair of the table fits none of its runs.
+        let mut t = unit_scada();
+        t.report_pairs
+            .push(("DISPATCH".into(), "UNIT_SCADA2".into()));
+        let r = Registry::from_set(SchemaSet {
+            tables: vec![t],
+            ..Default::default()
+        });
+        let other = IRow {
+            report_subtype: "UNIT_SCADA2",
+            ..scada(&THREE)
+        };
+        let res = r.resolve(&other, opts).unwrap();
+        assert_eq!((res.label(), res.version), ("deviates", 1));
     }
 
     #[test]
@@ -666,17 +665,35 @@ mod tests {
         );
     }
 
+    /// Every run of every embedded table resolves, in its own release
+    /// month, to its own schema's plan: what the census saw conforms.
     #[test]
-    fn the_embedded_registry_resolves_its_fixture_shapes() {
+    fn every_run_of_the_embedded_histories_conforms() {
         let r = Registry::load_embedded();
+        let strict = ResolveOptions { mode: Mode::Strict };
+        let mut runs = 0;
+        for (id, t) in r.tables() {
+            for run in &t.runs {
+                let s = t.schema(run.schema).unwrap();
+                let cols = t.schema_columns(s);
+                let irow = IRow {
+                    report_type: &run.report.0,
+                    report_subtype: &run.report.1,
+                    version: run.version,
+                    columns: &cols,
+                };
+                let res = r.resolve_in(&irow, strict, Some(run.from)).unwrap();
+                assert_eq!(res.status, Status::Conforms, "{} {}", t.name, run.from);
+                assert_eq!(res.table, id);
+                // Two schemas of one column list are one plan's columns.
+                assert_eq!(t.schema_columns(t.schema(res.version).unwrap()), cols);
+                runs += 1;
+            }
+        }
+        assert!(runs > 900, "{runs}");
         let res = r
-            .resolve_in(
-                &scada(&FOUR),
-                ResolveOptions { mode: Mode::Strict },
-                month("2026-08"),
-            )
+            .resolve_in(&scada(&THREE), strict, month("2024-08"))
             .unwrap();
-        assert_eq!(res.status, Status::Conforms);
         assert_eq!(res.source, SchemaSource::Registry);
     }
 }

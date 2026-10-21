@@ -153,7 +153,8 @@ mod tests {
             .find(|b| b.report_subtype == "PRICE")
             .unwrap();
         assert_eq!(price.table.as_deref(), Some("DISPATCHPRICE"));
-        // The live feed's DISPATCHPRICE is not the archive's increment.
+        // The live feed's DISPATCHPRICE has columns no run of the
+        // archive's history has.
         assert_eq!(price.status, "schema.deviates");
         assert_eq!(price.rows, 3);
         let unknown = s

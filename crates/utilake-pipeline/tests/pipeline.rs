@@ -17,7 +17,7 @@ use utilake_core::paths::Home;
 use utilake_kit::{Catalog as _, KitRegistry, Strictness};
 use utilake_mms_conform::MmsCatalog;
 use utilake_mms_registry::file_model::{
-    Column, ColumnId, Increment, LakeType, Market, RoleOrigin, Table, Temporal, ValidAxis,
+    Column, ColumnId, LakeType, Market, RoleOrigin, Run, Table, TableSchema, Temporal, ValidAxis,
 };
 use utilake_mms_registry::{LoadMode, Registry};
 use utilake_pipeline::{Deps, Input, Plan, RunOptions, run};
@@ -99,14 +99,16 @@ fn env() -> Env {
     }
 }
 
-/// A table of text columns, with increments of `(from, columns)`.
+/// A table of text columns, with schemas of `(from, columns)`: one run
+/// each, from that month.
 fn text_table(
     name: &str,
     pair: (&str, &str),
     columns: &[&str],
-    increments: &[(&str, &[&str])],
+    schemas: &[(&str, &[&str])],
     time_column: Option<&str>,
 ) -> Table {
+    let id = |c: &str| ColumnId(columns.iter().position(|n| *n == c).unwrap() as u32 + 1);
     Table {
         market: Market::Nem,
         name: name.into(),
@@ -122,7 +124,6 @@ fn text_table(
         },
         primary_key: vec![],
         time_column: time_column.map(str::to_owned),
-        next_column_id: columns.len() as u32 + 1,
         columns: columns
             .iter()
             .enumerate()
@@ -138,37 +139,40 @@ fn text_table(
                 note: None,
             })
             .collect(),
-        increments: increments
+        schemas: schemas
             .iter()
             .enumerate()
-            .map(|(i, (from, cols))| Increment {
-                n: i as u16 + 1,
+            .map(|(i, (_, cols))| TableSchema {
+                id: i as u16,
+                fields: cols.iter().map(|c| (id(c), false)).collect(),
+                key: Vec::new(),
+            })
+            .collect(),
+        runs: schemas
+            .iter()
+            .enumerate()
+            .map(|(i, (from, _))| Run {
+                schema: i as u16,
+                report: (pair.0.into(), pair.1.into()),
+                version: 1,
+                kinds: Vec::new(),
                 from: from.parse().unwrap(),
-                ctl: None,
-                ctl_sha256: None,
-                aemo_ctl: None,
-                aemo_versions: vec![1],
-                columns: cols.iter().map(|c| (*c).to_owned()).collect(),
-                note: None,
+                to: from.parse().unwrap(),
+                files: 0,
+                rows: 0,
             })
             .collect(),
     }
 }
 
 /// Lays `t` over the registry as a user's own table under `{root}`, as
-/// `{root}/nem/{TABLE}/table.toml`, without the control files the
-/// registry keeps.
+/// `{root}/nem/{TABLE}/table.toml`.
 fn overlay(registry: &Registry, root: &Path, t: &Table) -> Arc<Registry> {
-    let mut t = t.clone();
-    for i in &mut t.increments {
-        i.ctl = None;
-        i.ctl_sha256 = None;
-    }
     let dir = root.join("nem").join(&t.name);
     std::fs::create_dir_all(&dir).unwrap();
     std::fs::write(
         dir.join("table.toml"),
-        utilake_mms_registry::file_model::file::write_table(&t),
+        utilake_mms_registry::file_model::file::write_table(t),
     )
     .unwrap();
     Arc::new(registry.with_overlay(root).unwrap())
@@ -190,9 +194,10 @@ fn parquet_rows(path: &str) -> usize {
     b.build().unwrap().map(|r| r.unwrap().num_rows()).sum()
 }
 
-/// Every number is a double.
+/// A number is written as its table's history types it: RRP is
+/// decimal(15, 5), exact.
 #[tokio::test]
-async fn numbers_are_written_as_doubles() {
+async fn numbers_are_written_as_their_historys_types() {
     use arrow_array::Array;
     let csv = fixtures().join("DISPATCHPRICE_v4_head.csv");
     let floats = env();
@@ -211,16 +216,16 @@ async fn numbers_are_written_as_doubles() {
     let batch = parquet_batch(&files[0]);
     assert_eq!(
         batch.schema().field_with_name("RRP").unwrap().data_type(),
-        &arrow_schema::DataType::Float64
+        &arrow_schema::DataType::Decimal128(15, 5)
     );
     let col = batch
         .column_by_name("RRP")
         .unwrap()
         .as_any()
-        .downcast_ref::<arrow_array::Float64Array>()
+        .downcast_ref::<arrow_array::Decimal128Array>()
         .unwrap();
     // The first D row of the fixture publishes RRP as 57.98.
-    assert!((col.value(0) - 57.98).abs() < 1e-12);
+    assert_eq!(col.value(0), 5_798_000);
     assert_eq!(col.null_count(), 0);
     assert_eq!(batch.num_rows(), 20);
 }
@@ -266,7 +271,7 @@ async fn a_table_without_a_time_column_is_partitioned_by_its_file_month() {
     assert_eq!(files.len(), 2, "{files:?}");
     assert!(
         files.iter().any(|f| f.contains(
-            "nem/utilake_test_notime/year=2024/month=03/public_dvd_notime_202403010000-v1-"
+            "nem/utilake_test_notime/year=2024/month=03/public_dvd_notime_202403010000-v0-"
         )),
         "{files:?}"
     );
@@ -274,7 +279,7 @@ async fn a_table_without_a_time_column_is_partitioned_by_its_file_month() {
     assert!(
         files
             .iter()
-            .any(|f| f.contains("__HIVE_DEFAULT_PARTITION__") && f.contains("/notime-v1-")),
+            .any(|f| f.contains("__HIVE_DEFAULT_PARTITION__") && f.contains("/notime-v0-")),
         "{files:?}"
     );
 }
@@ -314,7 +319,7 @@ async fn local_zip_ingests_idempotently_and_records_manifest() {
         e.home.lake().display(),
         walk(e.home.root())
     );
-    assert!(files[0].contains("nem/dispatch_unit_scada/year=2024/month=01/public_dvd_dispatch_unit_scada_202401010000-v1-"), "{}", files[0]);
+    assert!(files[0].contains("nem/dispatch_unit_scada/year=2024/month=01/public_dvd_dispatch_unit_scada_202401010000-v0-"), "{}", files[0]);
     assert_eq!(parquet_rows(&files[0]), 20);
     let ingests = e.deps.manifest.list_ingests(None, false, 10).await.unwrap();
     assert_eq!(ingests.len(), 1);
@@ -455,7 +460,7 @@ async fn a_source_is_read_again_when_its_plan_changes() {
     assert_eq!(footer(&files[0], "utilake.plan"), first.plan_hash);
     assert_eq!(footer(&files[0], "utilake.schema_source"), "registry");
     assert_eq!(footer(&files[0], "utilake.resolution"), "conforms");
-    assert_eq!(footer(&files[0], "utilake.schema_version"), "4");
+    assert_eq!(footer(&files[0], "utilake.schema_version"), "1");
     assert_eq!(footer(&files[0], "utilake.report_type"), "DISPATCH");
     assert_eq!(footer(&files[0], "utilake.report_subtype"), "PRICE");
     assert_eq!(footer(&files[0], "utilake.source_version"), "4");
@@ -523,11 +528,11 @@ async fn a_source_is_read_again_when_its_plan_changes() {
     assert_eq!(walk(&e.home.lake()), files, "what is in the lake stays");
 }
 
-/// The month of a source decides the increment its blocks are read
-/// against: the same table, two shapes, both conforming in their months,
-/// and the lake says which increment read each.
+/// A block is read with the schema of its table's history its columns
+/// are: the same table, two shapes, both conforming, and the lake says
+/// which schema read each.
 #[tokio::test]
-async fn the_month_decides_the_increment() {
+async fn the_columns_decide_the_schema() {
     let e = env();
     let three = ["SETTLEMENTDATE", "UNIT", "VALUE"];
     let four = ["SETTLEMENTDATE", "UNIT", "VALUE", "QUALITY"];
@@ -601,8 +606,8 @@ async fn the_month_decides_the_increment() {
         files[0].clone()
     };
     let (p2010, p2024) = (path("year=2010"), path("year=2024"));
-    assert_eq!(footer(&p2010, "utilake.schema_version"), "1");
-    assert_eq!(footer(&p2024, "utilake.schema_version"), "2");
+    assert_eq!(footer(&p2010, "utilake.schema_version"), "0");
+    assert_eq!(footer(&p2024, "utilake.schema_version"), "1");
     for p in [&p2010, &p2024] {
         assert_eq!(footer(p, "utilake.resolution"), "conforms");
         assert_eq!(footer(p, "utilake.source_version"), "1");
@@ -615,12 +620,12 @@ async fn the_month_decides_the_increment() {
     // The 2010 file is null in the column it lacks, as the lake has it.
     assert_eq!(texts(&parquet_batch(&p2010), "QUALITY"), [None]);
 
-    // The three-column shape in 2024 deviates from the increment then:
-    // strict mode refuses it, and otherwise it is kept.
+    // Three columns in another order fit no run: strict mode refuses
+    // them, and otherwise they are kept.
     let late = file(
         "PUBLIC_DVD_GROWN_202405010000.CSV",
         "2024/05/01 00:05:00",
-        &three,
+        &["SETTLEMENTDATE", "VALUE", "UNIT"],
     );
     let rep = go(Input::Local(vec![late.clone()]), Strictness::Strict, &deps).await;
     assert_ne!(rep.exit_code, 0);
@@ -638,8 +643,8 @@ async fn the_month_decides_the_increment() {
             .find(|i| i.transform.source_period.as_deref() == Some(p))
             .unwrap()
     };
-    assert_eq!(by_period("2010-03").schema_version, 1);
-    assert_eq!(by_period("2024-03").schema_version, 2);
+    assert_eq!(by_period("2010-03").schema_version, 0);
+    assert_eq!(by_period("2024-03").schema_version, 1);
     assert_eq!(by_period("2024-05").transform.resolution, "deviates");
 
     // With the manifest, every source is current; under the registry
@@ -987,17 +992,17 @@ C,\"END OF REPORT\",9\n";
     assert_eq!(texts(&second, "DUID")[1], None);
 }
 
-/// A column the census saw beside the declared ones is declared by the
-/// regeneration with an id of its own; the Parquet file of a shape that
-/// carries it holds it under that id, like every declared column.
+/// A column a user's table declares beside the history's has an id of its
+/// own; the Parquet file of a shape that carries it holds it under that
+/// id, like every declared column.
 #[tokio::test]
-async fn a_census_column_is_written_with_its_field_id() {
+async fn a_declared_column_is_written_with_its_field_id() {
     let mut e = env();
     let registry = e.registry.clone();
     let mut table = registry
         .table(registry.table_by_name("DISPATCH_UNIT_SCADA").unwrap())
         .clone();
-    let id = table.next_column_id;
+    let id = table.columns.iter().map(|c| c.id.0).max().unwrap() + 1;
     table.columns.push(Column {
         id: ColumnId(id),
         name: "QUALITY".into(),
@@ -1005,7 +1010,6 @@ async fn a_census_column_is_written_with_its_field_id() {
         nullable: true,
         note: Some("Seen beside the declared columns.".into()),
     });
-    table.next_column_id += 1;
     e.set_registry(overlay(&registry, &e.home.root().join("overlay"), &table));
     let p = e
         .home
@@ -1540,7 +1544,7 @@ async fn remote_source_downloads_then_serves_from_cache_and_reports_fetch_failur
     let files = walk(&e.home.lake());
     assert!(
         files.iter().any(|f| f.contains(
-            "nem/tradingprice/year=2024/month=01/public_dvd_tradingprice_202401010000-v2-"
+            "nem/tradingprice/year=2024/month=01/public_dvd_tradingprice_202401010000-v1-"
         )),
         "{files:?}"
     );

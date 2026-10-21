@@ -2,14 +2,15 @@
 //!
 //! A [`ShapeId`] is derived from that content and nothing else, so two
 //! files with the same id are the same shape whenever and wherever they
-//! were published, and a shape is never given an id by hand. Types are not
-//! part of it: what a column holds is observed from its values and recorded
-//! beside the shape (`file_model::shapes`), so a column that is empty in one
-//! month and full in the next is one shape, not two.
+//! were published, and a shape is never given an id by hand. The census of
+//! utilake-schemas gives every block it sees this id, from the same
+//! canonical bytes; utilake computes it from each block's header and
+//! records it with every file it writes (`utilake.shape_id`). Types are not
+//! part of it, so a column that is empty in one month and full in the next
+//! is one shape, not two.
 //!
 //! AEMO's version number is not part of the shape either: AEMO has
-//! published one column list under several versions and several under one,
-//! so the versions are recorded beside the id.
+//! published one column list under several versions and several under one.
 
 use std::fmt;
 
@@ -18,94 +19,6 @@ use serde::{Deserialize, Serialize};
 /// The generation of the canonical form. Any change to [`CanonicalShape::bytes`]
 /// changes every id, so it raises this number and is a breaking change.
 pub const SHAPE_FORMAT: u32 = 2;
-
-/// The class of type AEMO's control file of a month declares a column as:
-/// what kind of value it holds, not its length or precision. A declaration,
-/// recorded beside what the values were observed to be.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum TypeClass {
-    /// Text (`CHAR(n)`).
-    Varchar,
-    /// A number (`FLOAT EXTERNAL`, `DECIMAL EXTERNAL`).
-    Number,
-    /// A whole number (`INTEGER EXTERNAL`).
-    Integer,
-    /// A date without a time of day (`DATE "yyyy/mm/dd"`).
-    Date,
-    /// A date and time (`DATE "yyyy/mm/dd hh24:mi:ss"`, `TIMESTAMP`).
-    Timestamp,
-    /// No control file of the month names the column.
-    Unknown,
-}
-
-impl TypeClass {
-    /// Every class.
-    pub const ALL: [Self; 6] = [
-        Self::Varchar,
-        Self::Number,
-        Self::Integer,
-        Self::Date,
-        Self::Timestamp,
-        Self::Unknown,
-    ];
-
-    /// One letter per class, for compact census records.
-    pub const fn letter(self) -> char {
-        match self {
-            Self::Varchar => 'v',
-            Self::Number => 'n',
-            Self::Integer => 'i',
-            Self::Date => 'D',
-            Self::Timestamp => 't',
-            Self::Unknown => '?',
-        }
-    }
-
-    /// The class of a letter from [`TypeClass::letter`].
-    pub fn of_letter(c: char) -> Option<Self> {
-        Self::ALL.into_iter().find(|k| k.letter() == c)
-    }
-
-    /// The class's name in census and shapes files.
-    pub const fn as_str(self) -> &'static str {
-        match self {
-            Self::Varchar => "varchar",
-            Self::Number => "number",
-            Self::Integer => "integer",
-            Self::Date => "date",
-            Self::Timestamp => "timestamp",
-            Self::Unknown => "unknown",
-        }
-    }
-}
-
-impl fmt::Display for TypeClass {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.write_str(self.as_str())
-    }
-}
-
-/// Why a string is not a type class.
-#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[error("{0:?} is not a type class (varchar, number, integer, date, timestamp, unknown)")]
-pub struct TypeClassError(String);
-
-impl std::str::FromStr for TypeClass {
-    type Err = TypeClassError;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Ok(match s {
-            "varchar" => Self::Varchar,
-            "number" => Self::Number,
-            "integer" => Self::Integer,
-            "date" => Self::Date,
-            "timestamp" => Self::Timestamp,
-            "unknown" => Self::Unknown,
-            _ => return Err(TypeClassError(s.to_owned())),
-        })
-    }
-}
 
 /// A shape in its canonical form: names normalised as an I row's are
 /// (see [`normalize_name`](utilake_core::normalize_name)), in file order.
@@ -143,6 +56,15 @@ impl CanonicalShape {
             b.push(0x1E);
         }
         b
+    }
+
+    /// The shape of a block's header.
+    pub fn of(report_type: &str, report_subtype: &str, columns: &[&str]) -> Self {
+        Self {
+            report_type: report_type.to_owned(),
+            report_subtype: report_subtype.to_owned(),
+            columns: columns.iter().map(|c| (*c).to_owned()).collect(),
+        }
     }
 
     /// The shape's id.
@@ -249,11 +171,9 @@ mod tests {
         let json = serde_json::to_string(&id).unwrap();
         assert_eq!(serde_json::from_str::<ShapeId>(&json).unwrap(), id);
         assert!(serde_json::from_str::<ShapeId>("\"zz\"").is_err());
-        for c in TypeClass::ALL {
-            assert_eq!(c.to_string().parse::<TypeClass>().unwrap(), c);
-            assert_eq!(TypeClass::of_letter(c.letter()), Some(c));
-        }
-        assert_eq!(TypeClass::of_letter('x'), None);
-        assert!("float".parse::<TypeClass>().is_err());
+        assert_eq!(
+            CanonicalShape::of("DISPATCH", "UNIT_SCADA", &COLUMNS).id(),
+            id
+        );
     }
 }

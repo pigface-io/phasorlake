@@ -39,9 +39,9 @@ pub fn field(c: &Column, market: &MarketDef) -> Field {
     Field::new(&c.name, c.ty.arrow(market), c.nullable).with_metadata(md)
 }
 
-/// The lake schema of a table: every column it ever had, in lake order,
-/// each with its id as `PARQUET:field_id`. Files of every increment share
-/// it; a file that lacks a column writes nulls.
+/// The lake schema of a table: every column it ever had, by id, each with
+/// its id as `PARQUET:field_id`. Files of every schema share it; a file
+/// that lacks a column writes nulls.
 pub fn lake_schema(t: &Table, market: &MarketDef) -> SchemaRef {
     let fields: Vec<Field> = t.columns.iter().map(|c| field(c, market)).collect();
     let md: HashMap<String, String> = [

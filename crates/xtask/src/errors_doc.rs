@@ -15,7 +15,7 @@ const CATEGORIES: [&str; 12] = [
 
 /// Codes that are no longer raised. A code is a promise to whoever matches
 /// on it, so a retired one stays listed and may never be given a new meaning.
-const RETIRED: [(&str, &str); 19] = [
+const RETIRED: [(&str, &str); 20] = [
     (
         "listing.era_unsupported",
         "months before 2024 could not be listed; every archive month is now readable and a month the archive does not publish is `listing.month_missing`",
@@ -55,6 +55,10 @@ const RETIRED: [(&str, &str); 19] = [
     (
         "schema.census_unresolved",
         "a census shape neither declared nor read by a rule; now `schema.census_deviates`",
+    ),
+    (
+        "schema.breaking_change",
+        "a table file changed in a way the lake does not survive; tables come from the histories utilake-schemas publishes, which hold their own changes",
     ),
     (
         "config.mirror_root",

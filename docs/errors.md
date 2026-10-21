@@ -84,7 +84,6 @@ Every error and warning utilake reports carries one of these codes. Codes are st
 | code | raised in |
 |---|---|
 | `schema.blob_corrupt` | `crates/utilake-mms-registry/src/file_model/error.rs` |
-| `schema.breaking_change` | `crates/utilake-mms-registry/src/file_model/error.rs` |
 | `schema.deviates` | `crates/utilake-mms-registry/src/error.rs` |
 | `schema.file_invalid` | `crates/utilake-mms-registry/src/file_model/error.rs` |
 | `schema.file_parse` | `crates/utilake-mms-registry/src/file_model/error.rs` |
@@ -153,6 +152,7 @@ No longer raised; kept so the code is never reused.
 | `schema.decimal_fallback` | decimal mode read a column without precision as a float; decimal mode is gone and every number is a double |
 | `schema.rule_conflict` | a hand-written rule routed a column the file also carried; rules are gone, fixes go in an increment's columns |
 | `schema.census_unresolved` | a census shape neither declared nor read by a rule; now `schema.census_deviates` |
+| `schema.breaking_change` | a table file changed in a way the lake does not survive; tables come from the histories utilake-schemas publishes, which hold their own changes |
 | `config.mirror_root` | raised by the mirror of nemweb's archive folders, which moved to nemweb-mirror (github.com/g0itb4/nemweb-mirror) |
 | `listing.unparsed_line` | raised by the mirror of nemweb's archive folders, which moved to nemweb-mirror (github.com/g0itb4/nemweb-mirror) |
 | `mirror.crawl_incomplete` | raised by the mirror of nemweb's archive folders, which moved to nemweb-mirror (github.com/g0itb4/nemweb-mirror) |

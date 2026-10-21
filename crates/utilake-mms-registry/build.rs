@@ -1,9 +1,11 @@
-//! Validates `schemas/` and packs it into `$OUT_DIR/registry.bin`, and the
-//! census's shapes into `$OUT_DIR/shapes.bin` and each table's Iceberg
-//! history into `$OUT_DIR/iceberg.bin`.
+//! Validates `schemas/` and packs it into `$OUT_DIR/registry.bin`: the
+//! market files, and the tables, the NEM ones from the copy of
+//! utilake-schemas' histories under `schemas/nem/pulled/`.
 //!
-//! A schema file that breaks an invariant fails the build with the issue
-//! list, so no binary ever ships a registry the validator rejects.
+//! A table that breaks an invariant fails the build with the issue list,
+//! so no binary ever ships a registry the validator rejects. That the copy
+//! is the one its manifest names, at the commit `Cargo.lock` pins, is
+//! `just schemas-check`'s to prove.
 
 use std::path::{Path, PathBuf};
 
@@ -14,9 +16,6 @@ use std::path::{Path, PathBuf};
 #[allow(dead_code, unused_imports)]
 #[path = "src/file_model/mod.rs"]
 mod file_model;
-#[allow(dead_code, unused_imports)]
-#[path = "src/shape.rs"]
-mod shape;
 
 use file_model::blob::SchemaSet;
 
@@ -54,6 +53,4 @@ fn main() {
     }
     let out_dir = PathBuf::from(std::env::var("OUT_DIR").expect("cargo sets OUT_DIR"));
     std::fs::write(out_dir.join("registry.bin"), set.encode()).expect("write registry.bin");
-    std::fs::write(out_dir.join("shapes.bin"), set.encode_shapes()).expect("write shapes.bin");
-    std::fs::write(out_dir.join("iceberg.bin"), set.encode_histories()).expect("write iceberg.bin");
 }

@@ -303,7 +303,7 @@ impl BlockSink for LakeSink<'_> {
         transform: &Arc<Transform>,
         status: &str,
     ) {
-        // Two column lists of one increment are two shapes, read by two
+        // Two column lists read against one schema are two shapes, read by two
         // plans: each is a result of its own.
         let idx = match self.results.iter().position(|r| {
             r.table == table.name && r.version == version && r.fingerprint == fingerprint

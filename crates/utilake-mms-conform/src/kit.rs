@@ -33,15 +33,12 @@ impl MmsDecoder {
     }
 }
 
-/// The census ids of a shape as recorded with an ingest: comma-separated,
-/// `None` when the census has not seen it.
-fn shape_id(ids: &[utilake_mms_registry::ShapeId]) -> Option<String> {
-    (!ids.is_empty()).then(|| {
-        ids.iter()
-            .map(ToString::to_string)
-            .collect::<Vec<_>>()
-            .join(",")
-    })
+/// The census's id of a block's shape, from its header: the same
+/// canonical bytes the census gives every block it sees.
+fn shape_id(irow: &IRow<'_>) -> String {
+    utilake_mms_registry::CanonicalShape::of(irow.report_type, irow.report_subtype, irow.columns)
+        .id()
+        .to_string()
 }
 
 fn load_mode(m: utilake_mms_registry::LoadMode) -> LoadMode {
@@ -102,7 +99,7 @@ impl BatchSink for Bridge<'_> {
             plan_hash: resolved.plan_hash().to_string(),
             schema_source: resolved.source.label().to_owned(),
             resolution: resolved.label().to_owned(),
-            shape_id: shape_id(&registry.shape_ids(irow, self.period)),
+            shape_id: Some(shape_id(irow)),
             schema_id: resolved.schema,
         });
         self.out.block_started(
@@ -282,7 +279,8 @@ impl Catalog for MmsCatalog {
                 version: t.source_version,
                 columns: &columns,
             };
-            // The month the source was read as: it decides the increment.
+            // The month the source was read as: it picks among the runs
+            // of the table's history that fit the block.
             let period = t.source_period.as_deref().and_then(|p| p.parse().ok());
             self.registry
                 .resolve_in(

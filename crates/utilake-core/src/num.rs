@@ -96,8 +96,9 @@ pub fn parse_i64(s: &[u8]) -> Result<i64, NumberError> {
 ///
 /// `123.45` with scale 5 becomes `12_345_000`. Fewer fractional digits than
 /// the scale are padded; more are an error (never rounded, so the lake holds
-/// exactly what AEMO published or refuses the row). Exponent forms are not
-/// decimals; callers wanting them use `parse_f64`.
+/// exactly what AEMO published or refuses the row). AEMO writes a few small
+/// numbers in exponent form (`-3E-05`); such a value is read exactly too,
+/// when the column's scale holds it.
 pub fn parse_decimal(s: &[u8], precision: u8, scale: u8) -> Result<i128, NumberError> {
     let (neg, body) = match s.first() {
         Some(b'-') => (true, &s[1..]),
@@ -115,6 +116,9 @@ pub fn parse_decimal(s: &[u8], precision: u8, scale: u8) -> Result<i128, NumberE
         // Trailing zeros beyond the scale carry no information; only
         // significant extra digits are an error.
         if frac[usize::from(scale)..].iter().any(|&b| b != b'0') {
+            if frac.iter().any(|&b| b == b'e' || b == b'E') {
+                return exponent_form(s, precision, scale);
+            }
             return Err(NumberError::DecimalScale {
                 scale,
                 seen: frac.len().min(255) as u8,
@@ -127,7 +131,7 @@ pub fn parse_decimal(s: &[u8], precision: u8, scale: u8) -> Result<i128, NumberE
     for &b in int.iter().chain(frac) {
         let d = b.wrapping_sub(b'0');
         if d >= 10 {
-            return Err(NumberError::DecimalShape);
+            return exponent_form(s, precision, scale);
         }
         if v != 0 || d != 0 {
             digits += 1;
@@ -137,6 +141,93 @@ pub fn parse_decimal(s: &[u8], precision: u8, scale: u8) -> Result<i128, NumberE
     let pad = u32::from(scale) - frac.len() as u32;
     digits += pad;
     v *= 10i128.pow(pad);
+    if digits > u32::from(precision) {
+        return Err(NumberError::DecimalOverflow);
+    }
+    Ok(if neg { -v } else { v })
+}
+
+/// The digits of `s` as one integer, and how many of them there are.
+fn digits_of(s: &[u8]) -> Option<(i128, u32)> {
+    let mut v: i128 = 0;
+    for &b in s {
+        let d = b.wrapping_sub(b'0');
+        if d >= 10 {
+            return None;
+        }
+        v = v.checked_mul(10)?.checked_add(i128::from(d))?;
+    }
+    Some((v, s.len() as u32))
+}
+
+/// A decimal written `<mantissa>E<exponent>`, as `-3E-05`: exact, or an
+/// error as [`parse_decimal`] gives one. Off the hot path: only a field
+/// that is not plain digits comes here.
+#[cold]
+fn exponent_form(s: &[u8], precision: u8, scale: u8) -> Result<i128, NumberError> {
+    let Some(e) = s.iter().position(|&b| b == b'e' || b == b'E') else {
+        return Err(NumberError::DecimalShape);
+    };
+    let (mantissa, exponent) = (&s[..e], &s[e + 1..]);
+    let (neg, body) = match mantissa.first() {
+        Some(b'-') => (true, &mantissa[1..]),
+        Some(b'+') => (false, &mantissa[1..]),
+        _ => (false, mantissa),
+    };
+    let (int, frac) = match memchr::memchr(b'.', body) {
+        Some(i) => (&body[..i], &body[i + 1..]),
+        None => (body, &body[body.len()..]),
+    };
+    let exp: i32 = match exponent.first() {
+        Some(b'-' | b'+') if exponent.len() > 1 => std::str::from_utf8(exponent)
+            .ok()
+            .and_then(|t| t.parse().ok()),
+        Some(b'0'..=b'9') => std::str::from_utf8(exponent)
+            .ok()
+            .and_then(|t| t.parse().ok()),
+        _ => None,
+    }
+    .filter(|e: &i32| e.abs() <= 76)
+    .ok_or(NumberError::DecimalShape)?;
+    if int.is_empty() && frac.is_empty() {
+        return Err(NumberError::DecimalShape);
+    }
+    let ((i, _), (f, n)) = (
+        digits_of(int).ok_or(NumberError::DecimalShape)?,
+        digits_of(frac).ok_or(NumberError::DecimalShape)?,
+    );
+    let ten = |k: u32| 10i128.checked_pow(k).ok_or(NumberError::DecimalOverflow);
+    let mut v = i
+        .checked_mul(ten(n)?)
+        .and_then(|v| v.checked_add(f))
+        .ok_or(NumberError::DecimalOverflow)?;
+    // `v` has `n - exp` fractional digits; the column has `scale`.
+    let shift = i64::from(scale) - (i64::from(n) - i64::from(exp));
+    if shift >= 0 {
+        v = v
+            .checked_mul(ten(
+                u32::try_from(shift).map_err(|_| NumberError::DecimalOverflow)?
+            )?)
+            .ok_or(NumberError::DecimalOverflow)?;
+    } else {
+        let d = ten(u32::try_from(-shift).map_err(|_| NumberError::DecimalOverflow)?);
+        match d {
+            Ok(d) if v % d == 0 => v /= d,
+            _ if v == 0 => {}
+            _ => {
+                return Err(NumberError::DecimalScale {
+                    scale,
+                    seen: (i64::from(scale) - shift).clamp(0, 255) as u8,
+                });
+            }
+        }
+    }
+    let mut digits = 0u32;
+    let mut rest = v;
+    while rest != 0 {
+        digits += 1;
+        rest /= 10;
+    }
     if digits > u32::from(precision) {
         return Err(NumberError::DecimalOverflow);
     }
@@ -193,7 +284,47 @@ mod tests {
         );
         assert_eq!(parse_decimal(b"", 15, 2), Err(NumberError::DecimalShape));
         assert_eq!(parse_decimal(b".", 15, 2), Err(NumberError::DecimalShape));
-        assert_eq!(parse_decimal(b"1e5", 15, 2), Err(NumberError::DecimalShape));
+        // Exponent forms, exactly, when the scale holds them.
+        assert_eq!(parse_decimal(b"1e5", 15, 2).unwrap(), 10_000_000);
+        assert_eq!(parse_decimal(b"-3E-05", 15, 5).unwrap(), -3);
+        assert_eq!(parse_decimal(b"+1.5E-04", 15, 5).unwrap(), 15);
+        assert_eq!(parse_decimal(b"2.50E+1", 15, 2).unwrap(), 2_500);
+        assert_eq!(parse_decimal(b"0E-30", 15, 2).unwrap(), 0);
+        assert_eq!(
+            parse_decimal(b"1E-06", 15, 5),
+            Err(NumberError::DecimalScale { scale: 5, seen: 6 })
+        );
+        assert_eq!(
+            parse_decimal(b"1E20", 15, 2),
+            Err(NumberError::DecimalOverflow)
+        );
+        assert_eq!(
+            parse_decimal(b"1E80", 15, 2),
+            Err(NumberError::DecimalShape)
+        );
+        assert_eq!(
+            parse_decimal(b"1E-90", 15, 2),
+            Err(NumberError::DecimalShape)
+        );
+        assert_eq!(
+            parse_decimal(b"9E70", 38, 0),
+            Err(NumberError::DecimalOverflow)
+        );
+        assert_eq!(
+            parse_decimal(b"1E-70", 38, 0),
+            Err(NumberError::DecimalScale { scale: 0, seen: 70 })
+        );
+        for bad in [&b"E5"[..], b"1E", b"1E-", b"1Ex", b"1xE5", b"1.xE5", b"abc"] {
+            assert_eq!(
+                parse_decimal(bad, 15, 2),
+                Err(NumberError::DecimalShape),
+                "{bad:?}"
+            );
+        }
+        assert_eq!(
+            parse_decimal(b"1.11111111111111111111111111111111111111111E0", 38, 2),
+            Err(NumberError::DecimalShape)
+        );
         assert_eq!(
             parse_decimal(b"1234", 5, 2),
             Err(NumberError::DecimalOverflow)

@@ -16,15 +16,15 @@ repo = "builtin"
 hooks = [
     # Files kept byte for byte: AEMO's fixtures, the tables pulled from
     # utilake-schemas (whose manifest holds their hashes), and references.
-    { id = "trailing-whitespace", exclude = '^(testdata/|schemas/.*/ctl/|schemas/nem/pulled/|reference/)' },
-    { id = "end-of-file-fixer", exclude = '^(testdata/|schemas/.*/ctl/|schemas/nem/pulled/|reference/)' },
+    { id = "trailing-whitespace", exclude = '^(testdata/|schemas/nem/pulled/|reference/)' },
+    { id = "end-of-file-fixer", exclude = '^(testdata/|schemas/nem/pulled/|reference/)' },
     { id = "check-yaml" },
     { id = "check-toml" },
     { id = "check-json" },
     { id = "check-merge-conflict" },
-    # The data-model JSON fixture, the data-model release records and the
-    # pulled tables are large; everything else is small.
-    { id = "check-added-large-files", args = ["--maxkb=200"], exclude = '^(testdata/bootstrap/datamodel/|schemas/nem/models/|schemas/nem/pulled/)' },
+    # The data-model JSON fixture and the pulled tables are large;
+    # everything else is small.
+    { id = "check-added-large-files", args = ["--maxkb=200"], exclude = '^(testdata/bootstrap/datamodel/|schemas/nem/pulled/)' },
     # ── Secrets (first line of defence; gitleaks is below) ──
     { id = "detect-private-key" },
 ]
@@ -121,15 +121,6 @@ language = "system"
 entry = "just bench-fast"
 stages = ["pre-push"]
 files = '^(crates/utilake-(core|kit|mms-decode|mms-conform|mms-registry|writer)/|bench/budgets\.json$)'
-pass_filenames = false
-
-[[repos.hooks]]
-id = "schema-compat"
-name = "schemas: no breaking change against the base branch"
-language = "system"
-entry = "just schema-compat"
-stages = ["pre-push"]
-files = '^schemas/'
 pass_filenames = false
 
 [[repos.hooks]]

@@ -11,8 +11,8 @@
 //!   file, entry), and each run of outputs under one schema and one AEMO
 //!   version is one snapshot, with that schema current; its summary names
 //!   the run's first and last source file, its months and its version;
-//! - an output whose block had no schema of the history (a column list the
-//!   census has not folded) is written under the table's last schema, and
+//! - an output whose block had no schema of the history (a column list no
+//!   run of it fits) is written under the table's last schema, and
 //!   its snapshot says so (`utilake.schema=latest`): a reader takes its
 //!   columns by field id all the same.
 //!

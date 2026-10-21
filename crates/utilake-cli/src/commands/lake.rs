@@ -260,7 +260,10 @@ pub async fn iceberg(ctx: &Context, table: Option<&str>) -> Result<i32> {
     let mut rows = Vec::new();
     let mut code = 0;
     for (name, outs) in by_table {
-        let (Some(id), Some(h)) = (r.table_by_name(name), r.histories().get(name)) else {
+        let Some((id, h)) = r
+            .table_by_name(name)
+            .and_then(|id| Some((id, r.history(id)?)))
+        else {
             rows.push(vec![
                 name.to_owned(),
                 "-".into(),
@@ -273,7 +276,7 @@ pub async fn iceberg(ctx: &Context, table: Option<&str>) -> Result<i32> {
         let t = utilake_writer::iceberg::TableSchemas {
             table: name.to_owned(),
             uuid: utilake_writer::iceberg::table_uuid(name),
-            schemas: h.iceberg_schemas(),
+            schemas: h.schemas.clone(),
         };
         let dir = ctx
             .home
@@ -329,10 +332,9 @@ pub async fn sql(
         .table_by_name(table)
         .ok_or_else(|| anyhow::anyhow!("no table {table}"))?;
     let h = r
-        .histories()
-        .get(table)
-        .ok_or_else(|| anyhow::anyhow!("table {table} has no history; fold the census first"))?;
-    let schemas = h.iceberg_schemas();
+        .history(id)
+        .ok_or_else(|| anyhow::anyhow!("table {table} has no history"))?;
+    let schemas = h.schemas.clone();
     let latest = schemas.iter().map(|s| s.schema_id).max().unwrap_or(0);
     let (manifest, thread) = ctx.manifest()?;
     let outputs = manifest

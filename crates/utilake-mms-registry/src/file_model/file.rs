@@ -1,16 +1,17 @@
-//! Reading and writing `schemas/{market}/{TABLE}/table.toml` and
-//! `schemas/{market}/market.toml`.
+//! Reading and writing a hand-written table, `{TABLE}/table.toml` in a
+//! user's own schemas, and `schemas/{market}/market.toml`.
 //!
-//! The file is ours and hand-editable: top-level scalars, one line per
-//! column (`column = [{ id = 1, name = "…", type = "double", nullable =
-//! true }, …]`; `[[column]]` tables read the same) and one `[[increment]]`
-//! per control file AEMO changed, and the table's time roles under
-//! `[temporal]`. Unknown keys are errors. Writing is deterministic, so a
-//! file that changes nothing is byte-identical.
-//!
-//! Format 2 had a `dedupe` key instead of `[temporal]`; such a file (a
-//! user's own table written before) still reads, with its roles derived,
-//! and is written back as format 3.
+//! The registry's NEM tables are the ones utilake-schemas publishes
+//! ([`mod@crate::file_model::doc`]); a hand-written table says the same in
+//! TOML: top-level scalars, one line per column (`column = [{ id = 1,
+//! name = "…", type = "double", nullable = true }, …]`; `[[column]]` tables
+//! read the same), the time roles under `[temporal]`, and one `[[schema]]`
+//! per column list its files carry, with the AEMO versions they come under
+//! and the month they start. The schemas become the table's history: one
+//! run per schema, report pair and version. Unknown keys are errors.
+//! Writing is deterministic, so a file that changes nothing is
+//! byte-identical, and `utilake schema show` writes any table, a pulled one
+//! included, in this form.
 
 use std::fmt::Write as _;
 use std::path::Path;
@@ -20,33 +21,22 @@ use utilake_core::{YearMonth, normalize_name};
 
 use crate::file_model::error::SchemaFileError;
 use crate::file_model::model::{
-    Column, ColumnId, Increment, LakeType, LoadMode, Market, MarketDef, Table, TimestampFormat,
+    Column, ColumnId, LakeType, LoadMode, Market, MarketDef, Run, Table, TableSchema,
+    TimestampFormat,
 };
-use crate::file_model::temporal::{RoleOrigin, Temporal, ValidAxis, derive};
+use crate::file_model::temporal::{RoleOrigin, Temporal, ValidAxis};
 
 /// The format of `table.toml` this crate reads and writes.
-pub const SCHEMA_FORMAT: u32 = 3;
-
-/// The format before `[temporal]`, still read.
-const SCHEMA_FORMAT_DEDUPE: u32 = 2;
-
-/// Format 2's `dedupe`, read and dropped: `[temporal]` says it now.
-#[derive(Deserialize)]
-#[serde(rename_all = "snake_case")]
-enum LegacyDedupe {
-    None,
-    Pk,
-    PkLastchanged,
-}
+pub const SCHEMA_FORMAT: u32 = 4;
 
 /// The format of `market.toml`.
 pub const MARKET_FORMAT: u32 = 1;
 
-/// The name of a table's file in its directory.
+/// The name of a hand-written table's file in its directory.
 pub const TABLE_FILE: &str = "table.toml";
 
-/// The directory of a table's control files, beside `table.toml`.
-pub const CTL_DIR: &str = "ctl";
+/// The month a schema with no `from` applies from: the NEM's first.
+pub const NEM_START: (i32, u8) = (1998, 12);
 
 const fn default_true() -> bool {
     true
@@ -55,7 +45,9 @@ const fn default_true() -> bool {
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 struct TableFile {
-    schema_format: u32,
+    /// Read first, by [`FormatOnly`].
+    #[serde(rename = "schema_format")]
+    _schema_format: u32,
     name: String,
     #[serde(default)]
     description: Option<String>,
@@ -63,24 +55,28 @@ struct TableFile {
     report_pairs: Vec<(String, String)>,
     load_mode: LoadMode,
     #[serde(default)]
-    dedupe: Option<LegacyDedupe>,
-    #[serde(default)]
     primary_key: Vec<String>,
     #[serde(default)]
     time_column: Option<String>,
-    next_column_id: u32,
     #[serde(default)]
     column: Vec<ColumnFile>,
+    temporal: TemporalFile,
     #[serde(default)]
-    increment: Vec<IncrementFile>,
+    schema: Vec<SchemaFile>,
+}
+
+/// The format of a file, read before the rest so an older one is named.
+#[derive(Deserialize)]
+struct FormatOnly {
+    schema_format: u32,
     #[serde(default)]
-    temporal: Option<TemporalFile>,
+    name: String,
 }
 
 /// `valid = { kind = "from", column = "EFFECTIVEDATE" }`.
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
-struct ValidFile {
+pub(crate) struct ValidFile {
     kind: ValidKind,
     #[serde(default)]
     column: Option<String>,
@@ -110,9 +106,10 @@ impl ValidFile {
     }
 }
 
+/// A table's roles as a file says them, here and in a pulled table.
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
-struct TemporalFile {
+pub(crate) struct TemporalFile {
     origin: RoleOrigin,
     #[serde(default)]
     entity: Vec<String>,
@@ -121,6 +118,19 @@ struct TemporalFile {
     order: Vec<String>,
     #[serde(default)]
     cutoff: Option<String>,
+}
+
+impl TemporalFile {
+    /// The roles, or why the valid axis is not one.
+    pub(crate) fn roles(self) -> Result<Temporal<String>, &'static str> {
+        Ok(Temporal {
+            origin: self.origin,
+            entity: self.entity,
+            valid: self.valid.axis()?,
+            order: self.order,
+            cutoff: self.cutoff,
+        })
+    }
 }
 
 #[derive(Deserialize)]
@@ -138,20 +148,12 @@ struct ColumnFile {
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
-struct IncrementFile {
-    n: u16,
-    from: YearMonth,
+struct SchemaFile {
+    id: u16,
     #[serde(default)]
-    ctl: Option<String>,
-    #[serde(default)]
-    ctl_sha256: Option<String>,
-    #[serde(default)]
-    aemo_ctl: Option<String>,
-    #[serde(default)]
-    aemo_versions: Vec<u16>,
+    from: Option<YearMonth>,
+    versions: Vec<u16>,
     columns: Vec<String>,
-    #[serde(default)]
-    note: Option<String>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -182,7 +184,7 @@ fn wrong_format(path: &Path, name: &str, found: u32, reads: u32) -> SchemaFileEr
 }
 
 /// A name as an I row writes it: upper case, unquoted.
-fn norm(s: &mut String, buf: &mut String) {
+pub(crate) fn norm(s: &mut String, buf: &mut String) {
     if let Some(n) = normalize_name(s, buf)
         && n != s.as_str()
     {
@@ -193,109 +195,130 @@ fn norm(s: &mut String, buf: &mut String) {
 /// Parses a table file's text. Names are normalised, so a hand-typed
 /// lower-case name still matches an I row.
 pub fn parse_table(path: &Path, text: &str, market: Market) -> Result<Table, SchemaFileError> {
-    let f: TableFile = toml::from_str(text).map_err(|e| parse_err(path, text, &e))?;
-    let invalid = |message: &str| SchemaFileError::Invalid {
+    let format: FormatOnly = toml::from_str(text).map_err(|e| parse_err(path, text, &e))?;
+    let invalid = |message: String| SchemaFileError::Invalid {
         path: path.display().to_string(),
-        table: f.name.clone(),
-        message: message.to_owned(),
+        table: format.name.clone(),
+        message,
     };
-    match (f.schema_format, &f.dedupe, &f.temporal) {
-        (SCHEMA_FORMAT, None, Some(_)) | (SCHEMA_FORMAT_DEDUPE, Some(_), None) => {}
-        (SCHEMA_FORMAT, Some(_), _) => {
-            return Err(invalid(
-                "dedupe is format 2; format 3 says it under [temporal]",
-            ));
+    match format.schema_format {
+        SCHEMA_FORMAT => {}
+        2 | 3 => {
+            return Err(invalid(format!(
+                "schema_format is {}: its [[increment]] lists are gone; write schema_format = {SCHEMA_FORMAT} with one [[schema]] (id, versions, columns, optionally from) per column list the files carry",
+                format.schema_format
+            )));
         }
-        (SCHEMA_FORMAT, None, None) => return Err(invalid("[temporal] is missing")),
-        (SCHEMA_FORMAT_DEDUPE, _, _) => {
-            return Err(invalid(
-                "format 2 has dedupe and no [temporal]; write it as schema_format = 3",
-            ));
-        }
-        (found, _, _) => return Err(wrong_format(path, &f.name, found, SCHEMA_FORMAT)),
+        found => return Err(wrong_format(path, &format.name, found, SCHEMA_FORMAT)),
     }
-    let roles = match f.temporal {
-        Some(r) => Some(Temporal {
-            origin: r.origin,
-            entity: r.entity,
-            valid: r.valid.axis().map_err(invalid)?,
-            order: r.order,
-            cutoff: r.cutoff,
-        }),
-        None => None,
-    };
+    let f: TableFile = toml::from_str(text).map_err(|e| parse_err(path, text, &e))?;
+    let mut temporal = f.temporal.roles().map_err(|m| invalid(m.to_owned()))?;
     let mut buf = String::new();
-    let mut t = Table {
-        market,
-        name: f.name,
-        description: f.description,
-        report_pairs: f.report_pairs,
-        load_mode: f.load_mode,
-        // Format 2: derived below, once the names are normalised.
-        temporal: roles.unwrap_or(Temporal {
-            origin: RoleOrigin::Derived,
-            entity: Vec::new(),
-            valid: ValidAxis::Timeless,
-            order: Vec::new(),
-            cutoff: None,
-        }),
-        primary_key: f.primary_key,
-        time_column: f.time_column,
-        next_column_id: f.next_column_id,
-        columns: f
-            .column
-            .into_iter()
-            .map(|c| Column {
-                id: ColumnId(c.id),
-                name: c.name,
-                ty: c.ty,
-                nullable: c.nullable,
-                note: c.note,
-            })
-            .collect(),
-        increments: f
-            .increment
-            .into_iter()
-            .map(|i| Increment {
-                n: i.n,
-                from: i.from,
-                ctl: i.ctl,
-                ctl_sha256: i.ctl_sha256,
-                aemo_ctl: i.aemo_ctl,
-                aemo_versions: i.aemo_versions,
-                columns: i.columns,
-                note: i.note,
-            })
-            .collect(),
-    };
-    norm(&mut t.name, &mut buf);
-    for (a, b) in &mut t.report_pairs {
+    let mut name = f.name;
+    norm(&mut name, &mut buf);
+    let mut report_pairs = f.report_pairs;
+    for (a, b) in &mut report_pairs {
         norm(a, &mut buf);
         norm(b, &mut buf);
     }
-    t.primary_key.iter_mut().for_each(|k| norm(k, &mut buf));
-    if let Some(tc) = &mut t.time_column {
+    let mut primary_key = f.primary_key;
+    primary_key.iter_mut().for_each(|k| norm(k, &mut buf));
+    let mut time_column = f.time_column;
+    if let Some(tc) = &mut time_column {
         norm(tc, &mut buf);
     }
-    t.columns
+    let mut columns: Vec<Column> = f
+        .column
+        .into_iter()
+        .map(|c| {
+            let mut name = c.name;
+            norm(&mut name, &mut buf);
+            Column {
+                id: ColumnId(c.id),
+                name,
+                ty: c.ty,
+                nullable: c.nullable,
+                note: c.note,
+            }
+        })
+        .collect();
+    columns.sort_by_key(|c| c.id);
+    for n in temporal
+        .entity
         .iter_mut()
-        .for_each(|c| norm(&mut c.name, &mut buf));
-    for i in &mut t.increments {
-        i.columns.iter_mut().for_each(|c| norm(c, &mut buf));
+        .chain(&mut temporal.order)
+        .chain(&mut temporal.cutoff)
+    {
+        norm(n, &mut buf);
     }
-    if f.schema_format == SCHEMA_FORMAT_DEDUPE {
-        t.temporal = derive(&t.primary_key, &t.columns);
-    } else {
-        let r = &mut t.temporal;
-        for n in r.entity.iter_mut().chain(&mut r.order).chain(&mut r.cutoff) {
-            norm(n, &mut buf);
+    temporal.valid = std::mem::replace(&mut temporal.valid, ValidAxis::Timeless).map(|mut n| {
+        norm(&mut n, &mut buf);
+        n
+    });
+    let id_of = |n: &str| columns.iter().find(|c| c.name == n);
+    let mut schemas = Vec::with_capacity(f.schema.len());
+    let mut runs = Vec::new();
+    for s in f.schema {
+        if s.versions.is_empty() {
+            return Err(invalid(format!(
+                "schema {} lists no versions; name the AEMO versions its files come under",
+                s.id
+            )));
         }
-        r.valid = std::mem::replace(&mut r.valid, ValidAxis::Timeless).map(|mut n| {
-            norm(&mut n, &mut buf);
-            n
+        let mut fields = Vec::with_capacity(s.columns.len());
+        for mut c in s.columns {
+            norm(&mut c, &mut buf);
+            let Some(col) = id_of(&c) else {
+                return Err(invalid(format!(
+                    "schema {} lists column {c}, which is not a column; add it to column",
+                    s.id
+                )));
+            };
+            fields.push((col.id, !col.nullable));
+        }
+        let key = primary_key
+            .iter()
+            .filter_map(|k| id_of(k))
+            .map(|c| c.id)
+            .filter(|id| fields.iter().any(|(f, _)| f == id))
+            .collect();
+        let from = s
+            .from
+            .unwrap_or_else(|| YearMonth::new(NEM_START.0, NEM_START.1).expect("a month"));
+        for (a, b) in &report_pairs {
+            for v in &s.versions {
+                runs.push(Run {
+                    schema: s.id,
+                    report: (a.clone(), b.clone()),
+                    version: *v,
+                    kinds: Vec::new(),
+                    from,
+                    to: from,
+                    files: 0,
+                    rows: 0,
+                });
+            }
+        }
+        schemas.push(TableSchema {
+            id: s.id,
+            fields,
+            key,
         });
     }
-    Ok(t)
+    runs.sort_by_key(|r| r.from);
+    Ok(Table {
+        market,
+        name,
+        description: f.description,
+        report_pairs,
+        load_mode: f.load_mode,
+        temporal,
+        primary_key,
+        time_column,
+        columns,
+        schemas,
+        runs,
+    })
 }
 
 /// Reads `{dir}/table.toml`.
@@ -319,10 +342,11 @@ fn inline<T: AsRef<str>>(items: &[T]) -> String {
     format!("[{}]", parts.join(", "))
 }
 
-/// Renders a table as TOML, deterministically.
+/// Renders a table as TOML, deterministically: each schema with the month
+/// its first run starts and the versions of its runs.
 pub fn write_table(t: &Table) -> String {
     let mut out = format!(
-        "# Our schema of {}. Hand edits are welcome; `utilake-nem-census sync` only appends increments and columns.\nschema_format = {SCHEMA_FORMAT}\nname = {}\n",
+        "# The table {}, written by hand or by `utilake schema show`.\nschema_format = {SCHEMA_FORMAT}\nname = {}\n",
         t.name,
         q(&t.name)
     );
@@ -344,7 +368,6 @@ pub fn write_table(t: &Table) -> String {
     if let Some(tc) = &t.time_column {
         let _ = writeln!(out, "time_column = {}", q(tc));
     }
-    let _ = writeln!(out, "next_column_id = {}", t.next_column_id);
     out.push_str("\ncolumn = [\n");
     for c in &t.columns {
         let _ = write!(
@@ -362,27 +385,22 @@ pub fn write_table(t: &Table) -> String {
     }
     out.push_str("]\n");
     write_temporal(&mut out, &t.temporal);
-    for i in &t.increments {
-        let _ = write!(out, "\n[[increment]]\nn = {}\nfrom = \"{}\"\n", i.n, i.from);
-        for (key, value) in [
-            ("ctl", &i.ctl),
-            ("ctl_sha256", &i.ctl_sha256),
-            ("aemo_ctl", &i.aemo_ctl),
-        ] {
-            if let Some(v) = value {
-                let _ = writeln!(out, "{key} = {}", q(v));
-            }
+    for s in &t.schemas {
+        let runs = || t.runs.iter().filter(|r| r.schema == s.id);
+        let _ = write!(out, "\n[[schema]]\nid = {}\n", s.id);
+        if let Some(from) = runs().map(|r| r.from).min() {
+            let _ = writeln!(out, "from = \"{from}\"");
         }
-        let versions: Vec<String> = i.aemo_versions.iter().map(u16::to_string).collect();
-        let _ = writeln!(out, "aemo_versions = [{}]", versions.join(", "));
+        let mut versions: Vec<u16> = runs().map(|r| r.version).collect();
+        versions.sort_unstable();
+        versions.dedup();
+        let versions: Vec<String> = versions.iter().map(u16::to_string).collect();
+        let _ = writeln!(out, "versions = [{}]", versions.join(", "));
         out.push_str("columns = [\n");
-        for c in &i.columns {
+        for c in t.schema_columns(s) {
             let _ = writeln!(out, "    {},", q(c));
         }
         out.push_str("]\n");
-        if let Some(n) = &i.note {
-            let _ = writeln!(out, "note = {}", q(n));
-        }
     }
     out
 }
@@ -406,11 +424,6 @@ fn write_temporal(out: &mut String, r: &Temporal<String>) {
     if let Some(c) = &r.cutoff {
         let _ = writeln!(out, "cutoff = {}", q(c));
     }
-}
-
-/// The control file of increment `n`'s name in the `ctl/` directory.
-pub fn ctl_file_name(n: u16) -> String {
-    format!("{n:03}.ctl")
 }
 
 /// Parses a market file's text.
@@ -460,10 +473,22 @@ mod tests {
         parse_table(Path::new("table.toml"), text, Market::Nem)
     }
 
+    /// The fixture as a hand-written file says it: one run per schema,
+    /// from the month its first run starts.
+    fn as_written() -> Table {
+        let mut t = unit_scada();
+        for r in &mut t.runs {
+            r.to = r.from;
+            r.kinds.clear();
+            (r.files, r.rows) = (0, 0);
+        }
+        t
+    }
+
     #[test]
     fn round_trips_and_is_deterministic() {
-        let t = unit_scada();
-        let text = write_table(&t);
+        let t = as_written();
+        let text = write_table(&unit_scada());
         assert!(
             text.contains(
                 "    { id = 3, name = \"SCADAVALUE\", type = \"double\", nullable = true },\n"
@@ -471,10 +496,13 @@ mod tests {
             "{text}"
         );
         assert!(text.contains("report_pairs = [[\"DISPATCH\", \"UNIT_SCADA\"]]"));
-        assert!(text.contains("\n[[increment]]\nn = 2\nfrom = \"2026-08\"\n"));
+        assert!(
+            text.contains("\n[[schema]]\nid = 1\nfrom = \"2026-08\"\nversions = [1]\n"),
+            "{text}"
+        );
         assert!(
             text.contains(
-                "\n[temporal]\norigin = \"derived\"\nentity = [\"DUID\"]\nvalid = { kind = \"interval_end\", column = \"SETTLEMENTDATE\" }\norder = [\"LASTCHANGED\"]\ncutoff = \"LASTCHANGED\"\n\n[[increment]]"
+                "\n[temporal]\norigin = \"derived\"\nentity = [\"DUID\"]\nvalid = { kind = \"interval_end\", column = \"SETTLEMENTDATE\" }\norder = [\"LASTCHANGED\"]\ncutoff = \"LASTCHANGED\"\n\n[[schema]]"
             ),
             "{text}"
         );
@@ -484,8 +512,6 @@ mod tests {
         // A column note and every optional key render and read back.
         let mut all = t.clone();
         all.columns[2].note = Some("a \"quoted\" note".into());
-        all.increments[0].ctl = Some("001.ctl".into());
-        all.increments[0].ctl_sha256 = Some("ab".into());
         all.time_column = None;
         all.description = None;
         all.load_mode = LoadMode::Snapshot;
@@ -503,19 +529,28 @@ mod tests {
             ValidAxis::From("SETTLEMENTDATE".into()),
             "normalised"
         );
+        // A schema with no run has no month.
+        let mut lone = t;
+        lone.runs.clear();
+        let text = write_table(&lone);
+        assert!(text.contains("id = 0\nversions = []\n"), "{text}");
     }
 
     #[test]
     fn reads_hand_written_forms() {
-        // `[[column]]` tables, a missing nullable (true), lower-case names.
+        // `[[column]]` tables, a missing nullable (true), lower-case names,
+        // a schema with no month and two versions.
         let text = r#"
-schema_format = 2
+schema_format = 4
 name = "region"
 report_pairs = [["dispatch", "region"]]
 load_mode = "snapshot"
-dedupe = "pk"
 primary_key = ["regionid"]
-next_column_id = 3
+
+[[column]]
+id = 2
+name = "\"Description\""
+type = "string"
 
 [[column]]
 id = 1
@@ -523,31 +558,36 @@ name = "regionid"
 type = "string"
 nullable = false
 
-[[column]]
-id = 2
-name = "\"Description\""
-type = "string"
+[temporal]
+origin = "hand"
+entity = ["regionid"]
+valid = { kind = "timeless" }
 
-[[increment]]
-n = 1
-from = "2024-01"
+[[schema]]
+id = 0
+versions = [1, 2]
 columns = ["REGIONID", "description"]
 "#;
         let t = parse(text).unwrap();
         assert_eq!(t.name, "REGION");
         assert_eq!(t.report_pairs, [("DISPATCH".into(), "REGION".into())]);
         assert_eq!(t.primary_key, ["REGIONID"]);
+        assert_eq!(t.columns[0].name, "REGIONID", "by id");
         assert_eq!(t.columns[1].name, "DESCRIPTION");
         assert!(t.columns[1].nullable);
-        assert_eq!(t.increments[0].columns, ["REGIONID", "DESCRIPTION"]);
-        assert!(t.increments[0].aemo_versions.is_empty());
-        // Format 2's dedupe is dropped and the roles derived; written back as 3.
-        assert_eq!(t.temporal, derive(&t.primary_key, &t.columns));
-        assert!(write_table(&t).contains("schema_format = 3\n"));
+        assert_eq!(t.temporal.entity, ["REGIONID"]);
+        assert_eq!(
+            t.schemas[0].fields,
+            [(ColumnId(1), true), (ColumnId(2), false)]
+        );
+        assert_eq!(t.schemas[0].key, [ColumnId(1)]);
+        assert_eq!(t.runs.len(), 2);
+        assert_eq!(t.runs[1].version, 2);
+        assert_eq!(t.runs[0].from.to_string(), "1998-12");
     }
 
     #[test]
-    fn rejects_unknown_keys_wrong_format_and_bad_types() {
+    fn rejects_unknown_keys_old_formats_and_bad_types() {
         let text = write_table(&unit_scada());
         let e = parse(&text.replace("origin =", "orign =")).unwrap_err();
         assert!(matches!(e, SchemaFileError::Parse { .. }), "{e}");
@@ -558,28 +598,23 @@ columns = ["REGIONID", "description"]
         assert!(e.to_string().contains("takes no column"), "{e}");
         let e = parse(&text.replace(", column = \"SETTLEMENTDATE\" }", " }")).unwrap_err();
         assert!(e.to_string().contains("needs a column"), "{e}");
-        let e = parse(&text.replace(
-            "load_mode = \"append\"\n",
-            "load_mode = \"append\"\ndedupe = \"pk\"\n",
-        ))
-        .unwrap_err();
-        assert!(e.to_string().contains("dedupe is format 2"), "{e}");
-        let no_roles = text.split("\n[temporal]").next().unwrap().to_owned();
-        let e = parse(&no_roles).unwrap_err();
-        assert!(e.to_string().contains("[temporal] is missing"), "{e}");
-        let e = parse(&text.replace("schema_format = 3", "schema_format = 2")).unwrap_err();
+        let e = parse(&text.replace("schema_format = 4", "schema_format = 3")).unwrap_err();
         assert!(
-            e.to_string()
-                .contains("format 2 has dedupe and no [temporal]"),
+            e.to_string().contains("[[increment]] lists are gone"),
             "{e}"
         );
-        let e = parse(&text.replace("schema_format = 3", "schema_format = 1")).unwrap_err();
+        let e = parse(&text.replace("schema_format = 4", "schema_format = 1")).unwrap_err();
         assert!(e.to_string().contains("schema_format is 1"), "{e}");
         let e = parse(&text.replace("type = \"double\"", "type = \"number\"")).unwrap_err();
         assert!(e.to_string().contains("number"), "{e}");
-        let e = parse(&text.replace("aemo_versions", "versions")).unwrap_err();
-        assert!(e.to_string().contains("versions"), "{e}");
-        let e = parse("schema_format = 2\nname = 3\n").unwrap_err();
+        let e = parse(&text.replace("versions = [1]", "versions = []")).unwrap_err();
+        assert!(e.to_string().contains("lists no versions"), "{e}");
+        let e = parse(&text.replacen("    \"DUID\",\n", "    \"GHOST\",\n", 1)).unwrap_err();
+        assert!(
+            e.to_string().contains("GHOST, which is not a column"),
+            "{e}"
+        );
+        let e = parse("schema_format = 4\nname = 3\n").unwrap_err();
         assert!(
             matches!(e, SchemaFileError::Parse { line: Some(2), .. }),
             "{e:?}"
@@ -590,12 +625,11 @@ columns = ["REGIONID", "description"]
     fn reads_from_disk_and_markets() {
         let dir = tempfile::tempdir().unwrap();
         std::fs::write(dir.path().join(TABLE_FILE), write_table(&unit_scada())).unwrap();
-        assert_eq!(read_table(dir.path(), Market::Nem).unwrap(), unit_scada());
+        assert_eq!(read_table(dir.path(), Market::Nem).unwrap(), as_written());
         assert!(matches!(
             read_table(&dir.path().join("none"), Market::Nem),
             Err(SchemaFileError::Read { .. })
         ));
-        assert_eq!(ctl_file_name(2), "002.ctl");
         let m = MarketDef {
             market: Market::Wem,
             utc_offset_secs: 28_800,

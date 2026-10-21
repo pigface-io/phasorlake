@@ -1,18 +1,15 @@
-//! The loaded registry: tables, indexes and conformance plans.
+//! The loaded registry: tables, indexes, histories and conformance plans.
 
-use std::collections::{BTreeMap, HashMap};
 use std::path::Path;
-use std::sync::{Arc, Mutex, OnceLock};
+use std::sync::{Arc, Mutex, OnceLock, RwLock};
 
 use crate::file_model::blob::SchemaSet;
-use crate::file_model::history::History;
-use crate::file_model::shapes::ShapeEntry;
 use crate::file_model::{
-    Column, ColumnId, Increment, LakeType, LoadMode, Market, MarketDef, SchemaFileError, Table,
+    Column, ColumnId, LakeType, LoadMode, Market, MarketDef, SchemaFileError, Table, TableSchema,
 };
-use crate::shape::ShapeId;
 use arrow_schema::SchemaRef;
 use hashbrown::Equivalent;
+use std::collections::HashMap;
 use utilake_core::{Fingerprint, YearMonth};
 use utilake_mms_decode::IRow;
 
@@ -75,15 +72,17 @@ pub struct Registry {
     /// Whether each table came from a user's overlay.
     from_user: Vec<bool>,
     by_name: HashMap<String, TableId>,
-    by_pair: hashbrown::HashMap<PairKey, TableId>,
-    /// The lake schema and the plans of each table's increments, built the
-    /// first time the table is used. A run reads a handful of tables;
-    /// building them for every table the registry knows would cost each
-    /// run the memory and the time of all of them.
+    /// Each report pair's table, and the pair's place in its list.
+    by_pair: hashbrown::HashMap<PairKey, (TableId, u16)>,
+    /// The lake schema, the history and the plans of each table's schemas,
+    /// built the first time the table is used. A run reads a handful of
+    /// tables; building them for every table the registry knows would cost
+    /// each run the memory and the time of all of them.
     shapes: Vec<OnceLock<TableShapes>>,
-    /// Shapes that deviate from their increment, or of a derived table,
-    /// worked out when first seen.
-    deviating: Mutex<HashMap<DeviationKey, Arc<Deviation>>>,
+    /// What each block shape resolved to, worked out when first seen: the
+    /// table, the fingerprint of its columns, its I-row version and the
+    /// month of its source decide it.
+    resolutions: RwLock<hashbrown::HashMap<ResolutionKey, Arc<Resolution>>>,
     /// Tables derived at run time from the header of a file whose report
     /// pair no table claims. Slots are written once and never moved, so a
     /// reference to one lives as long as the registry. Each is boxed: an
@@ -91,27 +90,6 @@ pub struct Registry {
     derived: Vec<OnceLock<Box<Derived>>>,
     /// The report pair of each derived table, in slot order.
     derived_pairs: Mutex<Vec<(String, String)>>,
-    /// The census's shapes of each table, by table name; for the embedded
-    /// registry decoded from their blob on first use.
-    census: OnceLock<BTreeMap<String, Vec<ShapeEntry>>>,
-    /// The blob the census's shapes are decoded from, when not given.
-    census_blob: &'static [u8],
-    /// Census shapes by report pair and fingerprint of their names, built
-    /// on first use.
-    census_index: OnceLock<HashMap<(String, String, Fingerprint), Vec<CensusShape>>>,
-    /// Each table's history as an Iceberg table, by table name; for the
-    /// embedded registry decoded from its blob on first use.
-    histories: OnceLock<BTreeMap<String, History>>,
-    /// The blob the histories are decoded from, when not given.
-    history_blob: &'static [u8],
-}
-
-/// What resolution needs of a census shape: its id and when it was seen.
-#[derive(Debug, Clone, Copy)]
-struct CensusShape {
-    id: ShapeId,
-    first_seen: YearMonth,
-    last_seen: YearMonth,
 }
 
 /// What the files of one table are written with.
@@ -119,22 +97,41 @@ struct CensusShape {
 pub(crate) struct TableShapes {
     /// The lake schema.
     pub(crate) lake: SchemaRef,
-    /// Per increment, in the table's order: the fingerprint of its columns
-    /// and the plan of a file that conforms to it.
-    pub(crate) increments: Vec<(Fingerprint, Arc<ConformancePlan>)>,
+    /// The table's history as an Iceberg table, which resolution reads.
+    pub(crate) history: utilake_iceberg::History,
+    /// Per schema of the history: its id and the plan of a block of its
+    /// columns.
+    pub(crate) plans: Vec<(u16, Arc<ConformancePlan>)>,
+    /// What `History::resolve` names, worked out ahead, for each column
+    /// list (by report pair's place and fingerprint) that only one schema
+    /// has: whatever the month and version, the block reads with it.
+    pub(crate) exact: ExactAnswers,
+    /// The AEMO versions of each report pair's runs, by the pair's place.
+    pub(crate) versions: Vec<(u16, u16)>,
 }
 
-/// A shape that does not conform: its table, the increment it was read
-/// against, the fingerprint of its columns and its I-row version.
-pub(crate) type DeviationKey = (TableId, u16, Fingerprint, u16);
+impl TableShapes {
+    /// The plan of a block of schema `id`'s columns.
+    pub(crate) fn plan(&self, id: u16) -> Option<&Arc<ConformancePlan>> {
+        self.plans.iter().find(|(s, _)| *s == id).map(|(_, p)| p)
+    }
+}
 
-/// What resolving a shape that does not conform gives, every time.
+/// A block shape: its table, the fingerprint of its columns, its I-row
+/// version and the month of its source.
+pub(crate) type ResolutionKey = (TableId, Fingerprint, u16, Option<YearMonth>);
+
+/// What resolving a block shape gives, every time.
 #[derive(Debug)]
-pub(crate) struct Deviation {
+pub(crate) struct Resolution {
     /// The plan it is read with.
     pub(crate) plan: Arc<ConformancePlan>,
     /// How it matched.
     pub(crate) status: crate::resolve::Status,
+    /// The table's schema it was read against.
+    pub(crate) version: u16,
+    /// The schema of the history it resolved to; none when it deviates.
+    pub(crate) schema: Option<u32>,
     /// What resolving it says.
     pub(crate) warnings: Vec<utilake_core::Diagnostic>,
 }
@@ -150,10 +147,6 @@ struct Derived {
 /// How many tables one run may derive. The whole archive has a few hundred
 /// tables; a file that asks for more than this is not an MMS file.
 const DERIVED_SLOTS: usize = 4096;
-
-/// The month the NEM began, which a derived table's one increment applies
-/// from.
-const NEM_START: (i32, u8) = (1998, 12);
 
 /// The definition of a market no file defines: fixed market time, AEMO's
 /// timestamp format.
@@ -174,12 +167,6 @@ static EMBEDDED: OnceLock<Arc<Registry>> = OnceLock::new();
 /// The blob `build.rs` packed from `schemas/`.
 const EMBEDDED_BLOB: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/registry.bin"));
 
-/// The census's shapes `build.rs` packed from `schemas/`.
-const EMBEDDED_SHAPES: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/shapes.bin"));
-
-/// Each table's Iceberg history `build.rs` packed from `schemas/`.
-const EMBEDDED_HISTORIES: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/iceberg.bin"));
-
 /// The embedded blob, for benchmarks and tools that decode it themselves.
 pub fn embedded_blob() -> &'static [u8] {
     EMBEDDED_BLOB
@@ -192,10 +179,7 @@ impl Registry {
             .get_or_init(|| {
                 let set = SchemaSet::decode(EMBEDDED_BLOB)
                     .expect("build.rs validated and packed the embedded registry");
-                let mut registry = Self::from_set(set);
-                registry.census_blob = EMBEDDED_SHAPES;
-                registry.history_blob = EMBEDDED_HISTORIES;
-                Arc::new(registry)
+                Arc::new(Self::from_set(set))
             })
             .clone()
     }
@@ -233,19 +217,7 @@ impl Registry {
             markets.retain(|x| x.market != m.market);
             markets.push(m);
         }
-        let mut shapes = self.census().clone();
-        for (table, theirs) in over.shapes {
-            shapes.insert(table, theirs);
-        }
-        let mut histories = self.histories().clone();
-        histories.extend(over.histories);
-        let set = SchemaSet {
-            markets,
-            tables,
-            shapes,
-            histories,
-            file_issues: over.file_issues,
-        };
+        let set = SchemaSet { markets, tables };
         let issues = set.validate();
         if let Some(first) = issues.first() {
             return Err(SchemaFileError::Invalid {
@@ -276,8 +248,8 @@ impl Registry {
         for (i, t) in tables.iter().enumerate() {
             let id = TableId(i as u32);
             by_name.insert(t.name.clone(), id);
-            for (a, b) in &t.report_pairs {
-                by_pair.insert(PairKey(a.clone(), b.clone()), id);
+            for (k, (a, b)) in t.report_pairs.iter().enumerate() {
+                by_pair.insert(PairKey(a.clone(), b.clone()), (id, k as u16));
             }
         }
         // A market no file defines gets the definition its name implies.
@@ -295,103 +267,23 @@ impl Registry {
             tables,
             by_name,
             by_pair,
-            deviating: Mutex::new(HashMap::new()),
+            resolutions: RwLock::new(hashbrown::HashMap::new()),
             derived: std::iter::repeat_with(OnceLock::new)
                 .take(DERIVED_SLOTS)
                 .collect(),
             derived_pairs: Mutex::new(Vec::new()),
-            census: if set.shapes.is_empty() {
-                OnceLock::new()
-            } else {
-                OnceLock::from(set.shapes)
-            },
-            census_blob: &[],
-            census_index: OnceLock::new(),
-            histories: if set.histories.is_empty() {
-                OnceLock::new()
-            } else {
-                OnceLock::from(set.histories)
-            },
-            history_blob: &[],
         }
     }
 
-    /// Each table's history as an Iceberg table, by table name.
-    pub fn histories(&self) -> &BTreeMap<String, History> {
-        self.histories.get_or_init(|| {
-            if self.history_blob.is_empty() {
-                BTreeMap::new()
-            } else {
-                SchemaSet::decode_histories(self.history_blob)
-                    .expect("build.rs validated and packed the histories")
-            }
-        })
+    /// The history of a table of the registry as an Iceberg table; none
+    /// for a table derived from a file.
+    pub fn history(&self, id: TableId) -> Option<&utilake_iceberg::History> {
+        let i = id.0 as usize;
+        (i < self.tables.len()).then(|| &self.shapes(i).history)
     }
 
-    /// The Iceberg schema a block of table `id` is written under: the one
-    /// of the table's history whose columns are the block's, in order.
-    pub fn schema_id(&self, id: TableId, irow: &IRow<'_>) -> Option<u32> {
-        self.histories()
-            .get(&self.table(id).name)?
-            .schema_of(irow.columns)
-    }
-
-    /// The census's shapes of each table, by table name.
-    pub fn census(&self) -> &BTreeMap<String, Vec<ShapeEntry>> {
-        self.census.get_or_init(|| {
-            if self.census_blob.is_empty() {
-                BTreeMap::new()
-            } else {
-                SchemaSet::decode_shapes(self.census_blob)
-                    .expect("build.rs validated and packed the census's shapes")
-            }
-        })
-    }
-
-    /// The ids the census gives a block of this report pair and column
-    /// list in a source of month `period`: the census shapes with these
-    /// names, seen in that month when it is known (a shape's id also covers
-    /// its control-file types, which an I row does not carry). Empty when
-    /// the census has not seen the block.
-    pub fn shape_ids(&self, irow: &IRow<'_>, period: Option<YearMonth>) -> Vec<ShapeId> {
-        let index = self.census_index.get_or_init(|| {
-            let mut index: HashMap<(String, String, Fingerprint), Vec<CensusShape>> =
-                HashMap::new();
-            for e in self.census().values().flatten() {
-                index
-                    .entry((
-                        e.report_type.clone(),
-                        e.report_subtype.clone(),
-                        e.fingerprint(),
-                    ))
-                    .or_default()
-                    .push(CensusShape {
-                        id: e.id,
-                        first_seen: e.first_seen,
-                        last_seen: e.last_seen,
-                    });
-            }
-            index
-        });
-        let key = (
-            irow.report_type.to_owned(),
-            irow.report_subtype.to_owned(),
-            irow.fingerprint(),
-        );
-        let mut ids: Vec<ShapeId> = index
-            .get(&key)
-            .into_iter()
-            .flatten()
-            .filter(|s| period.is_none_or(|p| s.first_seen <= p && p <= s.last_seen))
-            .map(|s| s.id)
-            .collect();
-        ids.sort();
-        ids.dedup();
-        ids
-    }
-
-    /// The lake schema and increment plans of a table of the registry,
-    /// built on first use.
+    /// The lake schema, history and schema plans of a table of the
+    /// registry, built on first use.
     pub(crate) fn shapes(&self, index: usize) -> &TableShapes {
         self.shapes[index].get_or_init(|| {
             let t = &self.tables[index];
@@ -400,18 +292,26 @@ impl Registry {
                 .expect("every table's market has a definition");
             let lake = lake_schema(t, market);
             let dir = t.dir_name();
-            let increments = t
-                .increments
+            let plans = t
+                .schemas
                 .iter()
-                .map(|i| {
-                    let names: Vec<&str> = i.columns.iter().map(String::as_str).collect();
+                .map(|s| {
+                    let names = t.schema_columns(s);
                     (
-                        Fingerprint::of_names(names.iter().copied()),
-                        Arc::new(ConformancePlan::new(t, market, &lake, i.n, &names, &dir)),
+                        s.id,
+                        Arc::new(ConformancePlan::new(t, market, &lake, s.id, &names, &dir)),
                     )
                 })
                 .collect();
-            TableShapes { lake, increments }
+            let history = t.history();
+            let (exact, versions) = exact_answers(t, &history);
+            TableShapes {
+                lake,
+                history,
+                plans,
+                exact,
+                versions,
+            }
         })
     }
 
@@ -506,7 +406,7 @@ impl Registry {
     /// The handle for a report pair, without allocating: a table of the
     /// registry, or failing that one derived earlier in this run.
     pub fn table_by_pair(&self, report_type: &str, report_subtype: &str) -> Option<TableId> {
-        if let Some(id) = self.by_pair.get(&PairRef(report_type, report_subtype)) {
+        if let Some((id, _)) = self.by_pair.get(&PairRef(report_type, report_subtype)) {
             return Some(*id);
         }
         self.derived_pairs
@@ -519,6 +419,12 @@ impl Registry {
 
     /// The handle for a report pair the registry itself declares.
     pub fn declared_by_pair(&self, report_type: &str, report_subtype: &str) -> Option<TableId> {
+        self.pair(report_type, report_subtype).map(|(id, _)| id)
+    }
+
+    /// The table the registry declares for a report pair, and the pair's
+    /// place in the table's list.
+    pub(crate) fn pair(&self, report_type: &str, report_subtype: &str) -> Option<(TableId, u16)> {
         self.by_pair
             .get(&PairRef(report_type, report_subtype))
             .copied()
@@ -554,50 +460,76 @@ impl Registry {
         }
     }
 
-    /// A table's increments, by ascending month.
-    pub fn increments(&self, table: &str) -> Option<&[Increment]> {
-        let id = self.table_by_name(table)?;
-        Some(&self.table(id).increments)
-    }
-
-    /// What a shape that does not conform resolves to, cached.
-    pub(crate) fn deviation(
+    /// What a block shape resolves to, worked out once.
+    pub(crate) fn resolution(
         &self,
-        key: DeviationKey,
-        build: impl FnOnce() -> Deviation,
-    ) -> Arc<Deviation> {
-        let mut cache = self
-            .deviating
-            .lock()
-            .expect("the plan cache is never poisoned");
-        cache
-            .entry(key)
-            .or_insert_with(|| Arc::new(build()))
-            .clone()
-    }
-
-    /// Changes between this registry and `newer` that break the lake.
-    pub fn check_compat(&self, newer: &Registry) -> Vec<(String, String)> {
-        let mut out = Vec::new();
-        for t in &self.tables {
-            match newer.table_by_name(&t.name) {
-                None => out.push((
-                    t.name.clone(),
-                    "table was deleted; its files stay in the lake".into(),
-                )),
-                Some(id) => {
-                    for m in crate::file_model::compat::breaking_changes(t, newer.table(id)) {
-                        out.push((t.name.clone(), m));
-                    }
-                }
-            }
+        key: ResolutionKey,
+        build: impl FnOnce() -> Resolution,
+    ) -> Arc<Resolution> {
+        if let Some(r) = self
+            .resolutions
+            .read()
+            .expect("the resolution cache is never poisoned")
+            .get(&key)
+        {
+            return r.clone();
         }
-        out
+        let built = Arc::new(build());
+        self.resolutions
+            .write()
+            .expect("the resolution cache is never poisoned")
+            .entry(key)
+            .or_insert(built)
+            .clone()
     }
 }
 
+/// The schema of each column list one schema alone has, by the report
+/// pair's place and the list's fingerprint.
+pub(crate) type ExactAnswers = hashbrown::HashMap<(u16, Fingerprint), u16>;
+
+/// The schema `History::resolve` names for each column list of a report
+/// pair that one schema alone has, which it names whatever the month and
+/// version; and the versions each pair's runs came under.
+fn exact_answers(t: &Table, history: &utilake_iceberg::History) -> (ExactAnswers, Vec<(u16, u16)>) {
+    let mut seen: hashbrown::HashMap<(u16, Fingerprint), Vec<u16>> = hashbrown::HashMap::new();
+    let mut versions = Vec::new();
+    for r in &t.runs {
+        let Some(k) = t.report_pairs.iter().position(|p| *p == r.report) else {
+            continue;
+        };
+        let k = k as u16;
+        if !versions.contains(&(k, r.version)) {
+            versions.push((k, r.version));
+        }
+        let Some(s) = t.schema(r.schema) else {
+            continue;
+        };
+        let fp = Fingerprint::of_names(t.schema_columns(s).iter().copied());
+        let ids = seen.entry((k, fp)).or_default();
+        if !ids.contains(&s.id) {
+            ids.push(s.id);
+        }
+    }
+    let exact = seen
+        .into_iter()
+        .filter_map(|((k, fp), ids)| {
+            let [only] = ids.as_slice() else {
+                return None;
+            };
+            let (a, b) = &t.report_pairs[usize::from(k)];
+            let cols = t.schema_columns(t.schema(*only)?);
+            let named =
+                history.resolve([a.as_str(), b.as_str()], 0, &cols, crate::resolve::LATEST)?;
+            debug_assert_eq!(named, u32::from(*only), "one schema has these columns");
+            Some(((k, fp), u16::try_from(named).ok()?))
+        })
+        .collect();
+    (exact, versions)
+}
+
 /// The table a file's I row says, when no table claims its report pair:
-/// every column nullable text, one increment of exactly these columns.
+/// every column nullable text, one schema of exactly these columns.
 fn derived_table(market: Market, irow: &IRow<'_>) -> Table {
     // Some tables publish no subtype: the pair (GENCONDATA, "") is GENCONDATA.
     let name = if irow.report_subtype.is_empty() {
@@ -605,7 +537,7 @@ fn derived_table(market: Market, irow: &IRow<'_>) -> Table {
     } else {
         format!("{}_{}", irow.report_type, irow.report_subtype)
     };
-    let columns: Vec<String> = irow.columns.iter().map(|c| (*c).to_owned()).collect();
+    let columns: Vec<&str> = irow.columns.to_vec();
     let mut t = Table {
         market,
         name,
@@ -623,28 +555,25 @@ fn derived_table(market: Market, irow: &IRow<'_>) -> Table {
         },
         primary_key: vec![],
         time_column: None,
-        next_column_id: columns.len() as u32 + 1,
         columns: columns
             .iter()
             .enumerate()
             .map(|(i, c)| Column {
                 id: ColumnId(i as u32 + 1),
-                name: c.clone(),
+                name: (*c).to_owned(),
                 ty: LakeType::String,
                 nullable: true,
                 note: None,
             })
             .collect(),
-        increments: vec![Increment {
-            n: 1,
-            from: YearMonth::new(NEM_START.0, NEM_START.1).expect("a month"),
-            ctl: None,
-            ctl_sha256: None,
-            aemo_ctl: None,
-            aemo_versions: vec![irow.version],
-            columns,
-            note: None,
+        schemas: vec![TableSchema {
+            id: 0,
+            fields: (1..=columns.len() as u32)
+                .map(|i| (ColumnId(i), false))
+                .collect(),
+            key: Vec::new(),
         }],
+        runs: Vec::new(),
     };
     t.temporal = crate::file_model::temporal::derive(&t.primary_key, &t.columns);
     t
@@ -653,27 +582,6 @@ fn derived_table(market: Market, irow: &IRow<'_>) -> Table {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    /// The embedded census is decoded when a shape is first asked for, and
-    /// knows the anchor month's shapes.
-    #[test]
-    fn the_embedded_census_names_the_anchor_months_shapes() {
-        let r = Registry::load_embedded();
-        let cols = ["SETTLEMENTDATE", "DUID", "SCADAVALUE", "LASTCHANGED"];
-        let irow = IRow {
-            report_type: "DISPATCH",
-            report_subtype: "UNIT_SCADA",
-            version: 1,
-            columns: &cols,
-        };
-        let anchor = "2026-08".parse().ok();
-        let ids = r.shape_ids(&irow, anchor);
-        assert_eq!(ids.len(), 1);
-        let recorded = &r.census()["DISPATCH_UNIT_SCADA"];
-        assert!(recorded.iter().any(|e| e.id == ids[0]));
-        assert!(r.shape_ids(&irow, "2009-07".parse().ok()).is_empty());
-        assert!(r.census().len() > 200);
-    }
 
     #[test]
     fn embedded_registry_loads_and_indexes() {
@@ -688,14 +596,14 @@ mod tests {
         assert_eq!(r.lake_schema(id).fields().len(), 4);
         assert_eq!(r.schema_source(id), SchemaSource::Registry);
         assert_eq!(SchemaSource::User.to_string(), "user");
-        let incs = r.increments("DISPATCH_UNIT_SCADA").unwrap();
-        assert_eq!(incs.len(), 2);
-        assert!(incs[0].from < incs[1].from);
-        assert!(r.increments("NOPE").is_none());
-        assert!(r.tables().count() >= 200);
+        let h = r.history(id).unwrap();
+        assert!(h.schemas.len() >= 2 && !h.runs.is_empty());
+        assert_eq!(h.table, "DISPATCH_UNIT_SCADA");
+        // Every table the data model declares, and nothing it does not.
+        assert_eq!(r.tables().count(), 241);
+        assert!(r.table_by_name("SPDRC_").is_none());
         assert!(r.market(Market::Nem).is_some());
         assert!(r.market(Market::Wem).is_some());
-        assert!(r.check_compat(&r).is_empty());
         assert!(!embedded_blob().is_empty());
     }
 
@@ -722,16 +630,18 @@ mod tests {
         t.primary_key = vec![t.columns[0].name.clone()];
         t.columns[0].nullable = false;
         t.time_column = None;
-        for i in &mut t.increments {
-            i.columns = vec![t.columns[0].name.clone()];
-            i.ctl = None;
-            i.ctl_sha256 = None;
-        }
+        t.schemas.truncate(1);
+        t.schemas[0].fields = vec![(t.columns[0].id, true)];
+        t.schemas[0].key = vec![t.columns[0].id];
+        t.runs.retain(|r| r.schema == t.schemas[0].id);
         t.temporal = crate::file_model::temporal::derive(&t.primary_key, &t.columns);
         write(dir.path(), &t);
         let mut n = t.clone();
         n.name = "NEWTABLE".into();
         n.report_pairs = vec![("X".into(), "Y".into())];
+        for r in &mut n.runs {
+            r.report = ("X".into(), "Y".into());
+        }
         write(dir.path(), &n);
         let o = r.with_overlay(dir.path()).unwrap();
         let region = o.table_by_name("REGION").unwrap();
@@ -739,18 +649,9 @@ mod tests {
         assert_eq!(o.schema_source(region), SchemaSource::User);
         assert!(o.table_by_pair("X", "Y").is_some());
         assert_eq!(o.tables().count(), r.tables().count() + 1);
-        // Removing a column is a breaking change; so is removing a table.
-        let breaks = r.check_compat(&o);
-        assert!(
-            breaks
-                .iter()
-                .any(|(t, m)| t == "REGION" && m.contains("removed")),
-            "{breaks:?}"
-        );
-        assert!(o.check_compat(&r).iter().any(|(t, _)| t == "NEWTABLE"));
         // An invalid overlay is refused.
         let mut bad = n.clone();
-        bad.next_column_id = 0;
+        bad.columns[0].id = ColumnId(0);
         write(dir.path(), &bad);
         assert!(r.with_overlay(dir.path()).is_err());
         assert!(Registry::load_dir(dir.path()).is_err());
@@ -771,10 +672,11 @@ mod tests {
         let a = r.derive(Market::Nem, &irow("A")).unwrap();
         assert_eq!(r.derive(Market::Nem, &irow("A")), Some(a));
         let t = r.table(a);
-        assert_eq!(t.increments[0].aemo_versions, [2]);
+        assert_eq!(t.schemas[0].fields, [(ColumnId(1), false)]);
         assert_eq!(t.columns[0].ty, LakeType::String);
         assert_eq!(r.schema_source(a), SchemaSource::File);
         assert_eq!(r.lake_schema(a).fields().len(), 1);
         assert_eq!(r.market_of(a).arrow_tz(), "+10:00");
+        assert!(r.history(a).is_none());
     }
 }

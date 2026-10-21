@@ -185,7 +185,7 @@ pub struct IngestArgs {
     #[arg(long)]
     pub max_bad_rows: Option<u64>,
     /// Refuse what the registry does not declare: an unknown table, or a
-    /// block whose columns are not its increment's, fails its file.
+    /// block no run of its table's history fits, fails its file.
     /// Without this, everything a file carries is kept and what deviates
     /// is reported.
     #[arg(long)]
@@ -205,9 +205,9 @@ pub enum SchemaCmd {
         /// Table name.
         table: String,
     },
-    /// A table's increments: from which month, the AEMO control file and
-    /// versions, and the columns each adds or drops.
-    Increments {
+    /// A table's history: its schemas, with the columns each adds or
+    /// drops, and the runs of files of each (`--json`: the Iceberg history).
+    History {
         /// Table name.
         table: String,
     },
@@ -223,7 +223,8 @@ pub enum SchemaCmd {
         /// The file's column names, in order.
         #[arg(long, value_delimiter = ',', required = true)]
         columns: Vec<String>,
-        /// The month of the source, which decides the increment.
+        /// The month the source was released in, which picks among the
+        /// runs that fit.
         #[arg(long, value_name = "YYYY-MM")]
         month: Option<utilake_core::YearMonth>,
     },

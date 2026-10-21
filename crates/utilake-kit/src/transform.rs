@@ -30,15 +30,16 @@ pub struct Transform {
     pub plan_hash: String,
     /// Where the table's definition came from: `registry`, `user`, `file`.
     pub schema_source: String,
-    /// How the shape matched the definition: `exact`, `aliased`, `drift`,
-    /// `derived`; with `+rule` when a hand-written rule routed a column.
+    /// How the shape matched the definition: `conforms`, `deviates` or
+    /// `derived` (older ingests recorded other words).
     pub resolution: String,
-    /// The ids the census gives the shape, comma-separated, when it has
-    /// seen it.
+    /// The census's id of the shape, from its header (an MMS block's
+    /// report pair and columns); older ingests may list several,
+    /// comma-separated.
     #[serde(default)]
     pub shape_id: Option<String>,
-    /// The Iceberg schema of the table's history whose columns are the
-    /// block's, when the census has folded that column list.
+    /// The Iceberg schema of the table's history the block resolved to;
+    /// none when no run of the history fits it.
     #[serde(default)]
     pub schema_id: Option<u32>,
 }

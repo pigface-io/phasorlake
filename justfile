@@ -84,10 +84,6 @@ bench-tighten:
 budget-check base="origin/main":
     cargo run -q -p xtask -- ratchet --base {{ base }}
 
-# fail if a table file changed in a way the lake does not survive
-schema-compat base="origin/main":
-    cargo run -q -p xtask -- schema-compat --base {{ base }}
-
 # ── schemas ──────────────────────────────────────────────────────────────────
 
 # copy utilake-schemas' NEM tables and manifest at REV into schemas/nem/pulled/

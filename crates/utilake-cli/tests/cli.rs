@@ -98,11 +98,21 @@ fn ingest_ls_errors_verify_round_trip() {
     assert!(runs_json.contains("\"exit_code\":0"), "{runs_json}");
     assert!(cli.ok(&["errors"]).contains("no diagnostics"));
     assert!(cli.ok(&["--json", "errors", "--last"]).is_empty());
-    // No table has a history in the embedded registry yet: none is built.
-    let (code, out, _) = cli.code(&["iceberg", "--table", "REGION"]);
+    // Every table of the registry has its history: REGION's Iceberg
+    // table is built from it. A table derived from a file has none.
+    let built = cli.ok(&["--json", "iceberg", "--table", "REGION"]);
+    assert!(built.contains("\"snapshots\":\"1\""), "{built}");
+    let unknown = cli.home.path().join("unknown.csv");
+    std::fs::write(
+        &unknown,
+        "C,NEMP.WORLD,TEST\nI,UTILAKE_TEST,NOBODY,1,A\nD,UTILAKE_TEST,NOBODY,1,x\nC,\"END OF REPORT\",3\n",
+    )
+    .unwrap();
+    cli.ok(&["ingest", unknown.to_str().unwrap()]);
+    let (code, out, _) = cli.code(&["iceberg", "--table", "UTILAKE_TEST_NOBODY"]);
     assert_eq!(code, 1, "{out}");
     assert!(
-        out.contains("REGION") && out.contains("no history"),
+        out.contains("UTILAKE_TEST_NOBODY") && out.contains("no history"),
         "{out}"
     );
     let (code, out, _) = cli.code(&["--json", "iceberg", "--table", "NONE"]);
@@ -121,31 +131,7 @@ fn ingest_ls_errors_verify_round_trip() {
     let (_, out, _) = cli.code(&["verify", "--table", "DISPATCH_UNIT_SCADA"]);
     assert!(!out.contains("orphan"), "another table's quarantine: {out}");
     std::fs::remove_file(qdir.join("left_over.jsonl")).unwrap();
-    // With a history for SCADA in the user's schemas: its Iceberg table,
-    // and the query that reads an interval of it.
-    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../schemas/nem/DISPATCH_UNIT_SCADA");
-    let scada_table = utilake_mms_registry::file_model::file::read_table(
-        &root,
-        utilake_mms_registry::file_model::Market::Nem,
-    )
-    .unwrap();
-    let fields: Vec<serde_json::Value> = scada_table
-        .columns
-        .iter()
-        .map(|c| {
-            serde_json::json!({
-                "id": c.id.0, "name": c.name, "type": c.ty.iceberg().name(), "required": !c.nullable,
-            })
-        })
-        .collect();
-    let history = serde_json::json!({
-        "table": "DISPATCH_UNIT_SCADA",
-        "schemas": [{"schema-id": 0, "fields": fields, "identifier-field-ids": [1]}],
-        "runs": [],
-    });
-    let hdir = cli.home.path().join("schemas/nem/iceberg");
-    std::fs::create_dir_all(&hdir).unwrap();
-    std::fs::write(hdir.join("DISPATCH_UNIT_SCADA.json"), history.to_string()).unwrap();
+    // SCADA's Iceberg table, and the query that reads an interval of it.
     let built = cli.ok(&["--json", "iceberg", "--table", "DISPATCH_UNIT_SCADA"]);
     assert!(built.contains("\"snapshots\":\"1\""), "{built}");
     let meta = cli
@@ -178,15 +164,6 @@ fn ingest_ls_errors_verify_round_trip() {
     assert!(code != 0 && err.contains("not an RFC 3339"), "{err}");
     let (code, _, err) = cli.code(&[
         "sql",
-        "REGION",
-        "--from",
-        "2024-01-01",
-        "--to",
-        "2024-02-01",
-    ]);
-    assert!(code != 0 && err.contains("no history"), "{err}");
-    let (code, _, err) = cli.code(&[
-        "sql",
         "NOBODY",
         "--from",
         "2024-01-01",
@@ -207,8 +184,8 @@ fn ingest_ls_errors_verify_round_trip() {
     assert!(code != 0);
     // The lake's checks leave the Iceberg metadata beside the files alone.
     assert!(cli.ok(&["verify"]).contains("no problems"));
-    std::fs::remove_dir_all(cli.home.path().join("schemas")).unwrap();
     std::fs::remove_dir_all(meta.parent().unwrap()).unwrap();
+    std::fs::remove_dir_all(cli.home.path().join("lake/nem/region/metadata")).unwrap();
     // Snapshot partition for REGION, month partition for SCADA.
     let lake = cli.home.path().join("lake/nem");
     assert!(lake.join("region/snapshot=202401").is_dir());
@@ -362,41 +339,44 @@ fn bad_rows_fail_and_are_explained() {
     assert!(out.contains("csv.stopped_fail_fast"), "{out}");
 }
 
-/// The head of every zip of the months the registry is built from, the
-/// anchor (August 2026) and an earlier one (January 2024): each one must
-/// conform to the increment of its table in force that month (strict mode
+/// The head of every zip of two months, January 2024 and August 2026:
+/// each block must resolve to a schema of its table's history (strict mode
 /// refuses a deviation) and every row must parse into its column's type.
-/// January 2024 has known deviations: the `_ALL` files of three P5MIN
-/// tables carry other columns than the file each table's control file
-/// loads, under the same report pair; and five tables' files carry
-/// columns their control file of the month does not list, which a census
-/// of every month is to settle.
+/// The histories end with the census's last month, April 2026; August 2026
+/// has files of 22 tables whose columns came after it (LASTCHANGED on the
+/// FPP tables, and a column or three on the others), which deviate until
+/// the census reaches that month.
 #[test]
 fn every_archive_table_ingests_strictly() {
+    every_head_ingests_strictly("MMSDM_2024_01", 161, &[]);
     every_head_ingests_strictly(
-        "MMSDM_2024_01",
-        161,
+        "MMSDM_2026_08",
+        309,
         &[
-            "DISPATCHCONSTRAINT",
-            "MTPASA_REGIONRESULT",
-            "P5MIN_CONSTRAINTSOLUTION1",
-            "P5MIN_CONSTRAINTSOLUTION2",
-            "P5MIN_CONSTRAINTSOLUTION3",
-            "P5MIN_CONSTRAINTSOLUTION4",
-            "PREDISPATCHCONSTRAINT_D",
-            "PREDISPATCHCONSTRAINT1",
-            "PREDISPATCHCONSTRAINT2",
-            "PREDISPATCHPRICE",
-            "PREDISPATCHPRICE_D",
-            "P5MIN_CONSTRAINTSOLUTION1_ALL",
-            "P5MIN_CONSTRAINTSOLUTION2_ALL",
-            "P5MIN_CONSTRAINTSOLUTION3_ALL",
-            "P5MIN_CONSTRAINTSOLUTION4_ALL",
-            "P5MIN_REGIONSOLUTION_ALL",
-            "P5MIN_UNITSOLUTION_ALL",
+            "BILLINGCALENDAR",
+            "BILLINGRUNTRK",
+            "FPP_CONSTRAINT_FREQ_MEASURE",
+            "FPP_CONTRIBUTION_FACTOR",
+            "FPP_EST_PERF_COST_RATE",
+            "FPP_EST_RESIDUAL_COST_RATE",
+            "FPP_FCAS_SUMMARY",
+            "FPP_FORECAST_DEFAULT_CF",
+            "FPP_FORECAST_RESIDUAL_DCF",
+            "FPP_HIST_PERFORMANCE",
+            "FPP_HIST_REGION_PERFORMANCE",
+            "FPP_P5_FWD_EST_RESIDUALRATE",
+            "FPP_PD_FWD_EST_RESIDUALRATE",
+            "FPP_PERFORMANCE",
+            "FPP_RCR",
+            "FPP_REGION_FREQ_MEASURE",
+            "FPP_RESIDUAL_CF",
+            "FPP_RESIDUAL_PERFORMANCE",
+            "FPP_RUN",
+            "FPP_USAGE",
+            "GENCONDATA",
+            "NEGATIVE_RESIDUE",
         ],
     );
-    every_head_ingests_strictly("MMSDM_2026_08", 309, &[]);
 }
 
 fn every_head_ingests_strictly(month: &str, at_least: usize, deviating: &[&str]) {
@@ -406,7 +386,11 @@ fn every_head_ingests_strictly(month: &str, at_least: usize, deviating: &[&str])
         .join("heads");
     let files = std::fs::read_dir(&heads).unwrap().count();
     assert!(files >= at_least, "{files} head fixtures of {month}");
-    let deviates = |l: &str| deviating.iter().any(|d| l.contains(&format!("_{d}_")));
+    let deviates = |l: &str| {
+        deviating
+            .iter()
+            .any(|d| l.contains(&format!("_{d}_")) || l.contains(&format!("#{d}#")))
+    };
     let cli = Cli::new();
     let (code, out, err) = cli.code(&["--json", "ingest", heads.to_str().unwrap(), "--strict"]);
     assert_eq!(
@@ -446,8 +430,7 @@ fn every_head_ingests_strictly(month: &str, at_least: usize, deviating: &[&str])
         "{month}: the clamp is reported: {errors}"
     );
     // The only schema diagnostics are the refusal of each known deviation
-    // and, for a month without a census, a version its increment has not
-    // recorded.
+    // and a version no run of the table's history came under.
     let mut refused = 0;
     for line in errors
         .lines()
@@ -546,20 +529,20 @@ fn inspect_and_schema_commands() {
     let (code, _, err) = cli.code(&["schema", "show", "NOPE"]);
     assert_eq!(code, 1);
     assert!(err.contains("no table NOPE"), "{err}");
-    let incs = cli.ok(&["schema", "increments", "DISPATCH_UNIT_SCADA"]);
+    let history = cli.ok(&["schema", "history", "DISPATCH_UNIT_SCADA"]);
     assert!(
-        incs.contains("2015-01") && incs.contains("2024-10") && incs.contains("+LASTCHANGED"),
-        "{incs}"
+        history.contains("2010-11")
+            && history.contains("2024-10")
+            && history.contains("+LASTCHANGED")
+            && history.contains("DISPATCH.UNIT_SCADA"),
+        "{history}"
     );
-    assert!(
-        incs.contains("PUBLIC_ARCHIVE#DISPATCH_UNIT_SCADA#FILE01#202410.ctl"),
-        "{incs}"
-    );
-    assert!(
-        cli.ok(&["--json", "schema", "increments", "DISPATCH_UNIT_SCADA"])
-            .starts_with('[')
-    );
-    assert_eq!(cli.code(&["schema", "increments", "NOPE"]).0, 1);
+    let json: serde_json::Value =
+        serde_json::from_str(&cli.ok(&["--json", "schema", "history", "DISPATCH_UNIT_SCADA"]))
+            .unwrap();
+    assert_eq!(json["format-version"], 3);
+    assert_eq!(json["schemas"][0]["schema-id"], 0);
+    assert_eq!(cli.code(&["schema", "history", "NOPE"]).0, 1);
     assert!(cli.ok(&["schema", "validate"]).contains("valid"));
     let schemas = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../schemas");
     let (code, out, _) = cli.code(&["schema", "validate", schemas.to_str().unwrap()]);
@@ -572,7 +555,7 @@ fn inspect_and_schema_commands() {
     assert_eq!(code, 5);
     assert!(err.contains("schema."), "{err}");
     // The plan of a shape: the table has four columns, the file of 2024
-    // three, as the increment then lists, so the fourth is written null.
+    // three, as its schema 0 lists, so the fourth is written null.
     let plan: serde_json::Value = serde_json::from_str(&cli.ok(&[
         "schema",
         "plan",
@@ -586,13 +569,16 @@ fn inspect_and_schema_commands() {
     ]))
     .unwrap();
     assert_eq!(plan["resolution"], "conforms");
-    assert_eq!(plan["version"], 1);
-    assert_eq!(plan["plan"]["increment"], 1);
+    assert_eq!(plan["version"], 0);
+    assert_eq!(plan["plan"]["schema"], 0);
     assert_eq!(plan["plan"]["table"], "DISPATCH_UNIT_SCADA");
     assert_eq!(plan["plan"]["fields"].as_array().unwrap().len(), 4);
     assert_eq!(plan["plan"]["routes"].as_array().unwrap().len(), 3);
     assert_eq!(plan["plan"]["missing"], serde_json::json!([3]));
-    assert_eq!(plan["plan"]["routes"][2]["cast"]["kind"], "float64");
+    assert_eq!(
+        plan["plan"]["routes"][2]["cast"],
+        serde_json::json!({"kind": "decimal128", "precision": 16, "scale": 6})
+    );
     let (code, _, err) = cli.code(&["schema", "plan", "NOBODY", "KNOWS", "1", "--columns", "A"]);
     assert_eq!(code, 0, "{err}");
     let (code, _, err) = cli.code(&["schema", "plan", "X", "Y", "1", "--columns", ","]);
@@ -730,8 +716,8 @@ fn reingest_brings_the_lake_up_to_the_schema() {
     assert_eq!(parquet(), after, "what is in the lake stays");
 }
 
-/// A user's fix for files that deviate from their increment, a column and
-/// an increment, puts exactly the sources it touches behind.
+/// A user's fix for files that deviate from their table, a column and a
+/// schema, puts exactly the sources it touches behind.
 #[test]
 fn a_fix_in_table_toml_brings_in_the_files_that_deviate() {
     let cli = Cli::new();
@@ -764,8 +750,8 @@ fn a_fix_in_table_toml_brings_in_the_files_that_deviate() {
     let table = user_table(&cli, "UTILAKE_TEST_FIXED", FIXED);
     let (code, out, err) = cli.code(&["ingest", &old, "--strict"]);
     assert_eq!(code, 0, "{out}{err}");
-    // The 2024 file carries a column the increment does not list: strict
-    // mode refuses it, and otherwise it is kept as text of its own.
+    // The 2024 file carries a column the table's schema does not list:
+    // strict mode refuses it, and otherwise it is kept as text of its own.
     let (code, out, _) = cli.code(&["ingest", &new, "--strict"]);
     assert_ne!(code, 0, "{out}");
     assert!(out.contains("schema.deviates"), "{out}");
@@ -773,14 +759,15 @@ fn a_fix_in_table_toml_brings_in_the_files_that_deviate() {
     assert_eq!(code, 0, "{out}");
     assert!(out.contains("schema.deviates"), "{out}");
 
-    // The fix: QUALITY is a column of the table from 2020 on.
-    let fixed = FIXED.replace("next_column_id = 4", "next_column_id = 5").replace(
-        "]\n\n[[increment]]",
-        "    { id = 4, name = \"QUALITY\", type = \"string\", nullable = true },\n]\n\n[[increment]]",
-    ) + "\n[[increment]]\nn = 2\nfrom = \"2020-01\"\ncolumns = [\"SETTLEMENTDATE\", \"UNIT\", \"VALUE\", \"QUALITY\"]\nnote = \"Files carry QUALITY from 2020.\"\n";
+    // The fix: QUALITY is a column of the table, and its files from 2020
+    // on carry it.
+    let fixed = FIXED.replace(
+        "]\n\n[temporal]",
+        "    { id = 4, name = \"QUALITY\", type = \"string\", nullable = true, note = \"Files carry QUALITY from 2020.\" },\n]\n\n[temporal]",
+    ) + "\n[[schema]]\nid = 1\nfrom = \"2020-01\"\nversions = [1]\ncolumns = [\"SETTLEMENTDATE\", \"UNIT\", \"VALUE\", \"QUALITY\"]\n";
     std::fs::write(&table, &fixed).unwrap();
     assert!(
-        cli.ok(&["schema", "increments", "UTILAKE_TEST_FIXED"])
+        cli.ok(&["schema", "history", "UTILAKE_TEST_FIXED"])
             .contains("+QUALITY")
     );
     // Only the 2024 file is behind: the 2010 file's shape does not carry
@@ -803,7 +790,7 @@ fn a_fix_in_table_toml_brings_in_the_files_that_deviate() {
     }
     assert!(cli.ok(&["reingest"]).contains("0 listed"));
 
-    // An increment that lists a column the table does not have is refused
+    // A schema that lists a column the table does not have is refused
     // with the reason.
     std::fs::write(&table, fixed.replace("\"QUALITY\"]", "\"NOWHERE\"]")).unwrap();
     let (code, _, err) = cli.code(&["schema", "list"]);
@@ -870,23 +857,16 @@ fn user_schemas_take_effect() {
     assert_ne!(code, 0, "a deviation is refused in strict mode: {out}{err}");
     let show = cli.ok(&["schema", "show", "DISPATCH_UNIT_SCADA"]);
     let toml = &show[..show.find("\n# Arrow lake schema").unwrap()];
-    let ours = toml
-        .lines()
-        .filter(|l| !l.starts_with("ctl"))
-        .collect::<Vec<_>>()
-        .join("\n")
-        .replace("next_column_id = 5", "next_column_id = 6")
-        .replacen(
-            "]\n\n[temporal]",
-            "    { id = 5, name = \"QUALITY\", type = \"string\", nullable = true },\n]\n\n[temporal]",
-            1,
-        )
-        + "\n\n[[increment]]\nn = 3\nfrom = \"2026-09\"\naemo_versions = [2]\ncolumns = [\"SETTLEMENTDATE\", \"DUID\", \"SCADAVALUE\", \"LASTCHANGED\", \"QUALITY\"]\n";
+    let ours = toml.replacen(
+        "]\n\n[temporal]",
+        "    { id = 5, name = \"QUALITY\", type = \"string\", nullable = true },\n]\n\n[temporal]",
+        1,
+    ) + "\n[[schema]]\nid = 9\nfrom = \"2026-09\"\nversions = [2]\ncolumns = [\"SETTLEMENTDATE\", \"DUID\", \"SCADAVALUE\", \"LASTCHANGED\", \"QUALITY\"]\n";
     user_table(&cli, "DISPATCH_UNIT_SCADA", &ours);
     let (code, out, err) = cli.code(&["ingest", v2, "--strict"]);
     assert_eq!(code, 0, "{out}{err}");
     assert!(
-        cli.ok(&["schema", "increments", "DISPATCH_UNIT_SCADA"])
+        cli.ok(&["schema", "history", "DISPATCH_UNIT_SCADA"])
             .contains("+QUALITY")
     );
 
@@ -1027,18 +1007,16 @@ fn user_table(cli: &Cli, name: &str, text: &str) -> PathBuf {
 }
 
 /// A user's table for (UTILAKE_TEST, FOLLOWS), as a person writes one.
-const FOLLOWS: &str = r#"schema_format = 2
+const FOLLOWS: &str = r#"schema_format = 4
 name = "UTILAKE_TEST_FOLLOWS"
 report_pairs = [["UTILAKE_TEST", "FOLLOWS"]]
 load_mode = "append"
-dedupe = "none"
 time_column = "SETTLEMENTDATE"
-next_column_id = 4
 
 [[column]]
 id = 1
 name = "SETTLEMENTDATE"
-type = "timestamp_ns"
+type = "timestamp"
 
 [[column]]
 id = 2
@@ -1050,32 +1028,40 @@ id = 3
 name = "VALUE"
 type = "double"
 
-[[increment]]
-n = 1
-from = "2009-07"
+[temporal]
+origin = "derived"
+valid = { kind = "timeless" }
+
+[[schema]]
+id = 0
+versions = [1]
 columns = ["SETTLEMENTDATE", "UNIT", "VALUE"]
 "#;
 
 /// A user's table for (UTILAKE_TEST, FIXED), in the form utilake writes.
-const FIXED: &str = r#"schema_format = 2
+const FIXED: &str = r#"schema_format = 4
 name = "UTILAKE_TEST_FIXED"
 report_pairs = [["UTILAKE_TEST", "FIXED"]]
 load_mode = "append"
-dedupe = "none"
 primary_key = []
 time_column = "SETTLEMENTDATE"
-next_column_id = 4
 
 column = [
-    { id = 1, name = "SETTLEMENTDATE", type = "timestamp_ns", nullable = true },
+    { id = 1, name = "SETTLEMENTDATE", type = "timestamp", nullable = true },
     { id = 2, name = "UNIT", type = "string", nullable = true },
     { id = 3, name = "VALUE", type = "double", nullable = true },
 ]
 
-[[increment]]
-n = 1
+[temporal]
+origin = "derived"
+entity = []
+valid = { kind = "timeless" }
+order = []
+
+[[schema]]
+id = 0
 from = "2009-07"
-aemo_versions = [1]
+versions = [1]
 columns = ["SETTLEMENTDATE", "UNIT", "VALUE"]
 "#;
 

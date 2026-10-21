@@ -77,7 +77,7 @@ pub enum Origin {
 /// value that does not fit is kept. Raise it when the same plan would be
 /// written differently by a newer utilake, so that lakes written by the
 /// older one are known to be behind.
-pub const PLAN_FORMAT: u32 = 3;
+pub const PLAN_FORMAT: u32 = 4;
 
 /// The identity of a plan: everything that decides what files of its shape
 /// are written as, and nothing else. It is recorded with every Parquet file
@@ -85,7 +85,7 @@ pub const PLAN_FORMAT: u32 = 3;
 /// plan has changed since can be found and done again from the archived
 /// source.
 ///
-/// It covers the table, market, directory, load mode and increment, the
+/// It covers the table, market, directory, load mode and schema, the
 /// key and time columns by name, and each route: the file column, the lake
 /// column it feeds with that column's id, type and nullability, the cast
 /// and why it goes there. It does not cover the lake columns the shape
@@ -127,7 +127,7 @@ struct PlanIdentity<'a> {
     market: Market,
     directory: &'a str,
     load_mode: LoadMode,
-    increment: u16,
+    schema: u16,
     key: Vec<&'a str>,
     time: Option<&'a str>,
     routes: Vec<RouteIdentity<'a>>,
@@ -142,7 +142,7 @@ impl PlanHash {
             market: plan.market,
             directory: &plan.directory,
             load_mode: plan.load_mode,
-            increment: plan.increment,
+            schema: plan.schema,
             key: plan.key_columns.iter().map(|&k| name(k)).collect(),
             time: plan.time_column.map(name),
             routes: plan
@@ -215,8 +215,8 @@ pub struct ConformancePlan {
     pub directory: String,
     /// Append or snapshot.
     pub load_mode: LoadMode,
-    /// The table's increment the shape was read against.
-    pub increment: u16,
+    /// The schema of the table's history the shape was read against.
+    pub schema: u16,
     /// Output field indexes of the primary key.
     pub key_columns: Vec<u16>,
     /// Output field index of the partition column.
@@ -237,8 +237,8 @@ pub struct ConformancePlan {
 }
 
 impl ConformancePlan {
-    /// The plan of a file column list onto `t`, read against increment
-    /// `increment`, losing nothing the file carries. `lake` is the table's
+    /// The plan of a file column list onto `t`, read against its schema
+    /// `schema`, losing nothing the file carries. `lake` is the table's
     /// lake schema and `dir` the directory its files go to.
     ///
     /// Each name that is a column of the table feeds it. Each that is not
@@ -250,7 +250,7 @@ impl ConformancePlan {
         t: &Table,
         market: &MarketDef,
         lake: &SchemaRef,
-        increment: u16,
+        schema: u16,
         names: &[&str],
         dir: &str,
     ) -> Self {
@@ -337,7 +337,7 @@ impl ConformancePlan {
             market: t.market,
             directory: dir.to_owned(),
             load_mode: t.load_mode,
-            increment,
+            schema,
             key_columns: t.primary_key.iter().filter_map(|k| index(k)).collect(),
             time_column: t.time_column.as_deref().and_then(index),
             fields: arrow
@@ -413,7 +413,7 @@ mod tests {
     }
 
     /// The hash is the same for the same shape and plan, and differs when
-    /// the shape, the increment or the table differs.
+    /// the shape, the schema or the table differs.
     #[test]
     fn the_hash_follows_what_decides_the_output() {
         let reg = with(unit_scada());
@@ -424,15 +424,15 @@ mod tests {
         assert_ne!(hash(&reg, &THREE), h);
         let extra = ["SETTLEMENTDATE", "DUID", "SCADAVALUE", "NOBODY_KNOWS"];
         assert_ne!(hash(&reg, &extra), h);
-        // The same columns read against another increment.
+        // The same columns read against another schema.
         let mut renumbered = unit_scada();
-        renumbered.increments[1].n = 3;
+        renumbered.schemas[1].id = 3;
+        renumbered.runs[1].schema = 3;
         assert_ne!(hash(&with(renumbered), &FOUR), h);
         // A description or a note is not part of it.
         let mut noted = unit_scada();
         noted.description = None;
         noted.columns[2].note = Some("why".into());
-        noted.increments[1].note = Some("why".into());
         assert_eq!(hash(&with(noted), &FOUR), h);
         // A table derived from the file has a plan of its own, and the same
         // one in another registry that derives it again.
@@ -457,13 +457,12 @@ mod tests {
         let reg = with(unit_scada());
         let mut t = unit_scada();
         t.columns.push(Column {
-            id: ColumnId(t.next_column_id),
+            id: ColumnId(5),
             name: "QUALITY".into(),
             ty: LakeType::String,
             nullable: true,
             note: None,
         });
-        t.next_column_id += 1;
         let wider = with(t);
         let carrying = [
             "SETTLEMENTDATE",
@@ -510,7 +509,7 @@ mod tests {
         let json = serde_json::to_value(&*p).unwrap();
         assert_eq!(json["routes"][0]["cast"]["kind"], "timestamp_nanos");
         assert_eq!(json["routes"][0]["origin"], "declared");
-        assert_eq!(json["increment"], 2);
+        assert_eq!(json["schema"], 1);
         assert!(json.get("arrow").is_none());
         // A repeated column is kept beside the first, under a suffix.
         let twice = ["SETTLEMENTDATE", "DUID", "DUID", "DUID__2"];

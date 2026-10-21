@@ -21,11 +21,8 @@ pub async fn schema(ctx: &Context, cmd: &SchemaCmd) -> Result<i32> {
                     vec![
                         t.name.clone(),
                         format!("{:?}", t.load_mode).to_ascii_lowercase(),
-                        t.increments
-                            .iter()
-                            .map(|i| i.n.to_string())
-                            .collect::<Vec<_>>()
-                            .join(","),
+                        t.schemas.len().to_string(),
+                        t.runs.len().to_string(),
                         t.columns.len().to_string(),
                         t.report_pairs
                             .iter()
@@ -40,7 +37,8 @@ pub async fn schema(ctx: &Context, cmd: &SchemaCmd) -> Result<i32> {
                 for (_, t) in r.tables() {
                     render::json_line(&serde_json::json!({
                         "name": t.name,
-                        "increments": t.increments.iter().map(|i| i.n).collect::<Vec<_>>(),
+                        "schemas": t.schemas.iter().map(|s| s.id).collect::<Vec<_>>(),
+                        "runs": t.runs.len(),
                         "columns": t.columns.len(),
                     }));
                 }
@@ -48,7 +46,7 @@ pub async fn schema(ctx: &Context, cmd: &SchemaCmd) -> Result<i32> {
                 print!(
                     "{}",
                     render::table(
-                        &["table", "mode", "increments", "cols", "report pairs"],
+                        &["table", "mode", "schemas", "runs", "cols", "report pairs"],
                         &rows
                     )
                 );
@@ -70,48 +68,55 @@ pub async fn schema(ctx: &Context, cmd: &SchemaCmd) -> Result<i32> {
             }
             Ok(0)
         }
-        SchemaCmd::Increments { table } => {
-            let Some(incs) = r.increments(table) else {
+        SchemaCmd::History { table } => {
+            let Some(h) = r.table_by_name(table).and_then(|id| r.history(id)) else {
                 anyhow::bail!("The registry has no table {table}.")
             };
-            let mut prev: Option<&[String]> = None;
-            let rows: Vec<Vec<String>> = incs
+            if ctx.json {
+                render::json_line(h);
+                return Ok(0);
+            }
+            let t = r.table(r.table_by_name(table).expect("found above"));
+            let mut prev: Option<Vec<&str>> = None;
+            let schemas: Vec<Vec<String>> = t
+                .schemas
                 .iter()
-                .map(|i| {
-                    let changes = prev.map_or_else(String::new, |p| changes(p, &i.columns));
-                    prev = Some(&i.columns);
+                .map(|s| {
+                    let cols = t.schema_columns(s);
+                    let changes = prev
+                        .as_deref()
+                        .map_or_else(String::new, |p| changes(p, &cols));
+                    let row = vec![s.id.to_string(), cols.len().to_string(), changes];
+                    prev = Some(cols);
+                    row
+                })
+                .collect();
+            let runs: Vec<Vec<String>> = t
+                .runs
+                .iter()
+                .map(|run| {
                     vec![
-                        i.n.to_string(),
-                        i.from.to_string(),
-                        i.aemo_ctl.clone().unwrap_or_default(),
-                        i.aemo_versions
-                            .iter()
-                            .map(u16::to_string)
-                            .collect::<Vec<_>>()
-                            .join(","),
-                        i.columns.len().to_string(),
-                        changes,
+                        run.schema.to_string(),
+                        format!("{}.{}", run.report.0, run.report.1),
+                        run.version.to_string(),
+                        run.from.to_string(),
+                        run.to.to_string(),
+                        run.kinds.join(","),
+                        run.files.to_string(),
+                        run.rows.to_string(),
                     ]
                 })
                 .collect();
-            if ctx.json {
-                render::json_line(&incs);
-            } else {
-                print!(
-                    "{}",
-                    render::table(
-                        &[
-                            "n",
-                            "from",
-                            "aemo control file",
-                            "versions",
-                            "cols",
-                            "changes"
-                        ],
-                        &rows
-                    )
-                );
-            }
+            print!(
+                "{}\n{}",
+                render::table(&["schema", "cols", "changes"], &schemas),
+                render::table(
+                    &[
+                        "schema", "report", "version", "from", "to", "kinds", "files", "rows"
+                    ],
+                    &runs
+                )
+            );
             Ok(0)
         }
         SchemaCmd::Plan {
@@ -131,21 +136,8 @@ pub async fn schema(ctx: &Context, cmd: &SchemaCmd) -> Result<i32> {
             }
             Some(d) => match Registry::load_dir(Path::new(d)) {
                 Ok(reg) => {
-                    let breaks = r.check_compat(&reg);
-                    for (t, m) in &breaks {
-                        println!("breaking: {t}: {m}");
-                    }
-                    println!(
-                        "{}: {} tables, valid{}",
-                        d.display(),
-                        reg.tables().count(),
-                        if breaks.is_empty() {
-                            ""
-                        } else {
-                            ", with breaking changes against the embedded registry"
-                        }
-                    );
-                    Ok(if breaks.is_empty() { 0 } else { 5 })
+                    println!("{}: {} tables, valid", d.display(), reg.tables().count());
+                    Ok(0)
                 }
                 Err(e) => {
                     eprintln!("{}", e.diagnostic().render());
@@ -158,7 +150,7 @@ pub async fn schema(ctx: &Context, cmd: &SchemaCmd) -> Result<i32> {
 
 /// The columns `next` adds to and drops from `prev`, and whether the
 /// columns both have moved.
-fn changes(prev: &[String], next: &[String]) -> String {
+fn changes(prev: &[&str], next: &[&str]) -> String {
     let mut out: Vec<String> = next
         .iter()
         .filter(|c| !prev.contains(c))
@@ -169,8 +161,11 @@ fn changes(prev: &[String], next: &[String]) -> String {
             .filter(|c| !next.contains(c))
             .map(|c| format!("-{c}")),
     );
-    let shared = |a: &[String], b: &[String]| -> Vec<String> {
-        a.iter().filter(|c| b.contains(c)).cloned().collect()
+    let shared = |a: &[&str], b: &[&str]| -> Vec<String> {
+        a.iter()
+            .filter(|c| b.contains(c))
+            .map(|c| (*c).to_owned())
+            .collect()
     };
     if shared(prev, next) != shared(next, prev) {
         out.push("reordered".into());
@@ -227,14 +222,10 @@ mod tests {
     use super::changes;
 
     #[test]
-    fn changes_between_increments() {
-        let v = |s: &[&str]| s.iter().map(|c| (*c).to_owned()).collect::<Vec<_>>();
-        assert_eq!(changes(&v(&["A", "B"]), &v(&["A", "B"])), "");
-        assert_eq!(changes(&v(&["A", "B"]), &v(&["A", "B", "C"])), "+C");
-        assert_eq!(
-            changes(&v(&["A", "B"]), &v(&["B", "A", "C"])),
-            "+C reordered"
-        );
-        assert_eq!(changes(&v(&["A", "B"]), &v(&["A"])), "-B");
+    fn changes_between_schemas() {
+        assert_eq!(changes(&["A", "B"], &["A", "B"]), "");
+        assert_eq!(changes(&["A", "B"], &["A", "B", "C"]), "+C");
+        assert_eq!(changes(&["A", "B"], &["B", "A", "C"]), "+C reordered");
+        assert_eq!(changes(&["A", "B"], &["A"]), "-B");
     }
 }

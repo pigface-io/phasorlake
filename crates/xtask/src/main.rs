@@ -7,7 +7,6 @@ mod covergate;
 mod errors_doc;
 mod llm_check;
 mod ratchet;
-mod schema_compat;
 mod schemas;
 
 use std::path::PathBuf;
@@ -44,12 +43,6 @@ enum Cmd {
         #[arg(long, default_value = "origin/main")]
         base: String,
     },
-    /// Fail if a table file changed in a way the lake does not survive.
-    SchemaCompat {
-        /// The base ref.
-        #[arg(long, default_value = "origin/main")]
-        base: String,
-    },
     /// Copy utilake-schemas' NEM tables and manifest at a commit into
     /// schemas/nem/pulled/.
     SchemasPull {
@@ -81,7 +74,6 @@ fn main() -> ExitCode {
         Cmd::Covergate { lcov } => covergate::run(&lcov),
         Cmd::Bench { set, tighten } => bench::run(&set, tighten),
         Cmd::Ratchet { base } => ratchet::run(&base),
-        Cmd::SchemaCompat { base } => schema_compat::run(&base),
         Cmd::SchemasPull { rev, from } => schemas::pull(&rev, &from),
         Cmd::SchemasCheck => schemas::check(),
         Cmd::LlmCheck => llm_check::run(),

@@ -1,5 +1,5 @@
 //! The invariants every table must satisfy. Run at build time over the
-//! committed files, at run time over a user's own tables, and in tests.
+//! pulled tables, at run time over a user's own tables, and in tests.
 
 use std::collections::{BTreeMap, HashSet};
 
@@ -49,15 +49,18 @@ pub fn validate_table(t: &Table) -> Vec<Issue> {
     if t.columns.is_empty() {
         out.push(issue(t, "column list is empty"));
     }
-    if t.increments.is_empty() {
-        out.push(issue(t, "increment list is empty"));
+    if t.schemas.is_empty() {
+        out.push(issue(
+            t,
+            "schema list is empty; a table needs the column list of its files",
+        ));
     }
     columns(t, &mut out);
     keys(t, &mut out);
     if let Err(problems) = t.temporal.check(t) {
         out.extend(problems.into_iter().map(|m| issue(t, m)));
     }
-    increments(t, &mut out);
+    schemas(t, &mut out);
     out
 }
 
@@ -92,15 +95,6 @@ fn columns(t: &Table, out: &mut Vec<Issue>) {
                 format!("column {} has id 0; ids start at 1", c.name),
             ));
         }
-        if c.id.0 >= t.next_column_id {
-            out.push(issue(
-                t,
-                format!(
-                    "column {} has id {} but next_column_id is {}",
-                    c.name, c.id, t.next_column_id
-                ),
-            ));
-        }
         if !c.nullable && !t.primary_key.contains(&c.name) {
             out.push(issue(
                 t,
@@ -111,13 +105,16 @@ fn columns(t: &Table, out: &mut Vec<Issue>) {
             ));
         }
         if !c.nullable
-            && let Some(i) = t.increments.iter().find(|i| !i.columns.contains(&c.name))
+            && let Some(s) = t
+                .schemas
+                .iter()
+                .find(|s| !s.fields.iter().any(|(id, _)| *id == c.id))
         {
             out.push(issue(
                 t,
                 format!(
-                    "column {} is non-nullable but increment {} does not carry it; set nullable = true",
-                    c.name, i.n
+                    "column {} is non-nullable but schema {} does not carry it; set nullable = true",
+                    c.name, s.id
                 ),
             ));
         }
@@ -160,58 +157,63 @@ fn keys(t: &Table, out: &mut Vec<Issue>) {
     }
 }
 
-fn increments(t: &Table, out: &mut Vec<Issue>) {
-    let mut ns = HashSet::new();
-    let mut prev = None;
-    for i in &t.increments {
-        if !ns.insert(i.n) {
-            out.push(issue(t, format!("increment {} is declared twice", i.n)));
+fn schemas(t: &Table, out: &mut Vec<Issue>) {
+    let mut ids = HashSet::new();
+    for s in &t.schemas {
+        if !ids.insert(s.id) {
+            out.push(issue(t, format!("schema {} is declared twice", s.id)));
         }
-        if i.n == 0 {
-            out.push(issue(t, "increment 0; increments start at 1"));
-        }
-        if let Some(p) = prev
-            && i.from <= p
-        {
-            out.push(issue(
-                t,
-                format!(
-                    "increment {} applies from {} after one from {p}; from must strictly increase",
-                    i.n, i.from
-                ),
-            ));
-        }
-        prev = Some(i.from);
-        if i.columns.is_empty() {
-            out.push(issue(t, format!("increment {} has no columns", i.n)));
+        if s.fields.is_empty() {
+            out.push(issue(t, format!("schema {} has no columns", s.id)));
         }
         let mut seen = HashSet::new();
-        for c in &i.columns {
-            if !seen.insert(c) {
+        for id in s.fields.iter().map(|(id, _)| id).chain(&s.key) {
+            if t.column_by_id(*id).is_none() {
                 out.push(issue(
                     t,
-                    format!("increment {} lists column {c} twice", i.n),
-                ));
-            }
-            if t.column(c).is_none() {
-                out.push(issue(
-                    t,
-                    format!(
-                        "increment {} lists column {c}, which is not a column; add it to column",
-                        i.n
-                    ),
+                    format!("schema {} has field {id}, which is not a column", s.id),
                 ));
             }
         }
-        if i.ctl.is_some() != i.ctl_sha256.is_some() {
+        for (id, _) in &s.fields {
+            if !seen.insert(id) {
+                out.push(issue(t, format!("schema {} lists field {id} twice", s.id)));
+            }
+        }
+    }
+    let mut prev = None;
+    for r in &t.runs {
+        if t.schema(r.schema).is_none() {
             out.push(issue(
                 t,
                 format!(
-                    "increment {} names a control file without its hash, or a hash without its file",
-                    i.n
+                    "a run of {} is under schema {}, which the table has not",
+                    r.from, r.schema
                 ),
             ));
         }
+        if !t.report_pairs.contains(&r.report) {
+            out.push(issue(
+                t,
+                format!(
+                    "a run of {} is of report pair ({}, {}), which report_pairs does not list",
+                    r.from, r.report.0, r.report.1
+                ),
+            ));
+        }
+        if r.to < r.from || prev.is_some_and(|p| r.from < p) {
+            out.push(issue(
+                t,
+                format!("the run of {} is out of release order", r.from),
+            ));
+        }
+        prev = Some(r.from);
+    }
+    if !t.schemas.is_empty() && t.runs.is_empty() {
+        out.push(issue(
+            t,
+            "the history has no run, so no block can resolve to a schema",
+        ));
     }
 }
 
@@ -290,19 +292,17 @@ mod tests {
         assert!(has(&t, "DUID is declared twice") && has(&t, "id 3 is used twice"));
         let mut t = unit_scada();
         t.columns[0].id = ColumnId(0);
-        t.columns[1].id = ColumnId(9);
         t.columns[1].name = String::new();
-        assert!(has(&t, "ids start at 1") && has(&t, "next_column_id is 5"));
-        assert!(has(&t, "empty name"));
+        assert!(has(&t, "ids start at 1") && has(&t, "empty name"));
         let mut t = unit_scada();
         t.columns[2].nullable = false;
         assert!(has(&t, "only key columns may refuse nulls"));
         let mut t = unit_scada();
         t.columns.clear();
-        t.increments.clear();
+        t.schemas.clear();
         t.report_pairs.clear();
         t.name = String::new();
-        assert!(has(&t, "column list is empty") && has(&t, "increment list is empty"));
+        assert!(has(&t, "column list is empty") && has(&t, "schema list is empty"));
         assert!(has(&t, "report_pairs is empty") && has(&t, "name is empty"));
         let mut t = unit_scada();
         t.columns[2].name = "_nl_source".into();
@@ -340,33 +340,37 @@ mod tests {
         t.columns[0].nullable = true;
         t.columns[1].nullable = true;
         assert!(has(&t, "snapshots are replaced by key"));
-        // A key column an increment lacks must take nulls.
+        // A key column a schema lacks must take nulls.
         let mut t = unit_scada();
-        t.increments[0].columns.retain(|c| c != "DUID");
+        t.schemas[0].fields.retain(|(id, _)| *id != ColumnId(2));
         assert!(has(
             &t,
-            "DUID is non-nullable but increment 1 does not carry it"
+            "DUID is non-nullable but schema 0 does not carry it"
         ));
     }
 
     #[test]
-    fn increments() {
+    fn schemas_and_runs() {
         let mut t = unit_scada();
-        t.increments[1].n = 1;
-        t.increments[1].from = t.increments[0].from;
-        assert!(has(&t, "increment 1 is declared twice") && has(&t, "strictly increase"));
+        t.schemas[1].id = 0;
+        t.schemas[0].fields.push((ColumnId(3), false));
+        t.schemas[0].fields.push((ColumnId(9), false));
+        assert!(has(&t, "schema 0 is declared twice") && has(&t, "lists field 3 twice"));
+        assert!(has(&t, "field 9, which is not a column"));
         let mut t = unit_scada();
-        t.increments[0].n = 0;
-        t.increments[0].columns.push("SCADAVALUE".into());
-        t.increments[0].columns.push("GHOST".into());
-        t.increments[0].ctl = Some("001.ctl".into());
-        assert!(has(&t, "increment 0") && has(&t, "lists column SCADAVALUE twice"));
-        assert!(has(&t, "GHOST, which is not a column") && has(&t, "without its hash"));
-        let mut t = unit_scada();
-        t.increments[1].columns.clear();
+        t.schemas[1].fields.clear();
         t.columns[0].nullable = true;
         t.columns[1].nullable = true;
-        assert!(has(&t, "increment 2 has no columns"));
+        assert!(has(&t, "schema 1 has no columns"));
+        let mut t = unit_scada();
+        t.runs[0].schema = 7;
+        t.runs[1].report.1 = "OTHER".into();
+        assert!(has(&t, "under schema 7") && has(&t, "(DISPATCH, OTHER), which report_pairs"));
+        let mut t = unit_scada();
+        t.runs.swap(0, 1);
+        assert!(has(&t, "out of release order"));
+        t.runs.clear();
+        assert!(has(&t, "has no run"));
     }
 
     #[test]

@@ -1,31 +1,28 @@
-//! The schema model: our schema per table, in increments AEMO's control
-//! files set, and the rules a committed schema must satisfy.
+//! The schema model: each table's columns and its history as an Iceberg
+//! table, and the rules a table must satisfy.
 //!
 //! Pure and synchronous. It knows nothing of Arrow, so the registry's
 //! `build.rs` compiles this module on its own to validate `schemas/` at
 //! compile time and emit a compact blob; the rest of the crate adds the
 //! Arrow mapping.
 //!
-//! A table is `schemas/{market}/{TABLE}/table.toml` (see [`mod@file`]): its
-//! lake columns with exact types and stable ids, which persist, and its
-//! increments (`TABLE@n`), each the file shape of one AEMO control file
-//! kept byte for byte under `{TABLE}/ctl/`. [`validate`] holds the
-//! invariants, [`compat`] what the lake survives, [`blob`] the packed set,
-//! and [`ctl`] the parser of AEMO's SQL*Loader control files.
+//! A NEM table is the `table.json` utilake-schemas publishes, pulled into
+//! `schemas/nem/pulled/{TABLE}/` (see [`mod@doc`]): its columns with exact
+//! types and stable ids, and the schemas and runs of its history. A user's
+//! own table may say the same by hand in a `table.toml` ([`mod@file`]).
+//! [`validate`] holds the invariants and [`blob`] the packed set.
 
 pub mod blob;
-pub mod compat;
-pub mod ctl;
+pub mod doc;
 pub mod error;
 pub mod file;
-pub mod history;
 pub mod model;
-pub mod shapes;
 pub mod temporal;
 pub mod validate;
 
 pub use error::SchemaFileError;
 pub use model::{
-    Column, ColumnId, Increment, LakeType, LoadMode, Market, MarketDef, Table, TimestampFormat,
+    Column, ColumnId, LakeType, LoadMode, Market, MarketDef, Run, Table, TableSchema,
+    TimestampFormat,
 };
 pub use temporal::{RoleOrigin, Temporal, ValidAxis};

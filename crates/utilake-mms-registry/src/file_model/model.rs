@@ -1,10 +1,10 @@
-//! In-memory shape of a table: our schema, and the increments AEMO's
-//! control files set.
+//! In-memory shape of a table: its columns, and its history as an Iceberg
+//! table — the schemas its files were written under and the runs of files
+//! of each.
 
 use std::fmt;
 use utilake_iceberg::IcebergType;
 
-use crate::shape::TypeClass;
 use serde::{Deserialize, Serialize};
 use utilake_core::YearMonth;
 
@@ -77,8 +77,8 @@ pub enum TimestampFormat {
     Iso8601,
 }
 
-/// A stable column identifier, never reused within a table; becomes the
-/// Parquet field id so a later Iceberg table can adopt it unchanged.
+/// A stable column identifier, never reused within a table: the Iceberg
+/// field id of the table's history, and the Parquet field id.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct ColumnId(pub u32);
@@ -89,7 +89,7 @@ impl fmt::Display for ColumnId {
     }
 }
 
-/// The exact type of a lake column, as Parquet and Iceberg name it.
+/// The exact type of a lake column, one to one with an Iceberg type.
 ///
 /// | type           | Arrow                      | Iceberg V3       |
 /// |----------------|----------------------------|------------------|
@@ -105,7 +105,7 @@ impl fmt::Display for ColumnId {
 pub enum LakeType {
     /// Text.
     String,
-    /// A 64-bit float; every number AEMO publishes.
+    /// A 64-bit float.
     Double,
     /// A 64-bit integer.
     Long,
@@ -113,11 +113,10 @@ pub enum LakeType {
     Boolean,
     /// A day.
     Date,
-    /// An instant in nanoseconds, written in market time.
+    /// An instant, written in market time.
     Timestamp,
     /// An exact decimal: `precision` digits in all, `scale` after the
-    /// point, fixed for the life of the column. Up to 18 digits it is
-    /// stored as a 64-bit integer.
+    /// point, fixed for the life of the column.
     Decimal {
         /// Digits in all, 1 to 38.
         precision: u8,
@@ -162,8 +161,7 @@ impl LakeType {
             "long" => Self::Long,
             "boolean" => Self::Boolean,
             "date" => Self::Date,
-            // Files written before the lake kept microseconds say `_ns`.
-            "timestamp" | "timestamp_ns" => Self::Timestamp,
+            "timestamp" => Self::Timestamp,
             other => {
                 let IcebergType::Decimal { precision, scale } = IcebergType::parse(other)? else {
                     return None;
@@ -198,30 +196,6 @@ impl LakeType {
             IcebergType::Decimal { precision, scale } => Self::Decimal { precision, scale },
         }
     }
-
-    /// Whether a column of this type may become `to` without rewriting a
-    /// file: only an Iceberg promotion (`utilake_iceberg`).
-    pub fn promotes_to(self, to: Self) -> bool {
-        self.iceberg().promotes_to(to.iceberg())
-    }
-
-    /// Whether values a control file loads as `class` are read into this
-    /// type without loss. Text keeps anything; an unknown class says
-    /// nothing either way.
-    pub const fn holds(self, class: TypeClass) -> bool {
-        matches!(
-            (class, self),
-            (TypeClass::Unknown, _)
-                | (_, Self::String)
-                | (
-                    TypeClass::Number | TypeClass::Integer,
-                    Self::Double | Self::Decimal { .. }
-                )
-                | (TypeClass::Integer, Self::Long)
-                | (TypeClass::Date, Self::Date | Self::Timestamp)
-                | (TypeClass::Timestamp, Self::Timestamp)
-        )
-    }
 }
 
 impl fmt::Display for LakeType {
@@ -246,44 +220,59 @@ impl From<LakeType> for String {
     }
 }
 
-/// One lake column, ever: its id is never reused, and a renamed column is
-/// a new column.
+/// One lake column, ever: one field of the table's history, so its id is
+/// never reused and a renamed column is a new column.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Column {
-    /// Stable id; the Parquet field id.
+    /// Stable id; the Iceberg and Parquet field id.
     pub id: ColumnId,
     /// Upper-case name, as AEMO's files write it.
     pub name: String,
-    /// The type, our choice: it stays whatever a later control file says.
+    /// The type.
     pub ty: LakeType,
-    /// Whether nulls are allowed. `false` only for primary-key columns.
+    /// Whether nulls are allowed: unless every schema of the history
+    /// requires the field.
     pub nullable: bool,
     /// Why the column is what it is, when that is not plain.
     pub note: Option<String>,
 }
 
-/// `TABLE@n`: the file shape one AEMO control file sets, from a month on.
+/// One schema of the table's history: the columns of the files written
+/// under it, in file order.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct Increment {
-    /// Our version, never reused.
-    pub n: u16,
-    /// The month it applies from, until the next increment's.
-    pub from: YearMonth,
-    /// The control file kept beside `table.toml`, e.g. `002.ctl`.
-    pub ctl: Option<String>,
-    /// SHA-256 of that file's bytes, lower-case hex.
-    pub ctl_sha256: Option<String>,
-    /// AEMO's name of the control file.
-    pub aemo_ctl: Option<String>,
-    /// The I-row versions seen under it.
-    pub aemo_versions: Vec<u16>,
-    /// The columns its files carry, in file order.
-    pub columns: Vec<String>,
-    /// Why it differs from its control file, when it does.
-    pub note: Option<String>,
+pub struct TableSchema {
+    /// The Iceberg schema id.
+    pub id: u16,
+    /// Its fields in file order: the column, and whether every row of its
+    /// files has a value.
+    pub fields: Vec<(ColumnId, bool)>,
+    /// The fields of the key.
+    pub key: Vec<ColumnId>,
 }
 
-/// A table: our schema, and its increments in the order of their months.
+/// Files in a row that AEMO released under one schema, version and
+/// report pair.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Run {
+    /// The schema.
+    pub schema: u16,
+    /// The report type and subtype.
+    pub report: (String, String),
+    /// AEMO's version of the report.
+    pub version: u16,
+    /// The kinds of file it came in (`archive`, `dvd`, …).
+    pub kinds: Vec<String>,
+    /// The month its first file was released in.
+    pub from: YearMonth,
+    /// The month its last was.
+    pub to: YearMonth,
+    /// Files in it.
+    pub files: u64,
+    /// Rows in them.
+    pub rows: u64,
+}
+
+/// A table: its columns, and its history.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Table {
     /// Market, from the directory the table is in.
@@ -302,12 +291,12 @@ pub struct Table {
     pub primary_key: Vec<String>,
     /// The column that partitions the table by month.
     pub time_column: Option<String>,
-    /// The next id to hand out; never decreases.
-    pub next_column_id: u32,
-    /// Every lake column, in lake order.
+    /// Every lake column, by id.
     pub columns: Vec<Column>,
-    /// Increments, by ascending `from`.
-    pub increments: Vec<Increment>,
+    /// The schemas of its history, by id.
+    pub schemas: Vec<TableSchema>,
+    /// The runs of its history, in release order.
+    pub runs: Vec<Run>,
 }
 
 impl Table {
@@ -316,34 +305,114 @@ impl Table {
         self.columns.iter().find(|c| c.name == name)
     }
 
+    /// The column with this id.
+    pub fn column_by_id(&self, id: ColumnId) -> Option<&Column> {
+        self.columns.iter().find(|c| c.id == id)
+    }
+
     /// Index into `columns` of this name.
     pub fn column_index(&self, name: &str) -> Option<usize> {
         self.columns.iter().position(|c| c.name == name)
     }
 
-    /// Increment `n`.
-    pub fn increment(&self, n: u16) -> Option<&Increment> {
-        self.increments.iter().find(|i| i.n == n)
+    /// The schema with this id.
+    pub fn schema(&self, id: u16) -> Option<&TableSchema> {
+        self.schemas.iter().find(|s| s.id == id)
     }
 
-    /// The increment in force in `month`: the last that applies from it or
-    /// earlier, else the first.
-    pub fn in_force(&self, month: YearMonth) -> Option<&Increment> {
-        self.increments
+    /// The names of a schema's columns, in file order.
+    pub fn schema_columns(&self, s: &TableSchema) -> Vec<&str> {
+        s.fields
             .iter()
+            .filter_map(|(id, _)| self.column_by_id(*id))
+            .map(|c| c.name.as_str())
+            .collect()
+    }
+
+    /// The schema a block of `report` released in `release` is compared
+    /// with when no run fits it: that of the last run of the pair released
+    /// by then, else the pair's first, else the table's last run.
+    pub fn reference_schema(
+        &self,
+        report: (&str, &str),
+        release: Option<YearMonth>,
+    ) -> Option<u16> {
+        let of_pair = || {
+            self.runs
+                .iter()
+                .filter(|r| r.report.0 == report.0 && r.report.1 == report.1)
+        };
+        of_pair()
             .rev()
-            .find(|i| i.from <= month)
-            .or_else(|| self.increments.first())
+            .find(|r| release.is_none_or(|m| r.from <= m))
+            .or_else(|| of_pair().next())
+            .or_else(|| self.runs.last())
+            .map(|r| r.schema)
     }
 
-    /// The increment with the latest `from`.
-    pub fn latest(&self) -> Option<&Increment> {
-        self.increments.last()
+    /// Whether a run of `report` came under AEMO version `version`.
+    pub fn has_version(&self, report: (&str, &str), version: u16) -> bool {
+        self.runs
+            .iter()
+            .any(|r| r.report.0 == report.0 && r.report.1 == report.1 && r.version == version)
     }
 
-    /// The next free increment number.
-    pub fn next_increment(&self) -> u16 {
-        self.increments.iter().map(|i| i.n).max().unwrap_or(0) + 1
+    /// The history as an Iceberg table, the form `History::resolve` reads.
+    /// Only what the registry keeps is filled in: a mark has its month,
+    /// not its file.
+    pub fn history(&self) -> utilake_iceberg::History {
+        let last = self.columns.iter().map(|c| c.id.0).max().unwrap_or(0);
+        let mark = |m: YearMonth| utilake_iceberg::history::Mark {
+            file: String::new(),
+            sha256: String::new(),
+            release: m.to_string(),
+            data_time: None,
+        };
+        utilake_iceberg::History {
+            table: self.name.clone(),
+            format_version: 3,
+            schemas: self
+                .schemas
+                .iter()
+                .map(|s| utilake_iceberg::Schema {
+                    schema_id: u32::from(s.id),
+                    fields: s
+                        .fields
+                        .iter()
+                        .filter_map(|(id, required)| {
+                            let c = self.column_by_id(*id)?;
+                            Some(utilake_iceberg::Field {
+                                id: c.id.0,
+                                name: c.name.clone(),
+                                ty: c.ty.iceberg(),
+                                required: *required,
+                                doc: None,
+                            })
+                        })
+                        .collect(),
+                    identifier_field_ids: s.key.iter().map(|k| k.0).collect(),
+                    last_column_id: last,
+                })
+                .collect(),
+            runs: self
+                .runs
+                .iter()
+                .map(|r| utilake_iceberg::history::Run {
+                    schema_id: u32::from(r.schema),
+                    report: [r.report.0.clone(), r.report.1.clone()],
+                    version: r.version,
+                    kinds: r.kinds.clone(),
+                    from: mark(r.from),
+                    to: mark(r.to),
+                    files: r.files,
+                    rows: r.rows,
+                    changes: Vec::new(),
+                    updates: Vec::new(),
+                    overlaps: false,
+                })
+                .collect(),
+            breaking: Vec::new(),
+        }
     }
 
     /// Lower-case name for lake directories.
@@ -356,7 +425,7 @@ impl Table {
 pub(crate) mod tests {
     use super::*;
 
-    fn month(s: &str) -> YearMonth {
+    pub(crate) fn month(s: &str) -> YearMonth {
         s.parse().unwrap()
     }
 
@@ -370,10 +439,26 @@ pub(crate) mod tests {
         }
     }
 
-    /// DISPATCH_UNIT_SCADA in two increments: three columns from 2024-01,
+    /// A run of DISPATCH_UNIT_SCADA.
+    pub(crate) fn run(schema: u16, version: u16, from: &str, to: &str) -> Run {
+        Run {
+            schema,
+            report: ("DISPATCH".into(), "UNIT_SCADA".into()),
+            version,
+            kinds: vec!["archive".into()],
+            from: month(from),
+            to: month(to),
+            files: 2,
+            rows: 9,
+        }
+    }
+
+    /// DISPATCH_UNIT_SCADA in two schemas: three columns from 2024-01,
     /// four from 2026-08.
     pub(crate) fn unit_scada() -> Table {
         let names = |n: &[&str]| n.iter().map(|s| (*s).to_owned()).collect::<Vec<_>>();
+        let key = vec![ColumnId(1), ColumnId(2)];
+        let fields = |n: u32| (1..=n).map(|i| (ColumnId(i), i <= 2)).collect();
         Table {
             market: Market::Nem,
             name: "DISPATCH_UNIT_SCADA".into(),
@@ -389,34 +474,27 @@ pub(crate) mod tests {
             },
             primary_key: names(&["SETTLEMENTDATE", "DUID"]),
             time_column: Some("SETTLEMENTDATE".into()),
-            next_column_id: 5,
             columns: vec![
                 col(1, "SETTLEMENTDATE", LakeType::Timestamp, false),
                 col(2, "DUID", LakeType::String, false),
                 col(3, "SCADAVALUE", LakeType::Double, true),
                 col(4, "LASTCHANGED", LakeType::Timestamp, true),
             ],
-            increments: vec![
-                Increment {
-                    n: 1,
-                    from: month("2024-01"),
-                    ctl: None,
-                    ctl_sha256: None,
-                    aemo_ctl: Some("PUBLIC_DVD_DISPATCH_UNIT_SCADA_202401.ctl".into()),
-                    aemo_versions: vec![1],
-                    columns: names(&["SETTLEMENTDATE", "DUID", "SCADAVALUE"]),
-                    note: None,
+            schemas: vec![
+                TableSchema {
+                    id: 0,
+                    fields: fields(3),
+                    key: key.clone(),
                 },
-                Increment {
-                    n: 2,
-                    from: month("2026-08"),
-                    ctl: None,
-                    ctl_sha256: None,
-                    aemo_ctl: None,
-                    aemo_versions: vec![1],
-                    columns: names(&["SETTLEMENTDATE", "DUID", "SCADAVALUE", "LASTCHANGED"]),
-                    note: Some("LASTCHANGED came with the 2026 control file.".into()),
+                TableSchema {
+                    id: 1,
+                    fields: fields(4),
+                    key,
                 },
+            ],
+            runs: vec![
+                run(0, 1, "2024-01", "2026-07"),
+                run(1, 1, "2026-08", "2026-09"),
             ],
         }
     }
@@ -447,65 +525,73 @@ pub(crate) mod tests {
     }
 
     #[test]
-    fn increments_in_force() {
+    fn schemas_runs_and_the_reference_schema() {
         let t = unit_scada();
-        assert_eq!(t.in_force(month("2009-07")).unwrap().n, 1, "before any");
-        assert_eq!(t.in_force(month("2024-01")).unwrap().n, 1);
-        assert_eq!(t.in_force(month("2026-07")).unwrap().n, 1);
-        assert_eq!(t.in_force(month("2026-08")).unwrap().n, 2);
-        assert_eq!(t.in_force(month("2030-01")).unwrap().n, 2);
-        assert_eq!(t.latest().unwrap().n, 2);
-        assert_eq!(t.increment(1).unwrap().columns.len(), 3);
-        assert!(t.increment(9).is_none());
-        assert_eq!(t.next_increment(), 3);
+        let pair = ("DISPATCH", "UNIT_SCADA");
+        assert_eq!(
+            t.reference_schema(pair, Some(month("2009-07"))),
+            Some(0),
+            "before any"
+        );
+        assert_eq!(t.reference_schema(pair, Some(month("2026-07"))), Some(0));
+        assert_eq!(t.reference_schema(pair, Some(month("2026-08"))), Some(1));
+        assert_eq!(t.reference_schema(pair, None), Some(1), "latest");
+        assert_eq!(
+            t.reference_schema(("X", "Y"), None),
+            Some(1),
+            "the last run"
+        );
+        assert!(t.has_version(pair, 1) && !t.has_version(pair, 2));
+        assert_eq!(
+            t.schema_columns(t.schema(0).unwrap()),
+            ["SETTLEMENTDATE", "DUID", "SCADAVALUE"]
+        );
+        assert!(t.schema(9).is_none());
         assert_eq!(t.column_index("SCADAVALUE"), Some(2));
         assert_eq!(t.column("DUID").unwrap().ty, LakeType::String);
+        assert_eq!(t.column_by_id(ColumnId(4)).unwrap().name, "LASTCHANGED");
         assert!(t.column("NOPE").is_none());
         assert_eq!(t.dir_name(), "dispatch_unit_scada");
         let mut empty = t;
-        empty.increments.clear();
-        assert!(empty.in_force(month("2024-01")).is_none());
-        assert_eq!(empty.next_increment(), 1);
+        empty.runs.clear();
+        assert_eq!(empty.reference_schema(pair, None), None);
+    }
+
+    /// The history the registry keeps reads back as the Iceberg history
+    /// `History::resolve` reads.
+    #[test]
+    fn the_history_is_an_iceberg_history() {
+        let t = unit_scada();
+        let h = t.history();
+        assert_eq!(h.schemas.len(), 2);
+        assert_eq!(h.schemas[1].fields[3].ty, IcebergType::Timestamptz);
+        assert_eq!(h.schemas[0].identifier_field_ids, [1, 2]);
+        assert_eq!(
+            (h.schemas[0].last_column_id, h.runs[1].from.release.as_str()),
+            (4, "2026-08")
+        );
+        assert!(h.schemas[0].fields[0].required && !h.schemas[0].fields[2].required);
+        let pair = ["DISPATCH", "UNIT_SCADA"];
+        let three = ["SETTLEMENTDATE", "DUID", "SCADAVALUE"];
+        assert_eq!(h.resolve(pair, 1, &three, "2024-06"), Some(0));
+        assert_eq!(h.resolve(pair, 1, &three[..2], "2024-06"), None);
     }
 
     #[test]
-    fn types_name_and_hold() {
+    fn types_name_and_map_to_iceberg() {
         for t in LakeType::ALL {
             assert_eq!(LakeType::parse(&t.to_string()), Some(t));
             assert_eq!(LakeType::try_from(t.name()), Ok(t));
-            assert!(t.promotes_to(t));
-            assert!(t.holds(TypeClass::Unknown));
+            assert_eq!(LakeType::of_iceberg(t.iceberg()), t);
         }
         assert_eq!(LakeType::Timestamp.iceberg().name(), "timestamptz");
         assert_eq!(LakeType::Long.iceberg(), IcebergType::Long);
-        for t in LakeType::ALL {
-            assert_eq!(LakeType::of_iceberg(t.iceberg()), t);
-        }
         assert!(
             LakeType::try_from("float".to_owned())
                 .unwrap_err()
                 .contains("not a lake type")
         );
         assert_eq!(LakeType::parse("timestamptz"), None);
-        assert!(LakeType::ALL[6].holds(TypeClass::Number));
-        // A wider decimal of the same scale is an Iceberg promotion.
-        let d = |p, s| LakeType::Decimal {
-            precision: p,
-            scale: s,
-        };
-        assert!(d(9, 2).promotes_to(d(18, 2)) && !d(9, 2).promotes_to(d(18, 3)));
-        assert!(!LakeType::Long.promotes_to(LakeType::Double));
-        assert!(
-            LakeType::Date.promotes_to(LakeType::Timestamp),
-            "a date becomes a time in v3"
-        );
-        assert!(LakeType::String.holds(TypeClass::Timestamp));
-        assert!(LakeType::Double.holds(TypeClass::Integer));
-        assert!(LakeType::Long.holds(TypeClass::Integer));
-        assert!(!LakeType::Long.holds(TypeClass::Number));
-        assert!(LakeType::Timestamp.holds(TypeClass::Date));
-        assert!(!LakeType::Date.holds(TypeClass::Timestamp));
-        assert!(!LakeType::Double.holds(TypeClass::Varchar));
-        assert!(!LakeType::Boolean.holds(TypeClass::Number));
+        assert_eq!(LakeType::parse("timestamp_ns"), None);
     }
 }
