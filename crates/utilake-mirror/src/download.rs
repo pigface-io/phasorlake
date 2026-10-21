@@ -88,6 +88,10 @@ pub async fn download(
     let mut record = read_record(&mirror.record_path())?;
     // Only the files under the prefixes given, when any are.
     record.retain(|r| only.is_empty() || only.iter().any(|p| r.url.starts_with(p.as_str())));
+    if let Some(folders) = options.folders {
+        let folders: std::collections::HashSet<&str> = folders.iter().map(String::as_str).collect();
+        record.retain(|r| folders.contains(r.listed_on.as_str()));
+    }
     let listed = record.iter().filter(|r| r.kind == RemoteKind::File).count();
     // Stable: every other file in URL order, then the paired zips.
     record.sort_by_key(|r| paired.contains_key(&r.url));
@@ -300,6 +304,8 @@ pub struct DownloadOptions<'a> {
     pub downloads: usize,
     /// Only the files whose URL starts with one of these, when any.
     pub only: &'a [String],
+    /// Only the files listed on one of these folders, when given.
+    pub folders: Option<&'a [String]>,
     /// Just before each zip beside a folder of the same name, compare its
     /// listing with the folder and, when they are the same, record it
     /// removed and do not download it.
@@ -389,6 +395,7 @@ mod tests {
             &DownloadOptions {
                 downloads: 2,
                 only: &[],
+                folders: None,
                 delete_duplicates: false,
             },
             ignore,
@@ -407,6 +414,7 @@ mod tests {
             &DownloadOptions {
                 downloads: 2,
                 only: &[],
+                folders: None,
                 delete_duplicates: false,
             },
             |d| {
@@ -440,6 +448,7 @@ mod tests {
             &DownloadOptions {
                 downloads: 2,
                 only: &[],
+                folders: None,
                 delete_duplicates: false,
             },
             ignore,
@@ -455,6 +464,7 @@ mod tests {
             &DownloadOptions {
                 downloads: 2,
                 only: &only,
+                folders: None,
                 delete_duplicates: false,
             },
             ignore,
@@ -463,6 +473,24 @@ mod tests {
         .unwrap();
         assert_eq!((s.files, s.cached), (1, 1));
         assert_eq!(t.request_count(), 1 + 3 + 1);
+        // Only the files a folder lists.
+        for (folder, files) in [("https://h/A/", 3), ("https://h/B/", 0)] {
+            let folders = [folder.to_owned()];
+            let s = download(
+                &f,
+                &mirror,
+                &DownloadOptions {
+                    downloads: 2,
+                    only: &[],
+                    folders: Some(&folders),
+                    delete_duplicates: false,
+                },
+                ignore,
+            )
+            .await
+            .unwrap();
+            assert_eq!(s.files, files);
+        }
     }
 
     #[tokio::test]
@@ -481,6 +509,7 @@ mod tests {
         let options = DownloadOptions {
             downloads: 1,
             only: &[],
+            folders: None,
             delete_duplicates: false,
         };
         download(&f, &mirror, &options, ignore).await.unwrap();
@@ -534,6 +563,7 @@ mod tests {
         let options = DownloadOptions {
             downloads: 1,
             only: &[],
+            folders: None,
             delete_duplicates: false,
         };
         download(&f, &mirror, &options, ignore).await.unwrap();
@@ -599,6 +629,7 @@ mod tests {
             &DownloadOptions {
                 downloads: 1,
                 only: &[],
+                folders: None,
                 delete_duplicates: false,
             },
             ignore,
@@ -631,6 +662,7 @@ mod tests {
                 &DownloadOptions {
                     downloads: 1,
                     only: &[],
+                    folders: None,
                     delete_duplicates: false,
                 },
                 ignore,
@@ -685,7 +717,7 @@ mod tests {
             .unwrap();
         // Once N's folder is down, N.zip is found the same as it.
         let removed = mirror.removed_path();
-        let s = download(&f, &mirror, &DownloadOptions { downloads: 1, only: &[], delete_duplicates: false }, |d| {
+        let s = download(&f, &mirror, &DownloadOptions { downloads: 1, only: &[], folders: None, delete_duplicates: false }, |d| {
             if d.url == "https://h/A/N/a.zip" {
                 std::fs::write(
                     &removed,
@@ -715,6 +747,7 @@ mod tests {
             &DownloadOptions {
                 downloads: 1,
                 only: &[],
+                folders: None,
                 delete_duplicates: false,
             },
             ignore,
@@ -839,6 +872,7 @@ mod tests {
         let options = DownloadOptions {
             downloads: 1,
             only: &[],
+            folders: None,
             delete_duplicates: true,
         };
         let s = download(&f, &mirror, &options, |_| {}).await.unwrap();

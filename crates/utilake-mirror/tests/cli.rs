@@ -633,14 +633,29 @@ fn a_watch_keeps_each_version_and_what_is_new() {
     }
     let cli = Cli::new();
     let base = srv.url("");
-    cli.config(&format!(
-        "{FAST}base_url = \"{base}\"\nwatch_fast = [\"W/G/\"]\nwatch_current = [\"W/\"]\nwatch_fast_secs = 1\nwatch_current_secs = 1\nwatch_secs = 1\nwatch_least_secs = 1\n"
-    ));
+    // Every folder read in every round, so each round's answers are known.
+    let every = |secs: u64, least: u64| {
+        format!(
+            "{FAST}base_url = \"{base}\"\nwatch_fast = [\"W/G/\"]\nwatch_current = [\"W/\"]\nwatch_fast_secs = {secs}\nwatch_current_secs = {secs}\nwatch_secs = {secs}\nwatch_least_secs = {least}\n"
+        )
+    };
+    cli.config(&every(0, 0));
     let root = srv.url("/W/");
     let (code, out, _) = cli.code(&["--json", "watch", "--root", &root]);
     assert_eq!(code, 1);
     assert!(out.contains("mirror.crawl_incomplete"), "{out}");
     cli.ok(&["run", "--root", &root]);
+    // A file of a folder that does not change, gone from the archive (a
+    // download cut off), is fetched again when its folder is read.
+    let archive = cli.home.path().join("archive");
+    let host = srv
+        .url("/W/")
+        .split_once("://")
+        .unwrap()
+        .1
+        .replace(':', "_");
+    let t_csv = archive.join(&host).join("M/t.csv");
+    std::fs::remove_file(&t_csv).unwrap();
 
     let out = cli.ok(&[
         "--json",
@@ -653,14 +668,8 @@ fn a_watch_keeps_each_version_and_what_is_new() {
     ]);
     assert_eq!(out.matches("\"event\":\"watch_round\"").count(), 2, "{out}");
     assert!(out.contains("\"event\":\"zip_peeked\""), "{out}");
-    let archive = cli.home.path().join("archive");
-    let g = archive.join(
-        srv.url("/W/G/")
-            .split_once("://")
-            .unwrap()
-            .1
-            .replace(':', "_"),
-    );
+    assert_eq!(std::fs::read(&t_csv).unwrap(), t);
+    let g = archive.join(&host).join("G");
     assert_eq!(std::fs::read(g.join("r.csv")).unwrap(), b"one");
     assert_eq!(
         std::fs::read(g.join("r.csv@20261013T115300+1000")).unwrap(),
@@ -678,6 +687,11 @@ fn a_watch_keeps_each_version_and_what_is_new() {
         std::fs::read(g.join("r.csv@20261014T090000+1000")).unwrap(),
         b"five!"
     );
+
+    // Between rounds, the watch sleeps until a folder is due.
+    cli.config(&every(1, 0));
+    let out = cli.ok(&["--json", "watch", "--root", &root, "--rounds", "2"]);
+    assert_eq!(out.matches("\"event\":\"watch_round\"").count(), 2, "{out}");
 
     // An archive linked to a drive not mounted is waited for.
     let away = cli.home.path().join("archive.away");

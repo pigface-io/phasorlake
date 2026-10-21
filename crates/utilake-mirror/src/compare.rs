@@ -797,6 +797,7 @@ mod tests {
             &crate::download::DownloadOptions {
                 downloads: 1,
                 only: &[],
+                folders: None,
                 delete_duplicates: false,
             },
             |_| {},

@@ -101,7 +101,7 @@ pub async fn run_command(cli: &Cli) -> Result<i32> {
         Command::Download { only } => {
             let fetcher = ctx.fetcher();
             let pass = async {
-                download(ctx, &fetcher, &mirror, only, false, None)
+                download(ctx, &fetcher, &mirror, only, None, false, None)
                     .await
                     .map(|(code, _)| code)
             };
@@ -228,6 +228,7 @@ async fn run(ctx: &Context, mirror: &Mirror, plan: &RunPlan<'_>) -> Result<i32, 
                     &fetcher,
                     mirror,
                     &[],
+                    None,
                     delete_duplicates,
                     Some(&tracker)
                 )
@@ -309,9 +310,6 @@ async fn watch(ctx: &Context, mirror: &Mirror, plan: &WatchPlan<'_>) -> Result<i
     let archive = ctx.archive();
     let mut fetcher = ctx.fetcher();
     let (mut rounds, mut refused) = (0, 0);
-    // Files of a round whose download failed, asked for once more in the
-    // next round.
-    let mut retry: Vec<String> = Vec::new();
     while plan.rounds.is_none_or(|n| rounds < n) {
         let now = std::time::Instant::now();
         let due = schedule.due(now);
@@ -361,23 +359,30 @@ async fn watch(ctx: &Context, mirror: &Mirror, plan: &WatchPlan<'_>) -> Result<i
                     r.files.len(),
                 );
             }
-            let fresh = r.files;
-            let mut files = fresh.clone();
-            files.extend(retry.iter().filter(|f| !fresh.contains(f)).cloned());
-            if files.is_empty() {
-                return Ok(files);
+            // Every file of the folders read that the archive lacks in the
+            // version listed, changed this round or not: one a download
+            // before did not get (it failed, or the watch was stopped) is
+            // fetched the next time its folder is read.
+            if !r.files.is_empty() {
+                let paired = nemweb_mirror::pairs(mirror)?;
+                if paired.iter().any(|p| r.files.contains(&p.zip)) {
+                    peek(ctx, &fetcher, mirror, true, None).await?;
+                }
             }
-            let paired = nemweb_mirror::pairs(mirror)?;
-            if paired.iter().any(|p| files.contains(&p.zip)) {
-                peek(ctx, &fetcher, mirror, true, None).await?;
-            }
-            let (code, _) =
-                download(ctx, &fetcher, mirror, &files, plan.delete_duplicates, None).await?;
-            Ok(if code == 0 { Vec::new() } else { fresh })
+            let read: Vec<String> = r.folders.into_iter().map(|(f, _)| f).collect();
+            download(
+                ctx,
+                &fetcher,
+                mirror,
+                &[],
+                Some(&read),
+                plan.delete_duplicates,
+                None,
+            )
+            .await
         };
         let d = match round.await {
-            Ok(failed) => {
-                retry = failed;
+            Ok(_) => {
                 refused = 0;
                 continue;
             }
@@ -523,6 +528,7 @@ async fn download(
     fetcher: &Fetcher,
     mirror: &Mirror,
     only: &[String],
+    folders: Option<&[String]>,
     delete_duplicates: bool,
     tracker: Option<&RefCell<Tracker>>,
 ) -> Result<(i32, bool), MirrorError> {
@@ -531,6 +537,7 @@ async fn download(
     let options = nemweb_mirror::DownloadOptions {
         downloads: ctx.config.downloads,
         only,
+        folders,
         delete_duplicates,
     };
     let summary = nemweb_mirror::download(fetcher, mirror, &options, |f| {
