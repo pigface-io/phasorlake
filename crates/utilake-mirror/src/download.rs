@@ -12,8 +12,9 @@ use crate::compare::{Pair, Verdict, compare, pairs, remove};
 use crate::crawl::{Mirror, RemoteKind, read_record};
 use crate::diag::{Diagnose as _, Diagnostic};
 use crate::error::MirrorError;
-use crate::net::{FetchError, Fetcher, RemoteFile};
+use crate::net::{Archive, FetchError, Fetcher, RemoteFile};
 use crate::peek::{Peeked, current};
+use crate::stamp::Stamp;
 
 /// One file dealt with.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -129,20 +130,39 @@ pub async fn download(
                 }
             }
             let url = remote.url.as_str();
-            if let Some(&size) = held.get(url)
-                && std::fs::metadata(fetcher.archive().path_for(url)).is_ok_and(|m| m.len() == size)
+            let archive = fetcher.archive();
+            if let Some(h) = held.get(url)
+                && h.is_listed_as(archive, remote.size, remote.modified_at)
+                && std::fs::metadata(h.path(archive)).is_ok_and(|m| m.len() == h.size)
             {
+                // A line written before lines kept the listed time is
+                // written again with it.
+                let note =
+                    (h.modified_at.is_none() && remote.modified_at.is_some()).then(|| Held {
+                        modified_at: remote.modified_at,
+                        ..h.clone()
+                    });
                 let got = Got {
                     cached: true,
-                    size,
-                    noted: true,
+                    size: h.size,
+                    note,
                 };
                 return Ok((remote, Some(Ok(got))));
             }
-            let got = fetcher.fetch(remote).await.map(|l| Got {
-                cached: l.cached,
-                size: l.size,
-                noted: false,
+            let got = fetcher.fetch(remote).await.map(|l| {
+                let base = archive.path_for(url);
+                Got {
+                    cached: l.cached,
+                    size: l.size,
+                    note: Some(Held {
+                        url: url.to_owned(),
+                        size: l.size,
+                        modified_at: remote.modified_at,
+                        file: (l.path != base)
+                            .then(|| l.path.file_name().map(|n| n.to_string_lossy().into_owned()))
+                            .flatten(),
+                    }),
+                }
             });
             Ok::<_, MirrorError>((remote, Some(got)))
         })
@@ -163,12 +183,8 @@ pub async fn download(
                     summary.downloaded += 1;
                     summary.bytes += local.size;
                 }
-                if !local.noted {
-                    let line = serde_json::to_string(&Held {
-                        url: remote.url.as_str().to_owned(),
-                        size: local.size,
-                    })
-                    .expect("a Held always serialises");
+                if let Some(held) = &local.note {
+                    let line = serde_json::to_string(held).expect("a Held always serialises");
                     note.write_all(format!("{line}\n").as_bytes())
                         .map_err(MirrorError::io(&held_path))?;
                 }
@@ -187,11 +203,58 @@ pub async fn download(
     Ok(summary)
 }
 
-/// One file a download pass found in the archive, or put there.
+/// One file a download pass found in the archive, or put there: the
+/// version nemweb listed when it did.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-struct Held {
-    url: String,
-    size: u64,
+pub struct Held {
+    /// The file's URL.
+    pub url: String,
+    /// Its bytes.
+    pub size: u64,
+    /// The time nemweb listed it with. A line written before lines kept it
+    /// has none.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub modified_at: Option<Stamp>,
+    /// The name of the version beside the URL's path that holds it
+    /// (`Archive::version_path`), when not the first.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub file: Option<String>,
+}
+
+impl Held {
+    /// Where its bytes are.
+    pub fn path(&self, archive: &Archive) -> PathBuf {
+        let path = archive.path_for(&self.url);
+        match &self.file {
+            Some(name) => path.with_file_name(name),
+            None => path,
+        }
+    }
+
+    /// Whether it is the version nemweb lists at `size` and `modified_at`:
+    /// the same size, and the same listed time when both have one. A line
+    /// without the listed time is that version when its file on disk was
+    /// written at or after that time; nemweb lists a time no later than
+    /// it serves the file.
+    pub fn is_listed_as(
+        &self,
+        archive: &Archive,
+        size: Option<u64>,
+        modified_at: Option<Stamp>,
+    ) -> bool {
+        if size.is_some_and(|s| s != self.size) {
+            return false;
+        }
+        match (self.modified_at, modified_at) {
+            (Some(a), Some(b)) => a == b,
+            (None, Some(at)) => std::fs::metadata(self.path(archive))
+                .and_then(|m| m.modified())
+                .ok()
+                .and_then(|t| t.duration_since(std::time::UNIX_EPOCH).ok())
+                .is_some_and(|d| d.as_secs() as i64 >= at.unix()),
+            (_, None) => true,
+        }
+    }
 }
 
 impl Mirror {
@@ -203,10 +266,11 @@ impl Mirror {
         self.dir().join("held.ndjson")
     }
 
-    /// Every held file's size, by URL. A line that does not read (the last
-    /// one, cut short when a pass was killed) is passed over: that file's
-    /// sidecar is read instead.
-    pub fn held(&self) -> Result<HashMap<String, u64>, MirrorError> {
+    /// Every held file, by URL: its last line, the version found or put
+    /// there last. A line that does not read (the last one, cut short when
+    /// a pass was killed) is passed over: that file's sidecar is read
+    /// instead.
+    pub fn held(&self) -> Result<HashMap<String, Held>, MirrorError> {
         let path = self.held_path();
         let text = match std::fs::read_to_string(&path) {
             Ok(t) => t,
@@ -216,7 +280,7 @@ impl Mirror {
         Ok(text
             .lines()
             .filter_map(|l| serde_json::from_str::<Held>(l).ok())
-            .map(|h| (h.url, h.size))
+            .map(|h| (h.url.clone(), h))
             .collect())
     }
 }
@@ -225,8 +289,8 @@ impl Mirror {
 struct Got {
     cached: bool,
     size: u64,
-    /// Whether `held.ndjson` already says so.
-    noted: bool,
+    /// The line to add to `held.ndjson`, when it does not say so already.
+    note: Option<Held>,
 }
 
 /// How a download pass runs.
@@ -421,9 +485,10 @@ mod tests {
         };
         download(&f, &mirror, &options, ignore).await.unwrap();
         let held = mirror.held().unwrap();
+        let size = |u: &str| held.get(u).map(|h| h.size);
         assert_eq!(
-            (held.get("https://h/A/x.zip"), held.get("https://h/A/y.zip")),
-            (Some(&3), Some(&4))
+            (size("https://h/A/x.zip"), size("https://h/A/y.zip")),
+            (Some(3), Some(4))
         );
 
         // A sidecar that does not read would stop a pass that read it.
@@ -448,6 +513,73 @@ mod tests {
         std::fs::create_dir(mirror.held_path()).unwrap();
         let e = download(&f, &mirror, &options, ignore).await.unwrap_err();
         assert!(e.to_string().contains("held.ndjson"), "{e}");
+    }
+
+    #[tokio::test]
+    async fn a_file_nemweb_rewrites_in_place_is_kept_in_every_version() {
+        let home = tempfile::tempdir().unwrap();
+        let mirror = Mirror::new(home.path().join("mirror"));
+        let archive = home.path().join("archive");
+        let t = Arc::new(StaticTransport::default());
+        // Listed again a day later: x with the same bytes, y rewritten.
+        let later = "<pre> Tuesday, October 13, 2026 11:53 AM 3 <A HREF=\"/A/x.zip\">x</A><br> Tuesday, October 13, 2026 11:53 AM 5 <A HREF=\"/A/y.zip\">y</A><br></pre>";
+        t.add("https://h/A/", Canned::ok(PAGE.as_bytes()))
+            .add("https://h/A/", Canned::ok(later.as_bytes()));
+        t.add("https://h/A/x.zip", Canned::ok(b"xxx"));
+        t.add("https://h/A/y.zip", Canned::ok(b"yyyy"))
+            .add("https://h/A/y.zip", Canned::ok(b"yyyyy"));
+        let f = fetcher(&t, &archive);
+        let roots = [root("https://h/A/").unwrap()];
+        crawl(&f, &mirror, &roots, false, |_| {}).await.unwrap();
+        let options = DownloadOptions {
+            downloads: 1,
+            only: &[],
+            delete_duplicates: false,
+        };
+        download(&f, &mirror, &options, ignore).await.unwrap();
+
+        // Lines written before they kept the listed time hold a file
+        // written since that time, and are written again with it.
+        let old = "{\"url\":\"https://h/A/x.zip\",\"size\":3}\n{\"url\":\"https://h/A/y.zip\",\"size\":4}\n";
+        std::fs::write(mirror.held_path(), old).unwrap();
+        let s = download(&f, &mirror, &options, ignore).await.unwrap();
+        assert_eq!((s.cached, s.downloaded), (2, 0));
+        let held = mirror.held().unwrap();
+        assert_eq!(
+            held["https://h/A/y.zip"].modified_at.unwrap().to_string(),
+            "2026-10-12T10:45:00+10:00"
+        );
+        let requests = t.request_count();
+
+        crawl(&f, &mirror, &roots, true, |_| {}).await.unwrap();
+        let s = download(&f, &mirror, &options, ignore).await.unwrap();
+        // Both asked for again; x's bytes are the same, so x is not kept twice.
+        assert_eq!((s.cached, s.downloaded), (1, 1));
+        assert_eq!(t.request_count(), requests + 1 + 2);
+        let a = Archive::new(&archive);
+        let y = archive.join("h/A/y.zip@20261013T115300+1000");
+        assert_eq!(std::fs::read(archive.join("h/A/y.zip")).unwrap(), b"yyyy");
+        assert_eq!(std::fs::read(&y).unwrap(), b"yyyyy");
+        assert!(!archive.join("h/A/x.zip@20261013T115300+1000").exists());
+        let held = mirror.held().unwrap();
+        assert_eq!(held["https://h/A/y.zip"].path(&a), y);
+        assert_eq!(
+            held["https://h/A/x.zip"].path(&a),
+            archive.join("h/A/x.zip")
+        );
+        // From then on, each is the version listed, with no request.
+        let s = download(&f, &mirror, &options, ignore).await.unwrap();
+        assert_eq!((s.cached, s.downloaded), (2, 0));
+        assert_eq!(t.request_count(), requests + 3);
+        // A line kept before the file was rewritten is not the version listed.
+        let h = Held {
+            modified_at: None,
+            ..held["https://h/A/x.zip"].clone()
+        };
+        let ahead = crate::stamp::Stamp::from_unix(crate::stamp::Stamp::now().unix() + 3600);
+        assert!(!h.is_listed_as(&a, Some(3), Some(ahead)));
+        assert!(h.is_listed_as(&a, None, None));
+        assert!(!h.is_listed_as(&a, Some(4), None));
     }
 
     #[tokio::test]

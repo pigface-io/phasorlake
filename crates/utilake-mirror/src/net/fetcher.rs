@@ -19,7 +19,7 @@ use futures::stream::BoxStream;
 use sha2::{Digest, Sha256};
 use tokio::sync::Mutex;
 
-use crate::net::archive::{Archive, Sidecar, hex};
+use crate::net::archive::{Archive, Archived, Sidecar, hex};
 use crate::net::error::FetchError;
 use crate::net::source::RemoteFile;
 use crate::net::transport::{HttpResponse, Span, Transport};
@@ -35,12 +35,28 @@ pub struct LocalFile {
     pub sha256: String,
     /// Bytes.
     pub size: u64,
-    /// Whether it was in the archive already, with no request.
+    /// Whether the archive held these bytes already: with no request, or,
+    /// for a file nemweb listed anew, with the same bytes as before.
     pub cached: bool,
     /// ETag.
     pub etag: Option<String>,
     /// Last-Modified.
     pub last_modified: Option<String>,
+}
+
+impl LocalFile {
+    /// An archived file, as found.
+    fn cached(remote: &RemoteFile, found: Archived) -> Self {
+        Self {
+            remote: remote.clone(),
+            path: found.path,
+            sha256: found.sidecar.sha256,
+            size: found.sidecar.size,
+            cached: true,
+            etag: found.sidecar.etag,
+            last_modified: found.sidecar.last_modified,
+        }
+    }
 }
 
 /// Knobs.
@@ -174,21 +190,33 @@ impl Fetcher {
 
     /// The archived copy of a remote file, or the file downloaded into the
     /// archive whole, with a sidecar that says where it came from.
+    ///
+    /// nemweb rewrites some files in place under the same name. When the
+    /// archived copy is not the version the listing gives (another size or
+    /// listed time, `Sidecar::is_listed_as`), that version is downloaded
+    /// beside it (`Archive::version_path`) and the first is kept as it
+    /// is. A version whose bytes turn out the same as the first is not
+    /// kept: the first is the file, as `cached`.
     pub async fn fetch(&self, remote: &RemoteFile) -> Result<LocalFile, FetchError> {
         let url = remote.url.as_str();
-        if let Some(found) = self.archive.lookup(url)? {
-            return Ok(LocalFile {
-                remote: remote.clone(),
-                path: found.path,
-                sha256: found.sidecar.sha256,
-                size: found.sidecar.size,
-                cached: true,
-                etag: found.sidecar.etag,
-                last_modified: found.sidecar.last_modified,
-            });
-        }
+        let first = self.archive.lookup(url)?;
+        let path = match &first {
+            None => self.archive.path_for(url),
+            Some(found) => {
+                let at = remote
+                    .modified_at
+                    .filter(|_| !found.sidecar.is_listed_as(remote.size, remote.modified_at));
+                let Some(at) = at else {
+                    return Ok(LocalFile::cached(remote, found.clone()));
+                };
+                let path = Archive::version_path(&found.path, at);
+                if let Some(version) = Archive::lookup_at(path.clone(), url)? {
+                    return Ok(LocalFile::cached(remote, version));
+                }
+                path
+            }
+        };
         self.ensure_online(url)?;
-        let path = self.archive.path_for(url);
         let p = path.parent().unwrap_or(Path::new("."));
         std::fs::create_dir_all(p).map_err(|source| FetchError::CacheIo {
             path: p.display().to_string(),
@@ -205,6 +233,10 @@ impl Fetcher {
             }
         };
         let _ = std::fs::remove_file(part_meta(&part));
+        if let Some(found) = first.filter(|f| f.sidecar.sha256 == streamed.sha256) {
+            let _ = std::fs::remove_file(&part);
+            return Ok(LocalFile::cached(remote, found));
+        }
         std::fs::rename(&part, &path).map_err(|source| FetchError::CacheIo {
             path: path.display().to_string(),
             source,
@@ -678,6 +710,46 @@ mod tests {
             .expect("the fetcher reports a download start");
         assert!(matches!(got, Some(Event::DownloadStarted { .. })));
         assert_eq!(f.archive().root(), dir.path());
+    }
+
+    #[tokio::test]
+    async fn a_later_version_is_kept_beside_the_first() {
+        let dir = tempfile::tempdir().unwrap();
+        let url = "https://h/Reports/CURRENT/A/s.csv";
+        let t = Arc::new(StaticTransport::default());
+        t.add(url, Canned::ok(b"one")).add(url, Canned::ok(b"two!"));
+        let f = Fetcher::new(Arc::new(t.clone()), Archive::new(dir.path()), fast());
+        let listed = |size, at: &str| RemoteFile {
+            size: Some(size),
+            modified: Some(at.to_owned()),
+            modified_at: Stamp::from_listing(at),
+            ..remote(url)
+        };
+        let first = f
+            .fetch(&listed(3, "Monday, October 12, 2026 10:45 AM"))
+            .await
+            .unwrap();
+        let later = listed(4, "Tuesday, October 13, 2026 11:53 AM");
+        let second = f.fetch(&later).await.unwrap();
+        assert!(!second.cached);
+        assert_eq!(
+            second.path,
+            dir.path()
+                .join("h/Reports/CURRENT/A/s.csv@20261013T115300+1000")
+        );
+        assert_eq!(std::fs::read(&first.path).unwrap(), b"one");
+        assert_eq!(std::fs::read(&second.path).unwrap(), b"two!");
+        // Found again beside the first, with no request.
+        let again = f.fetch(&later).await.unwrap();
+        assert!(again.cached);
+        assert_eq!(again.path, second.path);
+        // A listing with no time cannot name a version: the first is the file.
+        let untimed = RemoteFile {
+            size: Some(9),
+            ..remote(url)
+        };
+        assert_eq!(f.fetch(&untimed).await.unwrap().path, first.path);
+        assert_eq!(t.request_count(), 2);
     }
 
     #[tokio::test]

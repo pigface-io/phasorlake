@@ -37,7 +37,7 @@ pub const MAX_NESTED: u64 = 16 << 30;
 /// would pass it is not listed (`zip.too_many_entries`).
 pub const MAX_ENTRIES: u64 = 10_000_000;
 /// The version of the catalog's format, on its first line.
-pub const CATALOG_FORMAT: u32 = 2;
+pub const CATALOG_FORMAT: u32 = 3;
 /// The bytes every zip with at least one entry starts with, and an empty one.
 const ZIP_MAGIC: [&[u8; 4]; 2] = [b"PK\x03\x04", b"PK\x05\x06"];
 /// The buffer of a zip read from disk, which is read by seeking: small,
@@ -70,6 +70,9 @@ pub enum State {
     GoneUpstream,
     /// Removed from the archive: a zip found the same as its folder.
     Removed,
+    /// Another version of a file nemweb rewrote in place, kept beside it
+    /// as `{name}@{at}` (`docs/archive.md`).
+    Version,
 }
 
 /// Why a file or zip could not be read.
@@ -199,6 +202,8 @@ pub struct MapSummary {
     pub gone_upstream: usize,
     /// Zips removed as the same as their folders.
     pub removed: usize,
+    /// Later versions of files nemweb rewrote in place.
+    pub versions: usize,
     /// Files or zips that could not be read.
     pub errors: usize,
     /// Bytes of the archived files nemweb lists or listed.
@@ -273,14 +278,14 @@ fn tops(
     archive: &Archive,
     roots: &[Url],
 ) -> Result<BTreeMap<Vec<String>, Top>, MirrorError> {
-    let key = |url: &str| -> Vec<String> {
-        let path = archive.path_for(url);
+    let path_key = |path: &Path| -> Vec<String> {
         path.strip_prefix(archive.root())
-            .unwrap_or(&path)
+            .unwrap_or(path)
             .components()
             .map(|c| c.as_os_str().to_string_lossy().into_owned())
             .collect()
     };
+    let key = |url: &str| path_key(&archive.path_for(url));
     let mut tops = BTreeMap::new();
     let mut listed = HashSet::new();
     let removed = mirror.removed()?;
@@ -340,22 +345,39 @@ fn tops(
             removed: None,
         });
         for a in archive.entries_under(Some(&archive.path_for(root.as_str()))) {
-            if !listed.contains(&a.sidecar.url) {
-                tops.insert(
-                    key(&a.sidecar.url),
-                    Top {
-                        url: Some(a.sidecar.url.clone()),
-                        kind: NodeKind::File,
-                        size: Some(a.sidecar.size),
-                        modified: a.sidecar.last_modified,
-                        modified_at: a.sidecar.last_modified_at,
-                        state: Some(State::GoneUpstream),
-                        same_as: None,
-                        peek: None,
-                        removed: None,
-                    },
-                );
-            }
+            // A version beside the URL's path, listed or not, is its own
+            // node; the first version is the listed file, or one gone.
+            let (modified, modified_at, state) = if a.path != archive.path_for(&a.sidecar.url) {
+                let s = &a.sidecar;
+                (
+                    s.listed_modified.clone(),
+                    s.listed_modified_at,
+                    State::Version,
+                )
+            } else if !listed.contains(&a.sidecar.url) {
+                let s = &a.sidecar;
+                (
+                    s.last_modified.clone(),
+                    s.last_modified_at,
+                    State::GoneUpstream,
+                )
+            } else {
+                continue;
+            };
+            tops.insert(
+                path_key(&a.path),
+                Top {
+                    url: Some(a.sidecar.url.clone()),
+                    kind: NodeKind::File,
+                    size: Some(a.sidecar.size),
+                    modified,
+                    modified_at,
+                    state: Some(state),
+                    same_as: None,
+                    peek: None,
+                    removed: None,
+                },
+            );
         }
     }
     let mut parents = Vec::new();
@@ -886,11 +908,12 @@ impl Output {
             Some(State::NotArchived) => s.not_archived += 1,
             Some(State::GoneUpstream) => s.gone_upstream += 1,
             Some(State::Removed) => s.removed += 1,
+            Some(State::Version) => s.versions += 1,
             _ => {}
         }
         if node
             .state
-            .is_some_and(|st| matches!(st, State::Archived | State::GoneUpstream))
+            .is_some_and(|st| matches!(st, State::Archived | State::GoneUpstream | State::Version))
         {
             s.archived_bytes += node.size.unwrap_or(0);
         }
@@ -951,6 +974,7 @@ pub fn tree_line(node: &Node) -> String {
         Some(State::NotArchived) => line.push_str(" [not downloaded]"),
         Some(State::GoneUpstream) => line.push_str(" [no longer on nemweb]"),
         Some(State::Removed) => line.push_str(" [removed: same as its folder]"),
+        Some(State::Version) => line.push_str(" [another version]"),
         _ => {}
     }
     if node.contents.is_some() {
@@ -1106,6 +1130,30 @@ mod tests {
             },
         )
         .unwrap();
+        // b.txt, rewritten in place, and its later version beside it.
+        let later = Archive::version_path(
+            &archive.path_for("https://h/A/b.txt"),
+            crate::stamp::Stamp::from_listing("Tuesday, October 13, 2026 11:53 AM").unwrap(),
+        );
+        std::fs::write(&later, b"hello!").unwrap();
+        Archive::write_sidecar(
+            &later,
+            &crate::net::Sidecar {
+                url: "https://h/A/b.txt".into(),
+                size: 6,
+                sha256: String::new(),
+                crc32: None,
+                fetched_at: "t".into(),
+                etag: None,
+                last_modified: None,
+                last_modified_at: None,
+                listed_size: Some(6),
+                listed_modified: Some("Tuesday, October 13, 2026 11:53 AM".into()),
+                listed_modified_at: None,
+                tool: "nemweb-mirror".into(),
+            },
+        )
+        .unwrap();
         std::fs::create_dir_all(mirror.crawl_dir()).unwrap();
         let lines: String = record
             .iter()
@@ -1140,6 +1188,7 @@ h/
           z.txt  2 B (4 B packed)
         y.csv  4 B (6 B packed)
     b.txt  5 B
+    b.txt@20261013T115300+1000  6 B [another version]
     broken.zip/ (zip, 21 B) [zip.open_failed]
     deep.zip/ (zip, 796 B)
 ";
@@ -1163,6 +1212,7 @@ h/
             "{tree}"
         );
         assert_eq!((s.not_archived, s.gone_upstream, s.errors), (1, 1, 2));
+        assert_eq!(s.versions, 1);
         assert_eq!(s.zips, 6 + MAX_DEPTH);
 
         let ndjson = std::fs::read_to_string(f.mirror.dir().join("map/map.ndjson")).unwrap();
@@ -1188,6 +1238,12 @@ h/
         let gone: serde_json::Value = serde_json::from_str(gone).unwrap();
         assert_eq!(gone["modified"], "Mon, 12 Oct 2026 00:32:30 GMT");
         assert_eq!(gone["modified_at"], "2026-10-12T00:32:30Z");
+        // A later version carries the time nemweb listed it with.
+        let later = ndjson.lines().find(|l| l.contains("b.txt@")).unwrap();
+        let later: serde_json::Value = serde_json::from_str(later).unwrap();
+        assert_eq!(later["url"], "https://h/A/b.txt");
+        assert_eq!(later["state"], "version");
+        assert_eq!(later["modified_at"], "2026-10-13T11:53:00+10:00");
         // Every time field of the catalog is aware, or has its instant beside it.
         crate::stamp::check::assert_aware_lines(&ndjson);
 
@@ -1375,7 +1431,7 @@ h/
         let ndjson = std::fs::read_to_string(f.mirror.dir().join("map/map.ndjson")).unwrap();
         assert_eq!(
             ndjson.lines().next().unwrap(),
-            r#"{"catalog_format":2,"roots":["https://h/A/"]}"#
+            r#"{"catalog_format":3,"roots":["https://h/A/"]}"#
         );
         let tree = std::fs::read_to_string(f.mirror.dir().join("map/tree.txt")).unwrap();
         let expected = "    missing.zip/ (zip, 7 B) [not downloaded]

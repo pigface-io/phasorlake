@@ -25,7 +25,9 @@ what exists.
 - **Download**: every listed file, once, paced (one request per
   `request_interval_ms`), stopping when nemweb refuses (HTTP 403/429) and
   waiting it out. Each file is checked against its `Content-Length` and kept
-  with a sidecar recording its URL, size and sha256.
+  with a sidecar recording its URL, size and sha256. A file nemweb rewrites
+  in place is kept in every version: a later one beside the first as
+  `{name}@{listed time}`.
 - **Hash**: every downloaded file has its CRC-32 (what zips record of
   their entries) and sha256 in its sidecar; `hash` records the CRC-32 of
   files downloaded before downloads did, checking each sha256 on the way.
@@ -65,7 +67,7 @@ matches, without reading its sidecar.
 {home}/mirror/crawl/remote.ndjson        every folder and file the crawl found
 {home}/mirror/peek.ndjson                zip entries read before download (`peek`: every zip; `run`: the whole-month zips), with when, against which listing, and the server's ETag and Last-Modified
 {home}/mirror/removed.ndjson             zips removed as the same as their folders
-{home}/mirror/held.ndjson                every file a download pass found archived or fetched, with its size
+{home}/mirror/held.ndjson                every file a download pass found archived or fetched: its size, listed time and version
 {home}/mirror/progress.json              a run's counts, which `status` reads while it runs
 {home}/mirror/map/map.ndjson, tree.txt   the catalog                              (docs/catalog.md)
 ```

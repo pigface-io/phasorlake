@@ -91,6 +91,18 @@ pub struct Sidecar {
 }
 
 impl Sidecar {
+    /// Whether these are the bytes nemweb lists at `size` and
+    /// `modified_at`: the same size, and the same listed time when both
+    /// have one. nemweb rewrites some files in place under the same name;
+    /// a listing that differs is a later version.
+    pub fn is_listed_as(&self, size: Option<u64>, modified_at: Option<Stamp>) -> bool {
+        size.is_none_or(|s| s == self.size)
+            && match (self.listed_modified_at, modified_at) {
+                (Some(a), Some(b)) => a == b,
+                _ => true,
+            }
+    }
+
     /// The sidecar with its `_at` instants derived from the text fields
     /// beside them, where a sidecar written before they were kept lacks
     /// them.
@@ -282,6 +294,16 @@ impl Archive {
         PathBuf::from(s)
     }
 
+    /// Where a later version of the file at `path` is kept: beside it, as
+    /// `{name}@{at}`, `at` the time nemweb listed that version with
+    /// (`20261021T115300+1000`). The first version downloaded keeps the
+    /// plain name; nothing archived is moved or written over.
+    pub fn version_path(path: &Path, at: Stamp) -> PathBuf {
+        let mut s = path.as_os_str().to_owned();
+        s.push(format!("@{}", at.compact()));
+        PathBuf::from(s)
+    }
+
     /// The in-progress path of a download.
     pub fn part_path(path: &Path) -> PathBuf {
         let mut s = path.as_os_str().to_owned();
@@ -311,7 +333,11 @@ impl Archive {
     /// read (cut short when a run was stopped as it wrote it) is no
     /// sidecar: the file is downloaded again and the sidecar rewritten.
     pub fn lookup(&self, url: &str) -> Result<Option<Archived>, FetchError> {
-        let path = self.path_for(url);
+        Self::lookup_at(self.path_for(url), url)
+    }
+
+    /// The file at `path` with its sidecar, when it is archived from `url`.
+    pub fn lookup_at(path: PathBuf, url: &str) -> Result<Option<Archived>, FetchError> {
         let Ok(meta) = std::fs::metadata(&path) else {
             return Ok(None);
         };

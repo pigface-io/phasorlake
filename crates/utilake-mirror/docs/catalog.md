@@ -6,10 +6,10 @@ file nemweb lists under the roots, every archived file nemweb no longer
 lists, and every folder and file inside every zip, zips within zips too.
 `tree.txt` beside it is the same nodes as an indented tree.
 
-The first line is a header, `{"catalog_format":2,"roots":[…]}`: the format
+The first line is a header, `{"catalog_format":3,"roots":[…]}`: the format
 version, raised on any change a reader would notice, and the roots crawled.
 Format 2 adds the `_at` fields (see Times) to format 1 and changes nothing
-else.
+else. Format 3 adds the `version` state.
 Every other line is a node, in tree order: a folder before what it holds,
 names in byte order. The same archive and records give the same bytes.
 
@@ -37,7 +37,7 @@ zip's compressed bytes.
 | `matched`, `removed_at` | removed zips | how many of its files were found the same as the folder's, and when (UTC) |
 | `modified` | when known | as nemweb lists it (`Monday, October 12, 2026 10:45 AM`), as the zip records it (`YYYY-MM-DD HH:MM:SS`), or, for a file nemweb no longer lists, its sidecar's `last_modified` |
 | `modified_at` | with `modified` | the same time with its offset: `+10:00` for a listing's or a zip's time, `Z` for a `Last-Modified` |
-| `state` | files nemweb lists or listed | `archived`, `not_archived`, `gone_upstream` (archived, no longer listed) or `removed` (a duplicate, see `docs/archive.md`) |
+| `state` | files nemweb lists or listed | `archived`, `not_archived`, `gone_upstream` (archived, no longer listed), `removed` (a duplicate, see `docs/archive.md`) or `version` (a later version of a file nemweb rewrote in place, at `{path}@{at}`, see `docs/archive.md`; its `modified` is the time nemweb listed it with) |
 | `same_as` | removed | the folder holding the same files |
 | `contents` | a zip known only from a listing | `needs_download`: its entries need the outer zip |
 | `error` | could not be read | `{code, message}`, the code from `docs/errors.md` |

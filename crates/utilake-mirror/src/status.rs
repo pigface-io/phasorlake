@@ -64,9 +64,10 @@ pub struct Status {
 }
 
 /// Counts the kept pages and, once the crawl is done, the files listed
-/// against the files in the archive at their listed size: a file
-/// `held.ndjson` lists at that size without a look at the disk, any other
-/// only when its directory holds its name.
+/// against the files in the archive in the version listed: a file
+/// `held.ndjson` lists at that size and listed time without a look at the
+/// disk (`Held::is_listed_as`), any other at its listed size only when its
+/// directory holds its name.
 pub fn status(mirror: &Mirror, archive: &Archive, roots: &[Url]) -> Result<Status, MirrorError> {
     let mut status = Status {
         as_of: None,
@@ -111,9 +112,14 @@ pub fn status(mirror: &Mirror, archive: &Archive, roots: &[Url]) -> Result<Statu
                     continue;
                 }
                 let path = archive.path_for(&remote.url);
-                let archived = held.get(&remote.url) == Some(&size)
-                    || (listed.holds(&path)
-                        && std::fs::metadata(&path).is_ok_and(|m| m.is_file() && m.len() == size));
+                let archived = match held.get(&remote.url) {
+                    Some(h) => h.is_listed_as(archive, remote.size, remote.modified_at),
+                    None => {
+                        listed.holds(&path)
+                            && std::fs::metadata(&path)
+                                .is_ok_and(|m| m.is_file() && m.len() == size)
+                    }
+                };
                 if archived {
                     root.archived_files += 1;
                     root.archived_bytes += size;

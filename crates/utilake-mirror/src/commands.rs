@@ -427,7 +427,7 @@ fn map(ctx: &Context, mirror: &Mirror, given: &[String], jobs: usize) -> Result<
         render::json_line(&serde_json::json!({ "event": "map_done", "summary": s }));
     } else {
         println!(
-            "{} folders, {} files, {} zips; {:.1} GB archived, {} not downloaded, {} removed as duplicates, {} no longer on nemweb, {} unreadable; written to {}",
+            "{} folders, {} files, {} zips; {:.1} GB archived, {} not downloaded, {} removed as duplicates, {} no longer on nemweb, {} later versions, {} unreadable; written to {}",
             s.dirs,
             s.files,
             s.zips,
@@ -435,6 +435,7 @@ fn map(ctx: &Context, mirror: &Mirror, given: &[String], jobs: usize) -> Result<
             s.not_archived,
             s.removed,
             s.gone_upstream,
+            s.versions,
             s.errors,
             mirror.dir().join("map").display(),
         );

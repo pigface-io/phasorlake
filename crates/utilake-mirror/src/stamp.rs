@@ -89,6 +89,20 @@ impl Stamp {
         })
     }
 
+    /// The time as RFC 3339 without its separators, for a file name:
+    /// `20261021T115300+1000`, `20261021T015300Z`.
+    pub fn compact(self) -> String {
+        let (y, m, d, h, mi, s) = self.civil();
+        let zone = match self.offset {
+            0 => "Z".to_owned(),
+            o => {
+                let sign = if o < 0 { '-' } else { '+' };
+                format!("{sign}{:02}{:02}", o.abs() / 3600, o.abs() % 3600 / 60)
+            }
+        };
+        format!("{y:04}{m:02}{d:02}T{h:02}{mi:02}{s:02}{zone}")
+    }
+
     /// Seconds since 1970-01-01T00:00:00Z.
     pub fn unix(self) -> i64 {
         self.secs
@@ -395,6 +409,18 @@ mod tests {
 
     fn s(text: &str) -> String {
         Stamp::parse(text).unwrap().to_string()
+    }
+
+    #[test]
+    fn compact_for_a_file_name() {
+        let t = |offset| {
+            Stamp::at(2026, 10, 21, 11, 53, 0, offset)
+                .unwrap()
+                .compact()
+        };
+        assert_eq!(t(36_000), "20261021T115300+1000");
+        assert_eq!(t(0), "20261021T115300Z");
+        assert_eq!(t(-18_000), "20261021T115300-0500");
     }
 
     #[test]

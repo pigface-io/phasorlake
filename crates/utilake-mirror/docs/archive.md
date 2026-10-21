@@ -24,6 +24,20 @@ A file is written to `{path}.part` and renamed into place only after its
 size matches the server's `Content-Length`; a `.part` file is never part of
 the archive.
 
+## Versions
+
+nemweb rewrites some files in place under the same name: yearly summaries
+such as `AS_PAYMENTS_SUMMARY_2026.CSV` and most gas reports under
+`Reports/CURRENT/`. The first version downloaded is kept at `{path}`. When
+nemweb later lists the file with another size or time, that version is
+downloaded beside it as `{path}@{at}`, `at` the listed time in compact RFC
+3339 (`AS_PAYMENTS_SUMMARY_2026.CSV@20261021T115300+1000`), with its own
+sidecar at `{path}@{at}.json`, whose `url` is the file's URL. A version
+whose bytes are the same as the first is not kept. Nothing archived is
+moved or written over, so a path, once written, always holds the same
+bytes. `{home}/mirror/held.ndjson` names the version each file was last
+found or downloaded in.
+
 ## Sidecar
 
 Beside every file, `{path}.json`:
@@ -53,8 +67,9 @@ is written by the download, or by `compare` for a file downloaded before
 downloads recorded it; it is what zips record of their entries, so a file
 can be matched to a zip entry without reading either again. A file is
 archived when it and its sidecar exist, the sidecar's `url` is the file's
-URL and its `size` is the file's length. Readers ignore fields they do not
-know.
+URL and its `size` is the file's length; it is the version nemweb lists
+when its `listed_size` and `listed_modified_at` are the listing's. Readers
+ignore fields they do not know.
 
 ### Times
 
