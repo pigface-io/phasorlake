@@ -104,6 +104,10 @@ enum Cmd {
         /// The utilake home whose archive is read (default `~/.utilake`).
         #[arg(long, env = "UTILAKE_HOME")]
         home: Option<PathBuf>,
+        /// The nemweb-mirror home whose `mirror/journal/` notes each
+        /// folder's listings, counted for files rewritten in place.
+        #[arg(long, env = "NEMWEB_MIRROR_HOME")]
+        mirror: Option<PathBuf>,
         /// The schemas directory to write into.
         #[arg(long, default_value = "schemas")]
         schemas: PathBuf,
@@ -320,13 +324,14 @@ fn main() -> ExitCode {
             folder,
             again,
             home,
+            mirror,
             schemas,
             base,
         } => reports(
             &root,
             folder.as_deref(),
             again,
-            home.as_deref(),
+            (home.as_deref(), mirror.as_deref()),
             &schemas,
             &base,
         ),
@@ -539,7 +544,7 @@ fn reports(
     roots: &[String],
     folder: Option<&str>,
     again: bool,
-    home: Option<&Path>,
+    (home, mirror): (Option<&Path>, Option<&Path>),
     schemas: &Path,
     base: &str,
 ) -> ExitCode {
@@ -583,7 +588,21 @@ fn reports(
                     eprintln!("Reports/{root}/{rel}: recorded already");
                     continue;
                 }
-                let census = census_folder(&registry, &mut ctls, &files, tmp.path());
+                // The folder's journal: its URL's path under the mirror's.
+                let host = base
+                    .split_once("://")
+                    .map_or(base, |(_, h)| h)
+                    .trim_end_matches('/');
+                let journal = mirror.map(|m| {
+                    m.join("mirror/journal")
+                        .join(host)
+                        .join("Reports")
+                        .join(root)
+                        .join(&rel)
+                        .join("changes.ndjson")
+                });
+                let census =
+                    census_folder(&registry, &mut ctls, &files, journal.as_deref(), tmp.path());
                 for u in &census.unread {
                     eprintln!("error: Reports/{root}/{rel}: {} {}", u.file, u.error);
                     code = ExitCode::from(3);

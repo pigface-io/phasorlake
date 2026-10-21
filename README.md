@@ -272,6 +272,13 @@ and shape, the CSVs that held it, their rows, and the first and last CSV
 by name. A CSV's month comes from the date in its name; its blocks are
 typed by that MMSDM month's control files, or the last month's before it.
 Its shapes join the same `schemas/nem/shapes/` files, with the months seen.
+A file nemweb rewrote in place is kept by the mirror as `{name}@{listed time}`
+beside the first version. The tally lists each such file under `[[rewritten]]`,
+with each version classed `first`, `data` (new data), `report_time` (only the
+AEMO report time changed) or `reverted` (the same data as an earlier version).
+With `--mirror`, it also counts from the mirror's journal how often the file
+was listed again with the same bytes (`relisted`) or the same zip entries
+(`repacked`).
 Parquet is optional: `utilake ingest --from` writes it from the archive.
 
 ## Which months

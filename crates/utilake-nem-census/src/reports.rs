@@ -27,6 +27,7 @@ use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
 use utilake_acquire::Archive;
+use utilake_acquire::archive::sha256_hex;
 use utilake_core::{Diagnostic, YearMonth};
 use utilake_mms_registry::{Registry, TypeClass};
 use utilake_nem::MmsdmArchive;
@@ -84,6 +85,255 @@ pub struct FolderCensus {
     /// Every run, in the order its first CSV was read.
     #[serde(default, rename = "block")]
     pub blocks: Vec<Tally>,
+    /// Every file AEMO rewrote in place, with each of its versions.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub rewritten: Vec<Rewritten>,
+}
+
+/// A file AEMO rewrote in place under the same name: nemweb-mirror keeps
+/// each version with new bytes, the first under the file's name and each
+/// later one beside it as `{name}@{listed time}`, and notes every listing
+/// in the folder's journal.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Rewritten {
+    /// The file's name.
+    pub file: String,
+    /// Listings the mirror found with the bytes of a version it holds
+    /// (journal `same`): a rewrite with nothing new.
+    #[serde(default)]
+    pub relisted: u64,
+    /// Zips listed packed again with the same files (journal `repacked`).
+    #[serde(default)]
+    pub repacked: u64,
+    /// Every version archived, the first first.
+    #[serde(rename = "version")]
+    pub versions: Vec<Version>,
+}
+
+/// One version of a file rewritten in place, against the ones before it.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Version {
+    /// The archived file: `{name}`, or `{name}@{listed time}`.
+    pub file: String,
+    /// What changed from the version before.
+    pub change: Change,
+    /// For `reverted`, the earlier version whose data it has.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub same_data_as: Option<String>,
+    /// When nemweb listed it, RFC 3339 with offset (AEST).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub listed_at: Option<String>,
+    /// When AEMO published it (HTTP `Last-Modified`), RFC 3339 UTC.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub published_at: Option<String>,
+    /// sha256 hex of its bytes.
+    pub sha256: String,
+}
+
+/// What a version changed from the one before it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum Change {
+    /// The first version archived.
+    First,
+    /// Its data differs.
+    Data,
+    /// Only the report's own time differs: AEMO's `C,` header and footer
+    /// rows, or a `current_date` column.
+    ReportTime,
+    /// Its data is that of an earlier version, not the last: published,
+    /// then withdrawn.
+    Reverted,
+}
+
+/// A version's base name and listed time: `x.csv@20261021T191200+1000`
+/// is version `20261021T191200+1000` of `x.csv`. Any other `@` is part of
+/// the name.
+#[must_use]
+pub fn version_of(name: &str) -> (&str, Option<&str>) {
+    let stamp = |s: &str| {
+        let b = s.as_bytes();
+        let digits =
+            |r: std::ops::Range<usize>| b.get(r).is_some_and(|d| d.iter().all(u8::is_ascii_digit));
+        digits(0..8)
+            && b.get(8) == Some(&b'T')
+            && digits(9..15)
+            && (&s[15.min(s.len())..] == "Z"
+                || (b.len() == 20 && matches!(b[15], b'+' | b'-') && digits(16..20)))
+    };
+    match name.rsplit_once('@') {
+        Some((base, at)) if stamp(at) => (base, Some(at)),
+        _ => (name, None),
+    }
+}
+
+/// `text` without the report's own time: AEMO's `C,` rows, or else the
+/// values of a `current_date` column its header names. Two versions of a
+/// file the same without it differ only in when the report was made.
+fn without_report_time(text: &[u8]) -> Vec<u8> {
+    let lines: Vec<&[u8]> = text
+        .split(|&c| c == b'\n')
+        .map(|l| l.strip_suffix(b"\r").unwrap_or(l))
+        .collect();
+    let keep: Vec<Vec<u8>> = if lines.first().is_some_and(|l| l.starts_with(b"C,")) {
+        lines
+            .into_iter()
+            .filter(|l| !l.starts_with(b"C,"))
+            .map(<[u8]>::to_vec)
+            .collect()
+    } else {
+        let column = lines.first().and_then(|h| {
+            h.split(|&c| c == b',')
+                .position(|f| f.trim_ascii().eq_ignore_ascii_case(b"current_date"))
+        });
+        lines
+            .into_iter()
+            .map(|l| {
+                let fields: Vec<&[u8]> = l
+                    .split(|&c| c == b',')
+                    .enumerate()
+                    .filter(|(i, _)| Some(*i) != column)
+                    .map(|(_, f)| f)
+                    .collect();
+                fields.join(&b","[..])
+            })
+            .collect()
+    };
+    keep.join(&b"\n"[..])
+}
+
+/// What a report file holds apart from when it was made, as one sha256:
+/// each CSV (a zip's by entry name) without its report time. None when it
+/// cannot be read.
+fn data_print(path: &Path, zip: bool, tmp: &Path) -> Option<String> {
+    let mut parts: Vec<(String, String)> = Vec::new();
+    if zip {
+        utilake_kit::container::walk_csv_entries::<std::io::Error>(
+            path,
+            tmp,
+            &mut |e| {
+                let mut b = Vec::new();
+                std::io::Read::read_to_end(e.reader, &mut b)?;
+                parts.push((e.name.clone(), sha256_hex(&without_report_time(&b))));
+                Ok(())
+            },
+            &mut |_| {},
+        )
+        .ok()?;
+        parts.sort();
+    } else {
+        let b = std::fs::read(path).ok()?;
+        parts.push((String::new(), sha256_hex(&without_report_time(&b))));
+    }
+    let joined: Vec<String> = parts
+        .into_iter()
+        .map(|(n, h)| format!("{n}\t{h}"))
+        .collect();
+    Some(sha256_hex(joined.join("\n").as_bytes()))
+}
+
+/// How many listings of each file a folder's journal found with nothing
+/// new, by URL: (`same`, `repacked`).
+fn journal_counts(journal: Option<&Path>) -> BTreeMap<String, (u64, u64)> {
+    let mut out: BTreeMap<String, (u64, u64)> = BTreeMap::new();
+    let Some(text) = journal.and_then(|p| std::fs::read_to_string(p).ok()) else {
+        return out;
+    };
+    for line in text.lines() {
+        let Ok(e) = serde_json::from_str::<serde_json::Value>(line) else {
+            continue;
+        };
+        let (Some(url), Some(event)) = (e["url"].as_str(), e["event"].as_str()) else {
+            continue;
+        };
+        let c = out.entry(url.to_owned()).or_default();
+        match event {
+            "same" => c.0 += 1,
+            "repacked" => c.1 += 1,
+            _ => {}
+        }
+    }
+    out
+}
+
+/// Each file of `files` with more than one version, or with listings the
+/// journal found with nothing new, every version against the ones before.
+fn rewritten(files: &[PathBuf], journal: Option<&Path>, tmp: &Path) -> Vec<Rewritten> {
+    let mut groups: BTreeMap<String, Vec<(Option<String>, &PathBuf)>> = BTreeMap::new();
+    for path in files {
+        let name = path
+            .file_name()
+            .map(|n| n.to_string_lossy().into_owned())
+            .unwrap_or_default();
+        let (base, at) = version_of(&name);
+        groups
+            .entry(base.to_owned())
+            .or_default()
+            .push((at.map(str::to_owned), path));
+    }
+    let counts = journal_counts(journal);
+    let mut out = Vec::new();
+    for (file, mut versions) in groups {
+        versions.sort();
+        let sidecars: Vec<_> = versions
+            .iter()
+            .map(|(_, p)| Archive::read_sidecar(p).ok().flatten())
+            .collect();
+        let (relisted, repacked) = sidecars
+            .iter()
+            .flatten()
+            .next()
+            .and_then(|s| counts.get(&s.url))
+            .copied()
+            .unwrap_or_default();
+        if versions.len() < 2 && relisted + repacked == 0 {
+            continue;
+        }
+        let zip = file.to_ascii_lowercase().ends_with(".zip");
+        let mut seen: Vec<(Option<String>, String)> = Vec::new();
+        let mut list = Vec::new();
+        for ((_, path), sc) in versions.iter().zip(&sidecars) {
+            let name = path
+                .file_name()
+                .map(|n| n.to_string_lossy().into_owned())
+                .unwrap_or_default();
+            let print = data_print(path, zip, tmp);
+            let earlier = seen
+                .iter()
+                .rev()
+                .skip(1)
+                .find(|(p, _)| print.is_some() && *p == print)
+                .map(|(_, n)| n.clone());
+            let (change, same_data_as) = match seen.last() {
+                None => (Change::First, None),
+                Some((p, _)) if print.is_some() && *p == print => (Change::ReportTime, None),
+                Some(_) if earlier.is_some() => (Change::Reverted, earlier),
+                Some(_) => (Change::Data, None),
+            };
+            list.push(Version {
+                file: name.clone(),
+                change,
+                same_data_as,
+                listed_at: sc
+                    .as_ref()
+                    .and_then(|s| s.listed_modified_at)
+                    .map(|t| t.rfc3339()),
+                published_at: sc
+                    .as_ref()
+                    .and_then(|s| s.last_modified_at)
+                    .map(|t| t.rfc3339()),
+                sha256: sc.as_ref().map(|s| s.sha256.clone()).unwrap_or_default(),
+            });
+            seen.push((print, name));
+        }
+        out.push(Rewritten {
+            file,
+            relisted,
+            repacked,
+            versions: list,
+        });
+    }
+    out
 }
 
 /// The first month a name gives: the first run of at least six digits
@@ -294,35 +544,17 @@ fn base(name: &str) -> &str {
 }
 
 /// The census of the archived `files` of one folder.
-// TODO(versions): census each version of a file AEMO rewrites in place.
-// nemweb-mirror keeps every version with new data: the first under the
-// file's name, each later one beside it as `{name}@{listed time}` in compact
-// RFC 3339 (`int128_v4_actual_linepack_1.csv@20261021T191200+1000`), with
-// its own sidecar. Each folder's journal,
-// `{mirror home}/mirror/journal/{host}/{path}/changes.ndjson`, notes every
-// listing: `new`, `version`, `same` (the bytes of a version kept), `repacked`
-// (a zip of the same entries packed again), `dropped`, `folder_gone`. The
-// census still has to:
-// 1. Read versions. A name ending `@{stamp}` is a version of the base name:
-//    its kind is the base name's (`.csv`, `.zip`) and its month the base
-//    name's date. Today `ends_with(".csv")` and `ends_with(".zip")` pass
-//    over every version.
-// 2. Classify each version against the one before it of the same file:
-//    - `data`: the D rows differ;
-//    - `report_time`: only the report's own time differs (the AEMO `C,`
-//      header and footer rows, or the gas reports' `current_date` column);
-//    - `reverted`: its data is that of an earlier version, not the last
-//      (published, then withdrawn).
-//    The mirror keeps no byte copy and no repacked zip, so `same` cannot
-//    occur here; the journal counts those.
-// 3. Record per file its versions, each with its class, listed time,
-//    `Last-Modified` and sha256, so a table's history marks data AEMO
-//    restated in place, and take in the journal's `same` and `repacked`
-//    counts as rewrites with no new data.
+///
+/// A version of a file AEMO rewrote in place (`{name}@{listed time}`) is
+/// read as its name's kind and month, its blocks counted with the rest,
+/// and each such file is listed in `rewritten` with every version against
+/// the ones before it. `journal` is the folder's nemweb-mirror journal,
+/// whose listings with nothing new each file counts.
 pub fn census_folder(
     registry: &Registry,
     ctls: &mut CtlSource<'_>,
     files: &[PathBuf],
+    journal: Option<&Path>,
     tmp: &Path,
 ) -> FolderCensus {
     let mut g = Gather::default();
@@ -332,8 +564,9 @@ pub fn census_folder(
             .file_name()
             .map(|n| n.to_string_lossy().into_owned())
             .unwrap_or_default();
-        let lower = name.to_ascii_lowercase();
-        let outer_month = name_month(&name).or_else(|| published_month(path));
+        let (base_name, _) = version_of(&name);
+        let lower = base_name.to_ascii_lowercase();
+        let outer_month = name_month(base_name).or_else(|| published_month(path));
         g.census.files += 1;
         let mut one_csv =
             |csv: &str, r: &mut dyn std::io::Read, g: &mut Gather| -> Result<(), Box<Diagnostic>> {
@@ -407,6 +640,7 @@ pub fn census_folder(
             block: BlockRecord::of(&a.merged),
         });
     }
+    g.census.rewritten = rewritten(files, journal, tmp);
     g.census
 }
 
@@ -581,6 +815,209 @@ mod tests {
     use crate::census::tests::{SCADA_CTL, put, three_tables, zip_of};
     use utilake_mms_registry::TypeClass;
 
+    /// Archives `bytes` as version `at` of `url` (`None`: the first), with
+    /// the listed time `at` gives.
+    fn put_version(store: &Archive, url: &str, at: Option<&str>, bytes: &[u8]) -> PathBuf {
+        let base = store.path_for(url);
+        let path = at.map_or(base.clone(), |a| {
+            let mut p = base.into_os_string();
+            p.push(format!("@{a}"));
+            PathBuf::from(p)
+        });
+        std::fs::create_dir_all(path.parent().unwrap()).unwrap();
+        std::fs::write(&path, bytes).unwrap();
+        let listed = at.map(|a| {
+            format!(
+                "{}-{}-{}T{}:{}:{}+10:00",
+                &a[0..4],
+                &a[4..6],
+                &a[6..8],
+                &a[9..11],
+                &a[11..13],
+                &a[13..15]
+            )
+        });
+        let sidecar = utilake_acquire::Sidecar {
+            url: url.to_owned(),
+            size: bytes.len() as u64,
+            sha256: sha256_hex(bytes),
+            fetched_at: "2026-10-21T00:00:00Z".into(),
+            etag: None,
+            last_modified: Some("Wed, 21 Oct 2026 00:00:00 GMT".into()),
+            last_modified_at: utilake_core::timetext::parse_rfc3339("2026-10-21T00:00:00Z"),
+            listed_modified: None,
+            listed_modified_at: listed.and_then(|l| utilake_core::timetext::parse_rfc3339(&l)),
+            tool: "test".into(),
+        };
+        Archive::write_sidecar(&path, &sidecar).unwrap();
+        path
+    }
+
+    #[test]
+    fn a_version_name_gives_its_base_and_listed_time() {
+        assert_eq!(
+            version_of("int128_v4_actual_linepack_1.csv@20261021T191200+1000"),
+            (
+                "int128_v4_actual_linepack_1.csv",
+                Some("20261021T191200+1000")
+            )
+        );
+        assert_eq!(
+            version_of("a.zip@20261021T091200Z"),
+            ("a.zip", Some("20261021T091200Z"))
+        );
+        assert_eq!(version_of("a.zip"), ("a.zip", None));
+        for odd in [
+            "a@b.csv",
+            "a.csv@0123456789abcdef",
+            "a.csv@20261021X191200+1000",
+            "a.csv@20261021T191200+10",
+        ] {
+            assert_eq!(version_of(odd), (odd, None), "{odd}");
+        }
+    }
+
+    #[test]
+    fn a_report_time_is_left_out_of_what_a_file_holds() {
+        let aemo = b"C,NEMP.WORLD,X,AEMO,PUBLIC,2026/10/21,19:12:00,1\r\nI,A,B,1,X\r\nD,A,B,1,5\r\nC,END OF REPORT,3\r\n";
+        let later = b"C,NEMP.WORLD,X,AEMO,PUBLIC,2026/10/21,19:42:00,1\r\nI,A,B,1,X\r\nD,A,B,1,5\r\nC,END OF REPORT,3\r\n";
+        assert_eq!(without_report_time(aemo), without_report_time(later));
+        assert_eq!(without_report_time(aemo), b"I,A,B,1,X\nD,A,B,1,5\n");
+        let gas = b"gas_date,flow,current_date\n2026-10-21,5,21 Oct 2026 19:12:00\n";
+        let gas_later = b"gas_date,flow,current_date\n2026-10-21,5,21 Oct 2026 19:42:00\n";
+        assert_eq!(without_report_time(gas), without_report_time(gas_later));
+        assert_eq!(without_report_time(gas), b"gas_date,flow\n2026-10-21,5\n");
+        let plain = b"a,b\n1,2";
+        assert_eq!(without_report_time(plain), plain);
+    }
+
+    #[test]
+    fn each_version_of_a_file_rewritten_in_place_is_classed() {
+        let dir = tempfile::tempdir().unwrap();
+        let tmp = tempfile::tempdir().unwrap();
+        let store = Archive::new(dir.path());
+        let folder = "https://h/Reports/CURRENT/VicGas";
+        let csv = format!("{folder}/int128_v4_actual_linepack_1.csv");
+        let row = |flow: u32, made: &str| {
+            format!("gas_date,flow,current_date\n2026-10-21,{flow},{made}\n")
+        };
+        let mut files = vec![
+            put_version(&store, &csv, None, row(5, "19:00").as_bytes()),
+            put_version(
+                &store,
+                &csv,
+                Some("20261021T191200+1000"),
+                row(6, "19:12").as_bytes(),
+            ),
+            put_version(
+                &store,
+                &csv,
+                Some("20261021T194200+1000"),
+                row(6, "19:42").as_bytes(),
+            ),
+            put_version(
+                &store,
+                &csv,
+                Some("20261021T201200+1000"),
+                row(5, "20:12").as_bytes(),
+            ),
+        ];
+        let zip = format!("{folder}/CurrentDay.zip");
+        let inner = |made: &str| {
+            crate::census::tests::zip_of(&[(
+                "int029a.csv",
+                format!("C,X,{made}\nD,A,1\nC,END\n").as_bytes(),
+            )])
+        };
+        files.push(put_version(&store, &zip, None, &inner("1")));
+        files.push(put_version(
+            &store,
+            &zip,
+            Some("20261021T191200+1000"),
+            &inner("2"),
+        ));
+        // Not a zip that reads: its data cannot be compared.
+        files.push(put_version(
+            &store,
+            &zip,
+            Some("20261021T194200+1000"),
+            b"not a zip",
+        ));
+        let lone = format!("{folder}/int934_v4_ecgs_contacts_1.csv");
+        files.push(put_version(&store, &lone, None, b"a,b\n1,2\n"));
+        let quiet = format!("{folder}/int111_v5_sdpc_1.csv");
+        files.push(put_version(&store, &quiet, None, b"a,b\n1,2\n"));
+        files.sort();
+
+        let journal = dir.path().join("changes.ndjson");
+        let line =
+            |url: &str, event: &str| format!("{{\"url\":\"{url}\",\"event\":\"{event}\"}}\n");
+        let text = [
+            line(&lone, "same"),
+            line(&lone, "same"),
+            line(&zip, "repacked"),
+            line(&csv, "version"),
+            "{\"event\":\"same\"}\n".to_owned(),
+            "not json\n".to_owned(),
+        ]
+        .concat();
+        std::fs::write(&journal, text).unwrap();
+
+        let r = rewritten(&files, Some(&journal), tmp.path());
+        let names: Vec<&str> = r.iter().map(|w| w.file.as_str()).collect();
+        assert_eq!(
+            names,
+            [
+                "CurrentDay.zip",
+                "int128_v4_actual_linepack_1.csv",
+                "int934_v4_ecgs_contacts_1.csv"
+            ]
+        );
+        let changes = |w: &Rewritten| w.versions.iter().map(|v| v.change).collect::<Vec<_>>();
+        assert_eq!(
+            changes(&r[0]),
+            [Change::First, Change::ReportTime, Change::Data]
+        );
+        assert_eq!((r[0].relisted, r[0].repacked), (0, 1));
+        assert_eq!(
+            changes(&r[1]),
+            [
+                Change::First,
+                Change::Data,
+                Change::ReportTime,
+                Change::Reverted
+            ]
+        );
+        assert_eq!(
+            r[1].versions[3].same_data_as.as_deref(),
+            Some("int128_v4_actual_linepack_1.csv")
+        );
+        assert_eq!(
+            r[1].versions[1].listed_at.as_deref(),
+            Some("2026-10-21T19:12:00+10:00")
+        );
+        assert_eq!(
+            r[1].versions[0].published_at.as_deref(),
+            Some("2026-10-21T00:00:00Z")
+        );
+        assert_eq!((r[2].relisted, r[2].versions.len()), (2, 1));
+        // No journal: only the files with more than one version.
+        assert_eq!(rewritten(&files, None, tmp.path()).len(), 2);
+        assert!(journal_counts(Some(&dir.path().join("none.ndjson"))).is_empty());
+
+        // The census reads every version as its name's kind, and lists them.
+        let nem = MmsdmArchive::new("https://h").unwrap();
+        let reg = Registry::load_embedded();
+        let mut ctls = CtlSource::new(&store, &nem);
+        let census = census_folder(&reg, &mut ctls, &files, Some(&journal), tmp.path());
+        assert_eq!(census.other, 0);
+        assert_eq!(census.rewritten, r);
+        let text = toml::to_string(&census).unwrap();
+        assert!(text.contains("[[rewritten.version]]"), "{text}");
+        let back: FolderCensus = toml::from_str(&text).unwrap();
+        assert_eq!(back, census);
+    }
+
     #[test]
     fn a_name_gives_its_first_month() {
         let m = |s: &str| name_month(s).map(|m| m.to_string());
@@ -718,7 +1155,7 @@ mod tests {
                 .for_table(&["DISPATCH_UNIT_SCADA"])
                 .is_none()
         );
-        let census = census_folder(&reg, &mut ctls, &all["Dispatch_SCADA"], tmp.path());
+        let census = census_folder(&reg, &mut ctls, &all["Dispatch_SCADA"], None, tmp.path());
         assert_eq!((census.files, census.other), (9, 1));
         assert_eq!(census.csvs, 6, "two nested, four loose");
         let unread: Vec<&str> = census.unread.iter().map(|u| u.file.as_str()).collect();
