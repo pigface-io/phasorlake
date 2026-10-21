@@ -132,21 +132,3 @@ entry = "just budget-check"
 stages = ["pre-push"]
 files = '^(bench/budgets\.json|coverage\.json)$'
 pass_filenames = false
-
-[[repos.hooks]]
-id = "census-check"
-name = "schemas: every recorded census month resolves against the registry"
-language = "system"
-entry = "just census-check"
-stages = ["pre-push"]
-files = '^(schemas/|crates/utilake-(mms-registry|nem-census|core)/)'
-pass_filenames = false
-
-[[repos.hooks]]
-id = "schema-sync-check"
-name = "schemas: in step with the control files of every archived month"
-language = "system"
-entry = "just schema-sync-check"
-stages = ["pre-push"]
-files = '^(schemas/|crates/utilake-(mms-registry|nem-census)/)'
-pass_filenames = false

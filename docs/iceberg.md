@@ -5,7 +5,7 @@ One model runs through the census, the registry, the lake and the export:
 
 | Term | What it is | Where |
 |---|---|---|
-| **Field** | An Iceberg field: an id never minted twice, a name, one type, whether it is required | `crates/utilake-iceberg/src/schema.rs` |
+| **Field** | An Iceberg field: an id never minted twice, a name, one type, whether it is required | `utilake-iceberg` (utilake-schemas) `src/schema.rs` |
 | **Schema** | The fields a file of the table holds, in file order, and the key; an id per distinct schema | `schemas/nem/iceberg/<TABLE>.json` |
 | **Block** | One block of one AEMO file: its header, rows, data span and the profile of its values | `schemas/nem/census/` |
 | **Run** | Consecutive blocks under one schema, AEMO version and report pair | the history's `runs` |
@@ -13,8 +13,8 @@ One model runs through the census, the registry, the lake and the export:
 
 ## The history: from the census to schemas
 
-The fold (`crates/utilake-nem-census/src/history.rs`) reads every census
-block and writes each table's history.
+The fold (utilake-schemas, `crates/utilake-schemas/src/history.rs`) reads
+every census block and writes each table's history.
 
 - **Order.** Blocks go in the order AEMO released them: release month (the
   MMSDM archive month, a report CSV's month), then where the block's data
@@ -104,7 +104,7 @@ query over the lake's files.
 
 ## The export
 
-`utilake-nem-census export` (format 2) writes, per folded table, one JSON
+`utilake-schemas export` (format 2, in utilake-schemas) writes, per folded table, one JSON
 Schema per Iceberg schema (`nem/<TABLE>/schema-<hash>.json`, named by its
 fields and key so the `$id` never changes) with each field's id and type
 and the runs written under it, and the history in `table.json`'s `iceberg`

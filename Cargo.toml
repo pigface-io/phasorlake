@@ -12,7 +12,6 @@ resolver = "3"
 members = [
     "crates/utilake-core",
     "crates/utilake-mms-registry",
-    "crates/utilake-nem-census",
     "crates/utilake-mms-decode",
     "crates/utilake-mms-conform",
     "crates/utilake-acquire",
@@ -23,17 +22,14 @@ members = [
     "crates/utilake-pipeline",
     "crates/utilake-cli",
     "crates/utilake-mdff",
-    "crates/utilake-iceberg",
     "crates/utilake-iceberg-store",
     "crates/utilake-bench",
     "crates/xtask",
 ]
 default-members = [
     "crates/utilake-core",
-    "crates/utilake-iceberg",
     "crates/utilake-iceberg-store",
     "crates/utilake-mms-registry",
-    "crates/utilake-nem-census",
     "crates/utilake-mms-decode",
     "crates/utilake-mms-conform",
     "crates/utilake-acquire",
@@ -79,12 +75,13 @@ uninlined_format_args = "deny"
 
 [workspace.dependencies]
 utilake-core = { path = "crates/utilake-core" }
-utilake-iceberg = { path = "crates/utilake-iceberg" }
+# The Iceberg contract every repository shares: types, schemas, histories,
+# the interval planner and the table writer, at the rev its schemas pin.
+utilake-iceberg = { git = "ssh://git@github.com/g0itb4/utilake-schemas.git", rev = "6629dc4ae55128a9ea25e3f90a716dce9e07800d" }
 utilake-iceberg-store = { path = "crates/utilake-iceberg-store" }
 utilake-mms-registry = { path = "crates/utilake-mms-registry" }
 utilake-mms-decode = { path = "crates/utilake-mms-decode" }
 utilake-mms-conform = { path = "crates/utilake-mms-conform" }
-utilake-nem-census = { path = "crates/utilake-nem-census" }
 utilake-acquire = { path = "crates/utilake-acquire" }
 utilake-kit = { path = "crates/utilake-kit" }
 utilake-nem = { path = "crates/utilake-nem" }

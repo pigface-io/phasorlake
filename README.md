@@ -128,7 +128,7 @@ All three are written into the file's footer and into the manifest:
 | `utilake.report_type`, `utilake.report_subtype`, `utilake.source_version`, `utilake.source_columns`, `utilake.fingerprint` | the shape: the block's I row as AEMO published it |
 | `utilake.source_period` | the month of the source, which decides the increment a block is read against |
 | `utilake.plan` | the hash of the conformance plan the shape was read by: which file column feeds which lake column, that column's id, type and nullability, how the value is parsed, the key and time columns, the load mode, the directory |
-| `utilake.shape_id` | the ids the census gives the shape (`just census`), when it has seen it |
+| `utilake.shape_id` | the id the census gives the shape, when it has seen it |
 | `utilake.schema_source` | where the table's definition came from: `registry` (built in), `user` (your own table file), `file` (nobody declared it, so the file's own header) |
 | `utilake.resolution`, `utilake.table`, `utilake.schema_version` | how the shape matched: `conforms` (its columns are its increment's), `deviates` or `derived`; the table, and the increment (`TABLE@n`, our version; AEMO's is `source_version`) |
 
@@ -180,8 +180,7 @@ written without an offset is a defect.
 
 A file is downloaded once. Nothing in utilake replaces or deletes an
 archived file; to fetch one again, delete it and its record. Everything in
-the lake, and the census of every shape AEMO published (`just census`), is
-derived from the archive, which is what `utilake reingest` does when a
+the lake is derived from the archive, which is what `utilake reingest` does when a
 table's schema improves. `utilake archive verify` hashes every
 file against its record.
 
@@ -232,18 +231,11 @@ kept whole (a column the table lacks as text of its own, a column the file
 lacks as null) and is reported, and `--strict` refuses it. A renamed column
 is a new column.
 
-`just schema-sync FROM TO` follows the archive: a month whose control file
-lays a table out anew appends an increment, with new columns given fresh
-ids and their default types, and a table the schemas lack is started from
-its control file, the data model and the census. It never changes what is
-there. Where the files differ from their control file, the fix is yours,
-in `table.toml`: edit the increment's `columns`, a column's `type`, or add a
+Where the files differ from their control file, the fix is yours, in
+`table.toml`: edit the increment's `columns`, a column's `type`, or add a
 column, with a `note` saying why. Types change only by an Iceberg promotion
 (`just schema-compat`), and none of ours is one: a column of another type
 is a new column.
-
-AEMO's PDR control files can be kept under `reference/pdr/` for
-comparison (`utilake-nem-census pdr-diff`); resolution never reads them.
 
 ## Your own tables
 
@@ -255,30 +247,12 @@ before the table existed is brought up to it by `utilake reingest`.
 
 ## The census of every shape
 
-utilake documents what AEMO published, from evidence. Every file of the
-archive is downloaded once (`utilake fetch nem`), and `just census FROM TO`
-reads each archived file of those months in full, offline, recording every
-block (one per I row: a file of many tables has many) with its shape and
-rows under `schemas/nem/census/` and `schemas/nem/shapes/`. That static map
-is committed. A new month goes forward with `just census-forward YYYY-MM`:
-download, census, sync the schemas to the month's control files, and gate
-the census against them (`just census-check`).
-The report folders (`Reports/ARCHIVE`, the last year or so, and
-`Reports/CURRENT`, the last days) publish the same tables as they are
-produced, so a layout AEMO has just changed shows there first.
-`just census-reports` reads every archived file under them, offline, and
-writes a tally per folder under `schemas/nem/census/reports/`: per month
-and shape, the CSVs that held it, their rows, and the first and last CSV
-by name. A CSV's month comes from the date in its name; its blocks are
-typed by that MMSDM month's control files, or the last month's before it.
-Its shapes join the same `schemas/nem/shapes/` files, with the months seen.
-A file nemweb rewrote in place is kept by the mirror as `{name}@{listed time}`
-beside the first version. The tally lists each such file under `[[rewritten]]`,
-with each version classed `first`, `data` (new data), `report_time` (only the
-AEMO report time changed) or `reverted` (the same data as an earlier version).
-With `--mirror`, it also counts from the mirror's journal how often the file
-was listed again with the same bytes (`relisted`) or the same zip entries
-(`repacked`).
+The census of every file AEMO published, each table's Iceberg history folded
+from it, and the JSON Schema export live in the utilake-schemas repository
+(github.com/g0itb4/utilake-schemas): MMSDM months and the report folders
+(`Reports/ARCHIVE`, `Reports/CURRENT`), including each version of a file
+nemweb rewrote in place. utilake takes its `utilake-iceberg` crate, the
+Iceberg contract both repositories share, at the rev `Cargo.toml` pins.
 Parquet is optional: `utilake ingest --from` writes it from the archive.
 
 ## Which months
@@ -293,7 +267,7 @@ File names changed along the way, from `PUBLIC_DVD_{TABLE}_{YYYYMM}010000.zip`
 to `PUBLIC_ARCHIVE#{TABLE}#FILE{NN}#{YYYYMM}010000.zip`; both are read.
 
 The increments come from the control files of every month from January
-2015 to August 2026, built in one pass (`just schema-rebuild`), so each
+2015 to August 2026, built in one pass, so each
 starts in the month its layout first appeared; 2009 to 2014 follow once
 those months are downloaded. Every file of August 2026 conforms to its
 increment. In January 2024 the `_ALL` files of three P5MIN tables carry

@@ -24,7 +24,6 @@ crates/utilake-mms-conform   F   resolves blocks through the registry, casts to 
 
 The markets:
 crates/utilake-nem           M   the NEM kit: nemweb's monthly archive, AEMO's file names, [sources.nem], fetch nem, kit()
-crates/utilake-nem-census    M   the NEM kit's schema tool: the census of shapes, and the sync of schemas/ to the archive's control files
 crates/utilake-wem           M   the WEM kit: the datafiles source and [sources.wem]; no decoder yet
 crates/utilake-mdff          F   NEM12/13 meter data codes, std only, not yet used
 
@@ -48,8 +47,6 @@ worker; the async and sync worlds meet once per file.
 |---|---|---|
 | unit and integration | every crate, `cargo test` | `just test`, pre-commit |
 | coverage | `cargo llvm-cov` over the workspace | `just cover` against `coverage.json`, pre-push |
-| schema sync | `utilake-nem-census sync --check` over the archived months | `just schema-sync-check`, pre-push |
-| census | every recorded block conforms to the increment in force, control-file types fit ours | `just census-check`, pre-push |
 | schema compatibility | table files at `origin/main` against the working tree | `just schema-compat`, pre-push |
 | benchmarks | criterion plus `utilake-bench` | `just bench-fast` pre-push, `just bench` in CI, against `bench/budgets.json` |
 | network | `crates/utilake-nem/tests/net.rs` | `just net-test`, weekly in CI |

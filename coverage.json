@@ -2,17 +2,13 @@
   "exclude": [
     "crates/xtask/",
     "crates/utilake-bench/",
-    "crates/utilake-cli/src/main.rs",
-    "crates/utilake-nem-census/src/main.rs"
+    "crates/utilake-cli/src/main.rs"
   ],
   "floors": {
     "crates/utilake-core/src": 95,
-    "crates/utilake-iceberg/src": 100,
     "crates/utilake-iceberg-store/src": 100,
     "crates/utilake-mms-registry/src": 85,
     "crates/utilake-mms-registry/src/file_model": 90,
-    "crates/utilake-nem-census/src": 80,
-    "crates/utilake-nem-census/src/export": 100,
     "crates/utilake-mms-decode/src": 90,
     "crates/utilake-mms-conform/src": 90,
     "crates/utilake-acquire/src": 85,

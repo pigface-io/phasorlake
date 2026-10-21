@@ -2848,12 +2848,12 @@ dependencies = [
 [[package]]
 name = "utilake-iceberg"
 version = "0.1.0"
+source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=6629dc4ae55128a9ea25e3f90a716dce9e07800d#6629dc4ae55128a9ea25e3f90a716dce9e07800d"
 dependencies = [
  "serde",
  "serde_json",
  "sha2",
  "thiserror",
- "utilake-core",
 ]
 
 [[package]]
@@ -2957,31 +2957,6 @@ dependencies = [
  "utilake-kit",
  "utilake-mms-conform",
  "utilake-mms-registry",
-]
-
-[[package]]
-name = "utilake-nem-census"
-version = "0.1.0"
-dependencies = [
- "clap",
- "flate2",
- "insta",
- "jiff",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror",
- "tokio",
- "toml",
- "url",
- "utilake-acquire",
- "utilake-core",
- "utilake-iceberg",
- "utilake-kit",
- "utilake-mms-decode",
- "utilake-mms-registry",
- "utilake-nem",
- "zip",
 ]
 
 [[package]]
@@ -3409,7 +3384,6 @@ dependencies = [
  "utilake-iceberg",
  "utilake-mms-decode",
  "utilake-mms-registry",
- "utilake-nem-census",
 ]
 
 [[package]]

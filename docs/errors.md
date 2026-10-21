@@ -85,36 +85,12 @@ Every error and warning utilake reports carries one of these codes. Codes are st
 |---|---|
 | `schema.blob_corrupt` | `crates/utilake-mms-registry/src/file_model/error.rs` |
 | `schema.breaking_change` | `crates/utilake-mms-registry/src/file_model/error.rs` |
-| `schema.census_not_archived` | `crates/utilake-nem-census/src/census.rs` |
-| `schema.census_unreadable` | `crates/utilake-nem-census/src/census.rs` |
-| `schema.census_write` | `crates/utilake-nem-census/src/census.rs` |
-| `schema.datamodel_page` | `crates/utilake-nem-census/src/dmreport.rs` |
-| `schema.datamodel_parse` | `crates/utilake-nem-census/src/datamodel.rs` |
-| `schema.datamodel_read` | `crates/utilake-nem-census/src/datamodel.rs` |
 | `schema.deviates` | `crates/utilake-mms-registry/src/error.rs` |
-| `schema.export_io` | `crates/utilake-nem-census/src/export/mod.rs` |
-| `schema.export_stale` | `crates/utilake-nem-census/src/export/write.rs` |
-| `schema.export_unknown_shape` | `crates/utilake-nem-census/src/export/mod.rs` |
 | `schema.file_invalid` | `crates/utilake-mms-registry/src/file_model/error.rs` |
 | `schema.file_parse` | `crates/utilake-mms-registry/src/file_model/error.rs` |
 | `schema.file_read` | `crates/utilake-mms-registry/src/file_model/error.rs` |
-| `schema.fixture_read_failed` | `crates/utilake-nem-census/src/fixtures.rs` |
-| `schema.fixture_write_failed` | `crates/utilake-nem-census/src/fixtures.rs` |
-| `schema.iceberg_duplicate_name` | `crates/utilake-iceberg/src/update.rs` |
-| `schema.iceberg_identifier` | `crates/utilake-iceberg/src/update.rs` |
-| `schema.iceberg_not_a_promotion` | `crates/utilake-iceberg/src/update.rs` |
-| `schema.iceberg_required_forbidden` | `crates/utilake-iceberg/src/update.rs` |
-| `schema.iceberg_unknown_field` | `crates/utilake-iceberg/src/update.rs` |
-| `schema.migrate_io` | `crates/utilake-nem-census/src/migrate.rs` |
 | `schema.missing_key` | `crates/utilake-mms-registry/src/error.rs` |
-| `schema.model_differs` | `crates/utilake-nem-census/src/models.rs` |
-| `schema.model_unreadable` | `crates/utilake-nem-census/src/models.rs` |
-| `schema.model_write` | `crates/utilake-nem-census/src/models.rs` |
-| `schema.model_zip` | `crates/utilake-nem-census/src/models.rs` |
 | `schema.no_columns` | `crates/utilake-mms-registry/src/error.rs` |
-| `schema.pdr_read` | `crates/utilake-nem-census/src/pdr.rs` |
-| `schema.standing_list` | `crates/utilake-nem-census/src/main.rs` |
-| `schema.sync_write` | `crates/utilake-nem-census/src/sync.rs` |
 | `schema.unknown_table` | `crates/utilake-mms-registry/src/error.rs` |
 | `schema.unseen_version` | `crates/utilake-mms-registry/src/resolve.rs` |
 
