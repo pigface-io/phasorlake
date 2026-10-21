@@ -122,6 +122,13 @@ pub enum Command {
         #[arg(long, default_value_t = 100)]
         limit: usize,
     },
+    /// Build each table's Iceberg metadata from the manifest and the
+    /// census's history: one snapshot per run of one schema and version.
+    Iceberg {
+        /// Only this table.
+        #[arg(long)]
+        table: Option<String>,
+    },
     /// Check the lake against the manifest.
     Verify {
         /// Only this table.

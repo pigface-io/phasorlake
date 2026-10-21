@@ -240,6 +240,71 @@ pub async fn reingest(cli: &Cli, ctx: &Context, dry_run: bool, args: &IngestArgs
 
 /// `utilake verify`: every output the manifest lists exists with its size,
 /// and every quarantine file belongs to a current ingest.
+pub async fn iceberg(ctx: &Context, table: Option<&str>) -> Result<i32> {
+    let (manifest, thread) = ctx.manifest()?;
+    let outputs = manifest
+        .live_outputs(table)
+        .await
+        .map_err(|e| anyhow::anyhow!("{}", e.diagnostic().render()))?;
+    drop(manifest);
+    thread.join();
+    let mut by_table: std::collections::BTreeMap<&str, Vec<utilake_writer::manifest::LiveOutput>> =
+        std::collections::BTreeMap::new();
+    for o in &outputs {
+        by_table
+            .entry(o.table.as_str())
+            .or_default()
+            .push(o.clone());
+    }
+    let r = &ctx.registry;
+    let mut rows = Vec::new();
+    let mut code = 0;
+    for (name, outs) in by_table {
+        let (Some(id), Some(h)) = (r.table_by_name(name), r.histories().get(name)) else {
+            rows.push(vec![
+                name.to_owned(),
+                "-".into(),
+                "-".into(),
+                "no history".into(),
+            ]);
+            code = 1;
+            continue;
+        };
+        let t = utilake_writer::iceberg::TableSchemas {
+            table: name.to_owned(),
+            uuid: utilake_writer::iceberg::table_uuid(name),
+            schemas: h.iceberg_schemas(),
+        };
+        let dir = ctx
+            .home
+            .lake()
+            .join(r.table(id).market.to_string())
+            .join(r.table_dir(id));
+        let built = utilake_writer::iceberg::build_table(&dir, &t, &outs)
+            .await
+            .map_err(|e| anyhow::anyhow!("{}", e.diagnostic().render()))?;
+        rows.push(vec![
+            name.to_owned(),
+            built.snapshots.to_string(),
+            built.files.to_string(),
+            built.rows.to_string(),
+        ]);
+    }
+    if ctx.json {
+        for row in &rows {
+            render::json_line(&serde_json::json!({
+                "table": row[0], "snapshots": row[1], "files": row[2], "rows": row[3],
+            }));
+        }
+    } else {
+        print!(
+            "{}",
+            render::table(&["table", "snapshots", "files", "rows"], &rows)
+        );
+    }
+    Ok(code)
+}
+
 pub async fn verify(ctx: &Context, table: Option<&str>) -> Result<i32> {
     let (manifest, thread) = ctx.manifest()?;
     let report = utilake_writer::verify_lake(&manifest, &ctx.home.quarantine(), table)

@@ -4387,6 +4387,8 @@ dependencies = [
  "thiserror",
  "tokio",
  "utilake-core",
+ "utilake-iceberg",
+ "utilake-iceberg-store",
  "utilake-kit",
 ]
 

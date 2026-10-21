@@ -154,6 +154,7 @@ mod tests {
                 .map(|(i, fields)| HistorySchema {
                     schema_id: u32::try_from(i).unwrap(),
                     fields,
+                    identifier_field_ids: Vec::new(),
                 })
                 .collect(),
             runs: Vec::new(),

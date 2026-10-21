@@ -167,12 +167,25 @@ impl Store {
         Ok((version, serde_json::from_slice(&bytes)?))
     }
 
-    /// Writes version `version` and points the hint at it.
+    /// Writes version `version` and points the hint at it. The library
+    /// keeps schemas, specs and snapshots in hash maps; their arrays are
+    /// written sorted by id, so the same table is the same bytes.
     fn publish(&self, metadata: &TableMetadata, version: u32) -> Result<()> {
         let dir = self.meta_dir();
+        let mut v = serde_json::to_value(metadata)?;
+        for (list, id) in [
+            ("schemas", "schema-id"),
+            ("partition-specs", "spec-id"),
+            ("sort-orders", "order-id"),
+            ("snapshots", "snapshot-id"),
+        ] {
+            if let Some(items) = v.get_mut(list).and_then(serde_json::Value::as_array_mut) {
+                items.sort_by_key(|item| item.get(id).and_then(serde_json::Value::as_i64));
+            }
+        }
         std::fs::write(
             dir.join(format!("v{version}.metadata.json")),
-            serde_json::to_vec(metadata)?,
+            serde_json::to_vec(&v)?,
         )?;
         let tmp = dir.join(".version-hint.text");
         std::fs::write(&tmp, version.to_string())?;

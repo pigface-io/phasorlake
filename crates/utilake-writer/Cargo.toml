@@ -13,6 +13,8 @@ workspace = true
 
 [dependencies]
 utilake-core.workspace = true
+utilake-iceberg.workspace = true
+utilake-iceberg-store.workspace = true
 utilake-kit.workspace = true
 arrow-array.workspace = true
 arrow-schema.workspace = true

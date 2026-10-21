@@ -39,6 +39,9 @@ pub struct HistorySchema {
     pub schema_id: u32,
     /// Its fields, in file order.
     pub fields: Vec<HistoryField>,
+    /// The fields of the key.
+    #[serde(rename = "identifier-field-ids", default)]
+    pub identifier_field_ids: Vec<u32>,
 }
 
 /// Where a run starts or ends.
@@ -92,6 +95,31 @@ pub fn read_history(path: &Path) -> Result<History, SchemaFileError> {
 }
 
 impl History {
+    /// The schemas as Iceberg schemas, by id; a type Iceberg does not name
+    /// is text (validation reports it).
+    pub fn iceberg_schemas(&self) -> Vec<utilake_iceberg::Schema> {
+        let last = self.fields().iter().map(|f| f.id).max().unwrap_or(0);
+        self.schemas
+            .iter()
+            .map(|s| utilake_iceberg::Schema {
+                schema_id: s.schema_id,
+                fields: s
+                    .fields
+                    .iter()
+                    .map(|f| utilake_iceberg::Field {
+                        id: f.id,
+                        name: f.name.clone(),
+                        ty: IcebergType::parse(&f.ty).unwrap_or(IcebergType::String),
+                        required: f.required,
+                        doc: None,
+                    })
+                    .collect(),
+                identifier_field_ids: s.identifier_field_ids.clone(),
+                last_column_id: last,
+            })
+            .collect()
+    }
+
     /// The schema whose columns are `columns`, in order; the latest when a
     /// column's lineage gave two schemas the same names.
     pub fn schema_of(&self, columns: &[&str]) -> Option<u32> {
@@ -176,6 +204,7 @@ pub(crate) mod tests {
         let schema = |id, fields: &[&HistoryField]| HistorySchema {
             schema_id: id,
             fields: fields.iter().map(|f| (*f).clone()).collect(),
+            identifier_field_ids: vec![1, 2],
         };
         History {
             table: "DISPATCH_UNIT_SCADA".into(),
@@ -224,6 +253,15 @@ pub(crate) mod tests {
         // Every field once, required only where every schema requires it.
         let fields: Vec<(u32, bool)> = h.fields().iter().map(|f| (f.id, f.required)).collect();
         assert_eq!(fields, [(1, true), (2, true), (3, false), (4, false)]);
+        // As Iceberg schemas: ids, key and the table's last field id kept.
+        let mut odd = h.clone();
+        odd.schemas[2].fields[2].ty = "uuid".into();
+        let ice = odd.iceberg_schemas();
+        assert_eq!(ice.len(), 3);
+        assert_eq!((ice[1].schema_id, ice[1].last_column_id), (1, 4));
+        assert_eq!(ice[0].identifier_field_ids, [1, 2]);
+        assert_eq!(ice[1].fields[0].name, "DUID");
+        assert_eq!(ice[2].fields[2].ty, IcebergType::String);
     }
 
     #[test]

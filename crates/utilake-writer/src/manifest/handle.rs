@@ -24,6 +24,7 @@ enum Cmd {
     OutputsOfFile(i64, Reply<Vec<String>>),
     QuarantineOfFile(i64, Reply<Vec<String>>),
     LiveQuarantine(Reply<Vec<String>>),
+    LiveOutputs(Option<String>, Reply<Vec<super::LiveOutput>>),
     SupersedeFile(i64, Reply<usize>),
     BeginIngest(IngestStart, Reply<i64>),
     FinishIngest(i64, IngestEnd, Reply<()>),
@@ -97,6 +98,9 @@ impl ManifestHandle {
                         }
                         Cmd::LiveQuarantine(r) => {
                             let _ = r.send(manifest.live_quarantine());
+                        }
+                        Cmd::LiveOutputs(t, r) => {
+                            let _ = r.send(manifest.live_outputs(t.as_deref()));
                         }
                         Cmd::SupersedeFile(id, r) => {
                             let _ = r.send(manifest.supersede_file(id));
@@ -184,6 +188,14 @@ impl ManifestHandle {
     /// See [`Manifest::live_quarantine`].
     pub async fn live_quarantine(&self) -> Result<Vec<String>, ManifestError> {
         self.call(Cmd::LiveQuarantine).await
+    }
+    /// See [`Manifest::live_outputs`].
+    pub async fn live_outputs(
+        &self,
+        table: Option<&str>,
+    ) -> Result<Vec<super::LiveOutput>, ManifestError> {
+        self.call(|r| Cmd::LiveOutputs(table.map(str::to_owned), r))
+            .await
     }
     /// See [`Manifest::supersede_file`].
     pub async fn supersede_file(&self, file_id: i64) -> Result<usize, ManifestError> {
@@ -314,6 +326,7 @@ mod tests {
         assert_eq!(h.outputs_of_file(fid).await.unwrap().len(), 0);
         assert!(h.quarantine_of_file(fid).await.unwrap().is_empty());
         assert!(h.live_quarantine().await.unwrap().is_empty());
+        assert!(h.live_outputs(None).await.unwrap().is_empty());
         assert_eq!(h.supersede_file(fid).await.unwrap(), 1);
         assert_eq!(h.abort_running().await.unwrap(), 0);
         h.finish_run(run, 0, "{}").await.unwrap();

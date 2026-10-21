@@ -6,9 +6,11 @@
 //! its time column. [`manifest`] is the SQLite record of every file, ingest,
 //! output and diagnostic, owned by one thread and driven through an async
 //! handle so the pipeline awaits it and SQLite sees one writer. [`verify`]
-//! checks the lake against the manifest.
+//! checks the lake against the manifest. [`iceberg`] builds each table's
+//! Iceberg metadata from the manifest and the census's history.
 
 pub mod error;
+pub mod iceberg;
 pub mod manifest;
 pub mod parquet_hive;
 pub mod partition;

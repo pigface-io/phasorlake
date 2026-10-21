@@ -142,6 +142,29 @@ pub struct IngestEnd {
     pub error_code: Option<String>,
 }
 
+/// An output of a live ingest, with what the lake's Iceberg tables need.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct LiveOutput {
+    /// The table.
+    pub table: String,
+    /// The Parquet file.
+    pub path: String,
+    /// Its rows.
+    pub rows: u64,
+    /// Its size.
+    pub bytes: u64,
+    /// The Iceberg schema its block is written under, when known.
+    pub schema_id: Option<u32>,
+    /// AEMO's version of the block.
+    pub source_version: u16,
+    /// The month of the source, `YYYY-MM`.
+    pub source_period: Option<String>,
+    /// The source file.
+    pub url: String,
+    /// The entry of the source file.
+    pub entry: String,
+}
+
 /// A row of `ingests` with its outputs, for listings.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct IngestRecord {
@@ -512,6 +535,34 @@ impl Manifest {
     pub fn live_quarantine(&self) -> Result<Vec<String>, ManifestError> {
         let mut stmt = self.sql(self.conn.prepare("SELECT DISTINCT quarantine_path FROM ingests WHERE quarantine_path IS NOT NULL AND status != 'superseded' ORDER BY quarantine_path"))?;
         self.sql(stmt.query_map([], |r| r.get(0)).and_then(Iterator::collect))
+    }
+
+    /// Every output of a live ingest (status `ok`), of one table or all, in
+    /// the order the lake's Iceberg tables commit them: table, then source
+    /// month, then source file, entry and output.
+    pub fn live_outputs(&self, table: Option<&str>) -> Result<Vec<LiveOutput>, ManifestError> {
+        let mut stmt = self.sql(self.conn.prepare(
+            "SELECT i.table_name, o.parquet_path, o.rows, o.bytes, i.schema_id, i.source_version, i.source_period, f.url, i.entry
+             FROM outputs o JOIN ingests i ON o.ingest_id = i.id JOIN files f ON i.file_id = f.id
+             WHERE i.status = 'ok' AND (?1 IS NULL OR i.table_name = ?1)
+             ORDER BY i.table_name, i.source_period, f.url, i.entry, o.id",
+        ))?;
+        self.sql(
+            stmt.query_map([table], |r| {
+                Ok(LiveOutput {
+                    table: r.get(0)?,
+                    path: r.get(1)?,
+                    rows: r.get::<_, i64>(2)? as u64,
+                    bytes: r.get::<_, i64>(3)? as u64,
+                    schema_id: r.get(4)?,
+                    source_version: r.get::<_, i64>(5)? as u16,
+                    source_period: r.get(6)?,
+                    url: r.get(7)?,
+                    entry: r.get(8)?,
+                })
+            })
+            .and_then(Iterator::collect),
+        )
     }
 
     /// Marks every ingest of a file superseded and forgets its outputs.
@@ -900,6 +951,20 @@ mod tests {
         );
         assert_eq!(m.quarantine_of_file(fid).unwrap(), ["q"]);
         assert_eq!(m.live_quarantine().unwrap(), ["q"]);
+        // The live outputs, as the Iceberg tables take them.
+        let live = m.live_outputs(Some("T")).unwrap();
+        assert_eq!(live.len(), 1);
+        assert_eq!(
+            (live[0].rows, live[0].schema_id, live[0].source_version),
+            (5, Some(3), 3)
+        );
+        assert_eq!(live[0].source_period.as_deref(), Some("2024-01"));
+        assert_eq!(
+            (live[0].url.as_str(), live[0].entry.as_str()),
+            ("https://h/a.zip", "A.CSV")
+        );
+        assert_eq!(m.live_outputs(None).unwrap(), live);
+        assert!(m.live_outputs(Some("NONE")).unwrap().is_empty());
         let recs = m.list_ingests(None, false, 10).unwrap();
         assert_eq!(recs.len(), 1);
         assert_eq!(recs[0].fingerprint, "xxh3:1");

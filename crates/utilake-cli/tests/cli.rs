@@ -98,6 +98,15 @@ fn ingest_ls_errors_verify_round_trip() {
     assert!(runs_json.contains("\"exit_code\":0"), "{runs_json}");
     assert!(cli.ok(&["errors"]).contains("no diagnostics"));
     assert!(cli.ok(&["--json", "errors", "--last"]).is_empty());
+    // No table has a history in the embedded registry yet: none is built.
+    let (code, out, _) = cli.code(&["iceberg", "--table", "REGION"]);
+    assert_eq!(code, 1, "{out}");
+    assert!(
+        out.contains("REGION") && out.contains("no history"),
+        "{out}"
+    );
+    let (code, out, _) = cli.code(&["--json", "iceberg", "--table", "NONE"]);
+    assert_eq!((code, out.as_str()), (0, ""));
     let verify = cli.ok(&["verify"]);
     assert!(verify.contains("verified, no problems"), "{verify}");
     let verify_json = cli.ok(&["--json", "verify", "--table", "REGION"]);
