@@ -25,6 +25,7 @@ pub mod status;
 pub mod summary;
 #[cfg(test)]
 pub mod testzip;
+pub mod watch;
 pub mod zipdir;
 
 pub use compare::{Comparison, Pair, Removed, Verdict, Verified, compare, pairs, remove, verify};
@@ -42,3 +43,4 @@ pub use stamp::Stamp;
 pub use status::{PeekCount, RootStatus, Status, status};
 pub use summary::{fold, summary};
 pub use url::Url;
+pub use watch::{Cadence, Refreshed, Schedule, refresh};

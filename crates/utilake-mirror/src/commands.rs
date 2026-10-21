@@ -133,6 +133,22 @@ pub async fn run_command(cli: &Cli) -> Result<i32> {
             };
             locked(&mirror, run(ctx, &mirror, &plan)).await
         }
+        Command::Watch {
+            roots,
+            rounds,
+            refusals,
+            wait_minutes,
+            delete_duplicates,
+        } => {
+            let plan = WatchPlan {
+                given: roots,
+                rounds: *rounds,
+                refusals: *refusals,
+                wait: Duration::from_secs(wait_minutes * 60),
+                delete_duplicates: *delete_duplicates,
+            };
+            locked(&mirror, watch(ctx, &mirror, &plan)).await
+        }
         Command::Map { roots } => {
             let jobs = cli.jobs.unwrap_or_else(|| ctx.config.effective_jobs());
             map(ctx, &mirror, roots, jobs)
@@ -256,6 +272,139 @@ async fn run(ctx: &Context, mirror: &Mirror, plan: &RunPlan<'_>) -> Result<i32, 
         tokio::time::sleep(wait).await;
         // The crawl moved aside already; a second move would lose it.
         fresh = false;
+    }
+}
+
+/// What `watch` was asked to do.
+struct WatchPlan<'a> {
+    given: &'a [String],
+    rounds: Option<u64>,
+    refusals: u32,
+    wait: Duration,
+    delete_duplicates: bool,
+}
+
+/// Reads each folder's listing again when its turn comes and downloads
+/// what is new or rewritten, until `rounds` rounds; a refusal or a network
+/// failure waits `wait` and goes on with a new fetcher, at most
+/// `refusals` times in a row, and so does an archive that is not there.
+async fn watch(ctx: &Context, mirror: &Mirror, plan: &WatchPlan<'_>) -> Result<i32, MirrorError> {
+    let roots = roots(ctx, plan.given)?;
+    if !mirror.done_path().exists() {
+        return Err(MirrorError::CrawlIncomplete {
+            path: mirror.crawl_dir().display().to_string(),
+        });
+    }
+    let folders = nemweb_mirror::read_record(&mirror.record_path())?
+        .into_iter()
+        .filter(|r| r.kind == nemweb_mirror::RemoteKind::Dir)
+        .map(|r| r.url)
+        .chain(roots.iter().map(ToString::to_string));
+    let cadence = ctx.config.cadence();
+    let least = cadence.least;
+    let mut schedule = nemweb_mirror::Schedule::new(cadence, folders, std::time::Instant::now());
+    // Rounds are no closer than the least interval: each one reads the
+    // crawl record and, when anything changed, writes it again.
+    let mut not_before = std::time::Instant::now();
+    let archive = ctx.archive();
+    let mut fetcher = ctx.fetcher();
+    let (mut rounds, mut refused) = (0, 0);
+    // Files of a round whose download failed, asked for once more in the
+    // next round.
+    let mut retry: Vec<String> = Vec::new();
+    while plan.rounds.is_none_or(|n| rounds < n) {
+        let now = std::time::Instant::now();
+        let due = schedule.due(now);
+        if due.is_empty() || now < not_before {
+            let next = schedule.next().unwrap_or(now + plan.wait).max(not_before);
+            tokio::time::sleep_until(next.into()).await;
+            continue;
+        }
+        rounds += 1;
+        not_before = now + least;
+        // A link to an archive on a drive not mounted.
+        let root = archive.root();
+        if root.symlink_metadata().is_ok() && !root.exists() {
+            event(ctx, "archive_missing", &root.display().to_string());
+            tokio::time::sleep(plan.wait).await;
+            continue;
+        }
+        let round = async {
+            let r = nemweb_mirror::refresh(&fetcher, mirror, &roots, &due).await?;
+            let now = std::time::Instant::now();
+            for f in &r.removed {
+                schedule.remove(f);
+            }
+            for f in &r.added {
+                schedule.add(f.clone(), now);
+            }
+            for (f, changed) in &r.folders {
+                schedule.checked(f, *changed, now);
+            }
+            let changed = r.folders.iter().filter(|(_, c)| *c).count();
+            if ctx.json {
+                render::json_line(&serde_json::json!({
+                    "event": "watch_round",
+                    "read": r.folders.len(),
+                    "changed": changed,
+                    "added": r.added,
+                    "removed": r.removed,
+                    "files": r.files.len(),
+                    "folders": schedule.len(),
+                }));
+            } else if changed > 0 {
+                println!(
+                    "{} folders read, {changed} changed, {} added, {} gone; {} files new or rewritten",
+                    r.folders.len(),
+                    r.added.len(),
+                    r.removed.len(),
+                    r.files.len(),
+                );
+            }
+            let fresh = r.files;
+            let mut files = fresh.clone();
+            files.extend(retry.iter().filter(|f| !fresh.contains(f)).cloned());
+            if files.is_empty() {
+                return Ok(files);
+            }
+            let paired = nemweb_mirror::pairs(mirror)?;
+            if paired.iter().any(|p| files.contains(&p.zip)) {
+                peek(ctx, &fetcher, mirror, true, None).await?;
+            }
+            let (code, _) =
+                download(ctx, &fetcher, mirror, &files, plan.delete_duplicates, None).await?;
+            Ok(if code == 0 { Vec::new() } else { fresh })
+        };
+        let d = match round.await {
+            Ok(failed) => {
+                retry = failed;
+                refused = 0;
+                continue;
+            }
+            Err(MirrorError::Fetch(e)) if waits_out(&e) => e.diagnostic(),
+            Err(other) => return Err(other),
+        };
+        if fetcher.succeeded() > 0 {
+            refused = 0;
+        }
+        report(ctx, &d);
+        if refused >= plan.refusals {
+            return Ok(1);
+        }
+        refused += 1;
+        event(ctx, "waiting", &format!("{} seconds", plan.wait.as_secs()));
+        tokio::time::sleep(plan.wait).await;
+        fetcher = ctx.fetcher();
+    }
+    Ok(0)
+}
+
+/// A line of what a watch does: NDJSON, or for people on stderr.
+fn event(ctx: &Context, name: &str, detail: &str) {
+    if ctx.json {
+        render::json_line(&serde_json::json!({ "event": name, "detail": detail }));
+    } else {
+        eprintln!("{name}: {detail}");
     }
 }
 

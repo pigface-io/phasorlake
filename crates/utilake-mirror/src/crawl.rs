@@ -218,17 +218,9 @@ pub async fn crawl(
             .ok()
             .and_then(|t| t.duration_since(std::time::UNIX_EPOCH).ok())
             .map(|d| Stamp::from_unix(i64::try_from(d.as_secs()).unwrap_or(0)));
-        let links = listing::parse(&html).map_err(|source| MirrorError::Listing {
-            url: folder.to_string(),
-            source,
-        })?;
-        for link in &links {
-            let mut remote =
-                resolve(&folder, link, roots).map_err(|source| MirrorError::Listing {
-                    url: folder.to_string(),
-                    source,
-                })?;
-            remote.crawled_at = crawled_at;
+        let links = read_page(&folder, &html, roots, crawled_at)?;
+        let count = links.len();
+        for remote in links {
             if remote.kind == RemoteKind::Dir && seen.insert(remote.url.clone()) {
                 queue.push_back(Url::parse(&remote.url).expect("resolved from a URL"));
             }
@@ -237,7 +229,7 @@ pub async fn crawl(
         on_page(&PageRead {
             url: folder.as_str(),
             kept,
-            links: links.len(),
+            links: count,
             pages: summary.pages,
             queued: queue.len(),
         });
@@ -250,6 +242,29 @@ pub async fn crawl(
         pages_fetched: summary.pages_fetched,
         ..found
     })
+}
+
+/// Every link of `folder`'s listing page as a record, read at
+/// `crawled_at`.
+pub(crate) fn read_page(
+    folder: &Url,
+    html: &[u8],
+    roots: &[Url],
+    crawled_at: Option<Stamp>,
+) -> Result<Vec<Remote>, MirrorError> {
+    let bad = |source| MirrorError::Listing {
+        url: folder.to_string(),
+        source,
+    };
+    listing::parse(html)
+        .map_err(bad)?
+        .iter()
+        .map(|link| {
+            let mut remote = resolve(folder, link, roots).map_err(bad)?;
+            remote.crawled_at = crawled_at;
+            Ok(remote)
+        })
+        .collect()
 }
 
 /// A listed link as a record: its absolute URL, and whether it is a folder
@@ -328,7 +343,7 @@ pub fn read_record(path: &Path) -> Result<Vec<Remote>, MirrorError> {
         .collect()
 }
 
-fn write_record<'r>(
+pub(crate) fn write_record<'r>(
     path: &Path,
     record: impl Iterator<Item = &'r Remote>,
 ) -> Result<(), MirrorError> {
@@ -342,7 +357,7 @@ fn write_record<'r>(
 
 /// Writes `bytes` beside `path` and renames it into place, so a cut-off
 /// write never leaves a partial file under the final name.
-fn write_atomic(path: &Path, bytes: &[u8]) -> Result<(), MirrorError> {
+pub(crate) fn write_atomic(path: &Path, bytes: &[u8]) -> Result<(), MirrorError> {
     let parent = path.parent().unwrap_or(Path::new("."));
     std::fs::create_dir_all(parent).map_err(MirrorError::io(parent))?;
     let mut part = path.as_os_str().to_owned();

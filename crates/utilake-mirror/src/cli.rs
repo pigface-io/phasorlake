@@ -77,6 +77,33 @@ pub enum Command {
         #[arg(long)]
         delete_duplicates: bool,
     },
+    /// Read each folder's listing again on a schedule of its own and
+    /// download what is new or rewritten, until stopped: the folders whose
+    /// files nemweb rewrites often every few minutes, the rest of
+    /// Reports/CURRENT/ hourly, every other folder daily (config `watch_*`).
+    /// Needs a finished crawl.
+    Watch {
+        /// Roots to crawl instead of nemweb's Data_Archive/, Reports/ARCHIVE/ and Reports/CURRENT/.
+        #[arg(long = "root")]
+        roots: Vec<String>,
+        /// Stop after this many rounds of reads.
+        #[arg(long)]
+        rounds: Option<u64>,
+        /// How many refusals or network failures in a row to wait out before
+        /// giving up; a round in which any request succeeded starts the
+        /// count again.
+        #[arg(long, default_value_t = 8)]
+        refusals: u32,
+        /// Minutes to wait after a refusal or a network failure, and between
+        /// looks at an archive linked to a drive not mounted.
+        #[arg(long, default_value_t = 15)]
+        wait_minutes: u64,
+        /// Before a whole-month zip new to nemweb is downloaded, compare its
+        /// listing with its folder, and when they are the same record it
+        /// removed instead.
+        #[arg(long)]
+        delete_duplicates: bool,
+    },
     /// Write the map of every folder and file, zips opened as folders, to
     /// map.ndjson and tree.txt under {home}/mirror/map/; offline.
     Map {

@@ -2,10 +2,12 @@
 //! are errors, so a typo never falls back to a default quietly.
 
 use std::path::{Path, PathBuf};
+use std::time::Duration;
 
 use serde::{Deserialize, Serialize};
 
 use crate::diag::{Category, Diagnose, Diagnostic};
+use crate::watch::Cadence;
 
 /// Where the mirror keeps things: the archive of downloads and its own
 /// records. `--home` or `NEMWEB_MIRROR_HOME`, else `~/.nemweb-mirror`.
@@ -74,6 +76,19 @@ pub struct Config {
     pub read_timeout_secs: u64,
     /// Seconds between the counts a run writes for `status`.
     pub progress_every_secs: u64,
+    /// Folders a watch reads most often, as paths under `base_url`: those
+    /// whose files nemweb rewrites in place several times a day.
+    pub watch_fast: Vec<String>,
+    /// Seconds between a watch's reads of `watch_fast`.
+    pub watch_fast_secs: u64,
+    /// Folders a watch reads next most often, as paths under `base_url`.
+    pub watch_current: Vec<String>,
+    /// Seconds between a watch's reads of `watch_current`.
+    pub watch_current_secs: u64,
+    /// Seconds between a watch's reads of every other folder.
+    pub watch_secs: u64,
+    /// The fewest seconds between two reads of a folder found changed.
+    pub watch_least_secs: u64,
 }
 
 impl Default for Config {
@@ -88,6 +103,15 @@ impl Default for Config {
             backoff_ms: 500,
             read_timeout_secs: 120,
             progress_every_secs: 5,
+            watch_fast: ["VicGas", "STTM", "GBB", "ECGS", "GSH"]
+                .iter()
+                .map(|f| format!("Reports/CURRENT/{f}/"))
+                .collect(),
+            watch_fast_secs: 15 * 60,
+            watch_current: vec!["Reports/CURRENT/".to_owned()],
+            watch_current_secs: 60 * 60,
+            watch_secs: 24 * 60 * 60,
+            watch_least_secs: 5 * 60,
         }
     }
 }
@@ -109,6 +133,25 @@ impl Config {
             path: path.display().to_string(),
             message: e.message().to_owned(),
         })
+    }
+
+    /// How often a watch reads each folder.
+    pub fn cadence(&self) -> Cadence {
+        let base = self.base_url.trim_end_matches('/');
+        let under = |paths: &[String]| -> Vec<String> {
+            paths
+                .iter()
+                .map(|p| format!("{base}/{}", p.trim_start_matches('/')))
+                .collect()
+        };
+        Cadence {
+            fast: under(&self.watch_fast),
+            fast_every: Duration::from_secs(self.watch_fast_secs),
+            current: under(&self.watch_current),
+            current_every: Duration::from_secs(self.watch_current_secs),
+            every: Duration::from_secs(self.watch_secs),
+            least: Duration::from_secs(self.watch_least_secs),
+        }
     }
 
     /// The map's threads: `jobs`, or half the cores when it is 0.
@@ -187,5 +230,26 @@ mod tests {
         assert!(d.message.contains("requests"), "{}", d.message);
         let d = Config::load(dir.path()).unwrap_err().diagnostic();
         assert_eq!(d.code, "config.read");
+    }
+
+    #[test]
+    fn a_watch_cadence_is_under_the_base_url() {
+        let c = Config {
+            base_url: "https://h/".to_owned(),
+            watch_fast: vec!["/R/C/G/".to_owned()],
+            ..Config::default()
+        }
+        .cadence();
+        assert_eq!(c.fast, ["https://h/R/C/G/"]);
+        assert_eq!(c.current, ["https://h/Reports/CURRENT/"]);
+        assert_eq!(
+            (c.fast_every, c.current_every, c.every, c.least),
+            (
+                Duration::from_secs(900),
+                Duration::from_secs(3600),
+                Duration::from_secs(86_400),
+                Duration::from_secs(300)
+            )
+        );
     }
 }

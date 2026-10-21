@@ -28,6 +28,18 @@ what exists.
   with a sidecar recording its URL, size and sha256. A file nemweb rewrites
   in place is kept in every version: a later one beside the first as
   `{name}@{listed time}`.
+- **Watch**: after a finished crawl, `watch` reads each folder's listing
+  again on a schedule of its own and downloads what is new or rewritten,
+  until stopped: the folders whose files nemweb rewrites in place several
+  times a day (`watch_fast`: the gas reports under `Reports/CURRENT/`)
+  every 15 minutes, the rest of `Reports/CURRENT/` hourly, every other
+  folder daily. A folder found changed is read again in half its interval,
+  down to 5 minutes; one found the same goes back towards its own. Rounds
+  of reads are at least 5 minutes apart (`watch_least_secs`). A
+  version nemweb rewrites twice between two reads is not seen, so a
+  folder's interval is what decides how many versions are kept. A refusal
+  is waited out as in `run`, and so is an archive linked to a drive not
+  mounted.
 - **Hash**: every downloaded file has its CRC-32 (what zips record of
   their entries) and sha256 in its sidecar; `hash` records the CRC-32 of
   files downloaded before downloads did, checking each sha256 on the way.
@@ -51,6 +63,7 @@ nohup caffeinate -ims bin/nemweb-mirror run --json > mirror.log 2>&1 &
 bin/nemweb-mirror status
 bin/nemweb-mirror compare --delete
 bin/nemweb-mirror map && bin/nemweb-mirror summary
+nohup caffeinate -ims bin/nemweb-mirror watch --json --delete-duplicates >> mirror.log 2>&1 &
 ```
 
 `run` can be stopped and started again at any time: the crawl carries on from
@@ -62,7 +75,7 @@ matches, without reading its sidecar.
 
 ```
 {home}/archive/{host}/{path}             every file, with {path}.json beside it   (docs/archive.md)
-{home}/mirror/config.toml                downloads, request_interval_ms, attempts, backoff_ms, read_timeout_secs, progress_every_secs, base_url, user_agent_suffix, jobs
+{home}/mirror/config.toml                downloads, request_interval_ms, attempts, backoff_ms, read_timeout_secs, progress_every_secs, base_url, user_agent_suffix, jobs; watch_fast, watch_fast_secs, watch_current, watch_current_secs, watch_secs, watch_least_secs
 {home}/mirror/crawl/listings/…           each listing page as served
 {home}/mirror/crawl/remote.ndjson        every folder and file the crawl found
 {home}/mirror/peek.ndjson                zip entries read before download (`peek`: every zip; `run`: the whole-month zips), with when, against which listing, and the server's ETag and Last-Modified

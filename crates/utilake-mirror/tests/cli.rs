@@ -580,3 +580,163 @@ fn a_run_keeps_its_counts_for_status() {
     assert!(removed.contains("/Z/z.zip"), "{removed}");
     assert!(kept.contains("\"downloading\":0"), "{kept}");
 }
+
+/// An IIS listing of `(href, when, size)`: a size of `None` is a folder.
+fn dated(entries: &[(&str, &str, Option<usize>)]) -> Vec<u8> {
+    let mut body = String::from("<pre><A HREF=\"/\">[To Parent Directory]</A><br><br>");
+    for (href, when, size) in entries {
+        let what = size.map_or("&lt;dir&gt;".to_owned(), |s| s.to_string());
+        let _ = write!(body, " {when} {what} <A HREF=\"{href}\">x</A><br>");
+    }
+    body.push_str("</pre>");
+    body.into_bytes()
+}
+
+/// `watch` reads each folder again, downloads a file rewritten in place
+/// as a later version, rules on a whole-month zip new to nemweb from its
+/// listing, waits out a missing archive and refusals, and stops on a page
+/// it cannot read.
+#[test]
+fn a_watch_keeps_each_version_and_what_is_new() {
+    const MON: &str = "Monday, October 12, 2026 10:45 AM";
+    const TUE: &str = "Tuesday, October 13, 2026 11:53 AM";
+    const WED: &str = "Wednesday, October 14, 2026 09:00 AM";
+    let srv = Server::start();
+    let t = b"t,u\n".to_vec();
+    let whole = zip_of(&[("M/t.csv", &t)]);
+    srv.route(
+        "/W/",
+        Reply::Ok(dated(&[("/W/G/", MON, None), ("/W/M/", MON, None)])),
+    );
+    srv.route(
+        "/W/",
+        Reply::Ok(dated(&[
+            ("/W/G/", MON, None),
+            ("/W/M/", MON, None),
+            ("/W/M.zip", TUE, Some(whole.len())),
+        ])),
+    );
+    srv.route(
+        "/W/M/",
+        Reply::Ok(dated(&[("/W/M/t.csv", MON, Some(t.len()))])),
+    );
+    srv.route("/W/M/t.csv", Reply::Ok(t.clone()));
+    srv.route("/W/M.zip", Reply::Ok(whole.clone()));
+    for (when, size) in [(MON, 3), (TUE, 4), (TUE, 4), (WED, 5)] {
+        srv.route(
+            "/W/G/",
+            Reply::Ok(dated(&[("/W/G/r.csv", when, Some(size))])),
+        );
+    }
+    for body in [&b"one"[..], b"four", b"five!"] {
+        srv.route("/W/G/r.csv", Reply::Ok(body.to_vec()));
+    }
+    let cli = Cli::new();
+    let base = srv.url("");
+    cli.config(&format!(
+        "{FAST}base_url = \"{base}\"\nwatch_fast = [\"W/G/\"]\nwatch_current = [\"W/\"]\nwatch_fast_secs = 1\nwatch_current_secs = 1\nwatch_secs = 1\nwatch_least_secs = 1\n"
+    ));
+    let root = srv.url("/W/");
+    let (code, out, _) = cli.code(&["--json", "watch", "--root", &root]);
+    assert_eq!(code, 1);
+    assert!(out.contains("mirror.crawl_incomplete"), "{out}");
+    cli.ok(&["run", "--root", &root]);
+
+    let out = cli.ok(&[
+        "--json",
+        "watch",
+        "--root",
+        &root,
+        "--rounds",
+        "2",
+        "--delete-duplicates",
+    ]);
+    assert_eq!(out.matches("\"event\":\"watch_round\"").count(), 2, "{out}");
+    assert!(out.contains("\"event\":\"zip_peeked\""), "{out}");
+    let archive = cli.home.path().join("archive");
+    let g = archive.join(
+        srv.url("/W/G/")
+            .split_once("://")
+            .unwrap()
+            .1
+            .replace(':', "_"),
+    );
+    assert_eq!(std::fs::read(g.join("r.csv")).unwrap(), b"one");
+    assert_eq!(
+        std::fs::read(g.join("r.csv@20261013T115300+1000")).unwrap(),
+        b"four"
+    );
+    let removed = std::fs::read_to_string(cli.home.path().join("mirror/removed.ndjson")).unwrap();
+    assert!(removed.contains("M.zip"), "{removed}");
+
+    let out = cli.ok(&["watch", "--root", &root, "--rounds", "1"]);
+    assert!(
+        out.contains("1 changed, 0 added, 0 gone; 1 files new or rewritten"),
+        "{out}"
+    );
+    assert_eq!(
+        std::fs::read(g.join("r.csv@20261014T090000+1000")).unwrap(),
+        b"five!"
+    );
+
+    // An archive linked to a drive not mounted is waited for.
+    let away = cli.home.path().join("archive.away");
+    std::fs::rename(&archive, &away).unwrap();
+    std::os::unix::fs::symlink(cli.home.path().join("unmounted"), &archive).unwrap();
+    let (code, _, err) = cli.code(&[
+        "watch",
+        "--root",
+        &root,
+        "--rounds",
+        "1",
+        "--wait-minutes",
+        "0",
+    ]);
+    assert_eq!(code, 0);
+    assert!(err.contains("archive_missing"), "{err}");
+    std::fs::remove_file(&archive).unwrap();
+    std::fs::rename(&away, &archive).unwrap();
+
+    // A folder gone and one new; then refusals in a row end the watch. A
+    // page that does not read stops it.
+    srv.route("/X/", Reply::Ok(dated(&[("/X/d/", MON, None)])));
+    srv.route("/X/", Reply::Ok(dated(&[("/X/n/", TUE, None)])));
+    srv.route("/X/", Reply::Status(403));
+    srv.route("/X/d/", Reply::Ok(dated(&[("/X/d/a.csv", MON, Some(1))])));
+    srv.route("/X/d/", Reply::Status(404));
+    srv.route("/X/n/", Reply::Ok(dated(&[("/X/n/b.csv", TUE, Some(1))])));
+    srv.route("/X/n/b.csv", Reply::Ok(b"b".to_vec()));
+    srv.route("/Y/", Reply::Ok(dated(&[("/Y/a.csv", MON, Some(1))])));
+    srv.route(
+        "/Y/",
+        Reply::Ok(b"<pre> not a listing line <br></pre>".to_vec()),
+    );
+    for (r, code, what) in [
+        ("/X/", 1, "net.blocked"),
+        ("/Y/", 1, "listing.unparsed_line"),
+    ] {
+        let cli = Cli::new();
+        cli.config(&format!(
+            "{FAST}base_url = \"{base}\"\nwatch_secs = 0\nwatch_least_secs = 0\n"
+        ));
+        let root = srv.url(r);
+        cli.ok(&["crawl", "--root", &root]);
+        let (c, out, _) = cli.code(&[
+            "--json",
+            "watch",
+            "--root",
+            &root,
+            "--refusals",
+            "1",
+            "--wait-minutes",
+            "0",
+        ]);
+        assert_eq!(c, code, "{out}");
+        assert!(out.contains(what), "{out}");
+        if r == "/X/" {
+            assert!(out.contains("\"added\":[\""), "{out}");
+            assert!(out.contains("\"removed\":[\""), "{out}");
+            assert!(out.contains("\"event\":\"waiting\""), "{out}");
+        }
+    }
+}
