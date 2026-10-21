@@ -294,6 +294,31 @@ fn base(name: &str) -> &str {
 }
 
 /// The census of the archived `files` of one folder.
+// TODO(versions): census each version of a file AEMO rewrites in place.
+// nemweb-mirror keeps every version with new data: the first under the
+// file's name, each later one beside it as `{name}@{listed time}` in compact
+// RFC 3339 (`int128_v4_actual_linepack_1.csv@20261021T191200+1000`), with
+// its own sidecar. Each folder's journal,
+// `{mirror home}/mirror/journal/{host}/{path}/changes.ndjson`, notes every
+// listing: `new`, `version`, `same` (the bytes of a version kept), `repacked`
+// (a zip of the same entries packed again), `dropped`, `folder_gone`. The
+// census still has to:
+// 1. Read versions. A name ending `@{stamp}` is a version of the base name:
+//    its kind is the base name's (`.csv`, `.zip`) and its month the base
+//    name's date. Today `ends_with(".csv")` and `ends_with(".zip")` pass
+//    over every version.
+// 2. Classify each version against the one before it of the same file:
+//    - `data`: the D rows differ;
+//    - `report_time`: only the report's own time differs (the AEMO `C,`
+//      header and footer rows, or the gas reports' `current_date` column);
+//    - `reverted`: its data is that of an earlier version, not the last
+//      (published, then withdrawn).
+//    The mirror keeps no byte copy and no repacked zip, so `same` cannot
+//    occur here; the journal counts those.
+// 3. Record per file its versions, each with its class, listed time,
+//    `Last-Modified` and sha256, so a table's history marks data AEMO
+//    restated in place, and take in the journal's `same` and `repacked`
+//    counts as rewrites with no new data.
 pub fn census_folder(
     registry: &Registry,
     ctls: &mut CtlSource<'_>,
