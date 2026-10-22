@@ -1,0 +1,384 @@
+{
+  "current-schema-id": 2,
+  "current-snapshot-id": 5785110743187525166,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 11,
+  "last-partition-id": 999,
+  "last-sequence-number": 3,
+  "last-updated-ms": 1777557600002,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BILLINGCALENDAR",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "BILLINGCALENDAR sets out the billing calendar for the year, with week number 1 starting on 1 January. BILLINGCALENDAR advises preliminary and final statement posting date and corresponding  settlement for each billing week.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"CONTRACTYEAR\",\"WEEKNO\"]",
+    "utilake.load": "snapshot",
+    "utilake.model-types": "{\"1\":\"NUMERIC(4,0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"TIMESTAMP(0)\",\"8\":\"TIMESTAMP(0)\",\"9\":\"TIMESTAMP(0)\",\"10\":\"TIMESTAMP(0)\",\"11\":\"TIMESTAMP(0)\"}",
+    "utilake.package": "BILLING_CONFIG",
+    "utilake.reports": "[[\"BILLING_CONFIG\",\"BILLINGCALENDAR\"]]",
+    "utilake.table": "BILLINGCALENDAR",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"CONTRACTYEAR\",\"WEEKNO\"]",
+    "utilake.temporal.order": "[\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 5785110743187525166,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "AEMO Contract Year number starting in week containing 1st January",
+          "id": 1,
+          "name": "CONTRACTYEAR",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Week no within the contract year. Week no 1 is the week containing 1st January",
+          "id": 2,
+          "name": "WEEKNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Start Date of week",
+          "id": 3,
+          "name": "STARTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "End Date of week",
+          "id": 4,
+          "name": "ENDDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Preliminary Statement Date",
+          "id": 5,
+          "name": "PRELIMINARYSTATEMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Final Statement Date",
+          "id": 6,
+          "name": "FINALSTATEMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Payment Date",
+          "id": 7,
+          "name": "PAYMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 8,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "AEMO Contract Year number starting in week containing 1st January",
+          "id": 1,
+          "name": "CONTRACTYEAR",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Week no within the contract year. Week no 1 is the week containing 1st January",
+          "id": 2,
+          "name": "WEEKNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Start Date of week",
+          "id": 3,
+          "name": "STARTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "End Date of week",
+          "id": 4,
+          "name": "ENDDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Preliminary Statement Date",
+          "id": 5,
+          "name": "PRELIMINARYSTATEMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Final Statement Date",
+          "id": 6,
+          "name": "FINALSTATEMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Payment Date",
+          "id": 7,
+          "name": "PAYMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 8,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Revision 1 Statement Date for the billing week.",
+          "id": 9,
+          "name": "REVISION1_STATEMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Revision 2 Statement Date for the billing week.",
+          "id": 10,
+          "name": "REVISION2_STATEMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2
+      ],
+      "schema-id": 1,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "AEMO Contract Year number starting in week containing 1st January",
+          "id": 1,
+          "name": "CONTRACTYEAR",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Week no within the contract year. Week no 1 is the week containing 1st January",
+          "id": 2,
+          "name": "WEEKNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Start Date of week",
+          "id": 3,
+          "name": "STARTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "End Date of week",
+          "id": 4,
+          "name": "ENDDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Preliminary Statement Date",
+          "id": 5,
+          "name": "PRELIMINARYSTATEMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Final Statement Date",
+          "id": 6,
+          "name": "FINALSTATEMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Payment Date",
+          "id": 7,
+          "name": "PAYMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 8,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Revision 1 Statement Date for the billing week.",
+          "id": 9,
+          "name": "REVISION1_STATEMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Revision 2 Statement Date for the billing week.",
+          "id": 10,
+          "name": "REVISION2_STATEMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Revision 0 Statement Date for the billing week.",
+          "id": 11,
+          "name": "REVISION0_STATEMENTDATE",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2
+      ],
+      "schema-id": 2,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 1912582228984618074,
+      "timestamp-ms": 1246370400000
+    },
+    {
+      "snapshot-id": 1144384812505223488,
+      "timestamp-ms": 1320069600001
+    },
+    {
+      "snapshot-id": 5785110743187525166,
+      "timestamp-ms": 1777557600002
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BILLINGCALENDAR/metadata/snap-1912582228984618074-1-31fd31f2-8a98-8897-aacf-c6b9ae2dec7c.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 1912582228984618074,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "28",
+        "utilake.from.file": "PUBLIC_DVD_BILLINGCALENDAR_200907010000.zip",
+        "utilake.from.release": "2009-07",
+        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "utilake.from.time": "1997-12-28T00:00:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "BILLINGCALENDAR",
+        "utilake.report-type": "BILLING_CONFIG",
+        "utilake.rows": "20881",
+        "utilake.to.file": "PUBLIC_DVD_BILLINGCALENDAR_201110010000.zip",
+        "utilake.to.release": "2011-10",
+        "utilake.to.sha256": "7751def4d7617062adf8e6e096cfc2cea79698468b1a2794efd59527b8e86412",
+        "utilake.to.time": "2012-12-23T00:00:00+10:00",
+        "utilake.total-rows": "20881",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1246370400000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BILLINGCALENDAR/metadata/snap-1144384812505223488-2-31fd31f2-8a98-8897-aacf-c6b9ae2dec7c.avro",
+      "parent-snapshot-id": 1912582228984618074,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 1144384812505223488,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "174",
+        "utilake.from.file": "PUBLIC_DVD_BILLINGCALENDAR_201111010000.zip",
+        "utilake.from.release": "2011-11",
+        "utilake.from.sha256": "db36de9e5f398399950c0da19599751efdd43fbe009c661b715db265850722a0",
+        "utilake.from.time": "1997-12-28T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\",\"dvd\"]",
+        "utilake.report-subtype": "BILLINGCALENDAR",
+        "utilake.report-type": "BILLING_CONFIG",
+        "utilake.rows": "206645",
+        "utilake.to.file": "PUBLIC_ARCHIVE#BILLINGCALENDAR#FILE01#202604010000.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "79dd1bf2d437bf1e2894c83e58fdaadfedd22ad5b7fe05a18abcc25484f0e367",
+        "utilake.to.time": "2027-12-19T00:00:00+10:00",
+        "utilake.total-rows": "227526",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1320069600001
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BILLINGCALENDAR/metadata/snap-5785110743187525166-3-31fd31f2-8a98-8897-aacf-c6b9ae2dec7c.avro",
+      "parent-snapshot-id": 1144384812505223488,
+      "schema-id": 2,
+      "sequence-number": 3,
+      "snapshot-id": 5785110743187525166,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "5",
+        "utilake.from.file": "PUBLIC_ARCHIVE#BILLINGCALENDAR#FILE01#202605010000.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "607b00c3d556872080a37b6753057aeb0595a30ad533dec1d2e656762abb3392",
+        "utilake.from.time": "1997-12-28T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "BILLINGCALENDAR",
+        "utilake.report-type": "BILLING_CONFIG",
+        "utilake.rows": "7825",
+        "utilake.to.file": "PUBLIC_ARCHIVE#BILLINGCALENDAR#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "01f4c960ffe617f0d3648547a6d3ced15a5c9be7f7e47aaeaebaab1f6ff0412f",
+        "utilake.to.time": "2027-12-19T00:00:00+10:00",
+        "utilake.total-rows": "235351",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1777557600002
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "31fd31f2-8a98-8897-aacf-c6b9ae2dec7c"
+}

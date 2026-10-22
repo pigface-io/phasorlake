@@ -1,0 +1,170 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 440732567999454153,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 10,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1246370400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDDUIDDETAILS",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "BIDDUIDDETAILS and the associated tracking object BIDDUIDDETAILSTRK define the registration data for each ancillary service a dispatchable unit is registered to provide. The registration data is required to validate a dispatchable unit bid submitted for that ancillary service.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"DUID\",\"EFFECTIVEDATE\",\"VERSIONNO\",\"BIDTYPE\"]",
+    "utilake.load": "snapshot",
+    "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(10)\",\"5\":\"NUMERIC(22,0)\",\"6\":\"NUMERIC(22,0)\",\"7\":\"NUMERIC(22,0)\",\"8\":\"NUMERIC(3,0)\",\"9\":\"NUMERIC(3,0)\",\"10\":\"TIMESTAMP(0)\"}",
+    "utilake.package": "PARTICIPANT_REGISTRATION",
+    "utilake.reports": "[[\"PARTICIPANT_REGISTRATION\",\"BIDDUIDDETAILS\"]]",
+    "utilake.table": "BIDDUIDDETAILS",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"DUID\",\"BIDTYPE\"]",
+    "utilake.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "EFFECTIVEDATE",
+    "utilake.temporal.valid.kind": "from",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 440732567999454153,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Dispatchable unit identifier",
+          "id": 1,
+          "name": "DUID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Market date starting at 04:30 inclusive",
+          "id": 2,
+          "name": "EFFECTIVEDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Record version number",
+          "id": 3,
+          "name": "VERSIONNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Bid Type Identifier",
+          "id": 4,
+          "name": "BIDTYPE",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Maximum Capacity of this DUID for this BIDTYPE",
+          "id": 5,
+          "name": "MAXCAPACITY",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Minimum Energy Output (MW) at which this ancillary service becomes available (AS Only)",
+          "id": 6,
+          "name": "MINENABLEMENTLEVEL",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Maximum Energy Output (MW) at which this ancillary service can be supplied (AS Only)",
+          "id": 7,
+          "name": "MAXENABLEMENTLEVEL",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Maximum Angle at the lower end of the ancillary service profile (Degrees)",
+          "id": 8,
+          "name": "MAXLOWERANGLE",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Maximum Angle at the upper end of the ancillary service profile (Degrees)",
+          "id": 9,
+          "name": "MAXUPPERANGLE",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 10,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 440732567999454153,
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDDUIDDETAILS/metadata/snap-440732567999454153-1-19488f32-8b33-8323-8c1c-0b81f6fb947d.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 440732567999454153,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "207",
+        "utilake.from.file": "PUBLIC_DVD_BIDDUIDDETAILS_200907010000.zip",
+        "utilake.from.release": "2009-07",
+        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "utilake.from.time": "1998-10-25T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\",\"dvd\"]",
+        "utilake.report-subtype": "BIDDUIDDETAILS",
+        "utilake.report-type": "PARTICIPANT_REGISTRATION",
+        "utilake.rows": "1073936",
+        "utilake.to.file": "PUBLIC_ARCHIVE#BIDDUIDDETAILS#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "451272b14c1fe1dc249a120cf65f4530656402c39e1276d72e325367e82b1f63",
+        "utilake.to.time": "2026-10-09T00:00:00+10:00",
+        "utilake.total-rows": "1073936",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "19488f32-8b33-8323-8c1c-0b81f6fb947d"
+}

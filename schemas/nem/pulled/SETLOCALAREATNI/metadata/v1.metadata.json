@@ -1,0 +1,136 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 8185869379944291445,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 5,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1722434400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SETLOCALAREATNI",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "SETLOCALAREATNI shows the list of TNIs constituent to a local area in a settlement run.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"SETTLEMENTDATE\",\"SETTLEMENTRUNNO\",\"LOCALAREAID\",\"TNI\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(30)\",\"4\":\"VARCHAR(30)\",\"5\":\"TIMESTAMP(0)\"}",
+    "utilake.package": "SETTLEMENT_DATA",
+    "utilake.reports": "[[\"SETTLEMENTS\",\"LOCALAREATNI\"]]",
+    "utilake.table": "SETLOCALAREATNI",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"SETTLEMENTRUNNO\",\"LOCALAREAID\",\"TNI\"]",
+    "utilake.temporal.order": "[\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "SETTLEMENTDATE",
+    "utilake.temporal.valid.kind": "interval_end",
+    "utilake.time": "SETTLEMENTDATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 8185869379944291445,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Settlement date of the settlement run",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Settlement run number of the settlement run",
+          "id": 2,
+          "name": "SETTLEMENTRUNNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Unique identifier for the local area",
+          "id": 3,
+          "name": "LOCALAREAID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Unique identifier for a TNI constituent to the local area as at the settlement run",
+          "id": 4,
+          "name": "TNI",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Last changed date time for the record",
+          "id": 5,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 8185869379944291445,
+      "timestamp-ms": 1722434400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SETLOCALAREATNI/metadata/snap-8185869379944291445-1-46d812fd-5bae-8e41-8929-55e324d702f8.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 8185869379944291445,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "26",
+        "utilake.from.file": "PUBLIC_ARCHIVE#SETLOCALAREATNI#FILE01#202408010000.zip",
+        "utilake.from.release": "2024-08",
+        "utilake.from.sha256": "6fcb0c48fe06a09515e2846e025d7951e81860d9d08a77fc231e76fadf614b48",
+        "utilake.from.time": "2023-12-31T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "LOCALAREATNI",
+        "utilake.report-type": "SETTLEMENTS",
+        "utilake.rows": "2480795",
+        "utilake.to.file": "PUBLIC_ARCHIVE#SETLOCALAREATNI#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "552685be95b9c7d94157c81965564c304663004f07519df45f3a5cb0432e16ad",
+        "utilake.to.time": "2026-09-26T00:00:00+10:00",
+        "utilake.total-rows": "2480795",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1722434400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "46d812fd-5bae-8e41-8929-55e324d702f8"
+}

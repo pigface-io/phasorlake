@@ -1,0 +1,347 @@
+{
+  "current-schema-id": 2,
+  "current-snapshot-id": 4579136999796493969,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 10,
+  "last-partition-id": 999,
+  "last-sequence-number": 3,
+  "last-updated-ms": 1777557600002,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_USAGE",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "This report delivers the calculated usage for each constraint for each 5 minute trading interval",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"NUMERIC(5)\",\"4\":\"VARCHAR(10)\",\"5\":\"NUMERIC(18,8)\",\"6\":\"NUMERIC(18,8)\",\"7\":\"NUMERIC(18,8)\",\"8\":\"NUMERIC(5)\",\"9\":\"NUMERIC(18,8)\",\"10\":\"TIMESTAMP(0)\"}",
+    "utilake.reports": "[[\"FPP\",\"FPP_USAGE\"]]",
+    "utilake.table": "FPP_USAGE",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[]",
+    "utilake.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.time": "INTERVAL_DATETIME",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 4579136999796493969,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Date and time of the trading interval (DD/MM/YYYY HH24:MI:SS) fixed to the UTC+10 time zone (NEM time)",
+          "id": 1,
+          "name": "INTERVAL_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Constraint ID (binding constraint ID from FCAS data used in FPP calculations)",
+          "id": 2,
+          "name": "CONSTRAINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Version (FPP run number from the FPP database)",
+          "id": 3,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "doc": "Bid type (the bid type saved in relation to constraint ID from FCAS data used in FPP calculations)",
+          "id": 4,
+          "name": "BIDTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Enabled regulation MW used in the FPP calculation (from FPP database)",
+          "id": 5,
+          "name": "REGULATION_MW",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Maximum used regulation MW value (quantity of regulation FCAS that was calculated to be used in MW)",
+          "id": 6,
+          "name": "USED_MW",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Usage (calculation of the proportion of regulation FCAS that was calculated to be used)",
+          "id": 7,
+          "name": "USAGE",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The reason flag showing the decision matrix for the usage calculation Supported values are: 0 = Usage is calculated based on good input data 1 = Usage is 0 as FM is unreliable 2 = Usage is 0 as the percentage of units with unavailable input or bad data is greater than the threshold percentage",
+          "id": 8,
+          "name": "USAGE_REASON_FLAG",
+          "required": false,
+          "type": "decimal(5, 0)"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Date and time of the trading interval (DD/MM/YYYY HH24:MI:SS) fixed to the UTC+10 time zone (NEM time)",
+          "id": 1,
+          "name": "INTERVAL_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Constraint ID (binding constraint ID from FCAS data used in FPP calculations)",
+          "id": 2,
+          "name": "CONSTRAINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Version (FPP run number from the FPP database)",
+          "id": 3,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "doc": "Bid type (the bid type saved in relation to constraint ID from FCAS data used in FPP calculations)",
+          "id": 4,
+          "name": "BIDTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Enabled regulation MW used in the FPP calculation (from FPP database)",
+          "id": 5,
+          "name": "REGULATION_MW",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Maximum used regulation MW value (quantity of regulation FCAS that was calculated to be used in MW)",
+          "id": 6,
+          "name": "USED_MW",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Usage (calculation of the proportion of regulation FCAS that was calculated to be used)",
+          "id": 9,
+          "name": "USAGE_VALUE",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The reason flag showing the decision matrix for the usage calculation Supported values are: 0 = Usage is calculated based on good input data 1 = Usage is 0 as FM is unreliable 2 = Usage is 0 as the percentage of units with unavailable input or bad data is greater than the threshold percentage",
+          "id": 8,
+          "name": "USAGE_REASON_FLAG",
+          "required": false,
+          "type": "decimal(5, 0)"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 1,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Date and time of the trading interval (DD/MM/YYYY HH24:MI:SS) fixed to the UTC+10 time zone (NEM time)",
+          "id": 1,
+          "name": "INTERVAL_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Constraint ID (binding constraint ID from FCAS data used in FPP calculations)",
+          "id": 2,
+          "name": "CONSTRAINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Version (FPP run number from the FPP database)",
+          "id": 3,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "doc": "Bid type (the bid type saved in relation to constraint ID from FCAS data used in FPP calculations)",
+          "id": 4,
+          "name": "BIDTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Enabled regulation MW used in the FPP calculation (from FPP database)",
+          "id": 5,
+          "name": "REGULATION_MW",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Maximum used regulation MW value (quantity of regulation FCAS that was calculated to be used in MW)",
+          "id": 6,
+          "name": "USED_MW",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Usage (calculation of the proportion of regulation FCAS that was calculated to be used)",
+          "id": 9,
+          "name": "USAGE_VALUE",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The reason flag showing the decision matrix for the usage calculation Supported values are: 0 = Usage is calculated based on good input data 1 = Usage is 0 as FM is unreliable 2 = Usage is 0 as the percentage of units with unavailable input or bad data is greater than the threshold percentage",
+          "id": 8,
+          "name": "USAGE_REASON_FLAG",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 10,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 2,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 3152427865689832687,
+      "timestamp-ms": 1732975200000
+    },
+    {
+      "snapshot-id": 5388768332010688698,
+      "timestamp-ms": 1743429600001
+    },
+    {
+      "snapshot-id": 4579136999796493969,
+      "timestamp-ms": 1777557600002
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_USAGE/metadata/snap-3152427865689832687-1-0277df85-1205-8acb-a05a-33d8766bc3c0.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 3152427865689832687,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "4",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_USAGE#FILE01#202412010000.zip",
+        "utilake.from.release": "2024-12",
+        "utilake.from.sha256": "5ae1b8ddd657597021931585716fdbb651a5cc2354dea011c2891c24d0a94c4b",
+        "utilake.from.time": "2024-12-09T11:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "FPP_USAGE",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "365158",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_USAGE#FILE01#202503010000.zip",
+        "utilake.to.release": "2025-03",
+        "utilake.to.sha256": "07c5f4d9af3b007de7dad7c4456a48525706d811df18ed840d7dd3ee3e08fe32",
+        "utilake.to.time": "2025-04-08T15:45:00+10:00",
+        "utilake.total-rows": "365158",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1732975200000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_USAGE/metadata/snap-5388768332010688698-2-0277df85-1205-8acb-a05a-33d8766bc3c0.avro",
+      "parent-snapshot-id": 3152427865689832687,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 5388768332010688698,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "13",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_USAGE#FILE01#202504010000.zip",
+        "utilake.from.release": "2025-04",
+        "utilake.from.sha256": "2c53bfa5021f275a947a54e452c6e02fc1f29fb62871e823adb23511d76d0a73",
+        "utilake.from.time": "2024-12-09T11:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "FPP_USAGE",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "4950103",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_USAGE#FILE01#202604010000.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "4673f2c284fe93e7c45c54ced4077206d1b1c31002fb56cb5d9afe5aec8c448d",
+        "utilake.to.time": "2026-05-08T15:35:00+10:00",
+        "utilake.total-rows": "5315261",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1743429600001
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_USAGE/metadata/snap-4579136999796493969-3-0277df85-1205-8acb-a05a-33d8766bc3c0.avro",
+      "parent-snapshot-id": 5388768332010688698,
+      "schema-id": 2,
+      "sequence-number": 3,
+      "snapshot-id": 4579136999796493969,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "5",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_USAGE#FILE01#202605010000.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "031ef63d404aeb7ad6ffdf40f472f8acec2d4a4574cbb8bb856108bd98007102",
+        "utilake.from.time": "2024-12-09T11:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "FPP_USAGE",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "2039857",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_USAGE#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "a7a038ae83f49863c253e54e4039abc94bde51b7a1060322429ee4f4b48bfc23",
+        "utilake.to.time": "2026-10-01T00:00:00+10:00",
+        "utilake.total-rows": "7355118",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1777557600002
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "0277df85-1205-8acb-a05a-33d8766bc3c0"
+}

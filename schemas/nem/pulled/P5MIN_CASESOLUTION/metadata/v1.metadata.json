@@ -1,0 +1,572 @@
+{
+  "current-schema-id": 2,
+  "current-snapshot-id": 3972653930504303209,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 19,
+  "last-partition-id": 999,
+  "last-sequence-number": 3,
+  "last-updated-ms": 1722434400002,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_CASESOLUTION",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "The five-minute predispatch (P5Min) is a MMS system providing projected dispatch for 12 Dispatch cycles (one hour). The 5-minute Predispatch cycle runs every 5-minutes to produce a dispatch and pricing schedule to a 5-minute resolution covering the next hour, a total of twelve periods.\nP5MIN_CASESOLUTION shows one record containing results pertaining to the entire solution.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"RUN_DATETIME\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"NUMERIC(27,10)\",\"4\":\"NUMERIC(1,0)\",\"5\":\"NUMERIC(15,5)\",\"6\":\"NUMERIC(15,5)\",\"7\":\"NUMERIC(15,5)\",\"8\":\"NUMERIC(15,5)\",\"9\":\"NUMERIC(15,5)\",\"10\":\"NUMERIC(15,5)\",\"11\":\"NUMERIC(15,5)\",\"12\":\"NUMERIC(15,5)\",\"13\":\"NUMERIC(15,5)\",\"14\":\"NUMERIC(15,5)\",\"15\":\"NUMERIC(15,5)\",\"16\":\"NUMERIC(15,5)\",\"17\":\"NUMERIC(15,5)\",\"18\":\"TIMESTAMP(0)\",\"19\":\"NUMERIC(2,0)\"}",
+    "utilake.package": "P5MIN",
+    "utilake.reports": "[[\"P5MIN\",\"CASESOLUTION\"]]",
+    "utilake.table": "P5MIN_CASESOLUTION",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"INTERVENTION\"]",
+    "utilake.temporal.order": "[\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "RUN_DATETIME",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "RUN_DATETIME",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 3972653930504303209,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Unique Timestamp Identifier for this study",
+          "id": 1,
+          "name": "RUN_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Date and Time of first interval in study",
+          "id": 2,
+          "name": "STARTINTERVAL_DATETIME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The Objective function from the LP",
+          "id": 3,
+          "name": "TOTALOBJECTIVE",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Flag to indicate non-physical losses occurred in this study",
+          "id": 4,
+          "name": "NONPHYSICALLOSSES",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "Sum of Regional Energy balance violations",
+          "id": 5,
+          "name": "TOTALAREAGENVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of Interconnector violations of standing data limits",
+          "id": 6,
+          "name": "TOTALINTERCONNECTORVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of Generic Constraint violations",
+          "id": 7,
+          "name": "TOTALGENERICVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of Unit Ramp Rate violations",
+          "id": 8,
+          "name": "TOTALRAMPRATEVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of unit capacity violations",
+          "id": 9,
+          "name": "TOTALUNITMWCAPACITYVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of regional 5 min FCAS violations",
+          "id": 10,
+          "name": "TOTAL5MINVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of regional regulation FCAS violations",
+          "id": 11,
+          "name": "TOTALREGVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of regional 6 sec FCAS violations",
+          "id": 12,
+          "name": "TOTAL6SECVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of regional 60 sec FCAS violations",
+          "id": 13,
+          "name": "TOTAL60SECVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of unit energy constrained violations",
+          "id": 14,
+          "name": "TOTALENERGYCONSTRVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of unit offer violations",
+          "id": 15,
+          "name": "TOTALENERGYOFFERVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of unit FCAS profile offer violations",
+          "id": 16,
+          "name": "TOTALASPROFILEVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of unit Fast start profile violations",
+          "id": 17,
+          "name": "TOTALFASTSTARTVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Last changed date and time of this record",
+          "id": 18,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Unique Timestamp Identifier for this study",
+          "id": 1,
+          "name": "RUN_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Flag to indicate if this Predispatch case includes an intervention pricing run: 0 = case does not include an intervention pricing run, 1 = case does include an intervention pricing run. This field has a default value of 0 and is not nullable",
+          "id": 19,
+          "name": "INTERVENTION",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "Date and Time of first interval in study",
+          "id": 2,
+          "name": "STARTINTERVAL_DATETIME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The Objective function from the LP",
+          "id": 3,
+          "name": "TOTALOBJECTIVE",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Flag to indicate non-physical losses occurred in this study",
+          "id": 4,
+          "name": "NONPHYSICALLOSSES",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "Sum of Regional Energy balance violations",
+          "id": 5,
+          "name": "TOTALAREAGENVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of Interconnector violations of standing data limits",
+          "id": 6,
+          "name": "TOTALINTERCONNECTORVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of Generic Constraint violations",
+          "id": 7,
+          "name": "TOTALGENERICVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of Unit Ramp Rate violations",
+          "id": 8,
+          "name": "TOTALRAMPRATEVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of unit capacity violations",
+          "id": 9,
+          "name": "TOTALUNITMWCAPACITYVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of regional 5 min FCAS violations",
+          "id": 10,
+          "name": "TOTAL5MINVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of regional regulation FCAS violations",
+          "id": 11,
+          "name": "TOTALREGVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of regional 6 sec FCAS violations",
+          "id": 12,
+          "name": "TOTAL6SECVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of regional 60 sec FCAS violations",
+          "id": 13,
+          "name": "TOTAL60SECVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of unit energy constrained violations",
+          "id": 14,
+          "name": "TOTALENERGYCONSTRVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of unit offer violations",
+          "id": 15,
+          "name": "TOTALENERGYOFFERVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of unit FCAS profile offer violations",
+          "id": 16,
+          "name": "TOTALASPROFILEVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of unit Fast start profile violations",
+          "id": 17,
+          "name": "TOTALFASTSTARTVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Last changed date and time of this record",
+          "id": 18,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1
+      ],
+      "schema-id": 1,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Unique Timestamp Identifier for this study",
+          "id": 1,
+          "name": "RUN_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Date and Time of first interval in study",
+          "id": 2,
+          "name": "STARTINTERVAL_DATETIME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The Objective function from the LP",
+          "id": 3,
+          "name": "TOTALOBJECTIVE",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Flag to indicate non-physical losses occurred in this study",
+          "id": 4,
+          "name": "NONPHYSICALLOSSES",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "Sum of Regional Energy balance violations",
+          "id": 5,
+          "name": "TOTALAREAGENVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of Interconnector violations of standing data limits",
+          "id": 6,
+          "name": "TOTALINTERCONNECTORVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of Generic Constraint violations",
+          "id": 7,
+          "name": "TOTALGENERICVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of Unit Ramp Rate violations",
+          "id": 8,
+          "name": "TOTALRAMPRATEVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of unit capacity violations",
+          "id": 9,
+          "name": "TOTALUNITMWCAPACITYVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of regional 5 min FCAS violations",
+          "id": 10,
+          "name": "TOTAL5MINVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of regional regulation FCAS violations",
+          "id": 11,
+          "name": "TOTALREGVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of regional 6 sec FCAS violations",
+          "id": 12,
+          "name": "TOTAL6SECVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of regional 60 sec FCAS violations",
+          "id": 13,
+          "name": "TOTAL60SECVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of unit energy constrained violations",
+          "id": 14,
+          "name": "TOTALENERGYCONSTRVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of unit offer violations",
+          "id": 15,
+          "name": "TOTALENERGYOFFERVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of unit FCAS profile offer violations",
+          "id": 16,
+          "name": "TOTALASPROFILEVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of unit Fast start profile violations",
+          "id": 17,
+          "name": "TOTALFASTSTARTVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Last changed date and time of this record",
+          "id": 18,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Flag to indicate if this Predispatch case includes an intervention pricing run: 0 = case does not include an intervention pricing run, 1 = case does include an intervention pricing run. This field has a default value of 0 and is not nullable",
+          "id": 19,
+          "name": "INTERVENTION",
+          "required": false,
+          "type": "decimal(2, 0)"
+        }
+      ],
+      "identifier-field-ids": [
+        1
+      ],
+      "schema-id": 2,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 4324398016616364586,
+      "timestamp-ms": 1246370400000
+    },
+    {
+      "snapshot-id": 754606680182434523,
+      "timestamp-ms": 1543586400001
+    },
+    {
+      "snapshot-id": 3972653930504303209,
+      "timestamp-ms": 1722434400002
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_CASESOLUTION/metadata/snap-4324398016616364586-1-dd0afe19-4fc9-83b8-a2ca-c7b044cd2e4a.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 4324398016616364586,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "113",
+        "utilake.from.file": "PUBLIC_DVD_P5MIN_CASESOLUTION_200907010000.zip",
+        "utilake.from.release": "2009-07",
+        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "utilake.from.time": "2009-07-01T00:05:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "CASESOLUTION",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "992727",
+        "utilake.to.file": "PUBLIC_DVD_P5MIN_CASESOLUTION_201811010000.zip",
+        "utilake.to.release": "2018-11",
+        "utilake.to.sha256": "302ad9e72395debed4eff678ee49d87d81cc8ecb080d3922d9e610162e85e127",
+        "utilake.to.time": "2018-12-01T00:00:00+10:00",
+        "utilake.total-rows": "992727",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1246370400000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_CASESOLUTION/metadata/snap-754606680182434523-2-dd0afe19-4fc9-83b8-a2ca-c7b044cd2e4a.avro",
+      "parent-snapshot-id": 4324398016616364586,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 754606680182434523,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "68",
+        "utilake.from.file": "PUBLIC_DVD_P5MIN_CASESOLUTION_201812010000.zip",
+        "utilake.from.release": "2018-12",
+        "utilake.from.sha256": "9280bdeb356537d12ffa9ad36272bd9ff2fe388fc756dcdd7c2b35e6fb8b8208",
+        "utilake.from.time": "2018-12-01T00:05:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "CASESOLUTION",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "596155",
+        "utilake.to.file": "PUBLIC_DVD_P5MIN_CASESOLUTION_202407010000.zip",
+        "utilake.to.release": "2024-07",
+        "utilake.to.sha256": "dd361b3862284b649bb7a51130e1e97370f025595dd6bbc654de004f2eccd612",
+        "utilake.to.time": "2024-08-01T00:00:00+10:00",
+        "utilake.total-rows": "1588882",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1543586400001
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_CASESOLUTION/metadata/snap-3972653930504303209-3-dd0afe19-4fc9-83b8-a2ca-c7b044cd2e4a.avro",
+      "parent-snapshot-id": 754606680182434523,
+      "schema-id": 2,
+      "sequence-number": 3,
+      "snapshot-id": 3972653930504303209,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "26",
+        "utilake.from.file": "PUBLIC_ARCHIVE#P5MIN_CASESOLUTION#FILE01#202408010000.zip",
+        "utilake.from.release": "2024-08",
+        "utilake.from.sha256": "c436afc0b14e984021c35d39425d60e45913014caf434f1021f41c37a2fbc939",
+        "utilake.from.time": "2024-08-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "CASESOLUTION",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "227791",
+        "utilake.to.file": "PUBLIC_ARCHIVE#P5MIN_CASESOLUTION#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "420d1e44346939d9a238966702f8f991511c06d592b773bbb2f9fbd02f93852b",
+        "utilake.to.time": "2026-10-01T00:00:00+10:00",
+        "utilake.total-rows": "1816673",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1722434400002
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "dd0afe19-4fc9-83b8-a2ca-c7b044cd2e4a"
+}

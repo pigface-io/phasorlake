@@ -1,0 +1,106 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 8256866356151363972,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 4,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1246370400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/METER_DATA_GEN_DUID",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "false",
+    "utilake.format": "3",
+    "utilake.table": "METER_DATA_GEN_DUID"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 8256866356151363972,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "INTERVAL_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 2,
+          "name": "DUID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "MWH_READING",
+          "required": false,
+          "type": "decimal(8, 5)"
+        },
+        {
+          "id": 4,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 8256866356151363972,
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/METER_DATA_GEN_DUID/metadata/snap-8256866356151363972-1-901aec6f-4656-8f13-aa5b-27dd5578e8bb.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 8256866356151363972,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "18",
+        "utilake.from.file": "PUBLIC_DVD_METERDATA_GEN_DUID_200907010000.zip",
+        "utilake.from.release": "2009-07",
+        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "utilake.from.time": "2009-07-01T00:05:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "GEN_DUID",
+        "utilake.report-type": "METER_DATA",
+        "utilake.rows": "3738583",
+        "utilake.to.file": "PUBLIC_DVD_METERDATA_GEN_DUID_201012010000.zip",
+        "utilake.to.release": "2010-12",
+        "utilake.to.sha256": "c565278acc485ea71455d963fb53612658c4724ff55042c96b4f2cdc744e5b5f",
+        "utilake.to.time": "2010-12-02T14:35:00+10:00",
+        "utilake.total-rows": "3738583",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "901aec6f-4656-8f13-aa5b-27dd5578e8bb"
+}

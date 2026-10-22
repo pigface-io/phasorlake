@@ -1,0 +1,134 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 8759427731895928118,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 5,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1246370400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MARKETFEEDATA",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "MARKETFEEDATA sets out actual fee rates, as adjusted from time to time.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"MARKETFEEID\",\"MARKETFEEVERSIONNO\",\"EFFECTIVEDATE\"]",
+    "utilake.load": "snapshot",
+    "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"NUMERIC(22,8)\",\"5\":\"TIMESTAMP(0)\"}",
+    "utilake.package": "SETTLEMENT_CONFIG",
+    "utilake.reports": "[[\"SETTLEMENT_CONFIG\",\"MARKETFEEDATA\"]]",
+    "utilake.table": "MARKETFEEDATA",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"MARKETFEEID\",\"MARKETFEEVERSIONNO\"]",
+    "utilake.temporal.order": "[\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "EFFECTIVEDATE",
+    "utilake.temporal.valid.kind": "from",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 8759427731895928118,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Identifier for Market Fee",
+          "id": 1,
+          "name": "MARKETFEEID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Version of fees for this id",
+          "id": 2,
+          "name": "MARKETFEEVERSIONNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Date on which this data becomes effective",
+          "id": 3,
+          "name": "EFFECTIVEDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Market fee rate/MWh, a dollar amount",
+          "id": 4,
+          "name": "MARKETFEEVALUE",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 5,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 8759427731895928118,
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MARKETFEEDATA/metadata/snap-8759427731895928118-1-8732fb6c-c8b5-84fc-bb84-90a4551b3a06.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 8759427731895928118,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "207",
+        "utilake.from.file": "PUBLIC_DVD_MARKETFEEDATA_200907010000.zip",
+        "utilake.from.release": "2009-07",
+        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "utilake.from.time": "1998-07-01T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\",\"dvd\"]",
+        "utilake.report-subtype": "MARKETFEEDATA",
+        "utilake.report-type": "SETTLEMENT_CONFIG",
+        "utilake.rows": "86847",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MARKETFEEDATA#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "8853d982140f2af98d71474fc6c367cc0a94a50f799e6f9ad95c1e8831ceb4d9",
+        "utilake.to.time": "2026-07-01T00:00:00+10:00",
+        "utilake.total-rows": "86847",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "8732fb6c-c8b5-84fc-bb84-90a4551b3a06"
+}

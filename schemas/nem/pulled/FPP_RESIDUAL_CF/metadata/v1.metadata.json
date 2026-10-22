@@ -1,0 +1,294 @@
+{
+  "current-schema-id": 1,
+  "current-snapshot-id": 3147725703145995246,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 12,
+  "last-partition-id": 999,
+  "last-sequence-number": 2,
+  "last-updated-ms": 1777557600001,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_RESIDUAL_CF",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "This report delivers the calculated residual contribution factor value for each 5 minute trading interval for each constraint",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"NUMERIC(5)\",\"4\":\"VARCHAR(10)\",\"5\":\"NUMERIC(18,8)\",\"6\":\"NUMERIC(18,8)\",\"7\":\"NUMERIC(18,8)\",\"8\":\"NUMERIC(5)\",\"9\":\"NUMERIC(18,8)\",\"10\":\"NUMERIC(18,8)\",\"11\":\"NUMERIC(18,8)\",\"12\":\"TIMESTAMP(0)\"}",
+    "utilake.reports": "[[\"FPP\",\"RESIDUAL_CF\"]]",
+    "utilake.table": "FPP_RESIDUAL_CF",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[]",
+    "utilake.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.time": "INTERVAL_DATETIME",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 3147725703145995246,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Date and time of the trading interval (DD/MM/YYYY HH24:MI:SS) fixed to the UTC+10 time zone (NEM time)",
+          "id": 1,
+          "name": "INTERVAL_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Constraint ID (binding constraint ID from FCAS data used in FPP calculations)",
+          "id": 2,
+          "name": "CONSTRAINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Version (FPP run number from the FPP database)",
+          "id": 3,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "doc": "Bid type (the bid type saved in relation to constraint ID from FCAS data used in FPP calculations)",
+          "id": 4,
+          "name": "BIDTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Residual Contribution Factor (the calculated residual contribution factor for the constraint ID for that trading interval) - for further details please see the FPP procedure document",
+          "id": 5,
+          "name": "RESIDUAL_CF",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Negative Residual Contribution Factor (the calculated negative residual contribution factor for the constraint ID for that trading interval) - for further details please see the FPP procedure document",
+          "id": 6,
+          "name": "NEGATIVE_RESIDUAL_CF",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The Residual Default Contribution Factor (the calculated residual default contribution factor based on historical performance for the constraint ID for that trading interval) that is effective for this trading interval, which joins back to FPP_FORECAST_RESIDUAL_DCF - for further details please see the FPP procedure document",
+          "id": 7,
+          "name": "RESIDUAL_DCF",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The reason flag showing the decision matrix for the residual contribution factor (CF) Supported values are: 0 = CF is calculated based on good input data 8 = CF is 0 because FM is unreliable. 16 = CF is 0 because more than 50 percent input is bad or not available.",
+          "id": 8,
+          "name": "RESIDUAL_CF_REASON_FLAG",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "doc": "The sum of absolute positive performance in MWHz for the combination of constraint / bid type (raise or lower). This is used as the denominator in normalising contribution factors (CF) where a units performance is positive. For further details please see the FPP procedure document. >0 = Performance was calculated for the units NULL = Performance for the units was unavailable",
+          "id": 9,
+          "name": "CF_ABS_POSITIVE_PERF_TOTAL",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The sum of absolute negative performance in MWHz for the combination of constraint / bid type (raise or lower). This is used as the denominator in normalising contribution factors (CF) where a units performance is negative. For further details please see the FPP procedure document. >0 = Performance was calculated for the units NULL = Performance for the units was unavailable",
+          "id": 10,
+          "name": "CF_ABS_NEGATIVE_PERF_TOTAL",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The sum of absolute negative performance in MWHz for the combination of constraint / bid type (raise or lower). This is used as the denominator in normalising negative contribution factors (NCF). For further details please see the FPP procedure document. >0 = Performance was calculated for the units NULL = Performance for the units was unavailable 0 = When NCF is zero (i.e. CF is positive), then this total will be represented as zero",
+          "id": 11,
+          "name": "NCF_ABS_NEGATIVE_PERF_TOTAL",
+          "required": false,
+          "type": "decimal(18, 8)"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Date and time of the trading interval (DD/MM/YYYY HH24:MI:SS) fixed to the UTC+10 time zone (NEM time)",
+          "id": 1,
+          "name": "INTERVAL_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Constraint ID (binding constraint ID from FCAS data used in FPP calculations)",
+          "id": 2,
+          "name": "CONSTRAINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Version (FPP run number from the FPP database)",
+          "id": 3,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "doc": "Bid type (the bid type saved in relation to constraint ID from FCAS data used in FPP calculations)",
+          "id": 4,
+          "name": "BIDTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Residual Contribution Factor (the calculated residual contribution factor for the constraint ID for that trading interval) - for further details please see the FPP procedure document",
+          "id": 5,
+          "name": "RESIDUAL_CF",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Negative Residual Contribution Factor (the calculated negative residual contribution factor for the constraint ID for that trading interval) - for further details please see the FPP procedure document",
+          "id": 6,
+          "name": "NEGATIVE_RESIDUAL_CF",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The Residual Default Contribution Factor (the calculated residual default contribution factor based on historical performance for the constraint ID for that trading interval) that is effective for this trading interval, which joins back to FPP_FORECAST_RESIDUAL_DCF - for further details please see the FPP procedure document",
+          "id": 7,
+          "name": "RESIDUAL_DCF",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The reason flag showing the decision matrix for the residual contribution factor (CF) Supported values are: 0 = CF is calculated based on good input data 8 = CF is 0 because FM is unreliable. 16 = CF is 0 because more than 50 percent input is bad or not available.",
+          "id": 8,
+          "name": "RESIDUAL_CF_REASON_FLAG",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "doc": "The sum of absolute positive performance in MWHz for the combination of constraint / bid type (raise or lower). This is used as the denominator in normalising contribution factors (CF) where a units performance is positive. For further details please see the FPP procedure document. >0 = Performance was calculated for the units NULL = Performance for the units was unavailable",
+          "id": 9,
+          "name": "CF_ABS_POSITIVE_PERF_TOTAL",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The sum of absolute negative performance in MWHz for the combination of constraint / bid type (raise or lower). This is used as the denominator in normalising contribution factors (CF) where a units performance is negative. For further details please see the FPP procedure document. >0 = Performance was calculated for the units NULL = Performance for the units was unavailable",
+          "id": 10,
+          "name": "CF_ABS_NEGATIVE_PERF_TOTAL",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The sum of absolute negative performance in MWHz for the combination of constraint / bid type (raise or lower). This is used as the denominator in normalising negative contribution factors (NCF). For further details please see the FPP procedure document. >0 = Performance was calculated for the units NULL = Performance for the units was unavailable 0 = When NCF is zero (i.e. CF is positive), then this total will be represented as zero",
+          "id": 11,
+          "name": "NCF_ABS_NEGATIVE_PERF_TOTAL",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 12,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 1,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 7844061709732676348,
+      "timestamp-ms": 1732975200000
+    },
+    {
+      "snapshot-id": 3147725703145995246,
+      "timestamp-ms": 1777557600001
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_RESIDUAL_CF/metadata/snap-7844061709732676348-1-52e3a210-5fd4-8fd2-afb7-5c09e7a9d774.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 7844061709732676348,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "17",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_RESIDUAL_CF#FILE01#202412010000.zip",
+        "utilake.from.release": "2024-12",
+        "utilake.from.sha256": "08405f14b3340441ea854ea9bd278d1e1dd5ed39df56a2b5189794344416c83f",
+        "utilake.from.time": "2024-12-09T11:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "RESIDUAL_CF",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "5315257",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_RESIDUAL_CF#FILE01#202604010000.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "ecd56e26053eb6115e5aec33cb473288c006c1c17a506cba1ea251fb9f146d86",
+        "utilake.to.time": "2026-05-08T15:35:00+10:00",
+        "utilake.total-rows": "5315257",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1732975200000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_RESIDUAL_CF/metadata/snap-3147725703145995246-2-52e3a210-5fd4-8fd2-afb7-5c09e7a9d774.avro",
+      "parent-snapshot-id": 7844061709732676348,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 3147725703145995246,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "5",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_RESIDUAL_CF#FILE01#202605010000.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "34bfdf584e2f26a90e72ad81078f47fcaba1e25c7e55c15235b998b311a49e1c",
+        "utilake.from.time": "2024-12-09T11:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "RESIDUAL_CF",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "2039857",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_RESIDUAL_CF#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "696a6081859be67138f3379c4ead4c16330c879258891510d4450d4903298a11",
+        "utilake.to.time": "2026-10-01T00:00:00+10:00",
+        "utilake.total-rows": "7355114",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1777557600001
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "52e3a210-5fd4-8fd2-afb7-5c09e7a9d774"
+}

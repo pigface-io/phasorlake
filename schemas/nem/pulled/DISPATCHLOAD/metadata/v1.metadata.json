@@ -1,0 +1,2996 @@
+{
+  "current-schema-id": 5,
+  "current-snapshot-id": 4546456059943459337,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 69,
+  "last-partition-id": 999,
+  "last-sequence-number": 6,
+  "last-updated-ms": 1761919200005,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHLOAD",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "DISPATCHLOAD set out the current SCADA MW and target MW for each dispatchable unit, including relevant Frequency Control Ancillary Services (FCAS) enabling targets for each five minutes and additional fields to handle the new Ancillary Services functionality. Fast Start Plant status is indicated by dispatch mode.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"SETTLEMENTDATE\",\"RUNNO\",\"DUID\",\"INTERVENTION\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(10)\",\"4\":\"NUMERIC(2,0)\",\"5\":\"NUMERIC(22,0)\",\"6\":\"NUMERIC(2,0)\",\"7\":\"VARCHAR(12)\",\"8\":\"NUMERIC(2,0)\",\"9\":\"NUMERIC(2,0)\",\"10\":\"NUMERIC(15,5)\",\"11\":\"NUMERIC(15,5)\",\"12\":\"NUMERIC(15,5)\",\"13\":\"NUMERIC(15,5)\",\"14\":\"NUMERIC(15,5)\",\"15\":\"NUMERIC(15,5)\",\"16\":\"NUMERIC(15,5)\",\"17\":\"NUMERIC(15,5)\",\"18\":\"NUMERIC(15,5)\",\"19\":\"NUMERIC(15,5)\",\"20\":\"NUMERIC(15,5)\",\"21\":\"NUMERIC(15,5)\",\"22\":\"NUMERIC(15,5)\",\"23\":\"NUMERIC(15,5)\",\"24\":\"NUMERIC(15,5)\",\"25\":\"NUMERIC(15,5)\",\"26\":\"NUMERIC(15,5)\",\"27\":\"NUMERIC(15,5)\",\"28\":\"NUMERIC(15,5)\",\"29\":\"NUMERIC(15,5)\",\"30\":\"TIMESTAMP(0)\",\"31\":\"NUMERIC(15,5)\",\"32\":\"NUMERIC(15,5)\",\"33\":\"NUMERIC(15,5)\",\"34\":\"NUMERIC(3,0)\",\"35\":\"NUMERIC(3,0)\",\"36\":\"NUMERIC(3,0)\",\"37\":\"NUMERIC(3,0)\",\"38\":\"NUMERIC(3,0)\",\"39\":\"NUMERIC(3,0)\",\"40\":\"NUMERIC(3,0)\",\"41\":\"NUMERIC(3,0)\",\"42\":\"NUMERIC(15,5)\",\"43\":\"NUMERIC(15,5)\",\"44\":\"NUMERIC(15,5)\",\"45\":\"NUMERIC(15,5)\",\"46\":\"NUMERIC(15,5)\",\"47\":\"NUMERIC(15,5)\",\"48\":\"NUMERIC(16,6)\",\"49\":\"NUMERIC(16,6)\",\"50\":\"NUMERIC(16,6)\",\"51\":\"NUMERIC(16,6)\",\"52\":\"NUMERIC(16,6)\",\"53\":\"NUMERIC(16,6)\",\"54\":\"NUMERIC(16,6)\",\"55\":\"NUMERIC(16,6)\",\"56\":\"NUMERIC(3,0)\",\"57\":\"NUMERIC(4,0)\",\"58\":\"NUMERIC(15,5)\",\"59\":\"NUMERIC(15,5)\",\"60\":\"NUMERIC(3,0)\",\"61\":\"NUMERIC(3,0)\",\"62\":\"NUMERIC(16,6)\",\"63\":\"NUMERIC(16,6)\",\"64\":\"NUMERIC(6,0)\",\"65\":\"NUMERIC(15,5)\",\"66\":\"NUMERIC(15,5)\",\"67\":\"NUMERIC(15,5)\",\"68\":\"NUMERIC(15,5)\",\"69\":\"NUMERIC(5,0)\"}",
+    "utilake.package": "DISPATCH",
+    "utilake.reports": "[[\"DISPATCH\",\"UNIT_SOLUTION\"]]",
+    "utilake.table": "DISPATCHLOAD",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"DUID\",\"INTERVENTION\"]",
+    "utilake.temporal.order": "[\"RUNNO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "SETTLEMENTDATE",
+    "utilake.temporal.valid.kind": "interval_end",
+    "utilake.time": "SETTLEMENTDATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 4546456059943459337,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Market date and time starting at 04:05",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Dispatch run no; always 1",
+          "id": 2,
+          "name": "RUNNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Dispatchable unit identifier",
+          "id": 3,
+          "name": "DUID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Not used",
+          "id": 4,
+          "name": "TRADETYPE",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "Dispatch period identifier, from 001 to 288 in format YYYYMMDDPPP.",
+          "id": 5,
+          "name": "DISPATCHINTERVAL",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Intervention flag if intervention run",
+          "id": 6,
+          "name": "INTERVENTION",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Connection point identifier for DUID",
+          "id": 7,
+          "name": "CONNECTIONPOINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Dispatch mode for fast start plant (0 to 4).",
+          "id": 8,
+          "name": "DISPATCHMODE",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "AGC Status from EMS\n* 1 = on\n* 0 = off",
+          "id": 9,
+          "name": "AGCSTATUS",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "Initial MW at start of period. Negative values when Bi-directional Unit start from importing power, otherwise positive.",
+          "id": 10,
+          "name": "INITIALMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Target MW for end of period. Negative values when Bi-directional Unit is importing power, otherwise positive.",
+          "id": 11,
+          "name": "TOTALCLEARED",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Ramp down rate used in dispatch (lesser of bid or telemetered rate).",
+          "id": 12,
+          "name": "RAMPDOWNRATE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Ramp up rate (lesser of bid or telemetered rate).",
+          "id": 13,
+          "name": "RAMPUPRATE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 5 min reserve target",
+          "id": 14,
+          "name": "LOWER5MIN",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 60 sec reserve target",
+          "id": 15,
+          "name": "LOWER60SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 6 sec reserve target",
+          "id": 16,
+          "name": "LOWER6SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 5 min reserve target",
+          "id": 17,
+          "name": "RAISE5MIN",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 60 sec reserve target",
+          "id": 18,
+          "name": "RAISE60SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 6 sec reserve target",
+          "id": 19,
+          "name": "RAISE6SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not Used",
+          "id": 20,
+          "name": "DOWNEPF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not Used",
+          "id": 21,
+          "name": "UPEPF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Marginal $ value for 5 min",
+          "id": 22,
+          "name": "MARGINAL5MINVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Marginal $ value for 60 seconds",
+          "id": 23,
+          "name": "MARGINAL60SECVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Marginal $ value for 6 seconds",
+          "id": 24,
+          "name": "MARGINAL6SECVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Marginal $ value for energy",
+          "id": 25,
+          "name": "MARGINALVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Violation MW 5 min",
+          "id": 26,
+          "name": "VIOLATION5MINDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Violation MW 60 seconds",
+          "id": 27,
+          "name": "VIOLATION60SECDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Violation MW 6 seconds",
+          "id": 28,
+          "name": "VIOLATION6SECDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Violation MW energy",
+          "id": 29,
+          "name": "VIOLATIONDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 30,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Lower Regulation reserve target",
+          "id": 31,
+          "name": "LOWERREG",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise Regulation reserve target",
+          "id": 32,
+          "name": "RAISEREG",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "For Scheduled units, this is the MAXAVAIL bid availability For Semi-scheduled units, this is the lower of MAXAVAIL bid availability and UIGF",
+          "id": 33,
+          "name": "AVAILABILITY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 6sec status flag  - see",
+          "id": 34,
+          "name": "RAISE6SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Raise 60sec status flag  - see",
+          "id": 35,
+          "name": "RAISE60SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "id": 36,
+          "name": "RAISE5MINFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Raise Reg status flag  - see",
+          "id": 37,
+          "name": "RAISEREGFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Lower 6sec status flag  - see",
+          "id": 38,
+          "name": "LOWER6SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Lower 60sec status flag",
+          "id": 39,
+          "name": "LOWER60SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Lower 5min status flag",
+          "id": 40,
+          "name": "LOWER5MINFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Lower Reg status flag  - see",
+          "id": 41,
+          "name": "LOWERREGFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "RaiseReg availability - minimum of bid and telemetered value",
+          "id": 42,
+          "name": "RAISEREGAVAILABILITY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "RaiseReg enablement max point - minimum of bid and telemetered value",
+          "id": 43,
+          "name": "RAISEREGENABLEMENTMAX",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "RaiseReg Enablement Min point - maximum of bid and telemetered value",
+          "id": 44,
+          "name": "RAISEREGENABLEMENTMIN",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower Reg availability - minimum of bid and telemetered value",
+          "id": 45,
+          "name": "LOWERREGAVAILABILITY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower Reg enablement Max point - minimum of bid and telemetered value",
+          "id": 46,
+          "name": "LOWERREGENABLEMENTMAX",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower Reg Enablement Min point - maximum of bid and telemetered value",
+          "id": 47,
+          "name": "LOWERREGENABLEMENTMIN",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "trapezium adjusted raise 6sec availability",
+          "id": 48,
+          "name": "RAISE6SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise 60sec availability",
+          "id": 49,
+          "name": "RAISE60SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise 5min availability",
+          "id": 50,
+          "name": "RAISE5MINACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise reg availability",
+          "id": 51,
+          "name": "RAISEREGACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 6sec availability",
+          "id": 52,
+          "name": "LOWER6SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 60sec availability",
+          "id": 53,
+          "name": "LOWER60SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 5min availability",
+          "id": 54,
+          "name": "LOWER5MINACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower reg availability",
+          "id": 55,
+          "name": "LOWERREGACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Boolean representation flagging if the Target is Capped",
+          "id": 56,
+          "name": "SEMIDISPATCHCAP",
+          "required": false,
+          "type": "decimal(3, 0)"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        6
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Market date and time starting at 04:05",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Dispatch run no; always 1",
+          "id": 2,
+          "name": "RUNNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Dispatchable unit identifier",
+          "id": 3,
+          "name": "DUID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Not used",
+          "id": 4,
+          "name": "TRADETYPE",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "Dispatch period identifier, from 001 to 288 in format YYYYMMDDPPP.",
+          "id": 5,
+          "name": "DISPATCHINTERVAL",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Intervention flag if intervention run",
+          "id": 6,
+          "name": "INTERVENTION",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Connection point identifier for DUID",
+          "id": 7,
+          "name": "CONNECTIONPOINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Dispatch mode for fast start plant (0 to 4).",
+          "id": 8,
+          "name": "DISPATCHMODE",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "AGC Status from EMS\n* 1 = on\n* 0 = off",
+          "id": 9,
+          "name": "AGCSTATUS",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "Initial MW at start of period. Negative values when Bi-directional Unit start from importing power, otherwise positive.",
+          "id": 10,
+          "name": "INITIALMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Target MW for end of period. Negative values when Bi-directional Unit is importing power, otherwise positive.",
+          "id": 11,
+          "name": "TOTALCLEARED",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Ramp down rate used in dispatch (lesser of bid or telemetered rate).",
+          "id": 12,
+          "name": "RAMPDOWNRATE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Ramp up rate (lesser of bid or telemetered rate).",
+          "id": 13,
+          "name": "RAMPUPRATE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 5 min reserve target",
+          "id": 14,
+          "name": "LOWER5MIN",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 60 sec reserve target",
+          "id": 15,
+          "name": "LOWER60SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 6 sec reserve target",
+          "id": 16,
+          "name": "LOWER6SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 5 min reserve target",
+          "id": 17,
+          "name": "RAISE5MIN",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 60 sec reserve target",
+          "id": 18,
+          "name": "RAISE60SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 6 sec reserve target",
+          "id": 19,
+          "name": "RAISE6SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not Used",
+          "id": 20,
+          "name": "DOWNEPF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not Used",
+          "id": 21,
+          "name": "UPEPF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Marginal $ value for 5 min",
+          "id": 22,
+          "name": "MARGINAL5MINVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Marginal $ value for 60 seconds",
+          "id": 23,
+          "name": "MARGINAL60SECVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Marginal $ value for 6 seconds",
+          "id": 24,
+          "name": "MARGINAL6SECVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Marginal $ value for energy",
+          "id": 25,
+          "name": "MARGINALVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Violation MW 5 min",
+          "id": 26,
+          "name": "VIOLATION5MINDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Violation MW 60 seconds",
+          "id": 27,
+          "name": "VIOLATION60SECDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Violation MW 6 seconds",
+          "id": 28,
+          "name": "VIOLATION6SECDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Violation MW energy",
+          "id": 29,
+          "name": "VIOLATIONDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 30,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Lower Regulation reserve target",
+          "id": 31,
+          "name": "LOWERREG",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise Regulation reserve target",
+          "id": 32,
+          "name": "RAISEREG",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "For Scheduled units, this is the MAXAVAIL bid availability For Semi-scheduled units, this is the lower of MAXAVAIL bid availability and UIGF",
+          "id": 33,
+          "name": "AVAILABILITY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 6sec status flag  - see",
+          "id": 34,
+          "name": "RAISE6SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Raise 60sec status flag  - see",
+          "id": 35,
+          "name": "RAISE60SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "id": 36,
+          "name": "RAISE5MINFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Raise Reg status flag  - see",
+          "id": 37,
+          "name": "RAISEREGFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Lower 6sec status flag  - see",
+          "id": 38,
+          "name": "LOWER6SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Lower 60sec status flag",
+          "id": 39,
+          "name": "LOWER60SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Lower 5min status flag",
+          "id": 40,
+          "name": "LOWER5MINFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Lower Reg status flag  - see",
+          "id": 41,
+          "name": "LOWERREGFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "RaiseReg availability - minimum of bid and telemetered value",
+          "id": 42,
+          "name": "RAISEREGAVAILABILITY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "RaiseReg enablement max point - minimum of bid and telemetered value",
+          "id": 43,
+          "name": "RAISEREGENABLEMENTMAX",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "RaiseReg Enablement Min point - maximum of bid and telemetered value",
+          "id": 44,
+          "name": "RAISEREGENABLEMENTMIN",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower Reg availability - minimum of bid and telemetered value",
+          "id": 45,
+          "name": "LOWERREGAVAILABILITY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower Reg enablement Max point - minimum of bid and telemetered value",
+          "id": 46,
+          "name": "LOWERREGENABLEMENTMAX",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower Reg Enablement Min point - maximum of bid and telemetered value",
+          "id": 47,
+          "name": "LOWERREGENABLEMENTMIN",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "trapezium adjusted raise 6sec availability",
+          "id": 48,
+          "name": "RAISE6SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise 60sec availability",
+          "id": 49,
+          "name": "RAISE60SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise 5min availability",
+          "id": 50,
+          "name": "RAISE5MINACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise reg availability",
+          "id": 51,
+          "name": "RAISEREGACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 6sec availability",
+          "id": 52,
+          "name": "LOWER6SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 60sec availability",
+          "id": 53,
+          "name": "LOWER60SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 5min availability",
+          "id": 54,
+          "name": "LOWER5MINACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower reg availability",
+          "id": 55,
+          "name": "LOWERREGACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Boolean representation flagging if the Target is Capped",
+          "id": 56,
+          "name": "SEMIDISPATCHCAP",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Minutes for which the unit has been in the current DISPATCHMODE. From NEMDE TRADERSOLUTION element FSTARGETMODETIME attribute.",
+          "id": 57,
+          "name": "DISPATCHMODETIME",
+          "required": false,
+          "type": "decimal(4, 0)"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        6
+      ],
+      "schema-id": 1,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Market date and time starting at 04:05",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Dispatch run no; always 1",
+          "id": 2,
+          "name": "RUNNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Dispatchable unit identifier",
+          "id": 3,
+          "name": "DUID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Not used",
+          "id": 4,
+          "name": "TRADETYPE",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "Dispatch period identifier, from 001 to 288 in format YYYYMMDDPPP.",
+          "id": 5,
+          "name": "DISPATCHINTERVAL",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Intervention flag if intervention run",
+          "id": 6,
+          "name": "INTERVENTION",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Connection point identifier for DUID",
+          "id": 7,
+          "name": "CONNECTIONPOINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Dispatch mode for fast start plant (0 to 4).",
+          "id": 8,
+          "name": "DISPATCHMODE",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "AGC Status from EMS\n* 1 = on\n* 0 = off",
+          "id": 9,
+          "name": "AGCSTATUS",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "Initial MW at start of period. Negative values when Bi-directional Unit start from importing power, otherwise positive.",
+          "id": 10,
+          "name": "INITIALMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Target MW for end of period. Negative values when Bi-directional Unit is importing power, otherwise positive.",
+          "id": 11,
+          "name": "TOTALCLEARED",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Ramp down rate used in dispatch (lesser of bid or telemetered rate).",
+          "id": 12,
+          "name": "RAMPDOWNRATE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Ramp up rate (lesser of bid or telemetered rate).",
+          "id": 13,
+          "name": "RAMPUPRATE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 5 min reserve target",
+          "id": 14,
+          "name": "LOWER5MIN",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 60 sec reserve target",
+          "id": 15,
+          "name": "LOWER60SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 6 sec reserve target",
+          "id": 16,
+          "name": "LOWER6SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 5 min reserve target",
+          "id": 17,
+          "name": "RAISE5MIN",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 60 sec reserve target",
+          "id": 18,
+          "name": "RAISE60SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 6 sec reserve target",
+          "id": 19,
+          "name": "RAISE6SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not Used",
+          "id": 20,
+          "name": "DOWNEPF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not Used",
+          "id": 21,
+          "name": "UPEPF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Marginal $ value for 5 min",
+          "id": 22,
+          "name": "MARGINAL5MINVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Marginal $ value for 60 seconds",
+          "id": 23,
+          "name": "MARGINAL60SECVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Marginal $ value for 6 seconds",
+          "id": 24,
+          "name": "MARGINAL6SECVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Marginal $ value for energy",
+          "id": 25,
+          "name": "MARGINALVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Violation MW 5 min",
+          "id": 26,
+          "name": "VIOLATION5MINDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Violation MW 60 seconds",
+          "id": 27,
+          "name": "VIOLATION60SECDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Violation MW 6 seconds",
+          "id": 28,
+          "name": "VIOLATION6SECDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Violation MW energy",
+          "id": 29,
+          "name": "VIOLATIONDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 30,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Lower Regulation reserve target",
+          "id": 31,
+          "name": "LOWERREG",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise Regulation reserve target",
+          "id": 32,
+          "name": "RAISEREG",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "For Scheduled units, this is the MAXAVAIL bid availability For Semi-scheduled units, this is the lower of MAXAVAIL bid availability and UIGF",
+          "id": 33,
+          "name": "AVAILABILITY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 6sec status flag  - see",
+          "id": 34,
+          "name": "RAISE6SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Raise 60sec status flag  - see",
+          "id": 35,
+          "name": "RAISE60SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "id": 36,
+          "name": "RAISE5MINFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Raise Reg status flag  - see",
+          "id": 37,
+          "name": "RAISEREGFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Lower 6sec status flag  - see",
+          "id": 38,
+          "name": "LOWER6SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Lower 60sec status flag",
+          "id": 39,
+          "name": "LOWER60SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Lower 5min status flag",
+          "id": 40,
+          "name": "LOWER5MINFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Lower Reg status flag  - see",
+          "id": 41,
+          "name": "LOWERREGFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "RaiseReg availability - minimum of bid and telemetered value",
+          "id": 42,
+          "name": "RAISEREGAVAILABILITY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "RaiseReg enablement max point - minimum of bid and telemetered value",
+          "id": 43,
+          "name": "RAISEREGENABLEMENTMAX",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "RaiseReg Enablement Min point - maximum of bid and telemetered value",
+          "id": 44,
+          "name": "RAISEREGENABLEMENTMIN",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower Reg availability - minimum of bid and telemetered value",
+          "id": 45,
+          "name": "LOWERREGAVAILABILITY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower Reg enablement Max point - minimum of bid and telemetered value",
+          "id": 46,
+          "name": "LOWERREGENABLEMENTMAX",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower Reg Enablement Min point - maximum of bid and telemetered value",
+          "id": 47,
+          "name": "LOWERREGENABLEMENTMIN",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "trapezium adjusted raise 6sec availability",
+          "id": 48,
+          "name": "RAISE6SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise 60sec availability",
+          "id": 49,
+          "name": "RAISE60SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise 5min availability",
+          "id": 50,
+          "name": "RAISE5MINACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise reg availability",
+          "id": 51,
+          "name": "RAISEREGACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 6sec availability",
+          "id": 52,
+          "name": "LOWER6SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 60sec availability",
+          "id": 53,
+          "name": "LOWER60SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 5min availability",
+          "id": 54,
+          "name": "LOWER5MINACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower reg availability",
+          "id": 55,
+          "name": "LOWERREGACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Boolean representation flagging if the Target is Capped",
+          "id": 56,
+          "name": "SEMIDISPATCHCAP",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Minutes for which the unit has been in the current DISPATCHMODE. From NEMDE TRADERSOLUTION element FSTARGETMODETIME attribute.",
+          "id": 57,
+          "name": "DISPATCHMODETIME",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "doc": "Dispatched Lower1Sec - TraderSolution element L1Target attribute",
+          "id": 58,
+          "name": "LOWER1SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Dispatched Raise1Sec - TraderSolution element R1Target attribute",
+          "id": 59,
+          "name": "RAISE1SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "TraderSolution element R1Flags attribute",
+          "id": 60,
+          "name": "RAISE1SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "TraderSolution element L1Flags attribute",
+          "id": 61,
+          "name": "LOWER1SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Trapezium adjusted Raise 1Sec Availability",
+          "id": 62,
+          "name": "RAISE1SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Trapezium adjusted Lower 1Sec Availability",
+          "id": 63,
+          "name": "LOWER1SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Mode specific to units within an aggregate. 0 - no monitoring, 1 - aggregate monitoring, 2 - individual monitoring due to constraint",
+          "id": 64,
+          "name": "CONFORMANCE_MODE",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "For Semi-Scheduled units. Unconstrained Intermittent Generation Forecast value provided to NEMDE",
+          "id": 65,
+          "name": "UIGF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        6
+      ],
+      "schema-id": 2,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Market date and time starting at 04:05",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Dispatch run no; always 1",
+          "id": 2,
+          "name": "RUNNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Dispatchable unit identifier",
+          "id": 3,
+          "name": "DUID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Not used",
+          "id": 4,
+          "name": "TRADETYPE",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "Dispatch period identifier, from 001 to 288 in format YYYYMMDDPPP.",
+          "id": 5,
+          "name": "DISPATCHINTERVAL",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Intervention flag if intervention run",
+          "id": 6,
+          "name": "INTERVENTION",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Connection point identifier for DUID",
+          "id": 7,
+          "name": "CONNECTIONPOINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Dispatch mode for fast start plant (0 to 4).",
+          "id": 8,
+          "name": "DISPATCHMODE",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "AGC Status from EMS\n* 1 = on\n* 0 = off",
+          "id": 9,
+          "name": "AGCSTATUS",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "Initial MW at start of period. Negative values when Bi-directional Unit start from importing power, otherwise positive.",
+          "id": 10,
+          "name": "INITIALMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Target MW for end of period. Negative values when Bi-directional Unit is importing power, otherwise positive.",
+          "id": 11,
+          "name": "TOTALCLEARED",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Ramp down rate used in dispatch (lesser of bid or telemetered rate).",
+          "id": 12,
+          "name": "RAMPDOWNRATE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Ramp up rate (lesser of bid or telemetered rate).",
+          "id": 13,
+          "name": "RAMPUPRATE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 5 min reserve target",
+          "id": 14,
+          "name": "LOWER5MIN",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 60 sec reserve target",
+          "id": 15,
+          "name": "LOWER60SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 6 sec reserve target",
+          "id": 16,
+          "name": "LOWER6SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 5 min reserve target",
+          "id": 17,
+          "name": "RAISE5MIN",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 60 sec reserve target",
+          "id": 18,
+          "name": "RAISE60SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 6 sec reserve target",
+          "id": 19,
+          "name": "RAISE6SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not Used",
+          "id": 20,
+          "name": "DOWNEPF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not Used",
+          "id": 21,
+          "name": "UPEPF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Marginal $ value for 5 min",
+          "id": 22,
+          "name": "MARGINAL5MINVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Marginal $ value for 60 seconds",
+          "id": 23,
+          "name": "MARGINAL60SECVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Marginal $ value for 6 seconds",
+          "id": 24,
+          "name": "MARGINAL6SECVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Marginal $ value for energy",
+          "id": 25,
+          "name": "MARGINALVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Violation MW 5 min",
+          "id": 26,
+          "name": "VIOLATION5MINDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Violation MW 60 seconds",
+          "id": 27,
+          "name": "VIOLATION60SECDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Violation MW 6 seconds",
+          "id": 28,
+          "name": "VIOLATION6SECDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Violation MW energy",
+          "id": 29,
+          "name": "VIOLATIONDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 30,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Lower Regulation reserve target",
+          "id": 31,
+          "name": "LOWERREG",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise Regulation reserve target",
+          "id": 32,
+          "name": "RAISEREG",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "For Scheduled units, this is the MAXAVAIL bid availability For Semi-scheduled units, this is the lower of MAXAVAIL bid availability and UIGF",
+          "id": 33,
+          "name": "AVAILABILITY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 6sec status flag  - see",
+          "id": 34,
+          "name": "RAISE6SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Raise 60sec status flag  - see",
+          "id": 35,
+          "name": "RAISE60SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "id": 36,
+          "name": "RAISE5MINFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Raise Reg status flag  - see",
+          "id": 37,
+          "name": "RAISEREGFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Lower 6sec status flag  - see",
+          "id": 38,
+          "name": "LOWER6SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Lower 60sec status flag",
+          "id": 39,
+          "name": "LOWER60SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Lower 5min status flag",
+          "id": 40,
+          "name": "LOWER5MINFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Lower Reg status flag  - see",
+          "id": 41,
+          "name": "LOWERREGFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "RaiseReg availability - minimum of bid and telemetered value",
+          "id": 42,
+          "name": "RAISEREGAVAILABILITY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "RaiseReg enablement max point - minimum of bid and telemetered value",
+          "id": 43,
+          "name": "RAISEREGENABLEMENTMAX",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "RaiseReg Enablement Min point - maximum of bid and telemetered value",
+          "id": 44,
+          "name": "RAISEREGENABLEMENTMIN",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower Reg availability - minimum of bid and telemetered value",
+          "id": 45,
+          "name": "LOWERREGAVAILABILITY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower Reg enablement Max point - minimum of bid and telemetered value",
+          "id": 46,
+          "name": "LOWERREGENABLEMENTMAX",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower Reg Enablement Min point - maximum of bid and telemetered value",
+          "id": 47,
+          "name": "LOWERREGENABLEMENTMIN",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "trapezium adjusted raise 6sec availability",
+          "id": 48,
+          "name": "RAISE6SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise 60sec availability",
+          "id": 49,
+          "name": "RAISE60SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise 5min availability",
+          "id": 50,
+          "name": "RAISE5MINACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise reg availability",
+          "id": 51,
+          "name": "RAISEREGACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 6sec availability",
+          "id": 52,
+          "name": "LOWER6SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 60sec availability",
+          "id": 53,
+          "name": "LOWER60SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 5min availability",
+          "id": 54,
+          "name": "LOWER5MINACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower reg availability",
+          "id": 55,
+          "name": "LOWERREGACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Boolean representation flagging if the Target is Capped",
+          "id": 56,
+          "name": "SEMIDISPATCHCAP",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Minutes for which the unit has been in the current DISPATCHMODE. From NEMDE TRADERSOLUTION element FSTARGETMODETIME attribute.",
+          "id": 57,
+          "name": "DISPATCHMODETIME",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "doc": "Dispatched Lower1Sec - TraderSolution element L1Target attribute",
+          "id": 58,
+          "name": "LOWER1SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Dispatched Raise1Sec - TraderSolution element R1Target attribute",
+          "id": 59,
+          "name": "RAISE1SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "TraderSolution element R1Flags attribute",
+          "id": 60,
+          "name": "RAISE1SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "TraderSolution element L1Flags attribute",
+          "id": 61,
+          "name": "LOWER1SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Trapezium adjusted Raise 1Sec Availability",
+          "id": 62,
+          "name": "RAISE1SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Trapezium adjusted Lower 1Sec Availability",
+          "id": 63,
+          "name": "LOWER1SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Mode specific to units within an aggregate. 0 - no monitoring, 1 - aggregate monitoring, 2 - individual monitoring due to constraint",
+          "id": 64,
+          "name": "CONFORMANCE_MODE",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "For Semi-Scheduled units. Unconstrained Intermittent Generation Forecast value provided to NEMDE",
+          "id": 65,
+          "name": "UIGF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "The energy storage at the start of this dispatch interval(MWh)",
+          "id": 66,
+          "name": "INITIAL_ENERGY_STORAGE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "The projected energy storage based on cleared energy and regulation FCAS dispatch(MWh)",
+          "id": 67,
+          "name": "ENERGY_STORAGE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "BDU only. Load side availability (BidOfferPeriod.MAXAVAIL where DIRECTION = LOAD)",
+          "id": 68,
+          "name": "MIN_AVAILABILITY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        6
+      ],
+      "schema-id": 3,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Market date and time starting at 04:05",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Dispatch run no; always 1",
+          "id": 2,
+          "name": "RUNNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Dispatchable unit identifier",
+          "id": 3,
+          "name": "DUID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Not used",
+          "id": 4,
+          "name": "TRADETYPE",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "Dispatch period identifier, from 001 to 288 in format YYYYMMDDPPP.",
+          "id": 5,
+          "name": "DISPATCHINTERVAL",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Intervention flag if intervention run",
+          "id": 6,
+          "name": "INTERVENTION",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Connection point identifier for DUID",
+          "id": 7,
+          "name": "CONNECTIONPOINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Dispatch mode for fast start plant (0 to 4).",
+          "id": 8,
+          "name": "DISPATCHMODE",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "AGC Status from EMS\n* 1 = on\n* 0 = off",
+          "id": 9,
+          "name": "AGCSTATUS",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "Initial MW at start of period. Negative values when Bi-directional Unit start from importing power, otherwise positive.",
+          "id": 10,
+          "name": "INITIALMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Target MW for end of period. Negative values when Bi-directional Unit is importing power, otherwise positive.",
+          "id": 11,
+          "name": "TOTALCLEARED",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Ramp down rate used in dispatch (lesser of bid or telemetered rate).",
+          "id": 12,
+          "name": "RAMPDOWNRATE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Ramp up rate (lesser of bid or telemetered rate).",
+          "id": 13,
+          "name": "RAMPUPRATE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 5 min reserve target",
+          "id": 14,
+          "name": "LOWER5MIN",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 60 sec reserve target",
+          "id": 15,
+          "name": "LOWER60SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 6 sec reserve target",
+          "id": 16,
+          "name": "LOWER6SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 5 min reserve target",
+          "id": 17,
+          "name": "RAISE5MIN",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 60 sec reserve target",
+          "id": 18,
+          "name": "RAISE60SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 6 sec reserve target",
+          "id": 19,
+          "name": "RAISE6SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not Used",
+          "id": 20,
+          "name": "DOWNEPF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not Used",
+          "id": 21,
+          "name": "UPEPF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Marginal $ value for 5 min",
+          "id": 22,
+          "name": "MARGINAL5MINVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Marginal $ value for 60 seconds",
+          "id": 23,
+          "name": "MARGINAL60SECVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Marginal $ value for 6 seconds",
+          "id": 24,
+          "name": "MARGINAL6SECVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Marginal $ value for energy",
+          "id": 25,
+          "name": "MARGINALVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Violation MW 5 min",
+          "id": 26,
+          "name": "VIOLATION5MINDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Violation MW 60 seconds",
+          "id": 27,
+          "name": "VIOLATION60SECDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Violation MW 6 seconds",
+          "id": 28,
+          "name": "VIOLATION6SECDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Violation MW energy",
+          "id": 29,
+          "name": "VIOLATIONDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 30,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Lower Regulation reserve target",
+          "id": 31,
+          "name": "LOWERREG",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise Regulation reserve target",
+          "id": 32,
+          "name": "RAISEREG",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "For Scheduled units, this is the MAXAVAIL bid availability For Semi-scheduled units, this is the lower of MAXAVAIL bid availability and UIGF",
+          "id": 33,
+          "name": "AVAILABILITY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 6sec status flag  - see",
+          "id": 34,
+          "name": "RAISE6SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Raise 60sec status flag  - see",
+          "id": 35,
+          "name": "RAISE60SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "id": 36,
+          "name": "RAISE5MINFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Raise Reg status flag  - see",
+          "id": 37,
+          "name": "RAISEREGFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Lower 6sec status flag  - see",
+          "id": 38,
+          "name": "LOWER6SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Lower 60sec status flag",
+          "id": 39,
+          "name": "LOWER60SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Lower 5min status flag",
+          "id": 40,
+          "name": "LOWER5MINFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Lower Reg status flag  - see",
+          "id": 41,
+          "name": "LOWERREGFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "RaiseReg availability - minimum of bid and telemetered value",
+          "id": 42,
+          "name": "RAISEREGAVAILABILITY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "RaiseReg enablement max point - minimum of bid and telemetered value",
+          "id": 43,
+          "name": "RAISEREGENABLEMENTMAX",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "RaiseReg Enablement Min point - maximum of bid and telemetered value",
+          "id": 44,
+          "name": "RAISEREGENABLEMENTMIN",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower Reg availability - minimum of bid and telemetered value",
+          "id": 45,
+          "name": "LOWERREGAVAILABILITY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower Reg enablement Max point - minimum of bid and telemetered value",
+          "id": 46,
+          "name": "LOWERREGENABLEMENTMAX",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower Reg Enablement Min point - maximum of bid and telemetered value",
+          "id": 47,
+          "name": "LOWERREGENABLEMENTMIN",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "trapezium adjusted raise 6sec availability",
+          "id": 48,
+          "name": "RAISE6SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise 60sec availability",
+          "id": 49,
+          "name": "RAISE60SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise 5min availability",
+          "id": 50,
+          "name": "RAISE5MINACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise reg availability",
+          "id": 51,
+          "name": "RAISEREGACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 6sec availability",
+          "id": 52,
+          "name": "LOWER6SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 60sec availability",
+          "id": 53,
+          "name": "LOWER60SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 5min availability",
+          "id": 54,
+          "name": "LOWER5MINACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower reg availability",
+          "id": 55,
+          "name": "LOWERREGACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Boolean representation flagging if the Target is Capped",
+          "id": 56,
+          "name": "SEMIDISPATCHCAP",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Minutes for which the unit has been in the current DISPATCHMODE. From NEMDE TRADERSOLUTION element FSTARGETMODETIME attribute.",
+          "id": 57,
+          "name": "DISPATCHMODETIME",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "doc": "Mode specific to units within an aggregate. 0 - no monitoring, 1 - aggregate monitoring, 2 - individual monitoring due to constraint",
+          "id": 64,
+          "name": "CONFORMANCE_MODE",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "For Semi-Scheduled units. Unconstrained Intermittent Generation Forecast value provided to NEMDE",
+          "id": 65,
+          "name": "UIGF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Dispatched Raise1Sec - TraderSolution element R1Target attribute",
+          "id": 59,
+          "name": "RAISE1SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "TraderSolution element R1Flags attribute",
+          "id": 60,
+          "name": "RAISE1SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Dispatched Lower1Sec - TraderSolution element L1Target attribute",
+          "id": 58,
+          "name": "LOWER1SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "TraderSolution element L1Flags attribute",
+          "id": 61,
+          "name": "LOWER1SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Trapezium adjusted Raise 1Sec Availability",
+          "id": 62,
+          "name": "RAISE1SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Trapezium adjusted Lower 1Sec Availability",
+          "id": 63,
+          "name": "LOWER1SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "The energy storage at the start of this dispatch interval(MWh)",
+          "id": 66,
+          "name": "INITIAL_ENERGY_STORAGE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "The projected energy storage based on cleared energy and regulation FCAS dispatch(MWh)",
+          "id": 67,
+          "name": "ENERGY_STORAGE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "BDU only. Load side availability (BidOfferPeriod.MAXAVAIL where DIRECTION = LOAD)",
+          "id": 68,
+          "name": "MIN_AVAILABILITY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        6
+      ],
+      "schema-id": 4,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Market date and time starting at 04:05",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Dispatch run no; always 1",
+          "id": 2,
+          "name": "RUNNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Dispatchable unit identifier",
+          "id": 3,
+          "name": "DUID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Not used",
+          "id": 4,
+          "name": "TRADETYPE",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "Dispatch period identifier, from 001 to 288 in format YYYYMMDDPPP.",
+          "id": 5,
+          "name": "DISPATCHINTERVAL",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Intervention flag if intervention run",
+          "id": 6,
+          "name": "INTERVENTION",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Connection point identifier for DUID",
+          "id": 7,
+          "name": "CONNECTIONPOINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Dispatch mode for fast start plant (0 to 4).",
+          "id": 8,
+          "name": "DISPATCHMODE",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "AGC Status from EMS\n* 1 = on\n* 0 = off",
+          "id": 9,
+          "name": "AGCSTATUS",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "Initial MW at start of period. Negative values when Bi-directional Unit start from importing power, otherwise positive.",
+          "id": 10,
+          "name": "INITIALMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Target MW for end of period. Negative values when Bi-directional Unit is importing power, otherwise positive.",
+          "id": 11,
+          "name": "TOTALCLEARED",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Ramp down rate used in dispatch (lesser of bid or telemetered rate).",
+          "id": 12,
+          "name": "RAMPDOWNRATE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Ramp up rate (lesser of bid or telemetered rate).",
+          "id": 13,
+          "name": "RAMPUPRATE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 5 min reserve target",
+          "id": 14,
+          "name": "LOWER5MIN",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 60 sec reserve target",
+          "id": 15,
+          "name": "LOWER60SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 6 sec reserve target",
+          "id": 16,
+          "name": "LOWER6SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 5 min reserve target",
+          "id": 17,
+          "name": "RAISE5MIN",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 60 sec reserve target",
+          "id": 18,
+          "name": "RAISE60SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 6 sec reserve target",
+          "id": 19,
+          "name": "RAISE6SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not Used",
+          "id": 20,
+          "name": "DOWNEPF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not Used",
+          "id": 21,
+          "name": "UPEPF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Marginal $ value for 5 min",
+          "id": 22,
+          "name": "MARGINAL5MINVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Marginal $ value for 60 seconds",
+          "id": 23,
+          "name": "MARGINAL60SECVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Marginal $ value for 6 seconds",
+          "id": 24,
+          "name": "MARGINAL6SECVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Marginal $ value for energy",
+          "id": 25,
+          "name": "MARGINALVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Violation MW 5 min",
+          "id": 26,
+          "name": "VIOLATION5MINDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Violation MW 60 seconds",
+          "id": 27,
+          "name": "VIOLATION60SECDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Violation MW 6 seconds",
+          "id": 28,
+          "name": "VIOLATION6SECDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Violation MW energy",
+          "id": 29,
+          "name": "VIOLATIONDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 30,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Lower Regulation reserve target",
+          "id": 31,
+          "name": "LOWERREG",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise Regulation reserve target",
+          "id": 32,
+          "name": "RAISEREG",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "For Scheduled units, this is the MAXAVAIL bid availability For Semi-scheduled units, this is the lower of MAXAVAIL bid availability and UIGF",
+          "id": 33,
+          "name": "AVAILABILITY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 6sec status flag  - see",
+          "id": 34,
+          "name": "RAISE6SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Raise 60sec status flag  - see",
+          "id": 35,
+          "name": "RAISE60SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "id": 36,
+          "name": "RAISE5MINFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Raise Reg status flag  - see",
+          "id": 37,
+          "name": "RAISEREGFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Lower 6sec status flag  - see",
+          "id": 38,
+          "name": "LOWER6SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Lower 60sec status flag",
+          "id": 39,
+          "name": "LOWER60SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Lower 5min status flag",
+          "id": 40,
+          "name": "LOWER5MINFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Lower Reg status flag  - see",
+          "id": 41,
+          "name": "LOWERREGFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "RaiseReg availability - minimum of bid and telemetered value",
+          "id": 42,
+          "name": "RAISEREGAVAILABILITY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "RaiseReg enablement max point - minimum of bid and telemetered value",
+          "id": 43,
+          "name": "RAISEREGENABLEMENTMAX",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "RaiseReg Enablement Min point - maximum of bid and telemetered value",
+          "id": 44,
+          "name": "RAISEREGENABLEMENTMIN",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower Reg availability - minimum of bid and telemetered value",
+          "id": 45,
+          "name": "LOWERREGAVAILABILITY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower Reg enablement Max point - minimum of bid and telemetered value",
+          "id": 46,
+          "name": "LOWERREGENABLEMENTMAX",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower Reg Enablement Min point - maximum of bid and telemetered value",
+          "id": 47,
+          "name": "LOWERREGENABLEMENTMIN",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "trapezium adjusted raise 6sec availability",
+          "id": 48,
+          "name": "RAISE6SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise 60sec availability",
+          "id": 49,
+          "name": "RAISE60SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise 5min availability",
+          "id": 50,
+          "name": "RAISE5MINACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise reg availability",
+          "id": 51,
+          "name": "RAISEREGACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 6sec availability",
+          "id": 52,
+          "name": "LOWER6SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 60sec availability",
+          "id": 53,
+          "name": "LOWER60SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 5min availability",
+          "id": 54,
+          "name": "LOWER5MINACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower reg availability",
+          "id": 55,
+          "name": "LOWERREGACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Boolean representation flagging if the Target is Capped",
+          "id": 56,
+          "name": "SEMIDISPATCHCAP",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Minutes for which the unit has been in the current DISPATCHMODE. From NEMDE TRADERSOLUTION element FSTARGETMODETIME attribute.",
+          "id": 57,
+          "name": "DISPATCHMODETIME",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "doc": "Mode specific to units within an aggregate. 0 - no monitoring, 1 - aggregate monitoring, 2 - individual monitoring due to constraint",
+          "id": 64,
+          "name": "CONFORMANCE_MODE",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "For Semi-Scheduled units. Unconstrained Intermittent Generation Forecast value provided to NEMDE",
+          "id": 65,
+          "name": "UIGF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Dispatched Raise1Sec - TraderSolution element R1Target attribute",
+          "id": 59,
+          "name": "RAISE1SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "TraderSolution element R1Flags attribute",
+          "id": 60,
+          "name": "RAISE1SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Dispatched Lower1Sec - TraderSolution element L1Target attribute",
+          "id": 58,
+          "name": "LOWER1SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "TraderSolution element L1Flags attribute",
+          "id": 61,
+          "name": "LOWER1SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Trapezium adjusted Raise 1Sec Availability",
+          "id": 62,
+          "name": "RAISE1SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Trapezium adjusted Lower 1Sec Availability",
+          "id": 63,
+          "name": "LOWER1SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "The energy storage at the start of this dispatch interval(MWh)",
+          "id": 66,
+          "name": "INITIAL_ENERGY_STORAGE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "The projected energy storage based on cleared energy and regulation FCAS dispatch(MWh)",
+          "id": 67,
+          "name": "ENERGY_STORAGE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "BDU only. Load side availability (BidOfferPeriod.MAXAVAIL where DIRECTION = LOAD)",
+          "id": 68,
+          "name": "MIN_AVAILABILITY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Cap on the number of turbines or inverters at a DUID.",
+          "id": 69,
+          "name": "ELEMENT_CAP",
+          "required": false,
+          "type": "long"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        6
+      ],
+      "schema-id": 5,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 3148540194991028047,
+      "timestamp-ms": 1246370400000
+    },
+    {
+      "snapshot-id": 3440891214797053110,
+      "timestamp-ms": 1633010400001
+    },
+    {
+      "snapshot-id": 7939927365168231481,
+      "timestamp-ms": 1688133600002
+    },
+    {
+      "snapshot-id": 2547337212875282084,
+      "timestamp-ms": 1714485600003
+    },
+    {
+      "snapshot-id": 4012211686265786679,
+      "timestamp-ms": 1722434400004
+    },
+    {
+      "snapshot-id": 4546456059943459337,
+      "timestamp-ms": 1761919200005
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHLOAD/metadata/snap-3148540194991028047-1-7e36e1af-fd0e-80ac-b851-3bb40530439c.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 3148540194991028047,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "147",
+        "utilake.from.file": "PUBLIC_DVD_DISPATCHLOAD_200907010000.zip",
+        "utilake.from.release": "2009-07",
+        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "utilake.from.time": "2009-07-01T00:05:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "351585776",
+        "utilake.to.file": "PUBLIC_DVD_DISPATCHLOAD_202109010000.zip",
+        "utilake.to.release": "2021-09",
+        "utilake.to.sha256": "e84d364ea9e762a4b1c35a772d52773ee3be22c54f18f8bbb3c500142af63b6e",
+        "utilake.to.time": "2021-10-01T00:00:00+10:00",
+        "utilake.total-rows": "351585776",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1246370400000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHLOAD/metadata/snap-3440891214797053110-2-7e36e1af-fd0e-80ac-b851-3bb40530439c.avro",
+      "parent-snapshot-id": 3148540194991028047,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 3440891214797053110,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "21",
+        "utilake.from.file": "PUBLIC_DVD_DISPATCHLOAD_202110010000.zip",
+        "utilake.from.release": "2021-10",
+        "utilake.from.sha256": "b14e97868c9cda0536f5fbe3839a9833f5dc899f287ba4a8f0cdcd197c82807a",
+        "utilake.from.time": "2021-10-01T00:05:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "79804269",
+        "utilake.to.file": "PUBLIC_DVD_DISPATCHLOAD_202306010000.zip",
+        "utilake.to.release": "2023-06",
+        "utilake.to.sha256": "f6712cdd0588d6cc1184053c470e5a35775e1964ad01c9b4f358aa50bc1b7c9d",
+        "utilake.to.time": "2023-07-01T00:00:00+10:00",
+        "utilake.total-rows": "431390045",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1633010400001
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHLOAD/metadata/snap-7939927365168231481-3-7e36e1af-fd0e-80ac-b851-3bb40530439c.avro",
+      "parent-snapshot-id": 3440891214797053110,
+      "schema-id": 2,
+      "sequence-number": 3,
+      "snapshot-id": 7939927365168231481,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "10",
+        "utilake.from.file": "PUBLIC_DVD_DISPATCHLOAD_202307010000.zip",
+        "utilake.from.release": "2023-07",
+        "utilake.from.sha256": "14e0c281a00cff7ec619b8b140a906f43d80c9030ed0593626d71177bcf4673d",
+        "utilake.from.time": "2023-07-01T00:05:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "41706340",
+        "utilake.to.file": "PUBLIC_DVD_DISPATCHLOAD_202404010000.zip",
+        "utilake.to.release": "2024-04",
+        "utilake.to.sha256": "153191f97cf778d8b31e8a684b9b045ea55eb5328257776a494c01c66101cac0",
+        "utilake.to.time": "2024-05-01T00:00:00+10:00",
+        "utilake.total-rows": "473096385",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1688133600002
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHLOAD/metadata/snap-2547337212875282084-4-7e36e1af-fd0e-80ac-b851-3bb40530439c.avro",
+      "parent-snapshot-id": 7939927365168231481,
+      "schema-id": 3,
+      "sequence-number": 4,
+      "snapshot-id": 2547337212875282084,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "3",
+        "utilake.from.file": "PUBLIC_DVD_DISPATCHLOAD_202405010000.zip",
+        "utilake.from.release": "2024-05",
+        "utilake.from.sha256": "a27eed7051e483241c148642ef8c65f34b94d71229a365b954d4af003ffebd7a",
+        "utilake.from.time": "2024-05-01T00:05:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "13077216",
+        "utilake.to.file": "PUBLIC_DVD_DISPATCHLOAD_202407010000.zip",
+        "utilake.to.release": "2024-07",
+        "utilake.to.sha256": "064bfe51909ab23e62f2d69227efff80f55787bf491b19fee5236b94573289b2",
+        "utilake.to.time": "2024-08-01T00:00:00+10:00",
+        "utilake.total-rows": "486173601",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1714485600003
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHLOAD/metadata/snap-4012211686265786679-5-7e36e1af-fd0e-80ac-b851-3bb40530439c.avro",
+      "parent-snapshot-id": 2547337212875282084,
+      "schema-id": 4,
+      "sequence-number": 5,
+      "snapshot-id": 4012211686265786679,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "15",
+        "utilake.from.file": "PUBLIC_ARCHIVE#DISPATCHLOAD#FILE01#202408010000.zip",
+        "utilake.from.release": "2024-08",
+        "utilake.from.sha256": "f47b22263e6a6192be6bf7064effef0a90fa9e459f0c6105de8f009013600e90",
+        "utilake.from.time": "2024-08-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "66489035",
+        "utilake.to.file": "PUBLIC_ARCHIVE#DISPATCHLOAD#FILE01#202510010000.zip",
+        "utilake.to.release": "2025-10",
+        "utilake.to.sha256": "3051ff9d2dcf916e1cc1283b9f7cf39f15f6764e03d7322a0f80a9c1e2181278",
+        "utilake.to.time": "2025-11-01T00:00:00+10:00",
+        "utilake.total-rows": "552662636",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1722434400004
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHLOAD/metadata/snap-4546456059943459337-6-7e36e1af-fd0e-80ac-b851-3bb40530439c.avro",
+      "parent-snapshot-id": 4012211686265786679,
+      "schema-id": 5,
+      "sequence-number": 6,
+      "snapshot-id": 4546456059943459337,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "11",
+        "utilake.from.file": "PUBLIC_ARCHIVE#DISPATCHLOAD#FILE01#202511010000.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "2149824ef45478ab5674e26150a7b134b2540daf050afebe3a7bbab649bbfb3e",
+        "utilake.from.time": "2025-11-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "53448768",
+        "utilake.to.file": "PUBLIC_ARCHIVE#DISPATCHLOAD#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "a66206aff959fde2decb5d67b6e4890302551f19fff8297b5e206ae800a345c6",
+        "utilake.to.time": "2026-10-01T00:00:00+10:00",
+        "utilake.total-rows": "606111404",
+        "utilake.version": "6"
+      },
+      "timestamp-ms": 1761919200005
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "7e36e1af-fd0e-80ac-b851-3bb40530439c"
+}

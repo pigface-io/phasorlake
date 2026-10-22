@@ -1,0 +1,127 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 1657555907803014420,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 4,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1525096800000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_CASERESULT",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "MTPASA solution header table",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"RUN_DATETIME\",\"RUN_NO\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(4)\",\"3\":\"VARCHAR(20)\",\"4\":\"TIMESTAMP(0)\"}",
+    "utilake.package": "MTPASA",
+    "utilake.reports": "[[\"MTPASA\",\"CASERESULT\"]]",
+    "utilake.table": "MTPASA_CASERESULT",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[]",
+    "utilake.temporal.order": "[\"RUN_NO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "RUN_DATETIME",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "RUN_DATETIME",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 1657555907803014420,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Date processing of the run begins.",
+          "id": 1,
+          "name": "RUN_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Unique run id.",
+          "id": 2,
+          "name": "RUN_NO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Version of PLEXOS used",
+          "id": 3,
+          "name": "PLEXOS_VERSION",
+          "required": false,
+          "type": "decimal(4, 3)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 4,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 1657555907803014420,
+      "timestamp-ms": 1525096800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_CASERESULT/metadata/snap-1657555907803014420-1-32b01404-232e-8f4d-a706-ed82416eeb2b.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 1657555907803014420,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "101",
+        "utilake.from.file": "PUBLIC_DVD_MTPASA_CASERESULT_201805010000.zip",
+        "utilake.from.release": "2018-05",
+        "utilake.from.sha256": "4c63135dbc4999015caed8e1504bbc5c28c523bc46af0a628be99a10d77fbbf3",
+        "utilake.from.time": "2018-05-14T10:59:49+10:00",
+        "utilake.kinds": "[\"archive\",\"dvd\"]",
+        "utilake.report-subtype": "CASERESULT",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "457",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MTPASA_CASERESULT#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "4648b6f994cad449409d090242ed043fec64c73d871f893e928fd75c3a9d51f7",
+        "utilake.to.time": "2026-09-28T17:00:00+10:00",
+        "utilake.total-rows": "457",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1525096800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "32b01404-232e-8f4d-a706-ed82416eeb2b"
+}

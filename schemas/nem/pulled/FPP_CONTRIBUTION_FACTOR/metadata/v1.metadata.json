@@ -1,0 +1,336 @@
+{
+  "current-schema-id": 1,
+  "current-snapshot-id": 447643137925380492,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 15,
+  "last-partition-id": 999,
+  "last-sequence-number": 2,
+  "last-updated-ms": 1777557600001,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_CONTRIBUTION_FACTOR",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "This report delivers the calculated contribution factor value for each 5 minute trading interval for each constraint and FPP unit",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"VARCHAR(20)\",\"4\":\"NUMERIC(5)\",\"5\":\"VARCHAR(10)\",\"6\":\"NUMERIC(18,8)\",\"7\":\"NUMERIC(18,8)\",\"8\":\"NUMERIC(18,8)\",\"9\":\"NUMERIC(5)\",\"10\":\"NUMERIC(18,8)\",\"11\":\"NUMERIC(18,8)\",\"12\":\"NUMERIC(18,8)\",\"13\":\"VARCHAR(20)\",\"14\":\"VARCHAR(50)\",\"15\":\"TIMESTAMP(0)\"}",
+    "utilake.reports": "[[\"FPP\",\"CONTRIBUTION_FACTOR\"]]",
+    "utilake.table": "FPP_CONTRIBUTION_FACTOR",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[]",
+    "utilake.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.time": "INTERVAL_DATETIME",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 447643137925380492,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Date and time of the trading interval (DD/MM/YYYY HH24:MI:SS) fixed to the UTC+10 time zone (NEM time)",
+          "id": 1,
+          "name": "INTERVAL_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Constraint ID (binding constraint ID from FCAS data used in FPP calculations)",
+          "id": 2,
+          "name": "CONSTRAINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "FPP Unit ID (registered DUID/ TNI)",
+          "id": 3,
+          "name": "FPP_UNITID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Version (FPP run number from the FPP database)",
+          "id": 4,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "doc": "Bid type (the bid type saved in relation to constraint ID from FCAS data used in FPP calculations)",
+          "id": 5,
+          "name": "BIDTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Contribution Factor (the calculated contribution factor for the FPP unit and constraint ID for that trading interval) - for further details please see the FPP procedure document",
+          "id": 6,
+          "name": "CONTRIBUTION_FACTOR",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Negative Contribution Factor (the calculated negative contribution factor for the FPP unit and constraint ID for that trading interval) - for further details please see the FPP procedure document",
+          "id": 7,
+          "name": "NEGATIVE_CONTRIBUTION_FACTOR",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The Default Contribution Factor (the calculated default contribution factor based on historical performance for the FPP unit and constraint ID for that trading interval) that is effective for this trading interval, which joins back to FPP_FORECAST_DEFAULT_CF - for further details please see the FPP procedure document",
+          "id": 8,
+          "name": "DEFAULT_CONTRIBUTION_FACTOR",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The reason flag showing the decision matrix for the contribution factor (CF) Supported values are: 0 = CF is calculated based on good input data 1 = CF is 0 because it is not primary in the group 2 = CF is not for the DUID but for the whole group 4 = CF is calculated based on substitute performance 8 = CF is 0 because FM is unreliable. 16 = CF is 0 because more than 50 percent input is bad or not available.",
+          "id": 9,
+          "name": "CF_REASON_FLAG",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "doc": "The sum of absolute positive performance in MWHz for the combination of constraint / bid type (raise or lower). This is used as the denominator in normalising contribution factors (CF) where a units performance is positive. For further details please see the FPP procedure document. >0 = Performance was calculated for the units NULL = Performance for the units was unavailable",
+          "id": 10,
+          "name": "CF_ABS_POSITIVE_PERF_TOTAL",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The sum of absolute negative performance in MWHz for the combination of constraint / bid type (raise or lower). This is used as the denominator in normalising contribution factors (CF) where a units performance is negative. For further details please see the FPP procedure document. >0 = Performance was calculated for the units NULL = Performance for the units was unavailable",
+          "id": 11,
+          "name": "CF_ABS_NEGATIVE_PERF_TOTAL",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The sum of absolute negative performance in MWHz for the combination of constraint / bid type (raise or lower). This is used as the denominator in normalising negative contribution factors (NCF). For further details please see the FPP procedure document. >0 = Performance was calculated for the units NULL = Performance for the units was unavailable 0 = When NCF is zero (i.e. CF is positive), then this total will be represented as zero",
+          "id": 12,
+          "name": "NCF_ABS_NEGATIVE_PERF_TOTAL",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Participant ID",
+          "id": 13,
+          "name": "PARTICIPANTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The Settlements Unit ID (registered DUID / TNI) Note that this SETTLEMENTS_UNITID is what is sent and used by the Settlements system, and may be different from the FPP_UNITID for non-scheduled loads where the FPP_UNITID may be a descriptive key, whereas what will be sent to Settlements as the SETTLEMENTS_UNITID will be the TNI code.",
+          "id": 14,
+          "name": "SETTLEMENTS_UNITID",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Date and time of the trading interval (DD/MM/YYYY HH24:MI:SS) fixed to the UTC+10 time zone (NEM time)",
+          "id": 1,
+          "name": "INTERVAL_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Constraint ID (binding constraint ID from FCAS data used in FPP calculations)",
+          "id": 2,
+          "name": "CONSTRAINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "FPP Unit ID (registered DUID/ TNI)",
+          "id": 3,
+          "name": "FPP_UNITID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Version (FPP run number from the FPP database)",
+          "id": 4,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "doc": "Bid type (the bid type saved in relation to constraint ID from FCAS data used in FPP calculations)",
+          "id": 5,
+          "name": "BIDTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Contribution Factor (the calculated contribution factor for the FPP unit and constraint ID for that trading interval) - for further details please see the FPP procedure document",
+          "id": 6,
+          "name": "CONTRIBUTION_FACTOR",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Negative Contribution Factor (the calculated negative contribution factor for the FPP unit and constraint ID for that trading interval) - for further details please see the FPP procedure document",
+          "id": 7,
+          "name": "NEGATIVE_CONTRIBUTION_FACTOR",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The Default Contribution Factor (the calculated default contribution factor based on historical performance for the FPP unit and constraint ID for that trading interval) that is effective for this trading interval, which joins back to FPP_FORECAST_DEFAULT_CF - for further details please see the FPP procedure document",
+          "id": 8,
+          "name": "DEFAULT_CONTRIBUTION_FACTOR",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The reason flag showing the decision matrix for the contribution factor (CF) Supported values are: 0 = CF is calculated based on good input data 1 = CF is 0 because it is not primary in the group 2 = CF is not for the DUID but for the whole group 4 = CF is calculated based on substitute performance 8 = CF is 0 because FM is unreliable. 16 = CF is 0 because more than 50 percent input is bad or not available.",
+          "id": 9,
+          "name": "CF_REASON_FLAG",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "doc": "The sum of absolute positive performance in MWHz for the combination of constraint / bid type (raise or lower). This is used as the denominator in normalising contribution factors (CF) where a units performance is positive. For further details please see the FPP procedure document. >0 = Performance was calculated for the units NULL = Performance for the units was unavailable",
+          "id": 10,
+          "name": "CF_ABS_POSITIVE_PERF_TOTAL",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The sum of absolute negative performance in MWHz for the combination of constraint / bid type (raise or lower). This is used as the denominator in normalising contribution factors (CF) where a units performance is negative. For further details please see the FPP procedure document. >0 = Performance was calculated for the units NULL = Performance for the units was unavailable",
+          "id": 11,
+          "name": "CF_ABS_NEGATIVE_PERF_TOTAL",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The sum of absolute negative performance in MWHz for the combination of constraint / bid type (raise or lower). This is used as the denominator in normalising negative contribution factors (NCF). For further details please see the FPP procedure document. >0 = Performance was calculated for the units NULL = Performance for the units was unavailable 0 = When NCF is zero (i.e. CF is positive), then this total will be represented as zero",
+          "id": 12,
+          "name": "NCF_ABS_NEGATIVE_PERF_TOTAL",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Participant ID",
+          "id": 13,
+          "name": "PARTICIPANTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The Settlements Unit ID (registered DUID / TNI) Note that this SETTLEMENTS_UNITID is what is sent and used by the Settlements system, and may be different from the FPP_UNITID for non-scheduled loads where the FPP_UNITID may be a descriptive key, whereas what will be sent to Settlements as the SETTLEMENTS_UNITID will be the TNI code.",
+          "id": 14,
+          "name": "SETTLEMENTS_UNITID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 15,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 1,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 624422975618020066,
+      "timestamp-ms": 1732975200000
+    },
+    {
+      "snapshot-id": 447643137925380492,
+      "timestamp-ms": 1777557600001
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_CONTRIBUTION_FACTOR/metadata/snap-624422975618020066-1-4fa834ac-02da-8c66-95d5-7be20da7269c.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 624422975618020066,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "33",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_CONTRIBUTION_FACTOR#FILE01#202412010000.zip",
+        "utilake.from.release": "2024-12",
+        "utilake.from.sha256": "51563e23cc51b1de8ebe014d555794f09330cf6e921859a304289a3acf7f9881",
+        "utilake.from.time": "2025-01-07T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "CONTRIBUTION_FACTOR",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "1055364370",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_CONTRIBUTION_FACTOR#FILE03#202604010000.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "03753483bc9a6ec0753e06a85c4e2430ecb349289b53d975581b7f6425d66661",
+        "utilake.to.time": "2026-05-08T04:00:00+10:00",
+        "utilake.total-rows": "1055364370",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1732975200000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_CONTRIBUTION_FACTOR/metadata/snap-447643137925380492-2-4fa834ac-02da-8c66-95d5-7be20da7269c.avro",
+      "parent-snapshot-id": 624422975618020066,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 447643137925380492,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "14",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_CONTRIBUTION_FACTOR#FILE01#202605010000.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "9ce18c648ade59a0add4a6d8b0661dc8d6fed07614e84f6d17b15f16d5693046",
+        "utilake.from.time": "2025-01-07T02:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "CONTRIBUTION_FACTOR",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "446394413",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_CONTRIBUTION_FACTOR#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "9fc1f02afd76f2a8090fbcacb982a5edda367c1911966748c237c819da335580",
+        "utilake.to.time": "2026-10-01T00:00:00+10:00",
+        "utilake.total-rows": "1501758783",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1777557600001
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "4fa834ac-02da-8c66-95d5-7be20da7269c"
+}

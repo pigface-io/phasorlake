@@ -1,0 +1,148 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 6552772676758213654,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 7,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1722434400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/NETWORK_SUBSTATIONDETAIL",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "NETWORK_SUBSTATIONDETAIL sets out the attributes of sub-stations across time",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"SUBSTATIONID\",\"VALIDFROM\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"VARCHAR(30)\",\"2\":\"TIMESTAMP(3)\",\"3\":\"TIMESTAMP(3)\",\"4\":\"VARCHAR(100)\",\"5\":\"VARCHAR(10)\",\"6\":\"VARCHAR(30)\",\"7\":\"TIMESTAMP(3)\"}",
+    "utilake.package": "NETWORK",
+    "utilake.reports": "[[\"NETWORK\",\"SUBSTATIONDETAIL\"]]",
+    "utilake.table": "NETWORK_SUBSTATIONDETAIL",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"SUBSTATIONID\"]",
+    "utilake.temporal.order": "[\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "VALIDFROM",
+    "utilake.temporal.valid.kind": "from",
+    "utilake.time": "LASTCHANGED",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 6552772676758213654,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "ID uniquely identifying this substation",
+          "id": 1,
+          "name": "SUBSTATIONID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "The record is valid from this date (inclusive)",
+          "id": 2,
+          "name": "VALIDFROM",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The record is valid up until this date (exclusive)",
+          "id": 3,
+          "name": "VALIDTO",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Description of the substation",
+          "id": 4,
+          "name": "DESCRIPTION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The NEM region the substation is in",
+          "id": 5,
+          "name": "REGIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The TNSP who is responsible for this substation",
+          "id": 6,
+          "name": "OWNERID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The time that this record was last changed.",
+          "id": 7,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 6552772676758213654,
+      "timestamp-ms": 1722434400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/NETWORK_SUBSTATIONDETAIL/metadata/snap-6552772676758213654-1-980dedb9-7d6a-8342-96c7-ce93ed5c01af.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 6552772676758213654,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "26",
+        "utilake.from.file": "PUBLIC_ARCHIVE#NETWORK_SUBSTATIONDETAIL#FILE01#202408010000.zip",
+        "utilake.from.release": "2024-08",
+        "utilake.from.sha256": "12bd724b5b3dd3eaa26496c752e72610b58e4a77a3c1bb99ec58dde5e202cba4",
+        "utilake.from.time": "2003-04-28T16:51:18.000+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "SUBSTATIONDETAIL",
+        "utilake.report-type": "NETWORK",
+        "utilake.rows": "29210",
+        "utilake.to.file": "PUBLIC_ARCHIVE#NETWORK_SUBSTATIONDETAIL#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "9aae45cc150d7c35d305f610f553018826b328239f22bce8a2e7114e71ffa9ae",
+        "utilake.to.time": "2999-01-01T00:00:10.000+10:00",
+        "utilake.total-rows": "29210",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1722434400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "980dedb9-7d6a-8342-96c7-ce93ed5c01af"
+}

@@ -1,0 +1,140 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 4223335588524159648,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 6,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1722434400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MARKET_SUSPEND_REGION_SUM",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "Summary of Market Suspension timings",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"SUSPENSION_ID\",\"REGIONID\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"VARCHAR(20)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(0)\"}",
+    "utilake.package": "FORCE_MAJEURE",
+    "utilake.reports": "[[\"FORCE_MAJEURE\",\"MARKET_SUSPEND_REGION_SUM\"]]",
+    "utilake.table": "MARKET_SUSPEND_REGION_SUM",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"SUSPENSION_ID\",\"REGIONID\"]",
+    "utilake.temporal.order": "[\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.time": "LASTCHANGED",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 4223335588524159648,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Unique identifier for this suspension event",
+          "id": 1,
+          "name": "SUSPENSION_ID",
+          "required": true,
+          "type": "decimal(13, 1)"
+        },
+        {
+          "doc": "Region(s) covered by the Suspension event",
+          "id": 2,
+          "name": "REGIONID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Initial interval of the Suspension event",
+          "id": 3,
+          "name": "INITIAL_INTERVAL",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Last Dispatch interval for the Suspension event for this Region",
+          "id": 4,
+          "name": "END_REGION_INTERVAL",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Last Dispatch interval for the Suspension event",
+          "id": 5,
+          "name": "END_SUSPENSION_INTERVAL",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Last DateTime the Suspension was administered",
+          "id": 6,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 4223335588524159648,
+      "timestamp-ms": 1722434400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MARKET_SUSPEND_REGION_SUM/metadata/snap-4223335588524159648-1-8ee9f067-912f-85c5-b8b5-c5da057643e0.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 4223335588524159648,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "26",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MARKET_SUSPEND_REGION_SUM#FILE01#202408010000.zip",
+        "utilake.from.release": "2024-08",
+        "utilake.from.sha256": "e82d5d848f5be64c00a222ee0925968a500838fe10897151a4b0f5eb24ea9d71",
+        "utilake.from.time": "2022-02-18T15:38:41+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "MARKET_SUSPEND_REGION_SUM",
+        "utilake.report-type": "FORCE_MAJEURE",
+        "utilake.rows": "371",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MARKET_SUSPEND_REGION_SUM#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "26618c31185432458660014da1e614814ac56d6f6fa1b58c6ca58c1c43d02d43",
+        "utilake.to.time": "2026-03-23T17:54:23+10:00",
+        "utilake.total-rows": "371",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1722434400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "8ee9f067-912f-85c5-b8b5-c5da057643e0"
+}

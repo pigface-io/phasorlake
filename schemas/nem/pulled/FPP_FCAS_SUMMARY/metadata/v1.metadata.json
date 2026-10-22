@@ -1,0 +1,494 @@
+{
+  "current-schema-id": 2,
+  "current-snapshot-id": 430742818595246099,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 17,
+  "last-partition-id": 999,
+  "last-sequence-number": 3,
+  "last-updated-ms": 1777557600002,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_FCAS_SUMMARY",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "This report delivers a summary of FCAS requirements as used by the FPP calculation (i.e. only RAISEREG / LOWERREG bid types)",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(5)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(10)\",\"6\":\"VARCHAR(10)\",\"7\":\"VARCHAR(200)\",\"8\":\"NUMERIC(18,8)\",\"9\":\"NUMERIC(18,8)\",\"10\":\"NUMERIC(18,8)\",\"11\":\"NUMERIC(18,8)\",\"12\":\"NUMERIC(18,8)\",\"13\":\"NUMERIC(18,8)\",\"14\":\"NUMERIC(18,5)\",\"15\":\"NUMERIC(18,8)\",\"16\":\"NUMERIC(18,8)\",\"17\":\"TIMESTAMP(0)\"}",
+    "utilake.reports": "[[\"FPP\",\"FCAS_SUMMARY\"]]",
+    "utilake.table": "FPP_FCAS_SUMMARY",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[]",
+    "utilake.temporal.order": "[\"RUN_DATETIME\",\"VERSIONNO\",\"RUNNO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.time": "INTERVAL_DATETIME",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 430742818595246099,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "The run date and time of the dispatch case that was the trigger for the constraint FCAS processor execution",
+          "id": 1,
+          "name": "RUN_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The dispatch case run number that was the trigger for the constraint FCAS processor execution",
+          "id": 2,
+          "name": "RUNNO",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "doc": "Date and time of the trading interval (DD/MM/YYYY HH24:MI:SS) fixed to the UTC+10 time zone (NEM time)",
+          "id": 3,
+          "name": "INTERVAL_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Constraint ID (binding constraint ID from FCAS data used in FPP calculations)",
+          "id": 4,
+          "name": "CONSTRAINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The version number. In most cases this version will be the FPP run number from the FPP database, however there are some cases (like a new pricing run of the constraint FCAS processor received by the FPP system) where the version number listed here will be the financial estimate run number from the FPP database (this number is a different sequence from the FPP run number because there is no recalculation of performance or contribution, just changes to pricing / p regulation hence only the financial estimation is performed).",
+          "id": 5,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "decimal(10, 0)"
+        },
+        {
+          "doc": "Bid type (the bid type saved in relation to constraint ID from FCAS data used in FPP calculations, i.e. RAISEREG or LOWERREG)",
+          "id": 6,
+          "name": "BIDTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Relevant regions (a comma separated list of the relevant regions for the constraint from FCAS data)",
+          "id": 7,
+          "name": "RELEVANT_REGIONS",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Enabled regulation MW used in the FPP calculation (from FPP database)",
+          "id": 8,
+          "name": "REGULATION_MW",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Marginal value in AUD/MW per hour related to the constraint (from FCAS data used for FPP calculations)",
+          "id": 9,
+          "name": "CONSTRAINT_MARGINAL_VALUE",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "P regulation value in AUD/MW per hour related to the constraint (from FCAS data used for FPP calculations also known as adjusted marginal value)",
+          "id": 10,
+          "name": "P_REGULATION",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Base cost in AUD related to the constraint (from FCAS data used for FPP calculations)",
+          "id": 11,
+          "name": "BASE_COST",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "TSFCAS in AUD related to the constraint (FCAS recovery amount related to the constraint also known as adjusted cost)",
+          "id": 12,
+          "name": "TSFCAS",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Total amount of FPP in AUD changing hands related to the constraint (note that this is not the sum of FPP)",
+          "id": 13,
+          "name": "TOTAL_FPP",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "RCR MW (the calculated requirement for corrective response from FPP database). Note that this is a join back to the FPP_RCR table.",
+          "id": 14,
+          "name": "RCR",
+          "required": false,
+          "type": "decimal(18, 5)"
+        },
+        {
+          "doc": "Usage (calculation of the proportion of regulation FCAS that was calculated to be used). Note that this is a join back to the FPP_USAGE table.",
+          "id": 15,
+          "name": "USAGE",
+          "required": false,
+          "type": "decimal(18, 8)"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "The run date and time of the dispatch case that was the trigger for the constraint FCAS processor execution",
+          "id": 1,
+          "name": "RUN_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The dispatch case run number that was the trigger for the constraint FCAS processor execution",
+          "id": 2,
+          "name": "RUNNO",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "doc": "Date and time of the trading interval (DD/MM/YYYY HH24:MI:SS) fixed to the UTC+10 time zone (NEM time)",
+          "id": 3,
+          "name": "INTERVAL_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Constraint ID (binding constraint ID from FCAS data used in FPP calculations)",
+          "id": 4,
+          "name": "CONSTRAINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The version number. In most cases this version will be the FPP run number from the FPP database, however there are some cases (like a new pricing run of the constraint FCAS processor received by the FPP system) where the version number listed here will be the financial estimate run number from the FPP database (this number is a different sequence from the FPP run number because there is no recalculation of performance or contribution, just changes to pricing / p regulation hence only the financial estimation is performed).",
+          "id": 5,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "decimal(10, 0)"
+        },
+        {
+          "doc": "Bid type (the bid type saved in relation to constraint ID from FCAS data used in FPP calculations, i.e. RAISEREG or LOWERREG)",
+          "id": 6,
+          "name": "BIDTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Relevant regions (a comma separated list of the relevant regions for the constraint from FCAS data)",
+          "id": 7,
+          "name": "RELEVANT_REGIONS",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Enabled regulation MW used in the FPP calculation (from FPP database)",
+          "id": 8,
+          "name": "REGULATION_MW",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Marginal value in AUD/MW per hour related to the constraint (from FCAS data used for FPP calculations)",
+          "id": 9,
+          "name": "CONSTRAINT_MARGINAL_VALUE",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "P regulation value in AUD/MW per hour related to the constraint (from FCAS data used for FPP calculations also known as adjusted marginal value)",
+          "id": 10,
+          "name": "P_REGULATION",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Base cost in AUD related to the constraint (from FCAS data used for FPP calculations)",
+          "id": 11,
+          "name": "BASE_COST",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "TSFCAS in AUD related to the constraint (FCAS recovery amount related to the constraint also known as adjusted cost)",
+          "id": 12,
+          "name": "TSFCAS",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Total amount of FPP in AUD changing hands related to the constraint (note that this is not the sum of FPP)",
+          "id": 13,
+          "name": "TOTAL_FPP",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "RCR MW (the calculated requirement for corrective response from FPP database). Note that this is a join back to the FPP_RCR table.",
+          "id": 14,
+          "name": "RCR",
+          "required": false,
+          "type": "decimal(18, 5)"
+        },
+        {
+          "doc": "Usage (calculation of the proportion of regulation FCAS that was calculated to be used). Note that this is a join back to the FPP_USAGE table.",
+          "id": 16,
+          "name": "USAGE_VALUE",
+          "required": false,
+          "type": "decimal(18, 8)"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 1,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "The run date and time of the dispatch case that was the trigger for the constraint FCAS processor execution",
+          "id": 1,
+          "name": "RUN_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The dispatch case run number that was the trigger for the constraint FCAS processor execution",
+          "id": 2,
+          "name": "RUNNO",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "doc": "Date and time of the trading interval (DD/MM/YYYY HH24:MI:SS) fixed to the UTC+10 time zone (NEM time)",
+          "id": 3,
+          "name": "INTERVAL_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Constraint ID (binding constraint ID from FCAS data used in FPP calculations)",
+          "id": 4,
+          "name": "CONSTRAINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The version number. In most cases this version will be the FPP run number from the FPP database, however there are some cases (like a new pricing run of the constraint FCAS processor received by the FPP system) where the version number listed here will be the financial estimate run number from the FPP database (this number is a different sequence from the FPP run number because there is no recalculation of performance or contribution, just changes to pricing / p regulation hence only the financial estimation is performed).",
+          "id": 5,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "decimal(10, 0)"
+        },
+        {
+          "doc": "Bid type (the bid type saved in relation to constraint ID from FCAS data used in FPP calculations, i.e. RAISEREG or LOWERREG)",
+          "id": 6,
+          "name": "BIDTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Relevant regions (a comma separated list of the relevant regions for the constraint from FCAS data)",
+          "id": 7,
+          "name": "RELEVANT_REGIONS",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Enabled regulation MW used in the FPP calculation (from FPP database)",
+          "id": 8,
+          "name": "REGULATION_MW",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Marginal value in AUD/MW per hour related to the constraint (from FCAS data used for FPP calculations)",
+          "id": 9,
+          "name": "CONSTRAINT_MARGINAL_VALUE",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "P regulation value in AUD/MW per hour related to the constraint (from FCAS data used for FPP calculations also known as adjusted marginal value)",
+          "id": 10,
+          "name": "P_REGULATION",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Base cost in AUD related to the constraint (from FCAS data used for FPP calculations)",
+          "id": 11,
+          "name": "BASE_COST",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "TSFCAS in AUD related to the constraint (FCAS recovery amount related to the constraint also known as adjusted cost)",
+          "id": 12,
+          "name": "TSFCAS",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Total amount of FPP in AUD changing hands related to the constraint (note that this is not the sum of FPP)",
+          "id": 13,
+          "name": "TOTAL_FPP",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "RCR MW (the calculated requirement for corrective response from FPP database). Note that this is a join back to the FPP_RCR table.",
+          "id": 14,
+          "name": "RCR",
+          "required": false,
+          "type": "decimal(18, 5)"
+        },
+        {
+          "doc": "Usage (calculation of the proportion of regulation FCAS that was calculated to be used). Note that this is a join back to the FPP_USAGE table.",
+          "id": 16,
+          "name": "USAGE_VALUE",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 17,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 2,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 4407166680630341186,
+      "timestamp-ms": 1732975200000
+    },
+    {
+      "snapshot-id": 1188809050376789187,
+      "timestamp-ms": 1743429600001
+    },
+    {
+      "snapshot-id": 430742818595246099,
+      "timestamp-ms": 1777557600002
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_FCAS_SUMMARY/metadata/snap-4407166680630341186-1-1c2879d3-d23c-8208-ae08-b48f1039ee4e.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 4407166680630341186,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "4",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202412010000.zip",
+        "utilake.from.release": "2024-12",
+        "utilake.from.sha256": "959faa941faff464ef4edf9230a2241fbc89767afdbb0cf05909c63db2dba46f",
+        "utilake.from.time": "2024-12-09T11:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "FCAS_SUMMARY",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "365146",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202503010000.zip",
+        "utilake.to.release": "2025-03",
+        "utilake.to.sha256": "068ee8068661f469dae27927d2ba8f205fe48d3f060d33a82ae64eccce6b9198",
+        "utilake.to.time": "2025-04-08T15:50:00+10:00",
+        "utilake.total-rows": "365146",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1732975200000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_FCAS_SUMMARY/metadata/snap-1188809050376789187-2-1c2879d3-d23c-8208-ae08-b48f1039ee4e.avro",
+      "parent-snapshot-id": 4407166680630341186,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 1188809050376789187,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "13",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202504010000.zip",
+        "utilake.from.release": "2025-04",
+        "utilake.from.sha256": "e0f2c6b1e99f2f4c7fff75d4f2a8ad5987b8728196cd4800f7b05520ce064101",
+        "utilake.from.time": "2024-12-09T11:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "FCAS_SUMMARY",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "4949133",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202604010000.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "71b886649ebde9306c018383dc650b29ce130974127c9f7c360b6036691d4abf",
+        "utilake.to.time": "2026-05-08T15:35:00+10:00",
+        "utilake.total-rows": "5314279",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1743429600001
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_FCAS_SUMMARY/metadata/snap-430742818595246099-3-1c2879d3-d23c-8208-ae08-b48f1039ee4e.avro",
+      "parent-snapshot-id": 1188809050376789187,
+      "schema-id": 2,
+      "sequence-number": 3,
+      "snapshot-id": 430742818595246099,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "5",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202605010000.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "1db4ff9f08453d54026c45d8bfea4e7cc7436be5b83d8be0b8d3a2e291891744",
+        "utilake.from.time": "2024-12-09T11:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "FCAS_SUMMARY",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "2039845",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "1eb3ae1bfc6858542a31f1aac304e00688ba5f8bd7065d9379c34fea2d7afda8",
+        "utilake.to.time": "2026-10-01T00:00:00+10:00",
+        "utilake.total-rows": "7354124",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1777557600002
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "1c2879d3-d23c-8208-ae08-b48f1039ee4e"
+}

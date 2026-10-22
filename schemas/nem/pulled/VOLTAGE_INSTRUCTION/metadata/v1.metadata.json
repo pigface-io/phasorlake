@@ -1,0 +1,190 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 1348391229550920421,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 13,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1722434400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/VOLTAGE_INSTRUCTION",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "Child record for Voltage Instructions (MVAr Dispatch)",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"RUN_DATETIME\",\"EMS_ID\",\"VERSION_DATETIME\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(60)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(60)\",\"5\":\"VARCHAR(60)\",\"6\":\"VARCHAR(20)\",\"7\":\"VARCHAR(20)\",\"8\":\"NUMERIC(20,5)\",\"9\":\"NUMERIC(1,0)\",\"10\":\"VARCHAR(400)\",\"11\":\"TIMESTAMP(0)\",\"12\":\"NUMERIC(4,0)\",\"13\":\"VARCHAR(60)\"}",
+    "utilake.package": "VOLTAGE_INSTRUCTIONS",
+    "utilake.reports": "[[\"VOLTAGE_INSTRUCTION\",\"INSTRUCTION\"]]",
+    "utilake.table": "VOLTAGE_INSTRUCTION",
+    "utilake.temporal.entity": "[\"EMS_ID\"]",
+    "utilake.temporal.order": "[\"VERSION_DATETIME\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "RUN_DATETIME",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "RUN_DATETIME",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 1348391229550920421,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "MVAr Interval – a timestamp of when instructions issued",
+          "id": 1,
+          "name": "RUN_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The unique identifier for reference within AEMO –matches equipment names between NOS and EMS",
+          "id": 2,
+          "name": "EMS_ID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "The NEM id of the participant who owns the equipment",
+          "id": 3,
+          "name": "PARTICIPANTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The id of the station where the control equipment resides",
+          "id": 4,
+          "name": "STATION_ID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The company/participant preferred name of an equipment",
+          "id": 5,
+          "name": "DEVICE_ID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "One of REACTOR, CAPACITOR, GEN, SVC, TRANS or GRPGEN but may be extended to other types",
+          "id": 6,
+          "name": "DEVICE_TYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "One of VOLTAGE, TAP, MVAR, SWITCH or COMMIT but may be extended to other types",
+          "id": 7,
+          "name": "CONTROL_TYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Instruction for the device, for this interval null denotes no instruction",
+          "id": 8,
+          "name": "TARGET",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "[0,1] Denotes if the Device is currently conforming",
+          "id": 9,
+          "name": "CONFORMING",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "Verbose summary of instruction",
+          "id": 10,
+          "name": "INSTRUCTION_SUMMARY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Datetime the file was published by VDS - Versions differ from Run_DateTime only for Supplemental runs",
+          "id": 11,
+          "name": "VERSION_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Order for execution of Instruction",
+          "id": 12,
+          "name": "INSTRUCTION_SEQUENCE",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "doc": "Additional information pertaining to a particular instruction, e.g. Previously issued instruction revoked",
+          "id": 13,
+          "name": "ADDITIONAL_NOTES",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        11
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 1348391229550920421,
+      "timestamp-ms": 1722434400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/VOLTAGE_INSTRUCTION/metadata/snap-1348391229550920421-1-a4259128-741c-873b-babc-314e236ff4c7.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 1348391229550920421,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "26",
+        "utilake.from.file": "PUBLIC_ARCHIVE#VOLTAGE_INSTRUCTION#FILE01#202408010000.zip",
+        "utilake.from.release": "2024-08",
+        "utilake.from.sha256": "596d8fe58427e27844a805041d1715418a4cfd4f16d6ffeb56b5f5f4268c22df",
+        "utilake.from.time": "2024-08-01T00:28:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "INSTRUCTION",
+        "utilake.report-type": "VOLTAGE_INSTRUCTION",
+        "utilake.rows": "40464911",
+        "utilake.to.file": "PUBLIC_ARCHIVE#VOLTAGE_INSTRUCTION#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "4bd40e1b8a4b290cd4c0bd1b4f0d8d6f74e4ccc3974b09e3f4392a95e5dbbcec",
+        "utilake.to.time": "2026-09-30T23:09:30+10:00",
+        "utilake.total-rows": "40464911",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1722434400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "a4259128-741c-873b-babc-314e236ff4c7"
+}

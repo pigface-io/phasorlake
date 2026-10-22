@@ -1,6 +1,6 @@
 //! The NEM tables utilake reads are the ones utilake-schemas publishes:
-//! each table's `table.json`, with its Iceberg history, and the manifest
-//! of their hashes. `pull` copies them at a commit into
+//! each table's Iceberg table metadata, `nem/<TABLE>/metadata/v1.metadata.json`,
+//! and the manifest of their hashes. `pull` copies them at a commit into
 //! `schemas/nem/pulled/` and records the commit in `SOURCE`; `check` holds
 //! the copy to the manifest and the commit to the one `Cargo.lock` takes
 //! `utilake-iceberg` from, so the histories and the crate that reads them
@@ -22,14 +22,18 @@ const SOURCE: &str = "SOURCE";
 /// The manifest of the copy, as utilake-schemas publishes it.
 const MANIFEST: &str = "manifest.json";
 
+/// A table's metadata file, under its directory.
+const METADATA: &str = "metadata/v1.metadata.json";
+
 fn pulled_dir() -> PathBuf {
     crate::repo_root().join(PULLED)
 }
 
-/// The table a manifest path names, when it is a `nem/<TABLE>/table.json`.
+/// The table a manifest path names, when it is a
+/// `nem/<TABLE>/metadata/v1.metadata.json`.
 fn table_of(path: &str) -> Option<&str> {
     match path.split('/').collect::<Vec<_>>().as_slice() {
-        ["nem", table, "table.json"] if !table.is_empty() => Some(table),
+        ["nem", table, "metadata", "v1.metadata.json"] if !table.is_empty() => Some(table),
         _ => None,
     }
 }
@@ -86,7 +90,7 @@ fn blobs(checkout: &Path, rev: &str, paths: &[String]) -> Result<Vec<Vec<u8>>> {
     Ok(found)
 }
 
-/// Copies every `nem/*/table.json` and the manifest of `rev` in `checkout`
+/// Copies every table's metadata and the manifest of `rev` in `checkout`
 /// into `schemas/nem/pulled/`, whatever the checkout's working tree holds,
 /// and writes the commit to `SOURCE`.
 pub fn pull(rev: &str, checkout: &Path) -> Result<bool> {
@@ -120,7 +124,7 @@ pub fn pull(rev: &str, checkout: &Path) -> Result<bool> {
     std::fs::create_dir_all(&tmp)?;
     for (p, b) in paths.iter().zip(&bytes) {
         let to = match table_of(p) {
-            Some(t) => tmp.join(t).join("table.json"),
+            Some(t) => tmp.join(t).join(METADATA),
             None => tmp.join(MANIFEST),
         };
         std::fs::create_dir_all(to.parent().expect("a file in a directory"))?;
@@ -201,11 +205,11 @@ pub fn problems(dir: &Path, lock: &str) -> Vec<String> {
         out.push(format!("{PULLED}/{MANIFEST} lists no table"));
     }
     for (table, sha) in &want {
-        let path = dir.join(table).join("table.json");
+        let path = dir.join(table).join(METADATA);
         match std::fs::read(&path) {
-            Err(_) => out.push(format!("{table}/table.json is in the manifest but not pulled")),
+            Err(_) => out.push(format!("{table}/{METADATA} is in the manifest but not pulled")),
             Ok(bytes) if sha256(&bytes) != *sha => out.push(format!(
-                "{table}/table.json has SHA-256 {} where the manifest says {sha}; pulled files are not edited",
+                "{table}/{METADATA} has SHA-256 {} where the manifest says {sha}; pulled files are not edited",
                 sha256(&bytes)
             )),
             Ok(_) => {}
@@ -225,7 +229,8 @@ pub fn problems(dir: &Path, lock: &str) -> Vec<String> {
             let known = match rel.split('/').collect::<Vec<_>>().as_slice() {
                 [SOURCE | MANIFEST] => true,
                 [table] => p.is_dir() && want.contains_key(*table),
-                [table, "table.json"] => want.contains_key(*table),
+                [table, "metadata"] => p.is_dir() && want.contains_key(*table),
+                [table, "metadata", "v1.metadata.json"] => want.contains_key(*table),
                 _ => false,
             };
             if !known {
@@ -261,12 +266,13 @@ mod tests {
 
     fn tree() -> tempfile::TempDir {
         let dir = tempfile::tempdir().unwrap();
-        let t = dir.path().join("REGION");
+        let t = dir.path().join("REGION").join("metadata");
         std::fs::create_dir_all(&t).unwrap();
-        std::fs::write(t.join("table.json"), b"{}").unwrap();
+        std::fs::write(t.join("v1.metadata.json"), b"{}").unwrap();
         let manifest = serde_json::json!({"sha256": {
-            "nem/REGION/table.json": sha256(b"{}"),
+            "nem/REGION/metadata/v1.metadata.json": sha256(b"{}"),
             "nem/REGION/schema-1.json": "00",
+            "nem/REGION/metadata/snap-1-1-u.avro": "00",
         }});
         std::fs::write(dir.path().join(MANIFEST), manifest.to_string()).unwrap();
         std::fs::write(dir.path().join(SOURCE), "abc\n").unwrap();
@@ -277,8 +283,12 @@ mod tests {
     fn a_copy_of_the_locked_commit_has_no_problem() {
         assert_eq!(locked_rev(LOCK), Some("abc"));
         assert_eq!(locked_rev("[[package]]\nname = \"x\"\n"), None);
-        assert_eq!(table_of("nem/REGION/table.json"), Some("REGION"));
+        assert_eq!(
+            table_of("nem/REGION/metadata/v1.metadata.json"),
+            Some("REGION")
+        );
         assert_eq!(table_of("nem/REGION/schema-1.json"), None);
+        assert_eq!(table_of("nem/REGION/table.json"), None);
         let dir = tree();
         assert_eq!(problems(dir.path(), LOCK), Vec::<String>::new());
     }
@@ -286,7 +296,7 @@ mod tests {
     #[test]
     fn each_problem_is_named() {
         let dir = tree();
-        std::fs::write(dir.path().join("REGION/table.json"), b"{ }").unwrap();
+        std::fs::write(dir.path().join("REGION/metadata/v1.metadata.json"), b"{ }").unwrap();
         std::fs::write(dir.path().join("stray.txt"), b"").unwrap();
         std::fs::create_dir_all(dir.path().join("OTHER")).unwrap();
         let p = problems(dir.path(), &LOCK.replace("abc", "def"));
@@ -295,7 +305,7 @@ mod tests {
         assert!(p.iter().any(|m| m.starts_with("stray.txt")));
         assert!(p.iter().any(|m| m.starts_with("OTHER")));
         assert!(p.iter().any(|m| m.contains("just schemas-pull def")));
-        std::fs::remove_file(dir.path().join("REGION/table.json")).unwrap();
+        std::fs::remove_file(dir.path().join("REGION/metadata/v1.metadata.json")).unwrap();
         let p = problems(dir.path(), "");
         assert!(p.iter().any(|m| m.contains("but not pulled")), "{p:?}");
         assert!(p.iter().any(|m| m.contains("from no git commit")), "{p:?}");

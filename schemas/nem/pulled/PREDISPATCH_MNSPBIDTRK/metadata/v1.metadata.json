@@ -1,0 +1,162 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 117103460594219184,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 9,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1246370400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCH_MNSPBIDTRK",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "PREDISPATCH_MNSPBIDTRK shows the MNSP bid tracking, including the bid version used in each predispatch run for each MNSP Interconnector Link. PREDISPATCH_MNSPBIDTRK shows the audit trail of the bid used for each predispatch run.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"PREDISPATCHSEQNO\",\"LINKID\",\"PERIODID\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(10)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(3)\",\"7\":\"NUMERIC(3,0)\",\"8\":\"TIMESTAMP(0)\",\"9\":\"TIMESTAMP(0)\"}",
+    "utilake.package": "PRE_DISPATCH",
+    "utilake.reports": "[[\"PREDISPATCH\",\"MNSPBIDTRK\"]]",
+    "utilake.table": "PREDISPATCH_MNSPBIDTRK",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"LINKID\",\"PERIODID\"]",
+    "utilake.temporal.order": "[\"PREDISPATCHSEQNO\",\"OFFERDATE\",\"VERSIONNO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.time": "SETTLEMENTDATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 117103460594219184,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Predispatch run identifier",
+          "id": 1,
+          "name": "PREDISPATCHSEQNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Identifier for each of the two MNSP Interconnector Links. Each link pertains to the direction from and to.",
+          "id": 2,
+          "name": "LINKID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Trading Interval number",
+          "id": 3,
+          "name": "PERIODID",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Participant Identifier",
+          "id": 4,
+          "name": "PARTICIPANTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Market Date from which bid is active",
+          "id": 5,
+          "name": "SETTLEMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Time this bid was processed and loaded",
+          "id": 6,
+          "name": "OFFERDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Version No. for given offer date and settlement date used",
+          "id": 7,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Period expressed as Date/Time",
+          "id": 8,
+          "name": "DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Record creation timestamp",
+          "id": 9,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 117103460594219184,
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCH_MNSPBIDTRK/metadata/snap-117103460594219184-1-3e19c8dd-07f3-8ebc-86cd-a6bdc92965dd.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 117103460594219184,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "204",
+        "utilake.from.file": "PUBLIC_DVD_PREDISPATCH_MNSPBIDTRK_200907010000.zip",
+        "utilake.from.release": "2009-07",
+        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "utilake.from.time": "2009-07-01T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\",\"dvd\"]",
+        "utilake.report-subtype": "MNSPBIDTRK",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "981904",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PREDISPATCH_MNSPBIDTRK#FILE01#202606010000.zip",
+        "utilake.to.release": "2026-06",
+        "utilake.to.sha256": "18085e1c98f24f691765cee5a9799975f3a8929abd6e29c2fa597536235760e3",
+        "utilake.to.time": "2026-06-30T00:00:00+10:00",
+        "utilake.total-rows": "981904",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "3e19c8dd-07f3-8ebc-86cd-a6bdc92965dd"
+}

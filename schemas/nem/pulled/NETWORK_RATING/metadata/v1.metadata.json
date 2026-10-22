@@ -1,0 +1,169 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 1688809180377999511,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 10,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1722434400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/NETWORK_RATING",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "NETWORK_RATING defines a list of the equipment ratings that may be used as inputs to market constraints.\nIf the rating is flagged as dynamic then in real-time the rating will be dynamically determined and the static value will be used as a fallback value should the dynamic value fail.\nNote:\nIn some rare cases equipment has ratings provided from more than one TNSP. This is identified by a different SPD Id. The value used in the NEM is normally the more restrictive of the two values.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"SPD_ID\",\"VALIDFROM\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"VARCHAR(21)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"VARCHAR(10)\",\"5\":\"VARCHAR(30)\",\"6\":\"VARCHAR(10)\",\"7\":\"VARCHAR(30)\",\"8\":\"VARCHAR(10)\",\"9\":\"NUMERIC(1,0)\",\"10\":\"TIMESTAMP(0)\"}",
+    "utilake.package": "NETWORK",
+    "utilake.reports": "[[\"NETWORK\",\"RATING\"]]",
+    "utilake.table": "NETWORK_RATING",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"SPD_ID\"]",
+    "utilake.temporal.order": "[\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "VALIDFROM",
+    "utilake.temporal.valid.kind": "from",
+    "utilake.time": "LASTCHANGED",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 1688809180377999511,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "ID defining this data source for use in constraints",
+          "id": 1,
+          "name": "SPD_ID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "The date that this record is applies from (inclusive)",
+          "id": 2,
+          "name": "VALIDFROM",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The date that this record applies until (exclusive)",
+          "id": 3,
+          "name": "VALIDTO",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The region that this rating is for",
+          "id": 4,
+          "name": "REGIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The substation the equipment is located at",
+          "id": 5,
+          "name": "SUBSTATIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The type of equipment. Valid values are:\nLINE = Line\nTRANS = Transformer\nCB = Circuit breaker\nISOL = Isolator\nCAP = Capacitor\nREAC = Reactor\nUNIT = Unit",
+          "id": 6,
+          "name": "EQUIPMENTTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "A unique identifier for this equipment at this substation, and based on its type",
+          "id": 7,
+          "name": "EQUIPMENTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The rating level of the value used, one of:\nNORM = Continuous rating value. Applied under pre-contingent conditions.\nEMER = Continuous rating value. Applied under pre-contingent conditions\nLDSH = Load Shedding",
+          "id": 8,
+          "name": "RATINGLEVEL",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "One of:\n1 = Normally uses dynamic ratings\n0 = No dynamic ratings, static ratings are used",
+          "id": 9,
+          "name": "ISDYNAMIC",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "The time that this record was last changed",
+          "id": 10,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 1688809180377999511,
+      "timestamp-ms": 1722434400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/NETWORK_RATING/metadata/snap-1688809180377999511-1-f121d1ff-aeaa-8745-b4aa-b24dfc0dc733.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 1688809180377999511,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "26",
+        "utilake.from.file": "PUBLIC_ARCHIVE#NETWORK_RATING#FILE01#202408010000.zip",
+        "utilake.from.release": "2024-08",
+        "utilake.from.sha256": "3c5168180570804fe66cff03e62dcf60c0f4ee62256bff5ade3fafd304e667fa",
+        "utilake.from.time": "2007-07-09T12:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "RATING",
+        "utilake.report-type": "NETWORK",
+        "utilake.rows": "85356",
+        "utilake.to.file": "PUBLIC_ARCHIVE#NETWORK_RATING#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "ebe7be94ed2633adc00b204b6d7bdb4fb1008340316323f5cb37a3ab3a6df710",
+        "utilake.to.time": "9999-12-31T17:10:00+10:00",
+        "utilake.total-rows": "85356",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1722434400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "f121d1ff-aeaa-8745-b4aa-b24dfc0dc733"
+}

@@ -1,0 +1,145 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 8093306459927188207,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 7,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1246370400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PARTICIPANT",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "PARTICIPANT sets out Participant ID, name and class for all participants.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"PARTICIPANTID\"]",
+    "utilake.load": "snapshot",
+    "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"VARCHAR(20)\",\"3\":\"VARCHAR(80)\",\"4\":\"VARCHAR(64)\",\"5\":\"VARCHAR(9)\",\"6\":\"VARCHAR(40)\",\"7\":\"TIMESTAMP(0)\"}",
+    "utilake.package": "PARTICIPANT_REGISTRATION",
+    "utilake.reports": "[[\"PARTICIPANT_REGISTRATION\",\"PARTICIPANT\"]]",
+    "utilake.table": "PARTICIPANT",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"PARTICIPANTID\"]",
+    "utilake.temporal.order": "[\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 8093306459927188207,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Unique participant identifier",
+          "id": 1,
+          "name": "PARTICIPANTID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Class of participant",
+          "id": 2,
+          "name": "PARTICIPANTCLASSID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Full name of participant",
+          "id": 3,
+          "name": "NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Not used",
+          "id": 4,
+          "name": "DESCRIPTION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Australian Company Number; Nine Numbers XXX-XXX-XXX",
+          "id": 5,
+          "name": "ACN",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Identifies primary business activity of participant",
+          "id": 6,
+          "name": "PRIMARYBUSINESS",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 7,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 8093306459927188207,
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PARTICIPANT/metadata/snap-8093306459927188207-1-a40b86b9-96d9-84d3-882e-ceaa5e1aa7fe.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 8093306459927188207,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "207",
+        "utilake.from.file": "PUBLIC_DVD_PARTICIPANT_200907010000.zip",
+        "utilake.from.release": "2009-07",
+        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "utilake.from.time": "1998-06-30T22:01:22+10:00",
+        "utilake.kinds": "[\"archive\",\"dvd\"]",
+        "utilake.report-subtype": "PARTICIPANT",
+        "utilake.report-type": "PARTICIPANT_REGISTRATION",
+        "utilake.rows": "138712",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PARTICIPANT#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "cde06a5b3c329a9728de78d4ce71287f8ae17589d8e09300641d4c99aa1a98b2",
+        "utilake.to.time": "2026-10-07T14:35:40+10:00",
+        "utilake.total-rows": "138712",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "a40b86b9-96d9-84d3-882e-ceaa5e1aa7fe"
+}

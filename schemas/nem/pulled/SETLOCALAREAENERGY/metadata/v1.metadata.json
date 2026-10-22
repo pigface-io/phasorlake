@@ -1,0 +1,171 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 1335286686487679379,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 10,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1722434400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SETLOCALAREAENERGY",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "SETLOCALAREAENERGY shows the UFE, AGE and associated values for each local area and trading interval in a settlement run.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"SETTLEMENTDATE\",\"SETTLEMENTRUNNO\",\"LOCALAREAID\",\"PERIODID\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(30)\",\"4\":\"NUMERIC(3,0)\",\"5\":\"NUMERIC(18,8)\",\"6\":\"NUMERIC(18,8)\",\"7\":\"NUMERIC(18,8)\",\"8\":\"NUMERIC(18,8)\",\"9\":\"NUMERIC(18,8)\",\"10\":\"TIMESTAMP(0)\"}",
+    "utilake.package": "SETTLEMENT_DATA",
+    "utilake.reports": "[[\"SETTLEMENTS\",\"LOCALAREAENERGY\"]]",
+    "utilake.table": "SETLOCALAREAENERGY",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"SETTLEMENTRUNNO\",\"LOCALAREAID\",\"PERIODID\"]",
+    "utilake.temporal.order": "[\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "SETTLEMENTDATE",
+    "utilake.temporal.valid.kind": "interval_end",
+    "utilake.time": "SETTLEMENTDATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 1335286686487679379,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Settlement date of the settlement run",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Settlement run number of the settlement run",
+          "id": 2,
+          "name": "SETTLEMENTRUNNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Unique identifier for the local area",
+          "id": 3,
+          "name": "LOCALAREAID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Settlement Trading Interval",
+          "id": 4,
+          "name": "PERIODID",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Total unaccounted-for energy for the local area in this trading interval, in MWh",
+          "id": 5,
+          "name": "UFE",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "DDME component of UFE for the local area in this trading interval, in MWh.",
+          "id": 6,
+          "name": "DDME",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "TME component of UFE for the local area in this trading interval, in MWh.",
+          "id": 7,
+          "name": "TME",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "ADME component of UFE for the local area in this trading interval, in MWh.",
+          "id": 8,
+          "name": "ADME",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The sum of all DME amounts for each Market Customer FRMP and TNI in the local area, in this trading interval.",
+          "id": 9,
+          "name": "ADMELA",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Last changed date time for the record",
+          "id": 10,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 1335286686487679379,
+      "timestamp-ms": 1722434400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SETLOCALAREAENERGY/metadata/snap-1335286686487679379-1-a5ca6368-bcf8-8b29-9805-e6db23dfc72e.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 1335286686487679379,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "26",
+        "utilake.from.file": "PUBLIC_ARCHIVE#SETLOCALAREAENERGY#FILE01#202408010000.zip",
+        "utilake.from.release": "2024-08",
+        "utilake.from.sha256": "594c70dd3fa97aaaa388ba045059ffddb85379f22d03563c8366832ccccb44d6",
+        "utilake.from.time": "2023-12-31T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "LOCALAREAENERGY",
+        "utilake.report-type": "SETTLEMENTS",
+        "utilake.rows": "19522080",
+        "utilake.to.file": "PUBLIC_ARCHIVE#SETLOCALAREAENERGY#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "0a9c8f6c14753653af73d816274f96a5b13c8c4d22239b6d20322f24f24de66b",
+        "utilake.to.time": "2026-09-29T00:00:00+10:00",
+        "utilake.total-rows": "19522080",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1722434400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "a5ca6368-bcf8-8b29-9805-e6db23dfc72e"
+}

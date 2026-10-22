@@ -1,0 +1,112 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 4513850191796978916,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 2,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1725112800000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_BLOCKEDCONSTRAINT",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "P5MIN Blocked Constraints lists any constraints that were blocked in a P5MIN run. If no constraints are blocked, there will be no rows for that 5 minute predispatch run.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"RUN_DATETIME\",\"CONSTRAINTID\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\"}",
+    "utilake.package": "P5MIN",
+    "utilake.reports": "[[\"P5MIN\",\"BLOCKED_CONSTRAINTS\"]]",
+    "utilake.table": "P5MIN_BLOCKEDCONSTRAINT",
+    "utilake.temporal.entity": "[\"CONSTRAINTID\"]",
+    "utilake.temporal.order": "[]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "RUN_DATETIME",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "RUN_DATETIME",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 4513850191796978916,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "5-minute Predispatch Run",
+          "id": 1,
+          "name": "RUN_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Generic Constraint identifier (synonymous with GenConID)",
+          "id": 2,
+          "name": "CONSTRAINTID",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 4513850191796978916,
+      "timestamp-ms": 1725112800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_BLOCKEDCONSTRAINT/metadata/snap-4513850191796978916-1-f5b7a3a4-a5fc-8fff-a267-6d91e605df69.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 4513850191796978916,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "15",
+        "utilake.from.file": "PUBLIC_ARCHIVE#P5MIN_BLOCKEDCONSTRAINT#FILE01#202409010000.zip",
+        "utilake.from.release": "2024-09",
+        "utilake.from.sha256": "8fa6ca84543488604282024134a62174266d9ba62fca16c0d84a31a22776e5c0",
+        "utilake.from.time": "2024-09-24T12:45:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "BLOCKED_CONSTRAINTS",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "7576",
+        "utilake.to.file": "PUBLIC_ARCHIVE#P5MIN_BLOCKEDCONSTRAINT#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "3902b28e3bb8d31f07a3763612f8869fdd83a069bf4e14b8bdf5e0331d8c232a",
+        "utilake.to.time": "2026-09-02T14:10:00+10:00",
+        "utilake.total-rows": "7576",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1725112800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "f5b7a3a4-a5fc-8fff-a267-6d91e605df69"
+}

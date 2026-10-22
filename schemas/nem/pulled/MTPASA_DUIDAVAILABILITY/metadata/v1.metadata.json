@@ -1,0 +1,164 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 5663580162369706975,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 10,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1722434400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "Offered PASA Availability of the scheduled generator DUID for each day over the Medium Term PASA period. The data in this table is input data to the MT PASA process it is not part of the MTPASA solution. The availability does not reflect any energy limitations in the MT PASA offers",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(12,0)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"TIMESTAMP(0)\",\"8\":\"NUMERIC(1,0)\",\"9\":\"VARCHAR(20)\",\"10\":\"NUMERIC(4)\"}",
+    "utilake.reports": "[[\"MTPASA\",\"DUIDAVAILABILITY\"]]",
+    "utilake.table": "MTPASA_DUIDAVAILABILITY",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[]",
+    "utilake.temporal.order": "[\"PUBLISH_DATETIME\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.time": "DAY",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 5663580162369706975,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Date Time the report was published.",
+          "id": 1,
+          "name": "PUBLISH_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Date on which the PASA availability of DUID applies.",
+          "id": 2,
+          "name": "DAY",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "NEM Region.",
+          "id": 3,
+          "name": "REGIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "NEM DUID.",
+          "id": 4,
+          "name": "DUID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Offered PASA Availability of Scheduled generator DUID for the day.",
+          "id": 5,
+          "name": "PASAAVAILABILITY",
+          "required": false,
+          "type": "decimal(12, 0)"
+        },
+        {
+          "doc": "Date Time of the latest offer used for DUID for this date.",
+          "id": 6,
+          "name": "LATEST_OFFER_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 7,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Status of a reported capacity value (e.g. 1 for Yes, 0 for No)",
+          "id": 8,
+          "name": "CARRYOVERSTATUS",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "The unit state value",
+          "id": 9,
+          "name": "PASAUNITSTATE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The recall time value",
+          "id": 10,
+          "name": "PASARECALLTIME",
+          "required": false,
+          "type": "decimal(4, 0)"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 5663580162369706975,
+      "timestamp-ms": 1722434400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-5663580162369706975-1-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 5663580162369706975,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "26",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202408010000.zip",
+        "utilake.from.release": "2024-08",
+        "utilake.from.sha256": "cc9242e87fadcb4f8ba16ee8baffb8176b9963f1fa066f824a81d21f08f04d55",
+        "utilake.from.time": "2024-08-04T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "656020822",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "ad5cdf366dd1a563098f829140b0292f6b2013dc35613d158e3c57e294e6ddbd",
+        "utilake.to.time": "2029-09-30T00:00:00+10:00",
+        "utilake.total-rows": "656020822",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1722434400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "da98d36d-2983-80b8-8159-29e3f77a70a9"
+}

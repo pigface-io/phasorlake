@@ -1,0 +1,154 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 44002907277495660,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 8,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1256997600000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MARKET_PRICE_THRESHOLDS",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "MARKET_PRICE_THRESHOLDS sets out the market cap , floor and administered price thresholds applying to the electricity market",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"EFFECTIVEDATE\",\"VERSIONNO\"]",
+    "utilake.load": "snapshot",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(4,0)\",\"3\":\"NUMERIC(15,5)\",\"4\":\"NUMERIC(15,5)\",\"5\":\"NUMERIC(15,5)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"VARCHAR(15)\",\"8\":\"TIMESTAMP(0)\"}",
+    "utilake.package": "MARKET_CONFIG",
+    "utilake.reports": "[[\"MARKET_CONFIG\",\"MARKET_PRICE_THRESHOLDS\"]]",
+    "utilake.table": "MARKET_PRICE_THRESHOLDS",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[]",
+    "utilake.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "EFFECTIVEDATE",
+    "utilake.temporal.valid.kind": "from",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 44002907277495660,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Calendar date that this record becomes effective",
+          "id": 1,
+          "name": "EFFECTIVEDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "version no for the effective date",
+          "id": 2,
+          "name": "VERSIONNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "value of lost load if total supply falls short of demand after load management then involuntary load",
+          "id": 3,
+          "name": "VOLL",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "The floor price that the spot market price will not fall below.",
+          "id": 4,
+          "name": "MARKETPRICEFLOOR",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Threshold value beyond which Aggregate Prices per Region over 336 Trade Intervals (Energy), or 2016 Dispatch Intervals (FCAS), will result in an Administered Price declaration",
+          "id": 5,
+          "name": "ADMINISTERED_PRICE_THRESHOLD",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "date data authorised",
+          "id": 6,
+          "name": "AUTHORISEDDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "user authorising",
+          "id": 7,
+          "name": "AUTHORISEDBY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 8,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 44002907277495660,
+      "timestamp-ms": 1256997600000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MARKET_PRICE_THRESHOLDS/metadata/snap-44002907277495660-1-a01a43ce-3b31-8582-a8d0-14a3920577c2.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 44002907277495660,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "203",
+        "utilake.from.file": "PUBLIC_DVD_MARKET_PRICE_THRESHOLDS_200911010000.zip",
+        "utilake.from.release": "2009-11",
+        "utilake.from.sha256": "8f91e576b2516bb624e724efdcad603438a749cf2ba6b611377dd3862bbbf0fb",
+        "utilake.from.time": "1997-11-04T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\",\"dvd\"]",
+        "utilake.report-subtype": "MARKET_PRICE_THRESHOLDS",
+        "utilake.report-type": "MARKET_CONFIG",
+        "utilake.rows": "1985",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MARKET_PRICE_THRESHOLDS#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "d849ceba61fe2be80971e351d2ddad1f0c08529f10321b7178548ca91bb425ec",
+        "utilake.to.time": "2026-07-01T00:00:00+10:00",
+        "utilake.total-rows": "1985",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1256997600000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "a01a43ce-3b31-8582-a8d0-14a3920577c2"
+}

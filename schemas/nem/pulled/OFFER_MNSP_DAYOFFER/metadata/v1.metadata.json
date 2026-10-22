@@ -1,0 +1,405 @@
+{
+  "current-schema-id": 1,
+  "current-snapshot-id": 7116002401332375426,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 24,
+  "last-partition-id": 999,
+  "last-sequence-number": 3,
+  "last-updated-ms": 1614520800002,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/OFFER_MNSP_DAYOFFER",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "false",
+    "utilake.format": "3",
+    "utilake.table": "OFFER_MNSP_DAYOFFER"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 7116002401332375426,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 2,
+          "name": "OFFERDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 3,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "id": 4,
+          "name": "PARTICIPANTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 5,
+          "name": "LINKID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 6,
+          "name": "ENTRYTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 7,
+          "name": "REBIDEXPLANATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 8,
+          "name": "PRICEBAND1",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 9,
+          "name": "PRICEBAND2",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 10,
+          "name": "PRICEBAND3",
+          "required": false,
+          "type": "decimal(4, 2)"
+        },
+        {
+          "id": 11,
+          "name": "PRICEBAND4",
+          "required": false,
+          "type": "decimal(4, 2)"
+        },
+        {
+          "id": 12,
+          "name": "PRICEBAND5",
+          "required": false,
+          "type": "decimal(4, 2)"
+        },
+        {
+          "id": 13,
+          "name": "PRICEBAND6",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 14,
+          "name": "PRICEBAND7",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 15,
+          "name": "PRICEBAND8",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 16,
+          "name": "PRICEBAND9",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 17,
+          "name": "PRICEBAND10",
+          "required": false,
+          "type": "decimal(7, 2)"
+        },
+        {
+          "id": 18,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 19,
+          "name": "MR_FACTOR",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 2,
+          "name": "OFFERDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 3,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "id": 4,
+          "name": "PARTICIPANTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 5,
+          "name": "LINKID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 6,
+          "name": "ENTRYTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 7,
+          "name": "REBIDEXPLANATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 8,
+          "name": "PRICEBAND1",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 9,
+          "name": "PRICEBAND2",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 10,
+          "name": "PRICEBAND3",
+          "required": false,
+          "type": "decimal(4, 2)"
+        },
+        {
+          "id": 11,
+          "name": "PRICEBAND4",
+          "required": false,
+          "type": "decimal(4, 2)"
+        },
+        {
+          "id": 12,
+          "name": "PRICEBAND5",
+          "required": false,
+          "type": "decimal(4, 2)"
+        },
+        {
+          "id": 13,
+          "name": "PRICEBAND6",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 14,
+          "name": "PRICEBAND7",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 15,
+          "name": "PRICEBAND8",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 16,
+          "name": "PRICEBAND9",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 17,
+          "name": "PRICEBAND10",
+          "required": false,
+          "type": "decimal(7, 2)"
+        },
+        {
+          "id": 18,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 20,
+          "name": "REBID_EVENT_TIME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 21,
+          "name": "REBID_AWARE_TIME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 22,
+          "name": "REBID_DECISION_TIME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 23,
+          "name": "REBID_CATEGORY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 24,
+          "name": "REFERENCE_ID",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 1,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 2179261734806962610,
+      "timestamp-ms": 1246370400000
+    },
+    {
+      "snapshot-id": 2469351821972724307,
+      "timestamp-ms": 1398866400001
+    },
+    {
+      "snapshot-id": 7116002401332375426,
+      "timestamp-ms": 1614520800002
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/OFFER_MNSP_DAYOFFER/metadata/snap-2179261734806962610-1-0d2648ac-46eb-8195-8d20-4cbde29f2904.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 2179261734806962610,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "58",
+        "utilake.from.file": "PUBLIC_DVD_MNSP_DAYOFFER_200907010000.zip",
+        "utilake.from.release": "2009-07",
+        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "utilake.from.time": "2009-07-01T00:00:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "MNSP_DAYOFFER",
+        "utilake.report-type": "OFFER",
+        "utilake.rows": "29732",
+        "utilake.to.file": "PUBLIC_DVD_MNSP_DAYOFFER_201404010000.zip",
+        "utilake.to.release": "2014-04",
+        "utilake.to.sha256": "2c1ad633b7f181cbd1bb1c9a4ce226428383d48171e36bca37a41caef2243d7d",
+        "utilake.to.time": "2014-04-30T00:00:00+10:00",
+        "utilake.total-rows": "29732",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1246370400000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/OFFER_MNSP_DAYOFFER/metadata/snap-2469351821972724307-2-0d2648ac-46eb-8195-8d20-4cbde29f2904.avro",
+      "parent-snapshot-id": 2179261734806962610,
+      "schema-id": 0,
+      "sequence-number": 2,
+      "snapshot-id": 2469351821972724307,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "81",
+        "utilake.from.file": "PUBLIC_DVD_MNSP_DAYOFFER_201405010000.zip",
+        "utilake.from.release": "2014-05",
+        "utilake.from.sha256": "910155f5be43d874fdd1b2517c6547ce7546d4cfbd829c11bcb98edcb02a88c5",
+        "utilake.from.time": "2014-05-01T00:00:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "MNSP_DAYOFFER",
+        "utilake.report-type": "OFFER",
+        "utilake.rows": "17618",
+        "utilake.to.file": "PUBLIC_DVD_MNSP_DAYOFFER_202102010000.zip",
+        "utilake.to.release": "2021-02",
+        "utilake.to.sha256": "e145155859b49d2f0415625dc9c2180dc7fb2c91c5fe88df6048f365f6966085",
+        "utilake.to.time": "2021-02-28T00:00:00+10:00",
+        "utilake.total-rows": "47350",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1398866400001
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/OFFER_MNSP_DAYOFFER/metadata/snap-7116002401332375426-3-0d2648ac-46eb-8195-8d20-4cbde29f2904.avro",
+      "parent-snapshot-id": 2469351821972724307,
+      "schema-id": 1,
+      "sequence-number": 3,
+      "snapshot-id": 7116002401332375426,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_DVD_MNSP_DAYOFFER_202103010000.zip",
+        "utilake.from.release": "2021-03",
+        "utilake.from.sha256": "d78c3bb3bed22228df131f6430cebefe618691129a64d0b867c18cee545b2c5b",
+        "utilake.from.time": "2021-03-01T00:00:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "MNSP_DAYOFFER",
+        "utilake.report-type": "OFFER",
+        "utilake.rows": "490",
+        "utilake.to.file": "PUBLIC_DVD_MNSP_DAYOFFER_202103010000.zip",
+        "utilake.to.release": "2021-03",
+        "utilake.to.sha256": "d78c3bb3bed22228df131f6430cebefe618691129a64d0b867c18cee545b2c5b",
+        "utilake.to.time": "2021-03-31T00:00:00+10:00",
+        "utilake.total-rows": "47840",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1614520800002
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "0d2648ac-46eb-8195-8d20-4cbde29f2904"
+}

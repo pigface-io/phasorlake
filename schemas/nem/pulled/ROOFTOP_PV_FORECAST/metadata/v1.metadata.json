@@ -1,0 +1,156 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 7228370417963663670,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 8,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1469973600000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/ROOFTOP_PV_FORECAST",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "Regional forecasts of Rooftop Solar generation across the half-hour intervals over 8 days. AEMO plans to remove this table in a Data Model version release after 5.6.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"VERSION_DATETIME\",\"REGIONID\",\"INTERVAL_DATETIME\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"NUMERIC(12,3)\",\"5\":\"NUMERIC(12,3)\",\"6\":\"NUMERIC(12,3)\",\"7\":\"NUMERIC(12,3)\",\"8\":\"TIMESTAMP(0)\"}",
+    "utilake.package": "DEMAND_FORECASTS",
+    "utilake.reports": "[[\"ROOFTOP\",\"FORECAST\"]]",
+    "utilake.table": "ROOFTOP_PV_FORECAST",
+    "utilake.temporal.cutoff": "VERSION_DATETIME",
+    "utilake.temporal.entity": "[\"REGIONID\"]",
+    "utilake.temporal.order": "[\"VERSION_DATETIME\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "INTERVAL_DATETIME",
+    "utilake.temporal.valid.kind": "interval_end",
+    "utilake.time": "INTERVAL_DATETIME",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 7228370417963663670,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Date time this forecast was produced",
+          "id": 1,
+          "name": "VERSION_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Region identifier",
+          "id": 2,
+          "name": "REGIONID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "The forecast half-hour interval (time ending)",
+          "id": 3,
+          "name": "INTERVAL_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The average forecast value in MW at the interval end",
+          "id": 4,
+          "name": "POWERMEAN",
+          "required": false,
+          "type": "decimal(12, 3)"
+        },
+        {
+          "doc": "50% probability of exceedance forecast value in MW at the interval end",
+          "id": 5,
+          "name": "POWERPOE50",
+          "required": false,
+          "type": "decimal(12, 3)"
+        },
+        {
+          "doc": "90% probability of exceedance forecast value in MW at the interval end",
+          "id": 6,
+          "name": "POWERPOELOW",
+          "required": false,
+          "type": "decimal(12, 3)"
+        },
+        {
+          "doc": "10% probability of exceedance forecast value in MW at the interval end",
+          "id": 7,
+          "name": "POWERPOEHIGH",
+          "required": false,
+          "type": "decimal(12, 3)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 8,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 7228370417963663670,
+      "timestamp-ms": 1469973600000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/ROOFTOP_PV_FORECAST/metadata/snap-7228370417963663670-1-ad40feea-1eb3-8d35-b898-ec7741ef94e6.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 7228370417963663670,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "122",
+        "utilake.from.file": "PUBLIC_DVD_ROOFTOP_PV_FORECAST_201608010000.zip",
+        "utilake.from.release": "2016-08",
+        "utilake.from.sha256": "7c15b7e00e7eeae609aafbfb500e848e05a1d4b448e968a78fb312eef5214e40",
+        "utilake.from.time": "2016-08-01T00:30:00+10:00",
+        "utilake.kinds": "[\"archive\",\"dvd\"]",
+        "utilake.report-subtype": "FORECAST",
+        "utilake.report-type": "ROOFTOP",
+        "utilake.rows": "332380645",
+        "utilake.to.file": "PUBLIC_ARCHIVE#ROOFTOP_PV_FORECAST#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "ca5883e1a84092980fb344f69ebcdb7c3d25c833d02669a092da11de9ef2a640",
+        "utilake.to.time": "2026-10-09T00:00:00+10:00",
+        "utilake.total-rows": "332380645",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1469973600000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "ad40feea-1eb3-8d35-b898-ec7741ef94e6"
+}

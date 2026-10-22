@@ -1,0 +1,462 @@
+{
+  "current-schema-id": 2,
+  "current-snapshot-id": 5701419787463641106,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 14,
+  "last-partition-id": 999,
+  "last-sequence-number": 3,
+  "last-updated-ms": 1722434400002,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/APEVENTREGION",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "APEVENTREGION is the Region detail for an administered pricing event defined through APEVENT.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"APEVENTID\",\"REGIONID\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"NUMERIC(22,0)\",\"2\":\"VARCHAR(10)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"NUMERIC(1,0)\",\"5\":\"NUMERIC(1,0)\",\"6\":\"NUMERIC(1,0)\",\"7\":\"NUMERIC(1,0)\",\"8\":\"NUMERIC(1,0)\",\"9\":\"NUMERIC(1,0)\",\"10\":\"NUMERIC(1,0)\",\"11\":\"NUMERIC(1,0)\",\"12\":\"NUMERIC(1,0)\",\"13\":\"NUMERIC(3,0)\",\"14\":\"NUMERIC(3,0)\"}",
+    "utilake.package": "FORCE_MAJEURE",
+    "utilake.reports": "[[\"AP\",\"APEVENTREGION\"]]",
+    "utilake.table": "APEVENTREGION",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"APEVENTID\",\"REGIONID\"]",
+    "utilake.temporal.order": "[\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.time": "LASTCHANGED",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 5701419787463641106,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Unique identifier for this administered pricing event",
+          "id": 1,
+          "name": "APEVENTID",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Date-Time of the first Dispatch Interval to which the administered event applies",
+          "id": 2,
+          "name": "REGIONID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Date Time of the final Dispatch Interval to which the administered event applies",
+          "id": 3,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "flag indicating if the apevent covers an energy AP",
+          "id": 4,
+          "name": "ENERGYAPFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "flag indicating if the apevent covers a raise6sec AP",
+          "id": 5,
+          "name": "RAISE6SECAPFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "flag indicating if the apevent covers a raise60sec AP",
+          "id": 6,
+          "name": "RAISE60SECAPFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "flag indicating if the apevent covers a raise5min AP",
+          "id": 7,
+          "name": "RAISE5MINAPFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "flag indicating if the apevent covers a raisereg AP",
+          "id": 8,
+          "name": "RAISEREGAPFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "flag indicating if the apevent covers a lower6sec AP",
+          "id": 9,
+          "name": "LOWER6SECAPFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "flag indicating if the apevent covers a lower60sec AP\nflag indicating if the apevent covers a lower5min AP\nflag indicating if the apevent covers a lowerreg AP\nflag indicating if the apevent covers a lower60sec AP",
+          "id": 10,
+          "name": "LOWER60SECAPFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "flag indicating if the apevent covers a lower5min AP",
+          "id": 11,
+          "name": "LOWER5MINAPFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "flag indicating if the apevent covers a lowerreg AP",
+          "id": 12,
+          "name": "LOWERREGAPFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Unique identifier for this administered pricing event",
+          "id": 1,
+          "name": "APEVENTID",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Date-Time of the first Dispatch Interval to which the administered event applies",
+          "id": 2,
+          "name": "REGIONID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Date Time of the final Dispatch Interval to which the administered event applies",
+          "id": 3,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "flag indicating if the apevent covers an energy AP",
+          "id": 4,
+          "name": "ENERGYAPFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "Flag indicating if the APEvent covers a Raise1Sec AP",
+          "id": 13,
+          "name": "RAISE1SECAPFLAG",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "flag indicating if the apevent covers a raise6sec AP",
+          "id": 5,
+          "name": "RAISE6SECAPFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "flag indicating if the apevent covers a raise60sec AP",
+          "id": 6,
+          "name": "RAISE60SECAPFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "flag indicating if the apevent covers a raise5min AP",
+          "id": 7,
+          "name": "RAISE5MINAPFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "flag indicating if the apevent covers a raisereg AP",
+          "id": 8,
+          "name": "RAISEREGAPFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "Flag indicating if the APEvent covers a Lower1Sec AP",
+          "id": 14,
+          "name": "LOWER1SECAPFLAG",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "flag indicating if the apevent covers a lower6sec AP",
+          "id": 9,
+          "name": "LOWER6SECAPFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "flag indicating if the apevent covers a lower60sec AP\nflag indicating if the apevent covers a lower5min AP\nflag indicating if the apevent covers a lowerreg AP\nflag indicating if the apevent covers a lower60sec AP",
+          "id": 10,
+          "name": "LOWER60SECAPFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "flag indicating if the apevent covers a lower5min AP",
+          "id": 11,
+          "name": "LOWER5MINAPFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "flag indicating if the apevent covers a lowerreg AP",
+          "id": 12,
+          "name": "LOWERREGAPFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2
+      ],
+      "schema-id": 1,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Unique identifier for this administered pricing event",
+          "id": 1,
+          "name": "APEVENTID",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Date-Time of the first Dispatch Interval to which the administered event applies",
+          "id": 2,
+          "name": "REGIONID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Date Time of the final Dispatch Interval to which the administered event applies",
+          "id": 3,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "flag indicating if the apevent covers an energy AP",
+          "id": 4,
+          "name": "ENERGYAPFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "flag indicating if the apevent covers a raise6sec AP",
+          "id": 5,
+          "name": "RAISE6SECAPFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "flag indicating if the apevent covers a raise60sec AP",
+          "id": 6,
+          "name": "RAISE60SECAPFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "flag indicating if the apevent covers a raise5min AP",
+          "id": 7,
+          "name": "RAISE5MINAPFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "flag indicating if the apevent covers a raisereg AP",
+          "id": 8,
+          "name": "RAISEREGAPFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "flag indicating if the apevent covers a lower6sec AP",
+          "id": 9,
+          "name": "LOWER6SECAPFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "flag indicating if the apevent covers a lower60sec AP\nflag indicating if the apevent covers a lower5min AP\nflag indicating if the apevent covers a lowerreg AP\nflag indicating if the apevent covers a lower60sec AP",
+          "id": 10,
+          "name": "LOWER60SECAPFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "flag indicating if the apevent covers a lower5min AP",
+          "id": 11,
+          "name": "LOWER5MINAPFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "flag indicating if the apevent covers a lowerreg AP",
+          "id": 12,
+          "name": "LOWERREGAPFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "Flag indicating if the APEvent covers a Raise1Sec AP",
+          "id": 13,
+          "name": "RAISE1SECAPFLAG",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Flag indicating if the APEvent covers a Lower1Sec AP",
+          "id": 14,
+          "name": "LOWER1SECAPFLAG",
+          "required": false,
+          "type": "decimal(3, 0)"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2
+      ],
+      "schema-id": 2,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 4583796378384552624,
+      "timestamp-ms": 1256997600000
+    },
+    {
+      "snapshot-id": 7536100325348910087,
+      "timestamp-ms": 1714485600001
+    },
+    {
+      "snapshot-id": 5701419787463641106,
+      "timestamp-ms": 1722434400002
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/APEVENTREGION/metadata/snap-4583796378384552624-1-91fa8860-7d1b-8982-bf8b-5d73595b0c17.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 4583796378384552624,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "13",
+        "utilake.from.file": "PUBLIC_DVD_APEVENTREGION_200911010000.zip",
+        "utilake.from.release": "2009-11",
+        "utilake.from.sha256": "8f91e576b2516bb624e724efdcad603438a749cf2ba6b611377dd3862bbbf0fb",
+        "utilake.from.time": "2009-11-13T16:26:21+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "APEVENTREGION",
+        "utilake.report-type": "AP",
+        "utilake.rows": "148",
+        "utilake.to.file": "PUBLIC_DVD_APEVENTREGION_202211010000.zip",
+        "utilake.to.release": "2022-11",
+        "utilake.to.sha256": "6667a0343faa89a913f210c177608c925aaad2045f8b8972ebf8ff8bc51f3565",
+        "utilake.to.time": "2022-11-25T03:55:10+10:00",
+        "utilake.total-rows": "148",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1256997600000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/APEVENTREGION/metadata/snap-7536100325348910087-2-91fa8860-7d1b-8982-bf8b-5d73595b0c17.avro",
+      "parent-snapshot-id": 4583796378384552624,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 7536100325348910087,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_DVD_APEVENTREGION_202405010000.zip",
+        "utilake.from.release": "2024-05",
+        "utilake.from.sha256": "1fe5ba8e84da74182c35dcce62bbfd8ba539cd5438ec6f76256da0af1c0ccf2d",
+        "utilake.from.time": "2024-05-08T19:45:12+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "APEVENTREGION",
+        "utilake.report-type": "AP",
+        "utilake.rows": "7",
+        "utilake.to.file": "PUBLIC_DVD_APEVENTREGION_202405010000.zip",
+        "utilake.to.release": "2024-05",
+        "utilake.to.sha256": "1fe5ba8e84da74182c35dcce62bbfd8ba539cd5438ec6f76256da0af1c0ccf2d",
+        "utilake.to.time": "2024-05-14T03:55:10+10:00",
+        "utilake.total-rows": "155",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1714485600001
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/APEVENTREGION/metadata/snap-5701419787463641106-3-91fa8860-7d1b-8982-bf8b-5d73595b0c17.avro",
+      "parent-snapshot-id": 7536100325348910087,
+      "schema-id": 2,
+      "sequence-number": 3,
+      "snapshot-id": 5701419787463641106,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "26",
+        "utilake.from.file": "PUBLIC_ARCHIVE#APEVENTREGION#FILE01#202408010000.zip",
+        "utilake.from.release": "2024-08",
+        "utilake.from.sha256": "7fe28f5d32a784fba702be4089698fd7f93c36fbca0b774fa40ed03337a8c7fa",
+        "utilake.from.time": "2008-03-17T16:57:03+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "APEVENTREGION",
+        "utilake.report-type": "AP",
+        "utilake.rows": "4518",
+        "utilake.to.file": "PUBLIC_ARCHIVE#APEVENTREGION#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "ec3a69d98a3798eead9a8257c68f6a824b4560809f7e022dfeebbb9dba1e5ff6",
+        "utilake.to.time": "2025-08-23T03:55:16+10:00",
+        "utilake.total-rows": "4673",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1722434400002
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "91fa8860-7d1b-8982-bf8b-5d73595b0c17"
+}

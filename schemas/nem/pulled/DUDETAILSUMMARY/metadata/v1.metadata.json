@@ -1,0 +1,851 @@
+{
+  "current-schema-id": 3,
+  "current-snapshot-id": 8322084053495811605,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 29,
+  "last-partition-id": 999,
+  "last-sequence-number": 5,
+  "last-updated-ms": 1714485600004,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DUDETAILSUMMARY",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "DUDETAILSUMMARY sets out a single summary unit table so reducing the need for participants to use the various dispatchable unit detail and owner tables to establish generating unit specific details.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"DUID\",\"START_DATE\"]",
+    "utilake.load": "snapshot",
+    "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"VARCHAR(20)\",\"5\":\"VARCHAR(10)\",\"6\":\"VARCHAR(10)\",\"7\":\"VARCHAR(10)\",\"8\":\"VARCHAR(10)\",\"9\":\"TIMESTAMP(0)\",\"10\":\"NUMERIC(15,5)\",\"11\":\"VARCHAR(20)\",\"12\":\"NUMERIC(15,5)\",\"13\":\"NUMERIC(9,2)\",\"14\":\"NUMERIC(9,2)\",\"15\":\"VARCHAR(20)\",\"16\":\"NUMERIC(6,0)\",\"17\":\"NUMERIC(6,0)\",\"18\":\"NUMERIC(6,0)\",\"19\":\"NUMERIC(6,0)\",\"20\":\"NUMERIC(1,0)\",\"21\":\"VARCHAR(20)\",\"22\":\"VARCHAR(20)\",\"23\":\"NUMERIC(9,2)\",\"24\":\"NUMERIC(9,2)\",\"25\":\"NUMERIC(6,0)\",\"26\":\"NUMERIC(6,0)\",\"27\":\"NUMERIC(6,0)\",\"28\":\"NUMERIC(6,0)\",\"29\":\"NUMERIC(18,8)\"}",
+    "utilake.package": "PARTICIPANT_REGISTRATION",
+    "utilake.reports": "[[\"PARTICIPANT_REGISTRATION\",\"DUDETAILSUMMARY\"]]",
+    "utilake.table": "DUDETAILSUMMARY",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"DUID\"]",
+    "utilake.temporal.order": "[\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "START_DATE",
+    "utilake.temporal.valid.kind": "from",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 8322084053495811605,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Dispatchable Unit Identifier",
+          "id": 1,
+          "name": "DUID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Start date for effective record",
+          "id": 2,
+          "name": "START_DATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "End date for effective record",
+          "id": 3,
+          "name": "END_DATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Identifies LOAD, GENERATOR or BIDIRECTIONAL. This will likely expand to more generic models as new technology types are integrated into the NEM",
+          "id": 4,
+          "name": "DISPATCHTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Country wide - Unique id of a connection point",
+          "id": 5,
+          "name": "CONNECTIONPOINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Region identifier that unit is in",
+          "id": 6,
+          "name": "REGIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Station that unit is in",
+          "id": 7,
+          "name": "STATIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Participant that owns unit during effective record period",
+          "id": 8,
+          "name": "PARTICIPANTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 9,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Used in Bidding, Dispatch and Settlements. For Bidding and Dispatch, where the DUID is a BDU with DISPATCHTYPE of BIDIRECTIONAL, the TLF for the load component of the BDU. For Settlements, where dual TLFs apply, the primary TLF is applied to all energy (load and generation) when the Net Energy Flow of the ConnectionPointID in the interval is negative (net load).",
+          "id": 10,
+          "name": "TRANSMISSIONLOSSFACTOR",
+          "required": false,
+          "type": "decimal(15, 6)"
+        },
+        {
+          "doc": "Unit start type. At this time restricted to Fast, Slow or Non Dispatched",
+          "id": 11,
+          "name": "STARTTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The distribution loss factor to the currently assigned connection point",
+          "id": 12,
+          "name": "DISTRIBUTIONLOSSFACTOR",
+          "required": false,
+          "type": "decimal(15, 6)"
+        },
+        {
+          "doc": "Floored Offer/Bid Energy Price adjusted for TLF, DLF and MPF",
+          "id": 13,
+          "name": "MINIMUM_ENERGY_PRICE",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Capped Offer/Bid Energy Price adjusted for TLF, DLF and VoLL",
+          "id": 14,
+          "name": "MAXIMUM_ENERGY_PRICE",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Scheduled status of the unit:\n    'SCHEDULED'\n    'NON-SCHEDULED'\n    'SEMI-SCHEDULED'",
+          "id": 15,
+          "name": "SCHEDULE_TYPE",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Dispatchable Unit Identifier",
+          "id": 1,
+          "name": "DUID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Start date for effective record",
+          "id": 2,
+          "name": "START_DATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "End date for effective record",
+          "id": 3,
+          "name": "END_DATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Identifies LOAD, GENERATOR or BIDIRECTIONAL. This will likely expand to more generic models as new technology types are integrated into the NEM",
+          "id": 4,
+          "name": "DISPATCHTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Country wide - Unique id of a connection point",
+          "id": 5,
+          "name": "CONNECTIONPOINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Region identifier that unit is in",
+          "id": 6,
+          "name": "REGIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Station that unit is in",
+          "id": 7,
+          "name": "STATIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Participant that owns unit during effective record period",
+          "id": 8,
+          "name": "PARTICIPANTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 9,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Used in Bidding, Dispatch and Settlements. For Bidding and Dispatch, where the DUID is a BDU with DISPATCHTYPE of BIDIRECTIONAL, the TLF for the load component of the BDU. For Settlements, where dual TLFs apply, the primary TLF is applied to all energy (load and generation) when the Net Energy Flow of the ConnectionPointID in the interval is negative (net load).",
+          "id": 10,
+          "name": "TRANSMISSIONLOSSFACTOR",
+          "required": false,
+          "type": "decimal(15, 6)"
+        },
+        {
+          "doc": "Unit start type. At this time restricted to Fast, Slow or Non Dispatched",
+          "id": 11,
+          "name": "STARTTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The distribution loss factor to the currently assigned connection point",
+          "id": 12,
+          "name": "DISTRIBUTIONLOSSFACTOR",
+          "required": false,
+          "type": "decimal(15, 6)"
+        },
+        {
+          "doc": "Floored Offer/Bid Energy Price adjusted for TLF, DLF and MPF",
+          "id": 13,
+          "name": "MINIMUM_ENERGY_PRICE",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Capped Offer/Bid Energy Price adjusted for TLF, DLF and VoLL",
+          "id": 14,
+          "name": "MAXIMUM_ENERGY_PRICE",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Scheduled status of the unit:\n    'SCHEDULED'\n    'NON-SCHEDULED'\n    'SEMI-SCHEDULED'",
+          "id": 15,
+          "name": "SCHEDULE_TYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "MW/Min. Calculated Minimum Ramp Rate Up value accepted for Energy Offers or Bids with explanation",
+          "id": 16,
+          "name": "MIN_RAMP_RATE_UP",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "MW/Min. Calculated Minimum Ramp Rate Down value accepted for Energy Offers or Bids with explanation",
+          "id": 17,
+          "name": "MIN_RAMP_RATE_DOWN",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Maximum ramp up rate for Unit (Mw/min) - from DUDetail table",
+          "id": 18,
+          "name": "MAX_RAMP_RATE_UP",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Maximum ramp down rate for Unit (Mw/min) - from DUDetail table",
+          "id": 19,
+          "name": "MAX_RAMP_RATE_DOWN",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Whether the DUID is classified as an \"Aggregated Unit\" under the rules. This impacts the Minimum Ramp Rate calculation",
+          "id": 20,
+          "name": "IS_AGGREGATED",
+          "required": false,
+          "type": "decimal(1, 0)"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2
+      ],
+      "schema-id": 1,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Dispatchable Unit Identifier",
+          "id": 1,
+          "name": "DUID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Start date for effective record",
+          "id": 2,
+          "name": "START_DATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "End date for effective record",
+          "id": 3,
+          "name": "END_DATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Identifies LOAD, GENERATOR or BIDIRECTIONAL. This will likely expand to more generic models as new technology types are integrated into the NEM",
+          "id": 4,
+          "name": "DISPATCHTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Country wide - Unique id of a connection point",
+          "id": 5,
+          "name": "CONNECTIONPOINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Region identifier that unit is in",
+          "id": 6,
+          "name": "REGIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Station that unit is in",
+          "id": 7,
+          "name": "STATIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Participant that owns unit during effective record period",
+          "id": 8,
+          "name": "PARTICIPANTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 9,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Used in Bidding, Dispatch and Settlements. For Bidding and Dispatch, where the DUID is a BDU with DISPATCHTYPE of BIDIRECTIONAL, the TLF for the load component of the BDU. For Settlements, where dual TLFs apply, the primary TLF is applied to all energy (load and generation) when the Net Energy Flow of the ConnectionPointID in the interval is negative (net load).",
+          "id": 10,
+          "name": "TRANSMISSIONLOSSFACTOR",
+          "required": false,
+          "type": "decimal(15, 6)"
+        },
+        {
+          "doc": "Unit start type. At this time restricted to Fast, Slow or Non Dispatched",
+          "id": 11,
+          "name": "STARTTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The distribution loss factor to the currently assigned connection point",
+          "id": 12,
+          "name": "DISTRIBUTIONLOSSFACTOR",
+          "required": false,
+          "type": "decimal(15, 6)"
+        },
+        {
+          "doc": "Floored Offer/Bid Energy Price adjusted for TLF, DLF and MPF",
+          "id": 13,
+          "name": "MINIMUM_ENERGY_PRICE",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Capped Offer/Bid Energy Price adjusted for TLF, DLF and VoLL",
+          "id": 14,
+          "name": "MAXIMUM_ENERGY_PRICE",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Scheduled status of the unit:\n    'SCHEDULED'\n    'NON-SCHEDULED'\n    'SEMI-SCHEDULED'",
+          "id": 15,
+          "name": "SCHEDULE_TYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "MW/Min. Calculated Minimum Ramp Rate Up value accepted for Energy Offers or Bids with explanation",
+          "id": 16,
+          "name": "MIN_RAMP_RATE_UP",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "MW/Min. Calculated Minimum Ramp Rate Down value accepted for Energy Offers or Bids with explanation",
+          "id": 17,
+          "name": "MIN_RAMP_RATE_DOWN",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Maximum ramp up rate for Unit (Mw/min) - from DUDetail table",
+          "id": 18,
+          "name": "MAX_RAMP_RATE_UP",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Maximum ramp down rate for Unit (Mw/min) - from DUDetail table",
+          "id": 19,
+          "name": "MAX_RAMP_RATE_DOWN",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Whether the DUID is classified as an \"Aggregated Unit\" under the rules. This impacts the Minimum Ramp Rate calculation",
+          "id": 20,
+          "name": "IS_AGGREGATED",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "Additional information for DISPATCHTYPE. For DISPATCHTYPE = LOAD, subtype value is WDR for wholesale demand response units For DISPATCHTYPE = LOAD, subtype value is NULL for Scheduled Loads. For DISPATCHTYPE = GENERATOR type, subtype value is NULL.",
+          "id": 21,
+          "name": "DISPATCHSUBTYPE",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2
+      ],
+      "schema-id": 2,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Dispatchable Unit Identifier",
+          "id": 1,
+          "name": "DUID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Start date for effective record",
+          "id": 2,
+          "name": "START_DATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "End date for effective record",
+          "id": 3,
+          "name": "END_DATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Identifies LOAD, GENERATOR or BIDIRECTIONAL. This will likely expand to more generic models as new technology types are integrated into the NEM",
+          "id": 4,
+          "name": "DISPATCHTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Country wide - Unique id of a connection point",
+          "id": 5,
+          "name": "CONNECTIONPOINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Region identifier that unit is in",
+          "id": 6,
+          "name": "REGIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Station that unit is in",
+          "id": 7,
+          "name": "STATIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Participant that owns unit during effective record period",
+          "id": 8,
+          "name": "PARTICIPANTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 9,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Used in Bidding, Dispatch and Settlements. For Bidding and Dispatch, where the DUID is a BDU with DISPATCHTYPE of BIDIRECTIONAL, the TLF for the load component of the BDU. For Settlements, where dual TLFs apply, the primary TLF is applied to all energy (load and generation) when the Net Energy Flow of the ConnectionPointID in the interval is negative (net load).",
+          "id": 10,
+          "name": "TRANSMISSIONLOSSFACTOR",
+          "required": false,
+          "type": "decimal(15, 6)"
+        },
+        {
+          "doc": "Unit start type. At this time restricted to Fast, Slow or Non Dispatched",
+          "id": 11,
+          "name": "STARTTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The distribution loss factor to the currently assigned connection point",
+          "id": 12,
+          "name": "DISTRIBUTIONLOSSFACTOR",
+          "required": false,
+          "type": "decimal(15, 6)"
+        },
+        {
+          "doc": "Floored Offer/Bid Energy Price adjusted for TLF, DLF and MPF",
+          "id": 13,
+          "name": "MINIMUM_ENERGY_PRICE",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Capped Offer/Bid Energy Price adjusted for TLF, DLF and VoLL",
+          "id": 14,
+          "name": "MAXIMUM_ENERGY_PRICE",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Scheduled status of the unit:\n    'SCHEDULED'\n    'NON-SCHEDULED'\n    'SEMI-SCHEDULED'",
+          "id": 15,
+          "name": "SCHEDULE_TYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "MW/Min. Calculated Minimum Ramp Rate Up value accepted for Energy Offers or Bids with explanation",
+          "id": 16,
+          "name": "MIN_RAMP_RATE_UP",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "MW/Min. Calculated Minimum Ramp Rate Down value accepted for Energy Offers or Bids with explanation",
+          "id": 17,
+          "name": "MIN_RAMP_RATE_DOWN",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Maximum ramp up rate for Unit (Mw/min) - from DUDetail table",
+          "id": 18,
+          "name": "MAX_RAMP_RATE_UP",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Maximum ramp down rate for Unit (Mw/min) - from DUDetail table",
+          "id": 19,
+          "name": "MAX_RAMP_RATE_DOWN",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Whether the DUID is classified as an \"Aggregated Unit\" under the rules. This impacts the Minimum Ramp Rate calculation",
+          "id": 20,
+          "name": "IS_AGGREGATED",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "Additional information for DISPATCHTYPE. For DISPATCHTYPE = LOAD, subtype value is WDR for wholesale demand response units For DISPATCHTYPE = LOAD, subtype value is NULL for Scheduled Loads. For DISPATCHTYPE = GENERATOR type, subtype value is NULL.",
+          "id": 21,
+          "name": "DISPATCHSUBTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Aggregate Dispatch Group. Group into which the DUID is aggregated for Conformance. Null if DUID not aggregated for Conformance",
+          "id": 22,
+          "name": "ADG_ID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "BDU only. Floored Offer/Bid Energy Price adjusted for TLF, DLF and MPF for energy imports",
+          "id": 23,
+          "name": "LOAD_MINIMUM_ENERGY_PRICE",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "BDU only. Capped Offer/Bid Energy Price adjusted for TLF, DLF and VoLL for energy imports",
+          "id": 24,
+          "name": "LOAD_MAXIMUM_ENERGY_PRICE",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "BDU only. MW/Min. Calculated Minimum Ramp Rate Up value accepted for Energy Offers or Bids with explanation for energy imports",
+          "id": 25,
+          "name": "LOAD_MIN_RAMP_RATE_UP",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "BDU only. MW/Min. Calculated Minimum Ramp Rate Down value accepted for Energy Offers or Bids with explanation for energy imports",
+          "id": 26,
+          "name": "LOAD_MIN_RAMP_RATE_DOWN",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "BDU only. MW/Min. Registered Maximum Ramp Rate Up value accepted for Energy Offers or Bids for energy imports",
+          "id": 27,
+          "name": "LOAD_MAX_RAMP_RATE_UP",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "BDU only. MW/Min. Registered Maximum Ramp Rate Down value accepted for Energy Offers or Bids for energy imports",
+          "id": 28,
+          "name": "LOAD_MAX_RAMP_RATE_DOWN",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Used in Bidding, Dispatch and Settlements, only populated where Dual TLFs apply. For Bidding and Dispatch, the TLF for the generation component of a BDU, when null the TRANSMISSIONLOSSFACTOR is used for both the load and generation components. For Settlements, the secondary TLF is applied to all energy (load and generation) when the Net Energy Flow of the ConnectionPointID in the interval is positive (net generation).",
+          "id": 29,
+          "name": "SECONDARY_TLF",
+          "required": false,
+          "type": "decimal(18, 8)"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2
+      ],
+      "schema-id": 3,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 7692876794694889622,
+      "timestamp-ms": 1246370400000
+    },
+    {
+      "snapshot-id": 6717506843766554359,
+      "timestamp-ms": 1462024800001
+    },
+    {
+      "snapshot-id": 3737692508699940476,
+      "timestamp-ms": 1633010400002
+    },
+    {
+      "snapshot-id": 4636041030799613516,
+      "timestamp-ms": 1688133600003
+    },
+    {
+      "snapshot-id": 8322084053495811605,
+      "timestamp-ms": 1714485600004
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DUDETAILSUMMARY/metadata/snap-7692876794694889622-1-9eb06524-2c7d-8eed-ac34-f67b0223185e.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 7692876794694889622,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "82",
+        "utilake.from.file": "PUBLIC_DVD_DUDETAILSUMMARY_200907010000.zip",
+        "utilake.from.release": "2009-07",
+        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "utilake.from.time": "1998-10-25T00:00:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "DUDETAILSUMMARY",
+        "utilake.report-type": "PARTICIPANT_REGISTRATION",
+        "utilake.rows": "483971",
+        "utilake.to.file": "PUBLIC_DVD_DUDETAILSUMMARY_201604010000.zip",
+        "utilake.to.release": "2016-04",
+        "utilake.to.sha256": "abba026b2e33d657e01610032607936bbba1f1d372fce9496566a74aa1a4f732",
+        "utilake.to.time": "2016-05-04T00:00:00+10:00",
+        "utilake.total-rows": "483971",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1246370400000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DUDETAILSUMMARY/metadata/snap-6717506843766554359-2-9eb06524-2c7d-8eed-ac34-f67b0223185e.avro",
+      "parent-snapshot-id": 7692876794694889622,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 6717506843766554359,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "65",
+        "utilake.from.file": "PUBLIC_DVD_DUDETAILSUMMARY_201605010000.zip",
+        "utilake.from.release": "2016-05",
+        "utilake.from.sha256": "d1cf70b0329f3f52362f9615953f5c6fdc0f87daee71d5b15b33db325ddef7e6",
+        "utilake.from.time": "1998-10-25T00:00:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "DUDETAILSUMMARY",
+        "utilake.report-type": "PARTICIPANT_REGISTRATION",
+        "utilake.rows": "589440",
+        "utilake.to.file": "PUBLIC_DVD_DUDETAILSUMMARY_202109010000.zip",
+        "utilake.to.release": "2021-09",
+        "utilake.to.sha256": "02ad1b678af3e55608ea2654f78d178e0cde5b8f2bd503d62b8cc10ca5c996f9",
+        "utilake.to.time": "2021-10-05T00:00:00+10:00",
+        "utilake.total-rows": "1073411",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1462024800001
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DUDETAILSUMMARY/metadata/snap-3737692508699940476-3-9eb06524-2c7d-8eed-ac34-f67b0223185e.avro",
+      "parent-snapshot-id": 6717506843766554359,
+      "schema-id": 2,
+      "sequence-number": 3,
+      "snapshot-id": 3737692508699940476,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "21",
+        "utilake.from.file": "PUBLIC_DVD_DUDETAILSUMMARY_202110010000.zip",
+        "utilake.from.release": "2021-10",
+        "utilake.from.sha256": "eab9975af3669ad9d7a703967b9969be389f6006042607389b197c5f8a4ebb88",
+        "utilake.from.time": "1998-10-25T00:00:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "DUDETAILSUMMARY",
+        "utilake.report-type": "PARTICIPANT_REGISTRATION",
+        "utilake.rows": "236070",
+        "utilake.to.file": "PUBLIC_DVD_DUDETAILSUMMARY_202306010000.zip",
+        "utilake.to.release": "2023-06",
+        "utilake.to.sha256": "bf621f4b2fb5fa5aa09c7f5617533286a8efcc7cd6990ddf5231f11a2619116e",
+        "utilake.to.time": "2023-07-01T00:00:00+10:00",
+        "utilake.total-rows": "1309481",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1633010400002
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DUDETAILSUMMARY/metadata/snap-4636041030799613516-4-9eb06524-2c7d-8eed-ac34-f67b0223185e.avro",
+      "parent-snapshot-id": 3737692508699940476,
+      "schema-id": 2,
+      "sequence-number": 4,
+      "snapshot-id": 4636041030799613516,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "10",
+        "utilake.from.file": "PUBLIC_DVD_DUDETAILSUMMARY_202307010000.zip",
+        "utilake.from.release": "2023-07",
+        "utilake.from.sha256": "d0efbc00c68df11031966386c25d5e15c384459b0db7b896fd8774fcbfd3ddfa",
+        "utilake.from.time": "1998-10-25T00:00:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "DUDETAILSUMMARY",
+        "utilake.report-type": "PARTICIPANT_REGISTRATION",
+        "utilake.rows": "121989",
+        "utilake.to.file": "PUBLIC_DVD_DUDETAILSUMMARY_202404010000.zip",
+        "utilake.to.release": "2024-04",
+        "utilake.to.sha256": "04ec759fbe36b4a7582e2fe29f68cc8f7c7441e74003c289a1ebfdec1500fb93",
+        "utilake.to.time": "2024-05-07T00:00:00+10:00",
+        "utilake.total-rows": "1431470",
+        "utilake.version": "6"
+      },
+      "timestamp-ms": 1688133600003
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DUDETAILSUMMARY/metadata/snap-8322084053495811605-5-9eb06524-2c7d-8eed-ac34-f67b0223185e.avro",
+      "parent-snapshot-id": 4636041030799613516,
+      "schema-id": 3,
+      "sequence-number": 5,
+      "snapshot-id": 8322084053495811605,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "29",
+        "utilake.from.file": "PUBLIC_DVD_DUDETAILSUMMARY_202405010000.zip",
+        "utilake.from.release": "2024-05",
+        "utilake.from.sha256": "b59f3c31f296f848579c03f731e8bf0d972c3182df418ee1b496d3f31e2dac34",
+        "utilake.from.time": "1998-10-25T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\",\"dvd\"]",
+        "utilake.report-subtype": "DUDETAILSUMMARY",
+        "utilake.report-type": "PARTICIPANT_REGISTRATION",
+        "utilake.rows": "539263",
+        "utilake.to.file": "PUBLIC_ARCHIVE#DUDETAILSUMMARY#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "75f2abedad54dc15b7894ef41189ae404f1d22aaac55181767ce57d02cdc2a9b",
+        "utilake.to.time": "2026-10-09T00:00:00+10:00",
+        "utilake.total-rows": "1970733",
+        "utilake.version": "7"
+      },
+      "timestamp-ms": 1714485600004
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "9eb06524-2c7d-8eed-ac34-f67b0223185e"
+}

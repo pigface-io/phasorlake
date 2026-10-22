@@ -306,6 +306,9 @@ pub fn parse_table(path: &Path, text: &str, market: Market) -> Result<Table, Sch
         });
     }
     runs.sort_by_key(|r| r.from);
+    let current_schema = runs
+        .last()
+        .map_or_else(|| schemas.last().map_or(0, |s| s.id), |r| r.schema);
     Ok(Table {
         market,
         name,
@@ -318,6 +321,7 @@ pub fn parse_table(path: &Path, text: &str, market: Market) -> Result<Table, Sch
         columns,
         schemas,
         runs,
+        current_schema,
     })
 }
 

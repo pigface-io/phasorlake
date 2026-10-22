@@ -1,0 +1,125 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 4216707107924676656,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 4,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1722434400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_REGIONAVAIL_TRK",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "The tracking table to assist in versioning of the region-aggregate offered PASA Availability data published to the MTPASA_REGIONAVAILABILITY table.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"PUBLISH_DATETIME\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"TIMESTAMP(0)\"}",
+    "utilake.package": "MTPASA",
+    "utilake.reports": "[[\"MTPASA\",\"REGIONAVAILTRK\"]]",
+    "utilake.table": "MTPASA_REGIONAVAIL_TRK",
+    "utilake.temporal.entity": "[]",
+    "utilake.temporal.order": "[]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "PUBLISH_DATETIME",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "PUBLISH_DATETIME",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 4216707107924676656,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Date Time the report was published.",
+          "id": 1,
+          "name": "PUBLISH_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "First date of the report inclusive.",
+          "id": 2,
+          "name": "STARTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Last date of the report inclusive.",
+          "id": 3,
+          "name": "ENDDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Date Time of the latest offer used in the report.",
+          "id": 4,
+          "name": "LATEST_OFFER_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 4216707107924676656,
+      "timestamp-ms": 1722434400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_REGIONAVAIL_TRK/metadata/snap-4216707107924676656-1-5d023435-8b9d-8d6a-b3fc-812b7f9ea2b1.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 4216707107924676656,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "26",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MTPASA_REGIONAVAIL_TRK#FILE01#202408010000.zip",
+        "utilake.from.release": "2024-08",
+        "utilake.from.sha256": "5732a6c0733ac188ab10fe2e0492cb9d804ea2d6394d3656a3562f9cdfa28ecf",
+        "utilake.from.time": "2024-08-01T09:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "REGIONAVAILTRK",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "2770",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MTPASA_REGIONAVAIL_TRK#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "6f74ee1595af0f623809a3ae1eb26d21829e6068238bd2ef61f890767d61c1c8",
+        "utilake.to.time": "2026-09-30T18:00:00+10:00",
+        "utilake.total-rows": "2770",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1722434400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "5d023435-8b9d-8d6a-b3fc-812b7f9ea2b1"
+}

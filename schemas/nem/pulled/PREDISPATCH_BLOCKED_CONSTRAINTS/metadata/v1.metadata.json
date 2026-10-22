@@ -1,0 +1,92 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 1957818842093588847,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 2,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1738332000000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCH_BLOCKED_CONSTRAINTS",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "false",
+    "utilake.format": "3",
+    "utilake.table": "PREDISPATCH_BLOCKED_CONSTRAINTS"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 1957818842093588847,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "PREDISPATCHSEQNO",
+          "required": false,
+          "type": "decimal(10, 0)"
+        },
+        {
+          "id": 2,
+          "name": "CONSTRAINTID",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 1957818842093588847,
+      "timestamp-ms": 1738332000000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCH_BLOCKED_CONSTRAINTS/metadata/snap-1957818842093588847-1-79ec6d77-aef2-8e5c-8a16-41f330816aa9.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 1957818842093588847,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "10",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PREDISPATCHBLOCKEDCONSTRAINT#FILE01#202502010000.zip",
+        "utilake.from.release": "2025-02",
+        "utilake.from.sha256": "b32c5b91e6b8d924817f1eb838a82272b5fbbef417b023af05f6de66b50149f9",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "BLOCKED_CONSTRAINTS",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "1185",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PREDISPATCHBLOCKEDCONSTRAINT#FILE01#202607010000.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "bf45dc317ec55a81e371b5e34cb6105bd89dd65c4a832ebf92c6ffb6900f567d",
+        "utilake.total-rows": "1185",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1738332000000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "79ec6d77-aef2-8e5c-8a16-41f330816aa9"
+}

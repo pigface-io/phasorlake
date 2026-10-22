@@ -1,0 +1,134 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 2876313560764894478,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 5,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1246370400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PRUDENTIALRUNTRK",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "Records the prudential run accepted by Settlements staff for each prudential date",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"PRUDENTIAL_DATE\",\"RUNNO\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3)\",\"3\":\"VARCHAR(15)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"TIMESTAMP(0)\"}",
+    "utilake.package": "PRUDENTIALS",
+    "utilake.reports": "[[\"PRUDENTIAL\",\"RUNTRK\"]]",
+    "utilake.table": "PRUDENTIALRUNTRK",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[]",
+    "utilake.temporal.order": "[\"RUNNO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "PRUDENTIAL_DATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "LASTCHANGED",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 2876313560764894478,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "The prudential date",
+          "id": 1,
+          "name": "PRUDENTIAL_DATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The run number for the prudential date",
+          "id": 2,
+          "name": "RUNNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "The user that authorised the prudential run",
+          "id": 3,
+          "name": "AUTHORISEDBY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The datetime that the prudential run was authorised",
+          "id": 4,
+          "name": "AUTHORISEDDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The datetime that the record was last changed",
+          "id": 5,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 2876313560764894478,
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PRUDENTIALRUNTRK/metadata/snap-2876313560764894478-1-aaa34922-c0c0-8ee7-b5c5-29054ec88b20.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 2876313560764894478,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "169",
+        "utilake.from.file": "PUBLIC_DVD_PRUDENTIALRUNTRK_200907010000.zip",
+        "utilake.from.release": "2009-07",
+        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "utilake.from.time": "2009-07-01T06:49:43+10:00",
+        "utilake.kinds": "[\"archive\",\"dvd\"]",
+        "utilake.report-subtype": "RUNTRK",
+        "utilake.report-type": "PRUDENTIAL",
+        "utilake.rows": "42011",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PRUDENTIALRUNTRK#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "93199a1965f3a29aec91ab52d79d594753a57025408bc5f29e194ccfac6092f6",
+        "utilake.to.time": "2026-10-01T22:51:55+10:00",
+        "utilake.total-rows": "42011",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "aaa34922-c0c0-8ee7-b5c5-29054ec88b20"
+}

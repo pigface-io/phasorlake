@@ -1,0 +1,371 @@
+{
+  "current-schema-id": 1,
+  "current-snapshot-id": 7629266783597946454,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 18,
+  "last-partition-id": 999,
+  "last-sequence-number": 2,
+  "last-updated-ms": 1743429600001,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PD7DAY_PRICESOLUTION",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "PD7DAY price solution",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(2,0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(15,5)\",\"6\":\"NUMERIC(15,5)\",\"7\":\"NUMERIC(15,5)\",\"8\":\"NUMERIC(15,5)\",\"9\":\"NUMERIC(15,5)\",\"10\":\"NUMERIC(15,5)\",\"11\":\"NUMERIC(15,5)\",\"12\":\"NUMERIC(15,5)\",\"13\":\"NUMERIC(15,5)\",\"14\":\"NUMERIC(15,5)\",\"15\":\"NUMERIC(15,5)\",\"16\":\"TIMESTAMP(0)\",\"17\":\"NUMERIC(15,5)\",\"18\":\"NUMERIC(15,5)\"}",
+    "utilake.reports": "[[\"PD7DAY\",\"PRICESOLUTION\"]]",
+    "utilake.table": "PD7DAY_PRICESOLUTION",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"INTERVENTION\"]",
+    "utilake.temporal.order": "[\"RUN_DATETIME\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.time": "INTERVAL_DATETIME",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 7629266783597946454,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Unique Timestamp Identifier for this study",
+          "id": 1,
+          "name": "RUN_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Flag to indicate if this Predispatch case includes an intervention pricing run: 0 = case does not include an intervention pricing run, 1 = case does include an intervention pricing run.",
+          "id": 2,
+          "name": "INTERVENTION",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "The unique identifier for the interval within this study",
+          "id": 3,
+          "name": "INTERVAL_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Region Identifier",
+          "id": 4,
+          "name": "REGIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Region Reference Price (Energy)",
+          "id": 5,
+          "name": "RRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Lower 1Sec Price - RegionSolution element L1Price attribute",
+          "id": 6,
+          "name": "LOWER1SECRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Region Reference Price (Lower6Sec)",
+          "id": 7,
+          "name": "LOWER6SECRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Region Reference Price (Lower60Sec)",
+          "id": 8,
+          "name": "LOWER60SECRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Region Reference Price (Lower5Min)",
+          "id": 9,
+          "name": "LOWER5MINRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Region Reference Price (LowerReg)",
+          "id": 10,
+          "name": "LOWERREGRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Raise 1Sec Price - R1Price attribute after capping/flooring",
+          "id": 11,
+          "name": "RAISE1SECRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Region Reference Price (Raise6Sec)",
+          "id": 12,
+          "name": "RAISE6SECRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Region Reference Price (Raise60Sec)",
+          "id": 13,
+          "name": "RAISE60SECRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Region Reference Price (Raise5Min)",
+          "id": 14,
+          "name": "RAISE5MINRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Region Reference Price (RaiseReg)",
+          "id": 15,
+          "name": "RAISEREGRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 16,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Unique Timestamp Identifier for this study",
+          "id": 1,
+          "name": "RUN_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Flag to indicate if this Predispatch case includes an intervention pricing run: 0 = case does not include an intervention pricing run, 1 = case does include an intervention pricing run.",
+          "id": 2,
+          "name": "INTERVENTION",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "The unique identifier for the interval within this study",
+          "id": 3,
+          "name": "INTERVAL_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Region Identifier",
+          "id": 4,
+          "name": "REGIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Region Reference Price (Energy)",
+          "id": 5,
+          "name": "RRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Lower 1Sec Price - RegionSolution element L1Price attribute",
+          "id": 6,
+          "name": "LOWER1SECRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Region Reference Price (Lower6Sec)",
+          "id": 7,
+          "name": "LOWER6SECRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Region Reference Price (Lower60Sec)",
+          "id": 8,
+          "name": "LOWER60SECRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Region Reference Price (Lower5Min)",
+          "id": 9,
+          "name": "LOWER5MINRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Region Reference Price (LowerReg)",
+          "id": 10,
+          "name": "LOWERREGRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Raise 1Sec Price - R1Price attribute after capping/flooring",
+          "id": 11,
+          "name": "RAISE1SECRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Region Reference Price (Raise6Sec)",
+          "id": 12,
+          "name": "RAISE6SECRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Region Reference Price (Raise60Sec)",
+          "id": 13,
+          "name": "RAISE60SECRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Region Reference Price (Raise5Min)",
+          "id": 14,
+          "name": "RAISE5MINRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Region Reference Price (RaiseReg)",
+          "id": 15,
+          "name": "RAISEREGRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 16,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Energy Storage for BDU at the start of the interval(MWh) - Region Aggregated",
+          "id": 17,
+          "name": "BDU_INITIAL_ENERGY_STORAGE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Energy storage for Daily Energy Constrained Scheduled Generating Units at the start of the interval(MWh) - Region Aggregated",
+          "id": 18,
+          "name": "DECGEN_INITIAL_ENERGY_STORAGE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 1,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 1244334995929164123,
+      "timestamp-ms": 1722434400000
+    },
+    {
+      "snapshot-id": 7629266783597946454,
+      "timestamp-ms": 1743429600001
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PD7DAY_PRICESOLUTION/metadata/snap-1244334995929164123-1-aeb8f587-8ac8-883b-8ff9-6e955550532b.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 1244334995929164123,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PD7DAY_PRICESOLUTION#FILE01#202408010000.zip",
+        "utilake.from.release": "2024-08",
+        "utilake.from.sha256": "752aa4df884a95c8f6caba3772b3ee9b286b5e5680407de5c2494579445c6de8",
+        "utilake.from.time": "2024-04-23T18:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "PRICESOLUTION",
+        "utilake.report-type": "PD7DAY",
+        "utilake.rows": "7919470",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PD7DAY_PRICESOLUTION#FILE01#202503010000.zip",
+        "utilake.to.release": "2025-03",
+        "utilake.to.sha256": "3dc93e08fb1c5264002ba90f90fe617e2a18215ac5bd4856be8e745fc123c49d",
+        "utilake.to.time": "2025-04-14T04:00:00+10:00",
+        "utilake.total-rows": "7919470",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1722434400000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PD7DAY_PRICESOLUTION/metadata/snap-7629266783597946454-2-aeb8f587-8ac8-883b-8ff9-6e955550532b.avro",
+      "parent-snapshot-id": 1244334995929164123,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 7629266783597946454,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "18",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PD7DAY_PRICESOLUTION#FILE01#202504010000.zip",
+        "utilake.from.release": "2025-04",
+        "utilake.from.sha256": "02e5dcbb23b75927c11ef223ec0f5096618700bc828f232d6cf48dbf9e2af2d5",
+        "utilake.from.time": "2024-04-23T18:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "PRICESOLUTION",
+        "utilake.report-type": "PD7DAY",
+        "utilake.rows": "40247400",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PD7DAY_PRICESOLUTION#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "b8b37b04a9a6f9ddb6fde28017c62150cb23b7dbb0d113ed375e8d0b65485f0b",
+        "utilake.to.time": "2026-10-08T04:00:00+10:00",
+        "utilake.total-rows": "48166870",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1743429600001
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "aeb8f587-8ac8-883b-8ff9-6e955550532b"
+}

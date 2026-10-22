@@ -1,0 +1,124 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 3699405612205956865,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 7,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1246370400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/METER_DATA_INTERCONNECTOR",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "false",
+    "utilake.format": "3",
+    "utilake.table": "METER_DATA_INTERCONNECTOR"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 3699405612205956865,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 2,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 3,
+          "name": "INTERCONNECTORID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "PERIODID",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 5,
+          "name": "IMPORTENERGYVALUE",
+          "required": false,
+          "type": "decimal(9, 6)"
+        },
+        {
+          "id": 6,
+          "name": "EXPORTENERGYVALUE",
+          "required": false,
+          "type": "decimal(9, 6)"
+        },
+        {
+          "id": 7,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 3699405612205956865,
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/METER_DATA_INTERCONNECTOR/metadata/snap-3699405612205956865-1-a2fa7f06-d470-8567-90b8-120f7c0d4d8d.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 3699405612205956865,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "143",
+        "utilake.from.file": "PUBLIC_DVD_INTERCONNMWFLOW_200907010000.zip",
+        "utilake.from.release": "2009-07",
+        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "utilake.from.time": "2008-12-14T00:00:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "INTERCONNECTOR",
+        "utilake.report-type": "METER_DATA",
+        "utilake.rows": "8357520",
+        "utilake.to.file": "PUBLIC_DVD_INTERCONNMWFLOW_202105010000.zip",
+        "utilake.to.release": "2021-05",
+        "utilake.to.sha256": "6db1d4ce3857550c53d0ef64ee754aef6bebcd792d553226adf5e1e615f4bd25",
+        "utilake.to.time": "2021-05-11T00:00:00+10:00",
+        "utilake.total-rows": "8357520",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "a2fa7f06-d470-8567-90b8-120f7c0d4d8d"
+}

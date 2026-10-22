@@ -1,0 +1,124 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 5740485281186956291,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 4,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1246370400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INSTRUCTIONTYPE",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "Dispatch instruction (GD instruct) has types and subtypes. INSTRUCTIONTYPE, together with INSTRUCTIONSUBTYPE, sets out valid instruction types.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"INSTRUCTIONTYPEID\"]",
+    "utilake.load": "snapshot",
+    "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"VARCHAR(64)\",\"3\":\"VARCHAR(10)\",\"4\":\"TIMESTAMP(0)\"}",
+    "utilake.package": "GD_INSTRUCT",
+    "utilake.reports": "[[\"GD_INSTRUCT\",\"INSTRUCTIONTYPE\"]]",
+    "utilake.table": "INSTRUCTIONTYPE",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"INSTRUCTIONTYPEID\"]",
+    "utilake.temporal.order": "[\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 5740485281186956291,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Dispatch instruction type for example FCAS service.",
+          "id": 1,
+          "name": "INSTRUCTIONTYPEID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Description of instruction type",
+          "id": 2,
+          "name": "DESCRIPTION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Region id if regional instruction only.",
+          "id": 3,
+          "name": "REGIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 4,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 5740485281186956291,
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INSTRUCTIONTYPE/metadata/snap-5740485281186956291-1-f5072926-71ba-8f54-9529-546d262cdf78.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 5740485281186956291,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "207",
+        "utilake.from.file": "PUBLIC_DVD_INSTRUCTIONTYPE_200907010000.zip",
+        "utilake.from.release": "2009-07",
+        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "utilake.from.time": "1999-04-20T14:56:06+10:00",
+        "utilake.kinds": "[\"archive\",\"dvd\"]",
+        "utilake.report-subtype": "INSTRUCTIONTYPE",
+        "utilake.report-type": "GD_INSTRUCT",
+        "utilake.rows": "1863",
+        "utilake.to.file": "PUBLIC_ARCHIVE#INSTRUCTIONTYPE#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "92885df4559a23916ecd123a5a0cf5ddca43f9207f67534cd24d5c49ba676416",
+        "utilake.to.time": "1999-04-20T14:56:06+10:00",
+        "utilake.total-rows": "1863",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "f5072926-71ba-8f54-9529-546d262cdf78"
+}

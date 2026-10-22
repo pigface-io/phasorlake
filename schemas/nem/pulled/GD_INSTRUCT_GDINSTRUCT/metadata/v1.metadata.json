@@ -1,0 +1,172 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 858739287473283053,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 15,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1246370400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/GD_INSTRUCT_GDINSTRUCT",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "false",
+    "utilake.format": "3",
+    "utilake.table": "GD_INSTRUCT_GDINSTRUCT"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 858739287473283053,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "DUID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 2,
+          "name": "STATIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "REGIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "ID",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "id": 5,
+          "name": "INSTRUCTIONTYPEID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 6,
+          "name": "INSTRUCTIONSUBTYPEID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 7,
+          "name": "INSTRUCTIONCLASSID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 8,
+          "name": "REASON",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 9,
+          "name": "INSTLEVEL",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 10,
+          "name": "AUTHORISEDDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 11,
+          "name": "AUTHORISEDBY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 12,
+          "name": "PARTICIPANTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 13,
+          "name": "ISSUEDTIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 14,
+          "name": "TARGETTIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 15,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 858739287473283053,
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/GD_INSTRUCT_GDINSTRUCT/metadata/snap-858739287473283053-1-e2c141af-d15c-8c4b-90b4-78e3a76bba95.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 858739287473283053,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "104",
+        "utilake.from.file": "PUBLIC_DVD_GDINSTRUCT_200907010000.zip",
+        "utilake.from.release": "2009-07",
+        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "utilake.from.time": "2009-07-01T17:50:00+10:00",
+        "utilake.kinds": "[\"archive\",\"dvd\"]",
+        "utilake.report-subtype": "GDINSTRUCT",
+        "utilake.report-type": "GD_INSTRUCT",
+        "utilake.rows": "10069",
+        "utilake.to.file": "PUBLIC_ARCHIVE#GDINSTRUCT#FILE01#202607010000.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "351043c31821d3c68bc15b36f8dbfc87610a82a4d6336a5bc254b05c10984432",
+        "utilake.to.time": "2026-07-01T03:05:00+10:00",
+        "utilake.total-rows": "10069",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "e2c141af-d15c-8c4b-90b4-78e3a76bba95"
+}

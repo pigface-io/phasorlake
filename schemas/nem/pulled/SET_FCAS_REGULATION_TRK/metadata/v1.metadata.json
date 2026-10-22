@@ -1,0 +1,536 @@
+{
+  "current-schema-id": 2,
+  "current-snapshot-id": 8039182860725800482,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 25,
+  "last-partition-id": 999,
+  "last-sequence-number": 4,
+  "last-updated-ms": 1746021600003,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SET_FCAS_REGULATION_TRK",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "SET_FCAS_REGULATION_TRK shows FCAS Regulation Service Constraint tracking for Regional FCAS Regulation recovery",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"SETTLEMENTDATE\",\"VERSIONNO\",\"INTERVAL_DATETIME\",\"CONSTRAINTID\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(18,8)\",\"6\":\"NUMERIC(18,8)\",\"7\":\"NUMERIC(18,8)\",\"8\":\"NUMERIC(18,8)\",\"9\":\"TIMESTAMP(0)\",\"10\":\"NUMERIC(1,0)\",\"11\":\"NUMERIC(18,8)\",\"12\":\"NUMERIC(18,8)\",\"13\":\"NUMERIC(18,8)\",\"14\":\"NUMERIC(18,8)\",\"15\":\"NUMERIC(18,8)\",\"16\":\"NUMERIC(18,8)\",\"17\":\"NUMERIC(18,8)\",\"18\":\"NUMERIC(18,8)\",\"19\":\"NUMERIC(18,8)\",\"20\":\"NUMERIC(18,8)\",\"21\":\"NUMERIC(18,8)\",\"22\":\"NUMERIC(18,8)\",\"23\":\"NUMERIC(18,8)\",\"24\":\"NUMERIC(18,8)\",\"25\":\"NUMERIC(18,8)\"}",
+    "utilake.package": "SETTLEMENT_DATA",
+    "utilake.reports": "[[\"SETTLEMENTS\",\"SET_FCAS_REGULATION_TRK\"]]",
+    "utilake.table": "SET_FCAS_REGULATION_TRK",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"INTERVAL_DATETIME\",\"CONSTRAINTID\"]",
+    "utilake.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "SETTLEMENTDATE",
+    "utilake.temporal.valid.kind": "interval_end",
+    "utilake.time": "SETTLEMENTDATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 8039182860725800482,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Settlement Date",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Settlement Run No",
+          "id": 2,
+          "name": "VERSIONNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Dispatch Interval Date Time",
+          "id": 3,
+          "name": "INTERVAL_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Generic Constraint ID",
+          "id": 4,
+          "name": "CONSTRAINTID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Constraint Market Participant Factor. This column is NULL for Settlement Dates past FPP Rule Effective Date",
+          "id": 5,
+          "name": "CMPF",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Constraint Residual Market Participant Factor. This column is NULL for Settlement Dates past FPP Rule Effective Date",
+          "id": 6,
+          "name": "CRMPF",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Recovery factor for CMPF based recovery. This column is NULL for Settlement Dates past FPP Rule Effective Date",
+          "id": 7,
+          "name": "RECOVERY_FACTOR_CMPF",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Recovery factor for CRMPF based recovery. This column is NULL for Settlement Dates past FPP Rule Effective Date.",
+          "id": 8,
+          "name": "RECOVERY_FACTOR_CRMPF",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 9,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Settlement Date",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Settlement Run No",
+          "id": 2,
+          "name": "VERSIONNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Dispatch Interval Date Time",
+          "id": 3,
+          "name": "INTERVAL_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Generic Constraint ID",
+          "id": 4,
+          "name": "CONSTRAINTID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Constraint Market Participant Factor. This column is NULL for Settlement Dates past FPP Rule Effective Date",
+          "id": 5,
+          "name": "CMPF",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Constraint Residual Market Participant Factor. This column is NULL for Settlement Dates past FPP Rule Effective Date",
+          "id": 6,
+          "name": "CRMPF",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Recovery factor for CMPF based recovery. This column is NULL for Settlement Dates past FPP Rule Effective Date",
+          "id": 7,
+          "name": "RECOVERY_FACTOR_CMPF",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Recovery factor for CRMPF based recovery. This column is NULL for Settlement Dates past FPP Rule Effective Date.",
+          "id": 8,
+          "name": "RECOVERY_FACTOR_CRMPF",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 9,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Flag to indication that substitute demand was used to recover this requirement",
+          "id": 10,
+          "name": "USESUBSTITUTEDEMAND",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "the aggregate customer demand value used to recover the cost of this requirement",
+          "id": 11,
+          "name": "REQUIREMENTDEMAND",
+          "required": false,
+          "type": "decimal(18, 8)"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "schema-id": 1,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Settlement Date",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Settlement Run No",
+          "id": 2,
+          "name": "VERSIONNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Dispatch Interval Date Time",
+          "id": 3,
+          "name": "INTERVAL_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Generic Constraint ID",
+          "id": 4,
+          "name": "CONSTRAINTID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Constraint Market Participant Factor. This column is NULL for Settlement Dates past FPP Rule Effective Date",
+          "id": 5,
+          "name": "CMPF",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Constraint Residual Market Participant Factor. This column is NULL for Settlement Dates past FPP Rule Effective Date",
+          "id": 6,
+          "name": "CRMPF",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Recovery factor for CMPF based recovery. This column is NULL for Settlement Dates past FPP Rule Effective Date",
+          "id": 7,
+          "name": "RECOVERY_FACTOR_CMPF",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Recovery factor for CRMPF based recovery. This column is NULL for Settlement Dates past FPP Rule Effective Date.",
+          "id": 8,
+          "name": "RECOVERY_FACTOR_CRMPF",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 9,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Flag to indication that substitute demand was used to recover this requirement",
+          "id": 10,
+          "name": "USESUBSTITUTEDEMAND",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "the aggregate customer demand value used to recover the cost of this requirement",
+          "id": 11,
+          "name": "REQUIREMENTDEMAND",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The total FPP Amount from Eligible Units for the Constraint Id",
+          "id": 12,
+          "name": "FPP_AMOUNT",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The total FPP Residual Amount for the Constraint Id",
+          "id": 13,
+          "name": "FPP_RESIDUAL_AMOUNT",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The total Reg Used Amount from Eligible Units for the Constraint Id",
+          "id": 14,
+          "name": "USED_AMOUNT",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The total Reg Used Residual Amount for the Constraint Id",
+          "id": 15,
+          "name": "USED_RESIDUAL_AMOUNT",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The total Reg Unused Amount from Eligible Units for the Constraint Id",
+          "id": 16,
+          "name": "UNUSED_AMOUNT",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The total Reg Unused Residual Amount for the Constraint Id",
+          "id": 17,
+          "name": "UNUSED_RESIDUAL_AMOUNT",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The PRegulation Value from Constraints FCAS Requirement data",
+          "id": 18,
+          "name": "P_REGULATION",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The Adjusted Cost Value from Constraints FCAS Requirement data",
+          "id": 19,
+          "name": "TSFCAS",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The RCR Value from the FPP Inputs for the Constraint Id used to calculate FPP Amount",
+          "id": 20,
+          "name": "RCR",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The Usage Value from the FPP Inputs for the Constraint Id used to calculate Used Amount",
+          "id": 21,
+          "name": "USAGE_VALUE",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The RCF Value from the FPP Inputs for the Constraint Id used to calculate FPP Residual",
+          "id": 22,
+          "name": "RCF",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The NRCF Value from the FPP Inputs for the Constraint Id used to calculate Used Residual Amount",
+          "id": 23,
+          "name": "NRCF",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The DRCF Value from the FPP Inputs for the Constraint Id used to calculate Unused Residual Amount",
+          "id": 24,
+          "name": "DRCF",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The total residual MWh(ABS(ACE_MWh) + ASOE(MWh)) of the requirement regions.",
+          "id": 25,
+          "name": "RESIDUALTOTAL_MWH",
+          "required": false,
+          "type": "decimal(18, 8)"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "schema-id": 2,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 3585851685814876287,
+      "timestamp-ms": 1246370400000
+    },
+    {
+      "snapshot-id": 6170104345413526581,
+      "timestamp-ms": 1722434400001
+    },
+    {
+      "snapshot-id": 4427521064809749859,
+      "timestamp-ms": 1743429600002
+    },
+    {
+      "snapshot-id": 8039182860725800482,
+      "timestamp-ms": 1746021600003
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SET_FCAS_REGULATION_TRK/metadata/snap-3585851685814876287-1-9bd4501f-cffe-8a4e-83dd-b481896703a3.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 3585851685814876287,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "180",
+        "utilake.from.file": "PUBLIC_DVD_SET_FCAS_REGULATION_TRK_200907010000.zip",
+        "utilake.from.release": "2009-07",
+        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "utilake.from.time": "2009-01-01T00:00:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "SET_FCAS_REGULATION_TRK",
+        "utilake.report-type": "SETTLEMENTS",
+        "utilake.rows": "21684547",
+        "utilake.to.file": "PUBLIC_DVD_SET_FCAS_REGULATION_TRK_202407010000.zip",
+        "utilake.to.release": "2024-07",
+        "utilake.to.sha256": "e66e30a344b5b088a2337f39aa0133b230db2a8b2ff2d893053900649f04ced6",
+        "utilake.to.time": "2024-01-06T00:00:00+10:00",
+        "utilake.total-rows": "21684547",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1246370400000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SET_FCAS_REGULATION_TRK/metadata/snap-6170104345413526581-2-9bd4501f-cffe-8a4e-83dd-b481896703a3.avro",
+      "parent-snapshot-id": 3585851685814876287,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 6170104345413526581,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8",
+        "utilake.from.file": "PUBLIC_ARCHIVE#SET_FCAS_REGULATION_TRK#FILE01#202408010000.zip",
+        "utilake.from.release": "2024-08",
+        "utilake.from.sha256": "10330908f68fe9bb7d7e24aee66c42d95009af441a7d4e7e657e381ed2f3de13",
+        "utilake.from.time": "2023-12-31T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "SET_FCAS_REGULATION_TRK",
+        "utilake.report-type": "SETTLEMENTS",
+        "utilake.rows": "1667639",
+        "utilake.to.file": "PUBLIC_ARCHIVE#SET_FCAS_REGULATION_TRK#FILE01#202503010000.zip",
+        "utilake.to.release": "2025-03",
+        "utilake.to.sha256": "538f00993215881241366234d79f5a3df209f6ac00b2743bdaf1004190230480",
+        "utilake.to.time": "2025-03-30T00:00:00+10:00",
+        "utilake.total-rows": "23352186",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1722434400001
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SET_FCAS_REGULATION_TRK/metadata/snap-4427521064809749859-3-9bd4501f-cffe-8a4e-83dd-b481896703a3.avro",
+      "parent-snapshot-id": 6170104345413526581,
+      "schema-id": 2,
+      "sequence-number": 3,
+      "snapshot-id": 4427521064809749859,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#SET_FCAS_REGULATION_TRK#FILE01#202504010000.zip",
+        "utilake.from.release": "2025-04",
+        "utilake.from.sha256": "5eb7cdad6650c27646f1f919867c4a90b03dcd4eae2fb8438e4f7ee74ae73324",
+        "utilake.from.time": "2024-09-01T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "SET_FCAS_REGULATION_TRK",
+        "utilake.report-type": "SETTLEMENTS",
+        "utilake.rows": "188544",
+        "utilake.to.file": "PUBLIC_ARCHIVE#SET_FCAS_REGULATION_TRK#FILE01#202504010000.zip",
+        "utilake.to.release": "2025-04",
+        "utilake.to.sha256": "5eb7cdad6650c27646f1f919867c4a90b03dcd4eae2fb8438e4f7ee74ae73324",
+        "utilake.to.time": "2025-04-29T00:00:00+10:00",
+        "utilake.total-rows": "23540730",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1743429600002
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SET_FCAS_REGULATION_TRK/metadata/snap-8039182860725800482-4-9bd4501f-cffe-8a4e-83dd-b481896703a3.avro",
+      "parent-snapshot-id": 4427521064809749859,
+      "schema-id": 2,
+      "sequence-number": 4,
+      "snapshot-id": 8039182860725800482,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "17",
+        "utilake.from.file": "PUBLIC_ARCHIVE#SET_FCAS_REGULATION_TRK#FILE01#202505010000.zip",
+        "utilake.from.release": "2025-05",
+        "utilake.from.sha256": "ab82eab321e863ff3393305ebaeaabe44a63d6604b1e85733bfb8e9141a5cadc",
+        "utilake.from.time": "2024-09-29T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "SET_FCAS_REGULATION_TRK",
+        "utilake.report-type": "SETTLEMENTS",
+        "utilake.rows": "3017222",
+        "utilake.to.file": "PUBLIC_ARCHIVE#SET_FCAS_REGULATION_TRK#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "12e855b8a151b032712cb8865d13643414d7726389b08facdafb0d04301521c1",
+        "utilake.to.time": "2026-09-29T00:00:00+10:00",
+        "utilake.total-rows": "26557952",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1746021600003
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "9bd4501f-cffe-8a4e-83dd-b481896703a3"
+}

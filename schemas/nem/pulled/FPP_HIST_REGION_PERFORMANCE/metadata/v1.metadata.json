@@ -1,0 +1,280 @@
+{
+  "current-schema-id": 1,
+  "current-snapshot-id": 6278143743178981358,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 11,
+  "last-partition-id": 999,
+  "last-sequence-number": 2,
+  "last-updated-ms": 1777557600001,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_HIST_REGION_PERFORMANCE",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "This report delivers the historical region performance calculated based on a historical period and effective for a billing period (aligned to the settlement week). This calculated historical region performance calculation is an input into the constraint level residual default contribution factor (DCF) which is published in FPP_FORECAST_RESIDUAL_DCF",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"NUMERIC(10)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"NUMERIC(18,5)\",\"8\":\"NUMERIC(18,5)\",\"9\":\"NUMERIC(18,5)\",\"10\":\"NUMERIC(18,5)\",\"11\":\"TIMESTAMP(0)\"}",
+    "utilake.reports": "[[\"FPP\",\"HIST_REGION_PERFORMANCE\"]]",
+    "utilake.table": "FPP_HIST_REGION_PERFORMANCE",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[]",
+    "utilake.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.time": "LASTCHANGED",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 6278143743178981358,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Region ID of the historical region performance",
+          "id": 1,
+          "name": "REGIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Effective period start date and time (DD/MM/YYYY HH24:MI:SS) fixed to the UTC+10 time zone (NEM time) of the effective period for this historical performance values related to the region ID. This is the billing period over which these historical performance values will be effective / applied over. This will align to the settlement week.",
+          "id": 2,
+          "name": "EFFECTIVE_START_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Effective period end date and time (DD/MM/YYYY HH24:MI:SS) fixed to the UTC+10 time zone (NEM time) of the effective period for this historical performance values related to the region ID. This is the billing period over which these historical performance values will be effective / applied over. This will align to the settlement week.",
+          "id": 3,
+          "name": "EFFECTIVE_END_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Version (FPP historical performance calculation run number from the FPP database) Note that due to the these historical calculations, the version numbers listed here are different to the normal FPP run number version for trading interval calculations.",
+          "id": 4,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "decimal(10, 0)"
+        },
+        {
+          "doc": "Historical period start date and time (DD/MM/YYYY HH24:MI:SS) fixed to the UTC+10 time zone (NEM time) of the historical period for this historical performance calculation related to the region ID. This is the historical period of trading intervals that feed into the historical performance calculation. This will align to the settlement week.",
+          "id": 5,
+          "name": "HIST_PERIOD_START_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Historical period end date and time (DD/MM/YYYY HH24:MI:SS) fixed to the UTC+10 time zone (NEM time) of the historical period for this historical performance calculation related to the region ID. This is the historical period of trading intervals that feed into the historical performance calculation. This will align to the settlement week.",
+          "id": 6,
+          "name": "HIST_PERIOD_END_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Calculated regulation historical raise performance from the historical performance period (substitute raise performance when live performance is unavailable and default raise performance used for default contribution factor calculation) - please see the NER and FPP procedure documents for further information",
+          "id": 7,
+          "name": "REG_HIST_RAISE_PERFORMANCE",
+          "required": false,
+          "type": "decimal(18, 5)"
+        },
+        {
+          "doc": "Calculated regulation historical lower performance from the historical performance period (substitute lower performance when live performance is unavailable and default lower performance used for default contribution factor calculation) - please see the NER and FPP procedure documents for further information",
+          "id": 8,
+          "name": "REG_HIST_LOWER_PERFORMANCE",
+          "required": false,
+          "type": "decimal(18, 5)"
+        },
+        {
+          "doc": "Calculated FPP historical raise performance from the historical performance period (substitute raise performance calculated used for negative contribution factor calculation when live performance is unavailable) - please see the NER and FPP procedure documents for further information",
+          "id": 9,
+          "name": "FPP_HIST_RAISE_PERFORMANCE",
+          "required": false,
+          "type": "decimal(18, 5)"
+        },
+        {
+          "doc": "Calculated FPP historical lower performance from the historical performance period (substitute lower performance calculated used for negative contribution factor calculation when live performance is unavailable) - please see the NER and FPP procedure documents for further information",
+          "id": 10,
+          "name": "FPP_HIST_LOWER_PERFORMANCE",
+          "required": false,
+          "type": "decimal(18, 5)"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Region ID of the historical region performance",
+          "id": 1,
+          "name": "REGIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Effective period start date and time (DD/MM/YYYY HH24:MI:SS) fixed to the UTC+10 time zone (NEM time) of the effective period for this historical performance values related to the region ID. This is the billing period over which these historical performance values will be effective / applied over. This will align to the settlement week.",
+          "id": 2,
+          "name": "EFFECTIVE_START_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Effective period end date and time (DD/MM/YYYY HH24:MI:SS) fixed to the UTC+10 time zone (NEM time) of the effective period for this historical performance values related to the region ID. This is the billing period over which these historical performance values will be effective / applied over. This will align to the settlement week.",
+          "id": 3,
+          "name": "EFFECTIVE_END_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Version (FPP historical performance calculation run number from the FPP database) Note that due to the these historical calculations, the version numbers listed here are different to the normal FPP run number version for trading interval calculations.",
+          "id": 4,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "decimal(10, 0)"
+        },
+        {
+          "doc": "Historical period start date and time (DD/MM/YYYY HH24:MI:SS) fixed to the UTC+10 time zone (NEM time) of the historical period for this historical performance calculation related to the region ID. This is the historical period of trading intervals that feed into the historical performance calculation. This will align to the settlement week.",
+          "id": 5,
+          "name": "HIST_PERIOD_START_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Historical period end date and time (DD/MM/YYYY HH24:MI:SS) fixed to the UTC+10 time zone (NEM time) of the historical period for this historical performance calculation related to the region ID. This is the historical period of trading intervals that feed into the historical performance calculation. This will align to the settlement week.",
+          "id": 6,
+          "name": "HIST_PERIOD_END_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Calculated regulation historical raise performance from the historical performance period (substitute raise performance when live performance is unavailable and default raise performance used for default contribution factor calculation) - please see the NER and FPP procedure documents for further information",
+          "id": 7,
+          "name": "REG_HIST_RAISE_PERFORMANCE",
+          "required": false,
+          "type": "decimal(18, 5)"
+        },
+        {
+          "doc": "Calculated regulation historical lower performance from the historical performance period (substitute lower performance when live performance is unavailable and default lower performance used for default contribution factor calculation) - please see the NER and FPP procedure documents for further information",
+          "id": 8,
+          "name": "REG_HIST_LOWER_PERFORMANCE",
+          "required": false,
+          "type": "decimal(18, 5)"
+        },
+        {
+          "doc": "Calculated FPP historical raise performance from the historical performance period (substitute raise performance calculated used for negative contribution factor calculation when live performance is unavailable) - please see the NER and FPP procedure documents for further information",
+          "id": 9,
+          "name": "FPP_HIST_RAISE_PERFORMANCE",
+          "required": false,
+          "type": "decimal(18, 5)"
+        },
+        {
+          "doc": "Calculated FPP historical lower performance from the historical performance period (substitute lower performance calculated used for negative contribution factor calculation when live performance is unavailable) - please see the NER and FPP procedure documents for further information",
+          "id": 10,
+          "name": "FPP_HIST_LOWER_PERFORMANCE",
+          "required": false,
+          "type": "decimal(18, 5)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 11,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 1,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 4855264411759592693,
+      "timestamp-ms": 1743429600000
+    },
+    {
+      "snapshot-id": 6278143743178981358,
+      "timestamp-ms": 1777557600001
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_HIST_REGION_PERFORMANCE/metadata/snap-4855264411759592693-1-3b979a0d-a8bd-8003-8528-e8c7a76f592d.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 4855264411759592693,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "13",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_HIST_REGION_PERFORMANCE#FILE01#202504010000.zip",
+        "utilake.from.release": "2025-04",
+        "utilake.from.sha256": "45a30e11d2f77a54a57c4bb4a14a38d00c1354b2a1789f443bca7fd523a32262",
+        "utilake.from.time": "2025-05-11T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "HIST_REGION_PERFORMANCE",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "1795",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_HIST_REGION_PERFORMANCE#FILE01#202604010000.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "25ce631e12d40d6ca8a5ab3552528e70f8a8f3ecfde4ea4688970d9167f8f7c0",
+        "utilake.to.time": "2026-05-10T00:05:00+10:00",
+        "utilake.total-rows": "1795",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1743429600000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_HIST_REGION_PERFORMANCE/metadata/snap-6278143743178981358-2-3b979a0d-a8bd-8003-8528-e8c7a76f592d.avro",
+      "parent-snapshot-id": 4855264411759592693,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 6278143743178981358,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "5",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_HIST_REGION_PERFORMANCE#FILE01#202605010000.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "78e87f00e88bb7b55988ebef0f05936edbf78f87376a197cdc92e31da5ef3842",
+        "utilake.from.time": "2025-05-11T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "HIST_REGION_PERFORMANCE",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "1675",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_HIST_REGION_PERFORMANCE#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "9db2931b9a5b8a49125ef560db288a602e7b1a75cd17fc8532e6ef3e2de98539",
+        "utilake.to.time": "2026-10-11T00:05:00+10:00",
+        "utilake.total-rows": "3470",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1777557600001
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "3b979a0d-a8bd-8003-8528-e8c7a76f592d"
+}

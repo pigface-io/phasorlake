@@ -1,0 +1,224 @@
+{
+  "current-schema-id": 1,
+  "current-snapshot-id": 7599070157203772956,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 7,
+  "last-partition-id": 999,
+  "last-sequence-number": 2,
+  "last-updated-ms": 1777557600001,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_RCR",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "This report delivers the calculated RCR for each constraint for each 5 minute trading interval",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"NUMERIC(5)\",\"4\":\"VARCHAR(10)\",\"5\":\"NUMERIC(18,5)\",\"6\":\"NUMERIC(5)\",\"7\":\"TIMESTAMP(0)\"}",
+    "utilake.reports": "[[\"FPP\",\"FPP_RCR\"]]",
+    "utilake.table": "FPP_RCR",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[]",
+    "utilake.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.time": "INTERVAL_DATETIME",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 7599070157203772956,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Date and time of the trading interval (DD/MM/YYYY HH24:MI:SS) fixed to the UTC+10 time zone (NEM time)",
+          "id": 1,
+          "name": "INTERVAL_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Constraint ID (binding constraint ID from FCAS data used in FPP calculations)",
+          "id": 2,
+          "name": "CONSTRAINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Version (FPP run number from the FPP database)",
+          "id": 3,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "doc": "Bid type (the bid type saved in relation to constraint ID from FCAS data used in FPP calculations)",
+          "id": 4,
+          "name": "BIDTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "RCR (the calculated requirement for corrective response from FPP database)",
+          "id": 5,
+          "name": "RCR",
+          "required": false,
+          "type": "decimal(18, 5)"
+        },
+        {
+          "doc": "The reason flag showing the decision matrix for the requirement for corrective response (RCR) calculation Supported values are: 0 = RCR is calculated based on good input data 1 = RCR is 0 as FM is unreliable 2 = RCR is 0 as the percentage of units with unavailable input or bad data is greater than the threshold percentage",
+          "id": 6,
+          "name": "RCR_REASON_FLAG",
+          "required": false,
+          "type": "decimal(5, 0)"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Date and time of the trading interval (DD/MM/YYYY HH24:MI:SS) fixed to the UTC+10 time zone (NEM time)",
+          "id": 1,
+          "name": "INTERVAL_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Constraint ID (binding constraint ID from FCAS data used in FPP calculations)",
+          "id": 2,
+          "name": "CONSTRAINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Version (FPP run number from the FPP database)",
+          "id": 3,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "doc": "Bid type (the bid type saved in relation to constraint ID from FCAS data used in FPP calculations)",
+          "id": 4,
+          "name": "BIDTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "RCR (the calculated requirement for corrective response from FPP database)",
+          "id": 5,
+          "name": "RCR",
+          "required": false,
+          "type": "decimal(18, 5)"
+        },
+        {
+          "doc": "The reason flag showing the decision matrix for the requirement for corrective response (RCR) calculation Supported values are: 0 = RCR is calculated based on good input data 1 = RCR is 0 as FM is unreliable 2 = RCR is 0 as the percentage of units with unavailable input or bad data is greater than the threshold percentage",
+          "id": 6,
+          "name": "RCR_REASON_FLAG",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 7,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 1,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 9051779703271952980,
+      "timestamp-ms": 1732975200000
+    },
+    {
+      "snapshot-id": 7599070157203772956,
+      "timestamp-ms": 1777557600001
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_RCR/metadata/snap-9051779703271952980-1-73a89741-2728-816f-86f5-0c67cb8bae1b.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 9051779703271952980,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "17",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_RCR#FILE01#202412010000.zip",
+        "utilake.from.release": "2024-12",
+        "utilake.from.sha256": "ce856da968cfa38ac972d2be5e6c4e808a5b02774870562102e4bd36d7f79e47",
+        "utilake.from.time": "2024-12-09T11:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "FPP_RCR",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "5315257",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_RCR#FILE01#202604010000.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "2f0e0cc720aac5d5f016828fd232870a17ec1804b1f7ee0b8c0dc90f6138812a",
+        "utilake.to.time": "2026-05-08T15:35:00+10:00",
+        "utilake.total-rows": "5315257",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1732975200000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_RCR/metadata/snap-7599070157203772956-2-73a89741-2728-816f-86f5-0c67cb8bae1b.avro",
+      "parent-snapshot-id": 9051779703271952980,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 7599070157203772956,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "5",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_RCR#FILE01#202605010000.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "d21362e4b5af30cf72f57bedf08d2e08eb2d96f8a1a46aac993841f066b9e26b",
+        "utilake.from.time": "2024-12-09T11:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "FPP_RCR",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "2039857",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_RCR#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "4797bd98f2c10d281b4bf94252a8120b8c0bf72c7570146bb3f7b650143459d2",
+        "utilake.to.time": "2026-10-01T00:00:00+10:00",
+        "utilake.total-rows": "7355114",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1777557600001
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "73a89741-2728-816f-86f5-0c67cb8bae1b"
+}

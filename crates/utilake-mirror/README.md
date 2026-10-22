@@ -9,10 +9,11 @@ Operator (AEMO) publishes the National Electricity Market's data. Its
 about 4.9 TB. `Reports/CURRENT/` holds about 120,000 newer report files,
 about 50 GB; nemweb rewrites it daily and drops each file after days or weeks,
 some of them without archiving them, and only it gives each file's publish
-time. Those three folders are the crawl roots. nemweb-mirror downloads all of it,
-once, and writes a catalog of every folder, file and zip entry. [nemlake](https://github.com/g0itb4/nemlake)
-reads that catalog and the archive; it knows what the data means, this knows
-what exists.
+time. Those three folders are the crawl roots. nemweb-mirror, the
+`utilake-mirror` crate of this repository, downloads all of it, once, and
+writes a catalog of every folder, file and zip entry. utilake's ingest and
+the census in utilake-schemas read that catalog and the archive; they know
+what the data means, this knows what exists.
 
 ## What it does
 
@@ -61,14 +62,15 @@ what exists.
 ## Run
 
 ```sh
-just build
+cargo build --release -p utilake-mirror           # target/release/nemweb-mirror
 export NEMWEB_MIRROR_HOME=/data/nemweb   # default ~/.nemweb-mirror
 echo 'request_interval_ms = 750' > $NEMWEB_MIRROR_HOME/mirror/config.toml
-nohup caffeinate -ims bin/nemweb-mirror run --json > mirror.log 2>&1 &
-bin/nemweb-mirror status
-bin/nemweb-mirror compare --delete
-bin/nemweb-mirror map && bin/nemweb-mirror summary
-nohup caffeinate -ims bin/nemweb-mirror watch --json --delete-duplicates >> mirror.log 2>&1 &
+m=target/release/nemweb-mirror
+nohup caffeinate -ims $m run --json > mirror.log 2>&1 &
+$m status
+$m compare --delete
+$m map && $m summary
+nohup caffeinate -ims $m watch --json --delete-duplicates >> mirror.log 2>&1 &
 ```
 
 `run` can be stopped and started again at any time: the crawl carries on from

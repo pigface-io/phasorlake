@@ -1,0 +1,1389 @@
+{
+  "current-schema-id": 3,
+  "current-snapshot-id": 2543151901058099829,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 45,
+  "last-partition-id": 999,
+  "last-sequence-number": 6,
+  "last-updated-ms": 1722434400005,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STPASA_REGIONSOLUTION",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "STPASA_REGIONSOLUTION shows the results of the regional capacity, maximum surplus reserve and maximum spare capacity evaluations for each period of the study. Note that the RELIABILITY_LRC and OUTAGE_LRC Run Types are no longer reported from 31 July 2025.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"RUN_DATETIME\",\"INTERVAL_DATETIME\",\"REGIONID\",\"RUNTYPE\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(10)\",\"4\":\"NUMERIC(12,2)\",\"5\":\"NUMERIC(12,2)\",\"6\":\"NUMERIC(12,2)\",\"7\":\"NUMERIC(12,2)\",\"8\":\"NUMERIC(12,2)\",\"9\":\"NUMERIC(12,2)\",\"10\":\"NUMERIC(12,0)\",\"11\":\"NUMERIC(12,0)\",\"12\":\"NUMERIC(12,2)\",\"13\":\"NUMERIC(12,2)\",\"14\":\"NUMERIC(12,2)\",\"15\":\"NUMERIC(1,0)\",\"16\":\"NUMERIC(12,2)\",\"17\":\"NUMERIC(12,2)\",\"18\":\"NUMERIC(1,0)\",\"19\":\"NUMERIC(12,2)\",\"20\":\"NUMERIC(12,2)\",\"21\":\"TIMESTAMP(0)\",\"22\":\"NUMERIC(12,0)\",\"23\":\"VARCHAR(20)\",\"24\":\"NUMERIC(12,2)\",\"25\":\"NUMERIC(16,6)\",\"26\":\"NUMERIC(16,6)\",\"27\":\"NUMERIC(12,2)\",\"28\":\"NUMERIC(12,2)\",\"29\":\"NUMERIC(15,5)\",\"30\":\"NUMERIC(15,5)\",\"31\":\"NUMERIC(12,2)\",\"32\":\"NUMERIC(12,2)\",\"33\":\"NUMERIC(12,2)\",\"34\":\"NUMERIC(16,6)\",\"35\":\"NUMERIC(16,6)\",\"36\":\"NUMERIC(16,6)\",\"37\":\"NUMERIC(12,2)\",\"38\":\"NUMERIC(12,2)\",\"39\":\"NUMERIC(12,2)\",\"40\":\"NUMERIC(12,2)\",\"41\":\"NUMERIC(12,2)\",\"42\":\"NUMERIC(12,2)\",\"43\":\"NUMERIC(12,2)\",\"44\":\"NUMERIC(12,2)\",\"45\":\"NUMERIC(12,2)\"}",
+    "utilake.package": "STPASA_SOLUTION",
+    "utilake.reports": "[[\"STPASA\",\"REGIONSOLUTION\"]]",
+    "utilake.table": "STPASA_REGIONSOLUTION",
+    "utilake.temporal.cutoff": "RUN_DATETIME",
+    "utilake.temporal.entity": "[\"REGIONID\",\"RUNTYPE\"]",
+    "utilake.temporal.order": "[\"RUN_DATETIME\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "INTERVAL_DATETIME",
+    "utilake.temporal.valid.kind": "interval_end",
+    "utilake.time": "INTERVAL_DATETIME",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 2543151901058099829,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Unique Timestamp Identifier for this run, identified by the nominal start time of the run.",
+          "id": 1,
+          "name": "RUN_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "End date time of the interval.",
+          "id": 2,
+          "name": "INTERVAL_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Region Identifier",
+          "id": 3,
+          "name": "REGIONID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "10% Probability of Exceedance demand forecast.",
+          "id": 4,
+          "name": "DEMAND10",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "50% Probability of Exceedance demand forecast.",
+          "id": 5,
+          "name": "DEMAND50",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "90% Probability of Exceedance demand forecast.",
+          "id": 6,
+          "name": "DEMAND90",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Reserve Requirement (MW). This field is not populated after 30 July 2025.",
+          "id": 7,
+          "name": "RESERVEREQ",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Demand + Reserve requirements (MW). This field is not populated after 30 July 2025.",
+          "id": 8,
+          "name": "CAPACITYREQ",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Sum of: (Region Demand50)/Period (sum by trading day, entered in first period of trading day, GWh).",
+          "id": 9,
+          "name": "ENERGYREQDEMAND50",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Aggregate generation + WDR capacity from Non-Energy Constrained plant subjected to restrictions due to network constraints.",
+          "id": 10,
+          "name": "UNCONSTRAINEDCAPACITY",
+          "required": false,
+          "type": "decimal(12, 0)"
+        },
+        {
+          "doc": "Aggregate generation + WDR capacity from Energy Constrained plant subjected to restrictions due to network constraints.",
+          "id": 11,
+          "name": "CONSTRAINEDCAPACITY",
+          "required": false,
+          "type": "decimal(12, 0)"
+        },
+        {
+          "doc": "Net export (MW) out of this region in the LOR evaluation. Export if > 0, Import if < 0. This value is the same as LORNETINTERCHANGEUNDERSCARCITY.",
+          "id": 12,
+          "name": "NETINTERCHANGEUNDERSCARCITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Regional surplus capacity (MW), +/- values indicate surplus/deficit capacity respectively. This value reflects Regional LOR reserve.",
+          "id": 13,
+          "name": "SURPLUSCAPACITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Regional surplus reserve (MW). This value also reflects Regional LOR reserve. Note: For LOR runs, RESERVEREQ requirement input is not used.",
+          "id": 14,
+          "name": "SURPLUSRESERVE",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Regional reserve condition from LRC run. This field is not populated after 30 July 2025.",
+          "id": 15,
+          "name": "RESERVECONDITION",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "Maximum Surplus Reserve (MW) evaluated for this region from LRC runs. This field is no longer populated.",
+          "id": 16,
+          "name": "MAXSURPLUSRESERVE",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Maximum Spare Capacity (MW) evaluated for this region. Calculated for each region in turn. This value reflects Regional LOR reserve.",
+          "id": 17,
+          "name": "MAXSPARECAPACITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "The LOR Condition determined from the Maximum Spare Capacity value: 0 - no condition, 1 - LOR1 condition, 2 - LOR2 condition, 3 - LOR3 condition",
+          "id": 18,
+          "name": "LORCONDITION",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "Sum of MAXAVAIL quantities offered by all Scheduled units and Availability of all semi-scheduled units limited by MAXAVAIL in a given Region for a given PERIODID",
+          "id": 19,
+          "name": "AGGREGATECAPACITYAVAILABLE",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Sum of  MAXAVAIL quantities bid by of all Scheduled Loads in a given Region for a given PERIODID.",
+          "id": 20,
+          "name": "AGGREGATESCHEDULEDLOAD",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Date time this record was created.",
+          "id": 21,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Sum of PASAAVAILABILITY for all scheduled generating units and scheduled bidirectional units (Gen side) with a Recall_Period <= 24 hours plus the sum of Unconstrained Intermittent Generation Forecasts (UIGF) for all semi-scheduled generating units. For the RELIABILITY_LRC and OUTAGE_LRC runs, UIGF is the POE90 forecast. For the LOR Run, UIGF is the POE50 forecast. Note that the RELIABILITY_LRC and OUTAGE_LRC Run Types are discontinued from 31 July 2025. From March 2026, AGGREGATEPASAAVAILABILITY changes from that with Recall_Period <= 24 to that achievable by the relevant INTERVAL_DATETIME if recalled at the start of the run.",
+          "id": 22,
+          "name": "AGGREGATEPASAAVAILABILITY",
+          "required": false,
+          "type": "decimal(12, 0)"
+        },
+        {
+          "doc": "Type of run. Values are RELIABILITY_LRC, OUTAGE_LRC and LOR. Note that the STPASA RELIABILITY_LRC and OUTAGE_LRC Run Types are discontinued from 31 July 2025, with only the LOR Run Type reported.",
+          "id": 23,
+          "name": "RUNTYPE",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Energy (GWh) required for this energy block based on the 10% probability of exceedance demand. Listed in the first interval of the energy block",
+          "id": 24,
+          "name": "ENERGYREQDEMAND10",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Region Reserve Level for LOR1 used. Can be static value or calculated value if an interconnector is a credible contingency",
+          "id": 25,
+          "name": "CALCULATEDLOR1LEVEL",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Region Reserve Level for LOR2 used. Can be static value or calculated value if an interconnector is a credible contingency",
+          "id": 26,
+          "name": "CALCULATEDLOR2LEVEL",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Net interconnector flow from the region for this interval from the MSR assessment. This field is no longer populated.",
+          "id": 27,
+          "name": "MSRNETINTERCHANGEUNDERSCARCITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Net interconnector flow from the region for this interval from the LOR assessment",
+          "id": 28,
+          "name": "LORNETINTERCHANGEUNDERSCARCITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Allowance made for non-scheduled generation in the demand forecast (MW).",
+          "id": 29,
+          "name": "TOTALINTERMITTENTGENERATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of Cleared Scheduled generation, imported generation (at the region boundary) and allowances made for non-scheduled generation (MW).",
+          "id": 30,
+          "name": "DEMAND_AND_NONSCHEDGEN",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Unconstrained Intermittent Generation Forecast of Semi-scheduled generation (MW).",
+          "id": 31,
+          "name": "UIGF",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Constrained generation forecast (MW) for semi-scheduled units for the region. For RELIABILITY_LRC run, semi-scheduled generation is constrained only by System Normal constraints. For OUTAGE_LRC run and LOR run, semi-scheduled generation is constrained by both System Normal and Outage constraints. All three run types (RELIABILITY_LRC, OUTAGE_LRC, LOR) incorporate MAXAVAIL limits.",
+          "id": 32,
+          "name": "SEMISCHEDULEDCAPACITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Constrained generation forecast for semi-scheduled units for the region for the LOR run. Semi-scheduled generation is constrained by both System Normal and Outage constraints, and incorporate MAXAVAIL limits.",
+          "id": 33,
+          "name": "LOR_SEMISCHEDULEDCAPACITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        23
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Unique Timestamp Identifier for this run, identified by the nominal start time of the run.",
+          "id": 1,
+          "name": "RUN_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "End date time of the interval.",
+          "id": 2,
+          "name": "INTERVAL_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Region Identifier",
+          "id": 3,
+          "name": "REGIONID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "10% Probability of Exceedance demand forecast.",
+          "id": 4,
+          "name": "DEMAND10",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "50% Probability of Exceedance demand forecast.",
+          "id": 5,
+          "name": "DEMAND50",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "90% Probability of Exceedance demand forecast.",
+          "id": 6,
+          "name": "DEMAND90",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Reserve Requirement (MW). This field is not populated after 30 July 2025.",
+          "id": 7,
+          "name": "RESERVEREQ",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Demand + Reserve requirements (MW). This field is not populated after 30 July 2025.",
+          "id": 8,
+          "name": "CAPACITYREQ",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Sum of: (Region Demand50)/Period (sum by trading day, entered in first period of trading day, GWh).",
+          "id": 9,
+          "name": "ENERGYREQDEMAND50",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Aggregate generation + WDR capacity from Non-Energy Constrained plant subjected to restrictions due to network constraints.",
+          "id": 10,
+          "name": "UNCONSTRAINEDCAPACITY",
+          "required": false,
+          "type": "decimal(12, 0)"
+        },
+        {
+          "doc": "Aggregate generation + WDR capacity from Energy Constrained plant subjected to restrictions due to network constraints.",
+          "id": 11,
+          "name": "CONSTRAINEDCAPACITY",
+          "required": false,
+          "type": "decimal(12, 0)"
+        },
+        {
+          "doc": "Net export (MW) out of this region in the LOR evaluation. Export if > 0, Import if < 0. This value is the same as LORNETINTERCHANGEUNDERSCARCITY.",
+          "id": 12,
+          "name": "NETINTERCHANGEUNDERSCARCITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Regional surplus capacity (MW), +/- values indicate surplus/deficit capacity respectively. This value reflects Regional LOR reserve.",
+          "id": 13,
+          "name": "SURPLUSCAPACITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Regional surplus reserve (MW). This value also reflects Regional LOR reserve. Note: For LOR runs, RESERVEREQ requirement input is not used.",
+          "id": 14,
+          "name": "SURPLUSRESERVE",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Regional reserve condition from LRC run. This field is not populated after 30 July 2025.",
+          "id": 15,
+          "name": "RESERVECONDITION",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "Maximum Surplus Reserve (MW) evaluated for this region from LRC runs. This field is no longer populated.",
+          "id": 16,
+          "name": "MAXSURPLUSRESERVE",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Maximum Spare Capacity (MW) evaluated for this region. Calculated for each region in turn. This value reflects Regional LOR reserve.",
+          "id": 17,
+          "name": "MAXSPARECAPACITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "The LOR Condition determined from the Maximum Spare Capacity value: 0 - no condition, 1 - LOR1 condition, 2 - LOR2 condition, 3 - LOR3 condition",
+          "id": 18,
+          "name": "LORCONDITION",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "Sum of MAXAVAIL quantities offered by all Scheduled units and Availability of all semi-scheduled units limited by MAXAVAIL in a given Region for a given PERIODID",
+          "id": 19,
+          "name": "AGGREGATECAPACITYAVAILABLE",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Sum of  MAXAVAIL quantities bid by of all Scheduled Loads in a given Region for a given PERIODID.",
+          "id": 20,
+          "name": "AGGREGATESCHEDULEDLOAD",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Date time this record was created.",
+          "id": 21,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Sum of PASAAVAILABILITY for all scheduled generating units and scheduled bidirectional units (Gen side) with a Recall_Period <= 24 hours plus the sum of Unconstrained Intermittent Generation Forecasts (UIGF) for all semi-scheduled generating units. For the RELIABILITY_LRC and OUTAGE_LRC runs, UIGF is the POE90 forecast. For the LOR Run, UIGF is the POE50 forecast. Note that the RELIABILITY_LRC and OUTAGE_LRC Run Types are discontinued from 31 July 2025. From March 2026, AGGREGATEPASAAVAILABILITY changes from that with Recall_Period <= 24 to that achievable by the relevant INTERVAL_DATETIME if recalled at the start of the run.",
+          "id": 22,
+          "name": "AGGREGATEPASAAVAILABILITY",
+          "required": false,
+          "type": "decimal(12, 0)"
+        },
+        {
+          "doc": "Type of run. Values are RELIABILITY_LRC, OUTAGE_LRC and LOR. Note that the STPASA RELIABILITY_LRC and OUTAGE_LRC Run Types are discontinued from 31 July 2025, with only the LOR Run Type reported.",
+          "id": 23,
+          "name": "RUNTYPE",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Energy (GWh) required for this energy block based on the 10% probability of exceedance demand. Listed in the first interval of the energy block",
+          "id": 24,
+          "name": "ENERGYREQDEMAND10",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Region Reserve Level for LOR1 used. Can be static value or calculated value if an interconnector is a credible contingency",
+          "id": 25,
+          "name": "CALCULATEDLOR1LEVEL",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Region Reserve Level for LOR2 used. Can be static value or calculated value if an interconnector is a credible contingency",
+          "id": 26,
+          "name": "CALCULATEDLOR2LEVEL",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Net interconnector flow from the region for this interval from the MSR assessment. This field is no longer populated.",
+          "id": 27,
+          "name": "MSRNETINTERCHANGEUNDERSCARCITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Net interconnector flow from the region for this interval from the LOR assessment",
+          "id": 28,
+          "name": "LORNETINTERCHANGEUNDERSCARCITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Allowance made for non-scheduled generation in the demand forecast (MW).",
+          "id": 29,
+          "name": "TOTALINTERMITTENTGENERATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of Cleared Scheduled generation, imported generation (at the region boundary) and allowances made for non-scheduled generation (MW).",
+          "id": 30,
+          "name": "DEMAND_AND_NONSCHEDGEN",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Unconstrained Intermittent Generation Forecast of Semi-scheduled generation (MW).",
+          "id": 31,
+          "name": "UIGF",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Constrained generation forecast (MW) for semi-scheduled units for the region. For RELIABILITY_LRC run, semi-scheduled generation is constrained only by System Normal constraints. For OUTAGE_LRC run and LOR run, semi-scheduled generation is constrained by both System Normal and Outage constraints. All three run types (RELIABILITY_LRC, OUTAGE_LRC, LOR) incorporate MAXAVAIL limits.",
+          "id": 32,
+          "name": "SEMISCHEDULEDCAPACITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Constrained generation forecast for semi-scheduled units for the region for the LOR run. Semi-scheduled generation is constrained by both System Normal and Outage constraints, and incorporate MAXAVAIL limits.",
+          "id": 33,
+          "name": "LOR_SEMISCHEDULEDCAPACITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Largest Credible Risk. MW value for highest credible contingency",
+          "id": 34,
+          "name": "LCR",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Two Largest Credible Risks. MW value for highest two credible contingencies.",
+          "id": 35,
+          "name": "LCR2",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Forecasting Uncertainty Measure. MW value of reserve calculated as defined in the Reserve Level Declaration Guidelines",
+          "id": 36,
+          "name": "FUM",
+          "required": false,
+          "type": "decimal(16, 6)"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        23
+      ],
+      "schema-id": 1,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Unique Timestamp Identifier for this run, identified by the nominal start time of the run.",
+          "id": 1,
+          "name": "RUN_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "End date time of the interval.",
+          "id": 2,
+          "name": "INTERVAL_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Region Identifier",
+          "id": 3,
+          "name": "REGIONID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "10% Probability of Exceedance demand forecast.",
+          "id": 4,
+          "name": "DEMAND10",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "50% Probability of Exceedance demand forecast.",
+          "id": 5,
+          "name": "DEMAND50",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "90% Probability of Exceedance demand forecast.",
+          "id": 6,
+          "name": "DEMAND90",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Reserve Requirement (MW). This field is not populated after 30 July 2025.",
+          "id": 7,
+          "name": "RESERVEREQ",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Demand + Reserve requirements (MW). This field is not populated after 30 July 2025.",
+          "id": 8,
+          "name": "CAPACITYREQ",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Sum of: (Region Demand50)/Period (sum by trading day, entered in first period of trading day, GWh).",
+          "id": 9,
+          "name": "ENERGYREQDEMAND50",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Aggregate generation + WDR capacity from Non-Energy Constrained plant subjected to restrictions due to network constraints.",
+          "id": 10,
+          "name": "UNCONSTRAINEDCAPACITY",
+          "required": false,
+          "type": "decimal(12, 0)"
+        },
+        {
+          "doc": "Aggregate generation + WDR capacity from Energy Constrained plant subjected to restrictions due to network constraints.",
+          "id": 11,
+          "name": "CONSTRAINEDCAPACITY",
+          "required": false,
+          "type": "decimal(12, 0)"
+        },
+        {
+          "doc": "Net export (MW) out of this region in the LOR evaluation. Export if > 0, Import if < 0. This value is the same as LORNETINTERCHANGEUNDERSCARCITY.",
+          "id": 12,
+          "name": "NETINTERCHANGEUNDERSCARCITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Regional surplus capacity (MW), +/- values indicate surplus/deficit capacity respectively. This value reflects Regional LOR reserve.",
+          "id": 13,
+          "name": "SURPLUSCAPACITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Regional surplus reserve (MW). This value also reflects Regional LOR reserve. Note: For LOR runs, RESERVEREQ requirement input is not used.",
+          "id": 14,
+          "name": "SURPLUSRESERVE",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Regional reserve condition from LRC run. This field is not populated after 30 July 2025.",
+          "id": 15,
+          "name": "RESERVECONDITION",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "Maximum Surplus Reserve (MW) evaluated for this region from LRC runs. This field is no longer populated.",
+          "id": 16,
+          "name": "MAXSURPLUSRESERVE",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Maximum Spare Capacity (MW) evaluated for this region. Calculated for each region in turn. This value reflects Regional LOR reserve.",
+          "id": 17,
+          "name": "MAXSPARECAPACITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "The LOR Condition determined from the Maximum Spare Capacity value: 0 - no condition, 1 - LOR1 condition, 2 - LOR2 condition, 3 - LOR3 condition",
+          "id": 18,
+          "name": "LORCONDITION",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "Sum of MAXAVAIL quantities offered by all Scheduled units and Availability of all semi-scheduled units limited by MAXAVAIL in a given Region for a given PERIODID",
+          "id": 19,
+          "name": "AGGREGATECAPACITYAVAILABLE",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Sum of  MAXAVAIL quantities bid by of all Scheduled Loads in a given Region for a given PERIODID.",
+          "id": 20,
+          "name": "AGGREGATESCHEDULEDLOAD",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Date time this record was created.",
+          "id": 21,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Sum of PASAAVAILABILITY for all scheduled generating units and scheduled bidirectional units (Gen side) with a Recall_Period <= 24 hours plus the sum of Unconstrained Intermittent Generation Forecasts (UIGF) for all semi-scheduled generating units. For the RELIABILITY_LRC and OUTAGE_LRC runs, UIGF is the POE90 forecast. For the LOR Run, UIGF is the POE50 forecast. Note that the RELIABILITY_LRC and OUTAGE_LRC Run Types are discontinued from 31 July 2025. From March 2026, AGGREGATEPASAAVAILABILITY changes from that with Recall_Period <= 24 to that achievable by the relevant INTERVAL_DATETIME if recalled at the start of the run.",
+          "id": 22,
+          "name": "AGGREGATEPASAAVAILABILITY",
+          "required": false,
+          "type": "decimal(12, 0)"
+        },
+        {
+          "doc": "Type of run. Values are RELIABILITY_LRC, OUTAGE_LRC and LOR. Note that the STPASA RELIABILITY_LRC and OUTAGE_LRC Run Types are discontinued from 31 July 2025, with only the LOR Run Type reported.",
+          "id": 23,
+          "name": "RUNTYPE",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Energy (GWh) required for this energy block based on the 10% probability of exceedance demand. Listed in the first interval of the energy block",
+          "id": 24,
+          "name": "ENERGYREQDEMAND10",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Region Reserve Level for LOR1 used. Can be static value or calculated value if an interconnector is a credible contingency",
+          "id": 25,
+          "name": "CALCULATEDLOR1LEVEL",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Region Reserve Level for LOR2 used. Can be static value or calculated value if an interconnector is a credible contingency",
+          "id": 26,
+          "name": "CALCULATEDLOR2LEVEL",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Net interconnector flow from the region for this interval from the MSR assessment. This field is no longer populated.",
+          "id": 27,
+          "name": "MSRNETINTERCHANGEUNDERSCARCITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Net interconnector flow from the region for this interval from the LOR assessment",
+          "id": 28,
+          "name": "LORNETINTERCHANGEUNDERSCARCITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Allowance made for non-scheduled generation in the demand forecast (MW).",
+          "id": 29,
+          "name": "TOTALINTERMITTENTGENERATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of Cleared Scheduled generation, imported generation (at the region boundary) and allowances made for non-scheduled generation (MW).",
+          "id": 30,
+          "name": "DEMAND_AND_NONSCHEDGEN",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Unconstrained Intermittent Generation Forecast of Semi-scheduled generation (MW).",
+          "id": 31,
+          "name": "UIGF",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Constrained generation forecast (MW) for semi-scheduled units for the region. For RELIABILITY_LRC run, semi-scheduled generation is constrained only by System Normal constraints. For OUTAGE_LRC run and LOR run, semi-scheduled generation is constrained by both System Normal and Outage constraints. All three run types (RELIABILITY_LRC, OUTAGE_LRC, LOR) incorporate MAXAVAIL limits.",
+          "id": 32,
+          "name": "SEMISCHEDULEDCAPACITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Constrained generation forecast for semi-scheduled units for the region for the LOR run. Semi-scheduled generation is constrained by both System Normal and Outage constraints, and incorporate MAXAVAIL limits.",
+          "id": 33,
+          "name": "LOR_SEMISCHEDULEDCAPACITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Largest Credible Risk. MW value for highest credible contingency",
+          "id": 34,
+          "name": "LCR",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Two Largest Credible Risks. MW value for highest two credible contingencies.",
+          "id": 35,
+          "name": "LCR2",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Forecasting Uncertainty Measure. MW value of reserve calculated as defined in the Reserve Level Declaration Guidelines",
+          "id": 36,
+          "name": "FUM",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Unconstrained Intermittent Generation Forecast for solar for the region. For RELIABILITY_LRC and OUTAGE_LRC run this is the POE90 forecast (determined by LRCUIGFOption in CaseSolution). For LOR run this is the POE50 forecast",
+          "id": 37,
+          "name": "SS_SOLAR_UIGF",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Unconstrained Intermittent Generation Forecast for wind for the region. For RELIABILITY_LRC and OUTAGE_LRC run this is the POE90 forecast (determined by LRCUIGFOption in CaseSolution). For LOR run this is the POE50 forecast",
+          "id": 38,
+          "name": "SS_WIND_UIGF",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Constrained generation forecast for solar for the region. For RELIABILITY_LRC run solar generation is constrained only by System Normal constraints. For OUTAGE_LRC run and LOR run solar generation is constrained by both System Normal and Outage constraints. All three run types (RELIABILITY_LRC, OUTAGE_LRC, LOR) incorporate MAXAVAIL limits.",
+          "id": 39,
+          "name": "SS_SOLAR_CAPACITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Constrained generation forecast for wind for the region. For RELIABILITY_LRC run wind generation is constrained only by System Normal constraints. For OUTAGE_LRC run and LOR run wind generation is constrained by both System Normal and Outage constraints. All three run types (RELIABILITY_LRC, OUTAGE_LRC, LOR) incorporate MAXAVAIL limits.",
+          "id": 40,
+          "name": "SS_WIND_CAPACITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Constrained generation forecast (MW) for solar for the region. For RELIABILITY_LRC run, solar generation is constrained only by System Normal constraints. For OUTAGE_LRC run and LOR run, solar generation is constrained by both System Normal and Outage constraints. All three run types (RELIABILITY_LRC, OUTAGE_LRC, LOR) incorporate MAXAVAIL limits.This value is the same as SS_SOLAR_CAPACITY.",
+          "id": 41,
+          "name": "SS_SOLAR_CLEARED",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Constrained generation forecast (MW) for wind for the region. For RELIABILITY_LRC run, wind generation is constrained only by System Normal constraints. For OUTAGE_LRC run and LOR run, wind generation is constrained by both System Normal and Outage constraints. All three run types (RELIABILITY_LRC, OUTAGE_LRC, LOR) incorporate MAXAVAIL limits.This value is the same as SS_WIND_CAPACITY.",
+          "id": 42,
+          "name": "SS_WIND_CLEARED",
+          "required": false,
+          "type": "decimal(12, 2)"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        23
+      ],
+      "schema-id": 2,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Unique Timestamp Identifier for this run, identified by the nominal start time of the run.",
+          "id": 1,
+          "name": "RUN_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "End date time of the interval.",
+          "id": 2,
+          "name": "INTERVAL_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Region Identifier",
+          "id": 3,
+          "name": "REGIONID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "10% Probability of Exceedance demand forecast.",
+          "id": 4,
+          "name": "DEMAND10",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "50% Probability of Exceedance demand forecast.",
+          "id": 5,
+          "name": "DEMAND50",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "90% Probability of Exceedance demand forecast.",
+          "id": 6,
+          "name": "DEMAND90",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Reserve Requirement (MW). This field is not populated after 30 July 2025.",
+          "id": 7,
+          "name": "RESERVEREQ",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Demand + Reserve requirements (MW). This field is not populated after 30 July 2025.",
+          "id": 8,
+          "name": "CAPACITYREQ",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Sum of: (Region Demand50)/Period (sum by trading day, entered in first period of trading day, GWh).",
+          "id": 9,
+          "name": "ENERGYREQDEMAND50",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Aggregate generation + WDR capacity from Non-Energy Constrained plant subjected to restrictions due to network constraints.",
+          "id": 10,
+          "name": "UNCONSTRAINEDCAPACITY",
+          "required": false,
+          "type": "decimal(12, 0)"
+        },
+        {
+          "doc": "Aggregate generation + WDR capacity from Energy Constrained plant subjected to restrictions due to network constraints.",
+          "id": 11,
+          "name": "CONSTRAINEDCAPACITY",
+          "required": false,
+          "type": "decimal(12, 0)"
+        },
+        {
+          "doc": "Net export (MW) out of this region in the LOR evaluation. Export if > 0, Import if < 0. This value is the same as LORNETINTERCHANGEUNDERSCARCITY.",
+          "id": 12,
+          "name": "NETINTERCHANGEUNDERSCARCITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Regional surplus capacity (MW), +/- values indicate surplus/deficit capacity respectively. This value reflects Regional LOR reserve.",
+          "id": 13,
+          "name": "SURPLUSCAPACITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Regional surplus reserve (MW). This value also reflects Regional LOR reserve. Note: For LOR runs, RESERVEREQ requirement input is not used.",
+          "id": 14,
+          "name": "SURPLUSRESERVE",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Regional reserve condition from LRC run. This field is not populated after 30 July 2025.",
+          "id": 15,
+          "name": "RESERVECONDITION",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "Maximum Surplus Reserve (MW) evaluated for this region from LRC runs. This field is no longer populated.",
+          "id": 16,
+          "name": "MAXSURPLUSRESERVE",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Maximum Spare Capacity (MW) evaluated for this region. Calculated for each region in turn. This value reflects Regional LOR reserve.",
+          "id": 17,
+          "name": "MAXSPARECAPACITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "The LOR Condition determined from the Maximum Spare Capacity value: 0 - no condition, 1 - LOR1 condition, 2 - LOR2 condition, 3 - LOR3 condition",
+          "id": 18,
+          "name": "LORCONDITION",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "Sum of MAXAVAIL quantities offered by all Scheduled units and Availability of all semi-scheduled units limited by MAXAVAIL in a given Region for a given PERIODID",
+          "id": 19,
+          "name": "AGGREGATECAPACITYAVAILABLE",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Sum of  MAXAVAIL quantities bid by of all Scheduled Loads in a given Region for a given PERIODID.",
+          "id": 20,
+          "name": "AGGREGATESCHEDULEDLOAD",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Date time this record was created.",
+          "id": 21,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Sum of PASAAVAILABILITY for all scheduled generating units and scheduled bidirectional units (Gen side) with a Recall_Period <= 24 hours plus the sum of Unconstrained Intermittent Generation Forecasts (UIGF) for all semi-scheduled generating units. For the RELIABILITY_LRC and OUTAGE_LRC runs, UIGF is the POE90 forecast. For the LOR Run, UIGF is the POE50 forecast. Note that the RELIABILITY_LRC and OUTAGE_LRC Run Types are discontinued from 31 July 2025. From March 2026, AGGREGATEPASAAVAILABILITY changes from that with Recall_Period <= 24 to that achievable by the relevant INTERVAL_DATETIME if recalled at the start of the run.",
+          "id": 22,
+          "name": "AGGREGATEPASAAVAILABILITY",
+          "required": false,
+          "type": "decimal(12, 0)"
+        },
+        {
+          "doc": "Type of run. Values are RELIABILITY_LRC, OUTAGE_LRC and LOR. Note that the STPASA RELIABILITY_LRC and OUTAGE_LRC Run Types are discontinued from 31 July 2025, with only the LOR Run Type reported.",
+          "id": 23,
+          "name": "RUNTYPE",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Energy (GWh) required for this energy block based on the 10% probability of exceedance demand. Listed in the first interval of the energy block",
+          "id": 24,
+          "name": "ENERGYREQDEMAND10",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Region Reserve Level for LOR1 used. Can be static value or calculated value if an interconnector is a credible contingency",
+          "id": 25,
+          "name": "CALCULATEDLOR1LEVEL",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Region Reserve Level for LOR2 used. Can be static value or calculated value if an interconnector is a credible contingency",
+          "id": 26,
+          "name": "CALCULATEDLOR2LEVEL",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Net interconnector flow from the region for this interval from the MSR assessment. This field is no longer populated.",
+          "id": 27,
+          "name": "MSRNETINTERCHANGEUNDERSCARCITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Net interconnector flow from the region for this interval from the LOR assessment",
+          "id": 28,
+          "name": "LORNETINTERCHANGEUNDERSCARCITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Allowance made for non-scheduled generation in the demand forecast (MW).",
+          "id": 29,
+          "name": "TOTALINTERMITTENTGENERATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of Cleared Scheduled generation, imported generation (at the region boundary) and allowances made for non-scheduled generation (MW).",
+          "id": 30,
+          "name": "DEMAND_AND_NONSCHEDGEN",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Unconstrained Intermittent Generation Forecast of Semi-scheduled generation (MW).",
+          "id": 31,
+          "name": "UIGF",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Constrained generation forecast (MW) for semi-scheduled units for the region. For RELIABILITY_LRC run, semi-scheduled generation is constrained only by System Normal constraints. For OUTAGE_LRC run and LOR run, semi-scheduled generation is constrained by both System Normal and Outage constraints. All three run types (RELIABILITY_LRC, OUTAGE_LRC, LOR) incorporate MAXAVAIL limits.",
+          "id": 32,
+          "name": "SEMISCHEDULEDCAPACITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Constrained generation forecast for semi-scheduled units for the region for the LOR run. Semi-scheduled generation is constrained by both System Normal and Outage constraints, and incorporate MAXAVAIL limits.",
+          "id": 33,
+          "name": "LOR_SEMISCHEDULEDCAPACITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Largest Credible Risk. MW value for highest credible contingency",
+          "id": 34,
+          "name": "LCR",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Two Largest Credible Risks. MW value for highest two credible contingencies.",
+          "id": 35,
+          "name": "LCR2",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Forecasting Uncertainty Measure. MW value of reserve calculated as defined in the Reserve Level Declaration Guidelines",
+          "id": 36,
+          "name": "FUM",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Unconstrained Intermittent Generation Forecast for solar for the region. For RELIABILITY_LRC and OUTAGE_LRC run this is the POE90 forecast (determined by LRCUIGFOption in CaseSolution). For LOR run this is the POE50 forecast",
+          "id": 37,
+          "name": "SS_SOLAR_UIGF",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Unconstrained Intermittent Generation Forecast for wind for the region. For RELIABILITY_LRC and OUTAGE_LRC run this is the POE90 forecast (determined by LRCUIGFOption in CaseSolution). For LOR run this is the POE50 forecast",
+          "id": 38,
+          "name": "SS_WIND_UIGF",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Constrained generation forecast for solar for the region. For RELIABILITY_LRC run solar generation is constrained only by System Normal constraints. For OUTAGE_LRC run and LOR run solar generation is constrained by both System Normal and Outage constraints. All three run types (RELIABILITY_LRC, OUTAGE_LRC, LOR) incorporate MAXAVAIL limits.",
+          "id": 39,
+          "name": "SS_SOLAR_CAPACITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Constrained generation forecast for wind for the region. For RELIABILITY_LRC run wind generation is constrained only by System Normal constraints. For OUTAGE_LRC run and LOR run wind generation is constrained by both System Normal and Outage constraints. All three run types (RELIABILITY_LRC, OUTAGE_LRC, LOR) incorporate MAXAVAIL limits.",
+          "id": 40,
+          "name": "SS_WIND_CAPACITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Constrained generation forecast (MW) for solar for the region. For RELIABILITY_LRC run, solar generation is constrained only by System Normal constraints. For OUTAGE_LRC run and LOR run, solar generation is constrained by both System Normal and Outage constraints. All three run types (RELIABILITY_LRC, OUTAGE_LRC, LOR) incorporate MAXAVAIL limits.This value is the same as SS_SOLAR_CAPACITY.",
+          "id": 41,
+          "name": "SS_SOLAR_CLEARED",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Constrained generation forecast (MW) for wind for the region. For RELIABILITY_LRC run, wind generation is constrained only by System Normal constraints. For OUTAGE_LRC run and LOR run, wind generation is constrained by both System Normal and Outage constraints. All three run types (RELIABILITY_LRC, OUTAGE_LRC, LOR) incorporate MAXAVAIL limits.This value is the same as SS_WIND_CAPACITY.",
+          "id": 42,
+          "name": "SS_WIND_CLEARED",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Regional aggregated Wholesale Demand Response (WDR) availability in MW.",
+          "id": 43,
+          "name": "WDR_AVAILABLE",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Regional aggregated Wholesale Demand Response (WDR) PASA availability in MW.",
+          "id": 44,
+          "name": "WDR_PASAAVAILABLE",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Regional aggregated Wholesale Demand Response (WDR) capacity in MW.",
+          "id": 45,
+          "name": "WDR_CAPACITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        23
+      ],
+      "schema-id": 3,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 5626481442725820056,
+      "timestamp-ms": 1246370400000
+    },
+    {
+      "snapshot-id": 4724535795572406077,
+      "timestamp-ms": 1543586400001
+    },
+    {
+      "snapshot-id": 3107417951606224807,
+      "timestamp-ms": 1598882400002
+    },
+    {
+      "snapshot-id": 6693155236567340780,
+      "timestamp-ms": 1617199200003
+    },
+    {
+      "snapshot-id": 7093105456059673402,
+      "timestamp-ms": 1633010400004
+    },
+    {
+      "snapshot-id": 2543151901058099829,
+      "timestamp-ms": 1722434400005
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STPASA_REGIONSOLUTION/metadata/snap-5626481442725820056-1-c53e2e7e-d532-89e0-8bb6-b2fc749b16ad.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 5626481442725820056,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "114",
+        "utilake.from.file": "PUBLIC_DVD_STPASA_REGIONSOLUTION_200907010000.zip",
+        "utilake.from.release": "2009-07",
+        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "utilake.from.time": "2009-07-02T04:30:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "REGIONSOLUTION",
+        "utilake.report-type": "STPASA",
+        "utilake.rows": "115050720",
+        "utilake.to.file": "PUBLIC_DVD_STPASA_REGIONSOLUTION_201811010000.zip",
+        "utilake.to.release": "2018-11",
+        "utilake.to.sha256": "6e1ae5faf4ae848492d7986aea626189027e205e7273b317986ea56f8d664fdc",
+        "utilake.to.time": "2018-12-08T04:00:00+10:00",
+        "utilake.total-rows": "115050720",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1246370400000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STPASA_REGIONSOLUTION/metadata/snap-4724535795572406077-2-c53e2e7e-d532-89e0-8bb6-b2fc749b16ad.avro",
+      "parent-snapshot-id": 5626481442725820056,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 4724535795572406077,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "21",
+        "utilake.from.file": "PUBLIC_DVD_STPASA_REGIONSOLUTION_201812010000.zip",
+        "utilake.from.release": "2018-12",
+        "utilake.from.sha256": "b20e1984673eec66f747cb4282630dca765329a78808b3dd5bb187e92c3a517d",
+        "utilake.from.time": "2018-12-02T04:30:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "REGIONSOLUTION",
+        "utilake.report-type": "STPASA",
+        "utilake.rows": "22118400",
+        "utilake.to.file": "PUBLIC_DVD_STPASA_REGIONSOLUTION_202008010000.zip",
+        "utilake.to.release": "2020-08",
+        "utilake.to.sha256": "a2ee42f53b817e02c1c63f256a330cd4c12d4613c00ea397e46394b2220c428d",
+        "utilake.to.time": "2020-09-08T04:00:00+10:00",
+        "utilake.total-rows": "137169120",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1543586400001
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STPASA_REGIONSOLUTION/metadata/snap-3107417951606224807-3-c53e2e7e-d532-89e0-8bb6-b2fc749b16ad.avro",
+      "parent-snapshot-id": 4724535795572406077,
+      "schema-id": 2,
+      "sequence-number": 3,
+      "snapshot-id": 3107417951606224807,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "7",
+        "utilake.from.file": "PUBLIC_DVD_STPASA_REGIONSOLUTION_202009010000.zip",
+        "utilake.from.release": "2020-09",
+        "utilake.from.sha256": "d776846dd8acd669d1ae2b6d4e7e68c8053bb2bfbd3decb1a59c0de6fad30d6d",
+        "utilake.from.time": "2020-09-02T04:30:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "REGIONSOLUTION",
+        "utilake.report-type": "STPASA",
+        "utilake.rows": "11180160",
+        "utilake.to.file": "PUBLIC_DVD_STPASA_REGIONSOLUTION_202103010000.zip",
+        "utilake.to.release": "2021-03",
+        "utilake.to.sha256": "52cc2cb6976e42cf3fc617dabaaac61a7285cb28444681f713d47753ada3c56a",
+        "utilake.to.time": "2021-04-08T04:00:00+10:00",
+        "utilake.total-rows": "148349280",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1598882400002
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STPASA_REGIONSOLUTION/metadata/snap-6693155236567340780-4-c53e2e7e-d532-89e0-8bb6-b2fc749b16ad.avro",
+      "parent-snapshot-id": 3107417951606224807,
+      "schema-id": 2,
+      "sequence-number": 4,
+      "snapshot-id": 6693155236567340780,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "6",
+        "utilake.from.file": "PUBLIC_DVD_STPASA_REGIONSOLUTION_202104010000.zip",
+        "utilake.from.release": "2021-04",
+        "utilake.from.sha256": "1dd06c62aff0168cc69108f2d26ee4ac16f748f87c92652453316759619223d5",
+        "utilake.from.time": "2021-04-02T04:30:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "REGIONSOLUTION",
+        "utilake.report-type": "STPASA",
+        "utilake.rows": "12647520",
+        "utilake.to.file": "PUBLIC_DVD_STPASA_REGIONSOLUTION_202109010000.zip",
+        "utilake.to.release": "2021-09",
+        "utilake.to.sha256": "47e3e613dcdf92d98aeed4af4ad4eb9c1663158c20cbd631ecc5295d814a1baa",
+        "utilake.to.time": "2021-10-08T04:00:00+10:00",
+        "utilake.total-rows": "160996800",
+        "utilake.version": "6"
+      },
+      "timestamp-ms": 1617199200003
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STPASA_REGIONSOLUTION/metadata/snap-7093105456059673402-5-c53e2e7e-d532-89e0-8bb6-b2fc749b16ad.avro",
+      "parent-snapshot-id": 6693155236567340780,
+      "schema-id": 3,
+      "sequence-number": 5,
+      "snapshot-id": 7093105456059673402,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "34",
+        "utilake.from.file": "PUBLIC_DVD_STPASA_REGIONSOLUTION_202110010000.zip",
+        "utilake.from.release": "2021-10",
+        "utilake.from.sha256": "1c9e8195c95cefd41de3e44f05ef04ba61d059c8ca283c6148fecad1e29c85ae",
+        "utilake.from.time": "2021-10-02T04:30:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "REGIONSOLUTION",
+        "utilake.report-type": "STPASA",
+        "utilake.rows": "71519040",
+        "utilake.to.file": "PUBLIC_DVD_STPASA_REGIONSOLUTION_202407010000.zip",
+        "utilake.to.release": "2024-07",
+        "utilake.to.sha256": "442bd7a8aca9369d1b98172fa1861a40d18c21645514e8513096c13961dda5b2",
+        "utilake.to.time": "2024-08-08T04:00:00+10:00",
+        "utilake.total-rows": "232515840",
+        "utilake.version": "6"
+      },
+      "timestamp-ms": 1633010400004
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STPASA_REGIONSOLUTION/metadata/snap-2543151901058099829-6-c53e2e7e-d532-89e0-8bb6-b2fc749b16ad.avro",
+      "parent-snapshot-id": 7093105456059673402,
+      "schema-id": 3,
+      "sequence-number": 6,
+      "snapshot-id": 2543151901058099829,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "26",
+        "utilake.from.file": "PUBLIC_ARCHIVE#STPASA_REGIONSOLUTION#FILE01#202408010000.zip",
+        "utilake.from.release": "2024-08",
+        "utilake.from.sha256": "be268786bb7845fdfa449c9a69f7bfa7d7b9ea536c89a87da23b3d9bdd76af41",
+        "utilake.from.time": "2024-08-02T04:30:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "REGIONSOLUTION",
+        "utilake.report-type": "STPASA",
+        "utilake.rows": "52509600",
+        "utilake.to.file": "PUBLIC_ARCHIVE#STPASA_REGIONSOLUTION#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "e0c6abb38db89ea1d8b789783ccd7662835cda92c50f1da35ca135af93492982",
+        "utilake.to.time": "2026-10-08T04:00:00+10:00",
+        "utilake.total-rows": "285025440",
+        "utilake.version": "7"
+      },
+      "timestamp-ms": 1722434400005
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "c53e2e7e-d532-89e0-8bb6-b2fc749b16ad"
+}

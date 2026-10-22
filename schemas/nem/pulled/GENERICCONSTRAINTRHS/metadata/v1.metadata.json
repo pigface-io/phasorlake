@@ -1,0 +1,239 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 6963565440768215070,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 15,
+  "last-partition-id": 999,
+  "last-sequence-number": 2,
+  "last-updated-ms": 1722434400001,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/GENERICCONSTRAINTRHS",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "GENERICCONSTRAINTRHS sets out details of generic constraint Right Hand Side (RHS) formulations for dispatch (DS), predispatch (PD) and Short Term PASA (ST). GENERICCONSTRAINTRHS also includes general expressions (EQ) used in the dispatch, predispatch and PASA time frames.\nGENERICCONSTRAINTRHS replaces data previously available via the \"Constraint Library” Excel spreadsheet.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"GENCONID\",\"EFFECTIVEDATE\",\"VERSIONNO\",\"SCOPE\",\"TERMID\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(22,0)\",\"4\":\"VARCHAR(2)\",\"5\":\"NUMERIC(4,0)\",\"6\":\"NUMERIC(3,0)\",\"7\":\"VARCHAR(21)\",\"8\":\"VARCHAR(1)\",\"9\":\"NUMERIC(16,6)\",\"10\":\"VARCHAR(10)\",\"11\":\"NUMERIC(16,6)\",\"12\":\"VARCHAR(12)\",\"13\":\"VARCHAR(12)\",\"14\":\"VARCHAR(12)\",\"15\":\"TIMESTAMP(0)\"}",
+    "utilake.package": "GENERIC_CONSTRAINT",
+    "utilake.reports": "[[\"GCRHS\",\"\"],[\"GCRHS\",\"NULL\"]]",
+    "utilake.table": "GENERICCONSTRAINTRHS",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"GENCONID\",\"SCOPE\",\"TERMID\"]",
+    "utilake.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "EFFECTIVEDATE",
+    "utilake.temporal.valid.kind": "from",
+    "utilake.time": "EFFECTIVEDATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 6963565440768215070,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Generic Constraint Identifier",
+          "id": 1,
+          "name": "GENCONID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Effective date of this record",
+          "id": 2,
+          "name": "EFFECTIVEDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Version no of this record for the effective date",
+          "id": 3,
+          "name": "VERSIONNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Scope of RHS term (DS, PD, ST or EQ)",
+          "id": 4,
+          "name": "SCOPE",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "The unique identifier for the a constraint RHS term",
+          "id": 5,
+          "name": "TERMID",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "ID of super-term, if this is a sub-term",
+          "id": 6,
+          "name": "GROUPID",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "ID defining data source",
+          "id": 7,
+          "name": "SPD_ID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "ID describing type of data source",
+          "id": 8,
+          "name": "SPD_TYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Multiplier applied to operator result",
+          "id": 9,
+          "name": "FACTOR",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Unitary operator to apply to data value",
+          "id": 10,
+          "name": "OPERATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Default value if primary source given by SPD_ID and SPD_TYPE not available.",
+          "id": 11,
+          "name": "DEFAULTVALUE",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "The unique identifier for the first term (logic expression) to use in a Branch term",
+          "id": 12,
+          "name": "PARAMETERTERM1",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "The unique identifier for the second term (logic<=0 result) to use in a Branch term",
+          "id": 13,
+          "name": "PARAMETERTERM2",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "The unique identifier for the third term (logic>0 result) to use in a Branch term",
+          "id": 14,
+          "name": "PARAMETERTERM3",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 15,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 7450544112487903463,
+      "timestamp-ms": 1246370400000
+    },
+    {
+      "snapshot-id": 6963565440768215070,
+      "timestamp-ms": 1722434400001
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/GENERICCONSTRAINTRHS/metadata/snap-7450544112487903463-1-1c518695-59b9-8cf1-b61c-22dd84154d09.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 7450544112487903463,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "181",
+        "utilake.from.file": "PUBLIC_DVD_GENERICCONSTRAINTRHS_200907010000.zip",
+        "utilake.from.release": "2009-07",
+        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "utilake.from.time": "2009-07-01T00:00:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "GCRHS",
+        "utilake.rows": "30947044",
+        "utilake.to.file": "PUBLIC_DVD_GENERICCONSTRAINTRHS_202407010000.zip",
+        "utilake.to.release": "2024-07",
+        "utilake.to.sha256": "7f3e55fb9362ae2e09367749b1a83141ec1a82d9590d1276bb2fae8a2633ef5c",
+        "utilake.to.time": "2024-07-31T00:00:00+10:00",
+        "utilake.total-rows": "30947044",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1246370400000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/GENERICCONSTRAINTRHS/metadata/snap-6963565440768215070-2-1c518695-59b9-8cf1-b61c-22dd84154d09.avro",
+      "parent-snapshot-id": 7450544112487903463,
+      "schema-id": 0,
+      "sequence-number": 2,
+      "snapshot-id": 6963565440768215070,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "26",
+        "utilake.from.file": "PUBLIC_ARCHIVE#GENERICCONSTRAINTRHS#FILE01#202408010000.zip",
+        "utilake.from.release": "2024-08",
+        "utilake.from.sha256": "fd99c1dbf3075927018a4fcaee127349324b56ff0d77f6b0d5da94fdf271729e",
+        "utilake.from.time": "2024-08-01T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "NULL",
+        "utilake.report-type": "GCRHS",
+        "utilake.rows": "7292467",
+        "utilake.to.file": "PUBLIC_ARCHIVE#GENERICCONSTRAINTRHS#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "6a2148f2c4f7575113db4bb2e7983b1509c152898d1fa911bb6d1bd81a630bbd",
+        "utilake.to.time": "2026-10-01T00:00:00+10:00",
+        "utilake.total-rows": "38239511",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1722434400001
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "1c518695-59b9-8cf1-b61c-22dd84154d09"
+}

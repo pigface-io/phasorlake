@@ -1,0 +1,136 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 7699435748723979167,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 6,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1722434400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SETCFG_WDR_REIMBURSE_RATE",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "Settlements WDR transactions",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"VARCHAR(20)\",\"3\":\"TIMESTAMP(3)\",\"4\":\"NUMERIC(18,8)\",\"5\":\"NUMERIC(3,0)\",\"6\":\"TIMESTAMP(3)\"}",
+    "utilake.reports": "[[\"SETTLEMENTS_CONFIG\",\"WDR_REIMBURSE_RATE\"]]",
+    "utilake.table": "SETCFG_WDR_REIMBURSE_RATE",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[]",
+    "utilake.temporal.order": "[\"VERSION_DATETIME\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.time": "LASTCHANGED",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 7699435748723979167,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Unique identifier for the period to which the WDRRR applies. For quarter-based periods, this will be equal to YYYY[Q]NN, e.g. 2020Q3 for 2020 Quarter 3.",
+          "id": 1,
+          "name": "WDRRRPERIOD",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Unique identifier for the region",
+          "id": 2,
+          "name": "REGIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The Version Date time of the latest changes.",
+          "id": 3,
+          "name": "VERSION_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "WDRRR value for the period and region ($/MWh)",
+          "id": 4,
+          "name": "WDRRR",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "A flag to indicate that the WDRRR value is FIRM for the period and region, i.e. it is based on a complete set of firm prices from dispatch. Possible Values are 1 and 0",
+          "id": 5,
+          "name": "ISFIRM",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Last changed date for the record",
+          "id": 6,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 7699435748723979167,
+      "timestamp-ms": 1722434400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SETCFG_WDR_REIMBURSE_RATE/metadata/snap-7699435748723979167-1-fe29e131-071d-8891-966d-ea9fec977b3f.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 7699435748723979167,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "26",
+        "utilake.from.file": "PUBLIC_ARCHIVE#SETCFG_WDR_REIMBURSE_RATE#FILE01#202408010000.zip",
+        "utilake.from.release": "2024-08",
+        "utilake.from.sha256": "55be28716bc74f3fc670297fb9f3d5d8297a4cb595c29dd3b7bd1550dbaf65c2",
+        "utilake.from.time": "2021-10-26T09:15:10.363+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "WDR_REIMBURSE_RATE",
+        "utilake.report-type": "SETTLEMENTS_CONFIG",
+        "utilake.rows": "2665",
+        "utilake.to.file": "PUBLIC_ARCHIVE#SETCFG_WDR_REIMBURSE_RATE#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "3880af8dd3f43e9b141bec32bf976af5f79d06fa42d02d168fa26aa66df36e5e",
+        "utilake.to.time": "2026-10-01T00:01:08.730+10:00",
+        "utilake.total-rows": "2665",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1722434400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "fe29e131-071d-8891-966d-ea9fec977b3f"
+}

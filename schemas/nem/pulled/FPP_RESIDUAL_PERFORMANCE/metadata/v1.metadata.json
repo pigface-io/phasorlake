@@ -1,0 +1,238 @@
+{
+  "current-schema-id": 1,
+  "current-snapshot-id": 2747968337348966706,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 8,
+  "last-partition-id": 999,
+  "last-sequence-number": 2,
+  "last-updated-ms": 1777557600001,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_RESIDUAL_PERFORMANCE",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "This report delivers the calculated residual performance value for each 5 minute trading interval",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"NUMERIC(5)\",\"4\":\"NUMERIC(18,5)\",\"5\":\"NUMERIC(5)\",\"6\":\"NUMERIC(18,5)\",\"7\":\"NUMERIC(5)\",\"8\":\"TIMESTAMP(0)\"}",
+    "utilake.reports": "[[\"FPP\",\"RESIDUAL_PERFORMANCE\"]]",
+    "utilake.table": "FPP_RESIDUAL_PERFORMANCE",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[]",
+    "utilake.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.time": "INTERVAL_DATETIME",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 2747968337348966706,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Date and time of the trading interval (DD/MM/YYYY HH24:MI:SS) fixed to the UTC+10 time zone (NEM time)",
+          "id": 1,
+          "name": "INTERVAL_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Region ID of the residual performance",
+          "id": 2,
+          "name": "REGIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Version (FPP run number from the FPP database)",
+          "id": 3,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "doc": "Raise performance value in MWHz units (calculated by FPP for that trading interval taken from FPP database)",
+          "id": 4,
+          "name": "RAISE_PERFORMANCE",
+          "required": false,
+          "type": "decimal(18, 5)"
+        },
+        {
+          "doc": "The reason flag showing the decision matrix for the raise performance value Supported values are: 0 = Performance is calculated based on good input data 4 = Performance is Null as Input data is bad or unavailable 8 = Performance is Null as FM is unreliable 12 = Performance is Null as Input data is bad or unavailable and FM is unreliable",
+          "id": 5,
+          "name": "RAISE_REASON_FLAG",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "doc": "Lower performance value in MWHz units (calculated by FPP for that trading interval taken from FPP database)",
+          "id": 6,
+          "name": "LOWER_PERFORMANCE",
+          "required": false,
+          "type": "decimal(18, 5)"
+        },
+        {
+          "doc": "The reason flag showing the decision matrix for the lower performance value Supported values are: 0 = Performance is calculated based on good input data 4 = Performance is Null as Input data is bad or unavailable 8 = Performance is Null as FM is unreliable 12 = Performance is Null as Input data is bad or unavailable and FM is unreliable",
+          "id": 7,
+          "name": "LOWER_REASON_FLAG",
+          "required": false,
+          "type": "decimal(5, 0)"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Date and time of the trading interval (DD/MM/YYYY HH24:MI:SS) fixed to the UTC+10 time zone (NEM time)",
+          "id": 1,
+          "name": "INTERVAL_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Region ID of the residual performance",
+          "id": 2,
+          "name": "REGIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Version (FPP run number from the FPP database)",
+          "id": 3,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "doc": "Raise performance value in MWHz units (calculated by FPP for that trading interval taken from FPP database)",
+          "id": 4,
+          "name": "RAISE_PERFORMANCE",
+          "required": false,
+          "type": "decimal(18, 5)"
+        },
+        {
+          "doc": "The reason flag showing the decision matrix for the raise performance value Supported values are: 0 = Performance is calculated based on good input data 4 = Performance is Null as Input data is bad or unavailable 8 = Performance is Null as FM is unreliable 12 = Performance is Null as Input data is bad or unavailable and FM is unreliable",
+          "id": 5,
+          "name": "RAISE_REASON_FLAG",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "doc": "Lower performance value in MWHz units (calculated by FPP for that trading interval taken from FPP database)",
+          "id": 6,
+          "name": "LOWER_PERFORMANCE",
+          "required": false,
+          "type": "decimal(18, 5)"
+        },
+        {
+          "doc": "The reason flag showing the decision matrix for the lower performance value Supported values are: 0 = Performance is calculated based on good input data 4 = Performance is Null as Input data is bad or unavailable 8 = Performance is Null as FM is unreliable 12 = Performance is Null as Input data is bad or unavailable and FM is unreliable",
+          "id": 7,
+          "name": "LOWER_REASON_FLAG",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 8,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 1,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 6646390115288733613,
+      "timestamp-ms": 1732975200000
+    },
+    {
+      "snapshot-id": 2747968337348966706,
+      "timestamp-ms": 1777557600001
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_RESIDUAL_PERFORMANCE/metadata/snap-6646390115288733613-1-97e2db05-9ee1-82f8-ae66-fe29e4ebaa06.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 6646390115288733613,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "17",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_RESIDUAL_PERFORMANCE#FILE01#202412010000.zip",
+        "utilake.from.release": "2024-12",
+        "utilake.from.sha256": "70bc467cddc852e3bcb5d9f528e4ae60c42a0f97285d61e000f6a117d33e5b9d",
+        "utilake.from.time": "2024-12-09T11:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "RESIDUAL_PERFORMANCE",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "6732625",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_RESIDUAL_PERFORMANCE#FILE01#202604010000.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "e4425c97be28c73a8f48cf367c3fdbbfaa79ca42456f30a719e3989e12cc0ee9",
+        "utilake.to.time": "2026-05-08T15:25:00+10:00",
+        "utilake.total-rows": "6732625",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1732975200000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_RESIDUAL_PERFORMANCE/metadata/snap-2747968337348966706-2-97e2db05-9ee1-82f8-ae66-fe29e4ebaa06.avro",
+      "parent-snapshot-id": 6646390115288733613,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 2747968337348966706,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "5",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_RESIDUAL_PERFORMANCE#FILE01#202605010000.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "077fb60c8a8d86b5d6f351fb1a4a3f057dc2f840843c60e8d110060b0d8d33ff",
+        "utilake.from.time": "2024-12-09T11:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "RESIDUAL_PERFORMANCE",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "2581360",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_RESIDUAL_PERFORMANCE#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "d5d0abd91d720b9c49bc5f11358bae77fab58a81a23ae172d514165dab925dac",
+        "utilake.to.time": "2026-10-01T00:00:00+10:00",
+        "utilake.total-rows": "9313985",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1777557600001
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "97e2db05-9ee1-82f8-ae66-fe29e4ebaa06"
+}

@@ -1,0 +1,1105 @@
+{
+  "current-schema-id": 3,
+  "current-snapshot-id": 7753622578685322785,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 32,
+  "last-partition-id": 999,
+  "last-sequence-number": 5,
+  "last-updated-ms": 1761919200004,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDPEROFFER_D",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "BIDPEROFFER_D shows the public summary of the energy and FCAS offers applicable in the Dispatch for the\nintervals identified. BIDPEROFFER_D is the child to BIDDAYOFFER_D.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"SETTLEMENTDATE\",\"DUID\",\"BIDTYPE\",\"INTERVAL_DATETIME\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(10)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"NUMERIC(22,0)\",\"7\":\"NUMERIC(22,0)\",\"8\":\"NUMERIC(12,6)\",\"9\":\"NUMERIC(12,6)\",\"10\":\"NUMERIC(6,0)\",\"11\":\"NUMERIC(6,0)\",\"12\":\"NUMERIC(6,0)\",\"13\":\"NUMERIC(6,0)\",\"14\":\"NUMERIC(6,0)\",\"15\":\"NUMERIC(6,0)\",\"16\":\"NUMERIC(22,0)\",\"17\":\"NUMERIC(22,0)\",\"18\":\"NUMERIC(22,0)\",\"19\":\"NUMERIC(22,0)\",\"20\":\"NUMERIC(22,0)\",\"21\":\"NUMERIC(22,0)\",\"22\":\"NUMERIC(22,0)\",\"23\":\"NUMERIC(22,0)\",\"24\":\"NUMERIC(22,0)\",\"25\":\"NUMERIC(22,0)\",\"26\":\"TIMESTAMP(0)\",\"27\":\"NUMERIC(12,0)\",\"28\":\"TIMESTAMP(0)\",\"29\":\"NUMERIC(6,0)\",\"30\":\"VARCHAR(20)\",\"31\":\"NUMERIC(15,5)\",\"32\":\"NUMERIC(8,3)\"}",
+    "utilake.package": "BIDS",
+    "utilake.reports": "[[\"BID\",\"BIDPEROFFER_D\"]]",
+    "utilake.table": "BIDPEROFFER_D",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"DUID\",\"BIDTYPE\",\"INTERVAL_DATETIME\"]",
+    "utilake.temporal.order": "[\"OFFERDATE\",\"VERSIONNO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "SETTLEMENTDATE",
+    "utilake.temporal.valid.kind": "interval_end",
+    "utilake.time": "SETTLEMENTDATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 7753622578685322785,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Market date for which the bid applied",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Dispatchable Unit identifier",
+          "id": 2,
+          "name": "DUID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Bid Type Identifier",
+          "id": 3,
+          "name": "BIDTYPE",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Market date for which the bid was submitted",
+          "id": 4,
+          "name": "BIDSETTLEMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Offer date and time",
+          "id": 5,
+          "name": "OFFERDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The trading interval period identifier (1-288)",
+          "id": 6,
+          "name": "PERIODID",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Version number of offer",
+          "id": 7,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Maximum availability for this BidType in this period",
+          "id": 8,
+          "name": "MAXAVAIL",
+          "required": false,
+          "type": "decimal(12, 6)"
+        },
+        {
+          "doc": "Fixed unit output MW (Energy Bids Only).  A value of zero means no fixed load so the unit is dispatched according to bid and market (rather than zero fixed load)",
+          "id": 9,
+          "name": "FIXEDLOAD",
+          "required": false,
+          "type": "decimal(12, 6)"
+        },
+        {
+          "doc": "MW/min for raise (Energy Bids Only)",
+          "id": 10,
+          "name": "ROCUP",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "MW/Min for lower (Energy Bids Only)",
+          "id": 11,
+          "name": "ROCDOWN",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Minimum Energy Output (MW) at which this ancillary service becomes available (AS Only)",
+          "id": 12,
+          "name": "ENABLEMENTMIN",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Maximum Energy Output (MW) at which this ancillary service can be supplied (AS Only)",
+          "id": 13,
+          "name": "ENABLEMENTMAX",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Minimum Energy Output (MW) at which the unit can provide the full availability (MAXAVAIL) for this ancillary service (AS Only)",
+          "id": 14,
+          "name": "LOWBREAKPOINT",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Maximum Energy Output (MW) at which the unit can provide the full availability (MAXAVAIL) for this ancillary service (AS Only)",
+          "id": 15,
+          "name": "HIGHBREAKPOINT",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Availability at price band 1",
+          "id": 16,
+          "name": "BANDAVAIL1",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 2",
+          "id": 17,
+          "name": "BANDAVAIL2",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 3",
+          "id": 18,
+          "name": "BANDAVAIL3",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 4",
+          "id": 19,
+          "name": "BANDAVAIL4",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 5",
+          "id": 20,
+          "name": "BANDAVAIL5",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 6",
+          "id": 21,
+          "name": "BANDAVAIL6",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 7",
+          "id": 22,
+          "name": "BANDAVAIL7",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 8",
+          "id": 23,
+          "name": "BANDAVAIL8",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 9",
+          "id": 24,
+          "name": "BANDAVAIL9",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 10",
+          "id": 25,
+          "name": "BANDAVAIL10",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 26,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Allows for future use for energy bids, being the physical plant capability including any capability potentially available within 24 hours",
+          "id": 27,
+          "name": "PASAAVAILABILITY",
+          "required": false,
+          "type": "decimal(12, 0)"
+        },
+        {
+          "doc": "Date and Time of the dispatch interval to which the offer applied",
+          "id": 28,
+          "name": "INTERVAL_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        28
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Market date for which the bid applied",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Dispatchable Unit identifier",
+          "id": 2,
+          "name": "DUID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Bid Type Identifier",
+          "id": 3,
+          "name": "BIDTYPE",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Market date for which the bid was submitted",
+          "id": 4,
+          "name": "BIDSETTLEMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Offer date and time",
+          "id": 5,
+          "name": "OFFERDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The trading interval period identifier (1-288)",
+          "id": 6,
+          "name": "PERIODID",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Version number of offer",
+          "id": 7,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Maximum availability for this BidType in this period",
+          "id": 8,
+          "name": "MAXAVAIL",
+          "required": false,
+          "type": "decimal(12, 6)"
+        },
+        {
+          "doc": "Fixed unit output MW (Energy Bids Only).  A value of zero means no fixed load so the unit is dispatched according to bid and market (rather than zero fixed load)",
+          "id": 9,
+          "name": "FIXEDLOAD",
+          "required": false,
+          "type": "decimal(12, 6)"
+        },
+        {
+          "doc": "MW/min for raise (Energy Bids Only)",
+          "id": 10,
+          "name": "ROCUP",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "MW/Min for lower (Energy Bids Only)",
+          "id": 11,
+          "name": "ROCDOWN",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Minimum Energy Output (MW) at which this ancillary service becomes available (AS Only)",
+          "id": 12,
+          "name": "ENABLEMENTMIN",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Maximum Energy Output (MW) at which this ancillary service can be supplied (AS Only)",
+          "id": 13,
+          "name": "ENABLEMENTMAX",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Minimum Energy Output (MW) at which the unit can provide the full availability (MAXAVAIL) for this ancillary service (AS Only)",
+          "id": 14,
+          "name": "LOWBREAKPOINT",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Maximum Energy Output (MW) at which the unit can provide the full availability (MAXAVAIL) for this ancillary service (AS Only)",
+          "id": 15,
+          "name": "HIGHBREAKPOINT",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Availability at price band 1",
+          "id": 16,
+          "name": "BANDAVAIL1",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 2",
+          "id": 17,
+          "name": "BANDAVAIL2",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 3",
+          "id": 18,
+          "name": "BANDAVAIL3",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 4",
+          "id": 19,
+          "name": "BANDAVAIL4",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 5",
+          "id": 20,
+          "name": "BANDAVAIL5",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 6",
+          "id": 21,
+          "name": "BANDAVAIL6",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 7",
+          "id": 22,
+          "name": "BANDAVAIL7",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 8",
+          "id": 23,
+          "name": "BANDAVAIL8",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 9",
+          "id": 24,
+          "name": "BANDAVAIL9",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 10",
+          "id": 25,
+          "name": "BANDAVAIL10",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 26,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Allows for future use for energy bids, being the physical plant capability including any capability potentially available within 24 hours",
+          "id": 27,
+          "name": "PASAAVAILABILITY",
+          "required": false,
+          "type": "decimal(12, 0)"
+        },
+        {
+          "doc": "Date and Time of the dispatch interval to which the offer applied",
+          "id": 28,
+          "name": "INTERVAL_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Mandatory Restriction Offer amount",
+          "id": 29,
+          "name": "MR_CAPACITY",
+          "required": false,
+          "type": "decimal(6, 0)"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        28
+      ],
+      "schema-id": 1,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Market date for which the bid applied",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Dispatchable Unit identifier",
+          "id": 2,
+          "name": "DUID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Bid Type Identifier",
+          "id": 3,
+          "name": "BIDTYPE",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "The power flow direction to which this offer applies: GEN, LOAD or BIDIRECTIONAL",
+          "id": 30,
+          "name": "DIRECTION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Date and Time of the dispatch interval to which the offer applied",
+          "id": 28,
+          "name": "INTERVAL_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Market date for which the bid was submitted",
+          "id": 4,
+          "name": "BIDSETTLEMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Offer date and time",
+          "id": 5,
+          "name": "OFFERDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The trading interval period identifier (1-288)",
+          "id": 6,
+          "name": "PERIODID",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Version number of offer",
+          "id": 7,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Maximum availability for this BidType in this period",
+          "id": 8,
+          "name": "MAXAVAIL",
+          "required": false,
+          "type": "decimal(12, 6)"
+        },
+        {
+          "doc": "Fixed unit output MW (Energy Bids Only).  A value of zero means no fixed load so the unit is dispatched according to bid and market (rather than zero fixed load)",
+          "id": 9,
+          "name": "FIXEDLOAD",
+          "required": false,
+          "type": "decimal(12, 6)"
+        },
+        {
+          "doc": "MW/min for raise (Energy Bids Only)",
+          "id": 10,
+          "name": "ROCUP",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "MW/Min for lower (Energy Bids Only)",
+          "id": 11,
+          "name": "ROCDOWN",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Minimum Energy Output (MW) at which this ancillary service becomes available (AS Only)",
+          "id": 12,
+          "name": "ENABLEMENTMIN",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Maximum Energy Output (MW) at which this ancillary service can be supplied (AS Only)",
+          "id": 13,
+          "name": "ENABLEMENTMAX",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Minimum Energy Output (MW) at which the unit can provide the full availability (MAXAVAIL) for this ancillary service (AS Only)",
+          "id": 14,
+          "name": "LOWBREAKPOINT",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Maximum Energy Output (MW) at which the unit can provide the full availability (MAXAVAIL) for this ancillary service (AS Only)",
+          "id": 15,
+          "name": "HIGHBREAKPOINT",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Availability at price band 1",
+          "id": 16,
+          "name": "BANDAVAIL1",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 2",
+          "id": 17,
+          "name": "BANDAVAIL2",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 3",
+          "id": 18,
+          "name": "BANDAVAIL3",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 4",
+          "id": 19,
+          "name": "BANDAVAIL4",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 5",
+          "id": 20,
+          "name": "BANDAVAIL5",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 6",
+          "id": 21,
+          "name": "BANDAVAIL6",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 7",
+          "id": 22,
+          "name": "BANDAVAIL7",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 8",
+          "id": 23,
+          "name": "BANDAVAIL8",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 9",
+          "id": 24,
+          "name": "BANDAVAIL9",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 10",
+          "id": 25,
+          "name": "BANDAVAIL10",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 26,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Allows for future use for energy bids, being the physical plant capability including any capability potentially available within 24 hours",
+          "id": 27,
+          "name": "PASAAVAILABILITY",
+          "required": false,
+          "type": "decimal(12, 0)"
+        },
+        {
+          "doc": "Mandatory Restriction Offer amount",
+          "id": 29,
+          "name": "MR_CAPACITY",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "The Energy limit applying at the end of this dispatch interval in MWh. For GEN this is a lower energy limit. For LOAD this is an upper energy limit",
+          "id": 31,
+          "name": "ENERGYLIMIT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        28
+      ],
+      "schema-id": 2,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Market date for which the bid applied",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Dispatchable Unit identifier",
+          "id": 2,
+          "name": "DUID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Bid Type Identifier",
+          "id": 3,
+          "name": "BIDTYPE",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "The power flow direction to which this offer applies: GEN, LOAD or BIDIRECTIONAL",
+          "id": 30,
+          "name": "DIRECTION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Date and Time of the dispatch interval to which the offer applied",
+          "id": 28,
+          "name": "INTERVAL_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Market date for which the bid was submitted",
+          "id": 4,
+          "name": "BIDSETTLEMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Offer date and time",
+          "id": 5,
+          "name": "OFFERDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The trading interval period identifier (1-288)",
+          "id": 6,
+          "name": "PERIODID",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Version number of offer",
+          "id": 7,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Maximum availability for this BidType in this period",
+          "id": 8,
+          "name": "MAXAVAIL",
+          "required": false,
+          "type": "decimal(12, 6)"
+        },
+        {
+          "doc": "Fixed unit output MW (Energy Bids Only).  A value of zero means no fixed load so the unit is dispatched according to bid and market (rather than zero fixed load)",
+          "id": 9,
+          "name": "FIXEDLOAD",
+          "required": false,
+          "type": "decimal(12, 6)"
+        },
+        {
+          "doc": "MW/min for raise (Energy Bids Only)",
+          "id": 10,
+          "name": "ROCUP",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "MW/Min for lower (Energy Bids Only)",
+          "id": 11,
+          "name": "ROCDOWN",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Minimum Energy Output (MW) at which this ancillary service becomes available (AS Only)",
+          "id": 12,
+          "name": "ENABLEMENTMIN",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Maximum Energy Output (MW) at which this ancillary service can be supplied (AS Only)",
+          "id": 13,
+          "name": "ENABLEMENTMAX",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Minimum Energy Output (MW) at which the unit can provide the full availability (MAXAVAIL) for this ancillary service (AS Only)",
+          "id": 14,
+          "name": "LOWBREAKPOINT",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Maximum Energy Output (MW) at which the unit can provide the full availability (MAXAVAIL) for this ancillary service (AS Only)",
+          "id": 15,
+          "name": "HIGHBREAKPOINT",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Availability at price band 1",
+          "id": 16,
+          "name": "BANDAVAIL1",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 2",
+          "id": 17,
+          "name": "BANDAVAIL2",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 3",
+          "id": 18,
+          "name": "BANDAVAIL3",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 4",
+          "id": 19,
+          "name": "BANDAVAIL4",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 5",
+          "id": 20,
+          "name": "BANDAVAIL5",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 6",
+          "id": 21,
+          "name": "BANDAVAIL6",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 7",
+          "id": 22,
+          "name": "BANDAVAIL7",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 8",
+          "id": 23,
+          "name": "BANDAVAIL8",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 9",
+          "id": 24,
+          "name": "BANDAVAIL9",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 10",
+          "id": 25,
+          "name": "BANDAVAIL10",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 26,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Allows for future use for energy bids, being the physical plant capability including any capability potentially available within 24 hours",
+          "id": 27,
+          "name": "PASAAVAILABILITY",
+          "required": false,
+          "type": "decimal(12, 0)"
+        },
+        {
+          "doc": "Mandatory Restriction Offer amount",
+          "id": 29,
+          "name": "MR_CAPACITY",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "The Energy limit applying at the end of this dispatch interval in MWh. For GEN this is a lower energy limit. For LOAD this is an upper energy limit",
+          "id": 31,
+          "name": "ENERGYLIMIT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "The advance notice (in hours) that a Scheduled Resource requires to achieve the PASA Availability MW for this trading interval.",
+          "id": 32,
+          "name": "RECALL_PERIOD",
+          "required": false,
+          "type": "decimal(8, 3)"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        28
+      ],
+      "schema-id": 3,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 52478209154741716,
+      "timestamp-ms": 1246370400000
+    },
+    {
+      "snapshot-id": 8628360147803030901,
+      "timestamp-ms": 1280584800001
+    },
+    {
+      "snapshot-id": 1999948024918415948,
+      "timestamp-ms": 1722434400002
+    },
+    {
+      "snapshot-id": 5640622668882955666,
+      "timestamp-ms": 1751292000003
+    },
+    {
+      "snapshot-id": 7753622578685322785,
+      "timestamp-ms": 1761919200004
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDPEROFFER_D/metadata/snap-52478209154741716-1-08e2bd80-f05a-8abc-877d-80a3b7d03cd6.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 52478209154741716,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "13",
+        "utilake.from.file": "PUBLIC_DVD_BIDPEROFFER_D_200907010000.zip",
+        "utilake.from.release": "2009-07",
+        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "utilake.from.time": "2009-07-01T00:00:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "BIDPEROFFER_D",
+        "utilake.report-type": "BID",
+        "utilake.rows": "112716240",
+        "utilake.to.file": "PUBLIC_DVD_BIDPEROFFER_D_201007010000.zip",
+        "utilake.to.release": "2010-07",
+        "utilake.to.sha256": "b2e1526b37329daa1786a52b59b7e311781d03effb6f511750c627c722875b27",
+        "utilake.to.time": "2010-07-31T00:00:00+10:00",
+        "utilake.total-rows": "112716240",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1246370400000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDPEROFFER_D/metadata/snap-8628360147803030901-2-08e2bd80-f05a-8abc-877d-80a3b7d03cd6.avro",
+      "parent-snapshot-id": 52478209154741716,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 8628360147803030901,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "127",
+        "utilake.from.file": "PUBLIC_DVD_BIDPEROFFER_D_201008010000.zip",
+        "utilake.from.release": "2010-08",
+        "utilake.from.sha256": "aad9ba54f0c2f63689f9e30ebe4b890969f2b15cce6e1cea674b3c5a50d3d3f6",
+        "utilake.from.time": "2010-08-01T00:00:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "BIDPEROFFER_D",
+        "utilake.report-type": "BID",
+        "utilake.rows": "1100614338",
+        "utilake.to.file": "PUBLIC_DVD_BIDPEROFFER_D_202102010000.zip",
+        "utilake.to.release": "2021-02",
+        "utilake.to.sha256": "b3e741c79a042aa48630090f1bd2e6b366d6e7a4c0676c5842eb0b2810b09721",
+        "utilake.to.time": "2021-02-28T00:00:00+10:00",
+        "utilake.total-rows": "1213330578",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1280584800001
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDPEROFFER_D/metadata/snap-1999948024918415948-3-08e2bd80-f05a-8abc-877d-80a3b7d03cd6.avro",
+      "parent-snapshot-id": 8628360147803030901,
+      "schema-id": 2,
+      "sequence-number": 3,
+      "snapshot-id": 1999948024918415948,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "11",
+        "utilake.from.file": "PUBLIC_ARCHIVE#BIDPEROFFER_D#FILE01#202408010000.zip",
+        "utilake.from.release": "2024-08",
+        "utilake.from.sha256": "668fc9d55d3ce8756ac0e22db505cdd475d8035162ec0d353b6fef1699ea38e4",
+        "utilake.from.time": "2024-08-01T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "BIDPEROFFER_D",
+        "utilake.report-type": "BID",
+        "utilake.rows": "176406456",
+        "utilake.to.file": "PUBLIC_ARCHIVE#BIDPEROFFER_D#FILE01#202506010000.zip",
+        "utilake.to.release": "2025-06",
+        "utilake.to.sha256": "6c2141d328f96ec05d7aae78ed145e571cdba8a309c225156a3387c59a7aa229",
+        "utilake.to.time": "2025-06-30T00:00:00+10:00",
+        "utilake.total-rows": "1389737034",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1722434400002
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDPEROFFER_D/metadata/snap-5640622668882955666-4-08e2bd80-f05a-8abc-877d-80a3b7d03cd6.avro",
+      "parent-snapshot-id": 1999948024918415948,
+      "schema-id": 2,
+      "sequence-number": 4,
+      "snapshot-id": 5640622668882955666,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "4",
+        "utilake.from.file": "PUBLIC_ARCHIVE#BIDPEROFFER_D#FILE01#202507010000.zip",
+        "utilake.from.release": "2025-07",
+        "utilake.from.sha256": "9af625df4e660bad6eb672abb397d0ad49ce29bc0ce6d5eef0197bedb42399fd",
+        "utilake.from.time": "2025-07-01T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "BIDPEROFFER_D",
+        "utilake.report-type": "BID",
+        "utilake.rows": "68319024",
+        "utilake.to.file": "PUBLIC_ARCHIVE#BIDPEROFFER_D#FILE01#202510010000.zip",
+        "utilake.to.release": "2025-10",
+        "utilake.to.sha256": "574a02ca4e0e1c7c3c03f43526ab9c332f1ca37116892fb9deb4dd3165fc1093",
+        "utilake.to.time": "2025-10-31T00:00:00+10:00",
+        "utilake.total-rows": "1458056058",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1751292000003
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDPEROFFER_D/metadata/snap-7753622578685322785-5-08e2bd80-f05a-8abc-877d-80a3b7d03cd6.avro",
+      "parent-snapshot-id": 5640622668882955666,
+      "schema-id": 3,
+      "sequence-number": 5,
+      "snapshot-id": 7753622578685322785,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "11",
+        "utilake.from.file": "PUBLIC_ARCHIVE#BIDPEROFFER_D#FILE01#202511010000.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "7f430f1b51181512683a6d059c57ca6baae4275f2b1199d38529e741e94e3f43",
+        "utilake.from.time": "2025-11-01T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "BIDPEROFFER_D",
+        "utilake.report-type": "BID",
+        "utilake.rows": "207135168",
+        "utilake.to.file": "PUBLIC_ARCHIVE#BIDPEROFFER_D#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "242d173c0f9b771c714ea30c39b181efe5869c36164b1a4697bc00f62ca47cc2",
+        "utilake.to.time": "2026-09-30T00:00:00+10:00",
+        "utilake.total-rows": "1665191226",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1761919200004
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "08e2bd80-f05a-8abc-877d-80a3b7d03cd6"
+}

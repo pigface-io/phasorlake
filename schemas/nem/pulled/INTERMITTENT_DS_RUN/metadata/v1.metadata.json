@@ -1,0 +1,193 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 4811093347215296928,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 13,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1722434400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INTERMITTENT_DS_RUN",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "Unconstrained Intermittent Generation Forecasts (UIGF) for Dispatch.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"RUN_DATETIME\",\"DUID\",\"OFFERDATETIME\",\"ORIGIN\",\"FORECAST_PRIORITY\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(10,0)\",\"6\":\"VARCHAR(20)\",\"7\":\"VARCHAR(200)\",\"8\":\"TIMESTAMP(0)\",\"9\":\"VARCHAR(30)\",\"10\":\"TIMESTAMP(0)\",\"11\":\"NUMERIC(1,0)\",\"12\":\"NUMERIC(1,0)\",\"13\":\"VARCHAR(100)\"}",
+    "utilake.package": "DEMAND_FORECASTS",
+    "utilake.reports": "[[\"DEMAND\",\"INTERMITTENT_DS_RUN\"]]",
+    "utilake.table": "INTERMITTENT_DS_RUN",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"DUID\",\"ORIGIN\",\"FORECAST_PRIORITY\"]",
+    "utilake.temporal.order": "[\"OFFERDATETIME\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "RUN_DATETIME",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "RUN_DATETIME",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 4811093347215296928,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Date and Time where the forecast applies (dispatch interval ending)",
+          "id": 1,
+          "name": "RUN_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "DUID (or Area for non-scheduled) where this forecast applies",
+          "id": 2,
+          "name": "DUID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Date and Time when this forecast submission was loaded.",
+          "id": 3,
+          "name": "OFFERDATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Origin of this forecast (PARTICIPANTID, AWEFS/ASEFS, or another vendor)",
+          "id": 4,
+          "name": "ORIGIN",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Unsuppressed forecasts with higher priority values are used in Dispatch in preference to unsuppressed forecasts with lower priority values.",
+          "id": 5,
+          "name": "FORECAST_PRIORITY",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Authorising officer of this forecast (applicable for participant forecasts only). This column is not made available to the public.",
+          "id": 6,
+          "name": "AUTHORISEDBY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Comments relating to the forecast. This column is not made available to the public.",
+          "id": 7,
+          "name": "COMMENTS",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Last date and time the record changed.",
+          "id": 8,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Metadata relating to the forecast. This column is not made available to the public.",
+          "id": 9,
+          "name": "MODEL",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Participant can document when the forecast was created",
+          "id": 10,
+          "name": "PARTICIPANT_TIMESTAMP",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Was this forecast suppressed by AEMO? Suppressed = 1,Not suppressed =0",
+          "id": 11,
+          "name": "SUPPRESSED_AEMO",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "Was this forecast suppressed by the participant? Suppressed submissions may not be used,  Suppressed = 1, Not suppressed =0",
+          "id": 12,
+          "name": "SUPPRESSED_PARTICIPANT",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "Uniquely identifies this interaction",
+          "id": 13,
+          "name": "TRANSACTION_ID",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 4811093347215296928,
+      "timestamp-ms": 1722434400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INTERMITTENT_DS_RUN/metadata/snap-4811093347215296928-1-c8918de6-3f78-8b25-8679-3856b038320d.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 4811093347215296928,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "26",
+        "utilake.from.file": "PUBLIC_ARCHIVE#INTERMITTENT_DS_RUN#FILE01#202408010000.zip",
+        "utilake.from.release": "2024-08",
+        "utilake.from.sha256": "64ecc662806f3a0aed72e68c86c738a7f475f22b5161c18dd11889a92097dff8",
+        "utilake.from.time": "2024-08-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "INTERMITTENT_DS_RUN",
+        "utilake.report-type": "DEMAND",
+        "utilake.rows": "620306813",
+        "utilake.to.file": "PUBLIC_ARCHIVE#INTERMITTENT_DS_RUN#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "1649b24d671b6721aaba199990c195d8714f963e3c3434295c813aa43f511233",
+        "utilake.to.time": "2026-10-01T00:00:00+10:00",
+        "utilake.total-rows": "620306813",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1722434400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "c8918de6-3f78-8b25-8679-3856b038320d"
+}

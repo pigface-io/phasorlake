@@ -1,0 +1,157 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 6547043777174987424,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 8,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1246370400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCH_MNSPBIDTRK",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "DISPATCH_MNSPBIDTRK shows the MNSP bid tracking, including the bid version used in each dispatch run for each MNSP Interconnector Link. The table identifies which bids from MNSP_DAYOFFER and MNSP_BIDOFFERPERIOD were applied.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"SETTLEMENTDATE\",\"RUNNO\",\"PARTICIPANTID\",\"LINKID\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(10)\",\"4\":\"VARCHAR(10)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(3)\",\"7\":\"NUMERIC(3,0)\",\"8\":\"TIMESTAMP(0)\"}",
+    "utilake.package": "DISPATCH",
+    "utilake.reports": "[[\"DISPATCH\",\"MNSPBIDTRK\"]]",
+    "utilake.table": "DISPATCH_MNSPBIDTRK",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"PARTICIPANTID\",\"LINKID\"]",
+    "utilake.temporal.order": "[\"RUNNO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "SETTLEMENTDATE",
+    "utilake.temporal.valid.kind": "interval_end",
+    "utilake.time": "SETTLEMENTDATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 6547043777174987424,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Market date starting at 04:05",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Dispatch run no; always 1",
+          "id": 2,
+          "name": "RUNNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Participant that owns unit during effective record period",
+          "id": 3,
+          "name": "PARTICIPANTID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Identifier for each of the two MNSP Interconnector Links. Each link pertains to the direction from and to.",
+          "id": 4,
+          "name": "LINKID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Offer date for bid",
+          "id": 5,
+          "name": "OFFERSETTLEMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Time this bid was processed and loaded",
+          "id": 6,
+          "name": "OFFEREFFECTIVEDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "VersionNo of the bid/offer used",
+          "id": 7,
+          "name": "OFFERVERSIONNO",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Record creation timestamp",
+          "id": 8,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 6547043777174987424,
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCH_MNSPBIDTRK/metadata/snap-6547043777174987424-1-e80635f1-8b37-87fd-8509-0cb448e46a14.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 6547043777174987424,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "204",
+        "utilake.from.file": "PUBLIC_DVD_DISPATCH_MNSPBIDTRK_200907010000.zip",
+        "utilake.from.release": "2009-07",
+        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "utilake.from.time": "2009-07-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\",\"dvd\"]",
+        "utilake.report-subtype": "MNSPBIDTRK",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "3579936",
+        "utilake.to.file": "PUBLIC_ARCHIVE#DISPATCH_MNSPBIDTRK#FILE01#202606010000.zip",
+        "utilake.to.release": "2026-06",
+        "utilake.to.sha256": "01047170b0e9d893bf3ac6146f7d6f3522d7ff34c8419fcb6931653101e568c4",
+        "utilake.to.time": "2026-07-01T00:00:00+10:00",
+        "utilake.total-rows": "3579936",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "e80635f1-8b37-87fd-8509-0cb448e46a14"
+}

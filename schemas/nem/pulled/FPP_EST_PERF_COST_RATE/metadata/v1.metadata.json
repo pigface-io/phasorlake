@@ -1,0 +1,266 @@
+{
+  "current-schema-id": 1,
+  "current-snapshot-id": 4660800875528144514,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 10,
+  "last-partition-id": 999,
+  "last-sequence-number": 2,
+  "last-updated-ms": 1777557600001,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_EST_PERF_COST_RATE",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "This report delivers the estimated performance cost rate for each constraint for each 5 minute trading interval",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"NUMERIC(10)\",\"4\":\"VARCHAR(10)\",\"5\":\"VARCHAR(200)\",\"6\":\"NUMERIC(18,8)\",\"7\":\"NUMERIC(18,8)\",\"8\":\"NUMERIC(18,8)\",\"9\":\"NUMERIC(18,8)\",\"10\":\"TIMESTAMP(0)\"}",
+    "utilake.reports": "[[\"FPP\",\"EST_PERF_COST_RATE\"]]",
+    "utilake.table": "FPP_EST_PERF_COST_RATE",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[]",
+    "utilake.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.time": "INTERVAL_DATETIME",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 4660800875528144514,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Date and time of the trading interval (DD/MM/YYYY HH24:MI:SS) fixed to the UTC+10 time zone (NEM time)",
+          "id": 1,
+          "name": "INTERVAL_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Constraint ID (binding constraint ID from FCAS data used in FPP calculations)",
+          "id": 2,
+          "name": "CONSTRAINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The version number. In most cases this version will be the FPP run number from the FPP database, however there are some cases (like a new pricing run of the constraint FCAS processor received by the FPP system) where the version number listed here will be the financial estimate run number from the FPP database (this number is a different sequence from the FPP run number because there is no recalculation of performance or contribution, just changes to pricing / p regulation hence only the financial estimation is performed).",
+          "id": 3,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "decimal(10, 0)"
+        },
+        {
+          "doc": "Bid type (the bid type saved in relation to constraint ID from FCAS data used in FPP calculations)",
+          "id": 4,
+          "name": "BIDTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Relevant regions (a comma separated list of the relevant regions for the constraint from FCAS data)",
+          "id": 5,
+          "name": "RELEVANT_REGIONS",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The payment rate for FPP in AUD / MWHz (the denominator used is the sum of positive performance for the constraint calculated by contribution factor calculation). This value will be either 0 (nil), or a positive value (credit) only. For details on the calculation, please see FPP procedure and supporting documentation.",
+          "id": 6,
+          "name": "FPP_PAYMENT_RATE",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The recovery rate for FPP in AUD / MWHz (the denominator used is the absolute sum of negative performance for the constraint calculated by the contribution factor calculation). This value will be either 0 (nil), or a negative value (debit) only. For details on the calculation, please see FPP procedure and supporting documentation.",
+          "id": 7,
+          "name": "FPP_RECOVERY_RATE",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The rate for used FCAS in AUD / MWHz (the denominator used is the absolute sum of negative performance for the constraint calculated by the negative contribution factor calculation). This value will be either 0 (nil), or a negative value (debit) only. For details on the calculation, please see FPP procedure and supporting documentation.",
+          "id": 8,
+          "name": "USED_FCAS_RATE",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The rate for unused FCAS in AUD / MWHz (the denominator used is the absolute sum of negative performance for the constraint calculated by the default contribution factor calculation). This value will be either 0 (nil), or a negative value (debit) only. For details on the calculation, please see FPP procedure and supporting documentation.",
+          "id": 9,
+          "name": "UNUSED_FCAS_RATE",
+          "required": false,
+          "type": "decimal(18, 8)"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Date and time of the trading interval (DD/MM/YYYY HH24:MI:SS) fixed to the UTC+10 time zone (NEM time)",
+          "id": 1,
+          "name": "INTERVAL_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Constraint ID (binding constraint ID from FCAS data used in FPP calculations)",
+          "id": 2,
+          "name": "CONSTRAINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The version number. In most cases this version will be the FPP run number from the FPP database, however there are some cases (like a new pricing run of the constraint FCAS processor received by the FPP system) where the version number listed here will be the financial estimate run number from the FPP database (this number is a different sequence from the FPP run number because there is no recalculation of performance or contribution, just changes to pricing / p regulation hence only the financial estimation is performed).",
+          "id": 3,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "decimal(10, 0)"
+        },
+        {
+          "doc": "Bid type (the bid type saved in relation to constraint ID from FCAS data used in FPP calculations)",
+          "id": 4,
+          "name": "BIDTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Relevant regions (a comma separated list of the relevant regions for the constraint from FCAS data)",
+          "id": 5,
+          "name": "RELEVANT_REGIONS",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The payment rate for FPP in AUD / MWHz (the denominator used is the sum of positive performance for the constraint calculated by contribution factor calculation). This value will be either 0 (nil), or a positive value (credit) only. For details on the calculation, please see FPP procedure and supporting documentation.",
+          "id": 6,
+          "name": "FPP_PAYMENT_RATE",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The recovery rate for FPP in AUD / MWHz (the denominator used is the absolute sum of negative performance for the constraint calculated by the contribution factor calculation). This value will be either 0 (nil), or a negative value (debit) only. For details on the calculation, please see FPP procedure and supporting documentation.",
+          "id": 7,
+          "name": "FPP_RECOVERY_RATE",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The rate for used FCAS in AUD / MWHz (the denominator used is the absolute sum of negative performance for the constraint calculated by the negative contribution factor calculation). This value will be either 0 (nil), or a negative value (debit) only. For details on the calculation, please see FPP procedure and supporting documentation.",
+          "id": 8,
+          "name": "USED_FCAS_RATE",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The rate for unused FCAS in AUD / MWHz (the denominator used is the absolute sum of negative performance for the constraint calculated by the default contribution factor calculation). This value will be either 0 (nil), or a negative value (debit) only. For details on the calculation, please see FPP procedure and supporting documentation.",
+          "id": 9,
+          "name": "UNUSED_FCAS_RATE",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 10,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 1,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 245546533934124281,
+      "timestamp-ms": 1732975200000
+    },
+    {
+      "snapshot-id": 4660800875528144514,
+      "timestamp-ms": 1777557600001
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_EST_PERF_COST_RATE/metadata/snap-245546533934124281-1-5ce497f1-90c8-8e4c-8437-185d6238ec15.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 245546533934124281,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "17",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_EST_PERF_COST_RATE#FILE01#202412010000.zip",
+        "utilake.from.release": "2024-12",
+        "utilake.from.sha256": "1cd6c89bb1f9fef08e16687d8ec5d258591c0a1c19589d645f50b79e89a80666",
+        "utilake.from.time": "2024-12-09T11:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "EST_PERF_COST_RATE",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "5314438",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_EST_PERF_COST_RATE#FILE01#202604010000.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "58ffd5c27bc62335804416869b8add80f44480b803c2be725b68434fa8b1cddf",
+        "utilake.to.time": "2026-05-08T16:25:00+10:00",
+        "utilake.total-rows": "5314438",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1732975200000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_EST_PERF_COST_RATE/metadata/snap-4660800875528144514-2-5ce497f1-90c8-8e4c-8437-185d6238ec15.avro",
+      "parent-snapshot-id": 245546533934124281,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 4660800875528144514,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "5",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_EST_PERF_COST_RATE#FILE01#202605010000.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "2f65643cc56103d7984aaf5c41db391f4824a4d47e49b561989caa4314373ee8",
+        "utilake.from.time": "2024-12-09T11:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "EST_PERF_COST_RATE",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "2039897",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_EST_PERF_COST_RATE#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "6e9b6262409a2730a64ae99775b8408a38d35a32060da2cd0b0767eafd19bacc",
+        "utilake.to.time": "2026-10-01T00:00:00+10:00",
+        "utilake.total-rows": "7354335",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1777557600001
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "5ce497f1-90c8-8e4c-8437-185d6238ec15"
+}

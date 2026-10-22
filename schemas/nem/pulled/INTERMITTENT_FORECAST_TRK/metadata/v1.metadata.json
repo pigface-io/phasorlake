@@ -1,0 +1,133 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 3828847200653729229,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 5,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1722434400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INTERMITTENT_FORECAST_TRK",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "Uniquely tracks which Intermittent Generation forecast was used for the DUID in which Dispatch run",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"SETTLEMENTDATE\",\"DUID\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"VARCHAR(20)\",\"4\":\"NUMERIC(10,0)\",\"5\":\"TIMESTAMP(0)\"}",
+    "utilake.package": "DISPATCH",
+    "utilake.reports": "[[\"DISPATCH\",\"INTERMITTENT_FORECAST_TRK\"]]",
+    "utilake.table": "INTERMITTENT_FORECAST_TRK",
+    "utilake.temporal.entity": "[\"DUID\"]",
+    "utilake.temporal.order": "[\"OFFERDATETIME\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "SETTLEMENTDATE",
+    "utilake.temporal.valid.kind": "interval_end",
+    "utilake.time": "SETTLEMENTDATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 3828847200653729229,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "DateTime of the Dispatch run (dispatch interval ending)",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Tracks to INTERMITTENT_DS_RUN.DUID",
+          "id": 2,
+          "name": "DUID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Tracks to INTERMITTENT_DS_RUN.ORIGIN, except when the forecast used is either SCADA or FCST or Last Target",
+          "id": 3,
+          "name": "ORIGIN",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Tracks to INTERMITTENT_DS_RUN.FORECAST_PRIORITY, except for -1 which denotes SCADA or FCST, and 0 which denotes Last Target",
+          "id": 4,
+          "name": "FORECAST_PRIORITY",
+          "required": false,
+          "type": "decimal(10, 0)"
+        },
+        {
+          "doc": "Tracks to INTERMITTENT_DS_RUN.OFFERDATETIME",
+          "id": 5,
+          "name": "OFFERDATETIME",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 3828847200653729229,
+      "timestamp-ms": 1722434400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INTERMITTENT_FORECAST_TRK/metadata/snap-3828847200653729229-1-ffc5273e-266f-8f29-9c68-cf7709e03da7.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 3828847200653729229,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "26",
+        "utilake.from.file": "PUBLIC_ARCHIVE#INTERMITTENT_FORECAST_TRK#FILE01#202408010000.zip",
+        "utilake.from.release": "2024-08",
+        "utilake.from.sha256": "51abb2ce8bb72243265c7b9ec66a22408c029605b39d56bde660d6907e64b98d",
+        "utilake.from.time": "2024-08-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "INTERMITTENT_FORECAST_TRK",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "43416089",
+        "utilake.to.file": "PUBLIC_ARCHIVE#INTERMITTENT_FORECAST_TRK#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "b8be0c09827014d22c36b04d56439aeb8222cc8eda15b90064120e564cbf0597",
+        "utilake.to.time": "2026-10-01T00:00:00+10:00",
+        "utilake.total-rows": "43416089",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1722434400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "ffc5273e-266f-8f29-9c68-cf7709e03da7"
+}

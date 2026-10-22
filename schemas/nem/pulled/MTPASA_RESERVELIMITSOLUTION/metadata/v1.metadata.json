@@ -1,0 +1,147 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 955016150339972385,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 9,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1272636000000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_RESERVELIMITSOLUTION",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "MTPASA_RESERVELIMITSOLUTION is obsolete from 2017 End of Year DM4.27 Release. \nMT PASA Solution table reporting whether a MT PASA Reserve requirement is binding for each day and LDC block of the run.",
+    "utilake.declared": "false",
+    "utilake.format": "3",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(20)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"NUMERIC(3,0)\",\"7\":\"VARCHAR(20)\",\"8\":\"NUMERIC(16,6)\",\"9\":\"TIMESTAMP(0)\"}",
+    "utilake.table": "MTPASA_RESERVELIMITSOLUTION"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 955016150339972385,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Date processing of the run begins",
+          "id": 1,
+          "name": "RUN_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Unique run ID. Generated from the solution file Case ID.",
+          "id": 2,
+          "name": "RUN_NO",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Type of run. Values are RELIABILITY_LRC and OUTAGE_LRC",
+          "id": 3,
+          "name": "RUNTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Sunday at start of the week for this solutions energy block. Generated from the solution file energy block.",
+          "id": 4,
+          "name": "ENERGYBLOCK",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Day this solution is for. Generated from the solution file period id.",
+          "id": 5,
+          "name": "DAY",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Load Duration Curve block this solution is for. Generated from the solution file period id.",
+          "id": 6,
+          "name": "LDCBLOCK",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "The unique identifier of the MT PASA LRC Reserve Requirement.",
+          "id": 7,
+          "name": "RESERVELIMITID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Marginal Value of the Reserve Requirement Constraint. A non-zero value indicates that the reserve requirement is binding.",
+          "id": 8,
+          "name": "MARGINALVALUE",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Timestamp the record was last modified.",
+          "id": 9,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 955016150339972385,
+      "timestamp-ms": 1272636000000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_RESERVELIMITSOLUTION/metadata/snap-955016150339972385-1-e14dd9e4-ffb8-8aee-85b2-b41df352168f.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 955016150339972385,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "97",
+        "utilake.from.file": "PUBLIC_DVD_MTPASA_RESERVELIMITSOLUTION_201005010000.zip",
+        "utilake.from.release": "2010-05",
+        "utilake.from.sha256": "34146e389a0c5fbeeeac6510f42613eb362de7acf71d579bda892b6ec1eeb564",
+        "utilake.from.time": "2010-05-30T00:00:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "RESERVELIMITSOLUTION",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "3923017",
+        "utilake.to.file": "PUBLIC_DVD_MTPASA_RESERVELIMITSOLUTION_201805010000.zip",
+        "utilake.to.release": "2018-05",
+        "utilake.to.sha256": "ed68cc29b637ca99ec659f83cb5e9ab21ac993a3a9a5d2bca0971073361454ac",
+        "utilake.to.time": "2020-05-23T00:00:00+10:00",
+        "utilake.total-rows": "3923017",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1272636000000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "e14dd9e4-ffb8-8aee-85b2-b41df352168f"
+}

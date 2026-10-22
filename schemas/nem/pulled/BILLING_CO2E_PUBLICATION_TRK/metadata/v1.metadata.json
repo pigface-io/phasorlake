@@ -1,0 +1,126 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 8964122865261426470,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 4,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1317391200000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BILLING_CO2E_PUBLICATION_TRK",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "Carbon Dioxide Intensity Index publication tracking table",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"CONTRACTYEAR\",\"WEEKNO\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"NUMERIC(4)\",\"2\":\"NUMERIC(3)\",\"3\":\"NUMERIC(3)\",\"4\":\"TIMESTAMP(0)\"}",
+    "utilake.package": "BILLING_RUN",
+    "utilake.reports": "[[\"BILLING\",\"BILLING_CO2E_PUBLICATION_TRK\"]]",
+    "utilake.table": "BILLING_CO2E_PUBLICATION_TRK",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"CONTRACTYEAR\",\"WEEKNO\"]",
+    "utilake.temporal.order": "[\"BILLRUNNO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.time": "LASTCHANGED",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 8964122865261426470,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Billing contract year",
+          "id": 1,
+          "name": "CONTRACTYEAR",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Billing week no",
+          "id": 2,
+          "name": "WEEKNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Billing run no",
+          "id": 3,
+          "name": "BILLRUNNO",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Last changed date time",
+          "id": 4,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 8964122865261426470,
+      "timestamp-ms": 1317391200000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BILLING_CO2E_PUBLICATION_TRK/metadata/snap-8964122865261426470-1-6ccdbcb0-cec0-83ca-ad87-41c4497e10da.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 8964122865261426470,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "179",
+        "utilake.from.file": "PUBLIC_DVD_BILLING_CO2E_PUBLICATION_TRK_201110010000.zip",
+        "utilake.from.release": "2011-10",
+        "utilake.from.sha256": "7751def4d7617062adf8e6e096cfc2cea79698468b1a2794efd59527b8e86412",
+        "utilake.from.time": "2011-10-07T11:13:05+10:00",
+        "utilake.kinds": "[\"archive\",\"dvd\"]",
+        "utilake.report-subtype": "BILLING_CO2E_PUBLICATION_TRK",
+        "utilake.report-type": "BILLING",
+        "utilake.rows": "780",
+        "utilake.to.file": "PUBLIC_ARCHIVE#BILLING_CO2E_PUBLICATION_TRK#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "2b5a2d2fc995114d54a18ad881a1c82b85f4394d9f2334c7ae970badddf394bf",
+        "utilake.to.time": "2026-09-30T11:44:31+10:00",
+        "utilake.total-rows": "780",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1317391200000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "6ccdbcb0-cec0-83ca-ad87-41c4497e10da"
+}

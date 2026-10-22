@@ -1,0 +1,128 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 7067620122731691405,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 5,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1622469600000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_SCENARIODEMAND",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "The P5Min scenario MW offsets",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(2,0)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(4,0)\"}",
+    "utilake.reports": "[[\"P5MIN\",\"SCENARIODEMAND\"]]",
+    "utilake.table": "P5MIN_SCENARIODEMAND",
+    "utilake.temporal.entity": "[]",
+    "utilake.temporal.order": "[\"VERSION_DATETIME\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.time": "EFFECTIVEDATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 7067620122731691405,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "The effective date of this set of scenarios",
+          "id": 1,
+          "name": "EFFECTIVEDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The version of this set of scenarios",
+          "id": 2,
+          "name": "VERSION_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The scenario identifier",
+          "id": 3,
+          "name": "SCENARIO",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "The region to which to apply the deltaMW for this SCENARIO",
+          "id": 4,
+          "name": "REGIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The MW offset to apply to region total demand for this SCENARIO",
+          "id": 5,
+          "name": "DELTAMW",
+          "required": false,
+          "type": "decimal(4, 0)"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 7067620122731691405,
+      "timestamp-ms": 1622469600000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_SCENARIODEMAND/metadata/snap-7067620122731691405-1-9aa58c71-bb02-8d00-b5d2-c29e368d3fd9.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 7067620122731691405,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "64",
+        "utilake.from.file": "PUBLIC_DVD_P5MINSCENARIODEMAND_202106010000.zip",
+        "utilake.from.release": "2021-06",
+        "utilake.from.sha256": "9a5d38af056dc1bdbbf312d9c40495d3eee6878e3dd8e8d27d7cf2afaa56502a",
+        "utilake.from.time": "2020-07-01T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\",\"dvd\"]",
+        "utilake.report-subtype": "SCENARIODEMAND",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "960",
+        "utilake.to.file": "PUBLIC_ARCHIVE#P5MIN_SCENARIODEMAND#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "ac9670e3297be60c31375d4c8380a0b36a27177128599b8a128875bb57ed9651",
+        "utilake.to.time": "2020-07-01T00:00:00+10:00",
+        "utilake.total-rows": "960",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1622469600000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "9aa58c71-bb02-8d00-b5d2-c29e368d3fd9"
+}

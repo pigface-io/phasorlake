@@ -1,0 +1,150 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 5545382590377441421,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 7,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1722434400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/METERDATA_INTERCONNECTOR",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "Publishes metering data associated with wholesale interconnectors for a given CASE_ID",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"CASE_ID\",\"SETTLEMENTDATE\",\"INTERCONNECTORID\",\"PERIODID\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"NUMERIC(15,0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(20)\",\"4\":\"NUMERIC(3,0)\",\"5\":\"NUMERIC(18,8)\",\"6\":\"NUMERIC(18,8)\",\"7\":\"TIMESTAMP(0)\"}",
+    "utilake.package": "METER_DATA",
+    "utilake.reports": "[[\"METERDATA\",\"INTERCONNECTOR\"]]",
+    "utilake.table": "METERDATA_INTERCONNECTOR",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"CASE_ID\",\"INTERCONNECTORID\",\"PERIODID\"]",
+    "utilake.temporal.order": "[\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "SETTLEMENTDATE",
+    "utilake.temporal.valid.kind": "interval_end",
+    "utilake.time": "SETTLEMENTDATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 5545382590377441421,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Case Identifier",
+          "id": 1,
+          "name": "CASE_ID",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Settlement date within the case",
+          "id": 2,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Interconnector Identifier",
+          "id": 3,
+          "name": "INTERCONNECTORID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Trading Interval.",
+          "id": 4,
+          "name": "PERIODID",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "The import direction value for the meter read (MWh)",
+          "id": 5,
+          "name": "IMPORTVALUE",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The export direction value for the meter read (MWh)",
+          "id": 6,
+          "name": "EXPORTVALUE",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Last changed date for the record",
+          "id": 7,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 5545382590377441421,
+      "timestamp-ms": 1722434400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/METERDATA_INTERCONNECTOR/metadata/snap-5545382590377441421-1-e3906bde-9f48-8856-8c92-5e97996cb968.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 5545382590377441421,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "26",
+        "utilake.from.file": "PUBLIC_ARCHIVE#METERDATA_INTERCONNECTOR#FILE01#202408010000.zip",
+        "utilake.from.release": "2024-08",
+        "utilake.from.sha256": "393533f074116b60c8a252ee5fea44b54b22f3e9aafb4bc7cd2eac46930ad6f4",
+        "utilake.from.time": "2024-01-14T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "INTERCONNECTOR",
+        "utilake.report-type": "METERDATA",
+        "utilake.rows": "4570560",
+        "utilake.to.file": "PUBLIC_ARCHIVE#METERDATA_INTERCONNECTOR#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "4b6a607ec397b6e919a25a1faffa1c92833aa01bbf7328d97f7dd227d17cd5a2",
+        "utilake.to.time": "2026-09-26T00:00:00+10:00",
+        "utilake.total-rows": "4570560",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1722434400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "e3906bde-9f48-8856-8c92-5e97996cb968"
+}

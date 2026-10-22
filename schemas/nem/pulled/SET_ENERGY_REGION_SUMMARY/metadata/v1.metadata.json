@@ -1,0 +1,185 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 7539047672409738236,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 13,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1722434400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SET_ENERGY_REGION_SUMMARY",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "The Settlement Energy Region Summary report contains the Energy Transactions Summary for all the NEM regions. This report is produced only for Settlement Date post the IESS rule effective date.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(18,8)\",\"6\":\"NUMERIC(18,8)\",\"7\":\"NUMERIC(18,8)\",\"8\":\"NUMERIC(18,8)\",\"9\":\"NUMERIC(18,8)\",\"10\":\"NUMERIC(18,8)\",\"11\":\"NUMERIC(18,8)\",\"12\":\"NUMERIC(18,8)\",\"13\":\"TIMESTAMP(0)\"}",
+    "utilake.reports": "[[\"SETTLEMENTS\",\"ENERGY_REGION_SUMMARY\"]]",
+    "utilake.table": "SET_ENERGY_REGION_SUMMARY",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[]",
+    "utilake.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.time": "SETTLEMENTDATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 7539047672409738236,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "The Settlement Date of the Billing Week",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The Settlement Run No",
+          "id": 2,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "The Period ID Identifier",
+          "id": 3,
+          "name": "PERIODID",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "The NEM Region Id Identifier",
+          "id": 4,
+          "name": "REGIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The Consumed Energy summary for the Region Id",
+          "id": 5,
+          "name": "CE_MWH",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The UFEA Energy summary for the Region Id",
+          "id": 6,
+          "name": "UFEA_MWH",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The Adjusted Consumed Energy summary for the Region Id",
+          "id": 7,
+          "name": "ACE_MWH",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The Adjusted Sent Out Energy summary for the Region Id",
+          "id": 8,
+          "name": "ASOE_MWH",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The Adjusted Consumed Energy Amount for the Region Id",
+          "id": 9,
+          "name": "ACE_AMOUNT",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The Adjusted Sent Out Energy Amount for the Region Id",
+          "id": 10,
+          "name": "ASOE_AMOUNT",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The Total Energy summary for the Region Id",
+          "id": 11,
+          "name": "TOTAL_MWH",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The Total Dollar Amount summary for the Region Id",
+          "id": 12,
+          "name": "TOTAL_AMOUNT",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The Last changed Date time of the record",
+          "id": 13,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 7539047672409738236,
+      "timestamp-ms": 1722434400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SET_ENERGY_REGION_SUMMARY/metadata/snap-7539047672409738236-1-657c79cc-cfaf-8368-9030-79da507d550f.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 7539047672409738236,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "26",
+        "utilake.from.file": "PUBLIC_ARCHIVE#SET_ENERGY_REGION_SUMMARY#FILE01#202408010000.zip",
+        "utilake.from.release": "2024-08",
+        "utilake.from.sha256": "5060965aac91675f71efc51a426b874cb98f0580c34b59fc25e35d31cdabf725",
+        "utilake.from.time": "2024-06-02T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "ENERGY_REGION_SUMMARY",
+        "utilake.report-type": "SETTLEMENTS",
+        "utilake.rows": "74467480",
+        "utilake.to.file": "PUBLIC_ARCHIVE#SET_ENERGY_REGION_SUMMARY#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "1a276e0bfbd474c2573187ae153e188a6c9193fba820106db6776fcd1fa2a9eb",
+        "utilake.to.time": "2026-10-01T00:00:00+10:00",
+        "utilake.total-rows": "74467480",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1722434400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "657c79cc-cfaf-8368-9030-79da507d550f"
+}

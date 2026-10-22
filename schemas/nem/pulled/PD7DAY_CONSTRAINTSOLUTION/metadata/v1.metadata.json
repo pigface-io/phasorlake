@@ -1,0 +1,157 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 7652961595135748516,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 9,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1722434400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PD7DAY_CONSTRAINTSOLUTION",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "PD7DAY constraint solution",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(2,0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(15,5)\",\"6\":\"NUMERIC(15,5)\",\"7\":\"NUMERIC(15,5)\",\"8\":\"NUMERIC(15,5)\",\"9\":\"TIMESTAMP(0)\"}",
+    "utilake.reports": "[[\"PD7DAY\",\"CONSTRAINTSOLUTION\"]]",
+    "utilake.table": "PD7DAY_CONSTRAINTSOLUTION",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"INTERVENTION\"]",
+    "utilake.temporal.order": "[\"RUN_DATETIME\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.time": "INTERVAL_DATETIME",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 7652961595135748516,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Unique Timestamp Identifier for this study",
+          "id": 1,
+          "name": "RUN_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Flag to indicate if this Predispatch case includes an intervention pricing run: 0 = case does not include an intervention pricing run, 1 = case does include an intervention pricing run.",
+          "id": 2,
+          "name": "INTERVENTION",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "The unique identifier for the interval within this study",
+          "id": 3,
+          "name": "INTERVAL_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Constraint identifier (synonymous with GenConID)",
+          "id": 4,
+          "name": "CONSTRAINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Right Hand Side value in the capacity evaluation in MW",
+          "id": 5,
+          "name": "RHS",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Marginal cost of constraint (>0 if binding) in $/MW",
+          "id": 6,
+          "name": "MARGINALVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Amount of Violation (>0 if violating) in MW",
+          "id": 7,
+          "name": "VIOLATIONDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Aggregation of the constraints LHS term solution values in MW",
+          "id": 8,
+          "name": "LHS",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 9,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 7652961595135748516,
+      "timestamp-ms": 1722434400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PD7DAY_CONSTRAINTSOLUTION/metadata/snap-7652961595135748516-1-42958a99-ba3c-89dc-9bf3-a814bffa98f3.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 7652961595135748516,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "188",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PD7DAY_CONSTRAINTSOLUTION#FILE01#202408010000.zip",
+        "utilake.from.release": "2024-08",
+        "utilake.from.sha256": "e46ba33bc3c46dce12ae695b7788a54f1f98090155a9f90e4e36a7fe6553b244",
+        "utilake.from.time": "2024-04-24T07:30:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "CONSTRAINTSOLUTION",
+        "utilake.report-type": "PD7DAY",
+        "utilake.rows": "8052862416",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PD7DAY_CONSTRAINTSOLUTION#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "a74687424efdec7537d456afca01c851fcf6a218d5bf202604c43ab493b46367",
+        "utilake.to.time": "2026-10-08T04:00:00+10:00",
+        "utilake.total-rows": "8052862416",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1722434400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "42958a99-ba3c-89dc-9bf3-a814bffa98f3"
+}

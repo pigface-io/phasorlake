@@ -1,0 +1,124 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 7241673803002851808,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 7,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1767189600000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SETTLEMENTS_FCAS_CLAWBACK_RUN_TRK",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "false",
+    "utilake.format": "3",
+    "utilake.table": "SETTLEMENTS_FCAS_CLAWBACK_RUN_TRK"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 7241673803002851808,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 2,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 3,
+          "name": "INTERVAL_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 4,
+          "name": "RUNNO",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 5,
+          "name": "CLAWBACK_DATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 6,
+          "name": "PREV_DATA_SOURCE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 7,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 7241673803002851808,
+      "timestamp-ms": 1767189600000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SETTLEMENTS_FCAS_CLAWBACK_RUN_TRK/metadata/snap-7241673803002851808-1-6d07e42b-7315-8708-95df-ebe61082017c.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 7241673803002851808,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "7",
+        "utilake.from.file": "PUBLIC_ARCHIVE#SET_FCAS_CLAWBACK_RUN_TRK#FILE01#202601010000.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "7ae6cfef2822db4f4fce7677ac6bc6face49a7f31bf24652915a20f37270465f",
+        "utilake.from.time": "2025-07-06T07:50:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "FCAS_CLAWBACK_RUN_TRK",
+        "utilake.report-type": "SETTLEMENTS",
+        "utilake.rows": "50373",
+        "utilake.to.file": "PUBLIC_ARCHIVE#SET_FCAS_CLAWBACK_RUN_TRK#FILE01#202607010000.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "e675567ed96d94e37918aadafc25c01f7307edd14e0fc949f06bee0f183ff021",
+        "utilake.to.time": "2026-03-23T18:20:00+10:00",
+        "utilake.total-rows": "50373",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1767189600000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "6d07e42b-7315-8708-95df-ebe61082017c"
+}

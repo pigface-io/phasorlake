@@ -1,0 +1,183 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 48824540488196035,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 7,
+  "last-partition-id": 999,
+  "last-sequence-number": 2,
+  "last-updated-ms": 1722434400001,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SPDCONNECTIONPOINTCONSTRAINT",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "SPDCONNECTIONPOINTCONSTRAINT sets out details of connections point constraints issued in dispatch, predispatch and STPASA.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"CONNECTIONPOINTID\",\"EFFECTIVEDATE\",\"VERSIONNO\",\"GENCONID\",\"BIDTYPE\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"VARCHAR(12)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(16,6)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"VARCHAR(12)\"}",
+    "utilake.package": "GENERIC_CONSTRAINT",
+    "utilake.reports": "[[\"SPDCPC\",\"\"],[\"SPDCPC\",\"NULL\"]]",
+    "utilake.table": "SPDCONNECTIONPOINTCONSTRAINT",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"CONNECTIONPOINTID\",\"GENCONID\",\"BIDTYPE\"]",
+    "utilake.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "EFFECTIVEDATE",
+    "utilake.temporal.valid.kind": "from",
+    "utilake.time": "EFFECTIVEDATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 48824540488196035,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Connection Point Identifier",
+          "id": 1,
+          "name": "CONNECTIONPOINTID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Effective date of this record",
+          "id": 2,
+          "name": "EFFECTIVEDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Version no of this record for the effective date",
+          "id": 3,
+          "name": "VERSIONNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Generic Constraint Identifier",
+          "id": 4,
+          "name": "GENCONID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Constraint factor",
+          "id": 5,
+          "name": "FACTOR",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 6,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Bid Type Identifier; one of (RAISE6SEC, RAISE60SEC, RAISE5MIN, LOWER6SEC, LOWER60SEC, LOWER5MIN, RAISEREG, LOWERREG)",
+          "id": 7,
+          "name": "BIDTYPE",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4,
+        7
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 8928054010692769664,
+      "timestamp-ms": 1246370400000
+    },
+    {
+      "snapshot-id": 48824540488196035,
+      "timestamp-ms": 1722434400001
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SPDCONNECTIONPOINTCONSTRAINT/metadata/snap-8928054010692769664-1-1b655ccc-000b-842b-a77b-3b82fa640d1f.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 8928054010692769664,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "181",
+        "utilake.from.file": "PUBLIC_DVD_SPDCONNECTIONPOINTCONSTRAINT_200907010000.zip",
+        "utilake.from.release": "2009-07",
+        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "utilake.from.time": "2009-07-01T00:00:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "SPDCPC",
+        "utilake.rows": "13729732",
+        "utilake.to.file": "PUBLIC_DVD_SPDCONNECTIONPOINTCONSTRAINT_202407010000.zip",
+        "utilake.to.release": "2024-07",
+        "utilake.to.sha256": "f2b09bb227a59664d684902487c97d0a2595b2cdcb7a2545fdedfa8520edb732",
+        "utilake.to.time": "2024-07-31T00:00:00+10:00",
+        "utilake.total-rows": "13729732",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1246370400000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SPDCONNECTIONPOINTCONSTRAINT/metadata/snap-48824540488196035-2-1b655ccc-000b-842b-a77b-3b82fa640d1f.avro",
+      "parent-snapshot-id": 8928054010692769664,
+      "schema-id": 0,
+      "sequence-number": 2,
+      "snapshot-id": 48824540488196035,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "26",
+        "utilake.from.file": "PUBLIC_ARCHIVE#SPDCONNECTIONPOINTCONSTRAINT#FILE01#202408010000.zip",
+        "utilake.from.release": "2024-08",
+        "utilake.from.sha256": "ee14be6a3f7a870c0a671de4a6b68f11460ef7eec3764baa7c1793755ebaebb2",
+        "utilake.from.time": "2024-08-01T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "NULL",
+        "utilake.report-type": "SPDCPC",
+        "utilake.rows": "3270694",
+        "utilake.to.file": "PUBLIC_ARCHIVE#SPDCONNECTIONPOINTCONSTRAINT#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "6406c7f5baacbb42b4e61a2c78c740d08ff28f77b89fa35f29ae734692a9c014",
+        "utilake.to.time": "2026-10-01T00:00:00+10:00",
+        "utilake.total-rows": "17000426",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1722434400001
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "1b655ccc-000b-842b-a77b-3b82fa640d1f"
+}

@@ -1,0 +1,1624 @@
+{
+  "current-schema-id": 6,
+  "current-snapshot-id": 9111380754174026500,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 34,
+  "last-partition-id": 999,
+  "last-sequence-number": 7,
+  "last-updated-ms": 1727704800006,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DUDETAIL",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "DUDETAIL sets out a records specific details for each unit including start type and whether normally on or off load. Much of this data is information only and is not used in dispatch or settlements.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"DUID\",\"EFFECTIVEDATE\",\"VERSIONNO\"]",
+    "utilake.load": "snapshot",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(10)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(10)\",\"5\":\"VARCHAR(10)\",\"6\":\"NUMERIC(6,0)\",\"7\":\"VARCHAR(1)\",\"8\":\"VARCHAR(20)\",\"9\":\"NUMERIC(6,0)\",\"10\":\"VARCHAR(20)\",\"11\":\"VARCHAR(1)\",\"12\":\"VARCHAR(1)\",\"13\":\"VARCHAR(1)\",\"14\":\"VARCHAR(15)\",\"15\":\"TIMESTAMP(0)\",\"16\":\"TIMESTAMP(0)\",\"17\":\"VARCHAR(1)\",\"18\":\"VARCHAR(1)\",\"19\":\"NUMERIC(6,0)\",\"20\":\"NUMERIC(6,0)\",\"21\":\"VARCHAR(20)\",\"22\":\"VARCHAR(20)\",\"23\":\"NUMERIC(6,0)\",\"24\":\"NUMERIC(6,0)\",\"25\":\"NUMERIC(6,0)\",\"26\":\"NUMERIC(6,0)\",\"27\":\"NUMERIC(15,5)\",\"28\":\"NUMERIC(15,5)\",\"29\":\"NUMERIC(15,5)\",\"30\":\"NUMERIC(6,0)\",\"31\":\"NUMERIC(6,0)\",\"32\":\"NUMERIC(6,0)\",\"33\":\"NUMERIC(6,0)\",\"34\":\"NUMERIC(1,0)\"}",
+    "utilake.package": "PARTICIPANT_REGISTRATION",
+    "utilake.reports": "[[\"PARTICIPANT_REGISTRATION\",\"DUDETAIL\"]]",
+    "utilake.table": "DUDETAIL",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"DUID\"]",
+    "utilake.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "EFFECTIVEDATE",
+    "utilake.temporal.valid.kind": "from",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 9111380754174026500,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Effective calendar date of record",
+          "id": 1,
+          "name": "EFFECTIVEDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Dispatchable Unit Identifier",
+          "id": 2,
+          "name": "DUID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "version of Dispatchable Unit details for this effective date",
+          "id": 3,
+          "name": "VERSIONNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Country wide - Unique id of a connection point",
+          "id": 4,
+          "name": "CONNECTIONPOINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Voltage Level",
+          "id": 5,
+          "name": "VOLTLEVEL",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Registered capacity for normal operations",
+          "id": 6,
+          "name": "REGISTEREDCAPACITY",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "AGC Capability flag",
+          "id": 7,
+          "name": "AGCCAPABILITY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Identifies LOAD, GENERATOR or BIDIRECTIONAL.",
+          "id": 8,
+          "name": "DISPATCHTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Maximum Capacity as used for bid validation",
+          "id": 9,
+          "name": "MAXCAPACITY",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Identify unit as Fast or Slow",
+          "id": 10,
+          "name": "STARTTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "For a dispatchable load indicates that the load is normally on or off.",
+          "id": 11,
+          "name": "NORMALLYONFLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Indicates that the physical details for this unit are to be recorded",
+          "id": 12,
+          "name": "PHYSICALDETAILSFLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Indicates spinning reserve capability",
+          "id": 13,
+          "name": "SPINNINGRESERVEFLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "User authorising record",
+          "id": 14,
+          "name": "AUTHORISEDBY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Date record authorised",
+          "id": 15,
+          "name": "AUTHORISEDDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 16,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Indicate whether a unit is intermittent (e.g. a wind farm)",
+          "id": 17,
+          "name": "INTERMITTENTFLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Indicates if the DUID is a Semi-Scheduled Unit",
+          "id": 18,
+          "name": "SEMISCHEDULE_FLAG",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [
+        2,
+        1,
+        3
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Effective calendar date of record",
+          "id": 1,
+          "name": "EFFECTIVEDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Dispatchable Unit Identifier",
+          "id": 2,
+          "name": "DUID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "version of Dispatchable Unit details for this effective date",
+          "id": 3,
+          "name": "VERSIONNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Country wide - Unique id of a connection point",
+          "id": 4,
+          "name": "CONNECTIONPOINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Voltage Level",
+          "id": 5,
+          "name": "VOLTLEVEL",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Registered capacity for normal operations",
+          "id": 6,
+          "name": "REGISTEREDCAPACITY",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "AGC Capability flag",
+          "id": 7,
+          "name": "AGCCAPABILITY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Identifies LOAD, GENERATOR or BIDIRECTIONAL.",
+          "id": 8,
+          "name": "DISPATCHTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Maximum Capacity as used for bid validation",
+          "id": 9,
+          "name": "MAXCAPACITY",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Identify unit as Fast or Slow",
+          "id": 10,
+          "name": "STARTTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "For a dispatchable load indicates that the load is normally on or off.",
+          "id": 11,
+          "name": "NORMALLYONFLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Indicates that the physical details for this unit are to be recorded",
+          "id": 12,
+          "name": "PHYSICALDETAILSFLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Indicates spinning reserve capability",
+          "id": 13,
+          "name": "SPINNINGRESERVEFLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "User authorising record",
+          "id": 14,
+          "name": "AUTHORISEDBY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Date record authorised",
+          "id": 15,
+          "name": "AUTHORISEDDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 16,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Indicate whether a unit is intermittent (e.g. a wind farm)",
+          "id": 17,
+          "name": "INTERMITTENTFLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Indicates if the DUID is a Semi-Scheduled Unit",
+          "id": 18,
+          "name": "SEMISCHEDULE_FLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Maximum ramp up rate for Unit (Mw/min)",
+          "id": 19,
+          "name": "MAXRATEOFCHANGEUP",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Maximum ramp down rate for Unit (Mw/min)",
+          "id": 20,
+          "name": "MAXRATEOFCHANGEDOWN",
+          "required": false,
+          "type": "decimal(6, 0)"
+        }
+      ],
+      "identifier-field-ids": [
+        2,
+        1,
+        3
+      ],
+      "schema-id": 1,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Effective calendar date of record",
+          "id": 1,
+          "name": "EFFECTIVEDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Dispatchable Unit Identifier",
+          "id": 2,
+          "name": "DUID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "version of Dispatchable Unit details for this effective date",
+          "id": 3,
+          "name": "VERSIONNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Country wide - Unique id of a connection point",
+          "id": 4,
+          "name": "CONNECTIONPOINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Voltage Level",
+          "id": 5,
+          "name": "VOLTLEVEL",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Registered capacity for normal operations",
+          "id": 6,
+          "name": "REGISTEREDCAPACITY",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "AGC Capability flag",
+          "id": 7,
+          "name": "AGCCAPABILITY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Identifies LOAD, GENERATOR or BIDIRECTIONAL.",
+          "id": 8,
+          "name": "DISPATCHTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Maximum Capacity as used for bid validation",
+          "id": 9,
+          "name": "MAXCAPACITY",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Identify unit as Fast or Slow",
+          "id": 10,
+          "name": "STARTTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "For a dispatchable load indicates that the load is normally on or off.",
+          "id": 11,
+          "name": "NORMALLYONFLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Indicates that the physical details for this unit are to be recorded",
+          "id": 12,
+          "name": "PHYSICALDETAILSFLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Indicates spinning reserve capability",
+          "id": 13,
+          "name": "SPINNINGRESERVEFLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "User authorising record",
+          "id": 14,
+          "name": "AUTHORISEDBY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Date record authorised",
+          "id": 15,
+          "name": "AUTHORISEDDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 16,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Indicate whether a unit is intermittent (e.g. a wind farm)",
+          "id": 17,
+          "name": "INTERMITTENTFLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Indicates if the DUID is a Semi-Scheduled Unit",
+          "id": 18,
+          "name": "SEMISCHEDULE_FLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Maximum ramp up rate for Unit (Mw/min)",
+          "id": 19,
+          "name": "MAXRATEOFCHANGEUP",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Maximum ramp down rate for Unit (Mw/min)",
+          "id": 20,
+          "name": "MAXRATEOFCHANGEDOWN",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Additional information for DISPATCHTYPE. For DISPATCHTYPE = LOAD, subtype value is WDR for wholesale demand response units. For DISPATCHTYPE = LOAD, subtype value is NULL for Scheduled Loads. For DISPATCHTYPE = GENERATOR type, the subtype value is NULL.",
+          "id": 21,
+          "name": "DISPATCHSUBTYPE",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [
+        2,
+        1,
+        3
+      ],
+      "schema-id": 2,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Dispatchable Unit Identifier",
+          "id": 2,
+          "name": "DUID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Effective calendar date of record",
+          "id": 1,
+          "name": "EFFECTIVEDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "version of Dispatchable Unit details for this effective date",
+          "id": 3,
+          "name": "VERSIONNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Country wide - Unique id of a connection point",
+          "id": 4,
+          "name": "CONNECTIONPOINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Voltage Level",
+          "id": 5,
+          "name": "VOLTLEVEL",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Registered capacity for normal operations",
+          "id": 6,
+          "name": "REGISTEREDCAPACITY",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "AGC Capability flag",
+          "id": 7,
+          "name": "AGCCAPABILITY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Identifies LOAD, GENERATOR or BIDIRECTIONAL.",
+          "id": 8,
+          "name": "DISPATCHTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Maximum Capacity as used for bid validation",
+          "id": 9,
+          "name": "MAXCAPACITY",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Identify unit as Fast or Slow",
+          "id": 10,
+          "name": "STARTTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "For a dispatchable load indicates that the load is normally on or off.",
+          "id": 11,
+          "name": "NORMALLYONFLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Indicates that the physical details for this unit are to be recorded",
+          "id": 12,
+          "name": "PHYSICALDETAILSFLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Indicates spinning reserve capability",
+          "id": 13,
+          "name": "SPINNINGRESERVEFLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "User authorising record",
+          "id": 14,
+          "name": "AUTHORISEDBY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Date record authorised",
+          "id": 15,
+          "name": "AUTHORISEDDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 16,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Indicate whether a unit is intermittent (e.g. a wind farm)",
+          "id": 17,
+          "name": "INTERMITTENTFLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Indicates if the DUID is a Semi-Scheduled Unit",
+          "id": 18,
+          "name": "SEMISCHEDULE_FLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Maximum ramp up rate for Unit (Mw/min)",
+          "id": 19,
+          "name": "MAXRATEOFCHANGEUP",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Maximum ramp down rate for Unit (Mw/min)",
+          "id": 20,
+          "name": "MAXRATEOFCHANGEDOWN",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Additional information for DISPATCHTYPE. For DISPATCHTYPE = LOAD, subtype value is WDR for wholesale demand response units. For DISPATCHTYPE = LOAD, subtype value is NULL for Scheduled Loads. For DISPATCHTYPE = GENERATOR type, the subtype value is NULL.",
+          "id": 21,
+          "name": "DISPATCHSUBTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Aggregate Dispatch Group to which this dispatch unit belongs",
+          "id": 22,
+          "name": "ADG_ID",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [
+        2,
+        1,
+        3
+      ],
+      "schema-id": 3,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Dispatchable Unit Identifier",
+          "id": 2,
+          "name": "DUID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Effective calendar date of record",
+          "id": 1,
+          "name": "EFFECTIVEDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "version of Dispatchable Unit details for this effective date",
+          "id": 3,
+          "name": "VERSIONNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Country wide - Unique id of a connection point",
+          "id": 4,
+          "name": "CONNECTIONPOINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Voltage Level",
+          "id": 5,
+          "name": "VOLTLEVEL",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Registered capacity for normal operations",
+          "id": 6,
+          "name": "REGISTEREDCAPACITY",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "AGC Capability flag",
+          "id": 7,
+          "name": "AGCCAPABILITY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Identifies LOAD, GENERATOR or BIDIRECTIONAL.",
+          "id": 8,
+          "name": "DISPATCHTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Maximum Capacity as used for bid validation",
+          "id": 9,
+          "name": "MAXCAPACITY",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Identify unit as Fast or Slow",
+          "id": 10,
+          "name": "STARTTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "For a dispatchable load indicates that the load is normally on or off.",
+          "id": 11,
+          "name": "NORMALLYONFLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Indicates that the physical details for this unit are to be recorded",
+          "id": 12,
+          "name": "PHYSICALDETAILSFLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Indicates spinning reserve capability",
+          "id": 13,
+          "name": "SPINNINGRESERVEFLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "User authorising record",
+          "id": 14,
+          "name": "AUTHORISEDBY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Date record authorised",
+          "id": 15,
+          "name": "AUTHORISEDDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 16,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Indicate whether a unit is intermittent (e.g. a wind farm)",
+          "id": 17,
+          "name": "INTERMITTENTFLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Indicates if the DUID is a Semi-Scheduled Unit",
+          "id": 18,
+          "name": "SEMISCHEDULE_FLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Maximum ramp up rate for Unit (Mw/min)",
+          "id": 19,
+          "name": "MAXRATEOFCHANGEUP",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Maximum ramp down rate for Unit (Mw/min)",
+          "id": 20,
+          "name": "MAXRATEOFCHANGEDOWN",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Additional information for DISPATCHTYPE. For DISPATCHTYPE = LOAD, subtype value is WDR for wholesale demand response units. For DISPATCHTYPE = LOAD, subtype value is NULL for Scheduled Loads. For DISPATCHTYPE = GENERATOR type, the subtype value is NULL.",
+          "id": 21,
+          "name": "DISPATCHSUBTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Aggregate Dispatch Group to which this dispatch unit belongs",
+          "id": 22,
+          "name": "ADG_ID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Minimum capacity only for load side of BDU, otherwise 0 (MW)",
+          "id": 23,
+          "name": "MINCAPACITY",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Registered minimum capacity only for load side of BDU, otherwise 0 (MW)",
+          "id": 24,
+          "name": "REGISTEREDMINCAPACITY",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Raise Ramp rate applied to BDU Load component (MW/min)",
+          "id": 25,
+          "name": "MAXRATEOFCHANGEUP_LOAD",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Lower Ramp rate applied to BDU Load component (MW/min)",
+          "id": 26,
+          "name": "MAXRATEOFCHANGEDOWN_LOAD",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "The rated storage capacity (MWh), information only",
+          "id": 27,
+          "name": "MAXSTORAGECAPACITY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "The storage energy import conversion efficiency. Number from 0 to 1 where 1 is lossless. Calculated as (increase in stored energy / increase in imported energy)",
+          "id": 28,
+          "name": "STORAGEIMPORTEFFICIENCYFACTOR",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "The storage energy export conversion efficiency. Number from 0 to 1 where 1 is lossless. Calculated as (decrease in exported energy / decrease in stored energy)",
+          "id": 29,
+          "name": "STORAGEEXPORTEFFICIENCYFACTOR",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Calculated Minimum Ramp Rate Up value accepted for Energy Offers or Bids with explanation for energy imports (all DUID types and BDU Generation side) (MW/min)",
+          "id": 30,
+          "name": "MIN_RAMP_RATE_UP",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Calculated Minimum Ramp Rate Down value accepted for Energy Offers or Bids with explanation for energy imports (all DUID types and BDU Generation side) (MW/min)",
+          "id": 31,
+          "name": "MIN_RAMP_RATE_DOWN",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Calculated Minimum Ramp Rate Up value accepted for Energy Offers or Bids on BDU Load component with explanation for energy imports (MW/min)",
+          "id": 32,
+          "name": "LOAD_MIN_RAMP_RATE_UP",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Calculated Minimum Ramp Rate Down value accepted for Energy Offers or Bids on BDU Load component with explanation for energy imports (MW/min)",
+          "id": 33,
+          "name": "LOAD_MIN_RAMP_RATE_DOWN",
+          "required": false,
+          "type": "decimal(6, 0)"
+        }
+      ],
+      "identifier-field-ids": [
+        2,
+        1,
+        3
+      ],
+      "schema-id": 4,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Effective calendar date of record",
+          "id": 1,
+          "name": "EFFECTIVEDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Dispatchable Unit Identifier",
+          "id": 2,
+          "name": "DUID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "version of Dispatchable Unit details for this effective date",
+          "id": 3,
+          "name": "VERSIONNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Country wide - Unique id of a connection point",
+          "id": 4,
+          "name": "CONNECTIONPOINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Voltage Level",
+          "id": 5,
+          "name": "VOLTLEVEL",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Registered capacity for normal operations",
+          "id": 6,
+          "name": "REGISTEREDCAPACITY",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "AGC Capability flag",
+          "id": 7,
+          "name": "AGCCAPABILITY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Identifies LOAD, GENERATOR or BIDIRECTIONAL.",
+          "id": 8,
+          "name": "DISPATCHTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Maximum Capacity as used for bid validation",
+          "id": 9,
+          "name": "MAXCAPACITY",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Identify unit as Fast or Slow",
+          "id": 10,
+          "name": "STARTTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "For a dispatchable load indicates that the load is normally on or off.",
+          "id": 11,
+          "name": "NORMALLYONFLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Indicates that the physical details for this unit are to be recorded",
+          "id": 12,
+          "name": "PHYSICALDETAILSFLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Indicates spinning reserve capability",
+          "id": 13,
+          "name": "SPINNINGRESERVEFLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "User authorising record",
+          "id": 14,
+          "name": "AUTHORISEDBY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Date record authorised",
+          "id": 15,
+          "name": "AUTHORISEDDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 16,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Indicate whether a unit is intermittent (e.g. a wind farm)",
+          "id": 17,
+          "name": "INTERMITTENTFLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Indicates if the DUID is a Semi-Scheduled Unit",
+          "id": 18,
+          "name": "SEMISCHEDULE_FLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Maximum ramp up rate for Unit (Mw/min)",
+          "id": 19,
+          "name": "MAXRATEOFCHANGEUP",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Maximum ramp down rate for Unit (Mw/min)",
+          "id": 20,
+          "name": "MAXRATEOFCHANGEDOWN",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Additional information for DISPATCHTYPE. For DISPATCHTYPE = LOAD, subtype value is WDR for wholesale demand response units. For DISPATCHTYPE = LOAD, subtype value is NULL for Scheduled Loads. For DISPATCHTYPE = GENERATOR type, the subtype value is NULL.",
+          "id": 21,
+          "name": "DISPATCHSUBTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Aggregate Dispatch Group to which this dispatch unit belongs",
+          "id": 22,
+          "name": "ADG_ID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Minimum capacity only for load side of BDU, otherwise 0 (MW)",
+          "id": 23,
+          "name": "MINCAPACITY",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Registered minimum capacity only for load side of BDU, otherwise 0 (MW)",
+          "id": 24,
+          "name": "REGISTEREDMINCAPACITY",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Raise Ramp rate applied to BDU Load component (MW/min)",
+          "id": 25,
+          "name": "MAXRATEOFCHANGEUP_LOAD",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Lower Ramp rate applied to BDU Load component (MW/min)",
+          "id": 26,
+          "name": "MAXRATEOFCHANGEDOWN_LOAD",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "The rated storage capacity (MWh), information only",
+          "id": 27,
+          "name": "MAXSTORAGECAPACITY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "The storage energy import conversion efficiency. Number from 0 to 1 where 1 is lossless. Calculated as (increase in stored energy / increase in imported energy)",
+          "id": 28,
+          "name": "STORAGEIMPORTEFFICIENCYFACTOR",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "The storage energy export conversion efficiency. Number from 0 to 1 where 1 is lossless. Calculated as (decrease in exported energy / decrease in stored energy)",
+          "id": 29,
+          "name": "STORAGEEXPORTEFFICIENCYFACTOR",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Calculated Minimum Ramp Rate Up value accepted for Energy Offers or Bids with explanation for energy imports (all DUID types and BDU Generation side) (MW/min)",
+          "id": 30,
+          "name": "MIN_RAMP_RATE_UP",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Calculated Minimum Ramp Rate Down value accepted for Energy Offers or Bids with explanation for energy imports (all DUID types and BDU Generation side) (MW/min)",
+          "id": 31,
+          "name": "MIN_RAMP_RATE_DOWN",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Calculated Minimum Ramp Rate Up value accepted for Energy Offers or Bids on BDU Load component with explanation for energy imports (MW/min)",
+          "id": 32,
+          "name": "LOAD_MIN_RAMP_RATE_UP",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Calculated Minimum Ramp Rate Down value accepted for Energy Offers or Bids on BDU Load component with explanation for energy imports (MW/min)",
+          "id": 33,
+          "name": "LOAD_MIN_RAMP_RATE_DOWN",
+          "required": false,
+          "type": "decimal(6, 0)"
+        }
+      ],
+      "identifier-field-ids": [
+        2,
+        1,
+        3
+      ],
+      "schema-id": 5,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Effective calendar date of record",
+          "id": 1,
+          "name": "EFFECTIVEDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Dispatchable Unit Identifier",
+          "id": 2,
+          "name": "DUID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "version of Dispatchable Unit details for this effective date",
+          "id": 3,
+          "name": "VERSIONNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Country wide - Unique id of a connection point",
+          "id": 4,
+          "name": "CONNECTIONPOINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Voltage Level",
+          "id": 5,
+          "name": "VOLTLEVEL",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Registered capacity for normal operations",
+          "id": 6,
+          "name": "REGISTEREDCAPACITY",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "AGC Capability flag",
+          "id": 7,
+          "name": "AGCCAPABILITY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Identifies LOAD, GENERATOR or BIDIRECTIONAL.",
+          "id": 8,
+          "name": "DISPATCHTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Maximum Capacity as used for bid validation",
+          "id": 9,
+          "name": "MAXCAPACITY",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Identify unit as Fast or Slow",
+          "id": 10,
+          "name": "STARTTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "For a dispatchable load indicates that the load is normally on or off.",
+          "id": 11,
+          "name": "NORMALLYONFLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Indicates that the physical details for this unit are to be recorded",
+          "id": 12,
+          "name": "PHYSICALDETAILSFLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Indicates spinning reserve capability",
+          "id": 13,
+          "name": "SPINNINGRESERVEFLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "User authorising record",
+          "id": 14,
+          "name": "AUTHORISEDBY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Date record authorised",
+          "id": 15,
+          "name": "AUTHORISEDDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 16,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Indicate whether a unit is intermittent (e.g. a wind farm)",
+          "id": 17,
+          "name": "INTERMITTENTFLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Indicates if the DUID is a Semi-Scheduled Unit",
+          "id": 18,
+          "name": "SEMISCHEDULE_FLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Maximum ramp up rate for Unit (Mw/min)",
+          "id": 19,
+          "name": "MAXRATEOFCHANGEUP",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Maximum ramp down rate for Unit (Mw/min)",
+          "id": 20,
+          "name": "MAXRATEOFCHANGEDOWN",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Additional information for DISPATCHTYPE. For DISPATCHTYPE = LOAD, subtype value is WDR for wholesale demand response units. For DISPATCHTYPE = LOAD, subtype value is NULL for Scheduled Loads. For DISPATCHTYPE = GENERATOR type, the subtype value is NULL.",
+          "id": 21,
+          "name": "DISPATCHSUBTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Aggregate Dispatch Group to which this dispatch unit belongs",
+          "id": 22,
+          "name": "ADG_ID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Minimum capacity only for load side of BDU, otherwise 0 (MW)",
+          "id": 23,
+          "name": "MINCAPACITY",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Registered minimum capacity only for load side of BDU, otherwise 0 (MW)",
+          "id": 24,
+          "name": "REGISTEREDMINCAPACITY",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Raise Ramp rate applied to BDU Load component (MW/min)",
+          "id": 25,
+          "name": "MAXRATEOFCHANGEUP_LOAD",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Lower Ramp rate applied to BDU Load component (MW/min)",
+          "id": 26,
+          "name": "MAXRATEOFCHANGEDOWN_LOAD",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "The rated storage capacity (MWh), information only",
+          "id": 27,
+          "name": "MAXSTORAGECAPACITY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "The storage energy import conversion efficiency. Number from 0 to 1 where 1 is lossless. Calculated as (increase in stored energy / increase in imported energy)",
+          "id": 28,
+          "name": "STORAGEIMPORTEFFICIENCYFACTOR",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "The storage energy export conversion efficiency. Number from 0 to 1 where 1 is lossless. Calculated as (decrease in exported energy / decrease in stored energy)",
+          "id": 29,
+          "name": "STORAGEEXPORTEFFICIENCYFACTOR",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Calculated Minimum Ramp Rate Up value accepted for Energy Offers or Bids with explanation for energy imports (all DUID types and BDU Generation side) (MW/min)",
+          "id": 30,
+          "name": "MIN_RAMP_RATE_UP",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Calculated Minimum Ramp Rate Down value accepted for Energy Offers or Bids with explanation for energy imports (all DUID types and BDU Generation side) (MW/min)",
+          "id": 31,
+          "name": "MIN_RAMP_RATE_DOWN",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Calculated Minimum Ramp Rate Up value accepted for Energy Offers or Bids on BDU Load component with explanation for energy imports (MW/min)",
+          "id": 32,
+          "name": "LOAD_MIN_RAMP_RATE_UP",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Calculated Minimum Ramp Rate Down value accepted for Energy Offers or Bids on BDU Load component with explanation for energy imports (MW/min)",
+          "id": 33,
+          "name": "LOAD_MIN_RAMP_RATE_DOWN",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Identifies if a unit is aggregated. This flag was initially added in GENUNITS_UNIT table which is now deprecated with IESS release.",
+          "id": 34,
+          "name": "AGGREGATED",
+          "required": false,
+          "type": "decimal(1, 0)"
+        }
+      ],
+      "identifier-field-ids": [
+        2,
+        1,
+        3
+      ],
+      "schema-id": 6,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 6989748266414334559,
+      "timestamp-ms": 1246370400000
+    },
+    {
+      "snapshot-id": 4537008025180180638,
+      "timestamp-ms": 1288533600001
+    },
+    {
+      "snapshot-id": 950087118960503706,
+      "timestamp-ms": 1633010400002
+    },
+    {
+      "snapshot-id": 2453513777497504298,
+      "timestamp-ms": 1688133600003
+    },
+    {
+      "snapshot-id": 7191773526011291520,
+      "timestamp-ms": 1714485600004
+    },
+    {
+      "snapshot-id": 5869315340040560854,
+      "timestamp-ms": 1722434400005
+    },
+    {
+      "snapshot-id": 9111380754174026500,
+      "timestamp-ms": 1727704800006
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DUDETAIL/metadata/snap-6989748266414334559-1-54476d49-5b09-84b6-9f2c-864c9de85692.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 6989748266414334559,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "16",
+        "utilake.from.file": "PUBLIC_DVD_DUDETAIL_200907010000.zip",
+        "utilake.from.release": "2009-07",
+        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "utilake.from.time": "1998-10-25T00:00:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "DUDETAIL",
+        "utilake.report-type": "PARTICIPANT_REGISTRATION",
+        "utilake.rows": "40125",
+        "utilake.to.file": "PUBLIC_DVD_DUDETAIL_201010010000.zip",
+        "utilake.to.release": "2010-10",
+        "utilake.to.sha256": "09e1f2f9cbdb22c443316804443e3d31757bd933cca50327f2b5e31840020808",
+        "utilake.to.time": "2010-11-05T00:00:00+10:00",
+        "utilake.total-rows": "40125",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1246370400000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DUDETAIL/metadata/snap-4537008025180180638-2-54476d49-5b09-84b6-9f2c-864c9de85692.avro",
+      "parent-snapshot-id": 6989748266414334559,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 4537008025180180638,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "131",
+        "utilake.from.file": "PUBLIC_DVD_DUDETAIL_201011010000.zip",
+        "utilake.from.release": "2010-11",
+        "utilake.from.sha256": "5fb4a7ea3bc9c8ea4c926565c0ae2f91f6439a7810ad33752a1e3caf0f5d79c7",
+        "utilake.from.time": "1998-10-25T00:00:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "DUDETAIL",
+        "utilake.report-type": "PARTICIPANT_REGISTRATION",
+        "utilake.rows": "400687",
+        "utilake.to.file": "PUBLIC_DVD_DUDETAIL_202109010000.zip",
+        "utilake.to.release": "2021-09",
+        "utilake.to.sha256": "43f6d1e0408d0cd03ab1e7982b587d486e53782fd4d1d4654194453b90f6ab32",
+        "utilake.to.time": "2021-10-05T00:00:00+10:00",
+        "utilake.total-rows": "440812",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1288533600001
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DUDETAIL/metadata/snap-950087118960503706-3-54476d49-5b09-84b6-9f2c-864c9de85692.avro",
+      "parent-snapshot-id": 4537008025180180638,
+      "schema-id": 2,
+      "sequence-number": 3,
+      "snapshot-id": 950087118960503706,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "21",
+        "utilake.from.file": "PUBLIC_DVD_DUDETAIL_202110010000.zip",
+        "utilake.from.release": "2021-10",
+        "utilake.from.sha256": "e1d1990ae69b9ad51c79a74bc52d1e9f10e86ff99bf4880c0aa80fee897bf029",
+        "utilake.from.time": "1998-10-25T00:00:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "DUDETAIL",
+        "utilake.report-type": "PARTICIPANT_REGISTRATION",
+        "utilake.rows": "72523",
+        "utilake.to.file": "PUBLIC_DVD_DUDETAIL_202306010000.zip",
+        "utilake.to.release": "2023-06",
+        "utilake.to.sha256": "7cc6d48c87792a773fed301f5422eedd62ee7f3f8297f901be654934f8f30df8",
+        "utilake.to.time": "2023-06-27T00:00:00+10:00",
+        "utilake.total-rows": "513335",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1633010400002
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DUDETAIL/metadata/snap-2453513777497504298-4-54476d49-5b09-84b6-9f2c-864c9de85692.avro",
+      "parent-snapshot-id": 950087118960503706,
+      "schema-id": 3,
+      "sequence-number": 4,
+      "snapshot-id": 2453513777497504298,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "10",
+        "utilake.from.file": "PUBLIC_DVD_DUDETAIL_202307010000.zip",
+        "utilake.from.release": "2023-07",
+        "utilake.from.sha256": "26cca789257ef69d4337c69e22ede2b0525df7bf5fe2e9fa345b03412acc921c",
+        "utilake.from.time": "1998-10-25T00:00:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "DUDETAIL",
+        "utilake.report-type": "PARTICIPANT_REGISTRATION",
+        "utilake.rows": "35938",
+        "utilake.to.file": "PUBLIC_DVD_DUDETAIL_202404010000.zip",
+        "utilake.to.release": "2024-04",
+        "utilake.to.sha256": "27268854337fb37f58c514e9d2682c1eb470ead553157c8f5edfe68b19130c56",
+        "utilake.to.time": "2024-05-07T00:00:00+10:00",
+        "utilake.total-rows": "549273",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1688133600003
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DUDETAIL/metadata/snap-7191773526011291520-5-54476d49-5b09-84b6-9f2c-864c9de85692.avro",
+      "parent-snapshot-id": 2453513777497504298,
+      "schema-id": 4,
+      "sequence-number": 5,
+      "snapshot-id": 7191773526011291520,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "3",
+        "utilake.from.file": "PUBLIC_DVD_DUDETAIL_202405010000.zip",
+        "utilake.from.release": "2024-05",
+        "utilake.from.sha256": "f0c4683da1ee655039174fcf0bf856530fb584c533163ee2a98ecca66bb63dd2",
+        "utilake.from.time": "1998-10-25T00:00:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "DUDETAIL",
+        "utilake.report-type": "PARTICIPANT_REGISTRATION",
+        "utilake.rows": "12358",
+        "utilake.to.file": "PUBLIC_DVD_DUDETAIL_202407010000.zip",
+        "utilake.to.release": "2024-07",
+        "utilake.to.sha256": "cd6cb41871e040855372b10e92925a1c232f1bc9654f75f260e12afa2896bbc1",
+        "utilake.to.time": "2024-08-06T00:00:00+10:00",
+        "utilake.total-rows": "561631",
+        "utilake.version": "6"
+      },
+      "timestamp-ms": 1714485600004
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DUDETAIL/metadata/snap-5869315340040560854-6-54476d49-5b09-84b6-9f2c-864c9de85692.avro",
+      "parent-snapshot-id": 7191773526011291520,
+      "schema-id": 5,
+      "sequence-number": 6,
+      "snapshot-id": 5869315340040560854,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
+        "utilake.from.file": "PUBLIC_ARCHIVE#DUDETAIL#FILE01#202408010000.zip",
+        "utilake.from.release": "2024-08",
+        "utilake.from.sha256": "44c0cce6b61e1227b3a1419c739dbf689663cbf145ce9447baefaeb866d69832",
+        "utilake.from.time": "1998-10-25T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "DUDETAIL",
+        "utilake.report-type": "PARTICIPANT_REGISTRATION",
+        "utilake.rows": "8397",
+        "utilake.to.file": "PUBLIC_ARCHIVE#DUDETAIL#FILE01#202409010000.zip",
+        "utilake.to.release": "2024-09",
+        "utilake.to.sha256": "624a9399cb7018ef5680533caeb2624b50dbfecfdb62b52422644c2ca7337550",
+        "utilake.to.time": "2024-10-10T00:00:00+10:00",
+        "utilake.total-rows": "570028",
+        "utilake.version": "6"
+      },
+      "timestamp-ms": 1722434400005
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DUDETAIL/metadata/snap-9111380754174026500-7-54476d49-5b09-84b6-9f2c-864c9de85692.avro",
+      "parent-snapshot-id": 5869315340040560854,
+      "schema-id": 6,
+      "sequence-number": 7,
+      "snapshot-id": 9111380754174026500,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "24",
+        "utilake.from.file": "PUBLIC_ARCHIVE#DUDETAIL#FILE01#202410010000.zip",
+        "utilake.from.release": "2024-10",
+        "utilake.from.sha256": "360279545318f283889a5a8cf7fc01e38343d84af85743533f8133c54a3378c4",
+        "utilake.from.time": "1998-10-25T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "DUDETAIL",
+        "utilake.report-type": "PARTICIPANT_REGISTRATION",
+        "utilake.rows": "104757",
+        "utilake.to.file": "PUBLIC_ARCHIVE#DUDETAIL#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "604cc87311f7613034a9f5f401ba8819af9cf84e04c43ae98235c3353467d7f4",
+        "utilake.to.time": "2026-10-09T00:00:00+10:00",
+        "utilake.total-rows": "674785",
+        "utilake.version": "7"
+      },
+      "timestamp-ms": 1727704800006
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "54476d49-5b09-84b6-9f2c-864c9de85692"
+}

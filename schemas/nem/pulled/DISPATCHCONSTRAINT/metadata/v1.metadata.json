@@ -1,0 +1,488 @@
+{
+  "current-schema-id": 2,
+  "current-snapshot-id": 3121625652449605852,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 14,
+  "last-partition-id": 999,
+  "last-sequence-number": 4,
+  "last-updated-ms": 1722434400003,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHCONSTRAINT",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "DISPATCHCONSTRAINT sets out details of all binding and interregion constraints in each dispatch run. Note: invoked constraints can be established from GENCONSETINVOKE. Binding constraints show as marginal value >$0. Interconnector constraints are listed so RHS (SCADA calculated limits) can be reported.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"SETTLEMENTDATE\",\"RUNNO\",\"CONSTRAINTID\",\"DISPATCHINTERVAL\",\"INTERVENTION\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(20)\",\"4\":\"NUMERIC(22,0)\",\"5\":\"NUMERIC(2,0)\",\"6\":\"NUMERIC(15,5)\",\"7\":\"NUMERIC(15,5)\",\"8\":\"NUMERIC(15,5)\",\"9\":\"TIMESTAMP(0)\",\"11\":\"TIMESTAMP(0)\",\"12\":\"NUMERIC(22,0)\",\"13\":\"NUMERIC(15,5)\",\"14\":\"VARCHAR(20)\"}",
+    "utilake.package": "DISPATCH",
+    "utilake.reports": "[[\"DISPATCH\",\"CONSTRAINT\"]]",
+    "utilake.table": "DISPATCHCONSTRAINT",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"CONSTRAINTID\",\"DISPATCHINTERVAL\",\"INTERVENTION\"]",
+    "utilake.temporal.order": "[\"RUNNO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "SETTLEMENTDATE",
+    "utilake.temporal.valid.kind": "interval_end",
+    "utilake.time": "SETTLEMENTDATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 3121625652449605852,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Market date starting at 04:05",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Dispatch run no; always 1",
+          "id": 2,
+          "name": "RUNNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Generic Constraint identifier (synonymous with GenConID)",
+          "id": 3,
+          "name": "CONSTRAINTID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Dispatch period identifier, from 001 to 288 in format YYYYMMDDPPP.",
+          "id": 4,
+          "name": "DISPATCHINTERVAL",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Manual Intervention flag, which, if set (1), causes predispatch to solve twice.",
+          "id": 5,
+          "name": "INTERVENTION",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Right hand Side value as used in dispatch.",
+          "id": 6,
+          "name": "RHS",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "$ Value of binding constraint",
+          "id": 7,
+          "name": "MARGINALVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Degree of violation in MW",
+          "id": 8,
+          "name": "VIOLATIONDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 9,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 10,
+          "name": "CONFIDENTIAL_TO",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Effective date of the Generic Constraint (ConstraintID). This field is used to track the version of this generic constraint applied in this dispatch interval",
+          "id": 11,
+          "name": "GENCONID_EFFECTIVEDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Version number of the Generic Constraint (ConstraintID). This field is used to track the version of this generic constraint applied in this dispatch interval",
+          "id": 12,
+          "name": "GENCONID_VERSIONNO",
+          "required": false,
+          "type": "double"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Market date starting at 04:05",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Dispatch run no; always 1",
+          "id": 2,
+          "name": "RUNNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Generic Constraint identifier (synonymous with GenConID)",
+          "id": 3,
+          "name": "CONSTRAINTID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Dispatch period identifier, from 001 to 288 in format YYYYMMDDPPP.",
+          "id": 4,
+          "name": "DISPATCHINTERVAL",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Manual Intervention flag, which, if set (1), causes predispatch to solve twice.",
+          "id": 5,
+          "name": "INTERVENTION",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Right hand Side value as used in dispatch.",
+          "id": 6,
+          "name": "RHS",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "$ Value of binding constraint",
+          "id": 7,
+          "name": "MARGINALVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Degree of violation in MW",
+          "id": 8,
+          "name": "VIOLATIONDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 9,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 10,
+          "name": "CONFIDENTIAL_TO",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Effective date of the Generic Constraint (ConstraintID). This field is used to track the version of this generic constraint applied in this dispatch interval",
+          "id": 11,
+          "name": "GENCONID_EFFECTIVEDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Version number of the Generic Constraint (ConstraintID). This field is used to track the version of this generic constraint applied in this dispatch interval",
+          "id": 12,
+          "name": "GENCONID_VERSIONNO",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Aggregation of the constraints LHS term solution values",
+          "id": 13,
+          "name": "LHS",
+          "required": false,
+          "type": "decimal(15, 5)"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "schema-id": 1,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Market date starting at 04:05",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Dispatch run no; always 1",
+          "id": 2,
+          "name": "RUNNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Generic Constraint identifier (synonymous with GenConID)",
+          "id": 3,
+          "name": "CONSTRAINTID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Dispatch period identifier, from 001 to 288 in format YYYYMMDDPPP.",
+          "id": 4,
+          "name": "DISPATCHINTERVAL",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Manual Intervention flag, which, if set (1), causes predispatch to solve twice.",
+          "id": 5,
+          "name": "INTERVENTION",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Right hand Side value as used in dispatch.",
+          "id": 6,
+          "name": "RHS",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "$ Value of binding constraint",
+          "id": 7,
+          "name": "MARGINALVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Degree of violation in MW",
+          "id": 8,
+          "name": "VIOLATIONDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 9,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "DUID to which the Constraint is confidential. Null denotes non-confidential",
+          "id": 14,
+          "name": "DUID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Effective date of the Generic Constraint (ConstraintID). This field is used to track the version of this generic constraint applied in this dispatch interval",
+          "id": 11,
+          "name": "GENCONID_EFFECTIVEDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Version number of the Generic Constraint (ConstraintID). This field is used to track the version of this generic constraint applied in this dispatch interval",
+          "id": 12,
+          "name": "GENCONID_VERSIONNO",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Aggregation of the constraints LHS term solution values",
+          "id": 13,
+          "name": "LHS",
+          "required": false,
+          "type": "decimal(15, 5)"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "schema-id": 2,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 8435925315171781497,
+      "timestamp-ms": 1246370400000
+    },
+    {
+      "snapshot-id": 2167874919245723598,
+      "timestamp-ms": 1288533600001
+    },
+    {
+      "snapshot-id": 2486201485265160712,
+      "timestamp-ms": 1617199200002
+    },
+    {
+      "snapshot-id": 3121625652449605852,
+      "timestamp-ms": 1722434400003
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHCONSTRAINT/metadata/snap-8435925315171781497-1-238ef17d-f413-8855-a8ed-7962a229346c.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 8435925315171781497,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "16",
+        "utilake.from.file": "PUBLIC_DVD_DISPATCHCONSTRAINT_200907010000.zip",
+        "utilake.from.release": "2009-07",
+        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "utilake.from.time": "2009-07-01T00:05:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "CONSTRAINT",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "83157802",
+        "utilake.to.file": "PUBLIC_DVD_DISPATCHCONSTRAINT_201010010000.zip",
+        "utilake.to.release": "2010-10",
+        "utilake.to.sha256": "09e1f2f9cbdb22c443316804443e3d31757bd933cca50327f2b5e31840020808",
+        "utilake.to.time": "2010-11-01T00:00:00+10:00",
+        "utilake.total-rows": "83157802",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1246370400000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHCONSTRAINT/metadata/snap-2167874919245723598-2-238ef17d-f413-8855-a8ed-7962a229346c.avro",
+      "parent-snapshot-id": 8435925315171781497,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 2167874919245723598,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "125",
+        "utilake.from.file": "PUBLIC_DVD_DISPATCHCONSTRAINT_201011010000.zip",
+        "utilake.from.release": "2010-11",
+        "utilake.from.sha256": "5fb4a7ea3bc9c8ea4c926565c0ae2f91f6439a7810ad33752a1e3caf0f5d79c7",
+        "utilake.from.time": "2010-11-01T00:05:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "CONSTRAINT",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "808718768",
+        "utilake.to.file": "PUBLIC_DVD_DISPATCHCONSTRAINT_202103010000.zip",
+        "utilake.to.release": "2021-03",
+        "utilake.to.sha256": "19bf1af10c5b0c970b3b92f841bff1c422cf0b88f2bad68f7cbf9c205acb740f",
+        "utilake.to.time": "2021-04-01T00:00:00+10:00",
+        "utilake.total-rows": "891876570",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1288533600001
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHCONSTRAINT/metadata/snap-2486201485265160712-3-238ef17d-f413-8855-a8ed-7962a229346c.avro",
+      "parent-snapshot-id": 2167874919245723598,
+      "schema-id": 1,
+      "sequence-number": 3,
+      "snapshot-id": 2486201485265160712,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "40",
+        "utilake.from.file": "PUBLIC_DVD_DISPATCHCONSTRAINT_202104010000.zip",
+        "utilake.from.release": "2021-04",
+        "utilake.from.sha256": "9c4ed7120c8f8a6fa6b25d6fb676880e07aae042f6a9926058967c006d65e2be",
+        "utilake.from.time": "2021-04-01T00:05:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "CONSTRAINT",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "354727204",
+        "utilake.to.file": "PUBLIC_DVD_DISPATCHCONSTRAINT_202407010000.zip",
+        "utilake.to.release": "2024-07",
+        "utilake.to.sha256": "ea0f375de2e1510fe31e23ce7fbffd80e9035e2c3c57ea4ec9770cf06fc9be96",
+        "utilake.to.time": "2024-08-01T00:00:00+10:00",
+        "utilake.total-rows": "1246603774",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1617199200002
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHCONSTRAINT/metadata/snap-3121625652449605852-4-238ef17d-f413-8855-a8ed-7962a229346c.avro",
+      "parent-snapshot-id": 2486201485265160712,
+      "schema-id": 2,
+      "sequence-number": 4,
+      "snapshot-id": 3121625652449605852,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "26",
+        "utilake.from.file": "PUBLIC_ARCHIVE#DISPATCHCONSTRAINT#FILE01#202408010000.zip",
+        "utilake.from.release": "2024-08",
+        "utilake.from.sha256": "a4301eaee5a580a0904f89c03494447d5a8fad272b903aac392461e02851d892",
+        "utilake.from.time": "2024-08-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "CONSTRAINT",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "269711855",
+        "utilake.to.file": "PUBLIC_ARCHIVE#DISPATCHCONSTRAINT#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "b6f8a2801a08bdac65770efc974db178ffd88a14cda10c731a23d89e2f423222",
+        "utilake.to.time": "2026-10-01T00:00:00+10:00",
+        "utilake.total-rows": "1516315629",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1722434400003
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "238ef17d-f413-8855-a8ed-7962a229346c"
+}

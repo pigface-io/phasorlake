@@ -2,10 +2,11 @@
 //! build script and embedded in the binary.
 //!
 //! On disk a market is `schemas/{market}/market.toml` and its tables: the
-//! ones pulled from utilake-schemas under `pulled/` (`{TABLE}/table.json`,
-//! held to their manifest by `just schemas-check`), and, in a user's own
-//! schemas, a directory per table with a hand-written `table.toml` or a
-//! `table.json` of the same form as a pulled one.
+//! ones pulled from utilake-schemas under `pulled/`
+//! (`{TABLE}/metadata/v1.metadata.json`, held to their manifest by
+//! `just schemas-check`), and, in a user's own schemas, a directory per
+//! table with a hand-written `table.toml` or a `metadata/v1.metadata.json`
+//! of the same form as a pulled one.
 
 use std::path::Path;
 
@@ -127,7 +128,7 @@ impl SchemaSet {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::file_model::doc::tests::scada_doc;
+    use crate::file_model::doc::tests::{scada_doc, write_doc};
     use crate::file_model::file::{write_market, write_table};
     use crate::file_model::model::TimestampFormat;
     use crate::file_model::model::tests::unit_scada;
@@ -150,13 +151,12 @@ mod tests {
             ("DISPATCH_UNIT_SCADA", scada_doc()),
             ("UNDECLARED", {
                 let mut d = scada_doc();
-                d["name"] = "UNDECLARED".into();
-                d["declared"] = false.into();
+                d["properties"]["utilake.table"] = "UNDECLARED".into();
+                d["properties"]["utilake.declared"] = "false".into();
                 d
             }),
         ] {
-            std::fs::create_dir_all(pulled.join(name)).unwrap();
-            std::fs::write(pulled.join(name).join(DOC_FILE), doc.to_string()).unwrap();
+            write_doc(&pulled.join(name), &doc);
         }
         std::fs::write(pulled.join("manifest.json"), "{}").unwrap();
         std::fs::write(nem_dir.join("market.toml"), write_market(&nem())).unwrap();
@@ -166,13 +166,13 @@ mod tests {
         std::fs::create_dir_all(nem_dir.join("OWN")).unwrap();
         std::fs::write(nem_dir.join("OWN").join(TABLE_FILE), write_table(&own)).unwrap();
         let mut doc = scada_doc();
-        doc["name"] = "DOC".into();
-        doc["report_pairs"] = serde_json::json!([["DOC", "TABLE"]]);
-        for r in doc["iceberg"]["runs"].as_array_mut().unwrap() {
-            r["report"] = serde_json::json!(["DOC", "TABLE"]);
+        doc["properties"]["utilake.table"] = "DOC".into();
+        doc["properties"]["utilake.reports"] = "[[\"DOC\",\"TABLE\"]]".into();
+        for s in doc["snapshots"].as_array_mut().unwrap() {
+            s["summary"]["utilake.report-type"] = "DOC".into();
+            s["summary"]["utilake.report-subtype"] = "TABLE".into();
         }
-        std::fs::create_dir_all(nem_dir.join("DOC")).unwrap();
-        std::fs::write(nem_dir.join("DOC").join(DOC_FILE), doc.to_string()).unwrap();
+        write_doc(&nem_dir.join("DOC"), &doc);
         // Not tables: notes, a directory without a table file.
         std::fs::write(nem_dir.join("notes.md"), "text").unwrap();
         std::fs::create_dir_all(nem_dir.join("DRAFT")).unwrap();
@@ -229,7 +229,7 @@ mod tests {
         let set = SchemaSet::read_dir(dir.path()).unwrap();
         assert_eq!(set.tables[0].market, Market::Wem);
         let pulled = dir.path().join("wem").join(PULLED_DIR).join("X");
-        std::fs::create_dir_all(&pulled).unwrap();
+        std::fs::create_dir_all(pulled.join("metadata")).unwrap();
         std::fs::write(pulled.join(DOC_FILE), "{").unwrap();
         assert!(SchemaSet::read_dir(dir.path()).is_err());
     }

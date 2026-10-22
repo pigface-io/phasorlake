@@ -297,6 +297,9 @@ pub struct Table {
     pub schemas: Vec<TableSchema>,
     /// The runs of its history, in release order.
     pub runs: Vec<Run>,
+    /// The schema a reader of the table gets today: the published
+    /// `current-schema-id`, the last run's.
+    pub current_schema: u16,
 }
 
 impl Table {
@@ -357,9 +360,10 @@ impl Table {
             .any(|r| r.report.0 == report.0 && r.report.1 == report.1 && r.version == version)
     }
 
-    /// The history as an Iceberg table, the form `History::resolve` reads.
-    /// Only what the registry keeps is filled in: a mark has its month,
-    /// not its file.
+    /// The history as an Iceberg table, the form `History::resolve` and
+    /// the planner read. Only what the registry keeps is filled in: a mark
+    /// has its month, not its file, and no column breaks (a table with a
+    /// breaking column is refused on reading, see [`mod@super::doc`]).
     pub fn history(&self) -> utilake_iceberg::History {
         let last = self.columns.iter().map(|c| c.id.0).max().unwrap_or(0);
         let mark = |m: YearMonth| utilake_iceberg::history::Mark {
@@ -371,7 +375,7 @@ impl Table {
         utilake_iceberg::History {
             table: self.name.clone(),
             format_version: 3,
-            current_schema_id: 0,
+            current_schema_id: u32::from(self.current_schema),
             schemas: self
                 .schemas
                 .iter()
@@ -497,6 +501,7 @@ pub(crate) mod tests {
                 run(0, 1, "2024-01", "2026-07"),
                 run(1, 1, "2026-08", "2026-09"),
             ],
+            current_schema: 1,
         }
     }
 
@@ -565,6 +570,7 @@ pub(crate) mod tests {
         let t = unit_scada();
         let h = t.history();
         assert_eq!(h.schemas.len(), 2);
+        assert_eq!(h.current_schema_id, 1);
         assert_eq!(h.schemas[1].fields[3].ty, IcebergType::Timestamptz);
         assert_eq!(h.schemas[0].identifier_field_ids, [1, 2]);
         assert_eq!(

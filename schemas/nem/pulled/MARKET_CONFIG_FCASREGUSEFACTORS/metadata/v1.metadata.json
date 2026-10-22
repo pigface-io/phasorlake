@@ -1,0 +1,124 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 8567244316823105382,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 7,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1722434400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MARKET_CONFIG_FCASREGUSEFACTORS",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "false",
+    "utilake.format": "3",
+    "utilake.table": "MARKET_CONFIG_FCASREGUSEFACTORS"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 8567244316823105382,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "EFFECTIVEDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 2,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 3,
+          "name": "REGIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "BIDTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 5,
+          "name": "PERIODID",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 6,
+          "name": "USAGE_FACTOR",
+          "required": false,
+          "type": "decimal(2, 2)"
+        },
+        {
+          "id": 7,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 8567244316823105382,
+      "timestamp-ms": 1722434400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MARKET_CONFIG_FCASREGUSEFACTORS/metadata/snap-8567244316823105382-1-21542c4d-52dc-86fa-9a99-6577baa17aa6.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 8567244316823105382,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "24",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FCAS_REGU_USAGE_FACTORS#FILE01#202408010000.zip",
+        "utilake.from.release": "2024-08",
+        "utilake.from.sha256": "4196cae4a0fa7a2d1fc448ae94c8631c699538098214ff7480b556090d5f0b30",
+        "utilake.from.time": "2024-02-29T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "FCASREGUSEFACTORS",
+        "utilake.report-type": "MARKET_CONFIG",
+        "utilake.rows": "11520",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FCAS_REGU_USAGE_FACTORS#FILE01#202607010000.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "7707c9cfc9ace0f6a92cf9d1fffba4be40f797c445b90a6d7a448dd6483ada61",
+        "utilake.to.time": "2024-02-29T00:00:00+10:00",
+        "utilake.total-rows": "11520",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1722434400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "21542c4d-52dc-86fa-9a99-6577baa17aa6"
+}

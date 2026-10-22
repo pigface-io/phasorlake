@@ -1,0 +1,267 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 2445221871394293187,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 24,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1246370400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHCASESOLUTION",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "DISPATCHCASESOLUTION shows information relating to the complete dispatch run. The fields in DISPATCHCASESOLUTION provide an overview of the dispatch run results allowing immediate identification of conditions such as energy or FCAS deficiencies.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"SETTLEMENTDATE\",\"RUNNO\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"NUMERIC(2,0)\",\"4\":\"VARCHAR(3)\",\"5\":\"NUMERIC(2,0)\",\"6\":\"VARCHAR(20)\",\"7\":\"NUMERIC(1,0)\",\"8\":\"NUMERIC(27,10)\",\"9\":\"NUMERIC(15,5)\",\"10\":\"NUMERIC(15,5)\",\"11\":\"NUMERIC(15,5)\",\"12\":\"NUMERIC(15,5)\",\"13\":\"NUMERIC(15,5)\",\"14\":\"NUMERIC(15,5)\",\"15\":\"NUMERIC(15,5)\",\"16\":\"NUMERIC(15,5)\",\"17\":\"NUMERIC(15,5)\",\"18\":\"NUMERIC(15,5)\",\"19\":\"NUMERIC(15,5)\",\"20\":\"NUMERIC(15,5)\",\"21\":\"TIMESTAMP(0)\",\"22\":\"NUMERIC(1,0)\",\"23\":\"NUMERIC(1,0)\",\"24\":\"NUMERIC(1,0)\"}",
+    "utilake.package": "DISPATCH",
+    "utilake.reports": "[[\"DISPATCH\",\"CASE_SOLUTION\"]]",
+    "utilake.table": "DISPATCHCASESOLUTION",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"INTERVENTION\"]",
+    "utilake.temporal.order": "[\"RUNNO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "SETTLEMENTDATE",
+    "utilake.temporal.valid.kind": "interval_end",
+    "utilake.time": "SETTLEMENTDATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 2445221871394293187,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Date and time of the dispatch interval (e.g. five minute dispatch interval ending 28/09/2000 16:35)",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Dispatch run no; always 1",
+          "id": 2,
+          "name": "RUNNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Intervention flag - refer to package documentation for definition and practical query examples",
+          "id": 3,
+          "name": "INTERVENTION",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "Overconstrained dispatch indicator: \n* OCD = detecting over-constrained dispatch\n* null = no special condition",
+          "id": 4,
+          "name": "CASESUBTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "If non-zero indicated one of the following conditions:\n* 1 = Supply Scarcity, Excess generation or constraint violations\n* X = Model failure",
+          "id": 5,
+          "name": "SOLUTIONSTATUS",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "Current version of SPD",
+          "id": 6,
+          "name": "SPDVERSION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Non-Physical Losses algorithm invoked occurred during this run",
+          "id": 7,
+          "name": "NONPHYSICALLOSSES",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "The Objective function from the LP",
+          "id": 8,
+          "name": "TOTALOBJECTIVE",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Total Region Demand violations",
+          "id": 9,
+          "name": "TOTALAREAGENVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Total interconnector violations",
+          "id": 10,
+          "name": "TOTALINTERCONNECTORVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Total generic constraint violations",
+          "id": 11,
+          "name": "TOTALGENERICVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Total ramp rate violations",
+          "id": 12,
+          "name": "TOTALRAMPRATEVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Total unit capacity violations",
+          "id": 13,
+          "name": "TOTALUNITMWCAPACITYVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Total of 5 minute ancillary service region violations",
+          "id": 14,
+          "name": "TOTAL5MINVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Total of Regulation ancillary service region violations",
+          "id": 15,
+          "name": "TOTALREGVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Total of 6 second ancillary service region violations",
+          "id": 16,
+          "name": "TOTAL6SECVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Total of 60 second ancillary service region violations",
+          "id": 17,
+          "name": "TOTAL60SECVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Total of ancillary service trader profile violations",
+          "id": 18,
+          "name": "TOTALASPROFILEVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Total of fast start trader profile violations",
+          "id": 19,
+          "name": "TOTALFASTSTARTVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Total of unit summated offer band violations",
+          "id": 20,
+          "name": "TOTALENERGYOFFERVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 21,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Flag indicating the SCADA status for FCAS Interconnector dead-band. \"0\" if SCADA Status or requesting Constraint not invoked. \"1\" if SCADA Status AND requesting Constraint is invoked",
+          "id": 22,
+          "name": "SWITCHRUNINITIALSTATUS",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "Flag indicating which Switch run was used for the Solution – from PeriodSolution",
+          "id": 23,
+          "name": "SWITCHRUNBESTSTATUS",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "Flag indicating which Switch run was used for the Intervention Physical Solution - from PeriodSolution",
+          "id": 24,
+          "name": "SWITCHRUNBESTSTATUS_INT",
+          "required": false,
+          "type": "decimal(1, 0)"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 2445221871394293187,
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHCASESOLUTION/metadata/snap-2445221871394293187-1-52f62ceb-f03a-8fd6-a208-e4667d47aebb.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 2445221871394293187,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "207",
+        "utilake.from.file": "PUBLIC_DVD_DISPATCHCASESOLUTION_200907010000.zip",
+        "utilake.from.release": "2009-07",
+        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "utilake.from.time": "2009-07-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\",\"dvd\"]",
+        "utilake.report-subtype": "CASE_SOLUTION",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "1816704",
+        "utilake.to.file": "PUBLIC_ARCHIVE#DISPATCHCASESOLUTION#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "e5fed106d40c40531063d910b6433972809ffe5a78d580ed28dda23dd161ace8",
+        "utilake.to.time": "2026-10-01T00:00:00+10:00",
+        "utilake.total-rows": "1816704",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "52f62ceb-f03a-8fd6-a208-e4667d47aebb"
+}

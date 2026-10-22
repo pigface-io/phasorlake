@@ -1,0 +1,162 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 8200929729047794560,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 9,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1722434400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SRA_FINANCIAL_RUNTRK",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "Records details of the settlement process for the cancellation and purchase of SRA Auction Units",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"SRA_YEAR\",\"SRA_QUARTER\",\"SRA_RUNNO\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"NUMERIC(4)\",\"2\":\"NUMERIC(3)\",\"3\":\"NUMERIC(3)\",\"4\":\"VARCHAR(20)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"NUMERIC(3)\",\"8\":\"NUMERIC(3)\",\"9\":\"TIMESTAMP(0)\"}",
+    "utilake.package": "IRAUCTION",
+    "utilake.reports": "[[\"IRAUCTION\",\"SRA_FINANCIAL_RUNTRK\"]]",
+    "utilake.table": "SRA_FINANCIAL_RUNTRK",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"SRA_YEAR\",\"SRA_QUARTER\",\"SRA_RUNNO\"]",
+    "utilake.temporal.order": "[\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.time": "LASTCHANGED",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 8200929729047794560,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Year of the Tranche",
+          "id": 1,
+          "name": "SRA_YEAR",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Relevant Quarter of the Tranche",
+          "id": 2,
+          "name": "SRA_QUARTER",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "SRA Run Number",
+          "id": 3,
+          "name": "SRA_RUNNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "The type of SRA run",
+          "id": 4,
+          "name": "RUNTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The date and time the run was triggered",
+          "id": 5,
+          "name": "RUNDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The date/time the run was posted",
+          "id": 6,
+          "name": "POSTEDDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Version number of the interest component used in the payments run",
+          "id": 7,
+          "name": "INTEREST_VERSIONNO",
+          "required": false,
+          "type": "long"
+        },
+        {
+          "doc": "Version number of the makeup component used in the makeup run",
+          "id": 8,
+          "name": "MAKEUP_VERSIONNO",
+          "required": false,
+          "type": "long"
+        },
+        {
+          "doc": "The date and time this record was last modified",
+          "id": 9,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 8200929729047794560,
+      "timestamp-ms": 1722434400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SRA_FINANCIAL_RUNTRK/metadata/snap-8200929729047794560-1-23b842d6-1692-8b8a-bb61-1f96aa8f87ad.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 8200929729047794560,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "26",
+        "utilake.from.file": "PUBLIC_ARCHIVE#SRA_FINANCIAL_RUNTRK#FILE01#202408010000.zip",
+        "utilake.from.release": "2024-08",
+        "utilake.from.sha256": "d4814720289658b94d33572c0a4bf178a4de46d6cfeafd8f6ff133d82d1c9bc4",
+        "utilake.from.time": "2022-01-19T11:00:01+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "SRA_FINANCIAL_RUNTRK",
+        "utilake.report-type": "IRAUCTION",
+        "utilake.rows": "394",
+        "utilake.to.file": "PUBLIC_ARCHIVE#SRA_FINANCIAL_RUNTRK#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "9657ae492bb83d4cf811275aeda7fe45f714d96d410983aebfbf618292b22cbf",
+        "utilake.to.time": "2026-07-16T11:00:03+10:00",
+        "utilake.total-rows": "394",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1722434400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "23b842d6-1692-8b8a-bb61-1f96aa8f87ad"
+}

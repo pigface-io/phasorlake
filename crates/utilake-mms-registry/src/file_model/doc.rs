@@ -1,21 +1,24 @@
-//! A table as utilake-schemas publishes it: `nem/<TABLE>/table.json`,
-//! pulled into `schemas/nem/pulled/` (`just schemas-pull`).
+//! A table as utilake-schemas publishes it: its Iceberg table metadata,
+//! `nem/<TABLE>/metadata/v1.metadata.json`, pulled into
+//! `schemas/nem/pulled/<TABLE>/metadata/` (`just schemas-pull`).
 //!
-//! The document says the table's report pairs, key, time column, time
-//! roles and load mode, and under `iceberg` its history: the Iceberg
-//! schemas its files were written under and the runs of files of each.
-//! The table's columns are the history's fields, by id, each with its
-//! Iceberg type; a column takes nulls unless every schema requires it.
-//! The rest of the document (the data model's column notes, the package)
-//! is for its other readers.
+//! The metadata is read through `utilake_iceberg::from_metadata`: the
+//! table's history (the Iceberg schemas its files were written under and
+//! the runs of files of each, one snapshot per run), its declaration
+//! (report pairs, key, time column, time roles and load mode, as
+//! `utilake.*` properties) and the data model's words. The table's columns
+//! are the history's fields, by id, each with its Iceberg type; a column
+//! takes nulls unless every schema requires it. The schema a reader of the
+//! table gets today is the metadata's `current-schema-id`.
 //!
 //! A table the data model does not declare has no report pairs; the
 //! registry leaves it out, and a block of it is derived from its file.
 
 use std::path::Path;
 
-use serde::Deserialize;
 use utilake_core::YearMonth;
+use utilake_iceberg::from_metadata;
+use utilake_iceberg::table::TableMetadata;
 
 use crate::file_model::error::SchemaFileError;
 use crate::file_model::file::{TemporalFile, norm};
@@ -23,29 +26,10 @@ use crate::file_model::model::{
     Column, ColumnId, LakeType, LoadMode, Market, Run, Table, TableSchema,
 };
 
-/// The name of a pulled table's file in its directory.
-pub const DOC_FILE: &str = "table.json";
+/// The path of a pulled table's metadata under its directory.
+pub const DOC_FILE: &str = "metadata/v1.metadata.json";
 
-#[derive(Deserialize)]
-struct Doc {
-    name: String,
-    #[serde(default)]
-    description: Option<String>,
-    declared: bool,
-    #[serde(default)]
-    report_pairs: Option<Vec<(String, String)>>,
-    #[serde(default)]
-    primary_key: Option<Vec<String>>,
-    #[serde(default)]
-    time_column: Option<String>,
-    #[serde(default)]
-    temporal: Option<TemporalFile>,
-    #[serde(default)]
-    load_mode: Option<LoadMode>,
-    iceberg: utilake_iceberg::History,
-}
-
-/// Parses a pulled table's text: the table, or `None` for one the data
+/// Parses a pulled table's metadata: the table, or `None` for one the data
 /// model does not declare.
 ///
 /// A column of the history is one field: two fields of one name (a column
@@ -58,27 +42,40 @@ pub fn parse_doc(
     text: &str,
     market: Market,
 ) -> Result<Option<Table>, SchemaFileError> {
-    let d: Doc = serde_json::from_str(text).map_err(|e| SchemaFileError::Parse {
+    let m: TableMetadata = serde_json::from_str(text).map_err(|e| SchemaFileError::Parse {
         path: path.display().to_string(),
         message: e.to_string(),
         line: u64::try_from(e.line()).ok(),
     })?;
+    let p = from_metadata(&m).map_err(|e| SchemaFileError::Invalid {
+        path: path.display().to_string(),
+        table: m
+            .properties
+            .get("utilake.table")
+            .cloned()
+            .unwrap_or_default(),
+        message: e.to_string(),
+    })?;
+    let h = &p.history;
     let invalid = |message: String| SchemaFileError::Invalid {
         path: path.display().to_string(),
-        table: d.name.clone(),
+        table: h.table.clone(),
         message,
     };
-    if !d.declared {
+    let Some(decl) = &p.declaration else {
         return Ok(None);
-    }
-    let (Some(report_pairs), Some(load_mode), Some(temporal)) =
-        (d.report_pairs.clone(), d.load_mode, d.temporal)
-    else {
-        return Err(invalid(
-            "a declared table needs report_pairs, load_mode and temporal".into(),
-        ));
     };
-    let h = &d.iceberg;
+    let load_mode: LoadMode =
+        serde_json::from_value(serde_json::json!(decl.load_mode)).map_err(|_| {
+            invalid(format!(
+                "load mode {:?} is not append or snapshot",
+                decl.load_mode
+            ))
+        })?;
+    let temporal: TemporalFile = serde_json::to_value(&decl.temporal)
+        .ok()
+        .and_then(|v| serde_json::from_value(v).ok())
+        .ok_or_else(|| invalid("its temporal roles are not ones utilake knows".into()))?;
     let mut columns: Vec<Column> = Vec::new();
     for f in h.fields() {
         if let Some(other) = columns.iter().find(|c| c.name == f.name) {
@@ -146,27 +143,32 @@ pub fn parse_doc(
         temporal.valid = crate::file_model::temporal::ValidAxis::Timeless;
     }
     let mut buf = String::new();
-    let mut report_pairs = report_pairs;
+    let mut report_pairs: Vec<(String, String)> = decl
+        .report_pairs
+        .iter()
+        .map(|[a, b]| (a.clone(), b.clone()))
+        .collect();
     for (a, b) in &mut report_pairs {
         norm(a, &mut buf);
         norm(b, &mut buf);
     }
     Ok(Some(Table {
         market,
-        name: d.name.clone(),
-        description: d.description.clone(),
+        name: h.table.clone(),
+        description: p.description.clone(),
         report_pairs,
         load_mode,
         temporal,
-        primary_key: d.primary_key.clone().unwrap_or_default(),
-        time_column: d.time_column.clone().filter(is_column),
+        primary_key: decl.primary_key.clone(),
+        time_column: decl.time_column.clone().filter(is_column),
         columns,
         schemas,
         runs,
+        current_schema: schema_id(h.current_schema_id)?,
     }))
 }
 
-/// Reads `{dir}/table.json`.
+/// Reads `{dir}/metadata/v1.metadata.json`.
 pub fn read_doc(dir: &Path, market: Market) -> Result<Option<Table>, SchemaFileError> {
     let path = dir.join(DOC_FILE);
     let text = std::fs::read_to_string(&path).map_err(|source| SchemaFileError::Read {
@@ -179,54 +181,57 @@ pub fn read_doc(dir: &Path, market: Market) -> Result<Option<Table>, SchemaFileE
 #[cfg(test)]
 pub(crate) mod tests {
     use serde_json::json;
+    use utilake_iceberg::publish::{Declaration, Published, Temporal, Valid};
+    use utilake_iceberg::to_metadata;
 
     use super::*;
     use crate::file_model::model::tests::unit_scada;
 
     /// DISPATCH_UNIT_SCADA as utilake-schemas publishes it: the fixture's
-    /// schemas and runs.
+    /// history and declaration as Iceberg table metadata.
     pub(crate) fn scada_doc() -> serde_json::Value {
         let t = unit_scada();
-        let mark = |m: YearMonth| json!({"file": "F.zip", "sha256": "ab", "release": m.to_string(), "data-time": null});
-        let field = |id: &ColumnId, required: &bool| {
-            let c = t.column_by_id(*id).unwrap();
-            json!({"id": c.id.0, "name": c.name, "type": c.ty.iceberg().name(), "required": required})
+        let p = Published {
+            history: t.history(),
+            declaration: Some(Declaration {
+                package: Some("DISPATCH".into()),
+                report_pairs: t
+                    .report_pairs
+                    .iter()
+                    .map(|(a, b)| [a.clone(), b.clone()])
+                    .collect(),
+                primary_key: t.primary_key.clone(),
+                time_column: t.time_column.clone(),
+                load_mode: "append".into(),
+                visibility: "PUBLIC".into(),
+                temporal: Temporal {
+                    valid: Valid {
+                        kind: "interval_end".into(),
+                        column: Some("SETTLEMENTDATE".into()),
+                    },
+                    entity: vec!["DUID".into()],
+                    order: vec!["LASTCHANGED".into()],
+                    cutoff: Some("LASTCHANGED".into()),
+                    origin: "derived".into(),
+                },
+            }),
+            description: t.description.clone(),
+            docs: Default::default(),
+            model_types: Default::default(),
         };
-        json!({
-            "name": t.name,
-            "description": t.description,
-            "declared": true,
-            "package": "DISPATCH",
-            "visibility": "PUBLIC",
-            "report_pairs": t.report_pairs,
-            "primary_key": t.primary_key,
-            "time_column": t.time_column,
-            "load_mode": "append",
-            "temporal": {"origin": "derived", "entity": ["DUID"],
-                         "valid": {"kind": "interval_end", "column": "SETTLEMENTDATE"},
-                         "order": ["LASTCHANGED"], "cutoff": "LASTCHANGED"},
-            "columns": [],
-            "x-format": 2,
-            "iceberg": {
-                "table": t.name,
-                "format-version": 3,
-                "schemas": t.schemas.iter().map(|s| json!({
-                    "type": "struct", "schema-id": s.id,
-                    "identifier-field-ids": s.key.iter().map(|k| k.0).collect::<Vec<_>>(),
-                    "fields": s.fields.iter().map(|(id, r)| field(id, r)).collect::<Vec<_>>(),
-                })).collect::<Vec<_>>(),
-                "runs": t.runs.iter().map(|r| json!({
-                    "schema-id": r.schema, "report": [r.report.0, r.report.1], "version": r.version,
-                    "kinds": r.kinds, "from": mark(r.from), "to": mark(r.to), "files": r.files,
-                    "rows": r.rows, "changes": ["first"], "updates": [], "overlaps": false,
-                })).collect::<Vec<_>>(),
-                "breaking": [],
-            },
-        })
+        let table = to_metadata(&p, "l", "u").unwrap();
+        serde_json::to_value(&table.metadata).unwrap()
+    }
+
+    /// Writes `doc` where [`read_doc`] reads it under `dir`.
+    pub(crate) fn write_doc(dir: &Path, doc: &serde_json::Value) {
+        let path = dir.join(DOC_FILE);
+        std::fs::create_dir_all(path.parent().unwrap()).unwrap();
+        std::fs::write(path, doc.to_string()).unwrap();
     }
 
     fn parse(v: &serde_json::Value) -> Result<Option<Table>, SchemaFileError> {
-        parse_doc(Path::new("table.json"), &v.to_string(), Market::Nem)
+        parse_doc(Path::new(DOC_FILE), &v.to_string(), Market::Nem)
     }
 
     #[test]
@@ -234,21 +239,20 @@ pub(crate) mod tests {
         assert_eq!(parse(&scada_doc()).unwrap(), Some(unit_scada()));
         // Not declared: no table.
         let mut d = scada_doc();
-        d["declared"] = json!(false);
-        d["report_pairs"] = json!(null);
+        d["properties"]["utilake.declared"] = json!("false");
         assert_eq!(parse(&d).unwrap(), None);
         // A field one schema requires and another lacks takes nulls.
         let mut d = scada_doc();
-        d["iceberg"]["schemas"][1]["fields"][3]["required"] = json!(true);
+        d["schemas"][1]["fields"][3]["required"] = json!(true);
         let t = parse(&d).unwrap().unwrap();
         assert!(t.columns[3].nullable);
         assert_eq!(t.schemas[1].fields[3], (ColumnId(4), true));
         // A time column and roles naming a column no file has: dropped.
         let mut d = scada_doc();
-        d["time_column"] = json!("NOWHERE");
-        d["temporal"]["valid"]["column"] = json!("NOWHERE");
-        d["temporal"]["entity"] = json!(["DUID", "NOWHERE"]);
-        d["temporal"]["cutoff"] = json!("NOWHERE");
+        d["properties"]["utilake.time"] = json!("NOWHERE");
+        d["properties"]["utilake.temporal.valid.column"] = json!("NOWHERE");
+        d["properties"]["utilake.temporal.entity"] = json!("[\"DUID\",\"NOWHERE\"]");
+        d["properties"]["utilake.temporal.cutoff"] = json!("NOWHERE");
         let t = parse(&d).unwrap().unwrap();
         assert_eq!(t.time_column, None);
         assert_eq!(
@@ -263,34 +267,36 @@ pub(crate) mod tests {
 
     #[test]
     fn what_a_document_cannot_say() {
+        let err = |d: &serde_json::Value| parse(d).unwrap_err().to_string();
         // One column under two fields.
         let mut d = scada_doc();
-        d["iceberg"]["schemas"][1]["fields"][3]["id"] = json!(9);
-        d["iceberg"]["schemas"][1]["fields"][3]["name"] = json!("SCADAVALUE");
-        let e = parse(&d).unwrap_err();
-        assert!(e.to_string().contains("field 3 and field 9"), "{e}");
+        d["schemas"][1]["fields"][3]["id"] = json!(9);
+        d["schemas"][1]["fields"][3]["name"] = json!("SCADAVALUE");
+        assert!(err(&d).contains("field 3 and field 9"), "{}", err(&d));
+        // Not a published table.
         let mut d = scada_doc();
-        d["load_mode"] = json!(null);
-        assert!(
-            parse(&d)
-                .unwrap_err()
-                .to_string()
-                .contains("needs report_pairs")
-        );
+        d["properties"]["utilake.declared"] = json!("maybe");
+        assert!(err(&d).contains("utilake.declared"), "{}", err(&d));
         let mut d = scada_doc();
-        d["iceberg"]["runs"][0]["from"]["release"] = json!("2024");
-        assert!(parse(&d).unwrap_err().to_string().contains("not a month"));
+        d["properties"]["utilake.load"] = json!("weekly");
+        assert!(err(&d).contains("is not append or snapshot"), "{}", err(&d));
         let mut d = scada_doc();
-        d["iceberg"]["runs"][0]["schema-id"] = json!(70_000);
-        assert!(parse(&d).unwrap_err().to_string().contains("beyond"));
+        d["properties"]["utilake.temporal.origin"] = json!("guessed");
+        assert!(err(&d).contains("not ones utilake knows"), "{}", err(&d));
         let mut d = scada_doc();
-        d["temporal"]["valid"] = json!({"kind": "timeless", "column": "X"});
-        assert!(
-            parse(&d)
-                .unwrap_err()
-                .to_string()
-                .contains("takes no column")
-        );
+        d["snapshots"][0]["summary"]["utilake.from.release"] = json!("2024");
+        assert!(err(&d).contains("not a month"), "{}", err(&d));
+        let mut d = scada_doc();
+        d["current-schema-id"] = json!(70_000);
+        assert!(err(&d).contains("beyond"), "{}", err(&d));
+        let mut d = scada_doc();
+        d["schemas"][0]["schema-id"] = json!(70_000);
+        d["snapshots"][0]["schema-id"] = json!(70_000);
+        assert!(err(&d).contains("beyond"), "{}", err(&d));
+        let mut d = scada_doc();
+        d["properties"]["utilake.temporal.valid.kind"] = json!("timeless");
+        d["properties"]["utilake.temporal.valid.column"] = json!("X");
+        assert!(err(&d).contains("takes no column"), "{}", err(&d));
         let e = parse_doc(Path::new("t.json"), "{\n\"name\": 3}", Market::Nem).unwrap_err();
         assert!(
             matches!(e, SchemaFileError::Parse { line: Some(2), .. }),
@@ -301,7 +307,7 @@ pub(crate) mod tests {
             read_doc(dir.path(), Market::Nem),
             Err(SchemaFileError::Read { .. })
         ));
-        std::fs::write(dir.path().join(DOC_FILE), scada_doc().to_string()).unwrap();
+        write_doc(dir.path(), &scada_doc());
         assert_eq!(
             read_doc(dir.path(), Market::Nem).unwrap(),
             Some(unit_scada())

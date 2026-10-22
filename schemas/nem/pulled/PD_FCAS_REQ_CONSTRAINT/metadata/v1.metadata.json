@@ -1,0 +1,212 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 5388864864591061616,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 17,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1732975200000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PD_FCAS_REQ_CONSTRAINT",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "The constraint level FCAS cost / price details for constraint FCAS processor runs. This enhanced output table format is established for the constraint FCAS processor release required for the Frequency Performance Payments (FPP) release. This enhanced output is hierarchical in nature, with the parent *_FCAS_REQ_RUN table holding the details about the triggering case run and time, and the child *_FCAS_REQ_CONSTRAINT table holding the constraint level details of FCAS costs / prices.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(5)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"VARCHAR(20)\",\"6\":\"VARCHAR(20)\",\"7\":\"VARCHAR(10)\",\"8\":\"NUMERIC(15,5)\",\"9\":\"NUMERIC(15,5)\",\"10\":\"NUMERIC(15,5)\",\"11\":\"NUMERIC(15,5)\",\"12\":\"NUMERIC(15,5)\",\"13\":\"NUMERIC(15,5)\",\"14\":\"NUMERIC(18,8)\",\"15\":\"NUMERIC(18,8)\",\"16\":\"NUMERIC(18,8)\",\"17\":\"NUMERIC(18,8)\"}",
+    "utilake.reports": "[[\"PREDISPATCH\",\"FCAS_REQ_CONSTRAINT\"]]",
+    "utilake.table": "PD_FCAS_REQ_CONSTRAINT",
+    "utilake.temporal.entity": "[]",
+    "utilake.temporal.order": "[\"RUN_DATETIME\",\"PREDISPATCHSEQNO\",\"RUNNO\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.time": "INTERVAL_DATETIME",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 5388864864591061616,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Predispatch sequence number for the 30 minute predispatch case that triggers the constraint FCAS processor run",
+          "id": 1,
+          "name": "PREDISPATCHSEQNO",
+          "required": false,
+          "type": "decimal(10, 0)"
+        },
+        {
+          "doc": "The run date and time of the 30 minute predispatch case that triggers the constraint FCAS processor run",
+          "id": 2,
+          "name": "RUN_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The 30 minute predispatch case run number that has triggers the constraint FCAS processor run",
+          "id": 3,
+          "name": "RUNNO",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "doc": "The 30 minute interval date and time of the 30 minute predispatch interval that was processed by the constraint FCAS processor",
+          "id": 4,
+          "name": "INTERVAL_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "ConstraintID join to table GenConData",
+          "id": 5,
+          "name": "CONSTRAINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Region identifier",
+          "id": 6,
+          "name": "REGIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "DUID offered type",
+          "id": 7,
+          "name": "BIDTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Constraints summed LHS - aggregate LHS Solution values from the physical run from the PREDISPATCHCONSTRAINT table",
+          "id": 8,
+          "name": "LHS",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Constraints RHS value used in the solution - may be either dynamic (calculated) or static from the physical run from the PREDISPATCHCONSTRAINT table",
+          "id": 9,
+          "name": "RHS",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Shadow price of constraint from the PREDISPATCHCONSTRAINT table from the physical run.",
+          "id": 10,
+          "name": "MARGINALVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Bid type prices for the region coming from the pricing run of the PREDISPATCHREGIONSUM table",
+          "id": 11,
+          "name": "RRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "The dispatched MW for the bid type inside the region from the physical run of the PREDISPATCHREGIONSUM table",
+          "id": 12,
+          "name": "REGIONAL_ENABLEMENT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "MW enabled for this bid type within the constraint",
+          "id": 13,
+          "name": "CONSTRAINT_ENABLEMENT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "The regional payment allocated to the constraint for the interval pro-rated based on marginal value ratios over the binding constraints for that service in that region (this is an intermediate calculation to get to the base cost)",
+          "id": 14,
+          "name": "REGION_BASE_COST",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The base cost of the constraint, before the regulation/contingency split",
+          "id": 15,
+          "name": "BASE_COST",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The adjusted cost of the constraint for this service, after the regulation/contingency split",
+          "id": 16,
+          "name": "ADJUSTED_COST",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The adjusted marginal value of the constraint for FPP recovery (blank for constraints without REG terms)",
+          "id": 17,
+          "name": "P_REGULATION",
+          "required": false,
+          "type": "decimal(18, 8)"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 5388864864591061616,
+      "timestamp-ms": 1732975200000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PD_FCAS_REQ_CONSTRAINT/metadata/snap-5388864864591061616-1-026566a6-2ecf-8fa5-a725-0a70bb27c8ae.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 5388864864591061616,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "266",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PD_FCAS_REQ_CONSTRAINT#FILE01#202412010000.zip",
+        "utilake.from.release": "2024-12",
+        "utilake.from.sha256": "4fb3d23d4ac777b4c25b83aeb4f6983f21ed7e20a9bca657fab4b767523cead0",
+        "utilake.from.time": "2024-12-09T12:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "FCAS_REQ_CONSTRAINT",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "9439673563",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PD_FCAS_REQ_CONSTRAINT#FILE02#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "8eb4bd4d8c3c670e5544f6a93ba0d3185e1f9c3ce99e83c267e45c1a1a085dad",
+        "utilake.to.time": "2026-10-02T04:00:00+10:00",
+        "utilake.total-rows": "9439673563",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1732975200000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "026566a6-2ecf-8fa5-a725-0a70bb27c8ae"
+}

@@ -1,0 +1,373 @@
+{
+  "current-schema-id": 1,
+  "current-snapshot-id": 2455844151305130279,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 17,
+  "last-partition-id": 999,
+  "last-sequence-number": 2,
+  "last-updated-ms": 1777557600001,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BILLINGRUNTRK",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "BILLINGRUNTRK identifies the Statement type (i.e. Status of PRELIM, FINAL, REVISE) and date of the BillRunNo posted, per WeekNo. This provides a further extension of tracking data from the BILLINGDAYTRK table.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"CONTRACTYEAR\",\"WEEKNO\",\"BILLRUNNO\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"NUMERIC(4,0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(6)\",\"5\":\"VARCHAR(1)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"VARCHAR(10)\",\"8\":\"TIMESTAMP(0)\",\"9\":\"VARCHAR(10)\",\"10\":\"TIMESTAMP(0)\",\"11\":\"TIMESTAMP(0)\",\"12\":\"VARCHAR(10)\",\"13\":\"TIMESTAMP(0)\",\"14\":\"VARCHAR(10)\",\"15\":\"NUMERIC(16,6)\",\"16\":\"NUMERIC(15,5)\",\"17\":\"NUMERIC(3,0)\"}",
+    "utilake.package": "BILLING_RUN",
+    "utilake.reports": "[[\"BILLING\",\"RUNTRK\"]]",
+    "utilake.table": "BILLINGRUNTRK",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"CONTRACTYEAR\",\"WEEKNO\"]",
+    "utilake.temporal.order": "[\"BILLRUNNO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.time": "LASTCHANGED",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 2455844151305130279,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Year of the run",
+          "id": 1,
+          "name": "CONTRACTYEAR",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Week number of the run",
+          "id": 2,
+          "name": "WEEKNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Sequential run number",
+          "id": 3,
+          "name": "BILLRUNNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "The billing run type, PRELIM, FINAL, REVISE or INTERIM",
+          "id": 4,
+          "name": "STATUS",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Flag",
+          "id": 5,
+          "name": "ADJ_CLEARED",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "null, since not used",
+          "id": 6,
+          "name": "AUTHORISEDDATE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "null, since not used",
+          "id": 7,
+          "name": "AUTHORISEDBY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "When the results were posted",
+          "id": 8,
+          "name": "POSTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Who posted the results",
+          "id": 9,
+          "name": "POSTBY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 10,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "null, since not used",
+          "id": 11,
+          "name": "RECEIPTPOSTDATE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "null, since not used",
+          "id": 12,
+          "name": "RECEIPTPOSTBY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "When the payment was posted",
+          "id": 13,
+          "name": "PAYMENTPOSTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Who posted the payment",
+          "id": 14,
+          "name": "PAYMENTPOSTBY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Payment shortfall amount",
+          "id": 15,
+          "name": "SHORTFALL",
+          "required": false,
+          "type": "decimal(16, 8)"
+        },
+        {
+          "doc": "Not Used",
+          "id": 16,
+          "name": "MAKEUP",
+          "required": false,
+          "type": "decimal(15, 8)"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Year of the run",
+          "id": 1,
+          "name": "CONTRACTYEAR",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Week number of the run",
+          "id": 2,
+          "name": "WEEKNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Sequential run number",
+          "id": 3,
+          "name": "BILLRUNNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "The billing run type, PRELIM, FINAL, REVISE or INTERIM",
+          "id": 4,
+          "name": "STATUS",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Flag",
+          "id": 5,
+          "name": "ADJ_CLEARED",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "null, since not used",
+          "id": 6,
+          "name": "AUTHORISEDDATE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "null, since not used",
+          "id": 7,
+          "name": "AUTHORISEDBY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "When the results were posted",
+          "id": 8,
+          "name": "POSTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Who posted the results",
+          "id": 9,
+          "name": "POSTBY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 10,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "null, since not used",
+          "id": 11,
+          "name": "RECEIPTPOSTDATE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "null, since not used",
+          "id": 12,
+          "name": "RECEIPTPOSTBY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "When the payment was posted",
+          "id": 13,
+          "name": "PAYMENTPOSTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Who posted the payment",
+          "id": 14,
+          "name": "PAYMENTPOSTBY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Payment shortfall amount",
+          "id": 15,
+          "name": "SHORTFALL",
+          "required": false,
+          "type": "decimal(16, 8)"
+        },
+        {
+          "doc": "Not Used",
+          "id": 16,
+          "name": "MAKEUP",
+          "required": false,
+          "type": "decimal(15, 8)"
+        },
+        {
+          "doc": "Revision Run Type",
+          "id": 17,
+          "name": "REVISIONINDEX",
+          "required": false,
+          "type": "long"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3
+      ],
+      "schema-id": 1,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 5966211509321533145,
+      "timestamp-ms": 1246370400000
+    },
+    {
+      "snapshot-id": 2455844151305130279,
+      "timestamp-ms": 1777557600001
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BILLINGRUNTRK/metadata/snap-5966211509321533145-1-d1fdfa2b-3b49-8166-bde9-bfd8aceac43c.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 5966211509321533145,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "202",
+        "utilake.from.file": "PUBLIC_DVD_BILLINGRUNTRK_200907010000.zip",
+        "utilake.from.release": "2009-07",
+        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "utilake.from.time": "2009-06-19T08:39:42+10:00",
+        "utilake.kinds": "[\"archive\",\"dvd\"]",
+        "utilake.report-subtype": "RUNTRK",
+        "utilake.report-type": "BILLING",
+        "utilake.rows": "9691",
+        "utilake.to.file": "PUBLIC_ARCHIVE#BILLINGRUNTRK#FILE01#202604010000.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "0e8df01382edc03a467c857b0a61b77c88243e5fd53eff258732cac1cd3b8763",
+        "utilake.to.time": "2026-04-30T12:36:25+10:00",
+        "utilake.total-rows": "9691",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1246370400000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BILLINGRUNTRK/metadata/snap-2455844151305130279-2-d1fdfa2b-3b49-8166-bde9-bfd8aceac43c.avro",
+      "parent-snapshot-id": 5966211509321533145,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 2455844151305130279,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "5",
+        "utilake.from.file": "PUBLIC_ARCHIVE#BILLINGRUNTRK#FILE01#202605010000.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "f5d1b98f2c84df7afb6e0b09b3b525d9b9b3d05f4f0abbaf38c73346c222b581",
+        "utilake.from.time": "2026-05-01T03:45:55+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "RUNTRK",
+        "utilake.report-type": "BILLING",
+        "utilake.rows": "245",
+        "utilake.to.file": "PUBLIC_ARCHIVE#BILLINGRUNTRK#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "5f09b233621f7c4787424fcd6b7ee79c970605ebf6fc0294a469ad66e258c96e",
+        "utilake.to.time": "2026-09-30T11:32:07+10:00",
+        "utilake.total-rows": "9936",
+        "utilake.version": "6"
+      },
+      "timestamp-ms": 1777557600001
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "d1fdfa2b-3b49-8166-bde9-bfd8aceac43c"
+}

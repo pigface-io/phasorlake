@@ -1,0 +1,574 @@
+{
+  "current-schema-id": 1,
+  "current-snapshot-id": 989881416422905519,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 29,
+  "last-partition-id": 999,
+  "last-sequence-number": 3,
+  "last-updated-ms": 1722434400002,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDDAYOFFER_D",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "BIDDAYOFFER_D shows the public summary of the energy and FCAS offers applicable in the Dispatch for the\nintervals identified. BIDDAYOFFER_D is the parent table to BIDPEROFFER_D.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"SETTLEMENTDATE\",\"DUID\",\"BIDTYPE\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(10)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"NUMERIC(22,0)\",\"7\":\"VARCHAR(10)\",\"8\":\"NUMERIC(12,6)\",\"9\":\"VARCHAR(500)\",\"10\":\"NUMERIC(9,2)\",\"11\":\"NUMERIC(9,2)\",\"12\":\"NUMERIC(9,2)\",\"13\":\"NUMERIC(9,2)\",\"14\":\"NUMERIC(9,2)\",\"15\":\"NUMERIC(9,2)\",\"16\":\"NUMERIC(9,2)\",\"17\":\"NUMERIC(9,2)\",\"18\":\"NUMERIC(9,2)\",\"19\":\"NUMERIC(9,2)\",\"20\":\"NUMERIC(22,0)\",\"21\":\"NUMERIC(22,0)\",\"22\":\"NUMERIC(22,0)\",\"23\":\"NUMERIC(22,0)\",\"24\":\"NUMERIC(22,0)\",\"25\":\"VARCHAR(3)\",\"26\":\"TIMESTAMP(0)\",\"27\":\"NUMERIC(16,6)\",\"28\":\"VARCHAR(20)\",\"29\":\"VARCHAR(20)\"}",
+    "utilake.package": "BIDS",
+    "utilake.reports": "[[\"BID\",\"BIDDAYOFFER_D\"]]",
+    "utilake.table": "BIDDAYOFFER_D",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"DUID\",\"BIDTYPE\"]",
+    "utilake.temporal.order": "[\"OFFERDATE\",\"VERSIONNO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "SETTLEMENTDATE",
+    "utilake.temporal.valid.kind": "interval_end",
+    "utilake.time": "SETTLEMENTDATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 989881416422905519,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Market date for which the bid applied",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Dispatchable unit identifier",
+          "id": 2,
+          "name": "DUID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Bid Type Identifier",
+          "id": 3,
+          "name": "BIDTYPE",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Market date for which the bid was submitted.",
+          "id": 4,
+          "name": "BIDSETTLEMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Offer date and time",
+          "id": 5,
+          "name": "OFFERDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Version No. for given offer date",
+          "id": 6,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Unique participant identifier",
+          "id": 7,
+          "name": "PARTICIPANTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Maximum energy available from Energy Constrained Plant. (Energy Bids Only)",
+          "id": 8,
+          "name": "DAILYENERGYCONSTRAINT",
+          "required": false,
+          "type": "decimal(12, 6)"
+        },
+        {
+          "doc": "Explanation for all rebids and inflexibilities",
+          "id": 9,
+          "name": "REBIDEXPLANATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Price for Availability Band 1",
+          "id": 10,
+          "name": "PRICEBAND1",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Price for Availability Band 2",
+          "id": 11,
+          "name": "PRICEBAND2",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Price for Availability Band 3",
+          "id": 12,
+          "name": "PRICEBAND3",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Price for Availability Band 4",
+          "id": 13,
+          "name": "PRICEBAND4",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Price for Availability Band 5",
+          "id": 14,
+          "name": "PRICEBAND5",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Price for Availability Band 6",
+          "id": 15,
+          "name": "PRICEBAND6",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Price for Availability Band 7",
+          "id": 16,
+          "name": "PRICEBAND7",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Price for Availability Band 8",
+          "id": 17,
+          "name": "PRICEBAND8",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Price for Availability Band 9",
+          "id": 18,
+          "name": "PRICEBAND9",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Price for Availability Band 10",
+          "id": 19,
+          "name": "PRICEBAND10",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Minimum MW load fast start plant",
+          "id": 20,
+          "name": "MINIMUMLOAD",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Time to synchronise in minutes (Energy Bids Only)",
+          "id": 21,
+          "name": "T1",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Time to minimum load in minutes (Energy Bids Only)",
+          "id": 22,
+          "name": "T2",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Time at minimum load in minutes (Energy Bids Only)",
+          "id": 23,
+          "name": "T3",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Time to shutdown in minutes (Energy Bids Only)",
+          "id": 24,
+          "name": "T4",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "ON/OFF for loads (Energy Bids Only)",
+          "id": 25,
+          "name": "NORMALSTATUS",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 26,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Mandatory Restriction Scaling Factor",
+          "id": 27,
+          "name": "MR_FACTOR",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Daily if processed before BidCutOff of previous day, otherwise REBID",
+          "id": 28,
+          "name": "ENTRYTYPE",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Market date for which the bid applied",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Dispatchable unit identifier",
+          "id": 2,
+          "name": "DUID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Bid Type Identifier",
+          "id": 3,
+          "name": "BIDTYPE",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "The power flow direction to which this offer applies: GEN, LOAD or BIDIRECTIONAL",
+          "id": 29,
+          "name": "DIRECTION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Market date for which the bid was submitted.",
+          "id": 4,
+          "name": "BIDSETTLEMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Offer date and time",
+          "id": 5,
+          "name": "OFFERDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Version No. for given offer date",
+          "id": 6,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Unique participant identifier",
+          "id": 7,
+          "name": "PARTICIPANTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Maximum energy available from Energy Constrained Plant. (Energy Bids Only)",
+          "id": 8,
+          "name": "DAILYENERGYCONSTRAINT",
+          "required": false,
+          "type": "decimal(12, 6)"
+        },
+        {
+          "doc": "Explanation for all rebids and inflexibilities",
+          "id": 9,
+          "name": "REBIDEXPLANATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Price for Availability Band 1",
+          "id": 10,
+          "name": "PRICEBAND1",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Price for Availability Band 2",
+          "id": 11,
+          "name": "PRICEBAND2",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Price for Availability Band 3",
+          "id": 12,
+          "name": "PRICEBAND3",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Price for Availability Band 4",
+          "id": 13,
+          "name": "PRICEBAND4",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Price for Availability Band 5",
+          "id": 14,
+          "name": "PRICEBAND5",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Price for Availability Band 6",
+          "id": 15,
+          "name": "PRICEBAND6",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Price for Availability Band 7",
+          "id": 16,
+          "name": "PRICEBAND7",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Price for Availability Band 8",
+          "id": 17,
+          "name": "PRICEBAND8",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Price for Availability Band 9",
+          "id": 18,
+          "name": "PRICEBAND9",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Price for Availability Band 10",
+          "id": 19,
+          "name": "PRICEBAND10",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Minimum MW load fast start plant",
+          "id": 20,
+          "name": "MINIMUMLOAD",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Time to synchronise in minutes (Energy Bids Only)",
+          "id": 21,
+          "name": "T1",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Time to minimum load in minutes (Energy Bids Only)",
+          "id": 22,
+          "name": "T2",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Time at minimum load in minutes (Energy Bids Only)",
+          "id": 23,
+          "name": "T3",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Time to shutdown in minutes (Energy Bids Only)",
+          "id": 24,
+          "name": "T4",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "ON/OFF for loads (Energy Bids Only)",
+          "id": 25,
+          "name": "NORMALSTATUS",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 26,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Mandatory Restriction Scaling Factor",
+          "id": 27,
+          "name": "MR_FACTOR",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Daily if processed before BidCutOff of previous day, otherwise REBID",
+          "id": 28,
+          "name": "ENTRYTYPE",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3
+      ],
+      "schema-id": 1,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 3367138104620341738,
+      "timestamp-ms": 1246370400000
+    },
+    {
+      "snapshot-id": 4608322012119665478,
+      "timestamp-ms": 1398866400001
+    },
+    {
+      "snapshot-id": 989881416422905519,
+      "timestamp-ms": 1722434400002
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDDAYOFFER_D/metadata/snap-3367138104620341738-1-3648a352-60ec-82ec-baa3-f9f2794e90d7.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 3367138104620341738,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "58",
+        "utilake.from.file": "PUBLIC_DVD_BIDDAYOFFER_D_200907010000.zip",
+        "utilake.from.release": "2009-07",
+        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "utilake.from.time": "2009-07-01T00:00:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "BIDDAYOFFER_D",
+        "utilake.report-type": "BID",
+        "utilake.rows": "1737889",
+        "utilake.to.file": "PUBLIC_DVD_BIDDAYOFFER_D_201404010000.zip",
+        "utilake.to.release": "2014-04",
+        "utilake.to.sha256": "2c1ad633b7f181cbd1bb1c9a4ce226428383d48171e36bca37a41caef2243d7d",
+        "utilake.to.time": "2014-04-30T00:00:00+10:00",
+        "utilake.total-rows": "1737889",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1246370400000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDDAYOFFER_D/metadata/snap-4608322012119665478-2-3648a352-60ec-82ec-baa3-f9f2794e90d7.avro",
+      "parent-snapshot-id": 3367138104620341738,
+      "schema-id": 0,
+      "sequence-number": 2,
+      "snapshot-id": 4608322012119665478,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "82",
+        "utilake.from.file": "PUBLIC_DVD_BIDDAYOFFER_D_201405010000.zip",
+        "utilake.from.release": "2014-05",
+        "utilake.from.sha256": "910155f5be43d874fdd1b2517c6547ce7546d4cfbd829c11bcb98edcb02a88c5",
+        "utilake.from.time": "2014-05-01T00:00:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "BIDDAYOFFER_D",
+        "utilake.report-type": "BID",
+        "utilake.rows": "2475444",
+        "utilake.to.file": "PUBLIC_DVD_BIDDAYOFFER_D_202102010000.zip",
+        "utilake.to.release": "2021-02",
+        "utilake.to.sha256": "352208bab60de04fb8e06abfa89bbf86f3dba964573607eff04d22a5d032d524",
+        "utilake.to.time": "2021-02-28T00:00:00+10:00",
+        "utilake.total-rows": "4213333",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1398866400001
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDDAYOFFER_D/metadata/snap-989881416422905519-3-3648a352-60ec-82ec-baa3-f9f2794e90d7.avro",
+      "parent-snapshot-id": 4608322012119665478,
+      "schema-id": 1,
+      "sequence-number": 3,
+      "snapshot-id": 989881416422905519,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "26",
+        "utilake.from.file": "PUBLIC_ARCHIVE#BIDDAYOFFER_D#FILE01#202408010000.zip",
+        "utilake.from.release": "2024-08",
+        "utilake.from.sha256": "9ba0c185c2e20125acd03b749034b04c1e13022b566318f3669ddc552a139a2d",
+        "utilake.from.time": "2024-08-01T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "BIDDAYOFFER_D",
+        "utilake.report-type": "BID",
+        "utilake.rows": "1569821",
+        "utilake.to.file": "PUBLIC_ARCHIVE#BIDDAYOFFER_D#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "c91ac0f3aced300cc24621aede33eaac9e05590da48aee23c6e46d230541c01a",
+        "utilake.to.time": "2026-09-30T00:00:00+10:00",
+        "utilake.total-rows": "5783154",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1722434400002
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "3648a352-60ec-82ec-baa3-f9f2794e90d7"
+}

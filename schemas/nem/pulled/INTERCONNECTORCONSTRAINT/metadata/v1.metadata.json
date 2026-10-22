@@ -1,0 +1,253 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 3658552901285493047,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 22,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1246370400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INTERCONNECTORCONSTRAINT",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "INTERCONNECTORCONSTRAINT sets out Interconnector limit data used as defaults in dispatch, predispatch and STPASA and used by SPD in calculating flows. INTERCONNECTORCONSTRAINT includes an additional field to restrict an interconnector from support transfer of FCAS.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"EFFECTIVEDATE\",\"VERSIONNO\",\"INTERCONNECTORID\"]",
+    "utilake.load": "snapshot",
+    "utilake.model-types": "{\"1\":\"NUMERIC(5,2)\",\"2\":\"NUMERIC(5,2)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"NUMERIC(3,0)\",\"5\":\"VARCHAR(10)\",\"6\":\"NUMERIC(15,5)\",\"7\":\"NUMERIC(15,5)\",\"8\":\"NUMERIC(15,6)\",\"9\":\"NUMERIC(27,17)\",\"10\":\"VARCHAR(40)\",\"11\":\"VARCHAR(15)\",\"12\":\"TIMESTAMP(0)\",\"13\":\"VARCHAR(1)\",\"14\":\"NUMERIC(6,0)\",\"15\":\"NUMERIC(6,0)\",\"16\":\"NUMERIC(15,5)\",\"17\":\"NUMERIC(15,5)\",\"18\":\"NUMERIC(15,5)\",\"19\":\"NUMERIC(15,5)\",\"20\":\"TIMESTAMP(0)\",\"21\":\"NUMERIC(1,0)\",\"22\":\"VARCHAR(10)\"}",
+    "utilake.package": "MARKET_CONFIG",
+    "utilake.reports": "[[\"MARKET_CONFIG\",\"INTERCONNECTORCONSTRAINT\"]]",
+    "utilake.table": "INTERCONNECTORCONSTRAINT",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"INTERCONNECTORID\"]",
+    "utilake.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "EFFECTIVEDATE",
+    "utilake.temporal.valid.kind": "from",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 3658552901285493047,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "SPD Factor",
+          "id": 1,
+          "name": "RESERVEOVERALLLOADFACTOR",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "doc": "Loss share attributable to from region",
+          "id": 2,
+          "name": "FROMREGIONLOSSSHARE",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "doc": "Date that this limit is effective from",
+          "id": 3,
+          "name": "EFFECTIVEDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Version for this date",
+          "id": 4,
+          "name": "VERSIONNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Unique Id of this interconnector",
+          "id": 5,
+          "name": "INTERCONNECTORID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Limit of energy flowing into the RegionFrom",
+          "id": 6,
+          "name": "MAXMWIN",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Limit of energy flowing out of the Region",
+          "id": 7,
+          "name": "MAXMWOUT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Constant Loss factor",
+          "id": 8,
+          "name": "LOSSCONSTANT",
+          "required": false,
+          "type": "decimal(15, 6)"
+        },
+        {
+          "doc": "Linear coefficient of loss factor calculation",
+          "id": 9,
+          "name": "LOSSFLOWCOEFFICIENT",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Identifies the EMS entity that represents the interconnector flow",
+          "id": 10,
+          "name": "EMSMEASURAND",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "User authorising record",
+          "id": 11,
+          "name": "AUTHORISEDBY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Date record authorised",
+          "id": 12,
+          "name": "AUTHORISEDDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Not used",
+          "id": 13,
+          "name": "DYNAMICRHS",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Interconnector import limit",
+          "id": 14,
+          "name": "IMPORTLIMIT",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Interconnector export limit",
+          "id": 15,
+          "name": "EXPORTLIMIT",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "SPD Factor",
+          "id": 16,
+          "name": "OUTAGEDERATIONFACTOR",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Factor for non-physical losses rerun",
+          "id": 17,
+          "name": "NONPHYSICALLOSSFACTOR",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Interconnector overload for 60 sec",
+          "id": 18,
+          "name": "OVERLOADFACTOR60SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Interconnector overload for 6 sec",
+          "id": 19,
+          "name": "OVERLOADFACTOR6SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 20,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Flag to indicate that the interconnector cannot support FCAS Transfers",
+          "id": 21,
+          "name": "FCASSUPPORTUNAVAILABLE",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "Interconnector type - Currently either \"REGULATED\" or \"MNSP\"",
+          "id": 22,
+          "name": "ICTYPE",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [
+        3,
+        4,
+        5
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 3658552901285493047,
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INTERCONNECTORCONSTRAINT/metadata/snap-3658552901285493047-1-258e22de-36d6-87aa-91a1-47af3235322c.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 3658552901285493047,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "207",
+        "utilake.from.file": "PUBLIC_DVD_INTERCONNECTORCONSTRAINT_200907010000.zip",
+        "utilake.from.release": "2009-07",
+        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "utilake.from.time": "1998-07-01T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\",\"dvd\"]",
+        "utilake.report-subtype": "INTERCONNECTORCONSTRAINT",
+        "utilake.report-type": "MARKET_CONFIG",
+        "utilake.rows": "38907",
+        "utilake.to.file": "PUBLIC_ARCHIVE#INTERCONNECTORCONSTRAINT#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "ee08f84b0e4849b0673438d45d2e58e1f82049e2fe524b0deaf0861629186adb",
+        "utilake.to.time": "2026-10-01T00:00:00+10:00",
+        "utilake.total-rows": "38907",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "258e22de-36d6-87aa-91a1-47af3235322c"
+}

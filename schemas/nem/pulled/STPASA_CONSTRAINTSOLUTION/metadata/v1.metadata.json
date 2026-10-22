@@ -1,0 +1,264 @@
+{
+  "current-schema-id": 1,
+  "current-snapshot-id": 2401779945987773218,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 9,
+  "last-partition-id": 999,
+  "last-sequence-number": 2,
+  "last-updated-ms": 1612101600001,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STPASA_CONSTRAINTSOLUTION",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "STPASA_CONSTRAINTSOLUTION shows binding and violated constraint results from the capacity evaluation, including the RHS value.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"RUN_DATETIME\",\"INTERVAL_DATETIME\",\"CONSTRAINTID\",\"RUNTYPE\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(20)\",\"4\":\"NUMERIC(12,2)\",\"5\":\"NUMERIC(12,2)\",\"6\":\"NUMERIC(12,2)\",\"7\":\"TIMESTAMP(0)\",\"8\":\"VARCHAR(20)\",\"9\":\"VARCHAR(20)\"}",
+    "utilake.package": "STPASA_SOLUTION",
+    "utilake.reports": "[[\"STPASA\",\"CONSTRAINTSOLUTION\"]]",
+    "utilake.table": "STPASA_CONSTRAINTSOLUTION",
+    "utilake.temporal.cutoff": "RUN_DATETIME",
+    "utilake.temporal.entity": "[\"CONSTRAINTID\",\"RUNTYPE\"]",
+    "utilake.temporal.order": "[\"RUN_DATETIME\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "INTERVAL_DATETIME",
+    "utilake.temporal.valid.kind": "interval_end",
+    "utilake.time": "INTERVAL_DATETIME",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 2401779945987773218,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Unique Timestamp Identifier for this study",
+          "id": 1,
+          "name": "RUN_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The unique identifier for the interval within this study",
+          "id": 2,
+          "name": "INTERVAL_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Constraint identifier (synonymous with GenConID)",
+          "id": 3,
+          "name": "CONSTRAINTID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "The RHS value in the capacity evaluation.",
+          "id": 4,
+          "name": "CAPACITYRHS",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Capacity adequacy assessment marginal value, 0 if not binding",
+          "id": 5,
+          "name": "CAPACITYMARGINALVALUE",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Capacity adequacy assessment violation degree for generic constraint; 0 if not violating",
+          "id": 6,
+          "name": "CAPACITYVIOLATIONDEGREE",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Last changed date of this record",
+          "id": 7,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Type of run. Values are RELIABILITY_LRC, OUTAGE_LRC and LOR. Note that the STPASA RELIABILITY_LRC and OUTAGE_LRC Run Types are discontinued from 31 July 2025, with only the LOR Run Type reported.",
+          "id": 8,
+          "name": "RUNTYPE",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        8
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Unique Timestamp Identifier for this study",
+          "id": 1,
+          "name": "RUN_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The unique identifier for the interval within this study",
+          "id": 2,
+          "name": "INTERVAL_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Constraint identifier (synonymous with GenConID)",
+          "id": 3,
+          "name": "CONSTRAINTID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "The RHS value in the capacity evaluation.",
+          "id": 4,
+          "name": "CAPACITYRHS",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Capacity adequacy assessment marginal value, 0 if not binding",
+          "id": 5,
+          "name": "CAPACITYMARGINALVALUE",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Capacity adequacy assessment violation degree for generic constraint; 0 if not violating",
+          "id": 6,
+          "name": "CAPACITYVIOLATIONDEGREE",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Last changed date of this record",
+          "id": 7,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Type of run. Values are RELIABILITY_LRC, OUTAGE_LRC and LOR. Note that the STPASA RELIABILITY_LRC and OUTAGE_LRC Run Types are discontinued from 31 July 2025, with only the LOR Run Type reported.",
+          "id": 8,
+          "name": "RUNTYPE",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Primary Region for LP Solve (or MARKET if none).",
+          "id": 9,
+          "name": "STUDYREGIONID",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        8
+      ],
+      "schema-id": 1,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 2810672100021205460,
+      "timestamp-ms": 1246370400000
+    },
+    {
+      "snapshot-id": 2401779945987773218,
+      "timestamp-ms": 1612101600001
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STPASA_CONSTRAINTSOLUTION/metadata/snap-2810672100021205460-1-7a5e61c6-518b-838e-a784-4d8903b65935.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 2810672100021205460,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "140",
+        "utilake.from.file": "PUBLIC_DVD_STPASA_CONSTRAINTSOLUTION_200907010000.zip",
+        "utilake.from.release": "2009-07",
+        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "utilake.from.time": "2009-07-02T04:30:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "CONSTRAINTSOLUTION",
+        "utilake.report-type": "STPASA",
+        "utilake.rows": "191558514",
+        "utilake.to.file": "PUBLIC_DVD_STPASA_CONSTRAINTSOLUTION_202101010000.zip",
+        "utilake.to.release": "2021-01",
+        "utilake.to.sha256": "6c5f266766fdb0bdf703491f1d5f583c292d8779e4d290e70b9767f17d0f85e5",
+        "utilake.to.time": "2021-02-08T04:00:00+10:00",
+        "utilake.total-rows": "191558514",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1246370400000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STPASA_CONSTRAINTSOLUTION/metadata/snap-2401779945987773218-2-7a5e61c6-518b-838e-a784-4d8903b65935.avro",
+      "parent-snapshot-id": 2810672100021205460,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 2401779945987773218,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "68",
+        "utilake.from.file": "PUBLIC_DVD_STPASA_CONSTRAINTSOLUTION_202102010000.zip",
+        "utilake.from.release": "2021-02",
+        "utilake.from.sha256": "ec7d3838db534de6aecf1bd7b19e433c6728543f7b0fb8f4b0642a50b7ac5536",
+        "utilake.from.time": "2021-02-02T04:30:00+10:00",
+        "utilake.kinds": "[\"archive\",\"dvd\"]",
+        "utilake.report-subtype": "CONSTRAINTSOLUTION",
+        "utilake.report-type": "STPASA",
+        "utilake.rows": "904791837",
+        "utilake.to.file": "PUBLIC_ARCHIVE#STPASA_CONSTRAINTSOLUTION#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "5ab70e89f00121b9c3ef28773d5f08c079306bef6e81c629b123dc40432e7b6d",
+        "utilake.to.time": "2026-10-08T04:00:00+10:00",
+        "utilake.total-rows": "1096350351",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1612101600001
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "7a5e61c6-518b-838e-a784-4d8903b65935"
+}

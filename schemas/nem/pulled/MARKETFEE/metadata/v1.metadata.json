@@ -1,0 +1,289 @@
+{
+  "current-schema-id": 1,
+  "current-snapshot-id": 7375256903472195515,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 10,
+  "last-partition-id": 999,
+  "last-sequence-number": 3,
+  "last-updated-ms": 1722434400002,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MARKETFEE",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "MARKETFEE sets out fee type and period for each market fee.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"MARKETFEEID\"]",
+    "utilake.load": "snapshot",
+    "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"VARCHAR(20)\",\"3\":\"VARCHAR(12)\",\"4\":\"VARCHAR(64)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"VARCHAR(15)\",\"7\":\"VARCHAR(10)\",\"8\":\"VARCHAR(40)\",\"9\":\"VARCHAR(20)\",\"10\":\"VARCHAR(20)\"}",
+    "utilake.package": "SETTLEMENT_CONFIG",
+    "utilake.reports": "[[\"SETTLEMENT_CONFIG\",\"MARKETFEE\"]]",
+    "utilake.table": "MARKETFEE",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"MARKETFEEID\"]",
+    "utilake.temporal.order": "[\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 7375256903472195515,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Identifier for Market Fee",
+          "id": 1,
+          "name": "MARKETFEEID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Period type - PERIOD, DAILY, WEEKLY",
+          "id": 2,
+          "name": "MARKETFEEPERIOD",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Type - MW or $",
+          "id": 3,
+          "name": "MARKETFEETYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Description of market fee",
+          "id": 4,
+          "name": "DESCRIPTION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 5,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 6,
+          "name": "GL_TCODE",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 7,
+          "name": "GL_FINANCIALCODE",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 8,
+          "name": "FEE_CLASS",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [
+        1
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Identifier for Market Fee",
+          "id": 1,
+          "name": "MARKETFEEID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Period type - PERIOD, DAILY, WEEKLY",
+          "id": 2,
+          "name": "MARKETFEEPERIOD",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Type - MW or $",
+          "id": 3,
+          "name": "MARKETFEETYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Description of market fee",
+          "id": 4,
+          "name": "DESCRIPTION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 5,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 6,
+          "name": "GL_TCODE",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 7,
+          "name": "GL_FINANCIALCODE",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 8,
+          "name": "FEE_CLASS",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The Energy Type for the Market Fees Calculation. E.g of Meter Types are CUSTOMER, GENERATOR, NREG, BDU etc. If Meter Type is mentioned as ALL then all the Meter Types for that Participant Category will be used in the Fee calculation",
+          "id": 9,
+          "name": "METER_TYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The Meter Sub Type values are ACE, ASOE or ALL. ACE represent ACE_MWH value , ASOE represent ASOE_MWH value and ALL represent sum of ACE_MWh and ASOE_MWh",
+          "id": 10,
+          "name": "METER_SUBTYPE",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [
+        1
+      ],
+      "schema-id": 1,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 6028908164822722156,
+      "timestamp-ms": 1246370400000
+    },
+    {
+      "snapshot-id": 736958290375461278,
+      "timestamp-ms": 1714485600001
+    },
+    {
+      "snapshot-id": 7375256903472195515,
+      "timestamp-ms": 1722434400002
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MARKETFEE/metadata/snap-6028908164822722156-1-cbfb2125-fb78-8c7e-805f-e9934dd6978f.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 6028908164822722156,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "178",
+        "utilake.from.file": "PUBLIC_DVD_MARKETFEE_200907010000.zip",
+        "utilake.from.release": "2009-07",
+        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "utilake.from.time": "2000-06-27T08:38:47+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "MARKETFEE",
+        "utilake.report-type": "SETTLEMENT_CONFIG",
+        "utilake.rows": "7199",
+        "utilake.to.file": "PUBLIC_DVD_MARKETFEE_202404010000.zip",
+        "utilake.to.release": "2024-04",
+        "utilake.to.sha256": "96a9b8f1f9356889ac6fae03843c6b6906be74abbe858086229bba1673269bdc",
+        "utilake.to.time": "2023-06-29T13:03:52+10:00",
+        "utilake.total-rows": "7199",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1246370400000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MARKETFEE/metadata/snap-736958290375461278-2-cbfb2125-fb78-8c7e-805f-e9934dd6978f.avro",
+      "parent-snapshot-id": 6028908164822722156,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 736958290375461278,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "3",
+        "utilake.from.file": "PUBLIC_DVD_MARKETFEE_202405010000.zip",
+        "utilake.from.release": "2024-05",
+        "utilake.from.sha256": "c95623056932402ef24a5201a73e968eaf8521e563cdfc17c26fe246ce960158",
+        "utilake.from.time": "2000-06-27T08:38:47+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "MARKETFEE",
+        "utilake.report-type": "SETTLEMENT_CONFIG",
+        "utilake.rows": "207",
+        "utilake.to.file": "PUBLIC_DVD_MARKETFEE_202407010000.zip",
+        "utilake.to.release": "2024-07",
+        "utilake.to.sha256": "66ab2535a08dfe3e6bf87c0a7c25754f06018c363b2cf4a439b1cb8a049862ce",
+        "utilake.to.time": "2024-07-02T14:32:42+10:00",
+        "utilake.total-rows": "7406",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1714485600001
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MARKETFEE/metadata/snap-7375256903472195515-3-cbfb2125-fb78-8c7e-805f-e9934dd6978f.avro",
+      "parent-snapshot-id": 736958290375461278,
+      "schema-id": 1,
+      "sequence-number": 3,
+      "snapshot-id": 7375256903472195515,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "26",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MARKETFEE#FILE01#202408010000.zip",
+        "utilake.from.release": "2024-08",
+        "utilake.from.sha256": "267190dfe2bbd737e080ca34a4f6e4a5af8681e380796852df11b2bc45e208b3",
+        "utilake.from.time": "2000-06-27T08:38:47+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "MARKETFEE",
+        "utilake.report-type": "SETTLEMENT_CONFIG",
+        "utilake.rows": "2050",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MARKETFEE#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "90620f920d7602252b576692ca39cea60e324896d90d8aff108a2e7246764ab6",
+        "utilake.to.time": "2026-06-29T15:46:58+10:00",
+        "utilake.total-rows": "9456",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1722434400002
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "cbfb2125-fb78-8c7e-805f-e9934dd6978f"
+}

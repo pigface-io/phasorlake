@@ -1,0 +1,208 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 831124410278230441,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 15,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1525096800000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_INTERCONNECTORRESULT",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "Interconnector results for interval of max demand per day",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"RUN_DATETIME\",\"RUN_NO\",\"RUNTYPE\",\"DEMAND_POE_TYPE\",\"DAY\",\"INTERCONNECTORID\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(4)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(20)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"VARCHAR(20)\",\"7\":\"NUMERIC(3,0)\",\"8\":\"NUMERIC(12,2)\",\"9\":\"NUMERIC(12,2)\",\"10\":\"NUMERIC(12,2)\",\"11\":\"NUMERIC(8,5)\",\"12\":\"NUMERIC(8,5)\",\"13\":\"NUMERIC(12,2)\",\"14\":\"NUMERIC(12,2)\",\"15\":\"TIMESTAMP(0)\"}",
+    "utilake.package": "MTPASA",
+    "utilake.reports": "[[\"MTPASA\",\"INTERCONNECTORRESULT\"]]",
+    "utilake.table": "MTPASA_INTERCONNECTORRESULT",
+    "utilake.temporal.cutoff": "RUN_DATETIME",
+    "utilake.temporal.entity": "[\"RUNTYPE\",\"DEMAND_POE_TYPE\",\"INTERCONNECTORID\"]",
+    "utilake.temporal.order": "[\"RUN_DATETIME\",\"RUN_NO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "DAY",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "RUN_DATETIME",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 831124410278230441,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Date processing of the run begins.",
+          "id": 1,
+          "name": "RUN_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Unique run id.",
+          "id": 2,
+          "name": "RUN_NO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Type of run. Always RELIABILITY",
+          "id": 3,
+          "name": "RUNTYPE",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Demand POE type used. Value is POE10",
+          "id": 4,
+          "name": "DEMAND_POE_TYPE",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Day this result is for",
+          "id": 5,
+          "name": "DAY",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The unique identifier for the interconnector",
+          "id": 6,
+          "name": "INTERCONNECTORID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Half hourly period reported, selected as period of maximum NEM scheduled demand (calculated as maximum of scheduled demands, averaged across iterations and reference years)",
+          "id": 7,
+          "name": "PERIODID",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "The 90th percentile for flows, across iterations and reference years. Positive values indicate exporting, negative values indicate importing (MW)",
+          "id": 8,
+          "name": "FLOW90",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "The 50th percentile for flows, across iterations and reference years. Positive values indicate exporting, negative values indicate importing (MW)",
+          "id": 9,
+          "name": "FLOW50",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "The 10th percentile for flows, across iterations and reference years. Positive values indicate exporting, negative values indicate importing (MW)",
+          "id": 10,
+          "name": "FLOW10",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Proportion of iterations and reference years with interconnector constrained when exporting",
+          "id": 11,
+          "name": "PROBABILITYOFBINDINGEXPORT",
+          "required": false,
+          "type": "decimal(8, 5)"
+        },
+        {
+          "doc": "Proportion of iterations and reference years with interconnector constrained when importing",
+          "id": 12,
+          "name": "PROBABILITYOFBINDINGIMPORT",
+          "required": false,
+          "type": "decimal(8, 5)"
+        },
+        {
+          "doc": "Calculated Interconnector limit of exporting energy on the basis of invoked constraints and static interconnector export limit, averaged across iterations and reference years",
+          "id": 13,
+          "name": "CALCULATEDEXPORTLIMIT",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Calculated Interconnector limit of importing energy on the basis of invoked constraints and static interconnector import limit, averaged across iterations and reference years",
+          "id": 14,
+          "name": "CALCULATEDIMPORTLIMIT",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 15,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 831124410278230441,
+      "timestamp-ms": 1525096800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_INTERCONNECTORRESULT/metadata/snap-831124410278230441-1-e460b7e9-2ad7-8dfc-a1d8-f94f9976933e.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 831124410278230441,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "101",
+        "utilake.from.file": "PUBLIC_DVD_MTPASA_INTERCONNECTORRESULT_201805010000.zip",
+        "utilake.from.release": "2018-05",
+        "utilake.from.sha256": "f17e40a75b5f1d7ffe97f51aa3e602d4ebfdbbd3ea8029105d845260358fc586",
+        "utilake.from.time": "2018-05-14T10:59:49+10:00",
+        "utilake.kinds": "[\"archive\",\"dvd\"]",
+        "utilake.report-subtype": "INTERCONNECTORRESULT",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "2008812",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MTPASA_INTERCONNECTORRESULT#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "6780ef9d91298ec239d1f3c96dbd436657b41345cf14672e002df633b6c4a6bc",
+        "utilake.to.time": "2026-09-28T17:00:00+10:00",
+        "utilake.total-rows": "2008812",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1525096800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "e460b7e9-2ad7-8dfc-a1d8-f94f9976933e"
+}

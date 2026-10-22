@@ -1,0 +1,208 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 1574571182298321903,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 15,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1525096800000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_CONSTRAINTRESULT",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "Constraint results for Binding or Violating Constraints",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"RUN_DATETIME\",\"RUN_NO\",\"RUNTYPE\",\"DEMAND_POE_TYPE\",\"DAY\",\"CONSTRAINTID\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(4)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(20)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"VARCHAR(20)\",\"7\":\"TIMESTAMP(0)\",\"8\":\"NUMERIC(3,0)\",\"9\":\"NUMERIC(3,0)\",\"10\":\"NUMERIC(8,5)\",\"11\":\"NUMERIC(8,5)\",\"12\":\"NUMERIC(12,2)\",\"13\":\"NUMERIC(12,2)\",\"14\":\"NUMERIC(12,2)\",\"15\":\"TIMESTAMP(0)\"}",
+    "utilake.package": "MTPASA",
+    "utilake.reports": "[[\"MTPASA\",\"CONSTRAINTRESULT\"]]",
+    "utilake.table": "MTPASA_CONSTRAINTRESULT",
+    "utilake.temporal.cutoff": "RUN_DATETIME",
+    "utilake.temporal.entity": "[\"RUNTYPE\",\"DEMAND_POE_TYPE\",\"CONSTRAINTID\"]",
+    "utilake.temporal.order": "[\"RUN_DATETIME\",\"RUN_NO\",\"VERSIONNO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "DAY",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "RUN_DATETIME",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 1574571182298321903,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Date processing of the run begins.",
+          "id": 1,
+          "name": "RUN_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Unique run id.",
+          "id": 2,
+          "name": "RUN_NO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Type of run. Always RELIABILITY",
+          "id": 3,
+          "name": "RUNTYPE",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Demand POE type used. Value is POE10",
+          "id": 4,
+          "name": "DEMAND_POE_TYPE",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Day this result is for",
+          "id": 5,
+          "name": "DAY",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The unique identifier for the constraint. Only binding or violating constraints are reported",
+          "id": 6,
+          "name": "CONSTRAINTID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "The effective date of the constraint used",
+          "id": 7,
+          "name": "EFFECTIVEDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The version of the constraint used",
+          "id": 8,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Half hourly period reported, selected as period of maximum NEM scheduled demand (calculated as maximum of scheduled demands, averaged across iterations and reference years)",
+          "id": 9,
+          "name": "PERIODID",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Proportion of a constraint binding, across iterations and reference years",
+          "id": 10,
+          "name": "PROBABILITYOFBINDING",
+          "required": false,
+          "type": "decimal(8, 5)"
+        },
+        {
+          "doc": "Proportion of a constraint violating, across iterations and reference years",
+          "id": 11,
+          "name": "PROBABILITYOFVIOLATION",
+          "required": false,
+          "type": "decimal(8, 5)"
+        },
+        {
+          "doc": "The 90th percentile violation degree for this constraint, across iterations and reference years (MW)",
+          "id": 12,
+          "name": "CONSTRAINTVIOLATION90",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "The 50th percentile violation degree for this constraint, across iterations and reference years (MW)",
+          "id": 13,
+          "name": "CONSTRAINTVIOLATION50",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "The 10th percentile violation degree for this constraint, across iterations and reference years (MW)",
+          "id": 14,
+          "name": "CONSTRAINTVIOLATION10",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 15,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 1574571182298321903,
+      "timestamp-ms": 1525096800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_CONSTRAINTRESULT/metadata/snap-1574571182298321903-1-c0128502-a69a-859f-9c32-b90760f37e1b.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 1574571182298321903,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "101",
+        "utilake.from.file": "PUBLIC_DVD_MTPASA_CONSTRAINTRESULT_201805010000.zip",
+        "utilake.from.release": "2018-05",
+        "utilake.from.sha256": "df5708814f92ad86eaaf02f949f0e6539afae4c6c253060cb1436dd1d4251496",
+        "utilake.from.time": "2018-05-14T10:59:49+10:00",
+        "utilake.kinds": "[\"archive\",\"dvd\"]",
+        "utilake.report-subtype": "CONSTRAINTRESULT",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "7998323",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MTPASA_CONSTRAINTRESULT#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "f91d37b88cc9672cc0fbc807b80a99e50983686b1b64f0ead17654dd3cff93a1",
+        "utilake.to.time": "2026-09-28T17:00:00+10:00",
+        "utilake.total-rows": "7998323",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1525096800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "c0128502-a69a-859f-9c32-b90760f37e1b"
+}

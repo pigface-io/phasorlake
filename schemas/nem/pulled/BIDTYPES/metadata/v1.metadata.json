@@ -1,0 +1,162 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 6221532271146874079,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 9,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1246370400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDTYPES",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "BIDTYPES, together with the associated tracking data in BIDTYPESTRK, define a set of ancillary services with bidding parameters from a given date.\nBIDTYPES is static data describing each type of bid quantity, the number of applicable bands, how many days ahead a price lock down becomes effective and the validation rule that applies.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"BIDTYPE\",\"EFFECTIVEDATE\",\"VERSIONNO\"]",
+    "utilake.load": "snapshot",
+    "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(64)\",\"5\":\"NUMERIC(3,0)\",\"6\":\"NUMERIC(2,0)\",\"7\":\"VARCHAR(10)\",\"8\":\"TIMESTAMP(0)\",\"9\":\"VARCHAR(10)\"}",
+    "utilake.package": "MARKET_CONFIG",
+    "utilake.reports": "[[\"MARKET_CONFIG\",\"BIDTYPES\"]]",
+    "utilake.table": "BIDTYPES",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"BIDTYPE\"]",
+    "utilake.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "EFFECTIVEDATE",
+    "utilake.temporal.valid.kind": "from",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 6221532271146874079,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Bid Type Identifier",
+          "id": 1,
+          "name": "BIDTYPE",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Market date starting at 04:30 inclusive",
+          "id": 2,
+          "name": "EFFECTIVEDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Record version number",
+          "id": 3,
+          "name": "VERSIONNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Description of this Bid Type",
+          "id": 4,
+          "name": "DESCRIPTION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Number of active bands (1 to 10)",
+          "id": 5,
+          "name": "NUMBEROFBANDS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Number of days prior to the Market Day when prices are locked from 12:30pm",
+          "id": 6,
+          "name": "NUMDAYSAHEADPRICELOCKED",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "ENERGY or AS validation rules to apply.",
+          "id": 7,
+          "name": "VALIDATIONRULE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 8,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Alias for this BIDTYPE used in the SPD Solver",
+          "id": 9,
+          "name": "SPDALIAS",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 6221532271146874079,
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDTYPES/metadata/snap-6221532271146874079-1-6286c031-d8ba-8928-8973-e77ed362faf0.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 6221532271146874079,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "207",
+        "utilake.from.file": "PUBLIC_DVD_BIDTYPES_200907010000.zip",
+        "utilake.from.release": "2009-07",
+        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "utilake.from.time": "2000-09-12T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\",\"dvd\"]",
+        "utilake.report-subtype": "BIDTYPES",
+        "utilake.report-type": "MARKET_CONFIG",
+        "utilake.rows": "2281",
+        "utilake.to.file": "PUBLIC_ARCHIVE#BIDTYPES#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "6e6c284ac481459707cd8464bfbd226a743520eb8edf99dbc03b596f0d160937",
+        "utilake.to.time": "2023-08-14T00:00:00+10:00",
+        "utilake.total-rows": "2281",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "6286c031-d8ba-8928-8973-e77ed362faf0"
+}

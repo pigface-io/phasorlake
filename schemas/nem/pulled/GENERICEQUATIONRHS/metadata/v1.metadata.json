@@ -1,0 +1,231 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 7934596563824751875,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 14,
+  "last-partition-id": 999,
+  "last-sequence-number": 2,
+  "last-updated-ms": 1722434400001,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/GENERICEQUATIONRHS",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "GENERICEQUATIONRHS stores the formulation of commonly used Generic Constraint Right Hand Side Equations referenced from Generic Constraint Right Hand Side definitions stored in GENERICCONSTRAINTRHS. The Generic Equation definitions are versioned and the latest effective version is applied to the dispatch process.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"EQUATIONID\",\"EFFECTIVEDATE\",\"VERSIONNO\",\"TERMID\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"NUMERIC(3,0)\",\"5\":\"NUMERIC(3,0)\",\"6\":\"VARCHAR(21)\",\"7\":\"VARCHAR(1)\",\"8\":\"NUMERIC(16,6)\",\"9\":\"VARCHAR(10)\",\"10\":\"NUMERIC(16,6)\",\"11\":\"VARCHAR(12)\",\"12\":\"VARCHAR(12)\",\"13\":\"VARCHAR(12)\",\"14\":\"TIMESTAMP(0)\"}",
+    "utilake.package": "GENERIC_CONSTRAINT",
+    "utilake.reports": "[[\"GEQRHS\",\"\"],[\"GEQRHS\",\"NULL\"]]",
+    "utilake.table": "GENERICEQUATIONRHS",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"EQUATIONID\",\"TERMID\"]",
+    "utilake.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "EFFECTIVEDATE",
+    "utilake.temporal.valid.kind": "from",
+    "utilake.time": "EFFECTIVEDATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 7934596563824751875,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Generic Equation Identifier",
+          "id": 1,
+          "name": "EQUATIONID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Effective date of this record",
+          "id": 2,
+          "name": "EFFECTIVEDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Version no of this record for the effective date",
+          "id": 3,
+          "name": "VERSIONNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "The unique identifier for the a equation RHS term",
+          "id": 4,
+          "name": "TERMID",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "ID of super-term, if this is a sub-term",
+          "id": 5,
+          "name": "GROUPID",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "ID defining data source",
+          "id": 6,
+          "name": "SPD_ID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "ID describing type of data source",
+          "id": 7,
+          "name": "SPD_TYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Multiplier applied to operator result",
+          "id": 8,
+          "name": "FACTOR",
+          "required": false,
+          "type": "decimal(16, 10)"
+        },
+        {
+          "doc": "Unitary operator to apply to data value",
+          "id": 9,
+          "name": "OPERATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Default value if primary source given by SPD_ID and SPD_TYPE not available.",
+          "id": 10,
+          "name": "DEFAULTVALUE",
+          "required": false,
+          "type": "decimal(16, 10)"
+        },
+        {
+          "doc": "The unique identifier for the first term (logic expression) to use in a Branch term",
+          "id": 11,
+          "name": "PARAMETERTERM1",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "The unique identifier for the second term (logic<=0 result) to use in a Branch term",
+          "id": 12,
+          "name": "PARAMETERTERM2",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "The unique identifier for the third term (logic>0 result) to use in a Branch term",
+          "id": 13,
+          "name": "PARAMETERTERM3",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 14,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 2924597412579573004,
+      "timestamp-ms": 1246370400000
+    },
+    {
+      "snapshot-id": 7934596563824751875,
+      "timestamp-ms": 1722434400001
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/GENERICEQUATIONRHS/metadata/snap-2924597412579573004-1-a360242d-bf79-8b2a-9e1c-290a78414162.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 2924597412579573004,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "170",
+        "utilake.from.file": "PUBLIC_DVD_GENERICEQUATIONRHS_200907010000.zip",
+        "utilake.from.release": "2009-07",
+        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "utilake.from.time": "2009-07-10T00:00:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "GEQRHS",
+        "utilake.rows": "173463",
+        "utilake.to.file": "PUBLIC_DVD_GENERICEQUATIONRHS_202407010000.zip",
+        "utilake.to.release": "2024-07",
+        "utilake.to.sha256": "b77c4410085b1a9916f41bba77448c1e5432cbd2a0d915900d43221937af4cd3",
+        "utilake.to.time": "2024-07-29T00:00:00+10:00",
+        "utilake.total-rows": "173463",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1246370400000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/GENERICEQUATIONRHS/metadata/snap-7934596563824751875-2-a360242d-bf79-8b2a-9e1c-290a78414162.avro",
+      "parent-snapshot-id": 2924597412579573004,
+      "schema-id": 0,
+      "sequence-number": 2,
+      "snapshot-id": 7934596563824751875,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "26",
+        "utilake.from.file": "PUBLIC_ARCHIVE#GENERICEQUATIONRHS#FILE01#202408010000.zip",
+        "utilake.from.release": "2024-08",
+        "utilake.from.sha256": "592a48570cc9584631bbff98450b8c019717d351b64fee2308e169cd775474ac",
+        "utilake.from.time": "2024-08-02T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "NULL",
+        "utilake.report-type": "GEQRHS",
+        "utilake.rows": "32552",
+        "utilake.to.file": "PUBLIC_ARCHIVE#GENERICEQUATIONRHS#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "b32f1e76d6ce2560cbf4297cab9dcc715f6ce3ef2762123219f99c0a3c6ad485",
+        "utilake.to.time": "2026-10-01T00:00:00+10:00",
+        "utilake.total-rows": "206015",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1722434400001
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "a360242d-bf79-8b2a-9e1c-290a78414162"
+}

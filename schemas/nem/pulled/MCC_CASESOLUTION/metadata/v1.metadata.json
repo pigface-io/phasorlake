@@ -1,0 +1,104 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 8463397182509172172,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 1,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1288533600000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MCC_CASESOLUTION",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "Top level table for each MCC dispatch rerun process. Note there will be one record for each dispatch interval",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"RUN_DATETIME\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\"}",
+    "utilake.package": "MCC_DISPATCH",
+    "utilake.reports": "[[\"MCC\",\"CASESOLUTION\"]]",
+    "utilake.table": "MCC_CASESOLUTION",
+    "utilake.temporal.entity": "[]",
+    "utilake.temporal.order": "[]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "RUN_DATETIME",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "RUN_DATETIME",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 8463397182509172172,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "5-minute Dispatch Run identifier",
+          "id": 1,
+          "name": "RUN_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 8463397182509172172,
+      "timestamp-ms": 1288533600000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MCC_CASESOLUTION/metadata/snap-8463397182509172172-1-fe5ca00f-9153-842a-bd04-d266e1aceb4a.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 8463397182509172172,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "192",
+        "utilake.from.file": "PUBLIC_DVD_MCC_CASESOLUTION_200807010000.zip",
+        "utilake.from.release": "2010-11",
+        "utilake.from.sha256": "5fb4a7ea3bc9c8ea4c926565c0ae2f91f6439a7810ad33752a1e3caf0f5d79c7",
+        "utilake.from.time": "2008-07-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\",\"dvd\"]",
+        "utilake.report-subtype": "CASESOLUTION",
+        "utilake.report-type": "MCC",
+        "utilake.rows": "1922133",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MCC_CASESOLUTION#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "3440a47e6cf49a64661c18718d17ac4ebadd433635b28dd7e7960fe26d779aa6",
+        "utilake.to.time": "2026-10-01T00:00:00+10:00",
+        "utilake.total-rows": "1922133",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1288533600000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "fe5ca00f-9153-842a-bd04-d266e1aceb4a"
+}

@@ -1,0 +1,133 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 606247805718226437,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 5,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1246370400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDTYPESTRK",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "BIDTYPESTRK, together with the associated data in BIDTYPES, define a set of ancillary services with bidding parameters from a given date.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"EFFECTIVEDATE\",\"VERSIONNO\"]",
+    "utilake.load": "snapshot",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"VARCHAR(15)\",\"5\":\"TIMESTAMP(0)\"}",
+    "utilake.package": "MARKET_CONFIG",
+    "utilake.reports": "[[\"MARKET_CONFIG\",\"BIDTYPESTRK\"]]",
+    "utilake.table": "BIDTYPESTRK",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[]",
+    "utilake.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "EFFECTIVEDATE",
+    "utilake.temporal.valid.kind": "from",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 606247805718226437,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Market date starting at 04:30 inclusive",
+          "id": 1,
+          "name": "EFFECTIVEDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Record version number",
+          "id": 2,
+          "name": "VERSIONNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Date of record authorisation. A NULL value indicates the record is not authorised.",
+          "id": 3,
+          "name": "AUTHORISEDDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "User that authorised record. A NULL value indicates the record is not authorised.",
+          "id": 4,
+          "name": "AUTHORISEDBY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 5,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 606247805718226437,
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDTYPESTRK/metadata/snap-606247805718226437-1-622451fe-75fc-85ed-875b-cbad83cc7f77.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 606247805718226437,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "207",
+        "utilake.from.file": "PUBLIC_DVD_BIDTYPESTRK_200907010000.zip",
+        "utilake.from.release": "2009-07",
+        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "utilake.from.time": "2000-09-12T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\",\"dvd\"]",
+        "utilake.report-subtype": "BIDTYPESTRK",
+        "utilake.report-type": "MARKET_CONFIG",
+        "utilake.rows": "245",
+        "utilake.to.file": "PUBLIC_ARCHIVE#BIDTYPESTRK#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "02b09ac32b1b3f85e66d679683a58f73312a7a50917716ab81e1c98966f52ee8",
+        "utilake.to.time": "2023-08-14T00:00:00+10:00",
+        "utilake.total-rows": "245",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "622451fe-75fc-85ed-875b-cbad83cc7f77"
+}

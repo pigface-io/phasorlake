@@ -1,0 +1,164 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 7828188467408225277,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 9,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1722434400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/NETWORK_EQUIPMENTDETAIL",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "NETWORK_EQUIPMENTDETAIL Provides details on equipment that may have outages or ratings. A single piece of equipment may have multiple records if its details change.\nA line will typically have at least two valid records at a time, once for each end of the line.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"SUBSTATIONID\",\"EQUIPMENTTYPE\",\"EQUIPMENTID\",\"VALIDFROM\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"VARCHAR(30)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(30)\",\"4\":\"TIMESTAMP(3)\",\"5\":\"TIMESTAMP(3)\",\"6\":\"VARCHAR(20)\",\"7\":\"VARCHAR(100)\",\"8\":\"TIMESTAMP(3)\",\"9\":\"NUMERIC(15,0)\"}",
+    "utilake.package": "NETWORK",
+    "utilake.reports": "[[\"NETWORK\",\"EQUIPMENTDETAIL\"]]",
+    "utilake.table": "NETWORK_EQUIPMENTDETAIL",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"SUBSTATIONID\",\"EQUIPMENTTYPE\",\"EQUIPMENTID\"]",
+    "utilake.temporal.order": "[\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "VALIDFROM",
+    "utilake.temporal.valid.kind": "from",
+    "utilake.time": "LASTCHANGED",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 7828188467408225277,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "ID uniquely identifying the substation this equipment is located at",
+          "id": 1,
+          "name": "SUBSTATIONID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "The type of equipment. Valid values are:\nLINE = Line\nTRANS = Transformer\nCB = Circuit breaker\nISOL = Isolator\nCAP = Capacitor\nREAC = Reactor\nUNIT = Unit",
+          "id": 2,
+          "name": "EQUIPMENTTYPE",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "A unique identifier for this type of equipment at this substation",
+          "id": 3,
+          "name": "EQUIPMENTID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "The date that this record is applies from (inclusive)",
+          "id": 4,
+          "name": "VALIDFROM",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The date that this record applies until (exclusive)",
+          "id": 5,
+          "name": "VALIDTO",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The voltage in KV for this equipment.\nTransformers may have multiple voltages defined.\nE.g. 132_110_33",
+          "id": 6,
+          "name": "VOLTAGE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "A short description for this equipment.",
+          "id": 7,
+          "name": "DESCRIPTION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The time that this record was last changed.",
+          "id": 8,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Equipment element id",
+          "id": 9,
+          "name": "ELEMENTID",
+          "required": false,
+          "type": "decimal(15, 0)"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 7828188467408225277,
+      "timestamp-ms": 1722434400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/NETWORK_EQUIPMENTDETAIL/metadata/snap-7828188467408225277-1-6cc2a223-e3df-8788-a5bb-74d4f9ee08a1.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 7828188467408225277,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "26",
+        "utilake.from.file": "PUBLIC_ARCHIVE#NETWORK_EQUIPMENTDETAIL#FILE01#202408010000.zip",
+        "utilake.from.release": "2024-08",
+        "utilake.from.sha256": "b0cbed0b37c1154a11ba343e160c63fed381d338e3b966c9d1b54ad163417805",
+        "utilake.from.time": "1966-10-01T00:00:10.000+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "EQUIPMENTDETAIL",
+        "utilake.report-type": "NETWORK",
+        "utilake.rows": "782961",
+        "utilake.to.file": "PUBLIC_ARCHIVE#NETWORK_EQUIPMENTDETAIL#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "6859f05b544984705d73892015f1aea4f05e41dd8fb43013f4836c537efaa484",
+        "utilake.to.time": "9999-12-31T23:59:10.000+10:00",
+        "utilake.total-rows": "782961",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1722434400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "6cc2a223-e3df-8788-a5bb-74d4f9ee08a1"
+}

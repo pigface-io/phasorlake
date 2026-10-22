@@ -1,0 +1,501 @@
+{
+  "current-schema-id": 1,
+  "current-snapshot-id": 3429580641029934181,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 32,
+  "last-partition-id": 999,
+  "last-sequence-number": 3,
+  "last-updated-ms": 1614520800002,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/OFFER_BIDDAYOFFER",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "false",
+    "utilake.format": "3",
+    "utilake.table": "OFFER_BIDDAYOFFER"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 3429580641029934181,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "DUID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 2,
+          "name": "BIDTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "SETTLEMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 4,
+          "name": "OFFERDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 5,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "id": 6,
+          "name": "PARTICIPANTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 7,
+          "name": "DAILYENERGYCONSTRAINT",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "id": 8,
+          "name": "REBIDEXPLANATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 9,
+          "name": "PRICEBAND1",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 10,
+          "name": "PRICEBAND2",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 11,
+          "name": "PRICEBAND3",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 12,
+          "name": "PRICEBAND4",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 13,
+          "name": "PRICEBAND5",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 14,
+          "name": "PRICEBAND6",
+          "required": false,
+          "type": "decimal(7, 2)"
+        },
+        {
+          "id": 15,
+          "name": "PRICEBAND7",
+          "required": false,
+          "type": "decimal(7, 2)"
+        },
+        {
+          "id": 16,
+          "name": "PRICEBAND8",
+          "required": false,
+          "type": "decimal(7, 2)"
+        },
+        {
+          "id": 17,
+          "name": "PRICEBAND9",
+          "required": false,
+          "type": "decimal(7, 2)"
+        },
+        {
+          "id": 18,
+          "name": "PRICEBAND10",
+          "required": false,
+          "type": "decimal(7, 2)"
+        },
+        {
+          "id": 19,
+          "name": "MINIMUMLOAD",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "id": 20,
+          "name": "T1",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 21,
+          "name": "T2",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 22,
+          "name": "T3",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 23,
+          "name": "T4",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 24,
+          "name": "NORMALSTATUS",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 25,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 26,
+          "name": "MR_FACTOR",
+          "required": false,
+          "type": "decimal(7, 4)"
+        },
+        {
+          "id": 27,
+          "name": "ENTRYTYPE",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "DUID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 2,
+          "name": "BIDTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "SETTLEMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 4,
+          "name": "OFFERDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 5,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "id": 6,
+          "name": "PARTICIPANTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 7,
+          "name": "DAILYENERGYCONSTRAINT",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "id": 8,
+          "name": "REBIDEXPLANATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 9,
+          "name": "PRICEBAND1",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 10,
+          "name": "PRICEBAND2",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 11,
+          "name": "PRICEBAND3",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 12,
+          "name": "PRICEBAND4",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 13,
+          "name": "PRICEBAND5",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 14,
+          "name": "PRICEBAND6",
+          "required": false,
+          "type": "decimal(7, 2)"
+        },
+        {
+          "id": 15,
+          "name": "PRICEBAND7",
+          "required": false,
+          "type": "decimal(7, 2)"
+        },
+        {
+          "id": 16,
+          "name": "PRICEBAND8",
+          "required": false,
+          "type": "decimal(7, 2)"
+        },
+        {
+          "id": 17,
+          "name": "PRICEBAND9",
+          "required": false,
+          "type": "decimal(7, 2)"
+        },
+        {
+          "id": 18,
+          "name": "PRICEBAND10",
+          "required": false,
+          "type": "decimal(7, 2)"
+        },
+        {
+          "id": 19,
+          "name": "MINIMUMLOAD",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "id": 20,
+          "name": "T1",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 21,
+          "name": "T2",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 22,
+          "name": "T3",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 23,
+          "name": "T4",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 24,
+          "name": "NORMALSTATUS",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 25,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 27,
+          "name": "ENTRYTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 28,
+          "name": "REBID_EVENT_TIME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 29,
+          "name": "REBID_AWARE_TIME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 30,
+          "name": "REBID_DECISION_TIME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 31,
+          "name": "REBID_CATEGORY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 32,
+          "name": "REFERENCE_ID",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 1,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 6613419914633089995,
+      "timestamp-ms": 1246370400000
+    },
+    {
+      "snapshot-id": 7593182966601626188,
+      "timestamp-ms": 1398866400001
+    },
+    {
+      "snapshot-id": 3429580641029934181,
+      "timestamp-ms": 1614520800002
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/OFFER_BIDDAYOFFER/metadata/snap-6613419914633089995-1-8d60a925-d8cf-8fc0-b970-6e7a84fea4f6.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 6613419914633089995,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "58",
+        "utilake.from.file": "PUBLIC_DVD_BIDDAYOFFER_200907010000.zip",
+        "utilake.from.release": "2009-07",
+        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "utilake.from.time": "2009-07-01T00:00:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "BIDDAYOFFER",
+        "utilake.report-type": "OFFER",
+        "utilake.rows": "9348730",
+        "utilake.to.file": "PUBLIC_DVD_BIDDAYOFFER_201404010000.zip",
+        "utilake.to.release": "2014-04",
+        "utilake.to.sha256": "2c1ad633b7f181cbd1bb1c9a4ce226428383d48171e36bca37a41caef2243d7d",
+        "utilake.to.time": "2014-04-30T00:00:00+10:00",
+        "utilake.total-rows": "9348730",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1246370400000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/OFFER_BIDDAYOFFER/metadata/snap-7593182966601626188-2-8d60a925-d8cf-8fc0-b970-6e7a84fea4f6.avro",
+      "parent-snapshot-id": 6613419914633089995,
+      "schema-id": 0,
+      "sequence-number": 2,
+      "snapshot-id": 7593182966601626188,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "82",
+        "utilake.from.file": "PUBLIC_DVD_BIDDAYOFFER_201405010000.zip",
+        "utilake.from.release": "2014-05",
+        "utilake.from.sha256": "910155f5be43d874fdd1b2517c6547ce7546d4cfbd829c11bcb98edcb02a88c5",
+        "utilake.from.time": "2014-05-01T00:00:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "BIDDAYOFFER",
+        "utilake.report-type": "OFFER",
+        "utilake.rows": "23094881",
+        "utilake.to.file": "PUBLIC_DVD_BIDDAYOFFER_202102010000.zip",
+        "utilake.to.release": "2021-02",
+        "utilake.to.sha256": "632819318144a537f41145970384b470877cae5124f78668de78e300478375f3",
+        "utilake.to.time": "2021-02-28T00:00:00+10:00",
+        "utilake.total-rows": "32443611",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1398866400001
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/OFFER_BIDDAYOFFER/metadata/snap-3429580641029934181-3-8d60a925-d8cf-8fc0-b970-6e7a84fea4f6.avro",
+      "parent-snapshot-id": 7593182966601626188,
+      "schema-id": 1,
+      "sequence-number": 3,
+      "snapshot-id": 3429580641029934181,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_DVD_BIDDAYOFFER_202103010000.zip",
+        "utilake.from.release": "2021-03",
+        "utilake.from.sha256": "9de24e2c44d6b95253cf65c64b07ccd751121303cb2318cd7e05362ead5fbcbb",
+        "utilake.from.time": "2021-03-01T00:00:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "BIDDAYOFFER",
+        "utilake.report-type": "OFFER",
+        "utilake.rows": "626255",
+        "utilake.to.file": "PUBLIC_DVD_BIDDAYOFFER_202103010000.zip",
+        "utilake.to.release": "2021-03",
+        "utilake.to.sha256": "9de24e2c44d6b95253cf65c64b07ccd751121303cb2318cd7e05362ead5fbcbb",
+        "utilake.to.time": "2021-03-31T00:00:00+10:00",
+        "utilake.total-rows": "33069866",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1614520800002
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "8d60a925-d8cf-8fc0-b970-6e7a84fea4f6"
+}

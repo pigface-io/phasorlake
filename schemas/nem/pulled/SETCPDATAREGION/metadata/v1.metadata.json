@@ -1,0 +1,185 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 2130612366512560911,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 12,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1246370400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SETCPDATAREGION",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "SETCPDATAREGION sets out summary meter settlement data for each region. The table is populated for participants using Data Model 5.2. For participants using Data Model 5.3 or higher, SET_ENERGY_REGION_SUMMARY replace SETCPDATAREGION.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"SETTLEMENTDATE\",\"VERSIONNO\",\"PERIODID\",\"REGIONID\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(22,10)\",\"3\":\"NUMERIC(22,10)\",\"4\":\"VARCHAR(10)\",\"5\":\"NUMERIC(27,5)\",\"6\":\"NUMERIC(27,5)\",\"7\":\"NUMERIC(27,5)\",\"8\":\"NUMERIC(27,5)\",\"9\":\"NUMERIC(22,0)\",\"10\":\"NUMERIC(22,0)\",\"11\":\"TIMESTAMP(0)\",\"12\":\"NUMERIC(15,5)\"}",
+    "utilake.package": "SETTLEMENT_DATA",
+    "utilake.reports": "[[\"SETTLEMENTS\",\"CPDATAREGION\"]]",
+    "utilake.table": "SETCPDATAREGION",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"PERIODID\",\"REGIONID\"]",
+    "utilake.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "SETTLEMENTDATE",
+    "utilake.temporal.valid.kind": "interval_end",
+    "utilake.time": "SETTLEMENTDATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 2130612366512560911,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Calendar Settlement Date",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Settlement run no",
+          "id": 2,
+          "name": "VERSIONNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Settlements Trading Interval.",
+          "id": 3,
+          "name": "PERIODID",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Region Identifier",
+          "id": 4,
+          "name": "REGIONID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Import Gross energy into the pool - MWh",
+          "id": 5,
+          "name": "SUMIGENERGY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Export Gross energy from the pool - MWh",
+          "id": 6,
+          "name": "SUMXGENERGY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Import Nett energy into the pool - MWh",
+          "id": 7,
+          "name": "SUMINENERGY",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Export Nett energy from the pool - MWh",
+          "id": 8,
+          "name": "SUMXNENERGY",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Not used",
+          "id": 9,
+          "name": "SUMIPOWER",
+          "required": false,
+          "type": "long"
+        },
+        {
+          "doc": "Not used",
+          "id": 10,
+          "name": "SUMXPOWER",
+          "required": false,
+          "type": "long"
+        },
+        {
+          "doc": "current system date, to enable automatic replication",
+          "id": 11,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Sum of energy price across the region",
+          "id": 12,
+          "name": "SUMEP",
+          "required": false,
+          "type": "double"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 2130612366512560911,
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SETCPDATAREGION/metadata/snap-2130612366512560911-1-69ff3869-ec86-8f06-a04c-204a1fe5137c.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 2130612366512560911,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "185",
+        "utilake.from.file": "PUBLIC_DVD_SETCPDATAREGION_200907010000.zip",
+        "utilake.from.release": "2009-07",
+        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "utilake.from.time": "2008-11-30T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\",\"dvd\"]",
+        "utilake.report-subtype": "CPDATAREGION",
+        "utilake.report-type": "SETTLEMENTS",
+        "utilake.rows": "11359680",
+        "utilake.to.file": "PUBLIC_ARCHIVE#SETCPDATAREGION#FILE01#202412010000.zip",
+        "utilake.to.release": "2024-12",
+        "utilake.to.sha256": "913c8c4933fd4e02de630514b74f714771bcd1bae1dad8db530f7a84e8622941",
+        "utilake.to.time": "2024-06-01T00:00:00+10:00",
+        "utilake.total-rows": "11359680",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "69ff3869-ec86-8f06-a04c-204a1fe5137c"
+}

@@ -1,0 +1,114 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 6669786528541128750,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 3,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1722434400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PD7DAY_MARKET_SUMMARY",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "PD7DAY market summary showing calculated gas fuel forecasts",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(15,5)\"}",
+    "utilake.reports": "[[\"PD7DAY\",\"MARKET_SUMMARY\"]]",
+    "utilake.table": "PD7DAY_MARKET_SUMMARY",
+    "utilake.temporal.entity": "[]",
+    "utilake.temporal.order": "[\"RUN_DATETIME\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.time": "INTERVAL_DATETIME",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 6669786528541128750,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Unique Timestamp Identifier for this study",
+          "id": 1,
+          "name": "RUN_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The unique identifier for the interval within this study",
+          "id": 2,
+          "name": "INTERVAL_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The total gas consumption in TJ",
+          "id": 3,
+          "name": "GPG_FUEL_FORECAST_TJ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 6669786528541128750,
+      "timestamp-ms": 1722434400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PD7DAY_MARKET_SUMMARY/metadata/snap-6669786528541128750-1-57af33cd-3b5a-8636-b9a9-666669e2c716.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 6669786528541128750,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "26",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PD7DAY_MARKET_SUMMARY#FILE01#202408010000.zip",
+        "utilake.from.release": "2024-08",
+        "utilake.from.sha256": "859021b47528054218f41faf8de80dc042fabd2dedeb8f2408b969cc707d4f60",
+        "utilake.from.time": "2024-04-23T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "MARKET_SUMMARY",
+        "utilake.report-type": "PD7DAY",
+        "utilake.rows": "212514",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PD7DAY_MARKET_SUMMARY#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "9558d504dd8cbbbcc9b4489e788f1cfb34ad59781c60f1ee81ea3e15bbd921c9",
+        "utilake.to.time": "2026-10-07T00:00:00+10:00",
+        "utilake.total-rows": "212514",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1722434400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "57af33cd-3b5a-8636-b9a9-666669e2c716"
+}

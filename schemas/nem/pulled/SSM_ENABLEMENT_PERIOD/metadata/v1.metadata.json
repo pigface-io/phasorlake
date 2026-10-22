@@ -1,0 +1,136 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 8564845137886305892,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 6,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1761919200000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SSM_ENABLEMENT_PERIOD",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "SSM Contract Enablement Periods",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"VARCHAR(20)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"VARCHAR(40)\",\"6\":\"TIMESTAMP(0)\"}",
+    "utilake.reports": "[[\"SSM\",\"ENABLEMENT_PERIOD\"]]",
+    "utilake.table": "SSM_ENABLEMENT_PERIOD",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[]",
+    "utilake.temporal.order": "[\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.time": "LASTCHANGED",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 8564845137886305892,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Unique Instruction Identifier",
+          "id": 1,
+          "name": "INSTRUCTION_ID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Dispatchable Unit Identifier",
+          "id": 2,
+          "name": "DUID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The first Dispatch Interval the unit is enabled for SSM Services.",
+          "id": 3,
+          "name": "ENABLEMENT_START_INTERVAL",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The last Dispatch Interval the unit is enabled for SSM Services.",
+          "id": 4,
+          "name": "ENABLEMENT_END_INTERVAL",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Reason for the enablement.",
+          "id": 5,
+          "name": "ENABLEMENT_REASON",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Last time record was changed.",
+          "id": 6,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 8564845137886305892,
+      "timestamp-ms": 1761919200000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SSM_ENABLEMENT_PERIOD/metadata/snap-8564845137886305892-1-920c265b-5487-8146-82b4-41633cf494ae.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 8564845137886305892,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "11",
+        "utilake.from.file": "PUBLIC_ARCHIVE#SSM_ENABLEMENT_PERIOD#FILE01#202511010000.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "66eba899473cf20567db8388ca225e8c74b228560ed7c1396e13ebd7de70c98d",
+        "utilake.from.time": "2025-12-02T12:00:16+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "ENABLEMENT_PERIOD",
+        "utilake.report-type": "SSM",
+        "utilake.rows": "2563",
+        "utilake.to.file": "PUBLIC_ARCHIVE#SSM_ENABLEMENT_PERIOD#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "8ba51f94817f30a8591f6991c3f0ceddc8f0224a2882e82ce3e966236bc794d5",
+        "utilake.to.time": "2026-09-30T10:35:00+10:00",
+        "utilake.total-rows": "2563",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1761919200000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "920c265b-5487-8146-82b4-41633cf494ae"
+}

@@ -1,0 +1,425 @@
+{
+  "current-schema-id": 1,
+  "current-snapshot-id": 1150430091510266703,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 22,
+  "last-partition-id": 999,
+  "last-sequence-number": 2,
+  "last-updated-ms": 1714485600001,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/GENUNITS",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "GENUNITS shows Genset details for each physical unit with the relevant station.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"GENSETID\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"VARCHAR(10)\",\"3\":\"NUMERIC(16,6)\",\"4\":\"VARCHAR(10)\",\"5\":\"VARCHAR(2)\",\"6\":\"VARCHAR(2)\",\"7\":\"NUMERIC(6,0)\",\"8\":\"NUMERIC(6,0)\",\"9\":\"VARCHAR(20)\",\"10\":\"VARCHAR(20)\",\"11\":\"VARCHAR(10)\",\"12\":\"VARCHAR(10)\",\"13\":\"NUMERIC(6,0)\",\"14\":\"VARCHAR(15)\",\"15\":\"VARCHAR(40)\",\"16\":\"TIMESTAMP(0)\",\"17\":\"NUMERIC(18,8)\",\"18\":\"VARCHAR(100)\",\"19\":\"VARCHAR(20)\",\"20\":\"NUMERIC(6,0)\",\"21\":\"NUMERIC(6,0)\",\"22\":\"NUMERIC(15,5)\"}",
+    "utilake.package": "PARTICIPANT_REGISTRATION",
+    "utilake.reports": "[[\"PARTICIPANT_REGISTRATION\",\"GENUNITS\"]]",
+    "utilake.table": "GENUNITS",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"GENSETID\"]",
+    "utilake.temporal.order": "[\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.time": "LASTCHANGED",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 1150430091510266703,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Physical Unit identifier",
+          "id": 1,
+          "name": "GENSETID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Station Identifier",
+          "id": 2,
+          "name": "STATIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Not used",
+          "id": 3,
+          "name": "SETLOSSFACTOR",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Centrally dispatched Indicator",
+          "id": 4,
+          "name": "CDINDICATOR",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "AGC Available flag",
+          "id": 5,
+          "name": "AGCFLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Not used",
+          "id": 6,
+          "name": "SPINNINGFLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Voltage level",
+          "id": 7,
+          "name": "VOLTLEVEL",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Registered capacity",
+          "id": 8,
+          "name": "REGISTEREDCAPACITY",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Identifies LOAD, GENERATOR or BIDIRECTIONAL. This will likely expand to more generic models as new technology types are integrated into the NEM.",
+          "id": 9,
+          "name": "DISPATCHTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Fast / Slow / Not Dispatched",
+          "id": 10,
+          "name": "STARTTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Market Generator Indicator Flag",
+          "id": 11,
+          "name": "MKTGENERATORIND",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "On / Off for load",
+          "id": 12,
+          "name": "NORMALSTATUS",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Maximum capacity",
+          "id": 13,
+          "name": "MAXCAPACITY",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Genset type",
+          "id": 14,
+          "name": "GENSETTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Genset name",
+          "id": 15,
+          "name": "GENSETNAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 16,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The emissions factor for the generating unit, as calculated by Settlements staff members",
+          "id": 17,
+          "name": "CO2E_EMISSIONS_FACTOR",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The energy source for the generating unit, as used in the calculation of the CO2-e emissions factor.  Distinct from the Energy Source for a generating unit published as part of the Registration Master List",
+          "id": 18,
+          "name": "CO2E_ENERGY_SOURCE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "An indicator as to the source of the emission factor used in the calculation of the index. The applicable values for this field would be NTNDP which indicates the emission factor is quoted from the National Transmission Network Development Plan or Estimated to indicate the emission factor has been calculated using an internal AEMO procedure based upon the Department of Climate Change and Energy Efficiency NGA factors",
+          "id": 19,
+          "name": "CO2E_DATA_SOURCE",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [
+        1
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Physical Unit identifier",
+          "id": 1,
+          "name": "GENSETID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Station Identifier",
+          "id": 2,
+          "name": "STATIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Not used",
+          "id": 3,
+          "name": "SETLOSSFACTOR",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Centrally dispatched Indicator",
+          "id": 4,
+          "name": "CDINDICATOR",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "AGC Available flag",
+          "id": 5,
+          "name": "AGCFLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Not used",
+          "id": 6,
+          "name": "SPINNINGFLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Voltage level",
+          "id": 7,
+          "name": "VOLTLEVEL",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Registered capacity",
+          "id": 8,
+          "name": "REGISTEREDCAPACITY",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Identifies LOAD, GENERATOR or BIDIRECTIONAL. This will likely expand to more generic models as new technology types are integrated into the NEM.",
+          "id": 9,
+          "name": "DISPATCHTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Fast / Slow / Not Dispatched",
+          "id": 10,
+          "name": "STARTTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Market Generator Indicator Flag",
+          "id": 11,
+          "name": "MKTGENERATORIND",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "On / Off for load",
+          "id": 12,
+          "name": "NORMALSTATUS",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Maximum capacity",
+          "id": 13,
+          "name": "MAXCAPACITY",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Genset type",
+          "id": 14,
+          "name": "GENSETTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Genset name",
+          "id": 15,
+          "name": "GENSETNAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 16,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The emissions factor for the generating unit, as calculated by Settlements staff members",
+          "id": 17,
+          "name": "CO2E_EMISSIONS_FACTOR",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The energy source for the generating unit, as used in the calculation of the CO2-e emissions factor.  Distinct from the Energy Source for a generating unit published as part of the Registration Master List",
+          "id": 18,
+          "name": "CO2E_ENERGY_SOURCE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "An indicator as to the source of the emission factor used in the calculation of the index. The applicable values for this field would be NTNDP which indicates the emission factor is quoted from the National Transmission Network Development Plan or Estimated to indicate the emission factor has been calculated using an internal AEMO procedure based upon the Department of Climate Change and Energy Efficiency NGA factors",
+          "id": 19,
+          "name": "CO2E_DATA_SOURCE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Minimum capacity only for load side of BDU, otherwise 0 (MW)",
+          "id": 20,
+          "name": "MINCAPACITY",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Registered minimum capacity only for load side of BDU, otherwise 0 (MW)",
+          "id": 21,
+          "name": "REGISTEREDMINCAPACITY",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "The rated storage capacity (MWh), information only",
+          "id": 22,
+          "name": "MAXSTORAGECAPACITY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        }
+      ],
+      "identifier-field-ids": [
+        1
+      ],
+      "schema-id": 1,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 7738728406704844780,
+      "timestamp-ms": 1304172000000
+    },
+    {
+      "snapshot-id": 1150430091510266703,
+      "timestamp-ms": 1714485600001
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/GENUNITS/metadata/snap-7738728406704844780-1-b71767cc-be41-8f20-bda6-24b4eee919b1.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 7738728406704844780,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "156",
+        "utilake.from.file": "PUBLIC_DVD_GENUNITS_201105010000.zip",
+        "utilake.from.release": "2011-05",
+        "utilake.from.sha256": "b2785104571a81a3e7333543f8b92c36e4b2bbde29d19d4715123f459e3079ac",
+        "utilake.from.time": "2005-11-23T09:55:53+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "GENUNITS",
+        "utilake.report-type": "PARTICIPANT_REGISTRATION",
+        "utilake.rows": "102946",
+        "utilake.to.file": "PUBLIC_DVD_GENUNITS_202404010000.zip",
+        "utilake.to.release": "2024-04",
+        "utilake.to.sha256": "526eb902d634ecefeb0fb4db87a37b305f27fc58ef8c9cc64e1e7975c990ccfc",
+        "utilake.to.time": "2024-05-03T16:27:17+10:00",
+        "utilake.total-rows": "102946",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1304172000000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/GENUNITS/metadata/snap-1150430091510266703-2-b71767cc-be41-8f20-bda6-24b4eee919b1.avro",
+      "parent-snapshot-id": 7738728406704844780,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 1150430091510266703,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "29",
+        "utilake.from.file": "PUBLIC_DVD_GENUNITS_202405010000.zip",
+        "utilake.from.release": "2024-05",
+        "utilake.from.sha256": "8dc43ba5a375686a7c1304cb891e7ac3eeff84477b2cce1b78d90749f08c48e9",
+        "utilake.from.time": "2005-11-23T09:55:53+10:00",
+        "utilake.kinds": "[\"archive\",\"dvd\"]",
+        "utilake.report-subtype": "GENUNITS",
+        "utilake.report-type": "PARTICIPANT_REGISTRATION",
+        "utilake.rows": "27037",
+        "utilake.to.file": "PUBLIC_ARCHIVE#GENUNITS#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "77a2b7f511fffbb7ecdfaadc5f189a9c18717c2153eede48b3ae17c10c606795",
+        "utilake.to.time": "2026-10-02T15:12:44+10:00",
+        "utilake.total-rows": "129983",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1714485600001
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "b71767cc-be41-8f20-bda6-24b4eee919b1"
+}

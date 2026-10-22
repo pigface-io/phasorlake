@@ -1,0 +1,227 @@
+{
+  "current-schema-id": 1,
+  "current-snapshot-id": 4885187107600780274,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 6,
+  "last-partition-id": 999,
+  "last-sequence-number": 2,
+  "last-updated-ms": 1722434400001,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/ROOFTOP_PV_ACTUAL",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "Estimate of regional Rooftop Solar actual generation for each half-hour interval in a day. AEMO plans to remove this table in a Data Model version release after 5.6.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"INTERVAL_DATETIME\",\"REGIONID\",\"TYPE\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"NUMERIC(12,3)\",\"4\":\"NUMERIC(2,1)\",\"5\":\"VARCHAR(20)\",\"6\":\"TIMESTAMP(0)\"}",
+    "utilake.package": "DEMAND_FORECASTS",
+    "utilake.reports": "[[\"ROOFTOP\",\"ACTUAL\"]]",
+    "utilake.table": "ROOFTOP_PV_ACTUAL",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"REGIONID\",\"TYPE\"]",
+    "utilake.temporal.order": "[\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "INTERVAL_DATETIME",
+    "utilake.temporal.valid.kind": "interval_end",
+    "utilake.time": "INTERVAL_DATETIME",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 4885187107600780274,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "The forecast half-hour interval (time ending)",
+          "id": 1,
+          "name": "INTERVAL_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Region identifier",
+          "id": 2,
+          "name": "REGIONID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Estimated generation in MW at the interval end",
+          "id": 3,
+          "name": "POWER",
+          "required": false,
+          "type": "decimal(12, 3)"
+        },
+        {
+          "doc": "Quality indicator. Represents the quality of the estimate.",
+          "id": 4,
+          "name": "QI",
+          "required": false,
+          "type": "decimal(2, 1)"
+        },
+        {
+          "doc": "One of DAILY, MEASUREMENT or SATELLITE. DAILY- best quality estimated actuals, available day after. MEASUREMENT- best quality estimated actuals on day, delayed by 1 half hour. SATELLITE- estimated actuals using satellite imagery, delayed by 1 half hour.",
+          "id": 5,
+          "name": "TYPE",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 6,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        5
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "The forecast half-hour interval (time ending)",
+          "id": 1,
+          "name": "INTERVAL_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Region identifier",
+          "id": 2,
+          "name": "REGIONID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Estimated generation in MW at the interval end",
+          "id": 3,
+          "name": "POWER",
+          "required": false,
+          "type": "decimal(12, 3)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 6,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "One of DAILY, MEASUREMENT or SATELLITE. DAILY- best quality estimated actuals, available day after. MEASUREMENT- best quality estimated actuals on day, delayed by 1 half hour. SATELLITE- estimated actuals using satellite imagery, delayed by 1 half hour.",
+          "id": 5,
+          "name": "TYPE",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Quality indicator. Represents the quality of the estimate.",
+          "id": 4,
+          "name": "QI",
+          "required": false,
+          "type": "decimal(2, 1)"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        5
+      ],
+      "schema-id": 1,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 4510443077537476725,
+      "timestamp-ms": 1469973600000
+    },
+    {
+      "snapshot-id": 4885187107600780274,
+      "timestamp-ms": 1722434400001
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/ROOFTOP_PV_ACTUAL/metadata/snap-4510443077537476725-1-fd5477ad-ba5d-8652-b3a4-8ad78001ac36.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 4510443077537476725,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "96",
+        "utilake.from.file": "PUBLIC_DVD_ROOFTOP_PV_ACTUAL_201608010000.zip",
+        "utilake.from.release": "2016-08",
+        "utilake.from.sha256": "09bcf1599e0c25175aa779a0c1220a195dcfb104cf99ff81d6355b2c2267e431",
+        "utilake.from.time": "2016-08-01T00:30:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "ACTUAL",
+        "utilake.report-type": "ROOFTOP",
+        "utilake.rows": "2582900",
+        "utilake.to.file": "PUBLIC_DVD_ROOFTOP_PV_ACTUAL_202407010000.zip",
+        "utilake.to.release": "2024-07",
+        "utilake.to.sha256": "271e33d8eae6acb2388cf419f3f70defeea0499b7577dc946d46ffc741610cca",
+        "utilake.to.time": "2024-08-02T00:00:00+10:00",
+        "utilake.total-rows": "2582900",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1469973600000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/ROOFTOP_PV_ACTUAL/metadata/snap-4885187107600780274-2-fd5477ad-ba5d-8652-b3a4-8ad78001ac36.avro",
+      "parent-snapshot-id": 4510443077537476725,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 4885187107600780274,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "26",
+        "utilake.from.file": "PUBLIC_ARCHIVE#ROOFTOP_PV_ACTUAL#FILE01#202408010000.zip",
+        "utilake.from.release": "2024-08",
+        "utilake.from.sha256": "860cfe0553c04241287ce2f17546c90bc439f139462c464cd960c051b4ba398e",
+        "utilake.from.time": "2024-08-01T00:30:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "ACTUAL",
+        "utilake.report-type": "ROOFTOP",
+        "utilake.rows": "606490",
+        "utilake.to.file": "PUBLIC_ARCHIVE#ROOFTOP_PV_ACTUAL#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "665b62dfb873c2dcf451da7ade4294564384d59c9210f430b365d7c5d2e735ef",
+        "utilake.to.time": "2026-10-01T00:00:00+10:00",
+        "utilake.total-rows": "3189390",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1722434400001
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "fd5477ad-ba5d-8652-b3a4-8ad78001ac36"
+}

@@ -555,6 +555,7 @@ fn derived_table(market: Market, irow: &IRow<'_>) -> Table {
         },
         primary_key: vec![],
         time_column: None,
+        current_schema: 0,
         columns: columns
             .iter()
             .enumerate()

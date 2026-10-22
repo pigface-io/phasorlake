@@ -1,0 +1,791 @@
+{
+  "current-schema-id": 2,
+  "current-snapshot-id": 1272506297018007706,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 30,
+  "last-partition-id": 999,
+  "last-sequence-number": 3,
+  "last-updated-ms": 1722434400002,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/TRADINGPRICE",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "TRADINGPRICE sets out 5 minutes spot market price, including fields to handle the Ancillary Services functionality. If prices are adjusted, the final price is recorded in the regional reference price (RRP) field with price before adjustment recorded in the regional original price (ROP) field.\nPrior to 5 Minute Settlements, this was half-hourly spot market values, which was calculated as the average of the six 5 minute dispatch intervals within the 30 minute period.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"SETTLEMENTDATE\",\"RUNNO\",\"REGIONID\",\"PERIODID\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(10)\",\"4\":\"NUMERIC(3,0)\",\"5\":\"NUMERIC(15,5)\",\"6\":\"NUMERIC(15,5)\",\"7\":\"VARCHAR(1)\",\"8\":\"TIMESTAMP(0)\",\"9\":\"NUMERIC(15,5)\",\"10\":\"NUMERIC(15,5)\",\"11\":\"NUMERIC(15,5)\",\"12\":\"NUMERIC(15,5)\",\"13\":\"NUMERIC(15,5)\",\"14\":\"NUMERIC(15,5)\",\"15\":\"NUMERIC(15,5)\",\"16\":\"NUMERIC(15,5)\",\"17\":\"NUMERIC(15,5)\",\"18\":\"NUMERIC(15,5)\",\"19\":\"NUMERIC(15,5)\",\"20\":\"NUMERIC(15,5)\",\"21\":\"NUMERIC(15,5)\",\"22\":\"NUMERIC(15,5)\",\"23\":\"NUMERIC(15,5)\",\"24\":\"NUMERIC(15,5)\",\"25\":\"NUMERIC(15,5)\",\"26\":\"VARCHAR(20)\",\"27\":\"NUMERIC(15,5)\",\"28\":\"NUMERIC(15,5)\",\"29\":\"NUMERIC(15,5)\",\"30\":\"NUMERIC(15,5)\"}",
+    "utilake.package": "TRADING_DATA",
+    "utilake.reports": "[[\"TRADING\",\"PRICE\"]]",
+    "utilake.table": "TRADINGPRICE",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"REGIONID\",\"PERIODID\"]",
+    "utilake.temporal.order": "[\"RUNNO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "SETTLEMENTDATE",
+    "utilake.temporal.valid.kind": "interval_end",
+    "utilake.time": "SETTLEMENTDATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 1272506297018007706,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Date that this data applies to",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Run No",
+          "id": 2,
+          "name": "RUNNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Region Identifier",
+          "id": 3,
+          "name": "REGIONID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Period number where 1 represents the trading interval ending at 00:05 AEST",
+          "id": 4,
+          "name": "PERIODID",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Regional reference price for this dispatch period",
+          "id": 5,
+          "name": "RRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Excess energy price where negative average",
+          "id": 6,
+          "name": "EEP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Indicates when the Trading interval price has been adjusted after the trading interval was completed",
+          "id": 7,
+          "name": "INVALIDFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 8,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Regional Original Price. The price before any adjustments were made",
+          "id": 9,
+          "name": "ROP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional reference price for this dispatch period",
+          "id": 10,
+          "name": "RAISE6SECRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Original regional price - prior to APC or VoLL overrides applied",
+          "id": 11,
+          "name": "RAISE6SECROP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional reference price for this dispatch period",
+          "id": 12,
+          "name": "RAISE60SECRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Original regional price - prior to APC or VoLL overrides applied",
+          "id": 13,
+          "name": "RAISE60SECROP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional reference price for this dispatch period",
+          "id": 14,
+          "name": "RAISE5MINRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Original regional price - prior to APC or VoLL overrides applied",
+          "id": 15,
+          "name": "RAISE5MINROP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional reference price for this dispatch period",
+          "id": 16,
+          "name": "RAISEREGRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Original regional price - prior to APC or VoLL overrides applied",
+          "id": 17,
+          "name": "RAISEREGROP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional reference price for this dispatch period",
+          "id": 18,
+          "name": "LOWER6SECRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Original regional price - prior to APC or VoLL overrides applied",
+          "id": 19,
+          "name": "LOWER6SECROP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional reference price for this dispatch period",
+          "id": 20,
+          "name": "LOWER60SECRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Original regional price - prior to APC or VoLL overrides applied",
+          "id": 21,
+          "name": "LOWER60SECROP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional reference price for this dispatch period",
+          "id": 22,
+          "name": "LOWER5MINRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Original regional price - prior to APC or VoLL overrides applied",
+          "id": 23,
+          "name": "LOWER5MINROP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional reference price for this dispatch period",
+          "id": 24,
+          "name": "LOWERREGRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Original regional price - prior to APC or VoLL overrides applied",
+          "id": 25,
+          "name": "LOWERREGROP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Status of regional prices for this dispatch interval \"NOT FIRM\" or \"FIRM\"",
+          "id": 26,
+          "name": "PRICE_STATUS",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Date that this data applies to",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Run No",
+          "id": 2,
+          "name": "RUNNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Region Identifier",
+          "id": 3,
+          "name": "REGIONID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Period number where 1 represents the trading interval ending at 00:05 AEST",
+          "id": 4,
+          "name": "PERIODID",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Regional reference price for this dispatch period",
+          "id": 5,
+          "name": "RRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Excess energy price where negative average",
+          "id": 6,
+          "name": "EEP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Indicates when the Trading interval price has been adjusted after the trading interval was completed",
+          "id": 7,
+          "name": "INVALIDFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 8,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Regional Original Price. The price before any adjustments were made",
+          "id": 9,
+          "name": "ROP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Raise 1Sec Price - R1Price attribute after capping/flooring",
+          "id": 27,
+          "name": "RAISE1SECRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise1Sec Regional Original Price - uncapped/unfloored and unscaled",
+          "id": 28,
+          "name": "RAISE1SECROP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional reference price for this dispatch period",
+          "id": 10,
+          "name": "RAISE6SECRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Original regional price - prior to APC or VoLL overrides applied",
+          "id": 11,
+          "name": "RAISE6SECROP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional reference price for this dispatch period",
+          "id": 12,
+          "name": "RAISE60SECRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Original regional price - prior to APC or VoLL overrides applied",
+          "id": 13,
+          "name": "RAISE60SECROP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional reference price for this dispatch period",
+          "id": 14,
+          "name": "RAISE5MINRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Original regional price - prior to APC or VoLL overrides applied",
+          "id": 15,
+          "name": "RAISE5MINROP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional reference price for this dispatch period",
+          "id": 16,
+          "name": "RAISEREGRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Original regional price - prior to APC or VoLL overrides applied",
+          "id": 17,
+          "name": "RAISEREGROP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Lower 1Sec Price - RegionSolution element L1Price attribute",
+          "id": 29,
+          "name": "LOWER1SECRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower1Sec Regional Original Price - uncapped/unfloored and unscaled",
+          "id": 30,
+          "name": "LOWER1SECROP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional reference price for this dispatch period",
+          "id": 18,
+          "name": "LOWER6SECRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Original regional price - prior to APC or VoLL overrides applied",
+          "id": 19,
+          "name": "LOWER6SECROP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional reference price for this dispatch period",
+          "id": 20,
+          "name": "LOWER60SECRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Original regional price - prior to APC or VoLL overrides applied",
+          "id": 21,
+          "name": "LOWER60SECROP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional reference price for this dispatch period",
+          "id": 22,
+          "name": "LOWER5MINRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Original regional price - prior to APC or VoLL overrides applied",
+          "id": 23,
+          "name": "LOWER5MINROP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional reference price for this dispatch period",
+          "id": 24,
+          "name": "LOWERREGRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Original regional price - prior to APC or VoLL overrides applied",
+          "id": 25,
+          "name": "LOWERREGROP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Status of regional prices for this dispatch interval \"NOT FIRM\" or \"FIRM\"",
+          "id": 26,
+          "name": "PRICE_STATUS",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "schema-id": 1,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Date that this data applies to",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Run No",
+          "id": 2,
+          "name": "RUNNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Region Identifier",
+          "id": 3,
+          "name": "REGIONID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Period number where 1 represents the trading interval ending at 00:05 AEST",
+          "id": 4,
+          "name": "PERIODID",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Regional reference price for this dispatch period",
+          "id": 5,
+          "name": "RRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Excess energy price where negative average",
+          "id": 6,
+          "name": "EEP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Indicates when the Trading interval price has been adjusted after the trading interval was completed",
+          "id": 7,
+          "name": "INVALIDFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 8,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Regional Original Price. The price before any adjustments were made",
+          "id": 9,
+          "name": "ROP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional reference price for this dispatch period",
+          "id": 10,
+          "name": "RAISE6SECRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Original regional price - prior to APC or VoLL overrides applied",
+          "id": 11,
+          "name": "RAISE6SECROP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional reference price for this dispatch period",
+          "id": 12,
+          "name": "RAISE60SECRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Original regional price - prior to APC or VoLL overrides applied",
+          "id": 13,
+          "name": "RAISE60SECROP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional reference price for this dispatch period",
+          "id": 14,
+          "name": "RAISE5MINRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Original regional price - prior to APC or VoLL overrides applied",
+          "id": 15,
+          "name": "RAISE5MINROP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional reference price for this dispatch period",
+          "id": 16,
+          "name": "RAISEREGRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Original regional price - prior to APC or VoLL overrides applied",
+          "id": 17,
+          "name": "RAISEREGROP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional reference price for this dispatch period",
+          "id": 18,
+          "name": "LOWER6SECRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Original regional price - prior to APC or VoLL overrides applied",
+          "id": 19,
+          "name": "LOWER6SECROP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional reference price for this dispatch period",
+          "id": 20,
+          "name": "LOWER60SECRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Original regional price - prior to APC or VoLL overrides applied",
+          "id": 21,
+          "name": "LOWER60SECROP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional reference price for this dispatch period",
+          "id": 22,
+          "name": "LOWER5MINRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Original regional price - prior to APC or VoLL overrides applied",
+          "id": 23,
+          "name": "LOWER5MINROP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional reference price for this dispatch period",
+          "id": 24,
+          "name": "LOWERREGRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Original regional price - prior to APC or VoLL overrides applied",
+          "id": 25,
+          "name": "LOWERREGROP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Status of regional prices for this dispatch interval \"NOT FIRM\" or \"FIRM\"",
+          "id": 26,
+          "name": "PRICE_STATUS",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Regional Raise 1Sec Price - R1Price attribute after capping/flooring",
+          "id": 27,
+          "name": "RAISE1SECRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise1Sec Regional Original Price - uncapped/unfloored and unscaled",
+          "id": 28,
+          "name": "RAISE1SECROP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Lower 1Sec Price - RegionSolution element L1Price attribute",
+          "id": 29,
+          "name": "LOWER1SECRRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower1Sec Regional Original Price - uncapped/unfloored and unscaled",
+          "id": 30,
+          "name": "LOWER1SECROP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "schema-id": 2,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 7195649532210233542,
+      "timestamp-ms": 1246370400000
+    },
+    {
+      "snapshot-id": 6642717859239119188,
+      "timestamp-ms": 1688133600001
+    },
+    {
+      "snapshot-id": 1272506297018007706,
+      "timestamp-ms": 1722434400002
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/TRADINGPRICE/metadata/snap-7195649532210233542-1-64665df5-421d-80b7-8197-83e7cf179866.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 7195649532210233542,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "168",
+        "utilake.from.file": "PUBLIC_DVD_TRADINGPRICE_200907010000.zip",
+        "utilake.from.release": "2009-07",
+        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "utilake.from.time": "2009-07-01T00:30:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "PRICE",
+        "utilake.report-type": "TRADING",
+        "utilake.rows": "1994400",
+        "utilake.to.file": "PUBLIC_DVD_TRADINGPRICE_202306010000.zip",
+        "utilake.to.release": "2023-06",
+        "utilake.to.sha256": "8681c3c578c8af8593b5ecf45eb07836ec4576b79365d68d57d9e7d2cfc5decd",
+        "utilake.to.time": "2023-07-01T00:00:00+10:00",
+        "utilake.total-rows": "1994400",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1246370400000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/TRADINGPRICE/metadata/snap-6642717859239119188-2-64665df5-421d-80b7-8197-83e7cf179866.avro",
+      "parent-snapshot-id": 7195649532210233542,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 6642717859239119188,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "13",
+        "utilake.from.file": "PUBLIC_DVD_TRADINGPRICE_202307010000.zip",
+        "utilake.from.release": "2023-07",
+        "utilake.from.sha256": "7517162918931f1ca3e8a2d3f3b532276d526e001cbdc0d50b23ef44823cedf1",
+        "utilake.from.time": "2023-07-01T00:05:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "PRICE",
+        "utilake.report-type": "TRADING",
+        "utilake.rows": "571680",
+        "utilake.to.file": "PUBLIC_DVD_TRADINGPRICE_202407010000.zip",
+        "utilake.to.release": "2024-07",
+        "utilake.to.sha256": "0ba867ce1b2124f576e47edbe669364c9612b1ac5d912338065f7c82b9046d3a",
+        "utilake.to.time": "2024-08-01T00:00:00+10:00",
+        "utilake.total-rows": "2566080",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1688133600001
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/TRADINGPRICE/metadata/snap-1272506297018007706-3-64665df5-421d-80b7-8197-83e7cf179866.avro",
+      "parent-snapshot-id": 6642717859239119188,
+      "schema-id": 2,
+      "sequence-number": 3,
+      "snapshot-id": 1272506297018007706,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "26",
+        "utilake.from.file": "PUBLIC_ARCHIVE#TRADINGPRICE#FILE01#202408010000.zip",
+        "utilake.from.release": "2024-08",
+        "utilake.from.sha256": "37c95781f720bdfc536fa103e530ea05ff2b4ca61ae176626ef1829b584b0775",
+        "utilake.from.time": "2024-08-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "PRICE",
+        "utilake.report-type": "TRADING",
+        "utilake.rows": "1139040",
+        "utilake.to.file": "PUBLIC_ARCHIVE#TRADINGPRICE#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "165817241061addec06e7ae848cc7fbfad2af43b196d49cf54708e9e581ea03d",
+        "utilake.to.time": "2026-10-01T00:00:00+10:00",
+        "utilake.total-rows": "3705120",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1722434400002
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "64665df5-421d-80b7-8197-83e7cf179866"
+}

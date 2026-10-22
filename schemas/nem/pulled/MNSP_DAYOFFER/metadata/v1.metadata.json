@@ -1,0 +1,476 @@
+{
+  "current-schema-id": 1,
+  "current-snapshot-id": 757031461320976139,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 24,
+  "last-partition-id": 999,
+  "last-sequence-number": 2,
+  "last-updated-ms": 1722434400001,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_DAYOFFER",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "MNSP_DAYOFFER updates as bids are processed. All bids are available as part of next day market data. MNSP_DAYOFFER is the parent table to MNSP_BIDOFFERPERIOD, and joins to BIDOFFERFILETRK for 5MS Bids.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"SETTLEMENTDATE\",\"OFFERDATE\",\"VERSIONNO\",\"PARTICIPANTID\",\"LINKID\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(3)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(10)\",\"5\":\"VARCHAR(10)\",\"6\":\"VARCHAR(20)\",\"7\":\"VARCHAR(500)\",\"8\":\"NUMERIC(9,2)\",\"9\":\"NUMERIC(9,2)\",\"10\":\"NUMERIC(9,2)\",\"11\":\"NUMERIC(9,2)\",\"12\":\"NUMERIC(9,2)\",\"13\":\"NUMERIC(9,2)\",\"14\":\"NUMERIC(9,2)\",\"15\":\"NUMERIC(9,2)\",\"16\":\"NUMERIC(9,2)\",\"17\":\"NUMERIC(9,2)\",\"18\":\"TIMESTAMP(0)\",\"19\":\"VARCHAR(20)\",\"20\":\"VARCHAR(20)\",\"21\":\"VARCHAR(20)\",\"22\":\"VARCHAR(1)\",\"23\":\"VARCHAR(100)\",\"24\":\"NUMERIC(16,6)\"}",
+    "utilake.package": "BIDS",
+    "utilake.reports": "[[\"BIDS\",\"MNSP_DAYOFFER\"]]",
+    "utilake.table": "MNSP_DAYOFFER",
+    "utilake.temporal.cutoff": "OFFERDATE",
+    "utilake.temporal.entity": "[\"PARTICIPANTID\",\"LINKID\"]",
+    "utilake.temporal.order": "[\"OFFERDATE\",\"VERSIONNO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "SETTLEMENTDATE",
+    "utilake.temporal.valid.kind": "interval_end",
+    "utilake.time": "SETTLEMENTDATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 757031461320976139,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Market Date from which bid is active",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Time this bid was processed and loaded",
+          "id": 2,
+          "name": "OFFERDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Version of data for other key data - a higher version for same key data will take precedence",
+          "id": 3,
+          "name": "VERSIONNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Participant Identifier",
+          "id": 4,
+          "name": "PARTICIPANTID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Identifier for each of the two MNSP Interconnector Links. Each link pertains to the direction from and to.",
+          "id": 5,
+          "name": "LINKID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Bid type. Either Rebid or Daily",
+          "id": 6,
+          "name": "ENTRYTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Explanation for all rebids and inflexibilities",
+          "id": 7,
+          "name": "REBIDEXPLANATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Price for Availability Band 1",
+          "id": 8,
+          "name": "PRICEBAND1",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Price for Availability Band 2",
+          "id": 9,
+          "name": "PRICEBAND2",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Price for Availability Band 3",
+          "id": 10,
+          "name": "PRICEBAND3",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Price for Availability Band 4",
+          "id": 11,
+          "name": "PRICEBAND4",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Price for Availability Band 5",
+          "id": 12,
+          "name": "PRICEBAND5",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Price for Availability Band 6",
+          "id": 13,
+          "name": "PRICEBAND6",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Price for Availability Band 7",
+          "id": 14,
+          "name": "PRICEBAND7",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Price for Availability Band 8",
+          "id": 15,
+          "name": "PRICEBAND8",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Price for Availability Band 9",
+          "id": 16,
+          "name": "PRICEBAND9",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Price for Availability Band 10",
+          "id": 17,
+          "name": "PRICEBAND10",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 18,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The time of the event(s) or other occurrence(s) cited/adduced as the reason for the rebid. Required for rebids, not required for fixed load or low ramp rates. Expected in the format: HH:MM:SS e.g. 20:11:00",
+          "id": 19,
+          "name": "REBID_EVENT_TIME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Intended to support the Rebidding and Technical Parameters Guideline. The time at which the participant became aware of the event(s) / occurrence(s) that prompted the rebid. Not validated by AEMO",
+          "id": 20,
+          "name": "REBID_AWARE_TIME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Intended to support the Rebidding and Technical Parameters Guideline. The time at which the participant made the decision to rebid. Not validated by AEMO",
+          "id": 21,
+          "name": "REBID_DECISION_TIME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Intended to support the Rebidding and Technical Parameters Guideline. A provided rebid category. Not validated by AEMO",
+          "id": 22,
+          "name": "REBID_CATEGORY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "A participants unique Reference Id",
+          "id": 23,
+          "name": "REFERENCE_ID",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Market Date from which bid is active",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Time this bid was processed and loaded",
+          "id": 2,
+          "name": "OFFERDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Version of data for other key data - a higher version for same key data will take precedence",
+          "id": 3,
+          "name": "VERSIONNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Participant Identifier",
+          "id": 4,
+          "name": "PARTICIPANTID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Identifier for each of the two MNSP Interconnector Links. Each link pertains to the direction from and to.",
+          "id": 5,
+          "name": "LINKID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Bid type. Either Rebid or Daily",
+          "id": 6,
+          "name": "ENTRYTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Explanation for all rebids and inflexibilities",
+          "id": 7,
+          "name": "REBIDEXPLANATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Price for Availability Band 1",
+          "id": 8,
+          "name": "PRICEBAND1",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Price for Availability Band 2",
+          "id": 9,
+          "name": "PRICEBAND2",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Price for Availability Band 3",
+          "id": 10,
+          "name": "PRICEBAND3",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Price for Availability Band 4",
+          "id": 11,
+          "name": "PRICEBAND4",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Price for Availability Band 5",
+          "id": 12,
+          "name": "PRICEBAND5",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Price for Availability Band 6",
+          "id": 13,
+          "name": "PRICEBAND6",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Price for Availability Band 7",
+          "id": 14,
+          "name": "PRICEBAND7",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Price for Availability Band 8",
+          "id": 15,
+          "name": "PRICEBAND8",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Price for Availability Band 9",
+          "id": 16,
+          "name": "PRICEBAND9",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Price for Availability Band 10",
+          "id": 17,
+          "name": "PRICEBAND10",
+          "required": false,
+          "type": "decimal(9, 2)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 18,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Mandatory Restriction Offer Factor",
+          "id": 24,
+          "name": "MR_FACTOR",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "The time of the event(s) or other occurrence(s) cited/adduced as the reason for the rebid. Required for rebids, not required for fixed load or low ramp rates. Expected in the format: HH:MM:SS e.g. 20:11:00",
+          "id": 19,
+          "name": "REBID_EVENT_TIME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Intended to support the Rebidding and Technical Parameters Guideline. The time at which the participant became aware of the event(s) / occurrence(s) that prompted the rebid. Not validated by AEMO",
+          "id": 20,
+          "name": "REBID_AWARE_TIME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Intended to support the Rebidding and Technical Parameters Guideline. The time at which the participant made the decision to rebid. Not validated by AEMO",
+          "id": 21,
+          "name": "REBID_DECISION_TIME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Intended to support the Rebidding and Technical Parameters Guideline. A provided rebid category. Not validated by AEMO",
+          "id": 22,
+          "name": "REBID_CATEGORY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "A participants unique Reference Id",
+          "id": 23,
+          "name": "REFERENCE_ID",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "schema-id": 1,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 1820855689593754915,
+      "timestamp-ms": 1617199200000
+    },
+    {
+      "snapshot-id": 757031461320976139,
+      "timestamp-ms": 1722434400001
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_DAYOFFER/metadata/snap-1820855689593754915-1-869d7c8d-4d94-861a-9598-7d1d23f8f2b4.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 1820855689593754915,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "40",
+        "utilake.from.file": "PUBLIC_DVD_MNSP_DAYOFFER_202104010000.zip",
+        "utilake.from.release": "2021-04",
+        "utilake.from.sha256": "2bdebfb976176755862abf8b425b55957b2f1ccce1879796d383322c725d0c22",
+        "utilake.from.time": "2021-04-01T00:00:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "MNSP_DAYOFFER",
+        "utilake.report-type": "BIDS",
+        "utilake.rows": "68102",
+        "utilake.to.file": "PUBLIC_DVD_MNSP_DAYOFFER_202407010000.zip",
+        "utilake.to.release": "2024-07",
+        "utilake.to.sha256": "5b92d6451b0248d7a2d046bf202033ed20efdddd26de95244c1527f9feafd3e6",
+        "utilake.to.time": "2024-07-31T00:00:00+10:00",
+        "utilake.total-rows": "68102",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1617199200000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_DAYOFFER/metadata/snap-757031461320976139-2-869d7c8d-4d94-861a-9598-7d1d23f8f2b4.avro",
+      "parent-snapshot-id": 1820855689593754915,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 757031461320976139,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "24",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MNSP_DAYOFFER#FILE01#202408010000.zip",
+        "utilake.from.release": "2024-08",
+        "utilake.from.sha256": "d2a9b0d4ae68d52074c0d955f208b2aaa093a33fee23fa0b6e0a79e2fef82245",
+        "utilake.from.time": "2024-08-01T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "MNSP_DAYOFFER",
+        "utilake.report-type": "BIDS",
+        "utilake.rows": "297380",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MNSP_DAYOFFER#FILE01#202607010000.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "769923205d0e14164df902579659294846be0c0c7e5fb9918a8d85e13bdd0b10",
+        "utilake.to.time": "2026-07-09T00:00:00+10:00",
+        "utilake.total-rows": "365482",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1722434400001
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "869d7c8d-4d94-861a-9598-7d1d23f8f2b4"
+}

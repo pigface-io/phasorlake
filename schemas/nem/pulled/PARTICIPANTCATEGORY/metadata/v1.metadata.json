@@ -1,0 +1,117 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 3123072629562339282,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 3,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1246370400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PARTICIPANTCATEGORY",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "PARTICIPANTCATEGORY sets out valid participant categories.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"PARTICIPANTCATEGORYID\"]",
+    "utilake.load": "snapshot",
+    "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"VARCHAR(64)\",\"3\":\"TIMESTAMP(0)\"}",
+    "utilake.package": "PARTICIPANT_REGISTRATION",
+    "utilake.reports": "[[\"PARTICIPANT_REGISTRATION\",\"PARTICIPANTCATEGORY\"]]",
+    "utilake.table": "PARTICIPANTCATEGORY",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"PARTICIPANTCATEGORYID\"]",
+    "utilake.temporal.order": "[\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 3123072629562339282,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Participant category identifier",
+          "id": 1,
+          "name": "PARTICIPANTCATEGORYID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Category description",
+          "id": 2,
+          "name": "DESCRIPTION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 3,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 3123072629562339282,
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PARTICIPANTCATEGORY/metadata/snap-3123072629562339282-1-28b9f1ea-ee33-844a-8e31-c62bbd6818eb.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 3123072629562339282,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "207",
+        "utilake.from.file": "PUBLIC_DVD_PARTICIPANTCATEGORY_200907010000.zip",
+        "utilake.from.release": "2009-07",
+        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "utilake.from.time": "1998-06-30T22:11:13+10:00",
+        "utilake.kinds": "[\"archive\",\"dvd\"]",
+        "utilake.report-subtype": "PARTICIPANTCATEGORY",
+        "utilake.report-type": "PARTICIPANT_REGISTRATION",
+        "utilake.rows": "4464",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PARTICIPANTCATEGORY#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "20adbf31d8e0335d8bf797c542e1035f2e296be232d1bea29a6891c0f564af5a",
+        "utilake.to.time": "2026-07-06T14:14:39+10:00",
+        "utilake.total-rows": "4464",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "28b9f1ea-ee33-844a-8e31-c62bbd6818eb"
+}

@@ -1,0 +1,252 @@
+{
+  "current-schema-id": 1,
+  "current-snapshot-id": 6660668528766089507,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 9,
+  "last-partition-id": 999,
+  "last-sequence-number": 2,
+  "last-updated-ms": 1777557600001,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_FORECAST_RESIDUAL_DCF",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "This report delivers the forecast residual default contribution factors (DCF) effective for a billing period (aligned to the settlement week)",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"NUMERIC(10)\",\"5\":\"VARCHAR(10)\",\"6\":\"NUMERIC(18,8)\",\"7\":\"NUMERIC(5)\",\"8\":\"NUMERIC(18,8)\",\"9\":\"TIMESTAMP(0)\"}",
+    "utilake.reports": "[[\"FPP\",\"FORECAST_RESIDUAL_DCF\"]]",
+    "utilake.table": "FPP_FORECAST_RESIDUAL_DCF",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[]",
+    "utilake.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.time": "LASTCHANGED",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 6660668528766089507,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Constraint ID (binding constraint ID from FCAS data used in FPP calculations)",
+          "id": 1,
+          "name": "CONSTRAINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Effective period start date and time (DD/MM/YYYY HH24:MI:SS) fixed to the UTC+10 time zone (NEM time) of the effective period for this residual default contribution factor related to the constraint. This is the billing period over which these default contribution factors will be effective / applied. In most cases this will align to the settlement week, however there are some cases (like a new constraint) where the effective start date will be prorated to align with the change.",
+          "id": 2,
+          "name": "EFFECTIVE_START_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Effective period end date and time (DD/MM/YYYY HH24:MI:SS) fixed to the UTC+10 time zone (NEM time) of the effective period for this residual default contribution factor related to the constraint. This is the billing period over which these default contribution factors will be effective / applied. Effective end date will align with the end of a settlement week.",
+          "id": 3,
+          "name": "EFFECTIVE_END_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The version number. In most cases this version will be the historical performance calculation run number from the FPP database (which is different from the FPP run number), however there are some cases (like a new constraint) where the version number listed here will be the FPP run number from the FPP database (this will be where the effective start date time will be prorated to align with the detection of this change).",
+          "id": 4,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "decimal(10, 0)"
+        },
+        {
+          "doc": "Bid type (the bid type saved in relation to constraint ID from FCAS data used in FPP calculations)",
+          "id": 5,
+          "name": "BIDTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Calculated residual default contribution factor from the historical performance period. For further details please see the FPP procedure document.",
+          "id": 6,
+          "name": "RESIDUAL_DCF",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The reason flag showing the decision matrix for the residual default contribution factor (DCF)",
+          "id": 7,
+          "name": "RESIDUAL_DCF_REASON_FLAG",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "doc": "The sum of absolute negative performance in MWHz for the combination of constraint (raise or lower). This is used as the denominator in normalising default contribution factors (DCF). For further details please see the FPP procedure document. >0 = Performance was calculated for the units NULL = Performance for the units was unavailable",
+          "id": 8,
+          "name": "DCF_ABS_NEGATIVE_PERF_TOTAL",
+          "required": false,
+          "type": "decimal(18, 8)"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Constraint ID (binding constraint ID from FCAS data used in FPP calculations)",
+          "id": 1,
+          "name": "CONSTRAINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Effective period start date and time (DD/MM/YYYY HH24:MI:SS) fixed to the UTC+10 time zone (NEM time) of the effective period for this residual default contribution factor related to the constraint. This is the billing period over which these default contribution factors will be effective / applied. In most cases this will align to the settlement week, however there are some cases (like a new constraint) where the effective start date will be prorated to align with the change.",
+          "id": 2,
+          "name": "EFFECTIVE_START_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Effective period end date and time (DD/MM/YYYY HH24:MI:SS) fixed to the UTC+10 time zone (NEM time) of the effective period for this residual default contribution factor related to the constraint. This is the billing period over which these default contribution factors will be effective / applied. Effective end date will align with the end of a settlement week.",
+          "id": 3,
+          "name": "EFFECTIVE_END_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The version number. In most cases this version will be the historical performance calculation run number from the FPP database (which is different from the FPP run number), however there are some cases (like a new constraint) where the version number listed here will be the FPP run number from the FPP database (this will be where the effective start date time will be prorated to align with the detection of this change).",
+          "id": 4,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "decimal(10, 0)"
+        },
+        {
+          "doc": "Bid type (the bid type saved in relation to constraint ID from FCAS data used in FPP calculations)",
+          "id": 5,
+          "name": "BIDTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Calculated residual default contribution factor from the historical performance period. For further details please see the FPP procedure document.",
+          "id": 6,
+          "name": "RESIDUAL_DCF",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The reason flag showing the decision matrix for the residual default contribution factor (DCF)",
+          "id": 7,
+          "name": "RESIDUAL_DCF_REASON_FLAG",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "doc": "The sum of absolute negative performance in MWHz for the combination of constraint (raise or lower). This is used as the denominator in normalising default contribution factors (DCF). For further details please see the FPP procedure document. >0 = Performance was calculated for the units NULL = Performance for the units was unavailable",
+          "id": 8,
+          "name": "DCF_ABS_NEGATIVE_PERF_TOTAL",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 9,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 1,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 1703305991662649744,
+      "timestamp-ms": 1732975200000
+    },
+    {
+      "snapshot-id": 6660668528766089507,
+      "timestamp-ms": 1777557600001
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_FORECAST_RESIDUAL_DCF/metadata/snap-1703305991662649744-1-c553888b-9480-828b-a091-4472e5eaea2b.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 1703305991662649744,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "17",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_FORECAST_RESIDUAL_DCF#FILE01#202412010000.zip",
+        "utilake.from.release": "2024-12",
+        "utilake.from.sha256": "ebe5ef4b0d202a29529070e723337a8ad3dcb4c523884409f3e217041bfda55a",
+        "utilake.from.time": "2024-12-29T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "FORECAST_RESIDUAL_DCF",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "21995",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_FORECAST_RESIDUAL_DCF#FILE01#202604010000.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "0a706eb187dc5f2027cef65a6889c6cc014f1485d9b76e26c1ccf5f02e81d604",
+        "utilake.to.time": "2026-05-10T00:05:00+10:00",
+        "utilake.total-rows": "21995",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1732975200000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_FORECAST_RESIDUAL_DCF/metadata/snap-6660668528766089507-2-c553888b-9480-828b-a091-4472e5eaea2b.avro",
+      "parent-snapshot-id": 1703305991662649744,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 6660668528766089507,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "5",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_FORECAST_RESIDUAL_DCF#FILE01#202605010000.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "c5f7c2a94036b6f831a5f691558e1f8f259242000713b505f857bffa77b22b60",
+        "utilake.from.time": "2024-12-29T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "FORECAST_RESIDUAL_DCF",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "16246",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_FORECAST_RESIDUAL_DCF#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "891050e69d246f2409e1579a3e884213f8a0ad21a90528e70e95f18120bd0272",
+        "utilake.to.time": "2026-10-11T00:05:00+10:00",
+        "utilake.total-rows": "38241",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1777557600001
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "c553888b-9480-828b-a091-4472e5eaea2b"
+}

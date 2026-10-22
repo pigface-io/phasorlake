@@ -1,0 +1,135 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 55782754000563738,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 5,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1246370400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_PARTICIPANT",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "MNSP_PARTICIPANT registers MNSP ownership.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"INTERCONNECTORID\",\"EFFECTIVEDATE\",\"VERSIONNO\",\"PARTICIPANTID\"]",
+    "utilake.load": "snapshot",
+    "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(10)\",\"5\":\"TIMESTAMP(0)\"}",
+    "utilake.package": "PARTICIPANT_REGISTRATION",
+    "utilake.reports": "[[\"PARTICIPANT_REGISTRATION\",\"MNSP_PARTICIPANT\"]]",
+    "utilake.table": "MNSP_PARTICIPANT",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"INTERCONNECTORID\",\"PARTICIPANTID\"]",
+    "utilake.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "EFFECTIVEDATE",
+    "utilake.temporal.valid.kind": "from",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 55782754000563738,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Interconnector Identifier",
+          "id": 1,
+          "name": "INTERCONNECTORID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Calendar date when Interconnector ownership becomes effective",
+          "id": 2,
+          "name": "EFFECTIVEDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Version of data for other key data - a higher version for same key data takes precedence",
+          "id": 3,
+          "name": "VERSIONNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Participant Identifier",
+          "id": 4,
+          "name": "PARTICIPANTID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 5,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 55782754000563738,
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_PARTICIPANT/metadata/snap-55782754000563738-1-324f4652-d150-8b22-b85a-6331e3d0fc1a.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 55782754000563738,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "207",
+        "utilake.from.file": "PUBLIC_DVD_MNSP_PARTICIPANT_200907010000.zip",
+        "utilake.from.release": "2009-07",
+        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "utilake.from.time": "2000-04-06T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\",\"dvd\"]",
+        "utilake.report-subtype": "MNSP_PARTICIPANT",
+        "utilake.report-type": "PARTICIPANT_REGISTRATION",
+        "utilake.rows": "1035",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MNSP_PARTICIPANT#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "d366ebdb1de82ff1287bf76a81d6a63ae59de75dbaa3ac8f03ad7ec8dc14abc1",
+        "utilake.to.time": "2005-11-11T00:00:00+10:00",
+        "utilake.total-rows": "1035",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "324f4652-d150-8b22-b85a-6331e3d0fc1a"
+}

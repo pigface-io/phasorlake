@@ -1,0 +1,159 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 4236624417036237267,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 9,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1246370400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MARKETSUSPENSION",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "MARKETSUSPENSION is obsolete from 2017 End of Year DM4.27 Release. \nMARKETSUSPENSION sets out a start and end periods of any market suspension and the reason.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"SUSPENSIONID\"]",
+    "utilake.load": "snapshot",
+    "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"NUMERIC(3,0)\",\"6\":\"VARCHAR(64)\",\"7\":\"VARCHAR(15)\",\"8\":\"VARCHAR(15)\",\"9\":\"TIMESTAMP(0)\"}",
+    "utilake.package": "HISTORICAL TABLES",
+    "utilake.reports": "[[\"FORCE_MAJEURE\",\"MARKETSUSPENSION\"]]",
+    "utilake.table": "MARKETSUSPENSION",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"SUSPENSIONID\"]",
+    "utilake.temporal.order": "[\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 4236624417036237267,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Unique identifier for suspension",
+          "id": 1,
+          "name": "SUSPENSIONID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Start date of suspension",
+          "id": 2,
+          "name": "STARTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Start trading interval of suspension",
+          "id": 3,
+          "name": "STARTPERIOD",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "End Date of suspension",
+          "id": 4,
+          "name": "ENDDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "End trading interval of suspension",
+          "id": 5,
+          "name": "ENDPERIOD",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Reason for suspension",
+          "id": 6,
+          "name": "REASON",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "User authorising start",
+          "id": 7,
+          "name": "STARTAUTHORISEDBY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "User authorising end",
+          "id": 8,
+          "name": "ENDAUTHORISEDBY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 9,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 4236624417036237267,
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MARKETSUSPENSION/metadata/snap-4236624417036237267-1-d8cacaa9-4433-8ad4-8d25-15a689ba6412.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 4236624417036237267,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "207",
+        "utilake.from.file": "PUBLIC_DVD_MARKETSUSPENSION_200907010000.zip",
+        "utilake.from.release": "2009-07",
+        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "utilake.from.time": "1999-12-31T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\",\"dvd\"]",
+        "utilake.report-subtype": "MARKETSUSPENSION",
+        "utilake.report-type": "FORCE_MAJEURE",
+        "utilake.rows": "328",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MARKETSUSPENSION#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "e4abf977b62167003c4d47a1ee877e64183f1f374ebdc6c35085dcf1edf74f27",
+        "utilake.to.time": "2016-09-28T00:00:00+10:00",
+        "utilake.total-rows": "328",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "d8cacaa9-4433-8ad4-8d25-15a689ba6412"
+}

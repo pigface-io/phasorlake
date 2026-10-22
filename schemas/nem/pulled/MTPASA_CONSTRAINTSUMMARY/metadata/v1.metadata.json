@@ -1,0 +1,305 @@
+{
+  "current-schema-id": 1,
+  "current-snapshot-id": 1297144305464480068,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 11,
+  "last-partition-id": 999,
+  "last-sequence-number": 2,
+  "last-updated-ms": 1722434400001,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_CONSTRAINTSUMMARY",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "Constraint Summary results over aggregation periods",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"RUN_DATETIME\",\"RUN_NO\",\"RUNTYPE\",\"DEMAND_POE_TYPE\",\"DAY\",\"CONSTRAINTID\",\"AGGREGATION_PERIOD\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(4)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(20)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"VARCHAR(20)\",\"7\":\"VARCHAR(20)\",\"8\":\"TIMESTAMP(0)\",\"9\":\"NUMERIC(3,0)\",\"10\":\"NUMERIC(12,2)\",\"11\":\"TIMESTAMP(0)\"}",
+    "utilake.package": "MTPASA",
+    "utilake.reports": "[[\"MTPASA\",\"CONSTRAINTSUMMARY\"]]",
+    "utilake.table": "MTPASA_CONSTRAINTSUMMARY",
+    "utilake.temporal.cutoff": "RUN_DATETIME",
+    "utilake.temporal.entity": "[\"RUNTYPE\",\"DEMAND_POE_TYPE\",\"CONSTRAINTID\",\"AGGREGATION_PERIOD\"]",
+    "utilake.temporal.order": "[\"RUN_DATETIME\",\"RUN_NO\",\"VERSIONNO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "DAY",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "RUN_DATETIME",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 1297144305464480068,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Date processing of the run begins.",
+          "id": 1,
+          "name": "RUN_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Unique run id.",
+          "id": 2,
+          "name": "RUN_NO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Type of run. Always RELIABILITY",
+          "id": 3,
+          "name": "RUNTYPE",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Demand POE type used. Value is POE10",
+          "id": 4,
+          "name": "DEMAND_POE_TYPE",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Day this result is for",
+          "id": 5,
+          "name": "DAY",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The unique identifier for the constraint. Only binding or violating constraints are reported",
+          "id": 6,
+          "name": "CONSTRAINTID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Period data is aggregated over. Values are PEAK, SHOULDER, OFFPEAK. PEAK = 14:00-19:59, SHOULDER = 07:00-13:59 and 20:00-21:59, OFFPEAK = 22:00-06:59",
+          "id": 7,
+          "name": "AGGREGATION_PERIOD",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "The effective date of the constraint used",
+          "id": 8,
+          "name": "EFFECTIVEDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The version of the constraintID",
+          "id": 9,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Constraint hours binding or violating for period, averaged across iterations and reference years",
+          "id": 10,
+          "name": "CONSTRAINTHOURSBINDING",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 11,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Date processing of the run begins.",
+          "id": 1,
+          "name": "RUN_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Unique run id.",
+          "id": 2,
+          "name": "RUN_NO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Type of run. Always RELIABILITY",
+          "id": 3,
+          "name": "RUNTYPE",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Demand POE type used. Value is POE10",
+          "id": 4,
+          "name": "DEMAND_POE_TYPE",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Day this result is for",
+          "id": 5,
+          "name": "DAY",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The unique identifier for the constraint. Only binding or violating constraints are reported",
+          "id": 6,
+          "name": "CONSTRAINTID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "The effective date of the constraint used",
+          "id": 8,
+          "name": "EFFECTIVEDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The version of the constraintID",
+          "id": 9,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Period data is aggregated over. Values are PEAK, SHOULDER, OFFPEAK. PEAK = 14:00-19:59, SHOULDER = 07:00-13:59 and 20:00-21:59, OFFPEAK = 22:00-06:59",
+          "id": 7,
+          "name": "AGGREGATION_PERIOD",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Constraint hours binding or violating for period, averaged across iterations and reference years",
+          "id": 10,
+          "name": "CONSTRAINTHOURSBINDING",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 11,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "schema-id": 1,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 7817042855867991325,
+      "timestamp-ms": 1525096800000
+    },
+    {
+      "snapshot-id": 1297144305464480068,
+      "timestamp-ms": 1722434400001
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_CONSTRAINTSUMMARY/metadata/snap-7817042855867991325-1-52d9c6b6-37ab-89cf-a24a-2baac6b22a17.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 7817042855867991325,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "75",
+        "utilake.from.file": "PUBLIC_DVD_MTPASA_CONSTRAINTSUMMARY_201805010000.zip",
+        "utilake.from.release": "2018-05",
+        "utilake.from.sha256": "238cfa1d40b288bf5dbfe215c4026c8401328187eeedef791022d297544aed3d",
+        "utilake.from.time": "2018-05-14T10:59:49+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "CONSTRAINTSUMMARY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "35876262",
+        "utilake.to.file": "PUBLIC_DVD_MTPASA_CONSTRAINTSUMMARY_202407010000.zip",
+        "utilake.to.release": "2024-07",
+        "utilake.to.sha256": "4c3717b05c1049608c8b11cf1a1a991577be95e40bad516429f6578e4278d010",
+        "utilake.to.time": "2024-07-29T02:00:00+10:00",
+        "utilake.total-rows": "35876262",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1525096800000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_CONSTRAINTSUMMARY/metadata/snap-1297144305464480068-2-52d9c6b6-37ab-89cf-a24a-2baac6b22a17.avro",
+      "parent-snapshot-id": 7817042855867991325,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 1297144305464480068,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "26",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MTPASA_CONSTRAINTSUMMARY#FILE01#202408010000.zip",
+        "utilake.from.release": "2024-08",
+        "utilake.from.sha256": "b1d96e30ace2fbdd27d2ab63ed1c0bc23e12aebcb2af4190e0ca4dcc7a73ca50",
+        "utilake.from.time": "2024-08-05T02:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "CONSTRAINTSUMMARY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "30983892",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MTPASA_CONSTRAINTSUMMARY#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "b3592706079d0369b6b0c48b7aa1f72c5e36e4123e91fe38929dc0fa730d9d9c",
+        "utilake.to.time": "2026-09-28T17:00:00+10:00",
+        "utilake.total-rows": "66860154",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1722434400001
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "52d9c6b6-37ab-89cf-a24a-2baac6b22a17"
+}

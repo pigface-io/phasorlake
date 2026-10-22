@@ -1,0 +1,307 @@
+{
+  "current-schema-id": 1,
+  "current-snapshot-id": 6517783389225068329,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 12,
+  "last-partition-id": 999,
+  "last-sequence-number": 2,
+  "last-updated-ms": 1569852000001,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/AUCTION_IC_ALLOCATIONS",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "AUCTION_IC_ALLOCATIONS supports the Settlement Residue Auction by providing the basis for setting up contracts for individual tranches. AUCTION_IC_ALLOCATIONS shows the default definitions for the total number of units and proportion applicable to each directional interconnector for a specified auction quarter.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"CONTRACTYEAR\",\"QUARTER\",\"VERSIONNO\",\"INTERCONNECTORID\",\"FROMREGIONID\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"NUMERIC(4,0)\",\"2\":\"NUMERIC(1,0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(10)\",\"5\":\"VARCHAR(10)\",\"6\":\"NUMERIC(5,0)\",\"7\":\"NUMERIC(8,5)\",\"8\":\"NUMERIC(17,5)\",\"9\":\"TIMESTAMP(0)\",\"10\":\"VARCHAR(15)\",\"11\":\"TIMESTAMP(0)\",\"12\":\"NUMERIC(18,8)\"}",
+    "utilake.package": "IRAUCTION",
+    "utilake.reports": "[[\"IRAUCTION_CONFIG\",\"AUCTION_IC_ALLOCATIONS\"]]",
+    "utilake.table": "AUCTION_IC_ALLOCATIONS",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"CONTRACTYEAR\",\"QUARTER\",\"INTERCONNECTORID\",\"FROMREGIONID\"]",
+    "utilake.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.time": "LASTCHANGED",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 6517783389225068329,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "SRA Contracted Year",
+          "id": 1,
+          "name": "CONTRACTYEAR",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "SRA Contracted Quarter",
+          "id": 2,
+          "name": "QUARTER",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Version of data for other key data - a higher version for same key data takes precedence",
+          "id": 3,
+          "name": "VERSIONNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Contracted Interconnector Identifier",
+          "id": 4,
+          "name": "INTERCONNECTORID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Nominated source region for Interconnector",
+          "id": 5,
+          "name": "FROMREGIONID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Number of units on the interconnector",
+          "id": 6,
+          "name": "MAXIMUMUNITS",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "doc": "Percentage of the total residue for each Unit",
+          "id": 7,
+          "name": "PROPORTION",
+          "required": false,
+          "type": "decimal(8, 5)"
+        },
+        {
+          "doc": "Daily auction fee",
+          "id": 8,
+          "name": "AUCTIONFEE",
+          "required": false,
+          "type": "decimal(17, 5)"
+        },
+        {
+          "doc": "Authorisation date",
+          "id": 9,
+          "name": "CHANGEDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Name of person authorising this data set",
+          "id": 10,
+          "name": "CHANGEDBY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 11,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "SRA Contracted Year",
+          "id": 1,
+          "name": "CONTRACTYEAR",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "SRA Contracted Quarter",
+          "id": 2,
+          "name": "QUARTER",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Version of data for other key data - a higher version for same key data takes precedence",
+          "id": 3,
+          "name": "VERSIONNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Contracted Interconnector Identifier",
+          "id": 4,
+          "name": "INTERCONNECTORID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Nominated source region for Interconnector",
+          "id": 5,
+          "name": "FROMREGIONID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Number of units on the interconnector",
+          "id": 6,
+          "name": "MAXIMUMUNITS",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "doc": "Percentage of the total residue for each Unit",
+          "id": 7,
+          "name": "PROPORTION",
+          "required": false,
+          "type": "decimal(8, 5)"
+        },
+        {
+          "doc": "Daily auction fee",
+          "id": 8,
+          "name": "AUCTIONFEE",
+          "required": false,
+          "type": "decimal(17, 5)"
+        },
+        {
+          "doc": "Authorisation date",
+          "id": 9,
+          "name": "CHANGEDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Name of person authorising this data set",
+          "id": 10,
+          "name": "CHANGEDBY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 11,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Fees for Cancelled Units.",
+          "id": 12,
+          "name": "AUCTIONFEE_SALES",
+          "required": false,
+          "type": "decimal(18, 8)"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "schema-id": 1,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 2897791403744702228,
+      "timestamp-ms": 1251727200000
+    },
+    {
+      "snapshot-id": 6517783389225068329,
+      "timestamp-ms": 1569852000001
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/AUCTION_IC_ALLOCATIONS/metadata/snap-2897791403744702228-1-c76eb317-5460-8c68-8cb8-4f62a8203c95.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 2897791403744702228,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "79",
+        "utilake.from.file": "PUBLIC_DVD_AUCTION_IC_ALLOCATIONS_200909010000.zip",
+        "utilake.from.release": "2009-09",
+        "utilake.from.sha256": "9cf326f7fabd7b91220c5950a2de3fdb28d9c7b97f1a4045f8075ad7b3abaaf5",
+        "utilake.from.time": "2009-09-02T14:43:02+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "AUCTION_IC_ALLOCATIONS",
+        "utilake.report-type": "IRAUCTION_CONFIG",
+        "utilake.rows": "1816",
+        "utilake.to.file": "PUBLIC_DVD_AUCTION_IC_ALLOCATIONS_201908010000.zip",
+        "utilake.to.release": "2019-08",
+        "utilake.to.sha256": "7e40307884f350043d858630861ca76e1d1f00a3b6370bae20e38f2f5aed0072",
+        "utilake.to.time": "2019-08-19T10:54:30+10:00",
+        "utilake.total-rows": "1816",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1251727200000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/AUCTION_IC_ALLOCATIONS/metadata/snap-6517783389225068329-2-c76eb317-5460-8c68-8cb8-4f62a8203c95.avro",
+      "parent-snapshot-id": 2897791403744702228,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 6517783389225068329,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "58",
+        "utilake.from.file": "PUBLIC_DVD_AUCTION_IC_ALLOCATIONS_201910010000.zip",
+        "utilake.from.release": "2019-10",
+        "utilake.from.sha256": "1e7a473b260e9d2b7a2858667c3fd905777e72b5e0384cfa21cbd34db673b0e1",
+        "utilake.from.time": "2019-10-01T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\",\"dvd\"]",
+        "utilake.report-subtype": "AUCTION_IC_ALLOCATIONS",
+        "utilake.report-type": "IRAUCTION_CONFIG",
+        "utilake.rows": "1507",
+        "utilake.to.file": "PUBLIC_ARCHIVE#AUCTION_IC_ALLOCATIONS#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "210afae5e9005f67620ce4a8604af32fac2ba2f6cc05d020fc3586f07cf77b39",
+        "utilake.to.time": "2026-10-01T00:00:00+10:00",
+        "utilake.total-rows": "3323",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1569852000001
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "c76eb317-5460-8c68-8cb8-4f62a8203c95"
+}

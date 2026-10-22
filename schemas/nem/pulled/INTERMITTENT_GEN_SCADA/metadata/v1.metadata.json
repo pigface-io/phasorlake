@@ -1,0 +1,136 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 7372063632919759110,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 6,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1732975200000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INTERMITTENT_GEN_SCADA",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "INTERMITTENT_GEN_SCADA provides the SCADA Availability for every intermittent generating unit, including Elements Available (wind turbines/solar inverters) and Local Limit",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"VARCHAR(20)\",\"4\":\"NUMERIC(15,5)\",\"5\":\"VARCHAR(20)\",\"6\":\"TIMESTAMP(0)\"}",
+    "utilake.reports": "[[\"DEMAND\",\"INTERMITTENT_GEN_SCADA\"]]",
+    "utilake.table": "INTERMITTENT_GEN_SCADA",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[]",
+    "utilake.temporal.order": "[\"RUN_DATETIME\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.time": "RUN_DATETIME",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 7372063632919759110,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Date Time of the dispatch interval (interval ending)",
+          "id": 1,
+          "name": "RUN_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Dispatchable Unit Identifier",
+          "id": 2,
+          "name": "DUID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "SCADA snapshot for intermittent generating unit at start of interval for a specified SCADA signal type. ELAV = Total Elements Available (# turbines for wind farms, # inverters for solar farms); LOCL = Local Limit (MW).",
+          "id": 3,
+          "name": "SCADA_TYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "SCADA value snapshot for intermittent generating unit at start of interval for a specified SCADA signal type.",
+          "id": 4,
+          "name": "SCADA_VALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "SCADA quality snapshot for intermittent generating unit at start of interval for a specified SCADA signal type.",
+          "id": 5,
+          "name": "SCADA_QUALITY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 6,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 7372063632919759110,
+      "timestamp-ms": 1732975200000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INTERMITTENT_GEN_SCADA/metadata/snap-7372063632919759110-1-84f1b969-1855-8d53-a6ca-2ab3b2b7b07c.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 7372063632919759110,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "29",
+        "utilake.from.file": "PUBLIC_ARCHIVE#INTERMITTENT_GEN_SCADA#FILE01#202412010000.zip",
+        "utilake.from.release": "2024-12",
+        "utilake.from.sha256": "b9e078da76dc7688c483aa857fc939d7d5ceba9f18b8ecf9bf77633f6a9b0f8a",
+        "utilake.from.time": "2024-08-13T15:20:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "INTERMITTENT_GEN_SCADA",
+        "utilake.report-type": "DEMAND",
+        "utilake.rows": "1094454748",
+        "utilake.to.file": "PUBLIC_ARCHIVE#INTERMITTENT_GEN_SCADA#FILE02#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "baf1b4a230121f9c461670a81728706fdd288f4d3ccf086e5fb84f00343f0412",
+        "utilake.to.time": "2026-10-09T04:00:00+10:00",
+        "utilake.total-rows": "1094454748",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1732975200000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "84f1b969-1855-8d53-a6ca-2ab3b2b7b07c"
+}

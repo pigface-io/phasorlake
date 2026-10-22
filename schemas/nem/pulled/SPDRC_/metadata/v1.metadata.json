@@ -1,0 +1,124 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 4772426612180930289,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 7,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1246370400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SPDRC_",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "false",
+    "utilake.format": "3",
+    "utilake.table": "SPDRC_"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 4772426612180930289,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "REGIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 2,
+          "name": "EFFECTIVEDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 3,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 4,
+          "name": "GENCONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 5,
+          "name": "FACTOR",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 6,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 7,
+          "name": "BIDTYPE",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 4772426612180930289,
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SPDRC_/metadata/snap-4772426612180930289-1-3850429d-0068-8ee2-8dd8-4e37728c034b.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 4772426612180930289,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "115",
+        "utilake.from.file": "PUBLIC_DVD_SPDREGIONCONSTRAINT_200907010000.zip",
+        "utilake.from.release": "2009-07",
+        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "utilake.from.time": "2009-07-13T00:00:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "SPDRC",
+        "utilake.rows": "31733",
+        "utilake.to.file": "PUBLIC_DVD_SPDREGIONCONSTRAINT_202407010000.zip",
+        "utilake.to.release": "2024-07",
+        "utilake.to.sha256": "0be9a6897db27453b00eb2b4b50f72d8a9daab5e08a71a5af594cad53dea3b1a",
+        "utilake.to.time": "2024-07-30T00:00:00+10:00",
+        "utilake.total-rows": "31733",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "3850429d-0068-8ee2-8dd8-4e37728c034b"
+}

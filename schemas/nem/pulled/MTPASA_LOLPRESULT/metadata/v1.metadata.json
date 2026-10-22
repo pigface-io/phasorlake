@@ -1,0 +1,186 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 7573912234811145202,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 12,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1525096800000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_LOLPRESULT",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "Results for Loss of Load Probability (LOLP) run per day",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"RUN_DATETIME\",\"RUN_NO\",\"RUNTYPE\",\"DAY\",\"REGIONID\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(4)\",\"3\":\"VARCHAR(20)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"VARCHAR(20)\",\"6\":\"NUMERIC(3,0)\",\"7\":\"NUMERIC(12,2)\",\"8\":\"NUMERIC(12,2)\",\"9\":\"NUMERIC(12,2)\",\"10\":\"NUMERIC(8,5)\",\"11\":\"VARCHAR(20)\",\"12\":\"TIMESTAMP(0)\"}",
+    "utilake.package": "MTPASA",
+    "utilake.reports": "[[\"MTPASA\",\"LOLPRESULT\"]]",
+    "utilake.table": "MTPASA_LOLPRESULT",
+    "utilake.temporal.cutoff": "RUN_DATETIME",
+    "utilake.temporal.entity": "[\"RUNTYPE\",\"REGIONID\"]",
+    "utilake.temporal.order": "[\"RUN_DATETIME\",\"RUN_NO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "DAY",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "RUN_DATETIME",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 7573912234811145202,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Date processing of the run begins.",
+          "id": 1,
+          "name": "RUN_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Unique run id.",
+          "id": 2,
+          "name": "RUN_NO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Type of run. Always LOLP",
+          "id": 3,
+          "name": "RUNTYPE",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Day this result is for",
+          "id": 4,
+          "name": "DAY",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The unique region identifier",
+          "id": 5,
+          "name": "REGIONID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "The half hourly interval period with the highest LOLP, or highest region demand if LOLP = 0 for all intervals (1..48)",
+          "id": 6,
+          "name": "WORST_INTERVAL_PERIODID",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "The Abstract Operational Demand for the worst interval in this region (MW)",
+          "id": 7,
+          "name": "WORST_INTERVAL_DEMAND",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "The half hourly aggregate intermittent generation for the worst interval in this region (MW)",
+          "id": 8,
+          "name": "WORST_INTERVAL_INTGEN",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "The half hourly aggregate demand side participation for the worst interval period in this region (MW)",
+          "id": 9,
+          "name": "WORST_INTERVAL_DSP",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Loss of Load Probability for the worst interval in this region",
+          "id": 10,
+          "name": "LOSSOFLOADPROBABILITY",
+          "required": false,
+          "type": "decimal(8, 5)"
+        },
+        {
+          "doc": "Loss of Load Magnitude for the worst interval in this region. Values are LOW, MEDIUM, HIGH",
+          "id": 11,
+          "name": "LOSSOFLOADMAGNITUDE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 12,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 7573912234811145202,
+      "timestamp-ms": 1525096800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_LOLPRESULT/metadata/snap-7573912234811145202-1-d4d4e1bc-ec0c-8760-a3cb-676c67bfaeb6.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 7573912234811145202,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "101",
+        "utilake.from.file": "PUBLIC_DVD_MTPASA_LOLPRESULT_201805010000.zip",
+        "utilake.from.release": "2018-05",
+        "utilake.from.sha256": "20531510a03e8654b07a2eff7b45cfd001c4d328b7d1ec5db61fb6d1f20d9016",
+        "utilake.from.time": "2018-05-14T10:59:49+10:00",
+        "utilake.kinds": "[\"archive\",\"dvd\"]",
+        "utilake.report-subtype": "LOLPRESULT",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "1668495",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MTPASA_LOLPRESULT#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "376bccc5bc3384550e12cc82c7a6970bb0beee7749a0cfc112494e3a5a4a1c5b",
+        "utilake.to.time": "2026-09-28T17:00:00+10:00",
+        "utilake.total-rows": "1668495",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1525096800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "d4d4e1bc-ec0c-8760-a3cb-676c67bfaeb6"
+}

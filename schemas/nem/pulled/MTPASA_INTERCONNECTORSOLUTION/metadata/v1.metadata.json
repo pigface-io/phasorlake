@@ -1,0 +1,189 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 1697330553706654948,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 15,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1246370400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_INTERCONNECTORSOLUTION",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "MTPASA_INTERCONNECTORSOLUTION is obsolete from 2017 End of Year DM4.27 Release. \nThe MTPASA_INTERCONNECTORSOLUTION table shows the results of the capacity evaluation for Interconnectors, including the calculated limits for the ldcblock within the day.\nChange Notice 379 announced the replacement of the MT PASA data model so all MTPASAxxx tables become obsolete, replaced by MTPASA_xxx tables (see Change Notices 400, 400a and 400b).",
+    "utilake.declared": "false",
+    "utilake.format": "3",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"NUMERIC(3,0)\",\"6\":\"VARCHAR(10)\",\"7\":\"NUMERIC(12,2)\",\"8\":\"NUMERIC(12,2)\",\"9\":\"NUMERIC(12,2)\",\"10\":\"NUMERIC(12,2)\",\"11\":\"NUMERIC(12,2)\",\"12\":\"TIMESTAMP(0)\",\"13\":\"VARCHAR(20)\",\"14\":\"VARCHAR(20)\",\"15\":\"VARCHAR(20)\"}",
+    "utilake.table": "MTPASA_INTERCONNECTORSOLUTION"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 1697330553706654948,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Date processing of the run begins",
+          "id": 1,
+          "name": "RUN_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Unique run id. Generated from the solution file caseid",
+          "id": 2,
+          "name": "RUN_NO",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Sunday at start of the week for this solutions energy block. Generated from the solution file energy block",
+          "id": 3,
+          "name": "ENERGYBLOCK",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Day this solution is for. Generated from the solution file periodid",
+          "id": 4,
+          "name": "DAY",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "LDC block this solution is for. Generated from the solution file periodid",
+          "id": 5,
+          "name": "LDCBLOCK",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "The unique identifier for the interconnector",
+          "id": 6,
+          "name": "INTERCONNECTORID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Interconnector loading level (MW) that can be reached in case of capacity scarcity in neighbouring regions subject to network and energy constraints",
+          "id": 7,
+          "name": "CAPACITYMWFLOW",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Capacity adequacy assessment marginal value; 0 if not binding",
+          "id": 8,
+          "name": "CAPACITYMARGINALVALUE",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Capacity adequacy assessment violation degree, 0 if not violating; where CapacityMWFLow <= export + violation Degree (Deficit)CapacityMWFLow >= import + CapacityViolationDegree (Deficit)",
+          "id": 9,
+          "name": "CAPACITYVIOLATIONDEGREE",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Calculated Interconnector limit of exporting energy on the basis of invoked constraints and static interconnector export limit",
+          "id": 10,
+          "name": "CALCULATEDEXPORTLIMIT",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Calculated Interconnector limit of importing energy on the basis of invoked constraints and static interconnector import limit. Note unlike the input interconnector import limit this is a directional quantity and should be defined with respect to the interconnector flow",
+          "id": 11,
+          "name": "CALCULATEDIMPORTLIMIT",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Date the solution was loaded",
+          "id": 12,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Type of run.  Values are RELIABILITY_LRC and OUTAGE_LRC",
+          "id": 13,
+          "name": "RUNTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "ID of the constraint that sets the Interconnector Export Limit",
+          "id": 14,
+          "name": "EXPORTLIMITCONSTRAINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "ID of the constraint that sets the Interconnector Import Limit",
+          "id": 15,
+          "name": "IMPORTLIMITCONSTRAINTID",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 1697330553706654948,
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_INTERCONNECTORSOLUTION/metadata/snap-1697330553706654948-1-1b3380df-8ccb-8f01-bedc-fd47f6dc1bb5.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 1697330553706654948,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "107",
+        "utilake.from.file": "PUBLIC_DVD_MTPASA_INTERCONNECTORSOLUTION_200907010000.zip",
+        "utilake.from.release": "2009-07",
+        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "utilake.from.time": "2009-07-12T00:00:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "INTERCONNECTORSOLUTION",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "8258670",
+        "utilake.to.file": "PUBLIC_DVD_MTPASA_INTERCONNECTORSOLUTION_201805010000.zip",
+        "utilake.to.release": "2018-05",
+        "utilake.to.sha256": "1fa0300564aaecab7810ac015c20dda17c67c3874ecbe38778c7a7710e17219a",
+        "utilake.to.time": "2020-05-23T00:00:00+10:00",
+        "utilake.total-rows": "8258670",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "1b3380df-8ccb-8f01-bedc-fd47f6dc1bb5"
+}

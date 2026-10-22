@@ -1,0 +1,5340 @@
+{
+  "current-schema-id": 5,
+  "current-snapshot-id": 5531869266332822353,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 127,
+  "last-partition-id": 999,
+  "last-sequence-number": 8,
+  "last-updated-ms": 1748700000007,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHREGIONSUM",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "DISPATCHREGIONSUM sets out the 5-minute solution for each dispatch run for each region, including the Frequency Control Ancillary Services (FCAS) services provided. Additional fields are for the Raise Regulation and Lower Regulation Ancillary Services plus improvements to demand calculations.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"SETTLEMENTDATE\",\"RUNNO\",\"REGIONID\",\"DISPATCHINTERVAL\",\"INTERVENTION\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(10)\",\"4\":\"NUMERIC(22,0)\",\"5\":\"NUMERIC(2,0)\",\"6\":\"NUMERIC(15,5)\",\"7\":\"NUMERIC(15,5)\",\"8\":\"NUMERIC(15,5)\",\"9\":\"NUMERIC(15,5)\",\"10\":\"NUMERIC(15,5)\",\"11\":\"NUMERIC(15,5)\",\"12\":\"NUMERIC(15,5)\",\"13\":\"NUMERIC(15,5)\",\"14\":\"NUMERIC(15,5)\",\"15\":\"NUMERIC(15,5)\",\"16\":\"NUMERIC(15,5)\",\"17\":\"NUMERIC(15,5)\",\"18\":\"NUMERIC(15,5)\",\"19\":\"NUMERIC(15,5)\",\"20\":\"NUMERIC(15,5)\",\"21\":\"NUMERIC(15,5)\",\"22\":\"NUMERIC(15,5)\",\"23\":\"NUMERIC(15,5)\",\"24\":\"NUMERIC(15,5)\",\"25\":\"NUMERIC(15,5)\",\"26\":\"NUMERIC(15,5)\",\"27\":\"NUMERIC(15,5)\",\"28\":\"NUMERIC(15,5)\",\"29\":\"NUMERIC(15,5)\",\"30\":\"NUMERIC(15,5)\",\"31\":\"NUMERIC(15,5)\",\"32\":\"NUMERIC(15,5)\",\"33\":\"NUMERIC(15,5)\",\"34\":\"NUMERIC(15,5)\",\"35\":\"NUMERIC(15,5)\",\"36\":\"NUMERIC(15,5)\",\"37\":\"NUMERIC(15,5)\",\"38\":\"NUMERIC(15,5)\",\"39\":\"NUMERIC(15,5)\",\"40\":\"NUMERIC(15,5)\",\"41\":\"NUMERIC(15,5)\",\"42\":\"NUMERIC(15,5)\",\"43\":\"NUMERIC(15,5)\",\"44\":\"NUMERIC(15,5)\",\"45\":\"NUMERIC(15,5)\",\"46\":\"NUMERIC(15,5)\",\"47\":\"NUMERIC(15,5)\",\"48\":\"NUMERIC(15,5)\",\"49\":\"NUMERIC(15,5)\",\"50\":\"NUMERIC(15,5)\",\"51\":\"NUMERIC(15,5)\",\"52\":\"NUMERIC(15,5)\",\"53\":\"NUMERIC(15,5)\",\"54\":\"NUMERIC(15,5)\",\"55\":\"NUMERIC(15,5)\",\"56\":\"NUMERIC(15,5)\",\"57\":\"NUMERIC(15,5)\",\"58\":\"NUMERIC(15,5)\",\"59\":\"NUMERIC(15,5)\",\"60\":\"NUMERIC(15,5)\",\"61\":\"NUMERIC(15,5)\",\"62\":\"NUMERIC(15,5)\",\"63\":\"NUMERIC(15,5)\",\"64\":\"TIMESTAMP(0)\",\"65\":\"NUMERIC(15,5)\",\"66\":\"NUMERIC(15,5)\",\"67\":\"NUMERIC(15,5)\",\"68\":\"NUMERIC(15,5)\",\"69\":\"NUMERIC(15,5)\",\"70\":\"NUMERIC(15,5)\",\"71\":\"NUMERIC(15,5)\",\"72\":\"NUMERIC(15,5)\",\"73\":\"NUMERIC(15,5)\",\"74\":\"NUMERIC(15,5)\",\"75\":\"NUMERIC(15,5)\",\"76\":\"NUMERIC(15,5)\",\"77\":\"NUMERIC(15,5)\",\"78\":\"NUMERIC(15,5)\",\"79\":\"NUMERIC(15,5)\",\"80\":\"NUMERIC(15,5)\",\"81\":\"NUMERIC(15,5)\",\"82\":\"NUMERIC(15,5)\",\"83\":\"NUMERIC(15,5)\",\"84\":\"NUMERIC(15,5)\",\"85\":\"NUMERIC(15,5)\",\"86\":\"NUMERIC(15,5)\",\"87\":\"NUMERIC(15,5)\",\"88\":\"NUMERIC(15,5)\",\"89\":\"NUMERIC(15,5)\",\"90\":\"NUMERIC(15,5)\",\"91\":\"NUMERIC(16,6)\",\"92\":\"NUMERIC(16,6)\",\"93\":\"NUMERIC(16,6)\",\"94\":\"NUMERIC(16,6)\",\"95\":\"NUMERIC(16,6)\",\"96\":\"NUMERIC(16,6)\",\"97\":\"NUMERIC(16,6)\",\"98\":\"NUMERIC(16,6)\",\"99\":\"NUMERIC(16,6)\",\"100\":\"NUMERIC(16,6)\",\"101\":\"NUMERIC(15,5)\",\"102\":\"NUMERIC(15,5)\",\"103\":\"NUMERIC(15,5)\",\"104\":\"NUMERIC(15,5)\",\"105\":\"NUMERIC(15,5)\",\"106\":\"NUMERIC(15,5)\",\"107\":\"NUMERIC(15,5)\",\"108\":\"NUMERIC(15,5)\",\"109\":\"NUMERIC(15,5)\",\"110\":\"NUMERIC(15,5)\",\"111\":\"NUMERIC(15,5)\",\"112\":\"NUMERIC(15,5)\",\"113\":\"NUMERIC(15,5)\",\"114\":\"NUMERIC(15,5)\",\"115\":\"NUMERIC(15,5)\",\"116\":\"NUMERIC(15,5)\",\"117\":\"NUMERIC(16,6)\",\"118\":\"NUMERIC(16,6)\",\"119\":\"NUMERIC(15,5)\",\"120\":\"NUMERIC(15,5)\",\"121\":\"NUMERIC(15,5)\",\"122\":\"NUMERIC(15,5)\",\"123\":\"NUMERIC(15,5)\",\"124\":\"NUMERIC(15,5)\",\"125\":\"NUMERIC(15,5)\",\"126\":\"NUMERIC(15,5)\",\"127\":\"NUMERIC(15,5)\"}",
+    "utilake.package": "DISPATCH",
+    "utilake.reports": "[[\"DISPATCH\",\"REGIONSUM\"]]",
+    "utilake.table": "DISPATCHREGIONSUM",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"REGIONID\",\"DISPATCHINTERVAL\",\"INTERVENTION\"]",
+    "utilake.temporal.order": "[\"RUNNO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "SETTLEMENTDATE",
+    "utilake.temporal.valid.kind": "interval_end",
+    "utilake.time": "SETTLEMENTDATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 5531869266332822353,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Market date and time starting at 04:05",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Dispatch run no; always 1",
+          "id": 2,
+          "name": "RUNNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Region Identifier",
+          "id": 3,
+          "name": "REGIONID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Dispatch period identifier, from 001 to 288 in format YYYYMMDDPPP.",
+          "id": 4,
+          "name": "DISPATCHINTERVAL",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Manual Intervention flag",
+          "id": 5,
+          "name": "INTERVENTION",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Demand (less loads)",
+          "id": 6,
+          "name": "TOTALDEMAND",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Aggregate generation bid available in region",
+          "id": 7,
+          "name": "AVAILABLEGENERATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Aggregate load bid available in region",
+          "id": 8,
+          "name": "AVAILABLELOAD",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "5 minute forecast adjust",
+          "id": 9,
+          "name": "DEMANDFORECAST",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Dispatched Generation",
+          "id": 10,
+          "name": "DISPATCHABLEGENERATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Dispatched Load (add to total demand to get inherent region demand).",
+          "id": 11,
+          "name": "DISPATCHABLELOAD",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Net interconnector flow from the regional reference node",
+          "id": 12,
+          "name": "NETINTERCHANGE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "MW quantity of excess",
+          "id": 13,
+          "name": "EXCESSGENERATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 5 min MW dispatch",
+          "id": 14,
+          "name": "LOWER5MINDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 5 min MW imported",
+          "id": 15,
+          "name": "LOWER5MINIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 5 min local dispatch",
+          "id": 16,
+          "name": "LOWER5MINLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Local price of lower 5 min",
+          "id": 17,
+          "name": "LOWER5MINLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 5 min local requirement",
+          "id": 18,
+          "name": "LOWER5MINLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of lower 5 min",
+          "id": 19,
+          "name": "LOWER5MINPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 5 min total requirement",
+          "id": 20,
+          "name": "LOWER5MINREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of lower 5 min",
+          "id": 21,
+          "name": "LOWER5MINSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 60 sec MW dispatch",
+          "id": 22,
+          "name": "LOWER60SECDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 60 sec MW imported",
+          "id": 23,
+          "name": "LOWER60SECIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 60 sec local dispatch",
+          "id": 24,
+          "name": "LOWER60SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Local price of lower 60 sec",
+          "id": 25,
+          "name": "LOWER60SECLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 60 sec local requirement",
+          "id": 26,
+          "name": "LOWER60SECLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of lower 60 sec",
+          "id": 27,
+          "name": "LOWER60SECPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 60 sec total requirement",
+          "id": 28,
+          "name": "LOWER60SECREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of lower 60 sec",
+          "id": 29,
+          "name": "LOWER60SECSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 6 sec MW dispatch",
+          "id": 30,
+          "name": "LOWER6SECDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 6 sec MW imported",
+          "id": 31,
+          "name": "LOWER6SECIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 6 sec local dispatch",
+          "id": 32,
+          "name": "LOWER6SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Local price of lower 6 sec",
+          "id": 33,
+          "name": "LOWER6SECLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 6 sec local requirement",
+          "id": 34,
+          "name": "LOWER6SECLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of lower 6 sec",
+          "id": 35,
+          "name": "LOWER6SECPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 6 sec total requirement",
+          "id": 36,
+          "name": "LOWER6SECREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of lower 6 sec",
+          "id": 37,
+          "name": "LOWER6SECSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 5 min MW dispatch",
+          "id": 38,
+          "name": "RAISE5MINDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 5 min MW imported",
+          "id": 39,
+          "name": "RAISE5MINIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 5 min local dispatch",
+          "id": 40,
+          "name": "RAISE5MINLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise price of lower 5 min",
+          "id": 41,
+          "name": "RAISE5MINLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 5 min local requirement",
+          "id": 42,
+          "name": "RAISE5MINLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of raise 5 min",
+          "id": 43,
+          "name": "RAISE5MINPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 5 min total requirement",
+          "id": 44,
+          "name": "RAISE5MINREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of raise 5 min",
+          "id": 45,
+          "name": "RAISE5MINSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 60 sec MW dispatch",
+          "id": 46,
+          "name": "RAISE60SECDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 60 sec MW imported",
+          "id": 47,
+          "name": "RAISE60SECIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 60 sec local dispatch",
+          "id": 48,
+          "name": "RAISE60SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Local price of raise 60 sec",
+          "id": 49,
+          "name": "RAISE60SECLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 60 sec local requirement",
+          "id": 50,
+          "name": "RAISE60SECLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of raise 60 sec",
+          "id": 51,
+          "name": "RAISE60SECPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 60 sec total requirement",
+          "id": 52,
+          "name": "RAISE60SECREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of raise 60 sec",
+          "id": 53,
+          "name": "RAISE60SECSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 6 sec MW dispatch",
+          "id": 54,
+          "name": "RAISE6SECDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 6 sec MW imported",
+          "id": 55,
+          "name": "RAISE6SECIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 6 sec local dispatch",
+          "id": 56,
+          "name": "RAISE6SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Local price of raise 6 sec",
+          "id": 57,
+          "name": "RAISE6SECLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 6 sec local requirement",
+          "id": 58,
+          "name": "RAISE6SECLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of raise 6 sec",
+          "id": 59,
+          "name": "RAISE6SECPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 6 sec total requirement",
+          "id": 60,
+          "name": "RAISE6SECREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of raise 6 sec",
+          "id": 61,
+          "name": "RAISE6SECSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Calculated dispatch error",
+          "id": 62,
+          "name": "AGGEGATEDISPATCHERROR",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Calculated dispatch error",
+          "id": 63,
+          "name": "AGGREGATEDISPATCHERROR",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 64,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Sum of initial generation and import for region",
+          "id": 65,
+          "name": "INITIALSUPPLY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of cleared generation and import for region",
+          "id": 66,
+          "name": "CLEAREDSUPPLY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower Regulation MW imported",
+          "id": 67,
+          "name": "LOWERREGIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower Regulation local dispatch",
+          "id": 68,
+          "name": "LOWERREGLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower Regulation local requirement",
+          "id": 69,
+          "name": "LOWERREGLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower Regulation total requirement",
+          "id": 70,
+          "name": "LOWERREGREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise Regulation MW imported",
+          "id": 71,
+          "name": "RAISEREGIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise Regulation local dispatch",
+          "id": 72,
+          "name": "RAISEREGLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise Regulation local requirement",
+          "id": 73,
+          "name": "RAISEREGLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise Regulation total requirement",
+          "id": 74,
+          "name": "RAISEREGREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 5 min local requirement",
+          "id": 75,
+          "name": "RAISE5MINLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise Reg local requirement",
+          "id": 76,
+          "name": "RAISEREGLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 60 sec local requirement",
+          "id": 77,
+          "name": "RAISE60SECLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 6 sec local requirement",
+          "id": 78,
+          "name": "RAISE6SECLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 5 min local requirement",
+          "id": 79,
+          "name": "LOWER5MINLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower Reg local requirement",
+          "id": 80,
+          "name": "LOWERREGLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 60 sec local requirement",
+          "id": 81,
+          "name": "LOWER60SECLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 6 sec local requirement",
+          "id": 82,
+          "name": "LOWER6SECLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 5 min requirement",
+          "id": 83,
+          "name": "RAISE5MINVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise Reg requirement",
+          "id": 84,
+          "name": "RAISEREGVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 60 seconds requirement",
+          "id": 85,
+          "name": "RAISE60SECVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 6 seconds requirement",
+          "id": 86,
+          "name": "RAISE6SECVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 5 min requirement",
+          "id": 87,
+          "name": "LOWER5MINVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower Reg requirement",
+          "id": 88,
+          "name": "LOWERREGVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 60 seconds requirement",
+          "id": 89,
+          "name": "LOWER60SECVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 6 seconds requirement",
+          "id": 90,
+          "name": "LOWER6SECVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "trapezium adjusted raise 6sec availability",
+          "id": 91,
+          "name": "RAISE6SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise 60sec availability",
+          "id": 92,
+          "name": "RAISE60SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise 5min availability",
+          "id": 93,
+          "name": "RAISE5MINACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise reg availability",
+          "id": 94,
+          "name": "RAISEREGACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 6sec availability",
+          "id": 95,
+          "name": "LOWER6SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 60sec availability",
+          "id": 96,
+          "name": "LOWER60SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 5min availability",
+          "id": 97,
+          "name": "LOWER5MINACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower reg availability",
+          "id": 98,
+          "name": "LOWERREGACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Not in use after 17 Feb 2006. Total short term generation capacity reserve used in assessing lack of reserve condition",
+          "id": 99,
+          "name": "LORSURPLUS",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Not in use after 17 Feb 2006. Total short term generation capacity reserve above the stated low reserve condition requirement",
+          "id": 100,
+          "name": "LRCSURPLUS",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Allowance made for non-scheduled generation in the demand forecast (MW).",
+          "id": 101,
+          "name": "TOTALINTERMITTENTGENERATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of Cleared Scheduled generation, imported generation (at the region boundary) and allowances made for non-scheduled generation (MW).",
+          "id": 102,
+          "name": "DEMAND_AND_NONSCHEDGEN",
+          "required": false,
+          "type": "decimal(15, 6)"
+        },
+        {
+          "doc": "Regional aggregated Unconstrained Intermittent Generation Forecast of Semi-scheduled generation (MW).",
+          "id": 103,
+          "name": "UIGF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Semi-Schedule generator Cleared MW",
+          "id": 104,
+          "name": "SEMISCHEDULE_CLEAREDMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Semi-Schedule generator Cleared MW where Semi-Dispatch cap is enforced",
+          "id": 105,
+          "name": "SEMISCHEDULE_COMPLIANCEMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Market date and time starting at 04:05",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Dispatch run no; always 1",
+          "id": 2,
+          "name": "RUNNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Region Identifier",
+          "id": 3,
+          "name": "REGIONID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Dispatch period identifier, from 001 to 288 in format YYYYMMDDPPP.",
+          "id": 4,
+          "name": "DISPATCHINTERVAL",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Manual Intervention flag",
+          "id": 5,
+          "name": "INTERVENTION",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Demand (less loads)",
+          "id": 6,
+          "name": "TOTALDEMAND",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Aggregate generation bid available in region",
+          "id": 7,
+          "name": "AVAILABLEGENERATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Aggregate load bid available in region",
+          "id": 8,
+          "name": "AVAILABLELOAD",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "5 minute forecast adjust",
+          "id": 9,
+          "name": "DEMANDFORECAST",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Dispatched Generation",
+          "id": 10,
+          "name": "DISPATCHABLEGENERATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Dispatched Load (add to total demand to get inherent region demand).",
+          "id": 11,
+          "name": "DISPATCHABLELOAD",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Net interconnector flow from the regional reference node",
+          "id": 12,
+          "name": "NETINTERCHANGE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "MW quantity of excess",
+          "id": 13,
+          "name": "EXCESSGENERATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 5 min MW dispatch",
+          "id": 14,
+          "name": "LOWER5MINDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 5 min MW imported",
+          "id": 15,
+          "name": "LOWER5MINIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 5 min local dispatch",
+          "id": 16,
+          "name": "LOWER5MINLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Local price of lower 5 min",
+          "id": 17,
+          "name": "LOWER5MINLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 5 min local requirement",
+          "id": 18,
+          "name": "LOWER5MINLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of lower 5 min",
+          "id": 19,
+          "name": "LOWER5MINPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 5 min total requirement",
+          "id": 20,
+          "name": "LOWER5MINREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of lower 5 min",
+          "id": 21,
+          "name": "LOWER5MINSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 60 sec MW dispatch",
+          "id": 22,
+          "name": "LOWER60SECDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 60 sec MW imported",
+          "id": 23,
+          "name": "LOWER60SECIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 60 sec local dispatch",
+          "id": 24,
+          "name": "LOWER60SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Local price of lower 60 sec",
+          "id": 25,
+          "name": "LOWER60SECLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 60 sec local requirement",
+          "id": 26,
+          "name": "LOWER60SECLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of lower 60 sec",
+          "id": 27,
+          "name": "LOWER60SECPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 60 sec total requirement",
+          "id": 28,
+          "name": "LOWER60SECREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of lower 60 sec",
+          "id": 29,
+          "name": "LOWER60SECSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 6 sec MW dispatch",
+          "id": 30,
+          "name": "LOWER6SECDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 6 sec MW imported",
+          "id": 31,
+          "name": "LOWER6SECIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 6 sec local dispatch",
+          "id": 32,
+          "name": "LOWER6SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Local price of lower 6 sec",
+          "id": 33,
+          "name": "LOWER6SECLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 6 sec local requirement",
+          "id": 34,
+          "name": "LOWER6SECLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of lower 6 sec",
+          "id": 35,
+          "name": "LOWER6SECPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 6 sec total requirement",
+          "id": 36,
+          "name": "LOWER6SECREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of lower 6 sec",
+          "id": 37,
+          "name": "LOWER6SECSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 5 min MW dispatch",
+          "id": 38,
+          "name": "RAISE5MINDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 5 min MW imported",
+          "id": 39,
+          "name": "RAISE5MINIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 5 min local dispatch",
+          "id": 40,
+          "name": "RAISE5MINLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise price of lower 5 min",
+          "id": 41,
+          "name": "RAISE5MINLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 5 min local requirement",
+          "id": 42,
+          "name": "RAISE5MINLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of raise 5 min",
+          "id": 43,
+          "name": "RAISE5MINPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 5 min total requirement",
+          "id": 44,
+          "name": "RAISE5MINREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of raise 5 min",
+          "id": 45,
+          "name": "RAISE5MINSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 60 sec MW dispatch",
+          "id": 46,
+          "name": "RAISE60SECDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 60 sec MW imported",
+          "id": 47,
+          "name": "RAISE60SECIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 60 sec local dispatch",
+          "id": 48,
+          "name": "RAISE60SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Local price of raise 60 sec",
+          "id": 49,
+          "name": "RAISE60SECLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 60 sec local requirement",
+          "id": 50,
+          "name": "RAISE60SECLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of raise 60 sec",
+          "id": 51,
+          "name": "RAISE60SECPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 60 sec total requirement",
+          "id": 52,
+          "name": "RAISE60SECREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of raise 60 sec",
+          "id": 53,
+          "name": "RAISE60SECSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 6 sec MW dispatch",
+          "id": 54,
+          "name": "RAISE6SECDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 6 sec MW imported",
+          "id": 55,
+          "name": "RAISE6SECIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 6 sec local dispatch",
+          "id": 56,
+          "name": "RAISE6SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Local price of raise 6 sec",
+          "id": 57,
+          "name": "RAISE6SECLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 6 sec local requirement",
+          "id": 58,
+          "name": "RAISE6SECLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of raise 6 sec",
+          "id": 59,
+          "name": "RAISE6SECPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 6 sec total requirement",
+          "id": 60,
+          "name": "RAISE6SECREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of raise 6 sec",
+          "id": 61,
+          "name": "RAISE6SECSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Calculated dispatch error",
+          "id": 62,
+          "name": "AGGEGATEDISPATCHERROR",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Calculated dispatch error",
+          "id": 63,
+          "name": "AGGREGATEDISPATCHERROR",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 64,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Sum of initial generation and import for region",
+          "id": 65,
+          "name": "INITIALSUPPLY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of cleared generation and import for region",
+          "id": 66,
+          "name": "CLEAREDSUPPLY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower Regulation MW imported",
+          "id": 67,
+          "name": "LOWERREGIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower Regulation local dispatch",
+          "id": 68,
+          "name": "LOWERREGLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower Regulation local requirement",
+          "id": 69,
+          "name": "LOWERREGLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower Regulation total requirement",
+          "id": 70,
+          "name": "LOWERREGREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise Regulation MW imported",
+          "id": 71,
+          "name": "RAISEREGIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise Regulation local dispatch",
+          "id": 72,
+          "name": "RAISEREGLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise Regulation local requirement",
+          "id": 73,
+          "name": "RAISEREGLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise Regulation total requirement",
+          "id": 74,
+          "name": "RAISEREGREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 5 min local requirement",
+          "id": 75,
+          "name": "RAISE5MINLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise Reg local requirement",
+          "id": 76,
+          "name": "RAISEREGLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 60 sec local requirement",
+          "id": 77,
+          "name": "RAISE60SECLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 6 sec local requirement",
+          "id": 78,
+          "name": "RAISE6SECLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 5 min local requirement",
+          "id": 79,
+          "name": "LOWER5MINLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower Reg local requirement",
+          "id": 80,
+          "name": "LOWERREGLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 60 sec local requirement",
+          "id": 81,
+          "name": "LOWER60SECLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 6 sec local requirement",
+          "id": 82,
+          "name": "LOWER6SECLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 5 min requirement",
+          "id": 83,
+          "name": "RAISE5MINVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise Reg requirement",
+          "id": 84,
+          "name": "RAISEREGVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 60 seconds requirement",
+          "id": 85,
+          "name": "RAISE60SECVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 6 seconds requirement",
+          "id": 86,
+          "name": "RAISE6SECVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 5 min requirement",
+          "id": 87,
+          "name": "LOWER5MINVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower Reg requirement",
+          "id": 88,
+          "name": "LOWERREGVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 60 seconds requirement",
+          "id": 89,
+          "name": "LOWER60SECVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 6 seconds requirement",
+          "id": 90,
+          "name": "LOWER6SECVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "trapezium adjusted raise 6sec availability",
+          "id": 91,
+          "name": "RAISE6SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise 60sec availability",
+          "id": 92,
+          "name": "RAISE60SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise 5min availability",
+          "id": 93,
+          "name": "RAISE5MINACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise reg availability",
+          "id": 94,
+          "name": "RAISEREGACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 6sec availability",
+          "id": 95,
+          "name": "LOWER6SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 60sec availability",
+          "id": 96,
+          "name": "LOWER60SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 5min availability",
+          "id": 97,
+          "name": "LOWER5MINACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower reg availability",
+          "id": 98,
+          "name": "LOWERREGACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Not in use after 17 Feb 2006. Total short term generation capacity reserve used in assessing lack of reserve condition",
+          "id": 99,
+          "name": "LORSURPLUS",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Not in use after 17 Feb 2006. Total short term generation capacity reserve above the stated low reserve condition requirement",
+          "id": 100,
+          "name": "LRCSURPLUS",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Allowance made for non-scheduled generation in the demand forecast (MW).",
+          "id": 101,
+          "name": "TOTALINTERMITTENTGENERATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of Cleared Scheduled generation, imported generation (at the region boundary) and allowances made for non-scheduled generation (MW).",
+          "id": 102,
+          "name": "DEMAND_AND_NONSCHEDGEN",
+          "required": false,
+          "type": "decimal(15, 6)"
+        },
+        {
+          "doc": "Regional aggregated Unconstrained Intermittent Generation Forecast of Semi-scheduled generation (MW).",
+          "id": 103,
+          "name": "UIGF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Semi-Schedule generator Cleared MW",
+          "id": 104,
+          "name": "SEMISCHEDULE_CLEAREDMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Semi-Schedule generator Cleared MW where Semi-Dispatch cap is enforced",
+          "id": 105,
+          "name": "SEMISCHEDULE_COMPLIANCEMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Unconstrained Intermittent Generation Forecast of Semi-scheduled generation (MW) where the primary fuel source is solar",
+          "id": 106,
+          "name": "SS_SOLAR_UIGF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Unconstrained Intermittent Generation Forecast of Semi-scheduled generation (MW) where the primary fuel source is wind",
+          "id": 107,
+          "name": "SS_WIND_UIGF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Semi-Schedule generator Cleared MW where the primary fuel source is solar",
+          "id": 108,
+          "name": "SS_SOLAR_CLEAREDMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Semi-Schedule generator Cleared MW where the primary fuel source is wind",
+          "id": 109,
+          "name": "SS_WIND_CLEAREDMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Semi-Schedule generator Cleared MW where Semi-Dispatch cap is enforced and the primary fuel source is solar",
+          "id": 110,
+          "name": "SS_SOLAR_COMPLIANCEMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Semi-Schedule generator Cleared MW where Semi-Dispatch cap is enforced and the primary fuel source is wind",
+          "id": 111,
+          "name": "SS_WIND_COMPLIANCEMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "schema-id": 1,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Market date and time starting at 04:05",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Dispatch run no; always 1",
+          "id": 2,
+          "name": "RUNNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Region Identifier",
+          "id": 3,
+          "name": "REGIONID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Dispatch period identifier, from 001 to 288 in format YYYYMMDDPPP.",
+          "id": 4,
+          "name": "DISPATCHINTERVAL",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Manual Intervention flag",
+          "id": 5,
+          "name": "INTERVENTION",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Demand (less loads)",
+          "id": 6,
+          "name": "TOTALDEMAND",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Aggregate generation bid available in region",
+          "id": 7,
+          "name": "AVAILABLEGENERATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Aggregate load bid available in region",
+          "id": 8,
+          "name": "AVAILABLELOAD",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "5 minute forecast adjust",
+          "id": 9,
+          "name": "DEMANDFORECAST",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Dispatched Generation",
+          "id": 10,
+          "name": "DISPATCHABLEGENERATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Dispatched Load (add to total demand to get inherent region demand).",
+          "id": 11,
+          "name": "DISPATCHABLELOAD",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Net interconnector flow from the regional reference node",
+          "id": 12,
+          "name": "NETINTERCHANGE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "MW quantity of excess",
+          "id": 13,
+          "name": "EXCESSGENERATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 5 min MW dispatch",
+          "id": 14,
+          "name": "LOWER5MINDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 5 min MW imported",
+          "id": 15,
+          "name": "LOWER5MINIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 5 min local dispatch",
+          "id": 16,
+          "name": "LOWER5MINLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Local price of lower 5 min",
+          "id": 17,
+          "name": "LOWER5MINLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 5 min local requirement",
+          "id": 18,
+          "name": "LOWER5MINLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of lower 5 min",
+          "id": 19,
+          "name": "LOWER5MINPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 5 min total requirement",
+          "id": 20,
+          "name": "LOWER5MINREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of lower 5 min",
+          "id": 21,
+          "name": "LOWER5MINSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 60 sec MW dispatch",
+          "id": 22,
+          "name": "LOWER60SECDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 60 sec MW imported",
+          "id": 23,
+          "name": "LOWER60SECIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 60 sec local dispatch",
+          "id": 24,
+          "name": "LOWER60SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Local price of lower 60 sec",
+          "id": 25,
+          "name": "LOWER60SECLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 60 sec local requirement",
+          "id": 26,
+          "name": "LOWER60SECLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of lower 60 sec",
+          "id": 27,
+          "name": "LOWER60SECPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 60 sec total requirement",
+          "id": 28,
+          "name": "LOWER60SECREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of lower 60 sec",
+          "id": 29,
+          "name": "LOWER60SECSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 6 sec MW dispatch",
+          "id": 30,
+          "name": "LOWER6SECDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 6 sec MW imported",
+          "id": 31,
+          "name": "LOWER6SECIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 6 sec local dispatch",
+          "id": 32,
+          "name": "LOWER6SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Local price of lower 6 sec",
+          "id": 33,
+          "name": "LOWER6SECLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 6 sec local requirement",
+          "id": 34,
+          "name": "LOWER6SECLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of lower 6 sec",
+          "id": 35,
+          "name": "LOWER6SECPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 6 sec total requirement",
+          "id": 36,
+          "name": "LOWER6SECREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of lower 6 sec",
+          "id": 37,
+          "name": "LOWER6SECSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 5 min MW dispatch",
+          "id": 38,
+          "name": "RAISE5MINDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 5 min MW imported",
+          "id": 39,
+          "name": "RAISE5MINIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 5 min local dispatch",
+          "id": 40,
+          "name": "RAISE5MINLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise price of lower 5 min",
+          "id": 41,
+          "name": "RAISE5MINLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 5 min local requirement",
+          "id": 42,
+          "name": "RAISE5MINLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of raise 5 min",
+          "id": 43,
+          "name": "RAISE5MINPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 5 min total requirement",
+          "id": 44,
+          "name": "RAISE5MINREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of raise 5 min",
+          "id": 45,
+          "name": "RAISE5MINSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 60 sec MW dispatch",
+          "id": 46,
+          "name": "RAISE60SECDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 60 sec MW imported",
+          "id": 47,
+          "name": "RAISE60SECIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 60 sec local dispatch",
+          "id": 48,
+          "name": "RAISE60SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Local price of raise 60 sec",
+          "id": 49,
+          "name": "RAISE60SECLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 60 sec local requirement",
+          "id": 50,
+          "name": "RAISE60SECLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of raise 60 sec",
+          "id": 51,
+          "name": "RAISE60SECPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 60 sec total requirement",
+          "id": 52,
+          "name": "RAISE60SECREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of raise 60 sec",
+          "id": 53,
+          "name": "RAISE60SECSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 6 sec MW dispatch",
+          "id": 54,
+          "name": "RAISE6SECDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 6 sec MW imported",
+          "id": 55,
+          "name": "RAISE6SECIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 6 sec local dispatch",
+          "id": 56,
+          "name": "RAISE6SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Local price of raise 6 sec",
+          "id": 57,
+          "name": "RAISE6SECLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 6 sec local requirement",
+          "id": 58,
+          "name": "RAISE6SECLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of raise 6 sec",
+          "id": 59,
+          "name": "RAISE6SECPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 6 sec total requirement",
+          "id": 60,
+          "name": "RAISE6SECREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of raise 6 sec",
+          "id": 61,
+          "name": "RAISE6SECSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Calculated dispatch error",
+          "id": 62,
+          "name": "AGGEGATEDISPATCHERROR",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Calculated dispatch error",
+          "id": 63,
+          "name": "AGGREGATEDISPATCHERROR",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 64,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Sum of initial generation and import for region",
+          "id": 65,
+          "name": "INITIALSUPPLY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of cleared generation and import for region",
+          "id": 66,
+          "name": "CLEAREDSUPPLY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower Regulation MW imported",
+          "id": 67,
+          "name": "LOWERREGIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower Regulation local dispatch",
+          "id": 68,
+          "name": "LOWERREGLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower Regulation local requirement",
+          "id": 69,
+          "name": "LOWERREGLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower Regulation total requirement",
+          "id": 70,
+          "name": "LOWERREGREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise Regulation MW imported",
+          "id": 71,
+          "name": "RAISEREGIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise Regulation local dispatch",
+          "id": 72,
+          "name": "RAISEREGLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise Regulation local requirement",
+          "id": 73,
+          "name": "RAISEREGLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise Regulation total requirement",
+          "id": 74,
+          "name": "RAISEREGREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 5 min local requirement",
+          "id": 75,
+          "name": "RAISE5MINLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise Reg local requirement",
+          "id": 76,
+          "name": "RAISEREGLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 60 sec local requirement",
+          "id": 77,
+          "name": "RAISE60SECLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 6 sec local requirement",
+          "id": 78,
+          "name": "RAISE6SECLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 5 min local requirement",
+          "id": 79,
+          "name": "LOWER5MINLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower Reg local requirement",
+          "id": 80,
+          "name": "LOWERREGLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 60 sec local requirement",
+          "id": 81,
+          "name": "LOWER60SECLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 6 sec local requirement",
+          "id": 82,
+          "name": "LOWER6SECLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 5 min requirement",
+          "id": 83,
+          "name": "RAISE5MINVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise Reg requirement",
+          "id": 84,
+          "name": "RAISEREGVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 60 seconds requirement",
+          "id": 85,
+          "name": "RAISE60SECVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 6 seconds requirement",
+          "id": 86,
+          "name": "RAISE6SECVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 5 min requirement",
+          "id": 87,
+          "name": "LOWER5MINVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower Reg requirement",
+          "id": 88,
+          "name": "LOWERREGVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 60 seconds requirement",
+          "id": 89,
+          "name": "LOWER60SECVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 6 seconds requirement",
+          "id": 90,
+          "name": "LOWER6SECVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "trapezium adjusted raise 6sec availability",
+          "id": 91,
+          "name": "RAISE6SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise 60sec availability",
+          "id": 92,
+          "name": "RAISE60SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise 5min availability",
+          "id": 93,
+          "name": "RAISE5MINACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise reg availability",
+          "id": 94,
+          "name": "RAISEREGACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 6sec availability",
+          "id": 95,
+          "name": "LOWER6SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 60sec availability",
+          "id": 96,
+          "name": "LOWER60SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 5min availability",
+          "id": 97,
+          "name": "LOWER5MINACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower reg availability",
+          "id": 98,
+          "name": "LOWERREGACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Not in use after 17 Feb 2006. Total short term generation capacity reserve used in assessing lack of reserve condition",
+          "id": 99,
+          "name": "LORSURPLUS",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Not in use after 17 Feb 2006. Total short term generation capacity reserve above the stated low reserve condition requirement",
+          "id": 100,
+          "name": "LRCSURPLUS",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Allowance made for non-scheduled generation in the demand forecast (MW).",
+          "id": 101,
+          "name": "TOTALINTERMITTENTGENERATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of Cleared Scheduled generation, imported generation (at the region boundary) and allowances made for non-scheduled generation (MW).",
+          "id": 102,
+          "name": "DEMAND_AND_NONSCHEDGEN",
+          "required": false,
+          "type": "decimal(15, 6)"
+        },
+        {
+          "doc": "Regional aggregated Unconstrained Intermittent Generation Forecast of Semi-scheduled generation (MW).",
+          "id": 103,
+          "name": "UIGF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Semi-Schedule generator Cleared MW",
+          "id": 104,
+          "name": "SEMISCHEDULE_CLEAREDMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Semi-Schedule generator Cleared MW where Semi-Dispatch cap is enforced",
+          "id": 105,
+          "name": "SEMISCHEDULE_COMPLIANCEMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Unconstrained Intermittent Generation Forecast of Semi-scheduled generation (MW) where the primary fuel source is solar",
+          "id": 106,
+          "name": "SS_SOLAR_UIGF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Unconstrained Intermittent Generation Forecast of Semi-scheduled generation (MW) where the primary fuel source is wind",
+          "id": 107,
+          "name": "SS_WIND_UIGF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Semi-Schedule generator Cleared MW where the primary fuel source is solar",
+          "id": 108,
+          "name": "SS_SOLAR_CLEAREDMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Semi-Schedule generator Cleared MW where the primary fuel source is wind",
+          "id": 109,
+          "name": "SS_WIND_CLEAREDMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Semi-Schedule generator Cleared MW where Semi-Dispatch cap is enforced and the primary fuel source is solar",
+          "id": 110,
+          "name": "SS_SOLAR_COMPLIANCEMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Semi-Schedule generator Cleared MW where Semi-Dispatch cap is enforced and the primary fuel source is wind",
+          "id": 111,
+          "name": "SS_WIND_COMPLIANCEMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated MW value at start of interval for Wholesale Demand Response (WDR) units",
+          "id": 112,
+          "name": "WDR_INITIALMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated available MW for Wholesale Demand Response (WDR) units",
+          "id": 113,
+          "name": "WDR_AVAILABLE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated dispatched MW for Wholesale Demand Response (WDR) units",
+          "id": 114,
+          "name": "WDR_DISPATCHED",
+          "required": false,
+          "type": "decimal(15, 5)"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "schema-id": 2,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Market date and time starting at 04:05",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Dispatch run no; always 1",
+          "id": 2,
+          "name": "RUNNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Region Identifier",
+          "id": 3,
+          "name": "REGIONID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Dispatch period identifier, from 001 to 288 in format YYYYMMDDPPP.",
+          "id": 4,
+          "name": "DISPATCHINTERVAL",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Manual Intervention flag",
+          "id": 5,
+          "name": "INTERVENTION",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Demand (less loads)",
+          "id": 6,
+          "name": "TOTALDEMAND",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Aggregate generation bid available in region",
+          "id": 7,
+          "name": "AVAILABLEGENERATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Aggregate load bid available in region",
+          "id": 8,
+          "name": "AVAILABLELOAD",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "5 minute forecast adjust",
+          "id": 9,
+          "name": "DEMANDFORECAST",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Dispatched Generation",
+          "id": 10,
+          "name": "DISPATCHABLEGENERATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Dispatched Load (add to total demand to get inherent region demand).",
+          "id": 11,
+          "name": "DISPATCHABLELOAD",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Net interconnector flow from the regional reference node",
+          "id": 12,
+          "name": "NETINTERCHANGE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "MW quantity of excess",
+          "id": 13,
+          "name": "EXCESSGENERATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 5 min MW dispatch",
+          "id": 14,
+          "name": "LOWER5MINDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 5 min MW imported",
+          "id": 15,
+          "name": "LOWER5MINIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 5 min local dispatch",
+          "id": 16,
+          "name": "LOWER5MINLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Local price of lower 5 min",
+          "id": 17,
+          "name": "LOWER5MINLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 5 min local requirement",
+          "id": 18,
+          "name": "LOWER5MINLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of lower 5 min",
+          "id": 19,
+          "name": "LOWER5MINPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 5 min total requirement",
+          "id": 20,
+          "name": "LOWER5MINREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of lower 5 min",
+          "id": 21,
+          "name": "LOWER5MINSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 60 sec MW dispatch",
+          "id": 22,
+          "name": "LOWER60SECDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 60 sec MW imported",
+          "id": 23,
+          "name": "LOWER60SECIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 60 sec local dispatch",
+          "id": 24,
+          "name": "LOWER60SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Local price of lower 60 sec",
+          "id": 25,
+          "name": "LOWER60SECLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 60 sec local requirement",
+          "id": 26,
+          "name": "LOWER60SECLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of lower 60 sec",
+          "id": 27,
+          "name": "LOWER60SECPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 60 sec total requirement",
+          "id": 28,
+          "name": "LOWER60SECREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of lower 60 sec",
+          "id": 29,
+          "name": "LOWER60SECSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 6 sec MW dispatch",
+          "id": 30,
+          "name": "LOWER6SECDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 6 sec MW imported",
+          "id": 31,
+          "name": "LOWER6SECIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 6 sec local dispatch",
+          "id": 32,
+          "name": "LOWER6SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Local price of lower 6 sec",
+          "id": 33,
+          "name": "LOWER6SECLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 6 sec local requirement",
+          "id": 34,
+          "name": "LOWER6SECLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of lower 6 sec",
+          "id": 35,
+          "name": "LOWER6SECPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 6 sec total requirement",
+          "id": 36,
+          "name": "LOWER6SECREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of lower 6 sec",
+          "id": 37,
+          "name": "LOWER6SECSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 5 min MW dispatch",
+          "id": 38,
+          "name": "RAISE5MINDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 5 min MW imported",
+          "id": 39,
+          "name": "RAISE5MINIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 5 min local dispatch",
+          "id": 40,
+          "name": "RAISE5MINLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise price of lower 5 min",
+          "id": 41,
+          "name": "RAISE5MINLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 5 min local requirement",
+          "id": 42,
+          "name": "RAISE5MINLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of raise 5 min",
+          "id": 43,
+          "name": "RAISE5MINPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 5 min total requirement",
+          "id": 44,
+          "name": "RAISE5MINREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of raise 5 min",
+          "id": 45,
+          "name": "RAISE5MINSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 60 sec MW dispatch",
+          "id": 46,
+          "name": "RAISE60SECDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 60 sec MW imported",
+          "id": 47,
+          "name": "RAISE60SECIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 60 sec local dispatch",
+          "id": 48,
+          "name": "RAISE60SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Local price of raise 60 sec",
+          "id": 49,
+          "name": "RAISE60SECLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 60 sec local requirement",
+          "id": 50,
+          "name": "RAISE60SECLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of raise 60 sec",
+          "id": 51,
+          "name": "RAISE60SECPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 60 sec total requirement",
+          "id": 52,
+          "name": "RAISE60SECREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of raise 60 sec",
+          "id": 53,
+          "name": "RAISE60SECSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 6 sec MW dispatch",
+          "id": 54,
+          "name": "RAISE6SECDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 6 sec MW imported",
+          "id": 55,
+          "name": "RAISE6SECIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 6 sec local dispatch",
+          "id": 56,
+          "name": "RAISE6SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Local price of raise 6 sec",
+          "id": 57,
+          "name": "RAISE6SECLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 6 sec local requirement",
+          "id": 58,
+          "name": "RAISE6SECLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of raise 6 sec",
+          "id": 59,
+          "name": "RAISE6SECPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 6 sec total requirement",
+          "id": 60,
+          "name": "RAISE6SECREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of raise 6 sec",
+          "id": 61,
+          "name": "RAISE6SECSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Calculated dispatch error",
+          "id": 62,
+          "name": "AGGEGATEDISPATCHERROR",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Calculated dispatch error",
+          "id": 63,
+          "name": "AGGREGATEDISPATCHERROR",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 64,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Sum of initial generation and import for region",
+          "id": 65,
+          "name": "INITIALSUPPLY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of cleared generation and import for region",
+          "id": 66,
+          "name": "CLEAREDSUPPLY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower Regulation MW imported",
+          "id": 67,
+          "name": "LOWERREGIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower Regulation local dispatch",
+          "id": 68,
+          "name": "LOWERREGLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower Regulation local requirement",
+          "id": 69,
+          "name": "LOWERREGLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower Regulation total requirement",
+          "id": 70,
+          "name": "LOWERREGREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise Regulation MW imported",
+          "id": 71,
+          "name": "RAISEREGIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise Regulation local dispatch",
+          "id": 72,
+          "name": "RAISEREGLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise Regulation local requirement",
+          "id": 73,
+          "name": "RAISEREGLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise Regulation total requirement",
+          "id": 74,
+          "name": "RAISEREGREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 5 min local requirement",
+          "id": 75,
+          "name": "RAISE5MINLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise Reg local requirement",
+          "id": 76,
+          "name": "RAISEREGLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 60 sec local requirement",
+          "id": 77,
+          "name": "RAISE60SECLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 6 sec local requirement",
+          "id": 78,
+          "name": "RAISE6SECLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 5 min local requirement",
+          "id": 79,
+          "name": "LOWER5MINLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower Reg local requirement",
+          "id": 80,
+          "name": "LOWERREGLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 60 sec local requirement",
+          "id": 81,
+          "name": "LOWER60SECLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 6 sec local requirement",
+          "id": 82,
+          "name": "LOWER6SECLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 5 min requirement",
+          "id": 83,
+          "name": "RAISE5MINVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise Reg requirement",
+          "id": 84,
+          "name": "RAISEREGVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 60 seconds requirement",
+          "id": 85,
+          "name": "RAISE60SECVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 6 seconds requirement",
+          "id": 86,
+          "name": "RAISE6SECVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 5 min requirement",
+          "id": 87,
+          "name": "LOWER5MINVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower Reg requirement",
+          "id": 88,
+          "name": "LOWERREGVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 60 seconds requirement",
+          "id": 89,
+          "name": "LOWER60SECVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 6 seconds requirement",
+          "id": 90,
+          "name": "LOWER6SECVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "trapezium adjusted raise 6sec availability",
+          "id": 91,
+          "name": "RAISE6SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise 60sec availability",
+          "id": 92,
+          "name": "RAISE60SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise 5min availability",
+          "id": 93,
+          "name": "RAISE5MINACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise reg availability",
+          "id": 94,
+          "name": "RAISEREGACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 6sec availability",
+          "id": 95,
+          "name": "LOWER6SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 60sec availability",
+          "id": 96,
+          "name": "LOWER60SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 5min availability",
+          "id": 97,
+          "name": "LOWER5MINACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower reg availability",
+          "id": 98,
+          "name": "LOWERREGACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Not in use after 17 Feb 2006. Total short term generation capacity reserve used in assessing lack of reserve condition",
+          "id": 99,
+          "name": "LORSURPLUS",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Not in use after 17 Feb 2006. Total short term generation capacity reserve above the stated low reserve condition requirement",
+          "id": 100,
+          "name": "LRCSURPLUS",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Allowance made for non-scheduled generation in the demand forecast (MW).",
+          "id": 101,
+          "name": "TOTALINTERMITTENTGENERATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of Cleared Scheduled generation, imported generation (at the region boundary) and allowances made for non-scheduled generation (MW).",
+          "id": 102,
+          "name": "DEMAND_AND_NONSCHEDGEN",
+          "required": false,
+          "type": "decimal(15, 6)"
+        },
+        {
+          "doc": "Regional aggregated Unconstrained Intermittent Generation Forecast of Semi-scheduled generation (MW).",
+          "id": 103,
+          "name": "UIGF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Semi-Schedule generator Cleared MW",
+          "id": 104,
+          "name": "SEMISCHEDULE_CLEAREDMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Semi-Schedule generator Cleared MW where Semi-Dispatch cap is enforced",
+          "id": 105,
+          "name": "SEMISCHEDULE_COMPLIANCEMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Unconstrained Intermittent Generation Forecast of Semi-scheduled generation (MW) where the primary fuel source is solar",
+          "id": 106,
+          "name": "SS_SOLAR_UIGF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Unconstrained Intermittent Generation Forecast of Semi-scheduled generation (MW) where the primary fuel source is wind",
+          "id": 107,
+          "name": "SS_WIND_UIGF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Semi-Schedule generator Cleared MW where the primary fuel source is solar",
+          "id": 108,
+          "name": "SS_SOLAR_CLEAREDMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Semi-Schedule generator Cleared MW where the primary fuel source is wind",
+          "id": 109,
+          "name": "SS_WIND_CLEAREDMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Semi-Schedule generator Cleared MW where Semi-Dispatch cap is enforced and the primary fuel source is solar",
+          "id": 110,
+          "name": "SS_SOLAR_COMPLIANCEMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Semi-Schedule generator Cleared MW where Semi-Dispatch cap is enforced and the primary fuel source is wind",
+          "id": 111,
+          "name": "SS_WIND_COMPLIANCEMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated MW value at start of interval for Wholesale Demand Response (WDR) units",
+          "id": 112,
+          "name": "WDR_INITIALMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated available MW for Wholesale Demand Response (WDR) units",
+          "id": 113,
+          "name": "WDR_AVAILABLE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated dispatched MW for Wholesale Demand Response (WDR) units",
+          "id": 114,
+          "name": "WDR_DISPATCHED",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Total Raise1Sec Dispatched in Region - RegionSolution element R1Dispatch attribute",
+          "id": 115,
+          "name": "RAISE1SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Total Lower1Sec Dispatched in Region - RegionSolution element L1Dispatch attribute",
+          "id": 116,
+          "name": "LOWER1SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Trapezium adjusted Raise1Sec availability (summated from UnitSolution)",
+          "id": 117,
+          "name": "RAISE1SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Trapezium adjusted Lower1Sec availability (summated from UnitSolution)",
+          "id": 118,
+          "name": "LOWER1SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "For Semi-Scheduled units. Aggregate Energy Availability from Solar units in that region",
+          "id": 119,
+          "name": "SS_SOLAR_AVAILABILITY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "For Semi-Scheduled units. Aggregate Energy Availability from Wind units in that region",
+          "id": 120,
+          "name": "SS_WIND_AVAILABILITY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated energy storage where the DUID type is BDU (MWh)",
+          "id": 121,
+          "name": "BDU_ENERGY_STORAGE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Total available load side BDU summated for region (MW)",
+          "id": 122,
+          "name": "BDU_MIN_AVAIL",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Total available generation side BDU summated for region (MW)",
+          "id": 123,
+          "name": "BDU_MAX_AVAIL",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated cleared MW where the DUID type is BDU. Net of export (Generation)",
+          "id": 124,
+          "name": "BDU_CLEAREDMW_GEN",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated cleared MW where the DUID type is BDU. Net of import (Load)",
+          "id": 125,
+          "name": "BDU_CLEAREDMW_LOAD",
+          "required": false,
+          "type": "decimal(15, 5)"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "schema-id": 3,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Market date and time starting at 04:05",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Dispatch run no; always 1",
+          "id": 2,
+          "name": "RUNNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Region Identifier",
+          "id": 3,
+          "name": "REGIONID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Dispatch period identifier, from 001 to 288 in format YYYYMMDDPPP.",
+          "id": 4,
+          "name": "DISPATCHINTERVAL",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Manual Intervention flag",
+          "id": 5,
+          "name": "INTERVENTION",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Demand (less loads)",
+          "id": 6,
+          "name": "TOTALDEMAND",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Aggregate generation bid available in region",
+          "id": 7,
+          "name": "AVAILABLEGENERATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Aggregate load bid available in region",
+          "id": 8,
+          "name": "AVAILABLELOAD",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "5 minute forecast adjust",
+          "id": 9,
+          "name": "DEMANDFORECAST",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Dispatched Generation",
+          "id": 10,
+          "name": "DISPATCHABLEGENERATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Dispatched Load (add to total demand to get inherent region demand).",
+          "id": 11,
+          "name": "DISPATCHABLELOAD",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Net interconnector flow from the regional reference node",
+          "id": 12,
+          "name": "NETINTERCHANGE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "MW quantity of excess",
+          "id": 13,
+          "name": "EXCESSGENERATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 5 min MW dispatch",
+          "id": 14,
+          "name": "LOWER5MINDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 5 min MW imported",
+          "id": 15,
+          "name": "LOWER5MINIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 5 min local dispatch",
+          "id": 16,
+          "name": "LOWER5MINLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Local price of lower 5 min",
+          "id": 17,
+          "name": "LOWER5MINLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 5 min local requirement",
+          "id": 18,
+          "name": "LOWER5MINLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of lower 5 min",
+          "id": 19,
+          "name": "LOWER5MINPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 5 min total requirement",
+          "id": 20,
+          "name": "LOWER5MINREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of lower 5 min",
+          "id": 21,
+          "name": "LOWER5MINSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 60 sec MW dispatch",
+          "id": 22,
+          "name": "LOWER60SECDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 60 sec MW imported",
+          "id": 23,
+          "name": "LOWER60SECIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 60 sec local dispatch",
+          "id": 24,
+          "name": "LOWER60SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Local price of lower 60 sec",
+          "id": 25,
+          "name": "LOWER60SECLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 60 sec local requirement",
+          "id": 26,
+          "name": "LOWER60SECLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of lower 60 sec",
+          "id": 27,
+          "name": "LOWER60SECPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 60 sec total requirement",
+          "id": 28,
+          "name": "LOWER60SECREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of lower 60 sec",
+          "id": 29,
+          "name": "LOWER60SECSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 6 sec MW dispatch",
+          "id": 30,
+          "name": "LOWER6SECDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 6 sec MW imported",
+          "id": 31,
+          "name": "LOWER6SECIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 6 sec local dispatch",
+          "id": 32,
+          "name": "LOWER6SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Local price of lower 6 sec",
+          "id": 33,
+          "name": "LOWER6SECLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 6 sec local requirement",
+          "id": 34,
+          "name": "LOWER6SECLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of lower 6 sec",
+          "id": 35,
+          "name": "LOWER6SECPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 6 sec total requirement",
+          "id": 36,
+          "name": "LOWER6SECREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of lower 6 sec",
+          "id": 37,
+          "name": "LOWER6SECSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 5 min MW dispatch",
+          "id": 38,
+          "name": "RAISE5MINDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 5 min MW imported",
+          "id": 39,
+          "name": "RAISE5MINIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 5 min local dispatch",
+          "id": 40,
+          "name": "RAISE5MINLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise price of lower 5 min",
+          "id": 41,
+          "name": "RAISE5MINLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 5 min local requirement",
+          "id": 42,
+          "name": "RAISE5MINLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of raise 5 min",
+          "id": 43,
+          "name": "RAISE5MINPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 5 min total requirement",
+          "id": 44,
+          "name": "RAISE5MINREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of raise 5 min",
+          "id": 45,
+          "name": "RAISE5MINSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 60 sec MW dispatch",
+          "id": 46,
+          "name": "RAISE60SECDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 60 sec MW imported",
+          "id": 47,
+          "name": "RAISE60SECIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 60 sec local dispatch",
+          "id": 48,
+          "name": "RAISE60SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Local price of raise 60 sec",
+          "id": 49,
+          "name": "RAISE60SECLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 60 sec local requirement",
+          "id": 50,
+          "name": "RAISE60SECLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of raise 60 sec",
+          "id": 51,
+          "name": "RAISE60SECPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 60 sec total requirement",
+          "id": 52,
+          "name": "RAISE60SECREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of raise 60 sec",
+          "id": 53,
+          "name": "RAISE60SECSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 6 sec MW dispatch",
+          "id": 54,
+          "name": "RAISE6SECDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 6 sec MW imported",
+          "id": 55,
+          "name": "RAISE6SECIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 6 sec local dispatch",
+          "id": 56,
+          "name": "RAISE6SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Local price of raise 6 sec",
+          "id": 57,
+          "name": "RAISE6SECLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 6 sec local requirement",
+          "id": 58,
+          "name": "RAISE6SECLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of raise 6 sec",
+          "id": 59,
+          "name": "RAISE6SECPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 6 sec total requirement",
+          "id": 60,
+          "name": "RAISE6SECREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of raise 6 sec",
+          "id": 61,
+          "name": "RAISE6SECSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Calculated dispatch error",
+          "id": 62,
+          "name": "AGGEGATEDISPATCHERROR",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Calculated dispatch error",
+          "id": 63,
+          "name": "AGGREGATEDISPATCHERROR",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 64,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Sum of initial generation and import for region",
+          "id": 65,
+          "name": "INITIALSUPPLY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of cleared generation and import for region",
+          "id": 66,
+          "name": "CLEAREDSUPPLY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower Regulation MW imported",
+          "id": 67,
+          "name": "LOWERREGIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower Regulation local dispatch",
+          "id": 68,
+          "name": "LOWERREGLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower Regulation local requirement",
+          "id": 69,
+          "name": "LOWERREGLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower Regulation total requirement",
+          "id": 70,
+          "name": "LOWERREGREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise Regulation MW imported",
+          "id": 71,
+          "name": "RAISEREGIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise Regulation local dispatch",
+          "id": 72,
+          "name": "RAISEREGLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise Regulation local requirement",
+          "id": 73,
+          "name": "RAISEREGLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise Regulation total requirement",
+          "id": 74,
+          "name": "RAISEREGREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 5 min local requirement",
+          "id": 75,
+          "name": "RAISE5MINLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise Reg local requirement",
+          "id": 76,
+          "name": "RAISEREGLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 60 sec local requirement",
+          "id": 77,
+          "name": "RAISE60SECLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 6 sec local requirement",
+          "id": 78,
+          "name": "RAISE6SECLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 5 min local requirement",
+          "id": 79,
+          "name": "LOWER5MINLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower Reg local requirement",
+          "id": 80,
+          "name": "LOWERREGLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 60 sec local requirement",
+          "id": 81,
+          "name": "LOWER60SECLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 6 sec local requirement",
+          "id": 82,
+          "name": "LOWER6SECLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 5 min requirement",
+          "id": 83,
+          "name": "RAISE5MINVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise Reg requirement",
+          "id": 84,
+          "name": "RAISEREGVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 60 seconds requirement",
+          "id": 85,
+          "name": "RAISE60SECVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 6 seconds requirement",
+          "id": 86,
+          "name": "RAISE6SECVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 5 min requirement",
+          "id": 87,
+          "name": "LOWER5MINVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower Reg requirement",
+          "id": 88,
+          "name": "LOWERREGVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 60 seconds requirement",
+          "id": 89,
+          "name": "LOWER60SECVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 6 seconds requirement",
+          "id": 90,
+          "name": "LOWER6SECVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "trapezium adjusted raise 6sec availability",
+          "id": 91,
+          "name": "RAISE6SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise 60sec availability",
+          "id": 92,
+          "name": "RAISE60SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise 5min availability",
+          "id": 93,
+          "name": "RAISE5MINACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise reg availability",
+          "id": 94,
+          "name": "RAISEREGACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 6sec availability",
+          "id": 95,
+          "name": "LOWER6SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 60sec availability",
+          "id": 96,
+          "name": "LOWER60SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 5min availability",
+          "id": 97,
+          "name": "LOWER5MINACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower reg availability",
+          "id": 98,
+          "name": "LOWERREGACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Not in use after 17 Feb 2006. Total short term generation capacity reserve used in assessing lack of reserve condition",
+          "id": 99,
+          "name": "LORSURPLUS",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Not in use after 17 Feb 2006. Total short term generation capacity reserve above the stated low reserve condition requirement",
+          "id": 100,
+          "name": "LRCSURPLUS",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Allowance made for non-scheduled generation in the demand forecast (MW).",
+          "id": 101,
+          "name": "TOTALINTERMITTENTGENERATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of Cleared Scheduled generation, imported generation (at the region boundary) and allowances made for non-scheduled generation (MW).",
+          "id": 102,
+          "name": "DEMAND_AND_NONSCHEDGEN",
+          "required": false,
+          "type": "decimal(15, 6)"
+        },
+        {
+          "doc": "Regional aggregated Unconstrained Intermittent Generation Forecast of Semi-scheduled generation (MW).",
+          "id": 103,
+          "name": "UIGF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Semi-Schedule generator Cleared MW",
+          "id": 104,
+          "name": "SEMISCHEDULE_CLEAREDMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Semi-Schedule generator Cleared MW where Semi-Dispatch cap is enforced",
+          "id": 105,
+          "name": "SEMISCHEDULE_COMPLIANCEMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Unconstrained Intermittent Generation Forecast of Semi-scheduled generation (MW) where the primary fuel source is solar",
+          "id": 106,
+          "name": "SS_SOLAR_UIGF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Unconstrained Intermittent Generation Forecast of Semi-scheduled generation (MW) where the primary fuel source is wind",
+          "id": 107,
+          "name": "SS_WIND_UIGF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Semi-Schedule generator Cleared MW where the primary fuel source is solar",
+          "id": 108,
+          "name": "SS_SOLAR_CLEAREDMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Semi-Schedule generator Cleared MW where the primary fuel source is wind",
+          "id": 109,
+          "name": "SS_WIND_CLEAREDMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Semi-Schedule generator Cleared MW where Semi-Dispatch cap is enforced and the primary fuel source is solar",
+          "id": 110,
+          "name": "SS_SOLAR_COMPLIANCEMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Semi-Schedule generator Cleared MW where Semi-Dispatch cap is enforced and the primary fuel source is wind",
+          "id": 111,
+          "name": "SS_WIND_COMPLIANCEMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated MW value at start of interval for Wholesale Demand Response (WDR) units",
+          "id": 112,
+          "name": "WDR_INITIALMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated available MW for Wholesale Demand Response (WDR) units",
+          "id": 113,
+          "name": "WDR_AVAILABLE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated dispatched MW for Wholesale Demand Response (WDR) units",
+          "id": 114,
+          "name": "WDR_DISPATCHED",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "For Semi-Scheduled units. Aggregate Energy Availability from Solar units in that region",
+          "id": 119,
+          "name": "SS_SOLAR_AVAILABILITY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "For Semi-Scheduled units. Aggregate Energy Availability from Wind units in that region",
+          "id": 120,
+          "name": "SS_WIND_AVAILABILITY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Total Raise1Sec Dispatched in Region - RegionSolution element R1Dispatch attribute",
+          "id": 115,
+          "name": "RAISE1SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Total Lower1Sec Dispatched in Region - RegionSolution element L1Dispatch attribute",
+          "id": 116,
+          "name": "LOWER1SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Trapezium adjusted Raise1Sec availability (summated from UnitSolution)",
+          "id": 117,
+          "name": "RAISE1SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Trapezium adjusted Lower1Sec availability (summated from UnitSolution)",
+          "id": 118,
+          "name": "LOWER1SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Regional aggregated energy storage where the DUID type is BDU (MWh)",
+          "id": 121,
+          "name": "BDU_ENERGY_STORAGE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Total available load side BDU summated for region (MW)",
+          "id": 122,
+          "name": "BDU_MIN_AVAIL",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Total available generation side BDU summated for region (MW)",
+          "id": 123,
+          "name": "BDU_MAX_AVAIL",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated cleared MW where the DUID type is BDU. Net of export (Generation)",
+          "id": 124,
+          "name": "BDU_CLEAREDMW_GEN",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated cleared MW where the DUID type is BDU. Net of import (Load)",
+          "id": 125,
+          "name": "BDU_CLEAREDMW_LOAD",
+          "required": false,
+          "type": "decimal(15, 5)"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "schema-id": 4,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Market date and time starting at 04:05",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Dispatch run no; always 1",
+          "id": 2,
+          "name": "RUNNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Region Identifier",
+          "id": 3,
+          "name": "REGIONID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Dispatch period identifier, from 001 to 288 in format YYYYMMDDPPP.",
+          "id": 4,
+          "name": "DISPATCHINTERVAL",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Manual Intervention flag",
+          "id": 5,
+          "name": "INTERVENTION",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Demand (less loads)",
+          "id": 6,
+          "name": "TOTALDEMAND",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Aggregate generation bid available in region",
+          "id": 7,
+          "name": "AVAILABLEGENERATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Aggregate load bid available in region",
+          "id": 8,
+          "name": "AVAILABLELOAD",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "5 minute forecast adjust",
+          "id": 9,
+          "name": "DEMANDFORECAST",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Dispatched Generation",
+          "id": 10,
+          "name": "DISPATCHABLEGENERATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Dispatched Load (add to total demand to get inherent region demand).",
+          "id": 11,
+          "name": "DISPATCHABLELOAD",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Net interconnector flow from the regional reference node",
+          "id": 12,
+          "name": "NETINTERCHANGE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "MW quantity of excess",
+          "id": 13,
+          "name": "EXCESSGENERATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 5 min MW dispatch",
+          "id": 14,
+          "name": "LOWER5MINDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 5 min MW imported",
+          "id": 15,
+          "name": "LOWER5MINIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 5 min local dispatch",
+          "id": 16,
+          "name": "LOWER5MINLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Local price of lower 5 min",
+          "id": 17,
+          "name": "LOWER5MINLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 5 min local requirement",
+          "id": 18,
+          "name": "LOWER5MINLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of lower 5 min",
+          "id": 19,
+          "name": "LOWER5MINPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 5 min total requirement",
+          "id": 20,
+          "name": "LOWER5MINREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of lower 5 min",
+          "id": 21,
+          "name": "LOWER5MINSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 60 sec MW dispatch",
+          "id": 22,
+          "name": "LOWER60SECDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 60 sec MW imported",
+          "id": 23,
+          "name": "LOWER60SECIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 60 sec local dispatch",
+          "id": 24,
+          "name": "LOWER60SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Local price of lower 60 sec",
+          "id": 25,
+          "name": "LOWER60SECLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 60 sec local requirement",
+          "id": 26,
+          "name": "LOWER60SECLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of lower 60 sec",
+          "id": 27,
+          "name": "LOWER60SECPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 60 sec total requirement",
+          "id": 28,
+          "name": "LOWER60SECREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of lower 60 sec",
+          "id": 29,
+          "name": "LOWER60SECSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 6 sec MW dispatch",
+          "id": 30,
+          "name": "LOWER6SECDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 6 sec MW imported",
+          "id": 31,
+          "name": "LOWER6SECIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 6 sec local dispatch",
+          "id": 32,
+          "name": "LOWER6SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Local price of lower 6 sec",
+          "id": 33,
+          "name": "LOWER6SECLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 6 sec local requirement",
+          "id": 34,
+          "name": "LOWER6SECLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of lower 6 sec",
+          "id": 35,
+          "name": "LOWER6SECPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 6 sec total requirement",
+          "id": 36,
+          "name": "LOWER6SECREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of lower 6 sec",
+          "id": 37,
+          "name": "LOWER6SECSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 5 min MW dispatch",
+          "id": 38,
+          "name": "RAISE5MINDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 5 min MW imported",
+          "id": 39,
+          "name": "RAISE5MINIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 5 min local dispatch",
+          "id": 40,
+          "name": "RAISE5MINLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise price of lower 5 min",
+          "id": 41,
+          "name": "RAISE5MINLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 5 min local requirement",
+          "id": 42,
+          "name": "RAISE5MINLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of raise 5 min",
+          "id": 43,
+          "name": "RAISE5MINPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 5 min total requirement",
+          "id": 44,
+          "name": "RAISE5MINREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of raise 5 min",
+          "id": 45,
+          "name": "RAISE5MINSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 60 sec MW dispatch",
+          "id": 46,
+          "name": "RAISE60SECDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 60 sec MW imported",
+          "id": 47,
+          "name": "RAISE60SECIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 60 sec local dispatch",
+          "id": 48,
+          "name": "RAISE60SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Local price of raise 60 sec",
+          "id": 49,
+          "name": "RAISE60SECLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 60 sec local requirement",
+          "id": 50,
+          "name": "RAISE60SECLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of raise 60 sec",
+          "id": 51,
+          "name": "RAISE60SECPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 60 sec total requirement",
+          "id": 52,
+          "name": "RAISE60SECREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of raise 60 sec",
+          "id": 53,
+          "name": "RAISE60SECSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 6 sec MW dispatch",
+          "id": 54,
+          "name": "RAISE6SECDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 6 sec MW imported",
+          "id": 55,
+          "name": "RAISE6SECIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 6 sec local dispatch",
+          "id": 56,
+          "name": "RAISE6SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Local price of raise 6 sec",
+          "id": 57,
+          "name": "RAISE6SECLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 6 sec local requirement",
+          "id": 58,
+          "name": "RAISE6SECLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of raise 6 sec",
+          "id": 59,
+          "name": "RAISE6SECPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 6 sec total requirement",
+          "id": 60,
+          "name": "RAISE6SECREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of raise 6 sec",
+          "id": 61,
+          "name": "RAISE6SECSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Calculated dispatch error",
+          "id": 62,
+          "name": "AGGEGATEDISPATCHERROR",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Calculated dispatch error",
+          "id": 63,
+          "name": "AGGREGATEDISPATCHERROR",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 64,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Sum of initial generation and import for region",
+          "id": 65,
+          "name": "INITIALSUPPLY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of cleared generation and import for region",
+          "id": 66,
+          "name": "CLEAREDSUPPLY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower Regulation MW imported",
+          "id": 67,
+          "name": "LOWERREGIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower Regulation local dispatch",
+          "id": 68,
+          "name": "LOWERREGLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower Regulation local requirement",
+          "id": 69,
+          "name": "LOWERREGLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower Regulation total requirement",
+          "id": 70,
+          "name": "LOWERREGREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise Regulation MW imported",
+          "id": 71,
+          "name": "RAISEREGIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise Regulation local dispatch",
+          "id": 72,
+          "name": "RAISEREGLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise Regulation local requirement",
+          "id": 73,
+          "name": "RAISEREGLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise Regulation total requirement",
+          "id": 74,
+          "name": "RAISEREGREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 5 min local requirement",
+          "id": 75,
+          "name": "RAISE5MINLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise Reg local requirement",
+          "id": 76,
+          "name": "RAISEREGLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 60 sec local requirement",
+          "id": 77,
+          "name": "RAISE60SECLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 6 sec local requirement",
+          "id": 78,
+          "name": "RAISE6SECLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 5 min local requirement",
+          "id": 79,
+          "name": "LOWER5MINLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower Reg local requirement",
+          "id": 80,
+          "name": "LOWERREGLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 60 sec local requirement",
+          "id": 81,
+          "name": "LOWER60SECLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 6 sec local requirement",
+          "id": 82,
+          "name": "LOWER6SECLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 5 min requirement",
+          "id": 83,
+          "name": "RAISE5MINVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise Reg requirement",
+          "id": 84,
+          "name": "RAISEREGVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 60 seconds requirement",
+          "id": 85,
+          "name": "RAISE60SECVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 6 seconds requirement",
+          "id": 86,
+          "name": "RAISE6SECVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 5 min requirement",
+          "id": 87,
+          "name": "LOWER5MINVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower Reg requirement",
+          "id": 88,
+          "name": "LOWERREGVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 60 seconds requirement",
+          "id": 89,
+          "name": "LOWER60SECVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 6 seconds requirement",
+          "id": 90,
+          "name": "LOWER6SECVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "trapezium adjusted raise 6sec availability",
+          "id": 91,
+          "name": "RAISE6SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise 60sec availability",
+          "id": 92,
+          "name": "RAISE60SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise 5min availability",
+          "id": 93,
+          "name": "RAISE5MINACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise reg availability",
+          "id": 94,
+          "name": "RAISEREGACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 6sec availability",
+          "id": 95,
+          "name": "LOWER6SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 60sec availability",
+          "id": 96,
+          "name": "LOWER60SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 5min availability",
+          "id": 97,
+          "name": "LOWER5MINACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower reg availability",
+          "id": 98,
+          "name": "LOWERREGACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Not in use after 17 Feb 2006. Total short term generation capacity reserve used in assessing lack of reserve condition",
+          "id": 99,
+          "name": "LORSURPLUS",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Not in use after 17 Feb 2006. Total short term generation capacity reserve above the stated low reserve condition requirement",
+          "id": 100,
+          "name": "LRCSURPLUS",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Allowance made for non-scheduled generation in the demand forecast (MW).",
+          "id": 101,
+          "name": "TOTALINTERMITTENTGENERATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of Cleared Scheduled generation, imported generation (at the region boundary) and allowances made for non-scheduled generation (MW).",
+          "id": 102,
+          "name": "DEMAND_AND_NONSCHEDGEN",
+          "required": false,
+          "type": "decimal(15, 6)"
+        },
+        {
+          "doc": "Regional aggregated Unconstrained Intermittent Generation Forecast of Semi-scheduled generation (MW).",
+          "id": 103,
+          "name": "UIGF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Semi-Schedule generator Cleared MW",
+          "id": 104,
+          "name": "SEMISCHEDULE_CLEAREDMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Semi-Schedule generator Cleared MW where Semi-Dispatch cap is enforced",
+          "id": 105,
+          "name": "SEMISCHEDULE_COMPLIANCEMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Unconstrained Intermittent Generation Forecast of Semi-scheduled generation (MW) where the primary fuel source is solar",
+          "id": 106,
+          "name": "SS_SOLAR_UIGF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Unconstrained Intermittent Generation Forecast of Semi-scheduled generation (MW) where the primary fuel source is wind",
+          "id": 107,
+          "name": "SS_WIND_UIGF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Semi-Schedule generator Cleared MW where the primary fuel source is solar",
+          "id": 108,
+          "name": "SS_SOLAR_CLEAREDMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Semi-Schedule generator Cleared MW where the primary fuel source is wind",
+          "id": 109,
+          "name": "SS_WIND_CLEAREDMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Semi-Schedule generator Cleared MW where Semi-Dispatch cap is enforced and the primary fuel source is solar",
+          "id": 110,
+          "name": "SS_SOLAR_COMPLIANCEMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Semi-Schedule generator Cleared MW where Semi-Dispatch cap is enforced and the primary fuel source is wind",
+          "id": 111,
+          "name": "SS_WIND_COMPLIANCEMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated MW value at start of interval for Wholesale Demand Response (WDR) units",
+          "id": 112,
+          "name": "WDR_INITIALMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated available MW for Wholesale Demand Response (WDR) units",
+          "id": 113,
+          "name": "WDR_AVAILABLE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated dispatched MW for Wholesale Demand Response (WDR) units",
+          "id": 114,
+          "name": "WDR_DISPATCHED",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "For Semi-Scheduled units. Aggregate Energy Availability from Solar units in that region",
+          "id": 119,
+          "name": "SS_SOLAR_AVAILABILITY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "For Semi-Scheduled units. Aggregate Energy Availability from Wind units in that region",
+          "id": 120,
+          "name": "SS_WIND_AVAILABILITY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Total Raise1Sec Dispatched in Region - RegionSolution element R1Dispatch attribute",
+          "id": 115,
+          "name": "RAISE1SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Total Lower1Sec Dispatched in Region - RegionSolution element L1Dispatch attribute",
+          "id": 116,
+          "name": "LOWER1SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Trapezium adjusted Raise1Sec availability (summated from UnitSolution)",
+          "id": 117,
+          "name": "RAISE1SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Trapezium adjusted Lower1Sec availability (summated from UnitSolution)",
+          "id": 118,
+          "name": "LOWER1SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Regional aggregated energy storage where the DUID type is BDU (MWh)",
+          "id": 121,
+          "name": "BDU_ENERGY_STORAGE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Total available load side BDU summated for region (MW)",
+          "id": 122,
+          "name": "BDU_MIN_AVAIL",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Total available generation side BDU summated for region (MW)",
+          "id": 123,
+          "name": "BDU_MAX_AVAIL",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated cleared MW where the DUID type is BDU. Net of export (Generation)",
+          "id": 124,
+          "name": "BDU_CLEAREDMW_GEN",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated cleared MW where the DUID type is BDU. Net of import (Load)",
+          "id": 125,
+          "name": "BDU_CLEAREDMW_LOAD",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Energy Storage for BDU at the start of the interval(MWh) - Region Aggregated",
+          "id": 126,
+          "name": "BDU_INITIAL_ENERGY_STORAGE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Energy storage for Daily Energy Constrained Scheduled Generating Units at the start of the interval(MWh) - Region Aggregated",
+          "id": 127,
+          "name": "DECGEN_INITIAL_ENERGY_STORAGE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "schema-id": 5,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 6307533402016263228,
+      "timestamp-ms": 1246370400000
+    },
+    {
+      "snapshot-id": 6592338634748053440,
+      "timestamp-ms": 1598882400001
+    },
+    {
+      "snapshot-id": 5797497983025115730,
+      "timestamp-ms": 1617199200002
+    },
+    {
+      "snapshot-id": 3271215343536408150,
+      "timestamp-ms": 1633010400003
+    },
+    {
+      "snapshot-id": 5179634462572388399,
+      "timestamp-ms": 1714485600004
+    },
+    {
+      "snapshot-id": 4242250000360573084,
+      "timestamp-ms": 1722434400005
+    },
+    {
+      "snapshot-id": 6022870345407615067,
+      "timestamp-ms": 1743429600006
+    },
+    {
+      "snapshot-id": 5531869266332822353,
+      "timestamp-ms": 1748700000007
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHREGIONSUM/metadata/snap-6307533402016263228-1-895eb9c5-ab0c-861b-b26d-d3ebf267a971.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 6307533402016263228,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "134",
+        "utilake.from.file": "PUBLIC_DVD_DISPATCHREGIONSUM_200907010000.zip",
+        "utilake.from.release": "2009-07",
+        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "utilake.from.time": "2009-07-01T00:05:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "REGIONSUM",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "6138530",
+        "utilake.to.file": "PUBLIC_DVD_DISPATCHREGIONSUM_202008010000.zip",
+        "utilake.to.release": "2020-08",
+        "utilake.to.sha256": "af751ee538beda3c46e7d977b6ccf8add7132f40591caf5f151c60fe4af68fd4",
+        "utilake.to.time": "2020-09-01T00:00:00+10:00",
+        "utilake.total-rows": "6138530",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1246370400000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHREGIONSUM/metadata/snap-6592338634748053440-2-895eb9c5-ab0c-861b-b26d-d3ebf267a971.avro",
+      "parent-snapshot-id": 6307533402016263228,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 6592338634748053440,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "7",
+        "utilake.from.file": "PUBLIC_DVD_DISPATCHREGIONSUM_202009010000.zip",
+        "utilake.from.release": "2020-09",
+        "utilake.from.sha256": "9495c19d405187205fe919f133ae965ac948bb17ee9e83383c609fcfa682694d",
+        "utilake.from.time": "2020-09-01T00:05:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "REGIONSUM",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "305365",
+        "utilake.to.file": "PUBLIC_DVD_DISPATCHREGIONSUM_202103010000.zip",
+        "utilake.to.release": "2021-03",
+        "utilake.to.sha256": "2bceef3d0ca9e19a3ecdc3fab1c9d5dad0a55fc61f471e6457717eddf7dd264b",
+        "utilake.to.time": "2021-04-01T00:00:00+10:00",
+        "utilake.total-rows": "6443895",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1598882400001
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHREGIONSUM/metadata/snap-5797497983025115730-3-895eb9c5-ab0c-861b-b26d-d3ebf267a971.avro",
+      "parent-snapshot-id": 6592338634748053440,
+      "schema-id": 1,
+      "sequence-number": 3,
+      "snapshot-id": 5797497983025115730,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "6",
+        "utilake.from.file": "PUBLIC_DVD_DISPATCHREGIONSUM_202104010000.zip",
+        "utilake.from.release": "2021-04",
+        "utilake.from.sha256": "11b3ff7318c8df84440f518faef25558cc7f6dbc8746d0707b9b30032d0cac58",
+        "utilake.from.time": "2021-04-01T00:05:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "REGIONSUM",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "263660",
+        "utilake.to.file": "PUBLIC_DVD_DISPATCHREGIONSUM_202109010000.zip",
+        "utilake.to.release": "2021-09",
+        "utilake.to.sha256": "e67ed93fea098a121188b8bffd8889b8c4f9cdd2093aeb75ffdc6cdbeaf42169",
+        "utilake.to.time": "2021-10-01T00:00:00+10:00",
+        "utilake.total-rows": "6707555",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1617199200002
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHREGIONSUM/metadata/snap-3271215343536408150-4-895eb9c5-ab0c-861b-b26d-d3ebf267a971.avro",
+      "parent-snapshot-id": 5797497983025115730,
+      "schema-id": 2,
+      "sequence-number": 4,
+      "snapshot-id": 3271215343536408150,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_DVD_DISPATCHREGIONSUM_202110010000.zip",
+        "utilake.from.release": "2021-10",
+        "utilake.from.sha256": "7b2f812c17b2905bf8466d8d052b2fc30db1c6cfab1c5e7ab7d27e77448c808c",
+        "utilake.from.time": "2021-10-01T00:05:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "REGIONSUM",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "1375295",
+        "utilake.to.file": "PUBLIC_DVD_DISPATCHREGIONSUM_202404010000.zip",
+        "utilake.to.release": "2024-04",
+        "utilake.to.sha256": "27dc9fb1a4e3054349f20876eb04d538e51c47b22c8a9bdd593567b3429a0a81",
+        "utilake.to.time": "2024-05-01T00:00:00+10:00",
+        "utilake.total-rows": "8082850",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1633010400003
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHREGIONSUM/metadata/snap-5179634462572388399-5-895eb9c5-ab0c-861b-b26d-d3ebf267a971.avro",
+      "parent-snapshot-id": 3271215343536408150,
+      "schema-id": 3,
+      "sequence-number": 5,
+      "snapshot-id": 5179634462572388399,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "3",
+        "utilake.from.file": "PUBLIC_DVD_DISPATCHREGIONSUM_202405010000.zip",
+        "utilake.from.release": "2024-05",
+        "utilake.from.sha256": "3644c22a6cd9b83da8bffe5303ed46b70ff90713314b3fdbe9c2d30f3f6412cd",
+        "utilake.from.time": "2024-05-01T00:05:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "REGIONSUM",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "132480",
+        "utilake.to.file": "PUBLIC_DVD_DISPATCHREGIONSUM_202407010000.zip",
+        "utilake.to.release": "2024-07",
+        "utilake.to.sha256": "09a314d4f16e36763191e753f8ecff7d48be3dd7dbd7d0bc2f9817b829433087",
+        "utilake.to.time": "2024-08-01T00:00:00+10:00",
+        "utilake.total-rows": "8215330",
+        "utilake.version": "8"
+      },
+      "timestamp-ms": 1714485600004
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHREGIONSUM/metadata/snap-4242250000360573084-6-895eb9c5-ab0c-861b-b26d-d3ebf267a971.avro",
+      "parent-snapshot-id": 5179634462572388399,
+      "schema-id": 4,
+      "sequence-number": 6,
+      "snapshot-id": 4242250000360573084,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8",
+        "utilake.from.file": "PUBLIC_ARCHIVE#DISPATCHREGIONSUM#FILE01#202408010000.zip",
+        "utilake.from.release": "2024-08",
+        "utilake.from.sha256": "a65b04d980134633041613237a55455b7c834b1c061605fe08475b31b118c68d",
+        "utilake.from.time": "2024-08-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "REGIONSUM",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "349980",
+        "utilake.to.file": "PUBLIC_ARCHIVE#DISPATCHREGIONSUM#FILE01#202503010000.zip",
+        "utilake.to.release": "2025-03",
+        "utilake.to.sha256": "1db803f56f412a43897899aaa0d5988552716c1d8b7667016be1eedd11d2369f",
+        "utilake.to.time": "2025-04-01T00:00:00+10:00",
+        "utilake.total-rows": "8565310",
+        "utilake.version": "8"
+      },
+      "timestamp-ms": 1722434400005
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHREGIONSUM/metadata/snap-6022870345407615067-7-895eb9c5-ab0c-861b-b26d-d3ebf267a971.avro",
+      "parent-snapshot-id": 4242250000360573084,
+      "schema-id": 5,
+      "sequence-number": 7,
+      "snapshot-id": 6022870345407615067,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
+        "utilake.from.file": "PUBLIC_ARCHIVE#DISPATCHREGIONSUM#FILE01#202504010000.zip",
+        "utilake.from.release": "2025-04",
+        "utilake.from.sha256": "7aff4926cabc29758dc7b9428018db1062196721b5956d5027464b20c5b7c1b1",
+        "utilake.from.time": "2025-04-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "REGIONSUM",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "87840",
+        "utilake.to.file": "PUBLIC_ARCHIVE#DISPATCHREGIONSUM#FILE01#202505010000.zip",
+        "utilake.to.release": "2025-05",
+        "utilake.to.sha256": "89a3d7b9d793d164adeeeef7c4234f3a6a512aa63236ff0d1a3193d3d5eb5186",
+        "utilake.to.time": "2025-06-01T00:00:00+10:00",
+        "utilake.total-rows": "8653150",
+        "utilake.version": "8"
+      },
+      "timestamp-ms": 1743429600006
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHREGIONSUM/metadata/snap-5531869266332822353-8-895eb9c5-ab0c-861b-b26d-d3ebf267a971.avro",
+      "parent-snapshot-id": 6022870345407615067,
+      "schema-id": 5,
+      "sequence-number": 8,
+      "snapshot-id": 5531869266332822353,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "16",
+        "utilake.from.file": "PUBLIC_ARCHIVE#DISPATCHREGIONSUM#FILE01#202506010000.zip",
+        "utilake.from.release": "2025-06",
+        "utilake.from.sha256": "08b2080b7e1e6dc91da5cd4fdfbccb9f93a156efda2cdeb80ad9c69a73d46c72",
+        "utilake.from.time": "2025-06-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "REGIONSUM",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "701280",
+        "utilake.to.file": "PUBLIC_ARCHIVE#DISPATCHREGIONSUM#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "c9b384d926a508d5fcbdbd7c10bbb390833b2a5cdd589dfba7471098dff22795",
+        "utilake.to.time": "2026-10-01T00:00:00+10:00",
+        "utilake.total-rows": "9354430",
+        "utilake.version": "9"
+      },
+      "timestamp-ms": 1748700000007
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "895eb9c5-ab0c-861b-b26d-d3ebf267a971"
+}

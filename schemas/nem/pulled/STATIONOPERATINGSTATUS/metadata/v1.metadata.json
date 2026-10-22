@@ -1,0 +1,148 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 6230296812430164719,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 7,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1246370400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STATIONOPERATINGSTATUS",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "STATIONOPERATINGSTATUS sets out the operating status of each station.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"EFFECTIVEDATE\",\"STATIONID\",\"VERSIONNO\"]",
+    "utilake.load": "snapshot",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(10)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(20)\",\"5\":\"VARCHAR(15)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"TIMESTAMP(0)\"}",
+    "utilake.package": "PARTICIPANT_REGISTRATION",
+    "utilake.reports": "[[\"PARTICIPANT_REGISTRATION\",\"STATIONOPERATINGSTATUS\"]]",
+    "utilake.table": "STATIONOPERATINGSTATUS",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"STATIONID\"]",
+    "utilake.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "EFFECTIVEDATE",
+    "utilake.temporal.valid.kind": "from",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 6230296812430164719,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Effective date of this record",
+          "id": 1,
+          "name": "EFFECTIVEDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Unique station identifier",
+          "id": 2,
+          "name": "STATIONID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Version no of record within the effective date",
+          "id": 3,
+          "name": "VERSIONNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "The operating status of this station, valid values are COMMISSIONED and DECOMMISSIONED",
+          "id": 4,
+          "name": "STATUS",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "User authorising record",
+          "id": 5,
+          "name": "AUTHORISEDBY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Date record authorised",
+          "id": 6,
+          "name": "AUTHORISEDDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 7,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 6230296812430164719,
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STATIONOPERATINGSTATUS/metadata/snap-6230296812430164719-1-1cadceb8-aba8-80ae-839c-31c157cde73b.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 6230296812430164719,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "207",
+        "utilake.from.file": "PUBLIC_DVD_STATIONOPERATINGSTATUS_200907010000.zip",
+        "utilake.from.release": "2009-07",
+        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "utilake.from.time": "1998-10-25T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\",\"dvd\"]",
+        "utilake.report-subtype": "STATIONOPERATINGSTATUS",
+        "utilake.report-type": "PARTICIPANT_REGISTRATION",
+        "utilake.rows": "236629",
+        "utilake.to.file": "PUBLIC_ARCHIVE#STATIONOPERATINGSTATUS#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "9de16721af1a348a6cb1caa3cc845bcf3c83164886705979a452bab266c9e4ef",
+        "utilake.to.time": "2026-10-09T00:00:00+10:00",
+        "utilake.total-rows": "236629",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1246370400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "1cadceb8-aba8-80ae-839c-31c157cde73b"
+}

@@ -1,0 +1,359 @@
+{
+  "current-schema-id": 1,
+  "current-snapshot-id": 8642756119092691510,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 16,
+  "last-partition-id": 999,
+  "last-sequence-number": 2,
+  "last-updated-ms": 1777557600001,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/NEGATIVE_RESIDUE",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "Shows the inputs provided to the Negative Residue Constraints in the Dispatch horizon",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"SETTLEMENTDATE\",\"NRM_DATETIME\",\"DIRECTIONAL_INTERCONNECTORID\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(30)\",\"4\":\"NUMERIC(1,0)\",\"5\":\"NUMERIC(15,5)\",\"6\":\"NUMERIC(15,5)\",\"7\":\"NUMERIC(15,5)\",\"8\":\"NUMERIC(15,5)\",\"9\":\"VARCHAR(30)\",\"10\":\"VARCHAR(20)\",\"11\":\"TIMESTAMP(0)\",\"12\":\"TIMESTAMP(0)\",\"13\":\"NUMERIC(2,0)\",\"14\":\"NUMERIC(2,0)\",\"15\":\"NUMERIC(1,0)\",\"16\":\"NUMERIC(1,0)\"}",
+    "utilake.package": "DISPATCH",
+    "utilake.reports": "[[\"DISPATCH\",\"NEGATIVE_RESIDUE\"]]",
+    "utilake.table": "NEGATIVE_RESIDUE",
+    "utilake.temporal.entity": "[\"NRM_DATETIME\",\"DIRECTIONAL_INTERCONNECTORID\"]",
+    "utilake.temporal.order": "[\"PREDISPATCHSEQNO\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "SETTLEMENTDATE",
+    "utilake.temporal.valid.kind": "interval_end",
+    "utilake.time": "SETTLEMENTDATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 8642756119092691510,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Dispatch Interval",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The time that residue information is processed",
+          "id": 2,
+          "name": "NRM_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Negative residue related direction interconnector id",
+          "id": 3,
+          "name": "DIRECTIONAL_INTERCONNECTORID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Is 1 if negative residue process is on, else is 0",
+          "id": 4,
+          "name": "NRM_ACTIVATED_FLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "Negative residue triggering amount",
+          "id": 5,
+          "name": "CUMUL_NEGRESIDUE_AMOUNT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Previous trading interval cumulative negative residue amount",
+          "id": 6,
+          "name": "CUMUL_NEGRESIDUE_PREV_TI",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Current trading interval negative residue amount",
+          "id": 7,
+          "name": "NEGRESIDUE_CURRENT_TI",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "The cumulative negative residue for the next trading interval (PD)",
+          "id": 8,
+          "name": "NEGRESIDUE_PD_NEXT_TI",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "SubjectToReview, Indeterminate, Accepted or Rejected",
+          "id": 9,
+          "name": "PRICE_REVISION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Predispatch sequence number",
+          "id": 10,
+          "name": "PREDISPATCHSEQNO",
+          "required": false,
+          "type": "decimal(10, 0)"
+        },
+        {
+          "doc": "The starting DI when NRM event is active",
+          "id": 11,
+          "name": "EVENT_ACTIVATED_DI",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The finishing DI when NRM event stops being active.",
+          "id": 12,
+          "name": "EVENT_DEACTIVATED_DI",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Count of the number of DIs not binding by this constraint",
+          "id": 13,
+          "name": "DI_NOTBINDING_COUNT",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "Count of the number of DIs violated by this constraint",
+          "id": 14,
+          "name": "DI_VIOLATED_COUNT",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "1 if constraint is blocked, else 0",
+          "id": 15,
+          "name": "NRMCONSTRAINT_BLOCKED_FLAG",
+          "required": false,
+          "type": "long"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Dispatch Interval",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The time that residue information is processed",
+          "id": 2,
+          "name": "NRM_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Negative residue related direction interconnector id",
+          "id": 3,
+          "name": "DIRECTIONAL_INTERCONNECTORID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Is 1 if negative residue process is on, else is 0",
+          "id": 4,
+          "name": "NRM_ACTIVATED_FLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "Negative residue triggering amount",
+          "id": 5,
+          "name": "CUMUL_NEGRESIDUE_AMOUNT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Previous trading interval cumulative negative residue amount",
+          "id": 6,
+          "name": "CUMUL_NEGRESIDUE_PREV_TI",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Current trading interval negative residue amount",
+          "id": 7,
+          "name": "NEGRESIDUE_CURRENT_TI",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "The cumulative negative residue for the next trading interval (PD)",
+          "id": 8,
+          "name": "NEGRESIDUE_PD_NEXT_TI",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "SubjectToReview, Indeterminate, Accepted or Rejected",
+          "id": 9,
+          "name": "PRICE_REVISION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Predispatch sequence number",
+          "id": 10,
+          "name": "PREDISPATCHSEQNO",
+          "required": false,
+          "type": "decimal(10, 0)"
+        },
+        {
+          "doc": "The starting DI when NRM event is active",
+          "id": 11,
+          "name": "EVENT_ACTIVATED_DI",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The finishing DI when NRM event stops being active.",
+          "id": 12,
+          "name": "EVENT_DEACTIVATED_DI",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Count of the number of DIs not binding by this constraint",
+          "id": 13,
+          "name": "DI_NOTBINDING_COUNT",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "Count of the number of DIs violated by this constraint",
+          "id": 14,
+          "name": "DI_VIOLATED_COUNT",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "1 if constraint is blocked, else 0",
+          "id": 15,
+          "name": "NRMCONSTRAINT_BLOCKED_FLAG",
+          "required": false,
+          "type": "long"
+        },
+        {
+          "doc": "NRM Loop Flag controls monitoring behaviour: \n0 = Individual NRM monitoring suppressed (loop operational with aggregate IRSR >= 0)\n1 = Individual NRM monitoring active (applies to: loop not operational, aggregate loop IRSR < 0, or non-loop interconnection)\nThis flag is evaluated and set for ALL interconnections in each dispatch interval",
+          "id": 16,
+          "name": "NRM_LOOP_FLAG",
+          "required": false,
+          "type": "long"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3
+      ],
+      "schema-id": 1,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 3986145801521019689,
+      "timestamp-ms": 1722434400000
+    },
+    {
+      "snapshot-id": 8642756119092691510,
+      "timestamp-ms": 1777557600001
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/NEGATIVE_RESIDUE/metadata/snap-3986145801521019689-1-5a8afc6d-3af0-88d3-9478-64dd42ac7cf3.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 3986145801521019689,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "21",
+        "utilake.from.file": "PUBLIC_ARCHIVE#NEGATIVE_RESIDUE#FILE01#202408010000.zip",
+        "utilake.from.release": "2024-08",
+        "utilake.from.sha256": "ee2ab1b01231583b293c2e9f8d34b22b1989d6221dbb43410963e2caa2dfd7ac",
+        "utilake.from.time": "2024-08-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "NEGATIVE_RESIDUE",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "1102117",
+        "utilake.to.file": "PUBLIC_ARCHIVE#NEGATIVE_RESIDUE#FILE01#202604010000.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "28e036bbf3a25687c8ab0d3dd3300bf7a4637b3b41b43cf0ab24dff2bc368cd3",
+        "utilake.to.time": "2026-05-01T00:00:00+10:00",
+        "utilake.total-rows": "1102117",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1722434400000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/NEGATIVE_RESIDUE/metadata/snap-8642756119092691510-2-5a8afc6d-3af0-88d3-9478-64dd42ac7cf3.avro",
+      "parent-snapshot-id": 3986145801521019689,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 8642756119092691510,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "5",
+        "utilake.from.file": "PUBLIC_ARCHIVE#NEGATIVE_RESIDUE#FILE01#202605010000.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "6c35e21679a4d4383a9b2023a1ad97d1ae3f4383a3c4de505c830f572393f4b6",
+        "utilake.from.time": "2026-05-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "NEGATIVE_RESIDUE",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "317975",
+        "utilake.to.file": "PUBLIC_ARCHIVE#NEGATIVE_RESIDUE#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "3b6e0d60546af27964243d66a3858de66f271e89972f7faa3f29fffebda3e03c",
+        "utilake.to.time": "2026-10-01T00:00:00+10:00",
+        "utilake.total-rows": "1420092",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1777557600001
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "5a8afc6d-3af0-88d3-9478-64dd42ac7cf3"
+}

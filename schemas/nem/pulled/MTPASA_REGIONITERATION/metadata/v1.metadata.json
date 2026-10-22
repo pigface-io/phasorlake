@@ -1,0 +1,182 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 3319440494690570546,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 11,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1525096800000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_REGIONITERATION",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "Region results for Unserved Energy (USE)",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"RUN_DATETIME\",\"RUN_NO\",\"RUNTYPE\",\"DEMAND_POE_TYPE\",\"AGGREGATION_PERIOD\",\"PERIOD_ENDING\",\"REGIONID\",\"USE_ITERATION_ID\"]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(4)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(20)\",\"5\":\"VARCHAR(20)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"VARCHAR(20)\",\"8\":\"NUMERIC(5)\",\"9\":\"NUMERIC(12,2)\",\"10\":\"NUMERIC(12,2)\",\"11\":\"TIMESTAMP(0)\"}",
+    "utilake.package": "MTPASA",
+    "utilake.reports": "[[\"MTPASA\",\"REGIONITERATION\"]]",
+    "utilake.table": "MTPASA_REGIONITERATION",
+    "utilake.temporal.cutoff": "RUN_DATETIME",
+    "utilake.temporal.entity": "[\"RUNTYPE\",\"DEMAND_POE_TYPE\",\"AGGREGATION_PERIOD\",\"REGIONID\",\"USE_ITERATION_ID\"]",
+    "utilake.temporal.order": "[\"RUN_DATETIME\",\"RUN_NO\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.column": "PERIOD_ENDING",
+    "utilake.temporal.valid.kind": "interval_end",
+    "utilake.time": "RUN_DATETIME",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 3319440494690570546,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Date processing of the run begins.",
+          "id": 1,
+          "name": "RUN_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Unique run id.",
+          "id": 2,
+          "name": "RUN_NO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Type of run. Always RELIABILITY",
+          "id": 3,
+          "name": "RUNTYPE",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Demand POE type used. Value is POE10 or POE50",
+          "id": 4,
+          "name": "DEMAND_POE_TYPE",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Period data is aggregated over. Values are YEAR",
+          "id": 5,
+          "name": "AGGREGATION_PERIOD",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Datetime of day at end of period (i.e. last day of year reported)",
+          "id": 6,
+          "name": "PERIOD_ENDING",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The unique region identifier",
+          "id": 7,
+          "name": "REGIONID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Iteration ID, only produced for iterations showing unserved energy>0",
+          "id": 8,
+          "name": "USE_ITERATION_ID",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Number of half hours showing unserved energy over year, for iteration",
+          "id": 9,
+          "name": "USE_ITERATION_EVENT_NUMBER",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Average unserved energy event size for iteration over year (MW)",
+          "id": 10,
+          "name": "USE_ITERATION_EVENT_AVERAGE",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 11,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 3319440494690570546,
+      "timestamp-ms": 1525096800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_REGIONITERATION/metadata/snap-3319440494690570546-1-82b872f1-aeb4-8440-a68b-1e85dac0d5d0.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 3319440494690570546,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "101",
+        "utilake.from.file": "PUBLIC_DVD_MTPASA_REGIONITERATION_201805010000.zip",
+        "utilake.from.release": "2018-05",
+        "utilake.from.sha256": "626fe49bdafdb85534bcbe8f315e5fbde9e8fb08cd999c6d9d232e35be546838",
+        "utilake.from.time": "2018-05-14T10:59:49+10:00",
+        "utilake.kinds": "[\"archive\",\"dvd\"]",
+        "utilake.report-subtype": "REGIONITERATION",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "1351462",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MTPASA_REGIONITERATION#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "62a126e7fb03c96e60a4e951e3374d71a89a36fb508c8d70d15cdd4b59bd7c6a",
+        "utilake.to.time": "2026-09-28T17:00:00+10:00",
+        "utilake.total-rows": "1351462",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1525096800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "82b872f1-aeb4-8440-a68b-1e85dac0d5d0"
+}

@@ -1,0 +1,122 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 5703900841099798401,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 4,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1761919200000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SSM_ENABLEMENT_COSTS",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "SSM Contract Enablement Costs for NEM",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(40)\",\"3\":\"NUMERIC(18,8)\",\"4\":\"TIMESTAMP(0)\"}",
+    "utilake.reports": "[[\"SSM\",\"ENABLEMENT_COSTS\"]]",
+    "utilake.table": "SSM_ENABLEMENT_COSTS",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[]",
+    "utilake.temporal.order": "[\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.time": "LASTCHANGED",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 5703900841099798401,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Trading Date of the end of the enablement",
+          "id": 1,
+          "name": "END_TRADINGDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Primary Service type associated.",
+          "id": 2,
+          "name": "ENABLEMENT_REASON",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Cost estimation for the service type.",
+          "id": 3,
+          "name": "ESTIMATED_COSTS",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Last time record was changed.",
+          "id": 4,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 5703900841099798401,
+      "timestamp-ms": 1761919200000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SSM_ENABLEMENT_COSTS/metadata/snap-5703900841099798401-1-4101f960-6d02-8794-a564-025381482a4f.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 5703900841099798401,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "11",
+        "utilake.from.file": "PUBLIC_ARCHIVE#SSM_ENABLEMENT_COSTS#FILE01#202511010000.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "ad77d7a0f66ea2d1cc05939ec87d0b194fbf4aa69a170bbd04077e8201ba277c",
+        "utilake.from.time": "2025-12-02T12:00:16+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "ENABLEMENT_COSTS",
+        "utilake.report-type": "SSM",
+        "utilake.rows": "1398",
+        "utilake.to.file": "PUBLIC_ARCHIVE#SSM_ENABLEMENT_COSTS#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "9077bc34d3d1c2d7463eacb85db7ad6cbf0090fcc273b93076ed4e180e828c92",
+        "utilake.to.time": "2026-09-30T12:00:07+10:00",
+        "utilake.total-rows": "1398",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1761919200000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "4101f960-6d02-8794-a564-025381482a4f"
+}

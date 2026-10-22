@@ -1,0 +1,136 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 1966763573115288098,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 9,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1251727200000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PRICELOAD_PRICE_REVISION",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "false",
+    "utilake.format": "3",
+    "utilake.table": "PRICELOAD_PRICE_REVISION"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 1966763573115288098,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 2,
+          "name": "RUNNO",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 3,
+          "name": "INTERVENTION",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 4,
+          "name": "REGIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 5,
+          "name": "BIDTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 6,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 7,
+          "name": "RRP_NEW",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 8,
+          "name": "RRP_OLD",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 9,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 1966763573115288098,
+      "timestamp-ms": 1251727200000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PRICELOAD_PRICE_REVISION/metadata/snap-1966763573115288098-1-c8879ef1-e3ff-8cee-a8f8-14a34bcbfa22.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 1966763573115288098,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "40",
+        "utilake.from.file": "PUBLIC_DVD_DISPATCH_PRICE_REVISION_200909010000.zip",
+        "utilake.from.release": "2009-09",
+        "utilake.from.sha256": "9cf326f7fabd7b91220c5950a2de3fdb28d9c7b97f1a4045f8075ad7b3abaaf5",
+        "utilake.from.time": "2009-09-11T19:25:00+10:00",
+        "utilake.kinds": "[\"archive\",\"dvd\"]",
+        "utilake.report-subtype": "PRICE_REVISION",
+        "utilake.report-type": "PRICELOAD",
+        "utilake.rows": "39734",
+        "utilake.to.file": "PUBLIC_ARCHIVE#DISPATCH_PRICE_REVISION#FILE01#202603010000.zip",
+        "utilake.to.release": "2026-03",
+        "utilake.to.sha256": "233e3e992a2de3a8122a2f826f120a152782d60c6521c63230705a3769fff8fa",
+        "utilake.to.time": "2026-03-23T11:45:00+10:00",
+        "utilake.total-rows": "39734",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1251727200000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "c8879ef1-e3ff-8cee-a8f8-14a34bcbfa22"
+}

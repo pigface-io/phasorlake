@@ -1,0 +1,206 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 7359111850727412132,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 16,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1722434400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PMS_GROUPSERVICE",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "Describe the services a group provides and its relation to a market",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.model-types": "{\"1\":\"NUMERIC(20,0)\",\"2\":\"NUMERIC(20,0)\",\"3\":\"TIMESTAMP(3)\",\"4\":\"TIMESTAMP(3)\",\"5\":\"TIMESTAMP(3)\",\"6\":\"TIMESTAMP(3)\",\"7\":\"VARCHAR(50)\",\"8\":\"VARCHAR(50)\",\"9\":\"VARCHAR(50)\",\"10\":\"VARCHAR(50)\",\"11\":\"NUMERIC(10,3)\",\"12\":\"VARCHAR(500)\",\"13\":\"NUMERIC(10,0)\",\"14\":\"VARCHAR(20)\",\"15\":\"TIMESTAMP(3)\",\"16\":\"TIMESTAMP(3)\"}",
+    "utilake.reports": "[[\"PARTICIPANT_REGISTRATION\",\"PMS_GROUPSERVICE\"]]",
+    "utilake.table": "PMS_GROUPSERVICE",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[]",
+    "utilake.temporal.order": "[\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "derived",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.time": "LASTCHANGED",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 7359111850727412132,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Record identifier of the Service allocated to the Group. When data is updated, existing record identifier is terminated, and new record identifier(s) are allocated.",
+          "id": 1,
+          "name": "GROUPSERVICEID",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Group id of the Group where the Service is attached to.",
+          "id": 2,
+          "name": "GROUPID",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Date for which this version is effective from.",
+          "id": 3,
+          "name": "VERSIONFROM",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Date for which this version is effective to. Will be set to max date 9999/12/31 23:59:59.999 until this version ends or a change to the version is required.",
+          "id": 4,
+          "name": "VERSIONTO",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Effective date of when this service started operation",
+          "id": 5,
+          "name": "STARTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Effective date of when this service ended operation. Will be set to max date 9999/12/31 23:59:59.999 until its service ends or a change to the service is required.",
+          "id": 6,
+          "name": "ENDDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Market that this group is operating its service in. Will only be NEM initially.",
+          "id": 7,
+          "name": "MARKET",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Service that this group is operating. Will be only be ENERGY initially",
+          "id": 8,
+          "name": "SERVICETYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Describes the entity that is operating. Will only be WDRU initially.",
+          "id": 9,
+          "name": "ENTITYTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Describe the entity ID in the market that it will be operating in. Will only contain the DUID of the group initially.",
+          "id": 10,
+          "name": "ENTITYID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Maximum responsive component for the service offering",
+          "id": 11,
+          "name": "MRC",
+          "required": false,
+          "type": "decimal(10, 3)"
+        },
+        {
+          "doc": "Reason for the MRC.",
+          "id": 12,
+          "name": "MRCREASON",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Maximum ramp rate MW per minute of the service.",
+          "id": 13,
+          "name": "MAXIMUMRAMPRATEPERMIN",
+          "required": false,
+          "type": "decimal(10, 0)"
+        },
+        {
+          "doc": "Region the group is operating this service in One of NSW1, QLD1, VIC1, SA1 or TAS1",
+          "id": 14,
+          "name": "REGION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Date which this record was approved",
+          "id": 15,
+          "name": "APPROVEDDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Date time which record was last changed",
+          "id": 16,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 7359111850727412132,
+      "timestamp-ms": 1722434400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PMS_GROUPSERVICE/metadata/snap-7359111850727412132-1-24af073e-5ba7-8590-8be3-d58ab2a846df.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 7359111850727412132,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "26",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PMS_GROUPSERVICE#FILE01#202408010000.zip",
+        "utilake.from.release": "2024-08",
+        "utilake.from.sha256": "63cecb235bf4c375d3bac977ff2b82cac574f7f262eb4b872469353e44ea6f75",
+        "utilake.from.time": "2024-09-07T17:00:00.747+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "PMS_GROUPSERVICE",
+        "utilake.report-type": "PARTICIPANT_REGISTRATION",
+        "utilake.rows": "3128",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PMS_GROUPSERVICE#FILE01#202609010000.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "08e98075f1200bcaa7851c39567a82d564645f1779ff6462b4abdce422917aec",
+        "utilake.to.time": "2026-10-08T17:00:02.470+10:00",
+        "utilake.total-rows": "3128",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1722434400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "24af073e-5ba7-8590-8be3-d58ab2a846df"
+}

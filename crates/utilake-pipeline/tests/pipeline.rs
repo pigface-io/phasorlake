@@ -162,6 +162,7 @@ fn text_table(
                 rows: 0,
             })
             .collect(),
+        current_schema: schemas.len().saturating_sub(1) as u16,
     }
 }
 
