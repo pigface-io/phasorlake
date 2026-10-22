@@ -132,7 +132,7 @@ fn the_mirror_downloads_what_the_crawl_listed() {
         dir.join("a.zip.json"),
         format!(
             r#"{{"url":"https://h/A/a.zip","size":9,"sha256":"{}","fetched_at":"2026-10-15T10:00:05Z","tool":"nemlake"}}"#,
-            nemweb_mirror::net::archive::sha256_hex(b"zip bytes")
+            utilake_mirror::net::archive::sha256_hex(b"zip bytes")
         ),
     )
     .unwrap();
@@ -323,7 +323,7 @@ fn a_run_waits_out_failures_then_compare_map_and_summary() {
         verified.contains("holds") && verified.contains("1 removed zips checked, 0 no longer held"),
         "{verified}"
     );
-    let t1 = nemweb_mirror::net::Archive::new(cli.home.path().join("archive"))
+    let t1 = utilake_mirror::net::Archive::new(cli.home.path().join("archive"))
         .path_for(&srv.url("/A/M/S/t1.zip"));
     let mut bytes = std::fs::read(&t1).unwrap();
     bytes[0] ^= 1;
@@ -436,18 +436,18 @@ fn what_stops_coming_times_out() {
 #[test]
 fn the_lock_the_home_and_the_config() {
     let cli = Cli::new();
-    let mirror = nemweb_mirror::Mirror::new(cli.home.path().join("mirror"));
+    let mirror = utilake_mirror::Mirror::new(cli.home.path().join("mirror"));
     let held = mirror.lock().unwrap();
     let (code, _, err) = cli.code(&["--offline", "crawl", "--root", "https://h/A/"]);
     assert_eq!(code, 1);
     assert!(err.contains("mirror.locked"), "{err}");
     assert!(cli.ok(&["status"]).starts_with("mirror running"));
     // A run's kept counts are what status shows while it runs.
-    let mut kept = nemweb_mirror::Status {
+    let mut kept = utilake_mirror::Status {
         crawl_done: true,
-        peek: Some(nemweb_mirror::PeekCount { done: 2, total: 5 }),
+        peek: Some(utilake_mirror::PeekCount { done: 2, total: 5 }),
         downloading: Some(1_500_000_000),
-        ..nemweb_mirror::Status::default()
+        ..utilake_mirror::Status::default()
     };
     kept.pages = 7;
     mirror.write_progress(&kept).unwrap();

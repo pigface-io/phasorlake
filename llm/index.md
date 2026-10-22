@@ -37,6 +37,7 @@ Entries name where it starts.
 - **Command**: `fetch nem` (download only), `ingest` (archived months or local files), `reingest`, `inspect`, `ls`, `errors`, `verify`, `schema`, `archive`, `wem`. `crates/utilake-cli/src/cli.rs`, `crates/utilake-cli/src/commands/`.
 - **MDFF**: NEM12/13 codes, units; rules in `reference/mdff/`. `crates/utilake-mdff/src/`.
 - **Gates**: `just cover`, `just bench`, `just bench-fast`, `just budget-check`, `just llm-check`, `just errors-check`, `just schemas-check`. `crates/xtask/src/`, `crates/utilake-bench/src/main.rs`, `bench/budgets.json`, `coverage.json`.
+- **Mirror** (`crates/utilake-mirror/src/`, binary `nemweb-mirror`): every file under nemweb's archive folders and its catalog; `NEMWEB_MIRROR_HOME`, sidecars and journal as before (`crates/utilake-mirror/README.md`).
 
 ## Documents
 

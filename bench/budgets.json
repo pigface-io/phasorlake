@@ -61,6 +61,15 @@
     },
     "store/partition_split_two_months": {
       "max_ms": 5.05
+    },
+    "mirror/listing_parse": {
+      "min_mb_per_s": 720.0
+    },
+    "mirror/map_zip_of_zips": {
+      "min_mb_per_s": 125.0
+    },
+    "mirror/zipdir_parse": {
+      "min_mb_per_s": 870.0
     }
   }
 }

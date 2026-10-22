@@ -6,9 +6,9 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use criterion::{BatchSize, Criterion, Throughput, criterion_group, criterion_main};
-use nemweb_mirror::Url;
-use nemweb_mirror::net::transport::{Canned, StaticTransport};
-use nemweb_mirror::net::{Archive, Fetcher, FetcherConfig, RemoteFile};
+use utilake_mirror::Url;
+use utilake_mirror::net::transport::{Canned, StaticTransport};
+use utilake_mirror::net::{Archive, Fetcher, FetcherConfig, RemoteFile};
 
 const DOWNLOAD_BYTES: usize = 64 << 20;
 const CHUNK: usize = 64 << 10;

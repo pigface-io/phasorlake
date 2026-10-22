@@ -27,3 +27,7 @@ tempfile.workspace = true
 [[bench]]
 name = "scan"
 harness = false
+
+[[bench]]
+name = "values"
+harness = false

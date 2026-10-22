@@ -15,7 +15,7 @@ const CATEGORIES: [&str; 12] = [
 
 /// Codes that are no longer raised. A code is a promise to whoever matches
 /// on it, so a retired one stays listed and may never be given a new meaning.
-const RETIRED: [(&str, &str); 20] = [
+const RETIRED: [(&str, &str); 11] = [
     (
         "listing.era_unsupported",
         "months before 2024 could not be listed; every archive month is now readable and a month the archive does not publish is `listing.month_missing`",
@@ -59,42 +59,6 @@ const RETIRED: [(&str, &str); 20] = [
     (
         "schema.breaking_change",
         "a table file changed in a way the lake does not survive; tables come from the histories utilake-schemas publishes, which hold their own changes",
-    ),
-    (
-        "config.mirror_root",
-        "raised by the mirror of nemweb's archive folders, which moved to nemweb-mirror (github.com/g0itb4/nemweb-mirror)",
-    ),
-    (
-        "listing.unparsed_line",
-        "raised by the mirror of nemweb's archive folders, which moved to nemweb-mirror (github.com/g0itb4/nemweb-mirror)",
-    ),
-    (
-        "mirror.crawl_incomplete",
-        "raised by the mirror of nemweb's archive folders, which moved to nemweb-mirror (github.com/g0itb4/nemweb-mirror)",
-    ),
-    (
-        "mirror.files_failed",
-        "raised by the mirror of nemweb's archive folders, which moved to nemweb-mirror (github.com/g0itb4/nemweb-mirror)",
-    ),
-    (
-        "mirror.io",
-        "raised by the mirror of nemweb's archive folders, which moved to nemweb-mirror (github.com/g0itb4/nemweb-mirror)",
-    ),
-    (
-        "mirror.locked",
-        "raised by the mirror of nemweb's archive folders, which moved to nemweb-mirror (github.com/g0itb4/nemweb-mirror)",
-    ),
-    (
-        "mirror.not_same",
-        "raised by the mirror of nemweb's archive folders, which moved to nemweb-mirror (github.com/g0itb4/nemweb-mirror)",
-    ),
-    (
-        "mirror.record_corrupt",
-        "raised by the mirror of nemweb's archive folders, which moved to nemweb-mirror (github.com/g0itb4/nemweb-mirror)",
-    ),
-    (
-        "mirror.summary_stale",
-        "raised by the mirror of nemweb's archive folders, which moved to nemweb-mirror (github.com/g0itb4/nemweb-mirror)",
     ),
 ];
 

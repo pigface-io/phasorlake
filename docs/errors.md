@@ -7,22 +7,24 @@ Every error and warning utilake reports carries one of these codes. Codes are st
 | code | raised in |
 |---|---|
 | `config.bad_path` | `crates/utilake-pipeline/src/run.rs` |
+| `config.mirror_root` | `crates/utilake-mirror/src/error.rs` |
 | `config.no_decoder` | `crates/utilake-pipeline/src/ingest_file.rs` |
-| `config.parse` | `crates/utilake-core/src/config.rs` |
-| `config.read` | `crates/utilake-core/src/config.rs` |
+| `config.parse` | `crates/utilake-mirror/src/config.rs` |
+| `config.read` | `crates/utilake-mirror/src/config.rs` |
 
 ## net
 
 | code | raised in |
 |---|---|
-| `net.blocked` | `crates/utilake-acquire/src/error.rs` |
-| `net.body` | `crates/utilake-acquire/src/error.rs` |
-| `net.connect` | `crates/utilake-acquire/src/error.rs` |
-| `net.content_length_mismatch` | `crates/utilake-acquire/src/error.rs` |
-| `net.http_status` | `crates/utilake-acquire/src/error.rs` |
+| `net.blocked` | `crates/utilake-mirror/src/net/error.rs` |
+| `net.body` | `crates/utilake-mirror/src/net/error.rs` |
+| `net.connect` | `crates/utilake-mirror/src/net/error.rs` |
+| `net.content_length_mismatch` | `crates/utilake-mirror/src/net/error.rs` |
+| `net.http_status` | `crates/utilake-mirror/src/net/error.rs` |
 | `net.offline` | `crates/utilake-pipeline/src/report.rs` |
-| `net.retries_exhausted` | `crates/utilake-acquire/src/error.rs` |
-| `net.timeout` | `crates/utilake-acquire/src/error.rs` |
+| `net.range_unsupported` | `crates/utilake-mirror/src/net/error.rs` |
+| `net.retries_exhausted` | `crates/utilake-mirror/src/commands.rs` |
+| `net.timeout` | `crates/utilake-mirror/src/net/error.rs` |
 
 ## listing
 
@@ -31,25 +33,31 @@ Every error and warning utilake reports carries one of these codes. Codes are st
 | `listing.month_missing` | `crates/utilake-acquire/src/error.rs` |
 | `listing.no_match` | `crates/utilake-acquire/src/error.rs` |
 | `listing.parse_failed` | `crates/utilake-acquire/src/error.rs` |
+| `listing.unparsed_line` | `crates/utilake-mirror/src/error.rs` |
 
 ## cache
 
 | code | raised in |
 |---|---|
-| `cache.io` | `crates/utilake-acquire/src/error.rs` |
-| `cache.sha256_mismatch` | `crates/utilake-acquire/src/error.rs` |
-| `cache.sidecar_corrupt` | `crates/utilake-acquire/src/error.rs` |
+| `cache.io` | `crates/utilake-mirror/src/net/error.rs` |
+| `cache.sha256_mismatch` | `crates/utilake-mirror/src/net/error.rs` |
+| `cache.sidecar_corrupt` | `crates/utilake-mirror/src/net/error.rs` |
 | `cache.source_missing` | `crates/utilake-pipeline/src/run.rs` |
 
 ## zip
 
 | code | raised in |
 |---|---|
-| `zip.bad_entry` | `crates/utilake-kit/src/container.rs` |
-| `zip.nesting_too_deep` | `crates/utilake-kit/src/container.rs` |
+| `zip.bad_directory` | `crates/utilake-mirror/src/map.rs` |
+| `zip.bad_entry` | `crates/utilake-mirror/src/map.rs` |
+| `zip.nesting_too_deep` | `crates/utilake-mirror/src/map.rs` |
 | `zip.no_csv` | `crates/utilake-kit/src/container.rs` |
-| `zip.open_failed` | `crates/utilake-kit/src/container.rs` |
+| `zip.not_a_zip` | `crates/utilake-mirror/src/map.rs` |
+| `zip.open_failed` | `crates/utilake-mirror/src/error.rs` |
+| `zip.size_mismatch` | `crates/utilake-mirror/src/map.rs` |
 | `zip.spool_failed` | `crates/utilake-kit/src/container.rs` |
+| `zip.too_big` | `crates/utilake-mirror/src/map.rs` |
+| `zip.too_many_entries` | `crates/utilake-mirror/src/map.rs` |
 
 ## csv
 
@@ -153,12 +161,3 @@ No longer raised; kept so the code is never reused.
 | `schema.rule_conflict` | a hand-written rule routed a column the file also carried; rules are gone, fixes go in an increment's columns |
 | `schema.census_unresolved` | a census shape neither declared nor read by a rule; now `schema.census_deviates` |
 | `schema.breaking_change` | a table file changed in a way the lake does not survive; tables come from the histories utilake-schemas publishes, which hold their own changes |
-| `config.mirror_root` | raised by the mirror of nemweb's archive folders, which moved to nemweb-mirror (github.com/g0itb4/nemweb-mirror) |
-| `listing.unparsed_line` | raised by the mirror of nemweb's archive folders, which moved to nemweb-mirror (github.com/g0itb4/nemweb-mirror) |
-| `mirror.crawl_incomplete` | raised by the mirror of nemweb's archive folders, which moved to nemweb-mirror (github.com/g0itb4/nemweb-mirror) |
-| `mirror.files_failed` | raised by the mirror of nemweb's archive folders, which moved to nemweb-mirror (github.com/g0itb4/nemweb-mirror) |
-| `mirror.io` | raised by the mirror of nemweb's archive folders, which moved to nemweb-mirror (github.com/g0itb4/nemweb-mirror) |
-| `mirror.locked` | raised by the mirror of nemweb's archive folders, which moved to nemweb-mirror (github.com/g0itb4/nemweb-mirror) |
-| `mirror.not_same` | raised by the mirror of nemweb's archive folders, which moved to nemweb-mirror (github.com/g0itb4/nemweb-mirror) |
-| `mirror.record_corrupt` | raised by the mirror of nemweb's archive folders, which moved to nemweb-mirror (github.com/g0itb4/nemweb-mirror) |
-| `mirror.summary_stale` | raised by the mirror of nemweb's archive folders, which moved to nemweb-mirror (github.com/g0itb4/nemweb-mirror) |

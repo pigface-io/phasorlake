@@ -6,19 +6,26 @@ new source adds crates and changes none.
 ## Three groups
 
 - **Generic** (`utilake-core`, `utilake-iceberg`, `utilake-acquire`,
-  `utilake-kit`, `utilake-writer`, `utilake-pipeline`, `utilake-cli`): what
-  every source shares. `utilake-iceberg` is the lake's Iceberg contract
-  (types, field ids, legal updates, partition spec), on `utilake-core`
-  alone. The pipeline runs over the ports in `utilake-kit` and names no
+  `utilake-kit`, `utilake-writer`, `utilake-pipeline`, `utilake-cli`,
+  `utilake-mirror`): what every source shares. `utilake-iceberg` is the
+  lake's Iceberg contract (types, field ids, legal updates, the interval
+  planner); it, the MMS decoder (`utilake-mms-decode`) and the repository
+  gates (`utilake-gates`) come from the utilake-schemas repository at the
+  revision `Cargo.toml` pins, so the lake, its census and its schemas read
+  AEMO's files through one scanner and agree on every id. `utilake-mirror`
+  is the nemweb mirror (binary `nemweb-mirror`): every file under nemweb's
+  archive folders and the catalog of it, which the lake and the census
+  read from. The pipeline runs over the ports in `utilake-kit` and names no
   format: a `Source` lists and describes files, a `Decoder` reads an entry
   into `Block`s for a `BlockSink`, a `Catalog` declares the tables, and a
   `SourceKit` bundles them for one market. The compiler holds the rule:
   `cargo tree -p utilake-pipeline` names no format or market crate.
 - **Formats** (`utilake-mms-*`): how one publication format is read. MMS is
-  AEMO's C/I/D rows with SQL*Loader control files; `decode` scans them,
-  `registry` holds the table model and resolves a block's shape, `conform`
-  casts rows to the lake's types and implements the kit's `Decoder` and
-  `Catalog`. A format that another market also uses is shared, which is why
+  AEMO's C/I/D rows with SQL*Loader control files; the shared `decode`
+  scans them, `registry` holds the table model and resolves a block's
+  shape, `conform` casts rows to the lake's types (its value faults and
+  sink failures are its own, diagnosed by `utilake-core`) and implements
+  the kit's `Decoder` and `Catalog`. A format that another market also uses is shared, which is why
   these are `-mms-`, not `-nem-`.
 - **Markets** (`utilake-nem`, `utilake-wem`, later `utilake-gas`): what one
   market brings. Its sources (where the files are and what their names

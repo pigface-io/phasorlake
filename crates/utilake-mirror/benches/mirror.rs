@@ -6,8 +6,8 @@ use std::hint::black_box;
 use std::io::{Cursor, Write as _};
 
 use criterion::{Criterion, Throughput, criterion_group, criterion_main};
-use nemweb_mirror::net::Archive;
-use nemweb_mirror::{Mirror, Remote, RemoteKind};
+use utilake_mirror::net::Archive;
+use utilake_mirror::{Mirror, Remote, RemoteKind};
 
 const LISTING_ROWS: usize = 10_000;
 /// A day of five-minute files: one zip holding 288 zips of one CSV each.
@@ -85,8 +85,8 @@ fn day(home: &std::path::Path) -> (Mirror, Archive, u64) {
 /// A zip's bytes in memory, read by span.
 struct Mem(Vec<u8>);
 
-impl nemweb_mirror::zipdir::Spans for Mem {
-    type Error = nemweb_mirror::zipdir::DirError;
+impl utilake_mirror::zipdir::Spans for Mem {
+    type Error = utilake_mirror::zipdir::DirError;
     async fn read(&mut self, start: u64, end: u64) -> Result<Vec<u8>, Self::Error> {
         Ok(self.0[start as usize..end as usize].to_vec())
     }
@@ -113,7 +113,7 @@ fn bench(c: &mut Criterion) {
     g.bench_function("listing_parse", |b| {
         b.iter(|| {
             black_box(
-                nemweb_mirror::listing::parse(black_box(&html))
+                utilake_mirror::listing::parse(black_box(&html))
                     .unwrap()
                     .len(),
             )
@@ -122,12 +122,12 @@ fn bench(c: &mut Criterion) {
 
     let home = tempfile::tempdir().unwrap();
     let (mirror, archive, bytes) = day(home.path());
-    let roots = [nemweb_mirror::root("https://h/A/").unwrap()];
+    let roots = [utilake_mirror::root("https://h/A/").unwrap()];
     g.throughput(Throughput::Bytes(bytes));
     g.bench_function("map_zip_of_zips", |b| {
         b.iter(|| {
             black_box(
-                nemweb_mirror::map(&mirror, &archive, &roots, 1)
+                utilake_mirror::map(&mirror, &archive, &roots, 1)
                     .unwrap()
                     .zips,
             )
@@ -138,12 +138,12 @@ fn bench(c: &mut Criterion) {
     let len = zip.0.len() as u64;
     let mut zip = zip;
     g.throughput(Throughput::Bytes(
-        (zip.0.len() as u64).min(nemweb_mirror::zipdir::TAIL),
+        (zip.0.len() as u64).min(utilake_mirror::zipdir::TAIL),
     ));
     g.bench_function("zipdir_parse", |b| {
         b.iter(|| {
             let entries =
-                futures::executor::block_on(nemweb_mirror::zipdir::read_directory(&mut zip, len))
+                futures::executor::block_on(utilake_mirror::zipdir::read_directory(&mut zip, len))
                     .unwrap();
             black_box(entries.len())
         });

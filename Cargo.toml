@@ -21,6 +21,7 @@ members = [
     "crates/utilake-pipeline",
     "crates/utilake-cli",
     "crates/utilake-mdff",
+    "crates/utilake-mirror",
     "crates/utilake-iceberg-store",
     "crates/utilake-bench",
     "crates/xtask",
@@ -88,11 +89,13 @@ utilake-nem = { path = "crates/utilake-nem" }
 utilake-wem = { path = "crates/utilake-wem" }
 utilake-writer = { path = "crates/utilake-writer" }
 utilake-pipeline = { path = "crates/utilake-pipeline" }
+utilake-mirror = { path = "crates/utilake-mirror" }
 
 # hot path
 memchr = "2.8"
 flate2 = { version = "1", default-features = false, features = ["zlib-rs"] }
 crc32fast = "1"
+rustix = { version = "1.1", features = ["fs"] }
 fast-float2 = "0.2"
 xxhash-rust = { version = "0.8", features = ["xxh3"] }
 hashbrown = "0.17"
@@ -111,7 +114,7 @@ toml = "1"
 postcard = { version = "1", features = ["use-std"] }
 serde_yaml_ng = "0.10"
 # async + network
-tokio = { version = "1.53", features = ["rt-multi-thread", "sync", "fs", "time", "signal", "macros"] }
+tokio = { version = "1.53", features = ["rt-multi-thread", "sync", "fs", "time", "signal", "macros", "io-util"] }
 tokio-util = { version = "0.7", features = ["rt"] }
 futures = "0.3"
 bytes = "1"

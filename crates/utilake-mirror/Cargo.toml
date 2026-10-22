@@ -1,6 +1,6 @@
 [package]
-name = "nemweb-mirror"
-description = "A copy of every file under nemweb's archive folders, and the catalog of it: every folder, file and zip entry."
+name = "utilake-mirror"
+description = "nemweb-mirror: a copy of every file under nemweb's archive folders, and the catalog of it: every folder, file and zip entry."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true

@@ -269,13 +269,13 @@ pub fn run(set: &str, do_tighten: bool) -> Result<bool> {
         "fast" => &[
             ("utilake-mms-conform", "scan"),
             ("utilake-mms-registry", "resolve"),
-            ("utilake-mms-decode", "values"),
+            ("utilake-mms-conform", "values"),
             ("utilake-acquire", "fetch"),
         ],
         "full" => &[
             ("utilake-mms-conform", "scan"),
             ("utilake-mms-registry", "resolve"),
-            ("utilake-mms-decode", "values"),
+            ("utilake-mms-conform", "values"),
             ("utilake-acquire", "fetch"),
             ("utilake-writer", "write"),
         ],

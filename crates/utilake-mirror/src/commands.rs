@@ -9,13 +9,13 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use anyhow::{Context as _, Result};
-use nemweb_mirror::config::{Config, Home};
-use nemweb_mirror::net::{
+use std::cell::RefCell;
+use utilake_mirror::config::{Config, Home};
+use utilake_mirror::net::{
     Archive, FetchError, Fetcher, FetcherConfig, OfflineTransport, ReqwestTransport, Transport,
 };
-use std::cell::RefCell;
 
-use nemweb_mirror::{Diagnose, Mirror, MirrorError, PeekCount, Status, Url};
+use utilake_mirror::{Diagnose, Mirror, MirrorError, PeekCount, Status, Url};
 
 use crate::cli::{Cli, Command};
 use crate::render;
@@ -179,7 +179,7 @@ async fn locked(
     work.await
 }
 
-fn report(ctx: &Context, d: &nemweb_mirror::Diagnostic) {
+fn report(ctx: &Context, d: &utilake_mirror::Diagnostic) {
     if ctx.json {
         render::json_line(d);
     } else {
@@ -189,9 +189,9 @@ fn report(ctx: &Context, d: &nemweb_mirror::Diagnostic) {
 
 fn roots(ctx: &Context, given: &[String]) -> Result<Vec<Url>, MirrorError> {
     if given.is_empty() {
-        nemweb_mirror::default_roots(&ctx.config.base_url)
+        utilake_mirror::default_roots(&ctx.config.base_url)
     } else {
-        given.iter().map(|r| nemweb_mirror::root(r)).collect()
+        given.iter().map(|r| utilake_mirror::root(r)).collect()
     }
 }
 
@@ -242,9 +242,9 @@ async fn run(ctx: &Context, mirror: &Mirror, plan: &RunPlan<'_>) -> Result<i32, 
         let d = match attempt.await {
             Ok((code, false)) => return Ok(code),
             // Files failed on the network: another pass fetches only those.
-            Ok((_, true)) => nemweb_mirror::Diagnostic::error(
+            Ok((_, true)) => utilake_mirror::Diagnostic::error(
                 "mirror.files_failed",
-                nemweb_mirror::Category::Mirror,
+                utilake_mirror::Category::Mirror,
                 "Some files failed on the network; the next pass fetches only those.",
             ),
             Err(MirrorError::Fetch(e)) if waits_out(&e) => e.diagnostic(),
@@ -301,12 +301,12 @@ async fn watch(ctx: &Context, mirror: &Mirror, plan: &WatchPlan<'_>) -> Result<i
     let folders = mirror
         .record()?
         .into_iter()
-        .filter(|r| r.kind == nemweb_mirror::RemoteKind::Dir)
+        .filter(|r| r.kind == utilake_mirror::RemoteKind::Dir)
         .map(|r| r.url)
         .chain(roots.iter().map(ToString::to_string));
     let cadence = ctx.config.cadence();
     let least = cadence.least;
-    let mut schedule = nemweb_mirror::Schedule::new(cadence, folders, std::time::Instant::now());
+    let mut schedule = utilake_mirror::Schedule::new(cadence, folders, std::time::Instant::now());
     // Rounds are no closer than the least interval: each one reads the
     // crawl record and, when anything changed, writes it again.
     let mut not_before = std::time::Instant::now();
@@ -331,7 +331,7 @@ async fn watch(ctx: &Context, mirror: &Mirror, plan: &WatchPlan<'_>) -> Result<i
             continue;
         }
         let round = async {
-            let r = nemweb_mirror::refresh(&fetcher, mirror, &roots, &due).await?;
+            let r = utilake_mirror::refresh(&fetcher, mirror, &roots, &due).await?;
             let now = std::time::Instant::now();
             for f in &r.removed {
                 schedule.remove(f);
@@ -367,7 +367,7 @@ async fn watch(ctx: &Context, mirror: &Mirror, plan: &WatchPlan<'_>) -> Result<i
             // before did not get (it failed, or the watch was stopped) is
             // fetched the next time its folder is read.
             if !r.files.is_empty() {
-                let paired = nemweb_mirror::pairs(mirror)?;
+                let paired = utilake_mirror::pairs(mirror)?;
                 if paired.iter().any(|p| r.files.contains(&p.zip)) {
                     peek(ctx, &fetcher, mirror, true, None).await?;
                 }
@@ -411,7 +411,7 @@ async fn watch(ctx: &Context, mirror: &Mirror, plan: &WatchPlan<'_>) -> Result<i
 /// before it, and with `prune` those the same removed.
 async fn versions(ctx: &Context, mirror: &Mirror, prune: bool) -> Result<i32, MirrorError> {
     let json = ctx.json;
-    let s = nemweb_mirror::versions(mirror, &ctx.archive(), prune, |e| {
+    let s = utilake_mirror::versions(mirror, &ctx.archive(), prune, |e| {
         if json {
             render::json_line(&serde_json::json!({ "event": "version_same", "line": e }));
         }
@@ -464,7 +464,7 @@ async fn crawl(
     let roots = roots(ctx, given)?;
     let json = ctx.json;
     let progress = ctx.progress;
-    let summary = nemweb_mirror::crawl(fetcher, mirror, &roots, fresh, |p| {
+    let summary = utilake_mirror::crawl(fetcher, mirror, &roots, fresh, |p| {
         if json {
             render::json_line(&serde_json::json!({ "event": "page_read", "page": p }));
         } else if progress {
@@ -507,7 +507,7 @@ async fn peek(
 ) -> Result<(i32, bool), MirrorError> {
     let json = ctx.json;
     let progress = ctx.progress;
-    let summary = nemweb_mirror::peek(fetcher, mirror, only_paired, |z| {
+    let summary = utilake_mirror::peek(fetcher, mirror, only_paired, |z| {
         if let Some(t) = tracker {
             t.borrow_mut().peeked(z.done, z.total);
         }
@@ -543,7 +543,7 @@ async fn peek(
 }
 
 /// Whether a failure on the network may pass if asked again later.
-fn passes_with_time(d: &nemweb_mirror::Diagnostic) -> bool {
+fn passes_with_time(d: &utilake_mirror::Diagnostic) -> bool {
     matches!(
         d.code.as_ref(),
         "net.retries_exhausted" | "net.timeout" | "net.connect" | "net.body"
@@ -563,13 +563,13 @@ async fn download(
 ) -> Result<(i32, bool), MirrorError> {
     let json = ctx.json;
     let progress = ctx.progress;
-    let options = nemweb_mirror::DownloadOptions {
+    let options = utilake_mirror::DownloadOptions {
         downloads: ctx.config.downloads,
         only,
         folders,
         delete_duplicates,
     };
-    let summary = nemweb_mirror::download(fetcher, mirror, &options, |f| {
+    let summary = utilake_mirror::download(fetcher, mirror, &options, |f| {
         if let Some(t) = tracker {
             t.borrow_mut().downloaded(f);
         }
@@ -607,7 +607,7 @@ async fn download(
 
 fn map(ctx: &Context, mirror: &Mirror, given: &[String], jobs: usize) -> Result<i32, MirrorError> {
     let roots = roots(ctx, given)?;
-    let s = nemweb_mirror::map(mirror, &ctx.archive(), &roots, jobs)?;
+    let s = utilake_mirror::map(mirror, &ctx.archive(), &roots, jobs)?;
     if ctx.json {
         render::json_line(&serde_json::json!({ "event": "map_done", "summary": s }));
     } else {
@@ -631,7 +631,7 @@ fn map(ctx: &Context, mirror: &Mirror, given: &[String], jobs: usize) -> Result<
 fn hash(ctx: &Context, all: bool) -> Result<i32, MirrorError> {
     let json = ctx.json;
     let progress = ctx.progress;
-    let s = nemweb_mirror::hash(&ctx.archive(), all, |f| {
+    let s = utilake_mirror::hash(&ctx.archive(), all, |f| {
         if json {
             render::json_line(&serde_json::json!({ "event": "file_hashed", "file": f }));
         } else if progress {
@@ -661,7 +661,7 @@ fn hash(ctx: &Context, all: bool) -> Result<i32, MirrorError> {
 }
 
 fn verify(ctx: &Context, mirror: &Mirror) -> Result<i32, MirrorError> {
-    let results = nemweb_mirror::verify(mirror, &ctx.archive())?;
+    let results = utilake_mirror::verify(mirror, &ctx.archive())?;
     let mut rows = Vec::new();
     for v in &results {
         if ctx.json {
@@ -698,23 +698,23 @@ fn verify(ctx: &Context, mirror: &Mirror) -> Result<i32, MirrorError> {
 }
 
 fn compare(ctx: &Context, mirror: &Mirror, delete: bool) -> Result<i32, MirrorError> {
-    use nemweb_mirror::Verdict;
+    use utilake_mirror::Verdict;
     let archive = ctx.archive();
     let removed = mirror.removed()?;
-    let listings: std::collections::HashMap<String, Vec<nemweb_mirror::zipdir::Entry>> =
-        nemweb_mirror::peek::current(mirror)?
+    let listings: std::collections::HashMap<String, Vec<utilake_mirror::zipdir::Entry>> =
+        utilake_mirror::peek::current(mirror)?
             .into_values()
             .filter_map(|p| Some((p.url, p.entries?)))
             .collect();
     let tmp = mirror.dir().join("tmp");
     let (mut compared, mut waiting, mut freed, mut spared) = (0usize, 0usize, 0u64, 0u64);
     let mut rows = Vec::new();
-    for pair in nemweb_mirror::pairs(mirror)? {
+    for pair in utilake_mirror::pairs(mirror)? {
         if removed.contains_key(&pair.zip) {
             continue;
         }
         let listing = listings.get(&pair.zip).map(Vec::as_slice);
-        let cmp = nemweb_mirror::compare(&archive, &pair, listing, &tmp)?;
+        let cmp = utilake_mirror::compare(&archive, &pair, listing, &tmp)?;
         if cmp.verdict == Verdict::NotArchived {
             waiting += 1;
             continue;
@@ -722,7 +722,7 @@ fn compare(ctx: &Context, mirror: &Mirror, delete: bool) -> Result<i32, MirrorEr
         compared += 1;
         let mut action = "kept";
         if delete && cmp.verdict == Verdict::Same {
-            let r = nemweb_mirror::remove(mirror, &archive, &cmp)?;
+            let r = utilake_mirror::remove(mirror, &archive, &cmp)?;
             if r.downloaded {
                 freed += r.size;
             } else {
@@ -801,7 +801,7 @@ fn summary(
     out: &std::path::Path,
     check: bool,
 ) -> Result<i32, MirrorError> {
-    let text = nemweb_mirror::summary(&mirror.dir().join("map/map.ndjson"))?;
+    let text = utilake_mirror::summary(&mirror.dir().join("map/map.ndjson"))?;
     if check {
         if std::fs::read_to_string(out).ok().as_deref() != Some(text.as_str()) {
             return Err(MirrorError::SummaryStale {
@@ -846,7 +846,7 @@ pub struct Tracker {
     written: std::time::Instant,
     every: Duration,
     /// The fetcher's progress, and the bytes so far of each file in flight.
-    events: tokio::sync::mpsc::Receiver<nemweb_mirror::net::Event>,
+    events: tokio::sync::mpsc::Receiver<utilake_mirror::net::Event>,
     flying: std::collections::HashMap<String, u64>,
 }
 
@@ -856,12 +856,12 @@ impl Tracker {
         ctx: &Context,
         mirror: &Mirror,
         given: &[String],
-        events: tokio::sync::mpsc::Receiver<nemweb_mirror::net::Event>,
+        events: tokio::sync::mpsc::Receiver<utilake_mirror::net::Event>,
     ) -> Result<Self, MirrorError> {
         let roots = roots(ctx, given)?;
-        let mut status = nemweb_mirror::status(mirror, &ctx.archive(), &roots)?;
+        let mut status = utilake_mirror::status(mirror, &ctx.archive(), &roots)?;
         // Listings that still hold: older ones are peeked again this pass.
-        let peeked_before = nemweb_mirror::peek::current(mirror)?.len();
+        let peeked_before = utilake_mirror::peek::current(mirror)?.len();
         status.peek = Some(PeekCount {
             done: peeked_before,
             total: peeked_before,
@@ -879,7 +879,7 @@ impl Tracker {
         Ok(t)
     }
 
-    fn downloaded(&mut self, f: &nemweb_mirror::FileDone<'_>) {
+    fn downloaded(&mut self, f: &utilake_mirror::FileDone<'_>) {
         // Its last progress may still be queued: take it before it is done.
         self.drain();
         self.flying.remove(f.url);
@@ -899,7 +899,7 @@ impl Tracker {
 
     /// Takes the fetcher's progress so far.
     fn drain(&mut self) {
-        use nemweb_mirror::net::Event;
+        use utilake_mirror::net::Event;
         while let Ok(e) = self.events.try_recv() {
             match e {
                 Event::DownloadStarted { url, .. } => self.flying.insert(url, 0),
@@ -940,7 +940,7 @@ fn status(
             s.running = true;
             s
         }
-        None => nemweb_mirror::status(mirror, &ctx.archive(), &roots(ctx, given)?)?,
+        None => utilake_mirror::status(mirror, &ctx.archive(), &roots(ctx, given)?)?,
     };
     if ctx.json {
         render::json_line(&s);
