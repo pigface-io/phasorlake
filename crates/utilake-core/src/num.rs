@@ -73,15 +73,24 @@ pub fn parse_i64(s: &[u8]) -> Result<i64, NumberError> {
     if int.is_empty() {
         return Err(NumberError::Integer);
     }
+    // Accumulated toward the sign, checked, so i64::MIN reads and nothing
+    // wraps.
     let mut v: i64 = 0;
     for &b in int {
         let d = b.wrapping_sub(b'0');
         if d >= 10 {
             return Err(NumberError::Integer);
         }
+        let d = i64::from(d);
         v = v
             .checked_mul(10)
-            .and_then(|v| v.checked_add(i64::from(d)))
+            .and_then(|v| {
+                if neg {
+                    v.checked_sub(d)
+                } else {
+                    v.checked_add(d)
+                }
+            })
             .ok_or(NumberError::Integer)?;
     }
     if let Some(frac) = frac
@@ -89,7 +98,7 @@ pub fn parse_i64(s: &[u8]) -> Result<i64, NumberError> {
     {
         return Err(NumberError::Integer);
     }
-    Ok(if neg { -v } else { v })
+    Ok(v)
 }
 
 /// Parses a decimal literal into the unscaled `i128` of `Decimal128(precision, scale)`.
@@ -136,11 +145,19 @@ pub fn parse_decimal(s: &[u8], precision: u8, scale: u8) -> Result<i128, NumberE
         if v != 0 || d != 0 {
             digits += 1;
         }
-        v = v * 10 + i128::from(d);
+        // Checked: a run of digits longer than `i128` holds is refused,
+        // never wrapped into another value.
+        v = v
+            .checked_mul(10)
+            .and_then(|v| v.checked_add(i128::from(d)))
+            .ok_or(NumberError::DecimalOverflow)?;
     }
     let pad = u32::from(scale) - frac.len() as u32;
     digits += pad;
-    v *= 10i128.pow(pad);
+    v = 10i128
+        .checked_pow(pad)
+        .and_then(|p| v.checked_mul(p))
+        .ok_or(NumberError::DecimalOverflow)?;
     if digits > u32::from(precision) {
         return Err(NumberError::DecimalOverflow);
     }
@@ -268,6 +285,15 @@ mod tests {
             parse_i64(b"99999999999999999999"),
             Err(NumberError::Integer)
         );
+        // The ends of i64, and one past each.
+        assert_eq!(parse_i64(b"9223372036854775807").unwrap(), i64::MAX);
+        assert_eq!(parse_i64(b"-9223372036854775808").unwrap(), i64::MIN);
+        assert_eq!(parse_i64(b"9223372036854775808"), Err(NumberError::Integer));
+        assert_eq!(
+            parse_i64(b"-9223372036854775809"),
+            Err(NumberError::Integer)
+        );
+        assert_eq!(parse_i64(b"-0").unwrap(), 0);
     }
 
     #[test]
@@ -331,6 +357,73 @@ mod tests {
         );
         assert_eq!(parse_decimal(b"123", 5, 2).unwrap(), 12_300);
         assert_eq!(parse_decimal(b"0.00", 5, 2).unwrap(), 0);
+        // The bounds of Decimal128: 38 digits fit, 39 do not; nothing past
+        // what i128 holds is ever wrapped into another value.
+        let nines = |n: usize| "9".repeat(n);
+        let max38 = 10i128.pow(38) - 1;
+        assert_eq!(parse_decimal(nines(38).as_bytes(), 38, 0).unwrap(), max38);
+        assert_eq!(
+            parse_decimal(format!("-{}", nines(38)).as_bytes(), 38, 0).unwrap(),
+            -max38
+        );
+        assert_eq!(
+            parse_decimal(format!("{}.{}", nines(30), nines(8)).as_bytes(), 38, 8).unwrap(),
+            max38
+        );
+        assert_eq!(
+            parse_decimal(nines(39).as_bytes(), 38, 0),
+            Err(NumberError::DecimalOverflow)
+        );
+        assert_eq!(
+            parse_decimal(format!("-{}", nines(39)).as_bytes(), 38, 0),
+            Err(NumberError::DecimalOverflow)
+        );
+        let i128_max = i128::MAX.to_string();
+        assert_eq!(
+            parse_decimal(i128_max.as_bytes(), 38, 0),
+            Err(NumberError::DecimalOverflow),
+            "39 digits are beyond the precision"
+        );
+        for long in [
+            format!("{i128_max}0"),
+            format!("-{i128_max}0"),
+            nines(60),
+            format!("1{}", "0".repeat(45)),
+            format!("{}.5", nines(45)),
+        ] {
+            assert_eq!(
+                parse_decimal(long.as_bytes(), 38, 1),
+                Err(NumberError::DecimalOverflow),
+                "{long}"
+            );
+        }
+        // A short number padded past what i128 holds by its scale.
+        assert_eq!(
+            parse_decimal(format!("{}.5", nines(5)).as_bytes(), 38, 38),
+            Err(NumberError::DecimalOverflow)
+        );
+        assert_eq!(parse_decimal(b"1", 38, 37).unwrap(), 10i128.pow(37));
+        // Exponent forms past the precision, or past i128.
+        assert_eq!(
+            parse_decimal(b"1E38", 38, 0),
+            Err(NumberError::DecimalOverflow)
+        );
+        assert_eq!(
+            parse_decimal(b"9.9E37", 38, 0).unwrap(),
+            99 * 10i128.pow(36)
+        );
+        assert_eq!(
+            parse_decimal(b"-1E40", 38, 0),
+            Err(NumberError::DecimalOverflow)
+        );
+        assert_eq!(
+            parse_decimal(b"1E20", 38, 20),
+            Err(NumberError::DecimalOverflow)
+        );
+        assert_eq!(
+            parse_decimal(format!("{}E1", nines(38)).as_bytes(), 38, 0),
+            Err(NumberError::DecimalOverflow)
+        );
         for e in [
             NumberError::Float,
             NumberError::Integer,

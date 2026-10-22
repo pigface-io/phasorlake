@@ -1079,6 +1079,46 @@ D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",,1\n\
 D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",D,also bad\n\
 D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",E,2\n";
 
+    /// A decimal with more digits than its column, or than i128, holds is
+    /// kept as text beside a null, never wrapped into another number.
+    #[test]
+    fn a_decimal_too_long_for_its_column_is_kept_as_text() {
+        let r = reg();
+        let long = "9".repeat(45);
+        let rows = format!(
+            "I,DISPATCH,UNIT_SCADA,1,SETTLEMENTDATE,DUID,SCADAVALUE\nD,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",A,{long}\nD,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",B,1.5\n"
+        );
+        let (out, stats) = collect(
+            &r,
+            rows.as_bytes(),
+            ResolveOptions::default(),
+            &ScanOptions::default(),
+        )
+        .unwrap();
+        assert_eq!((stats.rows, stats.bad_rows), (2, 0));
+        let b = &out.batches[0].batch;
+        let mw = b
+            .column(2)
+            .as_any()
+            .downcast_ref::<Decimal128Array>()
+            .unwrap();
+        assert!(mw.is_null(0));
+        assert_eq!(mw.value(1), 1_500_000);
+        let raw = b
+            .column_by_name("SCADAVALUE__raw")
+            .unwrap()
+            .as_any()
+            .downcast_ref::<StringArray>()
+            .unwrap();
+        assert_eq!(raw.value(0), long);
+        assert!(raw.is_null(1));
+        assert!(
+            out.warnings
+                .iter()
+                .any(|w| w.code == "parse.value_kept_raw")
+        );
+    }
+
     #[test]
     fn a_value_that_does_not_fit_keeps_its_row_and_its_text() {
         let r = reg();

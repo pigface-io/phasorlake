@@ -77,7 +77,7 @@ pub enum Origin {
 /// value that does not fit is kept. Raise it when the same plan would be
 /// written differently by a newer utilake, so that lakes written by the
 /// older one are known to be behind.
-pub const PLAN_FORMAT: u32 = 4;
+pub const PLAN_FORMAT: u32 = 5;
 
 /// The identity of a plan: everything that decides what files of its shape
 /// are written as, and nothing else. It is recorded with every Parquet file
