@@ -542,6 +542,41 @@ where
     }
 }
 
+/// An archive that could not be walked, or an entry of it that could not
+/// be read, diagnosed.
+impl Diagnose for utilake_zip::ArchiveError {
+    fn diagnostic(&self) -> Diagnostic {
+        let msg = self.to_string();
+        match self {
+            Self::Open { path, .. } => {
+                Diagnostic::error("zip.open_failed", Category::Zip, msg).with_file(path.clone())
+            }
+            Self::Entry { path, entry, .. } => {
+                Diagnostic::error("zip.bad_entry", Category::Zip, msg)
+                    .with_file(path.clone())
+                    .with_entry(entry.clone())
+            }
+            Self::TooDeep { path, entry, .. } => {
+                Diagnostic::error("zip.nesting_too_deep", Category::Zip, msg)
+                    .with_file(path.clone())
+                    .with_entry(entry.clone())
+            }
+            Self::NoEntry { path, .. } => {
+                Diagnostic::error("zip.no_entry", Category::Zip, msg).with_file(path.clone())
+            }
+            Self::Spool {
+                path,
+                entry,
+                source,
+                ..
+            } => Diagnostic::error("zip.spool_failed", Category::Zip, msg)
+                .with_file(path.clone())
+                .with_entry(entry.clone())
+                .caused_by(source),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -687,5 +722,57 @@ mod tests {
     #[should_panic(expected = "must start with")]
     fn code_must_match_category() {
         let _ = Diagnostic::error("net.x", Category::Csv, "m");
+    }
+
+    #[test]
+    fn archive_errors_have_codes() {
+        use utilake_zip::ArchiveError;
+        let codes: Vec<String> = [
+            ArchiveError::Open {
+                path: "a.zip".into(),
+                message: "m".into(),
+            },
+            ArchiveError::Entry {
+                path: "a.zip".into(),
+                entry: "e".into(),
+                message: "m".into(),
+            },
+            ArchiveError::TooDeep {
+                path: "a.zip".into(),
+                entry: "e".into(),
+                depth: 3,
+            },
+            ArchiveError::NoEntry {
+                path: "a.zip".into(),
+                wanted: ".CSV".into(),
+            },
+            ArchiveError::Spool {
+                path: "a.zip".into(),
+                entry: "e".into(),
+                tmp: "/t".into(),
+                source: std::io::Error::other("full"),
+            },
+        ]
+        .iter()
+        .map(|e| e.diagnostic().code.into_owned())
+        .collect();
+        assert_eq!(
+            codes,
+            [
+                "zip.open_failed",
+                "zip.bad_entry",
+                "zip.nesting_too_deep",
+                "zip.no_entry",
+                "zip.spool_failed"
+            ]
+        );
+        let spool = ArchiveError::Spool {
+            path: "a.zip".into(),
+            entry: "e".into(),
+            tmp: "/t".into(),
+            source: std::io::Error::other("full"),
+        }
+        .diagnostic();
+        assert_eq!((spool.entry.as_deref(), spool.cause.len()), (Some("e"), 1));
     }
 }

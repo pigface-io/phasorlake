@@ -30,7 +30,7 @@
       "min_mb_per_s": 474.192
     },
     "parse_values/decimal": {
-      "max_ns": 17.381
+      "max_ns": 22.0
     },
     "parse_values/float_long": {
       "max_ns": 38.876

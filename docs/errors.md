@@ -51,10 +51,10 @@ Every error and warning utilake reports carries one of these codes. Codes are st
 | `zip.bad_directory` | `crates/utilake-mirror/src/map.rs` |
 | `zip.bad_entry` | `crates/utilake-mirror/src/map.rs` |
 | `zip.nesting_too_deep` | `crates/utilake-mirror/src/map.rs` |
-| `zip.no_csv` | `crates/utilake-kit/src/container.rs` |
+| `zip.no_entry` | `crates/utilake-core/src/diag.rs` |
 | `zip.not_a_zip` | `crates/utilake-mirror/src/map.rs` |
 | `zip.open_failed` | `crates/utilake-mirror/src/error.rs` |
-| `zip.spool_failed` | `crates/utilake-kit/src/container.rs` |
+| `zip.spool_failed` | `crates/utilake-core/src/diag.rs` |
 | `zip.too_big` | `crates/utilake-mirror/src/map.rs` |
 | `zip.too_many_entries` | `crates/utilake-mirror/src/map.rs` |
 
@@ -149,6 +149,7 @@ No longer raised; kept so the code is never reused.
 
 | code | was |
 |---|---|
+| `zip.no_csv` | an archive with no .CSV entry; the walk takes what a decoder accepts, so it is `zip.no_entry` |
 | `zip.size_mismatch` | an entry that inflated past the size it declared; the zip reader refuses it itself since zip 9, as `zip.bad_entry` |
 | `listing.era_unsupported` | months before 2024 could not be listed; every archive month is now readable and a month the archive does not publish is `listing.month_missing` |
 | `schema.merge_version_conflict` | the schema bootstrap refused two different column lists under one version number; each list is now a variant of the version |

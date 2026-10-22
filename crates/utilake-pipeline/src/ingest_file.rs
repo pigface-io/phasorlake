@@ -13,7 +13,9 @@ use tokio::sync::mpsc;
 use utilake_acquire::LocalFile;
 use utilake_core::event::Event;
 use utilake_core::{Category, Diagnose, Diagnostic, Fingerprint, YearMonth};
-use utilake_kit::container::{Accepts, WalkError, has_extension, walk_entries};
+use utilake_kit::container::{
+    Accepts, ArchiveError, WalkError, Walked, has_extension, walk_entries,
+};
 use utilake_kit::quarantine::QuarantineWriter;
 use utilake_kit::{
     Block, BlockSink, DecodeCtx, DecodeOptions, Flow, KitRegistry, LoadMode, RowAt, SourceKit,
@@ -714,7 +716,7 @@ pub fn ingest_file(input: IngestInput) -> FileReport {
             accepts: &|n: &str| kit.decoder_for(n).is_some(),
             wanted: "readable",
         };
-        let result: Result<usize, WalkError<()>> = walk_entries(
+        let result: Result<Walked, WalkError<()>> = walk_entries(
             &path,
             &input.tmp_dir,
             accepts,
@@ -726,12 +728,30 @@ pub fn ingest_file(input: IngestInput) -> FileReport {
             },
             &mut |_| {},
         );
-        if let Err(WalkError::Archive(e)) = result {
+        let place = |e: &dyn Diagnose| {
             let mut d = e.diagnostic();
             d.request = Some(input.request.clone());
             d.url = Some(input.local.remote.url.to_string());
             d.file = Some(path.display().to_string());
-            file_error = Some(d);
+            d
+        };
+        match result {
+            // An entry left behind is an entry that failed; the rest were
+            // read.
+            Ok(w) => entries.extend(w.failed.iter().map(|a| EntryReport {
+                entry: match a {
+                    ArchiveError::Entry { entry, .. }
+                    | ArchiveError::TooDeep { entry, .. }
+                    | ArchiveError::Spool { entry, .. } => entry.clone(),
+                    ArchiveError::Open { .. } | ArchiveError::NoEntry { .. } => String::new(),
+                },
+                results: Vec::new(),
+                warnings: Vec::new(),
+                row_errors: Vec::new(),
+                error: Some(place(a)),
+            })),
+            Err(WalkError::Archive(e)) => file_error = Some(place(&e)),
+            Err(WalkError::Callback(())) => {}
         }
     }
     FileReport {

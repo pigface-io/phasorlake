@@ -55,7 +55,7 @@ fn scan_blocks(ctx: &Context, path: &Path) -> Result<Vec<(String, BlockSummary)>
     } else {
         let tmp = ctx.home.tmp();
         let mut skipped = Vec::new();
-        walk_csv_entries(path, &tmp, &mut |e| handle(&e.name, e.reader), &mut |o| {
+        let walked = walk_csv_entries(path, &tmp, &mut |e| handle(&e.name, e.reader), &mut |o| {
             skipped.push(o.name);
         })
         .map_err(|e| match e {
@@ -64,6 +64,9 @@ fn scan_blocks(ctx: &Context, path: &Path) -> Result<Vec<(String, BlockSummary)>
             }
             utilake_kit::container::WalkError::Callback(c) => c,
         })?;
+        for a in &walked.failed {
+            eprintln!("{}", a.diagnostic().render());
+        }
         if !skipped.is_empty() && !ctx.json {
             eprintln!(
                 "skipped {} non-CSV entr{}: {}",

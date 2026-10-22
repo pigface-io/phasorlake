@@ -2855,13 +2855,14 @@ dependencies = [
  "thiserror",
  "toml",
  "utilake-mms-decode",
+ "utilake-zip",
  "xxhash-rust",
 ]
 
 [[package]]
 name = "utilake-gates"
 version = "0.1.0"
-source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=b01009a1b29b55f81054175e438a0a245f987e11#b01009a1b29b55f81054175e438a0a245f987e11"
+source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=8c3242a9000a704c2200cc0c44756c4ee18c505b#8c3242a9000a704c2200cc0c44756c4ee18c505b"
 dependencies = [
  "anyhow",
  "serde",
@@ -2871,7 +2872,7 @@ dependencies = [
 [[package]]
 name = "utilake-iceberg"
 version = "0.1.0"
-source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=b01009a1b29b55f81054175e438a0a245f987e11#b01009a1b29b55f81054175e438a0a245f987e11"
+source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=8c3242a9000a704c2200cc0c44756c4ee18c505b#8c3242a9000a704c2200cc0c44756c4ee18c505b"
 dependencies = [
  "serde",
  "serde_json",
@@ -2910,6 +2911,7 @@ dependencies = [
  "url",
  "utilake-acquire",
  "utilake-core",
+ "utilake-zip",
  "zip",
 ]
 
@@ -2960,7 +2962,7 @@ dependencies = [
 [[package]]
 name = "utilake-mms-decode"
 version = "0.1.0"
-source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=b01009a1b29b55f81054175e438a0a245f987e11#b01009a1b29b55f81054175e438a0a245f987e11"
+source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=8c3242a9000a704c2200cc0c44756c4ee18c505b#8c3242a9000a704c2200cc0c44756c4ee18c505b"
 dependencies = [
  "memchr",
  "serde",
@@ -3069,6 +3071,17 @@ dependencies = [
  "utilake-iceberg",
  "utilake-iceberg-store",
  "utilake-kit",
+]
+
+[[package]]
+name = "utilake-zip"
+version = "0.1.0"
+source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=8c3242a9000a704c2200cc0c44756c4ee18c505b#8c3242a9000a704c2200cc0c44756c4ee18c505b"
+dependencies = [
+ "flate2",
+ "tempfile",
+ "thiserror",
+ "zip",
 ]
 
 [[package]]

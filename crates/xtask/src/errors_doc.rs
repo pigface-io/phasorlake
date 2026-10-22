@@ -15,7 +15,11 @@ const CATEGORIES: [&str; 12] = [
 
 /// Codes that are no longer raised. A code is a promise to whoever matches
 /// on it, so a retired one stays listed and may never be given a new meaning.
-const RETIRED: [(&str, &str); 12] = [
+const RETIRED: [(&str, &str); 13] = [
+    (
+        "zip.no_csv",
+        "an archive with no .CSV entry; the walk takes what a decoder accepts, so it is `zip.no_entry`",
+    ),
     (
         "zip.size_mismatch",
         "an entry that inflated past the size it declared; the zip reader refuses it itself since zip 9, as `zip.bad_entry`",
