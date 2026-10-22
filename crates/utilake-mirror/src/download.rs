@@ -128,58 +128,29 @@ pub async fn download(
     // reads the paired zips' first, so by then they are there.
     let listings: std::sync::OnceLock<HashMap<String, Peeked>> = std::sync::OnceLock::new();
     let listings = &listings;
-    let mut results = futures::stream::iter(&files)
-        .map(|remote| async move {
-            if let Some(pair) = paired.get(remote.url.as_str()) {
-                // Found the same as its folder since the pass began?
-                if mirror.removed()?.contains_key(&pair.zip) {
-                    return Ok((remote, None));
-                }
-                if options.delete_duplicates && the_same(mirror, fetcher, pair, listings)? {
-                    return Ok((remote, None));
-                }
-            }
-            let url = remote.url.as_str();
-            let archive = fetcher.archive();
-            if let Some(h) = held.get(url)
-                && h.is_listed_as(archive, remote.size, remote.modified_at)
-                && std::fs::metadata(h.path(archive)).is_ok_and(|m| m.len() == h.size)
-            {
-                // A line written before lines kept the listed time is
-                // written again with it.
-                let note =
-                    (h.modified_at.is_none() && remote.modified_at.is_some()).then(|| Held {
-                        modified_at: remote.modified_at,
-                        ..h.clone()
-                    });
-                let got = Got {
-                    cached: true,
-                    size: h.size,
-                    note,
-                    event: None,
-                };
-                return Ok((remote, Some(Ok(got))));
-            }
-            let got = fetcher.fetch(remote).await.map(|l| {
-                let base = archive.path_for(url);
-                let name = l.path.file_name().map(|n| n.to_string_lossy().into_owned());
-                let event = event_of(remote, &l, l.path == base, name.clone());
-                Got {
-                    cached: l.cached,
-                    size: l.size,
-                    note: Some(Held {
-                        url: url.to_owned(),
-                        size: l.size,
-                        listed_size: remote.size.filter(|&s| s != l.size),
-                        modified_at: remote.modified_at,
-                        file: name.filter(|_| l.path != base),
-                    }),
-                    event,
-                }
-            });
-            Ok::<_, MirrorError>((remote, Some(got)))
-        })
-        .buffer_unordered(downloads.max(1));
+    // Every other file lands before any paired zip is compared with its
+    // folder: the zips come in a second pass, after the first has drained,
+    // so a zip is never held against a folder still downloading.
+    let (zips, plain): (Vec<&RemoteFile>, Vec<&RemoteFile>) = files
+        .iter()
+        .partition(|r| paired.contains_key(r.url.as_str()));
+    let pass = Pass {
+        fetcher,
+        mirror,
+        paired,
+        held,
+        listings,
+        delete_duplicates: options.delete_duplicates,
+    };
+    let task = |remote| pass.one(remote);
+    let mut results = futures::stream::iter(plain)
+        .map(task)
+        .buffer_unordered(downloads.max(1))
+        .chain(
+            futures::stream::iter(zips)
+                .map(task)
+                .buffer_unordered(downloads.max(1)),
+        );
     let mut done = 0;
     while let Some(next) = results.next().await {
         let (remote, result) = next?;
@@ -358,6 +329,73 @@ pub struct DownloadOptions<'a> {
     /// listing with the folder and, when they are the same, record it
     /// removed and do not download it.
     pub delete_duplicates: bool,
+}
+
+/// One download pass: what every file's fetch shares.
+struct Pass<'a> {
+    fetcher: &'a Fetcher,
+    mirror: &'a Mirror,
+    paired: &'a HashMap<String, Pair>,
+    held: &'a HashMap<String, Held>,
+    listings: &'a std::sync::OnceLock<HashMap<String, Peeked>>,
+    delete_duplicates: bool,
+}
+
+impl<'a> Pass<'a> {
+    /// Fetches `remote`, or finds it held already, or finds it a zip the
+    /// same as its folder (none to fetch).
+    async fn one(
+        &self,
+        remote: &'a RemoteFile,
+    ) -> Result<(&'a RemoteFile, Option<Result<Got, FetchError>>), MirrorError> {
+        if let Some(pair) = self.paired.get(remote.url.as_str()) {
+            // Found the same as its folder since the pass began?
+            if self.mirror.removed()?.contains_key(&pair.zip) {
+                return Ok((remote, None));
+            }
+            if self.delete_duplicates && the_same(self.mirror, self.fetcher, pair, self.listings)? {
+                return Ok((remote, None));
+            }
+        }
+        let url = remote.url.as_str();
+        let archive = self.fetcher.archive();
+        if let Some(h) = self.held.get(url)
+            && h.is_listed_as(archive, remote.size, remote.modified_at)
+            && std::fs::metadata(h.path(archive)).is_ok_and(|m| m.len() == h.size)
+        {
+            // A line written before lines kept the listed time is
+            // written again with it.
+            let note = (h.modified_at.is_none() && remote.modified_at.is_some()).then(|| Held {
+                modified_at: remote.modified_at,
+                ..h.clone()
+            });
+            let got = Got {
+                cached: true,
+                size: h.size,
+                note,
+                event: None,
+            };
+            return Ok((remote, Some(Ok(got))));
+        }
+        let got = self.fetcher.fetch(remote).await.map(|l| {
+            let base = archive.path_for(url);
+            let name = l.path.file_name().map(|n| n.to_string_lossy().into_owned());
+            let event = event_of(remote, &l, l.path == base, name.clone());
+            Got {
+                cached: l.cached,
+                size: l.size,
+                note: Some(Held {
+                    url: url.to_owned(),
+                    size: l.size,
+                    listed_size: remote.size.filter(|&s| s != l.size),
+                    modified_at: remote.modified_at,
+                    file: name.filter(|_| l.path != base),
+                }),
+                event,
+            }
+        });
+        Ok((remote, Some(got)))
+    }
 }
 
 /// Whether the zip of `pair`, not downloaded, is found the same as its
