@@ -11,8 +11,11 @@
 
 pub mod arrow_sink;
 pub mod builders;
+pub mod error;
 pub mod inspect;
 pub mod kit;
+pub mod mmstime;
 
 pub use arrow_sink::{ArrowSink, BlockBatch};
+pub use error::{RowError, RowFailure, ScanError, SinkError, ValueError};
 pub use kit::{MmsCatalog, MmsDecoder};

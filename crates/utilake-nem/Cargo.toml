@@ -12,6 +12,7 @@ publish.workspace = true
 workspace = true
 
 [dependencies]
+utilake-mms-decode.workspace = true
 utilake-core.workspace = true
 utilake-acquire.workspace = true
 utilake-kit.workspace = true

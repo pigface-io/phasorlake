@@ -3,16 +3,15 @@
 //! Everything here is Rust so the repository needs no second toolchain.
 
 mod bench;
-mod covergate;
 mod errors_doc;
 mod llm_check;
-mod ratchet;
 mod schemas;
 
 use std::path::PathBuf;
 use std::process::ExitCode;
 
 use clap::{Parser, Subcommand};
+use utilake_gates::{covergate, ratchet};
 
 #[derive(Parser)]
 #[command(name = "xtask", about = "utilake repository tooling")]
@@ -71,9 +70,9 @@ enum Cmd {
 fn main() -> ExitCode {
     let cli = Cli::parse();
     let result = match cli.cmd {
-        Cmd::Covergate { lcov } => covergate::run(&lcov),
+        Cmd::Covergate { lcov } => covergate::run(&repo_root(), &lcov),
         Cmd::Bench { set, tighten } => bench::run(&set, tighten),
-        Cmd::Ratchet { base } => ratchet::run(&base),
+        Cmd::Ratchet { base } => ratchet::run(&repo_root(), &base),
         Cmd::SchemasPull { rev, from } => schemas::pull(&rev, &from),
         Cmd::SchemasCheck => schemas::check(),
         Cmd::LlmCheck => llm_check::run(),

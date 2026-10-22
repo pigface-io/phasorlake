@@ -483,6 +483,65 @@ impl Diagnose for Diagnostic {
     }
 }
 
+/// A row the scanner or a sink refused, diagnosed: the scanner's own
+/// faults with their codes, a sink's by the sink.
+impl<Q: Diagnose + Clone + fmt::Debug + fmt::Display> Diagnose for utilake_mms_decode::RowError<Q> {
+    fn diagnostic(&self) -> Diagnostic {
+        let msg = self.to_string();
+        match self {
+            Self::FieldCount { declared, observed } => {
+                Diagnostic::error("csv.field_count_mismatch", Category::Csv, msg)
+                    .expected_observed(format!("{declared} fields"), format!("{observed} fields"))
+            }
+            Self::BlockMismatch { .. } => {
+                Diagnostic::error("csv.block_mismatch", Category::Csv, msg)
+            }
+            Self::TooShort(_) => Diagnostic::error("csv.row_too_short", Category::Csv, msg),
+            Self::UnknownRecord(_) => Diagnostic::error("csv.unknown_record", Category::Csv, msg),
+            Self::Value(v) => v.diagnostic(),
+        }
+    }
+}
+
+/// A scan that ended, diagnosed: the scanner's own failures with their
+/// codes, the sink's by the sink; each with the line it names.
+impl<Q, F> Diagnose for utilake_mms_decode::ScanError<Q, F>
+where
+    Q: Diagnose + Clone + fmt::Debug + fmt::Display,
+    F: Diagnose + fmt::Debug + fmt::Display,
+{
+    fn diagnostic(&self) -> Diagnostic {
+        let msg = self.to_string();
+        let mut d = match self {
+            Self::Io { source, .. } => {
+                Diagnostic::error("csv.read_failed", Category::Csv, msg).caused_by(source)
+            }
+            Self::LineTooLong { .. } => Diagnostic::error("csv.line_too_long", Category::Csv, msg),
+            Self::DataBeforeHeader { .. } => {
+                Diagnostic::error("csv.data_before_header", Category::Csv, msg)
+            }
+            Self::BadHeader { .. } => Diagnostic::error("csv.header_malformed", Category::Csv, msg),
+            Self::TooManyBadRows { first, .. } => {
+                // The refusal says exactly what the first bad row had
+                // wrong: its column, what was expected and what was there.
+                let row = first.diagnostic();
+                let mut d = Diagnostic::error("csv.too_many_bad_rows", Category::Csv, msg);
+                d.column = row.column;
+                d.expected = row.expected;
+                d.observed = row.observed;
+                d.cause = vec![format!("{} [{}]", row.message, row.code)];
+                d
+            }
+            Self::Sink(e) => e.diagnostic(),
+            Self::Stopped { .. } => Diagnostic::error("csv.stopped_fail_fast", Category::Csv, msg),
+        };
+        if let Some(l) = self.line() {
+            d.line = Some(l);
+        }
+        d
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

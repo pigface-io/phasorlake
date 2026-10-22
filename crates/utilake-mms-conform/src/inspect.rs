@@ -5,7 +5,7 @@ use utilake_core::Fingerprint;
 use utilake_mms_decode::IRow;
 use utilake_mms_registry::{Registry, ResolveOptions};
 
-use utilake_mms_decode::error::{RowError, RowFailure, SinkError};
+use crate::error::{RowError, RowFailure, SinkError, ValueError};
 use utilake_mms_decode::fields::Row;
 use utilake_mms_decode::scan::{Flow, Pos, Sink};
 
@@ -56,6 +56,8 @@ impl<'r> InspectSink<'r> {
 }
 
 impl Sink for InspectSink<'_> {
+    type Reject = ValueError;
+    type Fatal = SinkError;
     fn comment(&mut self, row: &Row<'_>, _: Pos) -> Result<(), SinkError> {
         if self.header.is_none() {
             self.header = Some(

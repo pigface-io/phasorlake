@@ -12,7 +12,6 @@ resolver = "3"
 members = [
     "crates/utilake-core",
     "crates/utilake-mms-registry",
-    "crates/utilake-mms-decode",
     "crates/utilake-mms-conform",
     "crates/utilake-acquire",
     "crates/utilake-kit",
@@ -30,7 +29,6 @@ default-members = [
     "crates/utilake-core",
     "crates/utilake-iceberg-store",
     "crates/utilake-mms-registry",
-    "crates/utilake-mms-decode",
     "crates/utilake-mms-conform",
     "crates/utilake-acquire",
     "crates/utilake-kit",
@@ -77,10 +75,12 @@ uninlined_format_args = "deny"
 utilake-core = { path = "crates/utilake-core" }
 # The Iceberg contract every repository shares: types, schemas, histories,
 # the interval planner and the table writer, at the rev its schemas pin.
-utilake-iceberg = { git = "ssh://git@github.com/g0itb4/utilake-schemas.git", rev = "46676f97c9af7d720a17ffca12fb5172808c1600" }
+utilake-iceberg = { git = "ssh://git@github.com/g0itb4/utilake-schemas.git", rev = "10d6a219e342c1e2a8ab126c2cb9e3ab8a9713a4" }
+# The MMS format layer and the repository gates, from the same repository.
+utilake-mms-decode = { git = "ssh://git@github.com/g0itb4/utilake-schemas.git", rev = "10d6a219e342c1e2a8ab126c2cb9e3ab8a9713a4" }
+utilake-gates = { git = "ssh://git@github.com/g0itb4/utilake-schemas.git", rev = "10d6a219e342c1e2a8ab126c2cb9e3ab8a9713a4" }
 utilake-iceberg-store = { path = "crates/utilake-iceberg-store" }
 utilake-mms-registry = { path = "crates/utilake-mms-registry" }
-utilake-mms-decode = { path = "crates/utilake-mms-decode" }
 utilake-mms-conform = { path = "crates/utilake-mms-conform" }
 utilake-acquire = { path = "crates/utilake-acquire" }
 utilake-kit = { path = "crates/utilake-kit" }

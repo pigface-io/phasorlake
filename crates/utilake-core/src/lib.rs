@@ -12,8 +12,6 @@ pub mod clock;
 pub mod config;
 pub mod diag;
 pub mod event;
-pub mod fingerprint;
-pub mod names;
 pub mod num;
 pub mod paths;
 pub mod period;
@@ -21,6 +19,5 @@ pub mod report;
 pub mod timetext;
 
 pub use diag::{Category, Diagnose, Diagnostic, Sample, Severity};
-pub use fingerprint::Fingerprint;
-pub use names::normalize_name;
 pub use period::{CivilDay, Period, TimeRange, YearMonth};
+pub use utilake_mms_decode::{Fingerprint, normalize_name};

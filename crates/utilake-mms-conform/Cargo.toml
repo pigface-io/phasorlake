@@ -18,6 +18,7 @@ utilake-mms-registry.workspace = true
 utilake-kit.workspace = true
 arrow-array.workspace = true
 arrow-schema.workspace = true
+thiserror.workspace = true
 
 [dev-dependencies]
 criterion.workspace = true

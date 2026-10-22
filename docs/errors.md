@@ -55,29 +55,29 @@ Every error and warning utilake reports carries one of these codes. Codes are st
 
 | code | raised in |
 |---|---|
-| `csv.block_mismatch` | `crates/utilake-mms-decode/src/error.rs` |
-| `csv.data_before_header` | `crates/utilake-mms-decode/src/error.rs` |
-| `csv.field_count_mismatch` | `crates/utilake-mms-decode/src/error.rs` |
+| `csv.block_mismatch` | `crates/utilake-core/src/diag.rs` |
+| `csv.data_before_header` | `crates/utilake-core/src/diag.rs` |
+| `csv.field_count_mismatch` | `crates/utilake-core/src/diag.rs` |
 | `csv.footer_count_mismatch` | `crates/utilake-pipeline/src/ingest_file.rs` |
-| `csv.header_malformed` | `crates/utilake-mms-decode/src/error.rs` |
-| `csv.line_too_long` | `crates/utilake-mms-decode/src/error.rs` |
+| `csv.header_malformed` | `crates/utilake-core/src/diag.rs` |
+| `csv.line_too_long` | `crates/utilake-core/src/diag.rs` |
 | `csv.read_failed` | `crates/utilake-pipeline/src/ingest_file.rs` |
-| `csv.row_too_short` | `crates/utilake-mms-decode/src/error.rs` |
-| `csv.stopped_fail_fast` | `crates/utilake-mms-decode/src/error.rs` |
-| `csv.too_many_bad_rows` | `crates/utilake-mms-decode/src/error.rs` |
-| `csv.unknown_record` | `crates/utilake-mms-decode/src/error.rs` |
+| `csv.row_too_short` | `crates/utilake-core/src/diag.rs` |
+| `csv.stopped_fail_fast` | `crates/utilake-core/src/diag.rs` |
+| `csv.too_many_bad_rows` | `crates/utilake-core/src/diag.rs` |
+| `csv.unknown_record` | `crates/utilake-core/src/diag.rs` |
 
 ## parse
 
 | code | raised in |
 |---|---|
-| `parse.boolean` | `crates/utilake-mms-decode/src/error.rs` |
-| `parse.decimal` | `crates/utilake-mms-decode/src/error.rs` |
-| `parse.float` | `crates/utilake-mms-decode/src/error.rs` |
-| `parse.integer` | `crates/utilake-mms-decode/src/error.rs` |
-| `parse.null_not_allowed` | `crates/utilake-mms-decode/src/error.rs` |
-| `parse.timestamp` | `crates/utilake-mms-decode/src/error.rs` |
-| `parse.utf8` | `crates/utilake-mms-decode/src/error.rs` |
+| `parse.boolean` | `crates/utilake-mms-conform/src/error.rs` |
+| `parse.decimal` | `crates/utilake-mms-conform/src/error.rs` |
+| `parse.float` | `crates/utilake-mms-conform/src/error.rs` |
+| `parse.integer` | `crates/utilake-mms-conform/src/error.rs` |
+| `parse.null_not_allowed` | `crates/utilake-mms-conform/src/error.rs` |
+| `parse.timestamp` | `crates/utilake-mms-conform/src/error.rs` |
+| `parse.utf8` | `crates/utilake-mms-conform/src/error.rs` |
 
 ## schema
 
@@ -132,7 +132,7 @@ Every error and warning utilake reports carries one of these codes. Codes are st
 
 | code | raised in |
 |---|---|
-| `internal.arrow` | `crates/utilake-mms-decode/src/error.rs` |
+| `internal.arrow` | `crates/utilake-mms-conform/src/error.rs` |
 | `internal.no_such_writer` | `crates/utilake-writer/src/error.rs` |
 | `internal.panic` | `crates/utilake-pipeline/src/run.rs` |
 

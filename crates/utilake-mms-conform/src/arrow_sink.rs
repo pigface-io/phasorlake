@@ -14,8 +14,8 @@ use utilake_mms_registry::{
     Cast, ConformancePlan, Mode, Registry, ResolveOptions, Resolved, TableId,
 };
 
+use crate::error::{RowError, RowFailure, SinkError, ValueError};
 use utilake_mms_decode::PREFIX_FIELDS;
-use utilake_mms_decode::error::{RowError, RowFailure, SinkError};
 use utilake_mms_decode::fields::Row;
 use utilake_mms_decode::scan::{Flow, Pos, Sink};
 use utilake_mms_registry::arrow::RAW_OF_KEY;
@@ -364,6 +364,8 @@ impl<'r, B: BatchSink> ArrowSink<'r, B> {
 }
 
 impl<B: BatchSink> Sink for ArrowSink<'_, B> {
+    type Reject = ValueError;
+    type Fatal = SinkError;
     fn comment(&mut self, _row: &Row<'_>, _pos: Pos) -> Result<(), SinkError> {
         Ok(())
     }
@@ -498,7 +500,7 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
                 .with_sample(bytes)
                 .with_table(block.resolved.plan.table.clone())
                 .with_version(block.resolved.version);
-            RowFailure::from(SinkError::Refused(Box::new(d)))
+            RowFailure::fatal(SinkError::Refused(Box::new(d)))
         };
         // Pass 1: parse every field; nothing is appended until all are read.
         self.parsed.fill(Parsed::Null);
@@ -525,14 +527,14 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
         if let Some(&m) = block.missing_required.first() {
             if strict {
                 let column = block.resolved.plan.arrow.field(m as usize).name();
-                let d = RowError::NullNotAllowed {
+                let d = ValueError::NullNotAllowed {
                     column: column.clone(),
                 }
                 .diagnostic()
                 .at(pos.line, pos.byte_offset)
                 .with_table(block.resolved.plan.table.clone())
                 .with_version(block.resolved.version);
-                return Err(SinkError::Refused(Box::new(d)).into());
+                return Err(RowFailure::fatal(SinkError::Refused(Box::new(d))));
             }
             for &m in &block.missing_required {
                 block.nulls_kept[m as usize].note(String::new, pos.line);
@@ -559,7 +561,7 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
         }
         block.rows += 1;
         if block.rows >= self.batch_rows {
-            self.flush()?;
+            self.flush().map_err(RowFailure::fatal)?;
         }
         Ok(())
     }
@@ -676,10 +678,7 @@ pub(crate) fn collect<R: std::io::Read>(
     reader: R,
     opts: ResolveOptions,
     scan_opts: &utilake_mms_decode::scan::ScanOptions,
-) -> Result<
-    (CollectBatches, utilake_mms_decode::scan::ScanStats),
-    utilake_mms_decode::error::ScanError,
-> {
+) -> Result<(CollectBatches, utilake_mms_decode::scan::ScanStats), crate::error::ScanError> {
     let mut sink = ArrowSink::new(
         registry,
         opts,
@@ -734,7 +733,7 @@ mod tests {
             .downcast_ref::<TimestampMicrosecondArray>()
             .unwrap();
         assert_eq!(ts.timezone(), Some("+10:00"));
-        let expected = utilake_mms_decode::mmstime::parse_nanos(b"2024/01/01 00:05:00", 36_000)
+        let expected = crate::mmstime::parse_nanos(b"2024/01/01 00:05:00", 36_000)
             .unwrap()
             .0;
         assert_eq!(ts.value(0), expected / 1_000, "microseconds");
@@ -820,7 +819,7 @@ mod tests {
         assert!(
             matches!(
                 &e,
-                utilake_mms_decode::error::ScanError::Sink(SinkError::Refused(d))
+                crate::error::ScanError::Sink(SinkError::Refused(d))
                     if d.code == "schema.unknown_table"
             ),
             "{e}"
@@ -905,7 +904,7 @@ mod tests {
             .unwrap();
         assert_eq!(ts.value(0), i64::MAX / 1_000);
         assert_eq!(ts.value(1), i64::MAX / 1_000);
-        let whole = utilake_mms_decode::mmstime::parse_nanos(b"2024/01/01 00:05:00", 36_000)
+        let whole = crate::mmstime::parse_nanos(b"2024/01/01 00:05:00", 36_000)
             .unwrap()
             .0;
         assert_eq!(ts.value(2), whole / 1_000 + 250_000);
@@ -1063,10 +1062,7 @@ D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",H,2\n";
             },
         )
         .unwrap_err();
-        assert!(matches!(
-            e,
-            utilake_mms_decode::error::ScanError::Stopped { line: 3 }
-        ));
+        assert!(matches!(e, crate::error::ScanError::Stopped { line: 3 }));
         assert_eq!(sink.inner_mut().bad.len(), 1);
         sink.inner_mut().bad.clear();
     }

@@ -1,5 +1,6 @@
 //! Typed column builders fed from raw bytes.
 
+use crate::mmstime as nemtime;
 use arrow_array::ArrayRef;
 use arrow_array::builder::{
     ArrayBuilder, BooleanBuilder, Date32Builder, Decimal128Builder, Float64Builder, Int64Builder,
@@ -7,10 +8,9 @@ use arrow_array::builder::{
 };
 use arrow_schema::DataType;
 use utilake_core::num;
-use utilake_mms_decode::mmstime as nemtime;
 use utilake_mms_registry::Cast;
 
-use utilake_mms_decode::error::RowError;
+use crate::error::{RowError, ValueError};
 
 /// A value parsed from a field, before it is appended. Holding parsed values
 /// for a whole row before appending any means a bad field never leaves a
@@ -56,24 +56,24 @@ impl Fault {
     pub fn row_error(self, column: &str, bytes: &[u8]) -> RowError {
         let column = column.to_owned();
         let value = || String::from_utf8_lossy(bytes).into_owned();
-        match self {
-            Self::Null => RowError::NullNotAllowed { column },
-            Self::Timestamp(source) => RowError::Timestamp {
+        RowError::Value(match self {
+            Self::Null => ValueError::NullNotAllowed { column },
+            Self::Timestamp(source) => ValueError::Timestamp {
                 column,
                 value: value(),
                 source,
             },
-            Self::Number(source) => RowError::Number {
+            Self::Number(source) => ValueError::Number {
                 column,
                 value: value(),
                 source,
             },
-            Self::Utf8 => RowError::Utf8 { column },
-            Self::Boolean => RowError::Boolean {
+            Self::Utf8 => ValueError::Utf8 { column },
+            Self::Boolean => ValueError::Boolean {
                 column,
                 value: value(),
             },
-        }
+        })
     }
 }
 
@@ -270,7 +270,7 @@ mod tests {
         ));
         assert!(matches!(
             parse_field!(ts, true, 0, "T", b"nope"),
-            Err(RowError::Timestamp { .. })
+            Err(RowError::Value(ValueError::Timestamp { .. }))
         ));
         // A far-future "no end" date is kept, clamped and marked as such.
         assert_eq!(
@@ -284,7 +284,7 @@ mod tests {
         assert_eq!(parse_field!(ts, true, 0, "T", b""), Ok(Parsed::Null));
         assert!(matches!(
             parse_field!(ts, false, 0, "T", b""),
-            Err(RowError::NullNotAllowed { .. })
+            Err(RowError::Value(ValueError::NullNotAllowed { .. }))
         ));
         assert_eq!(
             parse_field!(Cast::Float64, true, 0, "F", b"1.5"),
@@ -292,10 +292,10 @@ mod tests {
         );
         assert!(matches!(
             parse_field!(Cast::Float64, true, 0, "F", b"x"),
-            Err(RowError::Number {
+            Err(RowError::Value(ValueError::Number {
                 source: num::NumberError::Float,
                 ..
-            })
+            }))
         ));
         assert_eq!(
             parse_field!(Cast::Int64, true, 0, "I", b"42"),
@@ -317,7 +317,7 @@ mod tests {
         );
         assert!(matches!(
             parse_field!(dec, true, 0, "N", b"1.123456"),
-            Err(RowError::Number { .. })
+            Err(RowError::Value(ValueError::Number { .. }))
         ));
         assert_eq!(
             parse_field!(Cast::Date32, true, 0, "D", b"1970/01/03"),
@@ -330,7 +330,7 @@ mod tests {
         );
         assert!(matches!(
             parse_field!(Cast::Utf8, true, 3, "S", b"\xff"),
-            Err(RowError::Utf8 { .. })
+            Err(RowError::Value(ValueError::Utf8 { .. }))
         ));
         for t in [&b"true"[..], b"Y", b"1", b"T"] {
             assert_eq!(

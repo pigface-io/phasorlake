@@ -334,8 +334,7 @@ pub async fn sql(
     let h = r
         .history(id)
         .ok_or_else(|| anyhow::anyhow!("table {table} has no history"))?;
-    let schemas = h.schemas.clone();
-    let latest = schemas.iter().map(|s| s.schema_id).max().unwrap_or(0);
+    let latest = h.current_schema_id;
     let (manifest, thread) = ctx.manifest()?;
     let outputs = manifest
         .live_outputs(Some(table))
@@ -356,7 +355,7 @@ pub async fn sql(
         utilake_iceberg::Target::Latest,
         utilake_iceberg::Target::AsOf,
     );
-    let reads = utilake_iceberg::plan(&schemas, &files, interval, target)?;
+    let reads = utilake_iceberg::plan(h, &files, interval, target)?;
     println!(
         "{}",
         utilake_iceberg::duckdb_sql(&reads, r.table(id).time_column.as_deref(), interval)

@@ -16,11 +16,11 @@ pub mod file_model;
 pub mod plan;
 pub mod registry;
 pub mod resolve;
-pub mod shape;
+pub use utilake_mms_decode::shape;
 
 pub use crate::file_model::{Column, LakeType, LoadMode, Market, Run, Table, TableSchema};
 pub use error::ResolveError;
 pub use plan::{Cast, ColumnRoute, ConformancePlan, Origin, PLAN_FORMAT, PlanField, PlanHash};
 pub use registry::{Registry, SchemaSource, TableId};
 pub use resolve::{Mode, ResolveOptions, Resolved, Status};
-pub use shape::{CanonicalShape, SHAPE_FORMAT, ShapeId};
+pub use utilake_mms_decode::shape::{CanonicalShape, SHAPE_FORMAT, ShapeId};

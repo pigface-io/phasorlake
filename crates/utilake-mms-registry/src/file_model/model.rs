@@ -371,6 +371,7 @@ impl Table {
         utilake_iceberg::History {
             table: self.name.clone(),
             format_version: 3,
+            current_schema_id: 0,
             schemas: self
                 .schemas
                 .iter()
