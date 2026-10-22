@@ -15,7 +15,11 @@ const CATEGORIES: [&str; 12] = [
 
 /// Codes that are no longer raised. A code is a promise to whoever matches
 /// on it, so a retired one stays listed and may never be given a new meaning.
-const RETIRED: [(&str, &str); 11] = [
+const RETIRED: [(&str, &str); 12] = [
+    (
+        "zip.size_mismatch",
+        "an entry that inflated past the size it declared; the zip reader refuses it itself since zip 9, as `zip.bad_entry`",
+    ),
     (
         "listing.era_unsupported",
         "months before 2024 could not be listed; every archive month is now readable and a month the archive does not publish is `listing.month_missing`",

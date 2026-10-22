@@ -258,7 +258,9 @@ fn walk_zip<R: Read + Seek, E>(
         if entry.is_dir() {
             continue;
         }
-        let name = entry.name().to_owned();
+        // Entry names are ASCII in AEMO's archives; any other byte is kept
+        // as the replacement character, never an error.
+        let name = String::from_utf8_lossy(entry.name_raw()).into_owned();
         let size = entry.size();
         found += visit(&mut w, p, depth, prefix, &name, size, &mut entry)?;
     }
@@ -458,7 +460,7 @@ fn find_misplaced<R: Read + Seek, E>(
             crc32: f.crc32(),
             method: f.compression(),
             name_raw: f.name_raw().to_vec(),
-            name: f.name().to_owned(),
+            name: String::from_utf8_lossy(f.name_raw()).into_owned(),
             dir: f.is_dir(),
         });
     }

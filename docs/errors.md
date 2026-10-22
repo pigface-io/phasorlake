@@ -54,7 +54,6 @@ Every error and warning utilake reports carries one of these codes. Codes are st
 | `zip.no_csv` | `crates/utilake-kit/src/container.rs` |
 | `zip.not_a_zip` | `crates/utilake-mirror/src/map.rs` |
 | `zip.open_failed` | `crates/utilake-mirror/src/error.rs` |
-| `zip.size_mismatch` | `crates/utilake-mirror/src/map.rs` |
 | `zip.spool_failed` | `crates/utilake-kit/src/container.rs` |
 | `zip.too_big` | `crates/utilake-mirror/src/map.rs` |
 | `zip.too_many_entries` | `crates/utilake-mirror/src/map.rs` |
@@ -150,6 +149,7 @@ No longer raised; kept so the code is never reused.
 
 | code | was |
 |---|---|
+| `zip.size_mismatch` | an entry that inflated past the size it declared; the zip reader refuses it itself since zip 9, as `zip.bad_entry` |
 | `listing.era_unsupported` | months before 2024 could not be listed; every archive month is now readable and a month the archive does not publish is `listing.month_missing` |
 | `schema.merge_version_conflict` | the schema bootstrap refused two different column lists under one version number; each list is now a variant of the version |
 | `schema.version_drift` | a block whose columns differed from its declared version; resolution is now against increments, and such a block is `schema.deviates` |

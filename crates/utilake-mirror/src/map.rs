@@ -600,14 +600,14 @@ impl Lister {
             match z.by_index_raw(i) {
                 Ok(f) => {
                     // Zips made on Windows separate folders with `\`.
-                    let parts: Vec<String> = f
-                        .name()
+                    let raw = String::from_utf8_lossy(f.name_raw());
+                    let parts: Vec<String> = raw
                         .split(['/', '\\'])
                         .filter(|p| !p.is_empty())
                         .map(str::to_owned)
                         .collect();
                     if !parts.is_empty() {
-                        entries.push((parts, i, f.is_dir() || f.name().ends_with('\\')));
+                        entries.push((parts, i, f.is_dir() || raw.ends_with('\\')));
                     }
                 }
                 Err(e) => unreadable.push(Node {
@@ -727,15 +727,10 @@ impl Lister {
                 Ok((usize::try_from(n).unwrap_or(usize::MAX), Nested::Spooled(t)))
             })
         };
+        // An entry that inflates past the size it declares is refused by
+        // the zip reader itself, as a bad entry.
         match read {
             Err(e) => (node, Err(bad(&e))),
-            Ok((n, _)) if n as u64 + 4 > size => (
-                node,
-                Err(NodeError {
-                    code: "zip.size_mismatch",
-                    message: format!("The entry holds more than the {size} bytes it declares."),
-                }),
-            ),
             Ok((_, nested)) => (node, Ok(Some(nested))),
         }
     }
@@ -1541,16 +1536,16 @@ h/
         );
         lister.max_entries = MAX_ENTRIES;
         // An entry holding more than it declares, in memory and spooled:
-        // deflate gives what it inflates, whatever the zip declared.
+        // the zip reader refuses it at the declared size.
         let lying = testzip::understated(&testzip::deflated("n.zip", &inner));
         assert_eq!(
             list("lie.zip", &lying, &mut lister),
-            [None, Some("zip.size_mismatch")]
+            [None, Some("zip.bad_entry")]
         );
         lister.in_memory = 0;
         assert_eq!(
             list("lie2.zip", &lying, &mut lister),
-            [None, Some("zip.size_mismatch")]
+            [None, Some("zip.bad_entry")]
         );
         // Nowhere to spool it.
         lister.tmp = dir.path().join("no-such-dir");

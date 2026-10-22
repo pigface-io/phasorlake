@@ -268,10 +268,11 @@ pub fn compare(
         let mut files = Vec::with_capacity(z.len());
         for i in 0..z.len() {
             let f = z.by_index_raw(i).map_err(bad)?;
+            let name = String::from_utf8_lossy(f.name_raw());
             // Zips made on Windows separate folders with `\`.
-            if !f.is_dir() && !f.name().ends_with('\\') {
+            if !f.is_dir() && !name.ends_with('\\') {
                 files.push(ZipFile {
-                    name: f.name().replace('\\', "/"),
+                    name: name.replace('\\', "/"),
                     sum: Sum {
                         size: f.size(),
                         crc32: f.crc32(),
@@ -571,7 +572,8 @@ fn list<R: Read + Seek>(r: R) -> zip::result::ZipResult<Listing> {
     for i in 0..z.len() {
         let f = z.by_index_raw(i)?;
         if !f.is_dir() {
-            let name = f.name().rsplit(['/', '\\']).next().unwrap_or("").to_owned();
+            let raw = String::from_utf8_lossy(f.name_raw());
+            let name = raw.rsplit(['/', '\\']).next().unwrap_or("").to_owned();
             out.insert(name, (f.size(), f.crc32()));
         }
     }
