@@ -10,5 +10,5 @@ description = "Lockfile integrity hashes"
 paths = ['''(^|/)Cargo\.lock$''']
 
 [[allowlists]]
-description = "Fixtures are public AEMO data and scraped documentation; hashes in sidecars are not keys"
-paths = ['''^testdata/''']
+description = "Fixtures are public AEMO data and scraped documentation; hashes in sidecars are not keys, and nemweb's listing pages carry its own public Application Insights key"
+paths = ['''^testdata/''', '''^crates/utilake-mirror/testdata/''']
