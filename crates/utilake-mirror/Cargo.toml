@@ -1,0 +1,47 @@
+[package]
+name = "nemweb-mirror"
+description = "A copy of every file under nemweb's archive folders, and the catalog of it: every folder, file and zip entry."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[[bin]]
+name = "nemweb-mirror"
+path = "src/main.rs"
+
+[dependencies]
+anyhow.workspace = true
+async-trait.workspace = true
+bytes.workspace = true
+clap.workspace = true
+crc32fast.workspace = true
+futures.workspace = true
+memchr.workspace = true
+reqwest.workspace = true
+rustix.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+tempfile.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+toml.workspace = true
+url.workspace = true
+zip.workspace = true
+
+[dev-dependencies]
+criterion.workspace = true
+
+[[bench]]
+name = "mirror"
+harness = false
+
+[[bench]]
+name = "fetch"
+harness = false
