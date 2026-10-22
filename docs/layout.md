@@ -9,8 +9,9 @@ new source adds crates and changes none.
   `utilake-kit`, `utilake-writer`, `utilake-pipeline`, `utilake-cli`,
   `utilake-mirror`): what every source shares. `utilake-iceberg` is the
   lake's Iceberg contract (types, field ids, legal updates, the interval
-  planner); it, the MMS decoder (`utilake-mms-decode`) and the repository
-  gates (`utilake-gates`) come from the utilake-schemas repository at the
+  planner); it, the MMS decoder (`utilake-mms-decode`), the zip walker
+  (`utilake-zip`) and the repository gates (`utilake-gates`) come from the
+  utilake-schemas repository at the
   revision `Cargo.toml` pins, so the lake, its census and its schemas read
   AEMO's files through one scanner and agree on every id. `utilake-mirror`
   is the nemweb mirror (binary `nemweb-mirror`): every file under nemweb's

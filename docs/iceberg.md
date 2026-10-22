@@ -47,10 +47,14 @@ came in, and whether its data overlaps the run before.
 
 ## Resolution and the lake
 
-utilake-schemas publishes each table's history in its `table.json`;
-utilake keeps a copy at one commit in `schemas/nem/pulled/`, held to the
-manifest and to the `utilake-iceberg` rev of `Cargo.lock` by
-`just schemas-check`, and the registry embeds it. A table's columns are
+utilake-schemas publishes each table as Iceberg table metadata
+(`nem/<TABLE>/metadata/v1.metadata.json`: its schemas, its runs as
+snapshots, its declaration and the data model's words as properties; the
+format is described in that repository's README); utilake keeps a copy at
+one commit in `schemas/nem/pulled/`, held to the manifest and to the
+`utilake-iceberg` rev of `Cargo.lock` by `just schemas-check`, and the
+registry embeds what it reads from it through
+`utilake_iceberg::from_metadata`. A table's columns are
 the history's fields by id, typed by their Iceberg types, so a plan writes
 every value under its Iceberg field id (`PARQUET:field_id`). A block
 resolves to the schema `History::resolve` names for its report pair, AEMO
@@ -110,8 +114,10 @@ query over the lake's files.
 
 ## The export
 
-`utilake-schemas export` (format 2, in utilake-schemas) writes, per folded table, one JSON
-Schema per Iceberg schema (`nem/<TABLE>/schema-<hash>.json`, named by its
-fields and key so the `$id` never changes) with each field's id and type
-and the runs written under it, and the history in `table.json`'s `iceberg`
-block.
+`utilake-schemas export` (format 3, in utilake-schemas) writes, per folded
+table, its Iceberg table metadata with one empty manifest list per run,
+and, derived from it, one JSON Schema per Iceberg schema
+(`nem/<TABLE>/schema-<id>.json`) and `nem/headers.json`. A lake table
+`utilake iceberg` writes relates to the published one by its uuid and its
+schema ids, which are the same; its snapshots carry data files, the
+published one's none. The layout is described in utilake-schemas' README.

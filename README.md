@@ -186,19 +186,36 @@ the lake is derived from the archive, which is what `utilake reingest` does when
 table's schema improves. `utilake archive verify` hashes every
 file against its record.
 
+## The mirror
+
+`nemweb-mirror` (`crates/utilake-mirror`) keeps a copy of every file under
+nemweb's archive folders and a catalog of it: it crawls every listing page
+under `Data_Archive/`, `Reports/ARCHIVE/` and `Reports/CURRENT/`, peeks
+into each zip's central directory before downloading, downloads every
+listed file once at a paced rate (a refusal is waited out), keeps every
+version of a file nemweb rewrites in place, watches the folders on a
+schedule of their own after the crawl, maps every zip as a folder, and
+compares each month's zip with its folder so most zips are never
+downloaded. Its home is `NEMWEB_MIRROR_HOME` (default `~/.nemweb-mirror`):
+the archive, with a sidecar beside every file, the journal and the catalog.
+`crates/utilake-mirror/README.md` has the commands and the layout on disk;
+the census in utilake-schemas and `utilake` read what it keeps.
+
 ## Our schemas: the shared histories
 
 A table's schemas are its history as an Iceberg table, which
-utilake-schemas folds from its census of
-every file AEMO published (github.com/g0itb4/utilake-schemas) and publishes
-as `nem/{TABLE}/table.json` with a manifest of their hashes. utilake keeps a
-copy, taken at one commit and never edited:
+utilake-schemas folds from its census of every file AEMO published and
+publishes as the table's Iceberg table metadata,
+`nem/{TABLE}/metadata/v1.metadata.json`, with a manifest of every file's
+hash (github.com/g0itb4/utilake-schemas; its README describes what the
+metadata holds). utilake keeps a copy, taken at one commit and never
+edited:
 
 ```
 schemas/nem/pulled/
-  SOURCE                          the utilake-schemas commit it was taken at
-  manifest.json                   the sha256 of every file published then
-  DISPATCH_UNIT_SCADA/table.json  the table, and its history under `iceberg`
+  SOURCE                                       the utilake-schemas commit it was taken at
+  manifest.json                                the sha256 of every file published then
+  DISPATCH_UNIT_SCADA/metadata/v1.metadata.json  the table: its schemas, its runs as snapshots, its declaration
   ...
 ```
 
@@ -210,22 +227,11 @@ takes the `utilake-iceberg` crate from, so the histories and the code that
 reads them are always of one commit. A newer census is a pull and a bump of
 that rev, together.
 
-A history has schemas, each the fields of its files in file order, and
-runs, each the files AEMO released in a row under one schema, version and
-report pair:
-
-```json
-"schemas": [{"schema-id": 1, "identifier-field-ids": [1, 2], "fields": [
-    {"id": 1, "name": "SETTLEMENTDATE", "type": "timestamptz", "required": true},
-    {"id": 2, "name": "DUID", "type": "string", "required": true},
-    {"id": 3, "name": "SCADAVALUE", "type": "decimal(16, 6)", "required": false},
-    {"id": 4, "name": "LASTCHANGED", "type": "timestamptz", "required": false}]}],
-"runs": [{"schema-id": 1, "report": ["DISPATCH", "UNIT_SCADA"], "version": 1,
-          "from": {"release": "2024-10", ...}, "to": {"release": "2026-04", ...}, ...}]
-```
-
-The table's columns are the fields, by id, each typed by its Iceberg type;
-a column takes nulls unless every schema requires it. A block is read with
+The registry reads each table through `utilake_iceberg::from_metadata`.
+The table's columns are the history's fields, by id, each typed by its
+Iceberg type; a column takes nulls unless every schema requires it; the
+schema a reader gets today is the metadata's `current-schema-id`, which
+`utilake sql` targets unless `--as-of` names another. A block is read with
 the schema `History::resolve` names for its report pair, AEMO version,
 columns in order and the month its source was released in (with no month
 known, the latest run's): of the runs whose schema has exactly its columns,
@@ -234,7 +240,9 @@ first. Such a block conforms; the census guarantees every block it saw
 does. A block no run fits deviates: it is kept whole (a column the table
 lacks as text of its own, a column the file lacks as null), compared with
 the schema in force for its pair then and reported, and `--strict` refuses
-it. A renamed column is a new column.
+it. A renamed column is a new column. A table with a breaking column (one
+name under two fields) is refused until utilake reads a column by more
+than one field.
 
 Where AEMO's files have columns the history has not seen, the fix is the
 census's, in utilake-schemas; until then a table of your own reads them.
@@ -287,7 +295,7 @@ lists, is refused with how to write it now.
 ## The census of every shape
 
 The census of every file AEMO published, each table's Iceberg history folded
-from it, and the JSON Schema export live in the utilake-schemas repository
+from it, and the export of each table's metadata live in the utilake-schemas repository
 (github.com/g0itb4/utilake-schemas): MMSDM months and the report folders
 (`Reports/ARCHIVE`, `Reports/CURRENT`), including each version of a file
 nemweb rewrote in place. utilake reads the histories it publishes
