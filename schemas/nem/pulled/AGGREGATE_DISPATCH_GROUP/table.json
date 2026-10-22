@@ -2,19 +2,28 @@
   "columns": [
     {
       "comment": "Aggregate Dispatch Group ID",
+      "first_release": "2024-08",
+      "iceberg_type": "string",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "ADG_ID"
     },
     {
       "comment": "A participant provided comment",
+      "first_release": "2024-08",
+      "iceberg_type": "string",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(100)",
       "name": "COMMENTS"
     },
     {
       "comment": "Last date and time record changed",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     }
@@ -23,13 +32,14 @@
   "description": "Entity allowing for compliance monitoring over grouped DUIDs",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 21,
+        "files": 26,
         "from": {
           "data-time": "2023-08-04T15:39:42+10:00",
           "file": "PUBLIC_ARCHIVE#AGGREGATE_DISPATCH_GROUP#FILE01#202408010000.zip",
@@ -44,13 +54,13 @@
           "PARTICIPANT_REGISTRATION",
           "AGGREGATE_DISPATCH_GROUP"
         ],
-        "rows": 592,
+        "rows": 737,
         "schema-id": 0,
         "to": {
           "data-time": "2026-01-16T14:23:31+10:00",
-          "file": "PUBLIC_ARCHIVE#AGGREGATE_DISPATCH_GROUP#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "b10ccc77e79338efe0f5cf83678f0c7a8eab615e73a29287bd0aefd6746a7b98"
+          "file": "PUBLIC_ARCHIVE#AGGREGATE_DISPATCH_GROUP#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "865ccb3d7edc59d41b2eed74092d0fe8a48c11311cb3527718baf5618fbd20ef"
         },
         "updates": [],
         "version": 1

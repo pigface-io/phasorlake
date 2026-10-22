@@ -2,181 +2,271 @@
   "columns": [
     {
       "comment": "Date that this data applies to",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "SETTLEMENTDATE"
     },
     {
       "comment": "Run No",
+      "first_release": "2009-07",
+      "iceberg_type": "long",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(3,0)",
       "name": "RUNNO"
     },
     {
       "comment": "Region Identifier",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(10)",
       "name": "REGIONID"
     },
     {
       "comment": "Period number where 1 represents the trading interval ending at 00:05 AEST",
+      "first_release": "2009-07",
+      "iceberg_type": "long",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(3,0)",
       "name": "PERIODID"
     },
     {
       "comment": "Regional reference price for this dispatch period",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RRP"
     },
     {
       "comment": "Excess energy price where negative average",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 6,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "EEP"
     },
     {
       "comment": "Indicates when the Trading interval price has been adjusted after the trading interval was completed",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(1, 0)",
       "id": 7,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(1)",
       "name": "INVALIDFLAG"
     },
     {
       "comment": "Last date and time record changed",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 8,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     },
     {
       "comment": "Regional Original Price. The price before any adjustments were made",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 9,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "ROP"
     },
     {
       "comment": "Regional reference price for this dispatch period",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 10,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE6SECRRP"
     },
     {
       "comment": "Original regional price - prior to APC or VoLL overrides applied",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 11,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE6SECROP"
     },
     {
       "comment": "Regional reference price for this dispatch period",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 12,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE60SECRRP"
     },
     {
       "comment": "Original regional price - prior to APC or VoLL overrides applied",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 13,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE60SECROP"
     },
     {
       "comment": "Regional reference price for this dispatch period",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 14,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE5MINRRP"
     },
     {
       "comment": "Original regional price - prior to APC or VoLL overrides applied",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 15,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE5MINROP"
     },
     {
       "comment": "Regional reference price for this dispatch period",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 16,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISEREGRRP"
     },
     {
       "comment": "Original regional price - prior to APC or VoLL overrides applied",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 17,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISEREGROP"
     },
     {
       "comment": "Regional reference price for this dispatch period",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 18,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER6SECRRP"
     },
     {
       "comment": "Original regional price - prior to APC or VoLL overrides applied",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 19,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER6SECROP"
     },
     {
       "comment": "Regional reference price for this dispatch period",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 20,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER60SECRRP"
     },
     {
       "comment": "Original regional price - prior to APC or VoLL overrides applied",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 21,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER60SECROP"
     },
     {
       "comment": "Regional reference price for this dispatch period",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 22,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER5MINRRP"
     },
     {
       "comment": "Original regional price - prior to APC or VoLL overrides applied",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 23,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER5MINROP"
     },
     {
       "comment": "Regional reference price for this dispatch period",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 24,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWERREGRRP"
     },
     {
       "comment": "Original regional price - prior to APC or VoLL overrides applied",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 25,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWERREGROP"
     },
     {
       "comment": "Status of regional prices for this dispatch interval \"NOT FIRM\" or \"FIRM\"",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 26,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "PRICE_STATUS"
     },
     {
       "comment": "Regional Raise 1Sec Price - R1Price attribute after capping/flooring",
+      "first_release": "2023-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 27,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE1SECRRP"
     },
     {
       "comment": "Raise1Sec Regional Original Price - uncapped/unfloored and unscaled",
+      "first_release": "2023-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 28,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE1SECROP"
     },
     {
       "comment": "Regional Lower 1Sec Price - RegionSolution element L1Price attribute",
+      "first_release": "2023-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 29,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER1SECRRP"
     },
     {
       "comment": "Lower1Sec Regional Original Price - uncapped/unfloored and unscaled",
+      "first_release": "2023-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 30,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER1SECROP"
     }
@@ -185,6 +275,7 @@
   "description": "TRADINGPRICE sets out 5 minutes spot market price, including fields to handle the Ancillary Services functionality. If prices are adjusted, the final price is recorded in the regional reference price (RRP) field with price before adjustment recorded in the regional original price (ROP) field.\nPrior to 5 Minute Settlements, this was half-hourly spot market values, which was calculated as the average of the six 5 minute dispatch intervals within the 30 minute period.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 2,
     "format-version": 3,
     "runs": [
       {
@@ -269,7 +360,7 @@
           "schema",
           "version"
         ],
-        "files": 21,
+        "files": 26,
         "from": {
           "data-time": "2024-08-01T00:05:00+10:00",
           "file": "PUBLIC_ARCHIVE#TRADINGPRICE#FILE01#202408010000.zip",
@@ -284,13 +375,13 @@
           "TRADING",
           "PRICE"
         ],
-        "rows": 918720,
+        "rows": 1139040,
         "schema-id": 2,
         "to": {
-          "data-time": "2026-05-01T00:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#TRADINGPRICE#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "ca374cd041d8ca07fb4bf0458fd301f7f669d628661a77b6fc5703c748c72b90"
+          "data-time": "2026-10-01T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#TRADINGPRICE#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "165817241061addec06e7ae848cc7fbfad2af43b196d49cf54708e9e581ea03d"
         },
         "updates": [
           {

@@ -2,139 +2,208 @@
   "columns": [
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2009-09",
       "model_type": null,
       "name": "SETTLEMENTDATE"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(1, 0)",
       "id": 2,
+      "last_release": "2009-09",
       "model_type": null,
       "name": "RUNNO"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(1, 0)",
       "id": 3,
+      "last_release": "2009-09",
       "model_type": null,
       "name": "INTERVENTION"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 4,
+      "last_release": "2009-09",
       "model_type": null,
       "name": "CASESUBTYPE"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(1, 0)",
       "id": 5,
+      "last_release": "2009-09",
       "model_type": null,
       "name": "SOLUTIONSTATUS"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 6,
+      "last_release": "2009-09",
       "model_type": null,
       "name": "SPDVERSION"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 7,
+      "last_release": "2009-09",
       "model_type": null,
       "name": "STARTPERIOD"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(1, 0)",
       "id": 8,
+      "last_release": "2009-09",
       "model_type": null,
       "name": "NONPHYSICALLOSSES"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(13, 3)",
       "id": 9,
+      "last_release": "2009-09",
       "model_type": null,
       "name": "TOTALOBJECTIVE"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(1, 0)",
       "id": 10,
+      "last_release": "2009-09",
       "model_type": null,
       "name": "TOTALAREAGENVIOLATION"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(1, 0)",
       "id": 11,
+      "last_release": "2009-09",
       "model_type": null,
       "name": "TOTALINTERCONNECTORVIOLATION"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(6, 3)",
       "id": 12,
+      "last_release": "2009-09",
       "model_type": null,
       "name": "TOTALGENERICVIOLATION"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(4, 3)",
       "id": 13,
+      "last_release": "2009-09",
       "model_type": null,
       "name": "TOTALRAMPRATEVIOLATION"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(7, 3)",
       "id": 14,
+      "last_release": "2009-09",
       "model_type": null,
       "name": "TOTALUNITMWCAPACITYVIOLATION"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 15,
+      "last_release": "2009-09",
       "model_type": null,
       "name": "TOTAL5MINVIOLATION"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 16,
+      "last_release": "2009-09",
       "model_type": null,
       "name": "TOTALREGVIOLATION"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 17,
+      "last_release": "2009-09",
       "model_type": null,
       "name": "TOTAL6SECVIOLATION"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 18,
+      "last_release": "2009-09",
       "model_type": null,
       "name": "TOTAL60SECVIOLATION"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(1, 0)",
       "id": 19,
+      "last_release": "2009-09",
       "model_type": null,
       "name": "TOTALENERGYCONSTRVIOLATION"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(5, 3)",
       "id": 20,
+      "last_release": "2009-09",
       "model_type": null,
       "name": "TOTALENERGYOFFERVIOLATION"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(1, 0)",
       "id": 21,
+      "last_release": "2009-09",
       "model_type": null,
       "name": "TOTALASPROFILEVIOLATION"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(6, 3)",
       "id": 22,
+      "last_release": "2009-09",
       "model_type": null,
       "name": "TOTALFASTSTARTVIOLATION"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 23,
+      "last_release": "2009-09",
       "model_type": null,
       "name": "LASTCHANGED"
     }
@@ -143,6 +212,7 @@
   "description": null,
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {

@@ -2,235 +2,352 @@
   "columns": [
     {
       "comment": "Date processing of the run begins",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2018-05",
       "model_type": "TIMESTAMP(0)",
       "name": "RUN_DATETIME"
     },
     {
       "comment": "Unique run id. Generated from the solution file caseid",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(3, 0)",
       "id": 2,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(3,0)",
       "name": "RUN_NO"
     },
     {
       "comment": "Sunday at start of the week for this solutions energy block. Generated from the solution file energy block",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 3,
+      "last_release": "2018-05",
       "model_type": "TIMESTAMP(0)",
       "name": "ENERGYBLOCK"
     },
     {
       "comment": "Day this solution is for. Generated from the solution file periodid",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 4,
+      "last_release": "2018-05",
       "model_type": "TIMESTAMP(0)",
       "name": "DAY"
     },
     {
       "comment": "LDC block this solution is for. Generated from the solution file periodid",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(3, 0)",
       "id": 5,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(3,0)",
       "name": "LDCBLOCK"
     },
     {
       "comment": "The unique region identifier",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 6,
+      "last_release": "2018-05",
       "model_type": "VARCHAR(10)",
       "name": "REGIONID"
     },
     {
       "comment": "Input value for 10% probability demand",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 2)",
       "id": 7,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(12,2)",
       "name": "DEMAND10"
     },
     {
       "comment": "Not used from 21/05/2010. Prior to 21/05/2010: Input reserve requirement",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 2)",
       "id": 8,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(12,2)",
       "name": "RESERVEREQ"
     },
     {
       "comment": "Not used from 21/05/2010. Prior to 21/05/2010: CA Demand + Reserve Requirement",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 2)",
       "id": 9,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(12,2)",
       "name": "CAPACITYREQ"
     },
     {
       "comment": "Sum of: (Region Period Demand - given Demand10)/PeriodLength(sum by Energy Block, entered in first period of energy block, GWh)",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 2)",
       "id": 10,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(12,2)",
       "name": "ENERGYREQDEMAND10"
     },
     {
       "comment": "Region energy unconstrained MW capacity subject to network security constraints",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 0)",
       "id": 11,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(12,0)",
       "name": "UNCONSTRAINEDCAPACITY"
     },
     {
       "comment": "Region energy constrained MW capacity subject to energy and network security constraints",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 0)",
       "id": 12,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(12,0)",
       "name": "CONSTRAINEDCAPACITY"
     },
     {
       "comment": "Calculated in capacity adequacy evaluation: Export if > 0, Import if < 0.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 2)",
       "id": 13,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(12,2)",
       "name": "NETINTERCHANGEUNDERSCARCITY"
     },
     {
       "comment": "Regional surplus capacity MW, +/- values indicate surplus/deficit capacity",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 2)",
       "id": 14,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(12,2)",
       "name": "SURPLUSCAPACITY"
     },
     {
       "comment": "Not used from 21/05/2010. Prior to 21/05/2010: Regional reserve surplus. +/-0 values indicate surplus/deficit reserve",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 2)",
       "id": 15,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(12,2)",
       "name": "SURPLUSRESERVE"
     },
     {
       "comment": "The regional reserve condition: 0 = Adequate, 1 = LRC",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(1, 0)",
       "id": 16,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(1,0)",
       "name": "RESERVECONDITION"
     },
     {
       "comment": "The Maximum generation (MW) that could be withdrawn from this region without incurring a Low Reserve Condition.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 2)",
       "id": 17,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(12,2)",
       "name": "MAXSURPLUSRESERVE"
     },
     {
       "comment": "The Maximum Spare Capacity evaluated for this region in this period. Calculated for each region in turn",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 2)",
       "id": 18,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(12,2)",
       "name": "MAXSPARECAPACITY"
     },
     {
       "comment": "The LOR Condition determined from the Maximum Spare Capacity value: 0 = no condition, 1 = LOR1 condition, 2 = LOR2 condition, 3 = LOR3 condition",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(1, 0)",
       "id": 19,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(1,0)",
       "name": "LORCONDITION"
     },
     {
       "comment": "Sum of  MAXAVAIL quantities offered by all Scheduled Generators in a given Region for a given PERIODID.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 2)",
       "id": 20,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(12,2)",
       "name": "AGGREGATECAPACITYAVAILABLE"
     },
     {
       "comment": "Sum of  MAXAVAIL quantities bid by of all Scheduled Loads in a given Region for a given PERIODID.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 2)",
       "id": 21,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(12,2)",
       "name": "AGGREGATESCHEDULEDLOAD"
     },
     {
       "comment": "Date the solution was loaded",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 22,
+      "last_release": "2018-05",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     },
     {
       "comment": "Sum of  PASAAVAILABILITY quantities offered by all Scheduled Generators in a given Region for a given PERIODID.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 0)",
       "id": 23,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(12,0)",
       "name": "AGGREGATEPASAAVAILABILITY"
     },
     {
       "comment": "Type of run.  Values are RELIABILITY_LRC and OUTAGE_LRC",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 24,
+      "last_release": "2018-05",
       "model_type": "VARCHAR(20)",
       "name": "RUNTYPE"
     },
     {
       "comment": "Region Reserve Level for LOR1 used. Can be static value or calculated value if an interconnector is a credible contingency",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(16, 6)",
       "id": 25,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(16,6)",
       "name": "CALCULATEDLOR1LEVEL"
     },
     {
       "comment": "Region Reserve Level for LOR2 used. Can be static value or calculated value if an interconnector is a credible contingency",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(16, 6)",
       "id": 26,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(16,6)",
       "name": "CALCULATEDLOR2LEVEL"
     },
     {
       "comment": "Net interconnector flow from the region for this interval from the MSR assessment",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 2)",
       "id": 27,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(12,2)",
       "name": "MSRNETINTERCHANGEUNDERSCARCITY"
     },
     {
       "comment": "Net interconnector flow from the region for this interval from the LOR assessment",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 2)",
       "id": 28,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(12,2)",
       "name": "LORNETINTERCHANGEUNDERSCARCITY"
     },
     {
       "comment": "Allowance made for non-scheduled generation in the demand forecast (MW).",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 29,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(15,5)",
       "name": "TOTALINTERMITTENTGENERATION"
     },
     {
       "comment": "Input value for 50% probability demand",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 2)",
       "id": 30,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(12,2)",
       "name": "DEMAND50"
     },
     {
       "comment": "Sum of Cleared Scheduled generation, imported generation (at the region boundary) and allowances made for non-scheduled generation (MW).",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 31,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(15,5)",
       "name": "DEMAND_AND_NONSCHEDGEN"
     },
     {
       "comment": "Regional aggregated Unconstrained Intermittent Generation Forecast of Semi-scheduled generation (MW).",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 2)",
       "id": 32,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(12,2)",
       "name": "UIGF"
     },
     {
       "comment": "Aggregate Regional UIGF availability",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 2)",
       "id": 33,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(12,2)",
       "name": "SEMISCHEDULEDCAPACITY"
     },
     {
       "comment": "Aggregate Regional UIGF availability for LOR",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 2)",
       "id": 34,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(12,2)",
       "name": "LOR_SEMISCHEDULEDCAPACITY"
     },
     {
       "comment": "Regional reserve deficit (MW)",
+      "first_release": "2010-05",
+      "iceberg_type": "decimal(16, 6)",
       "id": 35,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(16,6)",
       "name": "DEFICITRESERVE"
     },
     {
       "comment": "The Maximum market response (MW) needed for the region to eliminate a Low Reserve Condition (LRC)",
+      "first_release": "2016-05",
+      "iceberg_type": "decimal(12, 2)",
       "id": 36,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(12,2)",
       "name": "MAXUSEFULRESPONSE"
     },
     {
       "comment": "Net interconnector flow from the region for this interval from the MRR assessment",
+      "first_release": "2016-05",
+      "iceberg_type": "decimal(12, 6)",
       "id": 37,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(12,2)",
       "name": "MURNETINTERCHANGEUNDERSCARCITY"
     },
     {
       "comment": "Allowance made for non-scheduled generation in the LOR assessment",
+      "first_release": "2016-05",
+      "iceberg_type": "decimal(15, 5)",
       "id": 38,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(15,5)",
       "name": "LORTOTALINTERMITTENTGENERATION"
     },
     {
       "comment": "Sum of: (Region Period Demand - given Demand50)/PeriodLength (sum by Energy Block, entered in first period of energy block, GWh)",
+      "first_release": "2016-05",
+      "iceberg_type": "decimal(12, 2)",
       "id": 39,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(12,2)",
       "name": "ENERGYREQDEMAND50"
     }
@@ -239,6 +356,7 @@
   "description": "MTPASA_CASESOLUTION is obsolete from 2017 End of Year DM4.27 Release. \nThe MTPASA_REGIONSOLUTION table shows the results of the regional capacity, maximum surplus reserve and maximum spare capacity evaluations for each day and ldcblock of the study.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 2,
     "format-version": 3,
     "runs": [
       {

@@ -2,55 +2,82 @@
   "columns": [
     {
       "comment": "Date processing of the run begins",
+      "first_release": "2010-05",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2018-05",
       "model_type": "TIMESTAMP(0)",
       "name": "RUN_DATETIME"
     },
     {
       "comment": "Unique run ID. Generated from the solution file Case ID.",
+      "first_release": "2010-05",
+      "iceberg_type": "decimal(3, 0)",
       "id": 2,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(3,0)",
       "name": "RUN_NO"
     },
     {
       "comment": "Type of run. Values are RELIABILITY_LRC and OUTAGE_LRC",
+      "first_release": "2010-05",
+      "iceberg_type": "string",
       "id": 3,
+      "last_release": "2018-05",
       "model_type": "VARCHAR(20)",
       "name": "RUNTYPE"
     },
     {
       "comment": "Sunday at start of the week for this solutions energy block. Generated from the solution file energy block.",
+      "first_release": "2010-05",
+      "iceberg_type": "timestamptz",
       "id": 4,
+      "last_release": "2018-05",
       "model_type": "TIMESTAMP(0)",
       "name": "ENERGYBLOCK"
     },
     {
       "comment": "Day this solution is for. Generated from the solution file period id.",
+      "first_release": "2010-05",
+      "iceberg_type": "timestamptz",
       "id": 5,
+      "last_release": "2018-05",
       "model_type": "TIMESTAMP(0)",
       "name": "DAY"
     },
     {
       "comment": "Load Duration Curve block this solution is for. Generated from the solution file period id.",
+      "first_release": "2010-05",
+      "iceberg_type": "decimal(3, 0)",
       "id": 6,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(3,0)",
       "name": "LDCBLOCK"
     },
     {
       "comment": "The unique identifier of the MT PASA LRC Reserve Requirement.",
+      "first_release": "2010-05",
+      "iceberg_type": "string",
       "id": 7,
+      "last_release": "2018-05",
       "model_type": "VARCHAR(20)",
       "name": "RESERVELIMITID"
     },
     {
       "comment": "Marginal Value of the Reserve Requirement Constraint. A non-zero value indicates that the reserve requirement is binding.",
+      "first_release": "2010-05",
+      "iceberg_type": "decimal(16, 6)",
       "id": 8,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(16,6)",
       "name": "MARGINALVALUE"
     },
     {
       "comment": "Timestamp the record was last modified.",
+      "first_release": "2010-05",
+      "iceberg_type": "timestamptz",
       "id": 9,
+      "last_release": "2018-05",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     }
@@ -59,6 +86,7 @@
   "description": "MTPASA_RESERVELIMITSOLUTION is obsolete from 2017 End of Year DM4.27 Release. \nMT PASA Solution table reporting whether a MT PASA Reserve requirement is binding for each day and LDC block of the run.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {

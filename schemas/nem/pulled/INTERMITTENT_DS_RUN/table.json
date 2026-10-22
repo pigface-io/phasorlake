@@ -2,79 +2,118 @@
   "columns": [
     {
       "comment": "Date and Time where the forecast applies (dispatch interval ending)",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "RUN_DATETIME"
     },
     {
       "comment": "DUID (or Area for non-scheduled) where this forecast applies",
+      "first_release": "2024-08",
+      "iceberg_type": "string",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "DUID"
     },
     {
       "comment": "Date and Time when this forecast submission was loaded.",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "OFFERDATETIME"
     },
     {
       "comment": "Origin of this forecast (PARTICIPANTID, AWEFS/ASEFS, or another vendor)",
+      "first_release": "2024-08",
+      "iceberg_type": "string",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "ORIGIN"
     },
     {
       "comment": "Unsuppressed forecasts with higher priority values are used in Dispatch in preference to unsuppressed forecasts with lower priority values.",
+      "first_release": "2024-08",
+      "iceberg_type": "long",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(10,0)",
       "name": "FORECAST_PRIORITY"
     },
     {
       "comment": "Authorising officer of this forecast (applicable for participant forecasts only). This column is not made available to the public.",
+      "first_release": "2024-08",
+      "iceberg_type": "string",
       "id": 6,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "AUTHORISEDBY"
     },
     {
       "comment": "Comments relating to the forecast. This column is not made available to the public.",
+      "first_release": "2024-08",
+      "iceberg_type": "string",
       "id": 7,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(200)",
       "name": "COMMENTS"
     },
     {
       "comment": "Last date and time the record changed.",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 8,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     },
     {
       "comment": "Metadata relating to the forecast. This column is not made available to the public.",
+      "first_release": "2024-08",
+      "iceberg_type": "string",
       "id": 9,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(30)",
       "name": "MODEL"
     },
     {
       "comment": "Participant can document when the forecast was created",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 10,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "PARTICIPANT_TIMESTAMP"
     },
     {
       "comment": "Was this forecast suppressed by AEMO? Suppressed = 1,Not suppressed =0",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(1, 0)",
       "id": 11,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(1,0)",
       "name": "SUPPRESSED_AEMO"
     },
     {
       "comment": "Was this forecast suppressed by the participant? Suppressed submissions may not be used,  Suppressed = 1, Not suppressed =0",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(1, 0)",
       "id": 12,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(1,0)",
       "name": "SUPPRESSED_PARTICIPANT"
     },
     {
       "comment": "Uniquely identifies this interaction",
+      "first_release": "2024-08",
+      "iceberg_type": "string",
       "id": 13,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(100)",
       "name": "TRANSACTION_ID"
     }
@@ -83,13 +122,14 @@
   "description": "Unconstrained Intermittent Generation Forecasts (UIGF) for Dispatch.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 21,
+        "files": 26,
         "from": {
           "data-time": "2024-08-01T00:05:00+10:00",
           "file": "PUBLIC_ARCHIVE#INTERMITTENT_DS_RUN#FILE01#202408010000.zip",
@@ -104,13 +144,13 @@
           "DEMAND",
           "INTERMITTENT_DS_RUN"
         ],
-        "rows": 461902093,
+        "rows": 620306813,
         "schema-id": 0,
         "to": {
-          "data-time": "2026-05-01T00:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#INTERMITTENT_DS_RUN#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "dcb4fa31350e8be63fcb0ba70e015dbd2b5a262f124c5989705b785171b96a3a"
+          "data-time": "2026-10-01T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#INTERMITTENT_DS_RUN#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "1649b24d671b6721aaba199990c195d8714f963e3c3434295c813aa43f511233"
         },
         "updates": [],
         "version": 1

@@ -2,193 +2,289 @@
   "columns": [
     {
       "comment": "Market date for which the bid applied",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "SETTLEMENTDATE"
     },
     {
       "comment": "Dispatchable Unit identifier",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(10)",
       "name": "DUID"
     },
     {
       "comment": "Bid Type Identifier",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(10)",
       "name": "BIDTYPE"
     },
     {
       "comment": "Market date for which the bid was submitted",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "BIDSETTLEMENTDATE"
     },
     {
       "comment": "Offer date and time",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "OFFERDATE"
     },
     {
       "comment": "The trading interval period identifier (1-288)",
+      "first_release": "2009-07",
+      "iceberg_type": "double",
       "id": 6,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(22,0)",
       "name": "PERIODID"
     },
     {
       "comment": "Version number of offer",
+      "first_release": "2009-07",
+      "iceberg_type": "double",
       "id": 7,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(22,0)",
       "name": "VERSIONNO"
     },
     {
       "comment": "Maximum availability for this BidType in this period",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 6)",
       "id": 8,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,6)",
       "name": "MAXAVAIL"
     },
     {
       "comment": "Fixed unit output MW (Energy Bids Only).  A value of zero means no fixed load so the unit is dispatched according to bid and market (rather than zero fixed load)",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 6)",
       "id": 9,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,6)",
       "name": "FIXEDLOAD"
     },
     {
       "comment": "MW/min for raise (Energy Bids Only)",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(6, 0)",
       "id": 10,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(6,0)",
       "name": "ROCUP"
     },
     {
       "comment": "MW/Min for lower (Energy Bids Only)",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(6, 0)",
       "id": 11,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(6,0)",
       "name": "ROCDOWN"
     },
     {
       "comment": "Minimum Energy Output (MW) at which this ancillary service becomes available (AS Only)",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(6, 0)",
       "id": 12,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(6,0)",
       "name": "ENABLEMENTMIN"
     },
     {
       "comment": "Maximum Energy Output (MW) at which this ancillary service can be supplied (AS Only)",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(6, 0)",
       "id": 13,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(6,0)",
       "name": "ENABLEMENTMAX"
     },
     {
       "comment": "Minimum Energy Output (MW) at which the unit can provide the full availability (MAXAVAIL) for this ancillary service (AS Only)",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(6, 0)",
       "id": 14,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(6,0)",
       "name": "LOWBREAKPOINT"
     },
     {
       "comment": "Maximum Energy Output (MW) at which the unit can provide the full availability (MAXAVAIL) for this ancillary service (AS Only)",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(6, 0)",
       "id": 15,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(6,0)",
       "name": "HIGHBREAKPOINT"
     },
     {
       "comment": "Availability at price band 1",
+      "first_release": "2009-07",
+      "iceberg_type": "double",
       "id": 16,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(22,0)",
       "name": "BANDAVAIL1"
     },
     {
       "comment": "Availability at price band 2",
+      "first_release": "2009-07",
+      "iceberg_type": "double",
       "id": 17,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(22,0)",
       "name": "BANDAVAIL2"
     },
     {
       "comment": "Availability at price band 3",
+      "first_release": "2009-07",
+      "iceberg_type": "double",
       "id": 18,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(22,0)",
       "name": "BANDAVAIL3"
     },
     {
       "comment": "Availability at price band 4",
+      "first_release": "2009-07",
+      "iceberg_type": "double",
       "id": 19,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(22,0)",
       "name": "BANDAVAIL4"
     },
     {
       "comment": "Availability at price band 5",
+      "first_release": "2009-07",
+      "iceberg_type": "double",
       "id": 20,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(22,0)",
       "name": "BANDAVAIL5"
     },
     {
       "comment": "Availability at price band 6",
+      "first_release": "2009-07",
+      "iceberg_type": "double",
       "id": 21,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(22,0)",
       "name": "BANDAVAIL6"
     },
     {
       "comment": "Availability at price band 7",
+      "first_release": "2009-07",
+      "iceberg_type": "double",
       "id": 22,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(22,0)",
       "name": "BANDAVAIL7"
     },
     {
       "comment": "Availability at price band 8",
+      "first_release": "2009-07",
+      "iceberg_type": "double",
       "id": 23,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(22,0)",
       "name": "BANDAVAIL8"
     },
     {
       "comment": "Availability at price band 9",
+      "first_release": "2009-07",
+      "iceberg_type": "double",
       "id": 24,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(22,0)",
       "name": "BANDAVAIL9"
     },
     {
       "comment": "Availability at price band 10",
+      "first_release": "2009-07",
+      "iceberg_type": "double",
       "id": 25,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(22,0)",
       "name": "BANDAVAIL10"
     },
     {
       "comment": "Last date and time record changed",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 26,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     },
     {
       "comment": "Allows for future use for energy bids, being the physical plant capability including any capability potentially available within 24 hours",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 0)",
       "id": 27,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,0)",
       "name": "PASAAVAILABILITY"
     },
     {
       "comment": "Date and Time of the dispatch interval to which the offer applied",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 28,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "INTERVAL_DATETIME"
     },
     {
       "comment": "Mandatory Restriction Offer amount",
+      "first_release": "2010-08",
+      "iceberg_type": "decimal(6, 0)",
       "id": 29,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(6,0)",
       "name": "MR_CAPACITY"
     },
     {
       "comment": "The power flow direction to which this offer applies: GEN, LOAD or BIDIRECTIONAL",
+      "first_release": "2024-08",
+      "iceberg_type": "string",
       "id": 30,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "DIRECTION"
     },
     {
       "comment": "The Energy limit applying at the end of this dispatch interval in MWh. For GEN this is a lower energy limit. For LOAD this is an upper energy limit",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(15, 5)",
       "id": 31,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "ENERGYLIMIT"
     },
     {
       "comment": "The advance notice (in hours) that a Scheduled Resource requires to achieve the PASA Availability MW for this trading interval.",
+      "first_release": "2025-11",
+      "iceberg_type": "decimal(8, 3)",
       "id": 32,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(8,3)",
       "name": "RECALL_PERIOD"
     }
@@ -197,6 +293,7 @@
   "description": "BIDPEROFFER_D shows the public summary of the energy and FCAS offers applicable in the Dispatch for the\nintervals identified. BIDPEROFFER_D is the child to BIDDAYOFFER_D.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 3,
     "format-version": 3,
     "runs": [
       {
@@ -342,7 +439,7 @@
         "changes": [
           "schema"
         ],
-        "files": 6,
+        "files": 11,
         "from": {
           "data-time": "2025-11-01T00:00:00+10:00",
           "file": "PUBLIC_ARCHIVE#BIDPEROFFER_D#FILE01#202511010000.zip",
@@ -357,13 +454,13 @@
           "BID",
           "BIDPEROFFER_D"
         ],
-        "rows": 109433472,
+        "rows": 207135168,
         "schema-id": 3,
         "to": {
-          "data-time": "2026-04-30T00:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#BIDPEROFFER_D#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "43f485a3a141a47493da8fc24917068afbbee5c50f94268ffab1b0a66a4cf591"
+          "data-time": "2026-09-30T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#BIDPEROFFER_D#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "242d173c0f9b771c714ea30c39b181efe5869c36164b1a4697bc00f62ca47cc2"
         },
         "updates": [
           {

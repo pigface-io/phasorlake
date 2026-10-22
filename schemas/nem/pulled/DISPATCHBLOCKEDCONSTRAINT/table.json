@@ -2,19 +2,28 @@
   "columns": [
     {
       "comment": "Dispatch Interval",
+      "first_release": "2024-09",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "SETTLEMENTDATE"
     },
     {
       "comment": "Dispatch run no; always 1",
+      "first_release": "2024-09",
+      "iceberg_type": "long",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(3,0)",
       "name": "RUNNO"
     },
     {
       "comment": "Generic Constraint identifier (synonymous with GenConID)",
+      "first_release": "2024-09",
+      "iceberg_type": "string",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "CONSTRAINTID"
     }
@@ -23,13 +32,14 @@
   "description": "DISPATCH Blocked Constraints lists any constraints that were blocked in a dispatch run. If no constraints are blocked, there will be no rows for that dispatch run.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 11,
+        "files": 15,
         "from": {
           "data-time": "2024-09-24T12:45:00+10:00",
           "file": "PUBLIC_ARCHIVE#DISPATCHBLOCKEDCONSTRAINT#FILE01#202409010000.zip",
@@ -44,13 +54,13 @@
           "DISPATCH",
           "BLOCKED_CONSTRAINTS"
         ],
-        "rows": 7368,
+        "rows": 7555,
         "schema-id": 0,
         "to": {
-          "data-time": "2026-03-28T21:45:00+10:00",
-          "file": "PUBLIC_ARCHIVE#DISPATCHBLOCKEDCONSTRAINT#FILE01#202603010000.zip",
-          "release": "2026-03",
-          "sha256": "438d7055c4eaf36d2a63118da390b7b7f715b58a3441075bd08fac81f3e926fc"
+          "data-time": "2026-09-02T14:10:00+10:00",
+          "file": "PUBLIC_ARCHIVE#DISPATCHBLOCKEDCONSTRAINT#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "136d20a295e87016a08349c211b17705366a8fb7fdc7073761fbd0b1bd052d1f"
         },
         "updates": [],
         "version": 1

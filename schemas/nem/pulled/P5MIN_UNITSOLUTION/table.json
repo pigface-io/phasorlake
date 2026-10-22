@@ -2,253 +2,379 @@
   "columns": [
     {
       "comment": "Unique Timestamp Identifier for this study",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2024-07",
       "model_type": "TIMESTAMP(0)",
       "name": "RUN_DATETIME"
     },
     {
       "comment": "The unique identifier for the interval within this study",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 2,
+      "last_release": "2024-07",
       "model_type": "TIMESTAMP(0)",
       "name": "INTERVAL_DATETIME"
     },
     {
       "comment": "Dispatchable unit identifier",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 3,
+      "last_release": "2024-07",
       "model_type": "VARCHAR(10)",
       "name": "DUID"
     },
     {
       "comment": "Connection point identifier for DUID",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 4,
+      "last_release": "2024-07",
       "model_type": "VARCHAR(12)",
       "name": "CONNECTIONPOINTID"
     },
     {
       "comment": "Generator or Load",
+      "first_release": "2009-07",
+      "iceberg_type": "long",
       "id": 5,
+      "last_release": "2024-07",
       "model_type": "NUMERIC(2,0)",
       "name": "TRADETYPE"
     },
     {
       "comment": "AGC Status from EMS: 1 = on, 0 = off",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(2, 0)",
       "id": 6,
+      "last_release": "2024-07",
       "model_type": "NUMERIC(2,0)",
       "name": "AGCSTATUS"
     },
     {
       "comment": "Initial MW at start of period. For periods subsequent to the first period of a P5MIN run, this value represents the cleared target for the previous period of that P5MIN run. Negative values when Bi-directional Unit start from importing power, otherwise positive.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 7,
+      "last_release": "2024-07",
       "model_type": "NUMERIC(15,5)",
       "name": "INITIALMW"
     },
     {
       "comment": "Target MW for end of period. Negative values when Bi-directional Unit is importing power, otherwise positive.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 8,
+      "last_release": "2024-07",
       "model_type": "NUMERIC(15,5)",
       "name": "TOTALCLEARED"
     },
     {
       "comment": "Ramp down rate (lessor of bid or telemetered rate).",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 9,
+      "last_release": "2024-07",
       "model_type": "NUMERIC(15,5)",
       "name": "RAMPDOWNRATE"
     },
     {
       "comment": "Ramp up rate (lessor of bid or telemetered rate).",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 10,
+      "last_release": "2024-07",
       "model_type": "NUMERIC(15,5)",
       "name": "RAMPUPRATE"
     },
     {
       "comment": "Lower 5 min reserve target",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 11,
+      "last_release": "2024-07",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER5MIN"
     },
     {
       "comment": "Lower 60 sec reserve target",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 12,
+      "last_release": "2024-07",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER60SEC"
     },
     {
       "comment": "Lower 6 sec reserve target",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 13,
+      "last_release": "2024-07",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER6SEC"
     },
     {
       "comment": "Raise 5 min reserve target",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 14,
+      "last_release": "2024-07",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE5MIN"
     },
     {
       "comment": "Raise 60 sec reserve target",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 15,
+      "last_release": "2024-07",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE60SEC"
     },
     {
       "comment": "Raise 6 sec reserve target",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 16,
+      "last_release": "2024-07",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE6SEC"
     },
     {
       "comment": "Lower Regulation reserve target",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 17,
+      "last_release": "2024-07",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWERREG"
     },
     {
       "comment": "Raise Regulation reserve target",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 18,
+      "last_release": "2024-07",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISEREG"
     },
     {
       "comment": "For Scheduled units, this is the MAXAVAIL bid availability For Semi-scheduled units, this is the lower of MAXAVAIL bid availability and UIGF",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 19,
+      "last_release": "2024-07",
       "model_type": "NUMERIC(15,5)",
       "name": "AVAILABILITY"
     },
     {
       "comment": "Raise 6sec status flag",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(3, 0)",
       "id": 20,
+      "last_release": "2024-07",
       "model_type": "NUMERIC(3,0)",
       "name": "RAISE6SECFLAGS"
     },
     {
       "comment": "Raise 60sec status flag",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(3, 0)",
       "id": 21,
+      "last_release": "2024-07",
       "model_type": "NUMERIC(3,0)",
       "name": "RAISE60SECFLAGS"
     },
     {
       "comment": "Raise 5min status flag",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(3, 0)",
       "id": 22,
+      "last_release": "2024-07",
       "model_type": "NUMERIC(3,0)",
       "name": "RAISE5MINFLAGS"
     },
     {
       "comment": "Raise Reg status flag",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(3, 0)",
       "id": 23,
+      "last_release": "2024-07",
       "model_type": "NUMERIC(3,0)",
       "name": "RAISEREGFLAGS"
     },
     {
       "comment": "Lower 6sec status flag",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(3, 0)",
       "id": 24,
+      "last_release": "2024-07",
       "model_type": "NUMERIC(3,0)",
       "name": "LOWER6SECFLAGS"
     },
     {
       "comment": "Lower 60sec status flag",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(3, 0)",
       "id": 25,
+      "last_release": "2024-07",
       "model_type": "NUMERIC(3,0)",
       "name": "LOWER60SECFLAGS"
     },
     {
       "comment": "Lower 5min status flag",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(3, 0)",
       "id": 26,
+      "last_release": "2024-07",
       "model_type": "NUMERIC(3,0)",
       "name": "LOWER5MINFLAGS"
     },
     {
       "comment": "Lower Reg status flag",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(3, 0)",
       "id": 27,
+      "last_release": "2024-07",
       "model_type": "NUMERIC(3,0)",
       "name": "LOWERREGFLAGS"
     },
     {
       "comment": "Last date and time record changed",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 28,
+      "last_release": "2024-07",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     },
     {
       "comment": "Boolean representation flagging if the Target is Capped",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(3, 0)",
       "id": 29,
+      "last_release": "2024-07",
       "model_type": "NUMERIC(3,0)",
       "name": "SEMIDISPATCHCAP"
     },
     {
       "comment": "Flag to indicate if this result set was sourced from the pricing run (INTERVENTION=0) or the physical run(INTERVENTION=1). In the event there is not intervention in the market, both pricing and physical runs correspond to INTERVENTION=0",
+      "first_release": "2018-12",
+      "iceberg_type": "decimal(2, 0)",
       "id": 30,
+      "last_release": "2024-07",
       "model_type": "NUMERIC(2,0)",
       "name": "INTERVENTION"
     },
     {
       "comment": "Minutes for which the unit has been in the current DISPATCHMODE. From NEMDE TRADERSOLUTION element FSTARGETMODETIME attribute.",
+      "first_release": "2021-10",
+      "iceberg_type": "decimal(4, 0)",
       "id": 31,
+      "last_release": "2024-07",
       "model_type": "NUMERIC(4,0)",
       "name": "DISPATCHMODETIME"
     },
     {
       "comment": "Dispatched Lower1Sec - TraderSolution element L1Target attribute",
+      "first_release": "2023-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 32,
+      "last_release": "2024-07",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER1SEC"
     },
     {
       "comment": "Dispatched Raise1Sec - TraderSolution element R1Target attribute",
+      "first_release": "2023-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 33,
+      "last_release": "2024-07",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE1SEC"
     },
     {
       "comment": "TraderSolution element R1Flags attribute",
+      "first_release": "2023-07",
+      "iceberg_type": "decimal(3, 0)",
       "id": 34,
+      "last_release": "2024-07",
       "model_type": "NUMERIC(3,0)",
       "name": "RAISE1SECFLAGS"
     },
     {
       "comment": "TraderSolution element L1Flags attribute",
+      "first_release": "2023-07",
+      "iceberg_type": "decimal(3, 0)",
       "id": 35,
+      "last_release": "2024-07",
       "model_type": "NUMERIC(3,0)",
       "name": "LOWER1SECFLAGS"
     },
     {
       "comment": "Mode specific to units within an aggregate. 0 - no monitoring, 1 - aggregate monitoring, 2 - individual monitoring due to constraint",
+      "first_release": "2023-07",
+      "iceberg_type": "decimal(6, 0)",
       "id": 36,
+      "last_release": "2024-07",
       "model_type": "NUMERIC(6,0)",
       "name": "CONFORMANCE_MODE"
     },
     {
       "comment": "For Semi-Scheduled units. Unconstrained Intermittent Generation Forecast value provided to NEMDE",
+      "first_release": "2023-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 37,
+      "last_release": "2024-07",
       "model_type": "NUMERIC(15,5)",
       "name": "UIGF"
     },
     {
       "comment": "The energy storage at the start of this dispatch interval(MWh)",
+      "first_release": "2024-05",
+      "iceberg_type": "decimal(15, 5)",
       "id": 38,
+      "last_release": "2024-07",
       "model_type": "NUMERIC(15,5)",
       "name": "INITIAL_ENERGY_STORAGE"
     },
     {
       "comment": "The projected energy storage based on cleared energy and regulation FCAS dispatch(MWh)",
+      "first_release": "2024-05",
+      "iceberg_type": "decimal(15, 5)",
       "id": 39,
+      "last_release": "2024-07",
       "model_type": "NUMERIC(15,5)",
       "name": "ENERGY_STORAGE"
     },
     {
       "comment": "BDU only - Minimum Energy Storage constraint limit (MWh)",
+      "first_release": "2024-05",
+      "iceberg_type": "decimal(15, 5)",
       "id": 40,
+      "last_release": "2024-07",
       "model_type": "NUMERIC(15,5)",
       "name": "ENERGY_STORAGE_MIN"
     },
     {
       "comment": "BDU only - Maximum Energy Storage constraint limit (MWh)",
+      "first_release": "2024-05",
+      "iceberg_type": "decimal(15, 5)",
       "id": 41,
+      "last_release": "2024-07",
       "model_type": "NUMERIC(15,5)",
       "name": "ENERGY_STORAGE_MAX"
     },
     {
       "comment": "BDU only. Load side availability (BidOfferPeriod.MAXAVAIL where DIRECTION = LOAD).",
+      "first_release": "2024-05",
+      "iceberg_type": "decimal(15, 5)",
       "id": 42,
+      "last_release": "2024-07",
       "model_type": "NUMERIC(15,5)",
       "name": "MIN_AVAILABILITY"
     }
@@ -257,6 +383,7 @@
   "description": "The five-minute predispatch (P5Min) is a MMS system providing projected dispatch for 12 Dispatch cycles (one hour). The 5-minute Predispatch cycle runs every 5-minutes to produce a dispatch and pricing schedule to a 5-minute resolution covering the next hour, a total of twelve periods.\nP5MIN_UNITSOLUTION shows the Unit results from the capacity evaluations for each period of the study.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 6,
     "format-version": 3,
     "runs": [
       {

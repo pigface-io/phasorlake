@@ -2,37 +2,55 @@
   "columns": [
     {
       "comment": "Effective date of this record",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "EFFECTIVEDATE"
     },
     {
       "comment": "Version no of record within the effective date",
+      "first_release": "2009-07",
+      "iceberg_type": "long",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(3,0)",
       "name": "VERSIONNO"
     },
     {
       "comment": "Unique participant identifier",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(10)",
       "name": "PARTICIPANTID"
     },
     {
       "comment": "Date record authorised",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "AUTHORISEDDATE"
     },
     {
       "comment": "User authorising record",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(15)",
       "name": "AUTHORISEDBY"
     },
     {
       "comment": "Last date and time record changed",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 6,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     }
@@ -41,6 +59,7 @@
   "description": "STATIONOWNERTRK shows the tracking for the associated object STATIONOWNER. Together, STATIONOWNERTRK and STATIONOWNER sets out the owner details of each station.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 1,
     "format-version": 3,
     "runs": [
       {
@@ -77,7 +96,7 @@
         "changes": [
           "schema"
         ],
-        "files": 196,
+        "files": 201,
         "from": {
           "data-time": "1998-10-25T00:00:00+10:00",
           "file": "PUBLIC_DVD_STATIONOWNERTRK_201001010000.zip",
@@ -93,13 +112,13 @@
           "PARTICIPANT_REGISTRATION",
           "STATIONOWNERTRK"
         ],
-        "rows": 124831,
+        "rows": 130051,
         "schema-id": 1,
         "to": {
-          "data-time": "2026-04-28T00:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#STATIONOWNERTRK#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "02bf79bb8f71d89b7767f047d36cec6d7fbd5423c4bdb7060d74b2fef40b8af0"
+          "data-time": "2026-10-09T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#STATIONOWNERTRK#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "a74329931a49304ded1f94129f4f92504317493c0c5cbd4b6ad4b1576a65e69a"
         },
         "updates": [
           {

@@ -2,55 +2,82 @@
   "columns": [
     {
       "comment": "Generic Equation Identifier",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "EQUATIONID"
     },
     {
       "comment": "Generic Equation Description",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(256)",
       "name": "DESCRIPTION"
     },
     {
       "comment": "Last date and time record changed",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     },
     {
       "comment": "The device(s) affected by the constraint (e.g. Interconnector, Generator(s) or Cutset)",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(64)",
       "name": "IMPACT"
     },
     {
       "comment": "The source of the constraint formulation",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(128)",
       "name": "SOURCE"
     },
     {
       "comment": "The limit type of the constraint e.g. Transient Stability, Voltage Stability",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 6,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(64)",
       "name": "LIMITTYPE"
     },
     {
       "comment": "The contingency or reason for the constraint",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 7,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(256)",
       "name": "REASON"
     },
     {
       "comment": "Details of the changes made to this version of the generic equation RHS",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 8,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(256)",
       "name": "MODIFICATIONS"
     },
     {
       "comment": "Extra notes on the constraint",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 9,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(256)",
       "name": "ADDITIONALNOTES"
     }
@@ -59,6 +86,7 @@
   "description": "GENERICEQUATIONDESC defines a generic equation identifier with a description. The formulation of the generic equation is detailed in GENERICEQUATIONRHS.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
@@ -95,7 +123,7 @@
         "changes": [
           "report"
         ],
-        "files": 21,
+        "files": 26,
         "from": {
           "data-time": "2024-08-02T14:32:38+10:00",
           "file": "PUBLIC_ARCHIVE#GENERICEQUATIONDESC#FILE01#202408010000.zip",
@@ -110,13 +138,13 @@
           "GEQDESC",
           "NULL"
         ],
-        "rows": 267,
+        "rows": 498,
         "schema-id": 0,
         "to": {
-          "data-time": "2026-04-07T14:57:01+10:00",
-          "file": "PUBLIC_ARCHIVE#GENERICEQUATIONDESC#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "26fb2a18df4822cdd205f761cff9fc7548f76537bcd81658fc6d967f72982094"
+          "data-time": "2026-09-30T10:01:34+10:00",
+          "file": "PUBLIC_ARCHIVE#GENERICEQUATIONDESC#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "ea046f456e370f22690433eb56051456ce5fff06d4a6545a3ae6b00df1a2c170"
         },
         "updates": [],
         "version": 2

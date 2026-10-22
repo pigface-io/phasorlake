@@ -2,145 +2,217 @@
   "columns": [
     {
       "comment": null,
+      "first_release": "2021-03",
+      "iceberg_type": "string",
       "id": 1,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "DUID"
     },
     {
       "comment": null,
+      "first_release": "2021-03",
+      "iceberg_type": "string",
       "id": 2,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "BIDTYPE"
     },
     {
       "comment": null,
+      "first_release": "2021-03",
+      "iceberg_type": "timestamptz",
       "id": 3,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "TRADINGDATE"
     },
     {
       "comment": null,
+      "first_release": "2021-03",
+      "iceberg_type": "timestamptz",
       "id": 4,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "OFFERDATETIME"
     },
     {
       "comment": null,
+      "first_release": "2021-03",
+      "iceberg_type": "decimal(3, 0)",
       "id": 5,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "PERIODID"
     },
     {
       "comment": null,
+      "first_release": "2021-03",
+      "iceberg_type": "decimal(4, 0)",
       "id": 6,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "MAXAVAIL"
     },
     {
       "comment": null,
+      "first_release": "2021-03",
+      "iceberg_type": "decimal(3, 0)",
       "id": 7,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "FIXEDLOAD"
     },
     {
       "comment": null,
+      "first_release": "2021-03",
+      "iceberg_type": "decimal(3, 0)",
       "id": 8,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "RAMPUPRATE"
     },
     {
       "comment": null,
+      "first_release": "2021-03",
+      "iceberg_type": "decimal(3, 0)",
       "id": 9,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "RAMPDOWNRATE"
     },
     {
       "comment": null,
+      "first_release": "2021-03",
+      "iceberg_type": "decimal(3, 0)",
       "id": 10,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "ENABLEMENTMIN"
     },
     {
       "comment": null,
+      "first_release": "2021-03",
+      "iceberg_type": "decimal(4, 0)",
       "id": 11,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "ENABLEMENTMAX"
     },
     {
       "comment": null,
+      "first_release": "2021-03",
+      "iceberg_type": "decimal(3, 0)",
       "id": 12,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "LOWBREAKPOINT"
     },
     {
       "comment": null,
+      "first_release": "2021-03",
+      "iceberg_type": "decimal(4, 0)",
       "id": 13,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "HIGHBREAKPOINT"
     },
     {
       "comment": null,
+      "first_release": "2021-03",
+      "iceberg_type": "decimal(3, 0)",
       "id": 14,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "BANDAVAIL1"
     },
     {
       "comment": null,
+      "first_release": "2021-03",
+      "iceberg_type": "decimal(3, 0)",
       "id": 15,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "BANDAVAIL2"
     },
     {
       "comment": null,
+      "first_release": "2021-03",
+      "iceberg_type": "decimal(4, 0)",
       "id": 16,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "BANDAVAIL3"
     },
     {
       "comment": null,
+      "first_release": "2021-03",
+      "iceberg_type": "decimal(3, 0)",
       "id": 17,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "BANDAVAIL4"
     },
     {
       "comment": null,
+      "first_release": "2021-03",
+      "iceberg_type": "decimal(4, 0)",
       "id": 18,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "BANDAVAIL5"
     },
     {
       "comment": null,
+      "first_release": "2021-03",
+      "iceberg_type": "decimal(3, 0)",
       "id": 19,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "BANDAVAIL6"
     },
     {
       "comment": null,
+      "first_release": "2021-03",
+      "iceberg_type": "decimal(3, 0)",
       "id": 20,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "BANDAVAIL7"
     },
     {
       "comment": null,
+      "first_release": "2021-03",
+      "iceberg_type": "decimal(4, 0)",
       "id": 21,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "BANDAVAIL8"
     },
     {
       "comment": null,
+      "first_release": "2021-03",
+      "iceberg_type": "decimal(3, 0)",
       "id": 22,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "BANDAVAIL9"
     },
     {
       "comment": null,
+      "first_release": "2021-03",
+      "iceberg_type": "decimal(4, 0)",
       "id": 23,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "BANDAVAIL10"
     },
     {
       "comment": null,
+      "first_release": "2021-03",
+      "iceberg_type": "decimal(4, 0)",
       "id": 24,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "PASAAVAILABILITY"
     }
@@ -149,6 +221,7 @@
   "description": null,
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {

@@ -2,19 +2,28 @@
   "columns": [
     {
       "comment": "Category unique identifier",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(10)",
       "name": "PARTICIPANTCATEGORYID"
     },
     {
       "comment": "Unique participant identifier",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(10)",
       "name": "PARTICIPANTID"
     },
     {
       "comment": "Last date and time record changed",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     }
@@ -23,13 +32,14 @@
   "description": "PARTICIPANTCATEGORYALLOC sets out the assignment of participants to particular categories.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 202,
+        "files": 207,
         "from": {
           "data-time": "1998-06-30T22:01:23+10:00",
           "file": "PUBLIC_DVD_PARTICIPANTCATEGORYALLOC_200907010000.zip",
@@ -45,13 +55,13 @@
           "PARTICIPANT_REGISTRATION",
           "PARTICIPANTCATEGORYALLOC"
         ],
-        "rows": 171050,
+        "rows": 178843,
         "schema-id": 0,
         "to": {
-          "data-time": "2026-05-06T13:23:15+10:00",
-          "file": "PUBLIC_ARCHIVE#PARTICIPANTCATEGORYALLOC#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "c6f8b498ae709beb4be5fa824c04ffebab66c2f6c6d8e6a9788e1f66d8681ac2"
+          "data-time": "2026-10-02T15:12:44+10:00",
+          "file": "PUBLIC_ARCHIVE#PARTICIPANTCATEGORYALLOC#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "452882d836cbb1c053b0e3c58db7a9815480769b8ddc15b51943923ec0e7da42"
         },
         "updates": [],
         "version": 1

@@ -2,223 +2,334 @@
   "columns": [
     {
       "comment": "Unique identifier of predispatch run in the form YYYYMMDDPP with 01 at 04:30",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(10, 0)",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "PREDISPATCHSEQNO"
     },
     {
       "comment": "LP Solver Predispatch run no, typically 1. It increments if the case is re-run.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(3, 0)",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(3,0)",
       "name": "RUNNO"
     },
     {
       "comment": "Unique region identifier",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(10)",
       "name": "REGIONID"
     },
     {
       "comment": "PERIODID is just a period count, starting from 1 for each predispatch run. Use DATETIME to determine half hour period.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(2, 0)",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "PERIODID"
     },
     {
       "comment": "Flag to indicate if this result set was sourced from the pricing run (INTERVENTION=0) or the physical run (INTERVENTION=1). In the event that there is not intervention in the market, both pricing and physical runs correspond to INTERVENTION=0",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(2, 0)",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(2,0)",
       "name": "INTERVENTION"
     },
     {
       "comment": "Regional Reference Price",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 6,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RRP"
     },
     {
       "comment": "Excess energy price",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 7,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "EEP"
     },
     {
       "comment": "Not used",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 8,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RRP1"
     },
     {
       "comment": "Not used",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 9,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "EEP1"
     },
     {
       "comment": "Not used",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 10,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RRP2"
     },
     {
       "comment": "Not used",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 11,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "EEP2"
     },
     {
       "comment": "Not used",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 12,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RRP3"
     },
     {
       "comment": "Not used",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 13,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "EEP3"
     },
     {
       "comment": "Not used",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 14,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RRP4"
     },
     {
       "comment": "Not used",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 15,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "EEP4"
     },
     {
       "comment": "Not used",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 16,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RRP5"
     },
     {
       "comment": "Not used",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 17,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "EEP5"
     },
     {
       "comment": "Not used",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 18,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RRP6"
     },
     {
       "comment": "Not used",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 19,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "EEP6"
     },
     {
       "comment": "Not used",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 20,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RRP7"
     },
     {
       "comment": "Not used",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 21,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "EEP7"
     },
     {
       "comment": "Not used",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 22,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RRP8"
     },
     {
       "comment": "Not used",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 23,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "EEP8"
     },
     {
       "comment": "Last date and time record changed",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 24,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     },
     {
       "comment": "Period date and time",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 25,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "DATETIME"
     },
     {
       "comment": "Regional reference price for this dispatch period",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 26,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE6SECRRP"
     },
     {
       "comment": "Regional reference price for this dispatch period",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 27,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE60SECRRP"
     },
     {
       "comment": "Regional reference price for this dispatch period",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 28,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE5MINRRP"
     },
     {
       "comment": "Regional reference price for this dispatch period",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 29,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISEREGRRP"
     },
     {
       "comment": "Regional reference price for this dispatch period",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 30,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER6SECRRP"
     },
     {
       "comment": "Regional reference price for this dispatch period",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 31,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER60SECRRP"
     },
     {
       "comment": "Regional reference price for this dispatch period",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 32,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER5MINRRP"
     },
     {
       "comment": "Regional reference price for this dispatch period",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 33,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWERREGRRP"
     },
     {
       "comment": "Regional Raise 1Sec Price - R1Price attribute after capping /flooring",
+      "first_release": "2023-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 34,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE1SECRRP"
     },
     {
       "comment": null,
+      "first_release": "2023-07",
+      "iceberg_type": "decimal(11, 5)",
       "id": 35,
+      "last_release": "2024-07",
       "model_type": null,
       "name": "RAISE1SECROP"
     },
     {
       "comment": "Regional Lower 1Sec Price - RegionSolution element L1Price attribute",
+      "first_release": "2023-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 36,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER1SECRRP"
     },
     {
       "comment": null,
+      "first_release": "2023-07",
+      "iceberg_type": "decimal(10, 5)",
       "id": 37,
+      "last_release": "2024-07",
       "model_type": null,
       "name": "LOWER1SECROP"
     }
@@ -227,6 +338,7 @@
   "description": "PREDISPATCHPRICE records predispatch prices for each region by period for each predispatch run, including fields to handle the Ancillary Services functionality.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 2,
     "format-version": 3,
     "runs": [
       {
@@ -311,7 +423,7 @@
           "schema",
           "version"
         ],
-        "files": 42,
+        "files": 52,
         "from": {
           "data-time": "2024-08-01T04:30:00+10:00",
           "file": "PUBLIC_ARCHIVE#PREDISPATCHPRICE#FILE01#202408010000.zip",
@@ -327,13 +439,13 @@
           "PREDISPATCH",
           "REGION_PRICES"
         ],
-        "rows": 8650830,
+        "rows": 10725510,
         "schema-id": 2,
         "to": {
-          "data-time": "2026-05-02T04:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#PREDISPATCHPRICE#ALL#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "f12a153e47a6091108cb2c38b4d438a59a05a88f32fab7751599a0e6589fb29f"
+          "data-time": "2026-10-02T04:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#PREDISPATCHPRICE#ALL#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "5f0dafe626b327a95a7a95f7ec95f729e01d50f8acf2e1f2ac27c7c1922a692e"
         },
         "updates": [
           {

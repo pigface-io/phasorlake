@@ -2,175 +2,262 @@
   "columns": [
     {
       "comment": "Dispatchable Unit Identifier",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(10)",
       "name": "DUID"
     },
     {
       "comment": "Start date for effective record",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "START_DATE"
     },
     {
       "comment": "End date for effective record",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "END_DATE"
     },
     {
       "comment": "Identifies LOAD, GENERATOR or BIDIRECTIONAL. This will likely expand to more generic models as new technology types are integrated into the NEM",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "DISPATCHTYPE"
     },
     {
       "comment": "Country wide - Unique id of a connection point",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(10)",
       "name": "CONNECTIONPOINTID"
     },
     {
       "comment": "Region identifier that unit is in",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 6,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(10)",
       "name": "REGIONID"
     },
     {
       "comment": "Station that unit is in",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 7,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(10)",
       "name": "STATIONID"
     },
     {
       "comment": "Participant that owns unit during effective record period",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 8,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(10)",
       "name": "PARTICIPANTID"
     },
     {
       "comment": "Last date and time record changed",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 9,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     },
     {
       "comment": "Used in Bidding, Dispatch and Settlements. For Bidding and Dispatch, where the DUID is a BDU with DISPATCHTYPE of BIDIRECTIONAL, the TLF for the load component of the BDU. For Settlements, where dual TLFs apply, the primary TLF is applied to all energy (load and generation) when the Net Energy Flow of the ConnectionPointID in the interval is negative (net load).",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 6)",
       "id": 10,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "TRANSMISSIONLOSSFACTOR"
     },
     {
       "comment": "Unit start type. At this time restricted to Fast, Slow or Non Dispatched",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 11,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "STARTTYPE"
     },
     {
       "comment": "The distribution loss factor to the currently assigned connection point",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 6)",
       "id": 12,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "DISTRIBUTIONLOSSFACTOR"
     },
     {
       "comment": "Floored Offer/Bid Energy Price adjusted for TLF, DLF and MPF",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(9, 2)",
       "id": 13,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(9,2)",
       "name": "MINIMUM_ENERGY_PRICE"
     },
     {
       "comment": "Capped Offer/Bid Energy Price adjusted for TLF, DLF and VoLL",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(9, 2)",
       "id": 14,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(9,2)",
       "name": "MAXIMUM_ENERGY_PRICE"
     },
     {
       "comment": "Scheduled status of the unit:\n    'SCHEDULED'\n    'NON-SCHEDULED'\n    'SEMI-SCHEDULED'",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 15,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "SCHEDULE_TYPE"
     },
     {
       "comment": "MW/Min. Calculated Minimum Ramp Rate Up value accepted for Energy Offers or Bids with explanation",
+      "first_release": "2016-05",
+      "iceberg_type": "decimal(6, 0)",
       "id": 16,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(6,0)",
       "name": "MIN_RAMP_RATE_UP"
     },
     {
       "comment": "MW/Min. Calculated Minimum Ramp Rate Down value accepted for Energy Offers or Bids with explanation",
+      "first_release": "2016-05",
+      "iceberg_type": "decimal(6, 0)",
       "id": 17,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(6,0)",
       "name": "MIN_RAMP_RATE_DOWN"
     },
     {
       "comment": "Maximum ramp up rate for Unit (Mw/min) - from DUDetail table",
+      "first_release": "2016-05",
+      "iceberg_type": "decimal(6, 0)",
       "id": 18,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(6,0)",
       "name": "MAX_RAMP_RATE_UP"
     },
     {
       "comment": "Maximum ramp down rate for Unit (Mw/min) - from DUDetail table",
+      "first_release": "2016-05",
+      "iceberg_type": "decimal(6, 0)",
       "id": 19,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(6,0)",
       "name": "MAX_RAMP_RATE_DOWN"
     },
     {
       "comment": "Whether the DUID is classified as an \"Aggregated Unit\" under the rules. This impacts the Minimum Ramp Rate calculation",
+      "first_release": "2016-05",
+      "iceberg_type": "decimal(1, 0)",
       "id": 20,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(1,0)",
       "name": "IS_AGGREGATED"
     },
     {
       "comment": "Additional information for DISPATCHTYPE. For DISPATCHTYPE = LOAD, subtype value is WDR for wholesale demand response units For DISPATCHTYPE = LOAD, subtype value is NULL for Scheduled Loads. For DISPATCHTYPE = GENERATOR type, subtype value is NULL.",
+      "first_release": "2021-10",
+      "iceberg_type": "string",
       "id": 21,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "DISPATCHSUBTYPE"
     },
     {
       "comment": "Aggregate Dispatch Group. Group into which the DUID is aggregated for Conformance. Null if DUID not aggregated for Conformance",
+      "first_release": "2024-05",
+      "iceberg_type": "string",
       "id": 22,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "ADG_ID"
     },
     {
       "comment": "BDU only. Floored Offer/Bid Energy Price adjusted for TLF, DLF and MPF for energy imports",
+      "first_release": "2024-05",
+      "iceberg_type": "decimal(9, 2)",
       "id": 23,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(9,2)",
       "name": "LOAD_MINIMUM_ENERGY_PRICE"
     },
     {
       "comment": "BDU only. Capped Offer/Bid Energy Price adjusted for TLF, DLF and VoLL for energy imports",
+      "first_release": "2024-05",
+      "iceberg_type": "decimal(9, 2)",
       "id": 24,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(9,2)",
       "name": "LOAD_MAXIMUM_ENERGY_PRICE"
     },
     {
       "comment": "BDU only. MW/Min. Calculated Minimum Ramp Rate Up value accepted for Energy Offers or Bids with explanation for energy imports",
+      "first_release": "2024-05",
+      "iceberg_type": "decimal(6, 0)",
       "id": 25,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(6,0)",
       "name": "LOAD_MIN_RAMP_RATE_UP"
     },
     {
       "comment": "BDU only. MW/Min. Calculated Minimum Ramp Rate Down value accepted for Energy Offers or Bids with explanation for energy imports",
+      "first_release": "2024-05",
+      "iceberg_type": "decimal(6, 0)",
       "id": 26,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(6,0)",
       "name": "LOAD_MIN_RAMP_RATE_DOWN"
     },
     {
       "comment": "BDU only. MW/Min. Registered Maximum Ramp Rate Up value accepted for Energy Offers or Bids for energy imports",
+      "first_release": "2024-05",
+      "iceberg_type": "decimal(6, 0)",
       "id": 27,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(6,0)",
       "name": "LOAD_MAX_RAMP_RATE_UP"
     },
     {
       "comment": "BDU only. MW/Min. Registered Maximum Ramp Rate Down value accepted for Energy Offers or Bids for energy imports",
+      "first_release": "2024-05",
+      "iceberg_type": "decimal(6, 0)",
       "id": 28,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(6,0)",
       "name": "LOAD_MAX_RAMP_RATE_DOWN"
     },
     {
       "comment": "Used in Bidding, Dispatch and Settlements, only populated where Dual TLFs apply. For Bidding and Dispatch, the TLF for the generation component of a BDU, when null the TRANSMISSIONLOSSFACTOR is used for both the load and generation components. For Settlements, the secondary TLF is applied to all energy (load and generation) when the Net Energy Flow of the ConnectionPointID in the interval is positive (net generation).",
+      "first_release": "2024-05",
+      "iceberg_type": "decimal(18, 8)",
       "id": 29,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(18,8)",
       "name": "SECONDARY_TLF"
     }
@@ -179,6 +266,7 @@
   "description": "DUDETAILSUMMARY sets out a single summary unit table so reducing the need for participants to use the various dispatchable unit detail and owner tables to establish generating unit specific details.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 3,
     "format-version": 3,
     "runs": [
       {
@@ -334,7 +422,7 @@
           "schema",
           "version"
         ],
-        "files": 24,
+        "files": 29,
         "from": {
           "data-time": "1998-10-25T00:00:00+10:00",
           "file": "PUBLIC_DVD_DUDETAILSUMMARY_202405010000.zip",
@@ -350,13 +438,13 @@
           "PARTICIPANT_REGISTRATION",
           "DUDETAILSUMMARY"
         ],
-        "rows": 423508,
+        "rows": 539263,
         "schema-id": 3,
         "to": {
-          "data-time": "2026-05-08T00:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#DUDETAILSUMMARY#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "0ffa95f7e7a6cc763596883573bb694a762020fc33c9549d3d0cec4be4e9dd52"
+          "data-time": "2026-10-09T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#DUDETAILSUMMARY#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "75f2abedad54dc15b7894ef41189ae404f1d22aaac55181767ce57d02cdc2a9b"
         },
         "updates": [
           {

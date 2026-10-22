@@ -342,41 +342,12 @@ fn bad_rows_fail_and_are_explained() {
 /// The head of every zip of two months, January 2024 and August 2026:
 /// each block must resolve to a schema of its table's history (strict mode
 /// refuses a deviation) and every row must parse into its column's type.
-/// The histories end with the census's last month, April 2026; August 2026
-/// has files of 22 tables whose columns came after it (LASTCHANGED on the
-/// FPP tables, and a column or three on the others), which deviate until
-/// the census reaches that month.
+/// The histories reach September 2026, so nothing deviates; a month past
+/// the census would, as August 2026 did while the census ended in April.
 #[test]
 fn every_archive_table_ingests_strictly() {
     every_head_ingests_strictly("MMSDM_2024_01", 161, &[]);
-    every_head_ingests_strictly(
-        "MMSDM_2026_08",
-        309,
-        &[
-            "BILLINGCALENDAR",
-            "BILLINGRUNTRK",
-            "FPP_CONSTRAINT_FREQ_MEASURE",
-            "FPP_CONTRIBUTION_FACTOR",
-            "FPP_EST_PERF_COST_RATE",
-            "FPP_EST_RESIDUAL_COST_RATE",
-            "FPP_FCAS_SUMMARY",
-            "FPP_FORECAST_DEFAULT_CF",
-            "FPP_FORECAST_RESIDUAL_DCF",
-            "FPP_HIST_PERFORMANCE",
-            "FPP_HIST_REGION_PERFORMANCE",
-            "FPP_P5_FWD_EST_RESIDUALRATE",
-            "FPP_PD_FWD_EST_RESIDUALRATE",
-            "FPP_PERFORMANCE",
-            "FPP_RCR",
-            "FPP_REGION_FREQ_MEASURE",
-            "FPP_RESIDUAL_CF",
-            "FPP_RESIDUAL_PERFORMANCE",
-            "FPP_RUN",
-            "FPP_USAGE",
-            "GENCONDATA",
-            "NEGATIVE_RESIDUE",
-        ],
-    );
+    every_head_ingests_strictly("MMSDM_2026_08", 309, &[]);
 }
 
 fn every_head_ingests_strictly(month: &str, at_least: usize, deviating: &[&str]) {

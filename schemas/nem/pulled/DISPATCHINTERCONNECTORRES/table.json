@@ -2,133 +2,199 @@
   "columns": [
     {
       "comment": "Market date starting at 04:05",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "SETTLEMENTDATE"
     },
     {
       "comment": "Dispatch run no; always 1",
+      "first_release": "2009-07",
+      "iceberg_type": "long",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(3,0)",
       "name": "RUNNO"
     },
     {
       "comment": "Interconnector identifier",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(10)",
       "name": "INTERCONNECTORID"
     },
     {
       "comment": "Dispatch period identifier, from 001 to 288 in format YYYYMMDDPPP.",
+      "first_release": "2009-07",
+      "iceberg_type": "long",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(22,0)",
       "name": "DISPATCHINTERVAL"
     },
     {
       "comment": "Intervention case or not",
+      "first_release": "2009-07",
+      "iceberg_type": "long",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(2,0)",
       "name": "INTERVENTION"
     },
     {
       "comment": "Metered MW Flow from SCADA.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 6,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "METEREDMWFLOW"
     },
     {
       "comment": "Target MW Flow for next 5 mins.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 7,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "MWFLOW"
     },
     {
       "comment": "Calculated MW Losses",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 8,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "MWLOSSES"
     },
     {
       "comment": "Shadow price resulting from thermal or reserve sharing constraints on Interconnector import/export (0 unless binding) - NEMDE Solution InterconnectorSolution element \"Price\" attribute",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 9,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "MARGINALVALUE"
     },
     {
       "comment": "Degree of violation on interconnector constraints",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 10,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "VIOLATIONDEGREE"
     },
     {
       "comment": "Last changed.",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 11,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     },
     {
       "comment": "Calculated export limit applying to energy only.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 12,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "EXPORTLIMIT"
     },
     {
       "comment": "Calculated import limit applying to energy only.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 13,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "IMPORTLIMIT"
     },
     {
       "comment": "Marginal loss factor. Use this to adjust prices between regions.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 14,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "MARGINALLOSS"
     },
     {
       "comment": "Generic Constraint setting the export limit",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 15,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "EXPORTGENCONID"
     },
     {
       "comment": "Generic Constraint setting the import limit",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 16,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "IMPORTGENCONID"
     },
     {
       "comment": "Calculated export limit applying to energy + FCAS.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 17,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "FCASEXPORTLIMIT"
     },
     {
       "comment": "Calculated import limit applying to energy + FCAS.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 18,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "FCASIMPORTLIMIT"
     },
     {
       "comment": "Aggregate Constraint contribution cost of this Interconnector: Sum(MarginalValue x Factor) for all relevant Constraints, for Export (Factor >= 0)",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(10, 2)",
       "id": 19,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(10,2)",
       "name": "LOCAL_PRICE_ADJUSTMENT_EXPORT"
     },
     {
       "comment": "Key for Local_Price_Adjustment_Export: 2 = at least one Outage Constraint; 1 = at least 1 System Normal Constraint (and no Outage Constraint); 0 = No System Normal or Outage Constraints",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(1, 0)",
       "id": 20,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(1,0)",
       "name": "LOCALLY_CONSTRAINED_EXPORT"
     },
     {
       "comment": "Aggregate Constraint contribution cost of this Interconnector: Sum(MarginalValue x Factor) for all relevant Constraints, for Import (Factor >= 0)",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(10, 2)",
       "id": 21,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(10,2)",
       "name": "LOCAL_PRICE_ADJUSTMENT_IMPORT"
     },
     {
       "comment": "Key for Local_Price_Adjustment_Import: 2 = at least one Outage Constraint; 1 = at least 1 System Normal Constraint (and no Outage Constraint); 0 = No System Normal or Outage Constraints",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(1, 0)",
       "id": 22,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(1,0)",
       "name": "LOCALLY_CONSTRAINED_IMPORT"
     }
@@ -137,6 +203,7 @@
   "description": "DISPATCHINTERCONNECTORRES sets out MW flow and losses on each interconnector for each dispatch period, including fields for the Frequency Controlled Ancillary Services export and import limits and extra reporting of the generic constraints set the energy import and export limits.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 1,
     "format-version": 3,
     "runs": [
       {
@@ -203,7 +270,7 @@
         "changes": [
           "schema"
         ],
-        "files": 21,
+        "files": 26,
         "from": {
           "data-time": "2024-08-01T00:05:00+10:00",
           "file": "PUBLIC_ARCHIVE#DISPATCHINTERCONNECTORRES#FILE01#202408010000.zip",
@@ -218,13 +285,13 @@
           "DISPATCH",
           "INTERCONNECTORRES"
         ],
-        "rows": 1102536,
+        "rows": 1366920,
         "schema-id": 1,
         "to": {
-          "data-time": "2026-05-01T00:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#DISPATCHINTERCONNECTORRES#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "20500ae0799e0619fab845629d7f36918e5e9d1abf5d7c83c2e35feff3a01e02"
+          "data-time": "2026-10-01T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#DISPATCHINTERCONNECTORRES#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "9298ad56466276350d320ded3c7b3ad71f64bdb5a22bfb7e08395a8f9b79faaa"
         },
         "updates": [
           {

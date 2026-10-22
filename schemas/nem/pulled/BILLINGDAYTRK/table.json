@@ -2,37 +2,55 @@
   "columns": [
     {
       "comment": "AEMO Contract Year number starting in week containing 1st January",
+      "first_release": "2009-07",
+      "iceberg_type": "long",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(4,0)",
       "name": "CONTRACTYEAR"
     },
     {
       "comment": "Week no within the contract year. Week no 1 is the week containing 1st January",
+      "first_release": "2009-07",
+      "iceberg_type": "long",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(3,0)",
       "name": "WEEKNO"
     },
     {
       "comment": "Unique run no within a given contract year and week no",
+      "first_release": "2009-07",
+      "iceberg_type": "long",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(3,0)",
       "name": "BILLRUNNO"
     },
     {
       "comment": "Calendar Settlement Date contained in the billing run.",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "SETTLEMENTDATE"
     },
     {
       "comment": "Settlement run number used for each settlement date in that billing run.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(3, 0)",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(3,0)",
       "name": "RUNNO"
     },
     {
       "comment": "Last date and time record changed",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 6,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     }
@@ -41,13 +59,14 @@
   "description": "BILLINGDAYTRK is key for matching settlement versions with billing runs. BILLINGDAYTRK displays the billrunnos per billing week, and the settlement version numbers per settlement day comprising the billrunno.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 202,
+        "files": 207,
         "from": {
           "data-time": "2008-11-30T00:00:00+10:00",
           "file": "PUBLIC_DVD_BILLINGDAYTRK_200907010000.zip",
@@ -63,13 +82,13 @@
           "BILLING",
           "DAYTRK"
         ],
-        "rows": 30903,
+        "rows": 31700,
         "schema-id": 0,
         "to": {
-          "data-time": "2026-04-29T00:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#BILLINGDAYTRK#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "d79067aa3a52afeee42ffa4c46f3156925612ccf39c031d9fd636a926b35c608"
+          "data-time": "2026-09-29T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#BILLINGDAYTRK#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "bf18bbccfcc24406aa8d39c22c75d9ac178fee444d9a2defddf3dd8d09af1a92"
         },
         "updates": [],
         "version": 5

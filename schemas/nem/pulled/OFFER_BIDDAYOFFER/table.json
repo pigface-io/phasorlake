@@ -2,193 +2,289 @@
   "columns": [
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 1,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "DUID"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 2,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "BIDTYPE"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 3,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "SETTLEMENTDATE"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 4,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "OFFERDATE"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(3, 0)",
       "id": 5,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "VERSIONNO"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 6,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "PARTICIPANTID"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(6, 0)",
       "id": 7,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "DAILYENERGYCONSTRAINT"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 8,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "REBIDEXPLANATION"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(6, 2)",
       "id": 9,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "PRICEBAND1"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(6, 2)",
       "id": 10,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "PRICEBAND2"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(6, 2)",
       "id": 11,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "PRICEBAND3"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(6, 2)",
       "id": 12,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "PRICEBAND4"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(6, 2)",
       "id": 13,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "PRICEBAND5"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(7, 2)",
       "id": 14,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "PRICEBAND6"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(7, 2)",
       "id": 15,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "PRICEBAND7"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(7, 2)",
       "id": 16,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "PRICEBAND8"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(7, 2)",
       "id": 17,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "PRICEBAND9"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(7, 2)",
       "id": 18,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "PRICEBAND10"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(3, 0)",
       "id": 19,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "MINIMUMLOAD"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(2, 0)",
       "id": 20,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "T1"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(2, 0)",
       "id": 21,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "T2"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(2, 0)",
       "id": 22,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "T3"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(2, 0)",
       "id": 23,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "T4"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 24,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "NORMALSTATUS"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 25,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "LASTCHANGED"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(7, 4)",
       "id": 26,
+      "last_release": "2021-02",
       "model_type": null,
       "name": "MR_FACTOR"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 27,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "ENTRYTYPE"
     },
     {
       "comment": null,
+      "first_release": "2021-03",
+      "iceberg_type": "string",
       "id": 28,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "REBID_EVENT_TIME"
     },
     {
       "comment": null,
+      "first_release": "2021-03",
+      "iceberg_type": "string",
       "id": 29,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "REBID_AWARE_TIME"
     },
     {
       "comment": null,
+      "first_release": "2021-03",
+      "iceberg_type": "string",
       "id": 30,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "REBID_DECISION_TIME"
     },
     {
       "comment": null,
+      "first_release": "2021-03",
+      "iceberg_type": "string",
       "id": 31,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "REBID_CATEGORY"
     },
     {
       "comment": null,
+      "first_release": "2021-03",
+      "iceberg_type": "string",
       "id": 32,
+      "last_release": "2021-03",
       "model_type": null,
       "name": "REFERENCE_ID"
     }
@@ -197,6 +293,7 @@
   "description": null,
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 1,
     "format-version": 3,
     "runs": [
       {

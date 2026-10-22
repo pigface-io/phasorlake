@@ -2,43 +2,64 @@
   "columns": [
     {
       "comment": "Notice Identifier",
+      "first_release": "2009-07",
+      "iceberg_type": "long",
       "id": 1,
+      "last_release": "2024-07",
       "model_type": "NUMERIC(10,0)",
       "name": "NOTICEID"
     },
     {
       "comment": "Effective Date of Market notice",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 2,
+      "last_release": "2024-07",
       "model_type": "TIMESTAMP(0)",
       "name": "EFFECTIVEDATE"
     },
     {
       "comment": "Market Notice Type Identifier (Market - all participants. Participant - selected participants)",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 3,
+      "last_release": "2024-07",
       "model_type": "VARCHAR(25)",
       "name": "TYPEID"
     },
     {
       "comment": "Market Notice Type",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 4,
+      "last_release": "2024-07",
       "model_type": "VARCHAR(25)",
       "name": "NOTICETYPE"
     },
     {
       "comment": "Last date and time record changed",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 5,
+      "last_release": "2024-07",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     },
     {
       "comment": "Detail of market notices.",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 6,
+      "last_release": "2024-07",
       "model_type": "VARCHAR(2000)",
       "name": "REASON"
     },
     {
       "comment": "External Reference for extra data pertaining to market notice",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 7,
+      "last_release": "2024-07",
       "model_type": "VARCHAR(255)",
       "name": "EXTERNALREFERENCE"
     }
@@ -47,6 +68,7 @@
   "description": "MARKETNOTICEDATA shows market notices data provided to all participants (market) and specific participants (participant).",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {

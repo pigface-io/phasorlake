@@ -2,109 +2,163 @@
   "columns": [
     {
       "comment": "Date Time the report was published.",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "PUBLISH_DATETIME"
     },
     {
       "comment": "Date on which the aggregation applies.",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "DAY"
     },
     {
       "comment": "NEM Region.",
+      "first_release": "2024-08",
+      "iceberg_type": "string",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "REGIONID"
     },
     {
       "comment": "Aggregate of the offered PASA Availability for all Scheduled generators in this region.",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(12, 0)",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,0)",
       "name": "PASAAVAILABILITY_SCHEDULED"
     },
     {
       "comment": "Date Time of the latest offer used in the aggregation for this region and date.",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LATEST_OFFER_DATETIME"
     },
     {
       "comment": "Region energy unconstrained MW capacity",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(12, 0)",
       "id": 6,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,0)",
       "name": "ENERGYUNCONSTRAINEDCAPACITY"
     },
     {
       "comment": "Region energy constrained MW capacity",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(12, 0)",
       "id": 7,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,0)",
       "name": "ENERGYCONSTRAINEDCAPACITY"
     },
     {
       "comment": "Allowance made for non-scheduled generation in the demand forecast (MW)",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(12, 2)",
       "id": 8,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "NONSCHEDULEDGENERATION"
     },
     {
       "comment": "10% probability demand (ex non-scheduled demand)",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(12, 2)",
       "id": 9,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "DEMAND10"
     },
     {
       "comment": "50% probability demand (ex non-scheduled demand)",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(12, 2)",
       "id": 10,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "DEMAND50"
     },
     {
       "comment": "Total weekly operational as generated consumption (POE 10)",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(12, 2)",
       "id": 11,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "ENERGYREQDEMAND10"
     },
     {
       "comment": "Total weekly operational as generated consumption (POE 50)",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(12, 2)",
       "id": 12,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "ENERGYREQDEMAND50"
     },
     {
       "comment": "Last date and time record changed",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 13,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     },
     {
       "comment": "Minimum of the Operational Load as Generated (OPGEN) peaks that occur in all ref years for the P10 traces (MW).",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(12, 2)",
       "id": 14,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "DEMAND10MIN"
     },
     {
       "comment": "Maximum of the Operational Load as Generated (OPGEN) peaks that occur in all ref years for the P10 traces (MW).",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(12, 2)",
       "id": 15,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "DEMAND10MAX"
     },
     {
       "comment": "Minimum of the Operational Load as Generated (OPGEN) peaks that occur in all ref years for the P50 traces (MW).",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(12, 2)",
       "id": 16,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "DEMAND50MIN"
     },
     {
       "comment": "Maximum of the Operational Load as Generated (OPGEN) peaks that occur in all ref years for the P50 traces (MW).",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(12, 2)",
       "id": 17,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "DEMAND50MAX"
     },
     {
       "comment": "Split of the CARRYOVER component of aggregate capacity vs the currently reported capacity.",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(12, 0)",
       "id": 18,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,0)",
       "name": "CARRYOVERCAPACITY"
     }
@@ -113,13 +167,14 @@
   "description": "Stores the Region-aggregate offered PASA Availability of scheduled generators for each day over the Medium Term PASA period. The data in this table is an aggregate of input data to the MT PASA process it is not part of the MTPASA solution. The aggregate availability does not reflect any energy limitations in the MT PASA offers.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 21,
+        "files": 26,
         "from": {
           "data-time": "2024-08-04T00:00:00+10:00",
           "file": "PUBLIC_ARCHIVE#MTPASA_REGIONAVAILABILITY#FILE01#202408010000.zip",
@@ -134,13 +189,13 @@
           "MTPASA",
           "REGIONAVAILABILITY"
         ],
-        "rows": 12194675,
+        "rows": 15129380,
         "schema-id": 0,
         "to": {
-          "data-time": "2029-04-29T00:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#MTPASA_REGIONAVAILABILITY#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "6354b6a7bfee6725f15b2a9b7ef9ea51efd4291e23495b75166bab265886e0db"
+          "data-time": "2029-09-30T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#MTPASA_REGIONAVAILABILITY#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "9aa4dc66a8d67aaa079c9553aad552f7133eb09401ca440adec97d4c0e2d0ddd"
         },
         "updates": [],
         "version": 4

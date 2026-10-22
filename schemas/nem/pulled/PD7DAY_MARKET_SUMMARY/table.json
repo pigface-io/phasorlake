@@ -2,19 +2,28 @@
   "columns": [
     {
       "comment": "Unique Timestamp Identifier for this study",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "RUN_DATETIME"
     },
     {
       "comment": "The unique identifier for the interval within this study",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "INTERVAL_DATETIME"
     },
     {
       "comment": "The total gas consumption in TJ",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(15, 5)",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "GPG_FUEL_FORECAST_TJ"
     }
@@ -23,13 +32,14 @@
   "description": "PD7DAY market summary showing calculated gas fuel forecasts",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 21,
+        "files": 26,
         "from": {
           "data-time": "2024-04-23T00:00:00+10:00",
           "file": "PUBLIC_ARCHIVE#PD7DAY_MARKET_SUMMARY#FILE01#202408010000.zip",
@@ -44,13 +54,13 @@
           "PD7DAY",
           "MARKET_SUMMARY"
         ],
-        "rows": 165139,
+        "rows": 212514,
         "schema-id": 0,
         "to": {
-          "data-time": "2026-05-14T00:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#PD7DAY_MARKET_SUMMARY#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "4eea91ea2e175664b219fd72694dd11b223a1fa1115f446654b02c6c6d8e8ac1"
+          "data-time": "2026-10-07T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#PD7DAY_MARKET_SUMMARY#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "9558d504dd8cbbbcc9b4489e788f1cfb34ad59781c60f1ee81ea3e15bbd921c9"
         },
         "updates": [],
         "version": 2

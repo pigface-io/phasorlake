@@ -2,43 +2,64 @@
   "columns": [
     {
       "comment": "The From Date of the SAPS Pricing Application Period",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-07",
       "model_type": "TIMESTAMP(0)",
       "name": "FROMDATE"
     },
     {
       "comment": "The To Date of the SAPS Pricing Application Period",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 2,
+      "last_release": "2026-07",
       "model_type": "TIMESTAMP(0)",
       "name": "TODATE"
     },
     {
       "comment": "The Region ID for which the calculated SAPS Price is applicable",
+      "first_release": "2024-08",
+      "iceberg_type": "string",
       "id": 3,
+      "last_release": "2026-07",
       "model_type": "VARCHAR(20)",
       "name": "REGIONID"
     },
     {
       "comment": "The Date time of the record generation",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 4,
+      "last_release": "2026-07",
       "model_type": "TIMESTAMP(0)",
       "name": "VERSION_DATETIME"
     },
     {
       "comment": "The Region Reference Price for SAPS in the Region",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(18, 8)",
       "id": 5,
+      "last_release": "2026-07",
       "model_type": "NUMERIC(18,8)",
       "name": "SAPS_RRP"
     },
     {
       "comment": "Whether the SAPS Price is Firm or Non-Firm",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(3, 0)",
       "id": 6,
+      "last_release": "2026-07",
       "model_type": "NUMERIC(3,0)",
       "name": "ISFIRM"
     },
     {
       "comment": "The Last Changed Date time of the record",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 7,
+      "last_release": "2026-07",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     }
@@ -47,13 +68,14 @@
   "description": "The Settlement Price for SAPS Energy in each Region",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 21,
+        "files": 24,
         "from": {
           "data-time": "2023-07-01T00:00:00+10:00",
           "file": "PUBLIC_ARCHIVE#SETCFG_SAPS_SETT_PRICE#FILE01#202408010000.zip",
@@ -68,13 +90,13 @@
           "SETCFG",
           "SAPS_SETT_PRICE"
         ],
-        "rows": 18500,
+        "rows": 22950,
         "schema-id": 0,
         "to": {
           "data-time": "2026-07-01T00:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#SETCFG_SAPS_SETT_PRICE#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "14ac2b35d9a887c2b5822289293b71ae6e5496b53aeae9ce6cae395edf9fe512"
+          "file": "PUBLIC_ARCHIVE#SETCFG_SAPS_SETT_PRICE#FILE01#202607010000.zip",
+          "release": "2026-07",
+          "sha256": "32f277551f7a5e9e2855350aaf79f105f903c6e92a38918a42f06f0c9ac4f645"
         },
         "updates": [],
         "version": 1

@@ -2,151 +2,226 @@
   "columns": [
     {
       "comment": "Settlement Date",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "SETTLEMENTDATE"
     },
     {
       "comment": "Settlement Run No",
+      "first_release": "2009-07",
+      "iceberg_type": "long",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(3,0)",
       "name": "VERSIONNO"
     },
     {
       "comment": "Dispatch Interval Date Time",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "INTERVAL_DATETIME"
     },
     {
       "comment": "Generic Constraint ID",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "CONSTRAINTID"
     },
     {
       "comment": "Constraint Market Participant Factor. This column is NULL for Settlement Dates past FPP Rule Effective Date",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(18, 8)",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(18,8)",
       "name": "CMPF"
     },
     {
       "comment": "Constraint Residual Market Participant Factor. This column is NULL for Settlement Dates past FPP Rule Effective Date",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(18, 8)",
       "id": 6,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(18,8)",
       "name": "CRMPF"
     },
     {
       "comment": "Recovery factor for CMPF based recovery. This column is NULL for Settlement Dates past FPP Rule Effective Date",
+      "first_release": "2009-07",
+      "iceberg_type": "double",
       "id": 7,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(18,8)",
       "name": "RECOVERY_FACTOR_CMPF"
     },
     {
       "comment": "Recovery factor for CRMPF based recovery. This column is NULL for Settlement Dates past FPP Rule Effective Date.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(18, 8)",
       "id": 8,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(18,8)",
       "name": "RECOVERY_FACTOR_CRMPF"
     },
     {
       "comment": "Last date and time record changed",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 9,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     },
     {
       "comment": "Flag to indication that substitute demand was used to recover this requirement",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(1, 0)",
       "id": 10,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(1,0)",
       "name": "USESUBSTITUTEDEMAND"
     },
     {
       "comment": "the aggregate customer demand value used to recover the cost of this requirement",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(18, 8)",
       "id": 11,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(18,8)",
       "name": "REQUIREMENTDEMAND"
     },
     {
       "comment": "The total FPP Amount from Eligible Units for the Constraint Id",
+      "first_release": "2025-04",
+      "iceberg_type": "decimal(18, 8)",
       "id": 12,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(18,8)",
       "name": "FPP_AMOUNT"
     },
     {
       "comment": "The total FPP Residual Amount for the Constraint Id",
+      "first_release": "2025-04",
+      "iceberg_type": "decimal(18, 8)",
       "id": 13,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(18,8)",
       "name": "FPP_RESIDUAL_AMOUNT"
     },
     {
       "comment": "The total Reg Used Amount from Eligible Units for the Constraint Id",
+      "first_release": "2025-04",
+      "iceberg_type": "decimal(18, 8)",
       "id": 14,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(18,8)",
       "name": "USED_AMOUNT"
     },
     {
       "comment": "The total Reg Used Residual Amount for the Constraint Id",
+      "first_release": "2025-04",
+      "iceberg_type": "decimal(18, 8)",
       "id": 15,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(18,8)",
       "name": "USED_RESIDUAL_AMOUNT"
     },
     {
       "comment": "The total Reg Unused Amount from Eligible Units for the Constraint Id",
+      "first_release": "2025-04",
+      "iceberg_type": "decimal(18, 8)",
       "id": 16,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(18,8)",
       "name": "UNUSED_AMOUNT"
     },
     {
       "comment": "The total Reg Unused Residual Amount for the Constraint Id",
+      "first_release": "2025-04",
+      "iceberg_type": "decimal(18, 8)",
       "id": 17,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(18,8)",
       "name": "UNUSED_RESIDUAL_AMOUNT"
     },
     {
       "comment": "The PRegulation Value from Constraints FCAS Requirement data",
+      "first_release": "2025-04",
+      "iceberg_type": "decimal(18, 8)",
       "id": 18,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(18,8)",
       "name": "P_REGULATION"
     },
     {
       "comment": "The Adjusted Cost Value from Constraints FCAS Requirement data",
+      "first_release": "2025-04",
+      "iceberg_type": "decimal(18, 8)",
       "id": 19,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(18,8)",
       "name": "TSFCAS"
     },
     {
       "comment": "The RCR Value from the FPP Inputs for the Constraint Id used to calculate FPP Amount",
+      "first_release": "2025-04",
+      "iceberg_type": "decimal(18, 8)",
       "id": 20,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(18,8)",
       "name": "RCR"
     },
     {
       "comment": "The Usage Value from the FPP Inputs for the Constraint Id used to calculate Used Amount",
+      "first_release": "2025-04",
+      "iceberg_type": "decimal(18, 8)",
       "id": 21,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(18,8)",
       "name": "USAGE_VALUE"
     },
     {
       "comment": "The RCF Value from the FPP Inputs for the Constraint Id used to calculate FPP Residual",
+      "first_release": "2025-04",
+      "iceberg_type": "decimal(18, 8)",
       "id": 22,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(18,8)",
       "name": "RCF"
     },
     {
       "comment": "The NRCF Value from the FPP Inputs for the Constraint Id used to calculate Used Residual Amount",
+      "first_release": "2025-04",
+      "iceberg_type": "decimal(18, 8)",
       "id": 23,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(18,8)",
       "name": "NRCF"
     },
     {
       "comment": "The DRCF Value from the FPP Inputs for the Constraint Id used to calculate Unused Residual Amount",
+      "first_release": "2025-04",
+      "iceberg_type": "decimal(18, 8)",
       "id": 24,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(18,8)",
       "name": "DRCF"
     },
     {
       "comment": "The total residual MWh(ABS(ACE_MWh) + ASOE(MWh)) of the requirement regions.",
+      "first_release": "2025-04",
+      "iceberg_type": "decimal(18, 8)",
       "id": 25,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(18,8)",
       "name": "RESIDUALTOTAL_MWH"
     }
@@ -155,6 +230,7 @@
   "description": "SET_FCAS_REGULATION_TRK shows FCAS Regulation Service Constraint tracking for Regional FCAS Regulation recovery",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 2,
     "format-version": 3,
     "runs": [
       {
@@ -318,7 +394,7 @@
         "changes": [
           "version"
         ],
-        "files": 12,
+        "files": 17,
         "from": {
           "data-time": "2024-09-29T00:00:00+10:00",
           "file": "PUBLIC_ARCHIVE#SET_FCAS_REGULATION_TRK#FILE01#202505010000.zip",
@@ -333,13 +409,13 @@
           "SETTLEMENTS",
           "SET_FCAS_REGULATION_TRK"
         ],
-        "rows": 2106531,
+        "rows": 3017222,
         "schema-id": 2,
         "to": {
-          "data-time": "2026-04-29T00:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#SET_FCAS_REGULATION_TRK#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "578fc0e9886e344f0d915d837ac93930e171203b8b7bdb64eb9d35d1c71ff60b"
+          "data-time": "2026-09-29T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#SET_FCAS_REGULATION_TRK#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "12e855b8a151b032712cb8865d13643414d7726389b08facdafb0d04301521c1"
         },
         "updates": [],
         "version": 3

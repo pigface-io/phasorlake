@@ -2,79 +2,118 @@
   "columns": [
     {
       "comment": "System wide unique Generating Set ID",
+      "first_release": "2024-08",
+      "iceberg_type": "string",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "GENSETID"
     },
     {
       "comment": "Effective Date of this detail record",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "EFFECTIVEDATE"
     },
     {
       "comment": "Version with respect to the effective date",
+      "first_release": "2024-08",
+      "iceberg_type": "long",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(6,0)",
       "name": "VERSIONNO"
     },
     {
       "comment": "Label of Physical Units within the station",
+      "first_release": "2024-08",
+      "iceberg_type": "string",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "UNIT_GROUPING_LABEL"
     },
     {
       "comment": "Number of units in this Gen Unit grouping",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(10, 0)",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(10,0)",
       "name": "UNIT_COUNT"
     },
     {
       "comment": "Nameplate Capacity for each unit in this grouping",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(8, 3)",
       "id": 6,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(8,3)",
       "name": "UNIT_SIZE"
     },
     {
       "comment": "Maximum Capacity for each unit in this grouping",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(8, 3)",
       "id": 7,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(8,3)",
       "name": "UNIT_MAX_SIZE"
     },
     {
       "comment": "Deprecated as this flag is moved to DUDETAIL table with IESS release.",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(1, 0)",
       "id": 8,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(1,0)",
       "name": "AGGREGATION_FLAG"
     },
     {
       "comment": "Date/Time when record was changed",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 9,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     },
     {
       "comment": "Only applicable for the LOAD side of BDU (MW)",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(8, 3)",
       "id": 10,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(8,3)",
       "name": "UNITMINSIZE"
     },
     {
       "comment": "The rated storage capacity (MWh), information only",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(15, 5)",
       "id": 11,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "MAXSTORAGECAPACITY"
     },
     {
       "comment": "Registered capacity for normal operations",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(8, 3)",
       "id": 12,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(8,3)",
       "name": "REGISTEREDCAPACITY"
     },
     {
       "comment": "Only applicable for the LOAD side of BDU (MW)",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(8, 3)",
       "id": 13,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(8,3)",
       "name": "REGISTEREDMINCAPACITY"
     }
@@ -83,13 +122,14 @@
   "description": "Physical units within a Gen Unit Set",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 21,
+        "files": 26,
         "from": {
           "data-time": "2010-10-27T00:00:00+10:00",
           "file": "PUBLIC_ARCHIVE#GENUNITS_UNIT#FILE01#202408010000.zip",
@@ -104,13 +144,13 @@
           "PARTICIPANT_REGISTRATION",
           "GENUNITS_UNIT"
         ],
-        "rows": 44794,
+        "rows": 55821,
         "schema-id": 0,
         "to": {
-          "data-time": "2026-04-28T00:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#GENUNITS_UNIT#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "4e9306c02c1e3f4f65e38b0b301e14493d3ebcabe8e8f4432c57c2466ffb6528"
+          "data-time": "2026-10-06T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#GENUNITS_UNIT#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "1035e3df2ffb467061d7f55d21e04f2b6f969f469e25fc33dff14a610d9baa1c"
         },
         "updates": [],
         "version": 2

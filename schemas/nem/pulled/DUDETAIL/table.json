@@ -2,205 +2,307 @@
   "columns": [
     {
       "comment": "Effective calendar date of record",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "EFFECTIVEDATE"
     },
     {
       "comment": "Dispatchable Unit Identifier",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(10)",
       "name": "DUID"
     },
     {
       "comment": "version of Dispatchable Unit details for this effective date",
+      "first_release": "2009-07",
+      "iceberg_type": "long",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(3,0)",
       "name": "VERSIONNO"
     },
     {
       "comment": "Country wide - Unique id of a connection point",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(10)",
       "name": "CONNECTIONPOINTID"
     },
     {
       "comment": "Voltage Level",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(3, 0)",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(10)",
       "name": "VOLTLEVEL"
     },
     {
       "comment": "Registered capacity for normal operations",
+      "first_release": "2009-07",
+      "iceberg_type": "double",
       "id": 6,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(6,0)",
       "name": "REGISTEREDCAPACITY"
     },
     {
       "comment": "AGC Capability flag",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 7,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(1)",
       "name": "AGCCAPABILITY"
     },
     {
       "comment": "Identifies LOAD, GENERATOR or BIDIRECTIONAL.",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 8,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "DISPATCHTYPE"
     },
     {
       "comment": "Maximum Capacity as used for bid validation",
+      "first_release": "2009-07",
+      "iceberg_type": "double",
       "id": 9,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(6,0)",
       "name": "MAXCAPACITY"
     },
     {
       "comment": "Identify unit as Fast or Slow",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 10,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "STARTTYPE"
     },
     {
       "comment": "For a dispatchable load indicates that the load is normally on or off.",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 11,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(1)",
       "name": "NORMALLYONFLAG"
     },
     {
       "comment": "Indicates that the physical details for this unit are to be recorded",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 12,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(1)",
       "name": "PHYSICALDETAILSFLAG"
     },
     {
       "comment": "Indicates spinning reserve capability",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 13,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(1)",
       "name": "SPINNINGRESERVEFLAG"
     },
     {
       "comment": "User authorising record",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 14,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(15)",
       "name": "AUTHORISEDBY"
     },
     {
       "comment": "Date record authorised",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 15,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "AUTHORISEDDATE"
     },
     {
       "comment": "Last date and time record changed",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 16,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     },
     {
       "comment": "Indicate whether a unit is intermittent (e.g. a wind farm)",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 17,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(1)",
       "name": "INTERMITTENTFLAG"
     },
     {
       "comment": "Indicates if the DUID is a Semi-Scheduled Unit",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 18,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(1)",
       "name": "SEMISCHEDULE_FLAG"
     },
     {
       "comment": "Maximum ramp up rate for Unit (Mw/min)",
+      "first_release": "2010-11",
+      "iceberg_type": "decimal(6, 0)",
       "id": 19,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(6,0)",
       "name": "MAXRATEOFCHANGEUP"
     },
     {
       "comment": "Maximum ramp down rate for Unit (Mw/min)",
+      "first_release": "2010-11",
+      "iceberg_type": "decimal(6, 0)",
       "id": 20,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(6,0)",
       "name": "MAXRATEOFCHANGEDOWN"
     },
     {
       "comment": "Additional information for DISPATCHTYPE. For DISPATCHTYPE = LOAD, subtype value is WDR for wholesale demand response units. For DISPATCHTYPE = LOAD, subtype value is NULL for Scheduled Loads. For DISPATCHTYPE = GENERATOR type, the subtype value is NULL.",
+      "first_release": "2021-10",
+      "iceberg_type": "string",
       "id": 21,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "DISPATCHSUBTYPE"
     },
     {
       "comment": "Aggregate Dispatch Group to which this dispatch unit belongs",
+      "first_release": "2023-07",
+      "iceberg_type": "string",
       "id": 22,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "ADG_ID"
     },
     {
       "comment": "Minimum capacity only for load side of BDU, otherwise 0 (MW)",
+      "first_release": "2024-05",
+      "iceberg_type": "decimal(6, 0)",
       "id": 23,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(6,0)",
       "name": "MINCAPACITY"
     },
     {
       "comment": "Registered minimum capacity only for load side of BDU, otherwise 0 (MW)",
+      "first_release": "2024-05",
+      "iceberg_type": "decimal(6, 0)",
       "id": 24,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(6,0)",
       "name": "REGISTEREDMINCAPACITY"
     },
     {
       "comment": "Raise Ramp rate applied to BDU Load component (MW/min)",
+      "first_release": "2024-05",
+      "iceberg_type": "decimal(6, 0)",
       "id": 25,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(6,0)",
       "name": "MAXRATEOFCHANGEUP_LOAD"
     },
     {
       "comment": "Lower Ramp rate applied to BDU Load component (MW/min)",
+      "first_release": "2024-05",
+      "iceberg_type": "decimal(6, 0)",
       "id": 26,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(6,0)",
       "name": "MAXRATEOFCHANGEDOWN_LOAD"
     },
     {
       "comment": "The rated storage capacity (MWh), information only",
+      "first_release": "2024-05",
+      "iceberg_type": "decimal(15, 5)",
       "id": 27,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "MAXSTORAGECAPACITY"
     },
     {
       "comment": "The storage energy import conversion efficiency. Number from 0 to 1 where 1 is lossless. Calculated as (increase in stored energy / increase in imported energy)",
+      "first_release": "2024-05",
+      "iceberg_type": "decimal(15, 5)",
       "id": 28,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "STORAGEIMPORTEFFICIENCYFACTOR"
     },
     {
       "comment": "The storage energy export conversion efficiency. Number from 0 to 1 where 1 is lossless. Calculated as (decrease in exported energy / decrease in stored energy)",
+      "first_release": "2024-05",
+      "iceberg_type": "decimal(15, 5)",
       "id": 29,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "STORAGEEXPORTEFFICIENCYFACTOR"
     },
     {
       "comment": "Calculated Minimum Ramp Rate Up value accepted for Energy Offers or Bids with explanation for energy imports (all DUID types and BDU Generation side) (MW/min)",
+      "first_release": "2024-05",
+      "iceberg_type": "decimal(6, 0)",
       "id": 30,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(6,0)",
       "name": "MIN_RAMP_RATE_UP"
     },
     {
       "comment": "Calculated Minimum Ramp Rate Down value accepted for Energy Offers or Bids with explanation for energy imports (all DUID types and BDU Generation side) (MW/min)",
+      "first_release": "2024-05",
+      "iceberg_type": "decimal(6, 0)",
       "id": 31,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(6,0)",
       "name": "MIN_RAMP_RATE_DOWN"
     },
     {
       "comment": "Calculated Minimum Ramp Rate Up value accepted for Energy Offers or Bids on BDU Load component with explanation for energy imports (MW/min)",
+      "first_release": "2024-05",
+      "iceberg_type": "decimal(6, 0)",
       "id": 32,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(6,0)",
       "name": "LOAD_MIN_RAMP_RATE_UP"
     },
     {
       "comment": "Calculated Minimum Ramp Rate Down value accepted for Energy Offers or Bids on BDU Load component with explanation for energy imports (MW/min)",
+      "first_release": "2024-05",
+      "iceberg_type": "decimal(6, 0)",
       "id": 33,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(6,0)",
       "name": "LOAD_MIN_RAMP_RATE_DOWN"
     },
     {
       "comment": "Identifies if a unit is aggregated. This flag was initially added in GENUNITS_UNIT table which is now deprecated with IESS release.",
+      "first_release": "2024-10",
+      "iceberg_type": "decimal(1, 0)",
       "id": 34,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(1,0)",
       "name": "AGGREGATED"
     }
@@ -209,6 +311,7 @@
   "description": "DUDETAIL sets out a records specific details for each unit including start type and whether normally on or off load. Much of this data is information only and is not used in dispatch or settlements.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 6,
     "format-version": 3,
     "runs": [
       {
@@ -472,7 +575,7 @@
           "schema",
           "version"
         ],
-        "files": 19,
+        "files": 24,
         "from": {
           "data-time": "1998-10-25T00:00:00+10:00",
           "file": "PUBLIC_ARCHIVE#DUDETAIL#FILE01#202410010000.zip",
@@ -487,13 +590,13 @@
           "PARTICIPANT_REGISTRATION",
           "DUDETAIL"
         ],
-        "rows": 82419,
+        "rows": 104757,
         "schema-id": 6,
         "to": {
-          "data-time": "2026-04-28T00:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#DUDETAIL#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "73eded1e84aaad754c5b384fc06e0f8c5d63231528e12cd411d7ea9fef945749"
+          "data-time": "2026-10-09T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#DUDETAIL#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "604cc87311f7613034a9f5f401ba8819af9cf84e04c43ae98235c3353467d7f4"
         },
         "updates": [
           {

@@ -2,37 +2,55 @@
   "columns": [
     {
       "comment": "Trade date when the set of reserve requirements become effective",
+      "first_release": "2010-05",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "EFFECTIVEDATE"
     },
     {
       "comment": "Timestamp when the set of reserve requirements become effective",
+      "first_release": "2010-05",
+      "iceberg_type": "timestamptz",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "VERSION_DATETIME"
     },
     {
       "comment": "MT PASA Reserve requirement identifier",
+      "first_release": "2010-05",
+      "iceberg_type": "string",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "RESERVELIMITID"
     },
     {
       "comment": "Region ID - identifier of a NEM region included in this requirement",
+      "first_release": "2010-05",
+      "iceberg_type": "string",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "REGIONID"
     },
     {
       "comment": "Coefficient for the region in this reserve requirement",
+      "first_release": "2010-05",
+      "iceberg_type": "decimal(16, 6)",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(16,6)",
       "name": "COEF"
     },
     {
       "comment": "Timestamp the record was last modified",
+      "first_release": "2010-05",
+      "iceberg_type": "timestamptz",
       "id": 6,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     }
@@ -41,13 +59,14 @@
   "description": "MT PASA input table to define the regions that are part of a single MT PASA Reserve Requirement",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 192,
+        "files": 197,
         "from": {
           "data-time": "2010-04-22T00:00:00+10:00",
           "file": "PUBLIC_DVD_MTPASA_RESERVELIMIT_REGION_201005010000.zip",
@@ -63,13 +82,13 @@
           "MTPASA",
           "RESERVELIMIT_REGION"
         ],
-        "rows": 25168,
+        "rows": 25883,
         "schema-id": 0,
         "to": {
           "data-time": "2013-05-29T00:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#MTPASA_RESERVELIMIT_REGION#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "cfeb74eca286c453c3783d208a10c36c7d3eab35ec047e69438925949eecd173"
+          "file": "PUBLIC_ARCHIVE#MTPASA_RESERVELIMIT_REGION#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "3c8b35071a0cf60d4252e07331dd659b6390a4dc26414603e69416eca521564b"
         },
         "updates": [],
         "version": 1

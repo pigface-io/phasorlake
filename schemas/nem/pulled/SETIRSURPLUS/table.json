@@ -2,67 +2,100 @@
   "columns": [
     {
       "comment": "Settlement date",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "SETTLEMENTDATE"
     },
     {
       "comment": "Settlement run number",
+      "first_release": "2009-07",
+      "iceberg_type": "long",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(3,0)",
       "name": "SETTLEMENTRUNNO"
     },
     {
       "comment": "Settlements Trading Interval.",
+      "first_release": "2009-07",
+      "iceberg_type": "long",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(3,0)",
       "name": "PERIODID"
     },
     {
       "comment": "Interconnector",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(10)",
       "name": "INTERCONNECTORID"
     },
     {
       "comment": "Side of interconnector",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(10)",
       "name": "REGIONID"
     },
     {
       "comment": "Net flow at the regional node (MWh), including losses",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 8)",
       "id": 6,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,6)",
       "name": "MWFLOW"
     },
     {
       "comment": "MW losses along interconnector NOTE: This is not a loss factor, but a loss figure expressed in MWH",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 8)",
       "id": 7,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOSSFACTOR"
     },
     {
       "comment": "Amount of surplus in $",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 8)",
       "id": 8,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "SURPLUSVALUE"
     },
     {
       "comment": "Last date and time record changed",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 9,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     },
     {
       "comment": "The SRA amount unadjusted by CSP",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(18, 8)",
       "id": 10,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(18,8)",
       "name": "UNADJUSTED_IRSR"
     },
     {
       "comment": "The CSP derogation amount applied as an adjustment to SRA",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(18, 8)",
       "id": 11,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(18,8)",
       "name": "CSP_DEROGATION_AMOUNT"
     }
@@ -71,6 +104,7 @@
   "description": "SETIRSURPLUS records the interregional residue calculation for each interconnector and each side of the interconnector.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 1,
     "format-version": 3,
     "runs": [
       {
@@ -107,7 +141,7 @@
         "changes": [
           "schema"
         ],
-        "files": 21,
+        "files": 26,
         "from": {
           "data-time": "2023-12-31T00:00:00+10:00",
           "file": "PUBLIC_ARCHIVE#SETIRSURPLUS#FILE01#202408010000.zip",
@@ -122,13 +156,13 @@
           "SETTLEMENTS",
           "IRSURPLUS"
         ],
-        "rows": 11016284,
+        "rows": 13770716,
         "schema-id": 1,
         "to": {
-          "data-time": "2026-04-29T00:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#SETIRSURPLUS#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "ad552f91dfbb25ddb5ea9ccbfe86ede0f4648a71cc4def8812d45a3c3d23b0de"
+          "data-time": "2026-09-29T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#SETIRSURPLUS#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "6b2df10dab7cba3939ffcdb8c726752f19ee8dc4273706d81e161864f4130285"
         },
         "updates": [
           {

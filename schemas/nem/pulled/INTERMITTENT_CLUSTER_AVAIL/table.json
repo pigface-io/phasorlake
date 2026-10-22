@@ -2,43 +2,64 @@
   "columns": [
     {
       "comment": "The trading day to which the availability submission applies",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "TRADINGDATE"
     },
     {
       "comment": "Unique Identifier of Dispatchable Unit",
+      "first_release": "2024-08",
+      "iceberg_type": "string",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "DUID"
     },
     {
       "comment": "Date and Time when this cluster availability submission was loaded",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "OFFERDATETIME"
     },
     {
       "comment": "Unique Cluster Identifier for this cluster within the DUID",
+      "first_release": "2024-08",
+      "iceberg_type": "string",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "CLUSTERID"
     },
     {
       "comment": "Trading interval number (1…48) within this TRADINGDATE for which ELEMENTS_UNAVAILABLE applies",
+      "first_release": "2024-08",
+      "iceberg_type": "long",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(3,0)",
       "name": "PERIODID"
     },
     {
       "comment": "Number of elements within this CLUSTERID (turbines for wind, or inverters for solar) that are not available for this TRADINGDATE and PERIODID (scheduled maintenance in AWEFS/ASEFS). Value between 0 and the registered Number of Cluster Elements.Value = 0 means no elements unavailable",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(5, 0)",
       "id": 6,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(5,0)",
       "name": "ELEMENTS_UNAVAILABLE"
     },
     {
       "comment": "Number of elements within this CLUSTERID (turbines for wind, or inverters for solar) that are available for this TRADINGDATE and PERIODID (scheduled maintenance in AWEFS/ASEFS). Value between 0 and the registered Number of Cluster Elements. Value = 0 means no elements available",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(5, 0)",
       "id": 7,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(5,0)",
       "name": "ELEMENTS_AVAILABLE"
     }
@@ -47,13 +68,14 @@
   "description": "A submission of expected plant availability for an intermittent generating unit cluster, by Trading Day and Trading Interval.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 21,
+        "files": 26,
         "from": {
           "data-time": "2024-08-02T00:00:00+10:00",
           "file": "PUBLIC_ARCHIVE#INTERMITTENT_CLUSTER_AVAIL#FILE01#202408010000.zip",
@@ -68,13 +90,13 @@
           "DEMAND",
           "INTERMITTENT_CLUSTER_AVAIL"
         ],
-        "rows": 38698405,
+        "rows": 58125157,
         "schema-id": 0,
         "to": {
-          "data-time": "2026-05-01T00:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#INTERMITTENT_CLUSTER_AVAIL#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "894a211013e448d07ef1e73fe9dc83ba7820e4b49a1afdc6927ef800635d62f2"
+          "data-time": "2026-10-01T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#INTERMITTENT_CLUSTER_AVAIL#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "ab2c6930d930bf017c2b142ed29bcb5f1d78f7ac60fea89a6a385ee4d1573268"
         },
         "updates": [],
         "version": 2

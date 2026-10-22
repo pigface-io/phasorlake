@@ -2,97 +2,145 @@
   "columns": [
     {
       "comment": null,
+      "first_release": "2009-08",
+      "iceberg_type": "decimal(4, 0)",
       "id": 1,
+      "last_release": "2010-06",
       "model_type": null,
       "name": "CONTRACTYEAR"
     },
     {
       "comment": null,
+      "first_release": "2009-08",
+      "iceberg_type": "decimal(2, 0)",
       "id": 2,
+      "last_release": "2010-06",
       "model_type": null,
       "name": "WEEKNO"
     },
     {
       "comment": null,
+      "first_release": "2009-08",
+      "iceberg_type": "decimal(1, 0)",
       "id": 3,
+      "last_release": "2010-06",
       "model_type": null,
       "name": "BILLRUNNO"
     },
     {
       "comment": null,
+      "first_release": "2009-08",
+      "iceberg_type": "string",
       "id": 4,
+      "last_release": "2010-06",
       "model_type": null,
       "name": "DIRECTION_ID"
     },
     {
       "comment": null,
+      "first_release": "2009-08",
+      "iceberg_type": "string",
       "id": 5,
+      "last_release": "2010-06",
       "model_type": null,
       "name": "DIRECTION_DESC"
     },
     {
       "comment": null,
+      "first_release": "2009-08",
+      "iceberg_type": "timestamptz",
       "id": 6,
+      "last_release": "2010-06",
       "model_type": null,
       "name": "DIRECTION_START_DATE"
     },
     {
       "comment": null,
+      "first_release": "2009-08",
+      "iceberg_type": "timestamptz",
       "id": 7,
+      "last_release": "2010-06",
       "model_type": null,
       "name": "DIRECTION_END_DATE"
     },
     {
       "comment": null,
+      "first_release": "2009-08",
+      "iceberg_type": "decimal(9, 2)",
       "id": 8,
+      "last_release": "2010-06",
       "model_type": null,
       "name": "COMPENSATION_AMOUNT"
     },
     {
       "comment": null,
+      "first_release": "2009-08",
+      "iceberg_type": "decimal(1, 0)",
       "id": 9,
+      "last_release": "2010-06",
       "model_type": null,
       "name": "INDEPENDENT_EXPERT_FEE"
     },
     {
       "comment": null,
+      "first_release": "2009-08",
+      "iceberg_type": "decimal(11, 6)",
       "id": 10,
+      "last_release": "2010-06",
       "model_type": null,
       "name": "INTEREST_AMOUNT"
     },
     {
       "comment": null,
+      "first_release": "2009-08",
+      "iceberg_type": "decimal(13, 6)",
       "id": 11,
+      "last_release": "2010-06",
       "model_type": null,
       "name": "CRA"
     },
     {
       "comment": null,
+      "first_release": "2009-08",
+      "iceberg_type": "string",
       "id": 12,
+      "last_release": "2010-06",
       "model_type": null,
       "name": "NEM_FEE_ID"
     },
     {
       "comment": null,
+      "first_release": "2009-08",
+      "iceberg_type": "decimal(11, 5)",
       "id": 13,
+      "last_release": "2010-06",
       "model_type": null,
       "name": "NEM_FIXED_FEE_AMOUNT"
     },
     {
       "comment": null,
+      "first_release": "2009-08",
+      "iceberg_type": "decimal(6, 6)",
       "id": 14,
+      "last_release": "2010-06",
       "model_type": null,
       "name": "MKT_CUSTOMER_PERC"
     },
     {
       "comment": null,
+      "first_release": "2009-08",
+      "iceberg_type": "string",
       "id": 15,
+      "last_release": "2010-06",
       "model_type": null,
       "name": "GENERATOR_PERC"
     },
     {
       "comment": null,
+      "first_release": "2009-08",
+      "iceberg_type": "timestamptz",
       "id": 16,
+      "last_release": "2010-06",
       "model_type": null,
       "name": "LASTCHANGED"
     }
@@ -101,6 +149,7 @@
   "description": null,
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {

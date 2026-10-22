@@ -2,43 +2,64 @@
   "columns": [
     {
       "comment": "Effective date of this record",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "EFFECTIVEDATE"
     },
     {
       "comment": "Unique station identifier",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(10)",
       "name": "STATIONID"
     },
     {
       "comment": "Version no of record within the effective date",
+      "first_release": "2009-07",
+      "iceberg_type": "long",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(3,0)",
       "name": "VERSIONNO"
     },
     {
       "comment": "The operating status of this station, valid values are COMMISSIONED and DECOMMISSIONED",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "STATUS"
     },
     {
       "comment": "User authorising record",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(15)",
       "name": "AUTHORISEDBY"
     },
     {
       "comment": "Date record authorised",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 6,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "AUTHORISEDDATE"
     },
     {
       "comment": "Last date and time record changed",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 7,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     }
@@ -47,13 +68,14 @@
   "description": "STATIONOPERATINGSTATUS sets out the operating status of each station.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 202,
+        "files": 207,
         "from": {
           "data-time": "1998-10-25T00:00:00+10:00",
           "file": "PUBLIC_DVD_STATIONOPERATINGSTATUS_200907010000.zip",
@@ -69,13 +91,13 @@
           "PARTICIPANT_REGISTRATION",
           "STATIONOPERATINGSTATUS"
         ],
-        "rows": 229337,
+        "rows": 236629,
         "schema-id": 0,
         "to": {
-          "data-time": "2026-04-28T00:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#STATIONOPERATINGSTATUS#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "f5b2e8b8cf446a1512948d22fce7de25371cf4f5d2d5d8fce90d8be9eea8ffaa"
+          "data-time": "2026-10-09T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#STATIONOPERATINGSTATUS#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "9de16721af1a348a6cb1caa3cc845bcf3c83164886705979a452bab266c9e4ef"
         },
         "updates": [],
         "version": 1

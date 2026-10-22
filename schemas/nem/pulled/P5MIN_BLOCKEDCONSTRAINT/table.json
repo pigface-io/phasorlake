@@ -2,13 +2,19 @@
   "columns": [
     {
       "comment": "5-minute Predispatch Run",
+      "first_release": "2024-09",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "RUN_DATETIME"
     },
     {
       "comment": "Generic Constraint identifier (synonymous with GenConID)",
+      "first_release": "2024-09",
+      "iceberg_type": "string",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "CONSTRAINTID"
     }
@@ -17,13 +23,14 @@
   "description": "P5MIN Blocked Constraints lists any constraints that were blocked in a P5MIN run. If no constraints are blocked, there will be no rows for that 5 minute predispatch run.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 11,
+        "files": 15,
         "from": {
           "data-time": "2024-09-24T12:45:00+10:00",
           "file": "PUBLIC_ARCHIVE#P5MIN_BLOCKEDCONSTRAINT#FILE01#202409010000.zip",
@@ -38,13 +45,13 @@
           "P5MIN",
           "BLOCKED_CONSTRAINTS"
         ],
-        "rows": 7378,
+        "rows": 7576,
         "schema-id": 0,
         "to": {
-          "data-time": "2026-03-28T21:45:00+10:00",
-          "file": "PUBLIC_ARCHIVE#P5MIN_BLOCKEDCONSTRAINT#FILE01#202603010000.zip",
-          "release": "2026-03",
-          "sha256": "8439de5401c59771a2ced9bbf889a6a7a571985750aae54c9849b026675f5a59"
+          "data-time": "2026-09-02T14:10:00+10:00",
+          "file": "PUBLIC_ARCHIVE#P5MIN_BLOCKEDCONSTRAINT#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "3902b28e3bb8d31f07a3763612f8869fdd83a069bf4e14b8bdf5e0331d8c232a"
         },
         "updates": [],
         "version": 1

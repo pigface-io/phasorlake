@@ -2,25 +2,37 @@
   "columns": [
     {
       "comment": "Date processing of the run begins.",
+      "first_release": "2018-05",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "RUN_DATETIME"
     },
     {
       "comment": "Unique run id.",
+      "first_release": "2018-05",
+      "iceberg_type": "long",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(4)",
       "name": "RUN_NO"
     },
     {
       "comment": "Version of PLEXOS used",
+      "first_release": "2018-05",
+      "iceberg_type": "decimal(4, 3)",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "PLEXOS_VERSION"
     },
     {
       "comment": "Last date and time record changed",
+      "first_release": "2018-05",
+      "iceberg_type": "timestamptz",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     }
@@ -29,13 +41,14 @@
   "description": "MTPASA solution header table",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 96,
+        "files": 101,
         "from": {
           "data-time": "2018-05-14T10:59:49+10:00",
           "file": "PUBLIC_DVD_MTPASA_CASERESULT_201805010000.zip",
@@ -51,13 +64,13 @@
           "MTPASA",
           "CASERESULT"
         ],
-        "rows": 435,
+        "rows": 457,
         "schema-id": 0,
         "to": {
-          "data-time": "2026-04-26T20:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#MTPASA_CASERESULT#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "232dc23044464b74da808e4f96e89d0879a62b0749fd0e4f8b8b25a4eb62d71b"
+          "data-time": "2026-09-28T17:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#MTPASA_CASERESULT#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "4648b6f994cad449409d090242ed043fec64c73d871f893e928fd75c3a9d51f7"
         },
         "updates": [],
         "version": 1

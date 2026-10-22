@@ -2,73 +2,109 @@
   "columns": [
     {
       "comment": "Market date starting at 04:05",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "SETTLEMENTDATE"
     },
     {
       "comment": "Dispatch run no; always 1",
+      "first_release": "2024-08",
+      "iceberg_type": "long",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(3,0)",
       "name": "RUNNO"
     },
     {
       "comment": "Intervention case or not",
+      "first_release": "2024-08",
+      "iceberg_type": "long",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(2,0)",
       "name": "INTERVENTION"
     },
     {
       "comment": "Nominated RegionID from which the energy flows",
+      "first_release": "2024-08",
+      "iceberg_type": "string",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "FROM_REGIONID"
     },
     {
       "comment": "Nominated RegionID to which the energy flows",
+      "first_release": "2024-08",
+      "iceberg_type": "string",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "TO_REGIONID"
     },
     {
       "comment": "Dispatch period identifier, from 001 to 288 in format YYYYMMDDPPP",
+      "first_release": "2024-08",
+      "iceberg_type": "double",
       "id": 6,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(22,0)",
       "name": "DISPATCHINTERVAL"
     },
     {
       "comment": "Inter-Regional Loss Factor. Calculated based on the MWFLOW and the nominal From and To Region losses.",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(15, 5)",
       "id": 7,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "IRLF"
     },
     {
       "comment": "Summed MW flow of the parallel regulated Interconnectors",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(16, 6)",
       "id": 8,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(16,6)",
       "name": "MWFLOW"
     },
     {
       "comment": "Summed Metered MW flow of the parallel regulated Interconnectors",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(16, 6)",
       "id": 9,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(16,6)",
       "name": "METEREDMWFLOW"
     },
     {
       "comment": "Losses across the Interconnection attributable to the nominal From Region",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(16, 6)",
       "id": 10,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(16,6)",
       "name": "FROM_REGION_MW_LOSSES"
     },
     {
       "comment": "Losses across the Interconnection attributable to the nominal To Region",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(16, 6)",
       "id": 11,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(16,6)",
       "name": "TO_REGION_MW_LOSSES"
     },
     {
       "comment": "The datetime that the record was last changed",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 12,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     }
@@ -77,13 +113,14 @@
   "description": "Inter-regional flow information common to or aggregated for regulated (i.e. not MNSP) Interconnectors spanning the From-Region and To-Region - NB only the physical run is calculated'",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 21,
+        "files": 26,
         "from": {
           "data-time": "2024-08-01T00:05:00+10:00",
           "file": "PUBLIC_ARCHIVE#DISPATCH_INTERCONNECTION#FILE01#202408010000.zip",
@@ -98,13 +135,13 @@
           "DISPATCH",
           "INTERCONNECTION"
         ],
-        "rows": 551268,
+        "rows": 709956,
         "schema-id": 0,
         "to": {
-          "data-time": "2026-05-01T00:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#DISPATCH_INTERCONNECTION#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "062ba7b696b8b5cc0df14135983e86f3f12f92ab262a347c37c7a147aafaad4c"
+          "data-time": "2026-10-01T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#DISPATCH_INTERCONNECTION#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "a83116f1d0bd205ba37bb671de784dab82ead53630a7bb2cb5fb6181f95b5881"
         },
         "updates": [],
         "version": 1

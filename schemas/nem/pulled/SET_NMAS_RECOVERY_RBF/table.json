@@ -2,67 +2,100 @@
   "columns": [
     {
       "comment": "Settlement Date",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "SETTLEMENTDATE"
     },
     {
       "comment": "Settlement run number",
+      "first_release": "2024-08",
+      "iceberg_type": "long",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(3,0)",
       "name": "VERSIONNO"
     },
     {
       "comment": "Settlements Trading Interval.",
+      "first_release": "2024-08",
+      "iceberg_type": "long",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(3,0)",
       "name": "PERIODID"
     },
     {
       "comment": "The type of NSCAS service incl ISF Services. Current value values are:\n- REACTIVE\n- LOADSHED\n- RESTART\n- INERTIA, SYSTEM STRENGTH, TYPE1, TYPE2",
+      "first_release": "2024-08",
+      "iceberg_type": "string",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "SERVICE"
     },
     {
       "comment": "The NMAS/ISF Contract Id",
+      "first_release": "2024-08",
+      "iceberg_type": "string",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "CONTRACTID"
     },
     {
       "comment": "The type of payment being recovered. Valid values are:\n- AVAILABILITY\n- ENABLEMENT\n- COMPENSATION",
+      "first_release": "2024-08",
+      "iceberg_type": "string",
       "id": 6,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "PAYMENTTYPE"
     },
     {
       "comment": "The region from where the amount is recovered",
+      "first_release": "2024-08",
+      "iceberg_type": "string",
       "id": 7,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(10)",
       "name": "REGIONID"
     },
     {
       "comment": "The Benefitting Factor for the RegionId",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(18, 8)",
       "id": 8,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(18,8)",
       "name": "RBF"
     },
     {
       "comment": "The total Payment Amount to recover from all benefitting regions",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(18, 8)",
       "id": 9,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(18,8)",
       "name": "PAYMENT_AMOUNT"
     },
     {
       "comment": "The Total recovery amount for the period for the REGIONID",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(18, 8)",
       "id": 10,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(18,8)",
       "name": "RECOVERY_AMOUNT"
     },
     {
       "comment": "The Last Updated date and time",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 11,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     }
@@ -71,13 +104,14 @@
   "description": "SET_NMAS_RECOVERY_RBF publishes the RBF for NSCAS non testing payments on a half hourly basis. This Table may also be used for NSCAS and Type 1 transitional services procured by AEMO under the ISF framework during 2025 and prior to the implementation of all system changes. During this time descriptions in these tables may not be correct.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 21,
+        "files": 26,
         "from": {
           "data-time": "2023-12-31T00:00:00+10:00",
           "file": "PUBLIC_ARCHIVE#SET_NMAS_RECOVERY_RBF#FILE01#202408010000.zip",
@@ -92,13 +126,13 @@
           "SETTLEMENTS",
           "NMAS_RECOVERY_RBF"
         ],
-        "rows": 51946685,
+        "rows": 65513995,
         "schema-id": 0,
         "to": {
-          "data-time": "2026-04-29T00:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#SET_NMAS_RECOVERY_RBF#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "6f8d8d3d98002bbabf87ace62b015d5411452d0b64217313cfc41403c37f9767"
+          "data-time": "2026-09-29T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#SET_NMAS_RECOVERY_RBF#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "128782b25cb8ebf1e8c9d84203df02d4f2eb273af8e656a476b8be755720d574"
         },
         "updates": [],
         "version": 1

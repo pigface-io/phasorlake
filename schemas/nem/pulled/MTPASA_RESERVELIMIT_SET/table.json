@@ -2,43 +2,64 @@
   "columns": [
     {
       "comment": "Trade date when the set of reserve requirements become effective",
+      "first_release": "2010-05",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "EFFECTIVEDATE"
     },
     {
       "comment": "Timestamp when the set of reserve requirements become effective",
+      "first_release": "2010-05",
+      "iceberg_type": "timestamptz",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "VERSION_DATETIME"
     },
     {
       "comment": "MT PASA LRC Reserve Requirement Set Identifier",
+      "first_release": "2010-05",
+      "iceberg_type": "string",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "RESERVELIMIT_SET_ID"
     },
     {
       "comment": "Description of this set of Reserve Requirements",
+      "first_release": "2010-05",
+      "iceberg_type": "string",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(200)",
       "name": "DESCRIPTION"
     },
     {
       "comment": "Date the requirement set was authorised",
+      "first_release": "2010-05",
+      "iceberg_type": "timestamptz",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "AUTHORISEDDATE"
     },
     {
       "comment": "User authorising this requirement set",
+      "first_release": "2010-05",
+      "iceberg_type": "string",
       "id": 6,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "AUTHORISEDBY"
     },
     {
       "comment": "Timestamp the record was last modified",
+      "first_release": "2010-05",
+      "iceberg_type": "timestamptz",
       "id": 7,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     }
@@ -47,13 +68,14 @@
   "description": "MT PASA input table defining a set of MT PASA Reserve Requirements. Note only one set can be active on a given date.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 192,
+        "files": 197,
         "from": {
           "data-time": "2010-04-22T00:00:00+10:00",
           "file": "PUBLIC_DVD_MTPASA_RESERVELIMIT_SET_201005010000.zip",
@@ -69,13 +91,13 @@
           "MTPASA",
           "RESERVELIMIT_SET"
         ],
-        "rows": 2544,
+        "rows": 2614,
         "schema-id": 0,
         "to": {
           "data-time": "2013-05-29T00:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#MTPASA_RESERVELIMIT_SET#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "b51cfcfa80f7a770dc56fe0374638ce7f55a12bf54cc1b06e22f239755ab2957"
+          "file": "PUBLIC_ARCHIVE#MTPASA_RESERVELIMIT_SET#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "c7150d04b90c5c34a8ed3dcdea7ae2dd51cf37238731700250db4435dd4c8813"
         },
         "updates": [],
         "version": 1

@@ -2,49 +2,73 @@
   "columns": [
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2021-02",
       "model_type": null,
       "name": "SETTLEMENTDATE"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 2,
+      "last_release": "2021-02",
       "model_type": null,
       "name": "OFFERDATE"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(3, 0)",
       "id": 3,
+      "last_release": "2021-02",
       "model_type": null,
       "name": "VERSIONNO"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 4,
+      "last_release": "2021-02",
       "model_type": null,
       "name": "PARTICIPANTID"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 5,
+      "last_release": "2021-02",
       "model_type": null,
       "name": "FILENAME"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 6,
+      "last_release": "2021-02",
       "model_type": null,
       "name": "AUTHORISEDDATE"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 7,
+      "last_release": "2021-02",
       "model_type": null,
       "name": "AUTHORISEDBY"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 8,
+      "last_release": "2021-02",
       "model_type": null,
       "name": "LASTCHANGED"
     }
@@ -53,6 +77,7 @@
   "description": null,
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {

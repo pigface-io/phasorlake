@@ -2,31 +2,46 @@
   "columns": [
     {
       "comment": "Market date starting at 04:30 inclusive",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "EFFECTIVEDATE"
     },
     {
       "comment": "Record version number",
+      "first_release": "2009-07",
+      "iceberg_type": "long",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(3,0)",
       "name": "VERSIONNO"
     },
     {
       "comment": "Date of record authorisation. A NULL value indicates the record is not authorised.",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "AUTHORISEDDATE"
     },
     {
       "comment": "User that authorised record. A NULL value indicates the record is not authorised.",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(15)",
       "name": "AUTHORISEDBY"
     },
     {
       "comment": "Last date and time record changed",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     }
@@ -35,13 +50,14 @@
   "description": "BIDTYPESTRK, together with the associated data in BIDTYPES, define a set of ancillary services with bidding parameters from a given date.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 202,
+        "files": 207,
         "from": {
           "data-time": "2000-09-12T00:00:00+10:00",
           "file": "PUBLIC_DVD_BIDTYPESTRK_200907010000.zip",
@@ -57,13 +73,13 @@
           "MARKET_CONFIG",
           "BIDTYPESTRK"
         ],
-        "rows": 235,
+        "rows": 245,
         "schema-id": 0,
         "to": {
           "data-time": "2023-08-14T00:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#BIDTYPESTRK#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "792869d8c03c385573492b0bc6388732afa0fa6e399936b686c16316e07dbc09"
+          "file": "PUBLIC_ARCHIVE#BIDTYPESTRK#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "02b09ac32b1b3f85e66d679683a58f73312a7a50917716ab81e1c98966f52ee8"
         },
         "updates": [],
         "version": 1

@@ -2,61 +2,91 @@
   "columns": [
     {
       "comment": null,
+      "first_release": "2009-09",
+      "iceberg_type": "decimal(4, 0)",
       "id": 1,
+      "last_release": "2010-06",
       "model_type": null,
       "name": "CONTRACTYEAR"
     },
     {
       "comment": null,
+      "first_release": "2009-09",
+      "iceberg_type": "decimal(1, 0)",
       "id": 2,
+      "last_release": "2010-06",
       "model_type": null,
       "name": "QUARTER"
     },
     {
       "comment": null,
+      "first_release": "2009-09",
+      "iceberg_type": "string",
       "id": 3,
+      "last_release": "2010-06",
       "model_type": null,
       "name": "VALUATIONID"
     },
     {
       "comment": null,
+      "first_release": "2009-09",
+      "iceberg_type": "decimal(1, 0)",
       "id": 4,
+      "last_release": "2010-06",
       "model_type": null,
       "name": "VERSIONNO"
     },
     {
       "comment": null,
+      "first_release": "2009-09",
+      "iceberg_type": "timestamptz",
       "id": 5,
+      "last_release": "2010-06",
       "model_type": null,
       "name": "EFFECTIVEDATE"
     },
     {
       "comment": null,
+      "first_release": "2009-09",
+      "iceberg_type": "string",
       "id": 6,
+      "last_release": "2010-06",
       "model_type": null,
       "name": "STATUS"
     },
     {
       "comment": null,
+      "first_release": "2009-09",
+      "iceberg_type": "string",
       "id": 7,
+      "last_release": "2010-06",
       "model_type": null,
       "name": "DOCUMENTREF"
     },
     {
       "comment": null,
+      "first_release": "2009-09",
+      "iceberg_type": "timestamptz",
       "id": 8,
+      "last_release": "2010-06",
       "model_type": null,
       "name": "AUTHORISEDDATE"
     },
     {
       "comment": null,
+      "first_release": "2009-09",
+      "iceberg_type": "string",
       "id": 9,
+      "last_release": "2010-06",
       "model_type": null,
       "name": "AUTHORISEDBY"
     },
     {
       "comment": null,
+      "first_release": "2009-09",
+      "iceberg_type": "timestamptz",
       "id": 10,
+      "last_release": "2010-06",
       "model_type": null,
       "name": "LASTCHANGED"
     }
@@ -65,6 +95,7 @@
   "description": null,
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {

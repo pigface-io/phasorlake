@@ -2,103 +2,154 @@
   "columns": [
     {
       "comment": null,
+      "first_release": "2009-10",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2018-05",
       "model_type": null,
       "name": "SETTLEMENTDATE"
     },
     {
       "comment": null,
+      "first_release": "2009-10",
+      "iceberg_type": "decimal(1, 0)",
       "id": 2,
+      "last_release": "2018-05",
       "model_type": null,
       "name": "VERSIONNO"
     },
     {
       "comment": null,
+      "first_release": "2009-10",
+      "iceberg_type": "string",
       "id": 3,
+      "last_release": "2018-05",
       "model_type": null,
       "name": "REGIONID"
     },
     {
       "comment": null,
+      "first_release": "2009-10",
+      "iceberg_type": "decimal(2, 0)",
       "id": 4,
+      "last_release": "2018-05",
       "model_type": null,
       "name": "PERIODID"
     },
     {
       "comment": null,
+      "first_release": "2009-10",
+      "iceberg_type": "decimal(1, 0)",
       "id": 5,
+      "last_release": "2018-05",
       "model_type": null,
       "name": "LOWER5MIN"
     },
     {
       "comment": null,
+      "first_release": "2009-10",
+      "iceberg_type": "decimal(1, 0)",
       "id": 6,
+      "last_release": "2018-05",
       "model_type": null,
       "name": "LOWER60SEC"
     },
     {
       "comment": null,
+      "first_release": "2009-10",
+      "iceberg_type": "decimal(1, 0)",
       "id": 7,
+      "last_release": "2018-05",
       "model_type": null,
       "name": "LOWER6SEC"
     },
     {
       "comment": null,
+      "first_release": "2009-10",
+      "iceberg_type": "decimal(1, 0)",
       "id": 8,
+      "last_release": "2018-05",
       "model_type": null,
       "name": "RAISE5MIN"
     },
     {
       "comment": null,
+      "first_release": "2009-10",
+      "iceberg_type": "decimal(1, 0)",
       "id": 9,
+      "last_release": "2018-05",
       "model_type": null,
       "name": "RAISE60SEC"
     },
     {
       "comment": null,
+      "first_release": "2009-10",
+      "iceberg_type": "decimal(1, 0)",
       "id": 10,
+      "last_release": "2018-05",
       "model_type": null,
       "name": "RAISE6SEC"
     },
     {
       "comment": null,
+      "first_release": "2009-10",
+      "iceberg_type": "timestamptz",
       "id": 11,
+      "last_release": "2018-05",
       "model_type": null,
       "name": "LASTCHANGED"
     },
     {
       "comment": null,
+      "first_release": "2009-10",
+      "iceberg_type": "decimal(4, 0)",
       "id": 12,
+      "last_release": "2018-05",
       "model_type": null,
       "name": "PASARESERVE"
     },
     {
       "comment": null,
+      "first_release": "2009-10",
+      "iceberg_type": "decimal(1, 0)",
       "id": 13,
+      "last_release": "2018-05",
       "model_type": null,
       "name": "LOADREJECTIONRESERVEREQ"
     },
     {
       "comment": null,
+      "first_release": "2009-10",
+      "iceberg_type": "decimal(1, 0)",
       "id": 14,
+      "last_release": "2018-05",
       "model_type": null,
       "name": "RAISEREG"
     },
     {
       "comment": null,
+      "first_release": "2009-10",
+      "iceberg_type": "decimal(1, 0)",
       "id": 15,
+      "last_release": "2018-05",
       "model_type": null,
       "name": "LOWERREG"
     },
     {
       "comment": null,
+      "first_release": "2009-10",
+      "iceberg_type": "decimal(4, 0)",
       "id": 16,
+      "last_release": "2018-05",
       "model_type": null,
       "name": "LOR1LEVEL"
     },
     {
       "comment": null,
+      "first_release": "2009-10",
+      "iceberg_type": "decimal(4, 0)",
       "id": 17,
+      "last_release": "2018-05",
       "model_type": null,
       "name": "LOR2LEVEL"
     }
@@ -107,6 +158,7 @@
   "description": null,
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {

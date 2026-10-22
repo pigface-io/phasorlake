@@ -2842,13 +2842,24 @@ dependencies = [
  "tempfile",
  "thiserror",
  "toml",
+ "utilake-mms-decode",
  "xxhash-rust",
+]
+
+[[package]]
+name = "utilake-gates"
+version = "0.1.0"
+source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=b01009a1b29b55f81054175e438a0a245f987e11#b01009a1b29b55f81054175e438a0a245f987e11"
+dependencies = [
+ "anyhow",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
 name = "utilake-iceberg"
 version = "0.1.0"
-source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=46676f97c9af7d720a17ffca12fb5172808c1600#46676f97c9af7d720a17ffca12fb5172808c1600"
+source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=b01009a1b29b55f81054175e438a0a245f987e11#b01009a1b29b55f81054175e438a0a245f987e11"
 dependencies = [
  "serde",
  "serde_json",
@@ -2895,6 +2906,31 @@ name = "utilake-mdff"
 version = "0.1.0"
 
 [[package]]
+name = "utilake-mirror"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "bytes",
+ "clap",
+ "crc32fast",
+ "criterion",
+ "futures",
+ "memchr",
+ "reqwest",
+ "rustix",
+ "serde",
+ "serde_json",
+ "sha2",
+ "tempfile",
+ "thiserror",
+ "tokio",
+ "toml",
+ "url",
+ "zip",
+]
+
+[[package]]
 name = "utilake-mms-conform"
 version = "0.1.0"
 dependencies = [
@@ -2902,6 +2938,7 @@ dependencies = [
  "arrow-schema",
  "criterion",
  "tempfile",
+ "thiserror",
  "utilake-core",
  "utilake-kit",
  "utilake-mms-decode",
@@ -2911,13 +2948,12 @@ dependencies = [
 [[package]]
 name = "utilake-mms-decode"
 version = "0.1.0"
+source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=b01009a1b29b55f81054175e438a0a245f987e11#b01009a1b29b55f81054175e438a0a245f987e11"
 dependencies = [
- "criterion",
  "memchr",
- "serde_json",
- "tempfile",
+ "serde",
  "thiserror",
- "utilake-core",
+ "xxhash-rust",
 ]
 
 [[package]]
@@ -2955,6 +2991,7 @@ dependencies = [
  "utilake-core",
  "utilake-kit",
  "utilake-mms-conform",
+ "utilake-mms-decode",
  "utilake-mms-registry",
 ]
 
@@ -3382,6 +3419,7 @@ dependencies = [
  "sha2",
  "tempfile",
  "utilake-core",
+ "utilake-gates",
  "utilake-iceberg",
  "utilake-mms-decode",
  "utilake-mms-registry",

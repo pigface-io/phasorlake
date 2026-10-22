@@ -2,25 +2,37 @@
   "columns": [
     {
       "comment": null,
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-07",
       "model_type": null,
       "name": "EFFECTIVEDATE"
     },
     {
       "comment": null,
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(1, 0)",
       "id": 2,
+      "last_release": "2026-07",
       "model_type": null,
       "name": "VERSIONNO"
     },
     {
       "comment": null,
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 3,
+      "last_release": "2026-07",
       "model_type": null,
       "name": "AUTHORISEDDATE"
     },
     {
       "comment": null,
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 4,
+      "last_release": "2026-07",
       "model_type": null,
       "name": "LASTCHANGED"
     }
@@ -29,13 +41,14 @@
   "description": null,
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 21,
+        "files": 24,
         "from": {
           "data-time": "2024-02-29T00:00:00+10:00",
           "file": "PUBLIC_ARCHIVE#FCAS_REGU_USAGE_FACTORS_TRK#FILE01#202408010000.zip",
@@ -50,13 +63,13 @@
           "MARKET_CONFIG",
           "FCASREGUSEFACTORS_TRK"
         ],
-        "rows": 21,
+        "rows": 24,
         "schema-id": 0,
         "to": {
           "data-time": "2024-02-29T00:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#FCAS_REGU_USAGE_FACTORS_TRK#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "0a9a17d5f073c98a977e90e33368c9e0d10632989ea90d4e8112c2677ceac548"
+          "file": "PUBLIC_ARCHIVE#FCAS_REGU_USAGE_FACTORS_TRK#FILE01#202607010000.zip",
+          "release": "2026-07",
+          "sha256": "c1f08502a31c1d65a5af2e146ababdf4e5337c4494312c0307ace4629d337072"
         },
         "updates": [],
         "version": 1

@@ -2,37 +2,55 @@
   "columns": [
     {
       "comment": "Unique Id of this interconnector",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(10)",
       "name": "INTERCONNECTORID"
     },
     {
       "comment": "Starting region of the interconnect",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(10)",
       "name": "REGIONFROM"
     },
     {
       "comment": "Not used",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(10)",
       "name": "RSOID"
     },
     {
       "comment": "Ending region of the interconnect",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(10)",
       "name": "REGIONTO"
     },
     {
       "comment": "Description of interconnector",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(64)",
       "name": "DESCRIPTION"
     },
     {
       "comment": "Last date and time record changed",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 6,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     }
@@ -41,13 +59,14 @@
   "description": "INTERCONNECTOR sets out valid identifiers for each interconnector.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 202,
+        "files": 207,
         "from": {
           "data-time": "2004-06-11T10:43:05+10:00",
           "file": "PUBLIC_DVD_INTERCONNECTOR_200907010000.zip",
@@ -63,13 +82,13 @@
           "MARKET_CONFIG",
           "INTERCONNECTOR"
         ],
-        "rows": 1616,
+        "rows": 1658,
         "schema-id": 0,
         "to": {
-          "data-time": "2008-09-30T14:50:56+10:00",
-          "file": "PUBLIC_ARCHIVE#INTERCONNECTOR#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "869d7ec8608d22e70891e7b37ca920320f40573b51b0bcdbe0ed6213d372ef6c"
+          "data-time": "2026-08-13T10:09:20+10:00",
+          "file": "PUBLIC_ARCHIVE#INTERCONNECTOR#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "df945c76d67a4b20acaa5ece08a921fd5adae70950705cceb15e4d2e43a078ab"
         },
         "updates": [],
         "version": 1

@@ -2,37 +2,55 @@
   "columns": [
     {
       "comment": "Date time interval for operational demand value",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "INTERVAL_DATETIME"
     },
     {
       "comment": "Region identifier",
+      "first_release": "2024-08",
+      "iceberg_type": "string",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "REGIONID"
     },
     {
       "comment": "Average 30-minute measured operational demand MW value (unadjusted)",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(10, 0)",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(10,0)",
       "name": "OPERATIONAL_DEMAND"
     },
     {
       "comment": "Last date and time record changed",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     },
     {
       "comment": "Adjustment value containing the estimated amount of activated RERT and involuntary load shedding that occurred as a result of a NER 4.8.9 instruction for load shedding from AEMO.",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(10, 0)",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(10,0)",
       "name": "OPERATIONAL_DEMAND_ADJUSTMENT"
     },
     {
       "comment": "Estimated average 30-minute MW amount of Wholesale Demand Response that occurred",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(10, 0)",
       "id": 6,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(10)",
       "name": "WDR_ESTIMATE"
     }
@@ -41,13 +59,14 @@
   "description": "Shows Actual Operational Demand for a particular date time interval.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 21,
+        "files": 26,
         "from": {
           "data-time": "2024-08-01T00:30:00+10:00",
           "file": "PUBLIC_ARCHIVE#DEMANDOPERATIONALACTUAL#FILE01#202408010000.zip",
@@ -62,13 +81,13 @@
           "OPERATIONAL_DEMAND",
           "ACTUAL"
         ],
-        "rows": 153120,
+        "rows": 189840,
         "schema-id": 0,
         "to": {
-          "data-time": "2026-05-01T00:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#DEMANDOPERATIONALACTUAL#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "0070ea94e4eb1017f20c5fda84af8ee540851d87c6f0e8b1271a422451247eb2"
+          "data-time": "2026-10-01T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#DEMANDOPERATIONALACTUAL#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "c83097df634f84c24f9b063f2fe56d84199e3ab97b0a5662f03126a23a4d5be9"
         },
         "updates": [],
         "version": 3

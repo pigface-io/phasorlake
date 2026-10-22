@@ -2,37 +2,55 @@
   "columns": [
     {
       "comment": "30-minute interval period, 1 to 48 from the start of the calendar day",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "PERIODDATE"
     },
     {
       "comment": "Region Identifier",
+      "first_release": "2024-08",
+      "iceberg_type": "string",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(10)",
       "name": "REGIONID"
     },
     {
       "comment": "The 30-minute interval period, 1 to 48",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(3, 0)",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(3,0)",
       "name": "PERIODID"
     },
     {
       "comment": "Regional reference price for this period",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(15, 5)",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RRP"
     },
     {
       "comment": "Result of Manifestly Incorrect Inputs Price Status and OCD_Status - either \"FIRM\" or \"NOT FIRM\". Only FIRM if the Dispatch Interval is resolved for both MII and OCD",
+      "first_release": "2024-08",
+      "iceberg_type": "string",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "PRICE_CONFIDENCE"
     },
     {
       "comment": "Last date and time record changed",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 6,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     }
@@ -41,13 +59,14 @@
   "description": "Reflects the 30-minute average price (the pre-5MS trading price).",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 21,
+        "files": 26,
         "from": {
           "data-time": "2024-08-01T00:25:03+10:00",
           "file": "PUBLIC_ARCHIVE#AVERAGEPRICE30#FILE01#202408010000.zip",
@@ -62,13 +81,13 @@
           "TRADING",
           "AVERAGEPRICE30"
         ],
-        "rows": 153120,
+        "rows": 189840,
         "schema-id": 0,
         "to": {
-          "data-time": "2026-04-30T23:55:05+10:00",
-          "file": "PUBLIC_ARCHIVE#AVERAGEPRICE30#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "b90c244f3e028f9c122b0699b0fb037870acaf046e0c2aee8a8f5beaf8e12605"
+          "data-time": "2026-09-30T23:55:06+10:00",
+          "file": "PUBLIC_ARCHIVE#AVERAGEPRICE30#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "ef9154b505f06b71776abfd13cdec49856ec178700af0eb8e639375bc07e84a6"
         },
         "updates": [],
         "version": 1

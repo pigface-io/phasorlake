@@ -2,49 +2,73 @@
   "columns": [
     {
       "comment": "Date that this data applies to",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "SETTLEMENTDATE"
     },
     {
       "comment": "Dispatch run no.",
+      "first_release": "2009-07",
+      "iceberg_type": "long",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(3,0)",
       "name": "RUNNO"
     },
     {
       "comment": "Interconnector identifier",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(10)",
       "name": "INTERCONNECTORID"
     },
     {
       "comment": "Period number where 1 represents the trading interval ending at 00:05 AEST",
+      "first_release": "2009-07",
+      "iceberg_type": "long",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(3,0)",
       "name": "PERIODID"
     },
     {
       "comment": "Average of the metered MW flow from the start of each dispatch interval.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "METEREDMWFLOW"
     },
     {
       "comment": "Calculated MW Flow from SPD",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 6,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "MWFLOW"
     },
     {
       "comment": "MW losses at calculated MW flow",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 7,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "MWLOSSES"
     },
     {
       "comment": "Last date and time record changed",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 8,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     }
@@ -53,6 +77,7 @@
   "description": "TRADINGINTERCONNECT shows the Interconnector flows for the 5 minutes Trading Interval.\nPrior to 5 Minute Settlements, this was the average of the six 5 minute dispatch intervals within the 30 minute period.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
@@ -89,7 +114,7 @@
         "changes": [
           "version"
         ],
-        "files": 130,
+        "files": 135,
         "from": {
           "data-time": "2015-07-01T00:30:00+10:00",
           "file": "PUBLIC_DVD_TRADINGINTERCONNECT_201507010000.zip",
@@ -105,13 +130,13 @@
           "TRADING",
           "INTERCONNECTORRES"
         ],
-        "rows": 3550752,
+        "rows": 3815136,
         "schema-id": 0,
         "to": {
-          "data-time": "2026-05-01T00:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#TRADINGINTERCONNECT#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "be92e8a04978249ec178f155da5184a77700cf7dcb41e2f38ba8d279fe8da0a3"
+          "data-time": "2026-10-01T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#TRADINGINTERCONNECT#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "675d05298c39f885af55cb074850c0864783dba99fb867ca93e1634b95586644"
         },
         "updates": [],
         "version": 2

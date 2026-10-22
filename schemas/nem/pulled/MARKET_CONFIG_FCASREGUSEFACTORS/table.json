@@ -2,43 +2,64 @@
   "columns": [
     {
       "comment": null,
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-07",
       "model_type": null,
       "name": "EFFECTIVEDATE"
     },
     {
       "comment": null,
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(1, 0)",
       "id": 2,
+      "last_release": "2026-07",
       "model_type": null,
       "name": "VERSIONNO"
     },
     {
       "comment": null,
+      "first_release": "2024-08",
+      "iceberg_type": "string",
       "id": 3,
+      "last_release": "2026-07",
       "model_type": null,
       "name": "REGIONID"
     },
     {
       "comment": null,
+      "first_release": "2024-08",
+      "iceberg_type": "string",
       "id": 4,
+      "last_release": "2026-07",
       "model_type": null,
       "name": "BIDTYPE"
     },
     {
       "comment": null,
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(2, 0)",
       "id": 5,
+      "last_release": "2026-07",
       "model_type": null,
       "name": "PERIODID"
     },
     {
       "comment": null,
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(2, 2)",
       "id": 6,
+      "last_release": "2026-07",
       "model_type": null,
       "name": "USAGE_FACTOR"
     },
     {
       "comment": null,
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 7,
+      "last_release": "2026-07",
       "model_type": null,
       "name": "LASTCHANGED"
     }
@@ -47,13 +68,14 @@
   "description": null,
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 21,
+        "files": 24,
         "from": {
           "data-time": "2024-02-29T00:00:00+10:00",
           "file": "PUBLIC_ARCHIVE#FCAS_REGU_USAGE_FACTORS#FILE01#202408010000.zip",
@@ -68,13 +90,13 @@
           "MARKET_CONFIG",
           "FCASREGUSEFACTORS"
         ],
-        "rows": 10080,
+        "rows": 11520,
         "schema-id": 0,
         "to": {
           "data-time": "2024-02-29T00:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#FCAS_REGU_USAGE_FACTORS#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "9ef121338b5d9e905e20b60b462a79b8d2a0abcf6c895fa84175c6040bfbc0ef"
+          "file": "PUBLIC_ARCHIVE#FCAS_REGU_USAGE_FACTORS#FILE01#202607010000.zip",
+          "release": "2026-07",
+          "sha256": "7707c9cfc9ace0f6a92cf9d1fffba4be40f797c445b90a6d7a448dd6483ada61"
         },
         "updates": [],
         "version": 1

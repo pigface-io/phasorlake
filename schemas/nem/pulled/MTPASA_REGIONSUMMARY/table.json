@@ -2,181 +2,271 @@
   "columns": [
     {
       "comment": "Date processing of the run begins.",
+      "first_release": "2018-05",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "RUN_DATETIME"
     },
     {
       "comment": "Unique run id.",
+      "first_release": "2018-05",
+      "iceberg_type": "long",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(4)",
       "name": "RUN_NO"
     },
     {
       "comment": "Type of run. Always RELIABILITY",
+      "first_release": "2018-05",
+      "iceberg_type": "string",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "RUNTYPE"
     },
     {
       "comment": "Demand POE type used. Value are POE10, POE50",
+      "first_release": "2018-05",
+      "iceberg_type": "string",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "DEMAND_POE_TYPE"
     },
     {
       "comment": "Period data is aggregated over. Values are YEAR, MONTH",
+      "first_release": "2018-05",
+      "iceberg_type": "string",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "AGGREGATION_PERIOD"
     },
     {
       "comment": "Datetime of day at end of period (i.e. last day of month or year reported)",
+      "first_release": "2018-05",
+      "iceberg_type": "timestamptz",
       "id": 6,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "PERIOD_ENDING"
     },
     {
       "comment": "The unique region identifier",
+      "first_release": "2018-05",
+      "iceberg_type": "string",
       "id": 7,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "REGIONID"
     },
     {
       "comment": "Native demand calculated from Operational As Generated trace supplied by Energy Forecasting",
+      "first_release": "2018-05",
+      "iceberg_type": "decimal(12, 2)",
       "id": 8,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "NATIVEDEMAND"
     },
     {
       "comment": "Unserved energy period amount at the 10th percentile of iterations and reference years (MWh)",
+      "first_release": "2018-05",
+      "iceberg_type": "decimal(12, 2)",
       "id": 9,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "USE_PERCENTILE10"
     },
     {
       "comment": "Unserved energy period amount at the 20th percentile of iterations and reference years (MWh)",
+      "first_release": "2018-05",
+      "iceberg_type": "decimal(12, 2)",
       "id": 10,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "USE_PERCENTILE20"
     },
     {
       "comment": "Unserved energy period amount at the 30th percentile of iterations and reference years (MWh)",
+      "first_release": "2018-05",
+      "iceberg_type": "decimal(12, 2)",
       "id": 11,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "USE_PERCENTILE30"
     },
     {
       "comment": "Unserved energy period amount at the 40th percentile of iterations and reference years (MWh)",
+      "first_release": "2018-05",
+      "iceberg_type": "decimal(12, 2)",
       "id": 12,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "USE_PERCENTILE40"
     },
     {
       "comment": "Unserved energy period amount at the 50th percentile of iterations and reference years (MWh)",
+      "first_release": "2018-05",
+      "iceberg_type": "decimal(12, 2)",
       "id": 13,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "USE_PERCENTILE50"
     },
     {
       "comment": "Unserved energy period amount at the 60th percentile of iterations and reference years (MWh)",
+      "first_release": "2018-05",
+      "iceberg_type": "decimal(12, 2)",
       "id": 14,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "USE_PERCENTILE60"
     },
     {
       "comment": "Unserved energy period amount at the 70th percentile of iterations and reference years (MWh)",
+      "first_release": "2018-05",
+      "iceberg_type": "decimal(12, 2)",
       "id": 15,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "USE_PERCENTILE70"
     },
     {
       "comment": "Unserved energy period amount at the 80th percentile of iterations and reference years (MWh)",
+      "first_release": "2018-05",
+      "iceberg_type": "decimal(12, 2)",
       "id": 16,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "USE_PERCENTILE80"
     },
     {
       "comment": "Unserved energy period amount at the 90th percentile of iterations and reference years (MWh)",
+      "first_release": "2018-05",
+      "iceberg_type": "decimal(12, 2)",
       "id": 17,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "USE_PERCENTILE90"
     },
     {
       "comment": "Unserved energy period amount at the 100th percentile of iterations and reference years (MWh)",
+      "first_release": "2018-05",
+      "iceberg_type": "decimal(12, 2)",
       "id": 18,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "USE_PERCENTILE100"
     },
     {
       "comment": "Average period unserved energy across iterations and reference years (MWh)",
+      "first_release": "2018-05",
+      "iceberg_type": "decimal(12, 2)",
       "id": 19,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "USE_AVERAGE"
     },
     {
       "comment": "Total number of iterations and reference years performed",
+      "first_release": "2018-05",
+      "iceberg_type": "decimal(12, 2)",
       "id": 20,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "NUMBEROFITERATIONS"
     },
     {
       "comment": "Number of iterations and reference years showing unserved energy",
+      "first_release": "2018-05",
+      "iceberg_type": "decimal(12, 2)",
       "id": 21,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "USE_NUMBEROFITERATIONS"
     },
     {
       "comment": "Maximum unserved energy event size across all half hourly intervals and iterations and reference years that have unserved energy>0 (MW)",
+      "first_release": "2018-05",
+      "iceberg_type": "decimal(12, 2)",
       "id": 22,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "USE_EVENT_MAX"
     },
     {
       "comment": "Upper quartile unserved energy event size across all half hourly intervals and iterations and reference years that have unserved energy>0 (MW)",
+      "first_release": "2018-05",
+      "iceberg_type": "decimal(12, 2)",
       "id": 23,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "USE_EVENT_UPPERQUARTILE"
     },
     {
       "comment": "Median unserved energy event size across all half hourly intervals and iterations and reference years that have unserved energy>0 (MW)",
+      "first_release": "2018-05",
+      "iceberg_type": "decimal(12, 2)",
       "id": 24,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "USE_EVENT_MEDIAN"
     },
     {
       "comment": "Lower quartile unserved energy event size across all half hourly intervals and iterations and reference years that have unserved energy>0 (MW)",
+      "first_release": "2018-05",
+      "iceberg_type": "decimal(12, 2)",
       "id": 25,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "USE_EVENT_LOWERQUARTILE"
     },
     {
       "comment": "Minimum unserved energy event size across all half hourly intervals and iterations and reference years that have unserved energy>0 (MW)",
+      "first_release": "2018-05",
+      "iceberg_type": "decimal(12, 2)",
       "id": 26,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "USE_EVENT_MIN"
     },
     {
       "comment": "Fixed Values of 0.696 for 50 POE and 0.304 for 10 POE.",
+      "first_release": "2018-05",
+      "iceberg_type": "decimal(16, 6)",
       "id": 27,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(16,6)",
       "name": "WEIGHT"
     },
     {
       "comment": "Weighted average USE per region = (USE_AVERAGE_POE10/NATIVE_DEMAND_POE_10*WEIGHT_POE_10 + USE_AVERAGE_POE50/NATIVE_DEMAND_POE_50*WEIGHT_POE_50)*100",
+      "first_release": "2018-05",
+      "iceberg_type": "double",
       "id": 28,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(16,6)",
       "name": "USE_WEIGHTED_AVG"
     },
     {
       "comment": "LRC Condition reported (Value=1) if USE_WEIGHTED_AVG >= 0.002% otherwise (Value=0)",
+      "first_release": "2018-05",
+      "iceberg_type": "decimal(12, 2)",
       "id": 29,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "LRC"
     },
     {
       "comment": "Last date and time record changed",
+      "first_release": "2018-05",
+      "iceberg_type": "timestamptz",
       "id": 30,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     }
@@ -185,13 +275,14 @@
   "description": "Region Results summary over aggregation periods.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 96,
+        "files": 101,
         "from": {
           "data-time": "2018-05-14T10:59:49+10:00",
           "file": "PUBLIC_DVD_MTPASA_REGIONSUMMARY_201805010000.zip",
@@ -207,13 +298,13 @@
           "MTPASA",
           "REGIONSUMMARY"
         ],
-        "rows": 117340,
+        "rows": 123270,
         "schema-id": 0,
         "to": {
-          "data-time": "2026-04-26T20:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#MTPASA_REGIONSUMMARY#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "0b09456b1292acf4bcde8abe415983bf59839b874a04423b863721e131fedebd"
+          "data-time": "2026-09-28T17:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#MTPASA_REGIONSUMMARY#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "68de2b38cd86c56492221560435659f956c3ad021bfdd7100575a631d1b5e56e"
         },
         "updates": [],
         "version": 1

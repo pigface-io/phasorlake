@@ -2,25 +2,37 @@
   "columns": [
     {
       "comment": "Date Time the report was published.",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "PUBLISH_DATETIME"
     },
     {
       "comment": "First date of the report inclusive.",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "STARTDATE"
     },
     {
       "comment": "Last date of the report inclusive.",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "ENDDATE"
     },
     {
       "comment": "Date Time of the latest offer used in the report.",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LATEST_OFFER_DATETIME"
     }
@@ -29,13 +41,14 @@
   "description": "The tracking table to assist in versioning of the region-aggregate offered PASA Availability data published to the MTPASA_REGIONAVAILABILITY table.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 21,
+        "files": 26,
         "from": {
           "data-time": "2024-08-01T09:00:00+10:00",
           "file": "PUBLIC_ARCHIVE#MTPASA_REGIONAVAIL_TRK#FILE01#202408010000.zip",
@@ -50,13 +63,13 @@
           "MTPASA",
           "REGIONAVAILTRK"
         ],
-        "rows": 2233,
+        "rows": 2770,
         "schema-id": 0,
         "to": {
-          "data-time": "2026-04-30T18:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#MTPASA_REGIONAVAIL_TRK#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "c0fdf90ba5b312be7f9007c5fec0e36b1dc95b844baf89fa6b9946cf51ffa376"
+          "data-time": "2026-09-30T18:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#MTPASA_REGIONAVAIL_TRK#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "6f74ee1595af0f623809a3ae1eb26d21829e6068238bd2ef61f890767d61c1c8"
         },
         "updates": [],
         "version": 1

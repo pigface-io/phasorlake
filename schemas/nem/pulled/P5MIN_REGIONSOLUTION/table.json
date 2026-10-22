@@ -2,715 +2,1072 @@
   "columns": [
     {
       "comment": "Unique Timestamp Identifier for this study",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "RUN_DATETIME"
     },
     {
       "comment": "The unique identifier for the interval within this study",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "INTERVAL_DATETIME"
     },
     {
       "comment": "Region Identifier",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(10)",
       "name": "REGIONID"
     },
     {
       "comment": "Region Reference Price (Energy)",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RRP"
     },
     {
       "comment": "Region Override Price (Energy)",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "ROP"
     },
     {
       "comment": "Total Energy Imbalance (MW)",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 6,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "EXCESSGENERATION"
     },
     {
       "comment": "Region Reference Price (Raise6Sec)",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 7,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE6SECRRP"
     },
     {
       "comment": "Original regional price (Raise6Sec)",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 8,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE6SECROP"
     },
     {
       "comment": "Region Reference Price (Raise60Sec)",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 9,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE60SECRRP"
     },
     {
       "comment": "Original regional price (Raise60Sec)",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 10,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE60SECROP"
     },
     {
       "comment": "Region Reference Price (Raise5Min)",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 11,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE5MINRRP"
     },
     {
       "comment": "Original regional price (Raise5Min)",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 12,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE5MINROP"
     },
     {
       "comment": "Region Reference Price (RaiseReg)",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 13,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISEREGRRP"
     },
     {
       "comment": "Original regional price (RaiseReg)",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 14,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISEREGROP"
     },
     {
       "comment": "Region Reference Price (Lower6Sec)",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 15,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER6SECRRP"
     },
     {
       "comment": "Original regional price (Lower6Sec)",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 16,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER6SECROP"
     },
     {
       "comment": "Region Reference Price (Lower60Sec)",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 17,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER60SECRRP"
     },
     {
       "comment": "Original regional price (Lower60Sec)",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 18,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER60SECROP"
     },
     {
       "comment": "Region Reference Price (Lower5Min)",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 19,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER5MINRRP"
     },
     {
       "comment": "Original regional price (Lower5Min)",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 20,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER5MINROP"
     },
     {
       "comment": "Region Reference Price (LowerReg)",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 21,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWERREGRRP"
     },
     {
       "comment": "Original regional price (LowerReg)",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 22,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWERREGROP"
     },
     {
       "comment": "Regional Demand - NB NOT net of Interconnector flows or Loads",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 23,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "TOTALDEMAND"
     },
     {
       "comment": "Regional Available generation",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 24,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "AVAILABLEGENERATION"
     },
     {
       "comment": "Regional Available Load",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 25,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "AVAILABLELOAD"
     },
     {
       "comment": "Predicted change in regional demand for this interval",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 26,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "DEMANDFORECAST"
     },
     {
       "comment": "Regional Generation Dispatched",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 27,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "DISPATCHABLEGENERATION"
     },
     {
       "comment": "Regional Load Dispatched",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 28,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "DISPATCHABLELOAD"
     },
     {
       "comment": "Net interconnector Flows",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 29,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "NETINTERCHANGE"
     },
     {
       "comment": "Not used since Dec 2003. Lower 5 min MW dispatch",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 30,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER5MINDISPATCH"
     },
     {
       "comment": "Not used since Dec 2003. Lower 5 min MW imported",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 31,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER5MINIMPORT"
     },
     {
       "comment": "Lower 5 min local dispatch",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 32,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER5MINLOCALDISPATCH"
     },
     {
       "comment": "Not used since Dec 2003. Lower 5 min local requirement",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 33,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER5MINLOCALREQ"
     },
     {
       "comment": "Not used since Dec 2003. Lower 5 min total requirement",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 34,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER5MINREQ"
     },
     {
       "comment": "Not used since Dec 2003. Lower 60 sec MW dispatch",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 35,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER60SECDISPATCH"
     },
     {
       "comment": "Not used since Dec 2003. Lower 60 sec MW imported",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 36,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER60SECIMPORT"
     },
     {
       "comment": "Lower 60 sec local dispatch",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 37,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER60SECLOCALDISPATCH"
     },
     {
       "comment": "Not used since Dec 2003. Lower 60 sec local requirement",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 38,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER60SECLOCALREQ"
     },
     {
       "comment": "Not used since Dec 2003. Lower 60 sec total requirement",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 39,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER60SECREQ"
     },
     {
       "comment": "Not used since Dec 2003. Lower 6 sec MW dispatch",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 40,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER6SECDISPATCH"
     },
     {
       "comment": "Not used since Dec 2003. Lower 6 sec MW imported",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 41,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER6SECIMPORT"
     },
     {
       "comment": "Lower 6 sec local dispatch",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 42,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER6SECLOCALDISPATCH"
     },
     {
       "comment": "Not used since Dec 2003. Lower 6 sec local requirement",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 43,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER6SECLOCALREQ"
     },
     {
       "comment": "Not used since Dec 2003. Lower 6 sec total requirement",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 44,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER6SECREQ"
     },
     {
       "comment": "Not used since Dec 2003. Total Raise 5 min MW dispatch",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 45,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE5MINDISPATCH"
     },
     {
       "comment": "Not used since Dec 2003. Raise 5 min MW imported",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 46,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE5MINIMPORT"
     },
     {
       "comment": "Raise 5 min local dispatch",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 47,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE5MINLOCALDISPATCH"
     },
     {
       "comment": "Not used since Dec 2003. Raise 5 min local requirement",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 48,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE5MINLOCALREQ"
     },
     {
       "comment": "Not used since Dec 2003. Raise 5 min total requirement",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 49,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE5MINREQ"
     },
     {
       "comment": "Not used since Dec 2003. Raise 60 sec MW dispatch",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 50,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE60SECDISPATCH"
     },
     {
       "comment": "Not used since Dec 2003. Raise 60 sec MW imported",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 51,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE60SECIMPORT"
     },
     {
       "comment": "Raise 50 sec local dispatch",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 52,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE60SECLOCALDISPATCH"
     },
     {
       "comment": "Not used since Dec 2003. Raise 60 sec local requirement",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 53,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE60SECLOCALREQ"
     },
     {
       "comment": "Not used since Dec 2003. Raise 60 sec total requirement",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 54,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE60SECREQ"
     },
     {
       "comment": "Not used since Dec 2003. Raise 6 sec MW dispatch",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 55,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE6SECDISPATCH"
     },
     {
       "comment": "Not used since Dec 2003. Raise 6 sec MW imported",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 56,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE6SECIMPORT"
     },
     {
       "comment": "Raise 6 sec local dispatch",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 57,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE6SECLOCALDISPATCH"
     },
     {
       "comment": "Not used since Dec 2003. Raise 6 sec local requirement",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 58,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE6SECLOCALREQ"
     },
     {
       "comment": "Not used since Dec 2003. Raise 6 sec total requirement",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 59,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE6SECREQ"
     },
     {
       "comment": "Aggregate dispatch error applied",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 60,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "AGGREGATEDISPATCHERROR"
     },
     {
       "comment": "Sum of initial generation and import for region",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 61,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "INITIALSUPPLY"
     },
     {
       "comment": "Sum of cleared generation and import for region",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 62,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "CLEAREDSUPPLY"
     },
     {
       "comment": "Not used since Dec 2003. Lower Regulation MW imported",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 63,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWERREGIMPORT"
     },
     {
       "comment": "Not used since Dec 2003. Total Lower Regulation dispatch",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 64,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWERREGDISPATCH"
     },
     {
       "comment": "Lower Regulation local dispatch",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 65,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWERREGLOCALDISPATCH"
     },
     {
       "comment": "Not used since Dec 2003. Lower Regulation local requirement",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 66,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWERREGLOCALREQ"
     },
     {
       "comment": "Not used since Dec 2003. Lower Regulation total requirement",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 67,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWERREGREQ"
     },
     {
       "comment": "Not used since Dec 2003. Raise Regulation MW imported",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 68,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISEREGIMPORT"
     },
     {
       "comment": "Not used since Dec 2003. Total Raise Regulation dispatch",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 69,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISEREGDISPATCH"
     },
     {
       "comment": "Raise Regulation local dispatch",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 70,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISEREGLOCALDISPATCH"
     },
     {
       "comment": "Not used since Dec 2003. Raise Regulation local requirement",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 71,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISEREGLOCALREQ"
     },
     {
       "comment": "Not used since Dec 2003. Raise Regulation total requirement",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 72,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISEREGREQ"
     },
     {
       "comment": "Not used since Dec 2003. Violation (MW) of Raise 5 min local requirement",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 73,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE5MINLOCALVIOLATION"
     },
     {
       "comment": "Not used since Dec 2003. Violation (MW) of Raise Reg local requirement",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 74,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISEREGLOCALVIOLATION"
     },
     {
       "comment": "Not used since Dec 2003. Violation (MW) of Raise 60 sec local requirement",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 75,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE60SECLOCALVIOLATION"
     },
     {
       "comment": "Not used since Dec 2003. Violation (MW) of Raise 6 sec local requirement",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 76,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE6SECLOCALVIOLATION"
     },
     {
       "comment": "Not used since Dec 2003. Violation (MW) of Lower 5 min local requirement",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 77,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER5MINLOCALVIOLATION"
     },
     {
       "comment": "Not used since Dec 2003. Violation (MW) of Lower Reg local requirement",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 78,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWERREGLOCALVIOLATION"
     },
     {
       "comment": "Not used since Dec 2003. Violation (MW) of Lower 60 sec local requirement",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 79,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER60SECLOCALVIOLATION"
     },
     {
       "comment": "Not used since Dec 2003. Violation (MW) of Lower 6 sec local requirement",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 80,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER6SECLOCALVIOLATION"
     },
     {
       "comment": "Not used since Dec 2003. Violation (MW) of Raise 5 min requirement",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 81,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE5MINVIOLATION"
     },
     {
       "comment": "Not used since Dec 2003. Violation (MW) of Raise Reg requirement",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 82,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISEREGVIOLATION"
     },
     {
       "comment": "Not used since Dec 2003. Violation (MW) of Raise 60 seconds requirement",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 83,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE60SECVIOLATION"
     },
     {
       "comment": "Not used since Dec 2003. Violation (MW) of Raise 6 seconds requirement",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 84,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE6SECVIOLATION"
     },
     {
       "comment": "Not used since Dec 2003. Violation (MW) of Lower 5 min requirement",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 85,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER5MINVIOLATION"
     },
     {
       "comment": "Not used since Dec 2003. Violation (MW) of Lower Reg requirement",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 86,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWERREGVIOLATION"
     },
     {
       "comment": "Not used since Dec 2003. Violation (MW) of Lower 60 seconds requirement",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 87,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER60SECVIOLATION"
     },
     {
       "comment": "Not used since Dec 2003. Violation (MW) of Lower 6 seconds requirement",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 88,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER6SECVIOLATION"
     },
     {
       "comment": "Last date and time record changed",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 89,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     },
     {
       "comment": "Allowance made for non-scheduled generation in the demand forecast (MW).",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 90,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "TOTALINTERMITTENTGENERATION"
     },
     {
       "comment": "Sum of Cleared Scheduled generation, imported generation (at the region boundary) and allowances made for non-scheduled generation (MW).",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 6)",
       "id": 91,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "DEMAND_AND_NONSCHEDGEN"
     },
     {
       "comment": "Regional aggregated Unconstrained Intermittent Generation Forecast of Semi-scheduled generation (MW).",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 92,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "UIGF"
     },
     {
       "comment": "Regional aggregated Semi-Schedule generator Cleared MW",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 93,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "SEMISCHEDULE_CLEAREDMW"
     },
     {
       "comment": "Regional aggregated Semi-Schedule generator Cleared MW where Semi-Dispatch cap is enforced",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 94,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "SEMISCHEDULE_COMPLIANCEMW"
     },
     {
       "comment": "Flag to indicate if this result set was sourced from the pricing run (INTERVENTION=0) or the physical run (INTERVENTION=1). In the event there is not intervention in the market, both pricing and physical runs correspond to INTERVENTION=0",
+      "first_release": "2018-12",
+      "iceberg_type": "decimal(2, 0)",
       "id": 95,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(2,0)",
       "name": "INTERVENTION"
     },
     {
       "comment": "Regional aggregated Unconstrained Intermittent Generation Forecast of Semi-scheduled generation (MW) where the primary fuel source is solar",
+      "first_release": "2020-09",
+      "iceberg_type": "decimal(15, 5)",
       "id": 96,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "SS_SOLAR_UIGF"
     },
     {
       "comment": "Regional aggregated Unconstrained Intermittent Generation Forecast of Semi-scheduled generation (MW) where the primary fuel source is wind",
+      "first_release": "2020-09",
+      "iceberg_type": "decimal(15, 5)",
       "id": 97,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "SS_WIND_UIGF"
     },
     {
       "comment": "Regional aggregated Semi-Schedule generator Cleared MW where the primary fuel source is solar",
+      "first_release": "2020-09",
+      "iceberg_type": "decimal(15, 5)",
       "id": 98,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "SS_SOLAR_CLEAREDMW"
     },
     {
       "comment": "Regional aggregated Semi-Schedule generator Cleared MW where the primary fuel source is wind",
+      "first_release": "2020-09",
+      "iceberg_type": "decimal(15, 5)",
       "id": 99,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "SS_WIND_CLEAREDMW"
     },
     {
       "comment": "Regional aggregated Semi-Schedule generator Cleared MW where Semi-Dispatch cap is enforced and the primary fuel source is solar",
+      "first_release": "2020-09",
+      "iceberg_type": "decimal(15, 5)",
       "id": 100,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "SS_SOLAR_COMPLIANCEMW"
     },
     {
       "comment": "Regional aggregated Semi-Schedule generator Cleared MW where Semi-Dispatch cap is enforced and the primary fuel source is wind",
+      "first_release": "2020-09",
+      "iceberg_type": "decimal(15, 5)",
       "id": 101,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "SS_WIND_COMPLIANCEMW"
     },
     {
       "comment": "Regional aggregated MW value at start of interval for Wholesale Demand Response (WDR) units",
+      "first_release": "2021-10",
+      "iceberg_type": "decimal(15, 5)",
       "id": 102,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "WDR_INITIALMW"
     },
     {
       "comment": "Regional aggregated available MW for Wholesale Demand Response (WDR) units",
+      "first_release": "2021-10",
+      "iceberg_type": "decimal(15, 5)",
       "id": 103,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "WDR_AVAILABLE"
     },
     {
       "comment": "Regional aggregated dispatched MW for Wholesale Demand Response (WDR) units",
+      "first_release": "2021-10",
+      "iceberg_type": "decimal(15, 5)",
       "id": 104,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "WDR_DISPATCHED"
     },
     {
       "comment": "Regional Raise 1Sec Price - R1Price attribute after capping/flooring",
+      "first_release": "2023-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 105,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE1SECRRP"
     },
     {
       "comment": "Raise1Sec Regional Original Price - uncapped/unfloored and unscaled",
+      "first_release": "2023-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 106,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE1SECROP"
     },
     {
       "comment": "Regional Lower 1Sec Price - RegionSolution element L1Price attribute",
+      "first_release": "2023-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 107,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER1SECRRP"
     },
     {
       "comment": "Lower1Sec Regional Original Price - uncapped/unfloored and unscaled",
+      "first_release": "2023-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 108,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER1SECROP"
     },
     {
       "comment": "Total Raise1Sec Dispatched in Region - RegionSolution element R1Dispatch attribute",
+      "first_release": "2023-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 109,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RAISE1SECLOCALDISPATCH"
     },
     {
       "comment": "Total Lower1Sec Dispatched in Region - RegionSolution element L1Dispatch attribute",
+      "first_release": "2023-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 110,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LOWER1SECLOCALDISPATCH"
     },
     {
       "comment": "For Semi-Scheduled units. Aggregate Energy Availability from Solar units in that region",
+      "first_release": "2023-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 111,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "SS_SOLAR_AVAILABILITY"
     },
     {
       "comment": "For Semi-Scheduled units. Aggregate Energy Availability from Wind units in that region",
+      "first_release": "2023-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 112,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "SS_WIND_AVAILABILITY"
     },
     {
       "comment": "Regional aggregated energy storage where the DUID type is BDU (MWh)",
+      "first_release": "2024-05",
+      "iceberg_type": "decimal(15, 5)",
       "id": 113,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "BDU_ENERGY_STORAGE"
     },
     {
       "comment": "Total available load side BDU summated for region (MW)",
+      "first_release": "2024-05",
+      "iceberg_type": "decimal(15, 5)",
       "id": 114,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "BDU_MIN_AVAIL"
     },
     {
       "comment": "Total available generation side BDU summated for region (MW)",
+      "first_release": "2024-05",
+      "iceberg_type": "decimal(15, 5)",
       "id": 115,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "BDU_MAX_AVAIL"
     },
     {
       "comment": "Regional aggregated cleared MW where the DUID type is BDU. Net of export (Generation)",
+      "first_release": "2024-05",
+      "iceberg_type": "decimal(15, 5)",
       "id": 116,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "BDU_CLEAREDMW_GEN"
     },
     {
       "comment": "Regional aggregated cleared MW where the DUID type is BDU. Net of import (Load)",
+      "first_release": "2024-05",
+      "iceberg_type": "decimal(15, 5)",
       "id": 117,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "BDU_CLEAREDMW_LOAD"
     },
     {
       "comment": "Energy Storage for BDU at the start of the interval(MWh) - Region Aggregated",
+      "first_release": "2025-04",
+      "iceberg_type": "decimal(15, 5)",
       "id": 118,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "BDU_INITIAL_ENERGY_STORAGE"
     },
     {
       "comment": "Energy storage for Daily Energy Constrained Scheduled Generating Units at the start of the interval(MWh) - Region Aggregated",
+      "first_release": "2025-04",
+      "iceberg_type": "decimal(15, 5)",
       "id": 119,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "DECGEN_INITIAL_ENERGY_STORAGE"
     }
@@ -719,6 +1076,7 @@
   "description": "The five-minute predispatch (P5Min) is a MMS system providing projected dispatch for 12 Dispatch cycles (one hour). The 5-minute Predispatch cycle runs every 5-minutes to produce a dispatch and pricing schedule to a 5-minute resolution covering the next hour, a total of twelve periods.\nP5MIN_REGIONSOLUTION shows the results of the regional capacity, maximum surplus reserve and maximum spare capacity evaluations for each period of the study.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 8,
     "format-version": 3,
     "runs": [
       {
@@ -2691,7 +3049,7 @@
         "changes": [
           "version"
         ],
-        "files": 22,
+        "files": 32,
         "from": {
           "data-time": "2025-06-01T00:05:00+10:00",
           "file": "PUBLIC_ARCHIVE#P5MIN_REGIONSOLUTION#ALL#FILE01#202506010000.zip",
@@ -2707,13 +3065,13 @@
           "P5MIN",
           "REGIONSOLUTION"
         ],
-        "rows": 11543040,
+        "rows": 16830720,
         "schema-id": 8,
         "to": {
-          "data-time": "2026-05-01T00:55:00+10:00",
-          "file": "PUBLIC_ARCHIVE#P5MIN_REGIONSOLUTION#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "2692366431f47587232c8d81c859c64194be162045b1f63c3cc890a1cecddd6e"
+          "data-time": "2026-10-01T00:55:00+10:00",
+          "file": "PUBLIC_ARCHIVE#P5MIN_REGIONSOLUTION#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "8baa951b1fa2a7f4e5007ab995421a3abc55572fe9d86782d6651388db5abf35"
         },
         "updates": [],
         "version": 10

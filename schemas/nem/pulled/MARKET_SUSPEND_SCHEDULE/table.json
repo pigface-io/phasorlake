@@ -2,97 +2,145 @@
   "columns": [
     {
       "comment": "Calendar date from when this record set is effective",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "EFFECTIVEDATE"
     },
     {
       "comment": "Distinguishes which record set to apply - at time of writing this was Business or Non-business day but may change in the future depending on outcome of consultation",
+      "first_release": "2024-08",
+      "iceberg_type": "string",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "DAY_TYPE"
     },
     {
       "comment": "Region affected.",
+      "first_release": "2024-08",
+      "iceberg_type": "string",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "REGIONID"
     },
     {
       "comment": "48 intervals for a day, midnight base (equates to 00:30 - 00:00)",
+      "first_release": "2024-08",
+      "iceberg_type": "long",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(3,0)",
       "name": "PERIODID"
     },
     {
       "comment": "Energy Price applied for this period for this Day Type",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(15, 5)",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "ENERGY_RRP"
     },
     {
       "comment": "Raise 6Sec contingency Price applied for this period for this Day Type",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(15, 5)",
       "id": 6,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "R6_RRP"
     },
     {
       "comment": "Raise 60Sec contingency Price applied for this period for this Day Type",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(15, 5)",
       "id": 7,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "R60_RRP"
     },
     {
       "comment": "Raise 5Min contingency Price applied for this period for this Day Type",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(15, 5)",
       "id": 8,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "R5_RRP"
     },
     {
       "comment": "Raise Regulation contingency Price applied for this period for this Day Type",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(15, 5)",
       "id": 9,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RREG_RRP"
     },
     {
       "comment": "Lower 6Sec contingency Price applied for this period for this Day Type",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(15, 5)",
       "id": 10,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "L6_RRP"
     },
     {
       "comment": "Lower 60Sec contingency Price applied for this period for this Day Type",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(15, 5)",
       "id": 11,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "L60_RRP"
     },
     {
       "comment": "Lower 5Min contingency Price applied for this period for this Day Type",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(15, 5)",
       "id": 12,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "L5_RRP"
     },
     {
       "comment": "Lower Regulation Price applied for this period for this Day Type",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(15, 5)",
       "id": 13,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LREG_RRP"
     },
     {
       "comment": "Last date and time record changed",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 14,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     },
     {
       "comment": "Lower 1Sec contingency Price applied for this period for this Day Type",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(15, 5)",
       "id": 15,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "L1_RRP"
     },
     {
       "comment": "Raise 1Sec contingency Price applied for this period for this Day Type",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(15, 5)",
       "id": 16,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "R1_RRP"
     }
@@ -101,13 +149,14 @@
   "description": "Trading prices that will apply in the event of a market suspension event updated weekly.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 21,
+        "files": 26,
         "from": {
           "data-time": "2017-12-25T00:00:00+10:00",
           "file": "PUBLIC_ARCHIVE#MARKET_SUSPEND_SCHEDULE#FILE01#202408010000.zip",
@@ -122,13 +171,13 @@
           "FORCE_MAJEURE",
           "MARKET_SUSPEND_SCHEDULE"
         ],
-        "rows": 3995040,
+        "rows": 5081760,
         "schema-id": 0,
         "to": {
-          "data-time": "2026-05-18T00:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#MARKET_SUSPEND_SCHEDULE#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "f9da115340191d5bd4f28247a09e692603506c101ca61c7b7d43b551bb410f61"
+          "data-time": "2026-10-19T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#MARKET_SUSPEND_SCHEDULE#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "a8501667b9e68f1ad067daa6a1a5f817c3340f0ed02ac02c74cd3368c487891f"
         },
         "updates": [],
         "version": 2

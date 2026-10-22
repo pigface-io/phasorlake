@@ -2,43 +2,64 @@
   "columns": [
     {
       "comment": "Unique ID for the Constraint Set",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "GENCONSETID"
     },
     {
       "comment": "Date this record becomes effective",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "EFFECTIVEDATE"
     },
     {
       "comment": "Version no of the record for the given effective date",
+      "first_release": "2009-07",
+      "iceberg_type": "long",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(3,0)",
       "name": "VERSIONNO"
     },
     {
       "comment": "Generic Contraint ID",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "GENCONID"
     },
     {
       "comment": "Since market start in 1998 these fields have not been used and any data that has been populated in the fields should be ignored",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "GENCONEFFDATE"
     },
     {
       "comment": "Since market start in 1998 these fields have not been used and any data that has been populated in the fields should be ignored",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(3, 0)",
       "id": 6,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(3,0)",
       "name": "GENCONVERSIONNO"
     },
     {
       "comment": "Last date and time record changed",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 7,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     }
@@ -47,6 +68,7 @@
   "description": "GENCONSET sets out generic constraint sets that are invoked and revoked, and may contain many generic constraints (GENCONDATA).",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
@@ -83,7 +105,7 @@
         "changes": [
           "report"
         ],
-        "files": 21,
+        "files": 26,
         "from": {
           "data-time": "2024-08-01T00:00:00+10:00",
           "file": "PUBLIC_ARCHIVE#GENCONSET#FILE01#202408010000.zip",
@@ -98,13 +120,13 @@
           "GENCONSET",
           "NULL"
         ],
-        "rows": 146633,
+        "rows": 192679,
         "schema-id": 0,
         "to": {
-          "data-time": "2026-04-30T00:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#GENCONSET#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "138181eb3a003cd2a801a611ee537c0a6de6d714e5edbaaa4d7ab4a062cdba4b"
+          "data-time": "2026-10-01T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#GENCONSET#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "2fd7bed8bc84a92d0f5823124110b80ed4b072bda9591a30f092790887d731c1"
         },
         "updates": [],
         "version": 1

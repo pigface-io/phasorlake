@@ -16,8 +16,8 @@ repo = "builtin"
 hooks = [
     # Files kept byte for byte: AEMO's fixtures, the tables pulled from
     # utilake-schemas (whose manifest holds their hashes), and references.
-    { id = "trailing-whitespace", exclude = '^(testdata/|schemas/nem/pulled/|reference/)' },
-    { id = "end-of-file-fixer", exclude = '^(testdata/|schemas/nem/pulled/|reference/)' },
+    { id = "trailing-whitespace", exclude = '^(testdata/|crates/utilake-mirror/testdata/|schemas/nem/pulled/|reference/)' },
+    { id = "end-of-file-fixer", exclude = '^(testdata/|crates/utilake-mirror/testdata/|schemas/nem/pulled/|reference/)' },
     { id = "check-yaml" },
     { id = "check-toml" },
     { id = "check-json" },

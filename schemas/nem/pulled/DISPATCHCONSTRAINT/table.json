@@ -2,85 +2,127 @@
   "columns": [
     {
       "comment": "Market date starting at 04:05",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "SETTLEMENTDATE"
     },
     {
       "comment": "Dispatch run no; always 1",
+      "first_release": "2009-07",
+      "iceberg_type": "long",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(3,0)",
       "name": "RUNNO"
     },
     {
       "comment": "Generic Constraint identifier (synonymous with GenConID)",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "CONSTRAINTID"
     },
     {
       "comment": "Dispatch period identifier, from 001 to 288 in format YYYYMMDDPPP.",
+      "first_release": "2009-07",
+      "iceberg_type": "long",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(22,0)",
       "name": "DISPATCHINTERVAL"
     },
     {
       "comment": "Manual Intervention flag, which, if set (1), causes predispatch to solve twice.",
+      "first_release": "2009-07",
+      "iceberg_type": "long",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(2,0)",
       "name": "INTERVENTION"
     },
     {
       "comment": "Right hand Side value as used in dispatch.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 6,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RHS"
     },
     {
       "comment": "$ Value of binding constraint",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 7,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "MARGINALVALUE"
     },
     {
       "comment": "Degree of violation in MW",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 8,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "VIOLATIONDEGREE"
     },
     {
       "comment": "Last date and time record changed",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 9,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 10,
+      "last_release": "2024-07",
       "model_type": null,
       "name": "CONFIDENTIAL_TO"
     },
     {
       "comment": "Effective date of the Generic Constraint (ConstraintID). This field is used to track the version of this generic constraint applied in this dispatch interval",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 11,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "GENCONID_EFFECTIVEDATE"
     },
     {
       "comment": "Version number of the Generic Constraint (ConstraintID). This field is used to track the version of this generic constraint applied in this dispatch interval",
+      "first_release": "2009-07",
+      "iceberg_type": "double",
       "id": 12,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(22,0)",
       "name": "GENCONID_VERSIONNO"
     },
     {
       "comment": "Aggregation of the constraints LHS term solution values",
+      "first_release": "2010-11",
+      "iceberg_type": "decimal(15, 5)",
       "id": 13,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "LHS"
     },
     {
       "comment": "DUID to which the Constraint is confidential. Null denotes non-confidential",
+      "first_release": "2024-08",
+      "iceberg_type": "string",
       "id": 14,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "DUID"
     }
@@ -89,6 +131,7 @@
   "description": "DISPATCHCONSTRAINT sets out details of all binding and interregion constraints in each dispatch run. Note: invoked constraints can be established from GENCONSETINVOKE. Binding constraints show as marginal value >$0. Interconnector constraints are listed so RHS (SCADA calculated limits) can be reported.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 2,
     "format-version": 3,
     "runs": [
       {
@@ -191,7 +234,7 @@
         "changes": [
           "schema"
         ],
-        "files": 21,
+        "files": 26,
         "from": {
           "data-time": "2024-08-01T00:05:00+10:00",
           "file": "PUBLIC_ARCHIVE#DISPATCHCONSTRAINT#FILE01#202408010000.zip",
@@ -206,13 +249,13 @@
           "DISPATCH",
           "CONSTRAINT"
         ],
-        "rows": 215160608,
+        "rows": 269711855,
         "schema-id": 2,
         "to": {
-          "data-time": "2026-05-01T00:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#DISPATCHCONSTRAINT#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "cd9ca2d30ec1f59cc61ca41cf50ac1128a45933227f73d06079a7925bdeeda98"
+          "data-time": "2026-10-01T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#DISPATCHCONSTRAINT#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "b6f8a2801a08bdac65770efc974db178ffd88a14cda10c731a23d89e2f423222"
         },
         "updates": [
           {

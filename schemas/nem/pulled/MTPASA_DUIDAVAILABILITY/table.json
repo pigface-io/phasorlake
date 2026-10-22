@@ -2,61 +2,91 @@
   "columns": [
     {
       "comment": "Date Time the report was published.",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "PUBLISH_DATETIME"
     },
     {
       "comment": "Date on which the PASA availability of DUID applies.",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "DAY"
     },
     {
       "comment": "NEM Region.",
+      "first_release": "2024-08",
+      "iceberg_type": "string",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "REGIONID"
     },
     {
       "comment": "NEM DUID.",
+      "first_release": "2024-08",
+      "iceberg_type": "string",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "DUID"
     },
     {
       "comment": "Offered PASA Availability of Scheduled generator DUID for the day.",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(12, 0)",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,0)",
       "name": "PASAAVAILABILITY"
     },
     {
       "comment": "Date Time of the latest offer used for DUID for this date.",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 6,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LATEST_OFFER_DATETIME"
     },
     {
       "comment": "Last date and time record changed",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 7,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     },
     {
       "comment": "Status of a reported capacity value (e.g. 1 for Yes, 0 for No)",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(1, 0)",
       "id": 8,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(1,0)",
       "name": "CARRYOVERSTATUS"
     },
     {
       "comment": "The unit state value",
+      "first_release": "2024-08",
+      "iceberg_type": "string",
       "id": 9,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "PASAUNITSTATE"
     },
     {
       "comment": "The recall time value",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(4, 0)",
       "id": 10,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(4)",
       "name": "PASARECALLTIME"
     }
@@ -65,13 +95,14 @@
   "description": "Offered PASA Availability of the scheduled generator DUID for each day over the Medium Term PASA period. The data in this table is input data to the MT PASA process it is not part of the MTPASA solution. The availability does not reflect any energy limitations in the MT PASA offers",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 21,
+        "files": 26,
         "from": {
           "data-time": "2024-08-04T00:00:00+10:00",
           "file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202408010000.zip",
@@ -86,13 +117,13 @@
           "MTPASA",
           "DUIDAVAILABILITY"
         ],
-        "rows": 517719142,
+        "rows": 656020822,
         "schema-id": 0,
         "to": {
-          "data-time": "2029-04-29T00:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "88357031568ec5b0caf7f729c34c444c325889a660ff75ef779ae0a74f01867f"
+          "data-time": "2029-09-30T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "ad5cdf366dd1a563098f829140b0292f6b2013dc35613d158e3c57e294e6ddbd"
         },
         "updates": [],
         "version": 3

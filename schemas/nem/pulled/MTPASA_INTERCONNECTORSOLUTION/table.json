@@ -2,91 +2,136 @@
   "columns": [
     {
       "comment": "Date processing of the run begins",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2018-05",
       "model_type": "TIMESTAMP(0)",
       "name": "RUN_DATETIME"
     },
     {
       "comment": "Unique run id. Generated from the solution file caseid",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(3, 0)",
       "id": 2,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(3,0)",
       "name": "RUN_NO"
     },
     {
       "comment": "Sunday at start of the week for this solutions energy block. Generated from the solution file energy block",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 3,
+      "last_release": "2018-05",
       "model_type": "TIMESTAMP(0)",
       "name": "ENERGYBLOCK"
     },
     {
       "comment": "Day this solution is for. Generated from the solution file periodid",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 4,
+      "last_release": "2018-05",
       "model_type": "TIMESTAMP(0)",
       "name": "DAY"
     },
     {
       "comment": "LDC block this solution is for. Generated from the solution file periodid",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(3, 0)",
       "id": 5,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(3,0)",
       "name": "LDCBLOCK"
     },
     {
       "comment": "The unique identifier for the interconnector",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 6,
+      "last_release": "2018-05",
       "model_type": "VARCHAR(10)",
       "name": "INTERCONNECTORID"
     },
     {
       "comment": "Interconnector loading level (MW) that can be reached in case of capacity scarcity in neighbouring regions subject to network and energy constraints",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 2)",
       "id": 7,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(12,2)",
       "name": "CAPACITYMWFLOW"
     },
     {
       "comment": "Capacity adequacy assessment marginal value; 0 if not binding",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 2)",
       "id": 8,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(12,2)",
       "name": "CAPACITYMARGINALVALUE"
     },
     {
       "comment": "Capacity adequacy assessment violation degree, 0 if not violating; where CapacityMWFLow <= export + violation Degree (Deficit)CapacityMWFLow >= import + CapacityViolationDegree (Deficit)",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 2)",
       "id": 9,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(12,2)",
       "name": "CAPACITYVIOLATIONDEGREE"
     },
     {
       "comment": "Calculated Interconnector limit of exporting energy on the basis of invoked constraints and static interconnector export limit",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 2)",
       "id": 10,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(12,2)",
       "name": "CALCULATEDEXPORTLIMIT"
     },
     {
       "comment": "Calculated Interconnector limit of importing energy on the basis of invoked constraints and static interconnector import limit. Note unlike the input interconnector import limit this is a directional quantity and should be defined with respect to the interconnector flow",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 2)",
       "id": 11,
+      "last_release": "2018-05",
       "model_type": "NUMERIC(12,2)",
       "name": "CALCULATEDIMPORTLIMIT"
     },
     {
       "comment": "Date the solution was loaded",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 12,
+      "last_release": "2018-05",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     },
     {
       "comment": "Type of run.  Values are RELIABILITY_LRC and OUTAGE_LRC",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 13,
+      "last_release": "2018-05",
       "model_type": "VARCHAR(20)",
       "name": "RUNTYPE"
     },
     {
       "comment": "ID of the constraint that sets the Interconnector Export Limit",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 14,
+      "last_release": "2018-05",
       "model_type": "VARCHAR(20)",
       "name": "EXPORTLIMITCONSTRAINTID"
     },
     {
       "comment": "ID of the constraint that sets the Interconnector Import Limit",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 15,
+      "last_release": "2018-05",
       "model_type": "VARCHAR(20)",
       "name": "IMPORTLIMITCONSTRAINTID"
     }
@@ -95,6 +140,7 @@
   "description": "MTPASA_INTERCONNECTORSOLUTION is obsolete from 2017 End of Year DM4.27 Release. \nThe MTPASA_INTERCONNECTORSOLUTION table shows the results of the capacity evaluation for Interconnectors, including the calculated limits for the ldcblock within the day.\nChange Notice 379 announced the replacement of the MT PASA data model so all MTPASAxxx tables become obsolete, replaced by MTPASA_xxx tables (see Change Notices 400, 400a and 400b).",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {

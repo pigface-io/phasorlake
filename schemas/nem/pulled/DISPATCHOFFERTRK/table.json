@@ -2,37 +2,55 @@
   "columns": [
     {
       "comment": "Date and time of the dispatch interval (e.g. five minute dispatch interval ending 28/09/2000 16:35)",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "SETTLEMENTDATE"
     },
     {
       "comment": "Dispatchable unit identifier",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(10)",
       "name": "DUID"
     },
     {
       "comment": "Bid type Identifier - the ancillary service to which the bid applies",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(10)",
       "name": "BIDTYPE"
     },
     {
       "comment": "Settlement date of bid applied",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "BIDSETTLEMENTDATE"
     },
     {
       "comment": "Time this bid was processed and loaded",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(3)",
       "name": "BIDOFFERDATE"
     },
     {
       "comment": "Last date and time record changed",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 6,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     }
@@ -41,13 +59,14 @@
   "description": "DISPATCHOFFERTRK is the energy and ancillary service bid tracking table for the Dispatch process. The table identifies which bids from BIDDAYOFFER and BIDOFFERPERIOD were applied for a given unit and bid type for each dispatch interval.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 202,
+        "files": 207,
         "from": {
           "data-time": "2009-07-01T00:05:00+10:00",
           "file": "PUBLIC_DVD_DISPATCHOFFERTRK_200907010000.zip",
@@ -63,13 +82,13 @@
           "DISPATCH",
           "OFFERTRK"
         ],
-        "rows": 2056015482,
+        "rows": 2146903098,
         "schema-id": 0,
         "to": {
-          "data-time": "2026-05-01T00:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#DISPATCHOFFERTRK#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "105e6dce21b095a0d675768ab4186b46428792ab6e7bdfd9c4d22c25e7490d38"
+          "data-time": "2026-10-01T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#DISPATCHOFFERTRK#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "b5568389e7f380890e68aacefd254f01950d886e31d6a184647c9e160147e5f7"
         },
         "updates": [],
         "version": 1

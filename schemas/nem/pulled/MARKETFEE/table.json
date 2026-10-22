@@ -2,61 +2,91 @@
   "columns": [
     {
       "comment": "Identifier for Market Fee",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(10)",
       "name": "MARKETFEEID"
     },
     {
       "comment": "Period type - PERIOD, DAILY, WEEKLY",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "MARKETFEEPERIOD"
     },
     {
       "comment": "Type - MW or $",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(12)",
       "name": "MARKETFEETYPE"
     },
     {
       "comment": "Description of market fee",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(64)",
       "name": "DESCRIPTION"
     },
     {
       "comment": "Last date and time record changed",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(2, 0)",
       "id": 6,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(15)",
       "name": "GL_TCODE"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(4, 0)",
       "id": 7,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(10)",
       "name": "GL_FINANCIALCODE"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 8,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(40)",
       "name": "FEE_CLASS"
     },
     {
       "comment": "The Energy Type for the Market Fees Calculation. E.g of Meter Types are CUSTOMER, GENERATOR, NREG, BDU etc. If Meter Type is mentioned as ALL then all the Meter Types for that Participant Category will be used in the Fee calculation",
+      "first_release": "2024-05",
+      "iceberg_type": "string",
       "id": 9,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "METER_TYPE"
     },
     {
       "comment": "The Meter Sub Type values are ACE, ASOE or ALL. ACE represent ACE_MWH value , ASOE represent ASOE_MWH value and ALL represent sum of ACE_MWh and ASOE_MWh",
+      "first_release": "2024-05",
+      "iceberg_type": "string",
       "id": 10,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "METER_SUBTYPE"
     }
@@ -65,6 +95,7 @@
   "description": "MARKETFEE sets out fee type and period for each market fee.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 1,
     "format-version": 3,
     "runs": [
       {
@@ -140,7 +171,7 @@
         "changes": [
           "version"
         ],
-        "files": 21,
+        "files": 26,
         "from": {
           "data-time": "2000-06-27T08:38:47+10:00",
           "file": "PUBLIC_ARCHIVE#MARKETFEE#FILE01#202408010000.zip",
@@ -155,13 +186,13 @@
           "SETTLEMENT_CONFIG",
           "MARKETFEE"
         ],
-        "rows": 1557,
+        "rows": 2050,
         "schema-id": 1,
         "to": {
-          "data-time": "2025-07-07T15:49:51+10:00",
-          "file": "PUBLIC_ARCHIVE#MARKETFEE#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "3f86eeb5e93a58a29e2a74bbf93caea9868632b4998e538b3f19e221ee656a79"
+          "data-time": "2026-06-29T15:46:58+10:00",
+          "file": "PUBLIC_ARCHIVE#MARKETFEE#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "90620f920d7602252b576692ca39cea60e324896d90d8aff108a2e7246764ab6"
         },
         "updates": [],
         "version": 2

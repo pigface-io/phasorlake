@@ -2,55 +2,82 @@
   "columns": [
     {
       "comment": "Dispatch interval that the prices were loaded to",
+      "first_release": "2024-10",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-08",
       "model_type": "TIMESTAMP(0)",
       "name": "SETTLEMENTDATE"
     },
     {
       "comment": "Dispatch run no; always 1",
+      "first_release": "2024-10",
+      "iceberg_type": "long",
       "id": 2,
+      "last_release": "2026-08",
       "model_type": "NUMERIC(3)",
       "name": "RUNNO"
     },
     {
       "comment": "Intervention 0/1",
+      "first_release": "2024-10",
+      "iceberg_type": "long",
       "id": 3,
+      "last_release": "2026-08",
       "model_type": "NUMERIC(2)",
       "name": "INTERVENTION"
     },
     {
       "comment": "ConstraintID/GenconID",
+      "first_release": "2024-10",
+      "iceberg_type": "string",
       "id": 4,
+      "last_release": "2026-08",
       "model_type": "VARCHAR(20)",
       "name": "CONSTRAINTID"
     },
     {
       "comment": "VersionNo",
+      "first_release": "2024-10",
+      "iceberg_type": "long",
       "id": 5,
+      "last_release": "2026-08",
       "model_type": "NUMERIC(3)",
       "name": "VERSIONNO"
     },
     {
       "comment": "The datetime that the record was last changed",
+      "first_release": "2024-10",
+      "iceberg_type": "timestamptz",
       "id": 6,
+      "last_release": "2026-08",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     },
     {
       "comment": "RHS from OCD re-run",
+      "first_release": "2024-10",
+      "iceberg_type": "decimal(15, 5)",
       "id": 7,
+      "last_release": "2026-08",
       "model_type": "NUMERIC(15,5)",
       "name": "RHS"
     },
     {
       "comment": "marginalvalue from OCD re-run",
+      "first_release": "2024-10",
+      "iceberg_type": "decimal(15, 5)",
       "id": 8,
+      "last_release": "2026-08",
       "model_type": "NUMERIC(15,5)",
       "name": "MARGINALVALUE"
     },
     {
       "comment": "The violation degree of this constraint in the solution result",
+      "first_release": "2024-10",
+      "iceberg_type": "decimal(15, 5)",
       "id": 9,
+      "last_release": "2026-08",
       "model_type": "NUMERIC(15,5)",
       "name": "VIOLATIONDEGREE"
     }
@@ -59,13 +86,14 @@
   "description": "FCAS constraint solution from OCD re-run.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 5,
+        "files": 6,
         "from": {
           "data-time": "2024-10-28T15:05:00+10:00",
           "file": "PUBLIC_ARCHIVE#DISPATCH_CONSTRAINT_FCAS_OCD#FILE01#202410010000.zip",
@@ -80,13 +108,13 @@
           "PRICELOAD",
           "CONSTRAINT_FCAS_OCD"
         ],
-        "rows": 1853,
+        "rows": 2267,
         "schema-id": 0,
         "to": {
-          "data-time": "2026-02-17T13:30:00+10:00",
-          "file": "PUBLIC_ARCHIVE#DISPATCH_CONSTRAINT_FCAS_OCD#FILE01#202602010000.zip",
-          "release": "2026-02",
-          "sha256": "86b6b970ab542e71bedf37f58140715bcc894ff1e13d5577485b0cea2826ea57"
+          "data-time": "2026-08-05T16:30:00+10:00",
+          "file": "PUBLIC_ARCHIVE#DISPATCH_CONSTRAINT_FCAS_OCD#FILE01#202608010000.zip",
+          "release": "2026-08",
+          "sha256": "4d8db0240e34c8f77602e88ef67ef04c0c1c8a83cc46daf91be697cac3482878"
         },
         "updates": [],
         "version": 1

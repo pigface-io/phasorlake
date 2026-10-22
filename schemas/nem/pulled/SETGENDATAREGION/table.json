@@ -2,85 +2,127 @@
   "columns": [
     {
       "comment": "Calendar Settlement Date",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2024-12",
       "model_type": "TIMESTAMP(0)",
       "name": "SETTLEMENTDATE"
     },
     {
       "comment": "Settlement run no",
+      "first_release": "2009-07",
+      "iceberg_type": "long",
       "id": 2,
+      "last_release": "2024-12",
       "model_type": "NUMERIC(22,10)",
       "name": "VERSIONNO"
     },
     {
       "comment": "Settlements Trading Interval.",
+      "first_release": "2009-07",
+      "iceberg_type": "long",
       "id": 3,
+      "last_release": "2024-12",
       "model_type": "NUMERIC(22,10)",
       "name": "PERIODID"
     },
     {
       "comment": "Region Identifier",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 4,
+      "last_release": "2024-12",
       "model_type": "VARCHAR(10)",
       "name": "REGIONID"
     },
     {
       "comment": "Generated energy - Not used in MMS Data Model",
+      "first_release": "2009-07",
+      "iceberg_type": "long",
       "id": 5,
+      "last_release": "2024-12",
       "model_type": "NUMERIC(22,0)",
       "name": "GENERGY"
     },
     {
       "comment": "Purchased Energy - Not used in MMS Data Model",
+      "first_release": "2009-07",
+      "iceberg_type": "long",
       "id": 6,
+      "last_release": "2024-12",
       "model_type": "NUMERIC(22,0)",
       "name": "AENERGY"
     },
     {
       "comment": "Not used in MMS Data Model",
+      "first_release": "2009-07",
+      "iceberg_type": "long",
       "id": 7,
+      "last_release": "2024-12",
       "model_type": "NUMERIC(22,0)",
       "name": "GPOWER"
     },
     {
       "comment": "Not used in MMS Data Model",
+      "first_release": "2009-07",
+      "iceberg_type": "long",
       "id": 8,
+      "last_release": "2024-12",
       "model_type": "NUMERIC(22,0)",
       "name": "APOWER"
     },
     {
       "comment": "Net energy MW/hours",
+      "first_release": "2009-07",
+      "iceberg_type": "double",
       "id": 9,
+      "last_release": "2024-12",
       "model_type": "NUMERIC(27,5)",
       "name": "NETENERGY"
     },
     {
       "comment": "Cost of net energy $",
+      "first_release": "2009-07",
+      "iceberg_type": "double",
       "id": 10,
+      "last_release": "2024-12",
       "model_type": "NUMERIC(27,5)",
       "name": "ENERGYCOST"
     },
     {
       "comment": "Cost of excess energy $",
+      "first_release": "2009-07",
+      "iceberg_type": "double",
       "id": 11,
+      "last_release": "2024-12",
       "model_type": "NUMERIC(27,5)",
       "name": "EXCESSENERGYCOST"
     },
     {
       "comment": "Export Energy (Generator Purchases)",
+      "first_release": "2009-07",
+      "iceberg_type": "double",
       "id": 12,
+      "last_release": "2024-12",
       "model_type": "NUMERIC(27,6)",
       "name": "EXPENERGY"
     },
     {
       "comment": "Export Energy Cost",
+      "first_release": "2009-07",
+      "iceberg_type": "double",
       "id": 13,
+      "last_release": "2024-12",
       "model_type": "NUMERIC(27,6)",
       "name": "EXPENERGYCOST"
     },
     {
       "comment": "current system date, to enable automatic replication",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 14,
+      "last_release": "2024-12",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     }
@@ -89,6 +131,7 @@
   "description": "SETGENDATAREGION sets out summary settlement data for generation within the specified region. The table is populated for participants using Data Model 5.2. For participants using Data Model 5.3 or higher, SET_ENERGY_REGION_SUMMARY replace SETGENDATAREGION.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {

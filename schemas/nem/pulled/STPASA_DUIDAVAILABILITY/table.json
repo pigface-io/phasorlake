@@ -2,61 +2,91 @@
   "columns": [
     {
       "comment": "STPASA run, identified by the nominal start time of the run.",
+      "first_release": "2025-07",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "RUN_DATETIME"
     },
     {
       "comment": "Half hour ended interval",
+      "first_release": "2025-07",
+      "iceberg_type": "timestamptz",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "INTERVAL_DATETIME"
     },
     {
       "comment": "NEM Dispatchable Unit Identifier",
+      "first_release": "2025-07",
+      "iceberg_type": "string",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "DUID"
     },
     {
       "comment": "Available Capacity for a scheduled generating unit, semi-scheduled generating unit, BDU (Gen side), WDR or MNSP.",
+      "first_release": "2025-07",
+      "iceberg_type": "decimal(12, 6)",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,6)",
       "name": "GENERATION_MAX_AVAILABILITY"
     },
     {
       "comment": "PASA Availability for a scheduled generating unit, BDU (Gen side), WDR or MNSP. Null for a semi-scheduled generating unit.",
+      "first_release": "2025-07",
+      "iceberg_type": "decimal(12, 0)",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,0)",
       "name": "GENERATION_PASA_AVAILABILITY"
     },
     {
       "comment": "Recall Period associated with the PASA Availability for a scheduled generating unit, BDU (Gen side), WDR or MNSP. Null for a semi-scheduled generating unit.",
+      "first_release": "2025-07",
+      "iceberg_type": "decimal(8, 3)",
       "id": 6,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(8,3)",
       "name": "GENERATION_RECALL_PERIOD"
     },
     {
       "comment": "Available Capacity for a scheduled load or BDU(Load side).",
+      "first_release": "2025-07",
+      "iceberg_type": "decimal(12, 6)",
       "id": 7,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,6)",
       "name": "LOAD_MAX_AVAILABILITY"
     },
     {
       "comment": "PASA Availability for a scheduled load or BDU(Load side).",
+      "first_release": "2025-07",
+      "iceberg_type": "decimal(12, 0)",
       "id": 8,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,0)",
       "name": "LOAD_PASA_AVAILABILITY"
     },
     {
       "comment": "Recall Period associated with the PASA Availability for a scheduled load or BDU(Load side).",
+      "first_release": "2025-07",
+      "iceberg_type": "decimal(8, 3)",
       "id": 9,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(8,3)",
       "name": "LOAD_RECALL_PERIOD"
     },
     {
       "comment": "Report Creation Date Time.",
+      "first_release": "2025-07",
+      "iceberg_type": "timestamptz",
       "id": 10,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     }
@@ -65,13 +95,14 @@
   "description": "This report delivers available capacity, PASA availability and given recall period for all scheduled resources. Note that for an MNSP, DUID = LINKID in the MNSP_INTERCONNECTOR table.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 89,
+        "files": 154,
         "from": {
           "data-time": "2025-08-01T04:30:00+10:00",
           "file": "PUBLIC_ARCHIVE#STPASA_DUIDAVAILABILITY#FILE01#202507010000.zip",
@@ -86,13 +117,13 @@
           "STPASA",
           "DUIDAVAILABILITY"
         ],
-        "rows": 4514686512,
+        "rows": 7962459120,
         "schema-id": 0,
         "to": {
-          "data-time": "2026-05-16T04:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#STPASA_DUIDAVAILABILITY#FILE17#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "e082e1fd2a3121ddcdb4882af60acd2ed6ac56a042528ee291d0e652496dda81"
+          "data-time": "2026-10-08T04:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#STPASA_DUIDAVAILABILITY#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "3c5a706195754ec57d8b1e5eb91eb2f0d61804f8b27ac775bd9bd4927bab182b"
         },
         "updates": [],
         "version": 1

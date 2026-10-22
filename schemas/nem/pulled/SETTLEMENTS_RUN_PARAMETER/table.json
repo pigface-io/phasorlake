@@ -2,31 +2,46 @@
   "columns": [
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2009-07",
       "model_type": null,
       "name": "SETTLEMENTDATE"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(1, 0)",
       "id": 2,
+      "last_release": "2009-07",
       "model_type": null,
       "name": "VERSIONNO"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 3,
+      "last_release": "2009-07",
       "model_type": null,
       "name": "PARAMETERID"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(9, 6)",
       "id": 4,
+      "last_release": "2009-07",
       "model_type": null,
       "name": "NUMVALUE"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 5,
+      "last_release": "2009-07",
       "model_type": null,
       "name": "LASTCHANGED"
     }
@@ -35,6 +50,7 @@
   "description": null,
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {

@@ -2,25 +2,37 @@
   "columns": [
     {
       "comment": "Trading Day for which this cluster availability submission applies",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "TRADINGDATE"
     },
     {
       "comment": "Unique Identifier of Dispatchable Unit",
+      "first_release": "2024-08",
+      "iceberg_type": "string",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "DUID"
     },
     {
       "comment": "Date and Time when this cluster availability submission was loaded",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "OFFERDATETIME"
     },
     {
       "comment": "Unique Cluster Identifier for this cluster within the DUID",
+      "first_release": "2024-08",
+      "iceberg_type": "string",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "CLUSTERID"
     }
@@ -29,13 +41,14 @@
   "description": "Summary record for an availability submission for an intermittent generating unit cluster for a Trading Day.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 21,
+        "files": 26,
         "from": {
           "data-time": "2024-08-02T00:00:00+10:00",
           "file": "PUBLIC_ARCHIVE#INTERMITTENT_CLUSTER_AVAIL_DAY#FILE01#202408010000.zip",
@@ -50,13 +63,13 @@
           "DEMAND",
           "INTERMITTENT_CLUSTER_AVAIL_DAY"
         ],
-        "rows": 807118,
+        "rows": 1211842,
         "schema-id": 0,
         "to": {
-          "data-time": "2026-05-01T00:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#INTERMITTENT_CLUSTER_AVAIL_DAY#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "41fee5378ec7f8817ad6c5fff956a9e6360deb929b3a0037e2218c18b32e0539"
+          "data-time": "2026-10-01T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#INTERMITTENT_CLUSTER_AVAIL_DAY#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "4c381b5889c28840149f4c8c1cc9d87d2ad8e6b5ca3151340d07555b44406d18"
         },
         "updates": [],
         "version": 1

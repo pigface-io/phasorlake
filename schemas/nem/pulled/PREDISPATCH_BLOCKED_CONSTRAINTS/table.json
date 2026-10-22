@@ -2,13 +2,19 @@
   "columns": [
     {
       "comment": null,
+      "first_release": "2025-02",
+      "iceberg_type": "decimal(10, 0)",
       "id": 1,
+      "last_release": "2026-07",
       "model_type": null,
       "name": "PREDISPATCHSEQNO"
     },
     {
       "comment": null,
+      "first_release": "2025-02",
+      "iceberg_type": "string",
       "id": 2,
+      "last_release": "2026-07",
       "model_type": null,
       "name": "CONSTRAINTID"
     }
@@ -17,13 +23,14 @@
   "description": null,
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 9,
+        "files": 10,
         "from": {
           "data-time": null,
           "file": "PUBLIC_ARCHIVE#PREDISPATCHBLOCKEDCONSTRAINT#FILE01#202502010000.zip",
@@ -38,13 +45,13 @@
           "PREDISPATCH",
           "BLOCKED_CONSTRAINTS"
         ],
-        "rows": 1159,
+        "rows": 1185,
         "schema-id": 0,
         "to": {
           "data-time": null,
-          "file": "PUBLIC_ARCHIVE#PREDISPATCHBLOCKEDCONSTRAINT#FILE01#202602010000.zip",
-          "release": "2026-02",
-          "sha256": "dc6f89ced6bda3695be4b7018a3b4c97c81eaccf4ada71d1742f9dda5c58977a"
+          "file": "PUBLIC_ARCHIVE#PREDISPATCHBLOCKEDCONSTRAINT#FILE01#202607010000.zip",
+          "release": "2026-07",
+          "sha256": "bf45dc317ec55a81e371b5e34cb6105bd89dd65c4a832ebf92c6ffb6900f567d"
         },
         "updates": [],
         "version": 1

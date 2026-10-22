@@ -2,139 +2,208 @@
   "columns": [
     {
       "comment": "Unique identifier of predispatch run in the form YYYYMMDDPP with 01 at 04:30",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(10, 0)",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "PREDISPATCHSEQNO"
     },
     {
       "comment": "SPD Predispatch run no, typically 1. It increments if the case is re-run.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(3, 0)",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(3,0)",
       "name": "RUNNO"
     },
     {
       "comment": "Interconnector identifier",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(10)",
       "name": "INTERCONNECTORID"
     },
     {
       "comment": "PERIODID is just a period count, starting from 1 for each predispatch run. Use DATETIME to determine half hour period.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(2, 0)",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "PERIODID"
     },
     {
       "comment": "Flag to indicate if this result set was sourced from the pricing run (INTERVENTION=0) or the physical run (INTERVENTION=1). In the event that there is not intervention in the market, both pricing and physical runs correspond to INTERVENTION=0",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(2, 0)",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(2,0)",
       "name": "INTERVENTION"
     },
     {
       "comment": "Metered MW Flow from EMS. For periods subsequent to the first period of a Pre-Dispatch run, this value represents the cleared target for the previous period of that Pre-Dispatch run.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 6,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "METEREDMWFLOW"
     },
     {
       "comment": "Calculated MW Flow",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 7,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "MWFLOW"
     },
     {
       "comment": "Calculated MW Losses",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 8,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "MWLOSSES"
     },
     {
       "comment": "$ Marginal value of interconnector constraint from SPD",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 9,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "MARGINALVALUE"
     },
     {
       "comment": "Degree of violation of interconnector constraint in MW",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 10,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "VIOLATIONDEGREE"
     },
     {
       "comment": "Last changed.",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 11,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     },
     {
       "comment": "Period date and time",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 12,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "DATETIME"
     },
     {
       "comment": "Calculated export limit.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 13,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "EXPORTLIMIT"
     },
     {
       "comment": "Calculated import limit.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 14,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "IMPORTLIMIT"
     },
     {
       "comment": "Marginal loss factor. Use this to adjust bids between reports.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 15,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "MARGINALLOSS"
     },
     {
       "comment": "Generic Constraint setting the export limit",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 16,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "EXPORTGENCONID"
     },
     {
       "comment": "Generic Constraint setting the import limit",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 17,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "IMPORTGENCONID"
     },
     {
       "comment": "Calculated export limit applying to energy + FCAS.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 18,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "FCASEXPORTLIMIT"
     },
     {
       "comment": "Calculated import limit applying to energy + FCAS.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 19,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "FCASIMPORTLIMIT"
     },
     {
       "comment": "Aggregate Constraint contribution cost of this Interconnector: Sum(MarginalValue x Factor) for all relevant Constraints, for Export (Factor >= 0)",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(10, 2)",
       "id": 20,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(10,2)",
       "name": "LOCAL_PRICE_ADJUSTMENT_EXPORT"
     },
     {
       "comment": "Key for Local_Price_Adjustment_Export: 2 = at least one Outage Constraint; 1 = at least 1 System Normal Constraint (and no Outage Constraint); 0 = No System Normal or Outage Constraints",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(1, 0)",
       "id": 21,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(1,0)",
       "name": "LOCALLY_CONSTRAINED_EXPORT"
     },
     {
       "comment": "Aggregate Constraint contribution cost of this Interconnector: Sum(MarginalValue x Factor) for all relevant Constraints, for Import (Factor >= 0)",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(10, 2)",
       "id": 22,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(10,2)",
       "name": "LOCAL_PRICE_ADJUSTMENT_IMPORT"
     },
     {
       "comment": "Key for Local_Price_Adjustment_Import: 2 = at least one Outage Constraint; 1 = at least 1 System Normal Constraint (and no Outage Constraint); 0 = No System Normal or Outage Constraints",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(1, 0)",
       "id": 23,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(1,0)",
       "name": "LOCALLY_CONSTRAINED_IMPORT"
     }
@@ -143,6 +212,7 @@
   "description": "PREDISPATCHINTERCONNECTORRES records Interconnector flows and losses for the periods calculated in each predispatch run. Only binding and interconnector constraints are reported.\nSome fields are for the Frequency Controlled Ancillary Services export and import limits and extra reporting of the generic constraint setting the energy import and export limits.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 1,
     "format-version": 3,
     "runs": [
       {
@@ -209,7 +279,7 @@
         "changes": [
           "schema"
         ],
-        "files": 42,
+        "files": 52,
         "from": {
           "data-time": "2024-08-01T04:30:00+10:00",
           "file": "PUBLIC_ARCHIVE#PREDISPATCHINTERCONNECTORRES#FILE01#202408010000.zip",
@@ -225,13 +295,13 @@
           "PREDISPATCH",
           "INTERCONNECTOR_SOLN"
         ],
-        "rows": 10380996,
+        "rows": 12872712,
         "schema-id": 1,
         "to": {
-          "data-time": "2026-05-02T04:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#PREDISPATCHINTERCONNECTORRES#ALL#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "f7be4670747e014466125f18c194cc1a56f67d80d019f6ca8e5de218a2e85764"
+          "data-time": "2026-10-02T04:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#PREDISPATCHINTERCONNECTORRES#ALL#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "6e7ed8973c4f4360ba70ffc3b2e8e3398c71f0cc25ec01b89a50a7280f9ce785"
         },
         "updates": [
           {

@@ -2,25 +2,37 @@
   "columns": [
     {
       "comment": "Trading Date of the end of the enablement",
+      "first_release": "2025-11",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "END_TRADINGDATE"
     },
     {
       "comment": "Primary Service type associated.",
+      "first_release": "2025-11",
+      "iceberg_type": "string",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(40)",
       "name": "ENABLEMENT_REASON"
     },
     {
       "comment": "Cost estimation for the service type.",
+      "first_release": "2025-11",
+      "iceberg_type": "decimal(18, 8)",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(18,8)",
       "name": "ESTIMATED_COSTS"
     },
     {
       "comment": "Last time record was changed.",
+      "first_release": "2025-11",
+      "iceberg_type": "timestamptz",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     }
@@ -29,13 +41,14 @@
   "description": "SSM Contract Enablement Costs for NEM",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 6,
+        "files": 11,
         "from": {
           "data-time": "2025-12-02T12:00:16+10:00",
           "file": "PUBLIC_ARCHIVE#SSM_ENABLEMENT_COSTS#FILE01#202511010000.zip",
@@ -50,13 +63,13 @@
           "SSM",
           "ENABLEMENT_COSTS"
         ],
-        "rows": 623,
+        "rows": 1398,
         "schema-id": 0,
         "to": {
-          "data-time": "2026-05-08T12:00:24+10:00",
-          "file": "PUBLIC_ARCHIVE#SSM_ENABLEMENT_COSTS#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "e7f038012194eb2289664414bd78888925276ead6357bca83c8c1d556af78a33"
+          "data-time": "2026-09-30T12:00:07+10:00",
+          "file": "PUBLIC_ARCHIVE#SSM_ENABLEMENT_COSTS#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "9077bc34d3d1c2d7463eacb85db7ad6cbf0090fcc273b93076ed4e180e828c92"
         },
         "updates": [],
         "version": 1

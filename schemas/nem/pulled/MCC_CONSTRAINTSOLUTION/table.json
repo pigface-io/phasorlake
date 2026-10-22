@@ -2,25 +2,37 @@
   "columns": [
     {
       "comment": "5-minute Dispatch Run identifier",
+      "first_release": "2010-11",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "RUN_DATETIME"
     },
     {
       "comment": "Generic Constraint identifier (synonymous with GenConID)",
+      "first_release": "2010-11",
+      "iceberg_type": "string",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "CONSTRAINTID"
     },
     {
       "comment": "Generic Constraint RHS Value for this MCC run",
+      "first_release": "2010-11",
+      "iceberg_type": "decimal(15, 5)",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "RHS"
     },
     {
       "comment": "Generic Constraint Marginal Value for this MCC run",
+      "first_release": "2010-11",
+      "iceberg_type": "decimal(15, 5)",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "MARGINALVALUE"
     }
@@ -29,13 +41,14 @@
   "description": "Constraint solution data from the MCC dispatch rerun process. Note only constraints with a non-zero marginal value are published.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 187,
+        "files": 192,
         "from": {
           "data-time": "2008-07-01T00:05:00+10:00",
           "file": "PUBLIC_DVD_MCC_CONSTRAINTSOLUTION_200807010000.zip",
@@ -51,13 +64,13 @@
           "MCC",
           "CONSTRAINTSOLUTION"
         ],
-        "rows": 26234555,
+        "rows": 27109798,
         "schema-id": 0,
         "to": {
-          "data-time": "2026-05-01T00:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#MCC_CONSTRAINTSOLUTION#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "2cfe65042297f41fc328c8af46220ff3655164c226b77b7033544b638373cf76"
+          "data-time": "2026-10-01T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#MCC_CONSTRAINTSOLUTION#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "7616d2f7764e1c9fbd5ed590c4a9a63107771e40016b97fa3d526682cca2a4d0"
         },
         "updates": [],
         "version": 1

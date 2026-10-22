@@ -2,133 +2,199 @@
   "columns": [
     {
       "comment": "Physical Unit identifier",
+      "first_release": "2011-05",
+      "iceberg_type": "string",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "GENSETID"
     },
     {
       "comment": "Station Identifier",
+      "first_release": "2011-05",
+      "iceberg_type": "string",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(10)",
       "name": "STATIONID"
     },
     {
       "comment": "Not used",
+      "first_release": "2011-05",
+      "iceberg_type": "decimal(16, 6)",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(16,6)",
       "name": "SETLOSSFACTOR"
     },
     {
       "comment": "Centrally dispatched Indicator",
+      "first_release": "2011-05",
+      "iceberg_type": "string",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(10)",
       "name": "CDINDICATOR"
     },
     {
       "comment": "AGC Available flag",
+      "first_release": "2011-05",
+      "iceberg_type": "string",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(2)",
       "name": "AGCFLAG"
     },
     {
       "comment": "Not used",
+      "first_release": "2011-05",
+      "iceberg_type": "string",
       "id": 6,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(2)",
       "name": "SPINNINGFLAG"
     },
     {
       "comment": "Voltage level",
+      "first_release": "2011-05",
+      "iceberg_type": "decimal(6, 0)",
       "id": 7,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(6,0)",
       "name": "VOLTLEVEL"
     },
     {
       "comment": "Registered capacity",
+      "first_release": "2011-05",
+      "iceberg_type": "decimal(6, 0)",
       "id": 8,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(6,0)",
       "name": "REGISTEREDCAPACITY"
     },
     {
       "comment": "Identifies LOAD, GENERATOR or BIDIRECTIONAL. This will likely expand to more generic models as new technology types are integrated into the NEM.",
+      "first_release": "2011-05",
+      "iceberg_type": "string",
       "id": 9,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "DISPATCHTYPE"
     },
     {
       "comment": "Fast / Slow / Not Dispatched",
+      "first_release": "2011-05",
+      "iceberg_type": "string",
       "id": 10,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "STARTTYPE"
     },
     {
       "comment": "Market Generator Indicator Flag",
+      "first_release": "2011-05",
+      "iceberg_type": "string",
       "id": 11,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(10)",
       "name": "MKTGENERATORIND"
     },
     {
       "comment": "On / Off for load",
+      "first_release": "2011-05",
+      "iceberg_type": "string",
       "id": 12,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(10)",
       "name": "NORMALSTATUS"
     },
     {
       "comment": "Maximum capacity",
+      "first_release": "2011-05",
+      "iceberg_type": "decimal(6, 0)",
       "id": 13,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(6,0)",
       "name": "MAXCAPACITY"
     },
     {
       "comment": "Genset type",
+      "first_release": "2011-05",
+      "iceberg_type": "string",
       "id": 14,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(15)",
       "name": "GENSETTYPE"
     },
     {
       "comment": "Genset name",
+      "first_release": "2011-05",
+      "iceberg_type": "string",
       "id": 15,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(40)",
       "name": "GENSETNAME"
     },
     {
       "comment": "Last date and time record changed",
+      "first_release": "2011-05",
+      "iceberg_type": "timestamptz",
       "id": 16,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     },
     {
       "comment": "The emissions factor for the generating unit, as calculated by Settlements staff members",
+      "first_release": "2011-05",
+      "iceberg_type": "decimal(18, 8)",
       "id": 17,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(18,8)",
       "name": "CO2E_EMISSIONS_FACTOR"
     },
     {
       "comment": "The energy source for the generating unit, as used in the calculation of the CO2-e emissions factor.  Distinct from the Energy Source for a generating unit published as part of the Registration Master List",
+      "first_release": "2011-05",
+      "iceberg_type": "string",
       "id": 18,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(100)",
       "name": "CO2E_ENERGY_SOURCE"
     },
     {
       "comment": "An indicator as to the source of the emission factor used in the calculation of the index. The applicable values for this field would be NTNDP which indicates the emission factor is quoted from the National Transmission Network Development Plan or Estimated to indicate the emission factor has been calculated using an internal AEMO procedure based upon the Department of Climate Change and Energy Efficiency NGA factors",
+      "first_release": "2011-05",
+      "iceberg_type": "string",
       "id": 19,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "CO2E_DATA_SOURCE"
     },
     {
       "comment": "Minimum capacity only for load side of BDU, otherwise 0 (MW)",
+      "first_release": "2024-05",
+      "iceberg_type": "decimal(6, 0)",
       "id": 20,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(6,0)",
       "name": "MINCAPACITY"
     },
     {
       "comment": "Registered minimum capacity only for load side of BDU, otherwise 0 (MW)",
+      "first_release": "2024-05",
+      "iceberg_type": "decimal(6, 0)",
       "id": 21,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(6,0)",
       "name": "REGISTEREDMINCAPACITY"
     },
     {
       "comment": "The rated storage capacity (MWh), information only",
+      "first_release": "2024-05",
+      "iceberg_type": "decimal(15, 5)",
       "id": 22,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "MAXSTORAGECAPACITY"
     }
@@ -137,6 +203,7 @@
   "description": "GENUNITS shows Genset details for each physical unit with the relevant station.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 1,
     "format-version": 3,
     "runs": [
       {
@@ -174,7 +241,7 @@
           "schema",
           "version"
         ],
-        "files": 24,
+        "files": 29,
         "from": {
           "data-time": "2005-11-23T09:55:53+10:00",
           "file": "PUBLIC_DVD_GENUNITS_202405010000.zip",
@@ -190,13 +257,13 @@
           "PARTICIPANT_REGISTRATION",
           "GENUNITS"
         ],
-        "rows": 22145,
+        "rows": 27037,
         "schema-id": 1,
         "to": {
-          "data-time": "2026-04-24T14:53:25+10:00",
-          "file": "PUBLIC_ARCHIVE#GENUNITS#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "25faefdc0f9791691052a03b0e17410a7099412fb08764d4bcd0e34418bcb282"
+          "data-time": "2026-10-02T15:12:44+10:00",
+          "file": "PUBLIC_ARCHIVE#GENUNITS#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "77a2b7f511fffbb7ecdfaadc5f189a9c18717c2153eede48b3ae17c10c606795"
         },
         "updates": [
           {

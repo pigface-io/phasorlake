@@ -2,61 +2,91 @@
   "columns": [
     {
       "comment": "Effective date of this record, only the latest date applies",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "EFFECTIVEDATE"
     },
     {
       "comment": "Version No of the standing data that should be effective on this date",
+      "first_release": "2009-07",
+      "iceberg_type": "long",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(3,0)",
       "name": "VERSIONNO"
     },
     {
       "comment": "Differentiates this region from all other regions",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(10)",
       "name": "REGIONID"
     },
     {
       "comment": "the unique identifier of the participant with responsibility for the region.",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(10)",
       "name": "RSOID"
     },
     {
       "comment": "unique id of a connection point, being the reference point for this region",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(10)",
       "name": "REGIONALREFERENCEPOINTID"
     },
     {
       "comment": "Period identifier of the peak trading period of this connection point",
+      "first_release": "2009-07",
+      "iceberg_type": "long",
       "id": 6,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(3,0)",
       "name": "PEAKTRADINGPERIOD"
     },
     {
       "comment": "Date record authorised",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 7,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "AUTHORISEDDATE"
     },
     {
       "comment": "User authorising record",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 8,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(15)",
       "name": "AUTHORISEDBY"
     },
     {
       "comment": "Scaling factor for regional FCAS requirement",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 9,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "SCALINGFACTOR"
     },
     {
       "comment": "Last date and time record changed",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 10,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     }
@@ -65,13 +95,14 @@
   "description": "REGIONSTANDINGDATA sets out standing region data including the region reference node.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 202,
+        "files": 207,
         "from": {
           "data-time": "1997-10-30T00:00:00+10:00",
           "file": "PUBLIC_DVD_REGIONSTANDINGDATA_200907010000.zip",
@@ -87,13 +118,13 @@
           "MARKET_CONFIG",
           "REGIONSTANDINGDATA"
         ],
-        "rows": 1604,
+        "rows": 1669,
         "schema-id": 0,
         "to": {
           "data-time": "2026-04-27T12:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#REGIONSTANDINGDATA#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "e530778cf14f9939a95aeb2d6864773e1f1d321b5d1da5292138e9b4d99af989"
+          "file": "PUBLIC_ARCHIVE#REGIONSTANDINGDATA#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "88eeb9abb361345dfaa30c112bfcdf57e8bcad3abf36d7e531f9a26f26baf467"
         },
         "updates": [],
         "version": 1

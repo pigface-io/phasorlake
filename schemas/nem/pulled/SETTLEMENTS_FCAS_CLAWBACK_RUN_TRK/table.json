@@ -2,43 +2,64 @@
   "columns": [
     {
       "comment": null,
+      "first_release": "2026-01",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-07",
       "model_type": null,
       "name": "SETTLEMENTDATE"
     },
     {
       "comment": null,
+      "first_release": "2026-01",
+      "iceberg_type": "decimal(2, 0)",
       "id": 2,
+      "last_release": "2026-07",
       "model_type": null,
       "name": "VERSIONNO"
     },
     {
       "comment": null,
+      "first_release": "2026-01",
+      "iceberg_type": "timestamptz",
       "id": 3,
+      "last_release": "2026-07",
       "model_type": null,
       "name": "INTERVAL_DATETIME"
     },
     {
       "comment": null,
+      "first_release": "2026-01",
+      "iceberg_type": "decimal(1, 0)",
       "id": 4,
+      "last_release": "2026-07",
       "model_type": null,
       "name": "RUNNO"
     },
     {
       "comment": null,
+      "first_release": "2026-01",
+      "iceberg_type": "timestamptz",
       "id": 5,
+      "last_release": "2026-07",
       "model_type": null,
       "name": "CLAWBACK_DATE"
     },
     {
       "comment": null,
+      "first_release": "2026-01",
+      "iceberg_type": "string",
       "id": 6,
+      "last_release": "2026-07",
       "model_type": null,
       "name": "PREV_DATA_SOURCE"
     },
     {
       "comment": null,
+      "first_release": "2026-01",
+      "iceberg_type": "timestamptz",
       "id": 7,
+      "last_release": "2026-07",
       "model_type": null,
       "name": "LASTCHANGED"
     }
@@ -47,13 +68,14 @@
   "description": null,
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 4,
+        "files": 7,
         "from": {
           "data-time": "2025-07-06T07:50:00+10:00",
           "file": "PUBLIC_ARCHIVE#SET_FCAS_CLAWBACK_RUN_TRK#FILE01#202601010000.zip",
@@ -68,13 +90,13 @@
           "SETTLEMENTS",
           "FCAS_CLAWBACK_RUN_TRK"
         ],
-        "rows": 14784,
+        "rows": 50373,
         "schema-id": 0,
         "to": {
           "data-time": "2026-03-23T18:20:00+10:00",
-          "file": "PUBLIC_ARCHIVE#SET_FCAS_CLAWBACK_RUN_TRK#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "97146864df4844fe43f6f4143e0a9c8914c99dd1a44e4de7dcf730ef0a73dd02"
+          "file": "PUBLIC_ARCHIVE#SET_FCAS_CLAWBACK_RUN_TRK#FILE01#202607010000.zip",
+          "release": "2026-07",
+          "sha256": "e675567ed96d94e37918aadafc25c01f7307edd14e0fc949f06bee0f183ff021"
         },
         "updates": [],
         "version": 1

@@ -2,25 +2,37 @@
   "columns": [
     {
       "comment": "The interest account ID for calculating the interest payment",
+      "first_release": "2024-08",
+      "iceberg_type": "string",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "INTEREST_ACCT_ID"
     },
     {
       "comment": "The effective date of the interest rate change",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "EFFECTIVEDATE"
     },
     {
       "comment": "Date Time this record was added",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "VERSION_DATETIME"
     },
     {
       "comment": "The interest rate for the interest account ID as on the effective date.",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(18, 8)",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(18,8)",
       "name": "INTEREST_RATE"
     }
@@ -29,13 +41,14 @@
   "description": "The security deposit interest rate on a daily basis. This is the public table published when the business enter and authorise a new daily interest rate",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 21,
+        "files": 26,
         "from": {
           "data-time": "2018-02-07T00:00:00+10:00",
           "file": "PUBLIC_ARCHIVE#SECDEPOSIT_INTEREST_RATE#FILE01#202408010000.zip",
@@ -50,13 +63,13 @@
           "BILLING_CONFIG",
           "SECDEPOSIT_INTEREST_RATE"
         ],
-        "rows": 756,
+        "rows": 936,
         "schema-id": 0,
         "to": {
           "data-time": "2021-05-05T00:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#SECDEPOSIT_INTEREST_RATE#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "fc6fe1b21361036db2bdd14ba6771a5044304c6eacbfc39ffc455a9560d500fa"
+          "file": "PUBLIC_ARCHIVE#SECDEPOSIT_INTEREST_RATE#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "e98c94c6e0966a2e538ae83a82d9c46d0965906d7488e0f2dc9cce1f75fba7aa"
         },
         "updates": [],
         "version": 1

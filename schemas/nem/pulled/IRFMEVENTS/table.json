@@ -2,37 +2,55 @@
   "columns": [
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(10)",
       "name": "IRFMID"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "STARTDATE"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(3, 0)",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(3,0)",
       "name": "STARTPERIOD"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "ENDDATE"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(3, 0)",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(3,0)",
       "name": "ENDPERIOD"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 6,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     }
@@ -41,13 +59,14 @@
   "description": "IRFMEVENTS sets out specific Industrial Relations Forced Majeure events.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 202,
+        "files": 207,
         "from": {
           "data-time": "2000-01-10T00:00:00+10:00",
           "file": "PUBLIC_DVD_IRFMEVENTS_200907010000.zip",
@@ -63,13 +82,13 @@
           "FORCE_MAJEURE",
           "IRFMEVENTS"
         ],
-        "rows": 1010,
+        "rows": 1035,
         "schema-id": 0,
         "to": {
           "data-time": "2000-02-06T00:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#IRFMEVENTS#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "9751fbec0751170b7b00e3fe2629e12b37ae7c56218e9e1cc180165b5d3f935f"
+          "file": "PUBLIC_ARCHIVE#IRFMEVENTS#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "6313774dc7a500a9c465c6bfabc46ca1160e3eea886200392a63b1f7643bd235"
         },
         "updates": [],
         "version": 1

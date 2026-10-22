@@ -2,49 +2,73 @@
   "columns": [
     {
       "comment": "Market date starting at 04:05",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-06",
       "model_type": "TIMESTAMP(0)",
       "name": "SETTLEMENTDATE"
     },
     {
       "comment": "Dispatch run no; always 1",
+      "first_release": "2009-07",
+      "iceberg_type": "long",
       "id": 2,
+      "last_release": "2026-06",
       "model_type": "NUMERIC(3,0)",
       "name": "RUNNO"
     },
     {
       "comment": "Participant that owns unit during effective record period",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 3,
+      "last_release": "2026-06",
       "model_type": "VARCHAR(10)",
       "name": "PARTICIPANTID"
     },
     {
       "comment": "Identifier for each of the two MNSP Interconnector Links. Each link pertains to the direction from and to.",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 4,
+      "last_release": "2026-06",
       "model_type": "VARCHAR(10)",
       "name": "LINKID"
     },
     {
       "comment": "Offer date for bid",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 5,
+      "last_release": "2026-06",
       "model_type": "TIMESTAMP(0)",
       "name": "OFFERSETTLEMENTDATE"
     },
     {
       "comment": "Time this bid was processed and loaded",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 6,
+      "last_release": "2026-06",
       "model_type": "TIMESTAMP(3)",
       "name": "OFFEREFFECTIVEDATE"
     },
     {
       "comment": "VersionNo of the bid/offer used",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(3, 0)",
       "id": 7,
+      "last_release": "2026-06",
       "model_type": "NUMERIC(3,0)",
       "name": "OFFERVERSIONNO"
     },
     {
       "comment": "Record creation timestamp",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 8,
+      "last_release": "2026-06",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     }
@@ -53,13 +77,14 @@
   "description": "DISPATCH_MNSPBIDTRK shows the MNSP bid tracking, including the bid version used in each dispatch run for each MNSP Interconnector Link. The table identifies which bids from MNSP_DAYOFFER and MNSP_BIDOFFERPERIOD were applied.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 202,
+        "files": 204,
         "from": {
           "data-time": "2009-07-01T00:05:00+10:00",
           "file": "PUBLIC_DVD_DISPATCH_MNSPBIDTRK_200907010000.zip",
@@ -75,13 +100,13 @@
           "DISPATCH",
           "MNSPBIDTRK"
         ],
-        "rows": 3544800,
+        "rows": 3579936,
         "schema-id": 0,
         "to": {
-          "data-time": "2026-05-01T00:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#DISPATCH_MNSPBIDTRK#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "5558aa124cf72b572af381a9e44a9ebc3d87d5781f0521741cf57a18835149a5"
+          "data-time": "2026-07-01T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#DISPATCH_MNSPBIDTRK#FILE01#202606010000.zip",
+          "release": "2026-06",
+          "sha256": "01047170b0e9d893bf3ac6146f7d6f3522d7ff34c8419fcb6931653101e568c4"
         },
         "updates": [],
         "version": 1

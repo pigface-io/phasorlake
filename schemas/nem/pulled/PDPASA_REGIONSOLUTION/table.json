@@ -2,271 +2,406 @@
   "columns": [
     {
       "comment": "Unique Timestamp Identifier for this run, identified by the first half hour ended interval of the run.",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "RUN_DATETIME"
     },
     {
       "comment": "End date time of the interval",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "INTERVAL_DATETIME"
     },
     {
       "comment": "Region identifier",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(10)",
       "name": "REGIONID"
     },
     {
       "comment": "10% Probability of Exceedance demand forecast",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 2)",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "DEMAND10"
     },
     {
       "comment": "50% Probability of Exceedance demand forecast",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 2)",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "DEMAND50"
     },
     {
       "comment": "90% Probability of Exceedance demand forecast",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 2)",
       "id": 6,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "DEMAND90"
     },
     {
       "comment": "Reserve Requirement (MW). This field is not populated after 30 July 2025.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 2)",
       "id": 7,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "RESERVEREQ"
     },
     {
       "comment": "Demand + Reserve requirements (MW). This field is not populated after 30 July 2025.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 2)",
       "id": 8,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "CAPACITYREQ"
     },
     {
       "comment": "Sum of: (Region Demand50)/Period (sum by trading day, entered in first period of trading day, GWh).",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 2)",
       "id": 9,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "ENERGYREQDEMAND50"
     },
     {
       "comment": "Aggregate generation + WDR capacity from Non-Energy Constrained plant subjected to restrictions due to network constraints.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 0)",
       "id": 10,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,0)",
       "name": "UNCONSTRAINEDCAPACITY"
     },
     {
       "comment": "Aggregate generation + WDR capacity from Energy Constrained plant subjected to restrictions due to network constraints.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 0)",
       "id": 11,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,0)",
       "name": "CONSTRAINEDCAPACITY"
     },
     {
       "comment": "Net export (MW) out of this region in the LOR evaluation. Export if > 0, Import if < 0. This value is the same as LORNETINTERCHANGEUNDERSCARCITY.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 2)",
       "id": 12,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "NETINTERCHANGEUNDERSCARCITY"
     },
     {
       "comment": "Regional surplus capacity (MW), +/- values indicate surplus/deficit capacity respectively. This value reflects Regional LOR reserve.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 2)",
       "id": 13,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "SURPLUSCAPACITY"
     },
     {
       "comment": "Regional surplus reserve (MW). This value also reflects Regional LOR reserve. Note: For LOR runs, RESERVEREQ requirement input is not used.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 2)",
       "id": 14,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "SURPLUSRESERVE"
     },
     {
       "comment": "Regional reserve condition from LRC run. This field is not populated after 30 July 2025.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(1, 0)",
       "id": 15,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(1,0)",
       "name": "RESERVECONDITION"
     },
     {
       "comment": "Maximum Surplus Reserve (MW) evaluated for this region from LRC runs. This field is no longer populated.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 2)",
       "id": 16,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "MAXSURPLUSRESERVE"
     },
     {
       "comment": "Maximum Spare Capacity (MW) evaluated for this region. Calculated for each region in turn. This value reflects Regional LOR reserve.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 2)",
       "id": 17,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "MAXSPARECAPACITY"
     },
     {
       "comment": "Lack of Reserve Condition (LOR) flag for this region and interval   (3 = LOR3, 2 = LOR2, 1 = LOR1, 0 = No LOR)",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(1, 0)",
       "id": 18,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(1,0)",
       "name": "LORCONDITION"
     },
     {
       "comment": "Sum of MAXAVAIL quantities offered by all Scheduled units and Availability of all semi-scheduled units limited by MAXAVAIL in a given Region for a given PERIODID",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 2)",
       "id": 19,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "AGGREGATECAPACITYAVAILABLE"
     },
     {
       "comment": "Sum of  MAXAVAIL quantities bid by of all Scheduled Loads in a given Region for a given PERIODID.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 2)",
       "id": 20,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "AGGREGATESCHEDULEDLOAD"
     },
     {
       "comment": "Date time this record was created.",
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 21,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     },
     {
       "comment": "Sum of PASAAVAILABILITY for all scheduled generating units and scheduled bidirectional units (Gen side) with a Recall_Period <= 24 hours plus the sum of Unconstrained Intermittent Generation Forecasts (UIGF) for all semi-scheduled generating units. For the OUTAGE_LRC run, UIGF is the POE90 forecast. For the LOR Run, UIGF is the POE50 forecast. Note that the OUTAGE_LRC Run Type is discontinued from 31 July 2025. From March 2026, AGGREGATEPASAAVAILABILITY changes from that with Recall_Period <= 24 to that achievable by the relevant INTERVAL_DATETIME if recalled at the start of the run.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 0)",
       "id": 22,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,0)",
       "name": "AGGREGATEPASAAVAILABILITY"
     },
     {
       "comment": "Type of run. Values are OUTAGE_LRC and LOR. Note that the PDPASA OUTAGE_LRC Run Type is discontinued from 31 July 2025, with only the LOR Run Type reported.",
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 23,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "RUNTYPE"
     },
     {
       "comment": "Energy (GWh) required for this energy block based on the 10% probability of exceedance demand. Listed in the first interval of the energy block",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 2)",
       "id": 24,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "ENERGYREQDEMAND10"
     },
     {
       "comment": "Region Reserve Level for LOR1 used. Can be static value or calculated value if an interconnector is a credible contingency",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(16, 6)",
       "id": 25,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(16,6)",
       "name": "CALCULATEDLOR1LEVEL"
     },
     {
       "comment": "Region Reserve Level for LOR2 used. Can be static value or calculated value if an interconnector is a credible contingency",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(16, 6)",
       "id": 26,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(16,6)",
       "name": "CALCULATEDLOR2LEVEL"
     },
     {
       "comment": "Net interconnector flow from the region for this interval from the MSR assessment. This field is no longer populated.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 2)",
       "id": 27,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "MSRNETINTERCHANGEUNDERSCARCITY"
     },
     {
       "comment": "Net interconnector flow from the region for this interval from the LOR assessment",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 2)",
       "id": 28,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "LORNETINTERCHANGEUNDERSCARCITY"
     },
     {
       "comment": "Allowance made for non-scheduled generation in the demand forecast (MW).",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 29,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "TOTALINTERMITTENTGENERATION"
     },
     {
       "comment": "Sum of Cleared Scheduled generation, imported generation (at the region boundary) and allowances made for non-scheduled generation (MW).",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(15, 5)",
       "id": 30,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(15,5)",
       "name": "DEMAND_AND_NONSCHEDGEN"
     },
     {
       "comment": "Regional aggregated Unconstrained Intermittent Generation Forecast of Semi-scheduled generation (MW).",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 2)",
       "id": 31,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "UIGF"
     },
     {
       "comment": "Constrained generation forecast (MW) for semi-scheduled units for the region. For OUTAGE_LRC run and LOR run, semi-scheduled generation is constrained by both System Normal and Outage constraints. All run types (OUTAGE_LRC, LOR) incorporate MAXAVAIL limits.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 2)",
       "id": 32,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "SEMISCHEDULEDCAPACITY"
     },
     {
       "comment": "Constrained generation forecast for semi-scheduled units for the region for the LOR run. Semi-scheduled generation is constrained by both System Normal and Outage constraints, and incorporate MAXAVAIL limits.",
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(12, 2)",
       "id": 33,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "LOR_SEMISCHEDULEDCAPACITY"
     },
     {
       "comment": "Largest Credible Risk. MW value for highest credible contingency",
+      "first_release": "2018-12",
+      "iceberg_type": "decimal(16, 6)",
       "id": 34,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(16,6)",
       "name": "LCR"
     },
     {
       "comment": "Two Largest Credible Risks. MW value for highest two credible contingencies.",
+      "first_release": "2018-12",
+      "iceberg_type": "decimal(16, 6)",
       "id": 35,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(16,6)",
       "name": "LCR2"
     },
     {
       "comment": "Forecasting Uncertainty Measure. MW value of reserve calculated as defined in the Reserve Level Declaration Guidelines",
+      "first_release": "2018-12",
+      "iceberg_type": "decimal(16, 6)",
       "id": 36,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(16,6)",
       "name": "FUM"
     },
     {
       "comment": "Unconstrained Intermittent Generation Forecast for solar for the region. For OUTAGE_LRC run, this is the POE90 forecast (determined by LRCUIGFOption in CaseSolution). For LOR run, this is the POE50 forecast.",
+      "first_release": "2020-09",
+      "iceberg_type": "decimal(12, 2)",
       "id": 37,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "SS_SOLAR_UIGF"
     },
     {
       "comment": "Unconstrained Intermittent Generation Forecast for wind for the region. For OUTAGE_LRC run, this is the POE90 forecast (determined by LRCUIGFOption in CaseSolution). For LOR run, this is the POE50 forecast.",
+      "first_release": "2020-09",
+      "iceberg_type": "decimal(12, 2)",
       "id": 38,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "SS_WIND_UIGF"
     },
     {
       "comment": "Constrained generation forecast for solar for the region. For OUTAGE_LRC run and LOR run. solar generation is constrained by both System Normal and Outage constraints. All run types (OUTAGE_LRC, LOR) incorporate MAXAVAIL limits.",
+      "first_release": "2020-09",
+      "iceberg_type": "decimal(12, 2)",
       "id": 39,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "SS_SOLAR_CAPACITY"
     },
     {
       "comment": "Constrained generation forecast for wind for the region. For OUTAGE_LRC run and LOR run, wind generation is constrained by both System Normal and Outage constraints. All run types (OUTAGE_LRC, LOR) incorporate MAXAVAIL limits.",
+      "first_release": "2020-09",
+      "iceberg_type": "decimal(12, 2)",
       "id": 40,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "SS_WIND_CAPACITY"
     },
     {
       "comment": "Constrained generation forecast (MW) for solar for the region. For OUTAGE_LRC run and LOR run, solar generation is constrained by both System Normal and Outage constraints. All run types (OUTAGE_LRC, LOR) incorporate MAXAVAIL limits. This value is the same as SS_SOLAR_CAPACITY.",
+      "first_release": "2020-09",
+      "iceberg_type": "decimal(12, 2)",
       "id": 41,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "SS_SOLAR_CLEARED"
     },
     {
       "comment": "Constrained generation forecast (MW) for wind for the region. For OUTAGE_LRC run and LOR run, wind generation is constrained by both System Normal and Outage constraints. All run types (OUTAGE_LRC, LOR) incorporate MAXAVAIL limits. This value is the same as SS_WIND_CAPACITY.",
+      "first_release": "2020-09",
+      "iceberg_type": "decimal(12, 2)",
       "id": 42,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "SS_WIND_CLEARED"
     },
     {
       "comment": "Regional aggregated Wholesale Demand Response (WDR) availability in MW.",
+      "first_release": "2021-10",
+      "iceberg_type": "decimal(12, 2)",
       "id": 43,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "WDR_AVAILABLE"
     },
     {
       "comment": "Regional aggregated Wholesale Demand Response (WDR) PASA availability in MW.",
+      "first_release": "2021-10",
+      "iceberg_type": "decimal(12, 2)",
       "id": 44,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "WDR_PASAAVAILABLE"
     },
     {
       "comment": "Regional aggregated Wholesale Demand Response (WDR) capacity in MW.",
+      "first_release": "2021-10",
+      "iceberg_type": "decimal(12, 2)",
       "id": 45,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "WDR_CAPACITY"
     }
@@ -275,6 +410,7 @@
   "description": "The PDPASA region solution data.Note that the OUTAGE_LRC Run Type is no longer reported from 31 July 2025.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 4,
     "format-version": 3,
     "runs": [
       {
@@ -488,7 +624,7 @@
           "schema",
           "version"
         ],
-        "files": 21,
+        "files": 26,
         "from": {
           "data-time": "2024-08-01T00:30:00+10:00",
           "file": "PUBLIC_ARCHIVE#PDPASA_REGIONSOLUTION#FILE01#202408010000.zip",
@@ -503,13 +639,13 @@
           "PDPASA",
           "REGIONSOLUTION"
         ],
-        "rows": 13348990,
+        "rows": 15386950,
         "schema-id": 4,
         "to": {
-          "data-time": "2026-05-02T04:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#PDPASA_REGIONSOLUTION#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "0d6e818523dfc1ed6c88e6c13c5142cc00c17e22a0ab95669634f84528bdec1f"
+          "data-time": "2026-10-02T04:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#PDPASA_REGIONSOLUTION#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "fc32e14f98f81bd8c547147be80bc6d2e97c946b95404c51ca497bf71bbd8945"
         },
         "updates": [
           {

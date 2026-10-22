@@ -2,55 +2,82 @@
   "columns": [
     {
       "comment": "Date and time of the trading interval (DD/MM/YYYY HH24:MI:SS) fixed to the UTC+10 time zone (NEM time)",
+      "first_release": "2024-12",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2024-12",
       "model_type": "TIMESTAMP(0)",
       "name": "INTERVAL_DATETIME"
     },
     {
       "comment": "Date and time of the SCADA data (DD/MM/YYYY HH24:MI:SS) fixed to the UTC+10 time zone (NEM time)",
+      "first_release": "2024-12",
+      "iceberg_type": "timestamptz",
       "id": 2,
+      "last_release": "2024-12",
       "model_type": "TIMESTAMP(0)",
       "name": "MEASUREMENT_DATETIME"
     },
     {
       "comment": "FPP Unit ID (registered DUID/TNI)",
+      "first_release": "2024-12",
+      "iceberg_type": "string",
       "id": 3,
+      "last_release": "2024-12",
       "model_type": "VARCHAR(20)",
       "name": "FPP_UNITID"
     },
     {
       "comment": "Version (FPP run number from the FPP database)",
+      "first_release": "2024-12",
+      "iceberg_type": "long",
       "id": 4,
+      "last_release": "2024-12",
       "model_type": "NUMERIC(5)",
       "name": "VERSIONNO"
     },
     {
       "comment": "Measured MW (4 second SCADA measurement in MW)",
+      "first_release": "2024-12",
+      "iceberg_type": "decimal(18, 8)",
       "id": 5,
+      "last_release": "2024-12",
       "model_type": "NUMERIC(18,8)",
       "name": "MEASURED_MW"
     },
     {
       "comment": "MW Quality (4 second SCADA measurement Quality) Supported values are: 0 = Bad Quality 1 = Good Quality 2 = Suspect Quality -1 = Value not used as input in the FPP calculation (generally used to indicate when SCADA data was late arriving after the FPP calculation commenced)",
+      "first_release": "2024-12",
+      "iceberg_type": "long",
       "id": 6,
+      "last_release": "2024-12",
       "model_type": "NUMERIC(5)",
       "name": "MW_QUALITY_FLAG"
     },
     {
       "comment": "Scheduled MW (reference trajectory value from FPP calculation process)",
+      "first_release": "2024-12",
+      "iceberg_type": "decimal(18, 5)",
       "id": 7,
+      "last_release": "2024-12",
       "model_type": "NUMERIC(18,5)",
       "name": "SCHEDULED_MW"
     },
     {
       "comment": "Unit Deviation (output of the FPP calculation process)",
+      "first_release": "2024-12",
+      "iceberg_type": "decimal(18, 5)",
       "id": 8,
+      "last_release": "2024-12",
       "model_type": "NUMERIC(18,5)",
       "name": "DEVIATION_MW"
     },
     {
       "comment": "Participant ID",
+      "first_release": "2024-12",
+      "iceberg_type": "string",
       "id": 9,
+      "last_release": "2024-12",
       "model_type": "VARCHAR(20)",
       "name": "PARTICIPANTID"
     }
@@ -59,6 +86,7 @@
   "description": "This report delivers the curated 4 second measurement MW data for each FPP unit",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {

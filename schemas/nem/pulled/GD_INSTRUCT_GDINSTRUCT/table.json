@@ -2,91 +2,136 @@
   "columns": [
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 1,
+      "last_release": "2026-07",
       "model_type": null,
       "name": "DUID"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 2,
+      "last_release": "2026-07",
       "model_type": null,
       "name": "STATIONID"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 3,
+      "last_release": "2026-07",
       "model_type": null,
       "name": "REGIONID"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(6, 0)",
       "id": 4,
+      "last_release": "2026-07",
       "model_type": null,
       "name": "ID"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 5,
+      "last_release": "2026-07",
       "model_type": null,
       "name": "INSTRUCTIONTYPEID"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 6,
+      "last_release": "2026-07",
       "model_type": null,
       "name": "INSTRUCTIONSUBTYPEID"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 7,
+      "last_release": "2026-07",
       "model_type": null,
       "name": "INSTRUCTIONCLASSID"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 8,
+      "last_release": "2026-07",
       "model_type": null,
       "name": "REASON"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "decimal(4, 0)",
       "id": 9,
+      "last_release": "2026-07",
       "model_type": null,
       "name": "INSTLEVEL"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 10,
+      "last_release": "2026-07",
       "model_type": null,
       "name": "AUTHORISEDDATE"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 11,
+      "last_release": "2026-07",
       "model_type": null,
       "name": "AUTHORISEDBY"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "string",
       "id": 12,
+      "last_release": "2026-07",
       "model_type": null,
       "name": "PARTICIPANTID"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 13,
+      "last_release": "2026-07",
       "model_type": null,
       "name": "ISSUEDTIME"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 14,
+      "last_release": "2026-07",
       "model_type": null,
       "name": "TARGETTIME"
     },
     {
       "comment": null,
+      "first_release": "2009-07",
+      "iceberg_type": "timestamptz",
       "id": 15,
+      "last_release": "2026-07",
       "model_type": null,
       "name": "LASTCHANGED"
     }
@@ -95,13 +140,14 @@
   "description": null,
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 101,
+        "files": 104,
         "from": {
           "data-time": "2009-07-01T17:50:00+10:00",
           "file": "PUBLIC_DVD_GDINSTRUCT_200907010000.zip",
@@ -117,13 +163,13 @@
           "GD_INSTRUCT",
           "GDINSTRUCT"
         ],
-        "rows": 10019,
+        "rows": 10069,
         "schema-id": 0,
         "to": {
-          "data-time": "2026-04-29T23:50:00+10:00",
-          "file": "PUBLIC_ARCHIVE#GDINSTRUCT#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "b7e13f613750f3f533597bac8411def1776e6429ddedf91f6774118f3ba26f0b"
+          "data-time": "2026-07-01T03:05:00+10:00",
+          "file": "PUBLIC_ARCHIVE#GDINSTRUCT#FILE01#202607010000.zip",
+          "release": "2026-07",
+          "sha256": "351043c31821d3c68bc15b36f8dbfc87610a82a4d6336a5bc254b05c10984432"
         },
         "updates": [],
         "version": 1

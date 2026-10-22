@@ -2,67 +2,100 @@
   "columns": [
     {
       "comment": "Date processing of the run begins.",
+      "first_release": "2018-05",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "RUN_DATETIME"
     },
     {
       "comment": "Unique run id.",
+      "first_release": "2018-05",
+      "iceberg_type": "long",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(4)",
       "name": "RUN_NO"
     },
     {
       "comment": "Type of run. Always RELIABILITY",
+      "first_release": "2018-05",
+      "iceberg_type": "string",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "RUNTYPE"
     },
     {
       "comment": "Demand POE type used. Value is POE10",
+      "first_release": "2018-05",
+      "iceberg_type": "string",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "DEMAND_POE_TYPE"
     },
     {
       "comment": "Day this result is for",
+      "first_release": "2018-05",
+      "iceberg_type": "timestamptz",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "DAY"
     },
     {
       "comment": "The unique identifier for the constraint. Only binding or violating constraints are reported",
+      "first_release": "2018-05",
+      "iceberg_type": "string",
       "id": 6,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "CONSTRAINTID"
     },
     {
       "comment": "Period data is aggregated over. Values are PEAK, SHOULDER, OFFPEAK. PEAK = 14:00-19:59, SHOULDER = 07:00-13:59 and 20:00-21:59, OFFPEAK = 22:00-06:59",
+      "first_release": "2018-05",
+      "iceberg_type": "string",
       "id": 7,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "AGGREGATION_PERIOD"
     },
     {
       "comment": "The effective date of the constraint used",
+      "first_release": "2018-05",
+      "iceberg_type": "timestamptz",
       "id": 8,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "EFFECTIVEDATE"
     },
     {
       "comment": "The version of the constraintID",
+      "first_release": "2018-05",
+      "iceberg_type": "decimal(3, 0)",
       "id": 9,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(3,0)",
       "name": "VERSIONNO"
     },
     {
       "comment": "Constraint hours binding or violating for period, averaged across iterations and reference years",
+      "first_release": "2018-05",
+      "iceberg_type": "decimal(12, 2)",
       "id": 10,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(12,2)",
       "name": "CONSTRAINTHOURSBINDING"
     },
     {
       "comment": "Last date and time record changed",
+      "first_release": "2018-05",
+      "iceberg_type": "timestamptz",
       "id": 11,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     }
@@ -71,6 +104,7 @@
   "description": "Constraint Summary results over aggregation periods",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 1,
     "format-version": 3,
     "runs": [
       {
@@ -107,7 +141,7 @@
         "changes": [
           "schema"
         ],
-        "files": 21,
+        "files": 26,
         "from": {
           "data-time": "2024-08-05T02:00:00+10:00",
           "file": "PUBLIC_ARCHIVE#MTPASA_CONSTRAINTSUMMARY#FILE01#202408010000.zip",
@@ -122,13 +156,13 @@
           "MTPASA",
           "CONSTRAINTSUMMARY"
         ],
-        "rows": 24382385,
+        "rows": 30983892,
         "schema-id": 1,
         "to": {
-          "data-time": "2026-04-26T20:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#MTPASA_CONSTRAINTSUMMARY#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "173802a0853ec53394afad50ebf7f6055c9684847a13e72ea36e41a327a8f1d4"
+          "data-time": "2026-09-28T17:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#MTPASA_CONSTRAINTSUMMARY#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "b3592706079d0369b6b0c48b7aa1f72c5e36e4123e91fe38929dc0fa730d9d9c"
         },
         "updates": [
           {

@@ -2,61 +2,91 @@
   "columns": [
     {
       "comment": "Settlement date of the settlement run",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "SETTLEMENTDATE"
     },
     {
       "comment": "Settlement run number of the settlement run",
+      "first_release": "2024-08",
+      "iceberg_type": "long",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(3,0)",
       "name": "SETTLEMENTRUNNO"
     },
     {
       "comment": "Unique identifier for the local area",
+      "first_release": "2024-08",
+      "iceberg_type": "string",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(30)",
       "name": "LOCALAREAID"
     },
     {
       "comment": "Settlement Trading Interval",
+      "first_release": "2024-08",
+      "iceberg_type": "long",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(3,0)",
       "name": "PERIODID"
     },
     {
       "comment": "Total unaccounted-for energy for the local area in this trading interval, in MWh",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(18, 8)",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(18,8)",
       "name": "UFE"
     },
     {
       "comment": "DDME component of UFE for the local area in this trading interval, in MWh.",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(18, 8)",
       "id": 6,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(18,8)",
       "name": "DDME"
     },
     {
       "comment": "TME component of UFE for the local area in this trading interval, in MWh.",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(18, 8)",
       "id": 7,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(18,8)",
       "name": "TME"
     },
     {
       "comment": "ADME component of UFE for the local area in this trading interval, in MWh.",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(18, 8)",
       "id": 8,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(18,8)",
       "name": "ADME"
     },
     {
       "comment": "The sum of all DME amounts for each Market Customer FRMP and TNI in the local area, in this trading interval.",
+      "first_release": "2024-08",
+      "iceberg_type": "decimal(18, 8)",
       "id": 9,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(18,8)",
       "name": "ADMELA"
     },
     {
       "comment": "Last changed date time for the record",
+      "first_release": "2024-08",
+      "iceberg_type": "timestamptz",
       "id": 10,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     }
@@ -65,13 +95,14 @@
   "description": "SETLOCALAREAENERGY shows the UFE, AGE and associated values for each local area and trading interval in a settlement run.",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 21,
+        "files": 26,
         "from": {
           "data-time": "2023-12-31T00:00:00+10:00",
           "file": "PUBLIC_ARCHIVE#SETLOCALAREAENERGY#FILE01#202408010000.zip",
@@ -86,13 +117,13 @@
           "SETTLEMENTS",
           "LOCALAREAENERGY"
         ],
-        "rows": 15592320,
+        "rows": 19522080,
         "schema-id": 0,
         "to": {
-          "data-time": "2026-04-29T00:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#SETLOCALAREAENERGY#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "34f290fa4cd712e03e807b4c9350a87ff7ab31de51e4e2ba201188c6fd1ad1bc"
+          "data-time": "2026-09-29T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#SETLOCALAREAENERGY#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "0a9c8f6c14753653af73d816274f96a5b13c8c4d22239b6d20322f24f24de66b"
         },
         "updates": [],
         "version": 1

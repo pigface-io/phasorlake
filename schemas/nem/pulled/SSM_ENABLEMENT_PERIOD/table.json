@@ -2,37 +2,55 @@
   "columns": [
     {
       "comment": "Unique Instruction Identifier",
+      "first_release": "2025-11",
+      "iceberg_type": "string",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "INSTRUCTION_ID"
     },
     {
       "comment": "Dispatchable Unit Identifier",
+      "first_release": "2025-11",
+      "iceberg_type": "string",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "DUID"
     },
     {
       "comment": "The first Dispatch Interval the unit is enabled for SSM Services.",
+      "first_release": "2025-11",
+      "iceberg_type": "timestamptz",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "ENABLEMENT_START_INTERVAL"
     },
     {
       "comment": "The last Dispatch Interval the unit is enabled for SSM Services.",
+      "first_release": "2025-11",
+      "iceberg_type": "timestamptz",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "ENABLEMENT_END_INTERVAL"
     },
     {
       "comment": "Reason for the enablement.",
+      "first_release": "2025-11",
+      "iceberg_type": "string",
       "id": 5,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(40)",
       "name": "ENABLEMENT_REASON"
     },
     {
       "comment": "Last time record was changed.",
+      "first_release": "2025-11",
+      "iceberg_type": "timestamptz",
       "id": 6,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     }
@@ -41,13 +59,14 @@
   "description": "SSM Contract Enablement Periods",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 0,
     "format-version": 3,
     "runs": [
       {
         "changes": [
           "first"
         ],
-        "files": 6,
+        "files": 11,
         "from": {
           "data-time": "2025-12-02T12:00:16+10:00",
           "file": "PUBLIC_ARCHIVE#SSM_ENABLEMENT_PERIOD#FILE01#202511010000.zip",
@@ -62,13 +81,13 @@
           "SSM",
           "ENABLEMENT_PERIOD"
         ],
-        "rows": 1185,
+        "rows": 2563,
         "schema-id": 0,
         "to": {
-          "data-time": "2026-05-08T12:00:25+10:00",
-          "file": "PUBLIC_ARCHIVE#SSM_ENABLEMENT_PERIOD#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "e689bff21a763a66dedc411497b5216c9f58659cce8e8300000be86dcdccb0df"
+          "data-time": "2026-09-30T10:35:00+10:00",
+          "file": "PUBLIC_ARCHIVE#SSM_ENABLEMENT_PERIOD#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "8ba51f94817f30a8591f6991c3f0ceddc8f0224a2882e82ce3e966236bc794d5"
         },
         "updates": [],
         "version": 1

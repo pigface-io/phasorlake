@@ -2,25 +2,37 @@
   "columns": [
     {
       "comment": "Date Time of the Dispatch Interval",
+      "first_release": "2010-11",
+      "iceberg_type": "timestamptz",
       "id": 1,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "SETTLEMENTDATE"
     },
     {
       "comment": "Dispatchable Unit Identifier",
+      "first_release": "2010-11",
+      "iceberg_type": "string",
       "id": 2,
+      "last_release": "2026-09",
       "model_type": "VARCHAR(20)",
       "name": "DUID"
     },
     {
       "comment": "Instantaneous MW reading from SCADA at the start of the Dispatch interval",
+      "first_release": "2010-11",
+      "iceberg_type": "decimal(16, 6)",
       "id": 3,
+      "last_release": "2026-09",
       "model_type": "NUMERIC(16,6)",
       "name": "SCADAVALUE"
     },
     {
       "comment": "Last date and time record changed",
+      "first_release": "2024-10",
+      "iceberg_type": "timestamptz",
       "id": 4,
+      "last_release": "2026-09",
       "model_type": "TIMESTAMP(0)",
       "name": "LASTCHANGED"
     }
@@ -29,6 +41,7 @@
   "description": "Dispatchable unit MW from SCADA at the start of the dispatch interval. The table includes all scheduled and semi-scheduled (and non-scheduled units where SCADA is available)",
   "iceberg": {
     "breaking": [],
+    "current-schema-id": 1,
     "format-version": 3,
     "runs": [
       {
@@ -66,7 +79,7 @@
         "changes": [
           "schema"
         ],
-        "files": 19,
+        "files": 24,
         "from": {
           "data-time": "2024-10-01T00:05:00+10:00",
           "file": "PUBLIC_ARCHIVE#DISPATCH_UNIT_SCADA#FILE01#202410010000.zip",
@@ -81,13 +94,13 @@
           "DISPATCH",
           "UNIT_SCADA"
         ],
-        "rows": 78783107,
+        "rows": 101337781,
         "schema-id": 1,
         "to": {
-          "data-time": "2026-05-01T00:00:00+10:00",
-          "file": "PUBLIC_ARCHIVE#DISPATCH_UNIT_SCADA#FILE01#202604010000.zip",
-          "release": "2026-04",
-          "sha256": "83a858501e4d443817a5453274a54f71c48cab4372f8ff9b67d70a6f8b6237ed"
+          "data-time": "2026-10-01T00:00:00+10:00",
+          "file": "PUBLIC_ARCHIVE#DISPATCH_UNIT_SCADA#FILE01#202609010000.zip",
+          "release": "2026-09",
+          "sha256": "8da665e7b2c276a011466a2748278eddc18195f598d75bbe851ba71507619601"
         },
         "updates": [
           {
