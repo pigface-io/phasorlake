@@ -1317,6 +1317,46 @@ fn get_writes_an_interval_of_a_table_from_a_whole_month_zip() {
         ls.contains("TRADINGPRICE") && !ls.contains("DISPATCHPRICE"),
         "{ls}"
     );
+    // A side forced, an excluded table, and a JSON dry run.
+    let text = cli.ok(&[
+        "get",
+        "nem",
+        "--table",
+        "TRADINGPRICE,DISPATCHPRICE",
+        "--exclude",
+        "DISPATCHPRICE",
+        "--source",
+        "monthly",
+        "--from",
+        "2024-01",
+        "--to",
+        "2024-01",
+        "--out",
+        out.to_str().unwrap(),
+    ]);
+    assert!(
+        text.contains("plan: every month from the monthly archive, as asked"),
+        "{text}"
+    );
+    assert!(!out.join("nem").join("DISPATCHPRICE.parquet").exists());
+    let (_, json, err) = cli.code(&[
+        "--json",
+        "get",
+        "nem",
+        "--table",
+        "TRADINGPRICE",
+        "--source",
+        "daily",
+        "--from",
+        "2024-01",
+        "--to",
+        "2024-01",
+        "--dry-run",
+    ]);
+    assert!(
+        json.contains("\"type\":\"get\"") || err.contains("report folder"),
+        "{json}{err}"
+    );
     // Too many rows for the cap.
     let (code, _, err) = cli.code(&[
         "get",

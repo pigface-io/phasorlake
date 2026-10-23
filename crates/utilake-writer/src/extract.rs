@@ -622,6 +622,78 @@ mod tests {
         })
         .unwrap_err();
         assert!(matches!(e, StoreError::Io { .. }), "{e}");
+        // A file whose column cannot be read as the target's type.
+        let bools = dir.path().join("bools.parquet");
+        {
+            let schema = Arc::new(Schema::new(vec![
+                Field::new(
+                    "SETTLEMENTDATE",
+                    arrow_type(IcebergType::Timestamptz, TZ),
+                    false,
+                ),
+                Field::new("DUID", DataType::Utf8, false),
+                Field::new("SCADAVALUE", DataType::Boolean, true),
+            ]));
+            let batch = RecordBatch::try_new(
+                schema.clone(),
+                vec![
+                    Arc::new(TimestampMicrosecondArray::from(vec![0]).with_timezone(TZ)),
+                    Arc::new(StringArray::from(vec!["U"])),
+                    Arc::new(arrow_array::BooleanArray::from(vec![true])),
+                ],
+            )
+            .unwrap();
+            let mut w =
+                ArrowWriter::try_new(std::fs::File::create(&bools).unwrap(), schema, None).unwrap();
+            w.write(&batch).unwrap();
+            w.close().unwrap();
+        }
+        let e = extract(&ExtractRequest {
+            max_rows: None,
+            files: vec![DataFile {
+                path: bools.display().to_string(),
+                ..old.clone()
+            }],
+            ..req()
+        })
+        .unwrap_err();
+        assert!(e.to_string().contains("cannot be read as"), "{e}");
+        // The output's place is taken by a folder.
+        let onto_dir = dir.path().join("taken.parquet");
+        std::fs::create_dir_all(&onto_dir).unwrap();
+        let e = extract(&ExtractRequest {
+            max_rows: None,
+            out: &onto_dir,
+            ..req()
+        })
+        .unwrap_err();
+        assert!(matches!(e, StoreError::Rename { .. }), "{e}");
+        // The sidecar's place is taken.
+        let side_taken = dir.path().join("side.parquet");
+        std::fs::create_dir_all(dir.path().join("side.parquet.json")).unwrap();
+        let e = extract(&ExtractRequest {
+            max_rows: None,
+            out: &side_taken,
+            ..req()
+        })
+        .unwrap_err();
+        assert!(matches!(e, StoreError::Io { .. }), "{e}");
+        assert!(side_taken.is_file(), "the Parquet file was written first");
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt as _;
+            let shut = dir.path().join("shut");
+            std::fs::create_dir_all(&shut).unwrap();
+            std::fs::set_permissions(&shut, std::fs::Permissions::from_mode(0o500)).unwrap();
+            let e = extract(&ExtractRequest {
+                max_rows: None,
+                out: &shut.join("x.parquet"),
+                ..req()
+            })
+            .unwrap_err();
+            std::fs::set_permissions(&shut, std::fs::Permissions::from_mode(0o700)).unwrap();
+            assert!(matches!(e, StoreError::Io { .. }), "{e}");
+        }
         // Every Iceberg type has an Arrow type.
         assert_eq!(arrow_type(IcebergType::Boolean, TZ), DataType::Boolean);
         assert_eq!(arrow_type(IcebergType::Double, TZ), DataType::Float64);

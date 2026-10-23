@@ -483,7 +483,9 @@ impl Source for MmsdmArchive {
                 if !wanted(&table) || !name.to_ascii_lowercase().ends_with(".zip") {
                     return None;
                 }
-                let url = Url::parse(&format!("{}!{}", remote.url, e.name)).ok()?;
+                // A `#` in the newer names would start a URL fragment.
+                let url =
+                    Url::parse(&format!("{}!{}", remote.url, e.name.replace('#', "%23"))).ok()?;
                 let mut remote_entry = describe_name(url)?;
                 remote_entry.size = Some(e.size);
                 remote_entry.modified = remote.modified.clone();
@@ -1275,6 +1277,9 @@ mod tests {
                 "MMSDM_2014_01/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_REGION_201401010000.CSV",
             ),
             entry("MMSDM_2014_01/README.txt"),
+            entry(
+                "MMSDM_2014_01/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_ARCHIVE#DUDETAIL#FILE01#201401010000.zip",
+            ),
         ];
         let q = |tables: &[&str], exclude: &[&str]| Query {
             tables: tables.iter().map(|t| (*t).to_owned()).collect(),
@@ -1306,6 +1311,10 @@ mod tests {
             (Some(10), Some("m"))
         );
         assert!(p[0].remote.url.as_str().ends_with(".zip!MMSDM_2014_01/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_REGION_201401010000.zip"));
+        let Picks::Entries(p) = a.pick(&whole, &entries, &q(&["DUDETAIL"], &[])) else {
+            panic!("entries");
+        };
+        assert_eq!(p[0].index, 6, "the hash scheme names its table too");
         assert_eq!(
             a.pick(&whole, &entries, &q(&["REGION"], &["REGION"])),
             Picks::Whole,

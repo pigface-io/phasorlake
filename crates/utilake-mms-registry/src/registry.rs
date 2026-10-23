@@ -669,7 +669,17 @@ mod tests {
             r.report = ("X".into(), "Y".into());
         }
         write(dir.path(), &n);
+        // The overlay's own market definition replaces the embedded one.
+        std::fs::write(
+            dir.path().join("nem").join("market.toml"),
+            "schema_format = 1\nmarket = \"nem\"\nutc_offset_secs = 36000\ntimestamp_format = \"aemo_slash\"\n",
+        )
+        .unwrap();
         let o = r.with_overlay(dir.path()).unwrap();
+        assert_eq!(
+            o.markets.iter().filter(|m| m.market == Market::Nem).count(),
+            1
+        );
         let region = o.table_by_name("REGION").unwrap();
         assert_eq!(o.table(region).columns.len(), 1);
         assert_eq!(o.schema_source(region), SchemaSource::User);

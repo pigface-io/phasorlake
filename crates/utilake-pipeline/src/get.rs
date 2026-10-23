@@ -159,7 +159,7 @@ async fn list_months(
     notes: &mut Vec<String>,
 ) -> Result<(Option<Step>, Option<YearMonth>), Box<Diagnostic>> {
     let mut unpublished = None;
-    while from <= to {
+    loop {
         let query = monthly_query(req, from, to);
         match source.list(&query, &deps.fetcher).await {
             Ok(files) => {
@@ -175,19 +175,23 @@ async fn list_months(
             Err(FetchError::MonthMissing { period, .. }) => {
                 // The archive publishes months in order: this one and the
                 // ones after it are not out yet.
-                let missing: YearMonth = period.parse().map_err(|_| {
-                    Box::new(
-                        FetchError::MonthMissing {
-                            period: period.clone(),
-                            url: String::new(),
-                            available: String::new(),
-                        }
-                        .diagnostic(),
-                    )
-                })?;
-                if missing < from || missing > to {
-                    break;
-                }
+                // A month the request did not ask for, or no month at all:
+                // not the archive's way of saying "not yet"; reported.
+                let missing = period
+                    .parse::<YearMonth>()
+                    .ok()
+                    .filter(|m| *m >= from && *m <= to)
+                    .ok_or_else(|| {
+                        Box::new(
+                            FetchError::MonthMissing {
+                                period: period.clone(),
+                                url: String::new(),
+                                available: format!("{from}..{to} were asked for"),
+                            }
+                            .diagnostic()
+                            .with_request(req.request.clone()),
+                        )
+                    })?;
                 notes.push(format!(
                     "{period} is not published in the monthly archive yet"
                 ));
@@ -200,7 +204,6 @@ async fn list_months(
             Err(e) => return Err(Box::new(e.diagnostic().with_request(req.request.clone()))),
         }
     }
-    Ok((None, unpublished))
 }
 
 /// Plans the request over the kit's sources, listing each once.
@@ -266,10 +269,8 @@ pub async fn plan_get(req: &GetRequest, deps: &Deps) -> Result<GetPlan, Box<Diag
         return Ok(plan);
     }
     let Some(daily) = daily else {
-        if req.source == SourceChoice::Daily {
-            return Err(no_source(req, "daily"));
-        }
-        // No daily source: the archive's whole months cover those days.
+        // No daily source (a forced daily side was refused above): the
+        // archive's whole months cover those days.
         return monthly_fallback(
             req,
             deps,
@@ -345,15 +346,15 @@ async fn monthly_fallback(
         .collect();
     months.sort();
     months.dedup();
-    if let (Some(&m0), Some(&m1)) = (months.first(), months.last()) {
-        plan.notes.push(format!(
-            "{} from the monthly archive for {}: {why}",
-            TimeRange::months(m0, m1),
-            req.tables.join(",")
-        ));
-        let (step, _) = list_months(req, source, deps, m0, m1, &mut plan.notes).await?;
-        plan.steps.extend(step);
-    }
+    // `day_runs` is never empty here, so neither is `months`.
+    let (m0, m1) = (months[0], months[months.len() - 1]);
+    plan.notes.push(format!(
+        "{} from the monthly archive for {}: {why}",
+        TimeRange::months(m0, m1),
+        req.tables.join(",")
+    ));
+    let (step, _) = list_months(req, source, deps, m0, m1, &mut plan.notes).await?;
+    plan.steps.extend(step);
     Ok(std::mem::take(plan))
 }
 

@@ -1815,6 +1815,23 @@ struct Monthly {
     whole_zip: Option<Url>,
 }
 
+/// A monthly source that says a month is missing that was not asked for.
+struct OddMonthly;
+
+#[async_trait]
+impl Source for OddMonthly {
+    fn id(&self) -> &'static str {
+        "nem-mmsdm"
+    }
+    async fn list(&self, _q: &Query, _f: &Fetcher) -> Result<Vec<RemoteFile>, FetchError> {
+        Err(FetchError::MonthMissing {
+            period: "no such".into(),
+            url: "https://h/year/".into(),
+            available: String::new(),
+        })
+    }
+}
+
 #[async_trait]
 impl Source for Monthly {
     fn id(&self) -> &'static str {
@@ -1894,6 +1911,11 @@ impl Source for Daily {
         utilake_acquire::Granularity::Day
     }
     async fn list(&self, q: &Query, _f: &Fetcher) -> Result<Vec<RemoteFile>, FetchError> {
+        if q.tables.iter().any(|t| t == "BROKEN") {
+            return Err(FetchError::Offline {
+                url: "https://h/Reports/".into(),
+            });
+        }
         if let Some(t) = q.tables.iter().find(|t| *t == "ONLY_MONTHLY") {
             return Err(FetchError::NoMatch {
                 url: "https://h/Reports/".into(),
@@ -2141,6 +2163,36 @@ async fn an_interval_is_cut_into_published_months_and_the_days_around_them() {
     .map(|_| ())
     .unwrap_err();
     assert!(e3.message.contains("no monthly source"), "{}", e3.message);
+    // A daily source that fails on a table: reported, not worked around.
+    e.deps.kits = kit_with(
+        &e,
+        vec![
+            Arc::new(Monthly {
+                unpublished_from: None,
+                whole_zip: None,
+            }),
+            Arc::new(Daily),
+        ],
+    );
+    let e4 = plan_get(
+        &get_request(&["BROKEN"], "2024-01-15", "2024-01-20", SourceChoice::Auto),
+        &e.deps,
+    )
+    .await
+    .map(|_| ())
+    .unwrap_err();
+    assert_eq!(e4.code, "net.offline");
+    // An archive that names a month nobody asked for as missing.
+    e.deps.kits = kit_with(&e, vec![Arc::new(OddMonthly), Arc::new(Daily)]);
+    let e5 = plan_get(
+        &get_request(&["A"], "2024-02-01", "2024-02-29", SourceChoice::Auto),
+        &e.deps,
+    )
+    .await
+    .map(|_| ())
+    .unwrap_err();
+    assert_eq!(e5.code, "listing.month_missing");
+    assert!(e5.message.contains("no such"), "{}", e5.message);
     // An unknown kit.
     let mut bad = get_request(&["A"], "2024-01-15", "2024-01-20", SourceChoice::Auto);
     bad.kit = "gas".into();

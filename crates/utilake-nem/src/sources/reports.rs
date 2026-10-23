@@ -469,6 +469,11 @@ mod tests {
         let mut html = format!(
             "<html><body><H1>nemweb.com.au - {dir}</H1><hr><pre><A HREF=\"/Reports/\">[To Parent Directory]</A><br><br>"
         );
+        // A sub-folder, as IIS lists one: passed over.
+        let _ = write!(
+            html,
+            "   Sunday, October 19, 2026  4:05 AM        &lt;dir&gt; <A HREF=\"{dir}DUPLICATE/\">DUPLICATE</A><br>"
+        );
         for n in names {
             let _ = write!(
                 html,
@@ -606,6 +611,15 @@ mod tests {
         );
         let e = src.list(&q2, &f).await.unwrap_err();
         assert!(matches!(e, FetchError::ListingParse { .. }), "{e}");
+        // A base the folders cannot be joined to.
+        let odd = ReportFolders::new("mailto:x", registry.clone()).unwrap();
+        assert!(matches!(
+            odd.folder_url(&registry.folders()[0]),
+            Err(FetchError::Parse {
+                what: "folder URL",
+                ..
+            })
+        ));
         // A server that fails.
         t.add(
             "https://h/Reports/ARCHIVE/TradingIS_Reports/",
@@ -700,8 +714,11 @@ mod tests {
             "2026-10-19",
             Some((start + five, start + 2 * five)),
         );
-        let Picks::Entries(p) = src.pick(&daily, &entries, &q) else {
-            panic!("entries");
+        let picked = src.pick(&daily, &entries, &q);
+        assert!(matches!(&picked, Picks::Entries(_)), "{picked:?}");
+        let p = match picked {
+            Picks::Entries(p) => p,
+            Picks::Whole => Vec::new(),
         };
         assert_eq!(p.iter().map(|p| p.index).collect::<Vec<_>>(), [0, 1, 2]);
         assert_eq!(
@@ -746,6 +763,8 @@ mod tests {
             "https://h/Reports/CURRENT/Dispatch_SCADA/PUBLIC_DISPATCHSCADA_202610200005_0000000543700000.zip",
         );
         put("https://h/Reports/CURRENT/Dispatch_SCADA/notes.txt");
+        // A sidecar whose URL is not one: passed over.
+        put("x/PUBLIC_DISPATCHSCADA_20261019.zip");
         let got = src
             .archived(
                 &archive,

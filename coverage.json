@@ -5,19 +5,19 @@
     "crates/utilake-cli/src/main.rs"
   ],
   "floors": {
-    "crates/utilake-core/src": 95,
+    "crates/utilake-core/src": 96,
     "crates/utilake-iceberg-store/src": 100,
-    "crates/utilake-mms-registry/src": 85,
-    "crates/utilake-mms-registry/src/file_model": 90,
+    "crates/utilake-mms-registry/src": 97,
+    "crates/utilake-mms-registry/src/file_model": 100,
     "crates/utilake-mms-decode/src": 90,
     "crates/utilake-mms-conform/src": 90,
     "crates/utilake-acquire/src": 100,
-    "crates/utilake-kit/src": 90,
-    "crates/utilake-nem/src": 85,
-    "crates/utilake-wem/src": 85,
-    "crates/utilake-writer/src": 85,
-    "crates/utilake-pipeline/src": 75,
-    "crates/utilake-cli/src": 30,
+    "crates/utilake-kit/src": 98,
+    "crates/utilake-nem/src": 96,
+    "crates/utilake-wem/src": 96,
+    "crates/utilake-writer/src": 94,
+    "crates/utilake-pipeline/src": 83,
+    "crates/utilake-cli/src": 78,
     "crates/utilake-mdff/src": 98,
     "crates/utilake-mirror/src": 100
   }

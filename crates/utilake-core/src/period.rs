@@ -452,5 +452,10 @@ mod day_tests {
         assert_eq!(t1 - t0, 86_400_000_000);
         let (m0, m1) = TimeRange::one(YearMonth::new(2024, 2).unwrap()).as_interval(0);
         assert_eq!((m1 - m0) / 86_400_000_000, 29);
+        // A day as JSON text, both ways.
+        let d: CivilDay = serde_json::from_str("\"2024-02-29\"").unwrap();
+        assert_eq!(d, day("2024-02-29"));
+        assert_eq!(serde_json::to_string(&d).unwrap(), "\"2024-02-29\"");
+        assert!(serde_json::from_str::<CivilDay>("\"2024-02-30\"").is_err());
     }
 }
