@@ -16,6 +16,23 @@ a failure is explained.
 
 ```sh
 cargo install --path crates/utilake-cli --locked
+utilake get nem --table DISPATCH_UNIT_SCADA --from 2024-01-15 --to 2024-01-18
+```
+
+`get` plans the interval across the market's sources (whole published
+months from the monthly archive, the rest from the report folders a day
+or a five-minute file at a time), downloads only what it needs (a zip
+that holds more than asked is read by its directory and only the entries
+wanted are fetched), reads it all into the lake, and writes one file per
+table trimmed to the interval: `./utilake-get/nem/DISPATCH_UNIT_SCADA.parquet`,
+with `DISPATCH_UNIT_SCADA.parquet.json` beside it saying which lake files
+its rows came from. `--from` and `--to` take a month, a day, a local time
+(`2024-01-15T10:00`, market time) or an RFC 3339 time; the end is not
+included. `--dry-run` shows the plan and what would be fetched.
+
+The two steps on their own:
+
+```sh
 utilake fetch nem --table DISPATCH_UNIT_SCADA --from 2024-01
 utilake ingest --from 2024-01 --table DISPATCH_UNIT_SCADA
 ```
@@ -38,6 +55,7 @@ the file, and the manifest knows it is already in the lake.
 
 | command | what it does |
 |---|---|
+| `utilake get nem --table T,T --from WHEN --to WHEN [--out DIR] [--source auto\|monthly\|daily] [--as-of ID] [--max-rows N] [--dry-run]` | an interval of the tables, fetched where it is published most finely, read into the lake, and written as one Parquet file per table under `{out}/{market}/` with a sidecar of its sources |
 | `utilake fetch nem --from YYYY-MM [--to YYYY-MM] [--table T,T] [--exclude T,T] [--dry-run]` | list the archive and download each file not archived yet, with the month's control files and README. Without `--table`: every table the archive has for those months. `--dry-run` lists the files and totals their size |
 | `utilake ingest --from YYYY-MM [--to YYYY-MM] [--table T,T] [--exclude T,T]` | write Parquet from the archived files of those months, no network |
 | `utilake ingest <zip\|csv\|dir>...` | ingest local files, no network |
@@ -62,10 +80,20 @@ Global flags: `--home DIR` (or `UTILAKE_HOME`), `--json`, `-v`, `--offline`,
   lake/nem/{table}/year=YYYY/month=MM/{source}-v{version}-{shape8}-{sha8}.parquet   appended tables, partitioned by market-local month
   lake/nem/{table}/snapshot=YYYYMM/...                                     standing-data tables (REGION, PARTICIPANT, ...): each month's file is the whole table
   archive/{host}/{path of the URL}[.json]                                  every download as the server sent it, with its record
+  archive/{host}/{path of a zip}!{entry}[.json]                            one entry of a zip, fetched alone by byte range; its record says where in the zip it was
   cache/tmp/                                                               scratch files of a running ingest, safe to delete
   quarantine/{table}/{source}.jsonl                                        rows whose structure was wrong for their block, with the reason
   manifest.sqlite                                                          runs, files, ingests, outputs, diagnostics
 ```
+
+An entry of a zip is the same source whether it was fetched alone (as
+`{zip}!{entry}`) or inside the whole zip: a read of the whole zip leaves
+the entries the lake already holds from a fetch of each alone, and an
+entry fetched alone whose zip was read whole is skipped, so `get` and
+`fetch` never write a row twice. Whole months come from the monthly
+archive, the settled publication; days and five-minute files from the
+report folders, the live one; `get` never mixes the two within a month,
+and each written file's sidecar names the vintage of every source.
 
 Every Parquet file carries the lake schema of its table: every column the
 table has ever had, each with its id as `PARQUET:field_id`, so files of

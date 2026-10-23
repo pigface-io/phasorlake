@@ -41,6 +41,10 @@ pub struct Cli {
 /// Top-level commands.
 #[derive(Subcommand, Debug)]
 pub enum Command {
+    /// An interval of some tables, fetched, read into the lake and written
+    /// as one Parquet file per table: whole published months from the
+    /// monthly archive, the rest from the report folders.
+    Get(GetArgs),
     /// Download files from AEMO into the archive, each once.
     Fetch {
         /// The market.
@@ -169,6 +173,61 @@ pub enum Command {
         #[command(subcommand)]
         cmd: WemCmd,
     },
+}
+
+/// `get`: an interval of some tables, straight to Parquet.
+#[derive(Args, Debug, Clone)]
+pub struct GetArgs {
+    /// The market: `nem`.
+    pub market: String,
+    /// Tables, comma separated.
+    #[arg(long, value_delimiter = ',', required = true)]
+    pub table: Vec<String>,
+    /// Tables to leave out, comma separated.
+    #[arg(long, value_delimiter = ',')]
+    pub exclude: Vec<String>,
+    /// The start, in market time: YYYY-MM, YYYY-MM-DD, YYYY-MM-DDTHH:MM, or
+    /// RFC 3339 with an offset. Included.
+    #[arg(long)]
+    pub from: String,
+    /// The end, in the same forms; a month or a day means its end. Not
+    /// included.
+    #[arg(long)]
+    pub to: String,
+    /// Where the files go: `{out}/{market}/{TABLE}.parquet` (default
+    /// `./utilake-get`).
+    #[arg(long)]
+    pub out: Option<PathBuf>,
+    /// Which side of the market's publication to read.
+    #[arg(long, value_enum, default_value_t = SourceArg::Auto)]
+    pub source: SourceArg,
+    /// The schema to write as (default: the table's latest).
+    #[arg(long)]
+    pub as_of: Option<u32>,
+    /// Refuse a table whose files hold more rows than this.
+    #[arg(long)]
+    pub max_rows: Option<u64>,
+    /// Plan and list what would be fetched, and stop.
+    #[arg(long)]
+    pub dry_run: bool,
+    /// Concurrent downloads.
+    #[arg(long)]
+    pub downloads: Option<usize>,
+    /// Ingest flags.
+    #[command(flatten)]
+    pub ingest: IngestArgs,
+}
+
+/// Which side of a market's publication `get` reads.
+#[derive(clap::ValueEnum, Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum SourceArg {
+    /// Whole published months from the monthly archive, the rest daily.
+    #[default]
+    Auto,
+    /// Every month the interval touches, from the monthly archive.
+    Monthly,
+    /// Every day, from the report folders.
+    Daily,
 }
 
 /// Markets to fetch.

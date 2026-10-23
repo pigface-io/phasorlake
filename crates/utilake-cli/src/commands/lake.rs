@@ -14,7 +14,7 @@ use crate::cli::{Cli, FetchMarket, IngestArgs};
 use crate::context::Context;
 use crate::render;
 
-fn options(
+pub(crate) fn options(
     cli: &Cli,
     ctx: &Context,
     args: &IngestArgs,

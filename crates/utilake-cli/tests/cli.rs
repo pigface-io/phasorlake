@@ -1054,3 +1054,286 @@ fn walk(root: &Path) -> Vec<PathBuf> {
     }
     out
 }
+
+/// A server on a local port for `get`: a year listing that names one
+/// whole-month zip, the zip itself served by byte range, and 404 for the
+/// rest. Answers until dropped.
+struct MonthServer {
+    base: String,
+    stop: std::sync::Arc<std::sync::atomic::AtomicBool>,
+    requests: std::sync::Arc<std::sync::Mutex<Vec<String>>>,
+}
+
+impl MonthServer {
+    fn start(zip: Vec<u8>) -> Self {
+        use std::io::{Read, Write};
+        let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+        listener.set_nonblocking(true).unwrap();
+        let port = listener.local_addr().unwrap().port();
+        let stop = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
+        let requests = std::sync::Arc::new(std::sync::Mutex::new(Vec::new()));
+        let (s2, r2) = (stop.clone(), requests.clone());
+        let year = "/Data_Archive/Wholesale_Electricity/MMSDM/2024/";
+        let listing = format!(
+            "<html><body><H1>nemweb.com.au - {year}</H1><hr><pre><A HREF=\"/x/\">[To Parent Directory]</A><br>   Tuesday, February 13, 2024 11:49 AM {} <A HREF=\"{year}MMSDM_2024_01.zip\">MMSDM_2024_01.zip</A><br></pre><hr></body></html>",
+            zip.len()
+        );
+        std::thread::spawn(move || {
+            while !s2.load(std::sync::atomic::Ordering::Relaxed) {
+                let Ok((mut sock, _)) = listener.accept() else {
+                    std::thread::sleep(std::time::Duration::from_millis(10));
+                    continue;
+                };
+                sock.set_nonblocking(false).unwrap();
+                let mut buf = vec![0u8; 8192];
+                let n = sock.read(&mut buf).unwrap_or(0);
+                let req = String::from_utf8_lossy(&buf[..n]).into_owned();
+                let path = req.split_whitespace().nth(1).unwrap_or("").to_owned();
+                let range = req.lines().find_map(|l| {
+                    l.to_ascii_lowercase()
+                        .strip_prefix("range: bytes=")
+                        .map(str::to_owned)
+                });
+                r2.lock()
+                    .unwrap()
+                    .push(format!("{path} {}", range.clone().unwrap_or_default()));
+                let (status, headers, body): (&str, String, Vec<u8>) = if path == year {
+                    (
+                        "200 OK",
+                        "Content-Type: text/html".into(),
+                        listing.clone().into_bytes(),
+                    )
+                } else if path == format!("{year}MMSDM_2024_01.zip") {
+                    match range.as_deref() {
+                        Some(r) => {
+                            let total = zip.len();
+                            let (a, b) = match r.split_once('-') {
+                                Some(("", n)) => (total.saturating_sub(n.parse().unwrap()), total),
+                                Some((a, "")) => (a.parse().unwrap(), total),
+                                Some((a, b)) => (
+                                    a.parse().unwrap(),
+                                    (b.parse::<usize>().unwrap() + 1).min(total),
+                                ),
+                                None => (0, total),
+                            };
+                            (
+                                "206 Partial Content",
+                                format!("Content-Range: bytes {a}-{}/{total}", b - 1),
+                                zip[a..b].to_vec(),
+                            )
+                        }
+                        None => ("200 OK", String::new(), zip.clone()),
+                    }
+                } else {
+                    ("404 Not Found", String::new(), b"<html>404</html>".to_vec())
+                };
+                let head = format!(
+                    "HTTP/1.1 {status}\r\nContent-Length: {}\r\n{headers}\r\nConnection: close\r\n\r\n",
+                    body.len()
+                );
+                let _ = sock.write_all(head.as_bytes());
+                let _ = sock.write_all(&body);
+                let _ = sock.shutdown(std::net::Shutdown::Write);
+                let mut rest = [0u8; 256];
+                while matches!(sock.read(&mut rest), Ok(n) if n > 0) {}
+            }
+        });
+        Self {
+            base: format!("http://127.0.0.1:{port}"),
+            stop,
+            requests,
+        }
+    }
+}
+
+impl Drop for MonthServer {
+    fn drop(&mut self) {
+        self.stop.store(true, std::sync::atomic::Ordering::Relaxed);
+    }
+}
+
+/// `get` over a whole-month zip: planned, picked out by range, read into
+/// the lake and written as one file with its sidecar; dry runs and refusals.
+#[test]
+fn get_writes_an_interval_of_a_table_from_a_whole_month_zip() {
+    use std::io::Write as _;
+    let cli = Cli::new();
+    let tmp = cli.home.path();
+    let inner = |name: &str, fixture: &str| {
+        let p = tmp.join(name);
+        make_zip(
+            &p,
+            &[(
+                &name.replace(".zip", ".CSV"),
+                &std::fs::read(fixtures().join(fixture)).unwrap(),
+            )],
+        );
+        std::fs::read(&p).unwrap()
+    };
+    let trading = inner(
+        "PUBLIC_DVD_TRADINGPRICE_202401010000.zip",
+        "TRADINGPRICE_v2_head.csv",
+    );
+    let dispatch = inner(
+        "PUBLIC_DVD_DISPATCHPRICE_202401010000.zip",
+        "DISPATCHPRICE_v4_head.csv",
+    );
+    let mut w = zip::ZipWriter::new(std::io::Cursor::new(Vec::new()));
+    let stored =
+        zip::write::SimpleFileOptions::default().compression_method(zip::CompressionMethod::Stored);
+    w.start_file("PUBLIC_DVD_TRADINGPRICE_202401010000.zip", stored)
+        .unwrap();
+    w.write_all(&trading).unwrap();
+    w.start_file("PUBLIC_DVD_DISPATCHPRICE_202401010000.zip", stored)
+        .unwrap();
+    w.write_all(&dispatch).unwrap();
+    w.start_file("README.txt", stored).unwrap();
+    w.write_all(&vec![b'.'; 2 * (trading.len() + dispatch.len())])
+        .unwrap();
+    let whole = w.finish().unwrap().into_inner();
+    let server = MonthServer::start(whole);
+    std::fs::write(
+        tmp.join("config.toml"),
+        format!(
+            "request_interval_ms = 0\n[sources.nem]\nbase_url = \"{}\"\n",
+            server.base
+        ),
+    )
+    .unwrap();
+    let out = tmp.join("out");
+    // Offline: nothing can be listed.
+    let (code, _, err) = cli.code(&[
+        "--offline",
+        "get",
+        "nem",
+        "--table",
+        "TRADINGPRICE",
+        "--from",
+        "2024-01",
+        "--to",
+        "2024-01",
+    ]);
+    assert_ne!(code, 0);
+    assert!(err.contains("offline") || err.contains("Offline"), "{err}");
+    // Refusals before any request.
+    let (code, _, err) = cli.code(&[
+        "get", "nem", "--table", "NOPE", "--from", "2024-01", "--to", "2024-01",
+    ]);
+    assert!(code != 0 && err.contains("No table named NOPE"), "{err}");
+    let (code, _, err) = cli.code(&[
+        "get",
+        "nem",
+        "--table",
+        "TRADINGPRICE",
+        "--from",
+        "2024-02",
+        "--to",
+        "2024-01",
+    ]);
+    assert!(code != 0 && err.contains("is not after"), "{err}");
+    let (code, _, err) = cli.code(&[
+        "get",
+        "gas",
+        "--table",
+        "TRADINGPRICE",
+        "--from",
+        "2024-01",
+        "--to",
+        "2024-01",
+    ]);
+    assert!(code != 0 && err.contains("No market named gas"), "{err}");
+    // A dry run: the plan and the listing, nothing fetched.
+    let text = cli.ok(&[
+        "get",
+        "nem",
+        "--table",
+        "TRADINGPRICE",
+        "--from",
+        "2024-01",
+        "--to",
+        "2024-01",
+        "--dry-run",
+        "--out",
+        out.to_str().unwrap(),
+    ]);
+    assert!(text.contains("nem-mmsdm: 1 file(s) over 2024-01"), "{text}");
+    assert!(!out.exists());
+    // The run: one table out of the zip by range, written with its sidecar.
+    let text = cli.ok(&[
+        "get",
+        "nem",
+        "--table",
+        "TRADINGPRICE",
+        "--from",
+        "2024-01",
+        "--to",
+        "2024-01",
+        "--out",
+        out.to_str().unwrap(),
+    ]);
+    assert!(text.contains("TRADINGPRICE"), "{text}");
+    let written = out.join("nem").join("TRADINGPRICE.parquet");
+    assert!(written.is_file(), "{text}");
+    let side: serde_json::Value = serde_json::from_slice(
+        &std::fs::read(out.join("nem").join("TRADINGPRICE.parquet.json")).unwrap(),
+    )
+    .unwrap();
+    assert!(side["rows"].as_u64().unwrap() > 0, "{side}");
+    assert_eq!(side["table"], "TRADINGPRICE");
+    let requests = server.requests.lock().unwrap().clone();
+    assert!(
+        requests
+            .iter()
+            .any(|r| r
+                .starts_with("/Data_Archive/Wholesale_Electricity/MMSDM/2024/MMSDM_2024_01.zip -")),
+        "the tail by range: {requests:?}"
+    );
+    assert!(
+        !requests
+            .iter()
+            .any(|r| r == "/Data_Archive/Wholesale_Electricity/MMSDM/2024/MMSDM_2024_01.zip "),
+        "never whole: {requests:?}"
+    );
+    // JSON output names what was written; the lake holds the one table.
+    let json = cli.ok(&[
+        "--json",
+        "get",
+        "nem",
+        "--table",
+        "TRADINGPRICE",
+        "--from",
+        "2024-01-02",
+        "--to",
+        "2024-01-03",
+        "--out",
+        out.to_str().unwrap(),
+    ]);
+    let last = json.lines().last().unwrap();
+    let v: serde_json::Value = serde_json::from_str(last).unwrap();
+    assert_eq!(v["type"], "get");
+    assert!(v["written"][0]["schema_id"].as_u64().is_some());
+    let ls = cli.ok(&["ls"]);
+    assert!(
+        ls.contains("TRADINGPRICE") && !ls.contains("DISPATCHPRICE"),
+        "{ls}"
+    );
+    // Too many rows for the cap.
+    let (code, _, err) = cli.code(&[
+        "get",
+        "nem",
+        "--table",
+        "TRADINGPRICE",
+        "--from",
+        "2024-01",
+        "--to",
+        "2024-01",
+        "--max-rows",
+        "1",
+        "--out",
+        out.to_str().unwrap(),
+    ]);
+    assert!(
+        code != 0 && err.contains("more than the 1 allowed"),
+        "{err}"
+    );
+}

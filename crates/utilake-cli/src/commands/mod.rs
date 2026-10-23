@@ -1,5 +1,6 @@
 //! One module per command family; `dispatch` routes the parsed CLI.
 
+mod get;
 mod inspect;
 mod lake;
 mod manifest;
@@ -16,6 +17,7 @@ pub async fn dispatch(cli: Cli) -> Result<i32> {
     init_logging(cli.verbose, cli.json);
     let ctx = Context::new(&cli)?;
     match &cli.command {
+        Command::Get(args) => get::get(&cli, &ctx, args).await,
         Command::Fetch { market } => lake::fetch(&cli, &ctx, market).await,
         Command::Ingest {
             paths,
