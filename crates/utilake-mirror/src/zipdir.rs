@@ -1,24 +1,17 @@
 //! A zip's central directory from byte spans of the file, without the rest
-//! of it: the end record in the file's last bytes says where the directory
-//! is, and the directory lists every entry's name, sizes, CRC-32, method and
-//! time. Nothing is decompressed, so a zip bomb costs nothing here; sizes
-//! are what the zip declares.
+//! of it, read by `utilake_zip::zipdir` (shared with the lake, which fetches
+//! single entries by the same directory): the mirror adds the entry's
+//! modified time as an instant in AEST, where AEMO packs its zips, and the
+//! record form `peek.ndjson` keeps.
 //!
 //! [`read_directory`] drives the reads through a [`Spans`] source: ranged
 //! requests to nemweb, or a file on disk.
 
 use serde::{Deserialize, Serialize};
+pub use utilake_zip::zipdir::{DirError, TAIL};
+use utilake_zip::zipdir::{DirectoryReader, Step};
 
 use crate::stamp::{AEST, Stamp};
-
-/// The end record, the longest comment it may be followed by, and the
-/// zip64 locator that may come before it.
-pub const TAIL: u64 = 20 + 22 + 0xFFFF;
-
-const EOCD: &[u8; 4] = b"PK\x05\x06";
-const ZIP64_LOCATOR: &[u8; 4] = b"PK\x06\x07";
-const ZIP64_EOCD: &[u8; 4] = b"PK\x06\x06";
-const CENTRAL: &[u8; 4] = b"PK\x01\x02";
 
 /// One entry of a zip, as its central directory records it.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -53,15 +46,19 @@ impl Entry {
     }
 }
 
-/// Why a directory could not be read.
-#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum DirError {
-    /// No end record in the last bytes: not a zip.
-    #[error("no end-of-central-directory record in the last {0} bytes: not a zip")]
-    NotAZip(u64),
-    /// The records point somewhere they cannot be.
-    #[error("the central directory is damaged: {0}")]
-    Damaged(&'static str),
+impl From<utilake_zip::zipdir::Entry> for Entry {
+    fn from(e: utilake_zip::zipdir::Entry) -> Self {
+        let (year, month, day, hour, minute, second) = e.modified_fields();
+        Self {
+            modified: e.modified_text(),
+            modified_at: Stamp::at(year, month, day, hour, minute, second, AEST),
+            name: e.name,
+            size: e.size,
+            compressed: e.compressed,
+            crc32: e.crc32,
+            method: e.method,
+        }
+    }
 }
 
 /// A file on disk, read by span; every span lies inside it, as the
@@ -85,16 +82,7 @@ impl Spans for OnDisk {
 /// name order, folders left out; none when it is not a zip that reads.
 /// Two zips that hold the same are the same data however they are packed.
 pub async fn contents(path: &std::path::Path) -> Option<Vec<(String, u32, u64)>> {
-    let file = std::fs::File::open(path).ok()?;
-    let len = file.metadata().ok()?.len();
-    let entries = read_directory(&mut OnDisk(file), len).await.ok()?;
-    let mut files: Vec<(String, u32, u64)> = entries
-        .into_iter()
-        .filter(|e| !e.name.ends_with('/'))
-        .map(|e| (e.name, e.crc32, e.size))
-        .collect();
-    files.sort();
-    Some(files)
+    utilake_zip::zipdir::contents(path)
 }
 
 /// Something byte spans of a file can be read from.
@@ -105,177 +93,20 @@ pub trait Spans {
     fn read(&mut self, start: u64, end: u64) -> impl Future<Output = Result<Vec<u8>, Self::Error>>;
 }
 
-/// Where the directory is.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum Found {
-    /// The directory's offset and size.
-    Directory(u64, u64),
-    /// A zip64 end record at this offset holds them.
-    Zip64(u64),
-}
-
 /// Every entry of the zip of `len` bytes, from at most three reads: its
 /// tail, a zip64 end record when it lies outside the tail, and the
 /// directory when it does.
 pub async fn read_directory<S: Spans>(src: &mut S, len: u64) -> Result<Vec<Entry>, S::Error> {
-    let tail_start = len.saturating_sub(TAIL);
-    let tail = src.read(tail_start, len).await?;
-    let (offset, size) = match locate(&tail)? {
-        Found::Directory(o, s) => (o, s),
-        Found::Zip64(at) => {
-            let record = if at >= tail_start {
-                tail[usize::try_from(at - tail_start).map_err(|_| damaged())?..].to_vec()
-            } else {
-                src.read(at, at + 56).await?
-            };
-            zip64_directory(&record)?
-        }
-    };
-    let end = offset
-        .checked_add(size)
-        .filter(|&e| e <= len)
-        .ok_or_else(damaged)?;
-    let directory = if offset >= tail_start {
-        let from = usize::try_from(offset - tail_start).map_err(|_| damaged())?;
-        let to = usize::try_from(end - tail_start).map_err(|_| damaged())?;
-        tail[from..to].to_vec()
-    } else {
-        src.read(offset, end).await?
-    };
-    Ok(entries(&directory)?)
-}
-
-fn damaged() -> DirError {
-    DirError::Damaged("an offset outside the file")
-}
-
-/// The end record in `tail` and where it says the directory is.
-fn locate(tail: &[u8]) -> Result<Found, DirError> {
-    let at = tail
-        .windows(4)
-        .rposition(|w| w == EOCD)
-        .filter(|&at| tail.len() >= at + 22)
-        .ok_or(DirError::NotAZip(tail.len() as u64))?;
-    let eocd = &tail[at..];
-    let size = u64::from(u32_at(eocd, 12));
-    let offset = u64::from(u32_at(eocd, 16));
-    // A zip64 locator sits just before the end record.
-    if at >= 20 && &tail[at - 20..at - 16] == ZIP64_LOCATOR {
-        return Ok(Found::Zip64(u64_at(&tail[at - 20..], 8)));
-    }
-    Ok(Found::Directory(offset, size))
-}
-
-/// The directory's offset and size from a zip64 end record.
-fn zip64_directory(record: &[u8]) -> Result<(u64, u64), DirError> {
-    if record.len() < 56 || &record[..4] != ZIP64_EOCD {
-        return Err(DirError::Damaged(
-            "no zip64 end record where the locator points",
-        ));
-    }
-    Ok((u64_at(record, 48), u64_at(record, 40)))
-}
-
-/// Every record of a central directory.
-fn entries(mut cd: &[u8]) -> Result<Vec<Entry>, DirError> {
-    let mut out = Vec::with_capacity(cd.len() / 80);
-    // Entries packed together share a time: the last one's is kept.
-    let mut last: Option<(u16, u16, String, Option<Stamp>)> = None;
-    while !cd.is_empty() {
-        if cd.len() < 46 || &cd[..4] != CENTRAL {
-            return Err(DirError::Damaged(
-                "a record that is not a central directory record",
-            ));
-        }
-        let name_len = usize::from(u16_at(cd, 28));
-        let extra_len = usize::from(u16_at(cd, 30));
-        let comment_len = usize::from(u16_at(cd, 32));
-        let end = 46 + name_len + extra_len + comment_len;
-        if cd.len() < end {
-            return Err(DirError::Damaged("a record longer than the directory"));
-        }
-        let mut size = u64::from(u32_at(cd, 24));
-        let mut compressed = u64::from(u32_at(cd, 20));
-        // Sizes too big for 32 bits are in the zip64 extra field, in order.
-        let mut extra = &cd[46 + name_len..46 + name_len + extra_len];
-        while extra.len() >= 4 {
-            let (id, len) = (u16_at(extra, 0), usize::from(u16_at(extra, 2)));
-            let body = &extra[4..(4 + len).min(extra.len())];
-            if id == 1 {
-                let mut fields = body.chunks_exact(8).map(|c| u64_at(c, 0));
-                if size == u64::from(u32::MAX) {
-                    size = fields
-                        .next()
-                        .ok_or(DirError::Damaged("a zip64 size missing"))?;
-                }
-                if compressed == u64::from(u32::MAX) {
-                    compressed = fields
-                        .next()
-                        .ok_or(DirError::Damaged("a zip64 size missing"))?;
-                }
+    let mut reader = DirectoryReader::new(len);
+    let mut step = reader.next();
+    loop {
+        match step {
+            Step::Read { start, end } => {
+                step = reader.feed(src.read(start, end).await?)?;
             }
-            extra = &extra[(4 + len).min(extra.len())..];
+            Step::Done(entries) => return Ok(entries.into_iter().map(Entry::from).collect()),
         }
-        let (date, time) = (u16_at(cd, 14), u16_at(cd, 12));
-        let (modified, modified_at) = match &last {
-            Some((d, t, text, at)) if (*d, *t) == (date, time) => (text.clone(), *at),
-            _ => {
-                let (text, at) = (dos_time(date, time), dos_stamp(date, time));
-                last = Some((date, time, text.clone(), at));
-                (text, at)
-            }
-        };
-        out.push(Entry {
-            // Zips made on Windows separate folders with `\`.
-            name: String::from_utf8_lossy(&cd[46..46 + name_len]).replace('\\', "/"),
-            size,
-            compressed,
-            crc32: u32_at(cd, 16),
-            method: u16_at(cd, 10),
-            modified,
-            modified_at,
-        });
-        cd = &cd[end..];
     }
-    Ok(out)
-}
-
-/// A DOS date and time as `YYYY-MM-DD HH:MM:SS`.
-fn dos_time(date: u16, time: u16) -> String {
-    format!(
-        "{:04}-{:02}-{:02} {:02}:{:02}:{:02}",
-        1980 + (date >> 9),
-        (date >> 5) & 0xF,
-        date & 0x1F,
-        time >> 11,
-        (time >> 5) & 0x3F,
-        (time & 0x1F) * 2
-    )
-}
-
-/// A DOS date and time as an instant in AEST.
-fn dos_stamp(date: u16, time: u16) -> Option<Stamp> {
-    Stamp::at(
-        1980 + i64::from(date >> 9),
-        ((date >> 5) & 0xF) as u8,
-        (date & 0x1F) as u8,
-        (time >> 11) as u8,
-        ((time >> 5) & 0x3F) as u8,
-        ((time & 0x1F) * 2) as u8,
-        AEST,
-    )
-}
-
-fn u16_at(b: &[u8], at: usize) -> u16 {
-    u16::from_le_bytes([b[at], b[at + 1]])
-}
-
-fn u32_at(b: &[u8], at: usize) -> u32 {
-    u32::from_le_bytes(b[at..at + 4].try_into().expect("four bytes"))
-}
-
-fn u64_at(b: &[u8], at: usize) -> u64 {
-    u64::from_le_bytes(b[at..at + 8].try_into().expect("eight bytes"))
 }
 
 #[cfg(test)]
@@ -320,7 +151,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn lists_a_zip_from_its_tail() {
+    async fn lists_a_zip_from_its_tail_with_the_time_as_an_instant() {
         let (r, reads) = read(zip("")).await;
         let e = r.unwrap();
         assert_eq!(reads, 1, "the directory is in the tail");
@@ -346,10 +177,20 @@ mod tests {
             old.derived().modified_at.unwrap().to_string(),
             "2017-01-12T12:24:16+10:00"
         );
-        assert_eq!(dos_time(0, 0), "1980-00-00 00:00:00");
-        assert!(dos_stamp(0, 0).is_none());
         let kept = e[1].clone().derived();
         assert_eq!(kept.modified_at, e[1].modified_at);
+        let zero = Entry::from(utilake_zip::zipdir::Entry {
+            name: "z".into(),
+            size: 0,
+            compressed: 0,
+            crc32: 0,
+            method: 0,
+            dos_date: 0,
+            dos_time: 0,
+            local_header_offset: 0,
+        });
+        assert_eq!(zero.modified, "1980-00-00 00:00:00");
+        assert!(zero.modified_at.is_none());
     }
 
     #[tokio::test]
@@ -359,137 +200,28 @@ mod tests {
         assert_eq!(reads, 2);
     }
 
-    /// A zip64 archive of one stored entry: its sizes in the zip64 extra
-    /// field, the directory found through the zip64 end record.
-    fn zip64(comment_len: usize) -> Vec<u8> {
-        let name = b"big.bin";
-        let mut z = Vec::new();
-        z.extend_from_slice(b"PK\x03\x04");
-        z.extend_from_slice(&[0; 26]);
-        z.extend_from_slice(b"data");
-        let cd_at = z.len() as u64;
-        z.extend_from_slice(b"PK\x01\x02");
-        z.extend_from_slice(&[45, 0, 45, 0, 0, 0, 0, 0]);
-        z.extend_from_slice(&[0, 0, 0x21, 0x5A]); // time 0, date 2025-01-01
-        z.extend_from_slice(&7u32.to_le_bytes()); // crc
-        z.extend_from_slice(&u32::MAX.to_le_bytes()); // compressed
-        z.extend_from_slice(&u32::MAX.to_le_bytes()); // size
-        z.extend_from_slice(&(name.len() as u16).to_le_bytes());
-        z.extend_from_slice(&20u16.to_le_bytes()); // extra
-        z.extend_from_slice(&[0; 10]); // comment length, disk, attributes
-        z.extend_from_slice(&u32::MAX.to_le_bytes()); // local header offset
-        z.extend_from_slice(name);
-        z.extend_from_slice(&1u16.to_le_bytes());
-        z.extend_from_slice(&16u16.to_le_bytes());
-        z.extend_from_slice(&5_000_000_000u64.to_le_bytes());
-        z.extend_from_slice(&4_000_000_000u64.to_le_bytes());
-        let cd_len = z.len() as u64 - cd_at;
-        let z64_at = z.len() as u64;
-        z.extend_from_slice(b"PK\x06\x06");
-        z.extend_from_slice(&44u64.to_le_bytes());
-        z.extend_from_slice(&[45, 0, 45, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-        z.extend_from_slice(&1u64.to_le_bytes());
-        z.extend_from_slice(&1u64.to_le_bytes());
-        z.extend_from_slice(&cd_len.to_le_bytes());
-        z.extend_from_slice(&cd_at.to_le_bytes());
-        z.extend_from_slice(b"PK\x06\x07");
-        z.extend_from_slice(&0u32.to_le_bytes());
-        z.extend_from_slice(&z64_at.to_le_bytes());
-        z.extend_from_slice(&1u32.to_le_bytes());
-        z.extend_from_slice(b"PK\x05\x06");
-        z.extend_from_slice(&[0xFF; 16]);
-        z.extend_from_slice(&(comment_len as u16).to_le_bytes());
-        z.extend(std::iter::repeat_n(b'c', comment_len));
-        z
-    }
-
     #[tokio::test]
-    async fn zip64_sizes_and_records() {
-        let (r, reads) = read(zip64(0)).await;
-        let e = r.unwrap();
-        assert_eq!(reads, 1);
-        assert_eq!((e[0].size, e[0].compressed), (5_000_000_000, 4_000_000_000));
-        assert_eq!(e[0].modified, "2025-01-01 00:00:00");
-        assert_eq!(
-            e[0].modified_at.unwrap().to_string(),
-            "2025-01-01T00:00:00+10:00"
-        );
-        // The zip64 end record and the directory both outside the tail.
-        let mut padded = vec![0u8; 70_000];
-        let small = zip64(0xFFFF);
-        let shift = padded.len() as u64;
-        // Move everything along: offsets in the records grow with it.
-        let mut z = small.clone();
-        let cd_at = 4 + 26 + 4;
-        let z64_at = z.windows(4).position(|w| w == b"PK\x06\x06").unwrap();
-        let loc = z.windows(4).position(|w| w == b"PK\x06\x07").unwrap();
-        z[z64_at + 48..z64_at + 56].copy_from_slice(&(cd_at as u64 + shift).to_le_bytes());
-        z[loc + 8..loc + 16].copy_from_slice(&(z64_at as u64 + shift).to_le_bytes());
-        padded.extend_from_slice(&z);
-        let (r, reads) = read(padded).await;
-        assert_eq!(r.unwrap()[0].name, "big.bin");
-        assert_eq!(reads, 3);
-    }
-
-    #[tokio::test]
-    async fn not_a_zip_and_damaged_directories() {
+    async fn not_a_zip_and_a_file_on_disk() {
         assert_eq!(
             read(b"just text".to_vec()).await.0,
             Err(DirError::NotAZip(9))
         );
-        // The end record points past the file.
-        let mut z = zip("");
-        let eocd = z.len() - 22;
-        z[eocd + 16..eocd + 20].copy_from_slice(&u32::MAX.to_le_bytes());
-        assert!(matches!(read(z).await.0, Err(DirError::Damaged(_))));
-        // A record that is not one.
-        let mut z = zip("");
-        let cd = z.windows(4).position(|w| w == b"PK\x01\x02").unwrap();
-        z[cd] = b'X';
-        assert!(matches!(read(z).await.0, Err(DirError::Damaged(_))));
-        // A record longer than the directory.
-        let mut z = zip("");
-        let cd = z.windows(4).rposition(|w| w == b"PK\x01\x02").unwrap();
-        z[cd + 28] = 0xFF;
-        assert!(matches!(read(z).await.0, Err(DirError::Damaged(_))));
-        // A locator pointing at no zip64 end record.
-        let mut z = zip64(0);
-        let z64 = z.windows(4).position(|w| w == b"PK\x06\x06").unwrap();
-        z[z64] = b'X';
-        assert!(matches!(read(z).await.0, Err(DirError::Damaged(_))));
-        // Sizes marked as zip64 with no zip64 field for them.
-        let mut z = zip64(0);
-        let extra = z.windows(4).position(|w| w == b"big.").unwrap() + 7;
-        z[extra..extra + 2].copy_from_slice(&9u16.to_le_bytes());
-        let e = read(z).await.0.unwrap();
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("a.zip");
+        std::fs::write(&path, zip("")).unwrap();
+        let file = std::fs::File::open(&path).unwrap();
+        let len = file.metadata().unwrap().len();
+        let e = read_directory(&mut OnDisk(file), len).await.unwrap();
+        assert_eq!(e.len(), 3);
+        assert_eq!(contents(&path).await.unwrap().len(), 2);
+        // A span past the file fails as the disk.
+        let mut short = OnDisk(std::fs::File::open(&path).unwrap());
         assert_eq!(
-            e[0].size,
-            u64::from(u32::MAX),
-            "an unknown extra field is skipped"
+            short.read(0, len + 10).await,
+            Err(DirError::Damaged("the file could not be read"))
         );
-        let mut z = zip64(0);
-        z[extra + 2..extra + 4].copy_from_slice(&0u16.to_le_bytes());
-        assert!(matches!(read(z).await.0, Err(DirError::Damaged(_))));
-        let mut z = zip64(0);
-        z[extra + 2..extra + 4].copy_from_slice(&8u16.to_le_bytes());
-        assert!(matches!(read(z).await.0, Err(DirError::Damaged(_))));
-        // Only one of the sizes too big for 32 bits: it takes the field.
-        let cd = zip64(0)
-            .windows(4)
-            .position(|w| w == b"PK\x01\x02")
-            .unwrap();
-        let mut z = zip64(0);
-        z[cd + 20..cd + 24].copy_from_slice(&9u32.to_le_bytes());
-        let e = read(z).await.0.unwrap();
-        assert_eq!((e[0].size, e[0].compressed), (5_000_000_000, 9));
-        let mut z = zip64(0);
-        z[cd + 24..cd + 28].copy_from_slice(&9u32.to_le_bytes());
-        let e = read(z).await.0.unwrap();
-        assert_eq!((e[0].size, e[0].compressed), (9, 5_000_000_000));
-        assert_eq!(
-            DirError::NotAZip(9).to_string(),
-            "no end-of-central-directory record in the last 9 bytes: not a zip"
-        );
+        std::fs::write(&path, b"text").unwrap();
+        assert!(contents(&path).await.is_none());
     }
 
     #[tokio::test]

@@ -349,7 +349,7 @@ fn is_zip_name(url: &str) -> bool {
 fn peek_error(e: &DirError) -> PeekError {
     let code = match e {
         DirError::NotAZip(_) => "zip.not_a_zip",
-        DirError::Damaged(_) => "zip.bad_directory",
+        DirError::Damaged(_) | DirError::Short { .. } => "zip.bad_directory",
     };
     PeekError {
         code: code.to_owned(),
@@ -579,6 +579,10 @@ mod tests {
         );
         assert_eq!(
             peek_error(&DirError::Damaged("x")).code,
+            "zip.bad_directory"
+        );
+        assert_eq!(
+            peek_error(&DirError::Short { wanted: 2, got: 1 }).code,
             "zip.bad_directory"
         );
     }

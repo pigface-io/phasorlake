@@ -376,6 +376,8 @@ impl Table {
             table: self.name.clone(),
             format_version: 3,
             current_schema_id: u32::from(self.current_schema),
+            // Every header of an MMS file is its column's name.
+            headers: std::collections::BTreeMap::new(),
             schemas: self
                 .schemas
                 .iter()

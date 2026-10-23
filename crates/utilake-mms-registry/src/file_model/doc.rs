@@ -192,6 +192,8 @@ pub(crate) mod tests {
     pub(crate) fn scada_doc() -> serde_json::Value {
         let t = unit_scada();
         let p = Published {
+            market: utilake_iceberg::Market::Nem,
+            model: Vec::new(),
             history: t.history(),
             declaration: Some(Declaration {
                 package: Some("DISPATCH".into()),
