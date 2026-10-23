@@ -219,7 +219,7 @@ pub fn bind(query: Query, lake: &Lake<'_>) -> Result<Bound, QueryError> {
 
     let (entity_filters, value_filters, keep) =
         filters_and_keep(&query, &table.name, &schema, &spec, &mut warnings)?;
-    Ok(Bound {
+    Ok(narrow(Bound {
         query,
         table: table.name.clone(),
         schema_id: Some(schema_id),
@@ -232,7 +232,63 @@ pub fn bind(query: Query, lake: &Lake<'_>) -> Result<Bound, QueryError> {
         keep,
         offset,
         warnings,
-    })
+    }))
+}
+
+/// A read that returns some columns reads only those, the roles, the
+/// time and the filtered columns: the schema and every position in it
+/// shrink to that set, in the target's order.
+fn narrow(b: Bound) -> Bound {
+    let Some(keep) = &b.keep else { return b };
+    let mut needed: Vec<usize> = keep.iter().map(|i| i.0).collect();
+    if let Some(s) = &b.spec {
+        needed.extend(s.entity.iter().map(|i| i.0));
+        needed.extend(s.valid.column().map(|i| i.0));
+        needed.extend(s.order.iter().map(|i| i.0));
+        needed.extend(s.cutoff.map(|i| i.0));
+    }
+    needed.extend(b.time.map(|i| i.0));
+    needed.extend(
+        b.entity_filters
+            .iter()
+            .chain(&b.value_filters)
+            .map(|f| f.column.0),
+    );
+    needed.sort_unstable();
+    needed.dedup();
+    if needed.len() == b.schema.fields().len() {
+        return b;
+    }
+    let at = |i: FieldIx| FieldIx(needed.binary_search(&i.0).expect("every role is needed"));
+    let fields: Vec<Field> = needed.iter().map(|i| b.schema.field(*i).clone()).collect();
+    let remap = |f: &BoundFilter| BoundFilter {
+        column: at(f.column),
+        values: f.values.clone(),
+    };
+    Bound {
+        schema: Arc::new(Schema::new(fields)),
+        spec: b.spec.as_ref().map(|s| BoundSpec {
+            entity: s.entity.iter().map(|i| at(*i)).collect(),
+            valid: s.valid.clone().map(at),
+            order: s.order.iter().map(|i| at(*i)).collect(),
+            cutoff: s.cutoff.map(at),
+            unit: s.unit,
+            collapse_all: s.collapse_all,
+        }),
+        time: b.time.map(at),
+        files: b
+            .files
+            .iter()
+            .map(|fr| FileRead {
+                file: fr.file,
+                columns: needed.iter().map(|i| fr.columns[*i].clone()).collect(),
+            })
+            .collect(),
+        entity_filters: b.entity_filters.iter().map(remap).collect(),
+        value_filters: b.value_filters.iter().map(remap).collect(),
+        keep: Some(keep.iter().map(|i| at(*i)).collect()),
+        ..b
+    }
 }
 
 /// A table without a history: every column as the registry derived it
@@ -293,7 +349,7 @@ fn bind_raw(
     };
     let (entity_filters, value_filters, keep) =
         filters_and_keep(&query, &table.name, &schema, &spec, &mut warnings)?;
-    Ok(Bound {
+    Ok(narrow(Bound {
         query,
         table: table.name.clone(),
         schema_id: None,
@@ -306,7 +362,7 @@ fn bind_raw(
         keep,
         offset,
         warnings,
-    })
+    }))
 }
 
 /// Filters by column, split by whether the column is an entity, and the

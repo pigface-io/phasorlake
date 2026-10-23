@@ -34,7 +34,7 @@ use arrow_array::RecordBatch;
 pub use bind::bind;
 pub use catalog::{LakeFile, SourceStamp, catalog};
 pub use error::QueryError;
-pub use output::{Format, Frame, Frames, RawBatch, Report, Resolved, SourceRef, Written};
+pub use output::{Format, Frame, Frames, RawBatch, Report, Resolved, SourceRef, Timing, Written};
 pub use query::{Bound, BoundSpec, FieldIx, Filter, Projection, Query, Resolution, Unit};
 pub use time::{
     Known, KnownTime, MarketOffset, Micros, Valid, ValidEnd, ValidTime, ValidWindow, parse_local,
@@ -98,34 +98,48 @@ pub fn read(b: &Bound, lake: &Lake<'_>) -> Result<Frames, QueryError> {
     let scan_schema = scan::scan_schema(&b.schema, &b.offset.tz());
     let mut frames = Vec::new();
     let mut out_schema = None;
+    let us = |t: std::time::Instant| u64::try_from(t.elapsed().as_micros()).unwrap_or(u64::MAX);
     for (_, reads) in &units {
         let mut batches: Vec<RecordBatch> = Vec::new();
+        let t = std::time::Instant::now();
         for fr in reads {
             let ix = u32::try_from(fr.file).expect("fewer than 2^32 files");
             batches.extend(scan::scan(b, lake, fr, ix, known_at, &mut report)?);
             report.files += 1;
         }
+        report.timing.scan_us += us(t);
         if batches.is_empty() {
             continue;
         }
+        let t = std::time::Instant::now();
         let unit = arrow_select::concat::concat_batches(&scan_schema, &batches)
             .map_err(|e| QueryError::arrow(&b.table, e))?;
+        drop(batches);
+        report.timing.concat_us += us(t);
         report.units += 1;
         let frame = match (&b.query.resolution, &b.spec) {
             (Resolution::Raw, _) | (_, None) => {
+                let t = std::time::Instant::now();
                 let out =
                     out_schema.get_or_insert_with(|| output::output_schema(b, &unit.schema()));
-                Frame::Raw(RawBatch(output::finish(&unit, b, out, &names)?))
+                let f = Frame::Raw(RawBatch(output::finish(&unit, b, out, &names)?));
+                report.timing.finish_us += us(t);
+                f
             }
             (_, Some(spec)) => {
+                let t = std::time::Instant::now();
                 let mut resolved = resolve::resolve(&unit, b, spec, &mut report)?;
                 if !b.value_filters.is_empty() {
                     resolved = scan::apply_filters(&resolved, &b.value_filters)
                         .map_err(|e| QueryError::arrow(&b.table, e))?;
                 }
+                report.timing.resolve_us += us(t);
+                let t = std::time::Instant::now();
                 let out =
                     out_schema.get_or_insert_with(|| output::output_schema(b, &resolved.schema()));
-                Frame::Resolved(Resolved(output::finish(&resolved, b, out, &names)?))
+                let f = Frame::Resolved(Resolved(output::finish(&resolved, b, out, &names)?));
+                report.timing.finish_us += us(t);
+                f
             }
         };
         report.rows_out += frame.batch().num_rows() as u64;

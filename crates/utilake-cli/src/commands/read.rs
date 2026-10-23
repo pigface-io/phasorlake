@@ -135,6 +135,7 @@ pub async fn read(ctx: &Context, args: &ReadArgs) -> Result<i32> {
                     "rows": r.rows_out, "rows_read": r.rows_read, "units": r.units, "files": r.files,
                     "dropped_window": r.dropped_window, "dropped_unknown": r.dropped_unknown,
                     "nan_rows": r.nan_rows, "columns": columns, "sources": r.sources,
+                    "timing": r.timing,
                 }));
             } else {
                 let rows = vec![
@@ -158,6 +159,16 @@ pub async fn read(ctx: &Context, args: &ReadArgs) -> Result<i32> {
                     ],
                     vec!["not yet known".to_owned(), r.dropped_unknown.to_string()],
                     vec!["columns".to_owned(), columns.join(", ")],
+                    vec![
+                        "time".to_owned(),
+                        format!(
+                            "scan {} ms, concat {} ms, resolve {} ms, finish {} ms",
+                            r.timing.scan_us / 1000,
+                            r.timing.concat_us / 1000,
+                            r.timing.resolve_us / 1000,
+                            r.timing.finish_us / 1000
+                        ),
+                    ],
                 ];
                 print!("{}", render::table(&["", ""], &rows));
             }

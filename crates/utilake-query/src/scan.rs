@@ -138,17 +138,29 @@ pub fn scan(
         })
         .collect();
     let mask = ProjectionMask::columns(builder.parquet_schema(), wanted.iter().copied());
-    let reader = builder
-        .with_projection(mask)
-        .with_batch_size(BATCH_ROWS)
-        .build()
-        .map_err(parquet_err)?;
     let axis = b.spec.as_ref().map(|s| &s.valid);
     let valid_ix = match (axis, b.time) {
         (Some(a), _) => a.column().copied(),
         (None, t) => t,
     };
     let trim_now = window::before_resolution(axis) || b.query.resolution == Resolution::Raw;
+    // Row groups whose valid column lies outside the window, by their
+    // statistics, are not read at all.
+    let groups = if trim_now && let Some(ix) = valid_ix {
+        row_groups_in(
+            &builder,
+            &read.columns[ix.0],
+            window::plan_bounds(axis, &b.query.window),
+            b.offset,
+        )
+    } else {
+        None
+    };
+    let mut builder = builder.with_projection(mask).with_batch_size(BATCH_ROWS);
+    if let Some(g) = groups {
+        builder = builder.with_row_groups(g);
+    }
+    let reader = builder.build().map_err(parquet_err)?;
     let mut out = Vec::new();
     for batch in reader {
         let batch = batch.map_err(arrow_err)?;
@@ -211,6 +223,44 @@ pub fn scan(
         }
     }
     Ok(out)
+}
+
+/// The row groups whose valid column may hold a value in `[t0, t1)`, by
+/// the column's statistics; none when every group may (the column is not
+/// in the file, or a group has no statistics).
+fn row_groups_in(
+    builder: &ParquetRecordBatchReaderBuilder<File>,
+    column: &Column,
+    (t0, t1): (i64, i64),
+    off: MarketOffset,
+) -> Option<Vec<usize>> {
+    use parquet::file::statistics::Statistics;
+    let Column::Read { source, .. } = column else {
+        return None;
+    };
+    let col = builder
+        .parquet_schema()
+        .columns()
+        .iter()
+        .position(|c| c.name() == source)?;
+    let mut keep = Vec::new();
+    for (i, rg) in builder.metadata().row_groups().iter().enumerate() {
+        let (min, max) = match rg.column(col).statistics() {
+            Some(Statistics::Int64(s)) => match (s.min_opt(), s.max_opt()) {
+                (Some(a), Some(z)) => (*a, *z),
+                _ => return None,
+            },
+            Some(Statistics::Int32(s)) => match (s.min_opt(), s.max_opt()) {
+                (Some(a), Some(z)) => (off.midnight_us(*a), off.midnight_us(*z)),
+                _ => return None,
+            },
+            _ => return None,
+        };
+        if max >= t0 && min < t1 {
+            keep.push(i);
+        }
+    }
+    Some(keep)
 }
 
 /// The rows whose columns are among the filters' values.

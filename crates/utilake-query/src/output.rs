@@ -90,6 +90,21 @@ pub struct Report {
     pub warnings: Vec<Diagnostic>,
     /// The sources, in stamp order.
     pub sources: Vec<SourceRef>,
+    /// Where the time went.
+    pub timing: Timing,
+}
+
+/// Microseconds spent in each stage of a read.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize)]
+pub struct Timing {
+    /// Reading, projecting and trimming the files.
+    pub scan_us: u64,
+    /// Joining a unit's batches into one.
+    pub concat_us: u64,
+    /// The kernel.
+    pub resolve_us: u64,
+    /// The output schema, the source names, the projection.
+    pub finish_us: u64,
 }
 
 /// A read's frames.

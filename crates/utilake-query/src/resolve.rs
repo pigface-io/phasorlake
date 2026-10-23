@@ -96,13 +96,26 @@ pub fn resolve(
         return with_valid_to(batch, b, spec, report);
     }
 
-    // The fact, and the rank within it.
+    // The fact, and the rank within it. Where the rows have a valid time
+    // that is not a version start, the fact is grouped by that time
+    // first: the files are in time order already, so the sort is a merge
+    // of runs, and each time's rows are a small group sorted on their
+    // own. Elsewhere (a `from` axis, no valid time) the whole unit sorts
+    // by (fact…, rank…).
     let n_target = b.schema.fields().len();
+    let by_time = match spec.valid {
+        ValidAxis::IntervalEnd(c) | ValidAxis::Instant(c) if !spec.collapse_all => {
+            micros_of(batch.column(c.0), b.offset)
+        }
+        _ => None,
+    };
     let (key_ix, rank_ix): (Vec<usize>, Vec<(usize, bool)>) = if spec.collapse_all {
         ((0..n_target).collect(), vec![(src_ix, true)])
     } else {
         let mut key: Vec<usize> = spec.entity.iter().map(|i| i.0).collect();
-        key.extend(spec.valid.column().map(|c| c.0));
+        if by_time.is_none() {
+            key.extend(spec.valid.column().map(|c| c.0));
+        }
         let mut rank: Vec<(usize, bool)> = Vec::new();
         match b.query.resolution {
             Resolution::Revisions => key.extend(spec.order.iter().map(|i| i.0)),
@@ -128,22 +141,51 @@ pub fn resolve(
         let cols: Vec<ArrayRef> = ixs.iter().map(|(i, _)| batch.column(*i).clone()).collect();
         converter.convert_columns(&cols)
     };
-    let keys = rows(&key_ix.iter().map(|i| (*i, false)).collect::<Vec<_>>()).map_err(err)?;
+    let key_fields: Vec<(usize, bool)> = key_ix.iter().map(|i| (*i, false)).collect();
+    let keys = rows(&key_fields).map_err(err)?;
     let ranks = rows(&rank_ix).map_err(err)?;
-    let mut order: Vec<usize> = (0..batch.num_rows()).collect();
-    order.sort_unstable_by(|&a, &c| {
-        keys.row(a)
-            .cmp(&keys.row(c))
-            .then_with(|| ranks.row(a).cmp(&ranks.row(c)))
-    });
-    let mut winners: Vec<u32> = Vec::with_capacity(order.len());
-    let mut prev: Option<usize> = None;
-    for &i in &order {
-        if prev.is_none_or(|p| keys.row(p) != keys.row(i)) {
-            winners.push(i as u32);
+    let n = batch.num_rows();
+    let mut order: Vec<u32> = (0..n as u32).collect();
+    let by_fact_then_rank = |a: &u32, c: &u32| {
+        keys.row(*a as usize)
+            .cmp(&keys.row(*c as usize))
+            .then_with(|| ranks.row(*a as usize).cmp(&ranks.row(*c as usize)))
+    };
+    let mut winners: Vec<u32> = Vec::with_capacity(n);
+    let mut keep_first_of_each_fact = |group: &[u32]| {
+        let mut prev: Option<u32> = None;
+        for &i in group {
+            if prev.is_none_or(|p| keys.row(p as usize) != keys.row(i as usize)) {
+                winners.push(i);
+            }
+            prev = Some(i);
         }
-        prev = Some(i);
+    };
+    if let Some(valid) = by_time {
+        let at = |i: u32| valid[i as usize].unwrap_or(i64::MIN);
+        if !order.is_sorted_by_key(|i| at(*i)) {
+            // Stable: runs of one file stay in file order and merge.
+            order.sort_by_key(|i| at(*i));
+        }
+        let mut start = 0;
+        while start < n {
+            let t = at(order[start]);
+            let mut end = start + 1;
+            while end < n && at(order[end]) == t {
+                end += 1;
+            }
+            let group = &mut order[start..end];
+            if group.len() > 1 {
+                group.sort_unstable_by(by_fact_then_rank);
+            }
+            keep_first_of_each_fact(group);
+            start = end;
+        }
+    } else {
+        order.sort_unstable_by(by_fact_then_rank);
+        keep_first_of_each_fact(&order);
     }
+    drop(order);
     let batch =
         arrow_select::take::take_record_batch(&batch, &UInt32Array::from(winners)).map_err(err)?;
     with_valid_to(batch, b, spec, report)

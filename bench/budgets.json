@@ -54,16 +54,16 @@
       "max_ns": 8.908
     },
     "query/resolve_from_table": {
-      "min_rows_per_s": 6300000.0
+      "min_rows_per_s": 6500000.0
     },
     "query/resolve_interval_day": {
-      "min_rows_per_s": 8700000.0
+      "min_rows_per_s": 16700000.0
     },
     "query/resolve_known_at": {
-      "min_rows_per_s": 18000000.0
+      "min_rows_per_s": 27000000.0
     },
     "query/resolve_revisions_day": {
-      "min_rows_per_s": 8600000.0
+      "min_rows_per_s": 16300000.0
     },
     "registry/load_embedded_from_blob": {
       "max_ns": 2000000.0
