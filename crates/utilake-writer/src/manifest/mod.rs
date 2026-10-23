@@ -167,6 +167,13 @@ pub struct LiveOutput {
     pub min_time: Option<i64>,
     /// Its greatest.
     pub max_time: Option<i64>,
+    /// The partition it is in, as its directory names it.
+    #[serde(default)]
+    pub partition: String,
+    /// When the server last changed the source file, RFC 3339 UTC, when
+    /// the server said.
+    #[serde(default)]
+    pub last_modified_at: Option<String>,
 }
 
 /// A row of `ingests` with its outputs, for listings.
@@ -592,7 +599,7 @@ impl Manifest {
     /// month, then source file, entry and output.
     pub fn live_outputs(&self, table: Option<&str>) -> Result<Vec<LiveOutput>, ManifestError> {
         let mut stmt = self.sql(self.conn.prepare(
-            "SELECT i.table_name, o.parquet_path, o.rows, o.bytes, i.schema_id, i.source_version, i.source_period, f.url, i.entry, o.min_time, o.max_time
+            "SELECT i.table_name, o.parquet_path, o.rows, o.bytes, i.schema_id, i.source_version, i.source_period, f.url, i.entry, o.min_time, o.max_time, o.partition, f.last_modified_at
              FROM outputs o JOIN ingests i ON o.ingest_id = i.id JOIN files f ON i.file_id = f.id
              WHERE i.status = 'ok' AND (?1 IS NULL OR i.table_name = ?1)
              ORDER BY i.table_name, i.source_period, f.url, i.entry, o.id",
@@ -611,6 +618,8 @@ impl Manifest {
                     entry: r.get(8)?,
                     min_time: r.get(9)?,
                     max_time: r.get(10)?,
+                    partition: r.get(11)?,
+                    last_modified_at: r.get(12)?,
                 })
             })
             .and_then(Iterator::collect),
@@ -910,7 +919,7 @@ mod tests {
             size: 10,
             etag: Some("e".into()),
             last_modified: None,
-            last_modified_at: None,
+            last_modified_at: Some("2024-02-01T00:00:00Z".into()),
         }
     }
 
@@ -1016,6 +1025,11 @@ mod tests {
             ("https://h/a.zip", "A.CSV")
         );
         assert_eq!((live[0].min_time, live[0].max_time), (Some(10), Some(20)));
+        assert_eq!(live[0].partition, outputs[0].partition.to_string());
+        assert_eq!(
+            live[0].last_modified_at.as_deref(),
+            Some("2024-02-01T00:00:00Z")
+        );
         assert_eq!(m.live_outputs(None).unwrap(), live);
         assert!(m.live_outputs(Some("NONE")).unwrap().is_empty());
         let recs = m.list_ingests(None, false, 10).unwrap();

@@ -256,6 +256,8 @@ mod tests {
             entry: "E.CSV".into(),
             min_time: None,
             max_time: None,
+            partition: String::new(),
+            last_modified_at: None,
         }
     }
 
