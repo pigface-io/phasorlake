@@ -21,6 +21,11 @@ pub struct Query {
     pub exclude: Vec<String>,
     /// The periods asked for, inclusive.
     pub range: TimeRange,
+    /// The instants asked for within the periods, `[from, to)` as
+    /// microseconds since the epoch, when the request is finer than a day:
+    /// a source picking five-minute entries out of a day's zip keeps the
+    /// ones inside. `None` means the whole of every period.
+    pub instants: Option<(i64, i64)>,
 }
 
 /// Which entries of a zip a source wants fetched alone, out of the
@@ -170,6 +175,7 @@ mod tests {
                 utilake_core::YearMonth::new(2024, 1).unwrap(),
                 utilake_core::YearMonth::new(2024, 1).unwrap(),
             ),
+            instants: None,
         };
         assert!(
             Bare.archived(&Archive::new(dir.path()), &q)

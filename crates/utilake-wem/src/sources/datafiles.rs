@@ -303,6 +303,7 @@ mod tests {
                 YearMonth::new(2023, 8).unwrap(),
                 YearMonth::new(2023, 9).unwrap(),
             ),
+            instants: None,
         };
         let files = w.list(&q, &f).await.unwrap();
         assert_eq!(files.len(), 2);

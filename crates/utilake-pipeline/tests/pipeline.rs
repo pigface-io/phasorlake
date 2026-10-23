@@ -1427,6 +1427,7 @@ async fn fetch_only_downloads_and_ingest_reads_the_archived_month() {
         exclude: Vec::new(),
         tables: tables.iter().map(|t| (*t).to_owned()).collect(),
         range: TimeRange::months(ym, ym),
+        instants: None,
     };
     let (rep, _) = run_plan(
         &e,
@@ -1520,6 +1521,7 @@ async fn remote_source_downloads_then_serves_from_cache_and_reports_fetch_failur
         exclude: Vec::new(),
         tables: vec![],
         range: TimeRange::months(ym, ym),
+        instants: None,
     };
     let plan = || Plan {
         request: "fetch nem".into(),
@@ -1704,6 +1706,7 @@ async fn an_entry_picked_out_of_a_zip_and_the_whole_zip_do_not_double_up() {
                 tables: tables.iter().map(|t| (*t).to_owned()).collect(),
                 exclude: Vec::new(),
                 range: TimeRange::months(ym, ym),
+                instants: None,
             },
         },
         options: RunOptions::default(),

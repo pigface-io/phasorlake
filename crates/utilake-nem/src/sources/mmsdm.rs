@@ -29,7 +29,7 @@ use url::Url;
 use utilake_core::YearMonth;
 
 use utilake_acquire::{
-    Archive, FetchError, Fetcher, LocalFile, Query, RemoteFile, Source, listing,
+    Archive, Entry, FetchError, Fetcher, LocalFile, Pick, Picks, Query, RemoteFile, Source, listing,
 };
 
 /// The source id.
@@ -445,6 +445,61 @@ impl Source for MmsdmArchive {
         describe_name(url.clone())
     }
 
+    /// A whole-month zip (July 2009 to December 2014) holds every table's
+    /// zip: read by its directory when tables are named.
+    fn wants_ranged(&self, remote: &RemoteFile) -> bool {
+        remote.table.is_none()
+            && remote
+                .url
+                .path_segments()
+                .and_then(|mut s| s.next_back())
+                .is_some_and(|n| {
+                    n.starts_with("MMSDM_") && n.to_ascii_lowercase().ends_with(".zip")
+                })
+    }
+
+    /// The nested zips of the tables asked for; the whole zip when none
+    /// are, or when a wanted table has no zip of its own in it.
+    fn pick(&self, remote: &RemoteFile, entries: &[Entry], query: &Query) -> Picks {
+        if query.tables.is_empty() {
+            return Picks::Whole;
+        }
+        let wanted = |t: &str| {
+            query.tables.iter().any(|w| w.eq_ignore_ascii_case(t))
+                && !query.exclude.iter().any(|x| x.eq_ignore_ascii_case(t))
+        };
+        let picks: Vec<Pick> = entries
+            .iter()
+            .enumerate()
+            .filter(|(_, e)| !e.is_dir())
+            .filter_map(|(index, e)| {
+                let name = e.name.rsplit('/').next().unwrap_or(&e.name);
+                let parsed = crate::names::parse(name)?;
+                let table = if parsed.file.is_some() {
+                    parsed.table.clone()
+                } else {
+                    parsed.split_table().0.to_owned()
+                };
+                if !wanted(&table) || !name.to_ascii_lowercase().ends_with(".zip") {
+                    return None;
+                }
+                let url = Url::parse(&format!("{}!{}", remote.url, e.name)).ok()?;
+                let mut remote_entry = describe_name(url)?;
+                remote_entry.size = Some(e.size);
+                remote_entry.modified = remote.modified.clone();
+                remote_entry.modified_at = remote.modified_at;
+                Some(Pick {
+                    index,
+                    remote: remote_entry,
+                })
+            })
+            .collect();
+        if picks.is_empty() {
+            return Picks::Whole;
+        }
+        Picks::Entries(picks)
+    }
+
     async fn list(&self, query: &Query, fetcher: &Fetcher) -> Result<Vec<RemoteFile>, FetchError> {
         let mut out = Vec::new();
         let upper = |names: &[String]| -> Vec<String> {
@@ -668,6 +723,7 @@ mod tests {
                 exclude: exclude.iter().map(|s| (*s).to_owned()).collect(),
                 tables: tables.iter().map(|s| (*s).to_owned()).collect(),
                 range: TimeRange::months(ym, ym),
+                instants: None,
             };
             let (a, f) = (&a, &f);
             async move { a.list(&q, f).await.unwrap() }
@@ -722,6 +778,7 @@ mod tests {
             exclude: Vec::new(),
             tables: vec!["dispatch_unit_scada".into(), "BIDPEROFFER".into()],
             range: TimeRange::months(ym, ym),
+            instants: None,
         };
         let files = a.list(&q, &f).await.unwrap();
         let names: Vec<String> = files.iter().map(RemoteFile::file_name).collect();
@@ -749,6 +806,7 @@ mod tests {
                     exclude: Vec::new(),
                     tables: vec![],
                     range: TimeRange::months(ym, ym),
+                    instants: None,
                 },
                 &f,
             )
@@ -766,6 +824,7 @@ mod tests {
                     exclude: Vec::new(),
                     tables: vec!["DISPATCH_UNIT_SCADAX".into()],
                     range: TimeRange::months(ym, ym),
+                    instants: None,
                 },
                 &f,
             )
@@ -792,6 +851,7 @@ mod tests {
                     exclude: vec![],
                     tables: vec!["DISPATCH_UNIT_SCADA".into(), "NOPE".into()],
                     range: TimeRange::months(ym, ym),
+                    instants: None,
                 },
                 &f,
             )
@@ -808,6 +868,7 @@ mod tests {
                     exclude: vec!["bidperoffer".into(), "PREDISPATCHPRICE".into()],
                     tables: vec![],
                     range: TimeRange::months(ym, ym),
+                    instants: None,
                 },
                 &f,
             )
@@ -825,6 +886,7 @@ mod tests {
                     exclude: vec!["BIDPEROFFER".into()],
                     tables: vec!["DISPATCH_UNIT_SCADA".into(), "BIDPEROFFER".into()],
                     range: TimeRange::months(ym, ym),
+                    instants: None,
                 },
                 &f,
             )
@@ -842,6 +904,7 @@ mod tests {
                     exclude: Vec::new(),
                     tables: vec![],
                     range: TimeRange::months(ym2, ym2),
+                    instants: None,
                 },
                 &f,
             )
@@ -860,6 +923,7 @@ mod tests {
                     exclude: Vec::new(),
                     tables: vec![],
                     range: TimeRange::months(ym3, ym3),
+                    instants: None,
                 },
                 &f
             )
@@ -900,6 +964,7 @@ mod tests {
                     exclude: Vec::new(),
                     tables: vec![],
                     range: TimeRange::months(ym, ym),
+                    instants: None,
                 },
                 &f,
             )
@@ -912,6 +977,7 @@ mod tests {
                     exclude: Vec::new(),
                     tables: vec!["BIDOFFERPERIOD".into()],
                     range: TimeRange::months(ym, ym),
+                    instants: None,
                 },
                 &f,
             )
@@ -924,6 +990,7 @@ mod tests {
                     exclude: Vec::new(),
                     tables: vec!["dispatchprice".into()],
                     range: TimeRange::months(ym, ym),
+                    instants: None,
                 },
                 &f,
             )
@@ -1032,6 +1099,7 @@ mod tests {
                     exclude: Vec::new(),
                     tables: vec!["REGION".into()],
                     range: TimeRange::months(ym, ym),
+                    instants: None,
                 },
                 &f,
             )
@@ -1071,6 +1139,7 @@ mod tests {
             exclude: Vec::new(),
             tables: tables.iter().map(|s| (*s).to_owned()).collect(),
             range: TimeRange::months(ym, ym),
+            instants: None,
         };
         let all = a.list(&query(&[]), &f).await.unwrap();
         assert_eq!(all.len(), 1);
@@ -1103,6 +1172,7 @@ mod tests {
                 exclude: Vec::new(),
                 tables: vec![],
                 range: TimeRange::months(ym, ym),
+                instants: None,
             }
         };
         // A month the year does not list.
@@ -1155,6 +1225,96 @@ mod tests {
         assert_eq!(r.period, Some(YearMonth::new(2014, 1).unwrap().into()));
         assert!(
             describe_name(Url::parse("https://h/A/MMSDM_2014_01.zip!notes.txt").unwrap()).is_none()
+        );
+    }
+
+    #[test]
+    fn a_whole_month_zip_is_read_by_its_directory_for_the_tables_asked() {
+        let a = MmsdmArchive::new("https://h").unwrap();
+        let whole = RemoteFile {
+            url: Url::parse(
+                "https://h/Data_Archive/Wholesale_Electricity/MMSDM/2014/MMSDM_2014_01.zip",
+            )
+            .unwrap(),
+            source: SOURCE_ID,
+            table: None,
+            period: Some(YearMonth::new(2014, 1).unwrap().into()),
+            size: None,
+            modified: Some("m".into()),
+            modified_at: None,
+        };
+        assert!(a.wants_ranged(&whole));
+        let per_table = RemoteFile {
+            url: Url::parse("https://h/x/DATA/PUBLIC_DVD_REGION_201401010000.zip").unwrap(),
+            table: Some("REGION".into()),
+            ..whole.clone()
+        };
+        assert!(!a.wants_ranged(&per_table));
+        let entry = |name: &str| Entry {
+            name: name.into(),
+            size: 10,
+            compressed: 8,
+            crc32: 0,
+            method: 0,
+            dos_date: 0,
+            dos_time: 0,
+            local_header_offset: 0,
+        };
+        let entries = [
+            entry(
+                "MMSDM_2014_01/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_REGION_201401010000.zip",
+            ),
+            entry(
+                "MMSDM_2014_01/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_DISPATCHPRICE_201401010000.zip",
+            ),
+            entry(
+                "MMSDM_2014_01/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_BIDPEROFFER1_201401010000.zip",
+            ),
+            entry("MMSDM_2014_01/MMSDM_Historical_Data_SQLLoader/DATA/"),
+            entry(
+                "MMSDM_2014_01/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_REGION_201401010000.CSV",
+            ),
+            entry("MMSDM_2014_01/README.txt"),
+        ];
+        let q = |tables: &[&str], exclude: &[&str]| Query {
+            tables: tables.iter().map(|t| (*t).to_owned()).collect(),
+            exclude: exclude.iter().map(|t| (*t).to_owned()).collect(),
+            range: TimeRange::months(
+                YearMonth::new(2014, 1).unwrap(),
+                YearMonth::new(2014, 1).unwrap(),
+            ),
+            instants: None,
+        };
+        assert_eq!(
+            a.pick(&whole, &entries, &q(&[], &[])),
+            Picks::Whole,
+            "every table"
+        );
+        let Picks::Entries(p) = a.pick(&whole, &entries, &q(&["region", "BIDPEROFFER"], &[]))
+        else {
+            panic!("entries");
+        };
+        assert_eq!(
+            p.iter().map(|p| p.index).collect::<Vec<_>>(),
+            [0, 2],
+            "zips only, the split digit ignored"
+        );
+        assert_eq!(p[0].remote.table.as_deref(), Some("REGION"));
+        assert_eq!(p[0].remote.period, whole.period);
+        assert_eq!(
+            (p[0].remote.size, p[0].remote.modified.as_deref()),
+            (Some(10), Some("m"))
+        );
+        assert!(p[0].remote.url.as_str().ends_with(".zip!MMSDM_2014_01/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_REGION_201401010000.zip"));
+        assert_eq!(
+            a.pick(&whole, &entries, &q(&["REGION"], &["REGION"])),
+            Picks::Whole,
+            "nothing left to pick"
+        );
+        assert_eq!(
+            a.pick(&whole, &entries, &q(&["NOPE"], &[])),
+            Picks::Whole,
+            "a table the zip lacks"
         );
     }
 }

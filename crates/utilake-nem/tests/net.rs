@@ -36,6 +36,7 @@ async fn lists_and_downloads_the_smallest_zip() {
                 exclude: Vec::new(),
                 tables: vec![],
                 range: TimeRange::months(ym, ym),
+                instants: None,
             },
             &fetcher,
         )

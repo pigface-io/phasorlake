@@ -1446,6 +1446,7 @@ mod picks_tests {
                 YearMonth::new(2024, 1).unwrap(),
                 YearMonth::new(2024, 1).unwrap(),
             ),
+            instants: None,
         };
     }
 

@@ -135,6 +135,7 @@ pub async fn fetch(cli: &Cli, ctx: &Context, market: &FetchMarket) -> Result<i32
                         exclude,
                         tables,
                         range: TimeRange::months(from, to),
+                        instants: None,
                     },
                 },
                 options: RunOptions {
@@ -220,6 +221,7 @@ pub async fn ingest_archived(
                 tables: upper(tables),
                 exclude: upper(exclude),
                 range: TimeRange::months(from, to),
+                instants: None,
             },
         },
         options: options(cli, ctx, args, None, false),

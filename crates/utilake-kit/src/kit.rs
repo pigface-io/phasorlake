@@ -207,6 +207,7 @@ mod tests {
                 utilake_core::YearMonth::new(2024, 1).unwrap(),
                 utilake_core::YearMonth::new(2024, 1).unwrap(),
             ),
+            instants: None,
         };
         assert!(Src("s").list(&q, &fetcher).await.unwrap().is_empty());
         struct Sink;
