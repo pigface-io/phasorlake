@@ -515,6 +515,52 @@ impl Manifest {
         Ok(Some(rows.into_iter().map(|(_, s)| s).collect()))
     }
 
+    /// Every entry in the lake that was fetched alone out of the zip at
+    /// `url` (recorded under `{url}!{entry}`), as its path within the zip
+    /// (`inner.zip!X.CSV`): what a read of the whole zip leaves alone.
+    pub fn entries_ingested_under(&self, url: &str) -> Result<Vec<String>, ManifestError> {
+        let prefix = format!("{url}!");
+        let pattern = format!(
+            "{}%",
+            prefix
+                .replace('\\', "\\\\")
+                .replace('%', "\\%")
+                .replace('_', "\\_")
+        );
+        let mut stmt = self.sql(self.conn.prepare(
+            "SELECT DISTINCT f.url, i.entry FROM ingests i JOIN files f ON i.file_id = f.id
+             WHERE i.status = 'ok' AND f.url LIKE ?1 ESCAPE '\\' ORDER BY f.url, i.entry",
+        ))?;
+        let rows: Vec<(String, String)> = self.sql(
+            stmt.query_map([pattern], |r| Ok((r.get(0)?, r.get(1)?)))
+                .and_then(Iterator::collect),
+        )?;
+        Ok(rows
+            .into_iter()
+            .map(|(file_url, entry)| format!("{}!{entry}", &file_url[prefix.len()..]))
+            .collect())
+    }
+
+    /// Whether the lake holds, from a read of the whole zip at `url`, the
+    /// entry `entry` or anything nested in it: what a fetch of that entry
+    /// alone would read again.
+    pub fn is_ingested_from(&self, url: &str, entry: &str) -> Result<bool, ManifestError> {
+        let nested = format!(
+            "{}!%",
+            entry
+                .replace('\\', "\\\\")
+                .replace('%', "\\%")
+                .replace('_', "\\_")
+        );
+        let r = self.conn.query_row(
+            "SELECT COUNT(*) FROM ingests i JOIN files f ON i.file_id = f.id
+             WHERE i.status = 'ok' AND f.url = ?1 AND (i.entry = ?2 OR i.entry LIKE ?3 ESCAPE '\\')",
+            params![url, entry, nested],
+            |r| r.get::<_, i64>(0),
+        );
+        Ok(self.sql(r)? > 0)
+    }
+
     /// Paths of every output a file's ingests wrote, for superseding.
     pub fn outputs_of_file(&self, file_id: i64) -> Result<Vec<String>, ManifestError> {
         let mut stmt = self.sql(self.conn.prepare("SELECT o.parquet_path FROM outputs o JOIN ingests i ON o.ingest_id = i.id WHERE i.file_id = ?1"))?;
@@ -1356,5 +1402,106 @@ mod tests {
             }
             other => panic!("{:?}", other.map(|_| ())),
         }
+    }
+
+    #[test]
+    fn entries_fetched_alone_and_whole_zips_know_of_each_other() {
+        let dir = tempfile::tempdir().unwrap();
+        let mut m = Manifest::open(&dir.path().join("m.sqlite")).unwrap();
+        let run = m.begin_run("get").unwrap();
+        let ok = |m: &mut Manifest, url: &str, entry: &str| {
+            let fid = m.record_file(&file(url, "s")).unwrap();
+            let iid = m
+                .begin_ingest(&IngestStart {
+                    run_id: run,
+                    file_id: fid,
+                    entry: entry.into(),
+                    table: "T".into(),
+                    schema_version: 1,
+                    fingerprint: "xxh3:1".into(),
+                    transform: transform(),
+                })
+                .unwrap();
+            m.finish_ingest(
+                iid,
+                &IngestEnd {
+                    status: IngestStatus::Ok,
+                    rows: 1,
+                    bad_rows: 0,
+                    quarantine_path: None,
+                    outputs: vec![],
+                    error_code: None,
+                },
+            )
+            .unwrap();
+        };
+        let zip = "https://h/M_2014_01.zip";
+        // Two entries fetched alone: one a nested zip with a CSV, one a CSV.
+        ok(
+            &mut m,
+            &format!("{zip}!PUBLIC_DVD_A_201401010000.zip"),
+            "A.CSV",
+        );
+        ok(&mut m, &format!("{zip}!d/notes.csv"), "d/notes.csv");
+        // A zip of a near name, and a failed ingest, do not count.
+        ok(&mut m, "https://h/M_2014_01.zip.bak!X.zip", "X.CSV");
+        let fid = m
+            .record_file(&file(&format!("{zip}!PUBLIC_DVD_B_201401010000.zip"), "s"))
+            .unwrap();
+        let iid = m
+            .begin_ingest(&IngestStart {
+                run_id: run,
+                file_id: fid,
+                entry: "B.CSV".into(),
+                table: "T".into(),
+                schema_version: 1,
+                fingerprint: "xxh3:1".into(),
+                transform: transform(),
+            })
+            .unwrap();
+        m.finish_ingest(
+            iid,
+            &IngestEnd {
+                status: IngestStatus::Failed,
+                rows: 0,
+                bad_rows: 0,
+                quarantine_path: None,
+                outputs: vec![],
+                error_code: Some("x".into()),
+            },
+        )
+        .unwrap();
+        assert_eq!(
+            m.entries_ingested_under(zip).unwrap(),
+            [
+                "PUBLIC_DVD_A_201401010000.zip!A.CSV",
+                "d/notes.csv!d/notes.csv"
+            ]
+        );
+        assert!(
+            m.entries_ingested_under("https://h/none.zip")
+                .unwrap()
+                .is_empty()
+        );
+        // The whole zip read: its entries, nested paths joined with `!`.
+        ok(&mut m, zip, "PUBLIC_DVD_C_201401010000.zip!C.CSV");
+        ok(&mut m, zip, "d/plain.csv");
+        assert!(
+            m.is_ingested_from(zip, "PUBLIC_DVD_C_201401010000.zip")
+                .unwrap()
+        );
+        assert!(m.is_ingested_from(zip, "d/plain.csv").unwrap());
+        assert!(
+            !m.is_ingested_from(zip, "PUBLIC_DVD_A_201401010000.zip")
+                .unwrap()
+        );
+        assert!(
+            !m.is_ingested_from(zip, "PUBLIC_DVD_C_2014").unwrap(),
+            "a prefix is not an entry"
+        );
+        assert!(
+            !m.is_ingested_from("https://h/other.zip", "d/plain.csv")
+                .unwrap()
+        );
     }
 }

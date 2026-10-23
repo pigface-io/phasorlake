@@ -352,10 +352,14 @@ pub fn period_of_name(name: &str) -> Option<YearMonth> {
 /// What a data file's name says: its table and month, as a file of this
 /// source. `None` when the name follows neither scheme.
 pub fn describe_name(url: Url) -> Option<RemoteFile> {
+    // An entry fetched alone out of a zip is named `{zip}!{entry}`: the
+    // entry's own name is what says its table and month.
     let name = url
         .path_segments()
         .and_then(|mut s| s.next_back())
         .filter(|s| !s.is_empty())?
+        .rsplit('!')
+        .next()?
         .replace("%23", "#");
     let lower = name.to_ascii_lowercase();
     if !(lower.ends_with(".zip") || lower.ends_with(".csv")) {
@@ -1138,6 +1142,19 @@ mod tests {
                 .await
                 .unwrap(),
             MonthLayout::Directory
+        );
+    }
+
+    #[test]
+    fn an_entry_fetched_alone_is_described_by_its_own_name() {
+        let r = describe_name(
+            Url::parse("https://h/A/MMSDM_2014_01.zip!PUBLIC_DVD_REGION_201401010000.zip").unwrap(),
+        )
+        .unwrap();
+        assert_eq!(r.table.as_deref(), Some("REGION"));
+        assert_eq!(r.period, Some(YearMonth::new(2014, 1).unwrap().into()));
+        assert!(
+            describe_name(Url::parse("https://h/A/MMSDM_2014_01.zip!notes.txt").unwrap()).is_none()
         );
     }
 }

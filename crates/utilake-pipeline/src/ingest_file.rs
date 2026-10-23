@@ -51,6 +51,9 @@ pub struct IngestInput {
     /// The file is in the lake already, written by rules that have changed
     /// since; it is being read again.
     pub rules_changed: bool,
+    /// Entries of the file (nested paths joined with `!`) that are in the
+    /// lake already from a fetch of each alone, left as they are.
+    pub skip: Vec<String>,
 }
 
 /// One shape (table, version, column list) within one entry.
@@ -103,6 +106,8 @@ pub struct FileReport {
     /// The file was read again because the rules it had been written by
     /// have changed.
     pub rules_changed: bool,
+    /// Entries left to an earlier read of each alone.
+    pub left: Vec<String>,
 }
 
 /// What tells one open writer from another: table, version, column list
@@ -678,6 +683,7 @@ pub fn ingest_file(input: IngestInput) -> FileReport {
                 .with_request(input.request.clone()),
             ),
             rules_changed: input.rules_changed,
+            left: input.skip,
             local: input.local,
             entries,
         };
@@ -713,7 +719,7 @@ pub fn ingest_file(input: IngestInput) -> FileReport {
     } else {
         let fail_fast = input.options.fail_fast;
         let accepts = Accepts {
-            accepts: &|n: &str| kit.decoder_for(n).is_some(),
+            accepts: &|n: &str| kit.decoder_for(n).is_some() && !input.skip.iter().any(|s| s == n),
             wanted: "readable",
         };
         let result: Result<Walked, WalkError<()>> = walk_entries(
@@ -756,6 +762,7 @@ pub fn ingest_file(input: IngestInput) -> FileReport {
     }
     FileReport {
         rules_changed: input.rules_changed,
+        left: input.skip,
         local: input.local,
         entries,
         file_error,

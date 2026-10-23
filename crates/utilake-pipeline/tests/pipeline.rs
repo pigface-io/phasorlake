@@ -1589,3 +1589,218 @@ fn walk(root: &Path) -> Vec<String> {
     out.sort();
     out
 }
+
+/// A whole-month zip read by its directory: the source picks the nested
+/// zips of the tables asked for, or wants the zip whole.
+struct RangedMonth {
+    url: Url,
+    whole: bool,
+}
+
+#[async_trait]
+impl Source for RangedMonth {
+    fn id(&self) -> &'static str {
+        "nem-mmsdm"
+    }
+    async fn list(&self, _q: &Query, _f: &Fetcher) -> Result<Vec<RemoteFile>, FetchError> {
+        Ok(vec![RemoteFile {
+            url: self.url.clone(),
+            source: "nem-mmsdm",
+            table: None,
+            period: Some(utilake_core::YearMonth::new(2024, 1).unwrap().into()),
+            size: None,
+            modified: None,
+            modified_at: None,
+        }])
+    }
+    fn wants_ranged(&self, _remote: &RemoteFile) -> bool {
+        true
+    }
+    fn pick(
+        &self,
+        remote: &RemoteFile,
+        entries: &[utilake_acquire::Entry],
+        query: &Query,
+    ) -> utilake_acquire::Picks {
+        if self.whole {
+            return utilake_acquire::Picks::Whole;
+        }
+        utilake_acquire::Picks::Entries(
+            entries
+                .iter()
+                .enumerate()
+                .filter(|(_, e)| query.tables.iter().any(|t| e.name.contains(t.as_str())))
+                .map(|(index, e)| utilake_acquire::Pick {
+                    index,
+                    remote: utilake_nem::describe_name(
+                        Url::parse(&format!("{}!{}", remote.url, e.name)).unwrap(),
+                    )
+                    .unwrap(),
+                })
+                .collect(),
+        )
+    }
+}
+
+/// An entry fetched alone out of a whole-month zip lands in the lake under
+/// its own name; a later read of the whole zip leaves it alone; the entry
+/// read again alone after that is nothing new.
+#[tokio::test]
+async fn an_entry_picked_out_of_a_zip_and_the_whole_zip_do_not_double_up() {
+    let e = env();
+    let inner = |name: &str, fixture: &str| {
+        let p = e.home.root().join(name);
+        make_zip(
+            &p,
+            &[(
+                &name.replace(".zip", ".CSV"),
+                &std::fs::read(fixtures().join(fixture)).unwrap(),
+            )],
+        );
+        std::fs::read(&p).unwrap()
+    };
+    let trading = inner(
+        "PUBLIC_DVD_TRADINGPRICE_202401010000.zip",
+        "TRADINGPRICE_v2_head.csv",
+    );
+    let dispatch = inner(
+        "PUBLIC_DVD_DISPATCHPRICE_202401010000.zip",
+        "DISPATCHPRICE_v4_head.csv",
+    );
+    let whole = e.home.root().join("MMSDM_2024_01.zip");
+    {
+        let f = std::fs::File::create(&whole).unwrap();
+        let mut w = zip::ZipWriter::new(f);
+        let stored = zip::write::SimpleFileOptions::default()
+            .compression_method(zip::CompressionMethod::Stored);
+        w.start_file("PUBLIC_DVD_TRADINGPRICE_202401010000.zip", stored)
+            .unwrap();
+        w.write_all(&trading).unwrap();
+        w.start_file("PUBLIC_DVD_DISPATCHPRICE_202401010000.zip", stored)
+            .unwrap();
+        w.write_all(&dispatch).unwrap();
+        // Padding, so one table's zip is well under half of the whole.
+        w.start_file("README.txt", stored).unwrap();
+        w.write_all(&vec![b'.'; 2 * (trading.len() + dispatch.len())])
+            .unwrap();
+        w.finish().unwrap();
+    }
+    let url =
+        Url::parse("https://h/Data_Archive/Wholesale_Electricity/MMSDM/2024/MMSDM_2024_01.zip")
+            .unwrap();
+    e.transport.add(
+        url.as_str(),
+        Canned::ranged(&std::fs::read(&whole).unwrap()),
+    );
+    let ym = utilake_core::YearMonth::new(2024, 1).unwrap();
+    let plan = |whole: bool, tables: &[&str]| Plan {
+        request: "get".into(),
+        input: Input::Remote {
+            source: Arc::new(RangedMonth {
+                url: url.clone(),
+                whole,
+            }),
+            query: Query {
+                tables: tables.iter().map(|t| (*t).to_owned()).collect(),
+                exclude: Vec::new(),
+                range: TimeRange::months(ym, ym),
+            },
+        },
+        options: RunOptions::default(),
+    };
+    // 1. One table, picked out: its nested zip alone is fetched and read.
+    let (rep, _) = run_plan(&e, plan(false, &["TRADINGPRICE"])).await;
+    assert_eq!(rep.exit_code, 0, "{:?}", rep.report.summary_lines());
+    assert_eq!((rep.summary.downloaded, rep.summary.ingested), (1, 1));
+    let entry_url = format!("{url}!PUBLIC_DVD_TRADINGPRICE_202401010000.zip");
+    let archive = e.deps.fetcher.archive();
+    assert!(archive.lookup(&entry_url).unwrap().is_some());
+    assert!(
+        archive.lookup(url.as_str()).unwrap().is_none(),
+        "the zip is not downloaded whole"
+    );
+    let outputs = e
+        .deps
+        .manifest
+        .live_outputs(Some("TRADINGPRICE"))
+        .await
+        .unwrap();
+    assert_eq!(outputs.len(), 1);
+    assert_eq!(outputs[0].url, entry_url);
+    let rows_before: usize = outputs.iter().map(|o| parquet_rows(&o.path)).sum();
+    // 2. The whole zip: the entry read before is left as it is, the rest
+    // is read.
+    let (rep, _) = run_plan(&e, plan(true, &[])).await;
+    assert_eq!(rep.exit_code, 0, "{:?}", rep.report.summary_lines());
+    assert!(
+        rep.report.by_code.contains_key("manifest.already_ingested"),
+        "{:?}",
+        rep.report.by_code.keys()
+    );
+    let outputs = e
+        .deps
+        .manifest
+        .live_outputs(Some("TRADINGPRICE"))
+        .await
+        .unwrap();
+    assert_eq!(outputs.len(), 1, "no second copy of the table's rows");
+    assert_eq!(
+        outputs.iter().map(|o| parquet_rows(&o.path)).sum::<usize>(),
+        rows_before
+    );
+    assert!(
+        !e.deps
+            .manifest
+            .live_outputs(Some("DISPATCHPRICE"))
+            .await
+            .unwrap()
+            .is_empty()
+    );
+    // 3. The entry alone again: the archive has the zip whole and the lake
+    // has its rows; nothing is fetched or read.
+    let (rep, _) = run_plan(&e, plan(false, &["TRADINGPRICE"])).await;
+    assert_eq!(
+        (
+            rep.summary.downloaded,
+            rep.summary.ingested,
+            rep.summary.skipped
+        ),
+        (0, 0, 1),
+        "{:?}",
+        rep.report.summary_lines()
+    );
+    // 4. The archive pruned of the whole zip, and another table asked for
+    // alone: its entry is fetched, and then found to be in the lake from
+    // the read of the whole zip, so it is not read again.
+    std::fs::remove_file(archive.path_for(url.as_str())).unwrap();
+    std::fs::remove_file(utilake_acquire::Archive::sidecar_path(
+        &archive.path_for(url.as_str()),
+    ))
+    .unwrap();
+    let (rep, _) = run_plan(&e, plan(false, &["DISPATCHPRICE"])).await;
+    assert_eq!(
+        (
+            rep.summary.downloaded,
+            rep.summary.ingested,
+            rep.summary.skipped
+        ),
+        (0, 0, 1),
+        "{:?}",
+        rep.report.summary_lines()
+    );
+    assert!(
+        archive
+            .lookup(&format!("{url}!PUBLIC_DVD_DISPATCHPRICE_202401010000.zip"))
+            .unwrap()
+            .is_some()
+    );
+    assert_eq!(
+        e.deps
+            .manifest
+            .live_outputs(Some("DISPATCHPRICE"))
+            .await
+            .unwrap()
+            .len(),
+        1
+    );
+}

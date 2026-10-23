@@ -6,7 +6,7 @@ use futures::StreamExt;
 use tokio::sync::mpsc;
 use tokio_util::sync::CancellationToken;
 use url::Url;
-use utilake_acquire::{LocalFile, RemoteFile};
+use utilake_acquire::{LocalFile, Query, RemoteFile, Source};
 use utilake_core::Diagnose;
 use utilake_core::event::{Event, Summary};
 use utilake_core::report::{DiagSink, Flow, Report, SourceOutcome, SourceStatus};
@@ -122,6 +122,9 @@ struct Listed {
     known: Option<FileRecord>,
     /// An archived file, known with its hash already.
     archived: Option<LocalFile>,
+    /// A zip to read by its directory first: the source that picks its
+    /// entries, and the query it picks for.
+    picks: Option<(std::sync::Arc<dyn Source>, Query)>,
 }
 
 enum Fetched {
@@ -166,6 +169,9 @@ pub async fn run(
                 .into_iter()
                 .map(|remote| Listed {
                     kit: kit_of(&deps.kits, source.id()).map_or("none", |k| k.id),
+                    picks: source
+                        .wants_ranged(&remote)
+                        .then(|| (source.clone(), query.clone())),
                     remote,
                     path: None,
                     known: None,
@@ -199,6 +205,7 @@ pub async fn run(
                 .into_iter()
                 .map(|l| Listed {
                     kit: kit_of(&deps.kits, source.id()).map_or("none", |k| k.id),
+                    picks: None,
                     remote: l.remote.clone(),
                     path: Some(l.path.clone()),
                     known: None,
@@ -218,6 +225,7 @@ pub async fn run(
                 match local_remote(&deps.kits, p) {
                     Some((kit, remote)) => out.push(Listed {
                         kit,
+                        picks: None,
                         remote,
                         path: Some(p.clone()),
                         known: None,
@@ -275,6 +283,7 @@ pub async fn run(
                 {
                     out.push(Listed {
                         kit,
+                        picks: None,
                         remote,
                         path: Some(std::path::PathBuf::from(&rec.cache_path)),
                         known: Some(rec),
@@ -308,14 +317,31 @@ pub async fn run(
                  path,
                  known,
                  archived,
+                 picks,
              }| {
             let fetcher = fetcher.clone();
             let req = req.clone();
             async move {
                 if let Some(l) = archived {
-                    return Fetched::Ok(kit, l);
+                    return vec![Fetched::Ok(kit, l)];
                 }
-                match path {
+                // A zip read by its directory: the entries the source
+                // picks, each a file of its own, or the zip whole.
+                if let Some((source, query)) = picks {
+                    let pick = |entries: &[utilake_acquire::Entry]| source.pick(&remote, entries, &query);
+                    return match fetcher.fetch_picks(&remote, &pick).await {
+                        Ok(picked) => picked
+                            .files()
+                            .into_iter()
+                            .map(|l| Fetched::Ok(kit, l))
+                            .collect(),
+                        Err(e) => vec![Fetched::Failed(
+                            remote.clone(),
+                            Box::new(e.diagnostic().with_request(req)),
+                        )],
+                    };
+                }
+                vec![match path {
                     Some(p) => match (hash_local(remote.clone(), p.clone()).await, known) {
                         // What the server said of a recorded source stays
                         // with it when it is read again.
@@ -367,10 +393,11 @@ pub async fn run(
                             Box::new(e.diagnostic().with_request(req)),
                         ),
                     },
-                }
+                }]
             }
         })
         .buffer_unordered(plan.options.downloads.max(1))
+        .flat_map(futures::stream::iter)
         .take_until(cancel.cancelled());
 
     // 3. Ingest on blocking workers, bounded.
@@ -403,6 +430,20 @@ pub async fn run(
                         if !options.ingest {
                             return Step::Downloaded(Box::new(local));
                         }
+                        // An entry fetched alone whose zip was read whole
+                        // already: in the lake, nothing to do.
+                        let url = local.remote.url.to_string();
+                        if let Some((zip, entry)) = url.split_once('!')
+                            && matches!(manifest.is_ingested_from(zip, entry).await, Ok(true))
+                        {
+                            return Step::Skipped(Box::new(local));
+                        }
+                        // Entries of this zip fetched alone before are in
+                        // the lake already: a read of the zip leaves them.
+                        let skip = manifest
+                            .entries_ingested_under(&url)
+                            .await
+                            .unwrap_or_default();
                         // In the lake already, by rules that still hold:
                         // nothing to do. By rules that have changed: read
                         // it again.
@@ -444,6 +485,7 @@ pub async fn run(
                             request: req.clone(),
                             events: Some(ev.clone()),
                             rules_changed,
+                            skip,
                         };
                         match tokio::task::spawn_blocking(move || ingest_file(input)).await {
                             Ok(rep) => Step::Ingested(Box::new(rep)),
@@ -690,6 +732,25 @@ async fn commit(
         }
         .with_url(local.remote.url.to_string());
         let _ = deps.manifest.record_diagnostic(run, None, d.clone()).await;
+        emit(events, Event::Diagnostic(Box::new(d.clone())));
+        summary.warnings += 1;
+        report.emit(d);
+    }
+    if !rep.left.is_empty() {
+        let d = Diagnostic::warning(
+            "manifest.already_ingested",
+            Category::Manifest,
+            format!(
+                "{} entries of {} were fetched alone and ingested before; the read of the whole file left them as they are: {}",
+                rep.left.len(),
+                local.remote.url,
+                rep.left.join(", ")
+            ),
+        )
+        .with_url(local.remote.url.to_string());
+        if let Some(run) = run_id {
+            let _ = deps.manifest.record_diagnostic(run, None, d.clone()).await;
+        }
         emit(events, Event::Diagnostic(Box::new(d.clone())));
         summary.warnings += 1;
         report.emit(d);

@@ -19,6 +19,8 @@ enum Cmd {
     FinishRun(i64, i32, String, Reply<()>),
     RecordFile(FileRecord, Reply<i64>),
     IngestedShapes(String, String, Reply<Option<Vec<IngestShape>>>),
+    EntriesIngestedUnder(String, Reply<Vec<String>>),
+    IsIngestedFrom(String, String, Reply<bool>),
     ListFiles(Reply<Vec<FileRecord>>),
     FileByUrl(String, Reply<Option<(i64, FileRecord)>>),
     OutputsOfFile(i64, Reply<Vec<String>>),
@@ -83,6 +85,12 @@ impl ManifestHandle {
                         }
                         Cmd::IngestedShapes(url, sha, r) => {
                             let _ = r.send(manifest.ingested_shapes(&url, &sha));
+                        }
+                        Cmd::EntriesIngestedUnder(url, r) => {
+                            let _ = r.send(manifest.entries_ingested_under(&url));
+                        }
+                        Cmd::IsIngestedFrom(url, entry, r) => {
+                            let _ = r.send(manifest.is_ingested_from(&url, &entry));
                         }
                         Cmd::ListFiles(r) => {
                             let _ = r.send(manifest.list_files());
@@ -172,6 +180,16 @@ impl ManifestHandle {
     /// See [`Manifest::list_files`].
     pub async fn list_files(&self) -> Result<Vec<FileRecord>, ManifestError> {
         self.call(Cmd::ListFiles).await
+    }
+    /// See [`Manifest::entries_ingested_under`].
+    pub async fn entries_ingested_under(&self, url: &str) -> Result<Vec<String>, ManifestError> {
+        self.call(|r| Cmd::EntriesIngestedUnder(url.to_owned(), r))
+            .await
+    }
+    /// See [`Manifest::is_ingested_from`].
+    pub async fn is_ingested_from(&self, url: &str, entry: &str) -> Result<bool, ManifestError> {
+        self.call(|r| Cmd::IsIngestedFrom(url.to_owned(), entry.to_owned(), r))
+            .await
     }
     /// See [`Manifest::file_by_url`].
     pub async fn file_by_url(&self, url: &str) -> Result<Option<(i64, FileRecord)>, ManifestError> {
