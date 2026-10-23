@@ -1807,3 +1807,546 @@ async fn an_entry_picked_out_of_a_zip_and_the_whole_zip_do_not_double_up() {
         1
     );
 }
+
+/// A monthly source whose archive has published up to, not including,
+/// `unpublished_from`: one file per table per month.
+struct Monthly {
+    unpublished_from: Option<utilake_core::YearMonth>,
+    whole_zip: Option<Url>,
+}
+
+#[async_trait]
+impl Source for Monthly {
+    fn id(&self) -> &'static str {
+        "nem-mmsdm"
+    }
+    async fn list(&self, q: &Query, _f: &Fetcher) -> Result<Vec<RemoteFile>, FetchError> {
+        let mut out = Vec::new();
+        for m in q.range.months_iter() {
+            if self.unpublished_from.is_some_and(|u| m >= u) {
+                return Err(FetchError::MonthMissing {
+                    period: m.to_string(),
+                    url: "https://h/year/".into(),
+                    available: "earlier months".into(),
+                });
+            }
+            if let Some(whole) = &self.whole_zip {
+                out.push(RemoteFile {
+                    url: whole.clone(),
+                    source: "nem-mmsdm",
+                    table: None,
+                    period: Some(m.into()),
+                    size: Some(3000),
+                    modified: None,
+                    modified_at: None,
+                });
+                continue;
+            }
+            for t in &q.tables {
+                out.push(RemoteFile {
+                    url: Url::parse(&format!("https://h/m/{m}/{t}.zip")).unwrap(),
+                    source: "nem-mmsdm",
+                    table: Some(t.clone()),
+                    period: Some(m.into()),
+                    size: Some(1000),
+                    modified: None,
+                    modified_at: None,
+                });
+            }
+        }
+        Ok(out)
+    }
+    fn wants_ranged(&self, remote: &RemoteFile) -> bool {
+        self.whole_zip.as_ref() == Some(&remote.url)
+    }
+    fn pick(
+        &self,
+        remote: &RemoteFile,
+        entries: &[utilake_acquire::Entry],
+        query: &Query,
+    ) -> utilake_acquire::Picks {
+        utilake_acquire::Picks::Entries(
+            entries
+                .iter()
+                .enumerate()
+                .filter(|(_, e)| query.tables.iter().any(|t| e.name.contains(t.as_str())))
+                .map(|(index, e)| utilake_acquire::Pick {
+                    index,
+                    remote: utilake_nem::describe_name(
+                        Url::parse(&format!("{}!{}", remote.url, e.name)).unwrap(),
+                    )
+                    .unwrap(),
+                })
+                .collect(),
+        )
+    }
+}
+
+/// A daily source: one file per day for every table but ONLY_MONTHLY.
+struct Daily;
+
+#[async_trait]
+impl Source for Daily {
+    fn id(&self) -> &'static str {
+        "nem-reports"
+    }
+    fn granularity(&self) -> utilake_acquire::Granularity {
+        utilake_acquire::Granularity::Day
+    }
+    async fn list(&self, q: &Query, _f: &Fetcher) -> Result<Vec<RemoteFile>, FetchError> {
+        if let Some(t) = q.tables.iter().find(|t| *t == "ONLY_MONTHLY") {
+            return Err(FetchError::NoMatch {
+                url: "https://h/Reports/".into(),
+                entries: 0,
+                table: t.clone(),
+                period: q.range.to_string(),
+                nearest: "no report folder carries it; the monthly archive does".into(),
+            });
+        }
+        Ok(q.range
+            .days_iter()
+            .map(|d| RemoteFile {
+                url: Url::parse(&format!("https://h/d/{d}.zip")).unwrap(),
+                source: "nem-reports",
+                table: None,
+                period: Some(d.into()),
+                size: Some(10),
+                modified: None,
+                modified_at: None,
+            })
+            .collect())
+    }
+}
+
+fn kit_with(e: &Env, sources: Vec<Arc<dyn Source>>) -> Arc<KitRegistry> {
+    let mut nem = utilake_nem::kit(e.registry.clone(), "https://h").unwrap();
+    nem.sources = sources;
+    Arc::new(KitRegistry::new(vec![nem]))
+}
+
+fn get_request(
+    tables: &[&str],
+    from: &str,
+    to: &str,
+    source: utilake_pipeline::SourceChoice,
+) -> utilake_pipeline::GetRequest {
+    let day = |s: &str| s.parse::<utilake_core::CivilDay>().unwrap();
+    let (a, b) = (day(from), day(to));
+    utilake_pipeline::GetRequest {
+        kit: "nem".into(),
+        tables: tables.iter().map(|t| (*t).to_owned()).collect(),
+        exclude: Vec::new(),
+        range: TimeRange::days(a, b),
+        instants: (a.start_micros(36_000), b.next().start_micros(36_000)),
+        source,
+        request: "get".into(),
+    }
+}
+
+fn step_names(plan: &utilake_pipeline::GetPlan) -> Vec<String> {
+    plan.steps
+        .iter()
+        .map(|s| format!("{} {} {}", s.source.id(), s.query.range, s.files.len()))
+        .collect()
+}
+
+#[tokio::test]
+async fn an_interval_is_cut_into_published_months_and_the_days_around_them() {
+    use utilake_pipeline::{SourceChoice, plan_get};
+    let mut e = env();
+    let month = |y, m| utilake_core::YearMonth::new(y, m).unwrap();
+    // Everything published: February whole from the archive, the ends daily.
+    e.deps.kits = kit_with(
+        &e,
+        vec![
+            Arc::new(Monthly {
+                unpublished_from: None,
+                whole_zip: None,
+            }),
+            Arc::new(Daily),
+        ],
+    );
+    let plan = plan_get(
+        &get_request(&["A", "B"], "2024-01-15", "2024-03-10", SourceChoice::Auto),
+        &e.deps,
+    )
+    .await
+    .unwrap();
+    assert_eq!(
+        step_names(&plan),
+        [
+            "nem-mmsdm 2024-02 2",
+            "nem-reports 2024-01-15..2024-01-31 17",
+            "nem-reports 2024-03-01..2024-03-10 10"
+        ]
+    );
+    assert!(plan.notes.is_empty(), "{:?}", plan.notes);
+    assert!(plan.steps[0].query.instants.is_none());
+    assert_eq!(
+        plan.steps[1].query.instants,
+        Some(get_request(&[], "2024-01-15", "2024-03-10", SourceChoice::Auto).instants)
+    );
+    assert_eq!(plan.steps[0].bytes(), 2000);
+    // February not published yet: its days go daily too.
+    e.deps.kits = kit_with(
+        &e,
+        vec![
+            Arc::new(Monthly {
+                unpublished_from: Some(month(2024, 2)),
+                whole_zip: None,
+            }),
+            Arc::new(Daily),
+        ],
+    );
+    let plan = plan_get(
+        &get_request(&["A"], "2024-01-15", "2024-03-10", SourceChoice::Auto),
+        &e.deps,
+    )
+    .await
+    .unwrap();
+    assert_eq!(
+        step_names(&plan),
+        [
+            "nem-reports 2024-01-15..2024-01-31 17",
+            "nem-reports 2024-02-01..2024-02-29 29",
+            "nem-reports 2024-03-01..2024-03-10 10"
+        ]
+    );
+    assert_eq!(
+        plan.notes,
+        ["2024-02 is not published in the monthly archive yet"]
+    );
+    // Two whole months, the later one unpublished: the first from the
+    // archive, the second daily.
+    e.deps.kits = kit_with(
+        &e,
+        vec![
+            Arc::new(Monthly {
+                unpublished_from: Some(month(2024, 3)),
+                whole_zip: None,
+            }),
+            Arc::new(Daily),
+        ],
+    );
+    let plan = plan_get(
+        &get_request(&["A"], "2024-02-01", "2024-03-31", SourceChoice::Auto),
+        &e.deps,
+    )
+    .await
+    .unwrap();
+    assert_eq!(
+        step_names(&plan),
+        [
+            "nem-mmsdm 2024-02 1",
+            "nem-reports 2024-03-01..2024-03-31 31"
+        ]
+    );
+    // A table no report folder carries: its days come from the archive's
+    // months; the other table's stay daily.
+    e.deps.kits = kit_with(
+        &e,
+        vec![
+            Arc::new(Monthly {
+                unpublished_from: None,
+                whole_zip: None,
+            }),
+            Arc::new(Daily),
+        ],
+    );
+    let plan = plan_get(
+        &get_request(
+            &["A", "ONLY_MONTHLY"],
+            "2024-01-15",
+            "2024-01-20",
+            SourceChoice::Auto,
+        ),
+        &e.deps,
+    )
+    .await
+    .unwrap();
+    assert_eq!(
+        step_names(&plan),
+        [
+            "nem-reports 2024-01-15..2024-01-20 6",
+            "nem-mmsdm 2024-01 1"
+        ]
+    );
+    assert_eq!(plan.steps[0].query.tables, ["A"]);
+    assert_eq!(plan.steps[1].query.tables, ["ONLY_MONTHLY"]);
+    assert!(
+        plan.notes
+            .iter()
+            .any(|n| n.starts_with("ONLY_MONTHLY: no report folder")),
+        "{:?}",
+        plan.notes
+    );
+    // Forced sides.
+    let plan = plan_get(
+        &get_request(&["A"], "2024-01-15", "2024-03-10", SourceChoice::Monthly),
+        &e.deps,
+    )
+    .await
+    .unwrap();
+    assert_eq!(step_names(&plan), ["nem-mmsdm 2024-01..2024-03 3"]);
+    let plan = plan_get(
+        &get_request(&["A"], "2024-01-15", "2024-03-10", SourceChoice::Daily),
+        &e.deps,
+    )
+    .await
+    .unwrap();
+    assert_eq!(step_names(&plan), ["nem-reports 2024-01-15..2024-03-10 56"]);
+    assert_eq!(plan.notes, ["every day from the report folders, as asked"]);
+    // A kit without a daily source: whole months cover the days.
+    e.deps.kits = kit_with(
+        &e,
+        vec![Arc::new(Monthly {
+            unpublished_from: None,
+            whole_zip: None,
+        })],
+    );
+    let plan = plan_get(
+        &get_request(&["A"], "2024-01-15", "2024-01-20", SourceChoice::Auto),
+        &e.deps,
+    )
+    .await
+    .unwrap();
+    assert_eq!(step_names(&plan), ["nem-mmsdm 2024-01 1"]);
+    assert!(
+        plan.notes.iter().any(|n| n.contains("no daily source")),
+        "{:?}",
+        plan.notes
+    );
+    let e2 = plan_get(
+        &get_request(&["A"], "2024-01-15", "2024-01-20", SourceChoice::Daily),
+        &e.deps,
+    )
+    .await
+    .map(|_| ())
+    .unwrap_err();
+    assert!(e2.message.contains("no daily source"), "{}", e2.message);
+    // A kit without a monthly source: every day daily.
+    e.deps.kits = kit_with(&e, vec![Arc::new(Daily)]);
+    let plan = plan_get(
+        &get_request(&["A"], "2024-01-15", "2024-03-10", SourceChoice::Auto),
+        &e.deps,
+    )
+    .await
+    .unwrap();
+    assert_eq!(step_names(&plan), ["nem-reports 2024-01-15..2024-03-10 56"]);
+    let e3 = plan_get(
+        &get_request(&["A"], "2024-01-15", "2024-01-20", SourceChoice::Monthly),
+        &e.deps,
+    )
+    .await
+    .map(|_| ())
+    .unwrap_err();
+    assert!(e3.message.contains("no monthly source"), "{}", e3.message);
+    // An unknown kit.
+    let mut bad = get_request(&["A"], "2024-01-15", "2024-01-20", SourceChoice::Auto);
+    bad.kit = "gas".into();
+    assert!(
+        plan_get(&bad, &e.deps)
+            .await
+            .map(|_| ())
+            .unwrap_err()
+            .message
+            .contains("No kit named gas")
+    );
+    // The days an interval touches, in market time.
+    let d = |s: &str| s.parse::<utilake_core::CivilDay>().unwrap();
+    let start = d("2024-01-15").start_micros(36_000);
+    assert_eq!(
+        utilake_pipeline::days_of((start, start + 7_200_000_000), 36_000),
+        TimeRange::days(d("2024-01-15"), d("2024-01-15"))
+    );
+    assert_eq!(
+        utilake_pipeline::days_of((start, d("2024-01-17").start_micros(36_000)), 36_000),
+        TimeRange::days(d("2024-01-15"), d("2024-01-16")),
+        "an end at midnight is not a new day"
+    );
+    assert_eq!(
+        utilake_pipeline::days_of((start, start), 36_000),
+        TimeRange::days(d("2024-01-15"), d("2024-01-15"))
+    );
+}
+
+/// `get` over a whole-month zip read by its directory: the plan's one step
+/// runs over the files the archive listed, and the table's entry alone
+/// lands in the lake.
+#[tokio::test]
+async fn get_runs_each_step_over_what_its_source_listed() {
+    use utilake_pipeline::{SourceChoice, run_get};
+    let mut e = env();
+    let inner = |name: &str, fixture: &str| {
+        let p = e.home.root().join(name);
+        make_zip(
+            &p,
+            &[(
+                &name.replace(".zip", ".CSV"),
+                &std::fs::read(fixtures().join(fixture)).unwrap(),
+            )],
+        );
+        std::fs::read(&p).unwrap()
+    };
+    let trading = inner(
+        "PUBLIC_DVD_TRADINGPRICE_202401010000.zip",
+        "TRADINGPRICE_v2_head.csv",
+    );
+    let dispatch = inner(
+        "PUBLIC_DVD_DISPATCHPRICE_202401010000.zip",
+        "DISPATCHPRICE_v4_head.csv",
+    );
+    let whole = e.home.root().join("MMSDM_2024_01.zip");
+    {
+        let f = std::fs::File::create(&whole).unwrap();
+        let mut w = zip::ZipWriter::new(f);
+        let stored = zip::write::SimpleFileOptions::default()
+            .compression_method(zip::CompressionMethod::Stored);
+        w.start_file("PUBLIC_DVD_TRADINGPRICE_202401010000.zip", stored)
+            .unwrap();
+        w.write_all(&trading).unwrap();
+        w.start_file("PUBLIC_DVD_DISPATCHPRICE_202401010000.zip", stored)
+            .unwrap();
+        w.write_all(&dispatch).unwrap();
+        w.start_file("README.txt", stored).unwrap();
+        w.write_all(&vec![b'.'; 2 * (trading.len() + dispatch.len())])
+            .unwrap();
+        w.finish().unwrap();
+    }
+    let url =
+        Url::parse("https://h/Data_Archive/Wholesale_Electricity/MMSDM/2024/MMSDM_2024_01.zip")
+            .unwrap();
+    e.transport.add(
+        url.as_str(),
+        Canned::ranged(&std::fs::read(&whole).unwrap()),
+    );
+    e.deps.kits = kit_with(
+        &e,
+        vec![Arc::new(Monthly {
+            unpublished_from: None,
+            whole_zip: Some(url.clone()),
+        })],
+    );
+    let (tx, mut rx) = tokio::sync::mpsc::channel(4096);
+    let report = run_get(
+        get_request(
+            &["TRADINGPRICE"],
+            "2024-01-01",
+            "2024-01-31",
+            SourceChoice::Auto,
+        ),
+        e.deps.clone(),
+        RunOptions::default(),
+        tx,
+        CancellationToken::new(),
+    )
+    .await
+    .unwrap();
+    let mut events = 0;
+    while rx.try_recv().is_ok() {
+        events += 1;
+    }
+    assert!(events > 0);
+    assert_eq!(
+        report.exit_code,
+        0,
+        "{:?}",
+        report.runs[0].report.summary_lines()
+    );
+    assert_eq!(step_names(&report.plan), ["nem-mmsdm 2024-01 1"]);
+    assert_eq!(report.runs.len(), 1);
+    assert_eq!(
+        (
+            report.runs[0].summary.downloaded,
+            report.runs[0].summary.ingested
+        ),
+        (1, 1)
+    );
+    assert!(
+        e.deps
+            .fetcher
+            .archive()
+            .lookup(&format!("{url}!PUBLIC_DVD_TRADINGPRICE_202401010000.zip"))
+            .unwrap()
+            .is_some()
+    );
+    assert!(
+        e.deps
+            .fetcher
+            .archive()
+            .lookup(url.as_str())
+            .unwrap()
+            .is_none()
+    );
+    assert_eq!(
+        e.deps
+            .manifest
+            .live_outputs(Some("TRADINGPRICE"))
+            .await
+            .unwrap()
+            .len(),
+        1
+    );
+    assert!(
+        e.deps
+            .manifest
+            .live_outputs(Some("DISPATCHPRICE"))
+            .await
+            .unwrap()
+            .is_empty()
+    );
+    // Dry run: the plan and the listing, nothing fetched.
+    let (tx, _rx) = tokio::sync::mpsc::channel(4096);
+    let report = run_get(
+        get_request(
+            &["DISPATCHPRICE"],
+            "2024-01-01",
+            "2024-01-31",
+            SourceChoice::Auto,
+        ),
+        e.deps.clone(),
+        RunOptions {
+            dry_run: true,
+            ..RunOptions::default()
+        },
+        tx,
+        CancellationToken::new(),
+    )
+    .await
+    .unwrap();
+    assert_eq!(report.runs[0].listed.len(), 1);
+    assert_eq!(report.runs[0].summary.downloaded, 0);
+    assert!(
+        e.deps
+            .fetcher
+            .archive()
+            .lookup(&format!("{url}!PUBLIC_DVD_DISPATCHPRICE_202401010000.zip"))
+            .unwrap()
+            .is_none()
+    );
+    // A cancelled run stops after its first step.
+    let cancel = CancellationToken::new();
+    cancel.cancel();
+    let (tx, _rx) = tokio::sync::mpsc::channel(4096);
+    e.deps.kits = kit_with(
+        &e,
+        vec![
+            Arc::new(Monthly {
+                unpublished_from: None,
+                whole_zip: None,
+            }),
+            Arc::new(Daily),
+        ],
+    );
+    let report = run_get(
+        get_request(&["A"], "2024-01-15", "2024-03-10", SourceChoice::Auto),
+        e.deps.clone(),
+        RunOptions::default(),
+        tx,
+        cancel,
+    )
+    .await
+    .unwrap();
+    assert_eq!(report.plan.steps.len(), 3);
+    assert_eq!(report.runs.len(), 1, "stopped after the first step");
+}

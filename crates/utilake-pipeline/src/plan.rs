@@ -59,6 +59,16 @@ pub enum Input {
         /// The query.
         query: Query,
     },
+    /// Files a source listed already, for a query: fetched and read as
+    /// [`Input::Remote`]'s are, listed again by no one.
+    Listed {
+        /// The source that listed them.
+        source: Arc<dyn Source>,
+        /// The query it listed them for.
+        query: Query,
+        /// The files.
+        files: Vec<utilake_acquire::RemoteFile>,
+    },
     /// The archived files of a source for a query: what `fetch`
     /// downloaded, read from disk, never from the network.
     Archive {

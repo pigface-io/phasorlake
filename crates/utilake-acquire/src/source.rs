@@ -28,6 +28,16 @@ pub struct Query {
     pub instants: Option<(i64, i64)>,
 }
 
+/// How finely a source cuts its files: the monthly archive publishes a
+/// month at a time, the report folders a day (or less) at a time.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Granularity {
+    /// One file covers a month.
+    Month,
+    /// One file covers a day, or a slice of one.
+    Day,
+}
+
 /// Which entries of a zip a source wants fetched alone, out of the
 /// directory it was shown.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -133,6 +143,11 @@ pub trait Source: Send + Sync {
         None
     }
 
+    /// How finely the source cuts its files.
+    fn granularity(&self) -> Granularity {
+        Granularity::Month
+    }
+
     /// Whether `remote` is a zip that may hold more than a query needs (a
     /// whole-month archive, a day's zip of five-minute files), so its
     /// directory is worth reading by ranged requests before it is fetched.
@@ -204,6 +219,7 @@ mod tests {
             modified_at: None,
         };
         assert!(!Bare.wants_ranged(&r));
+        assert_eq!(Bare.granularity(), Granularity::Month);
         assert_eq!(Bare.pick(&r, &[], &q), Picks::Whole);
         let p = Pick {
             index: 1,

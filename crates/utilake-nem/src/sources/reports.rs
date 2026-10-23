@@ -267,6 +267,10 @@ impl Source for ReportFolders {
         REPORTS_SOURCE_ID
     }
 
+    fn granularity(&self) -> utilake_acquire::Granularity {
+        utilake_acquire::Granularity::Day
+    }
+
     async fn list(&self, query: &Query, fetcher: &Fetcher) -> Result<Vec<RemoteFile>, FetchError> {
         let mut out = Vec::new();
         for sides in self.folders_for(query)?.values() {
@@ -502,6 +506,7 @@ mod tests {
         let (_dir, registry) = registry();
         let src = ReportFolders::new("https://h", registry.clone()).unwrap();
         assert_eq!(src.id(), REPORTS_SOURCE_ID);
+        assert_eq!(src.granularity(), utilake_acquire::Granularity::Day);
         let t = Arc::new(StaticTransport::default());
         t.add(
             "https://h/Reports/ARCHIVE/Dispatch_SCADA/",

@@ -20,5 +20,5 @@ pub mod transport;
 pub use archive::{Archive, Archived, Extracted, Sidecar, sha256_file};
 pub use error::FetchError;
 pub use fetcher::{Fetcher, FetcherConfig, LocalFile, Picked, RangeRead};
-pub use source::{Entry, Pick, Picks, Query, RemoteFile, Source};
+pub use source::{Entry, Granularity, Pick, Picks, Query, RemoteFile, Source};
 pub use transport::{HttpResponse, OfflineTransport, ReqwestTransport, Span, Transport};

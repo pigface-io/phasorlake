@@ -1,5 +1,6 @@
 //! The run: list, fetch, ingest, commit.
 
+use std::sync::Arc;
 use std::time::Instant;
 
 use futures::StreamExt;
@@ -124,7 +125,7 @@ struct Listed {
     archived: Option<LocalFile>,
     /// A zip to read by its directory first: the source that picks its
     /// entries, and the query it picks for.
-    picks: Option<(std::sync::Arc<dyn Source>, Query)>,
+    picks: Option<(Arc<dyn Source>, Query)>,
 }
 
 enum Fetched {
@@ -163,21 +164,29 @@ pub async fn run(
     let _ = utilake_writer::parquet_hive::sweep_tmp(&deps.home.lake());
 
     // 1. List.
+    let remote_listed = |source: &Arc<dyn Source>, query: &Query, files: Vec<RemoteFile>| {
+        files
+            .into_iter()
+            .map(|remote| Listed {
+                kit: kit_of(&deps.kits, source.id()).map_or("none", |k| k.id),
+                picks: source
+                    .wants_ranged(&remote)
+                    .then(|| (source.clone(), query.clone())),
+                remote,
+                path: None,
+                known: None,
+                archived: None,
+            })
+            .collect::<Vec<Listed>>()
+    };
     let listed: Vec<Listed> = match &plan.input {
+        Input::Listed {
+            source,
+            query,
+            files,
+        } => remote_listed(source, query, files.clone()),
         Input::Remote { source, query } => match source.list(query, &deps.fetcher).await {
-            Ok(files) => files
-                .into_iter()
-                .map(|remote| Listed {
-                    kit: kit_of(&deps.kits, source.id()).map_or("none", |k| k.id),
-                    picks: source
-                        .wants_ranged(&remote)
-                        .then(|| (source.clone(), query.clone())),
-                    remote,
-                    path: None,
-                    known: None,
-                    archived: None,
-                })
-                .collect(),
+            Ok(files) => remote_listed(source, query, files),
             Err(e) => {
                 let d = e.diagnostic().with_request(request.clone());
                 emit(&events, Event::Diagnostic(Box::new(d.clone())));

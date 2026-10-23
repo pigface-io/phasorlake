@@ -8,11 +8,13 @@
 //! flight. Every file is attempted; a failure marks that file and the run
 //! goes on unless `fail_fast` is set.
 
+pub mod get;
 pub mod ingest_file;
 pub mod plan;
 pub mod report;
 pub mod run;
 
+pub use get::{GetPlan, GetReport, GetRequest, SourceChoice, Step, days_of, plan_get, run_get};
 pub use plan::{DEFAULT_BATCH_ROWS, Deps, Input, Plan, RunOptions};
 pub use report::{RunReport, exit_code};
 pub use run::{local_remote, recorded_remote, run};
