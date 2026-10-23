@@ -21,6 +21,10 @@ const SOURCE: &str = "SOURCE";
 
 /// The manifest of the copy, as utilake-schemas publishes it.
 const MANIFEST: &str = "manifest.json";
+/// Which report folder carries each block, beside the tables.
+const FOLDERS: &str = "folders.json";
+/// Where utilake-schemas publishes it.
+const FOLDERS_SOURCE: &str = "nem/folders.json";
 
 /// A table's metadata file, under its directory.
 const METADATA: &str = "metadata/v1.metadata.json";
@@ -106,7 +110,7 @@ pub fn pull(rev: &str, checkout: &Path) -> Result<bool> {
     )?;
     let paths: Vec<String> = listing
         .lines()
-        .filter(|p| *p == MANIFEST || table_of(p).is_some())
+        .filter(|p| *p == MANIFEST || *p == FOLDERS_SOURCE || table_of(p).is_some())
         .map(str::to_owned)
         .collect();
     if !paths.iter().any(|p| p == MANIFEST) {
@@ -125,6 +129,7 @@ pub fn pull(rev: &str, checkout: &Path) -> Result<bool> {
     for (p, b) in paths.iter().zip(&bytes) {
         let to = match table_of(p) {
             Some(t) => tmp.join(t).join(METADATA),
+            None if p == FOLDERS_SOURCE => tmp.join(FOLDERS),
             None => tmp.join(MANIFEST),
         };
         std::fs::create_dir_all(to.parent().expect("a file in a directory"))?;
@@ -136,8 +141,13 @@ pub fn pull(rev: &str, checkout: &Path) -> Result<bool> {
     }
     std::fs::rename(&tmp, &dir)?;
     println!(
-        "schemas-pull: {} tables of utilake-schemas {full} into {PULLED}",
-        paths.len() - 1
+        "schemas-pull: {} tables of utilake-schemas {full} into {PULLED}{}",
+        paths.iter().filter(|p| table_of(p).is_some()).count(),
+        if paths.iter().any(|p| p == FOLDERS_SOURCE) {
+            ", with folders.json"
+        } else {
+            ""
+        }
     );
     Ok(true)
 }
@@ -204,6 +214,20 @@ pub fn problems(dir: &Path, lock: &str) -> Vec<String> {
     if want.is_empty() {
         out.push(format!("{PULLED}/{MANIFEST} lists no table"));
     }
+    // folders.json is held to the manifest too, when published.
+    let folders_sha = manifest
+        .get("sha256")
+        .and_then(|m| m.get(FOLDERS_SOURCE))
+        .and_then(serde_json::Value::as_str);
+    match (folders_sha, std::fs::read(dir.join(FOLDERS))) {
+        (Some(sha), Ok(bytes)) if sha256(&bytes) != sha => out.push(format!(
+            "{FOLDERS} has SHA-256 {} where the manifest says {sha}; pulled files are not edited",
+            sha256(&bytes)
+        )),
+        (Some(_), Err(_)) => out.push(format!("{FOLDERS} is in the manifest but not pulled")),
+        (None, Ok(_)) => out.push(format!("{FOLDERS} is pulled but the manifest lists none")),
+        _ => {}
+    }
     for (table, sha) in &want {
         let path = dir.join(table).join(METADATA);
         match std::fs::read(&path) {
@@ -227,7 +251,7 @@ pub fn problems(dir: &Path, lock: &str) -> Vec<String> {
                 .to_string_lossy()
                 .into_owned();
             let known = match rel.split('/').collect::<Vec<_>>().as_slice() {
-                [SOURCE | MANIFEST] => true,
+                [SOURCE | MANIFEST | FOLDERS] => true,
                 [table] => p.is_dir() && want.contains_key(*table),
                 [table, "metadata"] => p.is_dir() && want.contains_key(*table),
                 [table, "metadata", "v1.metadata.json"] => want.contains_key(*table),
@@ -269,10 +293,12 @@ mod tests {
         let t = dir.path().join("REGION").join("metadata");
         std::fs::create_dir_all(&t).unwrap();
         std::fs::write(t.join("v1.metadata.json"), b"{}").unwrap();
+        std::fs::write(dir.path().join(FOLDERS), b"{\"folders\":[]}").unwrap();
         let manifest = serde_json::json!({"sha256": {
             "nem/REGION/metadata/v1.metadata.json": sha256(b"{}"),
             "nem/REGION/schema-1.json": "00",
             "nem/REGION/metadata/snap-1-1-u.avro": "00",
+            "nem/folders.json": sha256(b"{\"folders\":[]}"),
         }});
         std::fs::write(dir.path().join(MANIFEST), manifest.to_string()).unwrap();
         std::fs::write(dir.path().join(SOURCE), "abc\n").unwrap();
@@ -299,8 +325,10 @@ mod tests {
         std::fs::write(dir.path().join("REGION/metadata/v1.metadata.json"), b"{ }").unwrap();
         std::fs::write(dir.path().join("stray.txt"), b"").unwrap();
         std::fs::create_dir_all(dir.path().join("OTHER")).unwrap();
+        std::fs::write(dir.path().join(FOLDERS), b"{\"folders\":[1]}").unwrap();
         let p = problems(dir.path(), &LOCK.replace("abc", "def"));
-        assert_eq!(p.len(), 4, "{p:?}");
+        assert_eq!(p.len(), 5, "{p:?}");
+        assert!(p.iter().any(|m| m.starts_with("folders.json has SHA-256")));
         assert!(p.iter().any(|m| m.contains("not edited")));
         assert!(p.iter().any(|m| m.starts_with("stray.txt")));
         assert!(p.iter().any(|m| m.starts_with("OTHER")));
@@ -321,5 +349,21 @@ mod tests {
                 .iter()
                 .any(|m| m.contains("missing"))
         );
+        // folders.json pulled without a manifest entry, or listed but not
+        // pulled.
+        let dir = tree();
+        let mut m: serde_json::Value =
+            serde_json::from_slice(&std::fs::read(dir.path().join(MANIFEST)).unwrap()).unwrap();
+        m["sha256"]
+            .as_object_mut()
+            .unwrap()
+            .remove("nem/folders.json");
+        std::fs::write(dir.path().join(MANIFEST), m.to_string()).unwrap();
+        let p = problems(dir.path(), LOCK);
+        assert_eq!(p, ["folders.json is pulled but the manifest lists none"]);
+        let dir = tree();
+        std::fs::remove_file(dir.path().join(FOLDERS)).unwrap();
+        let p = problems(dir.path(), LOCK);
+        assert_eq!(p, ["folders.json is in the manifest but not pulled"]);
     }
 }

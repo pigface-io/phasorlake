@@ -18,7 +18,9 @@ pub mod registry;
 pub mod resolve;
 pub use utilake_mms_decode::shape;
 
-pub use crate::file_model::{Column, LakeType, LoadMode, Market, Run, Table, TableSchema};
+pub use crate::file_model::{
+    Column, Folder, FolderBlock, LakeType, LoadMode, Market, Run, Table, TableSchema,
+};
 pub use error::ResolveError;
 pub use plan::{Cast, ColumnRoute, ConformancePlan, Origin, PLAN_FORMAT, PlanField, PlanHash};
 pub use registry::{Registry, SchemaSource, TableId};

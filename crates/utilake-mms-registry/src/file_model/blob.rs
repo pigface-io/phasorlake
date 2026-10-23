@@ -15,6 +15,7 @@ use serde::{Deserialize, Serialize};
 use crate::file_model::doc::{DOC_FILE, read_doc};
 use crate::file_model::error::SchemaFileError;
 use crate::file_model::file::{TABLE_FILE, read_market, read_table};
+use crate::file_model::folders::{FOLDERS_FILE, Folder, read_folders};
 use crate::file_model::model::{Market, MarketDef, Table};
 use crate::file_model::validate::{Issue, issue, validate_set, validate_table};
 
@@ -29,6 +30,10 @@ pub struct SchemaSet {
     pub markets: Vec<MarketDef>,
     /// Every table, sorted by name.
     pub tables: Vec<Table>,
+    /// Which report folder carries each block, from the markets'
+    /// `pulled/folders.json`; empty until one is pulled.
+    #[serde(default)]
+    pub folders: Vec<Folder>,
 }
 
 fn read_err(path: &Path, source: std::io::Error) -> SchemaFileError {
@@ -76,6 +81,10 @@ impl SchemaSet {
             if p.file_name().is_some_and(|n| n == PULLED_DIR) {
                 for t in sorted_dirs(&p)? {
                     self.tables.extend(read_doc(&t, market)?);
+                }
+                let folders = p.join(FOLDERS_FILE);
+                if folders.is_file() {
+                    self.folders.extend(read_folders(&folders)?);
                 }
             } else if p.join(TABLE_FILE).is_file() {
                 self.tables.push(read_table(&p, market)?);

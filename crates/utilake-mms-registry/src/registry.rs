@@ -5,7 +5,8 @@ use std::sync::{Arc, Mutex, OnceLock, RwLock};
 
 use crate::file_model::blob::SchemaSet;
 use crate::file_model::{
-    Column, ColumnId, LakeType, LoadMode, Market, MarketDef, SchemaFileError, Table, TableSchema,
+    Column, ColumnId, Folder, LakeType, LoadMode, Market, MarketDef, SchemaFileError, Table,
+    TableSchema,
 };
 use arrow_schema::SchemaRef;
 use hashbrown::Equivalent;
@@ -69,6 +70,8 @@ impl std::fmt::Display for SchemaSource {
 pub struct Registry {
     markets: Vec<MarketDef>,
     tables: Vec<Table>,
+    /// Which report folder of nemweb carries each block, as pulled.
+    folders: Vec<Folder>,
     /// Whether each table came from a user's overlay.
     from_user: Vec<bool>,
     by_name: HashMap<String, TableId>,
@@ -217,7 +220,11 @@ impl Registry {
             markets.retain(|x| x.market != m.market);
             markets.push(m);
         }
-        let set = SchemaSet { markets, tables };
+        let set = SchemaSet {
+            markets,
+            tables,
+            folders: self.folders.clone(),
+        };
         let issues = set.validate();
         if let Some(first) = issues.first() {
             return Err(SchemaFileError::Invalid {
@@ -243,6 +250,7 @@ impl Registry {
     pub fn from_set(set: SchemaSet) -> Self {
         let mut markets = set.markets;
         let tables = set.tables;
+        let folders = set.folders;
         let mut by_name = HashMap::with_capacity(tables.len());
         let mut by_pair = hashbrown::HashMap::with_capacity(tables.len());
         for (i, t) in tables.iter().enumerate() {
@@ -260,6 +268,7 @@ impl Registry {
         }
         Self {
             markets,
+            folders,
             from_user: vec![false; tables.len()],
             shapes: std::iter::repeat_with(OnceLock::new)
                 .take(tables.len())
@@ -273,6 +282,22 @@ impl Registry {
                 .collect(),
             derived_pairs: Mutex::new(Vec::new()),
         }
+    }
+
+    /// Every report folder the pulled census recorded.
+    pub fn folders(&self) -> &[Folder] {
+        &self.folders
+    }
+
+    /// The report folders that carried blocks of this table, by its report
+    /// pairs; empty for a table only the monthly archive publishes, or
+    /// when no folders were pulled.
+    pub fn folders_of(&self, id: TableId) -> Vec<&Folder> {
+        let t = self.table(id);
+        self.folders
+            .iter()
+            .filter(|f| t.report_pairs.iter().any(|(a, b)| f.carries(a, b)))
+            .collect()
     }
 
     /// The history of a table of the registry as an Iceberg table; none
