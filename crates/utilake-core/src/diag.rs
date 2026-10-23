@@ -43,6 +43,8 @@ pub enum Category {
     Manifest,
     /// `utilake verify` findings.
     Verify,
+    /// Reading the lake: a query's window, roles, projection and files.
+    Query,
     /// A bug in utilake (panic, broken invariant).
     Internal,
 }
@@ -62,12 +64,13 @@ impl Category {
             Self::Store => "store",
             Self::Manifest => "manifest",
             Self::Verify => "verify",
+            Self::Query => "query",
             Self::Internal => "internal",
         }
     }
 
     /// Every category, for documentation and exhaustiveness tests.
-    pub const ALL: [Self; 12] = [
+    pub const ALL: [Self; 13] = [
         Self::Config,
         Self::Net,
         Self::Listing,
@@ -79,6 +82,7 @@ impl Category {
         Self::Store,
         Self::Manifest,
         Self::Verify,
+        Self::Query,
         Self::Internal,
     ];
 }
@@ -647,7 +651,7 @@ mod tests {
         assert_eq!(back.line, d.line);
         assert_eq!(Category::Csv.to_string(), "csv");
         assert_eq!(Severity::Warning.to_string(), "warning");
-        assert_eq!(Category::ALL.len(), 12);
+        assert_eq!(Category::ALL.len(), 13);
     }
 
     #[test]
