@@ -19,9 +19,9 @@ use arrow_schema::DataType;
 use utilake_iceberg::Column;
 use utilake_mms_registry::file_model::ValidAxis;
 
+use crate::Lake;
 use crate::query::{Bound, FieldIx, Resolution};
 use crate::time::{OPEN_US, ValidWindow, rfc3339};
-use crate::{Lake, window};
 
 fn ident(name: &str) -> String {
     format!("\"{}\"", name.replace('"', "\"\""))
@@ -221,19 +221,33 @@ pub fn render(b: &Bound, lake: &Lake<'_>) -> String {
         (axis, w) => {
             let _ = writeln!(out, "spans AS (SELECT * FROM latest)");
             axis.column().map_or_else(String::new, |c| {
-                let (t0, t1) = window::plan_bounds(Some(axis), w);
-                let valid = as_instant(b, *c);
-                format!(
-                    "WHERE {valid} >= {} AND {valid} < {}",
-                    instant(t0),
-                    instant(t1)
-                )
+                window_sql(Some(axis), w, &as_instant(b, *c))
             })
         }
     };
     let cols = kept(b, "filename, published");
     let _ = write!(out, "SELECT {cols} FROM spans {window}");
     out
+}
+
+/// The window on an axis other than `from`, as a `WHERE` clause over the
+/// valid column `v`: `(after, upto]` where the time ends an interval,
+/// `[after, upto)` where it labels an instant.
+fn window_sql(axis: Option<&ValidAxis<FieldIx>>, w: &ValidWindow, v: &str) -> String {
+    match (axis, w) {
+        (Some(ValidAxis::Timeless), _) => String::new(),
+        (Some(ValidAxis::IntervalEnd(_)), ValidWindow::Range { after, upto }) => format!(
+            "WHERE {v} > {} AND {v} <= {}",
+            instant(after.get()),
+            instant(upto.get())
+        ),
+        (_, ValidWindow::Range { after, upto }) => format!(
+            "WHERE {v} >= {} AND {v} < {}",
+            instant(after.get()),
+            instant(upto.get())
+        ),
+        (_, ValidWindow::At(t)) => format!("WHERE {v} = {}", instant(t.get())),
+    }
 }
 
 /// The columns the read returns, as a select list; `hidden` are the
@@ -257,9 +271,7 @@ fn finish_raw(mut out: String, b: &Bound) -> String {
         (None, t) => t,
     };
     let where_ = valid.map_or_else(String::new, |c| {
-        let (t0, t1) = window::plan_bounds(axis, &b.query.window);
-        let v = as_instant(b, c);
-        format!("WHERE {v} >= {} AND {v} < {}", instant(t0), instant(t1))
+        window_sql(axis, &b.query.window, &as_instant(b, c))
     });
     let _ = writeln!(
         out,

@@ -47,7 +47,7 @@ fn each_kind_of_read_renders() {
         "{s}"
     );
     assert!(
-        s.contains("WHERE \"SETTLEMENTDATE\" >= make_timestamptz("),
+        s.contains("WHERE \"SETTLEMENTDATE\" > make_timestamptz(1704031200000000) AND \"SETTLEMENTDATE\" <= make_timestamptz(1704032100000000)"),
         "{s}"
     );
     assert!(s.contains("* EXCLUDE (filename, published)"), "{s}");
@@ -128,7 +128,7 @@ fn each_kind_of_read_renders() {
         &lake,
     );
     assert!(
-        s.contains("SELECT \"RRP\" FROM spans WHERE \"SETTLEMENTDATE\" >= make_timestamptz("),
+        s.contains("SELECT \"RRP\" FROM spans WHERE \"SETTLEMENTDATE\" > make_timestamptz("),
         "{s}"
     );
     assert!(!s.contains("QUALIFY"), "{s}");

@@ -3037,6 +3037,7 @@ dependencies = [
  "utilake-mms-registry",
  "utilake-nem",
  "utilake-pipeline",
+ "utilake-query",
  "utilake-wem",
  "utilake-writer",
  "zip",

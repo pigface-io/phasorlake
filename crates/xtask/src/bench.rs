@@ -129,6 +129,8 @@ struct BenchmarkMeta {
 struct Throughput {
     #[serde(rename = "Bytes", default)]
     bytes: Option<u64>,
+    #[serde(rename = "Elements", default)]
+    elements: Option<u64>,
 }
 
 /// Reads criterion's output for every bench under `target/criterion`.
@@ -158,11 +160,16 @@ pub fn read_criterion(target: &Path) -> Result<Measurements> {
                     .replace('\\', "/");
                 let ns = est.median.point_estimate;
                 let keys = out.entry(name).or_default();
-                if let Some(bytes) = meta.throughput.and_then(|t| t.bytes) {
+                let (bytes, elements) = meta
+                    .throughput
+                    .map_or((None, None), |t| (t.bytes, t.elements));
+                if let Some(bytes) = bytes {
                     keys.insert(
                         "min_mb_per_s".into(),
                         round3(bytes as f64 / 1e6 / (ns / 1e9)),
                     );
+                } else if let Some(rows) = elements {
+                    keys.insert("min_rows_per_s".into(), round3(rows as f64 / (ns / 1e9)));
                 } else if ns > 1e6 {
                     keys.insert("max_ms".into(), round3(ns / 1e6));
                 } else {

@@ -37,7 +37,8 @@ pub use error::QueryError;
 pub use output::{Format, Frame, Frames, RawBatch, Report, Resolved, SourceRef, Written};
 pub use query::{Bound, BoundSpec, FieldIx, Filter, Projection, Query, Resolution, Unit};
 pub use time::{
-    KnownTime, MarketOffset, Micros, ValidEnd, ValidTime, ValidWindow, parse_local, rfc3339,
+    Known, KnownTime, MarketOffset, Micros, Valid, ValidEnd, ValidTime, ValidWindow, parse_local,
+    rfc3339,
 };
 pub use utilake_iceberg::Target;
 use utilake_mms_registry::Registry;

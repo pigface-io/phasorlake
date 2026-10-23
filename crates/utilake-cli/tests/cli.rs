@@ -148,10 +148,26 @@ fn ingest_ls_errors_verify_round_trip() {
         "2024-02-01",
     ]);
     // 2024-01-01 00:00 in market time is 2023-12-31 14:00 in UTC.
+    // The time ends an interval: midnight is December's last row.
     assert!(
         sql.contains("read_parquet(")
-            && sql.contains("WHERE \"SETTLEMENTDATE\" >= make_timestamptz(1704031200000000)"),
+            && sql.contains("WHERE \"SETTLEMENTDATE\" > make_timestamptz(1704031200000000)"),
         "{sql}"
+    );
+    assert!(!sql.contains("QUALIFY"), "plain sql is the raw read: {sql}");
+    let latest = cli.ok(&[
+        "sql",
+        "DISPATCH_UNIT_SCADA",
+        "--from",
+        "2024-01-01",
+        "--to",
+        "2024-02-01",
+        "--known-at",
+        "2024-02-01",
+    ]);
+    assert!(
+        latest.contains("QUALIFY row_number()") && latest.contains("_nl_known <="),
+        "{latest}"
     );
     let (code, _, err) = cli.code(&[
         "sql",
@@ -162,6 +178,69 @@ fn ingest_ls_errors_verify_round_trip() {
         "2024-02-01",
     ]);
     assert!(code != 0 && err.contains("not an RFC 3339"), "{err}");
+    // The read itself: a summary, a file with its sidecar, the flags.
+    let summary = cli.ok(&[
+        "read",
+        "DISPATCH_UNIT_SCADA",
+        "--from",
+        "2024-01-01",
+        "--to",
+        "2024-02-01",
+    ]);
+    assert!(
+        summary.contains("resolution") && summary.contains("latest"),
+        "{summary}"
+    );
+    let json = cli.ok(&[
+        "--json",
+        "read",
+        "DISPATCH_UNIT_SCADA",
+        "--from",
+        "2024-01-01",
+        "--to",
+        "2024-02-01",
+        "--revisions",
+    ]);
+    assert!(
+        json.contains("\"resolution\":\"revisions\"") && json.contains("\"rows\":"),
+        "{json}"
+    );
+    let out = cli.home.path().join("scada.csv");
+    let written = cli.ok(&[
+        "read",
+        "DISPATCH_UNIT_SCADA",
+        "--from",
+        "2024-01-01",
+        "--to",
+        "2024-02-01",
+        "--raw",
+        "--columns",
+        "DUID,SCADAVALUE",
+        "--where",
+        "DUID=BARCSF1",
+        "-o",
+        out.to_str().unwrap(),
+        "--format",
+        "csv",
+    ]);
+    assert!(written.contains("rows written to"), "{written}");
+    assert!(out.is_file() && cli.home.path().join("scada.csv.json").is_file());
+    let (code, _, err) = cli.code(&["read", "DISPATCH_UNIT_SCADA", "--at", "2024-01-01"]);
+    assert!(
+        code != 0 && err.contains("query.at_on_interval_table"),
+        "{err}"
+    );
+    let (code, _, err) = cli.code(&[
+        "read",
+        "DISPATCH_UNIT_SCADA",
+        "--at",
+        "2024-01-01",
+        "--where",
+        "DUID",
+    ]);
+    assert!(code != 0 && err.contains("COL=v1,v2"), "{err}");
+    let (code, _, err) = cli.code(&["read", "NOBODY", "--at", "2024-01-01"]);
+    assert!(code != 0 && err.contains("query.unknown_table"), "{err}");
     let (code, _, err) = cli.code(&[
         "sql",
         "NOBODY",
@@ -170,7 +249,7 @@ fn ingest_ls_errors_verify_round_trip() {
         "--to",
         "2024-02-01",
     ]);
-    assert!(code != 0 && err.contains("no table"), "{err}");
+    assert!(code != 0 && err.contains("query.unknown_table"), "{err}");
     let (code, _, _) = cli.code(&[
         "sql",
         "DISPATCH_UNIT_SCADA",

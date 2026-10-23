@@ -133,21 +133,14 @@ pub enum Command {
         #[arg(long)]
         table: Option<String>,
     },
-    /// The DuckDB query that reads a table over an interval, every file
-    /// projected onto one of its Iceberg schemas by field id.
-    Sql {
-        /// The table.
-        table: String,
-        /// From this instant (RFC 3339, or a date in UTC), inclusive.
-        #[arg(long)]
-        from: String,
-        /// To this instant, exclusive.
-        #[arg(long)]
-        to: String,
-        /// The schema to read as (default: the latest).
-        #[arg(long)]
-        as_of: Option<u32>,
-    },
+    /// Read a table over an interval as one frame: every file projected
+    /// onto one schema, one row per fact (or every revision, or every row
+    /// as written), the versions in force across the window.
+    Read(ReadArgs),
+    /// The same read as a DuckDB query, printed, not run. Without
+    /// `--latest`, `--known-at` or `--revisions` it is the raw read:
+    /// every row as written, every file projected onto one schema.
+    Sql(ReadArgs),
     /// Check the lake against the manifest.
     Verify {
         /// Only this table.
@@ -228,6 +221,50 @@ pub enum SourceArg {
     Monthly,
     /// Every day, from the report folders.
     Daily,
+}
+
+/// What a read asks for.
+#[derive(Args, Debug, Clone)]
+pub struct ReadArgs {
+    /// The table.
+    pub table: String,
+    /// The start of the window: RFC 3339, a date, or a local date and
+    /// time in the market's clock.
+    #[arg(long, requires = "to", conflicts_with = "at")]
+    pub from: Option<String>,
+    /// The end of the window.
+    #[arg(long, requires = "from")]
+    pub to: Option<String>,
+    /// One instant: the versions in force then.
+    #[arg(long, required_unless_present = "from")]
+    pub at: Option<String>,
+    /// Keep only what was known by this time.
+    #[arg(long, conflicts_with = "raw")]
+    pub known_at: Option<String>,
+    /// Every revision of every fact, each once.
+    #[arg(long, conflicts_with_all = ["raw", "latest"])]
+    pub revisions: bool,
+    /// One row per fact, the newest revision (the default of `read`).
+    #[arg(long, conflicts_with = "raw")]
+    pub latest: bool,
+    /// Every row of every file, as written.
+    #[arg(long)]
+    pub raw: bool,
+    /// The schema to read as (default: the latest).
+    #[arg(long)]
+    pub as_of: Option<u32>,
+    /// The columns to return, comma separated (default: all).
+    #[arg(long, value_delimiter = ',')]
+    pub columns: Vec<String>,
+    /// Keep rows whose column is one of the values: `COL=v1,v2`. May repeat.
+    #[arg(long = "where", value_name = "COL=V,V")]
+    pub filters: Vec<String>,
+    /// Write the frame here (the sidecar goes beside it); default: a summary.
+    #[arg(short, long)]
+    pub out: Option<PathBuf>,
+    /// The file's format.
+    #[arg(long, default_value = "parquet", value_parser = ["parquet", "csv", "arrow"])]
+    pub format: String,
 }
 
 /// Markets to fetch.
@@ -366,5 +403,44 @@ mod tests {
         ));
         let c = Cli::try_parse_from(["utilake", "reingest", "--dry-run"]).unwrap();
         assert!(matches!(c.command, Command::Reingest { dry_run: true, .. }));
+        let c = Cli::try_parse_from([
+            "utilake",
+            "read",
+            "DUDETAIL",
+            "--at",
+            "2024-01-15",
+            "--where",
+            "DUID=A,B",
+            "--columns",
+            "DUID,VERSIONNO",
+            "-o",
+            "d.csv",
+            "--format",
+            "csv",
+        ])
+        .unwrap();
+        match c.command {
+            Command::Read(a) => {
+                assert_eq!(a.at.as_deref(), Some("2024-01-15"));
+                assert_eq!(a.filters, ["DUID=A,B"]);
+                assert_eq!(a.columns, ["DUID", "VERSIONNO"]);
+                assert_eq!(a.format, "csv");
+            }
+            other => panic!("{other:?}"),
+        }
+        assert!(Cli::try_parse_from(["utilake", "read", "T", "--from", "2024-01-01"]).is_err());
+        assert!(
+            Cli::try_parse_from([
+                "utilake",
+                "read",
+                "T",
+                "--at",
+                "2024-01-01",
+                "--raw",
+                "--revisions"
+            ])
+            .is_err()
+        );
+        assert!(Cli::try_parse_from(["utilake", "sql", "T"]).is_err());
     }
 }

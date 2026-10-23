@@ -5,6 +5,7 @@ mod inspect;
 mod lake;
 mod manifest;
 mod misc;
+mod read;
 mod schema;
 
 use anyhow::Result;
@@ -44,12 +45,8 @@ pub async fn dispatch(cli: Cli) -> Result<i32> {
         Command::Reingest { dry_run, ingest } => lake::reingest(&cli, &ctx, *dry_run, ingest).await,
         Command::Verify { table } => lake::verify(&ctx, table.as_deref()).await,
         Command::Iceberg { table } => lake::iceberg(&ctx, table.as_deref()).await,
-        Command::Sql {
-            table,
-            from,
-            to,
-            as_of,
-        } => lake::sql(&ctx, table, (from, to), *as_of).await,
+        Command::Read(args) => read::read(&ctx, args).await,
+        Command::Sql(args) => read::sql(&ctx, args).await,
         Command::Inspect { path } => inspect::inspect(&ctx, path),
         Command::Ls {
             table,
