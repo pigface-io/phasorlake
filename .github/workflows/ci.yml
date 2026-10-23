@@ -110,3 +110,23 @@ jobs:
           schemas-key: ${{ secrets.UTILAKE_SCHEMAS_KEY }}
       - run: sudo apt-get install -y zsh
       - run: just net-test
+
+  # The read kernel against DuckDB running the same read as SQL. Weekly
+  # and on demand, like the network tests: DuckDB is a download.
+  oracle:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+        with:
+          schemas-key: ${{ secrets.UTILAKE_SCHEMAS_KEY }}
+      - run: sudo apt-get install -y zsh unzip
+      - run: |
+          curl -fsSL -o duckdb.zip https://github.com/duckdb/duckdb/releases/download/v1.3.2/duckdb_cli-linux-amd64.zip
+          sudo unzip -o duckdb.zip -d /usr/local/bin
+          duckdb --version
+      - run: just oracle-test

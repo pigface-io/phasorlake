@@ -1,0 +1,42 @@
+[package]
+name = "utilake-query"
+description = "One square frame of one table over an interval: every file projected onto one schema, one row per fact as known at a time, the version in force across a window."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+utilake-core.workspace = true
+utilake-iceberg.workspace = true
+utilake-mms-decode.workspace = true
+utilake-mms-registry.workspace = true
+utilake-writer.workspace = true
+arrow-array.workspace = true
+arrow-schema.workspace = true
+arrow-select.workspace = true
+arrow-cast.workspace = true
+arrow-ord.workspace = true
+arrow-row.workspace = true
+arrow-csv.workspace = true
+arrow-ipc.workspace = true
+parquet.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+utilake-kit.workspace = true
+utilake-nem.workspace = true
+proptest.workspace = true
+tempfile.workspace = true
+criterion.workspace = true
+
+[[bench]]
+name = "resolve"
+harness = false

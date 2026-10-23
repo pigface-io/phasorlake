@@ -139,6 +139,28 @@ Every error and warning utilake reports carries one of these codes. Codes are st
 | `verify.orphan_quarantine` | `crates/utilake-writer/src/verify.rs` |
 | `verify.size_mismatch` | `crates/utilake-writer/src/verify.rs` |
 
+## query
+
+| code | raised in |
+|---|---|
+| `query.at_on_interval_table` | `crates/utilake-query/src/error.rs` |
+| `query.bad_filter_value` | `crates/utilake-query/src/error.rs` |
+| `query.bad_time` | `crates/utilake-query/src/error.rs` |
+| `query.filter_after_resolution` | `crates/utilake-query/src/bind.rs` |
+| `query.order_nan` | `crates/utilake-query/src/resolve.rs` |
+| `query.plan_failed` | `crates/utilake-query/src/error.rs` |
+| `query.raw_only` | `crates/utilake-query/src/error.rs` |
+| `query.read_failed` | `crates/utilake-query/src/error.rs` |
+| `query.role_missing` | `crates/utilake-query/src/error.rs` |
+| `query.role_type` | `crates/utilake-query/src/error.rs` |
+| `query.roles_invalid` | `crates/utilake-query/src/error.rs` |
+| `query.stamp_unknown` | `crates/utilake-query/src/scan.rs` |
+| `query.unknown_column` | `crates/utilake-query/src/error.rs` |
+| `query.unknown_table` | `crates/utilake-query/src/error.rs` |
+| `query.window_empty` | `crates/utilake-query/src/error.rs` |
+| `query.window_ignored` | `crates/utilake-query/src/bind.rs` |
+| `query.write_failed` | `crates/utilake-query/src/error.rs` |
+
 ## internal
 
 | code | raised in |

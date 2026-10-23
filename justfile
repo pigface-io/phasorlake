@@ -66,6 +66,10 @@ cover:
 net-test:
     UTILAKE_NET_TESTS=1 cargo test --locked -p utilake-nem --test net -- --nocapture
 
+# the read kernel against DuckDB running the same read as SQL (needs duckdb on PATH)
+oracle-test:
+    UTILAKE_ORACLE_TESTS=1 cargo test --locked -p utilake-query --test oracle -- --nocapture
+
 # ── benchmarks ───────────────────────────────────────────────────────────────
 
 # the fast benchmark set (parse, registry), held to bench/budgets.json
