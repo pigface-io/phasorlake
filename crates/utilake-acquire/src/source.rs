@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 use url::Url;
 use utilake_core::timetext::Stamp;
 use utilake_core::{Period, TimeRange};
+pub use utilake_zip::zipdir::Entry;
 
 use crate::archive::Archive;
 use crate::error::FetchError;
@@ -20,6 +21,27 @@ pub struct Query {
     pub exclude: Vec<String>,
     /// The periods asked for, inclusive.
     pub range: TimeRange,
+}
+
+/// Which entries of a zip a source wants fetched alone, out of the
+/// directory it was shown.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum Picks {
+    /// The zip whole: every entry, or more of them than ranged requests
+    /// are worth.
+    Whole,
+    /// These entries, each as the file it becomes.
+    Entries(Vec<Pick>),
+}
+
+/// One entry of a zip to fetch alone.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Pick {
+    /// Its index in the directory shown.
+    pub index: usize,
+    /// The file the entry becomes: its URL is the zip's with `!{entry}`
+    /// appended, its table and period what the entry's name says.
+    pub remote: RemoteFile,
 }
 
 /// A file a source wants fetched.
@@ -105,6 +127,21 @@ pub trait Source: Send + Sync {
         let _ = url;
         None
     }
+
+    /// Whether `remote` is a zip that may hold more than a query needs (a
+    /// whole-month archive, a day's zip of five-minute files), so its
+    /// directory is worth reading by ranged requests before it is fetched.
+    fn wants_ranged(&self, remote: &RemoteFile) -> bool {
+        let _ = remote;
+        false
+    }
+
+    /// Which entries of the zip `remote`, whose directory is `entries`, a
+    /// query needs: the whole zip unless the source says otherwise.
+    fn pick(&self, remote: &RemoteFile, entries: &[Entry], query: &Query) -> Picks {
+        let _ = (remote, entries, query);
+        Picks::Whole
+    }
 }
 
 #[cfg(test)]
@@ -123,8 +160,8 @@ mod tests {
         }
     }
 
-    #[test]
-    fn a_source_without_an_archive_or_names_answers_nothing() {
+    #[tokio::test]
+    async fn a_source_without_an_archive_or_names_answers_nothing() {
         let dir = tempfile::tempdir().unwrap();
         let q = Query {
             tables: Vec::new(),
@@ -144,6 +181,29 @@ mod tests {
                 .is_none()
         );
         assert_eq!(Bare.id(), "bare");
+        let f = Fetcher::new(
+            std::sync::Arc::new(crate::transport::OfflineTransport),
+            Archive::new(dir.path()),
+            crate::fetcher::FetcherConfig::default(),
+        );
+        assert!(Bare.list(&q, &f).await.unwrap().is_empty());
+        // No ranges, and the whole zip, unless a source says otherwise.
+        let r = RemoteFile {
+            url: Url::parse("https://h/MMSDM_2014_01.zip").unwrap(),
+            source: "bare",
+            table: None,
+            period: None,
+            size: None,
+            modified: None,
+            modified_at: None,
+        };
+        assert!(!Bare.wants_ranged(&r));
+        assert_eq!(Bare.pick(&r, &[], &q), Picks::Whole);
+        let p = Pick {
+            index: 1,
+            remote: r.clone(),
+        };
+        assert_eq!(Picks::Entries(vec![p.clone()]), Picks::Entries(vec![p]));
     }
 
     #[test]
@@ -164,5 +224,10 @@ mod tests {
             ..r
         };
         assert_eq!(r2.stem(), "noext");
+        let odd = RemoteFile {
+            url: Url::parse("https://h/a%20b(c).zip").unwrap(),
+            ..r2
+        };
+        assert_eq!(odd.stem(), "a_20b_c_");
     }
 }

@@ -22,6 +22,7 @@ Every error and warning utilake reports carries one of these codes. Codes are st
 | `net.content_length_mismatch` | `crates/utilake-mirror/src/net/error.rs` |
 | `net.http_status` | `crates/utilake-mirror/src/net/error.rs` |
 | `net.offline` | `crates/utilake-pipeline/src/report.rs` |
+| `net.range_ignored` | `crates/utilake-acquire/src/error.rs` |
 | `net.range_unsupported` | `crates/utilake-mirror/src/net/error.rs` |
 | `net.retries_exhausted` | `crates/utilake-mirror/src/commands.rs` |
 | `net.timeout` | `crates/utilake-mirror/src/net/error.rs` |
@@ -50,6 +51,7 @@ Every error and warning utilake reports carries one of these codes. Codes are st
 |---|---|
 | `zip.bad_directory` | `crates/utilake-mirror/src/map.rs` |
 | `zip.bad_entry` | `crates/utilake-mirror/src/map.rs` |
+| `zip.entry_corrupt` | `crates/utilake-acquire/src/error.rs` |
 | `zip.nesting_too_deep` | `crates/utilake-mirror/src/map.rs` |
 | `zip.no_entry` | `crates/utilake-core/src/diag.rs` |
 | `zip.not_a_zip` | `crates/utilake-mirror/src/map.rs` |

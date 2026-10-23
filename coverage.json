@@ -11,7 +11,7 @@
     "crates/utilake-mms-registry/src/file_model": 90,
     "crates/utilake-mms-decode/src": 90,
     "crates/utilake-mms-conform/src": 90,
-    "crates/utilake-acquire/src": 85,
+    "crates/utilake-acquire/src": 100,
     "crates/utilake-kit/src": 90,
     "crates/utilake-nem/src": 85,
     "crates/utilake-wem/src": 85,

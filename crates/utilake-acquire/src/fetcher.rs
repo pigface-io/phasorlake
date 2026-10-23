@@ -5,8 +5,17 @@
 //! disk without a copy: each chunk is handed as it arrived to a writer on a
 //! blocking thread, which hashes it and writes it through a 1 MiB buffer,
 //! so no hashing or file I/O runs on the async runtime.
+//!
+//! A zip that holds more than a request needs (a whole-month archive of
+//! every table, a day's zip of five-minute files) is read by its central
+//! directory first, through ranged requests, and only the entries the
+//! source picks are fetched, each as the file it is: a nested zip stays a
+//! zip, a deflated CSV is inflated. The archive keeps each at the zip's
+//! path with `!{entry}` appended, its sidecar saying where in the zip it
+//! was. When the picks are most of the zip, or the server ignores ranges,
+//! the zip is downloaded whole instead.
 
-use std::io::Write as _;
+use std::io::{Read as _, Write as _};
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::time::{Duration, Instant};
@@ -20,10 +29,12 @@ use utilake_core::clock::now_utc_rfc3339;
 use utilake_core::event::Event;
 use utilake_core::timetext::{self, Stamp};
 
-use crate::archive::{Archive, Sidecar, hex};
+use utilake_zip::zipdir::{DirectoryReader, Entry, LOCAL_HEADER, Step, TAIL, local_header_len};
+
+use crate::archive::{Archive, Archived, Extracted, Sidecar, hex, sha256_hex};
 use crate::error::FetchError;
-use crate::source::RemoteFile;
-use crate::transport::{HttpResponse, Transport};
+use crate::source::{Pick, Picks, RemoteFile};
+use crate::transport::{HttpResponse, Span, Transport};
 
 /// A file on disk, ready to read.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -45,6 +56,60 @@ pub struct LocalFile {
     /// `last_modified` as an instant (UTC).
     pub last_modified_at: Option<Stamp>,
 }
+
+impl LocalFile {
+    /// An archived file as the answer to `remote`.
+    fn archived(remote: &RemoteFile, found: Archived, cached: bool) -> Self {
+        Self {
+            remote: remote.clone(),
+            path: found.path,
+            sha256: found.sidecar.sha256,
+            size: found.sidecar.size,
+            cached,
+            etag: found.sidecar.etag,
+            last_modified: found.sidecar.last_modified,
+            last_modified_at: found.sidecar.last_modified_at,
+        }
+    }
+}
+
+/// What one ranged request returned.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RangeRead {
+    /// The span's bytes.
+    pub bytes: Vec<u8>,
+    /// The whole file's size, from `Content-Range`.
+    pub total_size: Option<u64>,
+    /// The file's `ETag`.
+    pub etag: Option<String>,
+    /// The file's `Last-Modified`, as sent.
+    pub last_modified: Option<String>,
+}
+
+/// What [`Fetcher::fetch_picks`] fetched.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum Picked {
+    /// The zip, whole: the source wanted it all, the picks were most of
+    /// it, the server ignored the range, or the archive had it already.
+    Whole(Box<LocalFile>),
+    /// The picked entries, in the order picked, each as its own file.
+    Entries(Vec<LocalFile>),
+}
+
+impl Picked {
+    /// The files fetched: the one zip, or each picked entry.
+    pub fn files(self) -> Vec<LocalFile> {
+        match self {
+            Self::Whole(l) => vec![*l],
+            Self::Entries(e) => e,
+        }
+    }
+}
+
+/// Bytes read past an entry's compressed data in one request, so its local
+/// header's extra field, and the next picked entry when it follows, come
+/// in the same request.
+const SLACK: u64 = 256;
 
 /// Knobs.
 #[derive(Debug, Clone)]
@@ -152,7 +217,221 @@ impl Fetcher {
     /// GETs a page (a directory listing, a report page) into memory.
     pub async fn fetch_listing(&self, url: &str) -> Result<Vec<u8>, FetchError> {
         self.ensure_online(url)?;
-        self.get_with_retries(url, |resp| read_all(url, resp)).await
+        self.get_with_retries(url, None, |resp| read_all(url, resp))
+            .await
+    }
+
+    /// GETs one span of `url` into memory, with what the server said of
+    /// the whole file. A server that answers with the whole file instead
+    /// is [`FetchError::RangeIgnored`].
+    pub async fn fetch_range(&self, url: &str, span: Span) -> Result<RangeRead, FetchError> {
+        self.ensure_online(url)?;
+        self.get_with_retries(url, Some(span), |resp| async move {
+            let (total_size, etag, last_modified) = (
+                resp.total_size,
+                resp.etag.clone(),
+                resp.last_modified.clone(),
+            );
+            Ok(RangeRead {
+                bytes: read_all(url, resp).await?,
+                total_size,
+                etag,
+                last_modified,
+            })
+        })
+        .await
+    }
+
+    /// The entries of the zip `remote` that `pick` wants, each fetched
+    /// alone by ranged requests and archived as the file it is, or the zip
+    /// whole when the picks are most of it, the server ignores the range,
+    /// or the archive holds it already. `pick` sees the zip's directory.
+    pub async fn fetch_picks(
+        &self,
+        remote: &RemoteFile,
+        pick: &(dyn Fn(&[Entry]) -> Picks + Sync),
+    ) -> Result<Picked, FetchError> {
+        let url = remote.url.as_str();
+        if self.archive.lookup(url)?.is_some() {
+            return self.fetch(remote).await.map(|l| Picked::Whole(Box::new(l)));
+        }
+        self.ensure_online(url)?;
+        let corrupt = |entry: &str, message: String| FetchError::EntryCorrupt {
+            url: url.to_owned(),
+            entry: entry.to_owned(),
+            message,
+        };
+        // The directory: its tail first, which also says how long the
+        // file is; the rest as the reader asks.
+        let tail = match self.fetch_range(url, Span::Last(TAIL)).await {
+            Ok(t) => t,
+            Err(FetchError::RangeIgnored { .. }) => {
+                return self.fetch(remote).await.map(|l| Picked::Whole(Box::new(l)));
+            }
+            Err(e) => return Err(e),
+        };
+        let Some(total) = tail.total_size else {
+            return self.fetch(remote).await.map(|l| Picked::Whole(Box::new(l)));
+        };
+        let (etag, last_modified) = (tail.etag, tail.last_modified);
+        let mut reader = DirectoryReader::new(total);
+        let mut step = reader
+            .feed(tail.bytes)
+            .map_err(|e| corrupt("", e.to_string()))?;
+        let entries = loop {
+            match step {
+                Step::Read { start, end } => {
+                    let r = self.fetch_range(url, Span::Bytes { start, end }).await?;
+                    step = reader
+                        .feed(r.bytes)
+                        .map_err(|e| corrupt("", e.to_string()))?;
+                }
+                Step::Done(entries) => break entries,
+            }
+        };
+        let picks = match pick(&entries) {
+            Picks::Whole => return self.fetch(remote).await.map(|l| Picked::Whole(Box::new(l))),
+            Picks::Entries(p) => p,
+        };
+        let entry_of = |p: &Pick| {
+            entries
+                .get(p.index)
+                .ok_or_else(|| corrupt("", format!("no entry {} in the directory", p.index)))
+        };
+        let mut wanted = 0u64;
+        for p in &picks {
+            wanted += entry_of(p)?.compressed;
+        }
+        // Most of the zip: one request for the whole beats many for parts.
+        if wanted.saturating_mul(2) > total {
+            return self.fetch(remote).await.map(|l| Picked::Whole(Box::new(l)));
+        }
+        // Each pick keeps its place in the answer, whatever order the
+        // requests take.
+        let mut out: Vec<(usize, LocalFile)> = Vec::with_capacity(picks.len());
+        let mut todo: Vec<(usize, Pick)> = Vec::new();
+        for (place, p) in picks.into_iter().enumerate() {
+            match self.archive.lookup(p.remote.url.as_str())? {
+                Some(found) => out.push((place, LocalFile::archived(&p.remote, found, true))),
+                None => todo.push((place, p)),
+            }
+        }
+        if !todo.is_empty()
+            && let Some(tx) = &self.events
+        {
+            let _ = tx.try_send(Event::DownloadStarted {
+                url: url.to_owned(),
+                size: Some(wanted),
+            });
+        }
+        // Entries that lie together in the zip come in one request.
+        todo.sort_by_key(|(_, p)| entries[p.index].local_header_offset);
+        let span_end = |e: &Entry| {
+            (e.local_header_offset
+                + LOCAL_HEADER as u64
+                + e.name.len() as u64
+                + SLACK
+                + e.compressed)
+                .min(total)
+        };
+        let mut i = 0;
+        while i < todo.len() {
+            let start = entries[todo[i].1.index].local_header_offset;
+            let mut end = span_end(&entries[todo[i].1.index]);
+            let mut j = i + 1;
+            while j < todo.len() && entries[todo[j].1.index].local_header_offset <= end {
+                end = end.max(span_end(&entries[todo[j].1.index]));
+                j += 1;
+            }
+            let mut buf = self
+                .fetch_range(url, Span::Bytes { start, end })
+                .await?
+                .bytes;
+            for (place, p) in &todo[i..j] {
+                let e = &entries[p.index];
+                let short = || corrupt(&e.name, "shorter than the directory says".into());
+                // Offsets within the request's bytes; the request spans at
+                // most the file, so they fit the address space.
+                let at = (e.local_header_offset - start) as usize;
+                let header = buf.get(at..at + LOCAL_HEADER).ok_or_else(short)?;
+                let data_start =
+                    at + local_header_len(header).map_err(|x| corrupt(&e.name, x.to_string()))?;
+                let data_end = data_start as u64 + e.compressed;
+                // An extra field longer than the slack, or a directory that
+                // overstates: the rest of the data, as far as the file goes.
+                if data_end > buf.len() as u64 {
+                    let more = self
+                        .fetch_range(
+                            url,
+                            Span::Bytes {
+                                start: start + buf.len() as u64,
+                                end: (start + data_end).min(total),
+                            },
+                        )
+                        .await?;
+                    buf.extend_from_slice(&more.bytes);
+                }
+                let data = buf
+                    .get(data_start..usize::try_from(data_end).unwrap_or(usize::MAX))
+                    .ok_or_else(short)?;
+                let bytes = unpack(e, data).map_err(|m| corrupt(&e.name, m))?;
+                let local =
+                    self.keep_entry(remote, e, &p.remote, &bytes, total, (&etag, &last_modified))?;
+                out.push((*place, local));
+            }
+            i = j;
+        }
+        out.sort_by_key(|(place, _)| *place);
+        Ok(Picked::Entries(out.into_iter().map(|(_, l)| l).collect()))
+    }
+
+    /// Archives the bytes of one entry of the zip `zip` as the file
+    /// `remote`, with a sidecar that says where in the zip it was.
+    fn keep_entry(
+        &self,
+        zip: &RemoteFile,
+        e: &Entry,
+        remote: &RemoteFile,
+        bytes: &[u8],
+        zip_size: u64,
+        (etag, last_modified): (&Option<String>, &Option<String>),
+    ) -> Result<LocalFile, FetchError> {
+        let path = self.archive.path_for(remote.url.as_str());
+        make_room(&path)?;
+        let part = Archive::part_path(&path);
+        std::fs::write(&part, bytes)
+            .and_then(|()| std::fs::rename(&part, &path))
+            .map_err(|source| FetchError::CacheIo {
+                path: path.display().to_string(),
+                source,
+            })?;
+        let sidecar = Sidecar {
+            url: remote.url.to_string(),
+            size: bytes.len() as u64,
+            sha256: sha256_hex(bytes),
+            fetched_at: now_utc_rfc3339(),
+            etag: etag.clone(),
+            last_modified_at: last_modified.as_deref().and_then(timetext::parse_http_date),
+            last_modified: last_modified.clone(),
+            listed_modified: zip.modified.clone(),
+            listed_modified_at: zip.modified_at,
+            tool: format!("utilake/{}", env!("CARGO_PKG_VERSION")),
+            extracted_from: Some(Extracted {
+                url: zip.url.to_string(),
+                entry: e.name.clone(),
+                zip_size,
+                offset: e.local_header_offset,
+                compressed: e.compressed,
+                method: e.method,
+                crc32: e.crc32,
+            }),
+        };
+        Archive::write_sidecar(&path, &sidecar)?;
+        Ok(LocalFile::archived(
+            remote,
+            Archived { path, sidecar },
+            false,
+        ))
     }
 
     /// The archived copy of a remote file, or the file downloaded into the
@@ -160,28 +439,14 @@ impl Fetcher {
     pub async fn fetch(&self, remote: &RemoteFile) -> Result<LocalFile, FetchError> {
         let url = remote.url.as_str();
         if let Some(found) = self.archive.lookup(url)? {
-            return Ok(LocalFile {
-                remote: remote.clone(),
-                path: found.path,
-                sha256: found.sidecar.sha256,
-                size: found.sidecar.size,
-                cached: true,
-                etag: found.sidecar.etag,
-                last_modified: found.sidecar.last_modified,
-                last_modified_at: found.sidecar.last_modified_at,
-            });
+            return Ok(LocalFile::archived(remote, found, true));
         }
         self.ensure_online(url)?;
         let path = self.archive.path_for(url);
-        if let Some(p) = path.parent() {
-            std::fs::create_dir_all(p).map_err(|source| FetchError::CacheIo {
-                path: p.display().to_string(),
-                source,
-            })?;
-        }
+        make_room(&path)?;
         let part = Archive::part_path(&path);
         let streamed = self
-            .get_with_retries(url, |resp| {
+            .get_with_retries(url, None, |resp| {
                 stream_to_file(url, resp, &part, self.events.clone())
             })
             .await?;
@@ -204,24 +469,27 @@ impl Fetcher {
             listed_modified: remote.modified.clone(),
             listed_modified_at: remote.modified_at,
             tool: format!("utilake/{}", env!("CARGO_PKG_VERSION")),
+            extracted_from: None,
         };
         Archive::write_sidecar(&path, &sidecar)?;
-        Ok(LocalFile {
-            remote: remote.clone(),
-            path,
-            sha256: sidecar.sha256,
-            size: sidecar.size,
-            cached: false,
-            etag: sidecar.etag,
-            last_modified: sidecar.last_modified,
-            last_modified_at: sidecar.last_modified_at,
-        })
+        Ok(LocalFile::archived(
+            remote,
+            Archived { path, sidecar },
+            false,
+        ))
     }
 
-    /// GETs `url` and hands a 200 to `consume`, pacing every attempt,
-    /// retrying what is worth retrying with backoff, and tripping the
-    /// breaker on a refusal.
-    async fn get_with_retries<T, F, Fut>(&self, url: &str, consume: F) -> Result<T, FetchError>
+    /// GETs `url` (one `span` of it when given) and hands a 200 (a 206 for
+    /// a span) to `consume`, pacing every attempt, retrying what is worth
+    /// retrying with backoff, and tripping the breaker on a refusal. A
+    /// span answered with the whole file is not retried: the server
+    /// ignores ranges.
+    async fn get_with_retries<T, F, Fut>(
+        &self,
+        url: &str,
+        span: Option<Span>,
+        consume: F,
+    ) -> Result<T, FetchError>
     where
         F: Fn(HttpResponse) -> Fut,
         Fut: std::future::Future<Output = Result<T, FetchError>>,
@@ -241,9 +509,18 @@ impl Fetcher {
                 return Err(e);
             }
             self.pace().await;
-            let result = match self.transport.get(url).await {
+            let response = match span {
+                Some(s) => self.transport.get_range(url, s).await,
+                None => self.transport.get(url).await,
+            };
+            let result = match response {
                 Err(e) => Err(e),
-                Ok(resp) if resp.status == 200 => consume(resp).await,
+                Ok(resp) if resp.status == 200 && span.is_some() => Err(FetchError::RangeIgnored {
+                    url: url.to_owned(),
+                }),
+                Ok(resp) if resp.status == 200 || (resp.status == 206 && span.is_some()) => {
+                    consume(resp).await
+                }
                 Ok(resp) if resp.status == 403 => {
                     let head = read_head(resp.body, 256).await;
                     let _ = self.blocked.set((403, url.to_owned(), head));
@@ -280,6 +557,54 @@ impl Fetcher {
             })),
         })
     }
+}
+
+/// Creates the folders an archived file goes under.
+fn make_room(path: &Path) -> Result<(), FetchError> {
+    let parent = path
+        .parent()
+        .expect("an archived path lies under the archive's root");
+    std::fs::create_dir_all(parent).map_err(|source| FetchError::CacheIo {
+        path: parent.display().to_string(),
+        source,
+    })
+}
+
+/// The bytes of an entry as the file it is: a stored entry's as they are, a
+/// deflated entry's inflated; checked against the directory's size and
+/// CRC-32.
+fn unpack(e: &Entry, data: &[u8]) -> Result<Vec<u8>, String> {
+    let bytes = match e.method {
+        0 => data.to_vec(),
+        8 => {
+            let mut out = Vec::with_capacity(usize::try_from(e.size.min(1 << 20)).unwrap_or(0));
+            flate2::read::DeflateDecoder::new(data)
+                .take(e.size + 1)
+                .read_to_end(&mut out)
+                .map_err(|x| format!("it does not inflate: {x}"))?;
+            out
+        }
+        m => {
+            return Err(format!(
+                "compression method {m} is neither stored nor deflated"
+            ));
+        }
+    };
+    if bytes.len() as u64 != e.size {
+        return Err(format!(
+            "{} bytes where the directory says {}",
+            bytes.len(),
+            e.size
+        ));
+    }
+    let crc = crc32fast::hash(&bytes);
+    if crc != e.crc32 {
+        return Err(format!(
+            "CRC-32 {crc:08x} where the directory says {:08x}",
+            e.crc32
+        ));
+    }
+    Ok(bytes)
 }
 
 async fn read_head(mut body: BoxStream<'static, Result<Bytes, String>>, limit: usize) -> Vec<u8> {
@@ -322,6 +647,7 @@ async fn read_all(url: &str, resp: HttpResponse) -> Result<Vec<u8>, FetchError> 
 }
 
 /// A completed download: its bytes' hash and size, and what the server said.
+#[derive(Debug)]
 struct Streamed {
     sha256: String,
     size: u64,
@@ -616,17 +942,20 @@ mod tests {
         short.claimed_length = Some(10);
         t.add("https://h/short.zip", short);
         let e = f.fetch(&remote("https://h/short.zip")).await.unwrap_err();
-        match e {
-            FetchError::RetriesExhausted { last, .. } => assert!(matches!(
-                *last,
-                FetchError::ContentLength {
-                    expected: 10,
-                    received: 3,
-                    ..
-                }
-            )),
-            other => panic!("{other}"),
-        }
+        assert!(
+            matches!(
+                &e,
+                FetchError::RetriesExhausted { last, .. } if matches!(
+                    **last,
+                    FetchError::ContentLength {
+                        expected: 10,
+                        received: 3,
+                        ..
+                    }
+                )
+            ),
+            "{e}"
+        );
         let path = f.archive().path_for("https://h/short.zip");
         assert!(!path.exists() && !Archive::part_path(&path).exists());
         assert!(f.archive().lookup("https://h/short.zip").unwrap().is_none());
@@ -670,5 +999,590 @@ mod tests {
         paced.fetch_listing("https://h/dir/").await.unwrap();
         paced.fetch_listing("https://h/dir/").await.unwrap();
         assert!(start.elapsed() >= Duration::from_millis(30));
+    }
+}
+
+#[cfg(test)]
+mod picks_tests {
+    use std::io::{Cursor, Write as _};
+    use std::sync::Arc;
+
+    use url::Url;
+    use utilake_core::YearMonth;
+
+    use super::*;
+    use crate::source::Query;
+    use crate::transport::{Canned, StaticTransport};
+
+    const ZIP: &str = "https://h/A/MMSDM_2014_01.zip";
+
+    fn remote(url: &str) -> RemoteFile {
+        RemoteFile {
+            url: Url::parse(url).unwrap(),
+            source: "nem-mmsdm",
+            table: None,
+            period: Some(YearMonth::new(2014, 1).unwrap().into()),
+            size: None,
+            modified: Some("1/02/2014 10:00 AM".into()),
+            modified_at: None,
+        }
+    }
+
+    fn fast() -> FetcherConfig {
+        FetcherConfig {
+            attempts: 2,
+            backoff: Duration::from_millis(1),
+            max_backoff: Duration::from_millis(2),
+            min_interval: Duration::ZERO,
+        }
+    }
+
+    /// A zip of one stored entry.
+    fn inner(name: &str, bytes: &[u8]) -> Vec<u8> {
+        let mut w = zip::ZipWriter::new(Cursor::new(Vec::new()));
+        let opts = zip::write::SimpleFileOptions::default()
+            .compression_method(zip::CompressionMethod::Stored);
+        w.start_file(name, opts).unwrap();
+        w.write_all(bytes).unwrap();
+        w.finish().unwrap().into_inner()
+    }
+
+    /// A whole-month zip: two small nested zips side by side, a large one,
+    /// a deflated text file and a folder.
+    fn month_zip() -> (Vec<u8>, Vec<Vec<u8>>, Vec<u8>) {
+        let a = inner("A.CSV", b"a,b\n1,2\n");
+        let b = inner("B.CSV", b"c\n3\n");
+        let big = inner("BIG.CSV", &b"x,y\n".repeat(600));
+        let text = b"line,of,text\n".repeat(20);
+        let mut w = zip::ZipWriter::new(Cursor::new(Vec::new()));
+        let stored = zip::write::SimpleFileOptions::default()
+            .compression_method(zip::CompressionMethod::Stored);
+        let deflated = zip::write::SimpleFileOptions::default()
+            .compression_method(zip::CompressionMethod::Deflated);
+        for (name, bytes) in [
+            ("PUBLIC_DVD_A_201401010000.zip", &a),
+            ("PUBLIC_DVD_B_201401010000.zip", &b),
+            ("PUBLIC_DVD_BIG_201401010000.zip", &big),
+        ] {
+            w.start_file(name, stored).unwrap();
+            w.write_all(bytes).unwrap();
+        }
+        w.add_directory("d/", stored).unwrap();
+        w.start_file("d/notes.csv", deflated).unwrap();
+        w.write_all(&text).unwrap();
+        (w.finish().unwrap().into_inner(), vec![a, b, big], text)
+    }
+
+    fn pick_of(indexes: &[usize]) -> impl Fn(&[Entry]) -> Picks + Sync {
+        let indexes = indexes.to_vec();
+        move |entries: &[Entry]| {
+            Picks::Entries(
+                indexes
+                    .iter()
+                    .map(|&i| Pick {
+                        index: i,
+                        remote: remote(&format!(
+                            "{ZIP}!{}",
+                            entries.get(i).map_or("none", |e| e.name.as_str())
+                        )),
+                    })
+                    .collect(),
+            )
+        }
+    }
+
+    fn setup(body: Canned) -> (tempfile::TempDir, Arc<StaticTransport>, Fetcher) {
+        let dir = tempfile::tempdir().unwrap();
+        let t = Arc::new(StaticTransport::default());
+        t.add(ZIP, body);
+        let f = Fetcher::new(Arc::new(t.clone()), Archive::new(dir.path()), fast());
+        (dir, t, f)
+    }
+
+    fn entries(p: Picked) -> Vec<LocalFile> {
+        assert!(matches!(&p, Picked::Entries(_)), "{p:?}");
+        p.files()
+    }
+
+    fn whole(p: Picked) -> LocalFile {
+        assert!(matches!(&p, Picked::Whole(_)), "{p:?}");
+        p.files().remove(0)
+    }
+
+    #[tokio::test]
+    async fn picked_entries_come_alone_as_the_files_they_are_and_are_kept() {
+        let (zip, inners, text) = month_zip();
+        let (_dir, t, f) = setup(Canned::ranged(&zip));
+        let r = remote(ZIP);
+        // The first nested zip and the deflated text: apart in the zip, so
+        // the directory's tail and one span each.
+        let got = entries(f.fetch_picks(&r, &pick_of(&[0, 4])).await.unwrap());
+        assert_eq!(t.request_count(), 3, "{:?}", t.requests.lock().unwrap());
+        assert_eq!(got.len(), 2);
+        assert_eq!(std::fs::read(&got[0].path).unwrap(), inners[0]);
+        assert!(
+            got[0]
+                .path
+                .ends_with("MMSDM_2014_01.zip!PUBLIC_DVD_A_201401010000.zip")
+        );
+        assert_eq!(std::fs::read(&got[1].path).unwrap(), text);
+        assert!(got[1].path.ends_with("MMSDM_2014_01.zip!d/notes.csv"));
+        assert!(!got[0].cached && got[0].etag.as_deref() == Some("\"etag\""));
+        let side = Archive::read_sidecar(&got[1].path).unwrap().unwrap();
+        let x = side.extracted_from.unwrap();
+        assert_eq!(
+            (x.url.as_str(), x.entry.as_str(), x.method),
+            (ZIP, "d/notes.csv", 8)
+        );
+        assert_eq!((x.zip_size, x.compressed > 0), (zip.len() as u64, true));
+        assert_eq!(side.listed_modified.as_deref(), Some("1/02/2014 10:00 AM"));
+        assert_eq!(side.size, text.len() as u64);
+        assert_eq!(side.sha256, sha256_hex(&text));
+        assert!(
+            f.archive()
+                .lookup(&format!("{ZIP}!d/notes.csv"))
+                .unwrap()
+                .is_some()
+        );
+        // Asked again: the directory is read again (the picks are named
+        // from it), then the archive answers for every entry.
+        let again = entries(f.fetch_picks(&r, &pick_of(&[0, 4])).await.unwrap());
+        assert_eq!(t.request_count(), 4);
+        assert!(again.iter().all(|l| l.cached));
+        // Two entries side by side: the tail and one span.
+        let (_dir, t, f) = setup(Canned::ranged(&zip));
+        let got = entries(f.fetch_picks(&r, &pick_of(&[1, 0])).await.unwrap());
+        assert_eq!(t.request_count(), 2, "{:?}", t.requests.lock().unwrap());
+        assert_eq!(
+            std::fs::read(&got[0].path).unwrap(),
+            inners[1],
+            "picked order"
+        );
+        assert_eq!(std::fs::read(&got[1].path).unwrap(), inners[0]);
+        // Nothing picked: nothing fetched beyond the directory.
+        assert_eq!(
+            entries(f.fetch_picks(&r, &pick_of(&[])).await.unwrap()),
+            Vec::<LocalFile>::new()
+        );
+        assert!(!f.archive().lookup(ZIP).unwrap().is_some());
+    }
+
+    #[tokio::test]
+    async fn the_zip_comes_whole_when_that_is_cheaper_or_the_only_way() {
+        let (zip, _, _) = month_zip();
+        // The source wants it all.
+        let (_dir, t, f) = setup(Canned::ranged(&zip));
+        let r = remote(ZIP);
+        let w = whole(f.fetch_picks(&r, &|_| Picks::Whole).await.unwrap());
+        assert_eq!((w.cached, w.size), (false, zip.len() as u64));
+        assert_eq!(t.request_count(), 2, "the tail, then the file");
+        // Archived whole already: no request, whatever the picks.
+        let w = whole(f.fetch_picks(&r, &pick_of(&[0])).await.unwrap());
+        assert!(w.cached);
+        assert_eq!(t.request_count(), 2);
+        // The picks are most of the zip.
+        let (_dir, t, f) = setup(Canned::ranged(&zip));
+        assert!(matches!(
+            f.fetch_picks(&r, &pick_of(&[2])).await.unwrap(),
+            Picked::Whole(_)
+        ));
+        assert_eq!(t.request_count(), 2);
+        // The server ignores ranges.
+        let (_dir, t, f) = setup(Canned::ok(&zip));
+        assert!(matches!(
+            f.fetch_picks(&r, &pick_of(&[0])).await.unwrap(),
+            Picked::Whole(_)
+        ));
+        assert_eq!(
+            t.request_count(),
+            2,
+            "the range once, not retried, then the file"
+        );
+        // A ranged read on its own says what the server said.
+        let (_dir, _t, f) = setup(Canned::ranged(&zip));
+        let read = f
+            .fetch_range(ZIP, Span::Bytes { start: 0, end: 4 })
+            .await
+            .unwrap();
+        assert_eq!(read.bytes, b"PK\x03\x04");
+        assert_eq!(read.total_size, Some(zip.len() as u64));
+        assert_eq!(read.etag.as_deref(), Some("\"etag\""));
+        assert!(read.last_modified.is_some());
+        assert!(matches!(
+            f.fetch_range("https://h/none.zip", Span::Last(1)).await,
+            Err(FetchError::HttpStatus { status: 404, .. })
+        ));
+    }
+
+    /// A server that honours a range but says nothing of the whole file.
+    struct NoTotal(Arc<StaticTransport>);
+
+    #[async_trait::async_trait]
+    impl Transport for NoTotal {
+        async fn get(&self, url: &str) -> Result<HttpResponse, FetchError> {
+            self.0.get(url).await
+        }
+        async fn get_range(&self, url: &str, span: Span) -> Result<HttpResponse, FetchError> {
+            let mut r = self.0.get_range(url, span).await?;
+            r.total_size = None;
+            Ok(r)
+        }
+    }
+
+    #[tokio::test]
+    async fn a_server_that_hides_the_size_gives_the_zip_whole_and_events_say_what_is_fetched() {
+        let (zip, _, _) = month_zip();
+        let dir = tempfile::tempdir().unwrap();
+        let t = Arc::new(StaticTransport::default());
+        t.add(ZIP, Canned::ranged(&zip));
+        let f = Fetcher::new(
+            Arc::new(NoTotal(t.clone())),
+            Archive::new(dir.path()),
+            fast(),
+        );
+        assert!(matches!(
+            f.fetch_picks(&remote(ZIP), &pick_of(&[0])).await.unwrap(),
+            Picked::Whole(_)
+        ));
+        // Events: one start for the picks, sized by their compressed bytes.
+        let (_dir, _t, f) = setup(Canned::ranged(&zip));
+        let (tx, mut rx) = tokio::sync::mpsc::channel(8);
+        let f = f.with_events(tx);
+        entries(
+            f.fetch_picks(&remote(ZIP), &pick_of(&[0, 1]))
+                .await
+                .unwrap(),
+        );
+        let started = rx.recv().await;
+        assert!(
+            matches!(&started, Some(Event::DownloadStarted { .. })),
+            "{started:?}"
+        );
+        if let Some(Event::DownloadStarted { url, size }) = started {
+            assert_eq!(url, ZIP);
+            assert!(size.is_some_and(|s| s > 0 && s < zip.len() as u64));
+        }
+    }
+
+    /// The zip with `f` applied to the central directory record of the
+    /// entry at `index`.
+    fn tampered(zip: &[u8], index: usize, f: impl Fn(&mut [u8])) -> Vec<u8> {
+        let mut z = zip.to_vec();
+        // The outer directory, through the end record (the nested zips
+        // carry directories of their own).
+        let eocd = z.len() - 22;
+        let mut at = u32::from_le_bytes(z[eocd + 16..eocd + 20].try_into().unwrap()) as usize;
+        for _ in 0..index {
+            let n = u16::from_le_bytes([z[at + 28], z[at + 29]]) as usize;
+            let m = u16::from_le_bytes([z[at + 30], z[at + 31]]) as usize;
+            let k = u16::from_le_bytes([z[at + 32], z[at + 33]]) as usize;
+            at += 46 + n + m + k;
+        }
+        assert_eq!(&z[at..at + 4], b"PK\x01\x02");
+        f(&mut z[at..]);
+        z
+    }
+
+    #[tokio::test]
+    async fn an_entry_that_is_not_what_the_directory_says_is_refused() {
+        let (zip, _, _) = month_zip();
+        let r = remote(ZIP);
+        let err = |p: Picked| -> String { panic!("{p:?}") };
+        // Not a zip at all.
+        let (_dir, _t, f) = setup(Canned::ranged(b"just text, not a zip"));
+        let e = f.fetch_picks(&r, &pick_of(&[0])).await.err().unwrap();
+        assert!(
+            matches!(&e, FetchError::EntryCorrupt { entry, .. } if entry.is_empty()),
+            "{e}"
+        );
+        assert!(e.to_string().contains("not a zip"));
+        // A pick the directory does not have.
+        let (_dir, _t, f) = setup(Canned::ranged(&zip));
+        let e = f.fetch_picks(&r, &pick_of(&[9])).await.err().unwrap();
+        assert!(e.to_string().contains("no entry 9"), "{e}");
+        // The directory's CRC-32 disagrees with the bytes.
+        let z = tampered(&zip, 0, |rec| rec[16] ^= 0xff);
+        let (dir, _t, f) = setup(Canned::ranged(&z));
+        let e = f
+            .fetch_picks(&r, &pick_of(&[0]))
+            .await
+            .map(err)
+            .unwrap_err();
+        assert!(
+            matches!(&e, FetchError::EntryCorrupt { entry, .. } if entry == "PUBLIC_DVD_A_201401010000.zip")
+        );
+        assert!(e.to_string().contains("CRC-32"), "{e}");
+        assert!(
+            crate::Archive::new(dir.path())
+                .entries_under(None)
+                .is_empty()
+        );
+        // A method that is neither stored nor deflated.
+        let z = tampered(&zip, 0, |rec| rec[10] = 99);
+        let (_dir, _t, f) = setup(Canned::ranged(&z));
+        let e = f
+            .fetch_picks(&r, &pick_of(&[0]))
+            .await
+            .map(err)
+            .unwrap_err();
+        assert!(e.to_string().contains("method 99"), "{e}");
+        // A compressed size a little over the bytes: the slack holds them,
+        // and the count disagrees.
+        let z = tampered(&zip, 0, |rec| {
+            let n = u32::from_le_bytes(rec[20..24].try_into().unwrap()) + 10;
+            rec[20..24].copy_from_slice(&n.to_le_bytes());
+        });
+        let (_dir, _t, f) = setup(Canned::ranged(&z));
+        let e = f
+            .fetch_picks(&r, &pick_of(&[0]))
+            .await
+            .map(err)
+            .unwrap_err();
+        assert!(
+            e.to_string().contains("bytes where the directory says"),
+            "{e}"
+        );
+        // A compressed size far past the slack on the last entry: the rest
+        // is asked for, and the file ends first.
+        let z = tampered(&zip, 4, |rec| {
+            let n = u32::from_le_bytes(rec[20..24].try_into().unwrap()) + 1000;
+            rec[20..24].copy_from_slice(&n.to_le_bytes());
+        });
+        let (_dir, t, f) = setup(Canned::ranged(&z));
+        let e = f
+            .fetch_picks(&r, &pick_of(&[4]))
+            .await
+            .map(err)
+            .unwrap_err();
+        assert!(
+            e.to_string().contains("shorter than the directory says"),
+            "{e}"
+        );
+        assert_eq!(t.request_count(), 3, "the tail, the span, the rest");
+        // A local header that is not one.
+        let mut z = zip.clone();
+        z[0] = b'X';
+        let (_dir, _t, f) = setup(Canned::ranged(&z));
+        let e = f
+            .fetch_picks(&r, &pick_of(&[0]))
+            .await
+            .map(err)
+            .unwrap_err();
+        assert!(e.to_string().contains("no local header"), "{e}");
+        // A directory that points past the file.
+        let z = tampered(&zip, 0, |rec| {
+            rec[42..46].copy_from_slice(&u32::MAX.to_le_bytes());
+        });
+        let (_dir, _t, f) = setup(Canned::ranged(&z));
+        let e = f
+            .fetch_picks(&r, &pick_of(&[0]))
+            .await
+            .map(err)
+            .unwrap_err();
+        assert!(
+            e.to_string().contains("shorter than the directory says"),
+            "{e}"
+        );
+        // The archive cannot take the file.
+        let (dir, _t, f) = setup(Canned::ranged(&zip));
+        std::fs::write(dir.path().join("h"), b"a file where the host folder goes").unwrap();
+        let e = f
+            .fetch_picks(&r, &pick_of(&[0]))
+            .await
+            .map(err)
+            .unwrap_err();
+        assert!(matches!(e, FetchError::CacheIo { .. }), "{e}");
+    }
+
+    #[test]
+    fn unpacking_checks_the_stream_the_size_and_the_crc() {
+        let e = |method: u16, size: u64, crc32: u32| Entry {
+            name: "x".into(),
+            size,
+            compressed: 0,
+            crc32,
+            method,
+            dos_date: 0,
+            dos_time: 0,
+            local_header_offset: 0,
+        };
+        assert_eq!(
+            unpack(&e(0, 3, crc32fast::hash(b"abc")), b"abc").unwrap(),
+            b"abc"
+        );
+        assert!(
+            unpack(&e(8, 3, 0), &[0xff, 0xff, 0xff])
+                .unwrap_err()
+                .contains("does not inflate")
+        );
+        assert!(
+            unpack(&e(0, 2, 0), b"abc")
+                .unwrap_err()
+                .contains("3 bytes where the directory says 2")
+        );
+        assert!(
+            unpack(&e(0, u64::MAX, 0), b"abc")
+                .unwrap_err()
+                .contains("where the directory says")
+        );
+        let mut enc = flate2::write::DeflateEncoder::new(Vec::new(), flate2::Compression::fast());
+        enc.write_all(b"hello").unwrap();
+        let deflated = enc.finish().unwrap();
+        assert_eq!(
+            unpack(&e(8, 5, crc32fast::hash(b"hello")), &deflated).unwrap(),
+            b"hello"
+        );
+        // The inflated bytes are cut at one past the declared size, so a
+        // lying directory cannot make a bomb of a small entry.
+        assert!(
+            unpack(&e(8, 2, 0), &deflated)
+                .unwrap_err()
+                .contains("3 bytes where the directory says 2")
+        );
+        let _ = Query {
+            tables: Vec::new(),
+            exclude: Vec::new(),
+            range: utilake_core::TimeRange::months(
+                YearMonth::new(2024, 1).unwrap(),
+                YearMonth::new(2024, 1).unwrap(),
+            ),
+        };
+    }
+
+    /// The month zip with a comment long enough to push its directory out
+    /// of the tail.
+    fn commented(zip: &[u8]) -> Vec<u8> {
+        let mut z = zip.to_vec();
+        let eocd = z.len() - 22;
+        z[eocd + 20..eocd + 22].copy_from_slice(&0xFFFFu16.to_le_bytes());
+        z.extend(std::iter::repeat_n(b'c', 0xFFFF));
+        z
+    }
+
+    #[tokio::test]
+    async fn a_directory_outside_the_tail_takes_a_second_span_and_its_damage_is_told() {
+        let (zip, inners, _) = month_zip();
+        let z = commented(&zip);
+        let (_dir, t, f) = setup(Canned::ranged(&z));
+        let got = entries(f.fetch_picks(&remote(ZIP), &pick_of(&[0])).await.unwrap());
+        assert_eq!(std::fs::read(&got[0].path).unwrap(), inners[0]);
+        assert_eq!(t.request_count(), 3, "the tail, the directory, the entry");
+        // The directory, read apart, is not one.
+        let mut broken = commented(&tampered(&zip, 0, |rec| rec[0] = b'X'));
+        let _ = &mut broken;
+        let (_dir, _t, f) = setup(Canned::ranged(&broken));
+        let e = f
+            .fetch_picks(&remote(ZIP), &pick_of(&[0]))
+            .await
+            .expect_err("damaged");
+        assert!(
+            matches!(&e, FetchError::EntryCorrupt { entry, .. } if entry.is_empty()),
+            "{e}"
+        );
+        // The tail itself cannot be fetched.
+        let dir = tempfile::tempdir().unwrap();
+        let t = Arc::new(StaticTransport::default());
+        let f = Fetcher::new(Arc::new(t), Archive::new(dir.path()), fast());
+        let e = f
+            .fetch_picks(&remote(ZIP), &pick_of(&[0]))
+            .await
+            .expect_err("a 404");
+        assert!(
+            matches!(e, FetchError::HttpStatus { status: 404, .. }),
+            "{e}"
+        );
+    }
+
+    #[tokio::test]
+    async fn the_archive_refusing_a_file_or_an_entry_is_reported() {
+        let (zip, _, _) = month_zip();
+        let r = remote(ZIP);
+        // A directory where the whole zip would go: it cannot be renamed
+        // into place.
+        let (dir, _t, f) = setup(Canned::ranged(&zip));
+        std::fs::create_dir_all(f.archive().path_for(ZIP)).unwrap();
+        let e = f.fetch(&r).await.expect_err("cannot rename onto a folder");
+        assert!(matches!(e, FetchError::CacheIo { .. }), "{e}");
+        drop(dir);
+        // A file where the host folder would go: nothing can be created.
+        let (dir, _t, f) = setup(Canned::ranged(&zip));
+        std::fs::write(dir.path().join("h"), b"a file").unwrap();
+        let e = f.fetch(&r).await.expect_err("no folder");
+        assert!(matches!(e, FetchError::CacheIo { .. }), "{e}");
+        drop(dir);
+        // A directory where an entry would go.
+        let (_dir, _t, f) = setup(Canned::ranged(&zip));
+        let entry_url = format!("{ZIP}!PUBLIC_DVD_A_201401010000.zip");
+        std::fs::create_dir_all(f.archive().path_for(&entry_url)).unwrap();
+        let e = f
+            .fetch_picks(&r, &pick_of(&[0]))
+            .await
+            .expect_err("cannot rename onto a folder");
+        assert!(matches!(e, FetchError::CacheIo { .. }), "{e}");
+        // A body that breaks while a span is read is retried, then given up.
+        let dir = tempfile::tempdir().unwrap();
+        let t = Arc::new(StaticTransport::default());
+        let mut broken = Canned::ranged(&zip);
+        broken.fail_after = Some(2);
+        t.add(ZIP, broken);
+        let f = Fetcher::new(Arc::new(t.clone()), Archive::new(dir.path()), fast());
+        let e = f
+            .fetch_range(ZIP, Span::Last(10))
+            .await
+            .expect_err("broken");
+        assert!(
+            matches!(&e, FetchError::RetriesExhausted { last, .. } if matches!(**last, FetchError::Body { .. })),
+            "{e}"
+        );
+        assert_eq!(t.request_count(), 2);
+    }
+
+    #[tokio::test]
+    async fn streaming_to_a_file_reports_progress_and_a_writer_that_stopped() {
+        let dir = tempfile::tempdir().unwrap();
+        let body = |bytes: Bytes| HttpResponse {
+            status: 200,
+            content_length: Some(bytes.len() as u64),
+            total_size: None,
+            etag: None,
+            last_modified: None,
+            body: futures::stream::iter(
+                (0..bytes.len())
+                    .step_by(1 << 20)
+                    .map(|i| Ok(bytes.slice(i..(i + (1 << 20)).min(bytes.len()))))
+                    .collect::<Vec<_>>(),
+            )
+            .boxed(),
+        };
+        // Five mebibytes in one-mebibyte chunks: one progress event at four.
+        let (tx, mut rx) = tokio::sync::mpsc::channel(8);
+        let big = Bytes::from(vec![7u8; 5 << 20]);
+        let part = dir.path().join("big.part");
+        let s = stream_to_file("https://h/big", body(big), &part, Some(tx))
+            .await
+            .unwrap();
+        assert_eq!(s.size, 5 << 20);
+        let mut progress = 0;
+        while let Ok(ev) = rx.try_recv() {
+            if let Event::DownloadProgress { bytes, .. } = ev {
+                progress += 1;
+                assert_eq!(bytes, 4 << 20);
+            }
+        }
+        assert_eq!(progress, 1);
+        // A part that cannot be created: the writer stops, the download
+        // (more chunks than the channel holds) breaks off, nothing is left
+        // behind.
+        let nowhere = dir.path().join("missing").join("x.part");
+        let e = stream_to_file(
+            "https://h/x",
+            body(Bytes::from(vec![1u8; 20 << 20])),
+            &nowhere,
+            None,
+        )
+        .await
+        .expect_err("no folder");
+        assert!(matches!(e, FetchError::CacheIo { .. }), "{e}");
+        assert!(!nowhere.exists());
     }
 }

@@ -5,7 +5,10 @@
 //! offline stub); the
 //! [`Fetcher`] combines a transport with the [`Archive`] on disk, retries and
 //! politeness into one `fetch(remote) -> LocalFile` call: each file is
-//! downloaded whole, once, and kept.
+//! downloaded whole, once, and kept. A zip that holds more than a request
+//! needs is read by its directory first, through ranged requests, and only
+//! the entries the source picks are fetched (`fetch_picks`), each kept as
+//! the file it is.
 
 pub mod archive;
 pub mod error;
@@ -14,8 +17,8 @@ pub mod listing;
 pub mod source;
 pub mod transport;
 
-pub use archive::{Archive, Archived, Sidecar, sha256_file};
+pub use archive::{Archive, Archived, Extracted, Sidecar, sha256_file};
 pub use error::FetchError;
-pub use fetcher::{Fetcher, FetcherConfig, LocalFile};
-pub use source::{Query, RemoteFile, Source};
-pub use transport::{HttpResponse, OfflineTransport, ReqwestTransport, Transport};
+pub use fetcher::{Fetcher, FetcherConfig, LocalFile, Picked, RangeRead};
+pub use source::{Entry, Pick, Picks, Query, RemoteFile, Source};
+pub use transport::{HttpResponse, OfflineTransport, ReqwestTransport, Span, Transport};

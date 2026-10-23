@@ -121,6 +121,24 @@ pub enum FetchError {
         /// First bytes of that refusal's body.
         body_head: Vec<u8>,
     },
+    /// A ranged request was answered with the whole file.
+    #[error(
+        "The server answered a range of {url} with the whole file; the file is downloaded whole instead."
+    )]
+    RangeIgnored {
+        /// URL.
+        url: String,
+    },
+    /// An entry fetched alone out of a zip is not what its directory says.
+    #[error("The entry {entry} of {url} is not what the zip's directory says: {message}")]
+    EntryCorrupt {
+        /// The zip.
+        url: String,
+        /// The entry.
+        entry: String,
+        /// What disagreed.
+        message: String,
+    },
     /// A file of the archive could not be read or written.
     #[error("The archive path {path} could not be read or written.")]
     CacheIo {
@@ -236,6 +254,14 @@ impl Diagnose for FetchError {
                 .with_url(url.clone())
                 .expected_observed("200", status.to_string())
                 .with_sample(body_head),
+            Self::RangeIgnored { url } => {
+                Diagnostic::warning("net.range_ignored", Category::Net, msg).with_url(url.clone())
+            }
+            Self::EntryCorrupt { url, entry, .. } => {
+                Diagnostic::error("zip.entry_corrupt", Category::Zip, msg)
+                    .with_url(url.clone())
+                    .with_file(entry.clone())
+            }
             Self::CacheIo { path, source } => Diagnostic::error("cache.io", Category::Cache, msg)
                 .with_file(path.clone())
                 .caused_by(source),
@@ -446,5 +472,31 @@ mod tests {
         ] {
             assert_eq!(e.diagnostic().code, code, "{e}");
         }
+    }
+}
+
+#[cfg(test)]
+mod ranged_tests {
+    use super::*;
+
+    #[test]
+    fn a_range_ignored_warns_and_a_corrupt_entry_names_the_zip_and_entry() {
+        let ignored = FetchError::RangeIgnored {
+            url: "https://h/a.zip".into(),
+        };
+        assert!(!ignored.is_retryable());
+        let d = ignored.diagnostic();
+        assert_eq!(d.code, "net.range_ignored");
+        assert_eq!(d.url.as_deref(), Some("https://h/a.zip"));
+        let corrupt = FetchError::EntryCorrupt {
+            url: "https://h/a.zip".into(),
+            entry: "b.zip".into(),
+            message: "CRC-32 differs".into(),
+        };
+        assert!(!corrupt.is_retryable());
+        let d = corrupt.diagnostic();
+        assert_eq!(d.code, "zip.entry_corrupt");
+        assert_eq!(d.file.as_deref(), Some("b.zip"));
+        assert!(corrupt.to_string().contains("CRC-32 differs"));
     }
 }

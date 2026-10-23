@@ -278,3 +278,13 @@ mod tests {
         assert!(parse(b"<A HREF=\"unterminated").is_empty());
     }
 }
+
+#[cfg(test)]
+mod more_tests {
+    #[test]
+    fn a_link_cut_off_before_its_tag_closes_ends_the_listing() {
+        let html = b"<a href=\"/a.zip\">a.zip</a><a href=\"/b.zip\"";
+        let names: Vec<String> = super::parse(html).into_iter().map(|e| e.name).collect();
+        assert_eq!(names, ["a.zip"]);
+    }
+}

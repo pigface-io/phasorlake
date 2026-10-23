@@ -49,6 +49,32 @@ pub struct Sidecar {
     /// The program and version that downloaded it, e.g. `utilake/0.1.0`.
     #[serde(default)]
     pub tool: String,
+    /// Where the bytes came from when they are one entry of a zip, fetched
+    /// alone by byte span rather than with the zip; none for a file
+    /// downloaded whole.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub extracted_from: Option<Extracted>,
+}
+
+/// One entry of a zip, fetched alone: what the zip's central directory
+/// said of it and where in the zip it was, so the archived bytes trace
+/// back to the server's.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Extracted {
+    /// The zip's URL.
+    pub url: String,
+    /// The entry's name in the zip.
+    pub entry: String,
+    /// The zip's size.
+    pub zip_size: u64,
+    /// Where the entry's local header starts in the zip.
+    pub offset: u64,
+    /// The entry's compressed size.
+    pub compressed: u64,
+    /// Its compression method (0 stored, 8 deflated).
+    pub method: u16,
+    /// Its CRC-32, as the directory declared it and the bytes matched.
+    pub crc32: u32,
 }
 
 impl Sidecar {
@@ -117,7 +143,11 @@ pub fn sha256_hex(bytes: &[u8]) -> String {
 /// file of any size takes the same memory. Blocking: call it off the
 /// async runtime.
 pub fn sha256_file(path: &Path) -> std::io::Result<(String, u64)> {
-    let mut f = std::fs::File::open(path)?;
+    sha256_read(&mut std::fs::File::open(path)?)
+}
+
+/// sha256 hex and length of everything `f` reads, in 1 MiB pieces.
+pub fn sha256_read(f: &mut impl Read) -> std::io::Result<(String, u64)> {
     let mut hasher = Sha256::new();
     let mut buf = vec![0u8; 1 << 20];
     let mut len = 0u64;
@@ -375,6 +405,7 @@ mod tests {
             listed_modified: Some("2/13/2024  6:27 PM".into()),
             listed_modified_at: timetext::parse_rfc3339("2024-02-13T18:27:00+10:00"),
             tool: "utilake/test".into(),
+            extracted_from: None,
         };
         Archive::write_sidecar(&path, &sidecar).unwrap();
         let found = a.lookup(url).unwrap().unwrap();
@@ -486,5 +517,94 @@ mod tests {
         let err = Archive::read_sidecar(&path).unwrap_err();
         assert_eq!(err.diagnostic().code, "cache.sidecar_corrupt");
         assert!(err.to_string().contains("fetched_at"), "{err}");
+    }
+}
+
+#[cfg(test)]
+mod more_tests {
+    use super::*;
+
+    /// A reader interrupted once, then done.
+    struct Flaky(usize, &'static [u8]);
+
+    impl Read for Flaky {
+        fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
+            self.0 += 1;
+            match self.0 {
+                1 => Err(std::io::Error::from(std::io::ErrorKind::Interrupted)),
+                2 => {
+                    let n = self.1.len().min(buf.len());
+                    buf[..n].copy_from_slice(&self.1[..n]);
+                    self.1 = &self.1[n..];
+                    Ok(n)
+                }
+                3 => Ok(0),
+                _ => Err(std::io::Error::other("gone")),
+            }
+        }
+    }
+
+    #[test]
+    fn hashing_rides_out_an_interruption_and_reports_a_failure() {
+        let (sha, len) = sha256_read(&mut Flaky(0, b"abc")).unwrap();
+        assert_eq!((sha, len), (sha256_hex(b"abc"), 3));
+        let mut gone = Flaky(3, b"");
+        assert_eq!(sha256_read(&mut gone).unwrap_err().to_string(), "gone");
+    }
+
+    #[test]
+    fn a_url_with_no_path_and_a_sidecar_that_cannot_be_read() {
+        let dir = tempfile::tempdir().unwrap();
+        let a = Archive::new(dir.path());
+        assert_eq!(a.path_for("https://h"), dir.path().join("h"));
+        assert_eq!(a.path_for(""), dir.path().join("_"));
+        assert_eq!(
+            a.path_for("https://h/A.zip!B.zip"),
+            dir.path().join("h").join("A.zip!B.zip")
+        );
+        // A sidecar path that is a directory: an I/O error, not "none".
+        let path = dir.path().join("x.zip");
+        std::fs::create_dir_all(Archive::sidecar_path(&path)).unwrap();
+        assert!(matches!(
+            Archive::read_sidecar(&path),
+            Err(FetchError::CacheIo { .. })
+        ));
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn a_folder_that_cannot_be_read_is_passed_over() {
+        use std::os::unix::fs::PermissionsExt as _;
+        let dir = tempfile::tempdir().unwrap();
+        let a = Archive::new(dir.path());
+        let shut = dir.path().join("shut");
+        std::fs::create_dir_all(&shut).unwrap();
+        std::fs::set_permissions(&shut, std::fs::Permissions::from_mode(0o000)).unwrap();
+        assert!(a.entries_under(None).is_empty());
+        std::fs::set_permissions(&shut, std::fs::Permissions::from_mode(0o755)).unwrap();
+    }
+
+    #[test]
+    fn an_extracted_entry_records_where_in_the_zip_it_was() {
+        let text = r#"{"url":"https://h/A.zip!B.zip","size":3,"sha256":"s","fetched_at":"2026-10-05T00:00:00Z",
+            "extracted_from":{"url":"https://h/A.zip","entry":"B.zip","zip_size":100,"offset":30,"compressed":3,"method":0,"crc32":7}}"#;
+        let s: Sidecar = serde_json::from_str(text).unwrap();
+        let x = s.extracted_from.clone().unwrap();
+        assert_eq!(
+            (x.entry.as_str(), x.offset, x.method, x.crc32),
+            ("B.zip", 30, 0, 7)
+        );
+        let back = serde_json::to_string(&s).unwrap();
+        assert!(back.contains("\"extracted_from\""));
+        let plain: Sidecar = serde_json::from_str(
+            r#"{"url":"u","size":1,"sha256":"s","fetched_at":"2026-10-05T00:00:00Z"}"#,
+        )
+        .unwrap();
+        assert!(plain.extracted_from.is_none());
+        assert!(
+            !serde_json::to_string(&plain)
+                .unwrap()
+                .contains("extracted_from")
+        );
     }
 }
