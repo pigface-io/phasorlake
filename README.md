@@ -51,6 +51,17 @@ from read_parquet('~/.utilake/lake/nem/dispatch_unit_scada/**/*.parquet', hive_p
 Run the same commands again and they finish in milliseconds: the archive has
 the file, and the manifest knows it is already in the lake.
 
+One frame of a table, every file projected onto one schema and one row per
+fact, the versions in force across the window:
+
+```sh
+utilake read DISPATCHPRICE --from 2024-01-15 --to 2024-01-16 -o prices.parquet
+utilake read DUDETAIL --at 2024-01-15 --columns DUID,REGISTEREDCAPACITY
+```
+
+`docs/semantics.md` says what a window and a revision mean on each kind of
+table.
+
 ## Commands
 
 | command | what it does |
@@ -63,6 +74,8 @@ the file, and the manifest knows it is already in the lake.
 | `utilake inspect <file>` | every block in a file, its version and how the registry resolves it |
 | `utilake ls [--table T] [--failed] [--runs]` | what the manifest knows |
 | `utilake errors [--last] [--table T] [--code C]` | diagnostics recorded by past runs |
+| `utilake read T --from A --to B \| --at T [--known-at K] [--revisions \| --raw] [--as-of N] [--columns A,B] [--where COL=v,v] [-o PATH] [--format parquet\|csv\|arrow]` | one frame of a table over a window: one row per fact (the newest revision, as known at `K`), every revision, or every row as written; `-o` writes the frame with a JSON sidecar, else a summary. Times in the market's clock. `docs/semantics.md` |
+| `utilake sql T ...` | the same read as one DuckDB query, printed; without `--latest`, `--known-at` or `--revisions` it is the raw read |
 | `utilake verify` | every Parquet file the manifest lists exists with its size |
 | `utilake schema list\|show\|history\|validate` | the registry; `history T` lists a table's schemas, with the columns each adds or drops, and the runs of files under each (`--json`: its Iceberg history) |
 | `utilake schema plan <type> <subtype> <version> --columns A,B,C [--month YYYY-MM]` | the conformance plan a shape is read with, as JSON: where each file column goes, its cast, what is written null |
@@ -259,7 +272,7 @@ The registry reads each table through `utilake_iceberg::from_metadata`.
 The table's columns are the history's fields, by id, each typed by its
 Iceberg type; a column takes nulls unless every schema requires it; the
 schema a reader gets today is the metadata's `current-schema-id`, which
-`utilake sql` targets unless `--as-of` names another. A block is read with
+`utilake read` and `utilake sql` target unless `--as-of` names another. A block is read with
 the schema `History::resolve` names for its report pair, AEMO version,
 columns in order and the month its source was released in (with no month
 known, the latest run's): of the runs whose schema has exactly its columns,

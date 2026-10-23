@@ -278,6 +278,7 @@ pub fn run(set: &str, do_tighten: bool) -> Result<bool> {
             ("utilake-mms-registry", "resolve"),
             ("utilake-mms-conform", "values"),
             ("utilake-acquire", "fetch"),
+            ("utilake-query", "resolve"),
         ],
         "full" => &[
             ("utilake-mms-conform", "scan"),
@@ -285,6 +286,7 @@ pub fn run(set: &str, do_tighten: bool) -> Result<bool> {
             ("utilake-mms-conform", "values"),
             ("utilake-acquire", "fetch"),
             ("utilake-writer", "write"),
+            ("utilake-query", "resolve"),
         ],
         other => bail!("unknown set {other}; use fast or full"),
     };

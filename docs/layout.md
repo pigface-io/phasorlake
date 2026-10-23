@@ -6,8 +6,11 @@ new source adds crates and changes none.
 ## Three groups
 
 - **Generic** (`utilake-core`, `utilake-iceberg`, `utilake-acquire`,
-  `utilake-kit`, `utilake-writer`, `utilake-pipeline`, `utilake-cli`,
-  `utilake-mirror`): what every source shares. `utilake-iceberg` is the
+  `utilake-kit`, `utilake-writer`, `utilake-pipeline`, `utilake-query`,
+  `utilake-cli`, `utilake-mirror`): what every source shares.
+  `utilake-query` reads the lake back: one frame of one table over a
+  window, resolved by the roles the registry publishes; it sits beside
+  the pipeline under the CLI and reads the manifest's rows only. `utilake-iceberg` is the
   lake's Iceberg contract (types, field ids, legal updates, the interval
   planner); it, the MMS decoder (`utilake-mms-decode`), the zip walker
   (`utilake-zip`) and the repository gates (`utilake-gates`) come from the

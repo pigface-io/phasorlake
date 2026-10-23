@@ -17,6 +17,15 @@
     "fetch/listing_parse": {
       "min_mb_per_s": 900.0
     },
+    "mirror/listing_parse": {
+      "min_mb_per_s": 720.0
+    },
+    "mirror/map_zip_of_zips": {
+      "min_mb_per_s": 125.0
+    },
+    "mirror/zipdir_parse": {
+      "min_mb_per_s": 870.0
+    },
     "parse/scan_headers_only": {
       "min_mb_per_s": 5300.0
     },
@@ -44,6 +53,18 @@
     "parse_values/timestamp": {
       "max_ns": 8.908
     },
+    "query/resolve_from_table": {
+      "min_rows_per_s": 6300000.0
+    },
+    "query/resolve_interval_day": {
+      "min_rows_per_s": 8700000.0
+    },
+    "query/resolve_known_at": {
+      "min_rows_per_s": 18000000.0
+    },
+    "query/resolve_revisions_day": {
+      "min_rows_per_s": 8600000.0
+    },
     "registry/load_embedded_from_blob": {
       "max_ns": 2000000.0
     },
@@ -61,15 +82,6 @@
     },
     "store/partition_split_two_months": {
       "max_ms": 5.05
-    },
-    "mirror/listing_parse": {
-      "min_mb_per_s": 720.0
-    },
-    "mirror/map_zip_of_zips": {
-      "min_mb_per_s": 125.0
-    },
-    "mirror/zipdir_parse": {
-      "min_mb_per_s": 870.0
     }
   }
 }

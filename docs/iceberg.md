@@ -109,8 +109,9 @@ and projects each onto one target schema by field id: a field the file has
 is read under its name there (cast where the target's type is a promotion),
 a field it lacks is null of the target's type, a field the target lacks is
 left out. The target is the latest schema or any schema of the history.
-`utilake sql TABLE --from --to [--as-of N]` prints that plan as one DuckDB
-query over the lake's files.
+`utilake read` runs that plan and resolves the rows by the table's roles
+(`docs/semantics.md`); `utilake sql TABLE --from --to [--as-of N]` prints
+the same read as one DuckDB query over the lake's files.
 
 ## The export
 
