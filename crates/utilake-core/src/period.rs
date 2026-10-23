@@ -35,6 +35,40 @@ impl CivilDay {
     pub const fn day(self) -> u8 {
         self.day
     }
+
+    /// Days since 1970-01-01.
+    pub const fn days_since_epoch(self) -> i64 {
+        crate::calendar::days_from_civil(self.year, self.month as u32, self.day as u32)
+    }
+
+    /// The day this many days after 1970-01-01.
+    pub const fn from_days(days: i64) -> Self {
+        let (year, month, day) = crate::calendar::civil_from_days(days);
+        Self {
+            year,
+            month: month as u8,
+            day: day as u8,
+        }
+    }
+
+    /// The day after.
+    pub const fn next(self) -> Self {
+        Self::from_days(self.days_since_epoch() + 1)
+    }
+
+    /// Midnight at the start of the day in a market at `offset_secs` from
+    /// UTC, as microseconds since the epoch.
+    pub fn start_micros(self, offset_secs: i32) -> i64 {
+        crate::calendar::utc_nanos(
+            self.year,
+            self.month as u32,
+            self.day as u32,
+            0,
+            0,
+            0,
+            offset_secs,
+        ) / 1_000
+    }
 }
 
 impl fmt::Display for CivilDay {
@@ -85,6 +119,27 @@ pub enum Period {
 }
 
 impl Period {
+    /// The first day of the period.
+    pub fn first_day(self) -> CivilDay {
+        match self {
+            Self::Month(m) => {
+                CivilDay::new(m.year(), m.month(), 1).expect("a month has a first day")
+            }
+            Self::Day(d) => d,
+        }
+    }
+
+    /// The last day of the period.
+    pub fn last_day(self) -> CivilDay {
+        match self {
+            Self::Month(m) => {
+                let days = crate::calendar::days_in_month(m.year(), u32::from(m.month()));
+                CivilDay::new(m.year(), m.month(), days as u8).expect("a month has a last day")
+            }
+            Self::Day(d) => d,
+        }
+    }
+
     /// The month the period is in, or is.
     pub fn month(self) -> YearMonth {
         match self {
@@ -179,6 +234,31 @@ impl TimeRange {
     /// than `from`.
     pub fn months_iter(&self) -> impl Iterator<Item = YearMonth> {
         self.first_month().range_inclusive(self.last_month())
+    }
+
+    /// The days `from` to `to`, inclusive.
+    pub fn days(from: CivilDay, to: CivilDay) -> Self {
+        Self {
+            from: Period::Day(from),
+            to: Period::Day(to),
+        }
+    }
+
+    /// Every day the range touches, in order: a month's every day; empty
+    /// when `to` is earlier than `from`.
+    pub fn days_iter(&self) -> impl Iterator<Item = CivilDay> {
+        let first = self.from.first_day().days_since_epoch();
+        let last = self.to.last_day().days_since_epoch();
+        (first..=last).map(CivilDay::from_days)
+    }
+
+    /// The instants the range spans in a market at `offset_secs` from UTC:
+    /// `[start of from, end of to)` as microseconds since the epoch.
+    pub fn as_interval(&self, offset_secs: i32) -> (i64, i64) {
+        (
+            self.from.first_day().start_micros(offset_secs),
+            self.to.last_day().next().start_micros(offset_secs),
+        )
     }
 
     /// Whether a period lies within the range.
@@ -320,5 +400,57 @@ mod tests {
         let json = serde_json::to_string(&r).unwrap();
         assert_eq!(json, r#"{"from":"2023-11","to":"2024-02"}"#);
         assert_eq!(serde_json::from_str::<TimeRange>(&json).unwrap(), r);
+    }
+}
+
+#[cfg(test)]
+mod day_tests {
+    use super::*;
+
+    fn day(s: &str) -> CivilDay {
+        s.parse().unwrap()
+    }
+
+    #[test]
+    fn days_count_and_step_across_months_and_years() {
+        assert_eq!(day("1970-01-01").days_since_epoch(), 0);
+        assert_eq!(CivilDay::from_days(0), day("1970-01-01"));
+        assert_eq!(day("2024-02-28").next(), day("2024-02-29"));
+        assert_eq!(day("2024-12-31").next(), day("2025-01-01"));
+        let month: Period = "2024-02".parse().unwrap();
+        assert_eq!(month.first_day(), day("2024-02-01"));
+        assert_eq!(month.last_day(), day("2024-02-29"));
+        let one: Period = "2024-02-10".parse().unwrap();
+        assert_eq!(
+            (one.first_day(), one.last_day()),
+            (day("2024-02-10"), day("2024-02-10"))
+        );
+    }
+
+    #[test]
+    fn a_range_lists_its_days_and_spans_its_instants() {
+        let r = TimeRange::days(day("2024-01-30"), day("2024-02-02"));
+        let days: Vec<String> = r.days_iter().map(|d| d.to_string()).collect();
+        assert_eq!(
+            days,
+            ["2024-01-30", "2024-01-31", "2024-02-01", "2024-02-02"]
+        );
+        let months = TimeRange::months(
+            YearMonth::new(2024, 1).unwrap(),
+            YearMonth::new(2024, 2).unwrap(),
+        );
+        assert_eq!(months.days_iter().count(), 31 + 29);
+        assert_eq!(
+            TimeRange::days(day("2024-02-02"), day("2024-02-01"))
+                .days_iter()
+                .count(),
+            0
+        );
+        // Midnight in +10:00 is 14:00 UTC the day before.
+        let (t0, t1) = TimeRange::one(day("2024-01-15")).as_interval(36_000);
+        assert_eq!(t0, 1_705_240_800_000_000);
+        assert_eq!(t1 - t0, 86_400_000_000);
+        let (m0, m1) = TimeRange::one(YearMonth::new(2024, 2).unwrap()).as_interval(0);
+        assert_eq!((m1 - m0) / 86_400_000_000, 29);
     }
 }
