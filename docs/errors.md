@@ -106,6 +106,7 @@ Every error and warning utilake reports carries one of these codes. Codes are st
 
 | code | raised in |
 |---|---|
+| `store.extract` | `crates/utilake-writer/src/error.rs` |
 | `store.iceberg_io` | `crates/utilake-iceberg-store/src/lib.rs` |
 | `store.iceberg_location` | `crates/utilake-iceberg-store/src/lib.rs` |
 | `store.iceberg_manifest` | `crates/utilake-iceberg-store/src/lib.rs` |

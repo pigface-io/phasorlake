@@ -46,6 +46,14 @@ pub enum StoreError {
     /// An unknown writer id.
     #[error("Writer {0} is not open.")]
     NoSuchWriter(u32),
+    /// An interval of a table could not be read out of the lake's files.
+    #[error("The interval of {table} could not be extracted: {message}")]
+    Extract {
+        /// The table.
+        table: String,
+        /// What went wrong.
+        message: String,
+    },
     /// The time column of a batch is not a timestamp with a zone.
     #[error(
         "Column {column} is the partition column but holds {observed}, not a timestamp with a zone."
@@ -94,6 +102,9 @@ impl Diagnose for StoreError {
             } => Diagnostic::error("store.schema_mismatch", Category::Store, msg)
                 .with_file(path.clone())
                 .expected_observed(expected.clone(), observed.clone()),
+            Self::Extract { table, .. } => {
+                Diagnostic::error("store.extract", Category::Store, msg).with_table(table.clone())
+            }
             Self::NoSuchWriter(_) => {
                 Diagnostic::error("internal.no_such_writer", Category::Internal, msg)
             }
