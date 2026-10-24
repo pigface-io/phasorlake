@@ -396,6 +396,11 @@ fn extract_writes_a_file_and_its_sidecar() {
     let lake = fx.lake();
     let day = range("2024-01-01T00:00", "2024-01-01T00:15");
     let out = fx.dir.path().join("out");
+    let current = fx
+        .registry
+        .history(fx.id("DISPATCHPRICE"))
+        .unwrap()
+        .current_schema_id;
     for (format, ext) in [
         (Format::Parquet, "parquet"),
         (Format::Csv, "csv"),
@@ -418,7 +423,7 @@ fn extract_writes_a_file_and_its_sidecar() {
         assert_eq!(sidecar["table"], "DISPATCHPRICE");
         assert_eq!(sidecar["resolution"], "latest");
         assert_eq!(sidecar["rows"], 2);
-        assert_eq!(sidecar["schema_id"], 2);
+        assert_eq!(sidecar["schema_id"], current);
         assert_eq!(sidecar["window"]["after"], "2024-01-01T00:00:00+10:00");
         assert_eq!(sidecar["known_at"], "2023-12-31T14:11:00Z");
         assert_eq!(sidecar["sources"].as_array().unwrap().len(), 3);
@@ -432,7 +437,10 @@ fn extract_writes_a_file_and_its_sidecar() {
     let get = |k: &str| kv.iter().find(|x| x.key == k).and_then(|x| x.value.clone());
     assert_eq!(get("utilake.resolution").as_deref(), Some("latest"));
     assert_eq!(get("utilake.table").as_deref(), Some("DISPATCHPRICE"));
-    assert_eq!(get("utilake.schema_id").as_deref(), Some("2"));
+    assert_eq!(
+        get("utilake.schema_id").as_deref(),
+        Some(current.to_string().as_str())
+    );
     assert_eq!(
         get("utilake.known_at").as_deref(),
         Some("2023-12-31T14:11:00Z")
