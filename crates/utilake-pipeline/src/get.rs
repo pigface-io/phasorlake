@@ -209,16 +209,16 @@ async fn list_months(
 /// Plans the request over the kit's sources, listing each once.
 pub async fn plan_get(req: &GetRequest, deps: &Deps) -> Result<GetPlan, Box<Diagnostic>> {
     let kit = deps.kits.kit(&req.kit).ok_or_else(|| no_kit(req))?;
-    let monthly = kit
-        .sources
-        .iter()
-        .find(|s| s.granularity() == Granularity::Month)
-        .cloned();
-    let daily = kit
-        .sources
-        .iter()
-        .find(|s| s.granularity() == Granularity::Day)
-        .cloned();
+    // The first source of each granularity that serves every table asked
+    // for: a kit of several feeds (gas) is read from the table's own.
+    let serving = |g: Granularity| {
+        kit.sources
+            .iter()
+            .find(|s| s.granularity() == g && req.tables.iter().all(|t| s.serves(t)))
+            .cloned()
+    };
+    let monthly = serving(Granularity::Month);
+    let daily = serving(Granularity::Day);
     let mut plan = GetPlan::default();
     let (first, last) = (req.range.first_month(), req.range.last_month());
     // Which days go to the daily side, and with which tables.

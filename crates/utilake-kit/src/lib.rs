@@ -25,7 +25,7 @@ pub use decoder::{
     Block, BlockSink, DecodeCtx, DecodeOptions, DecodeStats, Decoder, Flow, LoadMode, RowAt,
     Strictness, TableRef,
 };
-pub use feed_folders::{FeedFolders, TableOf};
+pub use feed_folders::{FeedFolders, Serves, TableOf};
 pub use kit::{KitRegistry, SourceKit};
 pub use transform::Transform;
 pub use utilake_plain_decode::names::version_of;

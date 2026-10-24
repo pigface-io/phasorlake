@@ -3,7 +3,7 @@
 use std::sync::Arc;
 
 use utilake_acquire::{FetchError, Source};
-use utilake_kit::{FeedFolders, SourceKit, TableOf};
+use utilake_kit::{FeedFolders, Serves, SourceKit, TableOf};
 use utilake_mms_conform::MmsCatalog;
 use utilake_mms_registry::{Market, Registry};
 use utilake_plain_decode::BlockName;
@@ -48,12 +48,20 @@ pub fn kit(registry: Arc<Registry>, config: &GasConfig) -> Result<SourceKit, Fet
     let mut sources: Vec<Arc<dyn Source>> = Vec::new();
     for feed in feeds_of("gas") {
         let id = source_id(feed.id).expect("every gas feed has a source id");
-        sources.push(Arc::new(FeedFolders::new(
-            id,
-            &config.base_url,
-            feed,
-            table_of.clone(),
-        )?));
+        // A feed serves the tables the census saw in its folders
+        // (folders.json): a table seen in none is served by no feed.
+        let serves: Serves = {
+            let registry = registry.clone();
+            Arc::new(move |table: &str| {
+                registry
+                    .table_by_name(&table.to_ascii_uppercase())
+                    .is_some_and(|id| registry.folders_of(id).iter().any(|f| f.feed == feed.id))
+            })
+        };
+        sources.push(Arc::new(
+            FeedFolders::new(id, &config.base_url, feed, table_of.clone())?
+                .with_tables_served(serves),
+        ));
     }
     Ok(SourceKit {
         id: KIT_ID,
@@ -90,6 +98,17 @@ mod tests {
         let claimed = k.sources.iter().find_map(|s| s.describe(&url)).unwrap();
         assert_eq!(claimed.source, "gas-gbb");
         assert_eq!(claimed.table.as_deref(), Some("GBB_ACTUAL_FLOW_STORAGE"));
+        // Each feed serves its own tables.
+        let gbb = k.sources.iter().find(|s| s.id() == "gas-gbb").unwrap();
+        let gsh = k.sources.iter().find(|s| s.id() == "gas-gsh").unwrap();
+        assert!(gbb.serves("gbb_actual_flow_storage") && !gsh.serves("GBB_ACTUAL_FLOW_STORAGE"));
+        assert!(gsh.serves("GSH_BENCHMARK_PRICE") && !gbb.serves("GSH_BENCHMARK_PRICE"));
+        // The GSH trades file sits in the GBB folder: the census says so.
+        assert!(
+            gbb.serves("GAS_GSH_TRADES"),
+            "folders.json puts it under GBB"
+        );
+        assert!(!gbb.serves("NO_SUCH_TABLE"));
         assert!(
             kit(
                 Registry::load_embedded(),

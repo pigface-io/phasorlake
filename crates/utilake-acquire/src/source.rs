@@ -154,6 +154,14 @@ pub trait Source: Send + Sync {
         Granularity::Month
     }
 
+    /// Whether this source publishes `table` at all: a kit of several
+    /// sources at one granularity (the gas feeds) is read from the one that
+    /// does. Every source by default.
+    fn serves(&self, table: &str) -> bool {
+        let _ = table;
+        true
+    }
+
     /// Whether `remote` is a zip that may hold more than a query needs (a
     /// whole-month archive, a day's zip of five-minute files), so its
     /// directory is worth reading by ranged requests before it is fetched.

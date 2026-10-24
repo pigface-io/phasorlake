@@ -29,12 +29,16 @@ use utilake_plain_decode::{BlockName, Feed};
 /// Names the table that claims a block, when the registry declares one.
 pub type TableOf = Arc<dyn Fn(&BlockName) -> Option<String> + Send + Sync>;
 
+/// Whether a table is one of the feed's.
+pub type Serves = Arc<dyn Fn(&str) -> bool + Send + Sync>;
+
 /// A feed's folders under one host.
 pub struct FeedFolders {
     id: &'static str,
     base: Url,
     feed: &'static Feed,
     table_of: TableOf,
+    serves: Serves,
 }
 
 fn parse_error(url: &str, what: &'static str, e: &dyn std::fmt::Display) -> FetchError {
@@ -70,7 +74,16 @@ impl FeedFolders {
             base,
             feed,
             table_of,
+            serves: Arc::new(|_| true),
         })
+    }
+
+    /// The same source, serving only the tables `serves` says are the
+    /// feed's: a request for another feed's table lists nothing here.
+    #[must_use]
+    pub fn with_tables_served(mut self, serves: Serves) -> Self {
+        self.serves = serves;
+        self
     }
 
     /// The feed.
@@ -162,6 +175,10 @@ impl FeedFolders {
 impl Source for FeedFolders {
     fn id(&self) -> &'static str {
         self.id
+    }
+
+    fn serves(&self, table: &str) -> bool {
+        (self.serves)(table)
     }
 
     /// Every file under the feed's roots the query asks for, by their
@@ -767,5 +784,8 @@ mod tests {
         );
         assert_eq!(p[0].remote.size, Some(10));
         assert_eq!(s.granularity(), utilake_acquire::Granularity::Month);
+        assert!(s.serves("ANYTHING"), "every table until told otherwise");
+        let s = s.with_tables_served(Arc::new(|t: &str| t.starts_with("STTM_")));
+        assert!(s.serves("STTM_INT651_EX_ANTE_MARKET_PRICE") && !s.serves("GBB_FACILITIES"));
     }
 }
