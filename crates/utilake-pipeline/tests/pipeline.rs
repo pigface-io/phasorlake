@@ -2432,3 +2432,54 @@ async fn get_runs_each_step_over_what_its_source_listed() {
     assert_eq!(report.plan.steps.len(), 3);
     assert_eq!(report.runs.len(), 1, "stopped after the first step");
 }
+
+/// A snapshot table fed from a source that cuts its files by day (a
+/// registry a feed publishes daily) is partitioned by that day.
+#[tokio::test]
+async fn a_days_snapshot_is_partitioned_by_its_day() {
+    let e = env();
+    let url = Url::parse("https://h/daily/PUBLIC_DVD_REGION_202401070000.CSV").unwrap();
+    e.transport.add(
+        url.as_str(),
+        Canned::ok(&std::fs::read(fixtures().join("REGION_v1_head.csv")).unwrap()),
+    );
+    let day: utilake_core::CivilDay = "2024-01-07".parse().unwrap();
+    let (rep, _) = run_plan(
+        &e,
+        Plan {
+            request: "ingest daily".into(),
+            input: Input::Remote {
+                source: Arc::new(OneFile(vec![RemoteFile {
+                    url: url.clone(),
+                    source: "test-one",
+                    table: Some("REGION".into()),
+                    period: Some(utilake_core::Period::Day(day)),
+                    size: None,
+                    modified: None,
+                    modified_at: None,
+                }])),
+                query: Query {
+                    exclude: Vec::new(),
+                    tables: Vec::new(),
+                    range: TimeRange::days(day, day),
+                    instants: None,
+                },
+            },
+            options: RunOptions::default(),
+        },
+    )
+    .await;
+    assert_eq!(rep.exit_code, 0, "{:?}", rep.report.summary_lines());
+    let files = walk(&e.home.lake());
+    assert!(
+        files
+            .iter()
+            .any(|f| f.contains("nem/region/snapshot=20240107/")),
+        "{files:?}"
+    );
+    let outputs = e.deps.manifest.live_outputs(Some("REGION")).await.unwrap();
+    assert!(
+        outputs.iter().any(|o| o.path.contains("snapshot=20240107")),
+        "{outputs:?}"
+    );
+}

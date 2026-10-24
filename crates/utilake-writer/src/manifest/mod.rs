@@ -878,6 +878,16 @@ fn parse_partition(seg: &str) -> crate::writer::Partition {
     {
         return Partition::Snapshot { year: y, month: m };
     }
+    if let Some(rest) = seg.strip_prefix("snapshot=")
+        && rest.len() == 8
+        && let (Ok(y), Ok(m), Ok(d)) = (rest[..4].parse(), rest[4..6].parse(), rest[6..].parse())
+    {
+        return Partition::SnapshotDay {
+            year: y,
+            month: m,
+            day: d,
+        };
+    }
     if let Some((y, m)) = seg
         .strip_prefix("year=")
         .and_then(|s| s.split_once("/month="))
@@ -1256,6 +1266,15 @@ mod tests {
                 month: 12
             }
         );
+        assert_eq!(
+            parse_partition("snapshot=20261007"),
+            Partition::SnapshotDay {
+                year: 2026,
+                month: 10,
+                day: 7
+            }
+        );
+        assert_eq!(parse_partition("snapshot=2026100"), Partition::Unknown);
         assert_eq!(parse_partition("junk"), Partition::Unknown);
         assert_eq!(parse_partition("year=x/month=1"), Partition::Unknown);
         assert_eq!(IngestStatus::parse("ok"), IngestStatus::Ok);

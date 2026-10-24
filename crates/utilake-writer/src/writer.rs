@@ -27,6 +27,16 @@ pub enum Partition {
         /// Month 1..=12.
         month: u8,
     },
+    /// A snapshot table's full copy from a file of one day (a registry a
+    /// feed publishes daily): `snapshot=YYYYMMDD`.
+    SnapshotDay {
+        /// Year.
+        year: i32,
+        /// Month 1..=12.
+        month: u8,
+        /// Day 1..=31.
+        day: u8,
+    },
     /// Rows whose partition value was null.
     Unknown,
 }
@@ -37,6 +47,9 @@ impl Partition {
         match self {
             Self::Month { year, month } => format!("year={year:04}/month={month:02}"),
             Self::Snapshot { year, month } => format!("snapshot={year:04}{month:02}"),
+            Self::SnapshotDay { year, month, day } => {
+                format!("snapshot={year:04}{month:02}{day:02}")
+            }
             Self::Unknown => {
                 "year=__HIVE_DEFAULT_PARTITION__/month=__HIVE_DEFAULT_PARTITION__".to_owned()
             }
@@ -151,6 +164,15 @@ mod tests {
             }
             .to_string(),
             "snapshot=202412"
+        );
+        assert_eq!(
+            Partition::SnapshotDay {
+                year: 2026,
+                month: 10,
+                day: 7
+            }
+            .to_string(),
+            "snapshot=20261007"
         );
         assert!(
             Partition::Unknown

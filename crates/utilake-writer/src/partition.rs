@@ -223,6 +223,40 @@ mod tests {
     }
 
     #[test]
+    fn a_market_two_hours_behind_splits_the_boundary_in_its_own_clock() {
+        // 2024/02/01 01:00 in WEM time is 2024/02/01 03:00 in NEM time, and
+        // 2024/01/31 23:30 WEM is 2024/02/01 01:30 NEM: the same instants
+        // fall in different months by market.
+        let b = batch(&[Some("2024/02/01 01:30:00"), Some("2024/02/01 03:00:00")]);
+        let nem = split_by_month(&b, 0, NEM_OFFSET_SECS).unwrap();
+        assert_eq!(nem.len(), 1);
+        assert_eq!(
+            nem[0].0,
+            Partition::Month {
+                year: 2024,
+                month: 2
+            }
+        );
+        let wem = split_by_month(&b, 0, utilake_core::calendar::WEM_OFFSET_SECS).unwrap();
+        assert_eq!(wem.len(), 2);
+        assert_eq!(
+            wem[0].0,
+            Partition::Month {
+                year: 2024,
+                month: 1
+            }
+        );
+        assert_eq!(wem[0].1.num_rows(), 1);
+        assert_eq!(
+            wem[1].0,
+            Partition::Month {
+                year: 2024,
+                month: 2
+            }
+        );
+    }
+
+    #[test]
     fn nulls_go_to_unknown_and_bounds_and_sortedness() {
         let b = batch(&[
             Some("2024/01/02 00:00:00"),

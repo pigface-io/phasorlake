@@ -201,6 +201,9 @@ struct LakeSink<'a> {
     local: &'a LocalFile,
     entry: &'a str,
     period: Option<YearMonth>,
+    /// The day the file covers, when the source cuts its files by day: a
+    /// snapshot it carries is the day's.
+    day: Option<utilake_core::CivilDay>,
     warnings: Vec<Diagnostic>,
     row_errors: Vec<Diagnostic>,
     fail_fast: bool,
@@ -361,11 +364,18 @@ impl BlockSink for LakeSink<'_> {
         let parts: Vec<(Partition, arrow_array::RecordBatch)> =
             match (table.load_mode, table.time_column) {
                 (LoadMode::Snapshot, _) => vec![(
-                    self.period
-                        .map_or(Partition::Unknown, |p| Partition::Snapshot {
+                    match (self.day, self.period) {
+                        (Some(d), _) => Partition::SnapshotDay {
+                            year: d.month().year(),
+                            month: d.month().month(),
+                            day: d.day(),
+                        },
+                        (None, Some(p)) => Partition::Snapshot {
                             year: p.year(),
                             month: p.month(),
-                        }),
+                        },
+                        (None, None) => Partition::Unknown,
+                    },
                     b.batch,
                 )],
                 (LoadMode::Append, Some(tc)) => {
@@ -582,6 +592,10 @@ fn ingest_entry(
         local: &input.local,
         entry,
         period,
+        day: match input.local.remote.period {
+            Some(utilake_core::Period::Day(d)) => Some(d),
+            _ => None,
+        },
         warnings: Vec::new(),
         row_errors: Vec::new(),
         fail_fast: input.options.fail_fast,
