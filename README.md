@@ -189,10 +189,11 @@ shape does not carry: its files simply lack that column, which reads as
 null. A source whose recorded hash is no longer what the current schemas
 give is behind: the next `fetch` or
 `ingest` that covers it reads it again instead of skipping it, and
-`utilake reingest` does that for every source in the manifest, straight
-from the archive. The Parquet files the earlier read wrote are replaced,
-and the run reports each such source as `manifest.rules_changed`.
-`utilake reingest --dry-run` lists what is behind and changes nothing.
+`utilake ingest` with no arguments does that for every source in the
+manifest, straight from the archive. The Parquet files the earlier read
+wrote are replaced, and the run reports each such source as
+`manifest.rules_changed`. `utilake ingest --dry-run` lists what is behind
+and changes nothing.
 
 ## The archive of downloads
 
@@ -229,8 +230,8 @@ written without an offset is a defect.
 
 A file is downloaded once. Nothing in utilake replaces or deletes an
 archived file; to fetch one again, delete it and its record. Everything in
-the lake is derived from the archive, which is what `utilake reingest` does when a
-table's schema improves. `utilake archive verify` hashes every
+the lake is derived from the archive, which is what `utilake ingest` does
+when a table's schema improves. `utilake verify --archive` hashes every
 file against its record.
 
 ## The mirror
@@ -278,7 +279,7 @@ The registry reads each table through `utilake_iceberg::from_metadata`.
 The table's columns are the history's fields, by id, each typed by its
 Iceberg type; a column takes nulls unless every schema requires it; the
 schema a reader gets today is the metadata's `current-schema-id`, which
-`utilake read` and `utilake sql` target unless `--as-of` names another. A block is read with
+`utilake get` targets unless `--as-of` names another. A block is read with
 the schema `History::resolve` names for its report pair, AEMO version,
 columns in order and the month its source was released in (with no month
 known, the latest run's): of the runs whose schema has exactly its columns,
@@ -299,7 +300,7 @@ census's, in utilake-schemas; until then a table of your own reads them.
 A table of your own goes in `~/.utilake/schemas/nem/{TABLE}/`. Every command
 uses it: one named after a built-in table replaces it, any other adds a
 table. `--no-user-schemas` runs without them. What was ingested before the
-table existed is brought up to it by `utilake reingest`.
+table existed is brought up to it by `utilake ingest`.
 
 It is either a `table.json` of the pulled form, such as a newer one from
 utilake-schemas, or a `table.toml` written by hand. `utilake schema show T`

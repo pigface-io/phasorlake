@@ -1,6 +1,6 @@
 # The semantics of a read
 
-The lake keeps every row of every file. `utilake read` turns an interval
+The lake keeps every row of every file. `utilake get` turns an interval
 of one table into one frame: every file projected onto one schema, one
 row per fact, the versions in force across the window. The rules come
 from the table's published roles, so the same kernel reads every declared
@@ -29,32 +29,49 @@ columns (`crates/utilake-mms-registry/src/file_model/temporal.rs`):
 | role | meaning | example (DISPATCHPRICE) |
 |---|---|---|
 | `entity` | what a fact is about; two rows of one entity and valid time are revisions of one fact | `REGIONID`, `DISPATCHINTERVAL`, `INTERVENTION` |
-| `valid` | when it applies, and the axis kind: `interval_end`, `instant`, `from`, `timeless` | `SETTLEMENTDATE`, `interval_end` |
+| `valid` | when it applies, and the axis kind: `interval_end`, `instant`, `day`, `from`, `timeless` | `SETTLEMENTDATE`, `interval_end` |
+| `valid.until` | on a `from` table, the column that ends a version early (`END_DATE`, `VALIDTO`); AEMO's "no end" dates are open | DUDETAILSUMMARY: `END_DATE` |
 | `order` | which revision is newer, most significant first | `RUNNO`, `LASTCHANGED` |
 | `cutoff` | the column a read "as known at" is held to; none: the source's publish time | `LASTCHANGED` |
 
 `INTERVENTION` is always an entity: AEMO publishes an intervention run's
 rows beside the normal run's, and merging them would lose one.
 
+The roles are one rule, shared with the publisher
+(`utilake_iceberg::derive`), run over the key and the columns; a table
+whose declaration carries a `[temporal]` block has roles a person set
+(`origin = hand`). The `day` kind is such a choice: the census shows a
+valid column seen only at midnight, and the fold says so.
+
 ## The window
 
 What `--from A --to B` keeps depends on the axis. A time that ends an
 interval is the end of the period the row covers: the row at `00:05` is
 the first of the day and the row at `24:00` its last, so a day is
-`(midnight, next midnight]`.
+`(midnight, next midnight]`. A day label is written at midnight but
+stands for the market's trading day, which starts at `s` after midnight
+(04:00 in the NEM, 08:00 in the WEM, `trading_day_start_secs` in
+`market.toml`): the label `L` covers `[L + s, L + s + 1 day)`.
 
 | axis | `--from A --to B` | `--at T` |
 |---|---|---|
 | `interval_end` | `A < t <= B` | refused (the interval containing `T` needs a length the registry does not hold) |
 | `instant` | `A <= t < B` | `t = T` |
+| `day` | the labels whose trading day overlaps `[A, B)`: `L + s < B` and `L + s + 1 day > A` | the label whose trading day holds `T` |
 | `from` | the version in force at `A`, and every later version until `B` | the version in force at `T` |
 | `timeless` | every row (a warning says so) | every row |
 | no roles (a table derived from a file) | `A <= t < B` on the time column, raw only | refused |
 
+`--day D` on the command line is the trading day of `D`: `--from D+s
+--to D+s+1 day`, which on a `day` table is that one label, and on an
+interval table the 288 intervals from `04:05` to `04:00` the next day.
+
 On a `from` table each returned version carries `_nl_valid_to`: the next
-valid time of the same entity, null for the version in force now. AEMO's
-"no end" dates (31 December 2999 and 9999) are open ends. A later join to
-interval data is an as-of join over `[valid, _nl_valid_to)`.
+valid time of the same entity, or the end column's value when the table
+has one and it comes first; null for the version in force now. AEMO's
+"no end" dates (31 December 2999 and 9999) are open ends, and an end
+before the version's own start says nothing. A later join to interval
+data is an as-of join over `[valid, _nl_valid_to)`.
 
 Times on the command line are read in the table's market clock: a bare
 date is that day's midnight there; RFC 3339 with an offset is taken as
