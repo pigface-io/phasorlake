@@ -1521,7 +1521,7 @@ mod tests {
         });
         let lines: String = peeks
             .iter()
-            .map(|p| serde_json::to_string(p).unwrap() + "\n")
+            .map(|p| serde_json::to_string(&p.clone().derived()).unwrap() + "\n")
             .collect();
         std::fs::write(f.mirror.peek_path(), lines).unwrap();
         let v = &verify(&f.mirror, &f.archive).unwrap()[0];

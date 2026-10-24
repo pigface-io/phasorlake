@@ -592,7 +592,7 @@ struct PartMeta {
 /// Where a part's [`PartMeta`] is kept.
 fn part_meta(part: &Path) -> PathBuf {
     let mut s = part.as_os_str().to_owned();
-    s.push(".json");
+    s.push(".resume");
     PathBuf::from(s)
 }
 

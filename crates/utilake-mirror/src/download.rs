@@ -924,7 +924,7 @@ mod tests {
         ];
         let lines: String = peeks
             .iter()
-            .map(|p| serde_json::to_string(p).unwrap() + "\n")
+            .map(|p| serde_json::to_string(&p.clone().derived()).unwrap() + "\n")
             .collect();
         std::fs::write(mirror.peek_path(), lines).unwrap();
         let p = Archive::new(&archive).path_for("https://h/A/P.zip");

@@ -32,8 +32,9 @@ pub struct Peeked {
     /// The size the crawl listed it at when it was peeked.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub listed_size: Option<u64>,
-    /// The date the crawl listed it with when it was peeked, as listed.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    /// The date the crawl listed it with, as listed: read from a record an
+    /// older mirror wrote, for its instant; never written.
+    #[serde(default, skip_serializing)]
     pub listed_modified: Option<String>,
     /// `listed_modified` as an instant (AEST).
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -44,8 +45,9 @@ pub struct Peeked {
     /// The server's `ETag` for it.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub etag: Option<String>,
-    /// The server's `Last-Modified` for it.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    /// The server's `Last-Modified` as sent: read from a record an older
+    /// mirror wrote, for its instant; never written.
+    #[serde(default, skip_serializing)]
     pub last_modified: Option<String>,
     /// `last_modified` as an instant (UTC).
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -244,12 +246,12 @@ pub async fn peek(
             url: url.clone(),
             peeked_at: Some(Stamp::now()),
             listed_size: remote.size,
-            listed_modified: Some(remote.modified.clone()),
+            listed_modified: None,
             listed_modified_at: remote.modified_at,
             size: seen.as_ref().and_then(|s| s.total_size),
             etag: seen.and_then(|s| s.etag),
             last_modified_at: last_modified.as_deref().and_then(Stamp::from_http_date),
-            last_modified,
+            last_modified: None,
             entries: None,
             error: None,
         };
@@ -310,14 +312,11 @@ pub fn keep_listing(
         url: url.to_owned(),
         peeked_at: Some(Stamp::now()),
         listed_size: listed.as_ref().and_then(|r| r.size),
-        listed_modified_at: listed.as_ref().and_then(|r| r.modified_at),
-        listed_modified: listed.map(|r| r.modified),
+        listed_modified_at: listed.and_then(|r| r.modified_at),
+        listed_modified: None,
         size: Some(len),
         etag: sidecar.as_ref().and_then(|s| s.etag().map(str::to_owned)),
-        last_modified: sidecar
-            .as_ref()
-            .and_then(crate::net::Provenance::modified)
-            .map(Stamp::http_date),
+        last_modified: None,
         last_modified_at: sidecar.and_then(|s| s.modified()),
         entries,
         error,
@@ -329,15 +328,19 @@ pub fn keep_listing(
 /// taken when the crawl listed it at the size and date it lists it at now.
 /// A zip AEMO has published again since has none, and is peeked again.
 pub fn current(mirror: &Mirror) -> Result<HashMap<String, Peeked>, MirrorError> {
-    let listed: HashMap<String, (Option<u64>, String)> = mirror
+    let listed: HashMap<String, (Option<u64>, Option<Stamp>)> = mirror
         .record()?
         .into_iter()
-        .map(|r| (r.url, (r.size, r.modified)))
+        .map(|r| (r.url, (r.size, r.modified_at)))
         .collect();
     let mut out = HashMap::new();
     for p in read_peeks(&mirror.peek_path())? {
-        let holds = listed.get(&p.url).is_some_and(|(size, modified)| {
-            p.listed_size == *size && p.listed_modified.as_deref() == Some(modified.as_str())
+        let holds = listed.get(&p.url).is_some_and(|(size, at)| {
+            p.listed_size == *size
+                && match (p.listed_modified_at, at) {
+                    (Some(a), Some(b)) => a.same_instant(*b),
+                    (a, b) => a.is_none() && b.is_none(),
+                }
         });
         if holds {
             out.insert(p.url.clone(), p);
@@ -375,7 +378,9 @@ fn peek_error(e: &DirError) -> PeekError {
 
 /// Appends one line and syncs it, so a cut-off pass keeps what it read.
 fn append(path: &Path, record: &Peeked) -> Result<(), MirrorError> {
-    let mut line = serde_json::to_vec(record).expect("a Peeked always serialises");
+    // A time given as text is written as its instant only.
+    let record = record.clone().derived();
+    let mut line = serde_json::to_vec(&record).expect("a Peeked always serialises");
     line.push(b'\n');
     let mut f = std::fs::OpenOptions::new()
         .create(true)
@@ -480,15 +485,9 @@ mod tests {
         let m = &peeks[0];
         assert!(m.peeked_at.is_some());
         assert_eq!((m.listed_size, m.size), (Some(m_len), Some(m_len)));
-        assert_eq!(
-            m.listed_modified.as_deref(),
-            Some("Monday, October 12, 2026 10:45 AM")
-        );
+        // Instants only: the text is not written.
+        assert_eq!((&m.listed_modified, &m.last_modified), (&None, &None));
         assert_eq!(m.etag.as_deref(), Some("\"etag\""));
-        assert_eq!(
-            m.last_modified.as_deref(),
-            Some("Tue, 13 Feb 2024 08:27:00 GMT")
-        );
         // Each text time has its instant beside it: the listing's in AEST,
         // the server's in UTC, the zip's entries' in AEST.
         assert_eq!(
@@ -507,19 +506,42 @@ mod tests {
             .lines()
             .map(|l| {
                 let mut v: serde_json::Value = serde_json::from_str(l).unwrap();
+                // As an older mirror wrote it: the times as text only.
                 let o = v.as_object_mut().unwrap();
-                o.remove("listed_modified_at");
+                let listed = o.remove("listed_modified_at").unwrap();
+                let at = Stamp::parse(listed.as_str().unwrap()).unwrap();
+                assert_eq!(at.to_string(), "2026-10-12T10:45:00+10:00");
+                o.insert(
+                    "listed_modified".into(),
+                    "Monday, October 12, 2026 10:45 AM".into(),
+                );
                 o.remove("last_modified_at");
+                o.insert(
+                    "last_modified".into(),
+                    "Tue, 13 Feb 2024 08:27:00 GMT".into(),
+                );
                 if let Some(es) = o.get_mut("entries").and_then(|e| e.as_array_mut()) {
                     for e in es {
-                        e.as_object_mut().unwrap().remove("modified_at");
+                        let e = e.as_object_mut().unwrap();
+                        let at = Stamp::parse(e.remove("modified_at").unwrap().as_str().unwrap());
+                        let text = at.unwrap().to_string()[..19].replace('T', " ");
+                        e.insert("modified".into(), text.into());
                     }
                 }
                 v.to_string() + "\n"
             })
             .collect();
         std::fs::write(mirror.peek_path(), &stripped).unwrap();
-        assert_eq!(read_peeks(&mirror.peek_path()).unwrap(), peeks);
+        let instants = |p: &Peeked| {
+            let entries: Vec<_> = p.entries.iter().flatten().map(|e| e.modified_at).collect();
+            (p.listed_modified_at, p.last_modified_at, entries)
+        };
+        let old: Vec<_> = read_peeks(&mirror.peek_path())
+            .unwrap()
+            .iter()
+            .map(instants)
+            .collect();
+        assert_eq!(old, peeks.iter().map(instants).collect::<Vec<_>>());
         std::fs::write(mirror.peek_path(), &text).unwrap();
         assert_eq!(current(&mirror).unwrap().len(), 3);
 

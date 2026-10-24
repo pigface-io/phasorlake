@@ -27,7 +27,9 @@ pub struct Entry {
     pub crc32: u32,
     /// Compression method (0 stored, 8 deflated).
     pub method: u16,
-    /// Modified, `YYYY-MM-DD HH:MM:SS`, from the DOS date and time.
+    /// Modified, `YYYY-MM-DD HH:MM:SS`, from the DOS date and time: read
+    /// from a record an older mirror wrote, for its instant; never written.
+    #[serde(default, skip_serializing)]
     pub modified: String,
     /// The same time as an instant, AEST (AEMO packs its zips there); none
     /// when the DOS fields are out of range.

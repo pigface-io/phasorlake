@@ -529,7 +529,7 @@ impl Lister {
         }
         if let Some(p) = &top.peek {
             node.etag.clone_from(&p.etag);
-            node.last_modified.clone_from(&p.last_modified);
+            node.last_modified = p.last_modified_at.map(Stamp::http_date);
             node.last_modified_at = p.last_modified_at;
             node.peeked_at = p.peeked_at;
         }
@@ -854,7 +854,8 @@ fn listed(out: &mut Vec<Node>, peek: &Peeked) {
         node.size = Some(e.size);
         node.compressed = Some(e.compressed);
         node.crc32 = Some(e.crc32);
-        node.modified = Some(e.modified.clone());
+        // As the zip records it, `YYYY-MM-DD HH:MM:SS`, from the instant.
+        node.modified = e.modified_at.map(|t| t.to_string()[..19].replace('T', " "));
         node.modified_at = e.modified_at;
         node.contents = is_zip.then_some("needs_download");
         out.push(node);
@@ -1557,7 +1558,7 @@ h/
         ];
         let lines: String = peeks
             .iter()
-            .map(|p| serde_json::to_string(p).unwrap() + "\n")
+            .map(|p| serde_json::to_string(&p.clone().derived()).unwrap() + "\n")
             .collect();
         std::fs::write(f.mirror.peek_path(), lines).unwrap();
         map(&f.mirror, &f.archive, &f.roots, 1, &Offsets::default()).unwrap();
@@ -1614,7 +1615,7 @@ h/
         ] {
             std::fs::write(
                 f.mirror.peek_path(),
-                serde_json::to_string(&bad(code)).unwrap() + "\n",
+                serde_json::to_string(&bad(code).derived()).unwrap() + "\n",
             )
             .unwrap();
             map(&f.mirror, &f.archive, &f.roots, 1, &Offsets::default()).unwrap();
