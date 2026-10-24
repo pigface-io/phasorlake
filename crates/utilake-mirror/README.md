@@ -1,6 +1,7 @@
 # utilake-mirror
 
-A copy of every file under nemweb's archive folders, and the catalog of it.
+A copy of every file under nemweb's archive folders, and under any other
+AEMO host the config names, and the catalog of it.
 
 [nemweb](https://www.nemweb.com.au) is where the Australian Energy Market
 Operator (AEMO) publishes the National Electricity Market's data. Its
@@ -74,7 +75,51 @@ nohup caffeinate -ims $m watch --json --delete-duplicates >> mirror.log 2>&1 &
 ```
 
 `run` can be stopped and started again at any time: the crawl carries on from
-the pages it kept, and archived files are never downloaded again. A restart
+the pages it kept, and archived files are never downloaded again.
+
+## Other hosts
+
+AEMO publishes the Wholesale Electricity Market (WA) on
+`data.wa.aemo.com.au`, an IIS site like nemweb whose listed and packed times
+are AWST (UTC+8). A `[[hosts]]` table in `config.toml` adds a host with its
+own roots, clock and pace; the crawl, download and watch cover every host,
+each through its own paced fetcher, so a refusal by one host stops only
+that host, and every `_at` instant is read in its host's clock. Without any
+`[[hosts]]` an existing config parses as before.
+
+```toml
+[[hosts]]
+base_url = "https://data.wa.aemo.com.au"
+listing_offset_secs = 28800
+request_interval_ms = 1000                       # optional; the top-level value when absent
+roots = [
+  "public/public-data/datafiles/",
+  "public/public-data/manifests/",
+  "public/market-data/capo/", "public/market-data/dsp/", "public/market-data/mt-pasa/",
+  "public/market-data/outages/", "public/market-data/st-pasa/",
+  "public/market-data/wemde/caseInputData/previous/", "public/market-data/wemde/caseInputData/schema/",
+  "public/market-data/wemde/dispatchSolution/previous/", "public/market-data/wemde/dispatchSolution/schema/",
+  "public/market-data/wemde/facilityScada/previous/", "public/market-data/wemde/facilityScada/schema/",
+  "public/market-data/wemde/intermittentLoad/previous/", "public/market-data/wemde/intermittentLoad/schema/",
+  "public/market-data/wemde/interruptibleLoad/previous/", "public/market-data/wemde/interruptibleLoad/schema/",
+  "public/market-data/wemde/loadShedding/previous/", "public/market-data/wemde/loadShedding/schema/",
+  "public/market-data/wemde/marketAdvisory/previous/", "public/market-data/wemde/marketAdvisory/schema/",
+  "public/market-data/wemde/ncess/previous/", "public/market-data/wemde/ncess/schema/",
+  "public/market-data/wemde/notInServiceCapacity/previous/", "public/market-data/wemde/notInServiceCapacity/schema/",
+  "public/market-data/wemde/operationalDemandWithdrawal/previous/", "public/market-data/wemde/operationalDemandWithdrawal/schema/",
+  "public/market-data/wemde/referenceTradingPrice/previous/", "public/market-data/wemde/referenceTradingPrice/schema/",
+  "public/market-data/wemde/tradingReport/previous/", "public/market-data/wemde/tradingReport/schema/",
+]
+watch_current = ["public/public-data/datafiles/", "public/market-data/wemde/"]
+```
+
+WEMDE: each dataset's `previous/` holds one zip per trading day, written
+once and kept, and `current/` the day in progress, rewritten through the
+day. Only `previous/` (and `schema/`) are roots, so the crawl records
+`current/` as a link out and never fetches a file that will be rewritten.
+The archive keeps each host under its own name
+(`{home}/archive/data.wa.aemo.com.au/…`), the journal and the catalog
+likewise. A restart
 takes a file listed in `held.ndjson` as archived when its size on disk
 matches, without reading its sidecar.
 
@@ -82,7 +127,7 @@ matches, without reading its sidecar.
 
 ```
 {home}/archive/{host}/{path}             every file, with {path}.json beside it   (docs/archive.md)
-{home}/mirror/config.toml                downloads, request_interval_ms, attempts, backoff_ms, read_timeout_secs, progress_every_secs, base_url, user_agent_suffix, jobs; watch_fast, watch_fast_secs, watch_current, watch_current_secs, watch_secs, watch_least_secs
+{home}/mirror/config.toml                downloads, request_interval_ms, attempts, backoff_ms, read_timeout_secs, progress_every_secs, base_url, user_agent_suffix, jobs; watch_fast, watch_fast_secs, watch_current, watch_current_secs, watch_secs, watch_least_secs; [[hosts]] (base_url, listing_offset_secs, request_interval_ms, roots, watch_fast, watch_current)
 {home}/mirror/crawl/listings/…           each listing page as served
 {home}/mirror/crawl/remote.ndjson        every folder and file the crawl found
 {home}/mirror/peek.ndjson                zip entries read before download (`peek`: every zip; `run`: the whole-month zips), with when, against which listing, and the server's ETag and Last-Modified
