@@ -158,7 +158,9 @@ mod tests {
     fn put(archive: &Archive, url: &str, at: Option<&str>, bytes: &[u8]) -> String {
         let base = archive.path_for(url);
         let path = match at {
-            Some(at) => Archive::version_path(&base, Stamp::from_listing(at).unwrap()),
+            Some(at) => {
+                Archive::version_path(&base, Stamp::from_listing(at, crate::stamp::AEST).unwrap())
+            }
             None => base,
         };
         std::fs::create_dir_all(path.parent().unwrap()).unwrap();

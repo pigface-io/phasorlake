@@ -168,7 +168,7 @@ impl Remote {
     /// it.
     pub fn derived(mut self) -> Self {
         if self.modified_at.is_none() {
-            self.modified_at = Stamp::from_listing(&self.modified);
+            self.modified_at = Stamp::from_listing(&self.modified, crate::stamp::AEST);
         }
         self
     }

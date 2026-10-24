@@ -76,7 +76,7 @@ impl Peeked {
             self.listed_modified_at = self
                 .listed_modified
                 .as_deref()
-                .and_then(Stamp::from_listing);
+                .and_then(|t| Stamp::from_listing(t, crate::stamp::AEST));
         }
         if self.last_modified_at.is_none() {
             self.last_modified_at = self

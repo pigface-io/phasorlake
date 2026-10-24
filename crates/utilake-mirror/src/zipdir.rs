@@ -40,7 +40,7 @@ impl Entry {
     /// written before it was kept lacks it.
     pub fn derived(mut self) -> Self {
         if self.modified_at.is_none() {
-            self.modified_at = Stamp::from_dos_text(&self.modified);
+            self.modified_at = Stamp::from_naive(&self.modified, AEST);
         }
         self
     }
@@ -50,10 +50,9 @@ impl Entry {
     /// A directory entry with its DOS time read in the clock of the
     /// machine that packed the zip (`offset` seconds east of UTC).
     pub fn from_zip(e: utilake_zip::zipdir::Entry, offset: i32) -> Self {
-        let (year, month, day, hour, minute, second) = e.modified_fields();
         Self {
             modified: e.modified_text(),
-            modified_at: Stamp::at(year, month, day, hour, minute, second, offset),
+            modified_at: e.modified_at(offset),
             name: e.name,
             size: e.size,
             compressed: e.compressed,
@@ -226,7 +225,7 @@ mod tests {
             "2026-10-01T12:34:56+08:00"
         );
         assert_eq!(
-            Stamp::from_dos_text_in("2026-10-01 12:34:56", 8 * 3600),
+            Stamp::from_naive("2026-10-01 12:34:56", 8 * 3600),
             e[1].modified_at
         );
     }

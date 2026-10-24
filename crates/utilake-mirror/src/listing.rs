@@ -164,7 +164,7 @@ fn parse_line(
     let modified_at = match last_date {
         Some((text, at)) if *text == modified => *at,
         _ => {
-            let at = Stamp::from_listing_in(&modified, offset)
+            let at = Stamp::from_listing(&modified, offset)
                 .ok_or_else(|| Unparsed::new("a line whose date cannot be read", line))?;
             *last_date = Some((modified.clone(), at));
             at

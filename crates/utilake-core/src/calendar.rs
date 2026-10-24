@@ -15,55 +15,8 @@ pub const WEM_OFFSET_SECS: i32 = 8 * 3600;
 /// Nanoseconds in one second.
 pub const NANOS_PER_SECOND: i64 = 1_000_000_000;
 
-/// Days from 1970-01-01 to the given civil date (proleptic Gregorian).
-///
-/// Howard Hinnant's `days_from_civil`, valid for every year an `i32` holds.
-#[inline]
-pub const fn days_from_civil(y: i32, m: u32, d: u32) -> i64 {
-    let y = if m <= 2 { y - 1 } else { y } as i64;
-    let era = if y >= 0 { y } else { y - 399 } / 400;
-    let yoe = y - era * 400;
-    let mp = (m as i64 + 9) % 12;
-    let doy = (153 * mp + 2) / 5 + d as i64 - 1;
-    let doe = yoe * 365 + yoe / 4 - yoe / 100 + doy;
-    era * 146_097 + doe - 719_468
-}
-
-/// The civil date of a day count from 1970-01-01, as `(year, month, day)`.
-pub const fn civil_from_days(z: i64) -> (i32, u32, u32) {
-    let z = z + 719_468;
-    let era = if z >= 0 { z } else { z - 146_096 } / 146_097;
-    let doe = z - era * 146_097;
-    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365;
-    let y = yoe + era * 400;
-    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
-    let mp = (5 * doy + 2) / 153;
-    let d = (doy - (153 * mp + 2) / 5 + 1) as u32;
-    let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32;
-    ((if m <= 2 { y + 1 } else { y }) as i32, m, d)
-}
-
-#[inline]
-const fn is_leap(y: i32) -> bool {
-    (y % 4 == 0 && y % 100 != 0) || y % 400 == 0
-}
-
-/// The days of month `m` (1..=12) in year `y`; 0 for a month that is not.
-#[inline]
-pub const fn days_in_month(y: i32, m: u32) -> u32 {
-    match m {
-        1 | 3 | 5 | 7 | 8 | 10 | 12 => 31,
-        4 | 6 | 9 | 11 => 30,
-        2 => {
-            if is_leap(y) {
-                29
-            } else {
-                28
-            }
-        }
-        _ => 0,
-    }
-}
+/// The proleptic Gregorian calendar in whole days, the family's one.
+pub use utilake_provenance::civil::{civil_from_days, days_from_civil, days_in_month};
 
 /// The civil `(year, month)` in the market's local time of a UTC instant in
 /// nanoseconds, for partitioning.

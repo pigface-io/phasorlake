@@ -224,7 +224,7 @@ impl Sidecar {
             self.listed_modified_at = self
                 .listed_modified
                 .as_deref()
-                .and_then(Stamp::from_listing);
+                .and_then(|t| Stamp::from_listing(t, crate::stamp::AEST));
         }
         self
     }

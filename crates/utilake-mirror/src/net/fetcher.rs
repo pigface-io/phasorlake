@@ -813,7 +813,7 @@ mod tests {
         let listed = |size, at: &str| RemoteFile {
             size: Some(size),
             modified: Some(at.to_owned()),
-            modified_at: Stamp::from_listing(at),
+            modified_at: Stamp::from_listing(at, crate::stamp::AEST),
             ..remote(url)
         };
         let first = f
@@ -870,7 +870,7 @@ mod tests {
             .add(zip, Canned::ok(&b))
             .add(zip, Canned::ok(&c));
         let listed_zip = |at: &str| RemoteFile {
-            modified_at: Stamp::from_listing(at),
+            modified_at: Stamp::from_listing(at, crate::stamp::AEST),
             ..remote(zip)
         };
         let z1 = f
@@ -908,7 +908,7 @@ mod tests {
         let f = Fetcher::new(Arc::new(t.clone()), Archive::new(dir.path()), fast());
         let listed = |url: &str, at: &str| RemoteFile {
             modified: Some(at.to_owned()),
-            modified_at: Stamp::from_listing(at),
+            modified_at: Stamp::from_listing(at, crate::stamp::AEST),
             ..remote(url)
         };
         let first = f
@@ -930,7 +930,8 @@ mod tests {
             second.path,
             Archive::version_path(
                 &plain,
-                Stamp::from_listing("Tuesday, October 13, 2026 11:53 AM").unwrap()
+                Stamp::from_listing("Tuesday, October 13, 2026 11:53 AM", crate::stamp::AEST)
+                    .unwrap()
             )
         );
         assert_eq!(std::fs::read(&plain).unwrap(), b"partial");
@@ -993,7 +994,10 @@ mod tests {
         let at = "Monday, October 12, 2026 10:45 AM";
         let e1 = f.fetch(&remote(e)).await.unwrap();
         std::fs::write(
-            Archive::version_path(&e1.path, Stamp::from_listing(at).unwrap()),
+            Archive::version_path(
+                &e1.path,
+                Stamp::from_listing(at, crate::stamp::AEST).unwrap(),
+            ),
             b"x",
         )
         .unwrap();
@@ -1001,7 +1005,10 @@ mod tests {
         assert!(!g1.cached);
         assert_ne!(
             g1.path,
-            Archive::version_path(&e1.path, Stamp::from_listing(at).unwrap())
+            Archive::version_path(
+                &e1.path,
+                Stamp::from_listing(at, crate::stamp::AEST).unwrap()
+            )
         );
     }
 

@@ -731,12 +731,12 @@ impl Lister {
         if let Some(d) = f.last_modified() {
             node.modified = Some(d.to_string());
             node.modified_at = Stamp::at(
-                i64::from(d.year()),
-                d.month(),
-                d.day(),
-                d.hour(),
-                d.minute(),
-                d.second(),
+                i32::from(d.year()),
+                d.month().into(),
+                d.day().into(),
+                d.hour().into(),
+                d.minute().into(),
+                d.second().into(),
                 self.offset,
             );
         }
@@ -1179,7 +1179,11 @@ mod tests {
         // b.txt, rewritten in place, and its later version beside it.
         let later = Archive::version_path(
             &archive.path_for("https://h/A/b.txt"),
-            crate::stamp::Stamp::from_listing("Tuesday, October 13, 2026 11:53 AM").unwrap(),
+            crate::stamp::Stamp::from_listing(
+                "Tuesday, October 13, 2026 11:53 AM",
+                crate::stamp::AEST,
+            )
+            .unwrap(),
         );
         std::fs::write(&later, b"hello!").unwrap();
         Archive::write_sidecar(
