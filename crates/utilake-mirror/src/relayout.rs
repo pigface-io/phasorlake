@@ -116,6 +116,9 @@ pub fn relayout(
     let mut names = DirNames::default();
     let mut whole: Vec<PathBuf> = Vec::new();
     let mut whole_to: Vec<PathBuf> = Vec::new();
+    // Files copied to their place whose sources go once the copies are on
+    // the disk: one sync for a batch, not one for each file.
+    let mut copied: Vec<(PathBuf, PathBuf)> = Vec::new();
     for dir in &stale {
         if whole.iter().any(|w| dir.starts_with(w)) {
             continue;
@@ -127,7 +130,7 @@ pub fn relayout(
             on_step(&step);
             summary.folders_moved += 1;
             if !dry_run {
-                log(mirror, &step)?;
+                log(mirror, &step, true)?;
                 let parent = step.to.parent().expect("a folder of the layout is in one");
                 std::fs::create_dir_all(parent).map_err(MirrorError::io(parent))?;
                 std::fs::rename(&step.from, &step.to).map_err(MirrorError::io(&step.to))?;
@@ -188,10 +191,14 @@ pub fn relayout(
                 versions.insert(step.url.clone(), name);
             }
             if !dry_run {
-                log(mirror, &step)?;
-                take(&step, sidecar, &record)?;
+                log(mirror, &step, false)?;
+                if let Some(done) = take(&step, sidecar, &record)? {
+                    copied.push(done);
+                }
+                settle(&mut copied, BATCH)?;
             }
         }
+        settle(&mut copied, 1)?;
     }
     summary.journals = merge_journals(mirror, dry_run)?;
     if !dry_run {
@@ -335,8 +342,27 @@ fn plan(
     None
 }
 
-/// Appends `step` to the log and hands it to the disk.
-fn log(mirror: &Mirror, step: &Step) -> Result<(), MirrorError> {
+/// Files copied before their sources go: one sync for them all.
+const BATCH: usize = 512;
+
+/// Once `at_least` copies are waiting, hands them to the disk, then
+/// removes their sources (the file, then its record): a source goes only
+/// once its copy is held.
+fn settle(copied: &mut Vec<(PathBuf, PathBuf)>, at_least: usize) -> Result<(), MirrorError> {
+    if copied.len() < at_least {
+        return Ok(());
+    }
+    rustix::fs::sync();
+    for (from, record) in copied.drain(..) {
+        std::fs::remove_file(&from).map_err(MirrorError::io(&from))?;
+        std::fs::remove_file(&record).map_err(MirrorError::io(&record))?;
+    }
+    Ok(())
+}
+
+/// Appends `step` to the log, handed to the disk when `durable` (a batch's
+/// sync hands the others).
+fn log(mirror: &Mirror, step: &Step, durable: bool) -> Result<(), MirrorError> {
     let path = mirror.relayout_path();
     let dir = mirror.migrations_dir();
     std::fs::create_dir_all(&dir).map_err(MirrorError::io(&dir))?;
@@ -348,7 +374,10 @@ fn log(mirror: &Mirror, step: &Step) -> Result<(), MirrorError> {
         .open(&path)
         .map_err(MirrorError::io(&path))?;
     f.write_all(&line).map_err(MirrorError::io(&path))?;
-    crate::net::archive::to_disk(&f).map_err(MirrorError::io(&path))
+    if durable {
+        crate::net::archive::to_disk(&f).map_err(MirrorError::io(&path))?;
+    }
+    Ok(())
 }
 
 /// The record beside the file at `path`, whichever name it has.
@@ -391,9 +420,15 @@ fn rename_record(from: &Path, record: &Path, to: &Path) -> Result<(), MirrorErro
 /// folder holds tens of thousands of entries, where a copy, a rename
 /// within one folder and an unlink each take milliseconds (measured on
 /// the volume). The bytes go to `{to}.part`, hashed on the way and, with
-/// `sha256`, held to it; handed to the disk; renamed into place; and given
-/// `from`'s modified time. `from` is left for the caller to remove.
-fn copy_across(from: &Path, to: &Path, sha256: Option<&Sha256>) -> Result<(), MirrorError> {
+/// `sha256`, held to it; handed to the disk when `durable` (else by the
+/// caller's sync); renamed into place; and given `from`'s modified time.
+/// `from` is left for the caller to remove.
+fn copy_across(
+    from: &Path,
+    to: &Path,
+    sha256: Option<&Sha256>,
+    durable: bool,
+) -> Result<(), MirrorError> {
     use sha2::Digest as _;
     use std::io::{Read as _, Write as _};
     let mut part = to.as_os_str().to_owned();
@@ -426,7 +461,9 @@ fn copy_across(from: &Path, to: &Path, sha256: Option<&Sha256>) -> Result<(), Mi
     if let Some(t) = modified {
         let _ = dst.set_modified(t);
     }
-    crate::net::archive::to_disk(&dst).map_err(MirrorError::io(&part))?;
+    if durable {
+        crate::net::archive::to_disk(&dst).map_err(MirrorError::io(&part))?;
+    }
     drop(dst);
     std::fs::rename(&part, to).map_err(MirrorError::io(to))
 }
@@ -441,7 +478,13 @@ fn drop_records(path: &Path) -> Result<(), MirrorError> {
 
 /// Takes one step. A moved file's record is written again at its new
 /// path in the current format, then the old one removed.
-fn take(step: &Step, sidecar: Provenance, record: &Path) -> Result<(), MirrorError> {
+/// Takes one step. A file moved is copied to its place, and its source and
+/// record returned to be removed once the copy is on the disk.
+fn take(
+    step: &Step,
+    sidecar: Provenance,
+    record: &Path,
+) -> Result<Option<(PathBuf, PathBuf)>, MirrorError> {
     match step.action {
         Action::Move | Action::Version | Action::Folder => {
             let dir = step.to.parent().expect("an archived path is in a folder");
@@ -452,10 +495,9 @@ fn take(step: &Step, sidecar: Provenance, record: &Path) -> Result<(), MirrorErr
             let suffix = record_suffix(&step.from, record);
             let mut record_to = step.to.as_os_str().to_owned();
             record_to.push(&suffix);
-            copy_across(&step.from, &step.to, Some(&sidecar.content.sha256))?;
-            copy_across(record, Path::new(&record_to), None)?;
-            std::fs::remove_file(&step.from).map_err(MirrorError::io(&step.from))?;
-            std::fs::remove_file(record).map_err(MirrorError::io(record))?;
+            copy_across(&step.from, &step.to, Some(&sidecar.content.sha256), false)?;
+            copy_across(record, Path::new(&record_to), None, false)?;
+            return Ok(Some((step.from.clone(), record.to_path_buf())));
         }
         Action::Same => {
             if let Some(mut kept) = Archive::read(&step.to)? {
@@ -477,7 +519,7 @@ fn take(step: &Step, sidecar: Provenance, record: &Path) -> Result<(), MirrorErr
             drop_records(&step.from)?;
         }
     }
-    Ok(())
+    Ok(None)
 }
 
 /// Finishes the step a run before logged last, when it was cut off
@@ -786,17 +828,17 @@ mod tests {
         std::fs::create_dir_all(to.parent().unwrap()).unwrap();
         std::fs::write(&from, b"bytes").unwrap();
         let wrong = crate::net::Sha256::of(b"other");
-        let e = copy_across(&from, &to, Some(&wrong)).unwrap_err();
+        let e = copy_across(&from, &to, Some(&wrong), true).unwrap_err();
         assert!(e.to_string().contains("hashes to"), "{e}");
         assert!(!to.exists() && !dir.path().join("b/a.part").exists());
-        copy_across(&from, &to, Some(&crate::net::Sha256::of(b"bytes"))).unwrap();
+        copy_across(&from, &to, Some(&crate::net::Sha256::of(b"bytes")), true).unwrap();
         assert_eq!(std::fs::read(&to).unwrap(), b"bytes");
         assert_eq!(
             std::fs::metadata(&to).unwrap().modified().unwrap(),
             std::fs::metadata(&from).unwrap().modified().unwrap()
         );
-        assert!(copy_across(&dir.path().join("none"), &to, None).is_err());
-        assert!(copy_across(&from, &dir.path().join("no/such/c"), None).is_err());
+        assert!(copy_across(&dir.path().join("none"), &to, None, false).is_err());
+        assert!(copy_across(&from, &dir.path().join("no/such/c"), None, false).is_err());
     }
 
     #[test]
@@ -821,7 +863,7 @@ mod tests {
             to: to.to_path_buf(),
             action,
         };
-        log(&mirror, &step(Action::Move, &to)).unwrap();
+        log(&mirror, &step(Action::Move, &to), true).unwrap();
         relayout(&mirror, &archive, false, |_| {}).unwrap();
         // The record moves under the name it had.
         let v1 = |p: &Path| PathBuf::from(format!("{}.json", p.display()));
@@ -831,7 +873,7 @@ mod tests {
         // A drop cut off after the file, before its sidecar.
         let from2 = old(&archive, &format!("{CUR}a.csv"), None, b"a");
         std::fs::remove_file(&from2).unwrap();
-        log(&mirror, &step(Action::Same, &to)).unwrap();
+        log(&mirror, &step(Action::Same, &to), true).unwrap();
         finish_last(&mirror).unwrap();
         assert!(!Archive::record_path(&from2).exists());
         // A step whose file is still where it was: nothing was taken yet.
@@ -842,7 +884,10 @@ mod tests {
         // dropped all the same.
         std::fs::remove_file(format!("{}.json", to.display())).unwrap();
         let sc = Archive::read(&from3).unwrap().unwrap();
-        take(&step(Action::Same, &to), sc, Path::new("")).unwrap();
+        assert_eq!(
+            take(&step(Action::Same, &to), sc, Path::new("")).unwrap(),
+            None
+        );
         assert!(!from3.exists());
     }
 
