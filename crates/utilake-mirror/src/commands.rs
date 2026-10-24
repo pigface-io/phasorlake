@@ -298,7 +298,7 @@ fn relayout(ctx: &Context, mirror: &Mirror, dry_run: bool) -> Result<i32, Mirror
             println!("{folder}: {m} moved, {v} versions, {same} the same");
         }
         println!(
-            "{}{} folders moved whole, {} moved, {} kept as versions, {} the same as the file there; {} journals merged, {} held lines rewritten, {} folders removed, {} folders set aside to delete, {} unreadable",
+            "{}{} folders moved whole, {} moved, {} kept as versions, {} the same as the file there; {} journals merged, {} held lines rewritten, {} folders removed, {} folders set aside to delete, {} swapped, {} unreadable",
             if s.dry_run { "dry run: " } else { "" },
             s.folders_moved,
             s.moved,
@@ -308,6 +308,7 @@ fn relayout(ctx: &Context, mirror: &Mirror, dry_run: bool) -> Result<i32, Mirror
             s.held,
             s.folders_removed,
             s.folders_set_aside,
+            s.folders_swapped,
             s.unreadable.len()
         );
     }

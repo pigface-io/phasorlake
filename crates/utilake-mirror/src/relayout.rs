@@ -87,6 +87,9 @@ pub struct RelayoutSummary {
     /// under `state/tmp/trash/` to delete: on exFAT an unlink in a folder
     /// of tens of thousands of entries takes seconds.
     pub folders_set_aside: usize,
+    /// Folders whose few files were copied into a folder of many that then
+    /// took their place, the folder of few set aside.
+    pub folders_swapped: usize,
     /// Whether nothing was changed.
     pub dry_run: bool,
 }
@@ -158,6 +161,17 @@ pub fn relayout(
             whole.push(dir.clone());
             whole_to.push(step.to);
             continue;
+        }
+        if !dry_run {
+            let to = folder_step_to(archive, dir).filter(|t| free(t));
+            if let Some((to, n)) = to.and_then(|t| swappable(dir, &t).map(|n| (t, n))) {
+                swap(mirror, archive, dir, &to)?;
+                summary.moved += n;
+                summary.folders_swapped += 1;
+                whole.push(dir.clone());
+                whole_to.push(to);
+                continue;
+            }
         }
         // Each entry with its type as the folder listing gives it: on
         // exFAT a look at one name reads the whole folder.
@@ -298,20 +312,127 @@ fn stale_dirs(archive: &Archive) -> (Vec<PathBuf>, Vec<PathBuf>) {
 /// that folder is not there yet: everything in `dir` belongs there, so one
 /// rename moves it all.
 fn folder_step(archive: &Archive, dir: &Path) -> Option<Step> {
-    let rel = dir.strip_prefix(archive.root()).ok()?;
-    let rel: Vec<String> = rel
-        .components()
-        .map(|c| c.as_os_str().to_string_lossy().into_owned())
-        .collect();
-    let url = format!("https://{}/", rel.join("/"));
-    let to = archive.path_for(&format!("{url}_")).parent()?.to_path_buf();
-    (to != dir && std::fs::symlink_metadata(&to).is_err()).then(|| Step {
+    let to = folder_step_to(archive, dir)?;
+    let url = folder_url(archive, dir)?;
+    std::fs::symlink_metadata(&to).is_err().then(|| Step {
         at: Stamp::now(),
         url,
         from: dir.to_path_buf(),
         to,
         action: Action::Folder,
     })
+}
+
+/// The URL of the folder `dir` of the archive, ending in `/`.
+fn folder_url(archive: &Archive, dir: &Path) -> Option<String> {
+    let rel = dir.strip_prefix(archive.root()).ok()?;
+    let rel: Vec<String> = rel
+        .components()
+        .map(|c| c.as_os_str().to_string_lossy().into_owned())
+        .collect();
+    Some(format!("https://{}/", rel.join("/")))
+}
+
+/// The folder of the layout that the files of `dir` belong in, when that
+/// is not `dir`.
+fn folder_step_to(archive: &Archive, dir: &Path) -> Option<PathBuf> {
+    let url = folder_url(archive, dir)?;
+    let to = archive.path_for(&format!("{url}_")).parent()?.to_path_buf();
+    (to != dir).then_some(to)
+}
+
+/// The names in `dir` by kind: data files, records and folders, less
+/// AppleDouble files; none when `dir` does not read.
+fn listing(dir: &Path) -> Option<(Vec<String>, Vec<String>, usize)> {
+    let (mut data, mut records, mut folders) = (Vec::new(), Vec::new(), 0);
+    for e in std::fs::read_dir(dir).ok()?.filter_map(Result::ok) {
+        let name = e.file_name().to_string_lossy().into_owned();
+        if name.starts_with("._") {
+            continue;
+        }
+        if e.file_type().is_ok_and(|t| t.is_dir()) {
+            folders += 1;
+        } else if name.ends_with(".json") {
+            records.push(name);
+        } else {
+            data.push(name);
+        }
+    }
+    Some((data, records, folders))
+}
+
+/// How many files `dir` holds, when it can be swapped for `to`, the
+/// folder they belong in: `to` holds fewer files than `dir`, and no
+/// folder; no name is in both; and every file of both has a record, and
+/// nothing else is there (no download or record in progress).
+fn swappable(dir: &Path, to: &Path) -> Option<usize> {
+    let (data, records, _) = listing(dir)?;
+    let (to_data, to_records, to_folders) = listing(to)?;
+    let all = |data: &[String], records: &[String]| {
+        let records: std::collections::HashSet<&str> = records.iter().map(String::as_str).collect();
+        records.len() == data.len()
+            && data.iter().all(|d| {
+                is_data_file(Path::new(d))
+                    && (records.contains(format!("{d}.json").as_str())
+                        || records.contains(format!("{d}.provenance.json").as_str()))
+            })
+    };
+    let mine: std::collections::HashSet<&String> = data.iter().chain(&records).collect();
+    (to_folders == 0
+        && to_data.len() < data.len()
+        && all(&data, &records)
+        && all(&to_data, &to_records)
+        && !to_data.iter().chain(&to_records).any(|n| mine.contains(n)))
+    .then_some(data.len())
+}
+
+/// Swaps the folder `dir` for `to`, the folder its files belong in, which
+/// holds fewer: `to`'s files and records are copied into `dir`, held to
+/// their records' sha256, and handed to the disk; `to` is set aside whole
+/// under `state/tmp/trash/`, and `dir` renamed to `to`. Two renames of a
+/// folder and a few copies, where moving `dir`'s files one by one would
+/// create each in a folder that grows, reading it whole each time. A run
+/// cut off before `to` is set aside finds the copies in `dir` the same as
+/// `to`'s files; one cut off after, `to` not there, moves `dir` whole.
+fn swap(mirror: &Mirror, archive: &Archive, dir: &Path, to: &Path) -> Result<(), MirrorError> {
+    let (data, _, _) = listing(to).unwrap_or_default();
+    let here: std::collections::HashSet<String> = std::fs::read_dir(to)
+        .map_err(MirrorError::io(to))?
+        .filter_map(Result::ok)
+        .map(|e| e.file_name().to_string_lossy().into_owned())
+        .collect();
+    for name in &data {
+        let from = to.join(name);
+        let record = Archive::record_where(&from, |n| here.contains(n))
+            .expect("a swappable folder's files have records");
+        let sidecar = Archive::read_record(&record)?;
+        let kept = read_held(&record, None)?;
+        // Logged where it is, which is where it stays: its copy is held at
+        // that path once `dir` is renamed.
+        let step = Step {
+            at: Stamp::now(),
+            url: sidecar.url().to_owned(),
+            from: from.clone(),
+            to: from.clone(),
+            action: Action::Move,
+        };
+        log(mirror, &step, false)?;
+        let bytes = read_held(&from, Some(&sidecar.content.sha256))?;
+        put(&dir.join(name), &bytes, false)?;
+        let record_name = record.file_name().expect("a record has a name");
+        put(&dir.join(record_name), &kept, false)?;
+    }
+    rustix::fs::sync();
+    let step = Step {
+        at: Stamp::now(),
+        url: folder_url(archive, dir).unwrap_or_default(),
+        from: dir.to_path_buf(),
+        to: to.to_path_buf(),
+        action: Action::Folder,
+    };
+    log(mirror, &step, true)?;
+    set_aside(mirror, archive, to)?;
+    std::fs::rename(dir, to).map_err(MirrorError::io(to))
 }
 
 /// Where the file at `path` goes, and how; none when it is in place.
@@ -980,6 +1101,73 @@ mod tests {
         let stuck = home.path().join("stuck");
         std::fs::create_dir_all(stuck.join("in")).unwrap();
         assert!(settle(&mut vec![(from4, stuck)]).is_err());
+    }
+
+    #[test]
+    fn a_folder_of_many_takes_the_place_of_one_of_few() {
+        let home = tempfile::tempdir().unwrap();
+        let mirror = Mirror::new(home.path().join("state"));
+        let archive = Archive::new(home.path().join("archive"));
+        const X: &str = "https://www.nemweb.com.au/Reports/CURRENT/X/";
+        const XA: &str = "https://www.nemweb.com.au/Reports/ARCHIVE/X/";
+        for n in ["a", "b", "c"] {
+            old(&archive, &format!("{X}{n}.zip"), None, n.as_bytes());
+        }
+        std::fs::write(archive.url_path(&format!("{X}._a.zip")), b"").unwrap();
+        // The folder of few: its files already moved there, whole.
+        let few = archive
+            .path_for(&format!("{X}_"))
+            .parent()
+            .unwrap()
+            .to_path_buf();
+        let d = old(&archive, &format!("{XA}d.zip"), None, b"d");
+        std::fs::create_dir_all(&few).unwrap();
+        std::fs::rename(&d, few.join("d.zip")).unwrap();
+        std::fs::rename(format!("{}.json", d.display()), few.join("d.zip.json")).unwrap();
+        let s = relayout(&mirror, &archive, false, |_| {}).unwrap();
+        assert_eq!((s.folders_swapped, s.moved), (1, 3), "{s:?}");
+        for n in ["a", "b", "c", "d"] {
+            let held = archive.lookup(&format!("{X}{n}.zip")).unwrap();
+            let held = held.or_else(|| archive.lookup(&format!("{XA}{n}.zip")).unwrap());
+            assert_eq!(std::fs::read(held.unwrap().path).unwrap(), n.as_bytes());
+        }
+        assert!(!archive.url_path(X).exists());
+        let trash = mirror.tmp_dir().join("trash/www.nemweb.com.au/Reports/X");
+        assert_eq!(std::fs::read(trash.join("d.zip")).unwrap(), b"d");
+        // Logged: the copy, where it stays, then the folder.
+        let log = std::fs::read_to_string(mirror.relayout_path()).unwrap();
+        assert_eq!(log.lines().count(), 2);
+
+        // Not swapped: a name in both, a folder of few with a folder in
+        // it, or with a file without a record; or not fewer.
+        let (dir, to) = (home.path().join("dir"), home.path().join("to"));
+        for p in [&dir, &to] {
+            std::fs::create_dir_all(p).unwrap();
+        }
+        let put = |p: &Path, n: &str| {
+            std::fs::write(p.join(n), n).unwrap();
+            std::fs::write(p.join(format!("{n}.json")), "{}").unwrap();
+        };
+        put(&dir, "a");
+        put(&dir, "b");
+        std::fs::write(dir.join("e"), "e").unwrap();
+        std::fs::write(dir.join("e.provenance.json"), "{}").unwrap();
+        assert_eq!(swappable(&dir, &to), Some(3));
+        put(&to, "a");
+        assert_eq!(swappable(&dir, &to), None);
+        std::fs::remove_file(to.join("a")).unwrap();
+        std::fs::remove_file(to.join("a.json")).unwrap();
+        std::fs::create_dir(to.join("sub")).unwrap();
+        assert_eq!(swappable(&dir, &to), None);
+        std::fs::remove_dir(to.join("sub")).unwrap();
+        std::fs::write(to.join("bare"), "x").unwrap();
+        assert_eq!(swappable(&dir, &to), None);
+        std::fs::remove_file(to.join("bare")).unwrap();
+        put(&to, "c");
+        put(&to, "d");
+        put(&to, "f");
+        assert_eq!(swappable(&dir, &to), None);
+        assert_eq!(swappable(&home.path().join("none"), &to), None);
     }
 
     #[test]
