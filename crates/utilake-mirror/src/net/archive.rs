@@ -200,46 +200,6 @@ pub fn hashes_of(path: &Path) -> std::io::Result<Hashes> {
     })
 }
 
-fn percent_decode(s: &str) -> String {
-    let bytes = s.as_bytes();
-    let mut out = Vec::with_capacity(bytes.len());
-    let hex = |b: u8| (b as char).to_digit(16);
-    let mut i = 0;
-    while i < bytes.len() {
-        if bytes[i] == b'%'
-            && i + 2 < bytes.len()
-            && let (Some(h), Some(l)) = (hex(bytes[i + 1]), hex(bytes[i + 2]))
-        {
-            out.push((h * 16 + l) as u8);
-            i += 3;
-        } else {
-            out.push(bytes[i]);
-            i += 1;
-        }
-    }
-    String::from_utf8_lossy(&out).into_owned()
-}
-
-/// One path segment of a URL as a file or directory name: unescaped, with
-/// the characters no file system takes, and the names that would climb out
-/// of the archive, replaced.
-fn segment(s: &str) -> String {
-    let cleaned: String = percent_decode(s)
-        .chars()
-        .map(|c| {
-            if c.is_control() || matches!(c, '/' | '\\' | ':' | '*' | '?' | '"' | '<' | '>' | '|') {
-                '_'
-            } else {
-                c
-            }
-        })
-        .collect();
-    match cleaned.as_str() {
-        "" | "." | ".." => "_".to_owned(),
-        _ => cleaned,
-    }
-}
-
 fn io_err(path: &Path) -> impl Fn(std::io::Error) -> FetchError + '_ {
     move |source| FetchError::CacheIo {
         path: path.display().to_string(),
@@ -258,32 +218,17 @@ impl Archive {
         &self.root
     }
 
-    /// Where a URL's bytes are kept: the URL itself as a path under the
-    /// archive, host first. A query string, which no archive URL has, is
-    /// folded into the file name as a hash so two queries of one path stay
-    /// apart; a fragment is not part of the file.
+    /// Where a URL's bytes are kept (`utilake_plain_decode::layout`): the
+    /// URL as a path under the archive, host first, one folder per report
+    /// folder (a `CURRENT` or `ARCHIVE` listing segment dropped). A query
+    /// string, which no archive URL has, is folded into the file name as a
+    /// hash so two queries of one path stay apart; a fragment is not part
+    /// of the file.
     pub fn path_for(&self, url: &str) -> PathBuf {
-        let url = url.split_once('#').map_or(url, |(u, _)| u);
-        let rest = url.split_once("://").map_or(url, |(_, r)| r);
-        let (location, query) = match rest.split_once('?') {
-            Some((l, q)) => (l, Some(q)),
-            None => (rest, None),
-        };
         let mut path = self.root.clone();
-        let mut last = String::new();
-        for s in location.split('/').filter(|s| !s.is_empty()) {
-            if !last.is_empty() {
-                path.push(&last);
-            }
-            last = segment(s);
+        for s in utilake_plain_decode::layout::local_segments(url) {
+            path.push(s);
         }
-        if last.is_empty() {
-            "_".clone_into(&mut last);
-        }
-        if let Some(q) = query {
-            last = format!("{last}@{}", &sha256_hex(q.as_bytes())[..16]);
-        }
-        path.push(last);
         path
     }
 

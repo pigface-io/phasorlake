@@ -5806,7 +5806,7 @@
     "gas/STTM_INT691_STTM_CTP_REGISTER/metadata/v1.metadata.json": "4ad98c0656e2abf27dc72f1621087c054e2bd88abc11769c3650676528637ab4",
     "gas/STTM_INT691_STTM_CTP_REGISTER/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
     "gas/STTM_INT691_STTM_CTP_REGISTER/schema-0.json": "1d864a5d86d807395083db369254a644918302d1aff651af6637979c317afd16",
-    "gas/folders.json": "7a694baddd7d7af3eee7aa4a161984ae9dca14a8202bda1c8ee3acc812b1a532",
+    "gas/folders.json": "93a4a43be385748e0ee44da7c11cd8784a09758b5b6266f18d188c3d00a40fb8",
     "gas/headers.json": "b127a8c9a8eacf2204a5623fda4a40b75f4a8cb0507f536cc80ccc92abb02036",
     "nem/ADG_DETAIL/metadata/snap-5155715949342366677-1-447fe174-a50e-8670-98ae-23ebf8238140.avro": "83fb7b4d2bceaac4d473375b433cb2cec0737d26b16b4155596830d1bfd4bba1",
     "nem/ADG_DETAIL/metadata/v1.metadata.json": "a7a5d9de96dc64769a14d4894c1ebc0a73dadd2d5c15fee3a0f43537925ba860",
@@ -10070,7 +10070,7 @@
     "nem/YESTBID_BIDPEROFFER/metadata/v1.metadata.json": "875eebbca05f31c6fa04553c2841bd68be3212533811245ed7bd607acb9cb693",
     "nem/YESTBID_BIDPEROFFER/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
     "nem/YESTBID_BIDPEROFFER/schema-0.json": "470ca6e743733b9ba2498707b0e1692c1f1dbb8af35f2f62f205491480f9db7f",
-    "nem/folders.json": "f2e4c97b63c0b2c685ac391eb6ac818bad2a12dbbeebd63bb81428e3d6b15048",
+    "nem/folders.json": "70753747f9f74d9099d8a2e50ca91ed419954cabf385ed8257b43e77bfcb5c57",
     "nem/headers.json": "6673873d9115e1add042026ef9b0df331c99e24600cc9a2e27afad0ee0067081"
   },
   "tables": 499

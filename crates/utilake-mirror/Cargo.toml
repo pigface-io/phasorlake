@@ -16,6 +16,7 @@ name = "utilake-mirror"
 path = "src/main.rs"
 
 [dependencies]
+utilake-plain-decode.workspace = true
 utilake-zip.workspace = true
 anyhow.workspace = true
 async-trait.workspace = true

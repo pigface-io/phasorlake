@@ -13,6 +13,7 @@ build = "build.rs"
 workspace = true
 
 [dependencies]
+utilake-plain-decode.workspace = true
 utilake-core.workspace = true
 utilake-iceberg.workspace = true
 utilake-mms-decode.workspace = true
@@ -28,6 +29,7 @@ xxhash-rust.workspace = true
 # build.rs compiles `src/file_model` itself to validate and pack `schemas/`.
 [build-dependencies]
 utilake-core.workspace = true
+utilake-plain-decode.workspace = true
 utilake-iceberg.workspace = true
 postcard.workspace = true
 serde.workspace = true

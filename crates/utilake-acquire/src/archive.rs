@@ -164,46 +164,6 @@ pub fn sha256_read(f: &mut impl Read) -> std::io::Result<(String, u64)> {
     Ok((hex(&hasher.finalize()), len))
 }
 
-fn percent_decode(s: &str) -> String {
-    let bytes = s.as_bytes();
-    let mut out = Vec::with_capacity(bytes.len());
-    let hex = |b: u8| (b as char).to_digit(16);
-    let mut i = 0;
-    while i < bytes.len() {
-        if bytes[i] == b'%'
-            && i + 2 < bytes.len()
-            && let (Some(h), Some(l)) = (hex(bytes[i + 1]), hex(bytes[i + 2]))
-        {
-            out.push((h * 16 + l) as u8);
-            i += 3;
-        } else {
-            out.push(bytes[i]);
-            i += 1;
-        }
-    }
-    String::from_utf8_lossy(&out).into_owned()
-}
-
-/// One path segment of a URL as a file or directory name: unescaped, with
-/// the characters no file system takes, and the names that would climb out
-/// of the archive, replaced.
-fn segment(s: &str) -> String {
-    let cleaned: String = percent_decode(s)
-        .chars()
-        .map(|c| {
-            if c.is_control() || matches!(c, '/' | '\\' | ':' | '*' | '?' | '"' | '<' | '>' | '|') {
-                '_'
-            } else {
-                c
-            }
-        })
-        .collect();
-    match cleaned.as_str() {
-        "" | "." | ".." => "_".to_owned(),
-        _ => cleaned,
-    }
-}
-
 fn io_err(path: &Path) -> impl Fn(std::io::Error) -> FetchError + '_ {
     move |source| FetchError::CacheIo {
         path: path.display().to_string(),
@@ -222,32 +182,17 @@ impl Archive {
         &self.root
     }
 
-    /// Where a URL's bytes are kept: the URL itself as a path under the
-    /// archive, host first. A query string, which no archive URL has, is
-    /// folded into the file name as a hash so two queries of one path stay
-    /// apart; a fragment is not part of the file.
+    /// Where a URL's bytes are kept (`utilake_plain_decode::layout`): the
+    /// URL as a path under the archive, host first, one folder per report
+    /// folder (a `CURRENT` or `ARCHIVE` listing segment dropped). A query
+    /// string, which no archive URL has, is folded into the file name as a
+    /// hash so two queries of one path stay apart; a fragment is not part
+    /// of the file.
     pub fn path_for(&self, url: &str) -> PathBuf {
-        let url = url.split_once('#').map_or(url, |(u, _)| u);
-        let rest = url.split_once("://").map_or(url, |(_, r)| r);
-        let (location, query) = match rest.split_once('?') {
-            Some((l, q)) => (l, Some(q)),
-            None => (rest, None),
-        };
         let mut path = self.root.clone();
-        let mut last = String::new();
-        for s in location.split('/').filter(|s| !s.is_empty()) {
-            if !last.is_empty() {
-                path.push(&last);
-            }
-            last = segment(s);
+        for s in utilake_plain_decode::layout::local_segments(url) {
+            path.push(s);
         }
-        if last.is_empty() {
-            "_".clone_into(&mut last);
-        }
-        if let Some(q) = query {
-            last = format!("{last}@{}", &sha256_hex(q.as_bytes())[..16]);
-        }
-        path.push(last);
         path
     }
 
@@ -327,6 +272,13 @@ impl Archive {
                 continue;
             };
             for p in rd.filter_map(Result::ok).map(|e| e.path()) {
+                // What macOS keeps beside a file on a disk of another
+                // format (`._x`) is no file of the archive.
+                if p.file_name()
+                    .is_some_and(|n| n.to_string_lossy().starts_with("._"))
+                {
+                    continue;
+                }
                 if p.is_dir() {
                     stack.push(p);
                 } else if p.extension().is_some_and(|x| x == "json") {
@@ -355,6 +307,15 @@ mod tests {
     #[test]
     fn the_archive_mirrors_the_url() {
         let a = Archive::new("/home/archive");
+        // One folder per report folder: a listing segment is dropped.
+        assert_eq!(
+            a.path_for("https://www.nemweb.com.au/Reports/CURRENT/Dispatch_SCADA/X.zip"),
+            a.path_for("https://www.nemweb.com.au/Reports/ARCHIVE/Dispatch_SCADA/X.zip")
+        );
+        assert_eq!(
+            a.path_for("https://www.nemweb.com.au/Reports/ARCHIVE/Dispatch_SCADA/X.zip"),
+            Path::new("/home/archive/www.nemweb.com.au/Reports/Dispatch_SCADA/X.zip")
+        );
         assert_eq!(a.root(), Path::new("/home/archive"));
         assert_eq!(
             a.path_for("https://www.nemweb.com.au/Data_Archive/X/PUBLIC_ARCHIVE%23T%23FILE01%23202608010000.zip"),
@@ -422,6 +383,15 @@ mod tests {
         }
         Archive::verify(&found).unwrap();
         assert_eq!(a.entries_under(None).len(), 1);
+        // A macOS AppleDouble copy of the file and of its sidecar is passed
+        // over.
+        let apple =
+            path.with_file_name(format!("._{}", path.file_name().unwrap().to_string_lossy()));
+        std::fs::copy(&path, &apple).unwrap();
+        std::fs::copy(Archive::sidecar_path(&path), Archive::sidecar_path(&apple)).unwrap();
+        assert_eq!(a.entries_under(None).len(), 1);
+        std::fs::remove_file(Archive::sidecar_path(&apple)).unwrap();
+        std::fs::remove_file(&apple).unwrap();
         assert_eq!(a.entries_under(Some(&dir.path().join("h/d"))).len(), 1);
         // Another size, or another URL, is not this download.
         std::fs::write(&path, b"abcd").unwrap();

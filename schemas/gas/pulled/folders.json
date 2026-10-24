@@ -14,9 +14,9 @@
         }
       ],
       "feed": "gsh",
-      "folder": "Benchmark_Price",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE/GSH"
+      "folder": "ARCHIVE/Benchmark_Price",
+      "listings": [],
+      "root": "Reports/GSH"
     },
     {
       "blocks": [
@@ -32,9 +32,9 @@
         }
       ],
       "feed": "gsh",
-      "folder": "GSH_AUCTION_CURTAILMENT_NOTICE",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE/GSH"
+      "folder": "ARCHIVE/GSH_AUCTION_CURTAILMENT_NOTICE",
+      "listings": [],
+      "root": "Reports/GSH"
     },
     {
       "blocks": [
@@ -50,9 +50,9 @@
         }
       ],
       "feed": "gsh",
-      "folder": "GSH_AUCTION_PRICE_VOLUME",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE/GSH"
+      "folder": "ARCHIVE/GSH_AUCTION_PRICE_VOLUME",
+      "listings": [],
+      "root": "Reports/GSH"
     },
     {
       "blocks": [
@@ -68,9 +68,9 @@
         }
       ],
       "feed": "gsh",
-      "folder": "GSH_AUCTION_QUANTITIES",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE/GSH"
+      "folder": "ARCHIVE/GSH_AUCTION_QUANTITIES",
+      "listings": [],
+      "root": "Reports/GSH"
     },
     {
       "blocks": [
@@ -86,9 +86,9 @@
         }
       ],
       "feed": "gsh",
-      "folder": "GSH_CAPACITY_TRANSACTION",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE/GSH"
+      "folder": "ARCHIVE/GSH_CAPACITY_TRANSACTION",
+      "listings": [],
+      "root": "Reports/GSH"
     },
     {
       "blocks": [
@@ -104,9 +104,9 @@
         }
       ],
       "feed": "gsh",
-      "folder": "GSH_CAPACITY_TRANSFER_AUCTION_NOTICE",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE/GSH"
+      "folder": "ARCHIVE/GSH_CAPACITY_TRANSFER_AUCTION_NOTICE",
+      "listings": [],
+      "root": "Reports/GSH"
     },
     {
       "blocks": [
@@ -122,9 +122,9 @@
         }
       ],
       "feed": "gsh",
-      "folder": "GSH_Daily_Trans_Summary",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE/GSH"
+      "folder": "ARCHIVE/GSH_Daily_Trans_Summary",
+      "listings": [],
+      "root": "Reports/GSH"
     },
     {
       "blocks": [
@@ -140,9 +140,9 @@
         }
       ],
       "feed": "gsh",
-      "folder": "GSH_Historical_Trans_Summary",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE/GSH"
+      "folder": "ARCHIVE/GSH_Historical_Trans_Summary",
+      "listings": [],
+      "root": "Reports/GSH"
     },
     {
       "blocks": [
@@ -168,9 +168,9 @@
         }
       ],
       "feed": "gsh",
-      "folder": "GSH_Participants",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE/GSH"
+      "folder": "ARCHIVE/GSH_Participants",
+      "listings": [],
+      "root": "Reports/GSH"
     },
     {
       "blocks": [
@@ -186,9 +186,9 @@
         }
       ],
       "feed": "gsh",
-      "folder": "GSH_REGISTERED_FACILITIES",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE/GSH"
+      "folder": "ARCHIVE/GSH_REGISTERED_FACILITIES",
+      "listings": [],
+      "root": "Reports/GSH"
     },
     {
       "blocks": [
@@ -244,9 +244,9 @@
         }
       ],
       "feed": "gsh",
-      "folder": "GSH_REGISTERED_SERVICE_POINTS",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE/GSH"
+      "folder": "ARCHIVE/GSH_REGISTERED_SERVICE_POINTS",
+      "listings": [],
+      "root": "Reports/GSH"
     },
     {
       "blocks": [
@@ -262,9 +262,9 @@
         }
       ],
       "feed": "gsh",
-      "folder": "GSH_REVISED_AUCTION_QUANTITIES",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE/GSH"
+      "folder": "ARCHIVE/GSH_REVISED_AUCTION_QUANTITIES",
+      "listings": [],
+      "root": "Reports/GSH"
     },
     {
       "blocks": [
@@ -280,9 +280,9 @@
         }
       ],
       "feed": "gsh",
-      "folder": "GSH_ZONE_CURTAILMENT_INFORMATION",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE/GSH"
+      "folder": "ARCHIVE/GSH_ZONE_CURTAILMENT_INFORMATION",
+      "listings": [],
+      "root": "Reports/GSH"
     },
     {
       "blocks": [
@@ -298,9 +298,9 @@
         }
       ],
       "feed": "gsh",
-      "folder": "Benchmark_Price",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT/GSH"
+      "folder": "CURRENT/Benchmark_Price",
+      "listings": [],
+      "root": "Reports/GSH"
     },
     {
       "blocks": [
@@ -316,9 +316,9 @@
         }
       ],
       "feed": "gsh",
-      "folder": "GSH_AUCTION_PRICE_VOLUME",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT/GSH"
+      "folder": "CURRENT/GSH_AUCTION_PRICE_VOLUME",
+      "listings": [],
+      "root": "Reports/GSH"
     },
     {
       "blocks": [
@@ -334,9 +334,9 @@
         }
       ],
       "feed": "gsh",
-      "folder": "GSH_AUCTION_QUANTITIES",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT/GSH"
+      "folder": "CURRENT/GSH_AUCTION_QUANTITIES",
+      "listings": [],
+      "root": "Reports/GSH"
     },
     {
       "blocks": [
@@ -352,9 +352,9 @@
         }
       ],
       "feed": "gsh",
-      "folder": "GSH_CAPACITY_TRANSFER_AUCTION_NOTICE",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT/GSH"
+      "folder": "CURRENT/GSH_CAPACITY_TRANSFER_AUCTION_NOTICE",
+      "listings": [],
+      "root": "Reports/GSH"
     },
     {
       "blocks": [
@@ -370,9 +370,9 @@
         }
       ],
       "feed": "gsh",
-      "folder": "GSH_Daily_Trans_Summary",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT/GSH"
+      "folder": "CURRENT/GSH_Daily_Trans_Summary",
+      "listings": [],
+      "root": "Reports/GSH"
     },
     {
       "blocks": [
@@ -388,9 +388,9 @@
         }
       ],
       "feed": "gsh",
-      "folder": "GSH_Historical_Trans_Summary",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT/GSH"
+      "folder": "CURRENT/GSH_Historical_Trans_Summary",
+      "listings": [],
+      "root": "Reports/GSH"
     },
     {
       "blocks": [
@@ -416,9 +416,9 @@
         }
       ],
       "feed": "gsh",
-      "folder": "GSH_Participants",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT/GSH"
+      "folder": "CURRENT/GSH_Participants",
+      "listings": [],
+      "root": "Reports/GSH"
     },
     {
       "blocks": [
@@ -434,9 +434,9 @@
         }
       ],
       "feed": "gsh",
-      "folder": "GSH_REGISTERED_FACILITIES",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT/GSH"
+      "folder": "CURRENT/GSH_REGISTERED_FACILITIES",
+      "listings": [],
+      "root": "Reports/GSH"
     },
     {
       "blocks": [
@@ -492,9 +492,9 @@
         }
       ],
       "feed": "gsh",
-      "folder": "GSH_REGISTERED_SERVICE_POINTS",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT/GSH"
+      "folder": "CURRENT/GSH_REGISTERED_SERVICE_POINTS",
+      "listings": [],
+      "root": "Reports/GSH"
     },
     {
       "blocks": [
@@ -510,9 +510,9 @@
         }
       ],
       "feed": "gsh",
-      "folder": "GSH_REVISED_AUCTION_QUANTITIES",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT/GSH"
+      "folder": "CURRENT/GSH_REVISED_AUCTION_QUANTITIES",
+      "listings": [],
+      "root": "Reports/GSH"
     },
     {
       "blocks": [
@@ -528,9 +528,193 @@
         }
       ],
       "feed": "gsh",
-      "folder": "GSH_ZONE_CURTAILMENT_INFORMATION",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT/GSH"
+      "folder": "CURRENT/GSH_ZONE_CURTAILMENT_INFORMATION",
+      "listings": [],
+      "root": "Reports/GSH"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "ACTUAL_FLOW_STORAGE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 11,
+          "report": [
+            "GBB",
+            "ACTUAL_FLOW_STORAGE_LAST31"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 11,
+          "report": [
+            "GBB",
+            "FACILITY_DEVELOPMENTS"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 9,
+          "report": [
+            "GBB",
+            "LINEPACK_CAPACITY_ADEQUACY_FUTURE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-04",
+          "last-release": "2026-10",
+          "months": 11,
+          "report": [
+            "GBB",
+            "MEDIUM_TERM_CAPACITY_OUTLOOK_FUTURE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 11,
+          "report": [
+            "GBB",
+            "NAMEPLATE_RATING_CURRENT"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 9,
+          "report": [
+            "GBB",
+            "NOMINATION_AND_FORECAST_NEXT7"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2024-06",
+          "last-release": "2025-08",
+          "months": 15,
+          "report": [
+            "GBB",
+            "PIPELINE_CONNECTION_FLOW"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 11,
+          "report": [
+            "GBB",
+            "PIPELINE_CONNECTION_FLOW_LAST31"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 11,
+          "report": [
+            "GBB",
+            "RESERVES_AND_RESOURCES"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-09",
+          "last-release": "2026-09",
+          "months": 1,
+          "report": [
+            "GBB",
+            "SHORT_TERM_CAPACITY_OUTLOOK"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 9,
+          "report": [
+            "GBB",
+            "SHORT_TERM_CAPACITY_OUTLOOK_FUTURE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 11,
+          "report": [
+            "GBB",
+            "UNCONTRACTED_CAPACITY_OUTLOOK_FUTURE"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "gbb",
+      "folder": "CURRENT/DUPLICATE",
+      "listings": [],
+      "root": "Reports/GBB"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2021-08",
+          "last-release": "2026-10",
+          "months": 64,
+          "report": [
+            "GBB",
+            "FORECAST_UTILISATION"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "gbb",
+      "folder": "CURRENT/ForecastUtilisation",
+      "listings": [],
+      "root": "Reports/GBB"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2021-07",
+          "last-release": "2026-10",
+          "months": 7,
+          "report": [
+            "GBB",
+            "PIPELINE_CONNECTION_FLOW"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2019-11",
+          "last-release": "2019-11",
+          "months": 1,
+          "report": [
+            "GBB",
+            "PIPELINE_CONNECTION_FLOW_HISTORY"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "gbb",
+      "folder": "CURRENT/GBB_PIPELINE_CONNECTION_FLOW",
+      "listings": [],
+      "root": "Reports/GBB"
     },
     {
       "blocks": [
@@ -1096,193 +1280,9 @@
         }
       ],
       "feed": "gbb",
-      "folder": "GBB",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT/GBB"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2026-10",
-          "last-release": "2026-10",
-          "months": 1,
-          "report": [
-            "GBB",
-            "ACTUAL_FLOW_STORAGE"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 11,
-          "report": [
-            "GBB",
-            "ACTUAL_FLOW_STORAGE_LAST31"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 11,
-          "report": [
-            "GBB",
-            "FACILITY_DEVELOPMENTS"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 9,
-          "report": [
-            "GBB",
-            "LINEPACK_CAPACITY_ADEQUACY_FUTURE"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-04",
-          "last-release": "2026-10",
-          "months": 11,
-          "report": [
-            "GBB",
-            "MEDIUM_TERM_CAPACITY_OUTLOOK_FUTURE"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 11,
-          "report": [
-            "GBB",
-            "NAMEPLATE_RATING_CURRENT"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 9,
-          "report": [
-            "GBB",
-            "NOMINATION_AND_FORECAST_NEXT7"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2024-06",
-          "last-release": "2025-08",
-          "months": 15,
-          "report": [
-            "GBB",
-            "PIPELINE_CONNECTION_FLOW"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 11,
-          "report": [
-            "GBB",
-            "PIPELINE_CONNECTION_FLOW_LAST31"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 11,
-          "report": [
-            "GBB",
-            "RESERVES_AND_RESOURCES"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2026-09",
-          "last-release": "2026-09",
-          "months": 1,
-          "report": [
-            "GBB",
-            "SHORT_TERM_CAPACITY_OUTLOOK"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 9,
-          "report": [
-            "GBB",
-            "SHORT_TERM_CAPACITY_OUTLOOK_FUTURE"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 11,
-          "report": [
-            "GBB",
-            "UNCONTRACTED_CAPACITY_OUTLOOK_FUTURE"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "gbb",
-      "folder": "DUPLICATE",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT/GBB"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2021-08",
-          "last-release": "2026-10",
-          "months": 64,
-          "report": [
-            "GBB",
-            "FORECAST_UTILISATION"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "gbb",
-      "folder": "ForecastUtilisation",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT/GBB"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2021-07",
-          "last-release": "2026-10",
-          "months": 7,
-          "report": [
-            "GBB",
-            "PIPELINE_CONNECTION_FLOW"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2019-11",
-          "last-release": "2019-11",
-          "months": 1,
-          "report": [
-            "GBB",
-            "PIPELINE_CONNECTION_FLOW_HISTORY"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "gbb",
-      "folder": "GBB_PIPELINE_CONNECTION_FLOW",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT/GBB"
+      "folder": "CURRENT/_root",
+      "listings": [],
+      "root": "Reports/GBB"
     },
     {
       "blocks": [
@@ -1738,9 +1738,9 @@
         }
       ],
       "feed": "sttm",
-      "folder": "STTM",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT/STTM"
+      "folder": "CURRENT/_root",
+      "listings": [],
+      "root": "Reports/STTM"
     },
     {
       "blocks": [
@@ -2666,9 +2666,9 @@
         }
       ],
       "feed": "dwgm",
-      "folder": "VicGas",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT/VicGas"
+      "folder": "CURRENT/_root",
+      "listings": [],
+      "root": "Reports/VicGas"
     }
   ],
   "x-format": 3

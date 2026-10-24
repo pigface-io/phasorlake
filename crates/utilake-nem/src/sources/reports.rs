@@ -20,7 +20,7 @@ use utilake_acquire::{
     Archive, Entry, FetchError, Fetcher, LocalFile, Pick, Picks, Query, RemoteFile, Source,
 };
 use utilake_core::{CivilDay, Period};
-use utilake_mms_registry::{Folder, Registry};
+use utilake_mms_registry::{Registry, Side};
 
 /// The source id, as the manifest records it.
 pub const REPORTS_SOURCE_ID: &str = "nem-reports";
@@ -123,12 +123,12 @@ impl ReportFolders {
         Ok(Self { base, registry })
     }
 
-    /// The URL of a folder, `{base}Reports/ARCHIVE/Dispatch_SCADA/`.
-    pub fn folder_url(&self, folder: &Folder) -> Result<Url, FetchError> {
+    /// The URL of a folder's side, `{base}Reports/ARCHIVE/Dispatch_SCADA/`.
+    pub fn folder_url(&self, side: &Side) -> Result<Url, FetchError> {
         self.base
-            .join(&format!("{}/", folder.path()))
+            .join(&format!("{}/", side.path))
             .map_err(|e| FetchError::Parse {
-                url: folder.path(),
+                url: side.path.clone(),
                 what: "folder URL",
                 message: e.to_string(),
             })
@@ -136,7 +136,7 @@ impl ReportFolders {
 
     /// The folders that carry the query's tables, by folder name, each with
     /// its `ARCHIVE` and `CURRENT` sides where the census saw them.
-    fn folders_for(&self, query: &Query) -> Result<BTreeMap<String, Vec<&Folder>>, FetchError> {
+    fn folders_for(&self, query: &Query) -> Result<BTreeMap<String, Vec<Side>>, FetchError> {
         let no_match = |table: &str, nearest: &str| FetchError::NoMatch {
             url: self.base.to_string(),
             entries: self.registry.folders().len(),
@@ -150,7 +150,7 @@ impl ReportFolders {
                 "the report folders are read per table; name one",
             ));
         }
-        let mut out: BTreeMap<String, Vec<&Folder>> = BTreeMap::new();
+        let mut out: BTreeMap<String, Vec<Side>> = BTreeMap::new();
         for table in &query.tables {
             if query.exclude.iter().any(|x| x.eq_ignore_ascii_case(table)) {
                 continue;
@@ -167,9 +167,11 @@ impl ReportFolders {
                 ));
             }
             for f in folders {
-                let side = out.entry(f.folder.clone()).or_default();
-                if !side.iter().any(|g| g.label == f.label) {
-                    side.push(f);
+                let sides = out.entry(f.path()).or_default();
+                for s in f.sides() {
+                    if !sides.contains(&s) {
+                        sides.push(s);
+                    }
                 }
             }
         }
@@ -180,14 +182,14 @@ impl ReportFolders {
     /// `ARCHIVE` zip when there is one, else its `CURRENT` files.
     async fn folder_files(
         &self,
-        sides: &[&Folder],
+        sides: &[Side],
         query: &Query,
         fetcher: &Fetcher,
     ) -> Result<Vec<RemoteFile>, FetchError> {
         let days: Vec<CivilDay> = query.range.days_iter().collect();
         let mut out = Vec::new();
         let mut covered: Vec<CivilDay> = Vec::new();
-        let listed = |side: &Folder,
+        let listed = |side: &Side,
                       out: &mut Vec<RemoteFile>,
                       covered: &mut Vec<CivilDay>,
                       body: &[u8],
@@ -233,7 +235,7 @@ impl ReportFolders {
             Ok(())
         };
         // ARCHIVE first, so its days are known before CURRENT is read.
-        let mut ordered: Vec<&Folder> = sides.to_vec();
+        let mut ordered: Vec<&Side> = sides.iter().collect();
         ordered.sort_by_key(|f| !f.label.eq_ignore_ascii_case("ARCHIVE"));
         for side in ordered {
             let url = self.folder_url(side)?;
@@ -282,18 +284,37 @@ impl Source for ReportFolders {
     }
 
     /// The archived files of the folders that carry the query's tables, for
-    /// its days: daily zips, loose files and entries fetched alone.
+    /// its days: daily zips, loose files and entries fetched alone. A
+    /// folder's sides are kept in one local folder, walked once; a day whose
+    /// `ARCHIVE` zip is held is read from it, not again from the 5-minute
+    /// files `CURRENT` listed.
     fn archived(&self, archive: &Archive, query: &Query) -> Result<Vec<LocalFile>, FetchError> {
         let days: Vec<CivilDay> = query.range.days_iter().collect();
         let mut out = Vec::new();
         for sides in self.folders_for(query)?.values() {
+            let mut dirs: Vec<std::path::PathBuf> = Vec::new();
             for side in sides {
                 let dir = archive.path_for(self.folder_url(side)?.as_str());
-                for a in archive.entries_under(Some(&dir)) {
-                    let Some(name) = parse_report_name(&a.sidecar.url) else {
-                        continue;
-                    };
-                    if !days.contains(&name.day) {
+                if !dirs.contains(&dir) {
+                    dirs.push(dir);
+                }
+            }
+            let held: Vec<_> = dirs
+                .iter()
+                .flat_map(|d| archive.entries_under(Some(d)))
+                .filter_map(|a| Some((parse_report_name(&a.sidecar.url)?, a)))
+                .filter(|(name, _)| days.contains(&name.day))
+                .collect();
+            let whole_days: Vec<CivilDay> = held
+                .iter()
+                .filter(|(name, a)| {
+                    name.time.is_none() && a.sidecar.url.contains("/Reports/ARCHIVE/")
+                })
+                .map(|(name, _)| name.day)
+                .collect();
+            for (name, a) in held {
+                {
+                    if name.time.is_some() && whole_days.contains(&name.day) {
                         continue;
                     }
                     let Ok(url) = Url::parse(&a.sidecar.url) else {
@@ -453,11 +474,9 @@ mod tests {
         std::fs::write(
             nem.join("pulled/folders.json"),
             r#"{"x-format": 3, "folders": [
-              {"feed": "reports", "label": "ARCHIVE", "root": "Reports/ARCHIVE", "folder": "Dispatch_SCADA",
+              {"feed": "reports", "root": "Reports", "folder": "Dispatch_SCADA", "listings": ["ARCHIVE", "CURRENT"],
                "blocks": [{"report": ["DISPATCH", "UNIT_SCADA"], "version": 1, "first-release": "2024-01", "last-release": "2026-10", "months": 34}]},
-              {"feed": "reports", "label": "CURRENT", "root": "Reports/CURRENT", "folder": "Dispatch_SCADA",
-               "blocks": [{"report": ["DISPATCH", "UNIT_SCADA"], "version": 1, "first-release": "2026-09", "last-release": "2026-10", "months": 2}]},
-              {"feed": "reports", "label": "ARCHIVE", "root": "Reports/ARCHIVE", "folder": "TradingIS_Reports",
+              {"feed": "reports", "root": "Reports", "folder": "TradingIS_Reports", "listings": ["ARCHIVE"],
                "blocks": [{"report": ["TRADING", "PRICE"], "version": 3, "first-release": "2024-01", "last-release": "2026-10", "months": 34}]}
             ]}"#,
         )
@@ -615,7 +634,7 @@ mod tests {
         // A base the folders cannot be joined to.
         let odd = ReportFolders::new("mailto:x", registry.clone()).unwrap();
         assert!(matches!(
-            odd.folder_url(&registry.folders()[0]),
+            odd.folder_url(&registry.folders()[0].sides()[0]),
             Err(FetchError::Parse {
                 what: "folder URL",
                 ..
@@ -631,7 +650,9 @@ mod tests {
         assert!(ReportFolders::new("not a url", registry.clone()).is_err());
         let s2 = ReportFolders::new("https://h/mirror", registry).unwrap();
         assert_eq!(
-            s2.folder_url(&s2.registry.folders()[0]).unwrap().as_str(),
+            s2.folder_url(&s2.registry.folders()[0].sides()[0])
+                .unwrap()
+                .as_str(),
             "https://h/mirror/Reports/ARCHIVE/Dispatch_SCADA/"
         );
     }

@@ -13,19 +13,32 @@ use crate::file_model::error::SchemaFileError;
 /// The file's name under a market's `pulled/` directory.
 pub const FOLDERS_FILE: &str = "folders.json";
 
-/// One report folder, under one root of one feed.
+/// One report folder of one feed, as the archive keeps it: one local
+/// folder whichever listing AEMO showed its files under.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Folder {
     /// The feed: `reports` for the NEM's report folders.
     pub feed: String,
-    /// `ARCHIVE` or `CURRENT`.
-    pub label: String,
-    /// The feed's root under the host: `Reports/ARCHIVE`.
+    /// The feed's root under the host, as the archive keeps it: `Reports`.
     pub root: String,
     /// The folder under the root: `Dispatch_SCADA`.
     pub folder: String,
+    /// The listings AEMO showed its files under (`ARCHIVE`, `CURRENT`);
+    /// none for a folder listed once.
+    #[serde(default)]
+    pub listings: Vec<String>,
     /// The blocks its files carried.
     pub blocks: Vec<FolderBlock>,
+}
+
+/// One place a folder is listed on its host.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Side {
+    /// The listing, upper-case (`ARCHIVE`, `CURRENT`); empty for a host
+    /// that lists the folder once.
+    pub label: String,
+    /// Its path under the host: `Reports/ARCHIVE/Dispatch_SCADA`.
+    pub path: String,
 }
 
 /// One block a folder carried.
@@ -46,9 +59,31 @@ pub struct FolderBlock {
 }
 
 impl Folder {
-    /// The folder's path under the host, `Reports/ARCHIVE/Dispatch_SCADA`.
+    /// The folder's path as the archive keeps it, `Reports/Dispatch_SCADA`.
     pub fn path(&self) -> String {
         format!("{}/{}", self.root.trim_end_matches('/'), self.folder)
+    }
+
+    /// Where its host lists it: one side per listing, as
+    /// `utilake_plain_decode::layout::listed_path` puts the listing back;
+    /// a folder of no listing is listed at its own path, under the listing
+    /// that path names, if any.
+    pub fn sides(&self) -> Vec<Side> {
+        use utilake_plain_decode::layout;
+        let host =
+            utilake_plain_decode::feeds::feed(&self.feed).map_or("www.nemweb.com.au", |f| f.host);
+        let path = self.path();
+        if self.listings.is_empty() {
+            let label = layout::listing(&format!("https://{host}/{path}/_")).unwrap_or_default();
+            return vec![Side { label, path }];
+        }
+        self.listings
+            .iter()
+            .map(|l| Side {
+                label: l.to_ascii_uppercase(),
+                path: layout::listed_path(host, &path, l),
+            })
+            .collect()
     }
 
     /// Whether the folder carried this report pair.
@@ -89,15 +124,47 @@ mod tests {
         std::fs::write(
             &p,
             r#"{"x-format": 3, "folders": [
-                {"feed": "reports", "label": "ARCHIVE", "root": "Reports/ARCHIVE/", "folder": "Dispatch_SCADA",
+                {"feed": "reports", "root": "Reports/", "folder": "Dispatch_SCADA",
+                 "listings": ["ARCHIVE", "current"],
                  "blocks": [{"report": ["DISPATCH", "UNIT_SCADA"], "version": 1,
-                             "first-release": "2024-01", "last-release": "2026-10", "months": 34}]}
+                             "first-release": "2024-01", "last-release": "2026-10", "months": 34}]},
+                {"feed": "reports", "root": "Reports", "folder": "ARCHIVE/Old", "blocks": []},
+                {"feed": "datafiles", "root": "public/public-data/datafiles", "folder": "x", "blocks": []}
             ]}"#,
         )
         .unwrap();
         let f = read_folders(&p).unwrap();
-        assert_eq!(f.len(), 1);
-        assert_eq!(f[0].path(), "Reports/ARCHIVE/Dispatch_SCADA");
+        assert_eq!(f.len(), 3);
+        assert_eq!(f[0].path(), "Reports/Dispatch_SCADA");
+        let sides = |i: usize| {
+            f[i].sides()
+                .into_iter()
+                .map(|s| (s.label, s.path))
+                .collect::<Vec<_>>()
+        };
+        assert_eq!(
+            sides(0),
+            [
+                (
+                    "ARCHIVE".to_owned(),
+                    "Reports/ARCHIVE/Dispatch_SCADA".to_owned()
+                ),
+                (
+                    "CURRENT".to_owned(),
+                    "Reports/CURRENT/Dispatch_SCADA".to_owned()
+                )
+            ]
+        );
+        // A folder recorded before the listings were merged is listed at
+        // its own path, under the listing that path names.
+        assert_eq!(
+            sides(1),
+            [("ARCHIVE".to_owned(), "Reports/ARCHIVE/Old".to_owned())]
+        );
+        assert_eq!(
+            sides(2),
+            [(String::new(), "public/public-data/datafiles/x".to_owned())]
+        );
         assert!(f[0].carries("DISPATCH", "UNIT_SCADA"));
         assert!(!f[0].carries("DISPATCH", "PRICE"));
         assert_eq!(f[0].blocks[0].months, 34);

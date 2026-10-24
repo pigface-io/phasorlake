@@ -301,7 +301,14 @@ impl Source for FeedFolders {
     /// `file://` path and the host's `https://` URL both claim.
     fn describe(&self, url: &Url) -> Option<RemoteFile> {
         let path = url.path();
-        let under_root = self.feed.roots.iter().any(|r| {
+        // A root as AEMO lists it, or as the archive keeps it.
+        let roots = self
+            .feed
+            .roots
+            .iter()
+            .map(|r| (*r).to_owned())
+            .chain(self.feed.local_roots());
+        let under_root = roots.into_iter().any(|r| {
             let root = format!("/{}/", r.trim_matches('/'));
             path.contains(&root) && path.len() > path.find(&root).unwrap_or(0) + root.len()
         });
@@ -738,6 +745,14 @@ mod tests {
         assert_eq!(r.table.as_deref(), Some("STTM_INT651_EX_ANTE_MARKET_PRICE"));
         assert_eq!(r.period.unwrap().to_string(), "2026-10");
         assert!(claimed("https://h/Reports/CURRENT/STTM/Day01.zip").is_some());
+        // As the archive keeps it: one folder whichever listing.
+        assert_eq!(
+            claimed("file:///v/archive/www.nemweb.com.au/Reports/STTM/int651_v1_ex_ante_market_price_rpt_1~20261001113227.csv")
+                .unwrap()
+                .table
+                .as_deref(),
+            Some("STTM_INT651_EX_ANTE_MARKET_PRICE")
+        );
         assert!(claimed("https://h/Reports/CURRENT/STTM/").is_none());
         assert!(claimed("https://h/Reports/CURRENT/GBB/x.csv").is_none());
         assert!(claimed("https://h/Reports/CURRENT/STTM/MOS Estimates/x.csv").is_none());

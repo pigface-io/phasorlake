@@ -19,7 +19,7 @@ pub mod resolve;
 pub use utilake_mms_decode::shape;
 
 pub use crate::file_model::{
-    Column, Folder, FolderBlock, LakeType, LoadMode, Market, Run, Table, TableSchema,
+    Column, Folder, FolderBlock, LakeType, LoadMode, Market, Run, Side, Table, TableSchema,
 };
 pub use error::ResolveError;
 pub use plan::{Cast, ColumnRoute, ConformancePlan, Origin, PLAN_FORMAT, PlanField, PlanHash};

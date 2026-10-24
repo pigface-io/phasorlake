@@ -64,9 +64,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Adjusted_Prices_Reports",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/Adjusted_Prices_Reports",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -92,9 +92,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Bidmove_Complete",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/Bidmove_Complete",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -180,9 +180,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Billing",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/Billing",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -208,9 +208,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "DISPATCHFCST",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/DISPATCHFCST",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -276,9 +276,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Daily_Reports",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/Daily_Reports",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -364,9 +364,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "DispatchIS_Reports",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/DispatchIS_Reports",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -382,9 +382,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Dispatch_IRSR",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/Dispatch_IRSR",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -410,9 +410,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Dispatch_Negative_Residue",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/Dispatch_Negative_Residue",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -478,9 +478,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Dispatch_Reports",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/Dispatch_Reports",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -496,9 +496,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Dispatch_SCADA",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/Dispatch_SCADA",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -514,9 +514,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Dispatchprices_PRE_AP",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/Dispatchprices_PRE_AP",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -552,9 +552,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "FPPDAILY",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/FPPDAILY",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -590,9 +590,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "FPPRATES",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/FPPRATES",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -668,9 +668,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "FPPRUN",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/FPPRUN",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -686,9 +686,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "HistDemand",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/HistDemand",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -714,9 +714,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "MCCDispatch",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/MCCDispatch",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -732,9 +732,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "MTPASA_DUIDAvailability",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/MTPASA_DUIDAvailability",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -760,9 +760,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "MTPASA_RegionAvailability",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/MTPASA_RegionAvailability",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -848,9 +848,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Medium_Term_PASA_Reports",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/Medium_Term_PASA_Reports",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -876,9 +876,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "NEXT_DAY_AVAIL_SUBMISS_CLUSTER",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/NEXT_DAY_AVAIL_SUBMISS_CLUSTER",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -904,9 +904,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "NEXT_DAY_AVAIL_SUBMISS_DAY",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/NEXT_DAY_AVAIL_SUBMISS_DAY",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -932,9 +932,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "NEXT_DAY_MCCDISPATCH",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/NEXT_DAY_MCCDISPATCH",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -1010,9 +1010,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Network",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/Network",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -1028,9 +1028,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Next_Day_Actual_Gen",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/Next_Day_Actual_Gen",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -1096,9 +1096,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Next_Day_Dispatch",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/Next_Day_Dispatch",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -1134,9 +1134,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Next_Day_Intermittent_DS",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/Next_Day_Intermittent_DS",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -1152,9 +1152,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Next_Day_Intermittent_Gen_Scada",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/Next_Day_Intermittent_Gen_Scada",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -1200,9 +1200,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Next_Day_Offer_Energy_SPARSE",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/Next_Day_Offer_Energy_SPARSE",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -1228,9 +1228,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Next_Day_Offer_FCAS_SPARSE",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/Next_Day_Offer_FCAS_SPARSE",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -1296,9 +1296,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Next_Day_PreDispatch",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/Next_Day_PreDispatch",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -1364,9 +1364,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Next_Day_PreDispatchD",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/Next_Day_PreDispatchD",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -1382,9 +1382,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Operational_Demand/ACTUAL_DAILY",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/Operational_Demand/ACTUAL_DAILY",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -1400,9 +1400,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Operational_Demand/ACTUAL_DAILY_AREA",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/Operational_Demand/ACTUAL_DAILY_AREA",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -1418,9 +1418,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Operational_Demand/ACTUAL_HH",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/Operational_Demand/ACTUAL_HH",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -1436,9 +1436,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Operational_Demand/ACTUAL_HH_AREA",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/Operational_Demand/ACTUAL_HH_AREA",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -1454,9 +1454,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Operational_Demand/FORECAST_HH",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/Operational_Demand/FORECAST_HH",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -1472,9 +1472,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Operational_Demand/FORECAST_HH_AREA",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/Operational_Demand/FORECAST_HH_AREA",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -1490,9 +1490,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Operational_Demand_Less_SNSG/ACTUAL_DAILY",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/Operational_Demand_Less_SNSG/ACTUAL_DAILY",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -1508,9 +1508,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Operational_Demand_Less_SNSG/ACTUAL_HH",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/Operational_Demand_Less_SNSG/ACTUAL_HH",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -1536,9 +1536,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "P5MINFCST",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/P5MINFCST",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -1604,9 +1604,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "P5_Reports",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/P5_Reports",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -1652,9 +1652,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "PDPASA",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/PDPASA",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -1670,9 +1670,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "PDPASA_DUIDAVAILABILITY",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/PDPASA_DUIDAVAILABILITY",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -1698,9 +1698,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "PREDISPATCHFCST",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/PREDISPATCHFCST",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -1776,9 +1776,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "PredispatchIS_Reports",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/PredispatchIS_Reports",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -1794,9 +1794,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Predispatch_IRSR",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/Predispatch_IRSR",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -1862,9 +1862,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Predispatch_Reports",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/Predispatch_Reports",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -1890,9 +1890,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Predispatch_Sensitivities",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/Predispatch_Sensitivities",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -1918,9 +1918,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Public_Prices",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/Public_Prices",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -1936,9 +1936,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "ROOFTOP_PV/ACTUAL",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/ROOFTOP_PV/ACTUAL",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -1954,9 +1954,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "ROOFTOP_PV/ACTUAL_AREA",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/ROOFTOP_PV/ACTUAL_AREA",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -1972,9 +1972,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "ROOFTOP_PV/FORECAST",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/ROOFTOP_PV/FORECAST",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -1990,9 +1990,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "ROOFTOP_PV/FORECAST_AREA",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/ROOFTOP_PV/FORECAST_AREA",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -2008,9 +2008,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "SEVENDAYOUTLOOK_FULL",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/SEVENDAYOUTLOOK_FULL",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -2026,9 +2026,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "SEVENDAYOUTLOOK_PEAK",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/SEVENDAYOUTLOOK_PEAK",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -2044,9 +2044,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "STPASA_DUIDAVAILABILITY",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/STPASA_DUIDAVAILABILITY",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -2152,9 +2152,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Settlements",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/Settlements",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -2200,9 +2200,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Short_Term_PASA_Reports",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/Short_Term_PASA_Reports",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -2228,9 +2228,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "TradingIS_Reports",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/TradingIS_Reports",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -2246,9 +2246,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Trading_Cumulative_Price",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/Trading_Cumulative_Price",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -2264,9 +2264,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Trading_IRSR",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/Trading_IRSR",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -2282,16 +2282,16 @@
         }
       ],
       "feed": "reports",
-      "folder": "WDR_CAPACITY_NO_SCADA",
-      "label": "ARCHIVE",
-      "root": "Reports/ARCHIVE"
+      "folder": "ARCHIVE/WDR_CAPACITY_NO_SCADA",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [],
       "feed": "reports",
-      "folder": "ANCILLARY_SERVICES_REPORTS",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/ANCILLARY_SERVICES_REPORTS",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -2327,37 +2327,37 @@
         }
       ],
       "feed": "reports",
-      "folder": "Adjusted_Prices_Reports",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Adjusted_Prices_Reports",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [],
       "feed": "reports",
-      "folder": "Alt_Limits",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Alt_Limits",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [],
       "feed": "reports",
-      "folder": "Ancillary_Services_Payments",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Ancillary_Services_Payments",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [],
       "feed": "reports",
-      "folder": "Ancillary_Services_Payments/DUPLICATE",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Ancillary_Services_Payments/DUPLICATE",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [],
       "feed": "reports",
-      "folder": "Auction_Units_Reports",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Auction_Units_Reports",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -2383,9 +2383,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Bidmove_Complete",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Bidmove_Complete",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -2491,9 +2491,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Billing",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Billing",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -2509,9 +2509,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "CDEII",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/CDEII",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -2527,16 +2527,16 @@
         }
       ],
       "feed": "reports",
-      "folder": "CSC_CSP_Settlements",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/CSC_CSP_Settlements",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [],
       "feed": "reports",
-      "folder": "Causer_Pays_Elements",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Causer_Pays_Elements",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -2552,9 +2552,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "DAILYOCD",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/DAILYOCD",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -2580,9 +2580,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "DISPATCHFCST",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/DISPATCHFCST",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -2608,9 +2608,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "DISPATCHFCST/DUPLICATE",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/DISPATCHFCST/DUPLICATE",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -2666,9 +2666,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "DISPATCHIS_PRICE_REVISIONS",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/DISPATCHIS_PRICE_REVISIONS",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -2684,9 +2684,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "DISPATCH_NEGATIVE_RESIDUE",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/DISPATCH_NEGATIVE_RESIDUE",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -2702,9 +2702,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "DISPATCH_NEGATIVE_RESIDUE/DUPLICATE",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/DISPATCH_NEGATIVE_RESIDUE/DUPLICATE",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -2770,9 +2770,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Daily_Reports",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Daily_Reports",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -2798,9 +2798,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Directions_Reconciliation",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Directions_Reconciliation",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -2876,9 +2876,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "DispatchIS_Reports",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/DispatchIS_Reports",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -2954,9 +2954,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "DispatchIS_Reports/DUPLICATE",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/DispatchIS_Reports/DUPLICATE",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -2972,9 +2972,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Dispatch_IRSR",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Dispatch_IRSR",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -2990,9 +2990,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Dispatch_IRSR/DUPLICATE",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Dispatch_IRSR/DUPLICATE",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -3058,9 +3058,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Dispatch_Reports",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Dispatch_Reports",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -3116,9 +3116,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Dispatch_Reports/DUPLICATE",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Dispatch_Reports/DUPLICATE",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -3134,9 +3134,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Dispatch_SCADA",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Dispatch_SCADA",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -3152,9 +3152,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Dispatch_SCADA/DUPLICATE",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Dispatch_SCADA/DUPLICATE",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -3170,9 +3170,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Dispatchprices_PRE_AP",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Dispatchprices_PRE_AP",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -3188,9 +3188,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Dispatchprices_PRE_AP/DUPLICATE",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Dispatchprices_PRE_AP/DUPLICATE",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -3226,9 +3226,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "FPP",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/FPP",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -3264,9 +3264,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "FPPDAILY",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/FPPDAILY",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -3302,9 +3302,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "FPPRATES",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/FPPRATES",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -3340,9 +3340,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "FPPRATES/DUPLICATE",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/FPPRATES/DUPLICATE",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -3418,9 +3418,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "FPPRUN",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/FPPRUN",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -3496,9 +3496,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "FPPRUN/DUPLICATE",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/FPPRUN/DUPLICATE",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -3514,16 +3514,16 @@
         }
       ],
       "feed": "reports",
-      "folder": "FPP_HIST_REG_PERF",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/FPP_HIST_REG_PERF",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [],
       "feed": "reports",
-      "folder": "HighImpactOutages",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/HighImpactOutages",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -3539,16 +3539,16 @@
         }
       ],
       "feed": "reports",
-      "folder": "HistDemand",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/HistDemand",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [],
       "feed": "reports",
-      "folder": "IBEI",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/IBEI",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -3574,9 +3574,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "MCCDispatch",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/MCCDispatch",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -3602,9 +3602,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "MCCDispatch/DUPLICATE",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/MCCDispatch/DUPLICATE",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -3640,9 +3640,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "MTPASA_DUIDAvailability",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/MTPASA_DUIDAvailability",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -3668,9 +3668,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "MTPASA_RegionAvailability",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/MTPASA_RegionAvailability",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -3686,16 +3686,16 @@
         }
       ],
       "feed": "reports",
-      "folder": "Marginal_Loss_Factors",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Marginal_Loss_Factors",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [],
       "feed": "reports",
-      "folder": "Market_Notice",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Market_Notice",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -3781,9 +3781,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Medium_Term_PASA_Reports",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Medium_Term_PASA_Reports",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -3809,9 +3809,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Mktsusp_Pricing",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Mktsusp_Pricing",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -3837,9 +3837,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "NEXT_DAY_AVAIL_SUBMISS_CLUSTER",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/NEXT_DAY_AVAIL_SUBMISS_CLUSTER",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -3865,9 +3865,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "NEXT_DAY_AVAIL_SUBMISS_DAY",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/NEXT_DAY_AVAIL_SUBMISS_DAY",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -3893,9 +3893,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "NEXT_DAY_MCCDISPATCH",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/NEXT_DAY_MCCDISPATCH",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -3971,9 +3971,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Network",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Network",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -3989,9 +3989,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Next_Day_Actual_Gen",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Next_Day_Actual_Gen",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -4057,9 +4057,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Next_Day_Dispatch",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Next_Day_Dispatch",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -4095,9 +4095,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Next_Day_Intermittent_DS",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Next_Day_Intermittent_DS",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -4133,9 +4133,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Next_Day_Intermittent_DS/DUPLICATE",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Next_Day_Intermittent_DS/DUPLICATE",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -4151,9 +4151,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Next_Day_Intermittent_Gen_Scada",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Next_Day_Intermittent_Gen_Scada",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -4179,9 +4179,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Next_Day_Offer_Energy_SPARSE",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Next_Day_Offer_Energy_SPARSE",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -4207,9 +4207,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Next_Day_Offer_FCAS_SPARSE",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Next_Day_Offer_FCAS_SPARSE",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -4255,9 +4255,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Next_Day_PreDispatch",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Next_Day_PreDispatch",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -4313,9 +4313,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Next_Day_PreDispatch/DUPLICATE",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Next_Day_PreDispatch/DUPLICATE",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -4361,9 +4361,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Next_Day_PreDispatchD",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Next_Day_PreDispatchD",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -4379,9 +4379,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Next_Day_Trading",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Next_Day_Trading",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -4397,9 +4397,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Operational_Demand/ACTUAL_5MIN",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Operational_Demand/ACTUAL_5MIN",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -4415,9 +4415,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Operational_Demand/ACTUAL_DAILY",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Operational_Demand/ACTUAL_DAILY",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -4433,9 +4433,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Operational_Demand/ACTUAL_DAILY_AREA",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Operational_Demand/ACTUAL_DAILY_AREA",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -4451,9 +4451,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Operational_Demand/ACTUAL_HH",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Operational_Demand/ACTUAL_HH",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -4469,9 +4469,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Operational_Demand/ACTUAL_HH_AREA",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Operational_Demand/ACTUAL_HH_AREA",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -4487,9 +4487,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Operational_Demand/FORECAST_HH",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Operational_Demand/FORECAST_HH",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -4505,9 +4505,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Operational_Demand/FORECAST_HH/DUPLICATE",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Operational_Demand/FORECAST_HH/DUPLICATE",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -4523,9 +4523,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Operational_Demand/FORECAST_HH_AREA",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Operational_Demand/FORECAST_HH_AREA",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -4541,9 +4541,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Operational_Demand_Less_SNSG/ACTUAL_DAILY",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Operational_Demand_Less_SNSG/ACTUAL_DAILY",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -4559,9 +4559,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Operational_Demand_Less_SNSG/ACTUAL_HH",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Operational_Demand_Less_SNSG/ACTUAL_HH",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -4577,9 +4577,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Operational_Demand_Less_SNSG/ACTUAL_UPDATE",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Operational_Demand_Less_SNSG/ACTUAL_UPDATE",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -4605,9 +4605,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "P5MINFCST",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/P5MINFCST",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -4633,9 +4633,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "P5MINFCST/DUPLICATE",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/P5MINFCST/DUPLICATE",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -4691,9 +4691,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "P5_Reports",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/P5_Reports",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -4749,9 +4749,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "P5_Reports/DUPLICATE",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/P5_Reports/DUPLICATE",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -4807,9 +4807,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "PD7Day",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/PD7Day",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -4855,9 +4855,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "PDPASA",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/PDPASA",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -4873,9 +4873,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "PDPASA_DUIDAvailability",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/PDPASA_DUIDAvailability",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -4901,16 +4901,16 @@
         }
       ],
       "feed": "reports",
-      "folder": "PREDISPATCHFCST",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/PREDISPATCHFCST",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [],
       "feed": "reports",
-      "folder": "PasaSnap",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/PasaSnap",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -4976,9 +4976,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "PredispatchIS_Reports",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/PredispatchIS_Reports",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -5044,9 +5044,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "PredispatchIS_Reports/DUPLICATE",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/PredispatchIS_Reports/DUPLICATE",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -5062,9 +5062,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Predispatch_IRSR",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Predispatch_IRSR",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -5080,9 +5080,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Predispatch_IRSR/DUPLICATE",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Predispatch_IRSR/DUPLICATE",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -5148,9 +5148,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Predispatch_Reports",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Predispatch_Reports",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -5216,9 +5216,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Predispatch_Reports/DUPLICATE",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Predispatch_Reports/DUPLICATE",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -5244,9 +5244,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Predispatch_Sensitivities",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Predispatch_Sensitivities",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -5272,9 +5272,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Predispatch_Sensitivities/DUPLICATE",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Predispatch_Sensitivities/DUPLICATE",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -5300,9 +5300,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Public_Prices",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Public_Prices",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -5318,9 +5318,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "ROOFTOP_PV/ACTUAL",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/ROOFTOP_PV/ACTUAL",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -5336,9 +5336,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "ROOFTOP_PV/ACTUAL_AREA",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/ROOFTOP_PV/ACTUAL_AREA",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -5354,9 +5354,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "ROOFTOP_PV/FORECAST",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/ROOFTOP_PV/FORECAST",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -5372,16 +5372,16 @@
         }
       ],
       "feed": "reports",
-      "folder": "ROOFTOP_PV/FORECAST_AREA",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/ROOFTOP_PV/FORECAST_AREA",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [],
       "feed": "reports",
-      "folder": "Regional_Summary_Report",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Regional_Summary_Report",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -5397,9 +5397,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "SEVENDAYOUTLOOK_FULL",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/SEVENDAYOUTLOOK_FULL",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -5415,9 +5415,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "SEVENDAYOUTLOOK_FULL/DUPLICATE",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/SEVENDAYOUTLOOK_FULL/DUPLICATE",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -5433,9 +5433,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "SEVENDAYOUTLOOK_PEAK",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/SEVENDAYOUTLOOK_PEAK",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -5451,9 +5451,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "SRA_Bids",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/SRA_Bids",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -5469,9 +5469,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "SRA_NSR_RECONCILIATION",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/SRA_NSR_RECONCILIATION",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -5487,16 +5487,16 @@
         }
       ],
       "feed": "reports",
-      "folder": "SRA_Offers",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/SRA_Offers",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [],
       "feed": "reports",
-      "folder": "SRA_Results",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/SRA_Results",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -5512,9 +5512,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "SSM_ENABLEMENT_COSTS",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/SSM_ENABLEMENT_COSTS",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -5530,9 +5530,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "SSM_ENABLEMENT_PERIOD",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/SSM_ENABLEMENT_PERIOD",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -5548,9 +5548,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "STPASA_DUIDAvailability",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/STPASA_DUIDAvailability",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -5766,9 +5766,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Settlements",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Settlements",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -5814,9 +5814,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Short_Term_PASA_Reports",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Short_Term_PASA_Reports",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -5862,16 +5862,16 @@
         }
       ],
       "feed": "reports",
-      "folder": "Short_Term_PASA_Reports/DUPLICATE",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Short_Term_PASA_Reports/DUPLICATE",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [],
       "feed": "reports",
-      "folder": "SupplyDemand",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/SupplyDemand",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -5897,9 +5897,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "TradingIS_Reports",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/TradingIS_Reports",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -5925,9 +5925,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "TradingIS_Reports/DUPLICATE",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/TradingIS_Reports/DUPLICATE",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -5943,9 +5943,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Trading_Cumulative_Price",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Trading_Cumulative_Price",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -5971,9 +5971,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Trading_Cumulative_Price/DUPLICATE",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Trading_Cumulative_Price/DUPLICATE",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -5989,9 +5989,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Trading_IRSR",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Trading_IRSR",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -6007,9 +6007,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Vwa_Fcas_Prices",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Vwa_Fcas_Prices",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -6025,16 +6025,16 @@
         }
       ],
       "feed": "reports",
-      "folder": "WDR_CAPACITY_NO_SCADA",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/WDR_CAPACITY_NO_SCADA",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [],
       "feed": "reports",
-      "folder": "Weekly_Constraint_Reports",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Weekly_Constraint_Reports",
+      "listings": [],
+      "root": "Reports"
     },
     {
       "blocks": [
@@ -6060,9 +6060,9 @@
         }
       ],
       "feed": "reports",
-      "folder": "Yesterdays_Bids_Reports/DUPLICATE",
-      "label": "CURRENT",
-      "root": "Reports/CURRENT"
+      "folder": "CURRENT/Yesterdays_Bids_Reports/DUPLICATE",
+      "listings": [],
+      "root": "Reports"
     }
   ],
   "x-format": 3

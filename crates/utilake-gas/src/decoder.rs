@@ -38,6 +38,8 @@ impl GasCsv {
         self.feeds.iter().find(|(f, _)| {
             f.roots
                 .iter()
+                .map(|r| (*r).to_owned())
+                .chain(f.local_roots())
                 .any(|r| path.contains(&format!("/{}/", r.trim_matches('/'))))
         })
     }
