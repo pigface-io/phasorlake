@@ -366,19 +366,69 @@ fn move_record(from: &Path, to: &Path) -> Result<(), MirrorError> {
     record_at(from).map_or(Ok(()), |record| rename_record(from, &record, to))
 }
 
-/// Renames `record`, the record of the file at `from`, beside `to` under
-/// the same suffix.
-fn rename_record(from: &Path, record: &Path, to: &Path) -> Result<(), MirrorError> {
-    let suffix = record
+/// What `record`'s name adds to the name of the file at `from`:
+/// `.provenance.json`, or `.json` for format 1.
+fn record_suffix(from: &Path, record: &Path) -> String {
+    record
         .file_name()
         .and_then(|r| {
             let data = from.file_name()?.to_string_lossy().into_owned();
             Some(r.to_string_lossy()[data.len()..].to_owned())
         })
-        .unwrap_or_default();
+        .unwrap_or_default()
+}
+
+/// Renames `record`, the record of the file at `from`, beside `to` under
+/// the same suffix.
+fn rename_record(from: &Path, record: &Path, to: &Path) -> Result<(), MirrorError> {
     let mut target = to.as_os_str().to_owned();
-    target.push(suffix);
+    target.push(record_suffix(from, record));
     std::fs::rename(record, &target).map_err(MirrorError::io(Path::new(&target)))
+}
+
+/// Puts the bytes of `from` at `to`, in another folder, without a rename
+/// between folders: exFAT under macOS's FSKit takes seconds for one when a
+/// folder holds tens of thousands of entries, where a copy, a rename
+/// within one folder and an unlink each take milliseconds (measured on
+/// the volume). The bytes go to `{to}.part`, hashed on the way and, with
+/// `sha256`, held to it; handed to the disk; renamed into place; and given
+/// `from`'s modified time. `from` is left for the caller to remove.
+fn copy_across(from: &Path, to: &Path, sha256: Option<&Sha256>) -> Result<(), MirrorError> {
+    use sha2::Digest as _;
+    use std::io::{Read as _, Write as _};
+    let mut part = to.as_os_str().to_owned();
+    part.push(".part");
+    let part = PathBuf::from(part);
+    let mut src = std::fs::File::open(from).map_err(MirrorError::io(from))?;
+    let modified = src.metadata().and_then(|m| m.modified()).ok();
+    let mut dst = std::fs::File::create(&part).map_err(MirrorError::io(&part))?;
+    let mut hasher = sha2::Sha256::new();
+    let mut buf = vec![0u8; 1 << 20];
+    loop {
+        let n = src.read(&mut buf).map_err(MirrorError::io(from))?;
+        if n == 0 {
+            break;
+        }
+        hasher.update(&buf[..n]);
+        dst.write_all(&buf[..n]).map_err(MirrorError::io(&part))?;
+    }
+    let got = Sha256(hasher.finalize().into());
+    if let Some(want) = sha256.filter(|w| **w != got) {
+        drop(dst);
+        let _ = std::fs::remove_file(&part);
+        return Err(crate::net::FetchError::Sha256Mismatch {
+            path: from.display().to_string(),
+            expected: want.hex(),
+            observed: got.hex(),
+        }
+        .into());
+    }
+    if let Some(t) = modified {
+        let _ = dst.set_modified(t);
+    }
+    crate::net::archive::to_disk(&dst).map_err(MirrorError::io(&part))?;
+    drop(dst);
+    std::fs::rename(&part, to).map_err(MirrorError::io(to))
 }
 
 /// Removes every record beside `path`.
@@ -396,8 +446,16 @@ fn take(step: &Step, sidecar: Provenance, record: &Path) -> Result<(), MirrorErr
         Action::Move | Action::Version | Action::Folder => {
             let dir = step.to.parent().expect("an archived path is in a folder");
             std::fs::create_dir_all(dir).map_err(MirrorError::io(dir))?;
-            std::fs::rename(&step.from, &step.to).map_err(MirrorError::io(&step.to))?;
-            rename_record(&step.from, record, &step.to)?;
+            // The record first: a run cut off before the data's copy lands
+            // finds the target's record naming bytes not there, and the
+            // file still at `from`, which it moves again.
+            let suffix = record_suffix(&step.from, record);
+            let mut record_to = step.to.as_os_str().to_owned();
+            record_to.push(&suffix);
+            copy_across(&step.from, &step.to, Some(&sidecar.content.sha256))?;
+            copy_across(record, Path::new(&record_to), None)?;
+            std::fs::remove_file(&step.from).map_err(MirrorError::io(&step.from))?;
+            std::fs::remove_file(record).map_err(MirrorError::io(record))?;
         }
         Action::Same => {
             if let Some(mut kept) = Archive::read(&step.to)? {
@@ -719,6 +777,26 @@ mod tests {
             ),
             (0, 0, 0, 0, 0)
         );
+    }
+
+    #[test]
+    fn a_copy_across_folders_is_held_to_the_record() {
+        let dir = tempfile::tempdir().unwrap();
+        let (from, to) = (dir.path().join("a"), dir.path().join("b/a"));
+        std::fs::create_dir_all(to.parent().unwrap()).unwrap();
+        std::fs::write(&from, b"bytes").unwrap();
+        let wrong = crate::net::Sha256::of(b"other");
+        let e = copy_across(&from, &to, Some(&wrong)).unwrap_err();
+        assert!(e.to_string().contains("hashes to"), "{e}");
+        assert!(!to.exists() && !dir.path().join("b/a.part").exists());
+        copy_across(&from, &to, Some(&crate::net::Sha256::of(b"bytes"))).unwrap();
+        assert_eq!(std::fs::read(&to).unwrap(), b"bytes");
+        assert_eq!(
+            std::fs::metadata(&to).unwrap().modified().unwrap(),
+            std::fs::metadata(&from).unwrap().modified().unwrap()
+        );
+        assert!(copy_across(&dir.path().join("none"), &to, None).is_err());
+        assert!(copy_across(&from, &dir.path().join("no/such/c"), None).is_err());
     }
 
     #[test]
