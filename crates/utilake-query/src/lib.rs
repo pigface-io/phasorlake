@@ -9,8 +9,8 @@
 //! (`utilake.temporal.*`: entity, valid, order, cutoff), so the same
 //! kernel reads every declared table of every market.
 //!
-//! A read is a [`Query`] bound to a table ([`bind()`]) and run ([`read()`]),
-//! or written as one file ([`extract`]). Nothing here opens the manifest:
+//! A read is a [`Query`] bound to a table ([`bind()`]) and run ([`read()`],
+//! or [`read_with()`] a unit at a time), or written out ([`extract`]). Nothing here opens the manifest:
 //! the caller lists the lake's files ([`catalog()`]) and hands them in a
 //! [`Lake`].
 
@@ -34,7 +34,10 @@ use arrow_array::RecordBatch;
 pub use bind::bind;
 pub use catalog::{LakeFile, SourceStamp, catalog};
 pub use error::QueryError;
-pub use output::{Format, Frame, Frames, RawBatch, Report, Resolved, SourceRef, Timing, Written};
+pub use output::{
+    Codec, Format, Frame, Frames, RawBatch, Report, Resolved, SourceRef, Timing, WriteOptions,
+    Writer, Written,
+};
 pub use query::{Bound, BoundSpec, FieldIx, Filter, Projection, Query, Resolution, Unit};
 pub use time::{
     Known, KnownTime, MarketOffset, Micros, Valid, ValidEnd, ValidTime, ValidWindow, parse_local,
@@ -58,9 +61,15 @@ pub struct Lake<'a> {
     pub version: &'a str,
 }
 
-/// Runs a bound read: scans each unit's files, resolves them, and
-/// returns the frames in the output schema.
-pub fn read(b: &Bound, lake: &Lake<'_>) -> Result<Frames, QueryError> {
+/// Runs a bound read, handing each unit's frame to `sink` as it resolves,
+/// so a caller holds one unit at a time: the frames are in unit order (a
+/// partition at a time, or the whole table once). Returns what the read
+/// did.
+pub fn read_with(
+    b: &Bound,
+    lake: &Lake<'_>,
+    sink: &mut dyn FnMut(Frame) -> Result<(), QueryError>,
+) -> Result<Report, QueryError> {
     let mut report = Report {
         warnings: b.warnings.clone(),
         ..Report::default()
@@ -96,8 +105,7 @@ pub fn read(b: &Bound, lake: &Lake<'_>) -> Result<Frames, QueryError> {
     }
     let names = output::source_names(lake);
     let scan_schema = scan::scan_schema(&b.schema, &b.offset.tz());
-    let mut frames = Vec::new();
-    let mut out_schema = None;
+    let out = output::output_schema(b);
     let us = |t: std::time::Instant| u64::try_from(t.elapsed().as_micros()).unwrap_or(u64::MAX);
     for (_, reads) in &units {
         let mut batches: Vec<RecordBatch> = Vec::new();
@@ -120,9 +128,7 @@ pub fn read(b: &Bound, lake: &Lake<'_>) -> Result<Frames, QueryError> {
         let frame = match (&b.query.resolution, &b.spec) {
             (Resolution::Raw, _) | (_, None) => {
                 let t = std::time::Instant::now();
-                let out =
-                    out_schema.get_or_insert_with(|| output::output_schema(b, &unit.schema()));
-                let f = Frame::Raw(RawBatch(output::finish(&unit, b, out, &names)?));
+                let f = Frame::Raw(RawBatch(output::finish(&unit, b, &out, &names)?));
                 report.timing.finish_us += us(t);
                 f
             }
@@ -135,38 +141,48 @@ pub fn read(b: &Bound, lake: &Lake<'_>) -> Result<Frames, QueryError> {
                 }
                 report.timing.resolve_us += us(t);
                 let t = std::time::Instant::now();
-                let out =
-                    out_schema.get_or_insert_with(|| output::output_schema(b, &resolved.schema()));
-                let f = Frame::Resolved(Resolved(output::finish(&resolved, b, out, &names)?));
+                let f = Frame::Resolved(Resolved(output::finish(&resolved, b, &out, &names)?));
                 report.timing.finish_us += us(t);
                 f
             }
         };
         report.rows_out += frame.batch().num_rows() as u64;
-        frames.push(frame);
+        sink(frame)?;
     }
-    let schema = out_schema.unwrap_or_else(|| output::output_schema(b, &scan_schema));
+    Ok(report)
+}
+
+/// Runs a bound read and returns every frame, in the output schema.
+pub fn read(b: &Bound, lake: &Lake<'_>) -> Result<Frames, QueryError> {
+    let mut frames = Vec::new();
+    let report = read_with(b, lake, &mut |f| {
+        frames.push(f);
+        Ok(())
+    })?;
     Ok(Frames {
-        schema,
+        schema: output::output_schema(b),
         frames,
         report,
     })
 }
 
-/// A read written as one file.
+/// A read written out.
 #[derive(Debug, Clone)]
 pub struct Extract {
     /// What to read.
     pub query: Query,
-    /// Where to write it.
+    /// Where to write it: a file when the extension names a format, else
+    /// a directory of parts.
     pub out: PathBuf,
-    /// As what.
-    pub format: Format,
+    /// How.
+    pub options: WriteOptions,
 }
 
-/// Binds, reads and writes: what `utilake read -o` and `utilake get` do.
+/// Binds, reads and writes, one unit at a time: what `utilake get` does.
 pub fn extract(req: Extract, lake: &Lake<'_>) -> Result<Written, QueryError> {
     let b = bind(req.query, lake)?;
-    let frames = read(&b, lake)?;
-    output::write(&frames, &b, req.format, &req.out, lake.version)
+    let schema = output::output_schema(&b);
+    let mut w = output::Writer::open(&b, schema, req.options, &req.out, lake.version)?;
+    let report = read_with(&b, lake, &mut |f| w.write(&f))?;
+    w.close(report)
 }

@@ -7,7 +7,7 @@ use anyhow::Result;
 use utilake_core::Diagnose;
 use utilake_query::{
     Extract, Filter, Format, Known, Lake, MarketOffset, Query, QueryError, Resolution, Target,
-    Valid, ValidWindow, bind, catalog, parse_local,
+    Valid, ValidWindow, WriteOptions, bind, catalog, parse_local,
 };
 
 use crate::cli::ReadArgs;
@@ -100,20 +100,28 @@ pub async fn read(ctx: &Context, args: &ReadArgs) -> Result<i32> {
                 Extract {
                     query: q,
                     out: PathBuf::from(out),
-                    format,
+                    options: WriteOptions {
+                        format,
+                        ..WriteOptions::default()
+                    },
                 },
                 &lake,
             )
             .map_err(|e| fail(&e))?;
             if ctx.json {
                 render::json_line(&serde_json::json!({
-                    "path": written.path, "sidecar": written.sidecar, "rows": written.rows,
+                    "files": written.parts, "sidecar": written.sidecar, "rows": written.rows,
                 }));
             } else {
                 println!(
                     "{} rows written to {} (sidecar {})",
                     written.rows,
-                    written.path.display(),
+                    written
+                        .parts
+                        .iter()
+                        .map(|p| p.display().to_string())
+                        .collect::<Vec<_>>()
+                        .join(", "),
                     written.sidecar.display()
                 );
             }

@@ -7,9 +7,10 @@ use arrow_array::cast::AsArray;
 use arrow_array::types::{Decimal128Type, Float64Type, Int64Type, TimestampMicrosecondType};
 use arrow_array::{Array, RecordBatch};
 use common::{ARCHIVE, DVD, Fixture, REPORT, ts};
+use utilake_query::Codec;
 use utilake_query::{
     Filter, Format, Frame, KnownTime, Projection, Query, QueryError, Resolution, Target, ValidTime,
-    ValidWindow, bind, extract, read,
+    ValidWindow, WriteOptions, bind, extract, read,
 };
 
 fn range(a: &str, b: &str) -> ValidWindow {
@@ -410,13 +411,17 @@ fn extract_writes_a_file_and_its_sidecar() {
             utilake_query::Extract {
                 query: Query::new("DISPATCHPRICE", day, known("2024-01-01T00:11")),
                 out: out.join(format!("dp.{ext}")),
-                format,
+                options: WriteOptions {
+                    format,
+                    ..WriteOptions::default()
+                },
             },
             &lake,
         )
         .unwrap();
         assert_eq!(w.rows, 2);
-        assert!(w.path.is_file());
+        assert_eq!(w.parts, [out.join(format!("dp.{ext}"))]);
+        assert!(w.parts[0].is_file());
         assert_eq!(w.sidecar, out.join(format!("dp.{ext}.json")));
         let sidecar: serde_json::Value =
             serde_json::from_str(&std::fs::read_to_string(&w.sidecar).unwrap()).unwrap();
@@ -457,7 +462,7 @@ fn extract_writes_a_file_and_its_sidecar() {
         utilake_query::Extract {
             query: Query::new("DISPATCHPRICE", day, Resolution::Raw),
             out: out.join("raw.parquet"),
-            format: Format::Parquet,
+            options: WriteOptions::default(),
         },
         &lake,
     )
@@ -471,7 +476,7 @@ fn extract_writes_a_file_and_its_sidecar() {
                 LATEST,
             ),
             out: out.join("none.csv"),
-            format: Format::Csv,
+            options: WriteOptions::default(),
         },
         &lake,
     )
@@ -483,7 +488,7 @@ fn extract_writes_a_file_and_its_sidecar() {
         utilake_query::Extract {
             query: Query::new("DISPATCHPRICE", day, LATEST),
             out: out.join("dp.parquet").join("x.parquet"),
-            format: Format::Parquet,
+            options: WriteOptions::default(),
         },
         &lake,
     )
@@ -578,7 +583,7 @@ fn a_file_of_an_unknown_schema_and_an_extract_at_an_instant() {
         utilake_query::Extract {
             query: Query::new("DUDETAIL", at("2024-01-15T00:00"), LATEST),
             out: out.clone(),
-            format: Format::Parquet,
+            options: WriteOptions::default(),
         },
         &fx.lake(),
     )
@@ -597,4 +602,103 @@ fn a_file_of_an_unknown_schema_and_an_extract_at_an_instant() {
     )
     .unwrap_err();
     assert!(matches!(err, QueryError::Plan { .. }), "{err}");
+}
+
+#[test]
+fn a_directory_takes_parts_of_the_asked_size() {
+    let mut fx = Fixture::new();
+    common::dispatchprice(&mut fx);
+    let lake = fx.lake();
+    // Two partitions hold rows of this window: December's last interval
+    // and January's first ones. A part of one byte fills at once, so each
+    // partition's frame is a part of its own.
+    let window = range("2023-12-31T23:00", "2024-01-01T00:15");
+    for (format, codec) in [
+        (Format::Parquet, Codec::Zstd),
+        (Format::Parquet, Codec::Snappy),
+        (Format::Parquet, Codec::None),
+        (Format::Csv, Codec::Zstd),
+        (Format::Arrow, Codec::Zstd),
+    ] {
+        let dir = fx
+            .dir
+            .path()
+            .join(format!("parts-{}-{}", format.extension(), codec.name()));
+        let w = extract(
+            utilake_query::Extract {
+                query: Query::new("DISPATCHPRICE", window, LATEST),
+                out: dir.clone(),
+                options: WriteOptions {
+                    format,
+                    codec,
+                    target_file_bytes: 1,
+                    row_group_rows: 2,
+                },
+            },
+            &lake,
+        )
+        .unwrap();
+        let ext = format.extension();
+        assert_eq!(
+            w.parts,
+            [
+                dir.join(format!("part-00000.{ext}")),
+                dir.join(format!("part-00001.{ext}"))
+            ],
+            "{format:?}"
+        );
+        assert!(w.parts.iter().all(|p| p.is_file()));
+        assert!(
+            !dir.join(format!("part-00000.{ext}.tmp")).exists(),
+            "renamed into place"
+        );
+        assert_eq!(
+            w.rows, 5,
+            "December's last interval and four facts of January (two at 00:15, one per intervention)"
+        );
+        assert_eq!(w.sidecar, dir.join("DISPATCHPRICE.json"));
+        let sidecar: serde_json::Value =
+            serde_json::from_str(&std::fs::read_to_string(&w.sidecar).unwrap()).unwrap();
+        assert_eq!(
+            sidecar["files"],
+            serde_json::json!([format!("part-00000.{ext}"), format!("part-00001.{ext}")])
+        );
+        assert_eq!(sidecar["rows"], 5);
+    }
+    // The default target never fills on a fixture: one part. A path with
+    // a format's extension is one file of that format, whatever the
+    // options say.
+    let dir = fx.dir.path().join("one");
+    let w = extract(
+        utilake_query::Extract {
+            query: Query::new("DISPATCHPRICE", window, LATEST),
+            out: dir.clone(),
+            options: WriteOptions::default(),
+        },
+        &lake,
+    )
+    .unwrap();
+    assert_eq!(w.parts, [dir.join("part-00000.parquet")]);
+    let file = fx.dir.path().join("one.csv");
+    let w = extract(
+        utilake_query::Extract {
+            query: Query::new("DISPATCHPRICE", window, LATEST),
+            out: file.clone(),
+            options: WriteOptions {
+                target_file_bytes: 1,
+                ..WriteOptions::default()
+            },
+        },
+        &lake,
+    )
+    .unwrap();
+    assert_eq!(w.parts, std::slice::from_ref(&file));
+    assert_eq!(w.sidecar, fx.dir.path().join("one.csv.json"));
+    let text = std::fs::read_to_string(&file).unwrap();
+    assert_eq!(
+        text.lines().count(),
+        6,
+        "a header and five rows, in one file"
+    );
+    assert_eq!(Format::of_extension("txt"), None);
 }

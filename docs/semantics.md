@@ -104,19 +104,30 @@ its lake field id, then:
 | `_nl_valid_to` | on a `from` table, where the version stops; null for open |
 
 The `_nl_` prefix is reserved: no table may declare such a column. A raw
-read carries `_nl_source` only. `-o` writes Parquet (field ids and
-`utilake.*` footer keys: `version`, `table`, `schema_id`, `resolution`,
-`window`, `known_at`), CSV or an Arrow IPC file, and a JSON sidecar
-beside it with the window, the schema, the resolution, every source with
-its publish time, and the counts of rows read, returned and left out.
+read carries `_nl_source` only.
+
+A read is written as Parquet (field ids and `utilake.*` footer keys:
+`version`, `table`, `schema_id`, `resolution`, `window`, `known_at`), CSV
+or an Arrow IPC file. The path says the shape: one whose extension names
+a format (`x.parquet`, `x.csv`, `x.arrow`) is one file of that format;
+any other path is a directory of parts, `part-00000.parquet`,
+`part-00001.parquet`, …, a new part beginning once the open one reaches
+the target size (128 MiB; a Parquet part may run over by one row group).
+Parquet is zstd at level 3 unless asked otherwise (`snappy`, `none`).
+Each part is written whole under a `.tmp` name and renamed, so a part
+that exists is complete. Beside the parts, `{TABLE}.json` (beside a
+file, `{file}.json`) names the window, the schema, the resolution, every
+source with its publish time, every file written, and the counts of rows
+read, returned and left out.
 
 ## Memory
 
 A table partitioned by its valid time (append tables whose valid column
 is the time column) resolves one month partition at a time, because the
-key holds the valid time and a fact never spans two. Snapshot and
-`from` tables, and tables whose valid time is not the partition column,
-resolve whole.
+key holds the valid time and a fact never spans two; each partition's
+frame is written before the next is read, so a read holds one partition
+in memory, however long the window. Snapshot and `from` tables, and
+tables whose valid time is not the partition column, resolve whole.
 
 ## The SQL oracle
 
