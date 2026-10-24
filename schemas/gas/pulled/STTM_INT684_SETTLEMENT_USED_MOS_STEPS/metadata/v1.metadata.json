@@ -1,0 +1,156 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 995202284090001086,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 10,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1788184800000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/STTM_INT684_SETTLEMENT_USED_MOS_STEPS",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"settlement_run_identifier\",\"2\":\"gas_date\",\"3\":\"hub_identifier\",\"4\":\"hub_name\",\"5\":\"facility_identifier\",\"6\":\"facility_name\",\"7\":\"stack_identifier\",\"8\":\"stack_type\",\"9\":\"stack_step_identifier\",\"10\":\"report_datetime\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"STTM\",\"INT684_SETTLEMENT_USED_MOS_STEPS_RPT_1\"]]",
+    "utilake.table": "STTM_INT684_SETTLEMENT_USED_MOS_STEPS",
+    "utilake.temporal.cutoff": "REPORT_DATETIME",
+    "utilake.temporal.entity": "[\"SETTLEMENT_RUN_IDENTIFIER\",\"HUB_IDENTIFIER\",\"FACILITY_IDENTIFIER\",\"STACK_IDENTIFIER\",\"STACK_STEP_IDENTIFIER\"]",
+    "utilake.temporal.order": "[\"REPORT_DATETIME\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "GAS_DATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "GAS_DATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 995202284090001086,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "SETTLEMENT_RUN_IDENTIFIER",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "id": 2,
+          "name": "GAS_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 3,
+          "name": "HUB_IDENTIFIER",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "HUB_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 5,
+          "name": "FACILITY_IDENTIFIER",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 6,
+          "name": "FACILITY_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 7,
+          "name": "STACK_IDENTIFIER",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 8,
+          "name": "STACK_TYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 9,
+          "name": "STACK_STEP_IDENTIFIER",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 10,
+          "name": "REPORT_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 995202284090001086,
+      "timestamp-ms": 1788184800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/STTM_INT684_SETTLEMENT_USED_MOS_STEPS/metadata/snap-995202284090001086-1-d1f648cf-946b-8af4-b159-50c69e0a8d37.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 995202284090001086,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "4",
+        "utilake.from.file": "Day24.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "93d3280f33572aae5ab124371171d23d919fc22cbba7faba01d06c46b49950c0",
+        "utilake.from.time": "2026-08-01T00:00:00+10:00",
+        "utilake.kinds": "[\"sttm/current\"]",
+        "utilake.report-subtype": "INT684_SETTLEMENT_USED_MOS_STEPS_RPT_1",
+        "utilake.report-type": "STTM",
+        "utilake.rows": "3262",
+        "utilake.to.file": "int684_v1_settlement_used_mos_steps_rpt_1.csv",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "9c525aceb8e4d056eaa039011d8a3807ee53ebe37449bec61cf5ed54e73966cf",
+        "utilake.to.time": "2026-09-30T00:00:00+10:00",
+        "utilake.total-rows": "3262",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1788184800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "d1f648cf-946b-8af4-b159-50c69e0a8d37"
+}

@@ -1,0 +1,137 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 3808556217372599467,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 6,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1790776800000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_LATE_NOMINATION_AND_FORECAST",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "Provides the aggregate of forecast and nominations by location.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"GasDate\",\"2\":\"FacilityName\",\"3\":\"FacilityId\",\"4\":\"ConnectionPointId\",\"5\":\"EarliestSubmissionDate\",\"6\":\"LateTimeSpan\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.model": "[\"GAS_NOMINATIONS_FORECAST_AGG\",\"GAS_FACILITY\"]",
+    "utilake.model-types": "{\"1\":\"DATE\",\"2\":\"VARCHAR2(100)\",\"3\":\"NUMBER(10,0)\"}",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"GBB\",\"LATE_NOMINATION_AND_FORECAST\"]]",
+    "utilake.table": "GBB_LATE_NOMINATION_AND_FORECAST",
+    "utilake.temporal.entity": "[\"FACILITYID\",\"CONNECTIONPOINTID\"]",
+    "utilake.temporal.order": "[]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "GASDATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "GASDATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 3808556217372599467,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Date of gas day",
+          "id": 1,
+          "name": "GASDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Name of the Facility",
+          "id": 2,
+          "name": "FACILITYNAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Unique Facility Identifier",
+          "id": 3,
+          "name": "FACILITYID",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "id": 4,
+          "name": "CONNECTIONPOINTID",
+          "required": false,
+          "type": "decimal(7, 0)"
+        },
+        {
+          "id": 5,
+          "name": "EARLIESTSUBMISSIONDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 6,
+          "name": "LATETIMESPAN",
+          "required": false,
+          "type": "decimal(8, 6)"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 3808556217372599467,
+      "timestamp-ms": 1790776800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_LATE_NOMINATION_AND_FORECAST/metadata/snap-3808556217372599467-1-9121563c-748e-8cee-83e9-c113f93965ea.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 3808556217372599467,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "GasBBLateNominationAndForecast.zip",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "f219693e1d2f0a051524430e8f0aa190e7146f00a9cb0947474d1fb2f9af25a1",
+        "utilake.from.time": "2026-08-28T00:00:00+10:00",
+        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.report-subtype": "LATE_NOMINATION_AND_FORECAST",
+        "utilake.report-type": "GBB",
+        "utilake.rows": "257",
+        "utilake.to.file": "GasBBLateNominationAndForecast.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "f219693e1d2f0a051524430e8f0aa190e7146f00a9cb0947474d1fb2f9af25a1",
+        "utilake.to.time": "2026-09-01T00:00:00+10:00",
+        "utilake.total-rows": "257",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1790776800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "9121563c-748e-8cee-83e9-c113f93965ea"
+}

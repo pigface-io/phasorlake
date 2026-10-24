@@ -1,0 +1,144 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 8878949196695823537,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 8,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1790776800000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT343_CCAUCTION_AUCTION_QTY",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"auction_id\",\"2\":\"zone_id\",\"3\":\"zone_name\",\"4\":\"zone_type\",\"5\":\"capacity_period\",\"6\":\"auction_date\",\"7\":\"available_capacity_gj\",\"8\":\"current_date\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"DWGM\",\"INT343_CCAUCTION_AUCTION_QTY_1\"]]",
+    "utilake.table": "DWGM_INT343_CCAUCTION_AUCTION_QTY",
+    "utilake.temporal.cutoff": "CURRENT_DATE",
+    "utilake.temporal.entity": "[\"AUCTION_ID\",\"ZONE_ID\"]",
+    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "AUCTION_DATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "AUCTION_DATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 8878949196695823537,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "AUCTION_ID",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 2,
+          "name": "ZONE_ID",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 3,
+          "name": "ZONE_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "ZONE_TYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 5,
+          "name": "CAPACITY_PERIOD",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 6,
+          "name": "AUCTION_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 7,
+          "name": "AVAILABLE_CAPACITY_GJ",
+          "required": false,
+          "type": "decimal(15, 9)"
+        },
+        {
+          "id": 8,
+          "name": "CURRENT_DATE",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 8878949196695823537,
+      "timestamp-ms": 1790776800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT343_CCAUCTION_AUCTION_QTY/metadata/snap-8878949196695823537-1-eec44cb1-2c44-818b-9255-4971fd78c829.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 8878949196695823537,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
+        "utilake.from.file": "PublicRpts02.zip",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "9a6a7289e60eeb2bb0e7ed7c113d340b61a1981d9ba79cbcd446d98c56aba4e3",
+        "utilake.from.time": "2026-11-25T00:00:00+10:00",
+        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.report-subtype": "INT343_CCAUCTION_AUCTION_QTY_1",
+        "utilake.report-type": "DWGM",
+        "utilake.rows": "252",
+        "utilake.to.file": "int343_v4_ccauction_auction_qty_1.csv",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "952ed126caa006c8b2f74600c0fd50aadb1cba394580aa2b0a323dc25a3e24a6",
+        "utilake.to.time": "2026-11-25T00:00:00+10:00",
+        "utilake.total-rows": "252",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1790776800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "eec44cb1-2c44-818b-9255-4971fd78c829"
+}

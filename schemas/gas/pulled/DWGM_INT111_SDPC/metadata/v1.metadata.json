@@ -1,0 +1,315 @@
+{
+  "current-schema-id": 1,
+  "current-snapshot-id": 7611900348572960145,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 21,
+  "last-partition-id": 999,
+  "last-sequence-number": 2,
+  "last-updated-ms": 1785506400001,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT111_SDPC",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"ti\",\"3\":\"mirn\",\"4\":\"hourly_maximum_quantity\",\"5\":\"hourly_minimum_quantity\",\"6\":\"ramp_up_constraint\",\"7\":\"ramp_down_constraint\",\"8\":\"schedule_response_time\",\"9\":\"daily_minimum_quantity\",\"10\":\"daily_maximum_quantity\",\"11\":\"expiration_time\",\"12\":\"sdpc_id\",\"13\":\"current_date\",\"14\":\"ps_hourly_max_qty\",\"15\":\"ps_hourly_min_qty\",\"16\":\"os_hourly_max_qty\",\"17\":\"os_hourly_min_qty\",\"18\":\"ps_daily_min_qty\",\"19\":\"ps_daily_max_qty\",\"20\":\"os_daily_min_qty\",\"21\":\"os_daily_max_qty\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"DWGM\",\"INT111_SDPC_1\"]]",
+    "utilake.table": "DWGM_INT111_SDPC",
+    "utilake.temporal.cutoff": "CURRENT_DATE",
+    "utilake.temporal.entity": "[\"SDPC_ID\"]",
+    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "GAS_DATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "GAS_DATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 7611900348572960145,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "GAS_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 2,
+          "name": "TI",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 3,
+          "name": "MIRN",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "HOURLY_MAXIMUM_QUANTITY",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "id": 5,
+          "name": "HOURLY_MINIMUM_QUANTITY",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 6,
+          "name": "RAMP_UP_CONSTRAINT",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 7,
+          "name": "RAMP_DOWN_CONSTRAINT",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "id": 8,
+          "name": "SCHEDULE_RESPONSE_TIME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 9,
+          "name": "DAILY_MINIMUM_QUANTITY",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 10,
+          "name": "DAILY_MAXIMUM_QUANTITY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 11,
+          "name": "EXPIRATION_TIME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 12,
+          "name": "SDPC_ID",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "id": 13,
+          "name": "CURRENT_DATE",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "GAS_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 2,
+          "name": "TI",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 3,
+          "name": "MIRN",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 14,
+          "name": "PS_HOURLY_MAX_QTY",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "id": 15,
+          "name": "PS_HOURLY_MIN_QTY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 16,
+          "name": "OS_HOURLY_MAX_QTY",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "id": 17,
+          "name": "OS_HOURLY_MIN_QTY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 6,
+          "name": "RAMP_UP_CONSTRAINT",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 7,
+          "name": "RAMP_DOWN_CONSTRAINT",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "id": 8,
+          "name": "SCHEDULE_RESPONSE_TIME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 18,
+          "name": "PS_DAILY_MIN_QTY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 19,
+          "name": "PS_DAILY_MAX_QTY",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "id": 20,
+          "name": "OS_DAILY_MIN_QTY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 21,
+          "name": "OS_DAILY_MAX_QTY",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "id": 11,
+          "name": "EXPIRATION_TIME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 12,
+          "name": "SDPC_ID",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "id": 13,
+          "name": "CURRENT_DATE",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 1,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 1719590352788812004,
+      "timestamp-ms": 1777557600000
+    },
+    {
+      "snapshot-id": 7611900348572960145,
+      "timestamp-ms": 1785506400001
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT111_SDPC/metadata/snap-1719590352788812004-1-a3ef24fd-9b95-87ad-85e1-2a43b4ef3f16.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 1719590352788812004,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "int111_v4_sdpc_1.csv",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "04fc3fe7d2ba3f063c1aaa6b7ce16944c7592170f200e5c24cfa10263b192208",
+        "utilake.from.time": "2015-05-03T00:00:00+10:00",
+        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.report-subtype": "INT111_SDPC_1",
+        "utilake.report-type": "DWGM",
+        "utilake.rows": "936",
+        "utilake.to.file": "int111_v4_sdpc_1.csv",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "04fc3fe7d2ba3f063c1aaa6b7ce16944c7592170f200e5c24cfa10263b192208",
+        "utilake.to.time": "2015-05-05T00:00:00+10:00",
+        "utilake.total-rows": "936",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1777557600000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT111_SDPC/metadata/snap-7611900348572960145-2-a3ef24fd-9b95-87ad-85e1-2a43b4ef3f16.avro",
+      "parent-snapshot-id": 1719590352788812004,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 7611900348572960145,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "326",
+        "utilake.from.file": "PublicRpts31.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
+        "utilake.from.time": "2026-08-30T00:00:00+10:00",
+        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.report-subtype": "INT111_SDPC_1",
+        "utilake.report-type": "DWGM",
+        "utilake.rows": "19008",
+        "utilake.to.file": "int111_v5_sdpc_1.csv@20261021T220900+1000",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "1158620f9f450edf3885b330782d80b30d9f02226fe7880f07d72e1109e2e1d0",
+        "utilake.to.time": "2026-10-23T00:00:00+10:00",
+        "utilake.total-rows": "19944",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1785506400001
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "a3ef24fd-9b95-87ad-85e1-2a43b4ef3f16"
+}

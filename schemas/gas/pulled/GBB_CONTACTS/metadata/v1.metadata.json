@@ -1,0 +1,144 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 5605942208238616121,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 7,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1790776800000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_CONTACTS",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "The registered user list of responsible contact persons for each BB Participant organisation as identified at registration or otherwise",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"PersonId\",\"2\":\"PersonName\",\"3\":\"CompanyId\",\"4\":\"CompanyName\",\"5\":\"Position\",\"6\":\"Email\",\"7\":\"LastUpdated\"}",
+    "utilake.key": "[\"PERSONID\",\"COMPANYID\"]",
+    "utilake.load": "snapshot",
+    "utilake.market": "gas",
+    "utilake.model": "[\"GAS_CONTACT\",\"GAS_CONTACT_DETAIL\",\"GAS_PARTICIPANT_CONTACT\"]",
+    "utilake.model-types": "{\"1\":\"Number(10,0)\",\"3\":\"Number(10,0)\",\"5\":\"varchar2(40)\",\"6\":\"Varchar2 (255)\"}",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"GBB\",\"CONTACTS\"]]",
+    "utilake.table": "GBB_CONTACTS",
+    "utilake.temporal.cutoff": "LASTUPDATED",
+    "utilake.temporal.entity": "[\"PERSONID\",\"COMPANYID\"]",
+    "utilake.temporal.order": "[\"LASTUPDATED\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.time": "LASTUPDATED",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 5605942208238616121,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Unique person identifier",
+          "id": 1,
+          "name": "PERSONID",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "id": 2,
+          "name": "PERSONNAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Unique company identifier",
+          "id": 3,
+          "name": "COMPANYID",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "id": 4,
+          "name": "COMPANYNAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Position of person",
+          "id": 5,
+          "name": "POSITION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Email address of person",
+          "id": 6,
+          "name": "EMAIL",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 7,
+          "name": "LASTUPDATED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 5605942208238616121,
+      "timestamp-ms": 1790776800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_CONTACTS/metadata/snap-5605942208238616121-1-fc7102db-534d-81ec-8cdd-cc6e787da9a5.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 5605942208238616121,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "GasBBContacts.CSV",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "d54d5d945f55a4873ea56bcd3b7022a6777966e8d960832c7543cc612c38d126",
+        "utilake.from.time": "2012-07-10T15:13:32+10:00",
+        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.report-subtype": "CONTACTS",
+        "utilake.report-type": "GBB",
+        "utilake.rows": "289",
+        "utilake.to.file": "GasBBContacts.CSV",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "d54d5d945f55a4873ea56bcd3b7022a6777966e8d960832c7543cc612c38d126",
+        "utilake.to.time": "2026-09-01T19:30:00+10:00",
+        "utilake.total-rows": "289",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1790776800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "fc7102db-534d-81ec-8cdd-cc6e787da9a5"
+}

@@ -1,0 +1,264 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 1147081139696193766,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 15,
+  "last-partition-id": 999,
+  "last-sequence-number": 3,
+  "last-updated-ms": 1790776800002,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_UNCONTRACTED_CAPACITY_OUTLOOK",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "Provide the uncontracted capacity of the facility over the next 12 months.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"FacilityId\",\"2\":\"FacilityName\",\"3\":\"FacilityType\",\"4\":\"OutlookYear\",\"5\":\"OutlookMonth\",\"6\":\"CapacityType\",\"7\":\"FlowDirection\",\"8\":\"OutlookQuantity\",\"9\":\"CapacityDescription\",\"10\":\"ReceiptLocation\",\"11\":\"ReceiptLocationName\",\"12\":\"DeliveryLocation\",\"13\":\"DeliveryLocationName\",\"14\":\"Description\",\"15\":\"LastUpdated\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.model": "[\"GAS_UNCONTRACTED_CAP_OUTLOOK\",\"GAS_FACILITY\"]",
+    "utilake.model-types": "{\"1\":\"NUMBER(10,0)\",\"2\":\"VARCHAR2(100)\",\"3\":\"VARCHAR2(40)\",\"4\":\"NUMBER(4,0)\",\"5\":\"NUMBER(4,0)\",\"6\":\"VARCHAR2(20)\",\"7\":\"VARCHAR2(20)\",\"8\":\"NUMBER(18,3)\",\"9\":\"VARCHAR2(1000)\",\"10\":\"NUMBER(10,0)\",\"12\":\"NUMBER(10,0)\",\"14\":\"VARCHAR2(1000)\"}",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"GBB\",\"UNCONTRACTED_CAPACITY_OUTLOOK_FULL_LIST\"],[\"GBB\",\"UNCONTRACTED_CAPACITY_OUTLOOK_FUTURE\"]]",
+    "utilake.table": "GBB_UNCONTRACTED_CAPACITY_OUTLOOK",
+    "utilake.temporal.cutoff": "LASTUPDATED",
+    "utilake.temporal.entity": "[\"FACILITYID\"]",
+    "utilake.temporal.order": "[\"LASTUPDATED\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.time": "LASTUPDATED",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 1147081139696193766,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Unique Facility Identifier",
+          "id": 1,
+          "name": "FACILITYID",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Name of the Facility",
+          "id": 2,
+          "name": "FACILITYNAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Describes the type of facility. Refer to the GAS_FACILITY_TYPE table",
+          "id": 3,
+          "name": "FACILITYTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The outlook year",
+          "id": 4,
+          "name": "OUTLOOKYEAR",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "doc": "The outlook month.",
+          "id": 5,
+          "name": "OUTLOOKMONTH",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "Capacity Type - Must be either STORAGE or MDQ",
+          "id": 6,
+          "name": "CAPACITYTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Direction of flow for the submission record. Must be one of ‘RECEIPT’ or ‘DELIVERY’",
+          "id": 7,
+          "name": "FLOWDIRECTION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Quantity of available capacity during the defined period",
+          "id": 8,
+          "name": "OUTLOOKQUANTITY",
+          "required": false,
+          "type": "decimal(7, 3)"
+        },
+        {
+          "doc": "Describes the meaning of the capacity Number Provided",
+          "id": 9,
+          "name": "CAPACITYDESCRIPTION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Connection Point ID that best represents the receipt location",
+          "id": 10,
+          "name": "RECEIPTLOCATION",
+          "required": false,
+          "type": "decimal(7, 0)"
+        },
+        {
+          "id": 11,
+          "name": "RECEIPTLOCATIONNAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Connection Point ID that best represents the Delivery Location",
+          "id": 12,
+          "name": "DELIVERYLOCATION",
+          "required": false,
+          "type": "decimal(7, 0)"
+        },
+        {
+          "id": 13,
+          "name": "DELIVERYLOCATIONNAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Description for reasons or comments directly related to the quantity or change in Outlook quantity in relation to the Facility",
+          "id": 14,
+          "name": "DESCRIPTION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 15,
+          "name": "LASTUPDATED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 635703820055934699,
+      "timestamp-ms": 1759240800000
+    },
+    {
+      "snapshot-id": 1833839811357543109,
+      "timestamp-ms": 1790776800001
+    },
+    {
+      "snapshot-id": 1147081139696193766,
+      "timestamp-ms": 1790776800002
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_UNCONTRACTED_CAPACITY_OUTLOOK/metadata/snap-635703820055934699-1-c88e98a2-eeb6-87c9-a70e-db6f6015975a.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 635703820055934699,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "41",
+        "utilake.from.file": "GasBBUncontractedCapacityOutlookFuture_20251028023835.csv",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "4936bcb52e5c0219b07c98026fc3b238d8d592e038bbdee7f3daa93bdf80596d",
+        "utilake.from.time": "2019-09-30T18:14:33+10:00",
+        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.report-subtype": "UNCONTRACTED_CAPACITY_OUTLOOK_FUTURE",
+        "utilake.report-type": "GBB",
+        "utilake.rows": "46513",
+        "utilake.to.file": "GasBBUncontractedCapacityOutlookFuture_20261001164311.csv",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "c0f019fecd815b4d51bbff10cf76dc8cc2f7cdff9836170aeba6092e9e53dbea",
+        "utilake.to.time": "2026-10-01T11:30:51+10:00",
+        "utilake.total-rows": "46513",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1759240800000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_UNCONTRACTED_CAPACITY_OUTLOOK/metadata/snap-1833839811357543109-2-c88e98a2-eeb6-87c9-a70e-db6f6015975a.avro",
+      "parent-snapshot-id": 635703820055934699,
+      "schema-id": 0,
+      "sequence-number": 2,
+      "snapshot-id": 1833839811357543109,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "3",
+        "utilake.from.file": "GasBBUncontractedCapacityOutlookFullList.csv",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "46cdfc3f1b6587d68004a2e1f1f3d4ecbbe04595115cbcab75e5cbc162c49d40",
+        "utilake.from.time": "2018-09-30T08:41:58+10:00",
+        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.report-subtype": "UNCONTRACTED_CAPACITY_OUTLOOK_FULL_LIST",
+        "utilake.report-type": "GBB",
+        "utilake.rows": "15696",
+        "utilake.to.file": "GasBBUncontractedCapacityOutlookFullList.csv@20261022T002100+1000",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "538f0c018372384c2c933e97bfbe3b86f312ea0ea290cf77aa8e45cde1f6e18a",
+        "utilake.to.time": "2026-10-21T12:08:58+10:00",
+        "utilake.total-rows": "62209",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1790776800001
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_UNCONTRACTED_CAPACITY_OUTLOOK/metadata/snap-1147081139696193766-3-c88e98a2-eeb6-87c9-a70e-db6f6015975a.avro",
+      "parent-snapshot-id": 1833839811357543109,
+      "schema-id": 0,
+      "sequence-number": 3,
+      "snapshot-id": 1147081139696193766,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
+        "utilake.from.file": "GasBBUncontractedCapacityOutlookFuture.csv",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "ef896d8901151ebb8edfa68ef782d998ca8a09f95b160b9659823217707de7df",
+        "utilake.from.time": "2019-09-30T18:14:33+10:00",
+        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.report-subtype": "UNCONTRACTED_CAPACITY_OUTLOOK_FUTURE",
+        "utilake.report-type": "GBB",
+        "utilake.rows": "5684",
+        "utilake.to.file": "GasBBUncontractedCapacityOutlookFuture.csv@20261021T190600+1000",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "c5486ac72221276cb7902ceaa36e1f1303830c152913001f2048c6ee77b58806",
+        "utilake.to.time": "2026-10-21T12:08:58+10:00",
+        "utilake.total-rows": "67893",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1790776800002
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "c88e98a2-eeb6-87c9-a70e-db6f6015975a"
+}

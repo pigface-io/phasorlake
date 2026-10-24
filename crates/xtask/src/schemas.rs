@@ -1,10 +1,11 @@
-//! The NEM tables utilake reads are the ones utilake-schemas publishes:
-//! each table's Iceberg table metadata, `nem/<TABLE>/metadata/v1.metadata.json`,
+//! The tables utilake reads are the ones utilake-schemas publishes: each
+//! table's Iceberg table metadata, `{market}/<TABLE>/metadata/v1.metadata.json`,
 //! and the manifest of their hashes. `pull` copies them at a commit into
-//! `schemas/nem/pulled/` and records the commit in `SOURCE`; `check` holds
-//! the copy to the manifest and the commit to the one `Cargo.lock` takes
-//! `utilake-iceberg` from, so the histories and the crate that reads them
-//! are always of one commit.
+//! `schemas/{market}/pulled/` for every market published and records the
+//! commit in each `SOURCE`; `check` holds each copy to the manifest and the
+//! commit to the one `Cargo.lock` takes `utilake-iceberg` from, so the
+//! histories and the crate that reads them are always of one commit. A
+//! market with no table published has no `pulled/`.
 
 use std::collections::BTreeMap;
 use std::io::{BufRead as _, BufReader, Read as _, Write as _};
@@ -13,8 +14,13 @@ use std::process::{Command, Stdio};
 
 use anyhow::{Context, Result, bail};
 
-/// Where the copy lives, under the repository root.
-const PULLED: &str = "schemas/nem/pulled";
+/// The markets utilake-schemas may publish, each a directory of its own.
+pub const MARKETS: [&str; 3] = ["nem", "wem", "gas"];
+
+/// Where a market's copy lives, under the repository root.
+fn pulled_rel(market: &str) -> String {
+    format!("schemas/{market}/pulled")
+}
 
 /// The file that names the commit the copy was taken at.
 const SOURCE: &str = "SOURCE";
@@ -23,21 +29,36 @@ const SOURCE: &str = "SOURCE";
 const MANIFEST: &str = "manifest.json";
 /// Which report folder carries each block, beside the tables.
 const FOLDERS: &str = "folders.json";
-/// Where utilake-schemas publishes it.
-const FOLDERS_SOURCE: &str = "nem/folders.json";
+
+/// Where utilake-schemas publishes a market's folders file.
+fn folders_source(market: &str) -> String {
+    format!("{market}/{FOLDERS}")
+}
+
+/// The market whose folders file a manifest path is, if it is one.
+fn folders_market(path: &str) -> Option<&str> {
+    match path.split('/').collect::<Vec<_>>().as_slice() {
+        [market, FOLDERS] if MARKETS.contains(market) => Some(market),
+        _ => None,
+    }
+}
 
 /// A table's metadata file, under its directory.
 const METADATA: &str = "metadata/v1.metadata.json";
 
-fn pulled_dir() -> PathBuf {
-    crate::repo_root().join(PULLED)
+fn pulled_dir(market: &str) -> PathBuf {
+    crate::repo_root().join(pulled_rel(market))
 }
 
-/// The table a manifest path names, when it is a
-/// `nem/<TABLE>/metadata/v1.metadata.json`.
-fn table_of(path: &str) -> Option<&str> {
+/// The market and table a manifest path names, when it is a
+/// `{market}/<TABLE>/metadata/v1.metadata.json`.
+fn table_of(path: &str) -> Option<(&str, &str)> {
     match path.split('/').collect::<Vec<_>>().as_slice() {
-        ["nem", table, "metadata", "v1.metadata.json"] if !table.is_empty() => Some(table),
+        [market, table, "metadata", "v1.metadata.json"]
+            if MARKETS.contains(market) && !table.is_empty() =>
+        {
+            Some((market, table))
+        }
         _ => None,
     }
 }
@@ -94,9 +115,10 @@ fn blobs(checkout: &Path, rev: &str, paths: &[String]) -> Result<Vec<Vec<u8>>> {
     Ok(found)
 }
 
-/// Copies every table's metadata and the manifest of `rev` in `checkout`
-/// into `schemas/nem/pulled/`, whatever the checkout's working tree holds,
-/// and writes the commit to `SOURCE`.
+/// Copies every market's tables' metadata, its folders file and the
+/// manifest of `rev` in `checkout` into `schemas/{market}/pulled/`,
+/// whatever the checkout's working tree holds, and writes the commit to
+/// each `SOURCE`. A market the commit publishes no table of has no copy.
 pub fn pull(rev: &str, checkout: &Path) -> Result<bool> {
     let full = git(
         checkout,
@@ -104,13 +126,19 @@ pub fn pull(rev: &str, checkout: &Path) -> Result<bool> {
     )?
     .trim()
     .to_owned();
-    let listing = git(
-        checkout,
-        &["ls-tree", "-r", "--name-only", &full, "--", MANIFEST, "nem"],
-    )?;
+    let mut args = vec![
+        "ls-tree",
+        "-r",
+        "--name-only",
+        full.as_str(),
+        "--",
+        MANIFEST,
+    ];
+    args.extend(MARKETS);
+    let listing = git(checkout, &args)?;
     let paths: Vec<String> = listing
         .lines()
-        .filter(|p| *p == MANIFEST || *p == FOLDERS_SOURCE || table_of(p).is_some())
+        .filter(|p| *p == MANIFEST || folders_market(p).is_some() || table_of(p).is_some())
         .map(str::to_owned)
         .collect();
     if !paths.iter().any(|p| p == MANIFEST) {
@@ -120,34 +148,56 @@ pub fn pull(rev: &str, checkout: &Path) -> Result<bool> {
         );
     }
     let bytes = blobs(checkout, &full, &paths)?;
-    let dir = pulled_dir();
-    let tmp = dir.with_extension("tmp");
-    if tmp.exists() {
-        std::fs::remove_dir_all(&tmp)?;
-    }
-    std::fs::create_dir_all(&tmp)?;
-    for (p, b) in paths.iter().zip(&bytes) {
-        let to = match table_of(p) {
-            Some(t) => tmp.join(t).join(METADATA),
-            None if p == FOLDERS_SOURCE => tmp.join(FOLDERS),
-            None => tmp.join(MANIFEST),
-        };
-        std::fs::create_dir_all(to.parent().expect("a file in a directory"))?;
-        std::fs::write(&to, b).with_context(|| format!("writing {}", to.display()))?;
-    }
-    std::fs::write(tmp.join(SOURCE), format!("{full}\n"))?;
-    if dir.exists() {
-        std::fs::remove_dir_all(&dir)?;
-    }
-    std::fs::rename(&tmp, &dir)?;
-    println!(
-        "schemas-pull: {} tables of utilake-schemas {full} into {PULLED}{}",
-        paths.iter().filter(|p| table_of(p).is_some()).count(),
-        if paths.iter().any(|p| p == FOLDERS_SOURCE) {
-            ", with folders.json"
-        } else {
-            ""
+    let manifest = paths
+        .iter()
+        .position(|p| p == MANIFEST)
+        .map(|i| bytes[i].clone())
+        .expect("the manifest is among the paths");
+    let mut report = Vec::new();
+    for market in MARKETS {
+        let dir = pulled_dir(market);
+        let tables = paths
+            .iter()
+            .filter(|p| table_of(p).is_some_and(|(m, _)| m == market))
+            .count();
+        if tables == 0 {
+            if dir.exists() {
+                std::fs::remove_dir_all(&dir)?;
+            }
+            continue;
         }
+        let tmp = dir.with_extension("tmp");
+        if tmp.exists() {
+            std::fs::remove_dir_all(&tmp)?;
+        }
+        std::fs::create_dir_all(&tmp)?;
+        let mut folders = false;
+        for (p, b) in paths.iter().zip(&bytes) {
+            let to = match (table_of(p), folders_market(p)) {
+                (Some((m, t)), _) if m == market => tmp.join(t).join(METADATA),
+                (_, Some(m)) if m == market => {
+                    folders = true;
+                    tmp.join(FOLDERS)
+                }
+                _ => continue,
+            };
+            std::fs::create_dir_all(to.parent().expect("a file in a directory"))?;
+            std::fs::write(&to, b).with_context(|| format!("writing {}", to.display()))?;
+        }
+        std::fs::write(tmp.join(MANIFEST), &manifest)?;
+        std::fs::write(tmp.join(SOURCE), format!("{full}\n"))?;
+        if dir.exists() {
+            std::fs::remove_dir_all(&dir)?;
+        }
+        std::fs::rename(&tmp, &dir)?;
+        report.push(format!(
+            "{tables} {market} tables{}",
+            if folders { " with folders.json" } else { "" }
+        ));
+    }
+    println!(
+        "schemas-pull: {} of utilake-schemas {full} into schemas/{{market}}/pulled",
+        report.join(", ")
     );
     Ok(true)
 }
@@ -181,16 +231,17 @@ fn sha256(bytes: &[u8]) -> String {
         })
 }
 
-/// What is wrong with the copy in `dir`, held to its manifest and to the
-/// commit `lock` names. Empty when it is right.
-pub fn problems(dir: &Path, lock: &str) -> Vec<String> {
+/// What is wrong with `market`'s copy in `dir`, held to its manifest and
+/// to the commit `lock` names. Empty when it is right.
+pub fn problems(dir: &Path, lock: &str, market: &str) -> Vec<String> {
+    let pulled = pulled_rel(market);
     let mut out = Vec::new();
     let source = std::fs::read_to_string(dir.join(SOURCE)).unwrap_or_default();
     let source = source.trim();
     match locked_rev(lock) {
         None => out.push("Cargo.lock takes utilake-iceberg from no git commit".to_owned()),
         Some(rev) if rev != source => out.push(format!(
-            "{PULLED}/{SOURCE} is {source:?} but Cargo.lock takes utilake-iceberg from {rev}; run `just schemas-pull {rev}`"
+            "{pulled}/{SOURCE} is {source:?} but Cargo.lock takes utilake-iceberg from {rev}; run `just schemas-pull {rev}`"
         )),
         Some(_) => {}
     }
@@ -200,7 +251,7 @@ pub fn problems(dir: &Path, lock: &str) -> Vec<String> {
     {
         Some(m) => m,
         None => {
-            out.push(format!("{PULLED}/{MANIFEST} is missing or not JSON"));
+            out.push(format!("{pulled}/{MANIFEST} is missing or not JSON"));
             return out;
         }
     };
@@ -209,15 +260,21 @@ pub fn problems(dir: &Path, lock: &str) -> Vec<String> {
         .and_then(serde_json::Value::as_object)
         .into_iter()
         .flatten()
-        .filter_map(|(path, sha)| Some((table_of(path)?.to_owned(), sha.as_str()?.to_owned())))
+        .filter_map(|(path, sha)| {
+            let (m, table) = table_of(path)?;
+            if m != market {
+                return None;
+            }
+            Some((table.to_owned(), sha.as_str()?.to_owned()))
+        })
         .collect();
     if want.is_empty() {
-        out.push(format!("{PULLED}/{MANIFEST} lists no table"));
+        out.push(format!("{pulled}/{MANIFEST} lists no {market} table"));
     }
     // folders.json is held to the manifest too, when published.
     let folders_sha = manifest
         .get("sha256")
-        .and_then(|m| m.get(FOLDERS_SOURCE))
+        .and_then(|m| m.get(folders_source(market)))
         .and_then(serde_json::Value::as_str);
     match (folders_sha, std::fs::read(dir.join(FOLDERS))) {
         (Some(sha), Ok(bytes)) if sha256(&bytes) != sha => out.push(format!(
@@ -268,18 +325,30 @@ pub fn problems(dir: &Path, lock: &str) -> Vec<String> {
     out
 }
 
-/// `schemas-check`: the copy is the manifest's, and of the locked commit.
+/// `schemas-check`: every market's copy is the manifest's, and of the
+/// locked commit; a market without a copy has nothing to check.
 pub fn check() -> Result<bool> {
     let lock = std::fs::read_to_string(crate::repo_root().join("Cargo.lock"))
         .context("reading Cargo.lock")?;
-    let problems = problems(&pulled_dir(), &lock);
-    for p in &problems {
-        println!("schemas-check: {p}");
+    let mut ok = true;
+    for market in MARKETS {
+        let dir = pulled_dir(market);
+        if !dir.exists() {
+            continue;
+        }
+        let problems = problems(&dir, &lock, market);
+        for p in &problems {
+            println!("schemas-check: {p}");
+        }
+        if problems.is_empty() {
+            println!(
+                "schemas-check: {} is the manifest's, of the commit Cargo.lock pins",
+                pulled_rel(market)
+            );
+        }
+        ok &= problems.is_empty();
     }
-    if problems.is_empty() {
-        println!("schemas-check: {PULLED} is the manifest's, of the commit Cargo.lock pins");
-    }
-    Ok(problems.is_empty())
+    Ok(ok)
 }
 
 #[cfg(test)]
@@ -311,12 +380,23 @@ mod tests {
         assert_eq!(locked_rev("[[package]]\nname = \"x\"\n"), None);
         assert_eq!(
             table_of("nem/REGION/metadata/v1.metadata.json"),
-            Some("REGION")
+            Some(("nem", "REGION"))
+        );
+        assert_eq!(
+            table_of("gas/GBB_FACILITIES/metadata/v1.metadata.json"),
+            Some(("gas", "GBB_FACILITIES"))
         );
         assert_eq!(table_of("nem/REGION/schema-1.json"), None);
         assert_eq!(table_of("nem/REGION/table.json"), None);
+        assert_eq!(table_of("mars/X/metadata/v1.metadata.json"), None);
+        assert_eq!(folders_market("gas/folders.json"), Some("gas"));
+        assert_eq!(folders_market("gas/x/folders.json"), None);
         let dir = tree();
-        assert_eq!(problems(dir.path(), LOCK), Vec::<String>::new());
+        assert_eq!(problems(dir.path(), LOCK, "nem"), Vec::<String>::new());
+        // The same copy read as another market's: its tables are not that
+        // market's, and its folders file is not listed for it.
+        let p = problems(dir.path(), LOCK, "gas");
+        assert!(p.iter().any(|m| m.contains("lists no gas table")), "{p:?}");
     }
 
     #[test]
@@ -326,7 +406,7 @@ mod tests {
         std::fs::write(dir.path().join("stray.txt"), b"").unwrap();
         std::fs::create_dir_all(dir.path().join("OTHER")).unwrap();
         std::fs::write(dir.path().join(FOLDERS), b"{\"folders\":[1]}").unwrap();
-        let p = problems(dir.path(), &LOCK.replace("abc", "def"));
+        let p = problems(dir.path(), &LOCK.replace("abc", "def"), "nem");
         assert_eq!(p.len(), 5, "{p:?}");
         assert!(p.iter().any(|m| m.starts_with("folders.json has SHA-256")));
         assert!(p.iter().any(|m| m.contains("not edited")));
@@ -334,18 +414,18 @@ mod tests {
         assert!(p.iter().any(|m| m.starts_with("OTHER")));
         assert!(p.iter().any(|m| m.contains("just schemas-pull def")));
         std::fs::remove_file(dir.path().join("REGION/metadata/v1.metadata.json")).unwrap();
-        let p = problems(dir.path(), "");
+        let p = problems(dir.path(), "", "nem");
         assert!(p.iter().any(|m| m.contains("but not pulled")), "{p:?}");
         assert!(p.iter().any(|m| m.contains("from no git commit")), "{p:?}");
         std::fs::write(dir.path().join(MANIFEST), "{}").unwrap();
         assert!(
-            problems(dir.path(), LOCK)
+            problems(dir.path(), LOCK, "nem")
                 .iter()
-                .any(|m| m.contains("lists no table"))
+                .any(|m| m.contains("lists no nem table"))
         );
         std::fs::remove_file(dir.path().join(MANIFEST)).unwrap();
         assert!(
-            problems(dir.path(), LOCK)
+            problems(dir.path(), LOCK, "nem")
                 .iter()
                 .any(|m| m.contains("missing"))
         );
@@ -359,11 +439,11 @@ mod tests {
             .unwrap()
             .remove("nem/folders.json");
         std::fs::write(dir.path().join(MANIFEST), m.to_string()).unwrap();
-        let p = problems(dir.path(), LOCK);
+        let p = problems(dir.path(), LOCK, "nem");
         assert_eq!(p, ["folders.json is pulled but the manifest lists none"]);
         let dir = tree();
         std::fs::remove_file(dir.path().join(FOLDERS)).unwrap();
-        let p = problems(dir.path(), LOCK);
+        let p = problems(dir.path(), LOCK, "nem");
         assert_eq!(p, ["folders.json is in the manifest but not pulled"]);
     }
 }

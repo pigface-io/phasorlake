@@ -42,8 +42,8 @@ enum Cmd {
         #[arg(long, default_value = "origin/main")]
         base: String,
     },
-    /// Copy utilake-schemas' NEM tables and manifest at a commit into
-    /// schemas/nem/pulled/.
+    /// Copy utilake-schemas' tables and manifest at a commit into
+    /// schemas/{market}/pulled/, every market it publishes.
     SchemasPull {
         /// The commit, or anything git names one by.
         rev: String,
@@ -51,7 +51,7 @@ enum Cmd {
         #[arg(long, default_value = "../utilake-schemas")]
         from: PathBuf,
     },
-    /// Fail unless schemas/nem/pulled/ is its manifest's, of the commit
+    /// Fail unless each schemas/{market}/pulled/ is its manifest's, of the commit
     /// Cargo.lock takes utilake-iceberg from.
     SchemasCheck,
     /// Check llm/index.md: size, and every path and recipe it names exists.

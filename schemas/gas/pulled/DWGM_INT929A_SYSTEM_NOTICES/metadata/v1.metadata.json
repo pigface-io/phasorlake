@@ -1,0 +1,144 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 8789624530248893323,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 8,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1790776800000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT929A_SYSTEM_NOTICES",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"system_wide_notice_id\",\"2\":\"critical_notice_flag\",\"3\":\"system_message\",\"4\":\"system_email_message\",\"5\":\"notice_start_date\",\"6\":\"notice_end_date\",\"7\":\"url_path\",\"8\":\"current_date\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"DWGM\",\"INT929A_SYSTEM_NOTICES_1\"]]",
+    "utilake.table": "DWGM_INT929A_SYSTEM_NOTICES",
+    "utilake.temporal.cutoff": "CURRENT_DATE",
+    "utilake.temporal.entity": "[\"SYSTEM_WIDE_NOTICE_ID\"]",
+    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "NOTICE_START_DATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "NOTICE_START_DATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 8789624530248893323,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "SYSTEM_WIDE_NOTICE_ID",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 2,
+          "name": "CRITICAL_NOTICE_FLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "SYSTEM_MESSAGE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "SYSTEM_EMAIL_MESSAGE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 5,
+          "name": "NOTICE_START_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 6,
+          "name": "NOTICE_END_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 7,
+          "name": "URL_PATH",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 8,
+          "name": "CURRENT_DATE",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 8789624530248893323,
+      "timestamp-ms": 1790776800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT929A_SYSTEM_NOTICES/metadata/snap-8789624530248893323-1-d02bce04-aa3e-8ade-a1cb-45ba99210eb7.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 8789624530248893323,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "int929a_v4_system_notices_1.csv",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "035e93484ede99a2e46e8e4123e1dec40b13b33226e4af159409e8b194abf36f",
+        "utilake.from.time": "2026-06-28T00:00:00+10:00",
+        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.report-subtype": "INT929A_SYSTEM_NOTICES_1",
+        "utilake.report-type": "DWGM",
+        "utilake.rows": "4",
+        "utilake.to.file": "int929a_v4_system_notices_1.csv",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "035e93484ede99a2e46e8e4123e1dec40b13b33226e4af159409e8b194abf36f",
+        "utilake.to.time": "2026-08-19T00:00:00+10:00",
+        "utilake.total-rows": "4",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1790776800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "d02bce04-aa3e-8ade-a1cb-45ba99210eb7"
+}

@@ -1,0 +1,321 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 8060513541631628762,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 14,
+  "last-partition-id": 999,
+  "last-sequence-number": 5,
+  "last-updated-ms": 1790776800004,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_SHORT_TERM_CAPACITY_OUTLOOK",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "Provides on each gas day D, the BB facility operator’s good faith estimate of the daily capacity of the BB Facility for gas days D+1 to D+7.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"FacilityId\",\"2\":\"FacilityName\",\"3\":\"CapacityType\",\"4\":\"CapacityTypeDescription\",\"5\":\"FlowDirection\",\"6\":\"GasDate\",\"7\":\"OutlookQuantity\",\"8\":\"Description\",\"9\":\"CapacityDescription\",\"10\":\"ReceiptLocation\",\"11\":\"ReceiptLocationName\",\"12\":\"DeliveryLocation\",\"13\":\"DeliveryLocationName\",\"14\":\"LastUpdated\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.model": "[\"GAS_SHORT_TERM_CAP_OUTLOOK\",\"GAS_FACILITY\"]",
+    "utilake.model-types": "{\"1\":\"NUMBER(10,0)\",\"2\":\"VARCHAR2(100)\",\"3\":\"VARCHAR2(20)\",\"5\":\"VARCHAR2(20)\",\"6\":\"DATE\",\"7\":\"NUMBER(18,3)\",\"8\":\"VARCHAR2(1000)\",\"9\":\"VARCHAR2(1000)\",\"10\":\"NUMBER(10,0)\",\"12\":\"NUMBER(10,0)\"}",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"GBB\",\"SHORT_TERM_CAPACITY_OUTLOOK\"],[\"GBB\",\"SHORT_TERM_CAPACITY_OUTLOOK_FUTURE\"]]",
+    "utilake.table": "GBB_SHORT_TERM_CAPACITY_OUTLOOK",
+    "utilake.temporal.cutoff": "LASTUPDATED",
+    "utilake.temporal.entity": "[\"FACILITYID\"]",
+    "utilake.temporal.order": "[\"LASTUPDATED\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "GASDATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "GASDATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 8060513541631628762,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Unique Facility Identifier",
+          "id": 1,
+          "name": "FACILITYID",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Name of the Facility",
+          "id": 2,
+          "name": "FACILITYNAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Capacity Type - Must be either STORAGE or MDQ",
+          "id": 3,
+          "name": "CAPACITYTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "CAPACITYTYPEDESCRIPTION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Direction of flow for the submission record. Must be one of ‘RECEIPT’ or ‘DELIVERY’",
+          "id": 5,
+          "name": "FLOWDIRECTION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Date of gas day",
+          "id": 6,
+          "name": "GASDATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "doc": "Quantity of available capacity during the defined period",
+          "id": 7,
+          "name": "OUTLOOKQUANTITY",
+          "required": false,
+          "type": "decimal(8, 3)"
+        },
+        {
+          "doc": "Description for reasons or comments directly related to the quantity or change in Outlook quantity in relation to the Facility",
+          "id": 8,
+          "name": "DESCRIPTION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Describes the meaning of the capacity Number Provided",
+          "id": 9,
+          "name": "CAPACITYDESCRIPTION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Connection Point ID that best represents the receipt location",
+          "id": 10,
+          "name": "RECEIPTLOCATION",
+          "required": false,
+          "type": "decimal(7, 0)"
+        },
+        {
+          "id": 11,
+          "name": "RECEIPTLOCATIONNAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Connection Point ID that best represents the Delivery Location",
+          "id": 12,
+          "name": "DELIVERYLOCATION",
+          "required": false,
+          "type": "decimal(7, 0)"
+        },
+        {
+          "id": 13,
+          "name": "DELIVERYLOCATIONNAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 14,
+          "name": "LASTUPDATED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 7118057924559837488,
+      "timestamp-ms": 1756648800000
+    },
+    {
+      "snapshot-id": 6880510907744860553,
+      "timestamp-ms": 1788184800001
+    },
+    {
+      "snapshot-id": 2763440785646611687,
+      "timestamp-ms": 1790776800002
+    },
+    {
+      "snapshot-id": 8732045144799303328,
+      "timestamp-ms": 1790776800003
+    },
+    {
+      "snapshot-id": 8060513541631628762,
+      "timestamp-ms": 1790776800004
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_SHORT_TERM_CAPACITY_OUTLOOK/metadata/snap-7118057924559837488-1-b65f99e7-4467-8f1f-a342-c27fd168ee5a.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 7118057924559837488,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "35",
+        "utilake.from.file": "GasBBShortTermCapacityOutlookFuture_20250912222127.CSV",
+        "utilake.from.release": "2025-09",
+        "utilake.from.sha256": "4a07a376adf148b6d570db6e1722c70e02375a9df8d8ca348f19a3d3295d7d6b",
+        "utilake.from.time": "2025-09-12T00:00:00+10:00",
+        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.report-subtype": "SHORT_TERM_CAPACITY_OUTLOOK_FUTURE",
+        "utilake.report-type": "GBB",
+        "utilake.rows": "12008",
+        "utilake.to.file": "GasBBShortTermCapacityOutlookFuture_20260913125435.CSV",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "3ecc06a0af0d24791949d123339a538479c45090c6c2bed5fdbb0f7befcf6fbe",
+        "utilake.to.time": "2026-10-19T00:00:00+10:00",
+        "utilake.total-rows": "12008",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1756648800000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_SHORT_TERM_CAPACITY_OUTLOOK/metadata/snap-6880510907744860553-2-b65f99e7-4467-8f1f-a342-c27fd168ee5a.avro",
+      "parent-snapshot-id": 7118057924559837488,
+      "schema-id": 0,
+      "sequence-number": 2,
+      "snapshot-id": 6880510907744860553,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "GasBBShortTermCapacityOutlook.CSV",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "2795e09944eacb9edcc12c420711a28832e4154f53a3e0d42f75ed7761238f07",
+        "utilake.from.time": "2018-09-30T00:00:00+10:00",
+        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.report-subtype": "SHORT_TERM_CAPACITY_OUTLOOK",
+        "utilake.report-type": "GBB",
+        "utilake.rows": "396176",
+        "utilake.to.file": "GasBBShortTermCapacityOutlook.CSV",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "2795e09944eacb9edcc12c420711a28832e4154f53a3e0d42f75ed7761238f07",
+        "utilake.to.time": "2026-10-20T00:00:00+10:00",
+        "utilake.total-rows": "408184",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1788184800001
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_SHORT_TERM_CAPACITY_OUTLOOK/metadata/snap-2763440785646611687-3-b65f99e7-4467-8f1f-a342-c27fd168ee5a.avro",
+      "parent-snapshot-id": 6880510907744860553,
+      "schema-id": 0,
+      "sequence-number": 3,
+      "snapshot-id": 2763440785646611687,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "3",
+        "utilake.from.file": "GasBBShortTermCapacityOutlookFuture.CSV",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "ee5a7da00dea5f9c6b9bb2d884591d76ec874c9935fb8e1d0679b1268b8c83ae",
+        "utilake.from.time": "2026-10-01T00:00:00+10:00",
+        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.report-subtype": "SHORT_TERM_CAPACITY_OUTLOOK_FUTURE",
+        "utilake.report-type": "GBB",
+        "utilake.rows": "2661",
+        "utilake.to.file": "GasBBShortTermCapacityOutlookFuture_20261001165434.CSV",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "6b5daa39411d771376d98588cb96622be0b76822e0931e03f18031c9c22f8333",
+        "utilake.to.time": "2026-10-20T00:00:00+10:00",
+        "utilake.total-rows": "410845",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1790776800002
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_SHORT_TERM_CAPACITY_OUTLOOK/metadata/snap-8732045144799303328-4-b65f99e7-4467-8f1f-a342-c27fd168ee5a.avro",
+      "parent-snapshot-id": 2763440785646611687,
+      "schema-id": 0,
+      "sequence-number": 4,
+      "snapshot-id": 8732045144799303328,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
+        "utilake.from.file": "GasBBShortTermCapacityOutlook.CSV",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "1ed4b456f03fc88eae388ca994bc9dd42d242e32593f1a8efb078bc667612e19",
+        "utilake.from.time": "2018-09-30T00:00:00+10:00",
+        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.report-subtype": "SHORT_TERM_CAPACITY_OUTLOOK",
+        "utilake.report-type": "GBB",
+        "utilake.rows": "402958",
+        "utilake.to.file": "GasBBShortTermCapacityOutlook.CSV@20261020T201100+1000",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "418155d02cce5d40fbe6b28d579709bcb83a3293b12243fe20d9823271620a65",
+        "utilake.to.time": "2026-10-31T00:00:00+10:00",
+        "utilake.total-rows": "813803",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1790776800003
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_SHORT_TERM_CAPACITY_OUTLOOK/metadata/snap-8060513541631628762-5-b65f99e7-4467-8f1f-a342-c27fd168ee5a.avro",
+      "parent-snapshot-id": 8732045144799303328,
+      "schema-id": 0,
+      "sequence-number": 5,
+      "snapshot-id": 8060513541631628762,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "3",
+        "utilake.from.file": "GasBBShortTermCapacityOutlookFuture.CSV",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "5c7caff8be37fdf60ba88b8b3679190d557918a644aa073eb410d8630056cbda",
+        "utilake.from.time": "2026-10-20T00:00:00+10:00",
+        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.report-subtype": "SHORT_TERM_CAPACITY_OUTLOOK_FUTURE",
+        "utilake.report-type": "GBB",
+        "utilake.rows": "2808",
+        "utilake.to.file": "GasBBShortTermCapacityOutlookFuture.CSV@20261022T085100+1000",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "349e5f7aa3b9f89a7e3decab6cee3e5dca9604a102b68b085ab57682ac7385d0",
+        "utilake.to.time": "2026-10-31T00:00:00+10:00",
+        "utilake.total-rows": "816611",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1790776800004
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "b65f99e7-4467-8f1f-a342-c27fd168ee5a"
+}

@@ -1,0 +1,97 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 2576567031203778253,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 1,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1777557600000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT157_13",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"int157\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"DWGM\",\"INT157_13\"]]",
+    "utilake.table": "DWGM_INT157_13",
+    "utilake.temporal.entity": "[]",
+    "utilake.temporal.order": "[]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 2576567031203778253,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "INT157",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 2576567031203778253,
+      "timestamp-ms": 1777557600000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT157_13/metadata/snap-2576567031203778253-1-008a1cd8-3574-8d14-ab80-de02e92c11a1.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 2576567031203778253,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "int157_13.csv",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "794f67574a1ec184923576af272a91fb5eb2babfbda295ee045a8ce6bd53d318",
+        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.report-subtype": "INT157_13",
+        "utilake.report-type": "DWGM",
+        "utilake.rows": "36",
+        "utilake.to.file": "int157_13.csv",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "794f67574a1ec184923576af272a91fb5eb2babfbda295ee045a8ce6bd53d318",
+        "utilake.total-rows": "36",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1777557600000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "008a1cd8-3574-8d14-ab80-de02e92c11a1"
+}

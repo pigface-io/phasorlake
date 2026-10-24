@@ -1,0 +1,130 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 5391615256095189669,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 5,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1785506400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_LNG_TRANSACTIONS",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "This table displays LNG transaction aggregated data",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"TransactionMonth\",\"2\":\"VolWeightPrice\",\"3\":\"VolumePJ\",\"4\":\"SupplyStartDate\",\"5\":\"SupplyEndDate\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.model": "[\"GAS_LNG_TRANSACTION\"]",
+    "utilake.model-types": "{\"2\":\"NUMBER(18,8)\",\"3\":\"NUMBER(18,8)\"}",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"GBB\",\"LNG_TRANSACTIONS\"]]",
+    "utilake.table": "GBB_LNG_TRANSACTIONS",
+    "utilake.temporal.entity": "[]",
+    "utilake.temporal.order": "[]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "SUPPLYSTARTDATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "SUPPLYSTARTDATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 5391615256095189669,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "TRANSACTIONMONTH",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The volume weighted price for the reporting period",
+          "id": 2,
+          "name": "VOLWEIGHTPRICE",
+          "required": false,
+          "type": "decimal(8, 6)"
+        },
+        {
+          "doc": "The total volume of the transactions",
+          "id": 3,
+          "name": "VOLUMEPJ",
+          "required": false,
+          "type": "decimal(5, 3)"
+        },
+        {
+          "id": 4,
+          "name": "SUPPLYSTARTDATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 5,
+          "name": "SUPPLYENDDATE",
+          "required": false,
+          "type": "date"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 5391615256095189669,
+      "timestamp-ms": 1785506400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_LNG_TRANSACTIONS/metadata/snap-5391615256095189669-1-9df31388-7b94-8afc-9827-72ccd152c68d.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 5391615256095189669,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "GasBBLNGTransactions.csv",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "a16e18422bfeaaf7620a4a1c48d0490db5cf7b092bdd99ec8f25cd384ec58b50",
+        "utilake.from.time": "2023-10-07T00:00:00+10:00",
+        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.report-subtype": "LNG_TRANSACTIONS",
+        "utilake.report-type": "GBB",
+        "utilake.rows": "14",
+        "utilake.to.file": "GasBBLNGTransactions.csv",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "a16e18422bfeaaf7620a4a1c48d0490db5cf7b092bdd99ec8f25cd384ec58b50",
+        "utilake.to.time": "2026-05-22T00:00:00+10:00",
+        "utilake.total-rows": "14",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1785506400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "9df31388-7b94-8afc-9827-72ccd152c68d"
+}

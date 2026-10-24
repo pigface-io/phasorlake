@@ -1,0 +1,150 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 7090837952938640268,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 8,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1790776800000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_SHIPPERS",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "A list of shippers who have contracted primary Storage, Compression or Pipeline capacity",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"EffectiveDate\",\"2\":\"FacilityId\",\"3\":\"FacilityName\",\"4\":\"FacilityType\",\"5\":\"CompanyId\",\"6\":\"OperatorName\",\"7\":\"ShipperName\",\"8\":\"LastUpdated\"}",
+    "utilake.key": "[\"FACILITYID\",\"COMPANYID\"]",
+    "utilake.load": "snapshot",
+    "utilake.market": "gas",
+    "utilake.model": "[\"GAS_SHIPPER_LIST\"]",
+    "utilake.model-types": "{\"1\":\"DATE\",\"2\":\"NUMBER(20,0)\",\"7\":\"VARCHAR2(200)\"}",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"GBB\",\"SHIPPERS_FULL_LIST\"]]",
+    "utilake.table": "GBB_SHIPPERS",
+    "utilake.temporal.cutoff": "LASTUPDATED",
+    "utilake.temporal.entity": "[\"FACILITYID\",\"COMPANYID\"]",
+    "utilake.temporal.order": "[\"LASTUPDATED\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "EFFECTIVEDATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "EFFECTIVEDATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 7090837952938640268,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Gas date that corresponding record takes effect",
+          "id": 1,
+          "name": "EFFECTIVEDATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "doc": "A unique AEMO defined Facility Identifier",
+          "id": 2,
+          "name": "FACILITYID",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "id": 3,
+          "name": "FACILITYNAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "FACILITYTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 5,
+          "name": "COMPANYID",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "id": 6,
+          "name": "OPERATORNAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The name of the shipper who holds the capacity",
+          "id": 7,
+          "name": "SHIPPERNAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 8,
+          "name": "LASTUPDATED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 7090837952938640268,
+      "timestamp-ms": 1790776800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_SHIPPERS/metadata/snap-7090837952938640268-1-66e81d1d-5610-89bb-8526-c2cc3218ff84.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 7090837952938640268,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "GasBBShippersFullList.CSV",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "a87a124d620a8bf81341f5c5015acb30dfe807e84627bfbd13854ef021d4c336",
+        "utilake.from.time": "2023-01-01T00:00:00+10:00",
+        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.report-subtype": "SHIPPERS_FULL_LIST",
+        "utilake.report-type": "GBB",
+        "utilake.rows": "5412",
+        "utilake.to.file": "GasBBShippersFullList.CSV",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "a87a124d620a8bf81341f5c5015acb30dfe807e84627bfbd13854ef021d4c336",
+        "utilake.to.time": "2026-10-01T00:00:00+10:00",
+        "utilake.total-rows": "5412",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1790776800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "66e81d1d-5610-89bb-8526-c2cc3218ff84"
+}

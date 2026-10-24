@@ -1,0 +1,111 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 6884137470561234878,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 3,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1790776800000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_LINEPACK_ZONES",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "Lists all production and demand locations within the Bulletin Board system.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"Operator\",\"2\":\"LinepackZone\",\"3\":\"LinepackZoneDescription\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.model": "[\"GAS_LOCATION\",\"GAS_LOCATION_NODE\"]",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"GBB\",\"LINEPACK_ZONES\"]]",
+    "utilake.table": "GBB_LINEPACK_ZONES",
+    "utilake.temporal.entity": "[]",
+    "utilake.temporal.order": "[]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 6884137470561234878,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "OPERATOR",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 2,
+          "name": "LINEPACKZONE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "LINEPACKZONEDESCRIPTION",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 6884137470561234878,
+      "timestamp-ms": 1790776800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_LINEPACK_ZONES/metadata/snap-6884137470561234878-1-ba6ea0e5-ae95-8b00-9c48-de7df2d53a48.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 6884137470561234878,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "GasBBLinepackZones.CSV",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "bd019316c5a2a9a73f94216e308469624b196841acff655fc11b54dbb61574d5",
+        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.report-subtype": "LINEPACK_ZONES",
+        "utilake.report-type": "GBB",
+        "utilake.rows": "56",
+        "utilake.to.file": "GasBBLinepackZones.CSV",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "bd019316c5a2a9a73f94216e308469624b196841acff655fc11b54dbb61574d5",
+        "utilake.total-rows": "56",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1790776800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "ba6ea0e5-ae95-8b00-9c48-de7df2d53a48"
+}

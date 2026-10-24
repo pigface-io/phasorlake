@@ -1,0 +1,274 @@
+{
+  "current-schema-id": 1,
+  "current-snapshot-id": 784793777290506993,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 11,
+  "last-partition-id": 999,
+  "last-sequence-number": 2,
+  "last-updated-ms": 1790776800001,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_FACILITIES",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "Provides details of all facilities",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"FacilityName\",\"2\":\"FacilityShortName\",\"3\":\"FacilityId\",\"4\":\"FacilityType\",\"5\":\"FacilityTypeDescription\",\"6\":\"OperatingState\",\"7\":\"OperatingStateDate\",\"8\":\"OperatorName\",\"9\":\"OperatorId\",\"10\":\"OperatorChangeDate\",\"11\":\"LastUpdated\"}",
+    "utilake.key": "[\"FACILITYID\",\"OPERATORID\"]",
+    "utilake.load": "snapshot",
+    "utilake.market": "gas",
+    "utilake.model": "[\"GAS_FACILITY\",\"GAS_FACILITY_DETAIL\",\"GAS_FACILITY_OPSTATE\",\"GAS_FACILITY_OWNER\"]",
+    "utilake.model-types": "{\"1\":\"VARCHAR2(100)\",\"2\":\"VARCHAR2(30)\",\"3\":\"NUMBER(10,0)\",\"4\":\"VARCHAR2(40)\",\"6\":\"Varchar2 (20)\"}",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"GBB\",\"FACILITIES_FULL\"],[\"GBB\",\"FACILITIES\"]]",
+    "utilake.table": "GBB_FACILITIES",
+    "utilake.temporal.cutoff": "LASTUPDATED",
+    "utilake.temporal.entity": "[\"FACILITYID\",\"OPERATORID\"]",
+    "utilake.temporal.order": "[\"LASTUPDATED\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "OPERATINGSTATEDATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "OPERATINGSTATEDATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 784793777290506993,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Name of the Facility",
+          "id": 1,
+          "name": "FACILITYNAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "An abbreviation of the facility name",
+          "id": 2,
+          "name": "FACILITYSHORTNAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Unique Facility Identifier",
+          "id": 3,
+          "name": "FACILITYID",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Describes the type of facility. Refer to the GAS_FACILITY_TYPE table",
+          "id": 4,
+          "name": "FACILITYTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 5,
+          "name": "FACILITYTYPEDESCRIPTION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Operating status - active, inactive",
+          "id": 6,
+          "name": "OPERATINGSTATE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 7,
+          "name": "OPERATINGSTATEDATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 8,
+          "name": "OPERATORNAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 9,
+          "name": "OPERATORID",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "id": 10,
+          "name": "OPERATORCHANGEDATE",
+          "required": false,
+          "type": "date"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Name of the Facility",
+          "id": 1,
+          "name": "FACILITYNAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "An abbreviation of the facility name",
+          "id": 2,
+          "name": "FACILITYSHORTNAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Unique Facility Identifier",
+          "id": 3,
+          "name": "FACILITYID",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Describes the type of facility. Refer to the GAS_FACILITY_TYPE table",
+          "id": 4,
+          "name": "FACILITYTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 5,
+          "name": "FACILITYTYPEDESCRIPTION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Operating status - active, inactive",
+          "id": 6,
+          "name": "OPERATINGSTATE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 7,
+          "name": "OPERATINGSTATEDATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 8,
+          "name": "OPERATORNAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 9,
+          "name": "OPERATORID",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "id": 10,
+          "name": "OPERATORCHANGEDATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 11,
+          "name": "LASTUPDATED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 1,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 2054818152468970949,
+      "timestamp-ms": 1790776800000
+    },
+    {
+      "snapshot-id": 784793777290506993,
+      "timestamp-ms": 1790776800001
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_FACILITIES/metadata/snap-2054818152468970949-1-e44f739c-297c-8b61-af04-d1d38e6bde5b.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 2054818152468970949,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "GasBBFacilities.CSV",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "9e28806670e13042b2c0d723f3579d55e6dac09207d812968de78f4f4cb94e49",
+        "utilake.from.time": "2008-07-01T00:00:00+10:00",
+        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.report-subtype": "FACILITIES",
+        "utilake.report-type": "GBB",
+        "utilake.rows": "159",
+        "utilake.to.file": "GasBBFacilities.CSV",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "9e28806670e13042b2c0d723f3579d55e6dac09207d812968de78f4f4cb94e49",
+        "utilake.to.time": "2026-09-01T00:00:00+10:00",
+        "utilake.total-rows": "159",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1790776800000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_FACILITIES/metadata/snap-784793777290506993-2-e44f739c-297c-8b61-af04-d1d38e6bde5b.avro",
+      "parent-snapshot-id": 2054818152468970949,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 784793777290506993,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "GasBBFacilitiesFull.CSV",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "4a86674156d4a3bb885792c1507cf782848377d2261433f6ccb4ac99a9e6eda0",
+        "utilake.from.time": "2008-01-01T00:00:00+10:00",
+        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.report-subtype": "FACILITIES_FULL",
+        "utilake.report-type": "GBB",
+        "utilake.rows": "266",
+        "utilake.to.file": "GasBBFacilitiesFull.CSV",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "4a86674156d4a3bb885792c1507cf782848377d2261433f6ccb4ac99a9e6eda0",
+        "utilake.to.time": "2026-09-01T00:00:00+10:00",
+        "utilake.total-rows": "425",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1790776800001
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "e44f739c-297c-8b61-af04-d1d38e6bde5b"
+}

@@ -1,0 +1,303 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 5200767692642771246,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 7,
+  "last-partition-id": 999,
+  "last-sequence-number": 6,
+  "last-updated-ms": 1790776800005,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_SHORT_TERM_TRANSACTIONS",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "These reports display information regarding short-term gas transactions",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"PeriodID\",\"2\":\"State\",\"3\":\"Quantity (TJ)\",\"4\":\"VolumeWeightedPrice ($)\",\"5\":\"TransactionType\",\"6\":\"SupplyPeriodStart\",\"7\":\"SupplyPeriodEnd\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.model": "[\"GAS_SHORT_TERM_TRANS\"]",
+    "utilake.model-types": "{\"2\":\"VARCHAR2(5)\",\"4\":\"NUMBER(18,8)\",\"5\":\"VARCHAR2(255)\",\"6\":\"DATE\",\"7\":\"DATE\"}",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"GBB\",\"SHORT_TERM_TRANSACTIONS_NSW\"],[\"GBB\",\"SHORT_TERM_TRANSACTIONS_NT\"],[\"GBB\",\"SHORT_TERM_TRANSACTIONS_QLD\"],[\"GBB\",\"SHORT_TERM_TRANSACTIONS_SA\"],[\"GBB\",\"SHORT_TERM_TRANSACTIONS_TAS\"],[\"GBB\",\"SHORT_TERM_TRANSACTIONS_VIC\"]]",
+    "utilake.table": "GBB_SHORT_TERM_TRANSACTIONS",
+    "utilake.temporal.entity": "[\"PERIODID\",\"STATE\"]",
+    "utilake.temporal.order": "[]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "SUPPLYPERIODSTART",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "SUPPLYPERIODSTART",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 5200767692642771246,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "PERIODID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The state where the transaction occurred",
+          "id": 2,
+          "name": "STATE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "QUANTITY_TJ",
+          "required": false,
+          "type": "decimal(11, 6)"
+        },
+        {
+          "doc": "Volume weighted price of transactions where trade date is in the reporting period for the given State",
+          "id": 4,
+          "name": "VOLUMEWEIGHTEDPRICE",
+          "required": false,
+          "type": "decimal(8, 6)"
+        },
+        {
+          "doc": "Transaction Type is Supply for these short-term transactions reports",
+          "id": 5,
+          "name": "TRANSACTIONTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The earliest start date of all transactions in the reporting period for the given state",
+          "id": 6,
+          "name": "SUPPLYPERIODSTART",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "doc": "The latest end date of all transactions in the reporting period for the given state",
+          "id": 7,
+          "name": "SUPPLYPERIODEND",
+          "required": false,
+          "type": "date"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 5202460303088284431,
+      "timestamp-ms": 1790776800000
+    },
+    {
+      "snapshot-id": 1214336223980829763,
+      "timestamp-ms": 1790776800001
+    },
+    {
+      "snapshot-id": 3572151487163450361,
+      "timestamp-ms": 1790776800002
+    },
+    {
+      "snapshot-id": 8028900900434682709,
+      "timestamp-ms": 1790776800003
+    },
+    {
+      "snapshot-id": 8396928435013907634,
+      "timestamp-ms": 1790776800004
+    },
+    {
+      "snapshot-id": 5200767692642771246,
+      "timestamp-ms": 1790776800005
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_SHORT_TERM_TRANSACTIONS/metadata/snap-5202460303088284431-1-e70149d2-1bfa-80c8-bbe1-4a4eb57a3c9e.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 5202460303088284431,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "GasBBShortTermTransactionsNT.CSV",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "a8bdd9b4bb5bafd9e745950c617edabb4fdaa8adcfcfe5916a152f9cbf326f55",
+        "utilake.from.time": "2023-03-18T00:00:00+10:00",
+        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.report-subtype": "SHORT_TERM_TRANSACTIONS_NT",
+        "utilake.report-type": "GBB",
+        "utilake.rows": "43",
+        "utilake.to.file": "GasBBShortTermTransactionsNT.CSV",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "a8bdd9b4bb5bafd9e745950c617edabb4fdaa8adcfcfe5916a152f9cbf326f55",
+        "utilake.to.time": "2026-05-11T00:00:00+10:00",
+        "utilake.total-rows": "43",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1790776800000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_SHORT_TERM_TRANSACTIONS/metadata/snap-1214336223980829763-2-e70149d2-1bfa-80c8-bbe1-4a4eb57a3c9e.avro",
+      "parent-snapshot-id": 5202460303088284431,
+      "schema-id": 0,
+      "sequence-number": 2,
+      "snapshot-id": 1214336223980829763,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "GasBBShortTermTransactionsNSW.CSV",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "531b39795c1bfc0bf0dfed4b7ba1d7dbff999082283015c06d854243a8a686ec",
+        "utilake.from.time": "2023-04-06T00:00:00+10:00",
+        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.report-subtype": "SHORT_TERM_TRANSACTIONS_NSW",
+        "utilake.report-type": "GBB",
+        "utilake.rows": "43",
+        "utilake.to.file": "GasBBShortTermTransactionsNSW.CSV",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "531b39795c1bfc0bf0dfed4b7ba1d7dbff999082283015c06d854243a8a686ec",
+        "utilake.to.time": "2026-07-02T00:00:00+10:00",
+        "utilake.total-rows": "86",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1790776800001
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_SHORT_TERM_TRANSACTIONS/metadata/snap-3572151487163450361-3-e70149d2-1bfa-80c8-bbe1-4a4eb57a3c9e.avro",
+      "parent-snapshot-id": 1214336223980829763,
+      "schema-id": 0,
+      "sequence-number": 3,
+      "snapshot-id": 3572151487163450361,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "GasBBShortTermTransactionsTAS.CSV",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "ab7abcd985b137428d6453c764290407a858005c337e4b82549a0c25d4eecfe9",
+        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.report-subtype": "SHORT_TERM_TRANSACTIONS_TAS",
+        "utilake.report-type": "GBB",
+        "utilake.rows": "43",
+        "utilake.to.file": "GasBBShortTermTransactionsTAS.CSV",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "ab7abcd985b137428d6453c764290407a858005c337e4b82549a0c25d4eecfe9",
+        "utilake.total-rows": "129",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1790776800002
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_SHORT_TERM_TRANSACTIONS/metadata/snap-8028900900434682709-4-e70149d2-1bfa-80c8-bbe1-4a4eb57a3c9e.avro",
+      "parent-snapshot-id": 3572151487163450361,
+      "schema-id": 0,
+      "sequence-number": 4,
+      "snapshot-id": 8028900900434682709,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "GasBBShortTermTransactionsQLD.CSV",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "a23faee1a8b9a733d48c348d7effc9fd0cc18b49f529c5324cf8ed2707deb979",
+        "utilake.from.time": "2023-03-14T00:00:00+10:00",
+        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.report-subtype": "SHORT_TERM_TRANSACTIONS_QLD",
+        "utilake.report-type": "GBB",
+        "utilake.rows": "188",
+        "utilake.to.file": "GasBBShortTermTransactionsQLD.CSV",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "a23faee1a8b9a733d48c348d7effc9fd0cc18b49f529c5324cf8ed2707deb979",
+        "utilake.to.time": "2026-10-06T00:00:00+10:00",
+        "utilake.total-rows": "317",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1790776800003
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_SHORT_TERM_TRANSACTIONS/metadata/snap-8396928435013907634-5-e70149d2-1bfa-80c8-bbe1-4a4eb57a3c9e.avro",
+      "parent-snapshot-id": 8028900900434682709,
+      "schema-id": 0,
+      "sequence-number": 5,
+      "snapshot-id": 8396928435013907634,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "GasBBShortTermTransactionsSA.CSV",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "f898631ccc379a24d691873d81b8f995a58f7940458e5d16e500e4a6e500168d",
+        "utilake.from.time": "2023-03-16T00:00:00+10:00",
+        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.report-subtype": "SHORT_TERM_TRANSACTIONS_SA",
+        "utilake.report-type": "GBB",
+        "utilake.rows": "188",
+        "utilake.to.file": "GasBBShortTermTransactionsSA.CSV",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "f898631ccc379a24d691873d81b8f995a58f7940458e5d16e500e4a6e500168d",
+        "utilake.to.time": "2026-10-06T00:00:00+10:00",
+        "utilake.total-rows": "505",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1790776800004
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_SHORT_TERM_TRANSACTIONS/metadata/snap-5200767692642771246-6-e70149d2-1bfa-80c8-bbe1-4a4eb57a3c9e.avro",
+      "parent-snapshot-id": 8396928435013907634,
+      "schema-id": 0,
+      "sequence-number": 6,
+      "snapshot-id": 5200767692642771246,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "GasBBShortTermTransactionsVIC.CSV",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "3759a210098537955956c95a862d3d52e8bd3e3a45e05e23cc036b74255b0427",
+        "utilake.from.time": "2023-03-22T00:00:00+10:00",
+        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.report-subtype": "SHORT_TERM_TRANSACTIONS_VIC",
+        "utilake.report-type": "GBB",
+        "utilake.rows": "188",
+        "utilake.to.file": "GasBBShortTermTransactionsVIC.CSV",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "3759a210098537955956c95a862d3d52e8bd3e3a45e05e23cc036b74255b0427",
+        "utilake.to.time": "2027-01-01T00:00:00+10:00",
+        "utilake.total-rows": "693",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1790776800005
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "e70149d2-1bfa-80c8-bbe1-4a4eb57a3c9e"
+}

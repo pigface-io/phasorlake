@@ -1,0 +1,203 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 4773774940429560292,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 14,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1759240800000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GSH_PIPELINE_SEGMENTS",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "Pipeline Segments currently registered under Part 24 of the Rules for the capacity trading and day ahead auction.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"CONNECTION_TYPE\",\"EFFECTIVEDATE\",\"FACILITY_ID\",\"FROM_ID\",\"SEGMENT_ID\",\"TO_ID\",\"VERSION_DATETIME\"]",
+    "utilake.load": "snapshot",
+    "utilake.market": "gas",
+    "utilake.model-types": "{\"1\":\"NUMBER(8,0)\",\"2\":\"VARCHAR2(100)\",\"3\":\"NUMBER(8,0)\",\"4\":\"VARCHAR2(100)\",\"5\":\"VARCHAR2 (20)\",\"6\":\"NUMBER(8,0)\",\"7\":\"VARCHAR2(100)\",\"8\":\"NUMBER(8,0)\",\"9\":\"VARCHAR2 (100)\",\"10\":\"VARCHAR2(3)\",\"11\":\"DATE\",\"12\":\"DATE\",\"13\":\"VARCHAR2(20)\",\"14\":\"DATE\"}",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"GSH\",\"PIPELINE_SEGMENTS\"]]",
+    "utilake.table": "GSH_PIPELINE_SEGMENTS",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"CONNECTION_TYPE\",\"FACILITY_ID\",\"FROM_ID\",\"SEGMENT_ID\",\"TO_ID\"]",
+    "utilake.temporal.order": "[\"VERSION_DATETIME\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "EFFECTIVEDATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "EFFECTIVEDATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 4773774940429560292,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "The unique identifier of the parent facility.",
+          "id": 1,
+          "name": "FACILITY_ID",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "The descriptive name of the parent facility.",
+          "id": 2,
+          "name": "FACILITY_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The unique identifier of the pipeline segment or compression service.",
+          "id": 3,
+          "name": "SEGMENT_ID",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "The descriptive name of the pipeline segment or compression service.",
+          "id": 4,
+          "name": "SEGMENT_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The segment type, for example Forward Haul, Backhaul or Compression Service",
+          "id": 5,
+          "name": "SEGMENT_TYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The unique identifier of the zone for forward haul pipeline segments and compression services or the service point for backhaul pipeline segments.",
+          "id": 6,
+          "name": "FROM_ID",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "The descriptive name of the zone or service point.",
+          "id": 7,
+          "name": "FROM_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The unique identifier of the zone for forward haul pipeline segments and compression services or the service point for backhaul pipeline segments.",
+          "id": 8,
+          "name": "TO_ID",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "The descriptive name of the zone or service point.",
+          "id": 9,
+          "name": "TO_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Flag to indicate if the product component can be published in the public auction reports, for example yes or no.",
+          "id": 10,
+          "name": "FOR_AUCTION_PUBLICATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The effective date of the segment.",
+          "id": 11,
+          "name": "EFFECTIVEDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The version timestamp of the record",
+          "id": 12,
+          "name": "VERSION_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Type of connection (eg. SERVICE_POINT, ZONE)",
+          "id": 13,
+          "name": "CONNECTION_TYPE",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "The date and time the report was generated.",
+          "id": 14,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        13,
+        11,
+        1,
+        6,
+        3,
+        8,
+        12
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 4773774940429560292,
+      "timestamp-ms": 1759240800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GSH_PIPELINE_SEGMENTS/metadata/snap-4773774940429560292-1-0ac33cc0-2054-837a-a75d-a8ab5722d46d.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 4773774940429560292,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "20",
+        "utilake.from.file": "PUBLIC_REGISTEREDSERVICEPOINTS_20251001.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "590d20d9b40c26928f87cc4e6b50f3e29982ac1bc55b772be5a8adee77129fbe",
+        "utilake.from.time": "2018-11-01T00:00:00+10:00",
+        "utilake.kinds": "[\"gsh/archive\",\"gsh/current\"]",
+        "utilake.report-subtype": "PIPELINE_SEGMENTS",
+        "utilake.report-type": "GSH",
+        "utilake.rows": "2772",
+        "utilake.to.file": "PUBLIC_REGISTEREDSERVICEPOINTS_20261001_0000000540478994.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "799574545e477633e6b3e3ae0bc97d495b68eef8750cd4f943a439aee9921a15",
+        "utilake.to.time": "2026-09-14T00:00:00+10:00",
+        "utilake.total-rows": "2772",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1759240800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "0ac33cc0-2054-837a-a75d-a8ab5722d46d"
+}

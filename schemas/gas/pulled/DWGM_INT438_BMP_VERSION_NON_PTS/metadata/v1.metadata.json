@@ -1,0 +1,138 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 1574690244845425436,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 7,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1788184800000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT438_BMP_VERSION_NON_PTS",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"network_name\",\"2\":\"version_id\",\"3\":\"extract_type\",\"4\":\"version_from_date\",\"5\":\"version_to_date\",\"6\":\"issued_date\",\"7\":\"current_date\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"DWGM\",\"INT438_BMP_VERSION_NON_PTS_1\"]]",
+    "utilake.table": "DWGM_INT438_BMP_VERSION_NON_PTS",
+    "utilake.temporal.cutoff": "CURRENT_DATE",
+    "utilake.temporal.entity": "[\"VERSION_ID\"]",
+    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "VERSION_FROM_DATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "VERSION_FROM_DATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 1574690244845425436,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "NETWORK_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 2,
+          "name": "VERSION_ID",
+          "required": false,
+          "type": "decimal(7, 0)"
+        },
+        {
+          "id": 3,
+          "name": "EXTRACT_TYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "VERSION_FROM_DATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 5,
+          "name": "VERSION_TO_DATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 6,
+          "name": "ISSUED_DATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 7,
+          "name": "CURRENT_DATE",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 1574690244845425436,
+      "timestamp-ms": 1788184800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT438_BMP_VERSION_NON_PTS/metadata/snap-1574690244845425436-1-76b446c1-5acf-8a01-97dc-c521943883b3.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 1574690244845425436,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "7",
+        "utilake.from.file": "PublicRpts21.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "af810782dbd1bd4baac2e55d7e29f26ac9a0abc27819b40c86f2b6b1a0678793",
+        "utilake.from.time": "2026-03-01T00:00:00+10:00",
+        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.report-subtype": "INT438_BMP_VERSION_NON_PTS_1",
+        "utilake.report-type": "DWGM",
+        "utilake.rows": "15",
+        "utilake.to.file": "PublicRpts09.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "89c080082b6f397490f3a948271d772417b446237cf15a22116661cabba4a07b",
+        "utilake.to.time": "2026-09-01T00:00:00+10:00",
+        "utilake.total-rows": "15",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1788184800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "76b446c1-5acf-8a01-97dc-c521943883b3"
+}

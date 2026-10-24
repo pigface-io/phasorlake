@@ -1,0 +1,156 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 4779851872916714213,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 10,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1788184800000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/STTM_INT679_NET_MARKET_BALANCE_SETTLEMENT_AMOUNTS",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"settlement_run_identifier\",\"2\":\"period_start_date\",\"3\":\"period_end_date\",\"4\":\"hub_identifier\",\"5\":\"hub_name\",\"6\":\"net_market_balance\",\"7\":\"total_deviation_qty\",\"8\":\"total_withdrawals\",\"9\":\"total_variation_charges\",\"10\":\"report_datetime\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"STTM\",\"INT679_NET_MARKET_BALANCE_SETTLEMENT_AMOUNTS_RPT_1\"]]",
+    "utilake.table": "STTM_INT679_NET_MARKET_BALANCE_SETTLEMENT_AMOUNTS",
+    "utilake.temporal.cutoff": "REPORT_DATETIME",
+    "utilake.temporal.entity": "[\"SETTLEMENT_RUN_IDENTIFIER\",\"HUB_IDENTIFIER\"]",
+    "utilake.temporal.order": "[\"REPORT_DATETIME\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "PERIOD_START_DATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "PERIOD_START_DATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 4779851872916714213,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "SETTLEMENT_RUN_IDENTIFIER",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "id": 2,
+          "name": "PERIOD_START_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 3,
+          "name": "PERIOD_END_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 4,
+          "name": "HUB_IDENTIFIER",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 5,
+          "name": "HUB_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 6,
+          "name": "NET_MARKET_BALANCE",
+          "required": false,
+          "type": "decimal(10, 4)"
+        },
+        {
+          "id": 7,
+          "name": "TOTAL_DEVIATION_QTY",
+          "required": false,
+          "type": "decimal(15, 9)"
+        },
+        {
+          "id": 8,
+          "name": "TOTAL_WITHDRAWALS",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "id": 9,
+          "name": "TOTAL_VARIATION_CHARGES",
+          "required": false,
+          "type": "decimal(9, 4)"
+        },
+        {
+          "id": 10,
+          "name": "REPORT_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 4779851872916714213,
+      "timestamp-ms": 1788184800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/STTM_INT679_NET_MARKET_BALANCE_SETTLEMENT_AMOUNTS/metadata/snap-4779851872916714213-1-6b4df705-ad5a-8462-a21d-b12f90af7a13.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 4779851872916714213,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "4",
+        "utilake.from.file": "Day24.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "93d3280f33572aae5ab124371171d23d919fc22cbba7faba01d06c46b49950c0",
+        "utilake.from.time": "2026-08-01T00:00:00+10:00",
+        "utilake.kinds": "[\"sttm/current\"]",
+        "utilake.report-subtype": "INT679_NET_MARKET_BALANCE_SETTLEMENT_AMOUNTS_RPT_1",
+        "utilake.report-type": "STTM",
+        "utilake.rows": "12",
+        "utilake.to.file": "int679_v1_net_market_balance_settlement_amounts_rpt_1.csv",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "f81b7d437c7585b583e20b8aea8d93925b1bab299e83a27dd166ea0a4624f65d",
+        "utilake.to.time": "2026-09-01T00:00:00+10:00",
+        "utilake.total-rows": "12",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1788184800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "6b4df705-ad5a-8462-a21d-b12f90af7a13"
+}

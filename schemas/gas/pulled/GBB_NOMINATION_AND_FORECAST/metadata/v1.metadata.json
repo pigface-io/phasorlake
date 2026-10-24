@@ -1,0 +1,213 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 6447055468641910535,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 12,
+  "last-partition-id": 999,
+  "last-sequence-number": 2,
+  "last-updated-ms": 1790776800001,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_NOMINATION_AND_FORECAST",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "Provides the aggregate of forecast and nominations by location.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"Gasdate\",\"2\":\"FacilityId\",\"3\":\"FacilityName\",\"4\":\"FacilityType\",\"5\":\"LocationId\",\"6\":\"LocationName\",\"7\":\"State\",\"8\":\"Demand\",\"9\":\"Supply\",\"10\":\"TransferIn\",\"11\":\"TransferOut\",\"12\":\"LastUpdated\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.model": "[\"GAS_NOMINATIONS_FORECAST_AGG\",\"GAS_FACILITY\",\"GAS_LOCATION\"]",
+    "utilake.model-types": "{\"1\":\"DATE\",\"2\":\"NUMBER(10,0)\",\"3\":\"VARCHAR2(100)\",\"4\":\"VARCHAR2(40)\",\"5\":\"NUMBER(10,0)\",\"6\":\"VARCHAR2(100)\",\"8\":\"NUMBER(18,3)\",\"9\":\"NUMBER(18,3)\",\"10\":\"NUMBER(18,3)\",\"11\":\"NUMBER(18,3)\"}",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"GBB\",\"NOMINATION_AND_FORECAST\"],[\"GBB\",\"NOMINATION_AND_FORECAST_NEXT7\"]]",
+    "utilake.table": "GBB_NOMINATION_AND_FORECAST",
+    "utilake.temporal.cutoff": "LASTUPDATED",
+    "utilake.temporal.entity": "[\"FACILITYID\",\"LOCATIONID\"]",
+    "utilake.temporal.order": "[\"LASTUPDATED\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "GASDATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "GASDATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 6447055468641910535,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Date of gas day",
+          "id": 1,
+          "name": "GASDATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "doc": "Unique Facility Identifier",
+          "id": 2,
+          "name": "FACILITYID",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Name of the Facility",
+          "id": 3,
+          "name": "FACILITYNAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Describes the type of facility. Refer to the GAS_FACILITY_TYPE table",
+          "id": 4,
+          "name": "FACILITYTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Unique Node Location Identifier",
+          "id": 5,
+          "name": "LOCATIONID",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Name of the location.",
+          "id": 6,
+          "name": "LOCATIONNAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 7,
+          "name": "STATE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Usage type expressed in TJ. Three decimal places is not shown if the value has trailing zeros after the decimal place.",
+          "id": 8,
+          "name": "DEMAND",
+          "required": false,
+          "type": "decimal(8, 3)"
+        },
+        {
+          "doc": "Usage type expressed in TJ. Three decimal places is not shown if the value has trailing zeros after the decimal place",
+          "id": 9,
+          "name": "SUPPLY",
+          "required": false,
+          "type": "decimal(9, 3)"
+        },
+        {
+          "doc": "Usage type expressed in TJ. Only applicable to BB pipelines. Three decimal places is not shown if the value has trailing zeros after the decimal place.",
+          "id": 10,
+          "name": "TRANSFERIN",
+          "required": false,
+          "type": "decimal(7, 3)"
+        },
+        {
+          "doc": "Usage type expressed in TJ. Only applicable to BB pipelines. Three decimal places is not shown if the value has trailing zeros after the decimal place.",
+          "id": 11,
+          "name": "TRANSFEROUT",
+          "required": false,
+          "type": "decimal(6, 3)"
+        },
+        {
+          "id": 12,
+          "name": "LASTUPDATED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 2064545848161079205,
+      "timestamp-ms": 1756648800000
+    },
+    {
+      "snapshot-id": 6447055468641910535,
+      "timestamp-ms": 1790776800001
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_NOMINATION_AND_FORECAST/metadata/snap-2064545848161079205-1-8df40a28-c085-80f2-a8d0-dedc58b4afc9.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 2064545848161079205,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "45",
+        "utilake.from.file": "GasBBNominationAndForecastNext7_20250930111730.CSV",
+        "utilake.from.release": "2025-09",
+        "utilake.from.sha256": "6d6a74aeae0ac6cfca4096d94b814e680ffd754756e6b5ba33be92b4bbb850e9",
+        "utilake.from.time": "2025-09-30T00:00:00+10:00",
+        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.report-subtype": "NOMINATION_AND_FORECAST_NEXT7",
+        "utilake.report-type": "GBB",
+        "utilake.rows": "14862",
+        "utilake.to.file": "GasBBNominationAndForecastNext7.CSV@20261022T084700+1000",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "61a2dc3238b265f71c54e2e7e47c4b7631078487de7fe6c34fc70c4fe7b6ddef",
+        "utilake.to.time": "2026-10-28T00:00:00+10:00",
+        "utilake.total-rows": "14862",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1756648800000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_NOMINATION_AND_FORECAST/metadata/snap-6447055468641910535-2-8df40a28-c085-80f2-a8d0-dedc58b4afc9.avro",
+      "parent-snapshot-id": 2064545848161079205,
+      "schema-id": 0,
+      "sequence-number": 2,
+      "snapshot-id": 6447055468641910535,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
+        "utilake.from.file": "GasBBNominationAndForecast.zip",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "df76a23376ac2533a204df960f92e12b99dd073ad36724bf8fae0209527c8d39",
+        "utilake.from.time": "2018-09-30T00:00:00+10:00",
+        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.report-subtype": "NOMINATION_AND_FORECAST",
+        "utilake.report-type": "GBB",
+        "utilake.rows": "333225",
+        "utilake.to.file": "GasBBNominationAndForecast.zip@20261021T190200+1000",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "efbea278ca0f1e3d78edfa1023bb0fa2a38e615c8b421bc232814f8f08d44df9",
+        "utilake.to.time": "2026-11-02T00:00:00+10:00",
+        "utilake.total-rows": "348087",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1790776800001
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "8df40a28-c085-80f2-a8d0-dedc58b4afc9"
+}

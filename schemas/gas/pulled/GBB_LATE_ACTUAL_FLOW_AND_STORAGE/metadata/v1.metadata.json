@@ -1,0 +1,138 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 971115108233580314,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 6,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1790776800000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_LATE_ACTUAL_FLOW_AND_STORAGE",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "Provides on each gas day D, the BB facility operator’s daily gas flow data for injections and withdrawals at each connection point for gas day D-1.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"GasDate\",\"2\":\"FacilityName\",\"3\":\"FacilityId\",\"4\":\"ConnectionPointId\",\"5\":\"EarliestSubmissionDate\",\"6\":\"LateTimeSpan\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.model": "[\"GAS_DAILY_FLOW_ACTUAL\",\"GAS_DAILY_STORAGE_ACTUAL\",\"GAS_FACILITY\"]",
+    "utilake.model-types": "{\"1\":\"DATE\",\"2\":\"VARCHAR2(100)\",\"3\":\"NUMBER(10,0)\",\"4\":\"NUMBER(10,0)\"}",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"GBB\",\"LATE_ACTUAL_FLOW_AND_STORAGE\"]]",
+    "utilake.table": "GBB_LATE_ACTUAL_FLOW_AND_STORAGE",
+    "utilake.temporal.entity": "[\"FACILITYID\",\"CONNECTIONPOINTID\"]",
+    "utilake.temporal.order": "[]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "GASDATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "GASDATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 971115108233580314,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Date of gas day",
+          "id": 1,
+          "name": "GASDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Name of the Facility",
+          "id": 2,
+          "name": "FACILITYNAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Unique Facility Identifier",
+          "id": 3,
+          "name": "FACILITYID",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Unique connection point identifier.",
+          "id": 4,
+          "name": "CONNECTIONPOINTID",
+          "required": false,
+          "type": "decimal(7, 0)"
+        },
+        {
+          "id": 5,
+          "name": "EARLIESTSUBMISSIONDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 6,
+          "name": "LATETIMESPAN",
+          "required": false,
+          "type": "decimal(9, 6)"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 971115108233580314,
+      "timestamp-ms": 1790776800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_LATE_ACTUAL_FLOW_AND_STORAGE/metadata/snap-971115108233580314-1-265ca80d-ebd8-866e-8d29-b59f0cf3fe6c.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 971115108233580314,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "3",
+        "utilake.from.file": "GasBBLateActualFlowAndStorage.zip",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "f79beac17ddf069b8388ef7e7e652ce37e5d534f4f447b27a57e8fb3656ea81c",
+        "utilake.from.time": "2026-07-20T00:00:00+10:00",
+        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.report-subtype": "LATE_ACTUAL_FLOW_AND_STORAGE",
+        "utilake.report-type": "GBB",
+        "utilake.rows": "482",
+        "utilake.to.file": "GasBBLateActualFlowAndStorage.zip@20261021T234100+1000",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "8fa079e00297d98ee4dd588004f462c9c90587db8db93f45e93f01fb36e684ad",
+        "utilake.to.time": "2026-10-20T00:00:00+10:00",
+        "utilake.total-rows": "482",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1790776800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "265ca80d-ebd8-866e-8d29-b59f0cf3fe6c"
+}

@@ -1,0 +1,115 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 7088152266159440450,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 3,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1790776800000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_NT_LNG_FLOW",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "Provides on each gas day D, the BB facility operator’s daily gas flow data for injections and withdrawals at each connection point for gas day D-1.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"Gas Date\",\"2\":\"Total Receipts\",\"3\":\"Total Deliveries\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.model": "[\"GAS_DAILY_FLOW_ACTUAL\"]",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"GBB\",\"NT_LNG_FLOW\"]]",
+    "utilake.table": "GBB_NT_LNG_FLOW",
+    "utilake.temporal.entity": "[]",
+    "utilake.temporal.order": "[]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "GAS_DATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "GAS_DATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 7088152266159440450,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "GAS_DATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 2,
+          "name": "TOTAL_RECEIPTS",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "TOTAL_DELIVERIES",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 7088152266159440450,
+      "timestamp-ms": 1790776800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_NT_LNG_FLOW/metadata/snap-7088152266159440450-1-8ae44a40-a663-8a4a-861b-6ce52df41563.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 7088152266159440450,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "3",
+        "utilake.from.file": "GasBBNTLngFlow.CSV",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "8ad1cb2bc948b245e22244da94e906093bdfd82eb8c3060c9a34e3a69437d363",
+        "utilake.from.time": "2025-10-19T00:00:00+10:00",
+        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.report-subtype": "NT_LNG_FLOW",
+        "utilake.report-type": "GBB",
+        "utilake.rows": "367",
+        "utilake.to.file": "GasBBNTLngFlow.CSV@20261021T230300+1000",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "f8192c0478a36fcde03aa994a37022ac7c3bbb01358e18e5ea7e7f987d831971",
+        "utilake.to.time": "2026-10-20T00:00:00+10:00",
+        "utilake.total-rows": "367",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1790776800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "8ae44a40-a663-8a4a-861b-6ce52df41563"
+}

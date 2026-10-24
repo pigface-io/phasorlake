@@ -1,0 +1,173 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 4836545937502006370,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 10,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1759240800000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GSH_AUCTION_CURTAIL_NOTICE",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "Contains details of curtailment of nominations against secondary firm rights (CTP trades) for service points (receipt and delivery points).",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"AUCTION_SERVICE\",\"EFFECTIVE_DATE_TIME\",\"FACILITY_ID\",\"GAS_DATE\",\"NOTICE_ID\"]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.model-types": "{\"1\":\"NUMBER(8,0)\",\"2\":\"NUMBER(8,0)\",\"3\":\"VARCHAR2(100)\",\"4\":\"VARCHAR2(20)\",\"5\":\"VARCHAR2(3)\",\"6\":\"VARCHAR2(3)\",\"7\":\"VARCHAR2(255)\",\"8\":\"DATE\",\"9\":\"DATE\",\"10\":\"DATE\"}",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"GSH\",\"AUCTION_CURTAILMENT_NOTICE\"]]",
+    "utilake.table": "GSH_AUCTION_CURTAIL_NOTICE",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"AUCTION_SERVICE\",\"FACILITY_ID\",\"NOTICE_ID\",\"GAS_DATE\"]",
+    "utilake.temporal.order": "[\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "EFFECTIVE_DATE_TIME",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "EFFECTIVE_DATE_TIME",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 4836545937502006370,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "The unique identifier of the notice.",
+          "id": 1,
+          "name": "NOTICE_ID",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "The unique facility identifier as defined in the Transportation Facility Register.",
+          "id": 2,
+          "name": "FACILITY_ID",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "The descriptive name of the facility.",
+          "id": 3,
+          "name": "FACILITY_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The auction service impacted by curtailment",
+          "id": 4,
+          "name": "AUCTION_SERVICE",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "A flag to indicate curtailment",
+          "id": 5,
+          "name": "CURTAILED",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Flag to indicate material curtailment",
+          "id": 6,
+          "name": "MATERIAL",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "A description of the curtailment.",
+          "id": 7,
+          "name": "DESCRIPTION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The date and time the curtailment is effective from.",
+          "id": 8,
+          "name": "EFFECTIVE_DATE_TIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The gas date for which the auction service is curtailed.",
+          "id": 9,
+          "name": "GAS_DATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The date and time the report was generated.",
+          "id": 10,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        4,
+        8,
+        2,
+        9,
+        1
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 4836545937502006370,
+      "timestamp-ms": 1759240800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GSH_AUCTION_CURTAIL_NOTICE/metadata/snap-4836545937502006370-1-413ac0a7-4287-889a-aae4-112f68784319.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 4836545937502006370,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "474",
+        "utilake.from.file": "PUBLIC_AUCTIONCURTAILMENTNOTICE _20251001.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "a2950aa92784afe780ac6acaff65195e97455b891085ecce355d7628c91990a4",
+        "utilake.from.time": "2025-10-05T20:31:01+10:00",
+        "utilake.kinds": "[\"gsh/archive\"]",
+        "utilake.report-subtype": "AUCTION_CURTAILMENT_NOTICE",
+        "utilake.report-type": "GSH",
+        "utilake.rows": "1697",
+        "utilake.to.file": "PUBLIC_AUCTIONCURTAILMENTNOTICE _20260301.zip",
+        "utilake.to.release": "2026-03",
+        "utilake.to.sha256": "e50fa76736eb7cab393c1c2fb3bdf88d1e1ac2d47d8982106edefe2047db6184",
+        "utilake.to.time": "2026-03-30T22:16:01+10:00",
+        "utilake.total-rows": "1697",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1759240800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "413ac0a7-4287-889a-aae4-112f68784319"
+}

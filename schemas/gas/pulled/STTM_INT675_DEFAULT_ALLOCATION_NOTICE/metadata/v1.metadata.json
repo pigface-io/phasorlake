@@ -1,0 +1,144 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 6149338428026813135,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 8,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1790776800000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/STTM_INT675_DEFAULT_ALLOCATION_NOTICE",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"notice_identifier\",\"2\":\"gas_date\",\"3\":\"hub_identifier\",\"4\":\"hub_name\",\"5\":\"facility_identifier\",\"6\":\"facility_name\",\"7\":\"notice_message\",\"8\":\"report_datetime\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"STTM\",\"INT675_DEFAULT_ALLOCATION_NOTICE_RPT_1\"]]",
+    "utilake.table": "STTM_INT675_DEFAULT_ALLOCATION_NOTICE",
+    "utilake.temporal.cutoff": "REPORT_DATETIME",
+    "utilake.temporal.entity": "[\"NOTICE_IDENTIFIER\",\"HUB_IDENTIFIER\",\"FACILITY_IDENTIFIER\"]",
+    "utilake.temporal.order": "[\"REPORT_DATETIME\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "GAS_DATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "GAS_DATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 6149338428026813135,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "NOTICE_IDENTIFIER",
+          "required": false,
+          "type": "decimal(10, 0)"
+        },
+        {
+          "id": 2,
+          "name": "GAS_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 3,
+          "name": "HUB_IDENTIFIER",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "HUB_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 5,
+          "name": "FACILITY_IDENTIFIER",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 6,
+          "name": "FACILITY_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 7,
+          "name": "NOTICE_MESSAGE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 8,
+          "name": "REPORT_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 6149338428026813135,
+      "timestamp-ms": 1790776800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/STTM_INT675_DEFAULT_ALLOCATION_NOTICE/metadata/snap-6149338428026813135-1-6bd0df14-467b-8b4d-afff-967f02d5c5dc.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 6149338428026813135,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "int675_v1_default_allocation_notice_rpt_1.csv",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "d5329e6218fe85edcf8958566e9d84e3b9b36d79e15818ea6d38cf289019fe20",
+        "utilake.from.time": "2026-05-16T00:00:00+10:00",
+        "utilake.kinds": "[\"sttm/current\"]",
+        "utilake.report-subtype": "INT675_DEFAULT_ALLOCATION_NOTICE_RPT_1",
+        "utilake.report-type": "STTM",
+        "utilake.rows": "1",
+        "utilake.to.file": "int675_v1_default_allocation_notice_rpt_1.csv",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "d5329e6218fe85edcf8958566e9d84e3b9b36d79e15818ea6d38cf289019fe20",
+        "utilake.to.time": "2026-05-16T00:00:00+10:00",
+        "utilake.total-rows": "1",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1790776800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "6bd0df14-467b-8b4d-afff-967f02d5c5dc"
+}

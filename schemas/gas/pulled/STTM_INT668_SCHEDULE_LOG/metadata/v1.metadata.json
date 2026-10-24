@@ -1,0 +1,168 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 5877989858846461577,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 12,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1785506400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/STTM_INT668_SCHEDULE_LOG",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"schedule_identifier\",\"2\":\"gas_date\",\"3\":\"hub_identifier\",\"4\":\"hub_name\",\"5\":\"schedule_type\",\"6\":\"schedule_day\",\"7\":\"creation_datetime\",\"8\":\"bid_offer_cut_off_datetime\",\"9\":\"facility_hub_capacity_cut_off_datetime\",\"10\":\"pipeline_allocation_cut_off_datetime\",\"11\":\"approval_datetime\",\"12\":\"report_datetime\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"STTM\",\"INT668_SCHEDULE_LOG_RPT_1\"]]",
+    "utilake.table": "STTM_INT668_SCHEDULE_LOG",
+    "utilake.temporal.cutoff": "REPORT_DATETIME",
+    "utilake.temporal.entity": "[\"SCHEDULE_IDENTIFIER\",\"HUB_IDENTIFIER\"]",
+    "utilake.temporal.order": "[\"APPROVAL_DATETIME\",\"REPORT_DATETIME\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "GAS_DATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "GAS_DATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 5877989858846461577,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "SCHEDULE_IDENTIFIER",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "id": 2,
+          "name": "GAS_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 3,
+          "name": "HUB_IDENTIFIER",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "HUB_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 5,
+          "name": "SCHEDULE_TYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 6,
+          "name": "SCHEDULE_DAY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 7,
+          "name": "CREATION_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 8,
+          "name": "BID_OFFER_CUT_OFF_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 9,
+          "name": "FACILITY_HUB_CAPACITY_CUT_OFF_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 10,
+          "name": "PIPELINE_ALLOCATION_CUT_OFF_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 11,
+          "name": "APPROVAL_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 12,
+          "name": "REPORT_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 5877989858846461577,
+      "timestamp-ms": 1785506400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/STTM_INT668_SCHEDULE_LOG/metadata/snap-5877989858846461577-1-fc227df1-3203-8091-a46b-39f2ecf9ae4a.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 5877989858846461577,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "109",
+        "utilake.from.file": "Day31.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "ae9eda135c5f3c28548b31911da9dcc65c767009ef5b7d16ceee4cce2755509e",
+        "utilake.from.time": "2026-08-24T00:00:00+10:00",
+        "utilake.kinds": "[\"sttm/current\"]",
+        "utilake.report-subtype": "INT668_SCHEDULE_LOG_RPT_1",
+        "utilake.report-type": "STTM",
+        "utilake.rows": "903",
+        "utilake.to.file": "int668_v1_schedule_log_rpt_1.csv@20261021T191600+1000",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "3089c864696c4d950515a2956dcb8a8bbc32cdfd6d29cd3486daae37594d932e",
+        "utilake.to.time": "2026-10-24T00:00:00+10:00",
+        "utilake.total-rows": "903",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1785506400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "fc227df1-3203-8091-a46b-39f2ecf9ae4a"
+}

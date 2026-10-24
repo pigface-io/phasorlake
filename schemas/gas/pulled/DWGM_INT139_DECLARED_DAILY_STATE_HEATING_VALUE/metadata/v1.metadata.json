@@ -1,0 +1,114 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 6927566028867659605,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 3,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1790776800000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT139_DECLARED_DAILY_STATE_HEATING_VALUE",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"declared_heating_value\",\"3\":\"current_date\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"DWGM\",\"INT139_DECLARED_DAILY_STATE_HEATING_VALUE_1\"]]",
+    "utilake.table": "DWGM_INT139_DECLARED_DAILY_STATE_HEATING_VALUE",
+    "utilake.temporal.cutoff": "CURRENT_DATE",
+    "utilake.temporal.entity": "[]",
+    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "GAS_DATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "GAS_DATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 6927566028867659605,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "GAS_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 2,
+          "name": "DECLARED_HEATING_VALUE",
+          "required": false,
+          "type": "decimal(4, 2)"
+        },
+        {
+          "id": 3,
+          "name": "CURRENT_DATE",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 6927566028867659605,
+      "timestamp-ms": 1790776800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT139_DECLARED_DAILY_STATE_HEATING_VALUE/metadata/snap-6927566028867659605-1-79250869-e009-8994-bf58-37052e97fcbb.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 6927566028867659605,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "int139_v4_declared_daily_state_heating_value_1.csv",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "4c367bbad9c5591b71bdecc83ab45ca2a917af5042a9d5e246942017f9fa5e12",
+        "utilake.from.time": "2024-09-11T00:00:00+10:00",
+        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.report-subtype": "INT139_DECLARED_DAILY_STATE_HEATING_VALUE_1",
+        "utilake.report-type": "DWGM",
+        "utilake.rows": "91",
+        "utilake.to.file": "int139_v4_declared_daily_state_heating_value_1.csv",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "4c367bbad9c5591b71bdecc83ab45ca2a917af5042a9d5e246942017f9fa5e12",
+        "utilake.to.time": "2024-12-10T00:00:00+10:00",
+        "utilake.total-rows": "91",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1790776800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "79250869-e009-8994-bf58-37052e97fcbb"
+}

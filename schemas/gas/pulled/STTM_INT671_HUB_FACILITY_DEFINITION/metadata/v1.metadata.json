@@ -1,0 +1,138 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 826679781877030754,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 7,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1785506400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/STTM_INT671_HUB_FACILITY_DEFINITION",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"hub_identifier\",\"2\":\"hub_name\",\"3\":\"facility_identifier\",\"4\":\"facility_name\",\"5\":\"facility_type\",\"6\":\"last_update_datetime\",\"7\":\"report_datetime\"}",
+    "utilake.key": "[\"HUB_IDENTIFIER\",\"FACILITY_IDENTIFIER\"]",
+    "utilake.load": "snapshot",
+    "utilake.market": "gas",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"STTM\",\"INT671_HUB_FACILITY_DEFINITION_RPT_1\"]]",
+    "utilake.table": "STTM_INT671_HUB_FACILITY_DEFINITION",
+    "utilake.temporal.cutoff": "REPORT_DATETIME",
+    "utilake.temporal.entity": "[\"HUB_IDENTIFIER\",\"FACILITY_IDENTIFIER\"]",
+    "utilake.temporal.order": "[\"REPORT_DATETIME\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "LAST_UPDATE_DATETIME",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "LAST_UPDATE_DATETIME",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 826679781877030754,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "HUB_IDENTIFIER",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 2,
+          "name": "HUB_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "FACILITY_IDENTIFIER",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "FACILITY_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 5,
+          "name": "FACILITY_TYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 6,
+          "name": "LAST_UPDATE_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 7,
+          "name": "REPORT_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 826679781877030754,
+      "timestamp-ms": 1785506400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/STTM_INT671_HUB_FACILITY_DEFINITION/metadata/snap-826679781877030754-1-dc241eed-d6cf-8f2f-96e0-534512a478d9.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 826679781877030754,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "34",
+        "utilake.from.file": "Day31.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "ae9eda135c5f3c28548b31911da9dcc65c767009ef5b7d16ceee4cce2755509e",
+        "utilake.from.time": "2011-10-17T22:00:35+10:00",
+        "utilake.kinds": "[\"sttm/current\"]",
+        "utilake.report-subtype": "INT671_HUB_FACILITY_DEFINITION_RPT_1",
+        "utilake.report-type": "STTM",
+        "utilake.rows": "16",
+        "utilake.to.file": "int671_v1_hub_facility_definition_rpt_1.csv@20261021T191600+1000",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "19078b1e83c12549a1844fda7decbd861ecf615b6b10066c685a613ee259c18c",
+        "utilake.to.time": "2025-04-04T14:03:32+10:00",
+        "utilake.total-rows": "16",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1785506400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "dc241eed-d6cf-8f2f-96e0-534512a478d9"
+}

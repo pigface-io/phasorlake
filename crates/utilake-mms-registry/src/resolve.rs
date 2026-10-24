@@ -708,6 +708,11 @@ mod tests {
         };
         let mut runs = 0;
         for (id, t) in r.tables() {
+            // Each table's pairs are looked up in its own market.
+            let strict = ResolveOptions {
+                market: t.market,
+                ..strict
+            };
             for run in &t.runs {
                 let s = t.schema(run.schema).unwrap();
                 let cols = t.schema_columns(s);

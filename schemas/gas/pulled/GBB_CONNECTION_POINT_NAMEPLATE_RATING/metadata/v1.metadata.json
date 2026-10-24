@@ -1,0 +1,184 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 3637937349011997105,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 13,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1790776800000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_CONNECTION_POINT_NAMEPLATE_RATING",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "Provide details of the gate station capacity on a particular day.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"ConnectionPointId\",\"2\":\"ConnectionPointName\",\"3\":\"EffectiveDate\",\"4\":\"CapacityQuantity\",\"5\":\"Description\",\"6\":\"FacilityName\",\"7\":\"FacilityId\",\"8\":\"FacilityType\",\"9\":\"OperatorId\",\"10\":\"OperatorName\",\"11\":\"OwnerId\",\"12\":\"OwnerName\",\"13\":\"LastUpdated\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.model": "[\"GAS_CONNECTIONPOINT_CAPACITY\",\"GAS_FACILITY\"]",
+    "utilake.model-types": "{\"1\":\"NUMBER(10,0)\",\"3\":\"DATE\",\"4\":\"NUMBER(18,3)\",\"5\":\"VARCHAR2(255)\",\"6\":\"VARCHAR2(100)\",\"7\":\"NUMBER(10,0)\",\"8\":\"VARCHAR2(40)\"}",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"GBB\",\"CONNECTION_POINT_NAMEPLATE_RATING_FUTURE\"]]",
+    "utilake.table": "GBB_CONNECTION_POINT_NAMEPLATE_RATING",
+    "utilake.temporal.cutoff": "LASTUPDATED",
+    "utilake.temporal.entity": "[\"CONNECTIONPOINTID\",\"FACILITYID\",\"OPERATORID\",\"OWNERID\"]",
+    "utilake.temporal.order": "[\"LASTUPDATED\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "EFFECTIVEDATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "EFFECTIVEDATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 3637937349011997105,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Unique connection point identifier.",
+          "id": 1,
+          "name": "CONNECTIONPOINTID",
+          "required": false,
+          "type": "decimal(7, 0)"
+        },
+        {
+          "id": 2,
+          "name": "CONNECTIONPOINTNAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Effective date of the record",
+          "id": 3,
+          "name": "EFFECTIVEDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Quantity of available capacity in TJs and support just 3 decimal places during the defined period",
+          "id": 4,
+          "name": "CAPACITYQUANTITY",
+          "required": false,
+          "type": "decimal(7, 3)"
+        },
+        {
+          "doc": "Description for reasons or comments directly related to the quantity or change in Outlook quantity in relation to the Facility.",
+          "id": 5,
+          "name": "DESCRIPTION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Name of the Facility",
+          "id": 6,
+          "name": "FACILITYNAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Unique Facility Identifier",
+          "id": 7,
+          "name": "FACILITYID",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Describes the type of facility. Refer to the GAS_FACILITY_TYPE table",
+          "id": 8,
+          "name": "FACILITYTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 9,
+          "name": "OPERATORID",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "id": 10,
+          "name": "OPERATORNAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 11,
+          "name": "OWNERID",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "id": 12,
+          "name": "OWNERNAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 13,
+          "name": "LASTUPDATED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 3637937349011997105,
+      "timestamp-ms": 1790776800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_CONNECTION_POINT_NAMEPLATE_RATING/metadata/snap-3637937349011997105-1-2ed8369b-ff00-8ca6-aa29-68219b3bd0b9.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 3637937349011997105,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "3",
+        "utilake.from.file": "GasBBConnectionPointNameplateRatingFuture.CSV",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "b98e5729177035d35e422a1a268e3ec7537c03483eaab0cb327036be73800f51",
+        "utilake.from.time": "2019-02-01T00:00:00+10:00",
+        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.report-subtype": "CONNECTION_POINT_NAMEPLATE_RATING_FUTURE",
+        "utilake.report-type": "GBB",
+        "utilake.rows": "762",
+        "utilake.to.file": "GasBBConnectionPointNameplateRatingFuture.CSV@20261022T045200+1000",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "699ace05336d44d90a6d551f5d4acf2b289b6159ac754aa199358aef5d243e1a",
+        "utilake.to.time": "2026-10-21T00:00:00+10:00",
+        "utilake.total-rows": "762",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1790776800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "2ed8369b-ff00-8ca6-aa29-68219b3bd0b9"
+}

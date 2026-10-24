@@ -1,0 +1,270 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 5482581137075880423,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 29,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1785506400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT276_HOURLY_SCADA_PRESSURES_AT_MCE_NODES",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"node_id\",\"2\":\"node_name\",\"3\":\"measurement_datetime\",\"4\":\"current_hour\",\"5\":\"hour_01_ago\",\"6\":\"hour_02_ago\",\"7\":\"hour_03_ago\",\"8\":\"hour_04_ago\",\"9\":\"hour_05_ago\",\"10\":\"hour_06_ago\",\"11\":\"hour_07_ago\",\"12\":\"hour_08_ago\",\"13\":\"hour_09_ago\",\"14\":\"hour_10_ago\",\"15\":\"hour_11_ago\",\"16\":\"hour_12_ago\",\"17\":\"hour_13_ago\",\"18\":\"hour_14_ago\",\"19\":\"hour_15_ago\",\"20\":\"hour_16_ago\",\"21\":\"hour_17_ago\",\"22\":\"hour_18_ago\",\"23\":\"hour_19_ago\",\"24\":\"hour_20_ago\",\"25\":\"hour_21_ago\",\"26\":\"hour_22_ago\",\"27\":\"hour_23_ago\",\"28\":\"hour_24_ago\",\"29\":\"current_date\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"DWGM\",\"INT276_HOURLY_SCADA_PRESSURES_AT_MCE_NODES_1\"]]",
+    "utilake.table": "DWGM_INT276_HOURLY_SCADA_PRESSURES_AT_MCE_NODES",
+    "utilake.temporal.cutoff": "CURRENT_DATE",
+    "utilake.temporal.entity": "[\"NODE_ID\"]",
+    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "MEASUREMENT_DATETIME",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "MEASUREMENT_DATETIME",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 5482581137075880423,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "NODE_ID",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 2,
+          "name": "NODE_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "MEASUREMENT_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 4,
+          "name": "CURRENT_HOUR",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 5,
+          "name": "HOUR_01_AGO",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 6,
+          "name": "HOUR_02_AGO",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 7,
+          "name": "HOUR_03_AGO",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 8,
+          "name": "HOUR_04_AGO",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 9,
+          "name": "HOUR_05_AGO",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 10,
+          "name": "HOUR_06_AGO",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 11,
+          "name": "HOUR_07_AGO",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 12,
+          "name": "HOUR_08_AGO",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 13,
+          "name": "HOUR_09_AGO",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 14,
+          "name": "HOUR_10_AGO",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 15,
+          "name": "HOUR_11_AGO",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 16,
+          "name": "HOUR_12_AGO",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 17,
+          "name": "HOUR_13_AGO",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 18,
+          "name": "HOUR_14_AGO",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 19,
+          "name": "HOUR_15_AGO",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 20,
+          "name": "HOUR_16_AGO",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 21,
+          "name": "HOUR_17_AGO",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 22,
+          "name": "HOUR_18_AGO",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 23,
+          "name": "HOUR_19_AGO",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 24,
+          "name": "HOUR_20_AGO",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 25,
+          "name": "HOUR_21_AGO",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 26,
+          "name": "HOUR_22_AGO",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 27,
+          "name": "HOUR_23_AGO",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 28,
+          "name": "HOUR_24_AGO",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 29,
+          "name": "CURRENT_DATE",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 5482581137075880423,
+      "timestamp-ms": 1785506400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT276_HOURLY_SCADA_PRESSURES_AT_MCE_NODES/metadata/snap-5482581137075880423-1-ccdbe653-1a52-8423-9f48-115805e28146.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 5482581137075880423,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "772",
+        "utilake.from.file": "PublicRpts31.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
+        "utilake.from.time": "2026-08-31T00:00:00+10:00",
+        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.report-subtype": "INT276_HOURLY_SCADA_PRESSURES_AT_MCE_NODES_1",
+        "utilake.report-type": "DWGM",
+        "utilake.rows": "47031",
+        "utilake.to.file": "int276_v4_hourly_scada_pressures_at_mce_nodes_1.csv@20261021T221100+1000",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "439ba3b5f5950297d65b22fd8667332ec80b9022af4d8c3f1b7f7a0c456ae77c",
+        "utilake.to.time": "2026-10-21T21:00:00+10:00",
+        "utilake.total-rows": "47031",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1785506400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "ccdbe653-1a52-8423-9f48-115805e28146"
+}

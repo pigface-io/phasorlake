@@ -1,0 +1,163 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 7744114142551861429,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 7,
+  "last-partition-id": 999,
+  "last-sequence-number": 2,
+  "last-updated-ms": 1785506400001,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT135_UPLIFT_CAP",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"schedule_no\",\"3\":\"positive_ave_ancillary_rate\",\"4\":\"negative_ave_ancillary_rate\",\"5\":\"positive_uplift_rate\",\"6\":\"negative_uplift_rate\",\"7\":\"current_datetime\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"DWGM\",\"INT135_UPLIFT_CAP\"],[\"DWGM\",\"INT135_UPLIFT_CAP_1\"]]",
+    "utilake.table": "DWGM_INT135_UPLIFT_CAP",
+    "utilake.temporal.entity": "[]",
+    "utilake.temporal.order": "[\"CURRENT_DATETIME\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 7744114142551861429,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "GAS_DATE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 2,
+          "name": "SCHEDULE_NO",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "POSITIVE_AVE_ANCILLARY_RATE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "NEGATIVE_AVE_ANCILLARY_RATE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 5,
+          "name": "POSITIVE_UPLIFT_RATE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 6,
+          "name": "NEGATIVE_UPLIFT_RATE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 7,
+          "name": "CURRENT_DATETIME",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 4488431661195226441,
+      "timestamp-ms": 1280584800000
+    },
+    {
+      "snapshot-id": 7744114142551861429,
+      "timestamp-ms": 1785506400001
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT135_UPLIFT_CAP/metadata/snap-4488431661195226441-1-7906ce98-983e-85f5-8ea6-debea50f0744.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 4488431661195226441,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "int135_v4_uplift_cap~20100817153329.csv",
+        "utilake.from.release": "2010-08",
+        "utilake.from.sha256": "38e164548379050f015fc71e2fbab4f7e6b0008ce6b8b4244dd7ad216adde363",
+        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.report-subtype": "INT135_UPLIFT_CAP",
+        "utilake.report-type": "DWGM",
+        "utilake.rows": "0",
+        "utilake.to.file": "int135_v4_uplift_cap~20100817153329.csv",
+        "utilake.to.release": "2010-08",
+        "utilake.to.sha256": "38e164548379050f015fc71e2fbab4f7e6b0008ce6b8b4244dd7ad216adde363",
+        "utilake.total-rows": "0",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1280584800000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT135_UPLIFT_CAP/metadata/snap-7744114142551861429-2-7906ce98-983e-85f5-8ea6-debea50f0744.avro",
+      "parent-snapshot-id": 4488431661195226441,
+      "schema-id": 0,
+      "sequence-number": 2,
+      "snapshot-id": 7744114142551861429,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "33",
+        "utilake.from.file": "PublicRpts31.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
+        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.report-subtype": "INT135_UPLIFT_CAP_1",
+        "utilake.report-type": "DWGM",
+        "utilake.rows": "0",
+        "utilake.to.file": "int135_v4_uplift_cap_1.csv",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "38e164548379050f015fc71e2fbab4f7e6b0008ce6b8b4244dd7ad216adde363",
+        "utilake.total-rows": "0",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1785506400001
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "7906ce98-983e-85f5-8ea6-debea50f0744"
+}

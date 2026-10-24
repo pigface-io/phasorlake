@@ -1,0 +1,153 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 150052958260718804,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 9,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1790776800000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_DEMAND_ZONES_PIPELINE_CONNECTION_POINT_MAPPING",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "Provides a list of nodes within a location.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"FacilityName\",\"2\":\"FacilityType\",\"3\":\"FacilityId\",\"4\":\"NodeId\",\"5\":\"ConnectionPointId\",\"6\":\"FlowDirection\",\"7\":\"ConnectionPointName\",\"8\":\"State\",\"9\":\"DemandZone\"}",
+    "utilake.key": "[\"FACILITYID\",\"NODEID\",\"CONNECTIONPOINTID\"]",
+    "utilake.load": "snapshot",
+    "utilake.market": "gas",
+    "utilake.model": "[\"GAS_LOCATION_NODE\",\"GAS_FACILITY_NODE_CONNECTION\"]",
+    "utilake.model-types": "{\"3\":\"NUMBER(10,0)\",\"4\":\"NUMBER(10,0)\",\"5\":\"NUMBER(10,0)\",\"6\":\"VARCHAR2(20)\",\"7\":\"VARCHAR2(200)\"}",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"GBB\",\"DEMAND_ZONES_PIPELINE_CONNECTION_POINT_MAPPING\"]]",
+    "utilake.table": "GBB_DEMAND_ZONES_PIPELINE_CONNECTION_POINT_MAPPING",
+    "utilake.temporal.entity": "[\"FACILITYID\",\"NODEID\",\"CONNECTIONPOINTID\"]",
+    "utilake.temporal.order": "[]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 150052958260718804,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "FACILITYNAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 2,
+          "name": "FACILITYTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Unique Facility Identifier",
+          "id": 3,
+          "name": "FACILITYID",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Unique Node Identifier",
+          "id": 4,
+          "name": "NODEID",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "doc": "Unique connection point identifier.",
+          "id": 5,
+          "name": "CONNECTIONPOINTID",
+          "required": false,
+          "type": "decimal(7, 0)"
+        },
+        {
+          "doc": "Direction of flow for the submission record. Must be one of ‘RECEIPT’ or ‘DELIVERY’",
+          "id": 6,
+          "name": "FLOWDIRECTION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Name of the Connection point",
+          "id": 7,
+          "name": "CONNECTIONPOINTNAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 8,
+          "name": "STATE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 9,
+          "name": "DEMANDZONE",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 150052958260718804,
+      "timestamp-ms": 1790776800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_DEMAND_ZONES_PIPELINE_CONNECTION_POINT_MAPPING/metadata/snap-150052958260718804-1-47572345-32e0-817d-84ad-b55915cf16a7.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 150052958260718804,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
+        "utilake.from.file": "GasBBDemandZonesPipelineConnectionPointMapping.csv",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "4576619f1911f3201d10c834d4173cdce151350518600b80d2ebdd3bdd46d9c0",
+        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.report-subtype": "DEMAND_ZONES_PIPELINE_CONNECTION_POINT_MAPPING",
+        "utilake.report-type": "GBB",
+        "utilake.rows": "325",
+        "utilake.to.file": "GasBBDemandZonesPipelineConnectionPointMapping.csv@20261020T210000+1000",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "737721690e52dcafdc07f9f70b40330f97fd1171cb9736c14499b9c8ef1257c0",
+        "utilake.total-rows": "325",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1790776800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "47572345-32e0-817d-84ad-b55915cf16a7"
+}

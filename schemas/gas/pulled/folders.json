@@ -1,0 +1,2675 @@
+{
+  "folders": [
+    {
+      "blocks": [
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-09",
+          "months": 12,
+          "report": [
+            "GSH",
+            "BENCHMARK_PRICE"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "gsh",
+      "folder": "Benchmark_Price",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE/GSH"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-03",
+          "months": 6,
+          "report": [
+            "GSH",
+            "AUCTION_CURTAILMENT_NOTICE"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "gsh",
+      "folder": "GSH_AUCTION_CURTAILMENT_NOTICE",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE/GSH"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-09",
+          "months": 12,
+          "report": [
+            "GSH",
+            "AUCTION_PRICE_VOLUME"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "gsh",
+      "folder": "GSH_AUCTION_PRICE_VOLUME",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE/GSH"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-09",
+          "months": 12,
+          "report": [
+            "GSH",
+            "AUCTION_QUANTITIES"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "gsh",
+      "folder": "GSH_AUCTION_QUANTITIES",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE/GSH"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-01",
+          "last-release": "2026-01",
+          "months": 1,
+          "report": [
+            "GSH",
+            "CAPACITY_TRANSACTION"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "gsh",
+      "folder": "GSH_CAPACITY_TRANSACTION",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE/GSH"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-03",
+          "last-release": "2026-08",
+          "months": 2,
+          "report": [
+            "GSH",
+            "CAPACITY_TRANSFER_AUCTION_NT"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "gsh",
+      "folder": "GSH_CAPACITY_TRANSFER_AUCTION_NOTICE",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE/GSH"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-09",
+          "months": 12,
+          "report": [
+            "GSH",
+            "TRANSACTION_SUMMARY"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "gsh",
+      "folder": "GSH_Daily_Trans_Summary",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE/GSH"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-09",
+          "months": 12,
+          "report": [
+            "GSH",
+            "HISTORICAL_SUMMARY"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "gsh",
+      "folder": "GSH_Historical_Trans_Summary",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE/GSH"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-09",
+          "months": 12,
+          "report": [
+            "GSH",
+            "PARTICIPANTS"
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-09",
+          "months": 12,
+          "report": [
+            "GSH",
+            "PARTICIPANT_OPSTATE"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "gsh",
+      "folder": "GSH_Participants",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE/GSH"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-09",
+          "months": 12,
+          "report": [
+            "GSH",
+            "FACILITIES"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "gsh",
+      "folder": "GSH_REGISTERED_FACILITIES",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE/GSH"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-09",
+          "months": 12,
+          "report": [
+            "GSH",
+            "NOTIONAL_POINTS"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-09",
+          "months": 12,
+          "report": [
+            "GSH",
+            "PARK_SERVICES"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-09",
+          "months": 12,
+          "report": [
+            "GSH",
+            "PIPELINE_SEGMENTS"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-09",
+          "months": 12,
+          "report": [
+            "GSH",
+            "SERVICE_POINTS"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-09",
+          "months": 12,
+          "report": [
+            "GSH",
+            "ZONES"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "gsh",
+      "folder": "GSH_REGISTERED_SERVICE_POINTS",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE/GSH"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-09",
+          "months": 12,
+          "report": [
+            "GSH",
+            "REVISED_AUCTION_QUANTITIES"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "gsh",
+      "folder": "GSH_REVISED_AUCTION_QUANTITIES",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE/GSH"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-03",
+          "last-release": "2026-09",
+          "months": 3,
+          "report": [
+            "GSH",
+            "ZONE_CURTAILMENT_INFORMATION"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "gsh",
+      "folder": "GSH_ZONE_CURTAILMENT_INFORMATION",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE/GSH"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-07",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "GSH",
+            "BENCHMARK_PRICE"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "gsh",
+      "folder": "Benchmark_Price",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT/GSH"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-07",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "GSH",
+            "AUCTION_PRICE_VOLUME"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "gsh",
+      "folder": "GSH_AUCTION_PRICE_VOLUME",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT/GSH"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-07",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "GSH",
+            "AUCTION_QUANTITIES"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "gsh",
+      "folder": "GSH_AUCTION_QUANTITIES",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT/GSH"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-08",
+          "months": 1,
+          "report": [
+            "GSH",
+            "CAPACITY_TRANSFER_AUCTION_NT"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "gsh",
+      "folder": "GSH_CAPACITY_TRANSFER_AUCTION_NOTICE",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT/GSH"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-07",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "GSH",
+            "TRANSACTION_SUMMARY"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "gsh",
+      "folder": "GSH_Daily_Trans_Summary",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT/GSH"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-07",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "GSH",
+            "HISTORICAL_SUMMARY"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "gsh",
+      "folder": "GSH_Historical_Trans_Summary",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT/GSH"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-07",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "GSH",
+            "PARTICIPANTS"
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2026-07",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "GSH",
+            "PARTICIPANT_OPSTATE"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "gsh",
+      "folder": "GSH_Participants",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT/GSH"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "GSH",
+            "FACILITIES"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "gsh",
+      "folder": "GSH_REGISTERED_FACILITIES",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT/GSH"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "GSH",
+            "NOTIONAL_POINTS"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "GSH",
+            "PARK_SERVICES"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "GSH",
+            "PIPELINE_SEGMENTS"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "GSH",
+            "SERVICE_POINTS"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "GSH",
+            "ZONES"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "gsh",
+      "folder": "GSH_REGISTERED_SERVICE_POINTS",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT/GSH"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-07",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "GSH",
+            "REVISED_AUCTION_QUANTITIES"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "gsh",
+      "folder": "GSH_REVISED_AUCTION_QUANTITIES",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT/GSH"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-09",
+          "last-release": "2026-10",
+          "months": 2,
+          "report": [
+            "GSH",
+            "ZONE_CURTAILMENT_INFORMATION"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "gsh",
+      "folder": "GSH_ZONE_CURTAILMENT_INFORMATION",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT/GSH"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2023-07",
+          "last-release": "2026-10",
+          "months": 15,
+          "report": [
+            "GBB",
+            "2P_SENSITIVIES"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "ACTUAL_FLOW_STORAGE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "ACTUAL_FLOW_STORAGE_LAST31"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "BASINS"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "BLEND_CURTAILMENT"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "CONNECTION_POINT_NAMEPLATE_RATING_FUTURE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "CONTACTS"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "DEMAND_ZONES_PIPELINE_CONNECTION_POINT_MAPPING"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "FACILITIES"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "FACILITIES_FULL"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "FACILITY_DEVELOPMENTS"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "FIELD_INTEREST_INFORMATION"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "GAS_FIELD_INTEREST"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "LATE_ACTUAL_FLOW_AND_STORAGE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "LATE_NOMINATION_AND_FORECAST"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "LINEPACK_CAPACITY_ADEQUACY_FULL_LIST"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "LINEPACK_CAPACITY_ADEQUACY_FUTURE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "LINEPACK_ZONES"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "LNG_SHIPMENTS"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-08",
+          "months": 1,
+          "report": [
+            "GBB",
+            "LNG_TRANSACTIONS"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "LOCATIONS_LIST"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "MEDIUM_TERM_CAPACITY_OUTLOOK"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "MEDIUM_TERM_CAPACITY_OUTLOOK_FUTURE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "MISSING_ACTUAL_FLOW_AND_STORAGE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "MISSING_NOMINATION_AND_FORECAST"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "NAMEPLATE_RATING"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "NAMEPLATE_RATING_CURRENT"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "NODES_AND_CONNECTION_POINTS"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "NODES_AND_CONNECTION_POINTS_FULL"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "NOMINATION_AND_FORECAST"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "NOMINATION_AND_FORECAST_NEXT7"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "NT_LNG_FLOW"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "PARTICIPANTS"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "PIPELINE_CONNECTION_FLOW"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "PIPELINE_CONNECTION_FLOW_LAST31"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "PIPELINE_NIL_QUALITY_SUBMISSION"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "RESERVES_AND_RESOURCES"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "SHIPPERS_FULL_LIST"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "SHIPPERS_LIST"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "SHORT_TERM_CAPACITY_OUTLOOK"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "SHORT_TERM_CAPACITY_OUTLOOK_FUTURE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "SHORT_TERM_SWAP_TRANSACTIONS_NSW"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "SHORT_TERM_SWAP_TRANSACTIONS_NT"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "SHORT_TERM_SWAP_TRANSACTIONS_QLD"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "SHORT_TERM_SWAP_TRANSACTIONS_SA"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "SHORT_TERM_SWAP_TRANSACTIONS_TAS"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "SHORT_TERM_SWAP_TRANSACTIONS_VIC"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "SHORT_TERM_TRANSACTIONS_NSW"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "SHORT_TERM_TRANSACTIONS_NT"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "SHORT_TERM_TRANSACTIONS_QLD"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "SHORT_TERM_TRANSACTIONS_SA"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "SHORT_TERM_TRANSACTIONS_TAS"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "SHORT_TERM_TRANSACTIONS_VIC"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "UNCONTRACTED_CAPACITY_OUTLOOK_FULL_LIST"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "UNCONTRACTED_CAPACITY_OUTLOOK_FUTURE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GSH",
+            "GAS_TRADES"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "gbb",
+      "folder": "GBB",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT/GBB"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "ACTUAL_FLOW_STORAGE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 11,
+          "report": [
+            "GBB",
+            "ACTUAL_FLOW_STORAGE_LAST31"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 11,
+          "report": [
+            "GBB",
+            "FACILITY_DEVELOPMENTS"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 9,
+          "report": [
+            "GBB",
+            "LINEPACK_CAPACITY_ADEQUACY_FUTURE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-04",
+          "last-release": "2026-10",
+          "months": 11,
+          "report": [
+            "GBB",
+            "MEDIUM_TERM_CAPACITY_OUTLOOK_FUTURE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 11,
+          "report": [
+            "GBB",
+            "NAMEPLATE_RATING_CURRENT"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 9,
+          "report": [
+            "GBB",
+            "NOMINATION_AND_FORECAST_NEXT7"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2024-06",
+          "last-release": "2025-08",
+          "months": 15,
+          "report": [
+            "GBB",
+            "PIPELINE_CONNECTION_FLOW"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 11,
+          "report": [
+            "GBB",
+            "PIPELINE_CONNECTION_FLOW_LAST31"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 11,
+          "report": [
+            "GBB",
+            "RESERVES_AND_RESOURCES"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-09",
+          "last-release": "2026-09",
+          "months": 1,
+          "report": [
+            "GBB",
+            "SHORT_TERM_CAPACITY_OUTLOOK"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 9,
+          "report": [
+            "GBB",
+            "SHORT_TERM_CAPACITY_OUTLOOK_FUTURE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 11,
+          "report": [
+            "GBB",
+            "UNCONTRACTED_CAPACITY_OUTLOOK_FUTURE"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "gbb",
+      "folder": "DUPLICATE",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT/GBB"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2021-08",
+          "last-release": "2026-10",
+          "months": 64,
+          "report": [
+            "GBB",
+            "FORECAST_UTILISATION"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "gbb",
+      "folder": "ForecastUtilisation",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT/GBB"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2021-07",
+          "last-release": "2026-10",
+          "months": 7,
+          "report": [
+            "GBB",
+            "PIPELINE_CONNECTION_FLOW"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2019-11",
+          "last-release": "2019-11",
+          "months": 1,
+          "report": [
+            "GBB",
+            "PIPELINE_CONNECTION_FLOW_HISTORY"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "gbb",
+      "folder": "GBB_PIPELINE_CONNECTION_FLOW",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT/GBB"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "STTM",
+            "INT651_EX_ANTE_MARKET_PRICE_RPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "STTM",
+            "INT652_EX_ANTE_SCHEDULE_QUANTITY_RPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "STTM",
+            "INT653_EX_ANTE_PIPELINE_PRICE_RPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "STTM",
+            "INT653_EX_ANTE_PIPELINE_PRICE_RPT_1"
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "STTM",
+            "INT653_EX_ANTE_PIPELINE_PRICE_RPT_1"
+          ],
+          "version": 3
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "STTM",
+            "INT654_PROVISIONAL_MARKET_PRICE_RPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "STTM",
+            "INT655_PROVISIONAL_SCHEDULE_QUANTITY_RPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "STTM",
+            "INT656_PROVISIONAL_PIPELINE_DATA_RPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "STTM",
+            "INT656_PROVISIONAL_PIPELINE_DATA_RPT_1"
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "STTM",
+            "INT657_EX_POST_MARKET_DATA_RPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "STTM",
+            "INT657_EX_POST_MARKET_DATA_RPT_1"
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "STTM",
+            "INT658_ALLOCATION_QUANTITY_RPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "STTM",
+            "INT658_LATEST_ALLOCATION_QUANTITY_RPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "STTM",
+            "INT659_BID_OFFER"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "STTM",
+            "INT659_BID_OFFER_RPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "STTM",
+            "INT660_CONTINGENCY_GAS_BIDS_AND_OFFERS_RPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "STTM",
+            "INT661_CONTINGENCY_GAS_CALLED_SCHEDULED_BID_OFFER_RPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "STTM",
+            "INT662_PROVISIONAL_DEVIATION_RPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "STTM",
+            "INT663_PROVISIONAL_VARIATION_RPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "STTM",
+            "INT664_DAILY_PROVISIONAL_MOS_ALLOCATION_RPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "STTM",
+            "INT665_MOS_STACK_DATA_RPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "STTM",
+            "INT666_MARKET_NOTICE_RPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "STTM",
+            "INT667_MARKET_PARAMETERS_RPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "STTM",
+            "INT668_SCHEDULE_LOG_RPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-09",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "STTM",
+            "INT669_SETTLEMENT_VERSION_RPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "STTM",
+            "INT670_REGISTERED_PARTICIPANTS_RPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "STTM",
+            "INT671_HUB_FACILITY_DEFINITION_RPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "STTM",
+            "INT672_CUMULATIVE_PRICE_RPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "STTM",
+            "INT673_TOTAL_CONTINGENCY_BID_OFFER_RPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "STTM",
+            "INT674_TOTAL_CONTINGENCY_GAS_SCHEDULES_RPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "STTM",
+            "INT675_DEFAULT_ALLOCATION_NOTICE_RPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "STTM",
+            "INT676_ROLLING_AVERAGE_PRICE_RPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "STTM",
+            "INT677_CONTINGENCY_GAS_PRICE_RPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "STTM",
+            "INT678_NET_MARKET_BALANCE_DAILY_AMOUNTS_RPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-09",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "STTM",
+            "INT679_NET_MARKET_BALANCE_SETTLEMENT_AMOUNTS_RPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "STTM",
+            "INT680_DP_FLAG_DATA_RPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "STTM",
+            "INT681_DAILY_PROVISIONAL_CAPACITY_RPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-09",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "STTM",
+            "INT682_SETTLEMENT_MOS_AND_CAPACITY_DATA_RPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "STTM",
+            "INT683_PROVISIONAL_USED_MOS_STEPS_RPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-09",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "STTM",
+            "INT684_SETTLEMENT_USED_MOS_STEPS_RPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "STTM",
+            "INT687_FACILITY_HUB_CAPACITY_DATA_RPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "STTM",
+            "INT688_ALLOCATION_WARNING_LIMIT_THRESHOLDS_RPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "STTM",
+            "INT689_EXPOST_FACILITY_ALLOCATION_QUANTITY_RPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "STTM",
+            "INT690_DEVIATION_PRICE_DATA_RPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "STTM",
+            "INT691_STTM_CTP_REGISTER_RPT_1"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "sttm",
+      "folder": "STTM",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT/STTM"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT029A_SYSTEM_NOTICES_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT037B_INDICATIVE_MKT_PRICE_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT037C_INDICATIVE_PRICE_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT039B_INDICATIVE_LOCATIONAL_PRICE_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT041_MARKET_AND_REFERENCE_PRICES_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-09",
+          "last-release": "2026-10",
+          "months": 2,
+          "report": [
+            "DWGM",
+            "INT042_WEIGHTED_AVERAGE_DAILY_PRICES_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT047_HEATING_VALUES_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT050_SCHED_WITHDRAWALS_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT079_TOTAL_GAS_WITHDRAWN_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT089_LINEPACK_BALANCE_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT091_EDDACT_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT108_SCHEDULED_RUN_LOG_7_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-05",
+          "last-release": "2026-05",
+          "months": 1,
+          "report": [
+            "DWGM",
+            "INT111_SDPC_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT111_SDPC_1"
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "DWGM",
+            "INT112B_NFTC_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT112B_NFTC_1"
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT112C_SSC_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT112D_ZFTC_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT112_DFPC_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT117A_EST_ANCILLARY_PAYMENTS_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT117B_ANCILLARY_PAYMENTS_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-05",
+          "last-release": "2026-05",
+          "months": 1,
+          "report": [
+            "DWGM",
+            "INT117_ANCILLARY_PAYMENTS_RPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-05",
+          "last-release": "2026-05",
+          "months": 1,
+          "report": [
+            "DWGM",
+            "INT125_DETAILS_OF_ORGANISATIONS_1"
+          ],
+          "version": 7
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT125_DETAILS_OF_ORGANISATIONS_1"
+          ],
+          "version": 8
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT126_DFS_DATA_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2012-09",
+          "last-release": "2026-10",
+          "months": 6,
+          "report": [
+            "DWGM",
+            "INT128_ACTUAL_LINEPACK_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT131_BIDS_AT_BID_CUTOFF_TIMES_PREV_2_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2010-08",
+          "last-release": "2010-08",
+          "months": 1,
+          "report": [
+            "DWGM",
+            "INT135_UPLIFT_CAP"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT135_UPLIFT_CAP_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-09",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "DWGM",
+            "INT138_SETTLEMENT_VERSION_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT139A_DAILY_ZONAL_HEATING_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "DWGM",
+            "INT139_DECLARED_DAILY_STATE_HEATING_VALUE_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT140_GAS_QUALITY_DATA_1"
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT150_PUBLIC_METERING_DATA_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT152_SCHED_MIN_QTY_LINEPACK_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT153_DEMAND_FORECAST_RPT_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-05",
+          "last-release": "2026-05",
+          "months": 1,
+          "report": [
+            "DWGM",
+            "INT157_13"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT171_LATEST_NSL_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-09",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "DWGM",
+            "INT176_GAS_COMPOSITION_DATA_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-05",
+          "last-release": "2026-05",
+          "months": 1,
+          "report": [
+            "DWGM",
+            "INT180_OP_SCHED_77"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT188_CTM_TO_HV_ZONE_MAPPING_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT199_CUMULATIVE_PRICE_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT235_SCHED_SYSTEM_TOTAL_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT236_OPERATIONAL_METER_READINGS_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "DWGM",
+            "INT256_MCE_FACTOR_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "DWGM",
+            "INT257_LINEPACK_WITH_ZONES_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "DWGM",
+            "INT258_MCE_NODES_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "DWGM",
+            "INT259_PIPE_SEGMENT_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "DWGM",
+            "INT260_COMPRESSOR_CHAR_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "DWGM",
+            "INT261_AGG_AMDQ_TRANSFERRED_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT262_SPARE_CAPACITY_LIMITS_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT263_LNG_MONITOR_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT271_LATEST_TOTAL_HOURLY_NSL_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT276_HOURLY_SCADA_PRESSURES_AT_MCE_NODES_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT284_TUOS_ZONE_POSTCODE_MAP_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT287_GAS_CONSUMPTION_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-09",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "DWGM",
+            "INT291_OUT_OF_MERIT_ORDER_GAS_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT310_PRICE_AND_WITHDRAWALS_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "DWGM",
+            "INT310_PRICE_AND_WITHDRAWALS_RPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "DWGM",
+            "INT311_CUSTOMER_TRANSFERS_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT311_CUSTOMER_TRANSFERS_1"
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT312_SETTLEMENTS_ACTIVITY_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-05",
+          "last-release": "2026-05",
+          "months": 1,
+          "report": [
+            "DWGM",
+            "INT312_SETTLEMENTS_ACTIVITY_REPORT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT313_ALLOCATED_INJECTIONS_WITHDRAWALS_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT314_BID_STACK_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-09",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "DWGM",
+            "INT316_OPERATIONAL_GAS_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-09",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "DWGM",
+            "INT322A_UPLIFT_BREAKDOWN_SETT_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT322B_UPLIFT_BREAKDOWN_PRUD_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "DWGM",
+            "INT339_CCAUCTION_BID_STACK_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "DWGM",
+            "INT342_CCAUCTION_SYS_CAPABILITY_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "DWGM",
+            "INT343_CCAUCTION_AUCTION_QTY_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "DWGM",
+            "INT345_CCAUCTION_ZONE_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "DWGM",
+            "INT348_CCTRANSFER_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT351_CCREGISTRY_SUMMARY_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "DWGM",
+            "INT353_CCAUCTION_QTY_WON_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "DWGM",
+            "INT353_CCAUCTION_QTY_WON_ALL_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT381_TIE_BREAKING_EVENT_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-09",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "DWGM",
+            "INT438_BMP_VERSION_NON_PTS_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "DWGM",
+            "INT439_PUBLISHED_DAILY_HEATING_VALUE_NON_PTS_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT471_LATEST_NSL_NON_PTS_RPT_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-09",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "DWGM",
+            "INT538_SETTLEMENT_VERSIONS_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT539_DAILY_ZONAL_HV_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT571_LATEST_NSL_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-09",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "DWGM",
+            "INT583_MONTHLY_CUMULATIVE_IMB_POS_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-09",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "DWGM",
+            "INT597_INJECTION_SCALING_FACTORS_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT839A_DAILY_ZONAL_HV_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT871_ERFTDAILYNSLRPT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT891_EDDACT_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT898_NEWSTREETLISTING_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-05",
+          "last-release": "2026-05",
+          "months": 1,
+          "report": [
+            "DWGM",
+            "INT89_LINEPACK_1"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "DWGM",
+            "INT929A_SYSTEM_NOTICES_1"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "DWGM",
+            "INT934_ECGS_CONTACTS_1"
+          ],
+          "version": 4
+        }
+      ],
+      "feed": "dwgm",
+      "folder": "VicGas",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT/VicGas"
+    }
+  ],
+  "x-format": 3
+}

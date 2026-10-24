@@ -1,0 +1,311 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 4783291662494989033,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 14,
+  "last-partition-id": 999,
+  "last-sequence-number": 3,
+  "last-updated-ms": 1790776800002,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT112B_NFTC",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"nftc_name\",\"2\":\"commencement_date\",\"3\":\"termination_date\",\"4\":\"daily_max_net_inj_qty_gj\",\"5\":\"daily_min_net_inj_qty_gj\",\"6\":\"daily_max_net_wdl_qty_gj\",\"7\":\"daily_min_net_wdl_qty_gj\",\"8\":\"ti\",\"9\":\"hourly_max_net_inj_qty_gj\",\"10\":\"hourly_min_net_inj_qty_gj\",\"11\":\"hourly_max_net_wdl_qty_gj\",\"12\":\"hourly_min_net_wdl_qty_gj\",\"13\":\"mod_datetime\",\"14\":\"current_date\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"DWGM\",\"INT112B_NFTC_1\"]]",
+    "utilake.table": "DWGM_INT112B_NFTC",
+    "utilake.temporal.cutoff": "CURRENT_DATE",
+    "utilake.temporal.entity": "[]",
+    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "COMMENCEMENT_DATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "COMMENCEMENT_DATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 4783291662494989033,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "NFTC_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 2,
+          "name": "COMMENCEMENT_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 3,
+          "name": "TERMINATION_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 4,
+          "name": "DAILY_MAX_NET_INJ_QTY_GJ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 5,
+          "name": "DAILY_MIN_NET_INJ_QTY_GJ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 6,
+          "name": "DAILY_MAX_NET_WDL_QTY_GJ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 7,
+          "name": "DAILY_MIN_NET_WDL_QTY_GJ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 8,
+          "name": "TI",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 9,
+          "name": "HOURLY_MAX_NET_INJ_QTY_GJ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 10,
+          "name": "HOURLY_MIN_NET_INJ_QTY_GJ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 11,
+          "name": "HOURLY_MAX_NET_WDL_QTY_GJ",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 12,
+          "name": "HOURLY_MIN_NET_WDL_QTY_GJ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 13,
+          "name": "MOD_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 14,
+          "name": "CURRENT_DATE",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "NFTC_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 2,
+          "name": "COMMENCEMENT_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 3,
+          "name": "TERMINATION_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 4,
+          "name": "DAILY_MAX_NET_INJ_QTY_GJ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 6,
+          "name": "DAILY_MAX_NET_WDL_QTY_GJ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 8,
+          "name": "TI",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 9,
+          "name": "HOURLY_MAX_NET_INJ_QTY_GJ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 11,
+          "name": "HOURLY_MAX_NET_WDL_QTY_GJ",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 13,
+          "name": "MOD_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 14,
+          "name": "CURRENT_DATE",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 1,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 1321445680540945306,
+      "timestamp-ms": 1785506400000
+    },
+    {
+      "snapshot-id": 1176854103074396359,
+      "timestamp-ms": 1790776800001
+    },
+    {
+      "snapshot-id": 4783291662494989033,
+      "timestamp-ms": 1790776800002
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT112B_NFTC/metadata/snap-1321445680540945306-1-23a38651-c210-83f7-9dd5-c036c48c3e9e.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 1321445680540945306,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "109",
+        "utilake.from.file": "PublicRpts31.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
+        "utilake.from.time": "2026-08-29T00:00:00+10:00",
+        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.report-subtype": "INT112B_NFTC_1",
+        "utilake.report-type": "DWGM",
+        "utilake.rows": "960",
+        "utilake.to.file": "PublicRpts30.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "ac08066e9a58bb171fab276325c3620ee9b6aadc807f5e1d4a2914ca72d40dc5",
+        "utilake.to.time": "2026-10-02T00:00:00+10:00",
+        "utilake.total-rows": "960",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1785506400000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT112B_NFTC/metadata/snap-1176854103074396359-2-23a38651-c210-83f7-9dd5-c036c48c3e9e.avro",
+      "parent-snapshot-id": 1321445680540945306,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 1176854103074396359,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "int112b_v4_nftc_1.csv",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "578a160c10fcea6f90e4c83d1f8daccf61752d8df343ae5168fa513a90e15e42",
+        "utilake.from.time": "2024-12-14T00:00:00+10:00",
+        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.report-subtype": "INT112B_NFTC_1",
+        "utilake.report-type": "DWGM",
+        "utilake.rows": "48",
+        "utilake.to.file": "int112b_v4_nftc_1.csv",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "578a160c10fcea6f90e4c83d1f8daccf61752d8df343ae5168fa513a90e15e42",
+        "utilake.to.time": "2024-12-17T00:00:00+10:00",
+        "utilake.total-rows": "1008",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1790776800001
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT112B_NFTC/metadata/snap-4783291662494989033-3-23a38651-c210-83f7-9dd5-c036c48c3e9e.avro",
+      "parent-snapshot-id": 1176854103074396359,
+      "schema-id": 0,
+      "sequence-number": 3,
+      "snapshot-id": 4783291662494989033,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "185",
+        "utilake.from.file": "CurrentDay.zip",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "d09196e8f849c4ebc0e465437c211d955f435f96ed792cf5f7cd6da3bf36fa31",
+        "utilake.from.time": "2026-09-29T00:00:00+10:00",
+        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.report-subtype": "INT112B_NFTC_1",
+        "utilake.report-type": "DWGM",
+        "utilake.rows": "1728",
+        "utilake.to.file": "int112b_v5_nftc_1.csv@20261021T220900+1000",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "83c1e5a4bdd83456d64bddd5cbc8393cfa54e5fc7861c4caad5989343e195b6a",
+        "utilake.to.time": "2026-10-23T00:00:00+10:00",
+        "utilake.total-rows": "2736",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1790776800002
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "23a38651-c210-83f7-9dd5-c036c48c3e9e"
+}

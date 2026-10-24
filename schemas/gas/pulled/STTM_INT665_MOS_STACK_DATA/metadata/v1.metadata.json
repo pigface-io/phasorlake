@@ -1,0 +1,186 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 7564820813757229886,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 15,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1785506400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/STTM_INT665_MOS_STACK_DATA",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"effective_from_date\",\"2\":\"effective_to_date\",\"3\":\"stack_identifier\",\"4\":\"hub_identifier\",\"5\":\"hub_name\",\"6\":\"facility_identifier\",\"7\":\"facility_name\",\"8\":\"stack_type\",\"9\":\"estimated_maximum_quantity\",\"10\":\"stack_step_identifier\",\"11\":\"trading_participant_identifier\",\"12\":\"trading_participant_name\",\"13\":\"step_quantity\",\"14\":\"step_price\",\"15\":\"report_datetime\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"STTM\",\"INT665_MOS_STACK_DATA_RPT_1\"]]",
+    "utilake.table": "STTM_INT665_MOS_STACK_DATA",
+    "utilake.temporal.cutoff": "REPORT_DATETIME",
+    "utilake.temporal.entity": "[\"STACK_IDENTIFIER\",\"HUB_IDENTIFIER\",\"FACILITY_IDENTIFIER\",\"STACK_STEP_IDENTIFIER\",\"TRADING_PARTICIPANT_IDENTIFIER\"]",
+    "utilake.temporal.order": "[\"REPORT_DATETIME\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "EFFECTIVE_FROM_DATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "EFFECTIVE_FROM_DATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 7564820813757229886,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "EFFECTIVE_FROM_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 2,
+          "name": "EFFECTIVE_TO_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 3,
+          "name": "STACK_IDENTIFIER",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 4,
+          "name": "HUB_IDENTIFIER",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 5,
+          "name": "HUB_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 6,
+          "name": "FACILITY_IDENTIFIER",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 7,
+          "name": "FACILITY_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 8,
+          "name": "STACK_TYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 9,
+          "name": "ESTIMATED_MAXIMUM_QUANTITY",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "id": 10,
+          "name": "STACK_STEP_IDENTIFIER",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 11,
+          "name": "TRADING_PARTICIPANT_IDENTIFIER",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "id": 12,
+          "name": "TRADING_PARTICIPANT_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 13,
+          "name": "STEP_QUANTITY",
+          "required": false,
+          "type": "decimal(13, 9)"
+        },
+        {
+          "id": 14,
+          "name": "STEP_PRICE",
+          "required": false,
+          "type": "decimal(6, 4)"
+        },
+        {
+          "id": 15,
+          "name": "REPORT_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 7564820813757229886,
+      "timestamp-ms": 1785506400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/STTM_INT665_MOS_STACK_DATA/metadata/snap-7564820813757229886-1-c8eb78a0-dd38-84e4-8c60-ecaa53e7decb.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 7564820813757229886,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "34",
+        "utilake.from.file": "Day31.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "ae9eda135c5f3c28548b31911da9dcc65c767009ef5b7d16ceee4cce2755509e",
+        "utilake.from.time": "2026-08-01T00:00:00+10:00",
+        "utilake.kinds": "[\"sttm/current\"]",
+        "utilake.report-subtype": "INT665_MOS_STACK_DATA_RPT_1",
+        "utilake.report-type": "STTM",
+        "utilake.rows": "2573",
+        "utilake.to.file": "int665_v1_mos_stack_data_rpt_1.csv@20261021T191600+1000",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "e197294983b62509908acb975897f10bb9ac0bb8d7aefd2131a036064dcba4b1",
+        "utilake.to.time": "2026-10-01T00:00:00+10:00",
+        "utilake.total-rows": "2573",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1785506400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "c8eb78a0-dd38-84e4-8c60-ecaa53e7decb"
+}

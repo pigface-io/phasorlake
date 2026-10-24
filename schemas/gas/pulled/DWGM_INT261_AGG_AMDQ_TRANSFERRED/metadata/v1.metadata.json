@@ -1,0 +1,109 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 4145432749254241851,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 3,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1790776800000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT261_AGG_AMDQ_TRANSFERRED",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"aggregated_amdq_transferred\",\"3\":\"current_date\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"DWGM\",\"INT261_AGG_AMDQ_TRANSFERRED_1\"]]",
+    "utilake.table": "DWGM_INT261_AGG_AMDQ_TRANSFERRED",
+    "utilake.temporal.entity": "[]",
+    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 4145432749254241851,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "GAS_DATE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 2,
+          "name": "AGGREGATED_AMDQ_TRANSFERRED",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "CURRENT_DATE",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 4145432749254241851,
+      "timestamp-ms": 1790776800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT261_AGG_AMDQ_TRANSFERRED/metadata/snap-4145432749254241851-1-129ce4a1-5e33-88dd-8b82-1e4555ddd72f.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 4145432749254241851,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "int261_v4_agg_amdq_transferred_1.csv",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "ffcb143d06824896afea46afa4a7be936a4ca7f402279bc1fab411d68b6691c0",
+        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.report-subtype": "INT261_AGG_AMDQ_TRANSFERRED_1",
+        "utilake.report-type": "DWGM",
+        "utilake.rows": "0",
+        "utilake.to.file": "int261_v4_agg_amdq_transferred_1.csv",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "ffcb143d06824896afea46afa4a7be936a4ca7f402279bc1fab411d68b6691c0",
+        "utilake.total-rows": "0",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1790776800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "129ce4a1-5e33-88dd-8b82-1e4555ddd72f"
+}

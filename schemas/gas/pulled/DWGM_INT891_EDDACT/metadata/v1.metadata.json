@@ -1,0 +1,126 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 7167300897528401551,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 5,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1785506400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT891_EDDACT",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"edd_update\",\"2\":\"edd_date\",\"3\":\"edd_value\",\"4\":\"edd_type\",\"5\":\"current_date\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"DWGM\",\"INT891_EDDACT_1\"]]",
+    "utilake.table": "DWGM_INT891_EDDACT",
+    "utilake.temporal.cutoff": "CURRENT_DATE",
+    "utilake.temporal.entity": "[]",
+    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "EDD_UPDATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "EDD_UPDATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 7167300897528401551,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "EDD_UPDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 2,
+          "name": "EDD_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 3,
+          "name": "EDD_VALUE",
+          "required": false,
+          "type": "decimal(4, 2)"
+        },
+        {
+          "id": 4,
+          "name": "EDD_TYPE",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 5,
+          "name": "CURRENT_DATE",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 7167300897528401551,
+      "timestamp-ms": 1785506400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT891_EDDACT/metadata/snap-7167300897528401551-1-4e4f7e32-aaf0-899a-b6ae-27d5cd3c9139.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 7167300897528401551,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "34",
+        "utilake.from.file": "PublicRpts31.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
+        "utilake.from.time": "2026-07-04T07:00:01+10:00",
+        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.report-subtype": "INT891_EDDACT_1",
+        "utilake.report-type": "DWGM",
+        "utilake.rows": "430",
+        "utilake.to.file": "int891_v1_eddact_1.csv@20261021T191200+1000",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "deca66eeeb43ea1a11fbb561746f33b161bd758a8de5fe80c865cf558875e1d0",
+        "utilake.to.time": "2026-10-21T07:00:02+10:00",
+        "utilake.total-rows": "430",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1785506400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "4e4f7e32-aaf0-899a-b6ae-27d5cd3c9139"
+}

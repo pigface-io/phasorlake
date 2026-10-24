@@ -1,0 +1,142 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 1416225620744963278,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 6,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1759240800000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GSH_HISTORICAL_SUMMARY",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "The report provides a summary of all trades delivered in the current gas day and the last thirty gas days per product location. It provides information on the volume weighted average price, and the total traded quantities.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"GAS_DATE\",\"PRODUCT_LOCATION\"]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.model-types": "{\"1\":\"DATE\",\"2\":\"VARCHAR2(80)\",\"3\":\"NUMBER(18,8)\",\"4\":\"NUMBER(18,8)\",\"5\":\"NUMBER(18,8)\",\"6\":\"DATE\"}",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"GSH\",\"HISTORICAL_SUMMARY\"]]",
+    "utilake.table": "GSH_HISTORICAL_SUMMARY",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"PRODUCT_LOCATION\"]",
+    "utilake.temporal.order": "[\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "GAS_DATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "GAS_DATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 1416225620744963278,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "The gas date when the delivery of trades occurred",
+          "id": 1,
+          "name": "GAS_DATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Product location for the Gas Supply Hub market",
+          "id": 2,
+          "name": "PRODUCT_LOCATION",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "The volume weighted average price for trades delivered in the specified gas day at the specified location in $/GJ",
+          "id": 3,
+          "name": "VOLUME_WEIGHTED_AVERAGE_PRICE",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Total traded quantities for the specified gas day at the specified location in GJ/day",
+          "id": 4,
+          "name": "TOTAL_QUANTITY",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The rolling 30 days volume weighted average price for trades delivered in the last 30 days at the specified location in $/GJ",
+          "id": 5,
+          "name": "ROLLING_WEIGHTED_AVERAGE_PRICE",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The date and time the report was generated",
+          "id": 6,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 1416225620744963278,
+      "timestamp-ms": 1759240800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GSH_HISTORICAL_SUMMARY/metadata/snap-1416225620744963278-1-9c43626d-a1ec-8026-be3e-a9598e8d58fd.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 1416225620744963278,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "462",
+        "utilake.from.file": "PUBLIC_HISTORICALTRANSACTIONSUMMARY_20251001.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "4c30fb186c7c767a557fe07b13738e46c2ceb407118422e5bad4e933add9a2a8",
+        "utilake.from.time": "2025-09-02T00:00:00+10:00",
+        "utilake.kinds": "[\"gsh/archive\",\"gsh/current\"]",
+        "utilake.report-subtype": "HISTORICAL_SUMMARY",
+        "utilake.report-type": "GSH",
+        "utilake.rows": "166320",
+        "utilake.to.file": "PUBLIC_HISTORICALTRANSACTIONSUMMARY_20261021_0000000544105654.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "0bd7f832e18b123bbc142ee0022b7772dae18de8a4f7072c49497401066222b4",
+        "utilake.to.time": "2026-10-21T00:00:00+10:00",
+        "utilake.total-rows": "166320",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1759240800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "9c43626d-a1ec-8026-be3e-a9598e8d58fd"
+}

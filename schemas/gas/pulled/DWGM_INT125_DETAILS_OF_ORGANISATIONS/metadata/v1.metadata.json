@@ -1,0 +1,350 @@
+{
+  "current-schema-id": 1,
+  "current-snapshot-id": 4649441393267054268,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 19,
+  "last-partition-id": 999,
+  "last-sequence-number": 2,
+  "last-updated-ms": 1785506400001,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT125_DETAILS_OF_ORGANISATIONS",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"company_id\",\"2\":\"company_name\",\"3\":\"registered_name\",\"4\":\"organization_class_name\",\"5\":\"organization_type_name\",\"6\":\"organization_status_name\",\"7\":\"line_1\",\"8\":\"line_2\",\"9\":\"line_3\",\"10\":\"province_id\",\"11\":\"city\",\"12\":\"postal_code\",\"13\":\"phone\",\"14\":\"fax\",\"15\":\"market_code\",\"16\":\"company_code\",\"17\":\"current_date\",\"18\":\"acn\",\"19\":\"abn\"}",
+    "utilake.key": "[\"COMPANY_ID\",\"PROVINCE_ID\"]",
+    "utilake.load": "snapshot",
+    "utilake.market": "gas",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"DWGM\",\"INT125_DETAILS_OF_ORGANISATIONS_1\"]]",
+    "utilake.table": "DWGM_INT125_DETAILS_OF_ORGANISATIONS",
+    "utilake.temporal.cutoff": "CURRENT_DATE",
+    "utilake.temporal.entity": "[\"COMPANY_ID\",\"PROVINCE_ID\"]",
+    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.time": "CURRENT_DATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 4649441393267054268,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "COMPANY_ID",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "id": 2,
+          "name": "COMPANY_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "REGISTERED_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "ORGANIZATION_CLASS_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 5,
+          "name": "ORGANIZATION_TYPE_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 6,
+          "name": "ORGANIZATION_STATUS_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 7,
+          "name": "LINE_1",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 8,
+          "name": "LINE_2",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 9,
+          "name": "LINE_3",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 10,
+          "name": "PROVINCE_ID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 11,
+          "name": "CITY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 12,
+          "name": "POSTAL_CODE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 13,
+          "name": "PHONE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 14,
+          "name": "FAX",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 15,
+          "name": "MARKET_CODE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 16,
+          "name": "COMPANY_CODE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 17,
+          "name": "CURRENT_DATE",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "COMPANY_ID",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "id": 2,
+          "name": "COMPANY_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "REGISTERED_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 18,
+          "name": "ACN",
+          "required": false,
+          "type": "decimal(9, 0)"
+        },
+        {
+          "id": 19,
+          "name": "ABN",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "ORGANIZATION_CLASS_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 5,
+          "name": "ORGANIZATION_TYPE_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 6,
+          "name": "ORGANIZATION_STATUS_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 7,
+          "name": "LINE_1",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 8,
+          "name": "LINE_2",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 9,
+          "name": "LINE_3",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 10,
+          "name": "PROVINCE_ID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 11,
+          "name": "CITY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 12,
+          "name": "POSTAL_CODE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 13,
+          "name": "PHONE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 14,
+          "name": "FAX",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 15,
+          "name": "MARKET_CODE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 16,
+          "name": "COMPANY_CODE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 17,
+          "name": "CURRENT_DATE",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 1,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 346214064254099412,
+      "timestamp-ms": 1777557600000
+    },
+    {
+      "snapshot-id": 4649441393267054268,
+      "timestamp-ms": 1785506400001
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT125_DETAILS_OF_ORGANISATIONS/metadata/snap-346214064254099412-1-0cdd0708-73b3-815e-bf70-e0d1c69d04c7.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 346214064254099412,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "int125_v7_details_of_organisations_1.csv",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "f5f908ff550228c798ab5a9019c622ae3c6d309a79147e86232e42375e613e5e",
+        "utilake.from.time": "2013-04-16T09:01:04+10:00",
+        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.report-subtype": "INT125_DETAILS_OF_ORGANISATIONS_1",
+        "utilake.report-type": "DWGM",
+        "utilake.rows": "353",
+        "utilake.to.file": "int125_v7_details_of_organisations_1.csv",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "f5f908ff550228c798ab5a9019c622ae3c6d309a79147e86232e42375e613e5e",
+        "utilake.to.time": "2013-04-16T09:01:04+10:00",
+        "utilake.total-rows": "353",
+        "utilake.version": "7"
+      },
+      "timestamp-ms": 1777557600000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT125_DETAILS_OF_ORGANISATIONS/metadata/snap-4649441393267054268-2-0cdd0708-73b3-815e-bf70-e0d1c69d04c7.avro",
+      "parent-snapshot-id": 346214064254099412,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 4649441393267054268,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "34",
+        "utilake.from.file": "PublicRpts31.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
+        "utilake.from.time": "2026-08-31T09:00:01+10:00",
+        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.report-subtype": "INT125_DETAILS_OF_ORGANISATIONS_1",
+        "utilake.report-type": "DWGM",
+        "utilake.rows": "849",
+        "utilake.to.file": "int125_v8_details_of_organisations_1.csv@20261021T191100+1000",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "ada93856250a8b82edae5fb4ca63405c8c243f42ebdd479e5b8657448156c164",
+        "utilake.to.time": "2026-10-21T09:00:02+10:00",
+        "utilake.total-rows": "1202",
+        "utilake.version": "8"
+      },
+      "timestamp-ms": 1785506400001
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "0cdd0708-73b3-815e-bf70-e0d1c69d04c7"
+}

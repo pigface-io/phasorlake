@@ -16,15 +16,15 @@ repo = "builtin"
 hooks = [
     # Files kept byte for byte: AEMO's fixtures, the tables pulled from
     # utilake-schemas (whose manifest holds their hashes), and references.
-    { id = "trailing-whitespace", exclude = '^(testdata/|crates/utilake-mirror/testdata/|schemas/nem/pulled/|reference/)' },
-    { id = "end-of-file-fixer", exclude = '^(testdata/|crates/utilake-mirror/testdata/|schemas/nem/pulled/|reference/)' },
+    { id = "trailing-whitespace", exclude = '^(testdata/|crates/utilake-mirror/testdata/|schemas/[a-z]+/pulled/|reference/)' },
+    { id = "end-of-file-fixer", exclude = '^(testdata/|crates/utilake-mirror/testdata/|schemas/[a-z]+/pulled/|reference/)' },
     { id = "check-yaml" },
     { id = "check-toml" },
     { id = "check-json" },
     { id = "check-merge-conflict" },
     # The data-model JSON fixture and the pulled tables are large;
     # everything else is small.
-    { id = "check-added-large-files", args = ["--maxkb=200"], exclude = '^(testdata/bootstrap/datamodel/|schemas/nem/pulled/)' },
+    { id = "check-added-large-files", args = ["--maxkb=200"], exclude = '^(testdata/bootstrap/datamodel/|schemas/[a-z]+/pulled/)' },
     # ── Secrets (first line of defence; gitleaks is below) ──
     { id = "detect-private-key" },
 ]
@@ -71,7 +71,7 @@ id = "schemas-check"
 name = "schemas: the pulled tables are their manifest's, at the locked rev"
 language = "system"
 entry = "just schemas-check"
-files = '^(schemas/nem/pulled/|Cargo\.lock$)'
+files = '^(schemas/[a-z]+/pulled/|Cargo\.lock$)'
 pass_filenames = false
 
 # On every commit, not only when the index changes: a file renamed anywhere

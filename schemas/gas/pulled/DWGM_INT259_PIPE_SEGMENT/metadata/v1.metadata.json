@@ -1,0 +1,216 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 3567994622777019824,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 20,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1790776800000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT259_PIPE_SEGMENT",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"pipe_segment_id\",\"2\":\"pipe_segment_name\",\"3\":\"linepack_zone_id\",\"4\":\"commencement_date\",\"5\":\"termination_date\",\"6\":\"node_destination_id\",\"7\":\"node_origin_id\",\"8\":\"diameter\",\"9\":\"diameter_paired\",\"10\":\"length\",\"11\":\"max_pressure\",\"12\":\"min_pressure\",\"13\":\"max_pressure_delta\",\"14\":\"pressure_at_regulator_outlet\",\"15\":\"regulator_at_origin\",\"16\":\"reverse_flow\",\"17\":\"compressor\",\"18\":\"mean_pipe_altitude\",\"19\":\"last_mod_date\",\"20\":\"current_date\"}",
+    "utilake.key": "[\"PIPE_SEGMENT_ID\",\"LINEPACK_ZONE_ID\",\"NODE_DESTINATION_ID\",\"NODE_ORIGIN_ID\"]",
+    "utilake.load": "snapshot",
+    "utilake.market": "gas",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"DWGM\",\"INT259_PIPE_SEGMENT_1\"]]",
+    "utilake.table": "DWGM_INT259_PIPE_SEGMENT",
+    "utilake.temporal.cutoff": "CURRENT_DATE",
+    "utilake.temporal.entity": "[\"PIPE_SEGMENT_ID\",\"LINEPACK_ZONE_ID\",\"NODE_DESTINATION_ID\",\"NODE_ORIGIN_ID\"]",
+    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "COMMENCEMENT_DATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "COMMENCEMENT_DATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 3567994622777019824,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "PIPE_SEGMENT_ID",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 2,
+          "name": "PIPE_SEGMENT_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "LINEPACK_ZONE_ID",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 4,
+          "name": "COMMENCEMENT_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 5,
+          "name": "TERMINATION_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 6,
+          "name": "NODE_DESTINATION_ID",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 7,
+          "name": "NODE_ORIGIN_ID",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 8,
+          "name": "DIAMETER",
+          "required": false,
+          "type": "decimal(5, 4)"
+        },
+        {
+          "id": 9,
+          "name": "DIAMETER_PAIRED",
+          "required": false,
+          "type": "decimal(4, 4)"
+        },
+        {
+          "id": 10,
+          "name": "LENGTH",
+          "required": false,
+          "type": "decimal(7, 4)"
+        },
+        {
+          "id": 11,
+          "name": "MAX_PRESSURE",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "id": 12,
+          "name": "MIN_PRESSURE",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 13,
+          "name": "MAX_PRESSURE_DELTA",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 14,
+          "name": "PRESSURE_AT_REGULATOR_OUTLET",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 15,
+          "name": "REGULATOR_AT_ORIGIN",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 16,
+          "name": "REVERSE_FLOW",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 17,
+          "name": "COMPRESSOR",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 18,
+          "name": "MEAN_PIPE_ALTITUDE",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "id": 19,
+          "name": "LAST_MOD_DATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 20,
+          "name": "CURRENT_DATE",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 3567994622777019824,
+      "timestamp-ms": 1790776800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT259_PIPE_SEGMENT/metadata/snap-3567994622777019824-1-a0dad6f2-ff3d-889a-86ec-5148c033116c.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 3567994622777019824,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "int259_v4_pipe_segment_1.csv",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "8a4f66fac084555d084e2fb75aadb9d4d0ff813ad707a741ad227e37d5b4a169",
+        "utilake.from.time": "1998-06-23T00:00:00+10:00",
+        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.report-subtype": "INT259_PIPE_SEGMENT_1",
+        "utilake.report-type": "DWGM",
+        "utilake.rows": "84",
+        "utilake.to.file": "int259_v4_pipe_segment_1.csv",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "8a4f66fac084555d084e2fb75aadb9d4d0ff813ad707a741ad227e37d5b4a169",
+        "utilake.to.time": "2024-02-07T00:00:00+10:00",
+        "utilake.total-rows": "84",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1790776800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "a0dad6f2-ff3d-889a-86ec-5148c033116c"
+}

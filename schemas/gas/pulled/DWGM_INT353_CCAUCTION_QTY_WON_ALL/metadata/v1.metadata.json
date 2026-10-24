@@ -1,0 +1,168 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 8983724577859043910,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 12,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1790776800000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT353_CCAUCTION_QTY_WON_ALL",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"auction_id\",\"2\":\"auction_date\",\"3\":\"zone_id\",\"4\":\"zone_name\",\"5\":\"zone_type\",\"6\":\"start_date\",\"7\":\"end_date\",\"8\":\"cc_period\",\"9\":\"clearing_price\",\"10\":\"quantities_won_gj\",\"11\":\"unallocated_qty\",\"12\":\"current_date\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"DWGM\",\"INT353_CCAUCTION_QTY_WON_ALL_1\"]]",
+    "utilake.table": "DWGM_INT353_CCAUCTION_QTY_WON_ALL",
+    "utilake.temporal.cutoff": "CURRENT_DATE",
+    "utilake.temporal.entity": "[\"AUCTION_ID\",\"ZONE_ID\"]",
+    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "START_DATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "START_DATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 8983724577859043910,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "AUCTION_ID",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 2,
+          "name": "AUCTION_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 3,
+          "name": "ZONE_ID",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 4,
+          "name": "ZONE_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 5,
+          "name": "ZONE_TYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 6,
+          "name": "START_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 7,
+          "name": "END_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 8,
+          "name": "CC_PERIOD",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 9,
+          "name": "CLEARING_PRICE",
+          "required": false,
+          "type": "decimal(5, 4)"
+        },
+        {
+          "id": 10,
+          "name": "QUANTITIES_WON_GJ",
+          "required": false,
+          "type": "decimal(15, 9)"
+        },
+        {
+          "id": 11,
+          "name": "UNALLOCATED_QTY",
+          "required": false,
+          "type": "decimal(15, 9)"
+        },
+        {
+          "id": 12,
+          "name": "CURRENT_DATE",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 8983724577859043910,
+      "timestamp-ms": 1790776800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT353_CCAUCTION_QTY_WON_ALL/metadata/snap-8983724577859043910-1-d35b0318-8eae-89cd-80ea-06fb8b621628.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 8983724577859043910,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "int353_v4_ccauction_qty_won_all_1.csv",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "c54f9d9e62ea773148f1d6d6b34c1f3924b395d5dab5a831024ac5e72470ba25",
+        "utilake.from.time": "2026-07-01T00:00:00+10:00",
+        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.report-subtype": "INT353_CCAUCTION_QTY_WON_ALL_1",
+        "utilake.report-type": "DWGM",
+        "utilake.rows": "231",
+        "utilake.to.file": "int353_v4_ccauction_qty_won_all_1.csv",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "c54f9d9e62ea773148f1d6d6b34c1f3924b395d5dab5a831024ac5e72470ba25",
+        "utilake.to.time": "2029-06-01T00:00:00+10:00",
+        "utilake.total-rows": "231",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1790776800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "d35b0318-8eae-89cd-80ea-06fb8b621628"
+}

@@ -626,14 +626,13 @@ mod tests {
             (1, 2, 0, 0)
         );
         assert_eq!(stats.lines, 3);
-        // No table of the registry claims the block yet: derived, under
-        // the gas market, named family and name.
-        let (table, market, version, how) = &sink.blocks[0];
-        assert_eq!(table, "GBB_ACTUAL_FLOW_STORAGE_LAST31");
+        // The registry's gas table that claims the pair, under the gas
+        // market, the block named by family and name.
+        let (table, market, _, how) = &sink.blocks[0];
+        assert_eq!(table, "GBB_ACTUAL_FLOW_STORAGE");
         assert_eq!(market, "gas");
-        // The schema the block was read against: a derived table has one.
-        assert_eq!(*version, 0);
-        assert_eq!(how, "derived:GBB:ACTUAL_FLOW_STORAGE_LAST31");
+        assert!(how.ends_with(":GBB:ACTUAL_FLOW_STORAGE_LAST31"), "{how}");
+        assert!(!how.starts_with("derived"), "{how}");
         let batch = &sink.batches[0].batch;
         assert_eq!(batch.num_rows(), 2);
         let schema = batch.schema();
@@ -645,19 +644,35 @@ mod tests {
         let transform = &sink.batches[0].transform;
         assert_eq!(transform.block_family, "GBB");
         assert_eq!(transform.source_columns[0], "GASDATE");
-        // The date is in the MMS form whatever the file wrote.
-        let col = batch
-            .column(0)
-            .as_any()
-            .downcast_ref::<arrow_array::StringArray>()
-            .unwrap();
-        assert_eq!(col.value(0), "2026/09/20");
-        // Strict mode refuses a block no table claims.
+        // The date, in the MMS form whatever the file wrote, lands in the
+        // declared table's typed column.
+        assert_eq!(
+            *schema.field(0).data_type(),
+            arrow_schema::DataType::Date32,
+            "{schema:?}"
+        );
+        assert_eq!(batch.column(0).null_count(), 0);
+        // A block no table claims is derived, named family and name; strict
+        // mode refuses it.
+        let mut sink = Collect::default();
+        let unknown = "https://www.nemweb.com.au/Reports/CURRENT/GBB/GasBBNoSuchThing.CSV";
+        decode(
+            &d,
+            unknown,
+            "GasBBNoSuchThing.CSV",
+            &bytes,
+            &options(false, 0),
+            None,
+            &mut sink,
+        )
+        .unwrap();
+        assert_eq!(sink.blocks[0].0, "GBB_NO_SUCH_THING");
+        assert_eq!(sink.blocks[0].3, "derived:GBB:NO_SUCH_THING");
         let mut strict = Collect::default();
         let e = decode(
             &d,
-            GBB,
-            "GasBBActualFlowStorageLast31.CSV",
+            unknown,
+            "GasBBNoSuchThing.CSV",
             &bytes,
             &options(true, 0),
             None,
@@ -766,7 +781,7 @@ mod tests {
         assert_eq!((stats.rows, stats.bad_rows), (2, 1));
         assert_eq!(sink.bad.len(), 1);
         assert_eq!(sink.bad[0].2, "csv.field_count_mismatch");
-        assert_eq!(sink.blocks[0].0, "STTM_INT651_EX_ANTE_MARKET_PRICE_RPT_1");
+        assert_eq!(sink.blocks[0].0, "STTM_INT651_EX_ANTE_MARKET_PRICE");
         // More than tolerated: the file fails.
         let mut sink = Collect::default();
         let e = decode(
@@ -978,7 +993,7 @@ mod tests {
         )
         .unwrap();
         assert_eq!((stats.blocks, stats.rows), (1, 1));
-        assert_eq!(sink.blocks[0].0, "GSH_GAS_TRADES");
+        assert_eq!(sink.blocks[0].0, "GAS_GSH_TRADES");
         assert_eq!(sink.blocks[0].1, "gas");
         // A header row: the file name names the block.
         let plain = fixture("gbb_actual_flow_storage_last31.csv");
@@ -994,7 +1009,7 @@ mod tests {
         )
         .unwrap();
         assert_eq!((stats.blocks, stats.rows), (1, 2));
-        assert_eq!(sink.blocks[0].0, "GBB_ACTUAL_FLOW_STORAGE_LAST31");
+        assert_eq!(sink.blocks[0].0, "GBB_ACTUAL_FLOW_STORAGE");
         // Markup: skipped with a warning, nothing read.
         let mut sink = Collect::default();
         let stats = decode(

@@ -1,0 +1,162 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 1010947029088326595,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 9,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1772287200000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GSH_CAP_XFR_AUCTION_NOTICE",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "Notifies participants when the market delay or cancellation process is triggered",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"NOTICE_ID\"]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.model-types": "{\"1\":\"NUMBER(8,0)\",\"2\":\"DATE\",\"3\":\"DATE\",\"4\":\"NUMBER(8,0)\",\"5\":\"VARCHAR2 (100)\",\"6\":\"VARCHAR2 (20)\",\"7\":\"VARCHAR2 (50)\",\"8\":\"VARCHAR2 (1000)\",\"9\":\"DATE\"}",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"GSH\",\"CAPACITY_TRANSFER_AUCTION_NT\"]]",
+    "utilake.table": "GSH_CAP_XFR_AUCTION_NOTICE",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"NOTICE_ID\"]",
+    "utilake.temporal.order": "[\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "NOTICE_DATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "NOTICE_DATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 1010947029088326595,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "The unique identifier of the notice.",
+          "id": 1,
+          "name": "NOTICE_ID",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "The date of the notice",
+          "id": 2,
+          "name": "NOTICE_DATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The gas date of the notice. Disregard the time component as this is not applicable.",
+          "id": 3,
+          "name": "GAS_DATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The unique identifier of the facility.",
+          "id": 4,
+          "name": "FACILITY_ID",
+          "required": false,
+          "type": "long"
+        },
+        {
+          "doc": "The descriptive name of the facility.",
+          "id": 5,
+          "name": "FACILITY_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The market that has triggered the notice, for example CTP or DAA.",
+          "id": 6,
+          "name": "MARKET",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The type of notice, for example Cancel or Delay for CTP, Exclude or Delay for DAA.",
+          "id": 7,
+          "name": "NOTICE_TYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The description of the notice.",
+          "id": 8,
+          "name": "DESCRIPTION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The date and time the report was generated.",
+          "id": 9,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 1010947029088326595,
+      "timestamp-ms": 1772287200000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GSH_CAP_XFR_AUCTION_NOTICE/metadata/snap-1010947029088326595-1-67926d56-66a5-82a4-94f4-eb84f6461343.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 1010947029088326595,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "5",
+        "utilake.from.file": "PUBLIC_CAPACITYTRANSFERAUCTIONNOTICE_20260301.zip",
+        "utilake.from.release": "2026-03",
+        "utilake.from.sha256": "012c0add70be5555316f9c0cf970e755ced86e9c97996588b052e95e761a0a6a",
+        "utilake.from.time": "2026-03-10T00:00:00+10:00",
+        "utilake.kinds": "[\"gsh/archive\",\"gsh/current\"]",
+        "utilake.report-subtype": "CAPACITY_TRANSFER_AUCTION_NT",
+        "utilake.report-type": "GSH",
+        "utilake.rows": "5",
+        "utilake.to.file": "PUBLIC_CAPACITYTRANSFERAUCTIONNOTICE_20260807_0000000531458749.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "535c7a8b4fa72bf03651121a06c05c5095d06f91d32cc18d1d8e0be78ba629e1",
+        "utilake.to.time": "2026-08-07T00:00:00+10:00",
+        "utilake.total-rows": "5",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1772287200000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "67926d56-66a5-82a4-94f4-eb84f6461343"
+}

@@ -1,0 +1,157 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 2397770786503523211,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 11,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1777557600000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT89_LINEPACK",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"total_inj_gj\",\"3\":\"total_wd_gj\",\"4\":\"eod_linepack_gj\",\"5\":\"linepack_acct_gj\",\"6\":\"linepack_acct_pmt_GST_Ex\",\"7\":\"adjust_linepack_acct_pmt_GST_Ex\",\"8\":\"linepack_acct_bal_GST_Ex\",\"9\":\"market_price_GST_Ex\",\"10\":\"adm_price_flag\",\"11\":\"current_date\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"DWGM\",\"INT89_LINEPACK_1\"]]",
+    "utilake.table": "DWGM_INT89_LINEPACK",
+    "utilake.temporal.entity": "[]",
+    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 2397770786503523211,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "GAS_DATE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 2,
+          "name": "TOTAL_INJ_GJ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "TOTAL_WD_GJ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "EOD_LINEPACK_GJ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 5,
+          "name": "LINEPACK_ACCT_GJ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 6,
+          "name": "LINEPACK_ACCT_PMT_GST_EX",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 7,
+          "name": "ADJUST_LINEPACK_ACCT_PMT_GST_EX",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 8,
+          "name": "LINEPACK_ACCT_BAL_GST_EX",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 9,
+          "name": "MARKET_PRICE_GST_EX",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 10,
+          "name": "ADM_PRICE_FLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 11,
+          "name": "CURRENT_DATE",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 2397770786503523211,
+      "timestamp-ms": 1777557600000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT89_LINEPACK/metadata/snap-2397770786503523211-1-70a1bb5e-3be0-8a0d-b422-d7ee0cb67856.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 2397770786503523211,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "int89_linepack_1.csv",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "edb8e5bf5807fe94b5724e4604a36ce2b4fd09d4780ab1c6067898fbefbc5178",
+        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.report-subtype": "INT89_LINEPACK_1",
+        "utilake.report-type": "DWGM",
+        "utilake.rows": "0",
+        "utilake.to.file": "int89_linepack_1.csv",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "edb8e5bf5807fe94b5724e4604a36ce2b4fd09d4780ab1c6067898fbefbc5178",
+        "utilake.total-rows": "0",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1777557600000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "70a1bb5e-3be0-8a0d-b422-d7ee0cb67856"
+}

@@ -1,0 +1,312 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 3251233668671989697,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 36,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1777557600000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT180_OP_SCHED_77",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"transmission_document_id\",\"3\":\"pipeline_id\",\"4\":\"pipeline_point_id\",\"5\":\"pipeline_point_name\",\"6\":\"participant_logical_meter\",\"7\":\"offer_type\",\"8\":\"participant_id\",\"9\":\"market_participant\",\"10\":\"daily_qty\",\"11\":\"hour_1\",\"12\":\"hour_2\",\"13\":\"hour_3\",\"14\":\"hour_4\",\"15\":\"hour_5\",\"16\":\"hour_6\",\"17\":\"hour_7\",\"18\":\"hour_8\",\"19\":\"hour_9\",\"20\":\"hour_10\",\"21\":\"hour_11\",\"22\":\"hour_12\",\"23\":\"hour_13\",\"24\":\"hour_14\",\"25\":\"hour_15\",\"26\":\"hour_16\",\"27\":\"hour_17\",\"28\":\"hour_18\",\"29\":\"hour_19\",\"30\":\"hour_20\",\"31\":\"hour_21\",\"32\":\"hour_22\",\"33\":\"hour_23\",\"34\":\"hour_24\",\"35\":\"comment\",\"36\":\"current_date\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"DWGM\",\"INT180_OP_SCHED_77\"]]",
+    "utilake.table": "DWGM_INT180_OP_SCHED_77",
+    "utilake.temporal.cutoff": "CURRENT_DATE",
+    "utilake.temporal.entity": "[\"TRANSMISSION_DOCUMENT_ID\",\"PIPELINE_ID\",\"PIPELINE_POINT_ID\",\"PARTICIPANT_ID\"]",
+    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "GAS_DATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "GAS_DATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 3251233668671989697,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "GAS_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 2,
+          "name": "TRANSMISSION_DOCUMENT_ID",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "id": 3,
+          "name": "PIPELINE_ID",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 4,
+          "name": "PIPELINE_POINT_ID",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 5,
+          "name": "PIPELINE_POINT_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 6,
+          "name": "PARTICIPANT_LOGICAL_METER",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 7,
+          "name": "OFFER_TYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 8,
+          "name": "PARTICIPANT_ID",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "id": 9,
+          "name": "MARKET_PARTICIPANT",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 10,
+          "name": "DAILY_QTY",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 11,
+          "name": "HOUR_1",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 12,
+          "name": "HOUR_2",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 13,
+          "name": "HOUR_3",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 14,
+          "name": "HOUR_4",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 15,
+          "name": "HOUR_5",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 16,
+          "name": "HOUR_6",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 17,
+          "name": "HOUR_7",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 18,
+          "name": "HOUR_8",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 19,
+          "name": "HOUR_9",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 20,
+          "name": "HOUR_10",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 21,
+          "name": "HOUR_11",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 22,
+          "name": "HOUR_12",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 23,
+          "name": "HOUR_13",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 24,
+          "name": "HOUR_14",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 25,
+          "name": "HOUR_15",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 26,
+          "name": "HOUR_16",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 27,
+          "name": "HOUR_17",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 28,
+          "name": "HOUR_18",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 29,
+          "name": "HOUR_19",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 30,
+          "name": "HOUR_20",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 31,
+          "name": "HOUR_21",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 32,
+          "name": "HOUR_22",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 33,
+          "name": "HOUR_23",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 34,
+          "name": "HOUR_24",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 35,
+          "name": "COMMENT",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 36,
+          "name": "CURRENT_DATE",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 3251233668671989697,
+      "timestamp-ms": 1777557600000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT180_OP_SCHED_77/metadata/snap-3251233668671989697-1-8bfe0315-705c-81df-b5ca-7e5c77ef9772.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 3251233668671989697,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "int180_v4_op_sched_77.csv",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "76c7634ef0289e6a294a2da560d07694c65c75fa29875b7f96b2d10d771a4a25",
+        "utilake.from.time": "2009-04-01T00:00:00+10:00",
+        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.report-subtype": "INT180_OP_SCHED_77",
+        "utilake.report-type": "DWGM",
+        "utilake.rows": "15",
+        "utilake.to.file": "int180_v4_op_sched_77.csv",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "76c7634ef0289e6a294a2da560d07694c65c75fa29875b7f96b2d10d771a4a25",
+        "utilake.to.time": "2009-04-03T00:00:00+10:00",
+        "utilake.total-rows": "15",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1777557600000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "8bfe0315-705c-81df-b5ca-7e5c77ef9772"
+}

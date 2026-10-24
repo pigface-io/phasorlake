@@ -1,0 +1,305 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 6230970159295608018,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 12,
+  "last-partition-id": 999,
+  "last-sequence-number": 3,
+  "last-updated-ms": 1790776800002,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/STTM_INT656_PROVISIONAL_PIPELINE_DATA",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"hub_identifier\",\"3\":\"hub_name\",\"4\":\"schedule_identifier\",\"5\":\"facility_identifier\",\"6\":\"facility_name\",\"7\":\"provisional_capacity_qty\",\"8\":\"prov_cap_qty_quality_type\",\"9\":\"provisional_capacity_price\",\"10\":\"provisional_flow_constraint_price\",\"11\":\"provisional_schedule_type\",\"12\":\"report_datetime\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"STTM\",\"INT656_PROVISIONAL_PIPELINE_DATA_RPT_1\"]]",
+    "utilake.table": "STTM_INT656_PROVISIONAL_PIPELINE_DATA",
+    "utilake.temporal.cutoff": "REPORT_DATETIME",
+    "utilake.temporal.entity": "[\"HUB_IDENTIFIER\",\"SCHEDULE_IDENTIFIER\",\"FACILITY_IDENTIFIER\"]",
+    "utilake.temporal.order": "[\"REPORT_DATETIME\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "GAS_DATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "GAS_DATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 6230970159295608018,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "GAS_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 2,
+          "name": "HUB_IDENTIFIER",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "HUB_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "SCHEDULE_IDENTIFIER",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "id": 5,
+          "name": "FACILITY_IDENTIFIER",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 6,
+          "name": "FACILITY_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 7,
+          "name": "PROVISIONAL_CAPACITY_QTY",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "id": 8,
+          "name": "PROV_CAP_QTY_QUALITY_TYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 9,
+          "name": "PROVISIONAL_CAPACITY_PRICE",
+          "required": false,
+          "type": "decimal(4, 4)"
+        },
+        {
+          "id": 10,
+          "name": "PROVISIONAL_FLOW_CONSTRAINT_PRICE",
+          "required": false,
+          "type": "decimal(4, 4)"
+        },
+        {
+          "id": 11,
+          "name": "PROVISIONAL_SCHEDULE_TYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 12,
+          "name": "REPORT_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "GAS_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 2,
+          "name": "HUB_IDENTIFIER",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "HUB_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "SCHEDULE_IDENTIFIER",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "id": 5,
+          "name": "FACILITY_IDENTIFIER",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 6,
+          "name": "FACILITY_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 7,
+          "name": "PROVISIONAL_CAPACITY_QTY",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "id": 9,
+          "name": "PROVISIONAL_CAPACITY_PRICE",
+          "required": false,
+          "type": "decimal(4, 4)"
+        },
+        {
+          "id": 10,
+          "name": "PROVISIONAL_FLOW_CONSTRAINT_PRICE",
+          "required": false,
+          "type": "decimal(4, 4)"
+        },
+        {
+          "id": 11,
+          "name": "PROVISIONAL_SCHEDULE_TYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 12,
+          "name": "REPORT_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 1,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 491948351108199909,
+      "timestamp-ms": 1785506400000
+    },
+    {
+      "snapshot-id": 5694289171211128659,
+      "timestamp-ms": 1790776800001
+    },
+    {
+      "snapshot-id": 6230970159295608018,
+      "timestamp-ms": 1790776800002
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/STTM_INT656_PROVISIONAL_PIPELINE_DATA/metadata/snap-491948351108199909-1-34ef3048-9e95-88b0-b744-dfc4d67e2654.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 491948351108199909,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "57",
+        "utilake.from.file": "Day31.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "ae9eda135c5f3c28548b31911da9dcc65c767009ef5b7d16ceee4cce2755509e",
+        "utilake.from.time": "2026-08-27T00:00:00+10:00",
+        "utilake.kinds": "[\"sttm/current\"]",
+        "utilake.report-subtype": "INT656_PROVISIONAL_PIPELINE_DATA_RPT_1",
+        "utilake.report-type": "STTM",
+        "utilake.rows": "496",
+        "utilake.to.file": "Day30.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "cf4981d5315499b11dabe341b590c7f2c87c874365834d08431241d7996a598e",
+        "utilake.to.time": "2026-10-03T00:00:00+10:00",
+        "utilake.total-rows": "496",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1785506400000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/STTM_INT656_PROVISIONAL_PIPELINE_DATA/metadata/snap-5694289171211128659-2-34ef3048-9e95-88b0-b744-dfc4d67e2654.avro",
+      "parent-snapshot-id": 491948351108199909,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 5694289171211128659,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "int656_v1_provisional_pipeline_data_rpt_1.csv",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "b961d2c76f349ad826653661baa88ee67cd5bd97ed7a197849d5d4c5af0ae723",
+        "utilake.from.time": "2011-06-11T00:00:00+10:00",
+        "utilake.kinds": "[\"sttm/current\"]",
+        "utilake.report-subtype": "INT656_PROVISIONAL_PIPELINE_DATA_RPT_1",
+        "utilake.report-type": "STTM",
+        "utilake.rows": "75",
+        "utilake.to.file": "int656_v1_provisional_pipeline_data_rpt_1.csv",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "b961d2c76f349ad826653661baa88ee67cd5bd97ed7a197849d5d4c5af0ae723",
+        "utilake.to.time": "2011-06-18T00:00:00+10:00",
+        "utilake.total-rows": "571",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1790776800001
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/STTM_INT656_PROVISIONAL_PIPELINE_DATA/metadata/snap-6230970159295608018-3-34ef3048-9e95-88b0-b744-dfc4d67e2654.avro",
+      "parent-snapshot-id": 5694289171211128659,
+      "schema-id": 0,
+      "sequence-number": 3,
+      "snapshot-id": 6230970159295608018,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "90",
+        "utilake.from.file": "CurrentDay.zip",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "dfafa8bc46e4792c6a997d432968550a1e39614f9ad96c9d55086f0efba64988",
+        "utilake.from.time": "2026-09-27T00:00:00+10:00",
+        "utilake.kinds": "[\"sttm/current\"]",
+        "utilake.report-subtype": "INT656_PROVISIONAL_PIPELINE_DATA_RPT_1",
+        "utilake.report-type": "STTM",
+        "utilake.rows": "824",
+        "utilake.to.file": "int656_v2_provisional_pipeline_data_rpt_1.csv@20261021T191600+1000",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "cf53db6bfa104ffcb93e904737e059c3b25796d478bcdcb2a38821adc001aec1",
+        "utilake.to.time": "2026-10-24T00:00:00+10:00",
+        "utilake.total-rows": "1395",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1790776800002
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "34ef3048-9e95-88b0-b744-dfc4d67e2654"
+}

@@ -1,0 +1,132 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 7152658066620395765,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 6,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1785506400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT089_LINEPACK_BALANCE",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"total_imb_pmt\",\"3\":\"total_dev_pmt\",\"4\":\"linepack_acct_pmt_gst_ex\",\"5\":\"linepack_acct_bal_gst_ex\",\"6\":\"current_date\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"DWGM\",\"INT089_LINEPACK_BALANCE_1\"]]",
+    "utilake.table": "DWGM_INT089_LINEPACK_BALANCE",
+    "utilake.temporal.cutoff": "CURRENT_DATE",
+    "utilake.temporal.entity": "[]",
+    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "GAS_DATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "GAS_DATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 7152658066620395765,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "GAS_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 2,
+          "name": "TOTAL_IMB_PMT",
+          "required": false,
+          "type": "decimal(11, 4)"
+        },
+        {
+          "id": 3,
+          "name": "TOTAL_DEV_PMT",
+          "required": false,
+          "type": "decimal(11, 4)"
+        },
+        {
+          "id": 4,
+          "name": "LINEPACK_ACCT_PMT_GST_EX",
+          "required": false,
+          "type": "decimal(10, 4)"
+        },
+        {
+          "id": 5,
+          "name": "LINEPACK_ACCT_BAL_GST_EX",
+          "required": false,
+          "type": "decimal(10, 4)"
+        },
+        {
+          "id": 6,
+          "name": "CURRENT_DATE",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 7152658066620395765,
+      "timestamp-ms": 1785506400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT089_LINEPACK_BALANCE/metadata/snap-7152658066620395765-1-c15c0a93-f6b7-88f0-8f54-b56015ef41ab.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 7152658066620395765,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "25",
+        "utilake.from.file": "PublicRpts31.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
+        "utilake.from.time": "2026-08-01T00:00:00+10:00",
+        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.report-subtype": "INT089_LINEPACK_BALANCE_1",
+        "utilake.report-type": "DWGM",
+        "utilake.rows": "231",
+        "utilake.to.file": "int089_v4_linepack_balance_1.csv@20261021T191100+1000",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "0fe93e911e979e1a6cdf21fd4fd649b128d350b5160ee3ac97edf4804d782928",
+        "utilake.to.time": "2026-10-18T00:00:00+10:00",
+        "utilake.total-rows": "231",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1785506400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "c15c0a93-f6b7-88f0-8f54-b56015ef41ab"
+}

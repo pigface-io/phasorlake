@@ -1,0 +1,132 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 7622793671247171718,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 6,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1790776800000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT345_CCAUCTION_ZONE",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"zone_id\",\"2\":\"zone_name\",\"3\":\"zone_type\",\"4\":\"from_date\",\"5\":\"to_date\",\"6\":\"current_date\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"DWGM\",\"INT345_CCAUCTION_ZONE_1\"]]",
+    "utilake.table": "DWGM_INT345_CCAUCTION_ZONE",
+    "utilake.temporal.cutoff": "CURRENT_DATE",
+    "utilake.temporal.entity": "[\"ZONE_ID\"]",
+    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "FROM_DATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "FROM_DATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 7622793671247171718,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "ZONE_ID",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 2,
+          "name": "ZONE_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "ZONE_TYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "FROM_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 5,
+          "name": "TO_DATE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 6,
+          "name": "CURRENT_DATE",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 7622793671247171718,
+      "timestamp-ms": 1790776800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT345_CCAUCTION_ZONE/metadata/snap-7622793671247171718-1-2b6a59ab-ec46-8778-bd81-7ba0a49c6ad2.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 7622793671247171718,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "int345_v4_ccauction_zone_1.csv",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "a7b3db76c058876d4802f6904c04f812614189d94c69acdc3eae9bd199878d5f",
+        "utilake.from.time": "2022-05-01T00:00:00+10:00",
+        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.report-subtype": "INT345_CCAUCTION_ZONE_1",
+        "utilake.report-type": "DWGM",
+        "utilake.rows": "7",
+        "utilake.to.file": "int345_v4_ccauction_zone_1.csv",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "a7b3db76c058876d4802f6904c04f812614189d94c69acdc3eae9bd199878d5f",
+        "utilake.to.time": "2022-05-01T00:00:00+10:00",
+        "utilake.total-rows": "7",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1790776800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "2b6a59ab-ec46-8778-bd81-7ba0a49c6ad2"
+}

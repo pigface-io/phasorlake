@@ -1,0 +1,126 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 6628155495221074401,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 5,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1785506400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT284_TUOS_ZONE_POSTCODE_MAP",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"last_update_datetime\",\"2\":\"postcode\",\"3\":\"tuos_zone\",\"4\":\"tuos_zone_desc\",\"5\":\"current_date\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"DWGM\",\"INT284_TUOS_ZONE_POSTCODE_MAP_1\"]]",
+    "utilake.table": "DWGM_INT284_TUOS_ZONE_POSTCODE_MAP",
+    "utilake.temporal.cutoff": "CURRENT_DATE",
+    "utilake.temporal.entity": "[]",
+    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "LAST_UPDATE_DATETIME",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "LAST_UPDATE_DATETIME",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 6628155495221074401,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "LAST_UPDATE_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 2,
+          "name": "POSTCODE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "TUOS_ZONE",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "id": 4,
+          "name": "TUOS_ZONE_DESC",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 5,
+          "name": "CURRENT_DATE",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 6628155495221074401,
+      "timestamp-ms": 1785506400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT284_TUOS_ZONE_POSTCODE_MAP/metadata/snap-6628155495221074401-1-242c145e-e489-86ea-bee9-e8db02edd6c7.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 6628155495221074401,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "7",
+        "utilake.from.file": "PublicRpts31.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
+        "utilake.from.time": "2024-05-01T11:18:07+10:00",
+        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.report-subtype": "INT284_TUOS_ZONE_POSTCODE_MAP_1",
+        "utilake.report-type": "DWGM",
+        "utilake.rows": "484",
+        "utilake.to.file": "int284_v4_tuos_zone_postcode_map_1.csv",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "fc6c5fd902b7eb1d0b8ba2d09f0f504d2728cd67309f3060ccae42b17f889aaf",
+        "utilake.to.time": "2024-05-01T11:18:07+10:00",
+        "utilake.total-rows": "484",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1785506400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "242c145e-e489-86ea-bee9-e8db02edd6c7"
+}

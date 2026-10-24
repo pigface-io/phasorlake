@@ -1,0 +1,160 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 7026274112973757341,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 9,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1790776800000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GAS_GSH_TRADES",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "Provides participants (buyer and seller) a confirmation whenever a trade is executed through auto matching of bids and offers or by off-market trades. Also provides participants with a list of all their future trades when triggered daily after the end of the trades for the current day",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"LOCATION\",\"PRODUCT\",\"TRADE_DATE\",\"TRADE_PRICE\",\"TYPE\"]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.model-types": "{\"1\":\"DATE\",\"3\":\"VARCHAR2(80)\",\"4\":\"VARCHAR2(100)\",\"5\":\"NUMBER(18,8)\",\"6\":\"NUMBER(18,8)\",\"7\":\"DATE\",\"8\":\"DATE\",\"9\":\"VARCHAR2(50)\"}",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"GSH\",\"GAS_TRADES\"]]",
+    "utilake.table": "GAS_GSH_TRADES",
+    "utilake.temporal.entity": "[\"LOCATION\",\"PRODUCT\",\"TRADE_PRICE\",\"TYPE\"]",
+    "utilake.temporal.order": "[]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "TRADE_DATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "TRADE_DATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 7026274112973757341,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Date and time the trade is executed",
+          "id": 1,
+          "name": "TRADE_DATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "id": 2,
+          "name": "TYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The product delivery period for the Gas Supply Hub market",
+          "id": 3,
+          "name": "PRODUCT",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Product location for the Gas Supply Hub market",
+          "id": 4,
+          "name": "LOCATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Price value of the trade in $/GJ",
+          "id": 5,
+          "name": "TRADE_PRICE",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Volume of gas transacted on the Trading Platform in GJ/day",
+          "id": 6,
+          "name": "DAILY_QTY_GJ",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The start gas day for the order delivery period",
+          "id": 7,
+          "name": "START_DATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The end gas day for the order delivery period",
+          "id": 8,
+          "name": "END_DATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Whether the trade is a manual trade",
+          "id": 9,
+          "name": "MANUAL_TRADE",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [
+        1
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 7026274112973757341,
+      "timestamp-ms": 1790776800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GAS_GSH_TRADES/metadata/snap-7026274112973757341-1-8a5c1a39-b8ba-8112-8406-116ffd386864.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 7026274112973757341,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "3",
+        "utilake.from.file": "GasBBGSHGasTrades.CSV",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "fdb6cb436a8daeefef4c6a78d71f2ab699c51fe4bfe1c58c705df523f254dad3",
+        "utilake.from.time": "2014-03-21T00:00:00+10:00",
+        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.report-subtype": "GAS_TRADES",
+        "utilake.report-type": "GSH",
+        "utilake.rows": "39796",
+        "utilake.to.file": "GasBBGSHGasTrades.CSV@20261022T060100+1000",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "2210d9528242f46fa473a6ac57c48fef959fb5ff51431a171e987a077a310afc",
+        "utilake.to.time": "2027-01-01T00:00:00+10:00",
+        "utilake.total-rows": "39796",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1790776800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "8a5c1a39-b8ba-8112-8406-116ffd386864"
+}

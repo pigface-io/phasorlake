@@ -1,0 +1,193 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 1609514212420521985,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 14,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1759240800000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_FACILITY_DEVELOPMENTS",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "Details of all Facility Developments",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"DevFacilityId\",\"2\":\"ProposedName\",\"3\":\"EffectiveDate\",\"4\":\"FacilityType\",\"5\":\"MinNameplate\",\"6\":\"MaxNameplate\",\"7\":\"Location\",\"8\":\"PlannedCommissionFrom\",\"9\":\"PlannedCommissionTo\",\"10\":\"DevelopmentStage\",\"11\":\"RelatedFacilityId\",\"12\":\"RelatedFacilityName\",\"13\":\"Comments\",\"14\":\"ReportingEntity\"}",
+    "utilake.key": "[\"DEVFACILITYID\",\"RELATEDFACILITYID\"]",
+    "utilake.load": "snapshot",
+    "utilake.market": "gas",
+    "utilake.model": "[\"GAS_DEVFACILITY\",\"GAS_DEVFACILITY_DETAIL\",\"GAS_DEVFACILITY_FACILITY\"]",
+    "utilake.model-types": "{\"1\":\"NUMBER(20,0)\",\"2\":\"VARCHAR2(100)\",\"3\":\"DATE\",\"4\":\"VARCHAR2(40)\",\"5\":\"NUMBER(18,3)\",\"6\":\"NUMBER(18,3)\",\"7\":\"VARCHAR2(200)\",\"8\":\"VARCHAR2(7)\",\"9\":\"VARCHAR2(7)\",\"10\":\"VARCHAR2(200)\",\"13\":\"VARCHAR2(400)\"}",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"GBB\",\"FACILITY_DEVELOPMENTS\"]]",
+    "utilake.table": "GBB_FACILITY_DEVELOPMENTS",
+    "utilake.temporal.entity": "[\"DEVFACILITYID\",\"RELATEDFACILITYID\"]",
+    "utilake.temporal.order": "[]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "EFFECTIVEDATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "EFFECTIVEDATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 1609514212420521985,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "A unique AEMO defined Development Facility Identifier",
+          "id": 1,
+          "name": "DEVFACILITYID",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "The name of the Facility development",
+          "id": 2,
+          "name": "PROPOSEDNAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The effective date of the submission",
+          "id": 3,
+          "name": "EFFECTIVEDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The facility development type",
+          "id": 4,
+          "name": "FACILITYTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The lower estimate of nameplate rating capacity",
+          "id": 5,
+          "name": "MINNAMEPLATE",
+          "required": false,
+          "type": "decimal(7, 3)"
+        },
+        {
+          "doc": "The upper estimate of nameplate rating capacity",
+          "id": 6,
+          "name": "MAXNAMEPLATE",
+          "required": false,
+          "type": "decimal(8, 3)"
+        },
+        {
+          "doc": "The location of the development facility",
+          "id": 7,
+          "name": "LOCATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The planned start date of commissioning",
+          "id": 8,
+          "name": "PLANNEDCOMMISSIONFROM",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The planned end date of commissioning",
+          "id": 9,
+          "name": "PLANNEDCOMMISSIONTO",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The current stage of the development facility being, PROPOSED, COMMITTED, CANCELLED, ENDED",
+          "id": 10,
+          "name": "DEVELOPMENTSTAGE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 11,
+          "name": "RELATEDFACILITYID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 12,
+          "name": "RELATEDFACILITYNAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Any additional comments included in the submission",
+          "id": 13,
+          "name": "COMMENTS",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 14,
+          "name": "REPORTINGENTITY",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 1609514212420521985,
+      "timestamp-ms": 1759240800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_FACILITY_DEVELOPMENTS/metadata/snap-1609514212420521985-1-aa309da2-2cba-8134-89ea-5a4e244df6fe.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 1609514212420521985,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "40",
+        "utilake.from.file": "GasBBFacilityDevelopments_20251028023042.csv",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "4f459459ee796ba8d279ffe5d047c183a83a53dc7dba500fa64371e9731a09f5",
+        "utilake.from.time": "2023-03-15T00:00:00+10:00",
+        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.report-subtype": "FACILITY_DEVELOPMENTS",
+        "utilake.report-type": "GBB",
+        "utilake.rows": "311",
+        "utilake.to.file": "GasBBFacilityDevelopments.csv",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "da8399b2cbe2f38be42eddc9eaaa5829e1e1dffa4d362564ef35472a8582148c",
+        "utilake.to.time": "2026-10-14T00:00:00+10:00",
+        "utilake.total-rows": "311",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1759240800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "aa309da2-2cba-8134-89ea-5a4e244df6fe"
+}

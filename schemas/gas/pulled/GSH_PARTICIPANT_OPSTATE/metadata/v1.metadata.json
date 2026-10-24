@@ -1,0 +1,151 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 6112446822976801481,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 7,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1759240800000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GSH_PARTICIPANT_OPSTATE",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "Operating Status of Participant",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"EFFECTIVEDATE\",\"MARKET_ID\",\"PARTICIPANT_ID\",\"VERSION_DATETIME\"]",
+    "utilake.load": "snapshot",
+    "utilake.market": "gas",
+    "utilake.model-types": "{\"1\":\"VARCHAR2(20)\",\"2\":\"VARCHAR2(20)\",\"3\":\"DATE\",\"4\":\"DATE\",\"5\":\"VARCHAR2(30)\",\"6\":\"DATE\",\"7\":\"DATE\"}",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"GSH\",\"PARTICIPANT_OPSTATE\"]]",
+    "utilake.table": "GSH_PARTICIPANT_OPSTATE",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"MARKET_ID\",\"PARTICIPANT_ID\"]",
+    "utilake.temporal.order": "[\"VERSION_DATETIME\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "EFFECTIVEDATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "EFFECTIVEDATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 6112446822976801481,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Unique Market ID",
+          "id": 1,
+          "name": "MARKET_ID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Unique Participant ID for this market",
+          "id": 2,
+          "name": "PARTICIPANT_ID",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "The Effective date of the Participant Operating State",
+          "id": 3,
+          "name": "EFFECTIVEDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Versioning with EffectiveDate",
+          "id": 4,
+          "name": "VERSION_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Current State of the Product (ACTIVE/INACTIVE)",
+          "id": 5,
+          "name": "STATUS",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The date of the latest authorisation record",
+          "id": 6,
+          "name": "AUTHORISEDDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Last changed date for the record",
+          "id": 7,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        3,
+        1,
+        2,
+        4
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 6112446822976801481,
+      "timestamp-ms": 1759240800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GSH_PARTICIPANT_OPSTATE/metadata/snap-6112446822976801481-1-de311d27-7ade-808c-85c8-a9b09756b610.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 6112446822976801481,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "98",
+        "utilake.from.file": "PUBLIC_REGISTEREDPARTICIPANTS_20251001.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "9862f38fbe1ffa9d5c5b0817578a2358d1f6b88d770f76c6f77e6423b27338f6",
+        "utilake.from.time": "2025-10-20T00:00:00+10:00",
+        "utilake.kinds": "[\"gsh/archive\",\"gsh/current\"]",
+        "utilake.report-subtype": "PARTICIPANT_OPSTATE",
+        "utilake.report-type": "GSH",
+        "utilake.rows": "52",
+        "utilake.to.file": "PUBLIC_REGISTEREDPARTICIPANTS_20261021_0000000544029183.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "554ffd0991605f3b8a909435ec5748d112faef3708bd4ee4c7638301ae76b312",
+        "utilake.to.time": "2026-09-28T00:00:00+10:00",
+        "utilake.total-rows": "52",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1759240800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "de311d27-7ade-808c-85c8-a9b09756b610"
+}

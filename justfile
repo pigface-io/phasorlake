@@ -90,11 +90,11 @@ budget-check base="origin/main":
 
 # ── schemas ──────────────────────────────────────────────────────────────────
 
-# copy utilake-schemas' NEM tables and manifest at REV into schemas/nem/pulled/
+# copy utilake-schemas' tables and manifest at REV into schemas/{market}/pulled/
 schemas-pull rev from="../utilake-schemas":
     cargo run -q -p xtask -- schemas-pull {{ rev }} --from {{ from }}
 
-# fail unless schemas/nem/pulled/ is its manifest's, at the rev Cargo.lock pins
+# fail unless each schemas/{market}/pulled/ is its manifest's, at the rev Cargo.lock pins
 schemas-check:
     cargo run -q -p xtask -- schemas-check
 

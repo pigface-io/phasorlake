@@ -1,0 +1,180 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 2382185689541277968,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 12,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1790776800000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_PARTICIPANTS",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "The list of all registered organisations i.e the BB Participants of the Bulletin Board",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"CompanyId\",\"2\":\"CompanyName\",\"3\":\"OrganisationTypeName\",\"5\":\"CompanyPhone\",\"6\":\"Locale\",\"7\":\"AddressType\",\"8\":\"Address\",\"9\":\"State\",\"10\":\"Postcode\",\"11\":\"CompanyFax\",\"12\":\"LastUpdated\"}",
+    "utilake.key": "[\"COMPANYID\"]",
+    "utilake.load": "snapshot",
+    "utilake.market": "gas",
+    "utilake.model": "[\"GAS_PARTICIPANT\",\"GAS_PARTICIPANT_DETAIL\"]",
+    "utilake.model-types": "{\"1\":\"Number(10,0)\",\"2\":\"Varchar2 (50)\",\"3\":\"VARCHAR2(40)\",\"4\":\"Varchar2 (30)\",\"5\":\"Varchar2 (30)\",\"6\":\"Varchar2 (40)\",\"7\":\"Varchar2 (40)\",\"8\":\"Varchar2 (120)\",\"10\":\"VARCHAR2(4)\",\"11\":\"Varchar2 (30)\"}",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"GBB\",\"PARTICIPANTS\"]]",
+    "utilake.table": "GBB_PARTICIPANTS",
+    "utilake.temporal.cutoff": "LASTUPDATED",
+    "utilake.temporal.entity": "[\"COMPANYID\"]",
+    "utilake.temporal.order": "[\"LASTUPDATED\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.time": "LASTUPDATED",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 2382185689541277968,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Unique company identifier",
+          "id": 1,
+          "name": "COMPANYID",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Name of company",
+          "id": 2,
+          "name": "COMPANYNAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The type of organisation",
+          "id": 3,
+          "name": "ORGANISATIONTYPENAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Australian Business Number of company",
+          "id": 4,
+          "name": "ABN",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Main (reception) phone of company",
+          "id": 5,
+          "name": "COMPANYPHONE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "City location of company",
+          "id": 6,
+          "name": "LOCALE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Type of address eg. Head Office, Postal Address etc.",
+          "id": 7,
+          "name": "ADDRESSTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Address of company based on AddressType",
+          "id": 8,
+          "name": "ADDRESS",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 9,
+          "name": "STATE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Postcode of company",
+          "id": 10,
+          "name": "POSTCODE",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "doc": "Main (reception) facsimile of company",
+          "id": 11,
+          "name": "COMPANYFAX",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 12,
+          "name": "LASTUPDATED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 2382185689541277968,
+      "timestamp-ms": 1790776800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_PARTICIPANTS/metadata/snap-2382185689541277968-1-936b5652-e28d-8c97-ba37-9a26b9901426.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 2382185689541277968,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "GasBBParticipants.CSV",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "38c824118ca57f685085e09579ce80e6a0f5ddd154a34f495a54813b392b4636",
+        "utilake.from.time": "2018-05-01T00:00:00+10:00",
+        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.report-subtype": "PARTICIPANTS",
+        "utilake.report-type": "GBB",
+        "utilake.rows": "259",
+        "utilake.to.file": "GasBBParticipants.CSV",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "38c824118ca57f685085e09579ce80e6a0f5ddd154a34f495a54813b392b4636",
+        "utilake.to.time": "2026-10-05T19:30:00+10:00",
+        "utilake.total-rows": "259",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1790776800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "936b5652-e28d-8c97-ba37-9a26b9901426"
+}

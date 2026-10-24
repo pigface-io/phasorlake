@@ -1,0 +1,198 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 3187182720766352362,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 17,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1788184800000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT176_GAS_COMPOSITION_DATA",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"hv_zone\",\"2\":\"hv_zone_desc\",\"3\":\"gas_date\",\"4\":\"methane\",\"5\":\"ethane\",\"6\":\"propane\",\"7\":\"butane_i\",\"8\":\"butane_n\",\"9\":\"pentane_i\",\"10\":\"pentane_n\",\"11\":\"pentane_neo\",\"12\":\"hexane\",\"13\":\"nitrogen\",\"14\":\"carbon_dioxide\",\"15\":\"hydrogen\",\"16\":\"spec_gravity\",\"17\":\"current_date\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"DWGM\",\"INT176_GAS_COMPOSITION_DATA_1\"]]",
+    "utilake.table": "DWGM_INT176_GAS_COMPOSITION_DATA",
+    "utilake.temporal.cutoff": "CURRENT_DATE",
+    "utilake.temporal.entity": "[]",
+    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "GAS_DATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "GAS_DATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 3187182720766352362,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "HV_ZONE",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "id": 2,
+          "name": "HV_ZONE_DESC",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "GAS_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 4,
+          "name": "METHANE",
+          "required": false,
+          "type": "decimal(7, 5)"
+        },
+        {
+          "id": 5,
+          "name": "ETHANE",
+          "required": false,
+          "type": "decimal(6, 5)"
+        },
+        {
+          "id": 6,
+          "name": "PROPANE",
+          "required": false,
+          "type": "decimal(6, 5)"
+        },
+        {
+          "id": 7,
+          "name": "BUTANE_I",
+          "required": false,
+          "type": "decimal(5, 5)"
+        },
+        {
+          "id": 8,
+          "name": "BUTANE_N",
+          "required": false,
+          "type": "decimal(5, 5)"
+        },
+        {
+          "id": 9,
+          "name": "PENTANE_I",
+          "required": false,
+          "type": "decimal(5, 5)"
+        },
+        {
+          "id": 10,
+          "name": "PENTANE_N",
+          "required": false,
+          "type": "decimal(5, 5)"
+        },
+        {
+          "id": 11,
+          "name": "PENTANE_NEO",
+          "required": false,
+          "type": "decimal(5, 5)"
+        },
+        {
+          "id": 12,
+          "name": "HEXANE",
+          "required": false,
+          "type": "decimal(5, 5)"
+        },
+        {
+          "id": 13,
+          "name": "NITROGEN",
+          "required": false,
+          "type": "decimal(6, 5)"
+        },
+        {
+          "id": 14,
+          "name": "CARBON_DIOXIDE",
+          "required": false,
+          "type": "decimal(6, 5)"
+        },
+        {
+          "id": 15,
+          "name": "HYDROGEN",
+          "required": false,
+          "type": "decimal(5, 5)"
+        },
+        {
+          "id": 16,
+          "name": "SPEC_GRAVITY",
+          "required": false,
+          "type": "decimal(5, 5)"
+        },
+        {
+          "id": 17,
+          "name": "CURRENT_DATE",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 3187182720766352362,
+      "timestamp-ms": 1788184800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT176_GAS_COMPOSITION_DATA/metadata/snap-3187182720766352362-1-076babc2-cfd2-88bb-8e18-b9e34b81eed8.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 3187182720766352362,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "6",
+        "utilake.from.file": "PublicRpts20.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "631725ac99f0eadc5f841bbc113ce882c1d694f05cdd5eb1465f3885aa320fb4",
+        "utilake.from.time": "2026-07-22T00:00:00+10:00",
+        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.report-subtype": "INT176_GAS_COMPOSITION_DATA_1",
+        "utilake.report-type": "DWGM",
+        "utilake.rows": "18850",
+        "utilake.to.file": "int176_v4_gas_composition_data_1.csv",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "865435654eac9dc607002a9accda593885b228d9af693bec5fdd679d61ef3ba2",
+        "utilake.to.time": "2026-10-17T00:00:00+10:00",
+        "utilake.total-rows": "18850",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1788184800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "076babc2-cfd2-88bb-8e18-b9e34b81eed8"
+}

@@ -1,0 +1,114 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 4531900082050780181,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 3,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1788184800000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT042_WEIGHTED_AVERAGE_DAILY_PRICES",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"imb_dev_wa_dly_price_gst_ex\",\"3\":\"current_date\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"DWGM\",\"INT042_WEIGHTED_AVERAGE_DAILY_PRICES_1\"]]",
+    "utilake.table": "DWGM_INT042_WEIGHTED_AVERAGE_DAILY_PRICES",
+    "utilake.temporal.cutoff": "CURRENT_DATE",
+    "utilake.temporal.entity": "[]",
+    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "GAS_DATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "GAS_DATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 4531900082050780181,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "GAS_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 2,
+          "name": "IMB_DEV_WA_DLY_PRICE_GST_EX",
+          "required": false,
+          "type": "decimal(6, 4)"
+        },
+        {
+          "id": 3,
+          "name": "CURRENT_DATE",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 4531900082050780181,
+      "timestamp-ms": 1788184800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT042_WEIGHTED_AVERAGE_DAILY_PRICES/metadata/snap-4531900082050780181-1-96399efc-d110-83f6-9320-a9ca1d13c063.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 4531900082050780181,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
+        "utilake.from.file": "PublicRpts24.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "9f016f20e01183aa385c09dbbbd0156302ae8f0ac705a948157d277099385af9",
+        "utilake.from.time": "2026-08-01T00:00:00+10:00",
+        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.report-subtype": "INT042_WEIGHTED_AVERAGE_DAILY_PRICES_1",
+        "utilake.report-type": "DWGM",
+        "utilake.rows": "31",
+        "utilake.to.file": "int042_v4_weighted_average_daily_prices_1.csv",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "72e5cb552ae8f903f2383d2f72c0f55a8db8499bdcaf04515d4303aceef586d8",
+        "utilake.to.time": "2026-08-31T00:00:00+10:00",
+        "utilake.total-rows": "31",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1788184800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "96399efc-d110-83f6-9320-a9ca1d13c063"
+}

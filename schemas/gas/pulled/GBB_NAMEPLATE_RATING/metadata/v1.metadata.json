@@ -1,0 +1,226 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 8734826248976744990,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 14,
+  "last-partition-id": 999,
+  "last-sequence-number": 2,
+  "last-updated-ms": 1790776800001,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_NAMEPLATE_RATING",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "Provide the nameplate rating of each facility or information about any planned permanent capacity reduction or expansion due to modification of the facility.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"facilityname\",\"2\":\"facilityid\",\"3\":\"facilitytype\",\"4\":\"capacitytype\",\"5\":\"receiptlocation\",\"6\":\"ReceiptLocationName\",\"7\":\"deliverylocation\",\"8\":\"DeliveryLocationName\",\"9\":\"capacitydescription\",\"10\":\"flowdirection\",\"11\":\"capacityquantity\",\"12\":\"effectivedate\",\"13\":\"description\",\"14\":\"LastUpdated\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.model": "[\"GAS_NAMEPLATE_RATING\",\"GAS_FACILITY\",\"GAS_LOCATION\"]",
+    "utilake.model-types": "{\"1\":\"VARCHAR2(100)\",\"2\":\"NUMBER(10,0)\",\"3\":\"VARCHAR2(40)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMBER(10,0)\",\"7\":\"NUMBER(10,0)\",\"9\":\"VARCHAR2(1000)\",\"10\":\"VARCHAR(20)\",\"11\":\"NUMBER(18,3)\",\"12\":\"DATE\",\"13\":\"VARCHAR2(1000)\"}",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"GBB\",\"NAMEPLATE_RATING\"],[\"GBB\",\"NAMEPLATE_RATING_CURRENT\"]]",
+    "utilake.table": "GBB_NAMEPLATE_RATING",
+    "utilake.temporal.cutoff": "LASTUPDATED",
+    "utilake.temporal.entity": "[\"FACILITYID\"]",
+    "utilake.temporal.order": "[\"LASTUPDATED\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "EFFECTIVEDATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "EFFECTIVEDATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 8734826248976744990,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Name of the Facility",
+          "id": 1,
+          "name": "FACILITYNAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Unique Facility Identifier",
+          "id": 2,
+          "name": "FACILITYID",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Describes the type of facility. Refer to the GAS_FACILITY_TYPE table",
+          "id": 3,
+          "name": "FACILITYTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Capacity Type - Must be either STORAGE or MDQ",
+          "id": 4,
+          "name": "CAPACITYTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Connection Point ID that best represents the Receipt location",
+          "id": 5,
+          "name": "RECEIPTLOCATION",
+          "required": false,
+          "type": "decimal(7, 0)"
+        },
+        {
+          "id": 6,
+          "name": "RECEIPTLOCATIONNAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Connection Point ID that best represents the Delivery Location",
+          "id": 7,
+          "name": "DELIVERYLOCATION",
+          "required": false,
+          "type": "decimal(7, 0)"
+        },
+        {
+          "id": 8,
+          "name": "DELIVERYLOCATIONNAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Describes the meaning of the capacity Number Provided",
+          "id": 9,
+          "name": "CAPACITYDESCRIPTION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Direction of flow for the submission record. Must be either ‘RECEIPT’ or ‘DELIVERY’.",
+          "id": 10,
+          "name": "FLOWDIRECTION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Quantity of available capacity during the defined period.",
+          "id": 11,
+          "name": "CAPACITYQUANTITY",
+          "required": false,
+          "type": "decimal(8, 3)"
+        },
+        {
+          "doc": "Effective date of the record",
+          "id": 12,
+          "name": "EFFECTIVEDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Description for reasons or comments directly related to the quantity or change in Outlook quantity in relation to the Facility.",
+          "id": 13,
+          "name": "DESCRIPTION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 14,
+          "name": "LASTUPDATED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 3241099909409964465,
+      "timestamp-ms": 1759240800000
+    },
+    {
+      "snapshot-id": 8734826248976744990,
+      "timestamp-ms": 1790776800001
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_NAMEPLATE_RATING/metadata/snap-3241099909409964465-1-8c87315a-8b4c-8c02-83e9-c219bc8770c4.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 3241099909409964465,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "43",
+        "utilake.from.file": "GasBBNameplateRatingCurrent_20251028023825.csv",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "e421ff2195b95f8bb225a1517ef36d01840eadc0bb19be278246c5a1bc708eea",
+        "utilake.from.time": "2019-08-29T00:00:00+10:00",
+        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.report-subtype": "NAMEPLATE_RATING_CURRENT",
+        "utilake.report-type": "GBB",
+        "utilake.rows": "1503",
+        "utilake.to.file": "GasBBNameplateRatingCurrent.csv@20261022T083600+1000",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "0fe00bec458c77fa25c7056632ba42992e7962c0fe567c60b9d13a2a2cf09924",
+        "utilake.to.time": "2026-10-22T00:00:00+10:00",
+        "utilake.total-rows": "1503",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1759240800000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_NAMEPLATE_RATING/metadata/snap-8734826248976744990-2-8c87315a-8b4c-8c02-83e9-c219bc8770c4.avro",
+      "parent-snapshot-id": 3241099909409964465,
+      "schema-id": 0,
+      "sequence-number": 2,
+      "snapshot-id": 8734826248976744990,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "3",
+        "utilake.from.file": "GasBBNameplateRating.zip",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "49c67e6fcf2c2a8dfa50b13425e42d42c681658366f98961b679bb2ea04323a4",
+        "utilake.from.time": "2018-09-30T00:00:00+10:00",
+        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.report-subtype": "NAMEPLATE_RATING",
+        "utilake.report-type": "GBB",
+        "utilake.rows": "138079",
+        "utilake.to.file": "GasBBNameplateRating.zip@20261022T021200+1000",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "96479030d31db3d9b7a13ea21b1fe068168d47e51d3558424ff2a487d1b96110",
+        "utilake.to.time": "2029-01-01T00:00:00+10:00",
+        "utilake.total-rows": "139582",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1790776800001
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "8c87315a-8b4c-8c02-83e9-c219bc8770c4"
+}

@@ -1,0 +1,208 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 698650069166694946,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 8,
+  "last-partition-id": 999,
+  "last-sequence-number": 3,
+  "last-updated-ms": 1790776800002,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/STTM_INT658_ALLOCATION_QUANTITY",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"hub_identifier\",\"3\":\"hub_name\",\"4\":\"facility_identifier\",\"5\":\"facility_name\",\"6\":\"allocation_qty_inc_mos\",\"7\":\"flow_direction\",\"8\":\"report_datetime\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"STTM\",\"INT658_ALLOCATION_QUANTITY_RPT_1\"],[\"STTM\",\"INT658_LATEST_ALLOCATION_QUANTITY_RPT_1\"]]",
+    "utilake.table": "STTM_INT658_ALLOCATION_QUANTITY",
+    "utilake.temporal.cutoff": "REPORT_DATETIME",
+    "utilake.temporal.entity": "[\"HUB_IDENTIFIER\",\"FACILITY_IDENTIFIER\"]",
+    "utilake.temporal.order": "[\"REPORT_DATETIME\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "GAS_DATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "GAS_DATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 698650069166694946,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "GAS_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 2,
+          "name": "HUB_IDENTIFIER",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "HUB_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "FACILITY_IDENTIFIER",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 5,
+          "name": "FACILITY_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 6,
+          "name": "ALLOCATION_QTY_INC_MOS",
+          "required": false,
+          "type": "decimal(15, 9)"
+        },
+        {
+          "id": 7,
+          "name": "FLOW_DIRECTION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 8,
+          "name": "REPORT_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 2685522751574490207,
+      "timestamp-ms": 1785506400000
+    },
+    {
+      "snapshot-id": 7518489023256616813,
+      "timestamp-ms": 1790776800001
+    },
+    {
+      "snapshot-id": 698650069166694946,
+      "timestamp-ms": 1790776800002
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/STTM_INT658_ALLOCATION_QUANTITY/metadata/snap-2685522751574490207-1-a58e3d7f-56d0-8a68-a055-d7ae86b3231a.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 2685522751574490207,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "12",
+        "utilake.from.file": "Day31.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "ae9eda135c5f3c28548b31911da9dcc65c767009ef5b7d16ceee4cce2755509e",
+        "utilake.from.time": "2025-11-01T00:00:00+10:00",
+        "utilake.kinds": "[\"sttm/current\"]",
+        "utilake.report-subtype": "INT658_LATEST_ALLOCATION_QUANTITY_RPT_1",
+        "utilake.report-type": "STTM",
+        "utilake.rows": "2573",
+        "utilake.to.file": "Day30.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "cf4981d5315499b11dabe341b590c7f2c87c874365834d08431241d7996a598e",
+        "utilake.to.time": "2026-09-29T00:00:00+10:00",
+        "utilake.total-rows": "2573",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1785506400000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/STTM_INT658_ALLOCATION_QUANTITY/metadata/snap-7518489023256616813-2-a58e3d7f-56d0-8a68-a055-d7ae86b3231a.avro",
+      "parent-snapshot-id": 2685522751574490207,
+      "schema-id": 0,
+      "sequence-number": 2,
+      "snapshot-id": 7518489023256616813,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "int658_v1_allocation_quantity_rpt_1.csv",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "6ad1287fc85c9372b739633910cbbd0a09bf5a3c5cbf4013aac54d5c03ec0ecf",
+        "utilake.from.time": "2011-05-01T00:00:00+10:00",
+        "utilake.kinds": "[\"sttm/current\"]",
+        "utilake.report-subtype": "INT658_ALLOCATION_QUANTITY_RPT_1",
+        "utilake.report-type": "STTM",
+        "utilake.rows": "162",
+        "utilake.to.file": "int658_v1_allocation_quantity_rpt_1.csv",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "6ad1287fc85c9372b739633910cbbd0a09bf5a3c5cbf4013aac54d5c03ec0ecf",
+        "utilake.to.time": "2011-06-14T00:00:00+10:00",
+        "utilake.total-rows": "2735",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1790776800001
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/STTM_INT658_ALLOCATION_QUANTITY/metadata/snap-698650069166694946-3-a58e3d7f-56d0-8a68-a055-d7ae86b3231a.avro",
+      "parent-snapshot-id": 7518489023256616813,
+      "schema-id": 0,
+      "sequence-number": 3,
+      "snapshot-id": 698650069166694946,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "22",
+        "utilake.from.file": "CurrentDay.zip",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "dfafa8bc46e4792c6a997d432968550a1e39614f9ad96c9d55086f0efba64988",
+        "utilake.from.time": "2025-12-01T00:00:00+10:00",
+        "utilake.kinds": "[\"sttm/current\"]",
+        "utilake.report-subtype": "INT658_LATEST_ALLOCATION_QUANTITY_RPT_1",
+        "utilake.report-type": "STTM",
+        "utilake.rows": "3928",
+        "utilake.to.file": "int658_v1_latest_allocation_quantity_rpt_1.csv@20261021T191600+1000",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "f0f3350fbe4a80b94f66d7f76b56f3944cf2070e0232f1dc4a7ea6d88a9cf9b8",
+        "utilake.to.time": "2026-10-20T00:00:00+10:00",
+        "utilake.total-rows": "6663",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1790776800002
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "a58e3d7f-56d0-8a68-a055-d7ae86b3231a"
+}

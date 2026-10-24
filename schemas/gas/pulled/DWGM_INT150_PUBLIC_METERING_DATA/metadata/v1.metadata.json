@@ -1,0 +1,132 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 6785455157380104270,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 6,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1785506400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT150_PUBLIC_METERING_DATA",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"flag\",\"3\":\"id\",\"4\":\"ti\",\"5\":\"energy_gj\",\"6\":\"current_date\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"DWGM\",\"INT150_PUBLIC_METERING_DATA_1\"]]",
+    "utilake.table": "DWGM_INT150_PUBLIC_METERING_DATA",
+    "utilake.temporal.cutoff": "CURRENT_DATE",
+    "utilake.temporal.entity": "[\"ID\"]",
+    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "GAS_DATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "GAS_DATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 6785455157380104270,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "GAS_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 2,
+          "name": "FLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "ID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "TI",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 5,
+          "name": "ENERGY_GJ",
+          "required": false,
+          "type": "decimal(8, 3)"
+        },
+        {
+          "id": 6,
+          "name": "CURRENT_DATE",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 6785455157380104270,
+      "timestamp-ms": 1785506400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT150_PUBLIC_METERING_DATA/metadata/snap-6785455157380104270-1-e1f9f4d7-c062-87c3-bd6f-00c51a681d53.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 6785455157380104270,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "25",
+        "utilake.from.file": "PublicRpts31.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
+        "utilake.from.time": "2026-07-01T00:00:00+10:00",
+        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.report-subtype": "INT150_PUBLIC_METERING_DATA_1",
+        "utilake.report-type": "DWGM",
+        "utilake.rows": "76977",
+        "utilake.to.file": "int150_v4_public_metering_data_1.csv@20261021T191100+1000",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "851822b301c2a09823d5890bb8fc96abd3dfba1a2433655103a4cd13c2996052",
+        "utilake.to.time": "2026-10-18T00:00:00+10:00",
+        "utilake.total-rows": "76977",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1785506400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "e1f9f4d7-c062-87c3-bd6f-00c51a681d53"
+}

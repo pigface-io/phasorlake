@@ -1,0 +1,187 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 6710557361362801409,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 12,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1759240800000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GSH_AUCTION_QUANTITIES",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "Auction limit quantities for each product component available for the day ahead auction",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"AUCTION_DATE\",\"FACILITY_ID\",\"GAS_DATE\",\"LIMIT_ID\",\"LIMIT_TYPE\"]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.model-types": "{\"1\":\"DATE\",\"2\":\"DATE\",\"3\":\"NUMBER(8,0)\",\"4\":\"VARCHAR2(100)\",\"5\":\"NUMBER(8,0)\",\"6\":\"VARCHAR2(100)\",\"7\":\"VARCHAR2(100)\",\"8\":\"NUMBER(10,0)\",\"9\":\"NUMBER(10,0)\",\"10\":\"VARCHAR2(3)\",\"11\":\"DATE\",\"12\":\"DATE\"}",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"GSH\",\"AUCTION_QUANTITIES\"]]",
+    "utilake.table": "GSH_AUCTION_QUANTITIES",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"FACILITY_ID\",\"LIMIT_ID\",\"LIMIT_TYPE\",\"GAS_DATE\"]",
+    "utilake.temporal.order": "[\"VERSION_DATETIME\",\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "AUCTION_DATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "AUCTION_DATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 6710557361362801409,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "The date of the auction. Disregard the time component as this is not applicable.",
+          "id": 1,
+          "name": "AUCTION_DATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The gas date that the auction quantities and transitional rights are valid for. Disregard the time component as this is not applicable.",
+          "id": 2,
+          "name": "GAS_DATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The unique identifier of the facility.",
+          "id": 3,
+          "name": "FACILITY_ID",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "The descriptive name of the facility.",
+          "id": 4,
+          "name": "FACILITY_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The unique identifier of the auction limit.",
+          "id": 5,
+          "name": "LIMIT_ID",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "The descriptive name of the auction limit.",
+          "id": 6,
+          "name": "LIMIT_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The type of auction limit",
+          "id": 7,
+          "name": "LIMIT_TYPE",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "The available auction quantity of the limit in GJ.",
+          "id": 8,
+          "name": "LIMIT_QUANTITY",
+          "required": false,
+          "type": "long"
+        },
+        {
+          "doc": "The quantity of nominations against grandfathered rights in GJ, for the previous gas day.",
+          "id": 9,
+          "name": "TRANSITIONAL_RIGHTS_QUANTITY",
+          "required": false,
+          "type": "long"
+        },
+        {
+          "doc": "Flag to indicate whether the facility operator has applied an operational override to the limit quantity, for example Yes or No.",
+          "id": 10,
+          "name": "OPERATIONAL_OVERRIDE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The date and time that the auction was run.",
+          "id": 11,
+          "name": "VERSION_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The date and time the report was generated.",
+          "id": 12,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        3,
+        2,
+        5,
+        7
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 6710557361362801409,
+      "timestamp-ms": 1759240800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GSH_AUCTION_QUANTITIES/metadata/snap-6710557361362801409-1-263dc756-a57a-8274-a714-9d76ce9987ce.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 6710557361362801409,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "462",
+        "utilake.from.file": "PUBLIC_AUCTIONQUANTITIES_20251001.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "b1691ba3140cfced2ddddac2a5915faa6528981b4805f11ff09b036b11e66da3",
+        "utilake.from.time": "2025-10-01T00:00:00+10:00",
+        "utilake.kinds": "[\"gsh/archive\",\"gsh/current\"]",
+        "utilake.report-subtype": "AUCTION_QUANTITIES",
+        "utilake.report-type": "GSH",
+        "utilake.rows": "243391",
+        "utilake.to.file": "PUBLIC_AUCTIONQUANTITIES_20261021_0000000544081081.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "0676ea742e666859dd615b286029323cce459c72e224cd929bcc4bb0cc9a5b03",
+        "utilake.to.time": "2026-10-21T00:00:00+10:00",
+        "utilake.total-rows": "243391",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1759240800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "263dc756-a57a-8274-a714-9d76ce9987ce"
+}

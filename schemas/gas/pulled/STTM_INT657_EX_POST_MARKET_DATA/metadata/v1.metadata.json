@@ -1,0 +1,293 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 3646830854518248007,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 11,
+  "last-partition-id": 999,
+  "last-sequence-number": 3,
+  "last-updated-ms": 1790776800002,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/STTM_INT657_EX_POST_MARKET_DATA",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"hub_identifier\",\"3\":\"hub_name\",\"4\":\"schedule_identifier\",\"5\":\"imbalance_qty\",\"6\":\"ex_post_imbalance_price\",\"7\":\"schedule_type_code\",\"8\":\"imbalance_type\",\"9\":\"schedule_imbalance_price\",\"10\":\"approval_datetime\",\"11\":\"report_datetime\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"STTM\",\"INT657_EX_POST_MARKET_DATA_RPT_1\"]]",
+    "utilake.table": "STTM_INT657_EX_POST_MARKET_DATA",
+    "utilake.temporal.cutoff": "REPORT_DATETIME",
+    "utilake.temporal.entity": "[\"HUB_IDENTIFIER\",\"SCHEDULE_IDENTIFIER\"]",
+    "utilake.temporal.order": "[\"APPROVAL_DATETIME\",\"REPORT_DATETIME\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "GAS_DATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "GAS_DATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 3646830854518248007,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "GAS_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 2,
+          "name": "HUB_IDENTIFIER",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "HUB_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "SCHEDULE_IDENTIFIER",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "id": 5,
+          "name": "IMBALANCE_QTY",
+          "required": false,
+          "type": "decimal(14, 9)"
+        },
+        {
+          "id": 6,
+          "name": "EX_POST_IMBALANCE_PRICE",
+          "required": false,
+          "type": "decimal(6, 4)"
+        },
+        {
+          "id": 7,
+          "name": "SCHEDULE_TYPE_CODE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 8,
+          "name": "IMBALANCE_TYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 9,
+          "name": "SCHEDULE_IMBALANCE_PRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 10,
+          "name": "APPROVAL_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 11,
+          "name": "REPORT_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "GAS_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 2,
+          "name": "HUB_IDENTIFIER",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "HUB_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "SCHEDULE_IDENTIFIER",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "id": 5,
+          "name": "IMBALANCE_QTY",
+          "required": false,
+          "type": "decimal(14, 9)"
+        },
+        {
+          "id": 6,
+          "name": "EX_POST_IMBALANCE_PRICE",
+          "required": false,
+          "type": "decimal(6, 4)"
+        },
+        {
+          "id": 8,
+          "name": "IMBALANCE_TYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 9,
+          "name": "SCHEDULE_IMBALANCE_PRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 10,
+          "name": "APPROVAL_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 11,
+          "name": "REPORT_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 1,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 3721385044753943130,
+      "timestamp-ms": 1785506400000
+    },
+    {
+      "snapshot-id": 8390560626476835457,
+      "timestamp-ms": 1790776800001
+    },
+    {
+      "snapshot-id": 3646830854518248007,
+      "timestamp-ms": 1790776800002
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/STTM_INT657_EX_POST_MARKET_DATA/metadata/snap-3721385044753943130-1-0f0c037d-e6f2-8ac4-806e-1efd0de80ad7.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 3721385044753943130,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "12",
+        "utilake.from.file": "Day31.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "ae9eda135c5f3c28548b31911da9dcc65c767009ef5b7d16ceee4cce2755509e",
+        "utilake.from.time": "2026-08-24T00:00:00+10:00",
+        "utilake.kinds": "[\"sttm/current\"]",
+        "utilake.report-subtype": "INT657_EX_POST_MARKET_DATA_RPT_1",
+        "utilake.report-type": "STTM",
+        "utilake.rows": "72",
+        "utilake.to.file": "Day30.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "cf4981d5315499b11dabe341b590c7f2c87c874365834d08431241d7996a598e",
+        "utilake.to.time": "2026-09-29T00:00:00+10:00",
+        "utilake.total-rows": "72",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1785506400000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/STTM_INT657_EX_POST_MARKET_DATA/metadata/snap-8390560626476835457-2-0f0c037d-e6f2-8ac4-806e-1efd0de80ad7.avro",
+      "parent-snapshot-id": 3721385044753943130,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 8390560626476835457,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "int657_v1_ex_post_market_data_rpt_1.csv",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "274ee0bb1ad7dc670ec78e771e5d2766feaf3a16e80498034a835eb1ffe019b7",
+        "utilake.from.time": "2011-06-08T00:00:00+10:00",
+        "utilake.kinds": "[\"sttm/current\"]",
+        "utilake.report-subtype": "INT657_EX_POST_MARKET_DATA_RPT_1",
+        "utilake.report-type": "STTM",
+        "utilake.rows": "14",
+        "utilake.to.file": "int657_v1_ex_post_market_data_rpt_1.csv",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "274ee0bb1ad7dc670ec78e771e5d2766feaf3a16e80498034a835eb1ffe019b7",
+        "utilake.to.time": "2011-06-14T00:00:00+10:00",
+        "utilake.total-rows": "86",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1790776800001
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/STTM_INT657_EX_POST_MARKET_DATA/metadata/snap-3646830854518248007-3-0f0c037d-e6f2-8ac4-806e-1efd0de80ad7.avro",
+      "parent-snapshot-id": 8390560626476835457,
+      "schema-id": 0,
+      "sequence-number": 3,
+      "snapshot-id": 3646830854518248007,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "22",
+        "utilake.from.file": "CurrentDay.zip",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "dfafa8bc46e4792c6a997d432968550a1e39614f9ad96c9d55086f0efba64988",
+        "utilake.from.time": "2026-09-24T00:00:00+10:00",
+        "utilake.kinds": "[\"sttm/current\"]",
+        "utilake.report-subtype": "INT657_EX_POST_MARKET_DATA_RPT_1",
+        "utilake.report-type": "STTM",
+        "utilake.rows": "120",
+        "utilake.to.file": "int657_v2_ex_post_market_data_rpt_1.csv@20261021T191600+1000",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "6a75988049db8669855fd1f1cf26c94f094abbb530e73489d558239e1181dcf3",
+        "utilake.to.time": "2026-10-20T00:00:00+10:00",
+        "utilake.total-rows": "206",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1790776800002
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "0f0c037d-e6f2-8ac4-806e-1efd0de80ad7"
+}

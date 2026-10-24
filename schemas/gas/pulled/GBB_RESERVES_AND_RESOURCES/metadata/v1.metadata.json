@@ -1,0 +1,311 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 8672285710148503032,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 31,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1759240800000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_RESERVES_AND_RESOURCES",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "This table displays information about Field Reserves and Resources",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"FieldId\",\"2\":\"FieldName\",\"3\":\"FieldInterestId\",\"4\":\"DevelopedReserve1P\",\"5\":\"DevelopedReserve2P\",\"6\":\"DevelopedReserve3P\",\"7\":\"UndevelopedReserve1P\",\"8\":\"UndevelopedReserve2P\",\"9\":\"UndevelopedReserve3P\",\"10\":\"Resources2C\",\"11\":\"ProductionChangeReserve2P\",\"12\":\"ProvedAreaExtensionReserve2P\",\"13\":\"PercentageChangeReserve2P\",\"14\":\"UpwardRevisionFrom3PReserveTo2P\",\"15\":\"DownwardRevisionFrom2PReserveTo3P\",\"16\":\"OtherRevisionsReserve2P\",\"17\":\"MaturitySubClass2P\",\"18\":\"MaturitySubClass2C\",\"19\":\"MinDate2P\",\"20\":\"MaxDate2P\",\"21\":\"MinDate2C\",\"22\":\"MaxDate2C\",\"23\":\"ExpectedBarriers2C\",\"24\":\"ResourcesEstimateMethod\",\"25\":\"ConversionFactorQtyTCFtoPJ\",\"26\":\"EconomicAssumption\",\"27\":\"UpdateReason\",\"28\":\"PreparedBy\",\"29\":\"PreparationIndependenceStatement\",\"30\":\"EffectiveDate\",\"31\":\"VersionDateTime\"}",
+    "utilake.key": "[\"FIELDID\",\"FIELDINTERESTID\"]",
+    "utilake.load": "snapshot",
+    "utilake.market": "gas",
+    "utilake.model": "[\"GAS_RESERVES_AND_RESOURCES\"]",
+    "utilake.model-types": "{\"3\":\"NUMBER(20,0)\",\"4\":\"NUMBER(18,3)\",\"5\":\"NUMBER(18,3)\",\"6\":\"NUMBER(18,3)\",\"7\":\"NUMBER(18,3)\",\"8\":\"NUMBER(18,3)\",\"9\":\"NUMBER(18,3)\",\"10\":\"NUMBER(18,3)\",\"11\":\"NUMBER(18,3)\",\"12\":\"NUMBER(18,3)\",\"13\":\"NUMBER(18,3)\",\"16\":\"NUMBER(18,3)\",\"17\":\"VARCHAR2(100)\",\"18\":\"VARCHAR2(100)\",\"19\":\"DATE\",\"20\":\"DATE\",\"21\":\"DATE\",\"22\":\"DATE\",\"23\":\"VARCHAR2(400)\",\"24\":\"VARCHAR2(200)\",\"25\":\"NUMBER(18,3)\",\"26\":\"VARCHAR2(1000)\",\"27\":\"VARCHAR2(400)\",\"28\":\"VARCHAR2(100)\",\"30\":\"DATE\",\"31\":\"DATE\"}",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"GBB\",\"RESERVES_AND_RESOURCES\"]]",
+    "utilake.table": "GBB_RESERVES_AND_RESOURCES",
+    "utilake.temporal.cutoff": "VERSIONDATETIME",
+    "utilake.temporal.entity": "[\"FIELDID\",\"FIELDINTERESTID\"]",
+    "utilake.temporal.order": "[\"VERSIONDATETIME\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "EFFECTIVEDATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "EFFECTIVEDATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 8672285710148503032,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "FIELDID",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "id": 2,
+          "name": "FIELDNAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "A unique AEMO defined Field Interest Identifier",
+          "id": 3,
+          "name": "FIELDINTERESTID",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "An estimate of the BB field interest 1P developed reserves",
+          "id": 4,
+          "name": "DEVELOPEDRESERVE1P",
+          "required": false,
+          "type": "decimal(9, 3)"
+        },
+        {
+          "doc": "An estimate of the BB field interest 2P developed reserves",
+          "id": 5,
+          "name": "DEVELOPEDRESERVE2P",
+          "required": false,
+          "type": "decimal(9, 3)"
+        },
+        {
+          "doc": "An estimate of the BB field interest 3P developed reserves",
+          "id": 6,
+          "name": "DEVELOPEDRESERVE3P",
+          "required": false,
+          "type": "decimal(9, 3)"
+        },
+        {
+          "doc": "An estimate of the BB field interest 1P undeveloped reserves",
+          "id": 7,
+          "name": "UNDEVELOPEDRESERVE1P",
+          "required": false,
+          "type": "decimal(8, 3)"
+        },
+        {
+          "doc": "An estimate of the BB field interest 2P undeveloped reserves",
+          "id": 8,
+          "name": "UNDEVELOPEDRESERVE2P",
+          "required": false,
+          "type": "decimal(8, 3)"
+        },
+        {
+          "doc": "An estimate of the BB field interest 3P undeveloped reserves",
+          "id": 9,
+          "name": "UNDEVELOPEDRESERVE3P",
+          "required": false,
+          "type": "decimal(8, 3)"
+        },
+        {
+          "doc": "An estimate of the BB field interest 2C resources",
+          "id": 10,
+          "name": "RESOURCES2C",
+          "required": false,
+          "type": "decimal(9, 3)"
+        },
+        {
+          "doc": "An estimate of the total movement in the BB field interest 2P reserves since the end of prior reporting year due to the production of gas",
+          "id": 11,
+          "name": "PRODUCTIONCHANGERESERVE2P",
+          "required": false,
+          "type": "decimal(7, 3)"
+        },
+        {
+          "doc": "An estimate of the total movement in the BB field interest 2P reserves since the end of prior reporting year due to the extension of a fields proved area",
+          "id": 12,
+          "name": "PROVEDAREAEXTENSIONRESERVE2P",
+          "required": false,
+          "type": "decimal(6, 3)"
+        },
+        {
+          "doc": "An estimate of the total movement in the BB field interest 2P reserves since the end of prior reporting year due to a percentage change in the BB field interest",
+          "id": 13,
+          "name": "PERCENTAGECHANGERESERVE2P",
+          "required": false,
+          "type": "decimal(6, 3)"
+        },
+        {
+          "id": 14,
+          "name": "UPWARDREVISIONFROM3PRESERVETO2P",
+          "required": false,
+          "type": "decimal(6, 3)"
+        },
+        {
+          "id": 15,
+          "name": "DOWNWARDREVISIONFROM2PRESERVETO3P",
+          "required": false,
+          "type": "decimal(5, 3)"
+        },
+        {
+          "doc": "An estimate of the total movement in the BB field interest 2P reserves since the end of prior reporting year due to other revisions",
+          "id": 16,
+          "name": "OTHERREVISIONSRESERVE2P",
+          "required": false,
+          "type": "decimal(7, 3)"
+        },
+        {
+          "doc": "The project maturity sub-class for the 2P reserves",
+          "id": 17,
+          "name": "MATURITYSUBCLASS2P",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The project maturity sub-class for the 2C resources",
+          "id": 18,
+          "name": "MATURITYSUBCLASS2C",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The earliest estimated date for the production of the 2P reserves",
+          "id": 19,
+          "name": "MINDATE2P",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The latest estimated date for the production of the 2P reserves",
+          "id": 20,
+          "name": "MAXDATE2P",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The earliest estimated date for the production of the 2C resources",
+          "id": 21,
+          "name": "MINDATE2C",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The latest estimated date for the production of the 2C resources",
+          "id": 22,
+          "name": "MAXDATE2C",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "A list of any barriers to the commercial recovery of the 2C resources",
+          "id": 23,
+          "name": "EXPECTEDBARRIERS2C",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The resources assessment method used to prepare the reserves and resources estimates",
+          "id": 24,
+          "name": "RESOURCESESTIMATEMETHOD",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The conversion factor used to convert quantities measured in trillions of cubic feet to PJ",
+          "id": 25,
+          "name": "CONVERSIONFACTORQTYTCFTOPJ",
+          "required": false,
+          "type": "decimal(7, 3)"
+        },
+        {
+          "doc": "The key economic assumptions in the forecast case used to prepare the reserves and resources estimates and the source of the assumptions",
+          "id": 26,
+          "name": "ECONOMICASSUMPTION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The reason for the update",
+          "id": 27,
+          "name": "UPDATEREASON",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The name of the person who prepared the estimates",
+          "id": 28,
+          "name": "PREPAREDBY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 29,
+          "name": "PREPARATIONINDEPENDENCESTATEMENT",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The date on which the record takes effect",
+          "id": 30,
+          "name": "EFFECTIVEDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Time a successful submission is accepted by AEMO systems",
+          "id": 31,
+          "name": "VERSIONDATETIME",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 8672285710148503032,
+      "timestamp-ms": 1759240800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_RESERVES_AND_RESOURCES/metadata/snap-8672285710148503032-1-fbf3367e-d2c3-8fa3-9af0-3bc784ed1844.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 8672285710148503032,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "44",
+        "utilake.from.file": "GasBBReservesAndResources_20251028023045.csv",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "cc03aba906ad860fdc12b07c43e1dbea1a7b1e920f110c56a0a0ea32773db1d4",
+        "utilake.from.time": "2023-03-15T00:00:00+10:00",
+        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.report-subtype": "RESERVES_AND_RESOURCES",
+        "utilake.report-type": "GBB",
+        "utilake.rows": "12700",
+        "utilake.to.file": "GasBBReservesAndResources_20261001153150.csv",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "ad79720754d6552bac05f48580515546f2acdc7e9b355477f373cac3dc6ff02c",
+        "utilake.to.time": "2026-08-25T00:00:00+10:00",
+        "utilake.total-rows": "12700",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1759240800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "fbf3367e-d2c3-8fa3-9af0-3bc784ed1844"
+}

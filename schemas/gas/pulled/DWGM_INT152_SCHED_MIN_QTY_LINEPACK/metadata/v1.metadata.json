@@ -1,0 +1,174 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 5248883809589992035,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 13,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1785506400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT152_SCHED_MIN_QTY_LINEPACK",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"type\",\"3\":\"linepack_id\",\"4\":\"linepack_zone_id\",\"5\":\"commencement_datetime\",\"6\":\"ti\",\"7\":\"termination_datetime\",\"8\":\"unit_id\",\"9\":\"linepack_zone_name\",\"10\":\"transmission_document_id\",\"11\":\"quantity\",\"12\":\"current_date\",\"13\":\"approval_date\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"DWGM\",\"INT152_SCHED_MIN_QTY_LINEPACK_1\"]]",
+    "utilake.table": "DWGM_INT152_SCHED_MIN_QTY_LINEPACK",
+    "utilake.temporal.cutoff": "CURRENT_DATE",
+    "utilake.temporal.entity": "[\"LINEPACK_ID\",\"LINEPACK_ZONE_ID\",\"UNIT_ID\",\"TRANSMISSION_DOCUMENT_ID\"]",
+    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "GAS_DATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "GAS_DATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 5248883809589992035,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "GAS_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 2,
+          "name": "TYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "LINEPACK_ID",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "id": 4,
+          "name": "LINEPACK_ZONE_ID",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 5,
+          "name": "COMMENCEMENT_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 6,
+          "name": "TI",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 7,
+          "name": "TERMINATION_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 8,
+          "name": "UNIT_ID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 9,
+          "name": "LINEPACK_ZONE_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 10,
+          "name": "TRANSMISSION_DOCUMENT_ID",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "id": 11,
+          "name": "QUANTITY",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "id": 12,
+          "name": "CURRENT_DATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 13,
+          "name": "APPROVAL_DATE",
+          "required": false,
+          "type": "date"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 5248883809589992035,
+      "timestamp-ms": 1785506400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT152_SCHED_MIN_QTY_LINEPACK/metadata/snap-5248883809589992035-1-54aef0c4-0ae4-8f23-9ab5-9a7bbc357f6f.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 5248883809589992035,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "294",
+        "utilake.from.file": "PublicRpts31.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
+        "utilake.from.time": "2026-08-23T00:00:00+10:00",
+        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.report-subtype": "INT152_SCHED_MIN_QTY_LINEPACK_1",
+        "utilake.report-type": "DWGM",
+        "utilake.rows": "35122",
+        "utilake.to.file": "int152_v4_sched_min_qty_linepack_1.csv@20261021T221100+1000",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "0eaab9478f97be89ae4b07c2c2c293f25d9158f4bfc862c82f7f50b11ac9481a",
+        "utilake.to.time": "2026-10-23T00:00:00+10:00",
+        "utilake.total-rows": "35122",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1785506400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "54aef0c4-0ae4-8f23-9ab5-9a7bbc357f6f"
+}

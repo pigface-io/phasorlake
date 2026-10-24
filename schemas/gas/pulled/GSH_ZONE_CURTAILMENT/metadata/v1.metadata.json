@@ -1,0 +1,164 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 7491251441321114129,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 9,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1772287200000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GSH_ZONE_CURTAILMENT",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "Contains details of curtailment of nominations against secondary firm rights (CTP trades) for service points (receipt and delivery points).",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"FACILITY_ID\",\"GAS_DATE\",\"SERVICE_POINT_ID\"]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.model-types": "{\"1\":\"NUMBER(8,0)\",\"2\":\"VARCHAR2(100)\",\"3\":\"NUMBER(8,0)\",\"4\":\"VARCHAR2(100)\",\"5\":\"VARCHAR2(100)\",\"6\":\"VARCHAR2(255)\",\"7\":\"DATE\",\"8\":\"NUMBER(10,0)\",\"9\":\"DATE\"}",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"GSH\",\"ZONE_CURTAILMENT_INFORMATION\"]]",
+    "utilake.table": "GSH_ZONE_CURTAILMENT",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"FACILITY_ID\",\"SERVICE_POINT_ID\"]",
+    "utilake.temporal.order": "[\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "GAS_DATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "GAS_DATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 7491251441321114129,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "The unique identifier of the parent facility.",
+          "id": 1,
+          "name": "FACILITY_ID",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "The descriptive name of the parent facility.",
+          "id": 2,
+          "name": "FACILITY_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The unique identifier of the service point.",
+          "id": 3,
+          "name": "SERVICE_POINT_ID",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "The descriptive name of the service point.",
+          "id": 4,
+          "name": "SERVICE_POINT_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The type of service point, for example forward haul receipt point, forward haul delivery point, backhaul receipt point, backhaul delivery point, compression receipt point or compression delivery point.",
+          "id": 5,
+          "name": "SERVICE_POINT_TYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The description of the service point.",
+          "id": 6,
+          "name": "SERVICE_POINT_DESCRIPTION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The effective gas date of the rejected nomination quantity.",
+          "id": 7,
+          "name": "GAS_DATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The curtailed quantity of nominations by the facility operator for transportation capacity that has been transferred pursuant to an operational transfer (GJ)",
+          "id": 8,
+          "name": "CURTAILED_QUANTITY",
+          "required": false,
+          "type": "long"
+        },
+        {
+          "doc": "The date and time the report was generated.",
+          "id": 9,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        7,
+        3
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 7491251441321114129,
+      "timestamp-ms": 1772287200000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GSH_ZONE_CURTAILMENT/metadata/snap-7491251441321114129-1-b7c3ecde-6939-8cb7-820b-f5ab7046c2b5.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 7491251441321114129,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "18",
+        "utilake.from.file": "PUBLIC_ZONECURTAILMENTINFORMATION_20260301.zip",
+        "utilake.from.release": "2026-03",
+        "utilake.from.sha256": "6d641e972b5c6e7d8a329d45d750c58b40d78253bd20cbc042db4b1a754bdfe2",
+        "utilake.from.time": "2026-03-16T00:00:00+10:00",
+        "utilake.kinds": "[\"gsh/archive\",\"gsh/current\"]",
+        "utilake.report-subtype": "ZONE_CURTAILMENT_INFORMATION",
+        "utilake.report-type": "GSH",
+        "utilake.rows": "18",
+        "utilake.to.file": "PUBLIC_ZONECURTAILMENTINFORMATION_20261013_0000000542690279.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "e788d537d254820a4a0664f8ddec5fac90b62a76475799de20b43b17b934aee0",
+        "utilake.to.time": "2026-10-14T00:00:00+10:00",
+        "utilake.total-rows": "18",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1772287200000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "b7c3ecde-6939-8cb7-820b-f5ab7046c2b5"
+}

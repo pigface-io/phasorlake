@@ -1,0 +1,151 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 6856195731211148448,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 10,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1785506400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT112D_ZFTC",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"zftc_name\",\"2\":\"commencement_date\",\"3\":\"termination_date\",\"4\":\"daily_max_net_inj_qty_gj\",\"5\":\"daily_max_net_wdl_qty_gj\",\"6\":\"ti\",\"7\":\"hourly_max_net_inj_qty_gj\",\"8\":\"hourly_max_net_wdl_qty_gj\",\"9\":\"mod_datetime\",\"10\":\"current_date\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"DWGM\",\"INT112D_ZFTC_1\"]]",
+    "utilake.table": "DWGM_INT112D_ZFTC",
+    "utilake.temporal.entity": "[]",
+    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 6856195731211148448,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "ZFTC_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 2,
+          "name": "COMMENCEMENT_DATE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "TERMINATION_DATE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "DAILY_MAX_NET_INJ_QTY_GJ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 5,
+          "name": "DAILY_MAX_NET_WDL_QTY_GJ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 6,
+          "name": "TI",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 7,
+          "name": "HOURLY_MAX_NET_INJ_QTY_GJ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 8,
+          "name": "HOURLY_MAX_NET_WDL_QTY_GJ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 9,
+          "name": "MOD_DATETIME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 10,
+          "name": "CURRENT_DATE",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 6856195731211148448,
+      "timestamp-ms": 1785506400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT112D_ZFTC/metadata/snap-6856195731211148448-1-fe0a4337-435b-8571-85f9-eca2fe05f1f6.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 6856195731211148448,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "291",
+        "utilake.from.file": "PublicRpts31.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
+        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.report-subtype": "INT112D_ZFTC_1",
+        "utilake.report-type": "DWGM",
+        "utilake.rows": "0",
+        "utilake.to.file": "int112d_v4_zftc_1.csv",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "6f2955f70b3562d6495a8f029fd87283b910eb7849b7903fab7aa58249bf8d68",
+        "utilake.total-rows": "0",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1785506400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "fe0a4337-435b-8571-85f9-eca2fe05f1f6"
+}

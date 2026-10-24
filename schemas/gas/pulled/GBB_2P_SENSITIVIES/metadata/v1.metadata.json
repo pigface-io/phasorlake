@@ -1,0 +1,115 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 2282766288982581718,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 4,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1688133600000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_2P_SENSITIVIES",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"PeriodID\",\"2\":\"State\",\"3\":\"Increase\",\"4\":\"Decrease\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"GBB\",\"2P_SENSITIVIES\"]]",
+    "utilake.table": "GBB_2P_SENSITIVIES",
+    "utilake.temporal.entity": "[\"PERIODID\"]",
+    "utilake.temporal.order": "[]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 2282766288982581718,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "PERIODID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 2,
+          "name": "STATE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "INCREASE",
+          "required": false,
+          "type": "decimal(7, 3)"
+        },
+        {
+          "id": 4,
+          "name": "DECREASE",
+          "required": false,
+          "type": "decimal(7, 3)"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 2282766288982581718,
+      "timestamp-ms": 1688133600000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_2P_SENSITIVIES/metadata/snap-2282766288982581718-1-17c1ae8d-6be6-8abb-a28f-18553e609398.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 2282766288982581718,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "15",
+        "utilake.from.file": "GasBB2PSensitivies_20230705.csv",
+        "utilake.from.release": "2023-07",
+        "utilake.from.sha256": "8d289d78d158660cede09225c27bcb62262b2e166fc5877ace001f2eccb0de12",
+        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.report-subtype": "2P_SENSITIVIES",
+        "utilake.report-type": "GBB",
+        "utilake.rows": "164",
+        "utilake.to.file": "GasBB2PSensitivies_20261005.csv",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "ae0725d7dd0f90bfa0bf8f9c0a546a907b51ea1e4c8d8093b9d88e9610cf47e0",
+        "utilake.total-rows": "164",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1688133600000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "17c1ae8d-6be6-8abb-a28f-18553e609398"
+}

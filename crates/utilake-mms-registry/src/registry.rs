@@ -657,8 +657,16 @@ mod tests {
         let h = r.history(id).unwrap();
         assert!(h.schemas.len() >= 2 && !h.runs.is_empty());
         assert_eq!(h.table, "DISPATCH_UNIT_SCADA");
-        // Every table the data model declares, and nothing it does not.
-        assert_eq!(r.tables().count(), 241);
+        // Every table the data model declares, and nothing it does not;
+        // the gas tables beside them.
+        assert_eq!(
+            r.tables().filter(|(_, t)| t.market == Market::Nem).count(),
+            241
+        );
+        assert_eq!(
+            r.tables().filter(|(_, t)| t.market == Market::Gas).count(),
+            182
+        );
         assert!(r.table_by_name("SPDRC_").is_none());
         assert!(r.market(Market::Nem).is_some());
         assert!(r.market(Market::Wem).is_some());

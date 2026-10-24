@@ -1,0 +1,133 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 7256277035900209934,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 7,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1785506400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT112C_SSC",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"supply_source\",\"2\":\"gas_date\",\"3\":\"ssc_id\",\"4\":\"ti\",\"5\":\"hourly_constraint\",\"6\":\"mod_datetime\",\"7\":\"current_date\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"DWGM\",\"INT112C_SSC_1\"]]",
+    "utilake.table": "DWGM_INT112C_SSC",
+    "utilake.temporal.entity": "[\"SSC_ID\"]",
+    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 7256277035900209934,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "SUPPLY_SOURCE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 2,
+          "name": "GAS_DATE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "SSC_ID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "TI",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 5,
+          "name": "HOURLY_CONSTRAINT",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 6,
+          "name": "MOD_DATETIME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 7,
+          "name": "CURRENT_DATE",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 7256277035900209934,
+      "timestamp-ms": 1785506400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT112C_SSC/metadata/snap-7256277035900209934-1-5ee13481-370c-8d67-be33-d5372bc7a510.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 7256277035900209934,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "291",
+        "utilake.from.file": "PublicRpts31.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
+        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.report-subtype": "INT112C_SSC_1",
+        "utilake.report-type": "DWGM",
+        "utilake.rows": "0",
+        "utilake.to.file": "int112c_v4_ssc_1.csv",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "02959f3b34ee00a30531d464ee9b9c9b4d366808e17c3a2f0c53933e1917b637",
+        "utilake.total-rows": "0",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1785506400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "5ee13481-370c-8d67-be33-d5372bc7a510"
+}

@@ -1,0 +1,138 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 8976317633222122355,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 7,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1788184800000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT597_INJECTION_SCALING_FACTORS",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"network_name\",\"2\":\"version_id\",\"3\":\"gas_date\",\"4\":\"distributor_name\",\"5\":\"withdrawal_zone\",\"6\":\"scaling_factor\",\"7\":\"current_date\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"DWGM\",\"INT597_INJECTION_SCALING_FACTORS_1\"]]",
+    "utilake.table": "DWGM_INT597_INJECTION_SCALING_FACTORS",
+    "utilake.temporal.cutoff": "CURRENT_DATE",
+    "utilake.temporal.entity": "[\"VERSION_ID\"]",
+    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "GAS_DATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "GAS_DATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 8976317633222122355,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "NETWORK_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 2,
+          "name": "VERSION_ID",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "id": 3,
+          "name": "GAS_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 4,
+          "name": "DISTRIBUTOR_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 5,
+          "name": "WITHDRAWAL_ZONE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 6,
+          "name": "SCALING_FACTOR",
+          "required": false,
+          "type": "decimal(4, 3)"
+        },
+        {
+          "id": 7,
+          "name": "CURRENT_DATE",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 8976317633222122355,
+      "timestamp-ms": 1788184800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT597_INJECTION_SCALING_FACTORS/metadata/snap-8976317633222122355-1-afa2e2d4-d797-87d4-a5a0-04dd4a82cbd8.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 8976317633222122355,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "4",
+        "utilake.from.file": "PublicRpts22.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "20d32cafc8e00f1760ea246fec625d26dd91304d25f9a1caeb65db5bf23993a1",
+        "utilake.from.time": "2026-08-01T00:00:00+10:00",
+        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.report-subtype": "INT597_INJECTION_SCALING_FACTORS_1",
+        "utilake.report-type": "DWGM",
+        "utilake.rows": "496",
+        "utilake.to.file": "PublicRpts07.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "d5207d761a8093a627cd6446b9eba33d8caace28718278d5a06bfab96e6f2a8c",
+        "utilake.to.time": "2026-08-31T00:00:00+10:00",
+        "utilake.total-rows": "496",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1788184800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "afa2e2d4-d797-87d4-a5a0-04dd4a82cbd8"
+}

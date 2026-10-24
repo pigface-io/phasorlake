@@ -1,0 +1,179 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 6946708083141865960,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 7,
+  "last-partition-id": 999,
+  "last-sequence-number": 2,
+  "last-updated-ms": 1790776800001,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_LINEPACK_CAPACITY_ADEQUACY",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "The linepack adequacy (flag) for each of the (non-exempt) BB pipelines",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"FacilityName\",\"2\":\"FacilityId\",\"3\":\"FacilityType\",\"4\":\"GasDate\",\"5\":\"Flag\",\"6\":\"Description\",\"7\":\"LastUpdated\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.model": "[\"GAS_LINEPACK_ADEQUACY\",\"GAS_FACILITY\"]",
+    "utilake.model-types": "{\"1\":\"VARCHAR2(100)\",\"2\":\"Number(10,0)\",\"3\":\"VARCHAR2(40)\",\"4\":\"Date\",\"5\":\"Varchar2 (5)\",\"6\":\"Varchar2 (800)\"}",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"GBB\",\"LINEPACK_CAPACITY_ADEQUACY_FULL_LIST\"],[\"GBB\",\"LINEPACK_CAPACITY_ADEQUACY_FUTURE\"]]",
+    "utilake.table": "GBB_LINEPACK_CAPACITY_ADEQUACY",
+    "utilake.temporal.cutoff": "LASTUPDATED",
+    "utilake.temporal.entity": "[\"FACILITYID\"]",
+    "utilake.temporal.order": "[\"LASTUPDATED\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "GASDATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "GASDATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 6946708083141865960,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Name of the Facility",
+          "id": 1,
+          "name": "FACILITYNAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Unique Facility identifier",
+          "id": 2,
+          "name": "FACILITYID",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Describes the type of facility. Refer to the GAS_FACILITY_TYPE table",
+          "id": 3,
+          "name": "FACILITYTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Date of gas day applicable under either the pipeline contract or market rules",
+          "id": 4,
+          "name": "GASDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Expected adequacy for the gas day. Valid entries are GREEN, AMBER or RED",
+          "id": 5,
+          "name": "FLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Free text description of record",
+          "id": 6,
+          "name": "DESCRIPTION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 7,
+          "name": "LASTUPDATED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 8613669559239398487,
+      "timestamp-ms": 1756648800000
+    },
+    {
+      "snapshot-id": 6946708083141865960,
+      "timestamp-ms": 1790776800001
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_LINEPACK_CAPACITY_ADEQUACY/metadata/snap-8613669559239398487-1-5becfce7-0d6f-882d-8878-15aa154f12e2.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 8613669559239398487,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "47",
+        "utilake.from.file": "GasBBLinepackCapacityAdequacyFuture_20250930111729.CSV",
+        "utilake.from.release": "2025-09",
+        "utilake.from.sha256": "d4456c586d4f2ebb21266730267b1ff65d9561c186faeca712f5977628d3998f",
+        "utilake.from.time": "2025-09-30T11:15:00+10:00",
+        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.report-subtype": "LINEPACK_CAPACITY_ADEQUACY_FUTURE",
+        "utilake.report-type": "GBB",
+        "utilake.rows": "7398",
+        "utilake.to.file": "GasBBLinepackCapacityAdequacyFuture.CSV@20261022T084700+1000",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "d978a4e1e3666efdeed8c64415ab5c6bf70d2f70b74abd7bfdfdc4a94a01c6ad",
+        "utilake.to.time": "2026-10-24T09:15:00+10:00",
+        "utilake.total-rows": "7398",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1756648800000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_LINEPACK_CAPACITY_ADEQUACY/metadata/snap-6946708083141865960-2-5becfce7-0d6f-882d-8878-15aa154f12e2.avro",
+      "parent-snapshot-id": 8613669559239398487,
+      "schema-id": 0,
+      "sequence-number": 2,
+      "snapshot-id": 6946708083141865960,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "3",
+        "utilake.from.file": "GasBBLinepackCapacityAdequacyFullList.zip",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "f771b0d7c010115cf3df26baa85758d859d380a212fd6389a9ba26d72494758c",
+        "utilake.from.time": "2018-09-30T00:00:00+10:00",
+        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.report-subtype": "LINEPACK_CAPACITY_ADEQUACY_FULL_LIST",
+        "utilake.report-type": "GBB",
+        "utilake.rows": "649582",
+        "utilake.to.file": "GasBBLinepackCapacityAdequacyFullList.zip@20261022T031000+1000",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "1c30428844cc7282fb4119711a9b068d20e9d90c2703df016e50f3d3c2390e97",
+        "utilake.to.time": "2027-06-30T00:00:00+10:00",
+        "utilake.total-rows": "656980",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1790776800001
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "5becfce7-0d6f-882d-8878-15aa154f12e2"
+}

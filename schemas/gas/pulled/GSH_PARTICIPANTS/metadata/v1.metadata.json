@@ -1,0 +1,238 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 1778631858789677411,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 20,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1759240800000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GSH_PARTICIPANTS",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "comment": "The report contains the registration details of all participants currently registered in the GSH market.",
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.key": "[\"MARKET_ID\",\"PARTICIPANT_ID\"]",
+    "utilake.load": "snapshot",
+    "utilake.market": "gas",
+    "utilake.model-types": "{\"2\":\"VARCHAR2(20)\",\"3\":\"VARCHAR2(20)\",\"4\":\"VARCHAR2(80)\",\"5\":\"VARCHAR2(20)\",\"6\":\"VARCHAR2(80)\",\"7\":\"VARCHAR2(80)\",\"8\":\"VARCHAR2(80)\",\"9\":\"VARCHAR2(80)\",\"10\":\"VARCHAR2(80)\",\"11\":\"VARCHAR2(80)\",\"12\":\"VARCHAR2(80)\",\"13\":\"VARCHAR2(20)\",\"14\":\"VARCHAR2(20)\",\"15\":\"VARCHAR2(20)\",\"16\":\"VARCHAR2(20)\",\"17\":\"VARCHAR2(80)\",\"18\":\"VARCHAR2(255)\",\"19\":\"DATE\",\"20\":\"VARCHAR2(20)\"}",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"GSH\",\"PARTICIPANTS\"]]",
+    "utilake.table": "GSH_PARTICIPANTS",
+    "utilake.temporal.cutoff": "LASTCHANGED",
+    "utilake.temporal.entity": "[\"MARKET_ID\",\"PARTICIPANT_ID\"]",
+    "utilake.temporal.order": "[\"LASTCHANGED\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.kind": "timeless",
+    "utilake.time": "LASTCHANGED",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 1778631858789677411,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "MARKET",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The unique identifier of the participant",
+          "id": 2,
+          "name": "PARTICIPANT_ID",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "The participant code",
+          "id": 3,
+          "name": "PARTICIPANT_CODE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Name of the organisation who has the ABN",
+          "id": 4,
+          "name": "ORGANISATION_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Unique code of the organisation",
+          "id": 5,
+          "name": "ORGANISATION_CODE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Trading name of the organisation",
+          "id": 6,
+          "name": "TRADING_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The head office address of the organisation",
+          "id": 7,
+          "name": "HEAD_OFFICE_ADDRESS_LINE_1",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The head office address of the organisation",
+          "id": 8,
+          "name": "HEAD_OFFICE_ADDRESS_LINE_2",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The head office address of the organisation",
+          "id": 9,
+          "name": "HEAD_OFFICE_ADDRESS_LINE_3",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The head office address of the organisation",
+          "id": 10,
+          "name": "HEAD_OFFICE_ADDRESS_LINE_4",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The phone number of the organisation",
+          "id": 11,
+          "name": "PHONE_NUMBER",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The fax number for the organisation",
+          "id": 12,
+          "name": "FAX_NUMBER",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "ABN of the organisation",
+          "id": 13,
+          "name": "ABN",
+          "required": false,
+          "type": "decimal(11, 0)"
+        },
+        {
+          "doc": "ARBN of the organisation",
+          "id": 14,
+          "name": "ARBN",
+          "required": false,
+          "type": "decimal(9, 0)"
+        },
+        {
+          "doc": "ACN of the organisation",
+          "id": 15,
+          "name": "ACN",
+          "required": false,
+          "type": "decimal(9, 0)"
+        },
+        {
+          "doc": "The unique participant identifier of the agent appointed to trade on the participant’s behalf.",
+          "id": 16,
+          "name": "AGENT_ID",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "doc": "Name of the agent organisation",
+          "id": 17,
+          "name": "AGENT_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The classification of the company in the GSH market, for example trading, view-only, etc.",
+          "id": 18,
+          "name": "CLASSIFICATIONS",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The date and time the report is generated",
+          "id": 19,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The market in which the company is a participant, for example GSH, DAA, ALL.",
+          "id": 20,
+          "name": "MARKET_ID",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [
+        20,
+        2
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 1778631858789677411,
+      "timestamp-ms": 1759240800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GSH_PARTICIPANTS/metadata/snap-1778631858789677411-1-7feb8c41-6e66-8512-bea5-fe1f6579431a.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 1778631858789677411,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "102",
+        "utilake.from.file": "PUBLIC_REGISTEREDPARTICIPANTS_20251001.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "9862f38fbe1ffa9d5c5b0817578a2358d1f6b88d770f76c6f77e6423b27338f6",
+        "utilake.from.time": "2014-07-01T01:29:45+10:00",
+        "utilake.kinds": "[\"gsh/archive\",\"gsh/current\"]",
+        "utilake.report-subtype": "PARTICIPANTS",
+        "utilake.report-type": "GSH",
+        "utilake.rows": "288",
+        "utilake.to.file": "PUBLIC_REGISTEREDPARTICIPANTS_20261021_0000000544029183.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "554ffd0991605f3b8a909435ec5748d112faef3708bd4ee4c7638301ae76b312",
+        "utilake.to.time": "2026-10-21T10:04:10+10:00",
+        "utilake.total-rows": "288",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1759240800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "7feb8c41-6e66-8512-bea5-fe1f6579431a"
+}

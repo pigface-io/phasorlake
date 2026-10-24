@@ -1,0 +1,114 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 8133873654408544136,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 3,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1785506400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT263_LNG_MONITOR",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"allocated_market_stock\",\"3\":\"current_date\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"DWGM\",\"INT263_LNG_MONITOR_1\"]]",
+    "utilake.table": "DWGM_INT263_LNG_MONITOR",
+    "utilake.temporal.cutoff": "CURRENT_DATE",
+    "utilake.temporal.entity": "[]",
+    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "GAS_DATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "GAS_DATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 8133873654408544136,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "GAS_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 2,
+          "name": "ALLOCATED_MARKET_STOCK",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "id": 3,
+          "name": "CURRENT_DATE",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 8133873654408544136,
+      "timestamp-ms": 1785506400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT263_LNG_MONITOR/metadata/snap-8133873654408544136-1-157ee62d-da05-8d57-aa5c-1cd3be544173.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 8133873654408544136,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "66",
+        "utilake.from.file": "PublicRpts31.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
+        "utilake.from.time": "2026-07-02T00:00:00+10:00",
+        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.report-subtype": "INT263_LNG_MONITOR_1",
+        "utilake.report-type": "DWGM",
+        "utilake.rows": "458",
+        "utilake.to.file": "int263_v4_lng_monitor_1.csv@20261021T191100+1000",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "8a51e94bdc0a50e4ebd1bb713a5d429075a021d8cc9c3f49da2c3370848a1c62",
+        "utilake.to.time": "2026-10-26T00:00:00+10:00",
+        "utilake.total-rows": "458",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1785506400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "157ee62d-da05-8d57-aa5c-1cd3be544173"
+}

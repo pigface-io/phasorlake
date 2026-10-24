@@ -1,0 +1,144 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 4845853367630245587,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 8,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1785506400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/STTM_INT681_DAILY_PROVISIONAL_CAPACITY",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"hub_identifier\",\"3\":\"hub_name\",\"4\":\"facility_identifier\",\"5\":\"facility_name\",\"6\":\"firm_not_flowed\",\"7\":\"as_available_flowed\",\"8\":\"report_datetime\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"STTM\",\"INT681_DAILY_PROVISIONAL_CAPACITY_RPT_1\"]]",
+    "utilake.table": "STTM_INT681_DAILY_PROVISIONAL_CAPACITY",
+    "utilake.temporal.cutoff": "REPORT_DATETIME",
+    "utilake.temporal.entity": "[\"HUB_IDENTIFIER\",\"FACILITY_IDENTIFIER\"]",
+    "utilake.temporal.order": "[\"REPORT_DATETIME\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "GAS_DATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "GAS_DATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 4845853367630245587,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "GAS_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 2,
+          "name": "HUB_IDENTIFIER",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "HUB_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "FACILITY_IDENTIFIER",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 5,
+          "name": "FACILITY_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 6,
+          "name": "FIRM_NOT_FLOWED",
+          "required": false,
+          "type": "decimal(15, 9)"
+        },
+        {
+          "id": 7,
+          "name": "AS_AVAILABLE_FLOWED",
+          "required": false,
+          "type": "decimal(14, 9)"
+        },
+        {
+          "id": 8,
+          "name": "REPORT_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 4845853367630245587,
+      "timestamp-ms": 1785506400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/STTM_INT681_DAILY_PROVISIONAL_CAPACITY/metadata/snap-4845853367630245587-1-2bb19b78-a52c-8c2a-82aa-0f0ec45f4294.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 4845853367630245587,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "34",
+        "utilake.from.file": "Day31.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "ae9eda135c5f3c28548b31911da9dcc65c767009ef5b7d16ceee4cce2755509e",
+        "utilake.from.time": "2026-07-01T00:00:00+10:00",
+        "utilake.kinds": "[\"sttm/current\"]",
+        "utilake.report-subtype": "INT681_DAILY_PROVISIONAL_CAPACITY_RPT_1",
+        "utilake.report-type": "STTM",
+        "utilake.rows": "1472",
+        "utilake.to.file": "int681_v1_daily_provisional_capacity_rpt_1.csv@20261021T191600+1000",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "9631205ae5b3539d113d7b913dc10bf891f4026ff15625c76da3867a199f3aa1",
+        "utilake.to.time": "2026-10-20T00:00:00+10:00",
+        "utilake.total-rows": "1472",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1785506400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "2bb19b78-a52c-8c2a-82aa-0f0ec45f4294"
+}

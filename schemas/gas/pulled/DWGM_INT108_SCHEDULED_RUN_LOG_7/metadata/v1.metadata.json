@@ -1,0 +1,186 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 8777699590599394586,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 15,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1785506400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT108_SCHEDULED_RUN_LOG_7",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"transmission_id\",\"2\":\"transmission_document_id\",\"3\":\"transmission_group_id\",\"4\":\"gas_start_datetime\",\"5\":\"bid_cutoff_datetime\",\"6\":\"schedule_type_id\",\"7\":\"creation_datetime\",\"8\":\"forecast_demand_version\",\"9\":\"dfs_interface_audit_id\",\"10\":\"last_os_for_gas_day_tdoc_id\",\"11\":\"os_prior_gas_day_tdoc_id\",\"12\":\"approval_datetime\",\"13\":\"demand_type_id\",\"14\":\"objective_function_value\",\"15\":\"current_date\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"DWGM\",\"INT108_SCHEDULED_RUN_LOG_7_1\"]]",
+    "utilake.table": "DWGM_INT108_SCHEDULED_RUN_LOG_7",
+    "utilake.temporal.cutoff": "CURRENT_DATE",
+    "utilake.temporal.entity": "[\"TRANSMISSION_ID\",\"TRANSMISSION_DOCUMENT_ID\",\"TRANSMISSION_GROUP_ID\",\"SCHEDULE_TYPE_ID\",\"DFS_INTERFACE_AUDIT_ID\",\"LAST_OS_FOR_GAS_DAY_TDOC_ID\",\"OS_PRIOR_GAS_DAY_TDOC_ID\",\"DEMAND_TYPE_ID\"]",
+    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "GAS_START_DATETIME",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "GAS_START_DATETIME",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 8777699590599394586,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "TRANSMISSION_ID",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "id": 2,
+          "name": "TRANSMISSION_DOCUMENT_ID",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "id": 3,
+          "name": "TRANSMISSION_GROUP_ID",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "id": 4,
+          "name": "GAS_START_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 5,
+          "name": "BID_CUTOFF_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 6,
+          "name": "SCHEDULE_TYPE_ID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 7,
+          "name": "CREATION_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 8,
+          "name": "FORECAST_DEMAND_VERSION",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "id": 9,
+          "name": "DFS_INTERFACE_AUDIT_ID",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "id": 10,
+          "name": "LAST_OS_FOR_GAS_DAY_TDOC_ID",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "id": 11,
+          "name": "OS_PRIOR_GAS_DAY_TDOC_ID",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "id": 12,
+          "name": "APPROVAL_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 13,
+          "name": "DEMAND_TYPE_ID",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 14,
+          "name": "OBJECTIVE_FUNCTION_VALUE",
+          "required": false,
+          "type": "decimal(14, 5)"
+        },
+        {
+          "id": 15,
+          "name": "CURRENT_DATE",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 8777699590599394586,
+      "timestamp-ms": 1785506400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT108_SCHEDULED_RUN_LOG_7/metadata/snap-8777699590599394586-1-963e51ba-1311-81b0-8d84-4d1883a334e5.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 8777699590599394586,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "294",
+        "utilake.from.file": "PublicRpts31.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
+        "utilake.from.time": "2026-08-24T10:00:00+10:00",
+        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.report-subtype": "INT108_SCHEDULED_RUN_LOG_7_1",
+        "utilake.report-type": "DWGM",
+        "utilake.rows": "1220",
+        "utilake.to.file": "int108_v4_scheduled_run_log_7_1.csv@20261021T220900+1000",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "5b3622bce7bba03220c57de50df16b8f7c9e1d1c91404433a899bf5fb679a7aa",
+        "utilake.to.time": "2026-10-23T06:00:00+10:00",
+        "utilake.total-rows": "1220",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1785506400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "963e51ba-1311-81b0-8d84-4d1883a334e5"
+}

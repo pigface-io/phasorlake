@@ -1,0 +1,150 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 8587533890285644536,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 9,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1785506400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT199_CUMULATIVE_PRICE",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "true",
+    "utilake.format": "3",
+    "utilake.headers": "{\"1\":\"transmission_id\",\"2\":\"gas_date\",\"3\":\"schedule_interval\",\"4\":\"cumulative_price\",\"5\":\"cpt_exceeded_flag\",\"6\":\"schedule_type_id\",\"7\":\"transmission_doc_id\",\"8\":\"approval_datetime\",\"9\":\"current_date\"}",
+    "utilake.key": "[]",
+    "utilake.load": "append",
+    "utilake.market": "gas",
+    "utilake.offset": "+10:00",
+    "utilake.reports": "[[\"DWGM\",\"INT199_CUMULATIVE_PRICE_1\"]]",
+    "utilake.table": "DWGM_INT199_CUMULATIVE_PRICE",
+    "utilake.temporal.cutoff": "CURRENT_DATE",
+    "utilake.temporal.entity": "[\"TRANSMISSION_ID\",\"SCHEDULE_TYPE_ID\",\"TRANSMISSION_DOC_ID\"]",
+    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
+    "utilake.temporal.origin": "hand",
+    "utilake.temporal.valid.column": "GAS_DATE",
+    "utilake.temporal.valid.kind": "instant",
+    "utilake.time": "GAS_DATE",
+    "utilake.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 8587533890285644536,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "TRANSMISSION_ID",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "id": 2,
+          "name": "GAS_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 3,
+          "name": "SCHEDULE_INTERVAL",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 4,
+          "name": "CUMULATIVE_PRICE",
+          "required": false,
+          "type": "decimal(7, 4)"
+        },
+        {
+          "id": 5,
+          "name": "CPT_EXCEEDED_FLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 6,
+          "name": "SCHEDULE_TYPE_ID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 7,
+          "name": "TRANSMISSION_DOC_ID",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "id": 8,
+          "name": "APPROVAL_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 9,
+          "name": "CURRENT_DATE",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 8587533890285644536,
+      "timestamp-ms": 1785506400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT199_CUMULATIVE_PRICE/metadata/snap-8587533890285644536-1-b34d95b2-cd89-80d2-89a3-70b1e05520cc.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 8587533890285644536,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "164",
+        "utilake.from.file": "PublicRpts31.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
+        "utilake.from.time": "2026-07-31T00:00:00+10:00",
+        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.report-subtype": "INT199_CUMULATIVE_PRICE_1",
+        "utilake.report-type": "DWGM",
+        "utilake.rows": "869",
+        "utilake.to.file": "int199_v4_cumulative_price_1.csv@20261021T212200+1000",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "562a023174cc0b62c56d79641a7eca54b8bb4b31264d9b9f0011ffb0cf6866fa",
+        "utilake.to.time": "2026-10-21T00:00:00+10:00",
+        "utilake.total-rows": "869",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1785506400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "b34d95b2-cd89-80d2-89a3-70b1e05520cc"
+}
