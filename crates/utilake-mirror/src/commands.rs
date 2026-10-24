@@ -39,7 +39,7 @@ impl Context {
     pub fn new(cli: &Cli) -> Result<Self> {
         let user_home = std::env::var_os("HOME").map(PathBuf::from);
         let home = Home::resolve(cli.home.as_deref(), user_home.as_deref())
-            .context("No home directory: pass --home or set NEMWEB_MIRROR_HOME.")?;
+            .context("No home directory: pass --home or set UTILAKE_MIRROR_HOME.")?;
         let config = Config::load(&home.config_file())
             .map_err(|e| anyhow::anyhow!("{}", e.diagnostic().render()))?;
         let progress = cli.progress
@@ -64,7 +64,7 @@ impl Context {
     /// interval apart.
     pub fn fetcher(&self) -> Fetcher {
         let ua = format!(
-            "nemweb-mirror/{} (+https://github.com/g0itb4/nemweb-mirror){}",
+            "utilake-mirror/{} (+https://github.com/g0itb4/utilake){}",
             env!("CARGO_PKG_VERSION"),
             self.config.user_agent_suffix
         );

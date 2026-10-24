@@ -79,7 +79,7 @@ pub enum FetchError {
     },
     /// The server refuses this client.
     #[error(
-        "The server refused {url} with HTTP {status}, first seen at {first_url}. AEMO's web server does this after too many requests in a short time, so nemweb-mirror sends it nothing more in this run. Wait a while before trying again; a larger `request_interval_ms` in the config file slows nemweb-mirror down."
+        "The server refused {url} with HTTP {status}, first seen at {first_url}. AEMO's web server does this after too many requests in a short time, so utilake-mirror sends it nothing more in this run. Wait a while before trying again; a larger `request_interval_ms` in the config file slows utilake-mirror down."
     )]
     Blocked {
         /// The URL of this request.

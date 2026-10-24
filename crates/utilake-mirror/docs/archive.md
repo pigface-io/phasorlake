@@ -1,7 +1,7 @@
 # The archive
 
 The archive is where every downloaded file is kept, untransformed. nemlake
-reads it; nemweb-mirror and nemlake's own `fetch` both write it, so a file
+reads it; utilake-mirror and nemlake's own `fetch` both write it, so a file
 either downloads is never downloaded again by the other.
 
 ## Layout
@@ -18,7 +18,7 @@ file system takes (control characters and `/ \ : * ? " < > |`) become `_`;
 `.`, `..` and empty segments become `_`. A query string, which no archive
 URL has, is folded into the file name as `name@{first 16 hex of its
 sha256}`; a fragment is not part of the file. `Archive::path_for`
-(`crates/nemweb-mirror/src/net/archive.rs`) is the reference.
+(`crates/utilake-mirror/src/net/archive.rs`) is the reference.
 
 A file is written to `{path}.part` and renamed into place only after its
 size matches the server's `Content-Length`; a `.part` file is never part of
@@ -38,7 +38,7 @@ archived already, or a zip that holds the same files as one (names,
 CRC-32 and sizes) packed again, is not kept, and its folder's journal
 says so. Nothing archived is moved or written over, so a path, once
 written, always holds the same bytes. `{home}/mirror/held.ndjson` names
-the version each file was last found or downloaded in. `nemweb-mirror
+the version each file was last found or downloaded in. `utilake-mirror
 versions` compares each version with the ones before it; `--prune`
 removes those kept before downloads compared with every version, noting
 each in the journal first.
@@ -83,7 +83,7 @@ Beside every file, `{path}.json`:
   "listed_size": 1469212391,
   "listed_modified": "Monday, October 12, 2026 10:45 AM",
   "listed_modified_at": "2026-10-12T10:45:00+10:00",
-  "tool": "nemweb-mirror/0.1.0"
+  "tool": "utilake-mirror/0.1.0"
 }
 ```
 
@@ -114,14 +114,14 @@ written without an offset is a defect.
 
 ## Removed duplicates
 
-A zip removed by `nemweb-mirror compare --delete` is gone from the archive
+A zip removed by `utilake-mirror compare --delete` is gone from the archive
 or was never downloaded, and is recorded in `{home}/mirror/removed.ndjson`,
 one line per file: `url`, `size`, `sha256` (absent when it was never
 downloaded), `downloaded`, `same_as` (the folder holding the same files)
 and `files` (how many of its files matched), `ancillary` (web pages of the
 zip left out of the comparison, when there were any) and `removed_at`
 (UTC). Its listing is kept in `{home}/mirror/peek.ndjson` and in the
-catalog, and each folder file's CRC-32 in its sidecar, so `nemweb-mirror
+catalog, and each folder file's CRC-32 in its sidecar, so `utilake-mirror
 compare --verify` can read the folder again and check the removal still
 holds. Its files are the folder's files: every one of them, by path, size
 and CRC-32, from the zip itself or from its listing, apart from web pages.

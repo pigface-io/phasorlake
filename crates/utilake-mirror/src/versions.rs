@@ -175,7 +175,7 @@ mod tests {
             listed_size: Some(bytes.len() as u64),
             listed_modified: at.map(str::to_owned),
             listed_modified_at: None,
-            tool: "nemweb-mirror".to_owned(),
+            tool: "utilake-mirror".to_owned(),
         };
         Archive::write_sidecar(&path, &sidecar).unwrap();
         path.file_name().unwrap().to_string_lossy().into_owned()

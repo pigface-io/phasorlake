@@ -188,7 +188,7 @@ file against its record.
 
 ## The mirror
 
-`nemweb-mirror` (`crates/utilake-mirror`) keeps a copy of every file under
+`utilake-mirror` (`crates/utilake-mirror`) keeps a copy of every file under
 nemweb's archive folders and a catalog of it: it crawls every listing page
 under `Data_Archive/`, `Reports/ARCHIVE/` and `Reports/CURRENT/`, peeks
 into each zip's central directory before downloading, downloads every
@@ -196,7 +196,7 @@ listed file once at a paced rate (a refusal is waited out), keeps every
 version of a file nemweb rewrites in place, watches the folders on a
 schedule of their own after the crawl, maps every zip as a folder, and
 compares each month's zip with its folder so most zips are never
-downloaded. Its home is `NEMWEB_MIRROR_HOME` (default `~/.nemweb-mirror`):
+downloaded. Its home is `UTILAKE_MIRROR_HOME` (default `~/.utilake-mirror`):
 the archive, with a sidecar beside every file, the journal and the catalog.
 `crates/utilake-mirror/README.md` has the commands and the layout on disk;
 the census in utilake-schemas and `utilake` read what it keeps.

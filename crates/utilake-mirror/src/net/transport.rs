@@ -415,7 +415,7 @@ mod tests {
             },
         );
         let t = ReqwestTransport::new(
-            "nemweb-mirror-test",
+            "utilake-mirror-test",
             Duration::from_secs(2),
             Duration::from_millis(300),
         );

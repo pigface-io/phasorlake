@@ -1,4 +1,4 @@
-//! The one shape every error and warning of nemweb-mirror is reported as.
+//! The one shape every error and warning of utilake-mirror is reported as.
 //!
 //! A `Diagnostic` carries a stable machine-readable code, a category, a
 //! severity, a full-sentence message, and the context the layer that raised
@@ -31,7 +31,7 @@ pub enum Category {
     Zip,
     /// The mirror's own records: crawl, peek, removed duplicates, map.
     Mirror,
-    /// A bug in nemweb-mirror (panic, broken invariant).
+    /// A bug in utilake-mirror (panic, broken invariant).
     Internal,
 }
 

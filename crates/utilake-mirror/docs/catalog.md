@@ -1,6 +1,6 @@
 # The catalog
 
-`nemweb-mirror map` writes the catalog of the mirror to
+`utilake-mirror map` writes the catalog of the mirror to
 `{home}/mirror/map/map.ndjson`: one JSON object per line for every folder and
 file nemweb lists under the roots, every archived file nemweb no longer
 lists, and every folder and file inside every zip, zips within zips too.

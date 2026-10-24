@@ -6,11 +6,11 @@ use clap::{Parser, Subcommand};
 
 /// A copy of every file under nemweb's archive folders, and its catalog.
 #[derive(Parser, Debug)]
-#[command(name = "nemweb-mirror", version, about, max_term_width = 100)]
+#[command(name = "utilake-mirror", version, about, max_term_width = 100)]
 pub struct Cli {
-    /// Home directory (default `~/.nemweb-mirror`): the archive, and the
+    /// Home directory (default `~/.utilake-mirror`): the archive, and the
     /// mirror's records with its config under `mirror/`.
-    #[arg(long, global = true, env = "NEMWEB_MIRROR_HOME")]
+    #[arg(long, global = true, env = "UTILAKE_MIRROR_HOME")]
     pub home: Option<PathBuf>,
     /// Machine-readable output: NDJSON, one event or record per line.
     #[arg(long, global = true)]

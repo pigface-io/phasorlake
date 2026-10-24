@@ -14,7 +14,7 @@ new source adds crates and changes none.
   utilake-schemas repository at the
   revision `Cargo.toml` pins, so the lake, its census and its schemas read
   AEMO's files through one scanner and agree on every id. `utilake-mirror`
-  is the nemweb mirror (binary `nemweb-mirror`): every file under nemweb's
+  is the nemweb mirror (binary `utilake-mirror`): every file under nemweb's
   archive folders and the catalog of it, which the lake and the census
   read from. The pipeline runs over the ports in `utilake-kit` and names no
   format: a `Source` lists and describes files, a `Decoder` reads an entry

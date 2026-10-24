@@ -16,12 +16,12 @@ impl Cli {
     }
 
     fn run(&self, args: &[&str]) -> Output {
-        Command::new(env!("CARGO_BIN_EXE_nemweb-mirror"))
+        Command::new(env!("CARGO_BIN_EXE_utilake-mirror"))
             .arg("--home")
             .arg(self.home.path())
             .arg("--no-progress")
             .args(args)
-            .env_remove("NEMWEB_MIRROR_HOME")
+            .env_remove("UTILAKE_MIRROR_HOME")
             .output()
             .expect("the binary runs")
     }
@@ -462,7 +462,7 @@ fn the_lock_the_home_and_the_config() {
     assert!(!full.contains("kept by the run"), "{full}");
     drop(held);
     // No flags about progress: stderr is not a terminal, so no progress line.
-    let plain = Command::new(env!("CARGO_BIN_EXE_nemweb-mirror"))
+    let plain = Command::new(env!("CARGO_BIN_EXE_utilake-mirror"))
         .arg("--home")
         .arg(cli.home.path())
         .arg("status")
@@ -475,9 +475,9 @@ fn the_lock_the_home_and_the_config() {
     assert_eq!(code, 2);
     assert!(err.contains("config.parse"), "{err}");
 
-    let out = Command::new(env!("CARGO_BIN_EXE_nemweb-mirror"))
+    let out = Command::new(env!("CARGO_BIN_EXE_utilake-mirror"))
         .arg("status")
-        .env_remove("NEMWEB_MIRROR_HOME")
+        .env_remove("UTILAKE_MIRROR_HOME")
         .env_remove("HOME")
         .output()
         .unwrap();

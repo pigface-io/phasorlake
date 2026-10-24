@@ -286,7 +286,7 @@ impl Fetcher {
             listed_size: remote.size,
             listed_modified: remote.modified.clone(),
             listed_modified_at: remote.modified_at,
-            tool: format!("nemweb-mirror/{}", env!("CARGO_PKG_VERSION")),
+            tool: format!("utilake-mirror/{}", env!("CARGO_PKG_VERSION")),
         };
         Archive::write_sidecar(&path, &sidecar)?;
         Ok(LocalFile {
@@ -738,7 +738,7 @@ mod tests {
         assert_eq!(sc.sha256, local.sha256);
         assert_eq!(
             sc.tool,
-            format!("nemweb-mirror/{}", env!("CARGO_PKG_VERSION"))
+            format!("utilake-mirror/{}", env!("CARGO_PKG_VERSION"))
         );
         assert_eq!(sc.crc32, Some(crc32fast::hash(&body)));
         assert_eq!(

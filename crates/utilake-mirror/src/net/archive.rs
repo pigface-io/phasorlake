@@ -3,7 +3,7 @@
 //! A file lives at a path that mirrors its URL
 //! (`{archive}/www.nemweb.com.au/Data_Archive/.../PUBLIC_DVD_X_202401010000.zip`)
 //! beside a small JSON sidecar that records where it came from, when, and
-//! what its bytes hash to. A file is downloaded once; nothing in nemweb-mirror
+//! what its bytes hash to. A file is downloaded once; nothing in utilake-mirror
 //! replaces or deletes an archived file, which is the untransformed record
 //! the census and the lake are derived from. To fetch one again, delete it.
 
@@ -85,7 +85,7 @@ pub struct Sidecar {
     /// `listed_modified` as an instant (AEST).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub listed_modified_at: Option<Stamp>,
-    /// The program and version that downloaded it, e.g. `nemweb-mirror/0.1.0`.
+    /// The program and version that downloaded it, e.g. `utilake-mirror/0.1.0`.
     #[serde(default)]
     pub tool: String,
 }

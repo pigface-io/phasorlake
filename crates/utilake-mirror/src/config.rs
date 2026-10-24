@@ -13,7 +13,7 @@ use crate::net::Archive;
 use crate::watch::Cadence;
 
 /// Where the mirror keeps things: the archive of downloads and its own
-/// records. `--home` or `NEMWEB_MIRROR_HOME`, else `~/.nemweb-mirror`.
+/// records. `--home` or `UTILAKE_MIRROR_HOME`, else `~/.utilake-mirror`.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Home {
     root: PathBuf,
@@ -25,11 +25,11 @@ impl Home {
         Self { root: root.into() }
     }
 
-    /// The explicit flag, else `~/.nemweb-mirror` under the user's home.
+    /// The explicit flag, else `~/.utilake-mirror` under the user's home.
     pub fn resolve(flag: Option<&Path>, user_home: Option<&Path>) -> Option<Self> {
         match flag {
             Some(p) => Some(Self::at(p)),
-            None => user_home.map(|h| Self::at(h.join(".nemweb-mirror"))),
+            None => user_home.map(|h| Self::at(h.join(".utilake-mirror"))),
         }
     }
 
@@ -283,7 +283,7 @@ mod tests {
     #[test]
     fn home_layout_and_config() {
         let h = Home::resolve(None, Some(Path::new("/u"))).unwrap();
-        assert_eq!(h.root(), Path::new("/u/.nemweb-mirror"));
+        assert_eq!(h.root(), Path::new("/u/.utilake-mirror"));
         assert!(Home::resolve(None, None).is_none());
         let h = Home::resolve(Some(Path::new("/m")), None).unwrap();
         assert_eq!(h.archive(), Path::new("/m/archive"));

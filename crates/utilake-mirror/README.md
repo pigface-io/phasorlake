@@ -1,4 +1,4 @@
-# nemweb-mirror
+# utilake-mirror
 
 A copy of every file under nemweb's archive folders, and the catalog of it.
 
@@ -9,7 +9,7 @@ Operator (AEMO) publishes the National Electricity Market's data. Its
 about 4.9 TB. `Reports/CURRENT/` holds about 120,000 newer report files,
 about 50 GB; nemweb rewrites it daily and drops each file after days or weeks,
 some of them without archiving them, and only it gives each file's publish
-time. Those three folders are the crawl roots. nemweb-mirror, the
+time. Those three folders are the crawl roots. utilake-mirror, the
 `utilake-mirror` crate of this repository, downloads all of it, once, and
 writes a catalog of every folder, file and zip entry. utilake's ingest and
 the census in utilake-schemas read that catalog and the archive; they know
@@ -62,10 +62,10 @@ what the data means, this knows what exists.
 ## Run
 
 ```sh
-cargo build --release -p utilake-mirror           # target/release/nemweb-mirror
-export NEMWEB_MIRROR_HOME=/data/nemweb   # default ~/.nemweb-mirror
-echo 'request_interval_ms = 750' > $NEMWEB_MIRROR_HOME/mirror/config.toml
-m=target/release/nemweb-mirror
+cargo build --release -p utilake-mirror           # target/release/utilake-mirror
+export UTILAKE_MIRROR_HOME=/data/nemweb   # default ~/.utilake-mirror
+echo 'request_interval_ms = 750' > $UTILAKE_MIRROR_HOME/mirror/config.toml
+m=target/release/utilake-mirror
 nohup caffeinate -ims $m run --json > mirror.log 2>&1 &
 $m status
 $m compare --delete
@@ -94,7 +94,7 @@ matches, without reading its sidecar.
 {home}/mirror/map/map.ndjson, tree.txt   the catalog                              (docs/catalog.md)
 ```
 
-`nemweb-mirror summary` folds the catalog into patterns as Markdown; its
+`utilake-mirror summary` folds the catalog into patterns as Markdown; its
 default output is `nemweb/map.md`, written after `map`, not tracked in git.
 
 Every time field in these records is RFC 3339 with an offset, or has one

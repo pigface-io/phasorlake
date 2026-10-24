@@ -1145,7 +1145,7 @@ mod tests {
                 listed_size: Some(6),
                 listed_modified: Some("Tuesday, October 13, 2026 11:53 AM".into()),
                 listed_modified_at: None,
-                tool: "nemweb-mirror".into(),
+                tool: "utilake-mirror".into(),
             },
         )
         .unwrap();

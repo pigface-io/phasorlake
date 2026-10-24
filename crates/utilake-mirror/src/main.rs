@@ -1,4 +1,4 @@
-//! `nemweb-mirror`: a copy of every file under nemweb's archive folders, and
+//! `utilake-mirror`: a copy of every file under nemweb's archive folders, and
 //! the catalog of it.
 
 mod cli;

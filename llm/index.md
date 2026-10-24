@@ -31,13 +31,13 @@ Entries name where it starts.
 - **Decode** (MMS format): the I row, MMS timestamps, scanner, field splitter; hands each block's I row and its untyped rows to a `Sink`. the decoder (`utilake-mms-decode`, in utilake-schemas). **Kit**: the ports and the zip walker, `crates/utilake-kit/src/`.
 - **Conform**: the typed Arrow sink, resolving each block via the registry, two-pass rows (parse all, then append), the value net (a value that does not fit is null, its text in `{col}__raw`; only a malformed row is quarantined), timestamp clamping; the inspect sink; the kit's decoder and catalog in `crates/utilake-mms-conform/src/kit.rs`.
 - **Acquire**: the `Source` port; paced requests, a refusal (403/429) trips a breaker, bodies streamed as `Bytes` to a blocking writer (`crates/utilake-acquire/src/fetcher.rs`); IIS listing parser, offline and canned transports; the archive mirrors each URL with a sidecar (`crates/utilake-acquire/src/archive.rs`). The NEM archive's month layouts are the kit's (`crates/utilake-nem/src/sources/mmsdm.rs`).
-- **Mirror**: nemweb-mirror fills the archive.
+- **Mirror**: utilake-mirror fills the archive.
 - **Writer**: Hive Parquet writer with atomic rename (`crates/utilake-writer/src/parquet_hive.rs`), month partitioner, SQLite manifest and its async actor (`crates/utilake-writer/src/manifest/`).
 - **Pipeline**: list → fetch → ingest on blocking workers → commit (`RunOptions::ingest` false: download only; `Input::Archive`: archived months). A batch with columns its open file lacks (`{col}__raw`, a kept null) continues the partition in a further part file. Each ingest records its transform (source shape, plan hash, census shape id, schema source) in the Parquet footer and manifest; a source whose plan changed is read again (`plans_current`; `Input::Stale` lists them). `crates/utilake-pipeline/src/run.rs`, `crates/utilake-pipeline/src/ingest_file.rs`, `crates/utilake-pipeline/src/report.rs`.
 - **Command**: `fetch nem` (download only), `ingest` (archived months or local files), `reingest`, `inspect`, `ls`, `errors`, `verify`, `schema`, `archive`, `wem`. `crates/utilake-cli/src/cli.rs`, `crates/utilake-cli/src/commands/`.
 - **MDFF**: NEM12/13 codes, units; rules in `reference/mdff/`. `crates/utilake-mdff/src/`.
 - **Gates**: `just cover`, `just bench`, `just bench-fast`, `just budget-check`, `just llm-check`, `just errors-check`, `just schemas-check`. `crates/xtask/src/`, `crates/utilake-bench/src/main.rs`, `bench/budgets.json`, `coverage.json`.
-- **Mirror** (`crates/utilake-mirror/src/`, binary `nemweb-mirror`): every file under nemweb's archive folders and its catalog; `NEMWEB_MIRROR_HOME`, sidecars and journal as before (`crates/utilake-mirror/README.md`).
+- **Mirror** (`crates/utilake-mirror/src/`, binary `utilake-mirror`): every file under nemweb's archive folders and its catalog; `UTILAKE_MIRROR_HOME`, sidecars and journal as before (`crates/utilake-mirror/README.md`).
 
 ## Documents
 

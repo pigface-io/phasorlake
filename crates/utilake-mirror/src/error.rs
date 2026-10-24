@@ -41,7 +41,7 @@ pub enum MirrorError {
     },
     /// Downloading needs a finished crawl.
     #[error(
-        "The crawl in {path} is not finished; run `nemweb-mirror crawl` (or `nemweb-mirror run`) first."
+        "The crawl in {path} is not finished; run `utilake-mirror crawl` (or `utilake-mirror run`) first."
     )]
     CrawlIncomplete {
         /// The crawl directory.
@@ -59,7 +59,7 @@ pub enum MirrorError {
     },
     /// The committed summary is not the summary of the current map.
     #[error(
-        "{path} is not the summary of the current map; run `nemweb-mirror summary` and commit it."
+        "{path} is not the summary of the current map; run `utilake-mirror summary` and commit it."
     )]
     SummaryStale {
         /// The summary file.
