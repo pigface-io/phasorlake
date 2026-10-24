@@ -60,6 +60,7 @@ Every error and warning utilake-mirror reports carries one of these codes. Codes
 | `mirror.io` | `crates/utilake-mirror/src/error.rs` |
 | `mirror.locked` | `crates/utilake-mirror/src/error.rs` |
 | `mirror.not_same` | `crates/utilake-mirror/src/error.rs` |
+| `mirror.old_layout` | `crates/utilake-mirror/src/error.rs` |
 | `mirror.record_corrupt` | `crates/utilake-mirror/src/error.rs` |
 | `mirror.summary_stale` | `crates/utilake-mirror/src/error.rs` |
 

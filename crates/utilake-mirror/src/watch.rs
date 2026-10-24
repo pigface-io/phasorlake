@@ -190,7 +190,7 @@ pub async fn refresh(
 ) -> Result<Refreshed, MirrorError> {
     if !mirror.done_path().exists() {
         return Err(MirrorError::CrawlIncomplete {
-            path: mirror.crawl_dir().display().to_string(),
+            path: mirror.done_path().display().to_string(),
         });
     }
     let mut record: BTreeMap<String, Remote> = mirror
@@ -439,12 +439,12 @@ mod tests {
         let o = hold("https://h/A/old/o.csv", &[]);
 
         // The same listing again: nothing changed, nothing written.
-        let record = std::fs::read(mirror.record_path()).unwrap();
+        let record = mirror.record_text();
         let r = refresh(&f, &mirror, &roots, &folders(&["https://h/A/b/"]))
             .await
             .unwrap();
         assert_eq!(r.folders, [("https://h/A/b/".to_owned(), false)]);
-        assert_eq!(std::fs::read(mirror.record_path()).unwrap(), record);
+        assert_eq!(mirror.record_text(), record);
 
         let r = refresh(
             &f,

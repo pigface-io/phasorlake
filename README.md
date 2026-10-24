@@ -207,30 +207,25 @@ path its URL spells out:
 ```
 ~/.utilake/archive/www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2024/MMSDM_2024_01/MMSDM_Historical_Data_SQLLoader/DATA/
   PUBLIC_DVD_DISPATCHPRICE_202401010000.zip
-  PUBLIC_DVD_DISPATCHPRICE_202401010000.zip.json
+  PUBLIC_DVD_DISPATCHPRICE_202401010000.zip.provenance.json
 ```
 
-The `.json` beside it records where the file came from: the URL, when the
-download completed, the server's `ETag` and `Last-Modified` (when AEMO
-published it), the time the directory listing showed, the size and sha256
-of the bytes, and the utilake version that fetched it.
+The record beside it (`utilake_provenance`, shared with the mirror) says
+what the bytes are, their size, sha256 and CRC-32, and every address that
+served them: the URL it was fetched from first, with when, the listing's
+line and the server's `ETag` and `Last-Modified` (when AEMO published it),
+and every other place the same bytes were found since. A record of format
+1, the flat `{name}.json` an older utilake or mirror wrote, is read as it
+is (`crates/utilake-mirror/docs/archive.md`, Provenance record).
 
-Times in it, and in every record utilake writes: every time field is RFC
-3339 with an offset, or stands beside one that is. `fetched_at` is when
-the download completed, UTC. `last_modified` and `listed_modified` are
-kept as the server and the listing wrote them; `last_modified_at` and
-`listed_modified_at` beside them are the same times with their offset: the
-HTTP date in UTC (`Z`), the listing's time in AEST (`+10:00`: nemweb lists
-in Australian Eastern Standard Time, which has no daylight saving). A
-sidecar written before the `_at` fields were kept lacks them;
-`Archive::read_sidecar` derives them from the text beside each
-(`Sidecar::derived`), and the sidecar on disk is left as it is. The
-convention holds everywhere a time comes in as text: the field keeps the
-text as it came, and its twin `{field}_at` holds the instant (`modified`
-and `modified_at` in listing output, `last_modified_at` in the manifest's
-`files`); a field whose name already ends in `_at` gets `{field}_utc`,
-the instant in UTC (the WEM manifest's `generated_at_utc`). A time
-written without an offset is a defect.
+Every time utilake writes is RFC 3339 with an offset: when bytes were
+fetched in UTC, a server's `Last-Modified` in UTC, a listing's time in the
+host's clock (AEST, `+10:00`, for nemweb, which has no daylight saving).
+Where a time comes in as text it is kept as an instant; in listing output
+and the manifest's `files`, `last_modified` is the HTTP date and
+`last_modified_at` the instant, and a field whose name already ends in
+`_at` gets `{field}_utc`, the instant in UTC (the WEM manifest's
+`generated_at_utc`). A time written without an offset is a defect.
 
 A file is downloaded once. Nothing in utilake replaces or deletes an
 archived file; to fetch one again, delete it and its record. Everything in
@@ -249,7 +244,9 @@ version of a file nemweb rewrites in place, watches the folders on a
 schedule of their own after the crawl, maps every zip as a folder, and
 compares each month's zip with its folder so most zips are never
 downloaded. Its home is `UTILAKE_MIRROR_HOME` (default `~/.utilake-mirror`):
-the archive, with a sidecar beside every file, the journal and the catalog.
+the archive, with a provenance record beside every file, and its own
+records under `state/`: each folder's listing, pages and events, and the
+catalog.
 `crates/utilake-mirror/README.md` has the commands and the layout on disk;
 the census in utilake-schemas and `utilake` read what it keeps.
 

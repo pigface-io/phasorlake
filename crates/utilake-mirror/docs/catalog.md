@@ -1,19 +1,19 @@
 # The catalog
 
 `utilake-mirror map` writes the catalog of the mirror to
-`{home}/mirror/map/map.ndjson`: one JSON object per line for every folder and
+`{home}/state/cache/catalog.ndjson`: one JSON object per line for every folder and
 file nemweb lists under the roots, every archived file nemweb no longer
 lists, and every folder and file inside every zip, zips within zips too.
-`tree.txt` beside it is the same nodes as an indented tree.
+`catalog.txt` beside it is the same nodes as an indented tree.
 
 The first line is a header, `{"catalog_format":3,"roots":[…]}`: the format
 version, raised on any change a reader would notice, and the roots crawled.
 Format 2 adds the `_at` fields (see Times) to format 1 and changes nothing
 else. Format 3 adds the `version` state.
-The crawl record the catalog reads is the crawl's, with each folder a watch
-has read since in place of what the crawl read of it
-(`{home}/mirror/crawl/folders/{host}/{path}/listing.json`), and what was
-under each folder gone from nemweb since left out (`…/gone`).
+The record of the listings the catalog reads is every folder's
+`{home}/state/folders/{host}/{folder}/listing.ndjson`: what the crawl read,
+each folder a watch has read since as it read it, and nothing under a
+folder gone from nemweb since.
 Every other line is a node, in tree order: a folder before what it holds,
 names in byte order. The same archive and records give the same bytes.
 
@@ -28,14 +28,14 @@ zip's compressed bytes.
 | field | when | meaning |
 |---|---|---|
 | `file` | always | the file or folder nemweb lists, at its path under the archive (`docs/archive.md`); for an entry inside a zip, the zip's. Both listings of a report folder are one folder, so two rows of files can share a `file` only when their bytes are one file; a file kept beside another URL's as a version has its own `{path}@{at}` |
-| `url` | all but the folders above the roots | the exact URL of `file`, as crawled or as its sidecar records it |
+| `url` | all but the folders above the roots | the exact URL of `file`, as crawled or as its record names it |
 | `inside` | entries of zips | where inside `file`: one path per zip, outermost first, folders separated by `/` |
 | `kind` | always | `dir`, `file` or `zip` (a file that is also a folder of what it holds) |
 | `size` | files, zips | bytes; uncompressed inside a zip |
 | `compressed` | inside a zip | packed bytes |
-| `crc32` | inside a zip; downloaded files | CRC-32: as the zip records it, or from the file's sidecar |
-| `sha256` | downloaded files | from the file's sidecar |
-| `etag`, `last_modified` | downloaded files; zips peeked | the server's, from the sidecar or the peek; `last_modified` as the server sent it |
+| `crc32` | inside a zip; downloaded files | CRC-32: as the zip records it, or from the file's record |
+| `sha256` | downloaded files | from the file's record |
+| `etag`, `last_modified` | downloaded files; zips peeked | the server's, from the record or the peek; `last_modified` as the server sent it |
 | `last_modified_at` | with `last_modified` | the same time, UTC |
 | `peeked_at` | zips not downloaded, or removed | when their listing was read, UTC |
 | `matched`, `removed_at` | removed zips | how many of its files were found the same as the folder's, and when (UTC) |

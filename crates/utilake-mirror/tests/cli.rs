@@ -53,14 +53,15 @@ impl Cli {
 fn the_mirror_crawls_kept_pages_and_reports_its_status() {
     let cli = Cli::new();
     let root = "https://h/A/";
-    let pages = cli.home.path().join("mirror/crawl/listings/h/A");
-    std::fs::create_dir_all(pages.join("b")).unwrap();
+    let pages = cli.home.path().join("state/folders/h/A");
+    std::fs::create_dir_all(pages.join("pages")).unwrap();
+    std::fs::create_dir_all(pages.join("b/pages")).unwrap();
     std::fs::write(
-        pages.join("index.html"),
+        pages.join("pages/index.html"),
         "<pre><A HREF=\"/\">[To Parent Directory]</A><br><br> Monday, October 12, 2026 10:45 AM &lt;dir&gt; <A HREF=\"/A/b/\">b</A><br> Monday, October 12, 2026 10:45 AM 9 <A HREF=\"/A/a.zip\">a.zip</A><br> Monday, October 12, 2026 10:45 AM &lt;dir&gt; <A HREF=\"/Z/\">Z</A><br></pre>",
     )
     .unwrap();
-    std::fs::write(pages.join("b/index.html"), "<pre></pre>").unwrap();
+    std::fs::write(pages.join("b/pages/index.html"), "<pre></pre>").unwrap();
 
     let status = cli.ok(&["status", "--root", root]);
     assert!(
@@ -108,10 +109,10 @@ fn the_mirror_downloads_what_the_crawl_listed() {
     assert_eq!(code, 1);
     assert!(err.contains("mirror.crawl_incomplete"), "{err}");
 
-    let pages = cli.home.path().join("mirror/crawl/listings/h/A");
-    std::fs::create_dir_all(&pages).unwrap();
+    let pages = cli.home.path().join("state/folders/h/A");
+    std::fs::create_dir_all(pages.join("pages")).unwrap();
     std::fs::write(
-        pages.join("index.html"),
+        pages.join("pages/index.html"),
         "<pre> Monday, October 12, 2026 10:45 AM 9 <A HREF=\"/A/a.zip\">a.zip</A><br></pre>",
     )
     .unwrap();
@@ -196,8 +197,8 @@ fn zip_of(entries: &[(&str, &[u8])]) -> Vec<u8> {
 
 impl Cli {
     fn config(&self, text: &str) {
-        std::fs::create_dir_all(self.home.path().join("mirror")).unwrap();
-        std::fs::write(self.home.path().join("mirror/config.toml"), text).unwrap();
+        std::fs::create_dir_all(self.home.path()).unwrap();
+        std::fs::write(self.home.path().join("config.toml"), text).unwrap();
     }
 }
 
@@ -284,7 +285,7 @@ fn a_run_waits_out_failures_then_compare_map_and_summary() {
     assert!(stderr.contains("/5 files"), "{stderr}");
     assert!(stdout.contains("0 zips peeked"), "{stdout}");
     // The run kept its counts; with no run, status counts for itself.
-    let kept = std::fs::read_to_string(cli.home.path().join("mirror/progress.json")).unwrap();
+    let kept = std::fs::read_to_string(cli.home.path().join("state/cache/status.json")).unwrap();
     assert!(
         kept.contains("\"archived_files\"") && kept.contains("\"peek\""),
         "{kept}"
@@ -436,7 +437,7 @@ fn what_stops_coming_times_out() {
 #[test]
 fn the_lock_the_home_and_the_config() {
     let cli = Cli::new();
-    let mirror = utilake_mirror::Mirror::new(cli.home.path().join("mirror"));
+    let mirror = utilake_mirror::Mirror::new(cli.home.path().join("state"));
     let held = mirror.lock().unwrap();
     let (code, _, err) = cli.code(&["--offline", "crawl", "--root", "https://h/A/"]);
     assert_eq!(code, 1);
@@ -491,16 +492,17 @@ fn the_lock_the_home_and_the_config() {
 fn a_duplicate_is_ruled_on_from_its_listing_and_never_downloaded() {
     let cli = Cli::new();
     let root = "https://h/A/";
-    let pages = cli.home.path().join("mirror/crawl/listings/h/A");
-    std::fs::create_dir_all(pages.join("M")).unwrap();
+    let pages = cli.home.path().join("state/folders/h/A");
+    std::fs::create_dir_all(pages.join("pages")).unwrap();
+    std::fs::create_dir_all(pages.join("M/pages")).unwrap();
     let t = zip_of(&[("T.CSV", b"a\n")]);
     std::fs::write(
-        pages.join("index.html"),
+        pages.join("pages/index.html"),
         page(&[("/A/M/", None), ("/A/M.zip", Some(20_000_000))]),
     )
     .unwrap();
     std::fs::write(
-        pages.join("M/index.html"),
+        pages.join("M/pages/index.html"),
         page(&[("/A/M/t.zip", Some(t.len()))]),
     )
     .unwrap();
@@ -523,7 +525,7 @@ fn a_duplicate_is_ruled_on_from_its_listing_and_never_downloaded() {
         h.finalize()
     };
     std::fs::write(
-        cli.home.path().join("mirror/peek.ndjson"),
+        cli.home.path().join("state/peeks.ndjson"),
         format!(
             r#"{{"url":"https://h/A/M.zip","peeked_at":"2026-10-15T00:00:00Z","etag":"\"e1\"","last_modified":"Mon, 12 Oct 2026 00:32:30 GMT","listed_size":20000000,"listed_modified":"Monday, October 12, 2026 10:45 AM","entries":[{{"name":"M/t.zip","size":{},"compressed":{},"crc32":{crc},"method":0,"modified":"m"}}]}}"#,
             t.len(),
@@ -537,7 +539,7 @@ fn a_duplicate_is_ruled_on_from_its_listing_and_never_downloaded() {
         out.contains("0.0 GB freed, 0.0 GB not to download"),
         "{out}"
     );
-    let removed = std::fs::read_to_string(cli.home.path().join("mirror/removed.ndjson")).unwrap();
+    let removed = std::fs::read_to_string(cli.home.path().join("state/removals.ndjson")).unwrap();
     assert!(removed.contains("\"downloaded\":false"), "{removed}");
     let out = cli.ok(&["--offline", "download"]);
     assert!(
@@ -572,12 +574,12 @@ fn a_run_keeps_its_counts_for_status() {
     let cli = Cli::new();
     cli.config(FAST);
     cli.ok(&["run", "--delete-duplicates", "--root", &srv.url("/Z/")]);
-    let kept = std::fs::read_to_string(cli.home.path().join("mirror/progress.json")).unwrap();
+    let kept = std::fs::read_to_string(cli.home.path().join("state/cache/status.json")).unwrap();
     // Only the zip beside its folder is peeked: it is found the same as the
     // folder and not downloaded; the other zip is downloaded unpeeked.
     assert!(kept.contains("\"peek\":{\"done\":1,\"total\":1}"), "{kept}");
     assert!(kept.contains("\"archived_files\":3"), "{kept}");
-    let removed = std::fs::read_to_string(cli.home.path().join("mirror/removed.ndjson")).unwrap();
+    let removed = std::fs::read_to_string(cli.home.path().join("state/removals.ndjson")).unwrap();
     assert!(removed.contains("/Z/z.zip"), "{removed}");
     assert!(kept.contains("\"downloading\":0"), "{kept}");
 }
@@ -676,7 +678,7 @@ fn a_watch_keeps_each_version_and_what_is_new() {
         std::fs::read(g.join("r.csv@20261013T115300+1000")).unwrap(),
         b"four"
     );
-    let removed = std::fs::read_to_string(cli.home.path().join("mirror/removed.ndjson")).unwrap();
+    let removed = std::fs::read_to_string(cli.home.path().join("state/removals.ndjson")).unwrap();
     assert!(removed.contains("M.zip"), "{removed}");
 
     let out = cli.ok(&["watch", "--root", &root, "--rounds", "1"]);
@@ -707,9 +709,9 @@ fn a_watch_keeps_each_version_and_what_is_new() {
     let journal = std::fs::read_to_string(
         cli.home
             .path()
-            .join("mirror/journal")
+            .join("state/folders")
             .join(&host)
-            .join("G/changes.ndjson"),
+            .join("G/events.ndjson"),
     )
     .unwrap();
     assert!(journal.contains("\"event\":\"same\""), "{journal}");
@@ -831,4 +833,63 @@ fn relayout_moves_both_listings_into_one_folder() {
     let (code, out, _) = cli.code(&["relayout"]);
     assert_eq!(code, 1, "{out}");
     assert!(out.contains("1 unreadable"), "{out}");
+}
+
+/// A home in the layout before `state/` is refused until it is upgraded;
+/// the upgrade moves its records, says so, and leaves the bytes alone.
+#[test]
+fn a_home_before_state_is_upgraded_first() {
+    let cli = Cli::new();
+    let old = cli.home.path().join("mirror");
+    std::fs::create_dir_all(old.join("crawl")).unwrap();
+    std::fs::write(old.join("config.toml"), "request_interval_ms = 750\n").unwrap();
+    std::fs::write(old.join("peek.ndjson"), "").unwrap();
+    std::fs::write(old.join("mine.txt"), "kept").unwrap();
+    let line = r#"{"url":"https://h/A/a.zip","kind":"file","size":2,"modified":"Monday, October 12, 2026 10:45 AM","listed_on":"https://h/A/"}"#;
+    std::fs::write(old.join("crawl/remote.ndjson"), format!("{line}\n")).unwrap();
+    let data = cli.home.path().join("archive/h/A/a.zip");
+    std::fs::create_dir_all(data.parent().unwrap()).unwrap();
+    std::fs::write(&data, b"aa").unwrap();
+    let v1 = format!(
+        r#"{{"url":"https://h/A/a.zip","size":2,"sha256":"{}","fetched_at":"2026-10-20T00:00:00Z"}}"#,
+        utilake_mirror::net::archive::sha256_hex(b"aa")
+    );
+    std::fs::write(cli.home.path().join("archive/h/A/a.zip.json"), v1).unwrap();
+    std::fs::write(cli.home.path().join("archive/h/A/b.zip"), b"b").unwrap();
+    std::fs::write(cli.home.path().join("archive/h/A/b.zip.json"), "{").unwrap();
+
+    let (code, _, err) = cli.code(&["status"]);
+    assert_eq!(code, 1);
+    assert!(err.contains("mirror.old_layout"), "{err}");
+    // Exit 1 all the same: one record does not read.
+    let (code, dry, _) = cli.code(&["upgrade", "--dry-run"]);
+    assert_eq!(code, 1);
+    assert!(
+        dry.starts_with(
+            "dry run: 2 records moved, 1 listing files written, 1 provenance records written again"
+        ),
+        "{dry}"
+    );
+    let json = cli.code(&["--json", "upgrade", "--dry-run"]).1;
+    assert!(
+        json.contains("\"upgrade_step\"") && json.contains("\"upgrade_done\""),
+        "{json}"
+    );
+    let (code, out, _) = cli.code(&["upgrade"]);
+    assert_eq!(code, 1, "one record does not read: {out}");
+    assert!(out.contains("left: ") && out.contains("mine.txt"), "{out}");
+    assert!(cli.home.path().join("config.toml").exists());
+    assert!(
+        cli.home
+            .path()
+            .join("archive/h/A/a.zip.provenance.json")
+            .exists()
+    );
+    assert_eq!(std::fs::read(&data).unwrap(), b"aa");
+    let again = cli.code(&["upgrade", "--skip-records"]).1;
+    assert!(
+        again.starts_with("0 records moved, 0 listing files written, 0"),
+        "{again}"
+    );
+    cli.ok(&["status"]);
 }

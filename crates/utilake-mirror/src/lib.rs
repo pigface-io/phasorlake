@@ -29,6 +29,7 @@ pub mod status;
 pub mod summary;
 #[cfg(test)]
 pub mod testzip;
+pub mod upgrade;
 pub mod versions;
 pub mod watch;
 pub mod zipdir;
@@ -52,6 +53,7 @@ pub use relayout::{RelayoutSummary, Step, relayout};
 pub use stamp::Stamp;
 pub use status::{PeekCount, RootStatus, Status, status};
 pub use summary::{fold, summary};
+pub use upgrade::{UpgradeSummary, upgrade};
 pub use url::Url;
 pub use versions::{VersionsSummary, versions};
 pub use watch::{Cadence, Refreshed, Schedule, refresh};

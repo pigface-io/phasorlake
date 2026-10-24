@@ -74,7 +74,7 @@ pub fn status(mirror: &Mirror, archive: &Archive, roots: &[Url]) -> Result<Statu
         peek: None,
         downloading: None,
         running: mirror.running(),
-        pages: count_pages(&mirror.crawl_dir().join("listings")),
+        pages: count_pages(mirror.folders().root()),
         crawl_done: mirror.done_path().exists(),
         roots: roots
             .iter()
@@ -143,7 +143,7 @@ impl Status {
 impl Mirror {
     /// Where a run keeps its counts.
     pub fn progress_path(&self) -> std::path::PathBuf {
-        self.dir().join("progress.json")
+        self.cache_dir().join("status.json")
     }
 
     /// Writes a run's counts, stamped now, beside their final name and
@@ -152,7 +152,9 @@ impl Mirror {
         let mut status = status.clone();
         status.as_of = Some(Stamp::now());
         let path = self.progress_path();
-        let part = self.dir().join("progress.json.part");
+        let cache = self.cache_dir();
+        std::fs::create_dir_all(&cache).map_err(MirrorError::io(&cache))?;
+        let part = cache.join("status.json.part");
         let text = serde_json::to_vec(&status).expect("a Status always serialises");
         std::fs::write(&part, text).map_err(MirrorError::io(&part))?;
         std::fs::rename(&part, &path).map_err(MirrorError::io(&path))
@@ -186,7 +188,11 @@ fn count_pages(dir: &Path) -> usize {
             let p = e.path();
             if p.is_dir() {
                 stack.push(p);
-            } else if p.file_name().is_some_and(|n| n == "index.html") {
+            } else if p.extension().is_some_and(|x| x == "html")
+                && p.parent()
+                    .and_then(Path::file_name)
+                    .is_some_and(|n| n == "pages")
+            {
                 n += 1;
             }
         }
@@ -238,7 +244,7 @@ mod tests {
             .iter()
             .map(|r| serde_json::to_string(r).unwrap() + "\n")
             .collect();
-        std::fs::write(mirror.record_path(), lines).unwrap();
+        mirror.set_record_text(lines);
         std::fs::write(mirror.done_path(), "").unwrap();
         for (url, len) in [("https://h/A/x.zip", 3), ("https://h/A/y.zip", 1)] {
             let p = archive.path_for(url);
@@ -300,7 +306,9 @@ mod tests {
         std::fs::create_dir(mirror.progress_path()).unwrap();
         assert!(mirror.read_progress().is_err());
         assert!(mirror.write_progress(&s).is_err());
-        let gone = Mirror::new(home.path().join("none"));
-        assert!(gone.write_progress(&s).is_err());
+        // A mirror whose folder is a file cannot keep counts.
+        let file = home.path().join("file");
+        std::fs::write(&file, "").unwrap();
+        assert!(Mirror::new(&file).write_progress(&s).is_err());
     }
 }

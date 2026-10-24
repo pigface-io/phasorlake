@@ -212,7 +212,7 @@ mod tests {
             format!(r#"{{"url":"{zip}","size":1,"file":"{packed}"}}"#),
             format!(r#"{{"url":"{lone}","size":1,"file":"lone.csv@x"}}"#),
         ];
-        std::fs::create_dir_all(mirror.dir()).unwrap();
+        std::fs::create_dir_all(mirror.cache_dir()).unwrap();
         std::fs::write(mirror.held_path(), held.join("\n") + "\n").unwrap();
 
         let mut seen = Vec::new();

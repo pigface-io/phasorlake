@@ -111,6 +111,19 @@ pub async fn run_command(cli: &Cli) -> Result<i32> {
     let ctx = &Context::new(cli)?;
     let cmd = &cli.command;
     let mirror = ctx.home.records();
+    if !matches!(cmd, Command::Upgrade { .. })
+        && ctx.home.old_records().exists()
+        && !mirror.dir().exists()
+    {
+        report(
+            ctx,
+            &MirrorError::OldLayout {
+                path: ctx.home.old_records().display().to_string(),
+            }
+            .diagnostic(),
+        );
+        return Ok(1);
+    }
     let result = match cmd {
         Command::Crawl { roots, fresh } => {
             let pass = async {
@@ -181,6 +194,10 @@ pub async fn run_command(cli: &Cli) -> Result<i32> {
         Command::Compare { delete, .. } => compare(ctx, &mirror, *delete),
         Command::Summary { out, check } => summary(ctx, &mirror, out, *check),
         Command::Status { roots, full } => status(ctx, &mirror, roots, *full),
+        Command::Upgrade {
+            dry_run,
+            skip_records,
+        } => upgrade(ctx, *dry_run, !*skip_records),
         Command::Relayout { dry_run } => {
             let _lock = mirror.lock()?;
             relayout(ctx, &mirror, *dry_run)
@@ -193,6 +210,36 @@ pub async fn run_command(cli: &Cli) -> Result<i32> {
             Ok(1)
         }
     }
+}
+
+/// Moves a home to the layout of `state/`.
+fn upgrade(ctx: &Context, dry_run: bool, records: bool) -> Result<i32, MirrorError> {
+    // No mirror may run while its records move: the lock of the layout it
+    // runs in, and the new one after.
+    let old = Mirror::new(ctx.home.old_records());
+    let _old_lock = old.dir().exists().then(|| old.lock()).transpose()?;
+    let _lock = (!dry_run).then(|| ctx.home.records().lock()).transpose()?;
+    let s = utilake_mirror::upgrade(&ctx.home, &ctx.archive(), dry_run, records, |step| {
+        if ctx.json {
+            render::json_line(&serde_json::json!({"event": "upgrade_step", "step": step}));
+        }
+    })?;
+    if ctx.json {
+        render::json_line(&serde_json::json!({"event": "upgrade_done", "summary": s}));
+    } else {
+        println!(
+            "{}{} records moved, {} listing files written, {} provenance records written again, {} unreadable",
+            if s.dry_run { "dry run: " } else { "" },
+            s.moved,
+            s.listings,
+            s.records,
+            s.unreadable.len()
+        );
+        for p in &s.left {
+            println!("left: {}", p.display());
+        }
+    }
+    Ok(i32::from(!s.unreadable.is_empty()))
 }
 
 /// Moves the archive to one folder per report folder.
@@ -379,7 +426,7 @@ async fn watch(ctx: &Context, mirror: &Mirror, plan: &WatchPlan<'_>) -> Result<i
     let roots = roots(ctx, plan.given)?;
     if !mirror.done_path().exists() {
         return Err(MirrorError::CrawlIncomplete {
-            path: mirror.crawl_dir().display().to_string(),
+            path: mirror.done_path().display().to_string(),
         });
     }
     let folders = mirror
@@ -707,7 +754,7 @@ fn map(ctx: &Context, mirror: &Mirror, given: &[String], jobs: usize) -> Result<
             s.gone_upstream,
             s.versions,
             s.errors,
-            mirror.dir().join("map").display(),
+            mirror.cache_dir().display(),
         );
     }
     Ok(i32::from(s.errors > 0))
@@ -791,7 +838,7 @@ fn compare(ctx: &Context, mirror: &Mirror, delete: bool) -> Result<i32, MirrorEr
             .into_values()
             .filter_map(|p| Some((p.url, p.entries?)))
             .collect();
-    let tmp = mirror.dir().join("tmp");
+    let tmp = mirror.tmp_dir();
     let (mut compared, mut waiting, mut freed, mut spared) = (0usize, 0usize, 0u64, 0u64);
     let mut rows = Vec::new();
     for pair in utilake_mirror::pairs(mirror, &archive, false)? {
@@ -888,7 +935,7 @@ fn summary(
     out: &std::path::Path,
     check: bool,
 ) -> Result<i32, MirrorError> {
-    let text = utilake_mirror::summary(&mirror.dir().join("map/map.ndjson"))?;
+    let text = utilake_mirror::summary(&mirror.cache_dir().join("catalog.ndjson"))?;
     if check {
         if std::fs::read_to_string(out).ok().as_deref() != Some(text.as_str()) {
             return Err(MirrorError::SummaryStale {

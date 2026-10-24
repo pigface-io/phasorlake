@@ -32,6 +32,7 @@ Every error and warning utilake reports carries one of these codes. Codes are st
 | code | raised in |
 |---|---|
 | `listing.month_missing` | `crates/utilake-acquire/src/error.rs` |
+| `listing.ndjson` | `crates/utilake-mirror/src/config.rs` |
 | `listing.no_match` | `crates/utilake-acquire/src/error.rs` |
 | `listing.parse_failed` | `crates/utilake-acquire/src/error.rs` |
 | `listing.unparsed_line` | `crates/utilake-mirror/src/error.rs` |

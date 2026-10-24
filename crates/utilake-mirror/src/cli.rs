@@ -113,7 +113,7 @@ pub enum Command {
         prune: bool,
     },
     /// Write the map of every folder and file, zips opened as folders, to
-    /// map.ndjson and tree.txt under {home}/mirror/map/; offline.
+    /// catalog.ndjson and catalog.txt under {home}/state/cache/; offline.
     Map {
         /// The roots the crawl used, when not the default ones.
         #[arg(long = "root")]
@@ -157,6 +157,18 @@ pub enum Command {
         /// Say what would move, and change nothing.
         #[arg(long)]
         dry_run: bool,
+    },
+    /// Moves a home kept before `state/` to the layout now: the mirror's
+    /// records to their new names, the crawl record into one listing file
+    /// per folder, and every provenance record written again in format 2.
+    /// Reads and writes records only, never a downloaded file; offline.
+    Upgrade {
+        /// Say what would change, and change nothing.
+        #[arg(long)]
+        dry_run: bool,
+        /// Leave the provenance records in the archive as they are.
+        #[arg(long)]
+        skip_records: bool,
     },
     /// Pages read, and files archived out of those listed, per root.
     Status {

@@ -122,7 +122,7 @@ pub struct PeekSummary {
 impl Mirror {
     /// The record of peeked zips.
     pub fn peek_path(&self) -> PathBuf {
-        self.dir().join("peek.ndjson")
+        self.dir().join("peeks.ndjson")
     }
 }
 
@@ -199,7 +199,7 @@ pub async fn peek(
 ) -> Result<PeekSummary, MirrorError> {
     if !mirror.done_path().exists() {
         return Err(MirrorError::CrawlIncomplete {
-            path: mirror.crawl_dir().display().to_string(),
+            path: mirror.done_path().display().to_string(),
         });
     }
     let path = mirror.peek_path();
@@ -525,7 +525,7 @@ mod tests {
 
         // AEMO publishes M.zip again: the crawl lists another size, its
         // listing no longer holds, and it is peeked again.
-        let record = std::fs::read_to_string(mirror.record_path()).unwrap();
+        let record = mirror.record_text();
         let republished = record.replace(
             &format!("\"url\":\"https://h/A/M.zip\",\"kind\":\"file\",\"size\":{m_len}"),
             &format!(
@@ -534,7 +534,7 @@ mod tests {
             ),
         );
         assert_ne!(record, republished);
-        std::fs::write(mirror.record_path(), &republished).unwrap();
+        mirror.set_record_text(&republished);
         assert!(!current(&mirror).unwrap().contains_key("https://h/A/M.zip"));
         let mut again = Vec::new();
         peek(&f, &mirror, false, |z| again.push(z.url.to_owned()))
@@ -566,9 +566,9 @@ mod tests {
         let f = fetcher(&t, home.path());
         let e = peek(&f, &mirror, false, |_| {}).await.unwrap_err();
         assert_eq!(e.diagnostic().code, "mirror.crawl_incomplete");
-        std::fs::create_dir_all(mirror.crawl_dir()).unwrap();
+        std::fs::create_dir_all(mirror.dir()).unwrap();
         std::fs::write(mirror.done_path(), "").unwrap();
-        std::fs::write(mirror.record_path(), "").unwrap();
+        mirror.set_record_text("");
         std::fs::write(mirror.peek_path(), "{\n").unwrap();
         let e = peek(&f, &mirror, false, |_| {}).await.unwrap_err();
         assert_eq!(e.diagnostic().code, "mirror.record_corrupt");

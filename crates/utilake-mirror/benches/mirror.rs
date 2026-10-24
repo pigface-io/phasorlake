@@ -62,8 +62,7 @@ fn day(home: &std::path::Path) -> (Mirror, Archive, u64) {
     let path = archive.path_for(url);
     std::fs::create_dir_all(path.parent().unwrap()).unwrap();
     std::fs::write(&path, &day).unwrap();
-    let mirror = Mirror::new(home.join("mirror"));
-    std::fs::create_dir_all(mirror.crawl_dir()).unwrap();
+    let mirror = Mirror::new(home.join("state"));
     let remote = Remote {
         url: url.into(),
         kind: RemoteKind::File,
@@ -73,11 +72,7 @@ fn day(home: &std::path::Path) -> (Mirror, Archive, u64) {
         listed_on: "https://h/A/".into(),
         crawled_at: None,
     };
-    std::fs::write(
-        mirror.record_path(),
-        serde_json::to_string(&remote).unwrap(),
-    )
-    .unwrap();
+    mirror.write_record([remote]).unwrap();
     std::fs::write(mirror.done_path(), "").unwrap();
     (mirror, archive, day.len() as u64)
 }

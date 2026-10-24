@@ -70,13 +70,14 @@ pub async fn download(
     let (downloads, only) = (options.downloads, options.only);
     if !mirror.done_path().exists() {
         return Err(MirrorError::CrawlIncomplete {
-            path: mirror.crawl_dir().display().to_string(),
+            path: mirror.done_path().display().to_string(),
         });
     }
     let removed = mirror.removed()?;
     let held = mirror.held()?;
     let held_path = mirror.held_path();
-    std::fs::create_dir_all(mirror.dir()).map_err(MirrorError::io(mirror.dir()))?;
+    let cache = mirror.cache_dir();
+    std::fs::create_dir_all(&cache).map_err(MirrorError::io(&cache))?;
     let mut note = std::fs::OpenOptions::new()
         .create(true)
         .append(true)
@@ -108,7 +109,7 @@ pub async fn download(
         .map(|(i, r)| {
             Ok(RemoteFile {
                 url: Url::parse(&r.url).map_err(|e| MirrorError::Record {
-                    path: mirror.record_path().display().to_string(),
+                    path: mirror.listing_path(&r.listed_on).display().to_string(),
                     line: i as u64 + 1,
                     message: format!("{}: {e}", r.url),
                 })?,
@@ -256,7 +257,7 @@ impl Mirror {
     /// line as archived without reading its sidecar, which on a large
     /// archive is most of the time a restart spends before downloading.
     pub fn held_path(&self) -> PathBuf {
-        self.dir().join("held.ndjson")
+        self.cache_dir().join("held.ndjson")
     }
 
     /// Every held file, by URL: its last line, the version found or put
@@ -411,7 +412,7 @@ fn the_same(
     let Some(entries) = listings.get(&pair.zip).and_then(|p| p.entries.as_deref()) else {
         return Ok(false);
     };
-    let cmp = compare(archive, pair, Some(entries), &mirror.dir().join("tmp"))?;
+    let cmp = compare(archive, pair, Some(entries), &mirror.tmp_dir())?;
     if cmp.verdict != Verdict::Same {
         return Ok(false);
     }
@@ -724,13 +725,11 @@ mod tests {
     fn a_bad_url_in_the_record_names_its_line() {
         let home = tempfile::tempdir().unwrap();
         let mirror = Mirror::new(home.path());
-        std::fs::create_dir_all(mirror.crawl_dir()).unwrap();
+        std::fs::create_dir_all(mirror.dir()).unwrap();
         std::fs::write(mirror.done_path(), "").unwrap();
-        std::fs::write(
-            mirror.record_path(),
-            "{\"url\":\"no url\",\"kind\":\"file\",\"modified\":\"m\",\"listed_on\":\"x\"}\n",
-        )
-        .unwrap();
+        mirror.set_record_text(
+            "{\"url\":\"no url\",\"kind\":\"file\",\"modified\":\"m\",\"listed_on\":\"https://h/A/\"}\n",
+        );
         let t = Arc::new(StaticTransport::default());
         let f = fetcher(&t, home.path());
         let rt = tokio::runtime::Builder::new_current_thread()

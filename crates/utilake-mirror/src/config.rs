@@ -1,6 +1,17 @@
 //! The home, the mirror's records under it, and its config file,
-//! `{home}/mirror/config.toml`. Unknown keys are errors, so a typo never
-//! falls back to a default quietly.
+//! `{home}/config.toml`. Unknown keys are errors, so a typo never falls
+//! back to a default quietly.
+//!
+//! ```text
+//! {home}/config.toml               settings
+//! {home}/archive/                  the bytes and their provenance records
+//! {home}/state/                    the mirror's records ([`Mirror`])
+//!   lock, crawl.json, peeks.ndjson, removals.ndjson
+//!   folders/{host}/{folder}/       listing.ndjson, pages/{LISTING}.html, events.ndjson
+//!   migrations/                    relayout.ndjson, upgrade.ndjson
+//!   cache/                         held.ndjson, status.json, catalog.ndjson, catalog.txt
+//!   tmp/
+//! ```
 
 use std::path::{Path, PathBuf};
 use std::time::Duration;
@@ -46,23 +57,29 @@ impl Home {
         self.root.join("archive")
     }
 
-    /// The mirror's own records: crawl, peek, removed duplicates, map.
-    pub fn mirror(&self) -> PathBuf {
+    /// The mirror's own records: crawl, folders, peeks, removals, caches.
+    pub fn state(&self) -> PathBuf {
+        self.root.join("state")
+    }
+
+    /// Where the mirror kept its records before `upgrade`: `{home}/mirror`.
+    pub fn old_records(&self) -> PathBuf {
         self.root.join("mirror")
     }
 
     /// The config file.
     pub fn config_file(&self) -> PathBuf {
-        self.mirror().join("config.toml")
+        self.root.join("config.toml")
     }
 
     /// The mirror's records, as a [`Mirror`].
     pub fn records(&self) -> Mirror {
-        Mirror::new(self.mirror())
+        Mirror::new(self.state())
     }
 }
 
-/// Where the mirror keeps its own files: `{home}/mirror`.
+/// Where the mirror keeps its own records: `{home}/state`. Each file is
+/// named for what it holds; a cache is under `cache/`, safe to delete.
 #[derive(Debug, Clone)]
 pub struct Mirror {
     dir: PathBuf,
@@ -79,37 +96,52 @@ impl Mirror {
         &self.dir
     }
 
-    /// The current crawl.
-    pub fn crawl_dir(&self) -> PathBuf {
-        self.dir.join("crawl")
-    }
-
-    /// The crawl before the current one.
-    pub fn previous_crawl_dir(&self) -> PathBuf {
-        self.dir.join("crawl.prev")
-    }
-
-    /// The listing pages of the current crawl, kept as served, at their
-    /// URL's path.
-    pub fn pages(&self) -> Archive {
-        Archive::new(self.crawl_dir().join("listings"))
-    }
-
-    /// The record of every link of the current crawl.
-    pub fn record_path(&self) -> PathBuf {
-        self.crawl_dir().join("remote.ndjson")
-    }
-
-    /// Written when the current crawl has read every page.
+    /// Written when a crawl has read every page: when it ended.
     pub fn done_path(&self) -> PathBuf {
-        self.crawl_dir().join("done")
+        self.dir.join("crawl.json")
     }
 
-    /// Where the page of a folder URL is kept.
+    /// One folder per local folder of the archive (both listings of a
+    /// report folder in one): its listing, pages and events.
+    pub fn folders(&self) -> Archive {
+        Archive::new(self.dir.join("folders"))
+    }
+
+    /// The folder of the listing URL `folder`.
+    pub fn folder_dir(&self, folder: &str) -> PathBuf {
+        self.folders().path_for(folder)
+    }
+
+    /// What every listing of `folder`'s local folder showed when last
+    /// read: one link a line, each with the listing it was on.
+    pub fn listing_path(&self, folder: &str) -> PathBuf {
+        self.folder_dir(folder).join("listing.ndjson")
+    }
+
+    /// Where the page of a folder URL is kept, as served: under its local
+    /// folder, named for its listing (`pages/CURRENT.html`), or
+    /// `pages/index.html` for a folder with one listing.
     pub fn page_path(&self, folder: &Url) -> PathBuf {
-        let mut path = self.pages().url_path(folder.as_str());
-        path.push("index.html");
-        path
+        let probe = format!("{}_", folder.as_str());
+        let name = utilake_provenance::layout::listing(&probe).unwrap_or_else(|| "index".into());
+        self.folder_dir(folder.as_str())
+            .join("pages")
+            .join(format!("{name}.html"))
+    }
+
+    /// The one-time moves, logged before each is taken.
+    pub fn migrations_dir(&self) -> PathBuf {
+        self.dir.join("migrations")
+    }
+
+    /// What the mirror derives and can derive again: safe to delete.
+    pub fn cache_dir(&self) -> PathBuf {
+        self.dir.join("cache")
+    }
+
+    /// Scratch space.
+    pub fn tmp_dir(&self) -> PathBuf {
+        self.dir.join("tmp")
     }
 }
 
@@ -313,16 +345,31 @@ mod tests {
     fn the_records_live_under_the_home() {
         let h = Home::at("/h");
         let m = h.records();
-        assert_eq!(m.dir(), Path::new("/h/mirror"));
-        assert_eq!(m.crawl_dir(), Path::new("/h/mirror/crawl"));
-        assert_eq!(m.previous_crawl_dir(), Path::new("/h/mirror/crawl.prev"));
-        assert_eq!(m.record_path(), Path::new("/h/mirror/crawl/remote.ndjson"));
-        assert_eq!(m.done_path(), Path::new("/h/mirror/crawl/done"));
-        assert!(
-            m.page_path(&Url::parse("https://www.nemweb.com.au/Reports/ARCHIVE/").unwrap())
-                .ends_with("listings/www.nemweb.com.au/Reports/ARCHIVE/index.html")
+        assert_eq!(m.dir(), Path::new("/h/state"));
+        assert_eq!(h.old_records(), Path::new("/h/mirror"));
+        assert_eq!(m.done_path(), Path::new("/h/state/crawl.json"));
+        assert_eq!(m.migrations_dir(), Path::new("/h/state/migrations"));
+        assert_eq!(m.cache_dir(), Path::new("/h/state/cache"));
+        assert_eq!(m.tmp_dir(), Path::new("/h/state/tmp"));
+        let page = |u: &str| m.page_path(&Url::parse(u).unwrap());
+        assert_eq!(
+            page("https://www.nemweb.com.au/Reports/CURRENT/Dispatch_SCADA/"),
+            Path::new(
+                "/h/state/folders/www.nemweb.com.au/Reports/Dispatch_SCADA/pages/CURRENT.html"
+            )
         );
-        assert_eq!(m.pages().root(), Path::new("/h/mirror/crawl/listings"));
+        assert_eq!(
+            page("https://www.nemweb.com.au/Reports/ARCHIVE/"),
+            Path::new("/h/state/folders/www.nemweb.com.au/Reports/ARCHIVE/pages/ARCHIVE.html")
+        );
+        assert_eq!(
+            page("https://www.nemweb.com.au/Data_Archive/"),
+            Path::new("/h/state/folders/www.nemweb.com.au/Data_Archive/pages/index.html")
+        );
+        assert_eq!(
+            m.listing_path("https://www.nemweb.com.au/Reports/ARCHIVE/Dispatch_SCADA/"),
+            Path::new("/h/state/folders/www.nemweb.com.au/Reports/Dispatch_SCADA/listing.ndjson")
+        );
     }
 
     #[test]
@@ -332,7 +379,7 @@ mod tests {
         assert!(Home::resolve(None, None).is_none());
         let h = Home::resolve(Some(Path::new("/m")), None).unwrap();
         assert_eq!(h.archive(), Path::new("/m/archive"));
-        assert_eq!(h.config_file(), Path::new("/m/mirror/config.toml"));
+        assert_eq!(h.config_file(), Path::new("/m/config.toml"));
 
         let dir = tempfile::tempdir().unwrap();
         let p = dir.path().join("config.toml");

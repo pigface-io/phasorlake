@@ -1,5 +1,6 @@
-//! Reading every listing page under the roots into one record of every
-//! folder and file.
+//! Reading every listing page under the roots into the record of every
+//! folder and file: each local folder's `listing.ndjson`, its pages kept
+//! beside it.
 //!
 //! The crawl follows every folder link under a root and records every file
 //! link, with no filter of names, extensions or known folders. Each page is
@@ -10,7 +11,7 @@ use std::collections::{BTreeMap, HashSet, VecDeque};
 use std::io::Write as _;
 use std::path::{Path, PathBuf};
 
-use crate::net::{Archive, Fetchers};
+use crate::net::Fetchers;
 use serde::{Deserialize, Serialize};
 use url::Url;
 
@@ -40,91 +41,153 @@ pub fn root(s: &str) -> Result<Url, MirrorError> {
 }
 
 impl Mirror {
-    /// The current crawl record: the crawl's, with each folder a watch has
-    /// read since in place of what the crawl read of it, and all under
-    /// each folder gone from nemweb since out of it.
+    /// What every listing showed when last read: each local folder's
+    /// `listing.ndjson`, in URL order.
     pub fn record(&self) -> Result<Vec<Remote>, MirrorError> {
-        let mut record: BTreeMap<String, Remote> = read_record(&self.record_path())?
-            .into_iter()
-            .map(|r| (r.url.clone(), r))
-            .collect();
-        let mut stack = vec![self.crawl_dir().join("folders")];
-        let (mut listings, mut gone) = (Vec::new(), Vec::new());
+        let mut record = Vec::new();
+        for path in listings_under(self.folders().root()) {
+            record.extend(read_record(&path)?);
+        }
+        record.sort_by(|a, b| a.url.cmp(&b.url));
+        Ok(record)
+    }
+
+    /// Records `links` as what the listing `folder` shows now, in place of
+    /// what it showed before. The other listing of its local folder keeps
+    /// its lines.
+    pub fn put_folder(&self, folder: &str, links: Vec<Remote>) -> Result<(), MirrorError> {
+        let path = self.listing_path(folder);
+        let mut lines = read_listing(&path)?;
+        lines.retain(|r| r.listed_on != folder);
+        lines.extend(links);
+        write_listing(&path, lines)
+    }
+
+    /// Records `folder` gone from nemweb, with all under it: its lines and
+    /// those of every folder under it leave their listings. The folder's
+    /// own link, on the page above it, stays.
+    pub fn folder_gone(&self, folder: &str) -> Result<(), MirrorError> {
+        for path in listings_under(&self.folder_dir(folder)) {
+            let mut lines = read_listing(&path)?;
+            lines.retain(|r| !r.listed_on.starts_with(folder));
+            write_listing(&path, lines)?;
+        }
+        Ok(())
+    }
+
+    /// Writes `record` as the listings it came from, one file per local
+    /// folder, each replacing what was there.
+    pub fn write_record(
+        &self,
+        record: impl IntoIterator<Item = Remote>,
+    ) -> Result<(), MirrorError> {
+        let mut by_file: BTreeMap<PathBuf, Vec<Remote>> = BTreeMap::new();
+        for r in record {
+            by_file
+                .entry(self.listing_path(&r.listed_on))
+                .or_default()
+                .push(r);
+        }
+        for (path, lines) in by_file {
+            write_listing(&path, lines)?;
+        }
+        Ok(())
+    }
+
+    /// Forgets every listing and page a crawl read, so the next crawl reads
+    /// every page again. The folders' events stay.
+    pub fn forget_crawl(&self) -> Result<(), MirrorError> {
+        let done = self.done_path();
+        if done.exists() {
+            std::fs::remove_file(&done).map_err(MirrorError::io(&done))?;
+        }
+        let mut stack = vec![self.folders().root().to_path_buf()];
         while let Some(dir) = stack.pop() {
-            let Ok(entries) = std::fs::read_dir(&dir) else {
-                continue;
-            };
-            for path in entries.flatten().map(|e| e.path()) {
-                match path.file_name().and_then(|n| n.to_str()) {
-                    Some(FOLDER_LISTING) => listings.push(path),
-                    Some(FOLDER_GONE) => gone.push(path),
-                    _ => stack.push(path),
+            for e in std::fs::read_dir(&dir).into_iter().flatten().flatten() {
+                let path = e.path();
+                let name = e.file_name();
+                if name == "pages" {
+                    std::fs::remove_dir_all(&path).map_err(MirrorError::io(&path))?;
+                } else if e.file_type().is_ok_and(|t| t.is_dir()) {
+                    stack.push(path);
+                } else if name == LISTING {
+                    std::fs::remove_file(&path).map_err(MirrorError::io(&path))?;
                 }
             }
         }
-        for path in gone {
-            let url = std::fs::read_to_string(&path).map_err(MirrorError::io(&path))?;
-            record.retain(|u, _| u == &url || !u.starts_with(url.as_str()));
-        }
-        for path in listings {
-            let text = std::fs::read_to_string(&path).map_err(MirrorError::io(&path))?;
-            let read: FolderRead =
-                serde_json::from_str(&text).map_err(|e| MirrorError::Record {
-                    path: path.display().to_string(),
-                    line: 1,
-                    message: e.to_string(),
-                })?;
-            record.retain(|_, r| r.listed_on != read.folder);
-            record.extend(read.links.into_iter().map(|r| (r.url.clone(), r.derived())));
-        }
-        Ok(record.into_values().collect())
-    }
-
-    /// Where a watch keeps what it read of a folder since the crawl: at
-    /// the folder URL's path, listing and all, since each listing is a
-    /// record of its own.
-    fn folder_dir(&self, folder: &str) -> PathBuf {
-        Archive::new(self.crawl_dir().join("folders")).url_path(folder)
-    }
-
-    /// Records `links` as what `folder` lists now, in place of what the
-    /// crawl read of it.
-    pub fn put_folder(&self, folder: &str, links: Vec<Remote>) -> Result<(), MirrorError> {
-        let dir = self.folder_dir(folder);
-        let gone = dir.join(FOLDER_GONE);
-        if gone.exists() {
-            std::fs::remove_file(&gone).map_err(MirrorError::io(&gone))?;
-        }
-        let read = FolderRead {
-            folder: folder.to_owned(),
-            links,
-        };
-        let text = serde_json::to_vec(&read).expect("a folder read always serialises");
-        write_atomic(&dir.join(FOLDER_LISTING), &text)
-    }
-
-    /// Records `folder` gone from nemweb, with all under it.
-    pub fn folder_gone(&self, folder: &str) -> Result<(), MirrorError> {
-        let dir = self.folder_dir(folder);
-        if dir.exists() {
-            std::fs::remove_dir_all(&dir).map_err(MirrorError::io(&dir))?;
-        }
-        write_atomic(&dir.join(FOLDER_GONE), folder.as_bytes())
+        Ok(())
     }
 }
 
-/// The file of a folder a watch read since the crawl: [`FolderRead`].
-const FOLDER_LISTING: &str = "listing.json";
-/// The file of a folder gone from nemweb since the crawl: its URL.
-const FOLDER_GONE: &str = "gone";
+#[cfg(test)]
+impl Mirror {
+    /// Writes the record an NDJSON text of links gives, as a test sets one
+    /// up. A line that does not read is the panic.
+    pub fn set_record_text(&self, text: impl AsRef<str>) {
+        let lines: Vec<Remote> = text
+            .as_ref()
+            .lines()
+            .filter(|l| !l.is_empty())
+            .map(|l| serde_json::from_str::<Remote>(l).expect("a test's record line"))
+            .collect();
+        std::fs::create_dir_all(self.folders().root()).expect("the folders");
+        self.write_record(lines).expect("the record written");
+    }
 
-/// What a watch read of one folder.
-#[derive(Debug, Clone, Serialize, Deserialize)]
-struct FolderRead {
-    /// The folder.
-    folder: String,
-    /// Every link its page lists.
-    links: Vec<Remote>,
+    /// The record as NDJSON, one link a line in URL order.
+    pub fn record_text(&self) -> String {
+        self.record()
+            .expect("the record reads")
+            .iter()
+            .map(|r| serde_json::to_string(r).expect("a Remote serialises") + "\n")
+            .collect()
+    }
+}
+
+/// A local folder's record of what its listings show.
+const LISTING: &str = "listing.ndjson";
+
+/// Every listing file under `dir`, at any depth; none when `dir` is not
+/// there.
+fn listings_under(dir: &Path) -> Vec<PathBuf> {
+    let mut out = Vec::new();
+    let mut stack = vec![dir.to_path_buf()];
+    while let Some(d) = stack.pop() {
+        for e in std::fs::read_dir(&d).into_iter().flatten().flatten() {
+            if e.file_type().is_ok_and(|t| t.is_dir()) {
+                stack.push(e.path());
+            } else if e.file_name() == LISTING {
+                out.push(e.path());
+            }
+        }
+    }
+    out
+}
+
+/// The lines of the listing file at `path`; none when there is none.
+fn read_listing(path: &Path) -> Result<Vec<Remote>, MirrorError> {
+    match std::fs::metadata(path) {
+        Ok(_) => read_record(path),
+        Err(_) => Ok(Vec::new()),
+    }
+}
+
+/// Writes `lines` as the listing file at `path`, in URL order; an empty
+/// listing removes the file.
+fn write_listing(path: &Path, mut lines: Vec<Remote>) -> Result<(), MirrorError> {
+    if lines.is_empty() {
+        return match std::fs::remove_file(path) {
+            Err(e) if e.kind() != std::io::ErrorKind::NotFound => Err(MirrorError::io(path)(e)),
+            _ => Ok(()),
+        };
+    }
+    lines.sort_by(|a, b| a.url.cmp(&b.url));
+    let mut out = Vec::with_capacity(lines.len() * 256);
+    for r in &lines {
+        serde_json::to_writer(&mut out, r).expect("a Remote always serialises");
+        out.push(b'\n');
+    }
+    write_atomic(path, &out)
 }
 
 /// What a recorded link is.
@@ -220,13 +283,8 @@ pub async fn crawl(
     fresh: bool,
     mut on_page: impl FnMut(&PageRead<'_>),
 ) -> Result<CrawlSummary, MirrorError> {
-    let crawl_dir = mirror.crawl_dir();
-    if fresh && crawl_dir.exists() {
-        let prev = mirror.previous_crawl_dir();
-        if prev.exists() {
-            std::fs::remove_dir_all(&prev).map_err(MirrorError::io(&prev))?;
-        }
-        std::fs::rename(&crawl_dir, &prev).map_err(MirrorError::io(&crawl_dir))?;
+    if fresh {
+        mirror.forget_crawl()?;
     }
     if mirror.done_path().exists() {
         let mut summary = summarise(&mirror.record()?);
@@ -273,9 +331,10 @@ pub async fn crawl(
             queued: queue.len(),
         });
     }
-    write_record(&mirror.record_path(), record.values())?;
-    write_atomic(&mirror.done_path(), b"")?;
-    let found = summarise(&record.into_values().collect::<Vec<_>>());
+    let found = summarise(&record.values().cloned().collect::<Vec<_>>());
+    mirror.write_record(record.into_values())?;
+    let done = serde_json::json!({ "completed_at": Stamp::now(), "pages": summary.pages });
+    write_atomic(&mirror.done_path(), done.to_string().as_bytes())?;
     Ok(CrawlSummary {
         pages: summary.pages,
         pages_fetched: summary.pages_fetched,
@@ -384,18 +443,6 @@ pub fn read_record(path: &Path) -> Result<Vec<Remote>, MirrorError> {
         .collect()
 }
 
-pub(crate) fn write_record<'r>(
-    path: &Path,
-    record: impl Iterator<Item = &'r Remote>,
-) -> Result<(), MirrorError> {
-    let mut out = Vec::with_capacity(1 << 20);
-    for r in record {
-        serde_json::to_writer(&mut out, r).expect("a Remote always serialises");
-        out.push(b'\n');
-    }
-    write_atomic(path, &out)
-}
-
 /// Writes `bytes` beside `path` and renames it into place, so a cut-off
 /// write never leaves a partial file under the final name.
 pub(crate) fn write_atomic(path: &Path, bytes: &[u8]) -> Result<(), MirrorError> {
@@ -406,12 +453,24 @@ pub(crate) fn write_atomic(path: &Path, bytes: &[u8]) -> Result<(), MirrorError>
     let part = PathBuf::from(part);
     let mut f = std::fs::File::create(&part).map_err(MirrorError::io(&part))?;
     f.write_all(bytes).map_err(MirrorError::io(&part))?;
-    f.sync_all().map_err(MirrorError::io(&part))?;
+    crate::net::archive::to_disk(&f).map_err(MirrorError::io(&part))?;
     std::fs::rename(&part, path).map_err(MirrorError::io(path))
 }
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn an_empty_mirror_lists_nothing_and_an_empty_listing_goes() {
+        let home = tempfile::tempdir().unwrap();
+        let mirror = Mirror::new(home.path());
+        assert!(mirror.record().unwrap().is_empty());
+        mirror.folder_gone("https://h/none/").unwrap();
+        let dir = home.path().join("listing.ndjson");
+        std::fs::create_dir_all(dir.join("x")).unwrap();
+        assert!(super::write_listing(&dir, Vec::new()).is_err());
+        super::write_listing(&home.path().join("none.ndjson"), Vec::new()).unwrap();
+    }
+
     use std::sync::Arc;
     use std::time::Duration;
 
@@ -529,13 +588,11 @@ mod tests {
             record[4].modified_at.unwrap().to_string(),
             "2026-10-12T10:45:00+10:00"
         );
-        crate::stamp::check::assert_aware_lines(
-            &std::fs::read_to_string(mirror.record_path()).unwrap(),
-        );
+        crate::stamp::check::assert_aware_lines(&mirror.record_text());
         assert!(
             mirror
                 .page_path(&roots()[0])
-                .ends_with("listings/h/A/index.html")
+                .ends_with("folders/h/A/pages/index.html")
         );
         assert!(mirror.done_path().exists());
 
@@ -545,10 +602,17 @@ mod tests {
         assert_eq!((again.files, again.pages), (2, 0));
         assert_eq!(t.request_count(), 3);
 
-        // Fresh: the crawl moves aside and every page is asked again.
+        // Fresh: the crawl's pages are forgotten and every page is asked
+        // again; a folder's events stay.
+        mirror
+            .note(
+                "https://h/A/",
+                &crate::journal::Event::now("https://h/A/x", crate::journal::Change::Same),
+            )
+            .unwrap();
         let fresh = crawl(&f, &mirror, &roots(), true, |_| {}).await.unwrap();
         assert_eq!(fresh.pages_fetched, 3);
-        assert!(mirror.previous_crawl_dir().join("done").exists());
+        assert_eq!(mirror.journal("https://h/A/").unwrap().len(), 1);
         let fresh = crawl(&f, &mirror, &roots(), true, |_| {}).await.unwrap();
         assert_eq!(fresh.pages_fetched, 3);
         assert_eq!(t.request_count(), 9);
@@ -694,7 +758,7 @@ mod tests {
             link("https://h/A/d/", RemoteKind::Dir, "https://h/A/"),
             link("https://h/A/d/e.csv", RemoteKind::File, "https://h/A/d/"),
         ];
-        write_record(&mirror.record_path(), crawled.iter()).unwrap();
+        mirror.write_record(crawled.clone()).unwrap();
         let urls = |m: &Mirror| {
             m.record()
                 .unwrap()
@@ -741,17 +805,11 @@ mod tests {
             .unwrap();
         assert!(urls(&mirror).contains(&"https://h/A/b/f.csv".to_owned()));
         // A listing that does not read stops the record.
-        let bad = home.path().join("crawl/folders/h/A/d");
-        std::fs::create_dir_all(&bad).unwrap();
-        std::fs::write(bad.join("listing.json"), "{").unwrap();
+        let bad = mirror.listing_path("https://h/A/d/");
+        std::fs::write(&bad, "{").unwrap();
         let e = mirror.record().unwrap_err();
-        assert!(e.to_string().contains("listing.json"), "{e}");
-        std::fs::remove_file(bad.join("listing.json")).unwrap();
-        std::fs::create_dir(bad.join("listing.json")).unwrap();
-        assert!(mirror.record().is_err());
-        std::fs::remove_dir(bad.join("listing.json")).unwrap();
-        std::fs::create_dir(bad.join("gone")).unwrap();
-        assert!(mirror.record().is_err());
+        assert!(e.to_string().contains("listing.ndjson"), "{e}");
+        std::fs::remove_file(&bad).unwrap();
     }
 
     #[test]

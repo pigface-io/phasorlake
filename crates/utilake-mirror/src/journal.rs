@@ -16,7 +16,6 @@ use serde::{Deserialize, Serialize};
 
 use crate::crawl::Mirror;
 use crate::error::MirrorError;
-use crate::net::Archive;
 use crate::stamp::Stamp;
 
 /// What became of a file.
@@ -72,12 +71,10 @@ impl Event {
 }
 
 impl Mirror {
-    /// The journal of the folder `folder` (a URL ending in `/`), at its
-    /// URL's path under `{home}/mirror/journal/`.
+    /// The journal of the folder `folder` (a URL ending in `/`): its local
+    /// folder's `events.ndjson`, both listings of a report folder in one.
     pub fn journal_path(&self, folder: &str) -> PathBuf {
-        Archive::new(self.dir().join("journal"))
-            .path_for(folder)
-            .join("changes.ndjson")
+        self.folder_dir(folder).join("events.ndjson")
     }
 
     /// Appends `event` to the journal of `folder`.
@@ -137,7 +134,7 @@ mod tests {
         let path = mirror.journal_path(folder);
         assert_eq!(
             path,
-            home.path().join("mirror/journal/h/R/C/G/changes.ndjson")
+            home.path().join("mirror/folders/h/R/C/G/events.ndjson")
         );
         let mut text = std::fs::read_to_string(&path).unwrap();
         crate::stamp::check::assert_aware_lines(&text);

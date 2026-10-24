@@ -3,7 +3,7 @@
 //! (zips within zips too) every folder and file, as one tree.
 //!
 //! The map is built offline from the crawl record and the archive. It is
-//! written twice: `map/map.ndjson`, one node per line, and `map/tree.txt`,
+//! written twice: `cache/catalog.ndjson`, one node per line, and `cache/catalog.txt`,
 //! the same nodes indented as a tree. Both are in tree order (a folder
 //! before what it holds, names in byte order), so two maps of the same
 //! archive are the same bytes.
@@ -244,17 +244,17 @@ pub fn map(
 ) -> Result<MapSummary, MirrorError> {
     if !mirror.done_path().exists() {
         return Err(MirrorError::CrawlIncomplete {
-            path: mirror.crawl_dir().display().to_string(),
+            path: mirror.done_path().display().to_string(),
         });
     }
     let tops = tops(mirror, archive, roots)?;
-    let dir = mirror.dir().join("map");
-    let tmp = mirror.dir().join("tmp");
+    let dir = mirror.cache_dir();
+    let tmp = mirror.tmp_dir();
     for d in [&dir, &tmp] {
         std::fs::create_dir_all(d).map_err(MirrorError::io(d))?;
     }
-    let ndjson_path = dir.join("map.ndjson");
-    let tree_path = dir.join("tree.txt");
+    let ndjson_path = dir.join("catalog.ndjson");
+    let tree_path = dir.join("catalog.txt");
     let header = serde_json::json!({
         "catalog_format": CATALOG_FORMAT,
         "roots": roots.iter().map(Url::as_str).collect::<Vec<_>>(),
@@ -964,10 +964,10 @@ impl Output {
         self.line.push(b'\n');
         self.ndjson
             .write_all(&self.line)
-            .map_err(|e| MirrorError::io(Path::new("map.ndjson"))(e))?;
+            .map_err(|e| MirrorError::io(Path::new("catalog.ndjson"))(e))?;
         self.tree
             .write_all(tree_line(node).as_bytes())
-            .map_err(|e| MirrorError::io(Path::new("tree.txt"))(e))
+            .map_err(|e| MirrorError::io(Path::new("catalog.txt"))(e))
     }
 
     fn finish(self, ndjson: &Path, tree: &Path) -> Result<MapSummary, MirrorError> {
@@ -1192,12 +1192,12 @@ mod tests {
             .unwrap(),
         )
         .unwrap();
-        std::fs::create_dir_all(mirror.crawl_dir()).unwrap();
+        std::fs::create_dir_all(mirror.dir()).unwrap();
         let lines: String = record
             .iter()
             .map(|r| serde_json::to_string(r).unwrap() + "\n")
             .collect();
-        std::fs::write(mirror.record_path(), lines).unwrap();
+        mirror.set_record_text(lines);
         std::fs::write(mirror.done_path(), "").unwrap();
         Fixture {
             _home: home,
@@ -1211,7 +1211,7 @@ mod tests {
     fn maps_every_file_and_every_zip_as_a_folder() {
         let f = fixture();
         let s = map(&f.mirror, &f.archive, &f.roots, 3, &Offsets::default()).unwrap();
-        let tree = std::fs::read_to_string(f.mirror.dir().join("map/tree.txt")).unwrap();
+        let tree = std::fs::read_to_string(f.mirror.cache_dir().join("catalog.txt")).unwrap();
         let expected = "\
 h/
   A/
@@ -1253,7 +1253,7 @@ h/
         assert_eq!(s.versions, 1);
         assert_eq!(s.zips, 6 + MAX_DEPTH);
 
-        let ndjson = std::fs::read_to_string(f.mirror.dir().join("map/map.ndjson")).unwrap();
+        let ndjson = std::fs::read_to_string(f.mirror.cache_dir().join("catalog.ndjson")).unwrap();
         let x = ndjson.lines().find(|l| l.contains("x.csv")).unwrap();
         let x: serde_json::Value = serde_json::from_str(x).unwrap();
         assert_eq!(x["file"], "h/A/a.zip");
@@ -1288,11 +1288,11 @@ h/
         // The same archive maps to the same bytes, on any number of threads.
         map(&f.mirror, &f.archive, &f.roots, 1, &Offsets::default()).unwrap();
         assert_eq!(
-            std::fs::read_to_string(f.mirror.dir().join("map/tree.txt")).unwrap(),
+            std::fs::read_to_string(f.mirror.cache_dir().join("catalog.txt")).unwrap(),
             tree
         );
         assert_eq!(
-            std::fs::read_to_string(f.mirror.dir().join("map/map.ndjson")).unwrap(),
+            std::fs::read_to_string(f.mirror.cache_dir().join("catalog.ndjson")).unwrap(),
             ndjson
         );
     }
@@ -1341,16 +1341,16 @@ h/
             file(format!("{cur}n.txt"), 1),
             file(format!("{arc}n.txt"), 1),
         ];
-        std::fs::create_dir_all(mirror.crawl_dir()).unwrap();
+        std::fs::create_dir_all(mirror.dir()).unwrap();
         let lines: String = record
             .iter()
             .map(|r| serde_json::to_string(r).unwrap() + "\n")
             .collect();
-        std::fs::write(mirror.record_path(), lines).unwrap();
+        mirror.set_record_text(lines);
         std::fs::write(mirror.done_path(), "").unwrap();
         let roots = [root("https://www.nemweb.com.au/Reports/").unwrap()];
         map(&mirror, &archive, &roots, 1, &Offsets::default()).unwrap();
-        let ndjson = std::fs::read_to_string(mirror.dir().join("map/map.ndjson")).unwrap();
+        let ndjson = std::fs::read_to_string(mirror.cache_dir().join("catalog.ndjson")).unwrap();
         let nodes: Vec<serde_json::Value> = ndjson
             .lines()
             .skip(1)
@@ -1561,12 +1561,12 @@ h/
             .collect();
         std::fs::write(f.mirror.peek_path(), lines).unwrap();
         map(&f.mirror, &f.archive, &f.roots, 1, &Offsets::default()).unwrap();
-        let ndjson = std::fs::read_to_string(f.mirror.dir().join("map/map.ndjson")).unwrap();
+        let ndjson = std::fs::read_to_string(f.mirror.cache_dir().join("catalog.ndjson")).unwrap();
         assert_eq!(
             ndjson.lines().next().unwrap(),
             r#"{"catalog_format":3,"roots":["https://h/A/"]}"#
         );
-        let tree = std::fs::read_to_string(f.mirror.dir().join("map/tree.txt")).unwrap();
+        let tree = std::fs::read_to_string(f.mirror.cache_dir().join("catalog.txt")).unwrap();
         let expected = "    missing.zip/ (zip, 7 B) [not downloaded]
       in/
         a.csv  10 B (4 B packed)
@@ -1589,7 +1589,7 @@ h/
         assert_eq!(in_a["modified"], "2026-10-01 12:00:00");
         assert_eq!(in_a["modified_at"], "2026-10-01T12:00:00+10:00");
         crate::stamp::check::assert_aware_lines(&ndjson);
-        let md = crate::summary(&f.mirror.dir().join("map/map.ndjson")).unwrap();
+        let md = crate::summary(&f.mirror.cache_dir().join("catalog.ndjson")).unwrap();
         assert!(md.contains("b.ZIP/ (zip)"), "{md}");
 
         // A listing that is damaged marks the zip; one of a file that is not
@@ -1618,7 +1618,7 @@ h/
             )
             .unwrap();
             map(&f.mirror, &f.archive, &f.roots, 1, &Offsets::default()).unwrap();
-            let tree = std::fs::read_to_string(f.mirror.dir().join("map/tree.txt")).unwrap();
+            let tree = std::fs::read_to_string(f.mirror.cache_dir().join("catalog.txt")).unwrap();
             assert!(tree.contains(line), "{tree}");
         }
     }
@@ -1768,7 +1768,7 @@ h/
         r.content.crc32 = Some(9);
         Archive::write(&path, &r).unwrap();
         map(&f.mirror, &f.archive, &f.roots, 1, &Offsets::default()).unwrap();
-        let ndjson = std::fs::read_to_string(f.mirror.dir().join("map/map.ndjson")).unwrap();
+        let ndjson = std::fs::read_to_string(f.mirror.cache_dir().join("catalog.ndjson")).unwrap();
         let b = ndjson
             .lines()
             .find(|l| l.contains("\"h/A/b.txt\""))

@@ -79,6 +79,14 @@ pub enum MirrorError {
         /// The zip's URL.
         url: String,
     },
+    /// The home keeps its records in the layout before `state/`.
+    #[error(
+        "The mirror's records are at {path}, the layout before `state/`: run `utilake-mirror upgrade` first."
+    )]
+    OldLayout {
+        /// The old records' folder.
+        path: String,
+    },
     /// A root is not a folder URL.
     #[error("The root {url} is not a folder: a root is an http(s) URL ending in `/`.")]
     Root {
@@ -137,6 +145,10 @@ impl Diagnose for MirrorError {
             }
             Self::NotSame { url } => {
                 Diagnostic::error("mirror.not_same", Category::Mirror, msg).with_url(url.clone())
+            }
+            Self::OldLayout { path } => {
+                Diagnostic::error("mirror.old_layout", Category::Mirror, msg)
+                    .with_file(path.clone())
             }
             Self::Root { url } => {
                 Diagnostic::error("config.mirror_root", Category::Config, msg).with_url(url.clone())

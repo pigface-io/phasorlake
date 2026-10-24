@@ -81,7 +81,7 @@ pub struct RelayoutSummary {
 impl Mirror {
     /// The log of relayout steps.
     pub fn relayout_path(&self) -> PathBuf {
-        self.dir().join("relayout.ndjson")
+        self.migrations_dir().join("relayout.ndjson")
     }
 }
 
@@ -273,7 +273,8 @@ fn plan(
 /// Appends `step` to the log and hands it to the disk.
 fn log(mirror: &Mirror, step: &Step) -> Result<(), MirrorError> {
     let path = mirror.relayout_path();
-    std::fs::create_dir_all(mirror.dir()).map_err(MirrorError::io(mirror.dir()))?;
+    let dir = mirror.migrations_dir();
+    std::fs::create_dir_all(&dir).map_err(MirrorError::io(&dir))?;
     let mut line = serde_json::to_vec(step).expect("a Step always serialises");
     line.push(b'\n');
     let mut f = std::fs::OpenOptions::new()
@@ -365,8 +366,8 @@ fn finish_last(mirror: &Mirror) -> Result<(), MirrorError> {
     drop_records(&step.from)
 }
 
-/// Merges each journal kept under a listing into its folder's journal,
-/// lines in time order. How many journals were (or would be) merged.
+/// Merges each journal kept under a listing (`journal/`, before `state/`)
+/// into its folder's events, lines in time order. How many journals were (or would be) merged.
 fn merge_journals(mirror: &Mirror, dry_run: bool) -> Result<usize, MirrorError> {
     let journals = Archive::new(mirror.dir().join("journal"));
     let (_, stale) = stale_dirs(&journals);
@@ -380,7 +381,7 @@ fn merge_journals(mirror: &Mirror, dry_run: bool) -> Result<usize, MirrorError> 
             .strip_prefix(journals.root())
             .expect("a journal is under the journals");
         let url = format!("https://{}/", rel.to_string_lossy());
-        let new = journals.path_for(&url).join("changes.ndjson");
+        let new = mirror.journal_path(&url);
         n += 1;
         if dry_run {
             continue;
@@ -400,7 +401,8 @@ fn merge_journals(mirror: &Mirror, dry_run: bool) -> Result<usize, MirrorError> 
             serde_json::from_str::<serde_json::Value>(l)
                 .ok()
                 .and_then(|v| {
-                    v.get("seen_at")?
+                    v.get("at")
+                        .or_else(|| v.get("seen_at"))?
                         .as_str()
                         .and_then(|s| Stamp::parse(s).ok())
                 })
@@ -539,7 +541,7 @@ mod tests {
         let held = format!(
             "{{\"url\":\"{CUR}m.zip\",\"size\":7}}\n{{\"url\":\"{CUR}a.csv\",\"size\":1}}\nnot json\n"
         );
-        std::fs::create_dir_all(mirror.dir()).unwrap();
+        std::fs::create_dir_all(mirror.cache_dir()).unwrap();
         std::fs::write(mirror.held_path(), &held).unwrap();
 
         let mut steps = Vec::new();
@@ -627,7 +629,7 @@ mod tests {
         let archive = Archive::new(home.path().join("archive"));
         // No log yet; a log without a step.
         relayout(&mirror, &archive, false, |_| {}).unwrap();
-        std::fs::create_dir_all(mirror.dir()).unwrap();
+        std::fs::create_dir_all(mirror.migrations_dir()).unwrap();
         std::fs::write(mirror.relayout_path(), "\n").unwrap();
         relayout(&mirror, &archive, false, |_| {}).unwrap();
         // A move cut off after the file, before its sidecar.
