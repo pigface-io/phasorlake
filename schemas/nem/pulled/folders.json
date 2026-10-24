@@ -3142,8 +3142,8 @@
       "blocks": [
         {
           "first-release": "2025-08",
-          "last-release": "2026-07",
-          "months": 3,
+          "last-release": "2026-10",
+          "months": 4,
           "report": [
             "DISPATCH",
             "UNIT_SCADA"
@@ -4494,6 +4494,24 @@
     {
       "blocks": [
         {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "OPERATIONAL_DEMAND",
+            "FORECAST"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Operational_Demand/FORECAST_HH/DUPLICATE",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
           "first-release": "2026-08",
           "last-release": "2026-10",
           "months": 3,
@@ -4595,8 +4613,8 @@
       "blocks": [
         {
           "first-release": "2026-03",
-          "last-release": "2026-06",
-          "months": 2,
+          "last-release": "2026-10",
+          "months": 3,
           "report": [
             "P5MIN",
             "FCAS_REQ_CONSTRAINT"
@@ -4605,8 +4623,8 @@
         },
         {
           "first-release": "2026-03",
-          "last-release": "2026-06",
-          "months": 2,
+          "last-release": "2026-10",
+          "months": 3,
           "report": [
             "P5MIN",
             "FCAS_REQ_RUN"
@@ -5618,8 +5636,8 @@
         },
         {
           "first-release": "2026-02",
-          "last-release": "2026-08",
-          "months": 6,
+          "last-release": "2026-10",
+          "months": 7,
           "report": [
             "SETTLEMENTS",
             "FCAS_CLAWBACK_REQ"
@@ -5628,8 +5646,8 @@
         },
         {
           "first-release": "2026-02",
-          "last-release": "2026-08",
-          "months": 6,
+          "last-release": "2026-10",
+          "months": 7,
           "report": [
             "SETTLEMENTS",
             "FCAS_CLAWBACK_RUN_TRK"

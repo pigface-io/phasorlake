@@ -1530,7 +1530,7 @@
       "snapshot-id": 6485150853299132183,
       "summary": {
         "operation": "append",
-        "utilake.files": "2789",
+        "utilake.files": "2912",
         "utilake.from.file": "PUBLIC_PREDISPATCH_SENSITIVITIES_20260826_20260901.zip",
         "utilake.from.release": "2026-09",
         "utilake.from.sha256": "d19270c0c82e4aff3923993f7d21a30f59df2283c326c4720aea38910cc0c270",
@@ -1538,12 +1538,12 @@
         "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
         "utilake.report-subtype": "PRICESENSITIVITIES",
         "utilake.report-type": "PREDISPATCH",
-        "utilake.rows": "774070",
-        "utilake.to.file": "PUBLIC_PREDISPATCH_SENSITIVITIES_20261021220759_0000000544124404.zip",
+        "utilake.rows": "806920",
+        "utilake.to.file": "PUBLIC_PREDISPATCH_SENSITIVITIES_20261024113423_0000000544594813.zip",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "f414572f3fbb564da01ba327f2eee9e9e040e001f183750de97349fc2d4e4b6c",
-        "utilake.to.time": "2026-10-23T04:00:00+10:00",
-        "utilake.total-rows": "6750265",
+        "utilake.to.sha256": "7e70f874f03bd010270631d3bc235085bb030156f733ebbe31f5ff859993af2b",
+        "utilake.to.time": "2026-10-25T04:00:00+10:00",
+        "utilake.total-rows": "6783115",
         "utilake.version": "1"
       },
       "timestamp-ms": 1788184800023

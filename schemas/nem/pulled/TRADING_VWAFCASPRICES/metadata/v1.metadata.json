@@ -215,7 +215,7 @@
       "snapshot-id": 4225665863219645298,
       "summary": {
         "operation": "append",
-        "utilake.files": "61",
+        "utilake.files": "64",
         "utilake.from.file": "PUBLIC_VWAFCASPRICES_202608210000_20260822040502.zip",
         "utilake.from.release": "2026-08",
         "utilake.from.sha256": "0d39e4a671e0e9a908266df8caca24b7411e7a0b786a1a734350251abc1b21c8",
@@ -223,12 +223,12 @@
         "utilake.kinds": "[\"reports/current\"]",
         "utilake.report-subtype": "VWAFCASPRICES",
         "utilake.report-type": "TRADING",
-        "utilake.rows": "2928",
-        "utilake.to.file": "PUBLIC_VWAFCASPRICES_202610200000_20261021040503.zip",
+        "utilake.rows": "3072",
+        "utilake.to.file": "PUBLIC_VWAFCASPRICES_202610230000_20261024040502.zip",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "9c14e5713a37dd524dd5bce57e0d836ee61529759723ae7b72a83b51c5ab1ee0",
-        "utilake.to.time": "2026-10-21T04:00:00+10:00",
-        "utilake.total-rows": "2928",
+        "utilake.to.sha256": "d2b077777bcf6ed24be89da95a0f276b09a01eafa6243610bb7678868680c991",
+        "utilake.to.time": "2026-10-24T04:00:00+10:00",
+        "utilake.total-rows": "3072",
         "utilake.version": "1"
       },
       "timestamp-ms": 1785506400000

@@ -212,7 +212,7 @@
       "snapshot-id": 1225842833192514144,
       "summary": {
         "operation": "append",
-        "utilake.files": "209",
+        "utilake.files": "216",
         "utilake.from.file": "PUBLIC_ARCHIVE#PD7DAY_INTERCONNECTORSOLUTION#FILE01#202408010000.zip",
         "utilake.from.release": "2024-08",
         "utilake.from.sha256": "9f10df015d46237b6c6012e2403447900f4c5c316ce63b1f4d111f9dc9f186f5",
@@ -220,12 +220,12 @@
         "utilake.kinds": "[\"archive\",\"reports/current\"]",
         "utilake.report-subtype": "INTERCONNECTORSOLUTION",
         "utilake.report-type": "PD7DAY",
-        "utilake.rows": "58215846",
-        "utilake.to.file": "PUBLIC_PD7DAY_20261021174310_0000000544091388.zip",
+        "utilake.rows": "58232912",
+        "utilake.to.file": "PUBLIC_PD7DAY_20261024070952_0000000544561635.zip",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "72ae05930ddc8ae6b42e0842e74594616aefd65d3f055b077440ad574710332d",
-        "utilake.to.time": "2026-10-29T04:00:00+10:00",
-        "utilake.total-rows": "58215846",
+        "utilake.to.sha256": "7b120e400efda9681a730aa04bab48d866aaf4c9c553c51d51968b4ab43f9358",
+        "utilake.to.time": "2026-10-31T04:00:00+10:00",
+        "utilake.total-rows": "58232912",
         "utilake.version": "1"
       },
       "timestamp-ms": 1722434400000

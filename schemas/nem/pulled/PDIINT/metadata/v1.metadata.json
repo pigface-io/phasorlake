@@ -83,7 +83,7 @@
       "snapshot-id": 2406387933016222300,
       "summary": {
         "operation": "append",
-        "utilake.files": "18868",
+        "utilake.files": "18990",
         "utilake.from.file": "PUBLIC_PREDISPATCH_201706191400_20170619133258_LEGACY.zip",
         "utilake.from.release": "2017-06",
         "utilake.from.sha256": "911cf5ba9d8a4adcb1c8dbc3bc964f8eb4c3d0752c684dbb44f016c7ed2fa3ee",
@@ -91,12 +91,12 @@
         "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
         "utilake.report-subtype": "",
         "utilake.report-type": "PDIINT",
-        "utilake.rows": "114411",
-        "utilake.to.file": "PUBLIC_PREDISPATCH_202610212300_20261021223153_LEGACY.zip",
+        "utilake.rows": "115265",
+        "utilake.to.file": "PUBLIC_PREDISPATCH_202610241200_20261024113111_LEGACY.zip",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "3560c6629b64698a4ac6ece266a5a04ec8b14b6e75348485491cc1badaf40497",
-        "utilake.to.time": "2026-10-21T23:00:00+10:00",
-        "utilake.total-rows": "114411",
+        "utilake.to.sha256": "1fe50fcf5bc3fec6cabfcda94a0ce20080e9487a5cf92e5911fd883d47a829db",
+        "utilake.to.time": "2026-10-24T12:00:00+10:00",
+        "utilake.total-rows": "115265",
         "utilake.version": "2"
       },
       "timestamp-ms": 1496239200000

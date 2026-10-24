@@ -89,7 +89,7 @@
       "snapshot-id": 1631004381654029274,
       "summary": {
         "operation": "append",
-        "utilake.files": "49399",
+        "utilake.files": "49523",
         "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEM_LESS_SNSG_UPDATE_202501310900_20250131115609.zip",
         "utilake.from.release": "2025-01",
         "utilake.from.sha256": "9d2263ca2f47a1164ddce36ff6a668de12b473ecea1d79283f4c1fad8c05abcb",
@@ -97,12 +97,12 @@
         "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
         "utilake.report-subtype": "ACTUAL",
         "utilake.report-type": "OPERATIONAL_DEM_LESS_SNSG",
-        "utilake.rows": "485990",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEM_LESS_SNSG_DAILY_202610210400_20261022044000.zip",
+        "utilake.rows": "487080",
+        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEM_LESS_SNSG_HH_202610241130_20261024113013.zip",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "bd80c9e2dd06c456286a5e8dadf27d567760a356572bfa1c3a6615f2daf8e76d",
-        "utilake.to.time": "2026-10-22T04:00:00+10:00",
-        "utilake.total-rows": "485990",
+        "utilake.to.sha256": "f27c4834509adf0b56ab769a46cc16a24cca5d10819260d3cffb13242150d9d1",
+        "utilake.to.time": "2026-10-24T11:30:00+10:00",
+        "utilake.total-rows": "487080",
         "utilake.version": "1"
       },
       "timestamp-ms": 1735653600000

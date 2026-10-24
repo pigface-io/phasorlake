@@ -223,7 +223,7 @@
       "snapshot-id": 8666719358406848131,
       "summary": {
         "operation": "append",
-        "utilake.files": "46808",
+        "utilake.files": "47379",
         "utilake.from.file": "PUBLIC_FPP_RUN_20260514.zip",
         "utilake.from.release": "2026-05",
         "utilake.from.sha256": "044f7c7f474ee59cec1dc88624cb7b3bf35c4551ccc375a51314993b719a644b",
@@ -231,12 +231,12 @@
         "utilake.kinds": "[\"archive\",\"reports/archive\",\"reports/current\"]",
         "utilake.report-subtype": "REGION_FREQ_MEASURE",
         "utilake.report-type": "FPP",
-        "utilake.rows": "210731775",
-        "utilake.to.file": "PUBLIC_FPP_RUN_202610220855_0000000544203622.zip",
+        "utilake.rows": "210945900",
+        "utilake.to.file": "PUBLIC_FPP_RUN_202610241135_0000000544595233.zip",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "9efc3d46231354432218d491fa407faa01add6cee0530a5ea1133ee0de370b16",
-        "utilake.to.time": "2026-10-22T08:55:00+10:00",
-        "utilake.total-rows": "737520300",
+        "utilake.to.sha256": "a2bbfa124eb310daee34052621c49cd286f8baceb9199ce898b62d04845cee99",
+        "utilake.to.time": "2026-10-24T11:35:00+10:00",
+        "utilake.total-rows": "737734425",
         "utilake.version": "1"
       },
       "timestamp-ms": 1777557600001

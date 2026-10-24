@@ -83,18 +83,18 @@
       "snapshot-id": 2821808946043980260,
       "summary": {
         "operation": "append",
-        "utilake.files": "18868",
+        "utilake.files": "18991",
         "utilake.from.file": "PUBLIC_PREDISPATCH_IRSR_20250928_20251004.zip",
         "utilake.from.release": "2025-09",
         "utilake.from.sha256": "6c71a6c575ee42eaa5fceab6d3b728d50b76c04e2f20b71c8bc22409f0112fe2",
         "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
         "utilake.report-subtype": "IRSR",
         "utilake.report-type": "PREDISPATCH",
-        "utilake.rows": "12703394",
-        "utilake.to.file": "PUBLIC_PREDISPATCH_IRSR_202610212230_0000000544123693.zip",
+        "utilake.rows": "12795374",
+        "utilake.to.file": "PUBLIC_PREDISPATCH_IRSR_202610241200_0000000544594447.zip",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "670df870f7ed714bb73f2459f9960ed3a8835736afbfb96bc8b4647ad7acc128",
-        "utilake.total-rows": "12703394",
+        "utilake.to.sha256": "b01f9f5733832fb152b13f4f60cc86a86b446a3644d4090add2e3eeef2420b17",
+        "utilake.total-rows": "12795374",
         "utilake.version": "2"
       },
       "timestamp-ms": 1756648800000

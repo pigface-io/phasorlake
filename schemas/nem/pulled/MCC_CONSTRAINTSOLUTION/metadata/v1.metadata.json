@@ -1105,7 +1105,7 @@
       "snapshot-id": 1921639405424693848,
       "summary": {
         "operation": "append",
-        "utilake.files": "21",
+        "utilake.files": "23",
         "utilake.from.file": "PUBLIC_NEXT_DAY_MCCDISPATCH_20261001_0000000540695911.zip",
         "utilake.from.release": "2026-10",
         "utilake.from.sha256": "a87d97555ef0da0139763ed1c79ba90be1d056315ca702d0ac3ec4a0a88cdeeb",
@@ -1113,12 +1113,12 @@
         "utilake.kinds": "[\"reports/current\"]",
         "utilake.report-subtype": "CONSTRAINTSOLUTION",
         "utilake.report-type": "MCC",
-        "utilake.rows": "129379",
-        "utilake.to.file": "PUBLIC_NEXT_DAY_MCCDISPATCH_20261021_0000000544173630.zip",
+        "utilake.rows": "142977",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_MCCDISPATCH_20261023_0000000544544768.zip",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "036aea71973212dfd09b5502b842330ebc97ea333dff932e24dd0220d43ae73b",
-        "utilake.to.time": "2026-10-22T04:00:00+10:00",
-        "utilake.total-rows": "31681464",
+        "utilake.to.sha256": "cc9f9c0da5734efeaeabe3df1d100bc36a566d5f3842de425f50f7c60c5c6413",
+        "utilake.to.time": "2026-10-24T04:00:00+10:00",
+        "utilake.total-rows": "31695062",
         "utilake.version": "1"
       },
       "timestamp-ms": 1790776800030
@@ -1133,7 +1133,7 @@
       "snapshot-id": 49818574443422806,
       "summary": {
         "operation": "append",
-        "utilake.files": "1131",
+        "utilake.files": "1695",
         "utilake.from.file": "PUBLIC_MCCDISPATCH_202610181055_0000000543513273.zip",
         "utilake.from.release": "2026-10",
         "utilake.from.sha256": "c201c15bda35117923d5062a655bfddebf243d86ecc9cfd29d770f223f087c58",
@@ -1141,12 +1141,12 @@
         "utilake.kinds": "[\"reports/current\"]",
         "utilake.report-subtype": "CONSTRAINTSOLUTION",
         "utilake.report-type": "MCC",
-        "utilake.rows": "25805",
-        "utilake.to.file": "PUBLIC_MCCDISPATCH_202610220905_0000000544203664.zip",
+        "utilake.rows": "37791",
+        "utilake.to.file": "PUBLIC_MCCDISPATCH_202610241140_0000000544594926.zip",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "0cbe23c0c30969cdda203f6c2dfa62087fc7e85c203f3fdcd95c983d8177b9b2",
-        "utilake.to.time": "2026-10-22T09:05:00+10:00",
-        "utilake.total-rows": "31707269",
+        "utilake.to.sha256": "c21589b57c1c35e25eb017035b3c0659fe2b147853f8808dfa6a1152a6489d6f",
+        "utilake.to.time": "2026-10-24T11:40:00+10:00",
+        "utilake.total-rows": "31732853",
         "utilake.version": "1"
       },
       "timestamp-ms": 1790776800031

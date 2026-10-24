@@ -1092,7 +1092,7 @@
       "snapshot-id": 3377190445119860293,
       "summary": {
         "operation": "append",
-        "utilake.files": "723",
+        "utilake.files": "845",
         "utilake.from.file": "PUBLIC_ROOFTOP_PV_FORECAST_20261006213000_0000000541508115.zip",
         "utilake.from.release": "2026-10",
         "utilake.from.sha256": "e1f56612517038d433eb420567493d0b46ac5dd30e0a155cffd01b68050d400d",
@@ -1100,12 +1100,12 @@
         "utilake.kinds": "[\"reports/current\"]",
         "utilake.report-subtype": "FORECAST",
         "utilake.report-type": "ROOFTOP",
-        "utilake.rows": "1329120",
-        "utilake.to.file": "PUBLIC_ROOFTOP_PV_FORECAST_20261021223000_0000000544127046.zip",
+        "utilake.rows": "1554575",
+        "utilake.to.file": "PUBLIC_ROOFTOP_PV_FORECAST_20261024113000_0000000544594224.zip",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "d746708b7cae73b48142e7a8703e2632217c556963f9483156a9bc70066e1be8",
-        "utilake.to.time": "2026-10-29T04:00:00+10:00",
-        "utilake.total-rows": "419821448",
+        "utilake.to.sha256": "0c0b3d65db8ddbedf19439ccc71d76933b52cef3b1bca6ff41b2b20e74221df0",
+        "utilake.to.time": "2026-11-01T04:00:00+10:00",
+        "utilake.total-rows": "420046903",
         "utilake.version": "1"
       },
       "timestamp-ms": 1790776800028
@@ -1120,7 +1120,7 @@
       "snapshot-id": 8155747527567622573,
       "summary": {
         "operation": "append",
-        "utilake.files": "723",
+        "utilake.files": "845",
         "utilake.from.file": "PUBLIC_ROOFTOP_PV_FORECAST_AREA_20261006213000_0000000541508116.zip",
         "utilake.from.release": "2026-10",
         "utilake.from.sha256": "c4fc4edc7ef8d5cb3b17601cda5ca2f7a779774588f1ae0e66c0437e03201996",
@@ -1128,12 +1128,12 @@
         "utilake.kinds": "[\"reports/current\"]",
         "utilake.report-subtype": "FORECAST",
         "utilake.report-type": "ROOFTOP",
-        "utilake.rows": "2126592",
-        "utilake.to.file": "PUBLIC_ROOFTOP_PV_FORECAST_AREA_20261021223000_0000000544127047.zip",
+        "utilake.rows": "2487320",
+        "utilake.to.file": "PUBLIC_ROOFTOP_PV_FORECAST_AREA_20261024113000_0000000544594225.zip",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "7f02cdba071b98f53241e406d227e8edfa58ac2b9a3a1729bc834d8fad4d38d3",
-        "utilake.to.time": "2026-10-29T04:00:00+10:00",
-        "utilake.total-rows": "421948040",
+        "utilake.to.sha256": "abd48cd572be4d21a7f0b4a1201bf785610e32f47ed281802ea6f3713ec63eeb",
+        "utilake.to.time": "2026-11-01T04:00:00+10:00",
+        "utilake.total-rows": "422534223",
         "utilake.version": "1"
       },
       "timestamp-ms": 1790776800029

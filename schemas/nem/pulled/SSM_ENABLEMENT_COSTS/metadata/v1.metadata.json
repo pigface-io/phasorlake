@@ -93,7 +93,7 @@
       "snapshot-id": 5703900841099798401,
       "summary": {
         "operation": "append",
-        "utilake.files": "263",
+        "utilake.files": "265",
         "utilake.from.file": "PUBLIC_ARCHIVE#SSM_ENABLEMENT_COSTS#FILE01#202511010000.zip",
         "utilake.from.release": "2025-11",
         "utilake.from.sha256": "ad77d7a0f66ea2d1cc05939ec87d0b194fbf4aa69a170bbd04077e8201ba277c",
@@ -101,12 +101,12 @@
         "utilake.kinds": "[\"archive\",\"reports/current\"]",
         "utilake.report-subtype": "ENABLEMENT_COSTS",
         "utilake.report-type": "SSM",
-        "utilake.rows": "1750",
-        "utilake.to.file": "PUBLIC_NEXT_DAY_ENABLEMENT_COSTS_20261021_120011_0000000544042980.zip",
+        "utilake.rows": "1752",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_ENABLEMENT_COSTS_20261023_120013_0000000544408982.zip",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "68a4a0402cc9d6e2fc4c1a781b83e4a04d295edf03bd681086b6c6e7b059c1f3",
-        "utilake.to.time": "2026-10-21T12:00:07+10:00",
-        "utilake.total-rows": "1750",
+        "utilake.to.sha256": "4ed063f4a8cf5f63d4e10b26164033f8563cd2cdddacf258fa06af3fe9959319",
+        "utilake.to.time": "2026-10-23T12:00:09+10:00",
+        "utilake.total-rows": "1752",
         "utilake.version": "1"
       },
       "timestamp-ms": 1761919200000

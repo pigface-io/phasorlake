@@ -235,7 +235,7 @@
       "snapshot-id": 2401779945987773218,
       "summary": {
         "operation": "append",
-        "utilake.files": "10293",
+        "utilake.files": "10354",
         "utilake.from.file": "PUBLIC_DVD_STPASA_CONSTRAINTSOLUTION_202102010000.zip",
         "utilake.from.release": "2021-02",
         "utilake.from.sha256": "ec7d3838db534de6aecf1bd7b19e433c6728543f7b0fb8f4b0642a50b7ac5536",
@@ -243,12 +243,12 @@
         "utilake.kinds": "[\"archive\",\"dvd\",\"reports/archive\",\"reports/current\"]",
         "utilake.report-subtype": "CONSTRAINTSOLUTION",
         "utilake.report-type": "STPASA",
-        "utilake.rows": "1080997888",
-        "utilake.to.file": "PUBLIC_STPASA_202610212200_0000000544125280.zip",
+        "utilake.rows": "1082201465",
+        "utilake.to.file": "PUBLIC_STPASA_202610241100_0000000544592173.zip",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "0db7c03c7d560a4732d91eb64258fa5ee0aa572ab72ce46d145d52adba7f2f3d",
-        "utilake.to.time": "2026-10-29T04:00:00+10:00",
-        "utilake.total-rows": "1272556402",
+        "utilake.to.sha256": "7d2eb910c7f19f5f4fb2d2362bb0fa3d394d8682b44cdfdfb631fd95dcc980f5",
+        "utilake.to.time": "2026-10-31T04:00:00+10:00",
+        "utilake.total-rows": "1273759979",
         "utilake.version": "3"
       },
       "timestamp-ms": 1612101600001

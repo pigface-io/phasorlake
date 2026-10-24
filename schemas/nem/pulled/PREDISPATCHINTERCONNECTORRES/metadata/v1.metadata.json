@@ -886,7 +886,7 @@
       "snapshot-id": 1261840023797469107,
       "summary": {
         "operation": "append",
-        "utilake.files": "18916",
+        "utilake.files": "19038",
         "utilake.from.file": "PUBLIC_ARCHIVE#PREDISPATCHINTERCONNECTORRES#FILE01#202408010000.zip",
         "utilake.from.release": "2024-08",
         "utilake.from.sha256": "a5299c6ff2eab57ca3727dda6e4667d49e18afc9a354dbbe22dedf9b38c4b28c",
@@ -894,12 +894,12 @@
         "utilake.kinds": "[\"archive\",\"archive#all\",\"reports/archive\",\"reports/current\"]",
         "utilake.report-subtype": "INTERCONNECTOR_SOLN",
         "utilake.report-type": "PREDISPATCH",
-        "utilake.rows": "19222821",
-        "utilake.to.file": "PUBLIC_PREDISPATCHIS_202610212300_20261021223153.zip",
+        "utilake.rows": "19268398",
+        "utilake.to.file": "PUBLIC_PREDISPATCHIS_202610241200_20261024113111.zip",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "aeaeb5ef4afe185ab63081de6184a729d498dfde6459f3958cc7192c826f33ab",
-        "utilake.to.time": "2026-10-23T04:00:00+10:00",
-        "utilake.total-rows": "112287675",
+        "utilake.to.sha256": "35780d6a8c7796b8a9f1b6481b53d0064f19f55b098fdf28f55ca6b1323af54f",
+        "utilake.to.time": "2026-10-25T04:00:00+10:00",
+        "utilake.total-rows": "112333252",
         "utilake.version": "3"
       },
       "timestamp-ms": 1722434400016

@@ -2333,7 +2333,7 @@
       "snapshot-id": 5299365235613585519,
       "summary": {
         "operation": "append",
-        "utilake.files": "1447",
+        "utilake.files": "1690",
         "utilake.from.file": "PUBLIC_ROOFTOP_PV_ACTUAL_MEASUREMENT_20261006210000_0000000541504522.zip",
         "utilake.from.release": "2026-10",
         "utilake.from.sha256": "452ec6a77d8a59864e39a7178d7d360d89dd863002f785f25581ce89e85cdcde",
@@ -2341,12 +2341,12 @@
         "utilake.kinds": "[\"reports/current\"]",
         "utilake.report-subtype": "ACTUAL",
         "utilake.report-type": "ROOFTOP",
-        "utilake.rows": "7235",
-        "utilake.to.file": "PUBLIC_ROOFTOP_PV_ACTUAL_SATELLITE_20261021223000_0000000544127050.zip",
+        "utilake.rows": "8450",
+        "utilake.to.file": "PUBLIC_ROOFTOP_PV_ACTUAL_SATELLITE_20261024113000_0000000544594228.zip",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "b304d08c1f9ffcf06d10e7be15634108669b3f989c6060edf54b0ce9f37c19e5",
-        "utilake.to.time": "2026-10-21T22:00:00+10:00",
-        "utilake.total-rows": "3686697",
+        "utilake.to.sha256": "5df2b660e937531dec778c968fea621b575b4d2944da75a79fc22fe875e083ee",
+        "utilake.to.time": "2026-10-24T11:00:00+10:00",
+        "utilake.total-rows": "3687912",
         "utilake.version": "2"
       },
       "timestamp-ms": 1790776800066
@@ -2361,7 +2361,7 @@
       "snapshot-id": 8434973928656628074,
       "summary": {
         "operation": "append",
-        "utilake.files": "1447",
+        "utilake.files": "1691",
         "utilake.from.file": "PUBLIC_ROOFTOP_PV_ACTUAL_MEASUREMENT_AREA_20261006213000_0000000541508118.zip",
         "utilake.from.release": "2026-10",
         "utilake.from.sha256": "b4abc5a130aac73a7e4e63f3d9334ebeddda90aeac2d8b7b549ac48995653a9f",
@@ -2369,12 +2369,12 @@
         "utilake.kinds": "[\"reports/current\"]",
         "utilake.report-subtype": "ACTUAL",
         "utilake.report-type": "ROOFTOP",
-        "utilake.rows": "11576",
-        "utilake.to.file": "PUBLIC_ROOFTOP_PV_ACTUAL_SATELLITE_AREA_20261021223000_0000000544127051.zip",
+        "utilake.rows": "13528",
+        "utilake.to.file": "PUBLIC_ROOFTOP_PV_ACTUAL_SATELLITE_AREA_20261024113000_0000000544594229.zip",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "1dc113c81822cd6fad66ef667817eca58bc8821669116eadf2a83a01f4a05d8a",
-        "utilake.to.time": "2026-10-21T22:00:00+10:00",
-        "utilake.total-rows": "3698273",
+        "utilake.to.sha256": "ff3dca4b5d615bee21ffeff75d9e1a89088aad341a0284162705b4ee9fa95a73",
+        "utilake.to.time": "2026-10-24T11:00:00+10:00",
+        "utilake.total-rows": "3701440",
         "utilake.version": "1"
       },
       "timestamp-ms": 1790776800067

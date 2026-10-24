@@ -86,7 +86,7 @@
       "snapshot-id": 7289042014973123665,
       "summary": {
         "operation": "append",
-        "utilake.files": "109467",
+        "utilake.files": "110032",
         "utilake.from.file": "PUBLIC_ARCHIVE#P5MIN_FCAS_REQ_RUN#FILE01#202412010000.zip",
         "utilake.from.release": "2024-12",
         "utilake.from.sha256": "40e4c468005f42df1e8f0580c5740d7585f4ba8f2c3f1620825be7c8619f7354",
@@ -94,12 +94,12 @@
         "utilake.kinds": "[\"archive\",\"reports/archive\",\"reports/current\"]",
         "utilake.report-subtype": "FCAS_REQ_RUN",
         "utilake.report-type": "P5MIN",
-        "utilake.rows": "1971929",
-        "utilake.to.file": "PUBLIC_P5MINFCST_202610212230_0000000544127122.zip",
+        "utilake.rows": "1972494",
+        "utilake.to.file": "PUBLIC_P5MINFCST_202610241140_0000000544595616.zip",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "b1d065427dc4ba2a2a62e77e4d83ea604bc2b9de8c8ecb072952d08b44259689",
-        "utilake.to.time": "2026-10-21T22:35:00+10:00",
-        "utilake.total-rows": "1971929",
+        "utilake.to.sha256": "b9ce21fb1bede57af7f0932181293c8ae7380a6428518fb4cf9971d677787dbf",
+        "utilake.to.time": "2026-10-24T11:45:00+10:00",
+        "utilake.total-rows": "1972494",
         "utilake.version": "1"
       },
       "timestamp-ms": 1732975200000

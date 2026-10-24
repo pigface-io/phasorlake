@@ -93,7 +93,7 @@
       "snapshot-id": 4674906727383717817,
       "summary": {
         "operation": "append",
-        "utilake.files": "18888",
+        "utilake.files": "19010",
         "utilake.from.file": "PUBLIC_ARCHIVE#PD_FCAS_REQ_RUN#FILE01#202412010000.zip",
         "utilake.from.release": "2024-12",
         "utilake.from.sha256": "f5e4e955a4fcaa5a5a9887c3ad065b7820b46810cd3b44d9f39a1ad4af06db3a",
@@ -101,12 +101,12 @@
         "utilake.kinds": "[\"archive\",\"reports/archive\",\"reports/current\"]",
         "utilake.report-subtype": "FCAS_REQ_RUN",
         "utilake.report-type": "PREDISPATCH",
-        "utilake.rows": "325330",
-        "utilake.to.file": "PUBLIC_PREDISPATCHFCST_202610212300_0000000544127266.zip",
+        "utilake.rows": "325452",
+        "utilake.to.file": "PUBLIC_PREDISPATCHFCST_202610241200_0000000544594454.zip",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "dee1bb9e251ef7157d6ddc27112bf4991cc07f4bca74cce17610b46a32c2c7dd",
-        "utilake.to.time": "2026-10-21T23:00:00+10:00",
-        "utilake.total-rows": "325330",
+        "utilake.to.sha256": "288b06bbd702469c38c3e78d20f9b52b3ace6c2ea873104efa336aced36c92ff",
+        "utilake.to.time": "2026-10-24T12:00:00+10:00",
+        "utilake.total-rows": "325452",
         "utilake.version": "1"
       },
       "timestamp-ms": 1732975200000

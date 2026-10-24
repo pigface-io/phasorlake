@@ -107,7 +107,7 @@
       "snapshot-id": 7372063632919759110,
       "summary": {
         "operation": "append",
-        "utilake.files": "456",
+        "utilake.files": "458",
         "utilake.from.file": "PUBLIC_ARCHIVE#INTERMITTENT_GEN_SCADA#FILE01#202412010000.zip",
         "utilake.from.release": "2024-12",
         "utilake.from.sha256": "b9e078da76dc7688c483aa857fc939d7d5ceba9f18b8ecf9bf77633f6a9b0f8a",
@@ -115,12 +115,12 @@
         "utilake.kinds": "[\"archive\",\"reports/archive\",\"reports/current\"]",
         "utilake.report-subtype": "INTERMITTENT_GEN_SCADA",
         "utilake.report-type": "DEMAND",
-        "utilake.rows": "1143537334",
-        "utilake.to.file": "PUBLIC_NEXT_DAY_INTERMITTENT_GEN_SCADA_20261021_0000000544169326.zip",
+        "utilake.rows": "1143773494",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_INTERMITTENT_GEN_SCADA_20261023_0000000544540786.zip",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "bafdc083920145f446c103631c4d9bdf61a91ac7296c843758a7bfb7953e4dd5",
-        "utilake.to.time": "2026-10-22T04:00:00+10:00",
-        "utilake.total-rows": "1143537334",
+        "utilake.to.sha256": "745328f666a2060a09c447174444ecdb6d89d693e4dd230bfc20be3e3f560ae0",
+        "utilake.to.time": "2026-10-24T04:00:00+10:00",
+        "utilake.total-rows": "1143773494",
         "utilake.version": "1"
       },
       "timestamp-ms": 1732975200000

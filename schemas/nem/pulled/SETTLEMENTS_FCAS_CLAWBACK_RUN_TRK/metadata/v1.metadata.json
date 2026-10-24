@@ -95,7 +95,7 @@
       "snapshot-id": 7241673803002851808,
       "summary": {
         "operation": "append",
-        "utilake.files": "44",
+        "utilake.files": "45",
         "utilake.from.file": "PUBLIC_ARCHIVE#SET_FCAS_CLAWBACK_RUN_TRK#FILE01#202601010000.zip",
         "utilake.from.release": "2026-01",
         "utilake.from.sha256": "7ae6cfef2822db4f4fce7677ac6bc6face49a7f31bf24652915a20f37270465f",
@@ -103,12 +103,12 @@
         "utilake.kinds": "[\"archive\",\"reports/current\"]",
         "utilake.report-subtype": "FCAS_CLAWBACK_RUN_TRK",
         "utilake.report-type": "SETTLEMENTS",
-        "utilake.rows": "66607",
-        "utilake.to.file": "PUBLIC_SETTLEMENTS_EXTN_20260820121039_0000000533558359.zip",
-        "utilake.to.release": "2026-08",
-        "utilake.to.sha256": "83e4b7921c4a706b987064e76be328c3fca80acd5ebae4554a4f152485c271ea",
+        "utilake.rows": "66617",
+        "utilake.to.file": "PUBLIC_SETTLEMENTS_EXTN_20261022105216_0000000544217029.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "ad1795cbc5f4a10603ff70b888af6cfede2a506776064c0cad6b2be7e4980d98",
         "utilake.to.time": "2026-03-23T18:20:00+10:00",
-        "utilake.total-rows": "66607",
+        "utilake.total-rows": "66617",
         "utilake.version": "1"
       },
       "timestamp-ms": 1767189600000

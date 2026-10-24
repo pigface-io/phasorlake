@@ -1012,7 +1012,7 @@
       "snapshot-id": 1848678901975825565,
       "summary": {
         "operation": "append",
-        "utilake.files": "2446",
+        "utilake.files": "2569",
         "utilake.from.file": "PUBLIC_PDPASA_DUIDAVAILABILITY_202609010000_0000000535430103.zip",
         "utilake.from.release": "2026-09",
         "utilake.from.sha256": "cef0776ab82726214a86faf5eca64380ee8970705511aab92c42217aa5410e06",
@@ -1020,12 +1020,12 @@
         "utilake.kinds": "[\"reports/current\"]",
         "utilake.report-subtype": "DUIDAVAILABILITY",
         "utilake.report-type": "PDPASA",
-        "utilake.rows": "63725016",
-        "utilake.to.file": "PUBLIC_PDPASA_DUIDAVAILABILITY_202610212230_0000000544123688.zip",
+        "utilake.rows": "66832536",
+        "utilake.to.file": "PUBLIC_PDPASA_DUIDAVAILABILITY_202610241200_0000000544594442.zip",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "beab853dca6149a1d1d7091cebaf3bf9b811e5ddf33fc05c4a67dd484c63b883",
-        "utilake.to.time": "2026-10-23T04:00:00+10:00",
-        "utilake.total-rows": "3529478129",
+        "utilake.to.sha256": "45ace1f0d656c0eb87d4b9eab0dbc24e5319315f80c83736c9ca1618e8f400c3",
+        "utilake.to.time": "2026-10-25T04:00:00+10:00",
+        "utilake.total-rows": "3532585649",
         "utilake.version": "1"
       },
       "timestamp-ms": 1788184800025

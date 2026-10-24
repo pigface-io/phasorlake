@@ -77,7 +77,7 @@
       "snapshot-id": 604208968661093429,
       "summary": {
         "operation": "append",
-        "utilake.files": "113136",
+        "utilake.files": "113871",
         "utilake.from.file": "PUBLIC_TRADING_IRSR_20250928_20251004.zip",
         "utilake.from.release": "2025-09",
         "utilake.from.sha256": "64eb3b8640297639c24e5304c8bea7d55b821da00442fb3ee44be8ef68c0443f",
@@ -85,12 +85,12 @@
         "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
         "utilake.report-subtype": "IRSR",
         "utilake.report-type": "TRADING",
-        "utilake.rows": "1371998",
-        "utilake.to.file": "PUBLIC_TRADING_IRSR_202610212235_0000000544127116.zip",
+        "utilake.rows": "1382288",
+        "utilake.to.file": "PUBLIC_TRADING_IRSR_202610241150_0000000544596183.zip",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "7e2e2d8c5794e99f8eea397f38ca24a3e54a2ad3af4f6fdc5497d138db0dbba1",
-        "utilake.to.time": "2026-10-21T22:35:00+10:00",
-        "utilake.total-rows": "1371998",
+        "utilake.to.sha256": "548e16087d1a09c6c504045b348bdb59ae3befd0db457ccd0a267c8fad3e4f4c",
+        "utilake.to.time": "2026-10-24T11:50:00+10:00",
+        "utilake.total-rows": "1382288",
         "utilake.version": "2"
       },
       "timestamp-ms": 1756648800000

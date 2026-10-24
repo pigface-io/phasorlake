@@ -202,7 +202,7 @@
       "snapshot-id": 7415118828263079548,
       "summary": {
         "operation": "append",
-        "utilake.files": "10432",
+        "utilake.files": "10493",
         "utilake.from.file": "PUBLIC_DVD_STPASA_CASESOLUTION_200907010000.zip",
         "utilake.from.release": "2009-07",
         "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
@@ -210,12 +210,12 @@
         "utilake.kinds": "[\"archive\",\"dvd\",\"reports/archive\",\"reports/current\"]",
         "utilake.report-subtype": "CASESOLUTION",
         "utilake.report-type": "STPASA",
-        "utilake.rows": "111357",
-        "utilake.to.file": "PUBLIC_STPASA_202610212200_0000000544125280.zip",
+        "utilake.rows": "111418",
+        "utilake.to.file": "PUBLIC_STPASA_202610241100_0000000544592173.zip",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "0db7c03c7d560a4732d91eb64258fa5ee0aa572ab72ce46d145d52adba7f2f3d",
-        "utilake.to.time": "2026-10-21T22:00:00+10:00",
-        "utilake.total-rows": "111357",
+        "utilake.to.sha256": "7d2eb910c7f19f5f4fb2d2362bb0fa3d394d8682b44cdfdfb631fd95dcc980f5",
+        "utilake.to.time": "2026-10-24T11:00:00+10:00",
+        "utilake.total-rows": "111418",
         "utilake.version": "3"
       },
       "timestamp-ms": 1246370400000

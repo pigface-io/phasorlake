@@ -1848,7 +1848,7 @@
       "snapshot-id": 2397733581276943630,
       "summary": {
         "operation": "append",
-        "utilake.files": "7204",
+        "utilake.files": "7939",
         "utilake.from.file": "PUBLIC_TRADINGIS_20260927_20261003.zip",
         "utilake.from.release": "2026-10",
         "utilake.from.sha256": "03c4813872668f22ffd3665b54bd5852926597505d4f45423bda5a1ddbcc3175",
@@ -1856,12 +1856,12 @@
         "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
         "utilake.report-subtype": "PRICE",
         "utilake.report-type": "TRADING",
-        "utilake.rows": "36020",
-        "utilake.to.file": "PUBLIC_TRADINGIS_202610212235_0000000544127062.zip",
+        "utilake.rows": "39695",
+        "utilake.to.file": "PUBLIC_TRADINGIS_202610241150_0000000544596098.zip",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "bbba7b7444ec99a74f09d2d861e2dd1dcca05fd849bd46973fac6cf237a8bd2e",
-        "utilake.to.time": "2026-10-21T22:35:00+10:00",
-        "utilake.total-rows": "4298080",
+        "utilake.to.sha256": "75746b05f42282a3f706e412dd9adea42829f89fd886746a9e1366b4fdd98b38",
+        "utilake.to.time": "2026-10-24T11:50:00+10:00",
+        "utilake.total-rows": "4301755",
         "utilake.version": "3"
       },
       "timestamp-ms": 1790776800029

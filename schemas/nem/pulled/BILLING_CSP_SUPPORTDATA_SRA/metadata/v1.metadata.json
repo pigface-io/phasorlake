@@ -149,18 +149,18 @@
       "snapshot-id": 8904083864363433596,
       "summary": {
         "operation": "append",
-        "utilake.files": "43",
+        "utilake.files": "45",
         "utilake.from.file": "PUBLIC_BILLINGCSP_2026WEEK15REVISE_20260825120126_0000000534371107.zip",
         "utilake.from.release": "2026-08",
         "utilake.from.sha256": "f41ed3f26c7ccdc3d8833200d32c5e3127de6480709f1a063ed5c3baf19b4bda",
         "utilake.kinds": "[\"reports/current\"]",
         "utilake.report-subtype": "CSP_SUPPORTDATA_SRA",
         "utilake.report-type": "BILLING",
-        "utilake.rows": "320",
+        "utilake.rows": "334",
         "utilake.to.file": "PUBLIC_BILLINGCSP_2026WEEK42PRELIM_20261021093013_0000000544022368.zip",
         "utilake.to.release": "2026-10",
         "utilake.to.sha256": "611f7b8b646a5d4b44658ff2abc7b9cc4b8970d243160a0d82f539d9729161f0",
-        "utilake.total-rows": "320",
+        "utilake.total-rows": "334",
         "utilake.version": "1"
       },
       "timestamp-ms": 1785506400000

@@ -127,7 +127,7 @@
       "snapshot-id": 8015006251405906325,
       "summary": {
         "operation": "append",
-        "utilake.files": "1067",
+        "utilake.files": "1071",
         "utilake.from.file": "PUBLIC_DVD_PREDISPATCHOFFERTRK_200907010000.zip",
         "utilake.from.release": "2009-07",
         "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
@@ -135,12 +135,12 @@
         "utilake.kinds": "[\"archive\",\"dvd\",\"reports/archive\",\"reports/current\"]",
         "utilake.report-subtype": "OFFERTRK",
         "utilake.report-type": "PREDISPATCH",
-        "utilake.rows": "724180263",
-        "utilake.to.file": "PUBLIC_NEXT_DAY_PREDISPATCH_D_20261021_0000000544173640.zip",
+        "utilake.rows": "724849235",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_PREDISPATCH_D_20261023_0000000544544778.zip",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "86d3381cd8609513643185ff6c8990ef31e0ac001679a81415adabefa365972d",
-        "utilake.to.time": "2026-10-22T04:00:00+10:00",
-        "utilake.total-rows": "724180263",
+        "utilake.to.sha256": "b5ac7eceaafb58da88d8890ab61c28db88d739e0de6ecd639312451d7f7d6b47",
+        "utilake.to.time": "2026-10-24T04:00:00+10:00",
+        "utilake.total-rows": "724849235",
         "utilake.version": "1"
       },
       "timestamp-ms": 1246370400000

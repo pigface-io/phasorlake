@@ -223,7 +223,7 @@
       "snapshot-id": 7557872407963178736,
       "summary": {
         "operation": "append",
-        "utilake.files": "46806",
+        "utilake.files": "47377",
         "utilake.from.file": "PUBLIC_FPP_RATES_20260514.zip",
         "utilake.from.release": "2026-05",
         "utilake.from.sha256": "296a25fbca2d1d67c399b200008da4e9242b89d083e671a173801df041e6402a",
@@ -231,12 +231,12 @@
         "utilake.kinds": "[\"archive\",\"reports/archive\",\"reports/current\"]",
         "utilake.report-subtype": "EST_RESIDUAL_COST_RATE",
         "utilake.report-type": "FPP",
-        "utilake.rows": "2226226",
-        "utilake.to.file": "PUBLIC_FPP_RATES_202610220855_0000000544203625.zip",
+        "utilake.rows": "2228485",
+        "utilake.to.file": "PUBLIC_FPP_RATES_202610241135_0000000544595236.zip",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "29d5fcf08a29bf4a7966afb53b9f2a2ff65c4cc55767f39c2753faf85348a134",
-        "utilake.to.time": "2026-10-22T08:55:00+10:00",
-        "utilake.total-rows": "7788157",
+        "utilake.to.sha256": "5efc0933060889025fdb789ce3244deed2939f447a0e567b649b49ffa9f5d87b",
+        "utilake.to.time": "2026-10-24T11:35:00+10:00",
+        "utilake.total-rows": "7790416",
         "utilake.version": "1"
       },
       "timestamp-ms": 1777557600001

@@ -2423,7 +2423,7 @@
       "snapshot-id": 2716917967418423293,
       "summary": {
         "operation": "append",
-        "utilake.files": "2501",
+        "utilake.files": "2624",
         "utilake.from.file": "PUBLIC_PDPASA_20260827.zip",
         "utilake.from.release": "2026-09",
         "utilake.from.sha256": "7ee116a8594b2ebb378c9fc8607cd8297edf114a926542ff8336230f65fa781d",
@@ -2431,12 +2431,12 @@
         "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
         "utilake.report-subtype": "REGIONSOLUTION",
         "utilake.report-type": "PDPASA",
-        "utilake.rows": "694190",
-        "utilake.to.file": "PUBLIC_PDPASA_202610212230_0000000544124057.zip",
+        "utilake.rows": "727040",
+        "utilake.to.file": "PUBLIC_PDPASA_202610241200_0000000544594621.zip",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "b131ff3af0689ffcb7092f3c3004eba66ac0ba466781ac227ca688c122483071",
-        "utilake.to.time": "2026-10-23T04:00:00+10:00",
-        "utilake.total-rows": "94013105",
+        "utilake.to.sha256": "dab00f9ae54fae3e7e93413eb9d491f835911ceb5d98b635528717e92e138204",
+        "utilake.to.time": "2026-10-25T04:00:00+10:00",
+        "utilake.total-rows": "94045955",
         "utilake.version": "7"
       },
       "timestamp-ms": 1788184800028

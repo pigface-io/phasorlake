@@ -160,7 +160,7 @@
       "snapshot-id": 1705477579794478067,
       "summary": {
         "operation": "append",
-        "utilake.files": "113293",
+        "utilake.files": "114028",
         "utilake.from.file": "PUBLIC_DVD_TRADINGINTERCONNECT_201507010000.zip",
         "utilake.from.release": "2015-07",
         "utilake.from.sha256": "3bfa39305d21c89f6b514ac9053c3d8c65416ecd685612365b0781c548365b9d",
@@ -168,12 +168,12 @@
         "utilake.kinds": "[\"archive\",\"dvd\",\"reports/archive\",\"reports/current\"]",
         "utilake.report-subtype": "INTERCONNECTORRES",
         "utilake.report-type": "TRADING",
-        "utilake.rows": "4501279",
-        "utilake.to.file": "PUBLIC_TRADINGIS_202610212235_0000000544127062.zip",
+        "utilake.rows": "4506424",
+        "utilake.to.file": "PUBLIC_TRADINGIS_202610241150_0000000544596098.zip",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "bbba7b7444ec99a74f09d2d861e2dd1dcca05fd849bd46973fac6cf237a8bd2e",
-        "utilake.to.time": "2026-10-21T22:35:00+10:00",
-        "utilake.total-rows": "5132287",
+        "utilake.to.sha256": "75746b05f42282a3f706e412dd9adea42829f89fd886746a9e1366b4fdd98b38",
+        "utilake.to.time": "2026-10-24T11:50:00+10:00",
+        "utilake.total-rows": "5137432",
         "utilake.version": "2"
       },
       "timestamp-ms": 1435672800001

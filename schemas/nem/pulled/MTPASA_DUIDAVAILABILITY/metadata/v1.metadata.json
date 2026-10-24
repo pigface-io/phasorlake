@@ -2059,7 +2059,7 @@
       "snapshot-id": 231768796555636655,
       "summary": {
         "operation": "append",
-        "utilake.files": "179",
+        "utilake.files": "189",
         "utilake.from.file": "PUBLIC_MTPASADUIDAVAILABILITY_202609010900_0000000535495521.zip",
         "utilake.from.release": "2026-09",
         "utilake.from.sha256": "548de76445949d4f2e04c0ccd171b2e8ab64a8eaf7a7987c1805c7c18b62f04d",
@@ -2067,12 +2067,12 @@
         "utilake.kinds": "[\"reports/current\"]",
         "utilake.report-subtype": "DUIDAVAILABILITY",
         "utilake.report-type": "MTPASA",
-        "utilake.rows": "46691867",
-        "utilake.to.file": "PUBLIC_MTPASADUIDAVAILABILITY_202610211800_0000000544095890.zip",
+        "utilake.rows": "49304137",
+        "utilake.to.file": "PUBLIC_MTPASADUIDAVAILABILITY_202610240900_0000000544577014.zip",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "8dd5dba8f6da2667aa0a8acd7d87750c930ab3cb0e3bf339f91424bf65fb1e62",
+        "utilake.to.sha256": "59e5b97170fc1e873322617137049298094f43a69bcce3f6c9a4e29dbab52d7e",
         "utilake.to.time": "2029-10-21T00:00:00+10:00",
-        "utilake.total-rows": "2679292624",
+        "utilake.total-rows": "2681904894",
         "utilake.version": "3"
       },
       "timestamp-ms": 1788184800054

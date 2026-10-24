@@ -1064,7 +1064,7 @@
       "snapshot-id": 357707083990765260,
       "summary": {
         "operation": "append",
-        "utilake.files": "1005",
+        "utilake.files": "1128",
         "utilake.from.file": "PUBLIC_SEVENDAYOUTLOOK_PEAK_20261001000518_0000000540479967.zip",
         "utilake.from.release": "2026-10",
         "utilake.from.sha256": "472bf08ffd5d4ab3020aed7ce6ceb62d1c2e0ced3044348e47cb76933711e4e0",
@@ -1072,12 +1072,12 @@
         "utilake.kinds": "[\"reports/current\"]",
         "utilake.report-subtype": "PEAK",
         "utilake.report-type": "SEVENDAYOUTLOOK",
-        "utilake.rows": "175875",
-        "utilake.to.file": "PUBLIC_SEVENDAYOUTLOOK_PEAK_20261021220456_0000000544124061.zip",
+        "utilake.rows": "197400",
+        "utilake.to.file": "PUBLIC_SEVENDAYOUTLOOK_PEAK_20261024113248_0000000544594625.zip",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "e94071ae5d2404fa04170d92474f35fcaf5bb0f79e1913ca9464f32252a23945",
-        "utilake.to.time": "2026-10-28T00:00:00+10:00",
-        "utilake.total-rows": "35134590",
+        "utilake.to.sha256": "6eb68ececb232f85246277114f2831c7110c67f71036be69d876e014de28e8a0",
+        "utilake.to.time": "2026-10-31T00:00:00+10:00",
+        "utilake.total-rows": "35156115",
         "utilake.version": "1"
       },
       "timestamp-ms": 1790776800029
@@ -1092,7 +1092,7 @@
       "snapshot-id": 6522671789201325415,
       "summary": {
         "operation": "append",
-        "utilake.files": "1005",
+        "utilake.files": "1128",
         "utilake.from.file": "PUBLIC_SEVENDAYOUTLOOK_FULL_20261001000518_0000000540479966.zip",
         "utilake.from.release": "2026-10",
         "utilake.from.sha256": "e9bbadb730d6f24d2d870bcc6ee8697c59e50f6343998aa2fdab1c4f25604e60",
@@ -1100,12 +1100,12 @@
         "utilake.kinds": "[\"reports/current\"]",
         "utilake.report-subtype": "PEAK",
         "utilake.report-type": "SEVENDAYOUTLOOK",
-        "utilake.rows": "1575000",
-        "utilake.to.file": "PUBLIC_SEVENDAYOUTLOOK_FULL_20261021220456_0000000544124060.zip",
+        "utilake.rows": "1766040",
+        "utilake.to.file": "PUBLIC_SEVENDAYOUTLOOK_FULL_20261024113248_0000000544594624.zip",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "0de9f14df200bd1f4f929167500c22f8c7366b24ec85d9c748b4266f9c49a49f",
-        "utilake.to.time": "2026-10-29T00:00:00+10:00",
-        "utilake.total-rows": "36709590",
+        "utilake.to.sha256": "2c6271ddc7331dba84cf3979615dadc02bbb17671104a3eee9385617c8894c00",
+        "utilake.to.time": "2026-10-31T04:00:00+10:00",
+        "utilake.total-rows": "36922155",
         "utilake.version": "1"
       },
       "timestamp-ms": 1790776800030

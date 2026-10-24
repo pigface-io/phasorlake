@@ -711,7 +711,7 @@
       "snapshot-id": 2704822819677798061,
       "summary": {
         "operation": "append",
-        "utilake.files": "3",
+        "utilake.files": "4",
         "utilake.from.file": "PUBLIC_BILLING_DIRECT_FINAL_RECON_2026Week11REVISE_20261008110723.zip",
         "utilake.from.release": "2026-10",
         "utilake.from.sha256": "75f094dc68937bda5b7c8538ef52756fb512b2f2b698223e75f1ba8b0cc6ac24",
@@ -719,12 +719,12 @@
         "utilake.kinds": "[\"reports/current\"]",
         "utilake.report-subtype": "DIRECTION",
         "utilake.report-type": "BILLING",
-        "utilake.rows": "5",
+        "utilake.rows": "70",
         "utilake.to.file": "PUBLIC_BILLING_DIRECT_FINAL_RECON_2026Week23REVISE_20261020110925.zip",
         "utilake.to.release": "2026-10",
         "utilake.to.sha256": "6a0f61dbdc41b67121572da9f34ebf7d4b0c652ab5460ac0d329f516047aba84",
         "utilake.to.time": "2026-05-31T21:50:00+10:00",
-        "utilake.total-rows": "52",
+        "utilake.total-rows": "117",
         "utilake.version": "2"
       },
       "timestamp-ms": 1790776800005
@@ -739,7 +739,7 @@
       "snapshot-id": 4963682135891249367,
       "summary": {
         "operation": "append",
-        "utilake.files": "3",
+        "utilake.files": "4",
         "utilake.from.file": "PUBLIC_BILLING_DIRECT_PROV_RECON_2026Week36REVISE_20261002110905.zip",
         "utilake.from.release": "2026-10",
         "utilake.from.sha256": "68aeed4731014ff7d3ed9fa0643068af02b5a70c16dc1ff2a8efbd5e443a4d03",
@@ -747,12 +747,12 @@
         "utilake.kinds": "[\"reports/current\"]",
         "utilake.report-subtype": "DIRECTION",
         "utilake.report-type": "BILLING",
-        "utilake.rows": "18",
-        "utilake.to.file": "PUBLIC_BILLING_DIRECT_PROV_RECON_2026Week38REVISE_20261016105405.zip",
+        "utilake.rows": "25",
+        "utilake.to.file": "PUBLIC_BILLING_DIRECT_PROV_RECON_2026Week39REVISE_20261023111540.zip",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "338778db1a67bab0775c271fbb52e28bd983a6ad8f67291b10ea7133bcb99f3c",
-        "utilake.to.time": "2026-09-19T17:05:00+10:00",
-        "utilake.total-rows": "70",
+        "utilake.to.sha256": "c1a07785833401efed04cdf48bbb14b03740cb280dabe1bd4371a05f849cd49f",
+        "utilake.to.time": "2026-09-25T11:25:00+10:00",
+        "utilake.total-rows": "142",
         "utilake.version": "2"
       },
       "timestamp-ms": 1790776800006

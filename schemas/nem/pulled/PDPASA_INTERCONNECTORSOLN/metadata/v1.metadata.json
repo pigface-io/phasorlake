@@ -156,7 +156,7 @@
       "snapshot-id": 8788379254841881355,
       "summary": {
         "operation": "append",
-        "utilake.files": "18601",
+        "utilake.files": "18724",
         "utilake.from.file": "PUBLIC_DVD_PDPASA_INTERCONNECTORSOLN_202102010000.zip",
         "utilake.from.release": "2021-02",
         "utilake.from.sha256": "ad141de16ef5169b510f84ca177ff07a9f5d41d3fe6bce93c87b31ee05e788af",
@@ -164,12 +164,12 @@
         "utilake.kinds": "[\"archive\",\"dvd\",\"reports/archive\",\"reports/current\"]",
         "utilake.report-subtype": "INTERCONNECTORSOLN",
         "utilake.report-type": "PDPASA",
-        "utilake.rows": "222658521",
-        "utilake.to.file": "PUBLIC_PDPASA_202610212230_0000000544124057.zip",
+        "utilake.rows": "222888471",
+        "utilake.to.file": "PUBLIC_PDPASA_202610241200_0000000544594621.zip",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "b131ff3af0689ffcb7092f3c3004eba66ac0ba466781ac227ca688c122483071",
-        "utilake.to.time": "2026-10-23T04:00:00+10:00",
-        "utilake.total-rows": "222658521",
+        "utilake.to.sha256": "dab00f9ae54fae3e7e93413eb9d491f835911ceb5d98b635528717e92e138204",
+        "utilake.to.time": "2026-10-25T04:00:00+10:00",
+        "utilake.total-rows": "222888471",
         "utilake.version": "1"
       },
       "timestamp-ms": 1612101600000

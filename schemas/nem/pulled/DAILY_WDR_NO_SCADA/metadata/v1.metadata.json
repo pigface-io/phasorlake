@@ -71,7 +71,7 @@
       "snapshot-id": 4398770350080881903,
       "summary": {
         "operation": "append",
-        "utilake.files": "2191",
+        "utilake.files": "2194",
         "utilake.from.file": "PUBLIC_WDR_CAPACITY_NO_SCADA_20211021_0000000351232024.zip",
         "utilake.from.release": "2021-10",
         "utilake.from.sha256": "78da1a3eb1e46b8c128a9f6072be5b2e35e7d373d1f0dce98e5cb9c50ca728e1",
@@ -79,12 +79,12 @@
         "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
         "utilake.report-subtype": "WDR_NO_SCADA",
         "utilake.report-type": "DAILY",
-        "utilake.rows": "10955",
-        "utilake.to.file": "PUBLIC_WDR_CAPACITY_NO_SCADA_20261020_0000000543990199.zip",
+        "utilake.rows": "10970",
+        "utilake.to.file": "PUBLIC_WDR_CAPACITY_NO_SCADA_20261023_0000000544544781.zip",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "6aeb87bde761428265a24b140cd610e43e5122654c95f85febe258d900716fef",
-        "utilake.to.time": "2026-10-20T00:00:00+10:00",
-        "utilake.total-rows": "10955",
+        "utilake.to.sha256": "130c2bd7c2c736618b2ecc21bad78671c5a4ab742c21c1a09eb5d64f8b9d7f6f",
+        "utilake.to.time": "2026-10-23T00:00:00+10:00",
+        "utilake.total-rows": "10970",
         "utilake.version": "1"
       },
       "timestamp-ms": 1633010400000
