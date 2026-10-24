@@ -1,13 +1,13 @@
 {
   "current-schema-id": 0,
-  "current-snapshot-id": 7837152295234636987,
+  "current-snapshot-id": 4088528969887131438,
   "default-sort-order-id": 0,
   "default-spec-id": 0,
   "format-version": 3,
   "last-column-id": 7,
   "last-partition-id": 999,
   "last-sequence-number": 1,
-  "last-updated-ms": 1722434400000,
+  "last-updated-ms": 1475244000000,
   "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCH_LOCAL_PRICE",
   "metadata-log": [],
   "next-row-id": 0,
@@ -38,7 +38,7 @@
   },
   "refs": {
     "main": {
-      "snapshot-id": 7837152295234636987,
+      "snapshot-id": 4088528969887131438,
       "type": "branch"
     }
   },
@@ -71,7 +71,7 @@
           "id": 4,
           "name": "PERIODID",
           "required": false,
-          "type": "decimal(1, 0)"
+          "type": "decimal(2, 0)"
         },
         {
           "doc": "Aggregate Constraint contribution cost of this unit: Sum(MarginalValue x Factor) for all relevant Constraints",
@@ -105,37 +105,37 @@
   ],
   "snapshot-log": [
     {
-      "snapshot-id": 7837152295234636987,
-      "timestamp-ms": 1722434400000
+      "snapshot-id": 4088528969887131438,
+      "timestamp-ms": 1475244000000
     }
   ],
   "snapshots": [
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCH_LOCAL_PRICE/metadata/snap-7837152295234636987-1-e7916735-9c5b-88d4-8fbd-2499463880da.avro",
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCH_LOCAL_PRICE/metadata/snap-4088528969887131438-1-e7916735-9c5b-88d4-8fbd-2499463880da.avro",
       "schema-id": 0,
       "sequence-number": 1,
-      "snapshot-id": 7837152295234636987,
+      "snapshot-id": 4088528969887131438,
       "summary": {
         "operation": "append",
-        "utilake.files": "26",
-        "utilake.from.file": "PUBLIC_ARCHIVE#PREDISPATCH_LOCAL_PRICE#FILE01#202408010000.zip",
-        "utilake.from.release": "2024-08",
-        "utilake.from.sha256": "06adf1427ee6c1de13ffe0b4a21b65db7ad29270bb3da8e42ad5ad16db60edd3",
-        "utilake.from.time": "2024-08-01T06:30:00+10:00",
-        "utilake.kinds": "[\"archive\"]",
+        "utilake.files": "19735",
+        "utilake.from.file": "PUBLIC_PREDISPATCHIS_201610231430_20161023140222.zip",
+        "utilake.from.release": "2016-10",
+        "utilake.from.sha256": "05c01348f57bfbc45b7ecb203854b00276f91041632e993e4ef41f29d7ccb18e",
+        "utilake.from.time": "2016-10-23T14:30:00+10:00",
+        "utilake.kinds": "[\"archive\",\"reports/archive\",\"reports/current\"]",
         "utilake.report-subtype": "LOCAL_PRICE",
         "utilake.report-type": "PREDISPATCH",
-        "utilake.rows": "1731710",
-        "utilake.to.file": "PUBLIC_ARCHIVE#PREDISPATCH_LOCAL_PRICE#FILE01#202609010000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "964085b00bbf640cd5b60b80928580c78240e999d45a5c33693f70ed4cc9b36a",
-        "utilake.to.time": "2026-10-01T04:00:00+10:00",
-        "utilake.total-rows": "1731710",
+        "utilake.rows": "53502630",
+        "utilake.to.file": "PUBLIC_PREDISPATCHIS_202610212300_20261021223153.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "aeaeb5ef4afe185ab63081de6184a729d498dfde6459f3958cc7192c826f33ab",
+        "utilake.to.time": "2026-10-23T04:00:00+10:00",
+        "utilake.total-rows": "53502630",
         "utilake.version": "1"
       },
-      "timestamp-ms": 1722434400000
+      "timestamp-ms": 1475244000000
     }
   ],
   "sort-orders": [

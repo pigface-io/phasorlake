@@ -6,8 +6,8 @@
   "format-version": 3,
   "last-column-id": 23,
   "last-partition-id": 999,
-  "last-sequence-number": 3,
-  "last-updated-ms": 1722434400002,
+  "last-sequence-number": 17,
+  "last-updated-ms": 1722434400016,
   "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHINTERCONNECTORRES",
   "metadata-log": [],
   "next-row-id": 0,
@@ -364,12 +364,68 @@
       "timestamp-ms": 1246370400000
     },
     {
+      "snapshot-id": 7052230635330620036,
+      "timestamp-ms": 1475244000001
+    },
+    {
+      "snapshot-id": 3596885739040978589,
+      "timestamp-ms": 1475244000002
+    },
+    {
+      "snapshot-id": 5435118774025135958,
+      "timestamp-ms": 1477922400003
+    },
+    {
+      "snapshot-id": 5731258183012935580,
+      "timestamp-ms": 1477922400004
+    },
+    {
+      "snapshot-id": 1186607856660573664,
+      "timestamp-ms": 1488290400005
+    },
+    {
+      "snapshot-id": 3865582828418782059,
+      "timestamp-ms": 1488290400006
+    },
+    {
+      "snapshot-id": 9166348503874208056,
+      "timestamp-ms": 1493560800007
+    },
+    {
+      "snapshot-id": 6962396644308570082,
+      "timestamp-ms": 1493560800008
+    },
+    {
+      "snapshot-id": 1911599630227747989,
+      "timestamp-ms": 1496239200009
+    },
+    {
+      "snapshot-id": 2210057416987061545,
+      "timestamp-ms": 1496239200010
+    },
+    {
+      "snapshot-id": 4502462764762836612,
+      "timestamp-ms": 1527775200011
+    },
+    {
+      "snapshot-id": 3666443520884091223,
+      "timestamp-ms": 1527775200012
+    },
+    {
+      "snapshot-id": 1613743895479317129,
+      "timestamp-ms": 1561903200013
+    },
+    {
+      "snapshot-id": 6475448776429113626,
+      "timestamp-ms": 1561903200014
+    },
+    {
       "snapshot-id": 1318647864287992426,
-      "timestamp-ms": 1617199200001
+      "timestamp-ms": 1617199200015
     },
     {
       "snapshot-id": 1261840023797469107,
-      "timestamp-ms": 1722434400002
+      "timestamp-ms": 1722434400016
     }
   ],
   "snapshots": [
@@ -382,7 +438,7 @@
       "snapshot-id": 690903984228542190,
       "summary": {
         "operation": "append",
-        "utilake.files": "282",
+        "utilake.files": "174",
         "utilake.from.file": "PUBLIC_DVD_PREDISPATCHINTERCONNECTORRES_D_200907010000.zip",
         "utilake.from.release": "2009-07",
         "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
@@ -390,12 +446,12 @@
         "utilake.kinds": "[\"dvd\"]",
         "utilake.report-subtype": "INTERCONNECTOR_SOLN",
         "utilake.report-type": "PREDISPATCH",
-        "utilake.rows": "73515174",
-        "utilake.to.file": "PUBLIC_DVD_PREDISPATCHINTERCONNECTORRES_202103010000.zip",
-        "utilake.to.release": "2021-03",
-        "utilake.to.sha256": "14c8c802dd0c923c456fa553553056ca2a03516fb0ddaeb125fa9d93d6153249",
-        "utilake.to.time": "2021-04-02T04:00:00+10:00",
-        "utilake.total-rows": "73515174",
+        "utilake.rows": "43220244",
+        "utilake.to.file": "PUBLIC_DVD_PREDISPATCHINTERCONNECTORRES_201609010000.zip",
+        "utilake.to.release": "2016-09",
+        "utilake.to.sha256": "31155d09edf7fffffa5faa16b09e3185c0489f6619075d84bdfe13cf75d531da",
+        "utilake.to.time": "2016-10-02T04:00:00+10:00",
+        "utilake.total-rows": "43220244",
         "utilake.version": "1"
       },
       "timestamp-ms": 1246370400000
@@ -403,10 +459,402 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHINTERCONNECTORRES/metadata/snap-1318647864287992426-2-66b43491-9a03-8d20-9676-71427386ecfd.avro",
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHINTERCONNECTORRES/metadata/snap-7052230635330620036-2-66b43491-9a03-8d20-9676-71427386ecfd.avro",
       "parent-snapshot-id": 690903984228542190,
-      "schema-id": 0,
+      "schema-id": 1,
       "sequence-number": 2,
+      "snapshot-id": 7052230635330620036,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
+        "utilake.from.file": "PUBLIC_PREDISPATCHIS_201610231430_20161023140222.zip",
+        "utilake.from.release": "2016-10",
+        "utilake.from.sha256": "05c01348f57bfbc45b7ecb203854b00276f91041632e993e4ef41f29d7ccb18e",
+        "utilake.from.time": "2016-10-23T14:30:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "INTERCONNECTOR_SOLN",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "768",
+        "utilake.to.file": "PUBLIC_PREDISPATCHIS_201610290230_20161029020151.zip",
+        "utilake.to.release": "2016-10",
+        "utilake.to.sha256": "0119d1158276f9b2949b9b59e64a5e7bd23047d771bcd2d2cc7fe494cb75cc57",
+        "utilake.to.time": "2016-10-30T04:00:00+10:00",
+        "utilake.total-rows": "43221012",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1475244000001
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHINTERCONNECTORRES/metadata/snap-3596885739040978589-3-66b43491-9a03-8d20-9676-71427386ecfd.avro",
+      "parent-snapshot-id": 7052230635330620036,
+      "schema-id": 0,
+      "sequence-number": 3,
+      "snapshot-id": 3596885739040978589,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
+        "utilake.from.file": "PUBLIC_DVD_PREDISPATCHINTERCONNECTORRES_D_201610010000.zip",
+        "utilake.from.release": "2016-10",
+        "utilake.from.sha256": "c831363f13fd2000abe044ee0347039b9cd475eb763c852a5987e22d124427c1",
+        "utilake.from.time": "2016-10-01T04:30:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "INTERCONNECTOR_SOLN",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "504432",
+        "utilake.to.file": "PUBLIC_DVD_PREDISPATCHINTERCONNECTORRES_201610010000.zip",
+        "utilake.to.release": "2016-10",
+        "utilake.to.sha256": "2d8c030528bd407279f0f0336373489d5ea1dc67114e6e4e42504e28ce092c6e",
+        "utilake.to.time": "2016-11-02T04:00:00+10:00",
+        "utilake.total-rows": "43725444",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1475244000002
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHINTERCONNECTORRES/metadata/snap-5435118774025135958-4-66b43491-9a03-8d20-9676-71427386ecfd.avro",
+      "parent-snapshot-id": 3596885739040978589,
+      "schema-id": 1,
+      "sequence-number": 4,
+      "snapshot-id": 5435118774025135958,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_PREDISPATCHIS_201611142200_20161114213159.zip",
+        "utilake.from.release": "2016-11",
+        "utilake.from.sha256": "bfa781b641ddc9e22267e5a6cc6abeaa6529f758ec8e05cc2cae887e5c338383",
+        "utilake.from.time": "2016-11-14T22:00:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "INTERCONNECTOR_SOLN",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "366",
+        "utilake.to.file": "PUBLIC_PREDISPATCHIS_201611142200_20161114213159.zip",
+        "utilake.to.release": "2016-11",
+        "utilake.to.sha256": "bfa781b641ddc9e22267e5a6cc6abeaa6529f758ec8e05cc2cae887e5c338383",
+        "utilake.to.time": "2016-11-16T04:00:00+10:00",
+        "utilake.total-rows": "43725810",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1477922400003
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHINTERCONNECTORRES/metadata/snap-5731258183012935580-5-66b43491-9a03-8d20-9676-71427386ecfd.avro",
+      "parent-snapshot-id": 5435118774025135958,
+      "schema-id": 0,
+      "sequence-number": 5,
+      "snapshot-id": 5731258183012935580,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8",
+        "utilake.from.file": "PUBLIC_DVD_PREDISPATCHINTERCONNECTORRES_D_201611010000.zip",
+        "utilake.from.release": "2016-11",
+        "utilake.from.sha256": "e4b838a3ba532a310517730d1939bea986f71f2e4ff75c23f60da389ae7adcb9",
+        "utilake.from.time": "2016-11-01T04:30:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "INTERCONNECTOR_SOLN",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "1957242",
+        "utilake.to.file": "PUBLIC_DVD_PREDISPATCHINTERCONNECTORRES_201702010000.zip",
+        "utilake.to.release": "2017-02",
+        "utilake.to.sha256": "0f1a61919e0046d1bf45072232920139740c7d9ebc1b5cf19392886010e26e9c",
+        "utilake.to.time": "2017-03-02T04:00:00+10:00",
+        "utilake.total-rows": "45683052",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1477922400004
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHINTERCONNECTORRES/metadata/snap-1186607856660573664-6-66b43491-9a03-8d20-9676-71427386ecfd.avro",
+      "parent-snapshot-id": 5731258183012935580,
+      "schema-id": 1,
+      "sequence-number": 6,
+      "snapshot-id": 1186607856660573664,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
+        "utilake.from.file": "PUBLIC_PREDISPATCHIS_201703131730_20170313170216.zip",
+        "utilake.from.release": "2017-03",
+        "utilake.from.sha256": "bb5f7242d88693e25340deae4df30b191d76e7e53100ce3844768319d557a58a",
+        "utilake.from.time": "2017-03-13T17:30:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "INTERCONNECTOR_SOLN",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "642",
+        "utilake.to.file": "PUBLIC_PREDISPATCHIS_201703261000_20170326093122.zip",
+        "utilake.to.release": "2017-03",
+        "utilake.to.sha256": "048cc33516cde79eb8bc5e166deb40a8b5f07bbe1c5cd27275c167e1f57ed3ba",
+        "utilake.to.time": "2017-03-27T04:00:00+10:00",
+        "utilake.total-rows": "45683694",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1488290400005
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHINTERCONNECTORRES/metadata/snap-3865582828418782059-7-66b43491-9a03-8d20-9676-71427386ecfd.avro",
+      "parent-snapshot-id": 1186607856660573664,
+      "schema-id": 0,
+      "sequence-number": 7,
+      "snapshot-id": 3865582828418782059,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "4",
+        "utilake.from.file": "PUBLIC_DVD_PREDISPATCHINTERCONNECTORRES_D_201703010000.zip",
+        "utilake.from.release": "2017-03",
+        "utilake.from.sha256": "23400a6b797670a757ff0f6130475ead9cbbaf5b45bb0aef0eae55e31987e698",
+        "utilake.from.time": "2017-03-01T04:30:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "INTERCONNECTOR_SOLN",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "1014858",
+        "utilake.to.file": "PUBLIC_DVD_PREDISPATCHINTERCONNECTORRES_201704010000.zip",
+        "utilake.to.release": "2017-04",
+        "utilake.to.sha256": "17a56a9e70c9999d1fbee7bdf0f9d22f8815ed16bd2281331ec01574ea1fa4b1",
+        "utilake.to.time": "2017-05-02T04:00:00+10:00",
+        "utilake.total-rows": "46698552",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1488290400006
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHINTERCONNECTORRES/metadata/snap-9166348503874208056-8-66b43491-9a03-8d20-9676-71427386ecfd.avro",
+      "parent-snapshot-id": 3865582828418782059,
+      "schema-id": 1,
+      "sequence-number": 8,
+      "snapshot-id": 9166348503874208056,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_PREDISPATCHIS_201705081700_20170508163242.zip",
+        "utilake.from.release": "2017-05",
+        "utilake.from.sha256": "2a4238af6afc8c8046a893ddb2839214779f0e030c536b2df99aaad665989f15",
+        "utilake.from.time": "2017-05-08T17:00:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "INTERCONNECTOR_SOLN",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "426",
+        "utilake.to.file": "PUBLIC_PREDISPATCHIS_201705081700_20170508163242.zip",
+        "utilake.to.release": "2017-05",
+        "utilake.to.sha256": "2a4238af6afc8c8046a893ddb2839214779f0e030c536b2df99aaad665989f15",
+        "utilake.to.time": "2017-05-10T04:00:00+10:00",
+        "utilake.total-rows": "46698978",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1493560800007
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHINTERCONNECTORRES/metadata/snap-6962396644308570082-9-66b43491-9a03-8d20-9676-71427386ecfd.avro",
+      "parent-snapshot-id": 9166348503874208056,
+      "schema-id": 0,
+      "sequence-number": 9,
+      "snapshot-id": 6962396644308570082,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
+        "utilake.from.file": "PUBLIC_DVD_PREDISPATCHINTERCONNECTORRES_D_201705010000.zip",
+        "utilake.from.release": "2017-05",
+        "utilake.from.sha256": "c97075cde91b0075cdb53c47355a8b743775ed8262be48b92dccd976488e823f",
+        "utilake.from.time": "2017-05-01T04:30:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "INTERCONNECTOR_SOLN",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "504432",
+        "utilake.to.file": "PUBLIC_DVD_PREDISPATCHINTERCONNECTORRES_201705010000.zip",
+        "utilake.to.release": "2017-05",
+        "utilake.to.sha256": "36747ec45dffae443ef0aa3c3383b7bfd2c6fada398f91142747888e15154457",
+        "utilake.to.time": "2017-06-02T04:00:00+10:00",
+        "utilake.total-rows": "47203410",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1493560800008
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHINTERCONNECTORRES/metadata/snap-1911599630227747989-10-66b43491-9a03-8d20-9676-71427386ecfd.avro",
+      "parent-snapshot-id": 6962396644308570082,
+      "schema-id": 1,
+      "sequence-number": 10,
+      "snapshot-id": 1911599630227747989,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_PREDISPATCHIS_201706181500_20170618143247.zip",
+        "utilake.from.release": "2017-06",
+        "utilake.from.sha256": "872e3ee17b35e79b8c7d97ad9fc5339de6df9d34ddbac5f941aa674924abdff7",
+        "utilake.from.time": "2017-06-18T15:00:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "INTERCONNECTOR_SOLN",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "450",
+        "utilake.to.file": "PUBLIC_PREDISPATCHIS_201706181500_20170618143247.zip",
+        "utilake.to.release": "2017-06",
+        "utilake.to.sha256": "872e3ee17b35e79b8c7d97ad9fc5339de6df9d34ddbac5f941aa674924abdff7",
+        "utilake.to.time": "2017-06-20T04:00:00+10:00",
+        "utilake.total-rows": "47203860",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1496239200009
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHINTERCONNECTORRES/metadata/snap-2210057416987061545-11-66b43491-9a03-8d20-9676-71427386ecfd.avro",
+      "parent-snapshot-id": 1911599630227747989,
+      "schema-id": 0,
+      "sequence-number": 11,
+      "snapshot-id": 2210057416987061545,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "24",
+        "utilake.from.file": "PUBLIC_DVD_PREDISPATCHINTERCONNECTORRES_D_201706010000.zip",
+        "utilake.from.release": "2017-06",
+        "utilake.from.sha256": "4822c50a030e7be7d2d4c739e40c3de9e99e7643ede3e8348089c16d118679a6",
+        "utilake.from.time": "2017-06-01T04:30:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "INTERCONNECTOR_SOLN",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "7115826",
+        "utilake.to.file": "PUBLIC_DVD_PREDISPATCHINTERCONNECTORRES_201805010000.zip",
+        "utilake.to.release": "2018-05",
+        "utilake.to.sha256": "dcf2cb22a196c66dc8c02a2465ed9ca5c489f883084800f60096f562776e8299",
+        "utilake.to.time": "2018-06-02T04:00:00+10:00",
+        "utilake.total-rows": "54319686",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1496239200010
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHINTERCONNECTORRES/metadata/snap-4502462764762836612-12-66b43491-9a03-8d20-9676-71427386ecfd.avro",
+      "parent-snapshot-id": 2210057416987061545,
+      "schema-id": 1,
+      "sequence-number": 12,
+      "snapshot-id": 4502462764762836612,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_PREDISPATCHIS_201806220230_20180622020151.zip",
+        "utilake.from.release": "2018-06",
+        "utilake.from.sha256": "5b442c7613e719720767a0677e03f1ae8f4087a23e3f7e806e4fe63efebf0542",
+        "utilake.from.time": "2018-06-22T02:30:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "INTERCONNECTOR_SOLN",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "312",
+        "utilake.to.file": "PUBLIC_PREDISPATCHIS_201806220230_20180622020151.zip",
+        "utilake.to.release": "2018-06",
+        "utilake.to.sha256": "5b442c7613e719720767a0677e03f1ae8f4087a23e3f7e806e4fe63efebf0542",
+        "utilake.to.time": "2018-06-23T04:00:00+10:00",
+        "utilake.total-rows": "54319998",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1527775200011
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHINTERCONNECTORRES/metadata/snap-3666443520884091223-13-66b43491-9a03-8d20-9676-71427386ecfd.avro",
+      "parent-snapshot-id": 4502462764762836612,
+      "schema-id": 0,
+      "sequence-number": 13,
+      "snapshot-id": 3666443520884091223,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "26",
+        "utilake.from.file": "PUBLIC_DVD_PREDISPATCHINTERCONNECTORRES_D_201806010000.zip",
+        "utilake.from.release": "2018-06",
+        "utilake.from.sha256": "2eb37e884024022b1e565c4533e41e62a9d469d60d397b6dce6977cdea257442",
+        "utilake.from.time": "2018-06-01T04:30:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "INTERCONNECTOR_SOLN",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "7700040",
+        "utilake.to.file": "PUBLIC_DVD_PREDISPATCHINTERCONNECTORRES_201906010000.zip",
+        "utilake.to.release": "2019-06",
+        "utilake.to.sha256": "4c9950efc583ef33e056c0265422b68a244c67be08993e985d58ffd80569d16c",
+        "utilake.to.time": "2019-07-02T04:00:00+10:00",
+        "utilake.total-rows": "62020038",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1527775200012
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHINTERCONNECTORRES/metadata/snap-1613743895479317129-14-66b43491-9a03-8d20-9676-71427386ecfd.avro",
+      "parent-snapshot-id": 3666443520884091223,
+      "schema-id": 1,
+      "sequence-number": 14,
+      "snapshot-id": 1613743895479317129,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_PREDISPATCHIS_201907111530_20190711150314.zip",
+        "utilake.from.release": "2019-07",
+        "utilake.from.sha256": "8100552c4b7b150556d483bee56234345906f095ed03e4328ebe9da93deb5b78",
+        "utilake.from.time": "2019-07-11T15:30:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "INTERCONNECTOR_SOLN",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "888",
+        "utilake.to.file": "PUBLIC_PREDISPATCHIS_201907111530_20190711150314.zip",
+        "utilake.to.release": "2019-07",
+        "utilake.to.sha256": "8100552c4b7b150556d483bee56234345906f095ed03e4328ebe9da93deb5b78",
+        "utilake.to.time": "2019-07-13T04:00:00+10:00",
+        "utilake.total-rows": "62020926",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1561903200013
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHINTERCONNECTORRES/metadata/snap-6475448776429113626-15-66b43491-9a03-8d20-9676-71427386ecfd.avro",
+      "parent-snapshot-id": 1613743895479317129,
+      "schema-id": 0,
+      "sequence-number": 15,
+      "snapshot-id": 6475448776429113626,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "42",
+        "utilake.from.file": "PUBLIC_DVD_PREDISPATCHINTERCONNECTORRES_D_201907010000.zip",
+        "utilake.from.release": "2019-07",
+        "utilake.from.sha256": "904cbd3100c3ab7a7a4419960108a4ad755406626098a4c625a7f08c2998f70a",
+        "utilake.from.time": "2019-07-01T04:30:00+10:00",
+        "utilake.kinds": "[\"dvd\"]",
+        "utilake.report-subtype": "INTERCONNECTOR_SOLN",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "11498100",
+        "utilake.to.file": "PUBLIC_DVD_PREDISPATCHINTERCONNECTORRES_202103010000.zip",
+        "utilake.to.release": "2021-03",
+        "utilake.to.sha256": "14c8c802dd0c923c456fa553553056ca2a03516fb0ddaeb125fa9d93d6153249",
+        "utilake.to.time": "2021-04-02T04:00:00+10:00",
+        "utilake.total-rows": "73519026",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1561903200014
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHINTERCONNECTORRES/metadata/snap-1318647864287992426-16-66b43491-9a03-8d20-9676-71427386ecfd.avro",
+      "parent-snapshot-id": 6475448776429113626,
+      "schema-id": 0,
+      "sequence-number": 16,
       "snapshot-id": 1318647864287992426,
       "summary": {
         "operation": "append",
@@ -423,38 +871,38 @@
         "utilake.to.release": "2024-07",
         "utilake.to.sha256": "1145201ef2b6577f7a326f00a96d47f80c40e33be474df751a90f9af1f0c0215",
         "utilake.to.time": "2024-08-02T04:00:00+10:00",
-        "utilake.total-rows": "93061002",
+        "utilake.total-rows": "93064854",
         "utilake.version": "3"
       },
-      "timestamp-ms": 1617199200001
+      "timestamp-ms": 1617199200015
     },
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHINTERCONNECTORRES/metadata/snap-1261840023797469107-3-66b43491-9a03-8d20-9676-71427386ecfd.avro",
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHINTERCONNECTORRES/metadata/snap-1261840023797469107-17-66b43491-9a03-8d20-9676-71427386ecfd.avro",
       "parent-snapshot-id": 1318647864287992426,
       "schema-id": 1,
-      "sequence-number": 3,
+      "sequence-number": 17,
       "snapshot-id": 1261840023797469107,
       "summary": {
         "operation": "append",
-        "utilake.files": "52",
+        "utilake.files": "18916",
         "utilake.from.file": "PUBLIC_ARCHIVE#PREDISPATCHINTERCONNECTORRES#FILE01#202408010000.zip",
         "utilake.from.release": "2024-08",
         "utilake.from.sha256": "a5299c6ff2eab57ca3727dda6e4667d49e18afc9a354dbbe22dedf9b38c4b28c",
         "utilake.from.time": "2024-08-01T04:30:00+10:00",
-        "utilake.kinds": "[\"archive\",\"archive#all\"]",
+        "utilake.kinds": "[\"archive\",\"archive#all\",\"reports/archive\",\"reports/current\"]",
         "utilake.report-subtype": "INTERCONNECTOR_SOLN",
         "utilake.report-type": "PREDISPATCH",
-        "utilake.rows": "12872712",
-        "utilake.to.file": "PUBLIC_ARCHIVE#PREDISPATCHINTERCONNECTORRES#ALL#FILE01#202609010000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "6e7ed8973c4f4360ba70ffc3b2e8e3398c71f0cc25ec01b89a50a7280f9ce785",
-        "utilake.to.time": "2026-10-02T04:00:00+10:00",
-        "utilake.total-rows": "105933714",
+        "utilake.rows": "19222821",
+        "utilake.to.file": "PUBLIC_PREDISPATCHIS_202610212300_20261021223153.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "aeaeb5ef4afe185ab63081de6184a729d498dfde6459f3958cc7192c826f33ab",
+        "utilake.to.time": "2026-10-23T04:00:00+10:00",
+        "utilake.total-rows": "112287675",
         "utilake.version": "3"
       },
-      "timestamp-ms": 1722434400002
+      "timestamp-ms": 1722434400016
     }
   ],
   "sort-orders": [

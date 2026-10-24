@@ -1,0 +1,1121 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 6522671789201325415,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 10,
+  "last-partition-id": 999,
+  "last-sequence-number": 31,
+  "last-updated-ms": 1790776800030,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SEVENDAYOUTLOOK_PEAK",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "false",
+    "utilake.format": "3",
+    "utilake.table": "SEVENDAYOUTLOOK_PEAK"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 6522671789201325415,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "REGIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 2,
+          "name": "CALENDAR_DATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 3,
+          "name": "SCHEDULED_DEMAND",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "id": 4,
+          "name": "SCHEDULED_CAPACITY",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "id": 5,
+          "name": "NET_INTERCHANGE",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 6,
+          "name": "SCHEDULED_RESERVE",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 7,
+          "name": "INTERVAL_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "REGIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 8,
+          "name": "DATATYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 9,
+          "name": "DATAVALUE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 2,
+          "name": "CALENDAR_DATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 10,
+          "name": "PRETTYDATE",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 1,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 7396301488267054363,
+      "timestamp-ms": 1485871200000
+    },
+    {
+      "snapshot-id": 9208202117508171681,
+      "timestamp-ms": 1756648800001
+    },
+    {
+      "snapshot-id": 8651602542880670575,
+      "timestamp-ms": 1756648800002
+    },
+    {
+      "snapshot-id": 7938355846664640655,
+      "timestamp-ms": 1759240800003
+    },
+    {
+      "snapshot-id": 8557914876260975284,
+      "timestamp-ms": 1759240800004
+    },
+    {
+      "snapshot-id": 6696873224433106820,
+      "timestamp-ms": 1761919200005
+    },
+    {
+      "snapshot-id": 5989751268400782350,
+      "timestamp-ms": 1761919200006
+    },
+    {
+      "snapshot-id": 3821807998022555499,
+      "timestamp-ms": 1764511200007
+    },
+    {
+      "snapshot-id": 88096517121202689,
+      "timestamp-ms": 1764511200008
+    },
+    {
+      "snapshot-id": 2861717984145268527,
+      "timestamp-ms": 1767189600009
+    },
+    {
+      "snapshot-id": 5725794800744090562,
+      "timestamp-ms": 1767189600010
+    },
+    {
+      "snapshot-id": 5208410895458843476,
+      "timestamp-ms": 1769868000011
+    },
+    {
+      "snapshot-id": 7518793051057351773,
+      "timestamp-ms": 1769868000012
+    },
+    {
+      "snapshot-id": 6579355831017697658,
+      "timestamp-ms": 1772287200013
+    },
+    {
+      "snapshot-id": 3572940895555808223,
+      "timestamp-ms": 1772287200014
+    },
+    {
+      "snapshot-id": 1675956225491255756,
+      "timestamp-ms": 1774965600015
+    },
+    {
+      "snapshot-id": 6236046865492792962,
+      "timestamp-ms": 1774965600016
+    },
+    {
+      "snapshot-id": 5949682172825597265,
+      "timestamp-ms": 1777557600017
+    },
+    {
+      "snapshot-id": 9181894299595441380,
+      "timestamp-ms": 1777557600018
+    },
+    {
+      "snapshot-id": 7715175035766612191,
+      "timestamp-ms": 1780236000019
+    },
+    {
+      "snapshot-id": 6498826193002862485,
+      "timestamp-ms": 1780236000020
+    },
+    {
+      "snapshot-id": 331571026131821874,
+      "timestamp-ms": 1782828000021
+    },
+    {
+      "snapshot-id": 1796807942973711594,
+      "timestamp-ms": 1782828000022
+    },
+    {
+      "snapshot-id": 6549870988358005007,
+      "timestamp-ms": 1785506400023
+    },
+    {
+      "snapshot-id": 666657542769627996,
+      "timestamp-ms": 1785506400024
+    },
+    {
+      "snapshot-id": 8928624901933502090,
+      "timestamp-ms": 1788184800025
+    },
+    {
+      "snapshot-id": 8037224278996658332,
+      "timestamp-ms": 1788184800026
+    },
+    {
+      "snapshot-id": 3086849532820624422,
+      "timestamp-ms": 1790776800027
+    },
+    {
+      "snapshot-id": 6155818420428334333,
+      "timestamp-ms": 1790776800028
+    },
+    {
+      "snapshot-id": 357707083990765260,
+      "timestamp-ms": 1790776800029
+    },
+    {
+      "snapshot-id": 6522671789201325415,
+      "timestamp-ms": 1790776800030
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SEVENDAYOUTLOOK_PEAK/metadata/snap-7396301488267054363-1-67d5a9a8-5f0c-8021-ae17-a3cb05a07d23.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 7396301488267054363,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_SEVENDAYOUTLOOK_FULL_20170206123430_0000000280715734.zip",
+        "utilake.from.release": "2017-02",
+        "utilake.from.sha256": "d5325468bb5812a10b758a6a427b6270f9f64f925b6fa594548e602d3a65233b",
+        "utilake.from.time": "2017-02-07T00:30:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "PEAK",
+        "utilake.report-type": "SEVENDAYOUTLOOK",
+        "utilake.rows": "1480",
+        "utilake.to.file": "PUBLIC_SEVENDAYOUTLOOK_FULL_20170206123430_0000000280715734.zip",
+        "utilake.to.release": "2017-02",
+        "utilake.to.sha256": "d5325468bb5812a10b758a6a427b6270f9f64f925b6fa594548e602d3a65233b",
+        "utilake.to.time": "2017-02-13T04:00:00+10:00",
+        "utilake.total-rows": "1480",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1485871200000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SEVENDAYOUTLOOK_PEAK/metadata/snap-9208202117508171681-2-67d5a9a8-5f0c-8021-ae17-a3cb05a07d23.avro",
+      "parent-snapshot-id": 7396301488267054363,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 9208202117508171681,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "144",
+        "utilake.from.file": "PUBLIC_SEVENDAYOUTLOOK_PEAK_20250928.zip",
+        "utilake.from.release": "2025-09",
+        "utilake.from.sha256": "e0b79aff907d94b8dec5160750302fc916eb2909dab511c28d26ad430cebea8e",
+        "utilake.from.time": "2025-09-29T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "PEAK",
+        "utilake.report-type": "SEVENDAYOUTLOOK",
+        "utilake.rows": "25200",
+        "utilake.to.file": "PUBLIC_SEVENDAYOUTLOOK_PEAK_20250928.zip",
+        "utilake.to.release": "2025-09",
+        "utilake.to.sha256": "e0b79aff907d94b8dec5160750302fc916eb2909dab511c28d26ad430cebea8e",
+        "utilake.to.time": "2025-10-07T00:00:00+10:00",
+        "utilake.total-rows": "26680",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1756648800001
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SEVENDAYOUTLOOK_PEAK/metadata/snap-8651602542880670575-3-67d5a9a8-5f0c-8021-ae17-a3cb05a07d23.avro",
+      "parent-snapshot-id": 9208202117508171681,
+      "schema-id": 0,
+      "sequence-number": 3,
+      "snapshot-id": 8651602542880670575,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "144",
+        "utilake.from.file": "PUBLIC_SEVENDAYOUTLOOK_FULL_20250928.zip",
+        "utilake.from.release": "2025-09",
+        "utilake.from.sha256": "eda2d83930e2f326aff728d017ab3e32405abae48c0a247dd5d937fc59e756b3",
+        "utilake.from.time": "2025-09-29T00:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "PEAK",
+        "utilake.report-type": "SEVENDAYOUTLOOK",
+        "utilake.rows": "225720",
+        "utilake.to.file": "PUBLIC_SEVENDAYOUTLOOK_FULL_20250928.zip",
+        "utilake.to.release": "2025-09",
+        "utilake.to.sha256": "eda2d83930e2f326aff728d017ab3e32405abae48c0a247dd5d937fc59e756b3",
+        "utilake.to.time": "2025-10-08T00:00:00+10:00",
+        "utilake.total-rows": "252400",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1756648800002
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SEVENDAYOUTLOOK_PEAK/metadata/snap-7938355846664640655-4-67d5a9a8-5f0c-8021-ae17-a3cb05a07d23.avro",
+      "parent-snapshot-id": 8651602542880670575,
+      "schema-id": 1,
+      "sequence-number": 4,
+      "snapshot-id": 7938355846664640655,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1488",
+        "utilake.from.file": "PUBLIC_SEVENDAYOUTLOOK_PEAK_20250928.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "e0b79aff907d94b8dec5160750302fc916eb2909dab511c28d26ad430cebea8e",
+        "utilake.from.time": "2025-10-02T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "PEAK",
+        "utilake.report-type": "SEVENDAYOUTLOOK",
+        "utilake.rows": "260400",
+        "utilake.to.file": "PUBLIC_SEVENDAYOUTLOOK_PEAK_20251026.zip",
+        "utilake.to.release": "2025-10",
+        "utilake.to.sha256": "e45238591cbe75b68a74dbebc42e6d8cbb1ba8a7a1754feba4e185892fba860e",
+        "utilake.to.time": "2025-11-07T00:00:00+10:00",
+        "utilake.total-rows": "512800",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1759240800003
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SEVENDAYOUTLOOK_PEAK/metadata/snap-8557914876260975284-5-67d5a9a8-5f0c-8021-ae17-a3cb05a07d23.avro",
+      "parent-snapshot-id": 7938355846664640655,
+      "schema-id": 0,
+      "sequence-number": 5,
+      "snapshot-id": 8557914876260975284,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1488",
+        "utilake.from.file": "PUBLIC_SEVENDAYOUTLOOK_FULL_20250928.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "eda2d83930e2f326aff728d017ab3e32405abae48c0a247dd5d937fc59e756b3",
+        "utilake.from.time": "2025-10-02T00:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "PEAK",
+        "utilake.report-type": "SEVENDAYOUTLOOK",
+        "utilake.rows": "2332040",
+        "utilake.to.file": "PUBLIC_SEVENDAYOUTLOOK_FULL_20251026.zip",
+        "utilake.to.release": "2025-10",
+        "utilake.to.sha256": "2437ae3ed4f27fa9cd3748cb1636db4078bf78f783e0d349f4ead2fca5e4e425",
+        "utilake.to.time": "2025-11-08T00:00:00+10:00",
+        "utilake.total-rows": "2844840",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1759240800004
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SEVENDAYOUTLOOK_PEAK/metadata/snap-6696873224433106820-6-67d5a9a8-5f0c-8021-ae17-a3cb05a07d23.avro",
+      "parent-snapshot-id": 8557914876260975284,
+      "schema-id": 1,
+      "sequence-number": 6,
+      "snapshot-id": 6696873224433106820,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1440",
+        "utilake.from.file": "PUBLIC_SEVENDAYOUTLOOK_PEAK_20251026.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "e45238591cbe75b68a74dbebc42e6d8cbb1ba8a7a1754feba4e185892fba860e",
+        "utilake.from.time": "2025-11-02T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "PEAK",
+        "utilake.report-type": "SEVENDAYOUTLOOK",
+        "utilake.rows": "252000",
+        "utilake.to.file": "PUBLIC_SEVENDAYOUTLOOK_PEAK_20251130.zip",
+        "utilake.to.release": "2025-11",
+        "utilake.to.sha256": "9e984c8983ea81c1d741fe6c8578d5764c459cdf97457484b827861b4bfccb6d",
+        "utilake.to.time": "2025-12-07T00:00:00+10:00",
+        "utilake.total-rows": "3096840",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1761919200005
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SEVENDAYOUTLOOK_PEAK/metadata/snap-5989751268400782350-7-67d5a9a8-5f0c-8021-ae17-a3cb05a07d23.avro",
+      "parent-snapshot-id": 6696873224433106820,
+      "schema-id": 0,
+      "sequence-number": 7,
+      "snapshot-id": 5989751268400782350,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1440",
+        "utilake.from.file": "PUBLIC_SEVENDAYOUTLOOK_FULL_20251026.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "2437ae3ed4f27fa9cd3748cb1636db4078bf78f783e0d349f4ead2fca5e4e425",
+        "utilake.from.time": "2025-11-02T00:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "PEAK",
+        "utilake.report-type": "SEVENDAYOUTLOOK",
+        "utilake.rows": "2257200",
+        "utilake.to.file": "PUBLIC_SEVENDAYOUTLOOK_FULL_20251130.zip",
+        "utilake.to.release": "2025-11",
+        "utilake.to.sha256": "5f8099d782c699b81474d00d6ea67adcfe8786fe767913f0aaccb33fd18e26fe",
+        "utilake.to.time": "2025-12-08T00:00:00+10:00",
+        "utilake.total-rows": "5354040",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1761919200006
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SEVENDAYOUTLOOK_PEAK/metadata/snap-3821807998022555499-8-67d5a9a8-5f0c-8021-ae17-a3cb05a07d23.avro",
+      "parent-snapshot-id": 5989751268400782350,
+      "schema-id": 1,
+      "sequence-number": 8,
+      "snapshot-id": 3821807998022555499,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1488",
+        "utilake.from.file": "PUBLIC_SEVENDAYOUTLOOK_PEAK_20251130.zip",
+        "utilake.from.release": "2025-12",
+        "utilake.from.sha256": "9e984c8983ea81c1d741fe6c8578d5764c459cdf97457484b827861b4bfccb6d",
+        "utilake.from.time": "2025-12-02T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "PEAK",
+        "utilake.report-type": "SEVENDAYOUTLOOK",
+        "utilake.rows": "260400",
+        "utilake.to.file": "PUBLIC_SEVENDAYOUTLOOK_PEAK_20251228.zip",
+        "utilake.to.release": "2025-12",
+        "utilake.to.sha256": "73356bc80923593e50a97be2da3746de05a6d2e81bfd2d7d9e72a75606152fc2",
+        "utilake.to.time": "2026-01-07T00:00:00+10:00",
+        "utilake.total-rows": "5614440",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1764511200007
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SEVENDAYOUTLOOK_PEAK/metadata/snap-88096517121202689-9-67d5a9a8-5f0c-8021-ae17-a3cb05a07d23.avro",
+      "parent-snapshot-id": 3821807998022555499,
+      "schema-id": 0,
+      "sequence-number": 9,
+      "snapshot-id": 88096517121202689,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1488",
+        "utilake.from.file": "PUBLIC_SEVENDAYOUTLOOK_FULL_20251130.zip",
+        "utilake.from.release": "2025-12",
+        "utilake.from.sha256": "5f8099d782c699b81474d00d6ea67adcfe8786fe767913f0aaccb33fd18e26fe",
+        "utilake.from.time": "2025-12-02T00:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "PEAK",
+        "utilake.report-type": "SEVENDAYOUTLOOK",
+        "utilake.rows": "2332440",
+        "utilake.to.file": "PUBLIC_SEVENDAYOUTLOOK_FULL_20251228.zip",
+        "utilake.to.release": "2025-12",
+        "utilake.to.sha256": "22a219faf3d08937e8b5eedcaca484b9a4c428975a69c12c8d78d8bcb5ee6a6e",
+        "utilake.to.time": "2026-01-08T00:00:00+10:00",
+        "utilake.total-rows": "7946880",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1764511200008
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SEVENDAYOUTLOOK_PEAK/metadata/snap-2861717984145268527-10-67d5a9a8-5f0c-8021-ae17-a3cb05a07d23.avro",
+      "parent-snapshot-id": 88096517121202689,
+      "schema-id": 1,
+      "sequence-number": 10,
+      "snapshot-id": 2861717984145268527,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1488",
+        "utilake.from.file": "PUBLIC_SEVENDAYOUTLOOK_PEAK_20251228.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "73356bc80923593e50a97be2da3746de05a6d2e81bfd2d7d9e72a75606152fc2",
+        "utilake.from.time": "2026-01-02T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "PEAK",
+        "utilake.report-type": "SEVENDAYOUTLOOK",
+        "utilake.rows": "260400",
+        "utilake.to.file": "PUBLIC_SEVENDAYOUTLOOK_PEAK_20260125.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "80dec9759ae7908f5623dc652224e8da9c78ccd141bbdcdacdfe3daa303ce7d4",
+        "utilake.to.time": "2026-02-07T00:00:00+10:00",
+        "utilake.total-rows": "8207280",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1767189600009
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SEVENDAYOUTLOOK_PEAK/metadata/snap-5725794800744090562-11-67d5a9a8-5f0c-8021-ae17-a3cb05a07d23.avro",
+      "parent-snapshot-id": 2861717984145268527,
+      "schema-id": 0,
+      "sequence-number": 11,
+      "snapshot-id": 5725794800744090562,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1488",
+        "utilake.from.file": "PUBLIC_SEVENDAYOUTLOOK_FULL_20251228.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "22a219faf3d08937e8b5eedcaca484b9a4c428975a69c12c8d78d8bcb5ee6a6e",
+        "utilake.from.time": "2026-01-02T00:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "PEAK",
+        "utilake.report-type": "SEVENDAYOUTLOOK",
+        "utilake.rows": "2332440",
+        "utilake.to.file": "PUBLIC_SEVENDAYOUTLOOK_FULL_20260125.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "2be0adc2e932abc134916c5d697f66287d88a08fd5010582ce28b0a283d2a8b9",
+        "utilake.to.time": "2026-02-08T00:00:00+10:00",
+        "utilake.total-rows": "10539720",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1767189600010
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SEVENDAYOUTLOOK_PEAK/metadata/snap-5208410895458843476-12-67d5a9a8-5f0c-8021-ae17-a3cb05a07d23.avro",
+      "parent-snapshot-id": 5725794800744090562,
+      "schema-id": 1,
+      "sequence-number": 12,
+      "snapshot-id": 5208410895458843476,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1344",
+        "utilake.from.file": "PUBLIC_SEVENDAYOUTLOOK_PEAK_20260201.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "dd39f4745294d87259c26987a7863e79de93ab3bb722c94a16f39290974c372e",
+        "utilake.from.time": "2026-02-02T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "PEAK",
+        "utilake.report-type": "SEVENDAYOUTLOOK",
+        "utilake.rows": "235200",
+        "utilake.to.file": "PUBLIC_SEVENDAYOUTLOOK_PEAK_20260222.zip",
+        "utilake.to.release": "2026-02",
+        "utilake.to.sha256": "eadf02c7ce115b82433176c849b8864fef1167b7fb6e291716c56cf7b4e4bb88",
+        "utilake.to.time": "2026-03-07T00:00:00+10:00",
+        "utilake.total-rows": "10774920",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1769868000011
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SEVENDAYOUTLOOK_PEAK/metadata/snap-7518793051057351773-13-67d5a9a8-5f0c-8021-ae17-a3cb05a07d23.avro",
+      "parent-snapshot-id": 5208410895458843476,
+      "schema-id": 0,
+      "sequence-number": 13,
+      "snapshot-id": 7518793051057351773,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1344",
+        "utilake.from.file": "PUBLIC_SEVENDAYOUTLOOK_FULL_20260201.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "1f62d49e54f40ab471ab5f147583145a1276958917486c56bae51c372ac3dd8e",
+        "utilake.from.time": "2026-02-02T00:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "PEAK",
+        "utilake.report-type": "SEVENDAYOUTLOOK",
+        "utilake.rows": "2106720",
+        "utilake.to.file": "PUBLIC_SEVENDAYOUTLOOK_FULL_20260222.zip",
+        "utilake.to.release": "2026-02",
+        "utilake.to.sha256": "ada773505f131042aeceafe5ebf122ef159c287b3a88bee748f9157e0b50c454",
+        "utilake.to.time": "2026-03-08T00:00:00+10:00",
+        "utilake.total-rows": "12881640",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1769868000012
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SEVENDAYOUTLOOK_PEAK/metadata/snap-6579355831017697658-14-67d5a9a8-5f0c-8021-ae17-a3cb05a07d23.avro",
+      "parent-snapshot-id": 7518793051057351773,
+      "schema-id": 1,
+      "sequence-number": 14,
+      "snapshot-id": 6579355831017697658,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1481",
+        "utilake.from.file": "PUBLIC_SEVENDAYOUTLOOK_PEAK_20260301.zip",
+        "utilake.from.release": "2026-03",
+        "utilake.from.sha256": "23b2df466aa287cca4b315cf9c61b75c2396b9bd219767dc9f92027bf7972ed0",
+        "utilake.from.time": "2026-03-02T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "PEAK",
+        "utilake.report-type": "SEVENDAYOUTLOOK",
+        "utilake.rows": "259175",
+        "utilake.to.file": "PUBLIC_SEVENDAYOUTLOOK_PEAK_20260329.zip",
+        "utilake.to.release": "2026-03",
+        "utilake.to.sha256": "98d60a8e468da83ad3eac84cee3fa626b2b8d8ffcd29598bd5a014cc85de31a6",
+        "utilake.to.time": "2026-04-07T00:00:00+10:00",
+        "utilake.total-rows": "13140815",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1772287200013
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SEVENDAYOUTLOOK_PEAK/metadata/snap-3572940895555808223-15-67d5a9a8-5f0c-8021-ae17-a3cb05a07d23.avro",
+      "parent-snapshot-id": 6579355831017697658,
+      "schema-id": 0,
+      "sequence-number": 15,
+      "snapshot-id": 3572940895555808223,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1481",
+        "utilake.from.file": "PUBLIC_SEVENDAYOUTLOOK_FULL_20260301.zip",
+        "utilake.from.release": "2026-03",
+        "utilake.from.sha256": "9a7d7c89464f9bdf00656198b628ed437e22ba3d78bf57c9c869365d927ec8a7",
+        "utilake.from.time": "2026-03-02T00:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "PEAK",
+        "utilake.report-type": "SEVENDAYOUTLOOK",
+        "utilake.rows": "2320680",
+        "utilake.to.file": "PUBLIC_SEVENDAYOUTLOOK_FULL_20260329.zip",
+        "utilake.to.release": "2026-03",
+        "utilake.to.sha256": "f3561cd7a36d762a92fe6b070d615f6774dc76c7bd759f3a0f6e6dcdbe5c742e",
+        "utilake.to.time": "2026-04-08T00:00:00+10:00",
+        "utilake.total-rows": "15461495",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1772287200014
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SEVENDAYOUTLOOK_PEAK/metadata/snap-1675956225491255756-16-67d5a9a8-5f0c-8021-ae17-a3cb05a07d23.avro",
+      "parent-snapshot-id": 3572940895555808223,
+      "schema-id": 1,
+      "sequence-number": 16,
+      "snapshot-id": 1675956225491255756,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1440",
+        "utilake.from.file": "PUBLIC_SEVENDAYOUTLOOK_PEAK_20260329.zip",
+        "utilake.from.release": "2026-04",
+        "utilake.from.sha256": "98d60a8e468da83ad3eac84cee3fa626b2b8d8ffcd29598bd5a014cc85de31a6",
+        "utilake.from.time": "2026-04-02T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "PEAK",
+        "utilake.report-type": "SEVENDAYOUTLOOK",
+        "utilake.rows": "252000",
+        "utilake.to.file": "PUBLIC_SEVENDAYOUTLOOK_PEAK_20260426.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "3ad7969295016f4dfbccf35cf07d6b08439a89cddc0b787fd4d5042c1ce4ee22",
+        "utilake.to.time": "2026-05-07T00:00:00+10:00",
+        "utilake.total-rows": "15713495",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1774965600015
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SEVENDAYOUTLOOK_PEAK/metadata/snap-6236046865492792962-17-67d5a9a8-5f0c-8021-ae17-a3cb05a07d23.avro",
+      "parent-snapshot-id": 1675956225491255756,
+      "schema-id": 0,
+      "sequence-number": 17,
+      "snapshot-id": 6236046865492792962,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1440",
+        "utilake.from.file": "PUBLIC_SEVENDAYOUTLOOK_FULL_20260329.zip",
+        "utilake.from.release": "2026-04",
+        "utilake.from.sha256": "f3561cd7a36d762a92fe6b070d615f6774dc76c7bd759f3a0f6e6dcdbe5c742e",
+        "utilake.from.time": "2026-04-02T00:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "PEAK",
+        "utilake.report-type": "SEVENDAYOUTLOOK",
+        "utilake.rows": "2257200",
+        "utilake.to.file": "PUBLIC_SEVENDAYOUTLOOK_FULL_20260426.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "444f341ee85b2fa2b2e776f79cafa1b8e1719285489d84b3b0028f5a9e2aa2f7",
+        "utilake.to.time": "2026-05-08T00:00:00+10:00",
+        "utilake.total-rows": "17970695",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1774965600016
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SEVENDAYOUTLOOK_PEAK/metadata/snap-5949682172825597265-18-67d5a9a8-5f0c-8021-ae17-a3cb05a07d23.avro",
+      "parent-snapshot-id": 6236046865492792962,
+      "schema-id": 1,
+      "sequence-number": 18,
+      "snapshot-id": 5949682172825597265,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1488",
+        "utilake.from.file": "PUBLIC_SEVENDAYOUTLOOK_PEAK_20260426.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "3ad7969295016f4dfbccf35cf07d6b08439a89cddc0b787fd4d5042c1ce4ee22",
+        "utilake.from.time": "2026-05-02T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "PEAK",
+        "utilake.report-type": "SEVENDAYOUTLOOK",
+        "utilake.rows": "260400",
+        "utilake.to.file": "PUBLIC_SEVENDAYOUTLOOK_PEAK_20260531.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "913c2c63aab48209b74d6d0f710bf8045fbbb974733ec9f65523e259a3da7c0a",
+        "utilake.to.time": "2026-06-07T00:00:00+10:00",
+        "utilake.total-rows": "18231095",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1777557600017
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SEVENDAYOUTLOOK_PEAK/metadata/snap-9181894299595441380-19-67d5a9a8-5f0c-8021-ae17-a3cb05a07d23.avro",
+      "parent-snapshot-id": 5949682172825597265,
+      "schema-id": 0,
+      "sequence-number": 19,
+      "snapshot-id": 9181894299595441380,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1488",
+        "utilake.from.file": "PUBLIC_SEVENDAYOUTLOOK_FULL_20260426.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "444f341ee85b2fa2b2e776f79cafa1b8e1719285489d84b3b0028f5a9e2aa2f7",
+        "utilake.from.time": "2026-05-02T00:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "PEAK",
+        "utilake.report-type": "SEVENDAYOUTLOOK",
+        "utilake.rows": "2332440",
+        "utilake.to.file": "PUBLIC_SEVENDAYOUTLOOK_FULL_20260531.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "d0871281c4799d7c9ca5af13b0ae9a1c942c96a6bef5582ce8f03ba15f48808a",
+        "utilake.to.time": "2026-06-08T00:00:00+10:00",
+        "utilake.total-rows": "20563535",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1777557600018
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SEVENDAYOUTLOOK_PEAK/metadata/snap-7715175035766612191-20-67d5a9a8-5f0c-8021-ae17-a3cb05a07d23.avro",
+      "parent-snapshot-id": 9181894299595441380,
+      "schema-id": 1,
+      "sequence-number": 20,
+      "snapshot-id": 7715175035766612191,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1440",
+        "utilake.from.file": "PUBLIC_SEVENDAYOUTLOOK_PEAK_20260531.zip",
+        "utilake.from.release": "2026-06",
+        "utilake.from.sha256": "913c2c63aab48209b74d6d0f710bf8045fbbb974733ec9f65523e259a3da7c0a",
+        "utilake.from.time": "2026-06-02T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "PEAK",
+        "utilake.report-type": "SEVENDAYOUTLOOK",
+        "utilake.rows": "252000",
+        "utilake.to.file": "PUBLIC_SEVENDAYOUTLOOK_PEAK_20260628.zip",
+        "utilake.to.release": "2026-06",
+        "utilake.to.sha256": "1b4f32e89b229039ed9282ac4e7d04dedab849f7f21e5d8f9b423b579cc60ae3",
+        "utilake.to.time": "2026-07-07T00:00:00+10:00",
+        "utilake.total-rows": "20815535",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1780236000019
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SEVENDAYOUTLOOK_PEAK/metadata/snap-6498826193002862485-21-67d5a9a8-5f0c-8021-ae17-a3cb05a07d23.avro",
+      "parent-snapshot-id": 7715175035766612191,
+      "schema-id": 0,
+      "sequence-number": 21,
+      "snapshot-id": 6498826193002862485,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1440",
+        "utilake.from.file": "PUBLIC_SEVENDAYOUTLOOK_FULL_20260531.zip",
+        "utilake.from.release": "2026-06",
+        "utilake.from.sha256": "d0871281c4799d7c9ca5af13b0ae9a1c942c96a6bef5582ce8f03ba15f48808a",
+        "utilake.from.time": "2026-06-02T00:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "PEAK",
+        "utilake.report-type": "SEVENDAYOUTLOOK",
+        "utilake.rows": "2257200",
+        "utilake.to.file": "PUBLIC_SEVENDAYOUTLOOK_FULL_20260628.zip",
+        "utilake.to.release": "2026-06",
+        "utilake.to.sha256": "d23bda60a57013ed7fd1d23a9fc502604edd8c23695d3edab05af190e37f9985",
+        "utilake.to.time": "2026-07-08T00:00:00+10:00",
+        "utilake.total-rows": "23072735",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1780236000020
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SEVENDAYOUTLOOK_PEAK/metadata/snap-331571026131821874-22-67d5a9a8-5f0c-8021-ae17-a3cb05a07d23.avro",
+      "parent-snapshot-id": 6498826193002862485,
+      "schema-id": 1,
+      "sequence-number": 22,
+      "snapshot-id": 331571026131821874,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1488",
+        "utilake.from.file": "PUBLIC_SEVENDAYOUTLOOK_PEAK_20260628.zip",
+        "utilake.from.release": "2026-07",
+        "utilake.from.sha256": "1b4f32e89b229039ed9282ac4e7d04dedab849f7f21e5d8f9b423b579cc60ae3",
+        "utilake.from.time": "2026-07-02T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "PEAK",
+        "utilake.report-type": "SEVENDAYOUTLOOK",
+        "utilake.rows": "260400",
+        "utilake.to.file": "PUBLIC_SEVENDAYOUTLOOK_PEAK_20260726.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "05a5be90ec4f5fc6672332c04122dc83a0b474e9fb93745fc687caa168516fdb",
+        "utilake.to.time": "2026-08-07T00:00:00+10:00",
+        "utilake.total-rows": "23333135",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1782828000021
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SEVENDAYOUTLOOK_PEAK/metadata/snap-1796807942973711594-23-67d5a9a8-5f0c-8021-ae17-a3cb05a07d23.avro",
+      "parent-snapshot-id": 331571026131821874,
+      "schema-id": 0,
+      "sequence-number": 23,
+      "snapshot-id": 1796807942973711594,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1488",
+        "utilake.from.file": "PUBLIC_SEVENDAYOUTLOOK_FULL_20260628.zip",
+        "utilake.from.release": "2026-07",
+        "utilake.from.sha256": "d23bda60a57013ed7fd1d23a9fc502604edd8c23695d3edab05af190e37f9985",
+        "utilake.from.time": "2026-07-02T00:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "PEAK",
+        "utilake.report-type": "SEVENDAYOUTLOOK",
+        "utilake.rows": "2332440",
+        "utilake.to.file": "PUBLIC_SEVENDAYOUTLOOK_FULL_20260726.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "23fae2cdb6db3580556981ad4282a9272b5f2e4543fe03fac9faacf67c87a3da",
+        "utilake.to.time": "2026-08-08T00:00:00+10:00",
+        "utilake.total-rows": "25665575",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1782828000022
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SEVENDAYOUTLOOK_PEAK/metadata/snap-6549870988358005007-24-67d5a9a8-5f0c-8021-ae17-a3cb05a07d23.avro",
+      "parent-snapshot-id": 1796807942973711594,
+      "schema-id": 1,
+      "sequence-number": 24,
+      "snapshot-id": 6549870988358005007,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1972",
+        "utilake.from.file": "PUBLIC_SEVENDAYOUTLOOK_PEAK_20260726.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "05a5be90ec4f5fc6672332c04122dc83a0b474e9fb93745fc687caa168516fdb",
+        "utilake.from.time": "2026-08-02T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "PEAK",
+        "utilake.report-type": "SEVENDAYOUTLOOK",
+        "utilake.rows": "345100",
+        "utilake.to.file": "PUBLIC_SEVENDAYOUTLOOK_PEAK_20260831233524_0000000535430445.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "3a144bc6edfeb520484071fdf87dcf04402687a05902f4304eda90ae62ca8920",
+        "utilake.to.time": "2026-09-07T00:00:00+10:00",
+        "utilake.total-rows": "26010675",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1785506400023
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SEVENDAYOUTLOOK_PEAK/metadata/snap-666657542769627996-25-67d5a9a8-5f0c-8021-ae17-a3cb05a07d23.avro",
+      "parent-snapshot-id": 6549870988358005007,
+      "schema-id": 0,
+      "sequence-number": 25,
+      "snapshot-id": 666657542769627996,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1973",
+        "utilake.from.file": "PUBLIC_SEVENDAYOUTLOOK_FULL_20260726.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "23fae2cdb6db3580556981ad4282a9272b5f2e4543fe03fac9faacf67c87a3da",
+        "utilake.from.time": "2026-08-02T00:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "PEAK",
+        "utilake.report-type": "SEVENDAYOUTLOOK",
+        "utilake.rows": "3093240",
+        "utilake.to.file": "PUBLIC_SEVENDAYOUTLOOK_FULL_20260831233524_0000000535430444.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "78bb1ceeb01a6c410d3dcf1cdd7d018dcce541cd4cefd14ce5cb4a709ce9b39d",
+        "utilake.to.time": "2026-09-08T00:00:00+10:00",
+        "utilake.total-rows": "29103915",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1785506400024
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SEVENDAYOUTLOOK_PEAK/metadata/snap-8928624901933502090-26-67d5a9a8-5f0c-8021-ae17-a3cb05a07d23.avro",
+      "parent-snapshot-id": 666657542769627996,
+      "schema-id": 1,
+      "sequence-number": 26,
+      "snapshot-id": 8928624901933502090,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2880",
+        "utilake.from.file": "PUBLIC_SEVENDAYOUTLOOK_PEAK_20260830.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "e061f31d71dd1abd82957cb057c00bd699d66f2b5c5d13b3465fef14b212c636",
+        "utilake.from.time": "2026-09-02T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "PEAK",
+        "utilake.report-type": "SEVENDAYOUTLOOK",
+        "utilake.rows": "504000",
+        "utilake.to.file": "PUBLIC_SEVENDAYOUTLOOK_PEAK_20260930233524_0000000540476194.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "ef58c112c0d6c56baffb5cb4c0e08d5b05e83aed9d522d611138519bcf99e2ff",
+        "utilake.to.time": "2026-10-07T00:00:00+10:00",
+        "utilake.total-rows": "29607915",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1788184800025
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SEVENDAYOUTLOOK_PEAK/metadata/snap-8037224278996658332-27-67d5a9a8-5f0c-8021-ae17-a3cb05a07d23.avro",
+      "parent-snapshot-id": 8928624901933502090,
+      "schema-id": 0,
+      "sequence-number": 27,
+      "snapshot-id": 8037224278996658332,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2880",
+        "utilake.from.file": "PUBLIC_SEVENDAYOUTLOOK_FULL_20260830.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "6d9841a88ba5623d2efe95dee267c857e7ce3c293f88eebc6b1d4495a1344cb3",
+        "utilake.from.time": "2026-09-02T00:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "PEAK",
+        "utilake.report-type": "SEVENDAYOUTLOOK",
+        "utilake.rows": "4514400",
+        "utilake.to.file": "PUBLIC_SEVENDAYOUTLOOK_FULL_20260930233524_0000000540476193.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "708adb3af6468bcd35cd0b6b3b4e06d46ef733a1ca1437128e7142104e0f0c4d",
+        "utilake.to.time": "2026-10-08T00:00:00+10:00",
+        "utilake.total-rows": "34122315",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1788184800026
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SEVENDAYOUTLOOK_PEAK/metadata/snap-3086849532820624422-28-67d5a9a8-5f0c-8021-ae17-a3cb05a07d23.avro",
+      "parent-snapshot-id": 8037224278996658332,
+      "schema-id": 1,
+      "sequence-number": 28,
+      "snapshot-id": 3086849532820624422,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "480",
+        "utilake.from.file": "PUBLIC_SEVENDAYOUTLOOK_PEAK_20260927.zip",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "7ab8dd7d6f83e9f72bf56e33316ef48f3ea468af5e8185fb288dc886d2018cb3",
+        "utilake.from.time": "2026-10-02T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "PEAK",
+        "utilake.report-type": "SEVENDAYOUTLOOK",
+        "utilake.rows": "84000",
+        "utilake.to.file": "PUBLIC_SEVENDAYOUTLOOK_PEAK_20261004.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "3787471a3e2ac6df270c5ad1890129f2fd3c3149d1d1be57eff381d63c0504c1",
+        "utilake.to.time": "2026-10-17T00:00:00+10:00",
+        "utilake.total-rows": "34206315",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1790776800027
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SEVENDAYOUTLOOK_PEAK/metadata/snap-6155818420428334333-29-67d5a9a8-5f0c-8021-ae17-a3cb05a07d23.avro",
+      "parent-snapshot-id": 3086849532820624422,
+      "schema-id": 0,
+      "sequence-number": 29,
+      "snapshot-id": 6155818420428334333,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "480",
+        "utilake.from.file": "PUBLIC_SEVENDAYOUTLOOK_FULL_20260927.zip",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "b4f99f7f97f1c41f6bcaddb64b36220704bc91781d40656b1f1332624fdc1324",
+        "utilake.from.time": "2026-10-02T00:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "PEAK",
+        "utilake.report-type": "SEVENDAYOUTLOOK",
+        "utilake.rows": "752400",
+        "utilake.to.file": "PUBLIC_SEVENDAYOUTLOOK_FULL_20261004.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "8b23b166e9dd2d4e4d8dfe3c1034b084b39f2ec2a7e2cad90af5a6cbd4c3a441",
+        "utilake.to.time": "2026-10-18T00:00:00+10:00",
+        "utilake.total-rows": "34958715",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1790776800028
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SEVENDAYOUTLOOK_PEAK/metadata/snap-357707083990765260-30-67d5a9a8-5f0c-8021-ae17-a3cb05a07d23.avro",
+      "parent-snapshot-id": 6155818420428334333,
+      "schema-id": 1,
+      "sequence-number": 30,
+      "snapshot-id": 357707083990765260,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1005",
+        "utilake.from.file": "PUBLIC_SEVENDAYOUTLOOK_PEAK_20261001000518_0000000540479967.zip",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "472bf08ffd5d4ab3020aed7ce6ceb62d1c2e0ced3044348e47cb76933711e4e0",
+        "utilake.from.time": "2026-10-02T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "PEAK",
+        "utilake.report-type": "SEVENDAYOUTLOOK",
+        "utilake.rows": "175875",
+        "utilake.to.file": "PUBLIC_SEVENDAYOUTLOOK_PEAK_20261021220456_0000000544124061.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "e94071ae5d2404fa04170d92474f35fcaf5bb0f79e1913ca9464f32252a23945",
+        "utilake.to.time": "2026-10-28T00:00:00+10:00",
+        "utilake.total-rows": "35134590",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1790776800029
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SEVENDAYOUTLOOK_PEAK/metadata/snap-6522671789201325415-31-67d5a9a8-5f0c-8021-ae17-a3cb05a07d23.avro",
+      "parent-snapshot-id": 357707083990765260,
+      "schema-id": 0,
+      "sequence-number": 31,
+      "snapshot-id": 6522671789201325415,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1005",
+        "utilake.from.file": "PUBLIC_SEVENDAYOUTLOOK_FULL_20261001000518_0000000540479966.zip",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "e9bbadb730d6f24d2d870bcc6ee8697c59e50f6343998aa2fdab1c4f25604e60",
+        "utilake.from.time": "2026-10-02T00:30:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "PEAK",
+        "utilake.report-type": "SEVENDAYOUTLOOK",
+        "utilake.rows": "1575000",
+        "utilake.to.file": "PUBLIC_SEVENDAYOUTLOOK_FULL_20261021220456_0000000544124060.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "0de9f14df200bd1f4f929167500c22f8c7366b24ec85d9c748b4266f9c49a49f",
+        "utilake.to.time": "2026-10-29T00:00:00+10:00",
+        "utilake.total-rows": "36709590",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1790776800030
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "67d5a9a8-5f0c-8021-ae17-a3cb05a07d23"
+}

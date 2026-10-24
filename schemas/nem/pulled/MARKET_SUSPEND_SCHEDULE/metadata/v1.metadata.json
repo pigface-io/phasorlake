@@ -1,13 +1,13 @@
 {
-  "current-schema-id": 0,
-  "current-snapshot-id": 1028807939711240289,
+  "current-schema-id": 1,
+  "current-snapshot-id": 6351638151608558102,
   "default-sort-order-id": 0,
   "default-spec-id": 0,
   "format-version": 3,
   "last-column-id": 16,
   "last-partition-id": 999,
-  "last-sequence-number": 1,
-  "last-updated-ms": 1722434400000,
+  "last-sequence-number": 6,
+  "last-updated-ms": 1790776800005,
   "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MARKET_SUSPEND_SCHEDULE",
   "metadata-log": [],
   "next-row-id": 0,
@@ -38,7 +38,7 @@
   },
   "refs": {
     "main": {
-      "snapshot-id": 1028807939711240289,
+      "snapshot-id": 6351638151608558102,
       "type": "branch"
     }
   },
@@ -166,12 +166,156 @@
       ],
       "schema-id": 0,
       "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Calendar date from when this record set is effective",
+          "id": 1,
+          "name": "EFFECTIVEDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Distinguishes which record set to apply - at time of writing this was Business or Non-business day but may change in the future depending on outcome of consultation",
+          "id": 2,
+          "name": "DAY_TYPE",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Region affected.",
+          "id": 3,
+          "name": "REGIONID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "48 intervals for a day, midnight base (equates to 00:30 - 00:00)",
+          "id": 4,
+          "name": "PERIODID",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Energy Price applied for this period for this Day Type",
+          "id": 5,
+          "name": "ENERGY_RRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 6Sec contingency Price applied for this period for this Day Type",
+          "id": 6,
+          "name": "R6_RRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 60Sec contingency Price applied for this period for this Day Type",
+          "id": 7,
+          "name": "R60_RRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 5Min contingency Price applied for this period for this Day Type",
+          "id": 8,
+          "name": "R5_RRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise Regulation contingency Price applied for this period for this Day Type",
+          "id": 9,
+          "name": "RREG_RRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 6Sec contingency Price applied for this period for this Day Type",
+          "id": 10,
+          "name": "L6_RRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 60Sec contingency Price applied for this period for this Day Type",
+          "id": 11,
+          "name": "L60_RRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 5Min contingency Price applied for this period for this Day Type",
+          "id": 12,
+          "name": "L5_RRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower Regulation Price applied for this period for this Day Type",
+          "id": 13,
+          "name": "LREG_RRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 1Sec contingency Price applied for this period for this Day Type",
+          "id": 15,
+          "name": "L1_RRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 1Sec contingency Price applied for this period for this Day Type",
+          "id": 16,
+          "name": "R1_RRP",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 14,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "schema-id": 1,
+      "type": "struct"
     }
   ],
   "snapshot-log": [
     {
       "snapshot-id": 1028807939711240289,
       "timestamp-ms": 1722434400000
+    },
+    {
+      "snapshot-id": 3420876080006451327,
+      "timestamp-ms": 1785506400001
+    },
+    {
+      "snapshot-id": 8941960249501064607,
+      "timestamp-ms": 1785506400002
+    },
+    {
+      "snapshot-id": 8482246169199738946,
+      "timestamp-ms": 1788184800003
+    },
+    {
+      "snapshot-id": 2258493672441567503,
+      "timestamp-ms": 1788184800004
+    },
+    {
+      "snapshot-id": 6351638151608558102,
+      "timestamp-ms": 1790776800005
     }
   ],
   "snapshots": [
@@ -184,7 +328,7 @@
       "snapshot-id": 1028807939711240289,
       "summary": {
         "operation": "append",
-        "utilake.files": "26",
+        "utilake.files": "24",
         "utilake.from.file": "PUBLIC_ARCHIVE#MARKET_SUSPEND_SCHEDULE#FILE01#202408010000.zip",
         "utilake.from.release": "2024-08",
         "utilake.from.sha256": "8577feba96378b4919d45e5aca316a0a3ff5ef1c029e2a4a29a8e347465f4e32",
@@ -192,15 +336,155 @@
         "utilake.kinds": "[\"archive\"]",
         "utilake.report-subtype": "MARKET_SUSPEND_SCHEDULE",
         "utilake.report-type": "FORCE_MAJEURE",
-        "utilake.rows": "5081760",
+        "utilake.rows": "4640160",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MARKET_SUSPEND_SCHEDULE#FILE01#202607010000.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "53457416487fdf5428885582f62601d2aff8cd7b71a9514fb5bf5309b8f08c5a",
+        "utilake.to.time": "2026-08-17T00:00:00+10:00",
+        "utilake.total-rows": "4640160",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1722434400000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MARKET_SUSPEND_SCHEDULE/metadata/snap-3420876080006451327-2-201ec535-b756-89d0-9dfc-630f34dff489.avro",
+      "parent-snapshot-id": 1028807939711240289,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 3420876080006451327,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
+        "utilake.from.file": "PUBLIC_MARKET_SUSPENSION_SCHEDULE_20260822235513_0000000533965554.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "846749094cd2ec6a6d8dc6f4288a26aa1be7bf403b0a70076288b43366aede39",
+        "utilake.from.time": "2026-09-07T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "MARKET_SUSPEND_SCHEDULE",
+        "utilake.report-type": "FORCE_MAJEURE",
+        "utilake.rows": "960",
+        "utilake.to.file": "PUBLIC_MARKET_SUSPENSION_SCHEDULE_20260829235511_0000000535112355.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "73873fcad9e3706c7c06044220bca76bb371f6051826abb49ba69cc779498bff",
+        "utilake.to.time": "2026-09-14T00:00:00+10:00",
+        "utilake.total-rows": "4641120",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1785506400001
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MARKET_SUSPEND_SCHEDULE/metadata/snap-8941960249501064607-3-201ec535-b756-89d0-9dfc-630f34dff489.avro",
+      "parent-snapshot-id": 3420876080006451327,
+      "schema-id": 0,
+      "sequence-number": 3,
+      "snapshot-id": 8941960249501064607,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MARKET_SUSPEND_SCHEDULE#FILE01#202608010000.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "4e33b65c4d8ff6dd0c662d14391185df0964250042a1604251437fca6a9a9036",
+        "utilake.from.time": "2017-12-25T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "MARKET_SUSPEND_SCHEDULE",
+        "utilake.report-type": "FORCE_MAJEURE",
+        "utilake.rows": "220320",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MARKET_SUSPEND_SCHEDULE#FILE01#202608010000.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "4e33b65c4d8ff6dd0c662d14391185df0964250042a1604251437fca6a9a9036",
+        "utilake.to.time": "2026-10-05T00:00:00+10:00",
+        "utilake.total-rows": "4861440",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1785506400002
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MARKET_SUSPEND_SCHEDULE/metadata/snap-8482246169199738946-4-201ec535-b756-89d0-9dfc-630f34dff489.avro",
+      "parent-snapshot-id": 8941960249501064607,
+      "schema-id": 1,
+      "sequence-number": 4,
+      "snapshot-id": 8482246169199738946,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "4",
+        "utilake.from.file": "PUBLIC_MARKET_SUSPENSION_SCHEDULE_20260905235509_0000000536292831.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "daa04953ed9f8efdb1a47aee3fe3e2a35d40a2fde0667cc467fcae6cb188ac6d",
+        "utilake.from.time": "2026-09-21T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "MARKET_SUSPEND_SCHEDULE",
+        "utilake.report-type": "FORCE_MAJEURE",
+        "utilake.rows": "1920",
+        "utilake.to.file": "PUBLIC_MARKET_SUSPENSION_SCHEDULE_20260926235515_0000000539910318.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "66c372bb8ea53cf5385232d6b6ecafec26fd62aab5abb1b44177549aae836f03",
+        "utilake.to.time": "2026-10-12T00:00:00+10:00",
+        "utilake.total-rows": "4863360",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1788184800003
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MARKET_SUSPEND_SCHEDULE/metadata/snap-2258493672441567503-5-201ec535-b756-89d0-9dfc-630f34dff489.avro",
+      "parent-snapshot-id": 8482246169199738946,
+      "schema-id": 0,
+      "sequence-number": 5,
+      "snapshot-id": 2258493672441567503,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MARKET_SUSPEND_SCHEDULE#FILE01#202609010000.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "a8501667b9e68f1ad067daa6a1a5f817c3340f0ed02ac02c74cd3368c487891f",
+        "utilake.from.time": "2017-12-25T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "MARKET_SUSPEND_SCHEDULE",
+        "utilake.report-type": "FORCE_MAJEURE",
+        "utilake.rows": "221280",
         "utilake.to.file": "PUBLIC_ARCHIVE#MARKET_SUSPEND_SCHEDULE#FILE01#202609010000.zip",
         "utilake.to.release": "2026-09",
         "utilake.to.sha256": "a8501667b9e68f1ad067daa6a1a5f817c3340f0ed02ac02c74cd3368c487891f",
         "utilake.to.time": "2026-10-19T00:00:00+10:00",
-        "utilake.total-rows": "5081760",
+        "utilake.total-rows": "5084640",
         "utilake.version": "2"
       },
-      "timestamp-ms": 1722434400000
+      "timestamp-ms": 1788184800004
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MARKET_SUSPEND_SCHEDULE/metadata/snap-6351638151608558102-6-201ec535-b756-89d0-9dfc-630f34dff489.avro",
+      "parent-snapshot-id": 2258493672441567503,
+      "schema-id": 1,
+      "sequence-number": 6,
+      "snapshot-id": 6351638151608558102,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "3",
+        "utilake.from.file": "PUBLIC_MARKET_SUSPENSION_SCHEDULE_20261003235512_0000000541019163.zip",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "016d36e7192e4eb40e723b8b61b96b31f64c5cb0d0ea6e2e4d7234719876b9d9",
+        "utilake.from.time": "2026-10-19T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "MARKET_SUSPEND_SCHEDULE",
+        "utilake.report-type": "FORCE_MAJEURE",
+        "utilake.rows": "1440",
+        "utilake.to.file": "PUBLIC_MARKET_SUSPENSION_SCHEDULE_20261017235510_0000000543435592.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "67535369ceb02a016a931256fe716e7fc621927e07b687f01278cd6054f42e9e",
+        "utilake.to.time": "2026-11-02T00:00:00+10:00",
+        "utilake.total-rows": "5086080",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1790776800005
     }
   ],
   "sort-orders": [

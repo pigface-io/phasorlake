@@ -1,0 +1,277 @@
+{
+  "current-schema-id": 1,
+  "current-snapshot-id": 5083969135744928089,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 14,
+  "last-partition-id": 999,
+  "last-sequence-number": 2,
+  "last-updated-ms": 1753970400001,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/TRADING_CUMULATIVE_PRICE",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "false",
+    "utilake.format": "3",
+    "utilake.table": "TRADING_CUMULATIVE_PRICE"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 5083969135744928089,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 2,
+          "name": "REGIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "CUMULATIVE_PRICE_THRESHOLD",
+          "required": false,
+          "type": "decimal(7, 0)"
+        },
+        {
+          "id": 4,
+          "name": "ENERGY_CUMULATIVE_PRICE",
+          "required": false,
+          "type": "decimal(8, 2)"
+        },
+        {
+          "id": 5,
+          "name": "RAISE6SEC_CUMULATIVE_PRICE",
+          "required": false,
+          "type": "decimal(7, 2)"
+        },
+        {
+          "id": 6,
+          "name": "RAISE60SEC_CUMULATIVE_PRICE",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 7,
+          "name": "RAISE5MIN_CUMULATIVE_PRICE",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 8,
+          "name": "RAISEREG_CUMULATIVE_PRICE",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 9,
+          "name": "LOWER6SEC_CUMULATIVE_PRICE",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 10,
+          "name": "LOWER60SEC_CUMULATIVE_PRICE",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 11,
+          "name": "LOWER5MIN_CUMULATIVE_PRICE",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 12,
+          "name": "LOWERREG_CUMULATIVE_PRICE",
+          "required": false,
+          "type": "decimal(6, 2)"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 2,
+          "name": "REGIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "CUMULATIVE_PRICE_THRESHOLD",
+          "required": false,
+          "type": "decimal(7, 0)"
+        },
+        {
+          "id": 4,
+          "name": "ENERGY_CUMULATIVE_PRICE",
+          "required": false,
+          "type": "decimal(8, 2)"
+        },
+        {
+          "id": 5,
+          "name": "RAISE6SEC_CUMULATIVE_PRICE",
+          "required": false,
+          "type": "decimal(7, 2)"
+        },
+        {
+          "id": 6,
+          "name": "RAISE60SEC_CUMULATIVE_PRICE",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 7,
+          "name": "RAISE5MIN_CUMULATIVE_PRICE",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 8,
+          "name": "RAISEREG_CUMULATIVE_PRICE",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 9,
+          "name": "LOWER6SEC_CUMULATIVE_PRICE",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 10,
+          "name": "LOWER60SEC_CUMULATIVE_PRICE",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 11,
+          "name": "LOWER5MIN_CUMULATIVE_PRICE",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 12,
+          "name": "LOWERREG_CUMULATIVE_PRICE",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 13,
+          "name": "LOWER1SEC_CUMULATIVE_PRICE",
+          "required": false,
+          "type": "decimal(8, 2)"
+        },
+        {
+          "id": 14,
+          "name": "RAISE1SEC_CUMULATIVE_PRICE",
+          "required": false,
+          "type": "decimal(6, 2)"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 1,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 5915488307447588692,
+      "timestamp-ms": 1596204000000
+    },
+    {
+      "snapshot-id": 5083969135744928089,
+      "timestamp-ms": 1753970400001
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/TRADING_CUMULATIVE_PRICE/metadata/snap-5915488307447588692-1-93858619-da67-8ac2-adbd-bc6027113b9f.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 5915488307447588692,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_TRADING_CUMULATIVE_PRICE_202008230200_0000000327476381.zip",
+        "utilake.from.release": "2020-08",
+        "utilake.from.sha256": "6448f09c6366d9220713a0e817ffb4bb9a67b12eb1590bf9e5ecacf7deacd98a",
+        "utilake.from.time": "2020-08-23T02:00:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "CUMULATIVE_PRICE",
+        "utilake.report-type": "TRADING",
+        "utilake.rows": "5",
+        "utilake.to.file": "PUBLIC_TRADING_CUMULATIVE_PRICE_202008230200_0000000327476381.zip",
+        "utilake.to.release": "2020-08",
+        "utilake.to.sha256": "6448f09c6366d9220713a0e817ffb4bb9a67b12eb1590bf9e5ecacf7deacd98a",
+        "utilake.to.time": "2020-08-23T02:00:00+10:00",
+        "utilake.total-rows": "5",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1596204000000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/TRADING_CUMULATIVE_PRICE/metadata/snap-5083969135744928089-2-93858619-da67-8ac2-adbd-bc6027113b9f.avro",
+      "parent-snapshot-id": 5915488307447588692,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 5083969135744928089,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "113152",
+        "utilake.from.file": "PUBLIC_TRADING_CUMULATIVE_PRICE_202508121115_0000000475994479.zip",
+        "utilake.from.release": "2025-08",
+        "utilake.from.sha256": "1bd4a5eba875b9301eda8536f8caff71a6b56fedc140c9c58a8102c325a4655e",
+        "utilake.from.time": "2025-08-12T11:15:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "CUMULATIVE_PRICE",
+        "utilake.report-type": "TRADING",
+        "utilake.rows": "565760",
+        "utilake.to.file": "PUBLIC_TRADING_CUMULATIVE_PRICE_202610212235_0000000544127064.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "9d11f364e432142b30e24152e1277b89f41cdd1cecb11c9930853016b593d5e2",
+        "utilake.to.time": "2026-10-21T22:35:00+10:00",
+        "utilake.total-rows": "565765",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1753970400001
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "93858619-da67-8ac2-adbd-bc6027113b9f"
+}

@@ -1,0 +1,178 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 7355935718269895109,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 16,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1759240800000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DINT",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "false",
+    "utilake.format": "3",
+    "utilake.table": "DINT"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 7355935718269895109,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 2,
+          "name": "RUNNO",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 3,
+          "name": "INTERCONNECTORID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "INTERVENTION",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 5,
+          "name": "METEREDMWFLOW",
+          "required": false,
+          "type": "decimal(9, 5)"
+        },
+        {
+          "id": 6,
+          "name": "MWFLOW",
+          "required": false,
+          "type": "decimal(9, 5)"
+        },
+        {
+          "id": 7,
+          "name": "MWLOSSES",
+          "required": false,
+          "type": "decimal(8, 5)"
+        },
+        {
+          "id": 8,
+          "name": "MARGINALVALUE",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 9,
+          "name": "VIOLATIONDEGREE",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 10,
+          "name": "IMPORTLIMIT",
+          "required": false,
+          "type": "decimal(9, 5)"
+        },
+        {
+          "id": 11,
+          "name": "EXPORTLIMIT",
+          "required": false,
+          "type": "decimal(9, 5)"
+        },
+        {
+          "id": 12,
+          "name": "MARGINALLOSS",
+          "required": false,
+          "type": "decimal(6, 5)"
+        },
+        {
+          "id": 13,
+          "name": "EXPORTGENCONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 14,
+          "name": "IMPORTGENCONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 15,
+          "name": "FCASEXPORTLIMIT",
+          "required": false,
+          "type": "decimal(9, 5)"
+        },
+        {
+          "id": 16,
+          "name": "FCASIMPORTLIMIT",
+          "required": false,
+          "type": "decimal(9, 5)"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 7355935718269895109,
+      "timestamp-ms": 1759240800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DINT/metadata/snap-7355935718269895109-1-f7453966-75af-8573-9058-401e715c770d.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 7355935718269895109,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "109714",
+        "utilake.from.file": "PUBLIC_DISPATCH_20251008.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "f55307b6231d29833fe3fd02e4ba50135485f27685126ebc3df6e0fb5636657b",
+        "utilake.from.time": "2025-10-08T00:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DINT",
+        "utilake.rows": "664912",
+        "utilake.to.file": "PUBLIC_DISPATCH_202610220905_20261022090010_LEGACY.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "b8096c5f4d1334a0d687a40a1abdff0449817f78441044b16bf39189b1a2017f",
+        "utilake.to.time": "2026-10-22T09:05:00+10:00",
+        "utilake.total-rows": "664912",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1759240800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "f7453966-75af-8573-9058-401e715c770d"
+}

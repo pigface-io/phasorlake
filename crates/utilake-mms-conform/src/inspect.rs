@@ -127,11 +127,12 @@ mod tests {
             env!("CARGO_MANIFEST_DIR")
         ))
         .unwrap();
-        // The fixture's blocks, plus one for a report pair no table claims,
-        // put in before the footer.
+        // The fixture's blocks, plus one for a report pair no table claims
+        // and one laid out as no run of its table is, put in before the
+        // footer.
         let footer = fixture.rfind("C,\"END OF REPORT\"").unwrap();
         let text = format!(
-            "{}I,UTILAKE_TEST,NEW_THING,1,WHEN,AMOUNT\nD,UTILAKE_TEST,NEW_THING,1,\"2026/10/01 13:40:00\",1.5\nD,UTILAKE_TEST,NEW_THING,1,\"2026/10/01 13:45:00\",2.5\n{}",
+            "{}I,UTILAKE_TEST,NEW_THING,1,WHEN,AMOUNT\nD,UTILAKE_TEST,NEW_THING,1,\"2026/10/01 13:40:00\",1.5\nD,UTILAKE_TEST,NEW_THING,1,\"2026/10/01 13:45:00\",2.5\nI,DISPATCH,UNIT_SCADA,1,SETTLEMENTDATE,SCADAVALUE,DUID\nD,DISPATCH,UNIT_SCADA,1,\"2026/10/01 13:40:00\",1.5,X\n{}",
             &fixture[..footer],
             &fixture[footer..]
         );
@@ -146,8 +147,8 @@ mod tests {
             },
         )
         .unwrap();
-        assert_eq!(stats.blocks, 8);
-        assert_eq!(s.blocks.len(), 8);
+        assert_eq!(stats.blocks, 9);
+        assert_eq!(s.blocks.len(), 9);
         assert_eq!(s.header.as_ref().unwrap()[1], "NEMP.WORLD");
         let price = s
             .blocks
@@ -155,10 +156,17 @@ mod tests {
             .find(|b| b.report_subtype == "PRICE")
             .unwrap();
         assert_eq!(price.table.as_deref(), Some("DISPATCHPRICE"));
-        // The live feed's DISPATCHPRICE has columns no run of the
-        // archive's history has.
-        assert_eq!(price.status, "schema.deviates");
+        // The live feed's DISPATCHPRICE is a run of the report folders'
+        // history; the swapped UNIT_SCADA is no run's.
+        assert_eq!(price.status, "conforms");
         assert_eq!(price.rows, 3);
+        let swapped = s
+            .blocks
+            .iter()
+            .find(|b| b.report_subtype == "UNIT_SCADA")
+            .unwrap();
+        assert_eq!(swapped.table.as_deref(), Some("DISPATCH_UNIT_SCADA"));
+        assert_eq!(swapped.status, "schema.deviates");
         let unknown = s
             .blocks
             .iter()

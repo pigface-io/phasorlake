@@ -1,13 +1,13 @@
 {
-  "current-schema-id": 3,
-  "current-snapshot-id": 2543151901058099829,
+  "current-schema-id": 4,
+  "current-snapshot-id": 225810857337576045,
   "default-sort-order-id": 0,
   "default-spec-id": 0,
   "format-version": 3,
   "last-column-id": 45,
   "last-partition-id": 999,
-  "last-sequence-number": 6,
-  "last-updated-ms": 1722434400005,
+  "last-sequence-number": 31,
+  "last-updated-ms": 1788184800030,
   "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STPASA_REGIONSOLUTION",
   "metadata-log": [],
   "next-row-id": 0,
@@ -38,7 +38,7 @@
   },
   "refs": {
     "main": {
-      "snapshot-id": 2543151901058099829,
+      "snapshot-id": 225810857337576045,
       "type": "branch"
     }
   },
@@ -1182,6 +1182,333 @@
       ],
       "schema-id": 3,
       "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Unique Timestamp Identifier for this run, identified by the nominal start time of the run.",
+          "id": 1,
+          "name": "RUN_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "End date time of the interval.",
+          "id": 2,
+          "name": "INTERVAL_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Region Identifier",
+          "id": 3,
+          "name": "REGIONID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "10% Probability of Exceedance demand forecast.",
+          "id": 4,
+          "name": "DEMAND10",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "50% Probability of Exceedance demand forecast.",
+          "id": 5,
+          "name": "DEMAND50",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "90% Probability of Exceedance demand forecast.",
+          "id": 6,
+          "name": "DEMAND90",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Reserve Requirement (MW). This field is not populated after 30 July 2025.",
+          "id": 7,
+          "name": "RESERVEREQ",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Demand + Reserve requirements (MW). This field is not populated after 30 July 2025.",
+          "id": 8,
+          "name": "CAPACITYREQ",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Sum of: (Region Demand50)/Period (sum by trading day, entered in first period of trading day, GWh).",
+          "id": 9,
+          "name": "ENERGYREQDEMAND50",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Aggregate generation + WDR capacity from Non-Energy Constrained plant subjected to restrictions due to network constraints.",
+          "id": 10,
+          "name": "UNCONSTRAINEDCAPACITY",
+          "required": false,
+          "type": "decimal(12, 0)"
+        },
+        {
+          "doc": "Aggregate generation + WDR capacity from Energy Constrained plant subjected to restrictions due to network constraints.",
+          "id": 11,
+          "name": "CONSTRAINEDCAPACITY",
+          "required": false,
+          "type": "decimal(12, 0)"
+        },
+        {
+          "doc": "Net export (MW) out of this region in the LOR evaluation. Export if > 0, Import if < 0. This value is the same as LORNETINTERCHANGEUNDERSCARCITY.",
+          "id": 12,
+          "name": "NETINTERCHANGEUNDERSCARCITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Regional surplus capacity (MW), +/- values indicate surplus/deficit capacity respectively. This value reflects Regional LOR reserve.",
+          "id": 13,
+          "name": "SURPLUSCAPACITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Regional surplus reserve (MW). This value also reflects Regional LOR reserve. Note: For LOR runs, RESERVEREQ requirement input is not used.",
+          "id": 14,
+          "name": "SURPLUSRESERVE",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Regional reserve condition from LRC run. This field is not populated after 30 July 2025.",
+          "id": 15,
+          "name": "RESERVECONDITION",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "Maximum Surplus Reserve (MW) evaluated for this region from LRC runs. This field is no longer populated.",
+          "id": 16,
+          "name": "MAXSURPLUSRESERVE",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Maximum Spare Capacity (MW) evaluated for this region. Calculated for each region in turn. This value reflects Regional LOR reserve.",
+          "id": 17,
+          "name": "MAXSPARECAPACITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "The LOR Condition determined from the Maximum Spare Capacity value: 0 - no condition, 1 - LOR1 condition, 2 - LOR2 condition, 3 - LOR3 condition",
+          "id": 18,
+          "name": "LORCONDITION",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "Sum of MAXAVAIL quantities offered by all Scheduled units and Availability of all semi-scheduled units limited by MAXAVAIL in a given Region for a given PERIODID",
+          "id": 19,
+          "name": "AGGREGATECAPACITYAVAILABLE",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Sum of  MAXAVAIL quantities bid by of all Scheduled Loads in a given Region for a given PERIODID.",
+          "id": 20,
+          "name": "AGGREGATESCHEDULEDLOAD",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Sum of PASAAVAILABILITY for all scheduled generating units and scheduled bidirectional units (Gen side) with a Recall_Period <= 24 hours plus the sum of Unconstrained Intermittent Generation Forecasts (UIGF) for all semi-scheduled generating units. For the RELIABILITY_LRC and OUTAGE_LRC runs, UIGF is the POE90 forecast. For the LOR Run, UIGF is the POE50 forecast. Note that the RELIABILITY_LRC and OUTAGE_LRC Run Types are discontinued from 31 July 2025. From March 2026, AGGREGATEPASAAVAILABILITY changes from that with Recall_Period <= 24 to that achievable by the relevant INTERVAL_DATETIME if recalled at the start of the run.",
+          "id": 22,
+          "name": "AGGREGATEPASAAVAILABILITY",
+          "required": false,
+          "type": "decimal(12, 0)"
+        },
+        {
+          "doc": "Date time this record was created.",
+          "id": 21,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Type of run. Values are RELIABILITY_LRC, OUTAGE_LRC and LOR. Note that the STPASA RELIABILITY_LRC and OUTAGE_LRC Run Types are discontinued from 31 July 2025, with only the LOR Run Type reported.",
+          "id": 23,
+          "name": "RUNTYPE",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Energy (GWh) required for this energy block based on the 10% probability of exceedance demand. Listed in the first interval of the energy block",
+          "id": 24,
+          "name": "ENERGYREQDEMAND10",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Region Reserve Level for LOR1 used. Can be static value or calculated value if an interconnector is a credible contingency",
+          "id": 25,
+          "name": "CALCULATEDLOR1LEVEL",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Region Reserve Level for LOR2 used. Can be static value or calculated value if an interconnector is a credible contingency",
+          "id": 26,
+          "name": "CALCULATEDLOR2LEVEL",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Net interconnector flow from the region for this interval from the MSR assessment. This field is no longer populated.",
+          "id": 27,
+          "name": "MSRNETINTERCHANGEUNDERSCARCITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Net interconnector flow from the region for this interval from the LOR assessment",
+          "id": 28,
+          "name": "LORNETINTERCHANGEUNDERSCARCITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Allowance made for non-scheduled generation in the demand forecast (MW).",
+          "id": 29,
+          "name": "TOTALINTERMITTENTGENERATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of Cleared Scheduled generation, imported generation (at the region boundary) and allowances made for non-scheduled generation (MW).",
+          "id": 30,
+          "name": "DEMAND_AND_NONSCHEDGEN",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Unconstrained Intermittent Generation Forecast of Semi-scheduled generation (MW).",
+          "id": 31,
+          "name": "UIGF",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Constrained generation forecast (MW) for semi-scheduled units for the region. For RELIABILITY_LRC run, semi-scheduled generation is constrained only by System Normal constraints. For OUTAGE_LRC run and LOR run, semi-scheduled generation is constrained by both System Normal and Outage constraints. All three run types (RELIABILITY_LRC, OUTAGE_LRC, LOR) incorporate MAXAVAIL limits.",
+          "id": 32,
+          "name": "SEMISCHEDULEDCAPACITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Constrained generation forecast for semi-scheduled units for the region for the LOR run. Semi-scheduled generation is constrained by both System Normal and Outage constraints, and incorporate MAXAVAIL limits.",
+          "id": 33,
+          "name": "LOR_SEMISCHEDULEDCAPACITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Largest Credible Risk. MW value for highest credible contingency",
+          "id": 34,
+          "name": "LCR",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Two Largest Credible Risks. MW value for highest two credible contingencies.",
+          "id": 35,
+          "name": "LCR2",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Forecasting Uncertainty Measure. MW value of reserve calculated as defined in the Reserve Level Declaration Guidelines",
+          "id": 36,
+          "name": "FUM",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Unconstrained Intermittent Generation Forecast for solar for the region. For RELIABILITY_LRC and OUTAGE_LRC run this is the POE90 forecast (determined by LRCUIGFOption in CaseSolution). For LOR run this is the POE50 forecast",
+          "id": 37,
+          "name": "SS_SOLAR_UIGF",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Unconstrained Intermittent Generation Forecast for wind for the region. For RELIABILITY_LRC and OUTAGE_LRC run this is the POE90 forecast (determined by LRCUIGFOption in CaseSolution). For LOR run this is the POE50 forecast",
+          "id": 38,
+          "name": "SS_WIND_UIGF",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Constrained generation forecast for solar for the region. For RELIABILITY_LRC run solar generation is constrained only by System Normal constraints. For OUTAGE_LRC run and LOR run solar generation is constrained by both System Normal and Outage constraints. All three run types (RELIABILITY_LRC, OUTAGE_LRC, LOR) incorporate MAXAVAIL limits.",
+          "id": 39,
+          "name": "SS_SOLAR_CAPACITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Constrained generation forecast for wind for the region. For RELIABILITY_LRC run wind generation is constrained only by System Normal constraints. For OUTAGE_LRC run and LOR run wind generation is constrained by both System Normal and Outage constraints. All three run types (RELIABILITY_LRC, OUTAGE_LRC, LOR) incorporate MAXAVAIL limits.",
+          "id": 40,
+          "name": "SS_WIND_CAPACITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Constrained generation forecast (MW) for solar for the region. For RELIABILITY_LRC run, solar generation is constrained only by System Normal constraints. For OUTAGE_LRC run and LOR run, solar generation is constrained by both System Normal and Outage constraints. All three run types (RELIABILITY_LRC, OUTAGE_LRC, LOR) incorporate MAXAVAIL limits.This value is the same as SS_SOLAR_CAPACITY.",
+          "id": 41,
+          "name": "SS_SOLAR_CLEARED",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Constrained generation forecast (MW) for wind for the region. For RELIABILITY_LRC run, wind generation is constrained only by System Normal constraints. For OUTAGE_LRC run and LOR run, wind generation is constrained by both System Normal and Outage constraints. All three run types (RELIABILITY_LRC, OUTAGE_LRC, LOR) incorporate MAXAVAIL limits.This value is the same as SS_WIND_CAPACITY.",
+          "id": 42,
+          "name": "SS_WIND_CLEARED",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Regional aggregated Wholesale Demand Response (WDR) availability in MW.",
+          "id": 43,
+          "name": "WDR_AVAILABLE",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Regional aggregated Wholesale Demand Response (WDR) PASA availability in MW.",
+          "id": 44,
+          "name": "WDR_PASAAVAILABLE",
+          "required": false,
+          "type": "decimal(12, 2)"
+        },
+        {
+          "doc": "Regional aggregated Wholesale Demand Response (WDR) capacity in MW.",
+          "id": 45,
+          "name": "WDR_CAPACITY",
+          "required": false,
+          "type": "decimal(12, 2)"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        23
+      ],
+      "schema-id": 4,
+      "type": "struct"
     }
   ],
   "snapshot-log": [
@@ -1208,6 +1535,106 @@
     {
       "snapshot-id": 2543151901058099829,
       "timestamp-ms": 1722434400005
+    },
+    {
+      "snapshot-id": 7948160650024273130,
+      "timestamp-ms": 1756648800006
+    },
+    {
+      "snapshot-id": 70025183628287051,
+      "timestamp-ms": 1759240800007
+    },
+    {
+      "snapshot-id": 5994515138706372242,
+      "timestamp-ms": 1759240800008
+    },
+    {
+      "snapshot-id": 4855043048646577150,
+      "timestamp-ms": 1761919200009
+    },
+    {
+      "snapshot-id": 3746435046879041343,
+      "timestamp-ms": 1761919200010
+    },
+    {
+      "snapshot-id": 6642306780650599229,
+      "timestamp-ms": 1764511200011
+    },
+    {
+      "snapshot-id": 3361250836643331414,
+      "timestamp-ms": 1764511200012
+    },
+    {
+      "snapshot-id": 6844691013520217191,
+      "timestamp-ms": 1767189600013
+    },
+    {
+      "snapshot-id": 5726464582648064322,
+      "timestamp-ms": 1767189600014
+    },
+    {
+      "snapshot-id": 2227602168083907916,
+      "timestamp-ms": 1769868000015
+    },
+    {
+      "snapshot-id": 2249047702832845270,
+      "timestamp-ms": 1769868000016
+    },
+    {
+      "snapshot-id": 1412155681735945230,
+      "timestamp-ms": 1772287200017
+    },
+    {
+      "snapshot-id": 2113223390389864007,
+      "timestamp-ms": 1772287200018
+    },
+    {
+      "snapshot-id": 4709441196907521875,
+      "timestamp-ms": 1774965600019
+    },
+    {
+      "snapshot-id": 5950668807667894478,
+      "timestamp-ms": 1774965600020
+    },
+    {
+      "snapshot-id": 8627537200096551506,
+      "timestamp-ms": 1777557600021
+    },
+    {
+      "snapshot-id": 7953520459045906145,
+      "timestamp-ms": 1777557600022
+    },
+    {
+      "snapshot-id": 263664317252859087,
+      "timestamp-ms": 1780236000023
+    },
+    {
+      "snapshot-id": 4673880012197602205,
+      "timestamp-ms": 1780236000024
+    },
+    {
+      "snapshot-id": 6888496166312861569,
+      "timestamp-ms": 1782828000025
+    },
+    {
+      "snapshot-id": 5155480508793740611,
+      "timestamp-ms": 1782828000026
+    },
+    {
+      "snapshot-id": 1605326777885141173,
+      "timestamp-ms": 1785506400027
+    },
+    {
+      "snapshot-id": 535809057439689851,
+      "timestamp-ms": 1785506400028
+    },
+    {
+      "snapshot-id": 5045225882748967535,
+      "timestamp-ms": 1788184800029
+    },
+    {
+      "snapshot-id": 225810857337576045,
+      "timestamp-ms": 1788184800030
     }
   ],
   "snapshots": [
@@ -1360,7 +1787,7 @@
       "snapshot-id": 2543151901058099829,
       "summary": {
         "operation": "append",
-        "utilake.files": "26",
+        "utilake.files": "14",
         "utilake.from.file": "PUBLIC_ARCHIVE#STPASA_REGIONSOLUTION#FILE01#202408010000.zip",
         "utilake.from.release": "2024-08",
         "utilake.from.sha256": "be268786bb7845fdfa449c9a69f7bfa7d7b9ea536c89a87da23b3d9bdd76af41",
@@ -1368,15 +1795,715 @@
         "utilake.kinds": "[\"archive\"]",
         "utilake.report-subtype": "REGIONSOLUTION",
         "utilake.report-type": "STPASA",
-        "utilake.rows": "52509600",
+        "utilake.rows": "39895200",
+        "utilake.to.file": "PUBLIC_ARCHIVE#STPASA_REGIONSOLUTION#FILE01#202509010000.zip",
+        "utilake.to.release": "2025-09",
+        "utilake.to.sha256": "5d0758bbbdc107361b766afe359a10bd1316eec58e8d192922632194318b6e41",
+        "utilake.to.time": "2025-10-08T04:00:00+10:00",
+        "utilake.total-rows": "272411040",
+        "utilake.version": "7"
+      },
+      "timestamp-ms": 1722434400005
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STPASA_REGIONSOLUTION/metadata/snap-7948160650024273130-7-c53e2e7e-d532-89e0-8bb6-b2fc749b16ad.avro",
+      "parent-snapshot-id": 2543151901058099829,
+      "schema-id": 4,
+      "sequence-number": 7,
+      "snapshot-id": 7948160650024273130,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "720",
+        "utilake.from.file": "PUBLIC_STPASA_20250901.zip",
+        "utilake.from.release": "2025-09",
+        "utilake.from.sha256": "5c6b375adf8c14fc6143e39bd3f6395b12f09f32470b2448d3e5a1b03cda507b",
+        "utilake.from.time": "2025-09-02T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "REGIONSOLUTION",
+        "utilake.report-type": "STPASA",
+        "utilake.rows": "1036800",
+        "utilake.to.file": "PUBLIC_STPASA_20250901.zip",
+        "utilake.to.release": "2025-09",
+        "utilake.to.sha256": "5c6b375adf8c14fc6143e39bd3f6395b12f09f32470b2448d3e5a1b03cda507b",
+        "utilake.to.time": "2025-10-08T04:00:00+10:00",
+        "utilake.total-rows": "273447840",
+        "utilake.version": "7"
+      },
+      "timestamp-ms": 1756648800006
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STPASA_REGIONSOLUTION/metadata/snap-70025183628287051-8-c53e2e7e-d532-89e0-8bb6-b2fc749b16ad.avro",
+      "parent-snapshot-id": 7948160650024273130,
+      "schema-id": 3,
+      "sequence-number": 8,
+      "snapshot-id": 70025183628287051,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#STPASA_REGIONSOLUTION#FILE01#202510010000.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "2c12cc53395a30a8b91aecc4148cdcc93ea1af0114d676b32beab55e6a3823e0",
+        "utilake.from.time": "2025-10-02T04:30:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "REGIONSOLUTION",
+        "utilake.report-type": "STPASA",
+        "utilake.rows": "1071360",
+        "utilake.to.file": "PUBLIC_ARCHIVE#STPASA_REGIONSOLUTION#FILE01#202510010000.zip",
+        "utilake.to.release": "2025-10",
+        "utilake.to.sha256": "2c12cc53395a30a8b91aecc4148cdcc93ea1af0114d676b32beab55e6a3823e0",
+        "utilake.to.time": "2025-11-08T04:00:00+10:00",
+        "utilake.total-rows": "274519200",
+        "utilake.version": "7"
+      },
+      "timestamp-ms": 1759240800007
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STPASA_REGIONSOLUTION/metadata/snap-5994515138706372242-9-c53e2e7e-d532-89e0-8bb6-b2fc749b16ad.avro",
+      "parent-snapshot-id": 70025183628287051,
+      "schema-id": 4,
+      "sequence-number": 9,
+      "snapshot-id": 5994515138706372242,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "744",
+        "utilake.from.file": "PUBLIC_STPASA_20251001.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "da26164713b941fa10b8d3749154730cf2589ef5b69453ccdbdd489063823d00",
+        "utilake.from.time": "2025-10-02T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "REGIONSOLUTION",
+        "utilake.report-type": "STPASA",
+        "utilake.rows": "1071360",
+        "utilake.to.file": "PUBLIC_STPASA_20251001.zip",
+        "utilake.to.release": "2025-10",
+        "utilake.to.sha256": "da26164713b941fa10b8d3749154730cf2589ef5b69453ccdbdd489063823d00",
+        "utilake.to.time": "2025-11-08T04:00:00+10:00",
+        "utilake.total-rows": "275590560",
+        "utilake.version": "7"
+      },
+      "timestamp-ms": 1759240800008
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STPASA_REGIONSOLUTION/metadata/snap-4855043048646577150-10-c53e2e7e-d532-89e0-8bb6-b2fc749b16ad.avro",
+      "parent-snapshot-id": 5994515138706372242,
+      "schema-id": 3,
+      "sequence-number": 10,
+      "snapshot-id": 4855043048646577150,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#STPASA_REGIONSOLUTION#FILE01#202511010000.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "4d050cdffd96dfaa06485625df68690549f5d24a1f249f2145208e4e4ed51fce",
+        "utilake.from.time": "2025-11-02T04:30:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "REGIONSOLUTION",
+        "utilake.report-type": "STPASA",
+        "utilake.rows": "1036800",
+        "utilake.to.file": "PUBLIC_ARCHIVE#STPASA_REGIONSOLUTION#FILE01#202511010000.zip",
+        "utilake.to.release": "2025-11",
+        "utilake.to.sha256": "4d050cdffd96dfaa06485625df68690549f5d24a1f249f2145208e4e4ed51fce",
+        "utilake.to.time": "2025-12-08T04:00:00+10:00",
+        "utilake.total-rows": "276627360",
+        "utilake.version": "7"
+      },
+      "timestamp-ms": 1761919200009
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STPASA_REGIONSOLUTION/metadata/snap-3746435046879041343-11-c53e2e7e-d532-89e0-8bb6-b2fc749b16ad.avro",
+      "parent-snapshot-id": 4855043048646577150,
+      "schema-id": 4,
+      "sequence-number": 11,
+      "snapshot-id": 3746435046879041343,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "720",
+        "utilake.from.file": "PUBLIC_STPASA_20251101.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "a158caa17fa170e5eb94d12f50a3214dad149fd64eb9caf9235cfd4ef68d6cc9",
+        "utilake.from.time": "2025-11-02T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "REGIONSOLUTION",
+        "utilake.report-type": "STPASA",
+        "utilake.rows": "1036800",
+        "utilake.to.file": "PUBLIC_STPASA_20251101.zip",
+        "utilake.to.release": "2025-11",
+        "utilake.to.sha256": "a158caa17fa170e5eb94d12f50a3214dad149fd64eb9caf9235cfd4ef68d6cc9",
+        "utilake.to.time": "2025-12-08T04:00:00+10:00",
+        "utilake.total-rows": "277664160",
+        "utilake.version": "7"
+      },
+      "timestamp-ms": 1761919200010
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STPASA_REGIONSOLUTION/metadata/snap-6642306780650599229-12-c53e2e7e-d532-89e0-8bb6-b2fc749b16ad.avro",
+      "parent-snapshot-id": 3746435046879041343,
+      "schema-id": 3,
+      "sequence-number": 12,
+      "snapshot-id": 6642306780650599229,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#STPASA_REGIONSOLUTION#FILE01#202512010000.zip",
+        "utilake.from.release": "2025-12",
+        "utilake.from.sha256": "4d8ff2f6a42ff2cbdc0472752df65249240d8e3769bd2cd20893497ae9d4e2dc",
+        "utilake.from.time": "2025-12-02T04:30:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "REGIONSOLUTION",
+        "utilake.report-type": "STPASA",
+        "utilake.rows": "1071360",
+        "utilake.to.file": "PUBLIC_ARCHIVE#STPASA_REGIONSOLUTION#FILE01#202512010000.zip",
+        "utilake.to.release": "2025-12",
+        "utilake.to.sha256": "4d8ff2f6a42ff2cbdc0472752df65249240d8e3769bd2cd20893497ae9d4e2dc",
+        "utilake.to.time": "2026-01-08T04:00:00+10:00",
+        "utilake.total-rows": "278735520",
+        "utilake.version": "7"
+      },
+      "timestamp-ms": 1764511200011
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STPASA_REGIONSOLUTION/metadata/snap-3361250836643331414-13-c53e2e7e-d532-89e0-8bb6-b2fc749b16ad.avro",
+      "parent-snapshot-id": 6642306780650599229,
+      "schema-id": 4,
+      "sequence-number": 13,
+      "snapshot-id": 3361250836643331414,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "744",
+        "utilake.from.file": "PUBLIC_STPASA_20251201.zip",
+        "utilake.from.release": "2025-12",
+        "utilake.from.sha256": "9641e194926532cfc6b0c1faecb99f3ce42955724e0a53dc7ae85fb1c32a50f5",
+        "utilake.from.time": "2025-12-02T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "REGIONSOLUTION",
+        "utilake.report-type": "STPASA",
+        "utilake.rows": "1071360",
+        "utilake.to.file": "PUBLIC_STPASA_20251201.zip",
+        "utilake.to.release": "2025-12",
+        "utilake.to.sha256": "9641e194926532cfc6b0c1faecb99f3ce42955724e0a53dc7ae85fb1c32a50f5",
+        "utilake.to.time": "2026-01-08T04:00:00+10:00",
+        "utilake.total-rows": "279806880",
+        "utilake.version": "7"
+      },
+      "timestamp-ms": 1764511200012
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STPASA_REGIONSOLUTION/metadata/snap-6844691013520217191-14-c53e2e7e-d532-89e0-8bb6-b2fc749b16ad.avro",
+      "parent-snapshot-id": 3361250836643331414,
+      "schema-id": 3,
+      "sequence-number": 14,
+      "snapshot-id": 6844691013520217191,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#STPASA_REGIONSOLUTION#FILE01#202601010000.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "6d9cc63877c894354d9c4e430db9a4328936381383afdb1c2ca32449628911b7",
+        "utilake.from.time": "2026-01-02T04:30:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "REGIONSOLUTION",
+        "utilake.report-type": "STPASA",
+        "utilake.rows": "1071360",
+        "utilake.to.file": "PUBLIC_ARCHIVE#STPASA_REGIONSOLUTION#FILE01#202601010000.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "6d9cc63877c894354d9c4e430db9a4328936381383afdb1c2ca32449628911b7",
+        "utilake.to.time": "2026-02-08T04:00:00+10:00",
+        "utilake.total-rows": "280878240",
+        "utilake.version": "7"
+      },
+      "timestamp-ms": 1767189600013
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STPASA_REGIONSOLUTION/metadata/snap-5726464582648064322-15-c53e2e7e-d532-89e0-8bb6-b2fc749b16ad.avro",
+      "parent-snapshot-id": 6844691013520217191,
+      "schema-id": 4,
+      "sequence-number": 15,
+      "snapshot-id": 5726464582648064322,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "744",
+        "utilake.from.file": "PUBLIC_STPASA_20260101.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "346e198d7a23a3e87dd1efa5bcc3e5d34d01dcbccc89cffdba05b4f6dc577dd1",
+        "utilake.from.time": "2026-01-02T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "REGIONSOLUTION",
+        "utilake.report-type": "STPASA",
+        "utilake.rows": "1071360",
+        "utilake.to.file": "PUBLIC_STPASA_20260101.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "346e198d7a23a3e87dd1efa5bcc3e5d34d01dcbccc89cffdba05b4f6dc577dd1",
+        "utilake.to.time": "2026-02-08T04:00:00+10:00",
+        "utilake.total-rows": "281949600",
+        "utilake.version": "7"
+      },
+      "timestamp-ms": 1767189600014
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STPASA_REGIONSOLUTION/metadata/snap-2227602168083907916-16-c53e2e7e-d532-89e0-8bb6-b2fc749b16ad.avro",
+      "parent-snapshot-id": 5726464582648064322,
+      "schema-id": 3,
+      "sequence-number": 16,
+      "snapshot-id": 2227602168083907916,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#STPASA_REGIONSOLUTION#FILE01#202602010000.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "13619ea5c0569a79d0b0dd85be7b069103e64bccff9067cac9b4d68f7cc6426a",
+        "utilake.from.time": "2026-02-02T04:30:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "REGIONSOLUTION",
+        "utilake.report-type": "STPASA",
+        "utilake.rows": "967680",
+        "utilake.to.file": "PUBLIC_ARCHIVE#STPASA_REGIONSOLUTION#FILE01#202602010000.zip",
+        "utilake.to.release": "2026-02",
+        "utilake.to.sha256": "13619ea5c0569a79d0b0dd85be7b069103e64bccff9067cac9b4d68f7cc6426a",
+        "utilake.to.time": "2026-03-08T04:00:00+10:00",
+        "utilake.total-rows": "282917280",
+        "utilake.version": "7"
+      },
+      "timestamp-ms": 1769868000015
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STPASA_REGIONSOLUTION/metadata/snap-2249047702832845270-17-c53e2e7e-d532-89e0-8bb6-b2fc749b16ad.avro",
+      "parent-snapshot-id": 2227602168083907916,
+      "schema-id": 4,
+      "sequence-number": 17,
+      "snapshot-id": 2249047702832845270,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "672",
+        "utilake.from.file": "PUBLIC_STPASA_20260201.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "2168a07e8418f4599062085146d5dd56dc8a0c42f2dcc5aa17525d314c376c99",
+        "utilake.from.time": "2026-02-02T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "REGIONSOLUTION",
+        "utilake.report-type": "STPASA",
+        "utilake.rows": "967680",
+        "utilake.to.file": "PUBLIC_STPASA_20260201.zip",
+        "utilake.to.release": "2026-02",
+        "utilake.to.sha256": "2168a07e8418f4599062085146d5dd56dc8a0c42f2dcc5aa17525d314c376c99",
+        "utilake.to.time": "2026-03-08T04:00:00+10:00",
+        "utilake.total-rows": "283884960",
+        "utilake.version": "7"
+      },
+      "timestamp-ms": 1769868000016
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STPASA_REGIONSOLUTION/metadata/snap-1412155681735945230-18-c53e2e7e-d532-89e0-8bb6-b2fc749b16ad.avro",
+      "parent-snapshot-id": 2249047702832845270,
+      "schema-id": 3,
+      "sequence-number": 18,
+      "snapshot-id": 1412155681735945230,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#STPASA_REGIONSOLUTION#FILE01#202603010000.zip",
+        "utilake.from.release": "2026-03",
+        "utilake.from.sha256": "cb87b0c01be36afe1a4680b9b3c52cfebfc3553f5ad22035bcae676eeecb6cba",
+        "utilake.from.time": "2026-03-02T04:30:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "REGIONSOLUTION",
+        "utilake.report-type": "STPASA",
+        "utilake.rows": "1071360",
+        "utilake.to.file": "PUBLIC_ARCHIVE#STPASA_REGIONSOLUTION#FILE01#202603010000.zip",
+        "utilake.to.release": "2026-03",
+        "utilake.to.sha256": "cb87b0c01be36afe1a4680b9b3c52cfebfc3553f5ad22035bcae676eeecb6cba",
+        "utilake.to.time": "2026-04-08T04:00:00+10:00",
+        "utilake.total-rows": "284956320",
+        "utilake.version": "7"
+      },
+      "timestamp-ms": 1772287200017
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STPASA_REGIONSOLUTION/metadata/snap-2113223390389864007-19-c53e2e7e-d532-89e0-8bb6-b2fc749b16ad.avro",
+      "parent-snapshot-id": 1412155681735945230,
+      "schema-id": 4,
+      "sequence-number": 19,
+      "snapshot-id": 2113223390389864007,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "744",
+        "utilake.from.file": "PUBLIC_STPASA_20260301.zip",
+        "utilake.from.release": "2026-03",
+        "utilake.from.sha256": "c35c019048824174bc06aad6c3506e7a8225708df0809cfd23973c53f280a413",
+        "utilake.from.time": "2026-03-02T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "REGIONSOLUTION",
+        "utilake.report-type": "STPASA",
+        "utilake.rows": "1071360",
+        "utilake.to.file": "PUBLIC_STPASA_20260301.zip",
+        "utilake.to.release": "2026-03",
+        "utilake.to.sha256": "c35c019048824174bc06aad6c3506e7a8225708df0809cfd23973c53f280a413",
+        "utilake.to.time": "2026-04-08T04:00:00+10:00",
+        "utilake.total-rows": "286027680",
+        "utilake.version": "7"
+      },
+      "timestamp-ms": 1772287200018
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STPASA_REGIONSOLUTION/metadata/snap-4709441196907521875-20-c53e2e7e-d532-89e0-8bb6-b2fc749b16ad.avro",
+      "parent-snapshot-id": 2113223390389864007,
+      "schema-id": 3,
+      "sequence-number": 20,
+      "snapshot-id": 4709441196907521875,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#STPASA_REGIONSOLUTION#FILE01#202604010000.zip",
+        "utilake.from.release": "2026-04",
+        "utilake.from.sha256": "de8755297bd0201639de157c5a447bc08280135d67d6574e5781570952f41bb5",
+        "utilake.from.time": "2026-04-02T04:30:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "REGIONSOLUTION",
+        "utilake.report-type": "STPASA",
+        "utilake.rows": "1036800",
+        "utilake.to.file": "PUBLIC_ARCHIVE#STPASA_REGIONSOLUTION#FILE01#202604010000.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "de8755297bd0201639de157c5a447bc08280135d67d6574e5781570952f41bb5",
+        "utilake.to.time": "2026-05-08T04:00:00+10:00",
+        "utilake.total-rows": "287064480",
+        "utilake.version": "7"
+      },
+      "timestamp-ms": 1774965600019
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STPASA_REGIONSOLUTION/metadata/snap-5950668807667894478-21-c53e2e7e-d532-89e0-8bb6-b2fc749b16ad.avro",
+      "parent-snapshot-id": 4709441196907521875,
+      "schema-id": 4,
+      "sequence-number": 21,
+      "snapshot-id": 5950668807667894478,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "721",
+        "utilake.from.file": "PUBLIC_STPASA_20260401.zip",
+        "utilake.from.release": "2026-04",
+        "utilake.from.sha256": "3e782d2527c3da3c61bd0fa246c84d4df8fd72cb54a194b19278dedb74f82b06",
+        "utilake.from.time": "2026-04-02T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "REGIONSOLUTION",
+        "utilake.report-type": "STPASA",
+        "utilake.rows": "1038240",
+        "utilake.to.file": "PUBLIC_STPASA_202605100700_0000000516983041.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "14be1597901094286ea56382e90472b31516f67290e64f4d172e18e221669e56",
+        "utilake.to.time": "2026-05-17T04:00:00+10:00",
+        "utilake.total-rows": "288102720",
+        "utilake.version": "7"
+      },
+      "timestamp-ms": 1774965600020
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STPASA_REGIONSOLUTION/metadata/snap-8627537200096551506-22-c53e2e7e-d532-89e0-8bb6-b2fc749b16ad.avro",
+      "parent-snapshot-id": 5950668807667894478,
+      "schema-id": 3,
+      "sequence-number": 22,
+      "snapshot-id": 8627537200096551506,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#STPASA_REGIONSOLUTION#FILE01#202605010000.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "35765e46b88adbc9459b3a19cfbd952353a09588b34cb8571167b80566a97b0b",
+        "utilake.from.time": "2026-05-02T04:30:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "REGIONSOLUTION",
+        "utilake.report-type": "STPASA",
+        "utilake.rows": "1071360",
+        "utilake.to.file": "PUBLIC_ARCHIVE#STPASA_REGIONSOLUTION#FILE01#202605010000.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "35765e46b88adbc9459b3a19cfbd952353a09588b34cb8571167b80566a97b0b",
+        "utilake.to.time": "2026-06-08T04:00:00+10:00",
+        "utilake.total-rows": "289174080",
+        "utilake.version": "7"
+      },
+      "timestamp-ms": 1777557600021
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STPASA_REGIONSOLUTION/metadata/snap-7953520459045906145-23-c53e2e7e-d532-89e0-8bb6-b2fc749b16ad.avro",
+      "parent-snapshot-id": 8627537200096551506,
+      "schema-id": 4,
+      "sequence-number": 23,
+      "snapshot-id": 7953520459045906145,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "744",
+        "utilake.from.file": "PUBLIC_STPASA_20260501.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "71b593bc2c51d52687ba004e52a0cf6800bc4cb2c6174cbc3b6cc2012bd418e0",
+        "utilake.from.time": "2026-05-02T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "REGIONSOLUTION",
+        "utilake.report-type": "STPASA",
+        "utilake.rows": "1071360",
+        "utilake.to.file": "PUBLIC_STPASA_20260501.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "71b593bc2c51d52687ba004e52a0cf6800bc4cb2c6174cbc3b6cc2012bd418e0",
+        "utilake.to.time": "2026-06-08T04:00:00+10:00",
+        "utilake.total-rows": "290245440",
+        "utilake.version": "7"
+      },
+      "timestamp-ms": 1777557600022
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STPASA_REGIONSOLUTION/metadata/snap-263664317252859087-24-c53e2e7e-d532-89e0-8bb6-b2fc749b16ad.avro",
+      "parent-snapshot-id": 7953520459045906145,
+      "schema-id": 3,
+      "sequence-number": 24,
+      "snapshot-id": 263664317252859087,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#STPASA_REGIONSOLUTION#FILE01#202606010000.zip",
+        "utilake.from.release": "2026-06",
+        "utilake.from.sha256": "2916f4ccf5dddca3a349855603e2af97ccb3967417ee42edfbdfaa7d2a0ec5ae",
+        "utilake.from.time": "2026-06-02T04:30:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "REGIONSOLUTION",
+        "utilake.report-type": "STPASA",
+        "utilake.rows": "1036800",
+        "utilake.to.file": "PUBLIC_ARCHIVE#STPASA_REGIONSOLUTION#FILE01#202606010000.zip",
+        "utilake.to.release": "2026-06",
+        "utilake.to.sha256": "2916f4ccf5dddca3a349855603e2af97ccb3967417ee42edfbdfaa7d2a0ec5ae",
+        "utilake.to.time": "2026-07-08T04:00:00+10:00",
+        "utilake.total-rows": "291282240",
+        "utilake.version": "7"
+      },
+      "timestamp-ms": 1780236000023
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STPASA_REGIONSOLUTION/metadata/snap-4673880012197602205-25-c53e2e7e-d532-89e0-8bb6-b2fc749b16ad.avro",
+      "parent-snapshot-id": 263664317252859087,
+      "schema-id": 4,
+      "sequence-number": 25,
+      "snapshot-id": 4673880012197602205,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "721",
+        "utilake.from.file": "PUBLIC_STPASA_20260601.zip",
+        "utilake.from.release": "2026-06",
+        "utilake.from.sha256": "81cfa39050dea795da69ec096680f03debd35e8245fde762da2c9f5f6f1b203c",
+        "utilake.from.time": "2026-06-02T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "REGIONSOLUTION",
+        "utilake.report-type": "STPASA",
+        "utilake.rows": "1038240",
+        "utilake.to.file": "PUBLIC_STPASA_202607140200_0000000527320493.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "f9ece985063ccfded821f13b9d325e3da3669905886bfe0bf75f648b9f821dcf",
+        "utilake.to.time": "2026-07-21T04:00:00+10:00",
+        "utilake.total-rows": "292320480",
+        "utilake.version": "7"
+      },
+      "timestamp-ms": 1780236000024
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STPASA_REGIONSOLUTION/metadata/snap-6888496166312861569-26-c53e2e7e-d532-89e0-8bb6-b2fc749b16ad.avro",
+      "parent-snapshot-id": 4673880012197602205,
+      "schema-id": 3,
+      "sequence-number": 26,
+      "snapshot-id": 6888496166312861569,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#STPASA_REGIONSOLUTION#FILE01#202607010000.zip",
+        "utilake.from.release": "2026-07",
+        "utilake.from.sha256": "16f43bf0e3f86fcefa8c7498a3b25ee490cc70a1ae2dd1598ca5239704cfaab4",
+        "utilake.from.time": "2026-07-02T04:30:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "REGIONSOLUTION",
+        "utilake.report-type": "STPASA",
+        "utilake.rows": "1071360",
+        "utilake.to.file": "PUBLIC_ARCHIVE#STPASA_REGIONSOLUTION#FILE01#202607010000.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "16f43bf0e3f86fcefa8c7498a3b25ee490cc70a1ae2dd1598ca5239704cfaab4",
+        "utilake.to.time": "2026-08-08T04:00:00+10:00",
+        "utilake.total-rows": "293391840",
+        "utilake.version": "7"
+      },
+      "timestamp-ms": 1782828000025
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STPASA_REGIONSOLUTION/metadata/snap-5155480508793740611-27-c53e2e7e-d532-89e0-8bb6-b2fc749b16ad.avro",
+      "parent-snapshot-id": 6888496166312861569,
+      "schema-id": 4,
+      "sequence-number": 27,
+      "snapshot-id": 5155480508793740611,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "744",
+        "utilake.from.file": "PUBLIC_STPASA_20260701.zip",
+        "utilake.from.release": "2026-07",
+        "utilake.from.sha256": "e1d165960eae9da388e18661a7a850a2239353c061d1ac76a4ffc57b4fce9360",
+        "utilake.from.time": "2026-07-02T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "REGIONSOLUTION",
+        "utilake.report-type": "STPASA",
+        "utilake.rows": "1071360",
+        "utilake.to.file": "PUBLIC_STPASA_20260701.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "e1d165960eae9da388e18661a7a850a2239353c061d1ac76a4ffc57b4fce9360",
+        "utilake.to.time": "2026-08-08T04:00:00+10:00",
+        "utilake.total-rows": "294463200",
+        "utilake.version": "7"
+      },
+      "timestamp-ms": 1782828000026
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STPASA_REGIONSOLUTION/metadata/snap-1605326777885141173-28-c53e2e7e-d532-89e0-8bb6-b2fc749b16ad.avro",
+      "parent-snapshot-id": 5155480508793740611,
+      "schema-id": 3,
+      "sequence-number": 28,
+      "snapshot-id": 1605326777885141173,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#STPASA_REGIONSOLUTION#FILE01#202608010000.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "65320fd4b1b4f6e38536069f3691dac1865bc473db754221918a847de0bfd0bb",
+        "utilake.from.time": "2026-08-02T04:30:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "REGIONSOLUTION",
+        "utilake.report-type": "STPASA",
+        "utilake.rows": "1071360",
+        "utilake.to.file": "PUBLIC_ARCHIVE#STPASA_REGIONSOLUTION#FILE01#202608010000.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "65320fd4b1b4f6e38536069f3691dac1865bc473db754221918a847de0bfd0bb",
+        "utilake.to.time": "2026-09-08T04:00:00+10:00",
+        "utilake.total-rows": "295534560",
+        "utilake.version": "7"
+      },
+      "timestamp-ms": 1785506400027
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STPASA_REGIONSOLUTION/metadata/snap-535809057439689851-29-c53e2e7e-d532-89e0-8bb6-b2fc749b16ad.avro",
+      "parent-snapshot-id": 1605326777885141173,
+      "schema-id": 4,
+      "sequence-number": 29,
+      "snapshot-id": 535809057439689851,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "984",
+        "utilake.from.file": "PUBLIC_STPASA_20260801.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "e312126291cd4e8205bbfb499ef07019cfc70b56d586df2246fd95b99a7d3156",
+        "utilake.from.time": "2026-08-02T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "REGIONSOLUTION",
+        "utilake.report-type": "STPASA",
+        "utilake.rows": "1416960",
+        "utilake.to.file": "PUBLIC_STPASA_202608312300_0000000535428001.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "28e8752d064f4599814f8acacea3017065151ce7d41dd6b71d01ba4221d9dffc",
+        "utilake.to.time": "2026-09-08T04:00:00+10:00",
+        "utilake.total-rows": "296951520",
+        "utilake.version": "7"
+      },
+      "timestamp-ms": 1785506400028
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STPASA_REGIONSOLUTION/metadata/snap-5045225882748967535-30-c53e2e7e-d532-89e0-8bb6-b2fc749b16ad.avro",
+      "parent-snapshot-id": 535809057439689851,
+      "schema-id": 3,
+      "sequence-number": 30,
+      "snapshot-id": 5045225882748967535,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#STPASA_REGIONSOLUTION#FILE01#202609010000.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "e0c6abb38db89ea1d8b789783ccd7662835cda92c50f1da35ca135af93492982",
+        "utilake.from.time": "2026-09-02T04:30:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "REGIONSOLUTION",
+        "utilake.report-type": "STPASA",
+        "utilake.rows": "1036800",
         "utilake.to.file": "PUBLIC_ARCHIVE#STPASA_REGIONSOLUTION#FILE01#202609010000.zip",
         "utilake.to.release": "2026-09",
         "utilake.to.sha256": "e0c6abb38db89ea1d8b789783ccd7662835cda92c50f1da35ca135af93492982",
         "utilake.to.time": "2026-10-08T04:00:00+10:00",
-        "utilake.total-rows": "285025440",
+        "utilake.total-rows": "297988320",
         "utilake.version": "7"
       },
-      "timestamp-ms": 1722434400005
+      "timestamp-ms": 1788184800029
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STPASA_REGIONSOLUTION/metadata/snap-225810857337576045-31-c53e2e7e-d532-89e0-8bb6-b2fc749b16ad.avro",
+      "parent-snapshot-id": 5045225882748967535,
+      "schema-id": 4,
+      "sequence-number": 31,
+      "snapshot-id": 225810857337576045,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1223",
+        "utilake.from.file": "PUBLIC_STPASA_202609010000_0000000535434287.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "2271829ba23c5605bc6e229d70bb9d3581b0c90477aa71a3f72ebcc55c9530bf",
+        "utilake.from.time": "2026-09-02T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "REGIONSOLUTION",
+        "utilake.report-type": "STPASA",
+        "utilake.rows": "1761120",
+        "utilake.to.file": "PUBLIC_STPASA_202610212200_0000000544125280.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "0db7c03c7d560a4732d91eb64258fa5ee0aa572ab72ce46d145d52adba7f2f3d",
+        "utilake.to.time": "2026-10-29T04:00:00+10:00",
+        "utilake.total-rows": "299749440",
+        "utilake.version": "7"
+      },
+      "timestamp-ms": 1788184800030
     }
   ],
   "sort-orders": [

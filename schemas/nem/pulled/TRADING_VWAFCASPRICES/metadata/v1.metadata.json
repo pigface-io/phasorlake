@@ -1,0 +1,244 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 4225665863219645298,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 27,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1785506400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/TRADING_VWAFCASPRICES",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "false",
+    "utilake.format": "3",
+    "utilake.table": "TRADING_VWAFCASPRICES"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 4225665863219645298,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 2,
+          "name": "RUNNO",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 3,
+          "name": "LOWER5MINVWAPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "LOWER5MINVOLUME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 5,
+          "name": "LOWER5MINREVENUE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 6,
+          "name": "LOWER6SECVWAPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 7,
+          "name": "LOWER6SECVOLUME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 8,
+          "name": "LOWER6SECREVENUE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 9,
+          "name": "LOWER60SECVWAPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 10,
+          "name": "LOWER60SECVOLUME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 11,
+          "name": "LOWER60SECREVENUE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 12,
+          "name": "LOWERREGVWAPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 13,
+          "name": "LOWERREGVOLUME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 14,
+          "name": "LOWERREGREVENUE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 15,
+          "name": "RAISE5MINVWAPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 16,
+          "name": "RAISE5MINVOLUME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 17,
+          "name": "RAISE5MINREVENUE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 18,
+          "name": "RAISE6SECVWAPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 19,
+          "name": "RAISE6SECVOLUME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 20,
+          "name": "RAISE6SECREVENUE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 21,
+          "name": "RAISE60SECVWAPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 22,
+          "name": "RAISE60SECVOLUME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 23,
+          "name": "RAISE60SECREVENUE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 24,
+          "name": "RAISEREGVWAPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 25,
+          "name": "RAISEREGVOLUME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 26,
+          "name": "RAISEREGREVENUE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 27,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 4225665863219645298,
+      "timestamp-ms": 1785506400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/TRADING_VWAFCASPRICES/metadata/snap-4225665863219645298-1-55408c81-877d-88fc-bfdc-39a881cc2fed.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 4225665863219645298,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "61",
+        "utilake.from.file": "PUBLIC_VWAFCASPRICES_202608210000_20260822040502.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "0d39e4a671e0e9a908266df8caca24b7411e7a0b786a1a734350251abc1b21c8",
+        "utilake.from.time": "2026-08-21T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "VWAFCASPRICES",
+        "utilake.report-type": "TRADING",
+        "utilake.rows": "2928",
+        "utilake.to.file": "PUBLIC_VWAFCASPRICES_202610200000_20261021040503.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "9c14e5713a37dd524dd5bce57e0d836ee61529759723ae7b72a83b51c5ab1ee0",
+        "utilake.to.time": "2026-10-21T04:00:00+10:00",
+        "utilake.total-rows": "2928",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1785506400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "55408c81-877d-88fc-bfdc-39a881cc2fed"
+}

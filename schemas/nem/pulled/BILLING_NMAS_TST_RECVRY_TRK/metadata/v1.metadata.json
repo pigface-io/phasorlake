@@ -1,13 +1,13 @@
 {
   "current-schema-id": 0,
-  "current-snapshot-id": 4023188611490218533,
+  "current-snapshot-id": 865062216067034029,
   "default-sort-order-id": 0,
   "default-spec-id": 0,
   "format-version": 3,
   "last-column-id": 6,
   "last-partition-id": 999,
   "last-sequence-number": 1,
-  "last-updated-ms": 1732975200000,
+  "last-updated-ms": 1496239200000,
   "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BILLING_NMAS_TST_RECVRY_TRK",
   "metadata-log": [],
   "next-row-id": 0,
@@ -35,7 +35,7 @@
   },
   "refs": {
     "main": {
-      "snapshot-id": 4023188611490218533,
+      "snapshot-id": 865062216067034029,
       "type": "branch"
     }
   },
@@ -99,35 +99,35 @@
   ],
   "snapshot-log": [
     {
-      "snapshot-id": 4023188611490218533,
-      "timestamp-ms": 1732975200000
+      "snapshot-id": 865062216067034029,
+      "timestamp-ms": 1496239200000
     }
   ],
   "snapshots": [
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BILLING_NMAS_TST_RECVRY_TRK/metadata/snap-4023188611490218533-1-bb89709d-4cd7-8162-ab1b-4378bf545a2f.avro",
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BILLING_NMAS_TST_RECVRY_TRK/metadata/snap-865062216067034029-1-bb89709d-4cd7-8162-ab1b-4378bf545a2f.avro",
       "schema-id": 0,
       "sequence-number": 1,
-      "snapshot-id": 4023188611490218533,
+      "snapshot-id": 865062216067034029,
       "summary": {
         "operation": "append",
-        "utilake.files": "16",
-        "utilake.from.file": "PUBLIC_ARCHIVE#BILLING_NMAS_TST_RECVRY_TRK#FILE01#202412010000.zip",
-        "utilake.from.release": "2024-12",
-        "utilake.from.sha256": "5f04e838a90600098e58510065521675014af924708cbb23f50d0c550f379b6e",
-        "utilake.kinds": "[\"archive\"]",
+        "utilake.files": "78",
+        "utilake.from.file": "PUBLIC_BILLING_20170616124141_0000000284563656.zip",
+        "utilake.from.release": "2017-06",
+        "utilake.from.sha256": "ff2ffe63ad625190e84cd6cdc38d781445ef664a79a28d187e54c7c5d2ae9eda",
+        "utilake.kinds": "[\"archive\",\"reports/archive\",\"reports/current\"]",
         "utilake.report-subtype": "NMAS_TST_RECVRY_TRK",
         "utilake.report-type": "BILLING",
-        "utilake.rows": "625",
-        "utilake.to.file": "PUBLIC_ARCHIVE#BILLING_NMAS_TST_RECVRY_TRK#FILE01#202608010000.zip",
+        "utilake.rows": "1269",
+        "utilake.to.file": "PUBLIC_BILLING_20260802.zip",
         "utilake.to.release": "2026-08",
-        "utilake.to.sha256": "9ac387db94897bd9eb8a23f3f5cafd08d072fe29ffafb31b43bd3253cf89f79d",
-        "utilake.total-rows": "625",
+        "utilake.to.sha256": "9b08d83d90b963b1d1f56eb1d2ad88b9b18fb852a1c0ff9e1b87ac918341ea98",
+        "utilake.total-rows": "1269",
         "utilake.version": "1"
       },
-      "timestamp-ms": 1732975200000
+      "timestamp-ms": 1496239200000
     }
   ],
   "sort-orders": [

@@ -1,13 +1,13 @@
 {
-  "current-schema-id": 0,
-  "current-snapshot-id": 5663580162369706975,
+  "current-schema-id": 2,
+  "current-snapshot-id": 231768796555636655,
   "default-sort-order-id": 0,
   "default-spec-id": 0,
   "format-version": 3,
   "last-column-id": 10,
   "last-partition-id": 999,
-  "last-sequence-number": 1,
-  "last-updated-ms": 1722434400000,
+  "last-sequence-number": 55,
+  "last-updated-ms": 1788184800054,
   "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY",
   "metadata-log": [],
   "next-row-id": 0,
@@ -36,11 +36,207 @@
   },
   "refs": {
     "main": {
-      "snapshot-id": 5663580162369706975,
+      "snapshot-id": 231768796555636655,
       "type": "branch"
     }
   },
   "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Date Time the report was published.",
+          "id": 1,
+          "name": "PUBLISH_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Date on which the PASA availability of DUID applies.",
+          "id": 2,
+          "name": "DAY",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "NEM Region.",
+          "id": 3,
+          "name": "REGIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "NEM DUID.",
+          "id": 4,
+          "name": "DUID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Offered PASA Availability of Scheduled generator DUID for the day.",
+          "id": 5,
+          "name": "PASAAVAILABILITY",
+          "required": false,
+          "type": "decimal(12, 0)"
+        },
+        {
+          "doc": "Date Time of the latest offer used for DUID for this date.",
+          "id": 6,
+          "name": "LATEST_OFFER_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 7,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Date Time the report was published.",
+          "id": 1,
+          "name": "PUBLISH_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Date on which the PASA availability of DUID applies.",
+          "id": 2,
+          "name": "DAY",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "NEM Region.",
+          "id": 3,
+          "name": "REGIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "NEM DUID.",
+          "id": 4,
+          "name": "DUID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Offered PASA Availability of Scheduled generator DUID for the day.",
+          "id": 5,
+          "name": "PASAAVAILABILITY",
+          "required": false,
+          "type": "decimal(12, 0)"
+        },
+        {
+          "doc": "Date Time of the latest offer used for DUID for this date.",
+          "id": 6,
+          "name": "LATEST_OFFER_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 7,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Status of a reported capacity value (e.g. 1 for Yes, 0 for No)",
+          "id": 8,
+          "name": "CARRYOVERSTATUS",
+          "required": false,
+          "type": "decimal(1, 0)"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 1,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Date Time the report was published.",
+          "id": 1,
+          "name": "PUBLISH_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Date on which the PASA availability of DUID applies.",
+          "id": 2,
+          "name": "DAY",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "NEM Region.",
+          "id": 3,
+          "name": "REGIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "NEM DUID.",
+          "id": 4,
+          "name": "DUID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Offered PASA Availability of Scheduled generator DUID for the day.",
+          "id": 5,
+          "name": "PASAAVAILABILITY",
+          "required": false,
+          "type": "decimal(12, 0)"
+        },
+        {
+          "doc": "The unit state value",
+          "id": 9,
+          "name": "PASAUNITSTATE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The recall time value",
+          "id": 10,
+          "name": "PASARECALLTIME",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "doc": "Date Time of the latest offer used for DUID for this date.",
+          "id": 6,
+          "name": "LATEST_OFFER_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 7,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Status of a reported capacity value (e.g. 1 for Yes, 0 for No)",
+          "id": 8,
+          "name": "CARRYOVERSTATUS",
+          "required": false,
+          "type": "decimal(1, 0)"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 2,
+      "type": "struct"
+    },
     {
       "fields": [
         {
@@ -115,27 +311,327 @@
         }
       ],
       "identifier-field-ids": [],
-      "schema-id": 0,
+      "schema-id": 3,
       "type": "struct"
     }
   ],
   "snapshot-log": [
     {
-      "snapshot-id": 5663580162369706975,
-      "timestamp-ms": 1722434400000
+      "snapshot-id": 4962325854420748123,
+      "timestamp-ms": 1596204000000
+    },
+    {
+      "snapshot-id": 3467366195667838176,
+      "timestamp-ms": 1633010400001
+    },
+    {
+      "snapshot-id": 4449543160481682764,
+      "timestamp-ms": 1682863200002
+    },
+    {
+      "snapshot-id": 5961298957030977850,
+      "timestamp-ms": 1722434400003
+    },
+    {
+      "snapshot-id": 2374289717305811753,
+      "timestamp-ms": 1722434400004
+    },
+    {
+      "snapshot-id": 7869615975479713418,
+      "timestamp-ms": 1725112800005
+    },
+    {
+      "snapshot-id": 7616783656814009682,
+      "timestamp-ms": 1725112800006
+    },
+    {
+      "snapshot-id": 125448749521887464,
+      "timestamp-ms": 1727704800007
+    },
+    {
+      "snapshot-id": 2814431606570460191,
+      "timestamp-ms": 1727704800008
+    },
+    {
+      "snapshot-id": 5188972620526920421,
+      "timestamp-ms": 1730383200009
+    },
+    {
+      "snapshot-id": 5849678469589770226,
+      "timestamp-ms": 1730383200010
+    },
+    {
+      "snapshot-id": 8297925018780115485,
+      "timestamp-ms": 1732975200011
+    },
+    {
+      "snapshot-id": 1254927245192572900,
+      "timestamp-ms": 1732975200012
+    },
+    {
+      "snapshot-id": 8419003534539323376,
+      "timestamp-ms": 1735653600013
+    },
+    {
+      "snapshot-id": 3896095156346414950,
+      "timestamp-ms": 1735653600014
+    },
+    {
+      "snapshot-id": 6679488526107787516,
+      "timestamp-ms": 1738332000015
+    },
+    {
+      "snapshot-id": 2393390747089822151,
+      "timestamp-ms": 1738332000016
+    },
+    {
+      "snapshot-id": 7220711418764866583,
+      "timestamp-ms": 1740751200017
+    },
+    {
+      "snapshot-id": 4669999473723476479,
+      "timestamp-ms": 1740751200018
+    },
+    {
+      "snapshot-id": 5784004536005072747,
+      "timestamp-ms": 1743429600019
+    },
+    {
+      "snapshot-id": 5832150140008692392,
+      "timestamp-ms": 1743429600020
+    },
+    {
+      "snapshot-id": 8172040020548761786,
+      "timestamp-ms": 1746021600021
+    },
+    {
+      "snapshot-id": 804661555918192558,
+      "timestamp-ms": 1746021600022
+    },
+    {
+      "snapshot-id": 3228288926108759134,
+      "timestamp-ms": 1748700000023
+    },
+    {
+      "snapshot-id": 4249061084600114753,
+      "timestamp-ms": 1748700000024
+    },
+    {
+      "snapshot-id": 5091335653342231998,
+      "timestamp-ms": 1751292000025
+    },
+    {
+      "snapshot-id": 8538167218385718142,
+      "timestamp-ms": 1751292000026
+    },
+    {
+      "snapshot-id": 1873999458988557954,
+      "timestamp-ms": 1753970400027
+    },
+    {
+      "snapshot-id": 3472227762362380290,
+      "timestamp-ms": 1753970400028
+    },
+    {
+      "snapshot-id": 4938031884682739420,
+      "timestamp-ms": 1756648800029
+    },
+    {
+      "snapshot-id": 5636358374956673009,
+      "timestamp-ms": 1756648800030
+    },
+    {
+      "snapshot-id": 3486270948826949633,
+      "timestamp-ms": 1759240800031
+    },
+    {
+      "snapshot-id": 5110499193697261319,
+      "timestamp-ms": 1759240800032
+    },
+    {
+      "snapshot-id": 4723132545675279222,
+      "timestamp-ms": 1761919200033
+    },
+    {
+      "snapshot-id": 3078050158019590092,
+      "timestamp-ms": 1761919200034
+    },
+    {
+      "snapshot-id": 2467125662663206822,
+      "timestamp-ms": 1764511200035
+    },
+    {
+      "snapshot-id": 4192858558699506619,
+      "timestamp-ms": 1764511200036
+    },
+    {
+      "snapshot-id": 6608429758570089025,
+      "timestamp-ms": 1767189600037
+    },
+    {
+      "snapshot-id": 4313765542938738010,
+      "timestamp-ms": 1767189600038
+    },
+    {
+      "snapshot-id": 2778003473217566146,
+      "timestamp-ms": 1769868000039
+    },
+    {
+      "snapshot-id": 358110853944366310,
+      "timestamp-ms": 1769868000040
+    },
+    {
+      "snapshot-id": 5685055639920350506,
+      "timestamp-ms": 1772287200041
+    },
+    {
+      "snapshot-id": 8604606043443894169,
+      "timestamp-ms": 1772287200042
+    },
+    {
+      "snapshot-id": 8603853729585069728,
+      "timestamp-ms": 1774965600043
+    },
+    {
+      "snapshot-id": 5355616030689986262,
+      "timestamp-ms": 1774965600044
+    },
+    {
+      "snapshot-id": 8963528162822603702,
+      "timestamp-ms": 1777557600045
+    },
+    {
+      "snapshot-id": 7260988133607249059,
+      "timestamp-ms": 1777557600046
+    },
+    {
+      "snapshot-id": 3402438221956505840,
+      "timestamp-ms": 1780236000047
+    },
+    {
+      "snapshot-id": 5200260405749921341,
+      "timestamp-ms": 1780236000048
+    },
+    {
+      "snapshot-id": 883680458770520287,
+      "timestamp-ms": 1782828000049
+    },
+    {
+      "snapshot-id": 1089215563795724814,
+      "timestamp-ms": 1782828000050
+    },
+    {
+      "snapshot-id": 6671378490689551773,
+      "timestamp-ms": 1785506400051
+    },
+    {
+      "snapshot-id": 6449694713523091705,
+      "timestamp-ms": 1785506400052
+    },
+    {
+      "snapshot-id": 7434716593667093013,
+      "timestamp-ms": 1788184800053
+    },
+    {
+      "snapshot-id": 231768796555636655,
+      "timestamp-ms": 1788184800054
     }
   ],
   "snapshots": [
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-5663580162369706975-1-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-4962325854420748123-1-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
       "schema-id": 0,
       "sequence-number": 1,
-      "snapshot-id": 5663580162369706975,
+      "snapshot-id": 4962325854420748123,
       "summary": {
         "operation": "append",
-        "utilake.files": "26",
+        "utilake.files": "1484",
+        "utilake.from.file": "PUBLIC_MTPASADUIDAVAILABILITY_202008201200_0000000327353179.zip",
+        "utilake.from.release": "2020-08",
+        "utilake.from.sha256": "5f52e454139734a50d533dffc3d4c592f6956be524460ab161a4e5571f7a7683",
+        "utilake.from.time": "2020-08-23T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "266025090",
+        "utilake.to.file": "PUBLIC_MTPASADUIDAVAILABILITY_202110210900_0000000351185773.zip",
+        "utilake.to.release": "2021-10",
+        "utilake.to.sha256": "fddef28b4c31033700e992187708f393b2d0878b3a72890591466d3759651353",
+        "utilake.to.time": "2024-10-20T00:00:00+10:00",
+        "utilake.total-rows": "266025090",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1596204000000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-3467366195667838176-2-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 4962325854420748123,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 3467366195667838176,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2149",
+        "utilake.from.file": "PUBLIC_MTPASADUIDAVAILABILITY_202110211200_0000000351193681.zip",
+        "utilake.from.release": "2021-10",
+        "utilake.from.sha256": "0c55af36f305ff8354511e32685dfab2a1787efc54efbd805fd72ec48820b640",
+        "utilake.from.time": "2021-10-24T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "425349742",
+        "utilake.to.file": "PUBLIC_MTPASADUIDAVAILABILITY_202305231200_0000000387833872.zip",
+        "utilake.to.release": "2023-05",
+        "utilake.to.sha256": "5478ac3ff7f63d304d7edb2e40e3934ec683007e36ddc961d136402b4618cb7a",
+        "utilake.to.time": "2026-05-24T00:00:00+10:00",
+        "utilake.total-rows": "691374832",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1633010400001
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-4449543160481682764-3-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 3467366195667838176,
+      "schema-id": 2,
+      "sequence-number": 3,
+      "snapshot-id": 4449543160481682764,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1593",
+        "utilake.from.file": "PUBLIC_MTPASADUIDAVAILABILITY_202305231500_0000000387844799.zip",
+        "utilake.from.release": "2023-05",
+        "utilake.from.sha256": "81e5dfe03d6e95683e903176e7810b07e67bc60e5e475a4d9ff628e8d81d095e",
+        "utilake.from.time": "2023-05-28T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "335179286",
+        "utilake.to.file": "PUBLIC_MTPASADUIDAVAILABILITY_202407311800_0000000428029436.zip",
+        "utilake.to.release": "2024-07",
+        "utilake.to.sha256": "00cf65ff043f6b28ad101799361af8cd22f5cfd924fccdd3ecd1315e36bf3a12",
+        "utilake.to.time": "2027-08-01T00:00:00+10:00",
+        "utilake.total-rows": "1026554118",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1682863200002
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-5961298957030977850-4-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 4449543160481682764,
+      "schema-id": 3,
+      "sequence-number": 4,
+      "snapshot-id": 5961298957030977850,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
         "utilake.from.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202408010000.zip",
         "utilake.from.release": "2024-08",
         "utilake.from.sha256": "cc9242e87fadcb4f8ba16ee8baffb8176b9963f1fa066f824a81d21f08f04d55",
@@ -143,15 +639,1443 @@
         "utilake.kinds": "[\"archive\"]",
         "utilake.report-subtype": "DUIDAVAILABILITY",
         "utilake.report-type": "MTPASA",
-        "utilake.rows": "656020822",
+        "utilake.rows": "24153114",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202408010000.zip",
+        "utilake.to.release": "2024-08",
+        "utilake.to.sha256": "cc9242e87fadcb4f8ba16ee8baffb8176b9963f1fa066f824a81d21f08f04d55",
+        "utilake.to.time": "2027-08-29T00:00:00+10:00",
+        "utilake.total-rows": "1050707232",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1722434400003
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-2374289717305811753-5-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 5961298957030977850,
+      "schema-id": 2,
+      "sequence-number": 5,
+      "snapshot-id": 2374289717305811753,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "111",
+        "utilake.from.file": "PUBLIC_MTPASADUIDAVAILABILITY_202408010900_0000000428089467.zip",
+        "utilake.from.release": "2024-08",
+        "utilake.from.sha256": "00c9bc39a3ab1a11dabdf88d1fed5f742a0d2ab63769ba9914732b89684791b0",
+        "utilake.from.time": "2024-08-04T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "24153114",
+        "utilake.to.file": "PUBLIC_MTPASADUIDAVAILABILITY_202408311800_0000000431375968.zip",
+        "utilake.to.release": "2024-08",
+        "utilake.to.sha256": "80c63eda9fb9d60530c7884c102ac39f176bde0f28d5f30dd4bc9957d3c6739a",
+        "utilake.to.time": "2027-08-29T00:00:00+10:00",
+        "utilake.total-rows": "1074860346",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1722434400004
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-7869615975479713418-6-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 2374289717305811753,
+      "schema-id": 3,
+      "sequence-number": 6,
+      "snapshot-id": 7869615975479713418,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202409010000.zip",
+        "utilake.from.release": "2024-09",
+        "utilake.from.sha256": "9d6015066c11ab613816634f604512cc1616890ace93964cb2c9a547ed8893d4",
+        "utilake.from.time": "2024-09-08T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "23084160",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202409010000.zip",
+        "utilake.to.release": "2024-09",
+        "utilake.to.sha256": "9d6015066c11ab613816634f604512cc1616890ace93964cb2c9a547ed8893d4",
+        "utilake.to.time": "2027-10-03T00:00:00+10:00",
+        "utilake.total-rows": "1097944506",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1725112800005
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-7616783656814009682-7-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 7869615975479713418,
+      "schema-id": 2,
+      "sequence-number": 7,
+      "snapshot-id": 7616783656814009682,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "106",
+        "utilake.from.file": "PUBLIC_MTPASADUIDAVAILABILITY_202409020900_0000000431552427.zip",
+        "utilake.from.release": "2024-09",
+        "utilake.from.sha256": "c7be255b4c4f470283accd8cb78f335f17bfd41d25837125ae916678da0596e8",
+        "utilake.from.time": "2024-09-08T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "23084160",
+        "utilake.to.file": "PUBLIC_MTPASADUIDAVAILABILITY_202409301800_0000000434697928.zip",
+        "utilake.to.release": "2024-09",
+        "utilake.to.sha256": "0535ccd3612d6e54245396c4c976e2dbef4846c148a5f455ce4f772e9f24506d",
+        "utilake.to.time": "2027-10-03T00:00:00+10:00",
+        "utilake.total-rows": "1121028666",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1725112800006
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-125448749521887464-8-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 7616783656814009682,
+      "schema-id": 3,
+      "sequence-number": 8,
+      "snapshot-id": 125448749521887464,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202410010000.zip",
+        "utilake.from.release": "2024-10",
+        "utilake.from.sha256": "5341775b318782f65a1da91cb7cb51e8fa067096cbe6b2dfc07c04e5d5d8ee5a",
+        "utilake.from.time": "2024-10-06T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "23756355",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202410010000.zip",
+        "utilake.to.release": "2024-10",
+        "utilake.to.sha256": "5341775b318782f65a1da91cb7cb51e8fa067096cbe6b2dfc07c04e5d5d8ee5a",
+        "utilake.to.time": "2027-10-31T00:00:00+10:00",
+        "utilake.total-rows": "1144785021",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1727704800007
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-2814431606570460191-9-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 125448749521887464,
+      "schema-id": 2,
+      "sequence-number": 9,
+      "snapshot-id": 2814431606570460191,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "111",
+        "utilake.from.file": "PUBLIC_MTPASADUIDAVAILABILITY_202410010900_0000000434762439.zip",
+        "utilake.from.release": "2024-10",
+        "utilake.from.sha256": "234d469d7bbd4879a8af65d8ccb791c3e43fe4d68c7c39e90e0e5e437086c149",
+        "utilake.from.time": "2024-10-06T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "23971676",
+        "utilake.to.file": "PUBLIC_MTPASADUIDAVAILABILITY_202410311800_0000000438188123.zip",
+        "utilake.to.release": "2024-10",
+        "utilake.to.sha256": "24f7bf1d5acdbede3c33b894e8d61ba473feba0fb60646c4207d5e4b6971eab6",
+        "utilake.to.time": "2027-10-31T00:00:00+10:00",
+        "utilake.total-rows": "1168756697",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1727704800008
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-5188972620526920421-10-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 2814431606570460191,
+      "schema-id": 3,
+      "sequence-number": 10,
+      "snapshot-id": 5188972620526920421,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202411010000.zip",
+        "utilake.from.release": "2024-11",
+        "utilake.from.sha256": "b1fc0329c29d633affba3b3aefae681fb1d415d3d352205a02c3673a20388df6",
+        "utilake.from.time": "2024-11-03T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "23005464",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202411010000.zip",
+        "utilake.to.release": "2024-11",
+        "utilake.to.sha256": "b1fc0329c29d633affba3b3aefae681fb1d415d3d352205a02c3673a20388df6",
+        "utilake.to.time": "2027-11-28T00:00:00+10:00",
+        "utilake.total-rows": "1191762161",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1730383200009
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-5849678469589770226-11-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 5188972620526920421,
+      "schema-id": 2,
+      "sequence-number": 11,
+      "snapshot-id": 5849678469589770226,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "105",
+        "utilake.from.file": "PUBLIC_MTPASADUIDAVAILABILITY_202411010900_0000000438254273.zip",
+        "utilake.from.release": "2024-11",
+        "utilake.from.sha256": "e13663a6c0e8b39ab0f151cd6d0f01cef4a1eac465954f5d1271db69e1328683",
+        "utilake.from.time": "2024-11-03T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "23005464",
+        "utilake.to.file": "PUBLIC_MTPASADUIDAVAILABILITY_202411301800_0000000441670142.zip",
+        "utilake.to.release": "2024-11",
+        "utilake.to.sha256": "0aaaab7aecf2e4bb768a783a4fbd9294772c1f3fe1014080385ed3765bbdb7cf",
+        "utilake.to.time": "2027-11-28T00:00:00+10:00",
+        "utilake.total-rows": "1214767625",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1730383200010
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-8297925018780115485-12-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 5849678469589770226,
+      "schema-id": 3,
+      "sequence-number": 12,
+      "snapshot-id": 8297925018780115485,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202412010000.zip",
+        "utilake.from.release": "2024-12",
+        "utilake.from.sha256": "1e5c327d15f2e119867a2d0ec49586b9be9390fe723fbfa3e1ded55152390047",
+        "utilake.from.time": "2024-12-08T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "22758474",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202412010000.zip",
+        "utilake.to.release": "2024-12",
+        "utilake.to.sha256": "1e5c327d15f2e119867a2d0ec49586b9be9390fe723fbfa3e1ded55152390047",
+        "utilake.to.time": "2028-01-02T00:00:00+10:00",
+        "utilake.total-rows": "1237526099",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1732975200011
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-1254927245192572900-13-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 8297925018780115485,
+      "schema-id": 2,
+      "sequence-number": 13,
+      "snapshot-id": 1254927245192572900,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "104",
+        "utilake.from.file": "PUBLIC_MTPASADUIDAVAILABILITY_202412020900_0000000441850012.zip",
+        "utilake.from.release": "2024-12",
+        "utilake.from.sha256": "f54f10249eb908deb13a082541ef810a33335aeeba1ea91eeb340d4b4eaff62c",
+        "utilake.from.time": "2024-12-08T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "22758474",
+        "utilake.to.file": "PUBLIC_MTPASADUIDAVAILABILITY_202412311800_0000000445391836.zip",
+        "utilake.to.release": "2024-12",
+        "utilake.to.sha256": "8669b6bce667dcdace0cf9f9ec1ff6cab33058bb1830621f9bace5060ad12bc0",
+        "utilake.to.time": "2028-01-02T00:00:00+10:00",
+        "utilake.total-rows": "1260284573",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1732975200012
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-8419003534539323376-14-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 1254927245192572900,
+      "schema-id": 3,
+      "sequence-number": 14,
+      "snapshot-id": 8419003534539323376,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202501010000.zip",
+        "utilake.from.release": "2025-01",
+        "utilake.from.sha256": "3fb4cda37822931abfedc52e4e1dfbd6413889e0ceafd0e91950d03b5f6aedac",
+        "utilake.from.time": "2025-01-05T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "24278809",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202501010000.zip",
+        "utilake.to.release": "2025-01",
+        "utilake.to.sha256": "3fb4cda37822931abfedc52e4e1dfbd6413889e0ceafd0e91950d03b5f6aedac",
+        "utilake.to.time": "2028-01-30T00:00:00+10:00",
+        "utilake.total-rows": "1284563382",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1735653600013
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-3896095156346414950-15-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 8419003534539323376,
+      "schema-id": 2,
+      "sequence-number": 15,
+      "snapshot-id": 3896095156346414950,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "111",
+        "utilake.from.file": "PUBLIC_MTPASADUIDAVAILABILITY_202501010900_0000000445463190.zip",
+        "utilake.from.release": "2025-01",
+        "utilake.from.sha256": "0fdabced850292274836c89d148cd8316383665c4574bcdc9d6839e3a9d4cbc5",
+        "utilake.from.time": "2025-01-05T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "24278809",
+        "utilake.to.file": "PUBLIC_MTPASADUIDAVAILABILITY_202501311800_0000000449230893.zip",
+        "utilake.to.release": "2025-01",
+        "utilake.to.sha256": "189177b7b8aa49e2ab7c6cab410297e235046592734607162b9efb9f2644472e",
+        "utilake.to.time": "2028-01-30T00:00:00+10:00",
+        "utilake.total-rows": "1308842191",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1735653600014
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-6679488526107787516-16-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 3896095156346414950,
+      "schema-id": 3,
+      "sequence-number": 16,
+      "snapshot-id": 6679488526107787516,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202502010000.zip",
+        "utilake.from.release": "2025-02",
+        "utilake.from.sha256": "de7be967cddab9f84b27c457ed715a730b0b4e7c250755e4ad3148ae1137d3df",
+        "utilake.from.time": "2025-02-02T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "21148457",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202502010000.zip",
+        "utilake.to.release": "2025-02",
+        "utilake.to.sha256": "de7be967cddab9f84b27c457ed715a730b0b4e7c250755e4ad3148ae1137d3df",
+        "utilake.to.time": "2028-02-27T00:00:00+10:00",
+        "utilake.total-rows": "1329990648",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1738332000015
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-2393390747089822151-17-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 6679488526107787516,
+      "schema-id": 2,
+      "sequence-number": 17,
+      "snapshot-id": 2393390747089822151,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "97",
+        "utilake.from.file": "PUBLIC_MTPASADUIDAVAILABILITY_202502010900_0000000449308350.zip",
+        "utilake.from.release": "2025-02",
+        "utilake.from.sha256": "9e90baf25000e2d1e427420d2c5a41751c91a92ef5450396aeec3336433bbb3e",
+        "utilake.from.time": "2025-02-02T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "21368150",
+        "utilake.to.file": "PUBLIC_MTPASADUIDAVAILABILITY_202502281800_0000000452987943.zip",
+        "utilake.to.release": "2025-02",
+        "utilake.to.sha256": "a9ebfb8e36bfc0c569f8393f4684aea14d655eea354cf4c805bebfe02420683b",
+        "utilake.to.time": "2028-02-27T00:00:00+10:00",
+        "utilake.total-rows": "1351358798",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1738332000016
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-7220711418764866583-18-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 2393390747089822151,
+      "schema-id": 3,
+      "sequence-number": 18,
+      "snapshot-id": 7220711418764866583,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202503010000.zip",
+        "utilake.from.release": "2025-03",
+        "utilake.from.sha256": "090825ab53f9a5bb20c46d50ec18e4586c529d12e9e50d9f82338212dafedc96",
+        "utilake.from.time": "2025-03-02T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "23943248",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202503010000.zip",
+        "utilake.to.release": "2025-03",
+        "utilake.to.sha256": "090825ab53f9a5bb20c46d50ec18e4586c529d12e9e50d9f82338212dafedc96",
+        "utilake.to.time": "2028-04-02T00:00:00+10:00",
+        "utilake.total-rows": "1375302046",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1740751200017
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-4669999473723476479-19-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 7220711418764866583,
+      "schema-id": 2,
+      "sequence-number": 19,
+      "snapshot-id": 4669999473723476479,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "108",
+        "utilake.from.file": "PUBLIC_MTPASADUIDAVAILABILITY_202503010900_0000000453068715.zip",
+        "utilake.from.release": "2025-03",
+        "utilake.from.sha256": "52a86db79feb70eb757bf3f4570992d7abd92613a9a6cda6e52dd1bc4a840eed",
+        "utilake.from.time": "2025-03-02T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "23943248",
+        "utilake.to.file": "PUBLIC_MTPASADUIDAVAILABILITY_202503311800_0000000457231333.zip",
+        "utilake.to.release": "2025-03",
+        "utilake.to.sha256": "6cf763cf8fa125d2adbe4c8560eb0f9a5a8454718276a3e4cb1799a12545cecb",
+        "utilake.to.time": "2028-04-02T00:00:00+10:00",
+        "utilake.total-rows": "1399245294",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1740751200018
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-5784004536005072747-20-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 4669999473723476479,
+      "schema-id": 3,
+      "sequence-number": 20,
+      "snapshot-id": 5784004536005072747,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202504010000.zip",
+        "utilake.from.release": "2025-04",
+        "utilake.from.sha256": "10b082d45f289032fd5199c5a19c51f73fae432948a398c7adb4ce992a4f9a0d",
+        "utilake.from.time": "2025-04-06T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "23495128",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202504010000.zip",
+        "utilake.to.release": "2025-04",
+        "utilake.to.sha256": "10b082d45f289032fd5199c5a19c51f73fae432948a398c7adb4ce992a4f9a0d",
+        "utilake.to.time": "2028-04-30T00:00:00+10:00",
+        "utilake.total-rows": "1422740422",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1743429600019
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-5832150140008692392-21-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 5784004536005072747,
+      "schema-id": 2,
+      "sequence-number": 21,
+      "snapshot-id": 5832150140008692392,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "104",
+        "utilake.from.file": "PUBLIC_MTPASADUIDAVAILABILITY_202504010900_0000000457314886.zip",
+        "utilake.from.release": "2025-04",
+        "utilake.from.sha256": "56dce4158f381197bbb8b79592da6ee0c03098e64c4ef7e144a636902aedb700",
+        "utilake.from.time": "2025-04-06T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "23495128",
+        "utilake.to.file": "PUBLIC_MTPASADUIDAVAILABILITY_202504301800_0000000461337641.zip",
+        "utilake.to.release": "2025-04",
+        "utilake.to.sha256": "e5a8a7128404f41bfb8f26982a677837b94e54c768f16882cfa9518113772ca7",
+        "utilake.to.time": "2028-04-30T00:00:00+10:00",
+        "utilake.total-rows": "1446235550",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1743429600020
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-8172040020548761786-22-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 5832150140008692392,
+      "schema-id": 3,
+      "sequence-number": 22,
+      "snapshot-id": 8172040020548761786,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202505010000.zip",
+        "utilake.from.release": "2025-05",
+        "utilake.from.sha256": "21035500171a668aebe7013a7e009c7bfbdac528627e91e457482e7d3e04c01d",
+        "utilake.from.time": "2025-05-04T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "24451503",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202505010000.zip",
+        "utilake.to.release": "2025-05",
+        "utilake.to.sha256": "21035500171a668aebe7013a7e009c7bfbdac528627e91e457482e7d3e04c01d",
+        "utilake.to.time": "2028-05-28T00:00:00+10:00",
+        "utilake.total-rows": "1470687053",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1746021600021
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-804661555918192558-23-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 8172040020548761786,
+      "schema-id": 2,
+      "sequence-number": 23,
+      "snapshot-id": 804661555918192558,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "108",
+        "utilake.from.file": "PUBLIC_MTPASADUIDAVAILABILITY_202505010900_0000000461418444.zip",
+        "utilake.from.release": "2025-05",
+        "utilake.from.sha256": "b20ec888fc92a5df3cbbbf1db07376c30df98c133225fef91c3bf9f335dad181",
+        "utilake.from.time": "2025-05-04T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "24451503",
+        "utilake.to.file": "PUBLIC_MTPASADUIDAVAILABILITY_202505311800_0000000465709783.zip",
+        "utilake.to.release": "2025-05",
+        "utilake.to.sha256": "caa3beb41b3ddc1c716e13b6167969787d667a58faf5c1bf316b16a8c843f4c1",
+        "utilake.to.time": "2028-05-28T00:00:00+10:00",
+        "utilake.total-rows": "1495138556",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1746021600022
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-3228288926108759134-24-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 804661555918192558,
+      "schema-id": 3,
+      "sequence-number": 24,
+      "snapshot-id": 3228288926108759134,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202506010000.zip",
+        "utilake.from.release": "2025-06",
+        "utilake.from.sha256": "00203f077c128c4287593f81c6bbd03cf1496a49021df57cb7b87df4f65946fd",
+        "utilake.from.time": "2025-06-08T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "23450315",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202506010000.zip",
+        "utilake.to.release": "2025-06",
+        "utilake.to.sha256": "00203f077c128c4287593f81c6bbd03cf1496a49021df57cb7b87df4f65946fd",
+        "utilake.to.time": "2028-07-02T00:00:00+10:00",
+        "utilake.total-rows": "1518588871",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1748700000023
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-4249061084600114753-25-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 3228288926108759134,
+      "schema-id": 2,
+      "sequence-number": 25,
+      "snapshot-id": 4249061084600114753,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "102",
+        "utilake.from.file": "PUBLIC_MTPASADUIDAVAILABILITY_202506020900_0000000465934418.zip",
+        "utilake.from.release": "2025-06",
+        "utilake.from.sha256": "091159bb2760089e1f74d984b2fa2166ea8ba768b6cd4b4050bc56297f9076e2",
+        "utilake.from.time": "2025-06-08T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "23450315",
+        "utilake.to.file": "PUBLIC_MTPASADUIDAVAILABILITY_202506301800_0000000469939209.zip",
+        "utilake.to.release": "2025-06",
+        "utilake.to.sha256": "79684708b7ae36dbbc598a6d6e8d719266643850110bd44624e7d15823b76dfa",
+        "utilake.to.time": "2028-07-02T00:00:00+10:00",
+        "utilake.total-rows": "1542039186",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1748700000024
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-5091335653342231998-26-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 4249061084600114753,
+      "schema-id": 3,
+      "sequence-number": 26,
+      "snapshot-id": 5091335653342231998,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202507010000.zip",
+        "utilake.from.release": "2025-07",
+        "utilake.from.sha256": "ff159d4e2d4709ea8367d4fe8f0ab50486ee8503fb06e59e51bd57b13af75b89",
+        "utilake.from.time": "2025-07-06T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "25134628",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202507010000.zip",
+        "utilake.to.release": "2025-07",
+        "utilake.to.sha256": "ff159d4e2d4709ea8367d4fe8f0ab50486ee8503fb06e59e51bd57b13af75b89",
+        "utilake.to.time": "2028-07-30T00:00:00+10:00",
+        "utilake.total-rows": "1567173814",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1751292000025
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-8538167218385718142-27-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 5091335653342231998,
+      "schema-id": 2,
+      "sequence-number": 27,
+      "snapshot-id": 8538167218385718142,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "108",
+        "utilake.from.file": "PUBLIC_MTPASADUIDAVAILABILITY_202507010900_0000000470021025.zip",
+        "utilake.from.release": "2025-07",
+        "utilake.from.sha256": "eb4b24bb9879e9b72b0a20cced2ef7b4877a9c862ae0d9cdbdd015900067de6f",
+        "utilake.from.time": "2025-07-06T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "25134628",
+        "utilake.to.file": "PUBLIC_MTPASADUIDAVAILABILITY_202507311800_0000000474385808.zip",
+        "utilake.to.release": "2025-07",
+        "utilake.to.sha256": "76068bdfe3f1cc4238906a089c0aa1362979d3ad1466c2a1134b926d2512e03f",
+        "utilake.to.time": "2028-07-30T00:00:00+10:00",
+        "utilake.total-rows": "1592308442",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1751292000026
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-1873999458988557954-28-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 8538167218385718142,
+      "schema-id": 3,
+      "sequence-number": 28,
+      "snapshot-id": 1873999458988557954,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202508010000.zip",
+        "utilake.from.release": "2025-08",
+        "utilake.from.sha256": "32213659981659848f7563eec4e746f0692a83ee8f2b2bd2e352a5159335d6dc",
+        "utilake.from.time": "2025-08-03T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "24819844",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202508010000.zip",
+        "utilake.to.release": "2025-08",
+        "utilake.to.sha256": "32213659981659848f7563eec4e746f0692a83ee8f2b2bd2e352a5159335d6dc",
+        "utilake.to.time": "2028-08-27T00:00:00+10:00",
+        "utilake.total-rows": "1617128286",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1753970400027
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-3472227762362380290-29-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 1873999458988557954,
+      "schema-id": 2,
+      "sequence-number": 29,
+      "snapshot-id": 3472227762362380290,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "106",
+        "utilake.from.file": "PUBLIC_MTPASADUIDAVAILABILITY_202508010900_0000000474468811.zip",
+        "utilake.from.release": "2025-08",
+        "utilake.from.sha256": "f00006c0fc7a1270b21e43d68056fb9ba1cd78a2cf8cbb2c404bf86516d76237",
+        "utilake.from.time": "2025-08-03T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "24819844",
+        "utilake.to.file": "PUBLIC_MTPASADUIDAVAILABILITY_202508301800_0000000478535878.zip",
+        "utilake.to.release": "2025-08",
+        "utilake.to.sha256": "b7093f86af4d7c3feba6505a1b24c67a061942433c3ffbf3eef73b4cfe74087a",
+        "utilake.to.time": "2028-08-27T00:00:00+10:00",
+        "utilake.total-rows": "1641948130",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1753970400028
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-4938031884682739420-30-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 3472227762362380290,
+      "schema-id": 3,
+      "sequence-number": 30,
+      "snapshot-id": 4938031884682739420,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202509010000.zip",
+        "utilake.from.release": "2025-09",
+        "utilake.from.sha256": "175b8521e118fb4db0a795b7b2f74573867c9660ae3a776b3cacd355f721ffaa",
+        "utilake.from.time": "2025-09-07T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "24859192",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202509010000.zip",
+        "utilake.to.release": "2025-09",
+        "utilake.to.sha256": "175b8521e118fb4db0a795b7b2f74573867c9660ae3a776b3cacd355f721ffaa",
+        "utilake.to.time": "2028-10-01T00:00:00+10:00",
+        "utilake.total-rows": "1666807322",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1756648800029
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-5636358374956673009-31-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 4938031884682739420,
+      "schema-id": 2,
+      "sequence-number": 31,
+      "snapshot-id": 5636358374956673009,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "210",
+        "utilake.from.file": "PUBLIC_MTPASADUIDAVAILABILITY_20250901.zip",
+        "utilake.from.release": "2025-09",
+        "utilake.from.sha256": "9b0a018a718508a15d5c1ecd5cd3ac268b4dfdbb09ad1001311edba0cc1c5416",
+        "utilake.from.time": "2025-09-07T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "49718384",
+        "utilake.to.file": "PUBLIC_MTPASADUIDAVAILABILITY_202509301800_0000000482867153.zip",
+        "utilake.to.release": "2025-09",
+        "utilake.to.sha256": "8b43abacdd96b89914cab386154c8c1f19cb5bb7095213518ccbbc5d059ce6d6",
+        "utilake.to.time": "2028-10-01T00:00:00+10:00",
+        "utilake.total-rows": "1716525706",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1756648800030
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-3486270948826949633-32-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 5636358374956673009,
+      "schema-id": 3,
+      "sequence-number": 32,
+      "snapshot-id": 3486270948826949633,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202510010000.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "451deda06a2a072f0553af0cde15b8f0b38288d7dc4de84e95f8ba7b380b71b1",
+        "utilake.from.time": "2025-10-05T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "26904195",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202510010000.zip",
+        "utilake.to.release": "2025-10",
+        "utilake.to.sha256": "451deda06a2a072f0553af0cde15b8f0b38288d7dc4de84e95f8ba7b380b71b1",
+        "utilake.to.time": "2028-10-29T00:00:00+10:00",
+        "utilake.total-rows": "1743429901",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1759240800031
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-5110499193697261319-33-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 3486270948826949633,
+      "schema-id": 2,
+      "sequence-number": 33,
+      "snapshot-id": 5110499193697261319,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "224",
+        "utilake.from.file": "PUBLIC_MTPASADUIDAVAILABILITY_20251001.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "140c7f6e3921a09036af0eb2df44350a1cc900284ea901e3f93bb22c59f186a9",
+        "utilake.from.time": "2025-10-05T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "53808390",
+        "utilake.to.file": "PUBLIC_MTPASADUIDAVAILABILITY_202510311800_0000000487295168.zip",
+        "utilake.to.release": "2025-10",
+        "utilake.to.sha256": "9a445e90e9f05d212532e2bde535e2887016f9e4d94cc0b0c05a45680e6f7e9b",
+        "utilake.to.time": "2028-10-29T00:00:00+10:00",
+        "utilake.total-rows": "1797238291",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1759240800032
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-4723132545675279222-34-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 5110499193697261319,
+      "schema-id": 3,
+      "sequence-number": 34,
+      "snapshot-id": 4723132545675279222,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202511010000.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "1fe4213dca4ad0cdde42004012377db52b90881767f1ad2f7702955bfa58c192",
+        "utilake.from.time": "2025-11-02T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "24601244",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202511010000.zip",
+        "utilake.to.release": "2025-11",
+        "utilake.to.sha256": "1fe4213dca4ad0cdde42004012377db52b90881767f1ad2f7702955bfa58c192",
+        "utilake.to.time": "2028-11-26T00:00:00+10:00",
+        "utilake.total-rows": "1821839535",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1761919200033
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-3078050158019590092-35-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 4723132545675279222,
+      "schema-id": 2,
+      "sequence-number": 35,
+      "snapshot-id": 3078050158019590092,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "202",
+        "utilake.from.file": "PUBLIC_MTPASADUIDAVAILABILITY_20251101.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "9ee471c8f3cb371fd991e2bc16e0437ce77f053135968c640e412337f3343205",
+        "utilake.from.time": "2025-11-02T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "49202488",
+        "utilake.to.file": "PUBLIC_MTPASADUIDAVAILABILITY_202511291800_0000000491611047.zip",
+        "utilake.to.release": "2025-11",
+        "utilake.to.sha256": "2b393cc299ab0cb73490435cc364fda211adb18f259a841d82d3ecec1cd34329",
+        "utilake.to.time": "2028-11-26T00:00:00+10:00",
+        "utilake.total-rows": "1871042023",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1761919200034
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-2467125662663206822-36-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 3078050158019590092,
+      "schema-id": 3,
+      "sequence-number": 36,
+      "snapshot-id": 2467125662663206822,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202512010000.zip",
+        "utilake.from.release": "2025-12",
+        "utilake.from.sha256": "b8324ba232441de3143a6ed22dc952c76bbbfcb65af1ddcaa0c2002e9b209cc5",
+        "utilake.from.time": "2025-12-07T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "27226630",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202512010000.zip",
+        "utilake.to.release": "2025-12",
+        "utilake.to.sha256": "b8324ba232441de3143a6ed22dc952c76bbbfcb65af1ddcaa0c2002e9b209cc5",
+        "utilake.to.time": "2028-12-31T00:00:00+10:00",
+        "utilake.total-rows": "1898268653",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1764511200035
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-4192858558699506619-37-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 2467125662663206822,
+      "schema-id": 2,
+      "sequence-number": 37,
+      "snapshot-id": 4192858558699506619,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "222",
+        "utilake.from.file": "PUBLIC_MTPASADUIDAVAILABILITY_20251201.zip",
+        "utilake.from.release": "2025-12",
+        "utilake.from.sha256": "7ab058afaeda9c5aa339088d587f3c808a143c96ccd67f211da670aed2fab316",
+        "utilake.from.time": "2025-12-07T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "54453260",
+        "utilake.to.file": "PUBLIC_MTPASADUIDAVAILABILITY_202512311800_0000000496592821.zip",
+        "utilake.to.release": "2025-12",
+        "utilake.to.sha256": "acca1e1c9c28286143792d3e92c600fba82c6dbd8e1eb370fb7c72224c38d113",
+        "utilake.to.time": "2028-12-31T00:00:00+10:00",
+        "utilake.total-rows": "1952721913",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1764511200036
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-6608429758570089025-38-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 4192858558699506619,
+      "schema-id": 3,
+      "sequence-number": 38,
+      "snapshot-id": 6608429758570089025,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202601010000.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "fba10b3a8ebecaa5e001298f541ab93f62af8f50c51fd3726f334e3bd21b174f",
+        "utilake.from.time": "2026-01-04T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "27051750",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202601010000.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "fba10b3a8ebecaa5e001298f541ab93f62af8f50c51fd3726f334e3bd21b174f",
+        "utilake.to.time": "2029-01-28T00:00:00+10:00",
+        "utilake.total-rows": "1979773663",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1767189600037
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-4313765542938738010-39-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 6608429758570089025,
+      "schema-id": 2,
+      "sequence-number": 39,
+      "snapshot-id": 4313765542938738010,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "220",
+        "utilake.from.file": "PUBLIC_MTPASADUIDAVAILABILITY_20260101.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "c07dbedfb328483243b6fbe322d3f5048b11f0e63e6d57d38d28ab0ed2f3a2cb",
+        "utilake.from.time": "2026-01-04T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "54103500",
+        "utilake.to.file": "PUBLIC_MTPASADUIDAVAILABILITY_202601311800_0000000501321552.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "45d61348cf88049c95e3e7425c60ead0560ad104a114a13104d7126660fd43e6",
+        "utilake.to.time": "2029-01-28T00:00:00+10:00",
+        "utilake.total-rows": "2033877163",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1767189600038
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-2778003473217566146-40-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 4313765542938738010,
+      "schema-id": 3,
+      "sequence-number": 40,
+      "snapshot-id": 2778003473217566146,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202602010000.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "7ca553d4f320a44b30fb4ae151ee5c63e76a91fe82af032508f0156a780338f5",
+        "utilake.from.time": "2026-02-08T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "24254763",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202602010000.zip",
+        "utilake.to.release": "2026-02",
+        "utilake.to.sha256": "7ca553d4f320a44b30fb4ae151ee5c63e76a91fe82af032508f0156a780338f5",
+        "utilake.to.time": "2029-02-25T00:00:00+10:00",
+        "utilake.total-rows": "2058131926",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1769868000039
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-358110853944366310-41-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 2778003473217566146,
+      "schema-id": 2,
+      "sequence-number": 41,
+      "snapshot-id": 358110853944366310,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "195",
+        "utilake.from.file": "PUBLIC_MTPASADUIDAVAILABILITY_20260201.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "a54568ab2dbf39bd849340cb6c562fed49dec78647f2a3bd0c0c3c217f036d56",
+        "utilake.from.time": "2026-02-08T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "48262508",
+        "utilake.to.file": "PUBLIC_MTPASADUIDAVAILABILITY_202602281800_0000000505604846.zip",
+        "utilake.to.release": "2026-02",
+        "utilake.to.sha256": "fdd0811abc6fa263fb623340d94159660a5634768c263697ae061b74e09497ad",
+        "utilake.to.time": "2029-02-25T00:00:00+10:00",
+        "utilake.total-rows": "2106394434",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1769868000040
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-5685055639920350506-42-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 358110853944366310,
+      "schema-id": 3,
+      "sequence-number": 42,
+      "snapshot-id": 5685055639920350506,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202603010000.zip",
+        "utilake.from.release": "2026-03",
+        "utilake.from.sha256": "281ce787acb8fe6d84390033ab909df7a55b6e1160878b3d68b9c66d1a6a0d46",
+        "utilake.from.time": "2026-03-08T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "27064866",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202603010000.zip",
+        "utilake.to.release": "2026-03",
+        "utilake.to.sha256": "281ce787acb8fe6d84390033ab909df7a55b6e1160878b3d68b9c66d1a6a0d46",
+        "utilake.to.time": "2029-04-01T00:00:00+10:00",
+        "utilake.total-rows": "2133459300",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1772287200041
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-8604606043443894169-43-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 5685055639920350506,
+      "schema-id": 2,
+      "sequence-number": 43,
+      "snapshot-id": 8604606043443894169,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "216",
+        "utilake.from.file": "PUBLIC_MTPASADUIDAVAILABILITY_20260301.zip",
+        "utilake.from.release": "2026-03",
+        "utilake.from.sha256": "1bcae1f2ee3081d14829e5cd4ea3f80dbb6c8525e910d8a7d3702c62f1e3ab1a",
+        "utilake.from.time": "2026-03-08T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "54129732",
+        "utilake.to.file": "PUBLIC_MTPASADUIDAVAILABILITY_202603311800_0000000510650216.zip",
+        "utilake.to.release": "2026-03",
+        "utilake.to.sha256": "23235b1b7195c381bb7b12ae0a3fdc90e9ca635e1b06d95f3d1a9d8ff4432949",
+        "utilake.to.time": "2029-04-01T00:00:00+10:00",
+        "utilake.total-rows": "2187589032",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1772287200042
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-8603853729585069728-44-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 8604606043443894169,
+      "schema-id": 3,
+      "sequence-number": 44,
+      "snapshot-id": 8603853729585069728,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202604010000.zip",
+        "utilake.from.release": "2026-04",
+        "utilake.from.sha256": "88357031568ec5b0caf7f729c34c444c325889a660ff75ef779ae0a74f01867f",
+        "utilake.from.time": "2026-04-05T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "28277003",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202604010000.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "88357031568ec5b0caf7f729c34c444c325889a660ff75ef779ae0a74f01867f",
+        "utilake.to.time": "2029-04-29T00:00:00+10:00",
+        "utilake.total-rows": "2215866035",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1774965600043
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-5355616030689986262-45-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 8603853729585069728,
+      "schema-id": 2,
+      "sequence-number": 45,
+      "snapshot-id": 5355616030689986262,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "222",
+        "utilake.from.file": "PUBLIC_MTPASADUIDAVAILABILITY_20260401.zip",
+        "utilake.from.release": "2026-04",
+        "utilake.from.sha256": "90142154a8de83b5c25889b722d062063d01b619e962930e0bab2daa2b255c76",
+        "utilake.from.time": "2026-04-05T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "56554006",
+        "utilake.to.file": "PUBLIC_MTPASADUIDAVAILABILITY_202604301800_0000000515502882.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "a582403f451b95a8bdcefb0f3147eaf61571dca7ba65a1676bc2a423247fb001",
+        "utilake.to.time": "2029-04-29T00:00:00+10:00",
+        "utilake.total-rows": "2272420041",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1774965600044
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-8963528162822603702-46-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 5355616030689986262,
+      "schema-id": 3,
+      "sequence-number": 46,
+      "snapshot-id": 8963528162822603702,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202605010000.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "37b7c49e26634a5329c45c63d5fa92b1ddac911374c7708e37bef72b8242ca2e",
+        "utilake.from.time": "2026-05-03T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "26599248",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202605010000.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "37b7c49e26634a5329c45c63d5fa92b1ddac911374c7708e37bef72b8242ca2e",
+        "utilake.to.time": "2029-05-27T00:00:00+10:00",
+        "utilake.total-rows": "2299019289",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1777557600045
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-7260988133607249059-47-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 8963528162822603702,
+      "schema-id": 2,
+      "sequence-number": 47,
+      "snapshot-id": 7260988133607249059,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "208",
+        "utilake.from.file": "PUBLIC_MTPASADUIDAVAILABILITY_20260501.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "0d5f2194b394e98ba9b154b701ed50ad8f5a589c1b2582995baaf01c9d4efef3",
+        "utilake.from.time": "2026-05-03T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "53198496",
+        "utilake.to.file": "PUBLIC_MTPASADUIDAVAILABILITY_202605301800_0000000520087070.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "92c4581a48a382e6937a81e5574ede7949eac0ce6983c13146c850e5bdb87356",
+        "utilake.to.time": "2029-05-27T00:00:00+10:00",
+        "utilake.total-rows": "2352217785",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1777557600046
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-3402438221956505840-48-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 7260988133607249059,
+      "schema-id": 3,
+      "sequence-number": 48,
+      "snapshot-id": 3402438221956505840,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202606010000.zip",
+        "utilake.from.release": "2026-06",
+        "utilake.from.sha256": "652eb7a7d57ba716568389b90c5daa2b7e7dd53cd5edc0ac4382804b2635121f",
+        "utilake.from.time": "2026-06-07T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "27276926",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202606010000.zip",
+        "utilake.to.release": "2026-06",
+        "utilake.to.sha256": "652eb7a7d57ba716568389b90c5daa2b7e7dd53cd5edc0ac4382804b2635121f",
+        "utilake.to.time": "2029-07-01T00:00:00+10:00",
+        "utilake.total-rows": "2379494711",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1780236000047
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-5200260405749921341-49-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 3402438221956505840,
+      "schema-id": 2,
+      "sequence-number": 49,
+      "snapshot-id": 5200260405749921341,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "212",
+        "utilake.from.file": "PUBLIC_MTPASADUIDAVAILABILITY_20260601.zip",
+        "utilake.from.release": "2026-06",
+        "utilake.from.sha256": "a52b27a00cb2548ffc46e83d146a2b22fdbd6fd563dba1d33770baf313f90fbf",
+        "utilake.from.time": "2026-06-07T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "54553852",
+        "utilake.to.file": "PUBLIC_MTPASADUIDAVAILABILITY_202606301800_0000000525098488.zip",
+        "utilake.to.release": "2026-06",
+        "utilake.to.sha256": "c4b5b08d402863e1901cef20b6cbbc14f4cfd1d6e354ab17be45b11cd959c9fd",
+        "utilake.to.time": "2029-07-01T00:00:00+10:00",
+        "utilake.total-rows": "2434048563",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1780236000048
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-883680458770520287-50-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 5200260405749921341,
+      "schema-id": 3,
+      "sequence-number": 50,
+      "snapshot-id": 883680458770520287,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202607010000.zip",
+        "utilake.from.release": "2026-07",
+        "utilake.from.sha256": "6908f0463e295c52b4c825be3205cb390c74dafa46c4c4d330180aea027d1ff9",
+        "utilake.from.time": "2026-07-05T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "28631135",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202607010000.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "6908f0463e295c52b4c825be3205cb390c74dafa46c4c4d330180aea027d1ff9",
+        "utilake.to.time": "2029-07-29T00:00:00+10:00",
+        "utilake.total-rows": "2462679698",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1782828000049
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-1089215563795724814-51-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 883680458770520287,
+      "schema-id": 2,
+      "sequence-number": 51,
+      "snapshot-id": 1089215563795724814,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "224",
+        "utilake.from.file": "PUBLIC_MTPASADUIDAVAILABILITY_20260701.zip",
+        "utilake.from.release": "2026-07",
+        "utilake.from.sha256": "9012dc84236aede574f7e1093d72a872d2b164a7bbe3995db6709418573b4531",
+        "utilake.from.time": "2026-07-05T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "57262270",
+        "utilake.to.file": "PUBLIC_MTPASADUIDAVAILABILITY_202607311800_0000000530223364.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "587a197cf3357059d3d8b3ef546f127e08c72d5b850073758f0a9acc4b70064d",
+        "utilake.to.time": "2029-07-29T00:00:00+10:00",
+        "utilake.total-rows": "2519941968",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1782828000050
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-6671378490689551773-52-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 1089215563795724814,
+      "schema-id": 3,
+      "sequence-number": 52,
+      "snapshot-id": 6671378490689551773,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202608010000.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "ca377ec8115660045f6a9fd1f8fe299ea02d7f882d9e846dca5ed355d2e6a976",
+        "utilake.from.time": "2026-08-02T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "28432209",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202608010000.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "ca377ec8115660045f6a9fd1f8fe299ea02d7f882d9e846dca5ed355d2e6a976",
+        "utilake.to.time": "2029-09-02T00:00:00+10:00",
+        "utilake.total-rows": "2548374177",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1785506400051
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-6449694713523091705-53-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 6671378490689551773,
+      "schema-id": 2,
+      "sequence-number": 53,
+      "snapshot-id": 6449694713523091705,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "220",
+        "utilake.from.file": "PUBLIC_MTPASADUIDAVAILABILITY_20260801.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "8851c7c50969c1bd530635a2a2e328460ea4d11ee83e95de32cb604215a01948",
+        "utilake.from.time": "2026-08-02T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "56864418",
+        "utilake.to.file": "PUBLIC_MTPASADUIDAVAILABILITY_202608311800_0000000535395855.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "73bbaa9b4b4c8af18fa7a4058c211918bc7aaddacde759bcc10176a5beb8df58",
+        "utilake.to.time": "2029-09-02T00:00:00+10:00",
+        "utilake.total-rows": "2605238595",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1785506400052
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-7434716593667093013-54-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 6449694713523091705,
+      "schema-id": 3,
+      "sequence-number": 54,
+      "snapshot-id": 7434716593667093013,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202609010000.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "ad5cdf366dd1a563098f829140b0292f6b2013dc35613d158e3c57e294e6ddbd",
+        "utilake.from.time": "2026-09-06T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "27362162",
         "utilake.to.file": "PUBLIC_ARCHIVE#MTPASA_DUIDAVAILABILITY#FILE01#202609010000.zip",
         "utilake.to.release": "2026-09",
         "utilake.to.sha256": "ad5cdf366dd1a563098f829140b0292f6b2013dc35613d158e3c57e294e6ddbd",
         "utilake.to.time": "2029-09-30T00:00:00+10:00",
-        "utilake.total-rows": "656020822",
+        "utilake.total-rows": "2632600757",
         "utilake.version": "3"
       },
-      "timestamp-ms": 1722434400000
+      "timestamp-ms": 1788184800053
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_DUIDAVAILABILITY/metadata/snap-231768796555636655-55-da98d36d-2983-80b8-8159-29e3f77a70a9.avro",
+      "parent-snapshot-id": 7434716593667093013,
+      "schema-id": 2,
+      "sequence-number": 55,
+      "snapshot-id": 231768796555636655,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "179",
+        "utilake.from.file": "PUBLIC_MTPASADUIDAVAILABILITY_202609010900_0000000535495521.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "548de76445949d4f2e04c0ccd171b2e8ab64a8eaf7a7987c1805c7c18b62f04d",
+        "utilake.from.time": "2026-09-06T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "MTPASA",
+        "utilake.rows": "46691867",
+        "utilake.to.file": "PUBLIC_MTPASADUIDAVAILABILITY_202610211800_0000000544095890.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "8dd5dba8f6da2667aa0a8acd7d87750c930ab3cb0e3bf339f91424bf65fb1e62",
+        "utilake.to.time": "2029-10-21T00:00:00+10:00",
+        "utilake.total-rows": "2679292624",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1788184800054
     }
   ],
   "sort-orders": [

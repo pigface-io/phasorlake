@@ -1,13 +1,13 @@
 {
-  "current-schema-id": 0,
-  "current-snapshot-id": 7228370417963663670,
+  "current-schema-id": 1,
+  "current-snapshot-id": 8155747527567622573,
   "default-sort-order-id": 0,
   "default-spec-id": 0,
   "format-version": 3,
-  "last-column-id": 8,
+  "last-column-id": 9,
   "last-partition-id": 999,
-  "last-sequence-number": 1,
-  "last-updated-ms": 1469973600000,
+  "last-sequence-number": 30,
+  "last-updated-ms": 1790776800029,
   "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/ROOFTOP_PV_FORECAST",
   "metadata-log": [],
   "next-row-id": 0,
@@ -38,7 +38,7 @@
   },
   "refs": {
     "main": {
-      "snapshot-id": 7228370417963663670,
+      "snapshot-id": 8155747527567622573,
       "type": "branch"
     }
   },
@@ -109,12 +109,193 @@
       ],
       "schema-id": 0,
       "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Date time this forecast was produced",
+          "id": 1,
+          "name": "VERSION_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "id": 9,
+          "name": "AREAID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The forecast half-hour interval (time ending)",
+          "id": 3,
+          "name": "INTERVAL_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The average forecast value in MW at the interval end",
+          "id": 4,
+          "name": "POWERMEAN",
+          "required": false,
+          "type": "decimal(12, 3)"
+        },
+        {
+          "doc": "50% probability of exceedance forecast value in MW at the interval end",
+          "id": 5,
+          "name": "POWERPOE50",
+          "required": false,
+          "type": "decimal(12, 3)"
+        },
+        {
+          "doc": "90% probability of exceedance forecast value in MW at the interval end",
+          "id": 6,
+          "name": "POWERPOELOW",
+          "required": false,
+          "type": "decimal(12, 3)"
+        },
+        {
+          "doc": "10% probability of exceedance forecast value in MW at the interval end",
+          "id": 7,
+          "name": "POWERPOEHIGH",
+          "required": false,
+          "type": "decimal(12, 3)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 8,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        3
+      ],
+      "schema-id": 1,
+      "type": "struct"
     }
   ],
   "snapshot-log": [
     {
       "snapshot-id": 7228370417963663670,
       "timestamp-ms": 1469973600000
+    },
+    {
+      "snapshot-id": 7794535458460655070,
+      "timestamp-ms": 1756648800001
+    },
+    {
+      "snapshot-id": 7655552361302110451,
+      "timestamp-ms": 1756648800002
+    },
+    {
+      "snapshot-id": 8419738314894461146,
+      "timestamp-ms": 1759240800003
+    },
+    {
+      "snapshot-id": 7714749578402194866,
+      "timestamp-ms": 1759240800004
+    },
+    {
+      "snapshot-id": 3200610641392741571,
+      "timestamp-ms": 1761919200005
+    },
+    {
+      "snapshot-id": 7502064633074391501,
+      "timestamp-ms": 1761919200006
+    },
+    {
+      "snapshot-id": 5894967393188992812,
+      "timestamp-ms": 1764511200007
+    },
+    {
+      "snapshot-id": 4914564423625059641,
+      "timestamp-ms": 1764511200008
+    },
+    {
+      "snapshot-id": 6686355597862225720,
+      "timestamp-ms": 1767189600009
+    },
+    {
+      "snapshot-id": 7361694157841296121,
+      "timestamp-ms": 1767189600010
+    },
+    {
+      "snapshot-id": 7223860282615919370,
+      "timestamp-ms": 1769868000011
+    },
+    {
+      "snapshot-id": 274636414907148144,
+      "timestamp-ms": 1769868000012
+    },
+    {
+      "snapshot-id": 8803360948558524718,
+      "timestamp-ms": 1772287200013
+    },
+    {
+      "snapshot-id": 5178204232094025955,
+      "timestamp-ms": 1772287200014
+    },
+    {
+      "snapshot-id": 3032290767655337876,
+      "timestamp-ms": 1774965600015
+    },
+    {
+      "snapshot-id": 3016405824441633952,
+      "timestamp-ms": 1774965600016
+    },
+    {
+      "snapshot-id": 6487045368270552165,
+      "timestamp-ms": 1777557600017
+    },
+    {
+      "snapshot-id": 7104347658995415706,
+      "timestamp-ms": 1777557600018
+    },
+    {
+      "snapshot-id": 910585088671608154,
+      "timestamp-ms": 1780236000019
+    },
+    {
+      "snapshot-id": 4973104323592276343,
+      "timestamp-ms": 1780236000020
+    },
+    {
+      "snapshot-id": 4484432058514659004,
+      "timestamp-ms": 1782828000021
+    },
+    {
+      "snapshot-id": 8266550595774893505,
+      "timestamp-ms": 1782828000022
+    },
+    {
+      "snapshot-id": 2467029633882731624,
+      "timestamp-ms": 1785506400023
+    },
+    {
+      "snapshot-id": 9120073846154589648,
+      "timestamp-ms": 1785506400024
+    },
+    {
+      "snapshot-id": 3383312294296274947,
+      "timestamp-ms": 1788184800025
+    },
+    {
+      "snapshot-id": 7992334633283788684,
+      "timestamp-ms": 1788184800026
+    },
+    {
+      "snapshot-id": 2167524901264524024,
+      "timestamp-ms": 1790776800027
+    },
+    {
+      "snapshot-id": 3377190445119860293,
+      "timestamp-ms": 1790776800028
+    },
+    {
+      "snapshot-id": 8155747527567622573,
+      "timestamp-ms": 1790776800029
     }
   ],
   "snapshots": [
@@ -127,7 +308,7 @@
       "snapshot-id": 7228370417963663670,
       "summary": {
         "operation": "append",
-        "utilake.files": "122",
+        "utilake.files": "109",
         "utilake.from.file": "PUBLIC_DVD_ROOFTOP_PV_FORECAST_201608010000.zip",
         "utilake.from.release": "2016-08",
         "utilake.from.sha256": "7c15b7e00e7eeae609aafbfb500e848e05a1d4b448e968a78fb312eef5214e40",
@@ -135,15 +316,827 @@
         "utilake.kinds": "[\"archive\",\"dvd\"]",
         "utilake.report-subtype": "FORECAST",
         "utilake.report-type": "ROOFTOP",
-        "utilake.rows": "332380645",
-        "utilake.to.file": "PUBLIC_ARCHIVE#ROOFTOP_PV_FORECAST#FILE01#202609010000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "ca5883e1a84092980fb344f69ebcdb7c3d25c833d02669a092da11de9ef2a640",
-        "utilake.to.time": "2026-10-09T00:00:00+10:00",
-        "utilake.total-rows": "332380645",
+        "utilake.rows": "297517945",
+        "utilake.to.file": "PUBLIC_ARCHIVE#ROOFTOP_PV_FORECAST#FILE01#202508010000.zip",
+        "utilake.to.release": "2025-08",
+        "utilake.to.sha256": "3a54c6e95971448d5e6e20e8b0a4ed6d4a9f358b1913f0c7409e27127917c047",
+        "utilake.to.time": "2025-09-09T00:00:00+10:00",
+        "utilake.total-rows": "297517945",
         "utilake.version": "1"
       },
       "timestamp-ms": 1469973600000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/ROOFTOP_PV_FORECAST/metadata/snap-7794535458460655070-2-ad40feea-1eb3-8d35-b898-ec7741ef94e6.avro",
+      "parent-snapshot-id": 7228370417963663670,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 7794535458460655070,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "48",
+        "utilake.from.file": "PUBLIC_ROOFTOP_PV_FORECAST_AREA_20250930.zip",
+        "utilake.from.release": "2025-09",
+        "utilake.from.sha256": "416730d513cc695bf712ff4dae3c3153b730e5223194e201b20415f470c555c5",
+        "utilake.from.time": "2025-09-30T00:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "FORECAST",
+        "utilake.report-type": "ROOFTOP",
+        "utilake.rows": "141216",
+        "utilake.to.file": "PUBLIC_ROOFTOP_PV_FORECAST_AREA_20250930.zip",
+        "utilake.to.release": "2025-09",
+        "utilake.to.sha256": "416730d513cc695bf712ff4dae3c3153b730e5223194e201b20415f470c555c5",
+        "utilake.to.time": "2025-10-08T04:00:00+10:00",
+        "utilake.total-rows": "297659161",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1756648800001
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/ROOFTOP_PV_FORECAST/metadata/snap-7655552361302110451-3-ad40feea-1eb3-8d35-b898-ec7741ef94e6.avro",
+      "parent-snapshot-id": 7794535458460655070,
+      "schema-id": 0,
+      "sequence-number": 3,
+      "snapshot-id": 7655552361302110451,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1441",
+        "utilake.from.file": "PUBLIC_ARCHIVE#ROOFTOP_PV_FORECAST#FILE01#202509010000.zip",
+        "utilake.from.release": "2025-09",
+        "utilake.from.sha256": "15c9ef8304c444df70c3c8a4c1179986e778fdf555384d6e7206134fcebb65a3",
+        "utilake.from.time": "2025-09-01T01:00:00+10:00",
+        "utilake.kinds": "[\"archive\",\"reports/archive\"]",
+        "utilake.report-subtype": "FORECAST",
+        "utilake.report-type": "ROOFTOP",
+        "utilake.rows": "5295600",
+        "utilake.to.file": "PUBLIC_ROOFTOP_PV_FORECAST_20251030.zip",
+        "utilake.to.release": "2025-10",
+        "utilake.to.sha256": "e2f312ffde41461f2b9c965d24fc0cec6fb011964f2b154fad99d199e29c9e8e",
+        "utilake.to.time": "2025-11-08T04:00:00+10:00",
+        "utilake.total-rows": "302954761",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1756648800002
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/ROOFTOP_PV_FORECAST/metadata/snap-8419738314894461146-4-ad40feea-1eb3-8d35-b898-ec7741ef94e6.avro",
+      "parent-snapshot-id": 7655552361302110451,
+      "schema-id": 1,
+      "sequence-number": 4,
+      "snapshot-id": 8419738314894461146,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1488",
+        "utilake.from.file": "PUBLIC_ROOFTOP_PV_FORECAST_AREA_20250930.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "416730d513cc695bf712ff4dae3c3153b730e5223194e201b20415f470c555c5",
+        "utilake.from.time": "2025-10-01T00:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "FORECAST",
+        "utilake.report-type": "ROOFTOP",
+        "utilake.rows": "4377696",
+        "utilake.to.file": "PUBLIC_ROOFTOP_PV_FORECAST_AREA_20251028.zip",
+        "utilake.to.release": "2025-10",
+        "utilake.to.sha256": "95909174402abdaf1f48ede6f928db22ad6170b86239dda2cb5b62cddec2c90c",
+        "utilake.to.time": "2025-11-08T04:00:00+10:00",
+        "utilake.total-rows": "307332457",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1759240800003
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/ROOFTOP_PV_FORECAST/metadata/snap-7714749578402194866-5-ad40feea-1eb3-8d35-b898-ec7741ef94e6.avro",
+      "parent-snapshot-id": 8419738314894461146,
+      "schema-id": 0,
+      "sequence-number": 5,
+      "snapshot-id": 7714749578402194866,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1441",
+        "utilake.from.file": "PUBLIC_ARCHIVE#ROOFTOP_PV_FORECAST#FILE01#202510010000.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "b3b3f5218cbb195e51b11c2bf7ff4c7c138399231f77d829fd24480e1e84c55e",
+        "utilake.from.time": "2025-10-01T01:00:00+10:00",
+        "utilake.kinds": "[\"archive\",\"reports/archive\"]",
+        "utilake.report-subtype": "FORECAST",
+        "utilake.report-type": "ROOFTOP",
+        "utilake.rows": "5383860",
+        "utilake.to.file": "PUBLIC_ROOFTOP_PV_FORECAST_20251127.zip",
+        "utilake.to.release": "2025-11",
+        "utilake.to.sha256": "00175342be9908f2326b33d534c4baed349e56173d1422acf03b8586980a4ce8",
+        "utilake.to.time": "2025-12-08T04:00:00+10:00",
+        "utilake.total-rows": "312716317",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1759240800004
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/ROOFTOP_PV_FORECAST/metadata/snap-3200610641392741571-6-ad40feea-1eb3-8d35-b898-ec7741ef94e6.avro",
+      "parent-snapshot-id": 7714749578402194866,
+      "schema-id": 1,
+      "sequence-number": 6,
+      "snapshot-id": 3200610641392741571,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1440",
+        "utilake.from.file": "PUBLIC_ROOFTOP_PV_FORECAST_AREA_20251028.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "95909174402abdaf1f48ede6f928db22ad6170b86239dda2cb5b62cddec2c90c",
+        "utilake.from.time": "2025-11-01T00:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "FORECAST",
+        "utilake.report-type": "ROOFTOP",
+        "utilake.rows": "4236480",
+        "utilake.to.file": "PUBLIC_ROOFTOP_PV_FORECAST_AREA_20251125.zip",
+        "utilake.to.release": "2025-11",
+        "utilake.to.sha256": "ddd1d1cdba05009e40097af9c77966436e9ffb8ad24f4f7259fcd355fd7a8269",
+        "utilake.to.time": "2025-12-08T04:00:00+10:00",
+        "utilake.total-rows": "316952797",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1761919200005
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/ROOFTOP_PV_FORECAST/metadata/snap-7502064633074391501-7-ad40feea-1eb3-8d35-b898-ec7741ef94e6.avro",
+      "parent-snapshot-id": 3200610641392741571,
+      "schema-id": 0,
+      "sequence-number": 7,
+      "snapshot-id": 7502064633074391501,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1489",
+        "utilake.from.file": "PUBLIC_ARCHIVE#ROOFTOP_PV_FORECAST#FILE01#202511010000.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "5134094569e4adfb7b1d6e0d9ebaf0536645b586feefb8ffb875b3b16d891566",
+        "utilake.from.time": "2025-11-01T01:00:00+10:00",
+        "utilake.kinds": "[\"archive\",\"reports/archive\"]",
+        "utilake.report-subtype": "FORECAST",
+        "utilake.report-type": "ROOFTOP",
+        "utilake.rows": "5383860",
+        "utilake.to.file": "PUBLIC_ROOFTOP_PV_FORECAST_20251225.zip",
+        "utilake.to.release": "2025-12",
+        "utilake.to.sha256": "6c16ada7270caade11d9cea2de92fa7249d466f7438312babe8296e6d20aaf4a",
+        "utilake.to.time": "2026-01-08T04:00:00+10:00",
+        "utilake.total-rows": "322336657",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1761919200006
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/ROOFTOP_PV_FORECAST/metadata/snap-5894967393188992812-8-ad40feea-1eb3-8d35-b898-ec7741ef94e6.avro",
+      "parent-snapshot-id": 7502064633074391501,
+      "schema-id": 1,
+      "sequence-number": 8,
+      "snapshot-id": 5894967393188992812,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1488",
+        "utilake.from.file": "PUBLIC_ROOFTOP_PV_FORECAST_AREA_20251125.zip",
+        "utilake.from.release": "2025-12",
+        "utilake.from.sha256": "ddd1d1cdba05009e40097af9c77966436e9ffb8ad24f4f7259fcd355fd7a8269",
+        "utilake.from.time": "2025-12-01T00:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "FORECAST",
+        "utilake.report-type": "ROOFTOP",
+        "utilake.rows": "4377696",
+        "utilake.to.file": "PUBLIC_ROOFTOP_PV_FORECAST_AREA_20251230.zip",
+        "utilake.to.release": "2025-12",
+        "utilake.to.sha256": "b97490218037639e8a89b2c5c9c96b8201980d98690002436fce08972bcc0972",
+        "utilake.to.time": "2026-01-08T04:00:00+10:00",
+        "utilake.total-rows": "326714353",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1764511200007
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/ROOFTOP_PV_FORECAST/metadata/snap-4914564423625059641-9-ad40feea-1eb3-8d35-b898-ec7741ef94e6.avro",
+      "parent-snapshot-id": 5894967393188992812,
+      "schema-id": 0,
+      "sequence-number": 9,
+      "snapshot-id": 4914564423625059641,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1489",
+        "utilake.from.file": "PUBLIC_ARCHIVE#ROOFTOP_PV_FORECAST#FILE01#202512010000.zip",
+        "utilake.from.release": "2025-12",
+        "utilake.from.sha256": "16f11af3f83e290a1167c3296f950f2889176121a04d62509802f1c9ab5cb782",
+        "utilake.from.time": "2025-12-01T01:00:00+10:00",
+        "utilake.kinds": "[\"archive\",\"reports/archive\"]",
+        "utilake.report-subtype": "FORECAST",
+        "utilake.report-type": "ROOFTOP",
+        "utilake.rows": "5472120",
+        "utilake.to.file": "PUBLIC_ROOFTOP_PV_FORECAST_20260129.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "d6fdbb7e492f88e111727e3cd175e3b7dd7fb5a15feaee05e4e191588476a22d",
+        "utilake.to.time": "2026-02-08T04:00:00+10:00",
+        "utilake.total-rows": "332186473",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1764511200008
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/ROOFTOP_PV_FORECAST/metadata/snap-6686355597862225720-10-ad40feea-1eb3-8d35-b898-ec7741ef94e6.avro",
+      "parent-snapshot-id": 4914564423625059641,
+      "schema-id": 1,
+      "sequence-number": 10,
+      "snapshot-id": 6686355597862225720,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1488",
+        "utilake.from.file": "PUBLIC_ROOFTOP_PV_FORECAST_AREA_20251230.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "b97490218037639e8a89b2c5c9c96b8201980d98690002436fce08972bcc0972",
+        "utilake.from.time": "2026-01-01T00:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "FORECAST",
+        "utilake.report-type": "ROOFTOP",
+        "utilake.rows": "4377696",
+        "utilake.to.file": "PUBLIC_ROOFTOP_PV_FORECAST_AREA_20260127.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "19b0db2a8bb24d996ee98aaa4c2d26e01afb6e254657f85cf2b427711c148920",
+        "utilake.to.time": "2026-02-08T04:00:00+10:00",
+        "utilake.total-rows": "336564169",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1767189600009
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/ROOFTOP_PV_FORECAST/metadata/snap-7361694157841296121-11-ad40feea-1eb3-8d35-b898-ec7741ef94e6.avro",
+      "parent-snapshot-id": 6686355597862225720,
+      "schema-id": 0,
+      "sequence-number": 11,
+      "snapshot-id": 7361694157841296121,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1345",
+        "utilake.from.file": "PUBLIC_ARCHIVE#ROOFTOP_PV_FORECAST#FILE01#202601010000.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "b57b1194aa3188e2121b75cbe2d0ecd36cb08ead83121e8be4873763412b2f3b",
+        "utilake.from.time": "2026-01-01T01:00:00+10:00",
+        "utilake.kinds": "[\"archive\",\"reports/archive\"]",
+        "utilake.report-subtype": "FORECAST",
+        "utilake.report-type": "ROOFTOP",
+        "utilake.rows": "5207340",
+        "utilake.to.file": "PUBLIC_ROOFTOP_PV_FORECAST_20260226.zip",
+        "utilake.to.release": "2026-02",
+        "utilake.to.sha256": "61f1859188fb912e9c5434876165c5887e40f1326b09bac0d0f8e7e676f26485",
+        "utilake.to.time": "2026-03-08T04:00:00+10:00",
+        "utilake.total-rows": "341771509",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1767189600010
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/ROOFTOP_PV_FORECAST/metadata/snap-7223860282615919370-12-ad40feea-1eb3-8d35-b898-ec7741ef94e6.avro",
+      "parent-snapshot-id": 7361694157841296121,
+      "schema-id": 1,
+      "sequence-number": 12,
+      "snapshot-id": 7223860282615919370,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1344",
+        "utilake.from.file": "PUBLIC_ROOFTOP_PV_FORECAST_AREA_20260127.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "19b0db2a8bb24d996ee98aaa4c2d26e01afb6e254657f85cf2b427711c148920",
+        "utilake.from.time": "2026-02-01T00:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "FORECAST",
+        "utilake.report-type": "ROOFTOP",
+        "utilake.rows": "3954048",
+        "utilake.to.file": "PUBLIC_ROOFTOP_PV_FORECAST_AREA_20260224.zip",
+        "utilake.to.release": "2026-02",
+        "utilake.to.sha256": "bed0a3af320390debeed0730241911278649132b94489945da773b0d0255e148",
+        "utilake.to.time": "2026-03-08T04:00:00+10:00",
+        "utilake.total-rows": "345725557",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1769868000011
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/ROOFTOP_PV_FORECAST/metadata/snap-274636414907148144-13-ad40feea-1eb3-8d35-b898-ec7741ef94e6.avro",
+      "parent-snapshot-id": 7223860282615919370,
+      "schema-id": 0,
+      "sequence-number": 13,
+      "snapshot-id": 274636414907148144,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1482",
+        "utilake.from.file": "PUBLIC_ARCHIVE#ROOFTOP_PV_FORECAST#FILE01#202602010000.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "3242af896e82d6ab05bf16f9ea00810b417993ca2be21cd693fdf205ea5d74cf",
+        "utilake.from.time": "2026-02-01T01:00:00+10:00",
+        "utilake.kinds": "[\"archive\",\"reports/archive\"]",
+        "utilake.report-subtype": "FORECAST",
+        "utilake.report-type": "ROOFTOP",
+        "utilake.rows": "5194915",
+        "utilake.to.file": "PUBLIC_ROOFTOP_PV_FORECAST_20260326.zip",
+        "utilake.to.release": "2026-03",
+        "utilake.to.sha256": "a5e36a95ef37011dce05e39a6b724b78c25d2ce6b9974a22b2bb4fa66f044108",
+        "utilake.to.time": "2026-04-08T04:00:00+10:00",
+        "utilake.total-rows": "350920472",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1769868000012
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/ROOFTOP_PV_FORECAST/metadata/snap-8803360948558524718-14-ad40feea-1eb3-8d35-b898-ec7741ef94e6.avro",
+      "parent-snapshot-id": 274636414907148144,
+      "schema-id": 1,
+      "sequence-number": 14,
+      "snapshot-id": 8803360948558524718,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1488",
+        "utilake.from.file": "PUBLIC_ROOFTOP_PV_FORECAST_AREA_20260224.zip",
+        "utilake.from.release": "2026-03",
+        "utilake.from.sha256": "bed0a3af320390debeed0730241911278649132b94489945da773b0d0255e148",
+        "utilake.from.time": "2026-03-01T00:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "FORECAST",
+        "utilake.report-type": "ROOFTOP",
+        "utilake.rows": "4377696",
+        "utilake.to.file": "PUBLIC_ROOFTOP_PV_FORECAST_AREA_20260331.zip",
+        "utilake.to.release": "2026-03",
+        "utilake.to.sha256": "548ca504e72cf804be62f770bc820bdbb3ba5861fced2cb0f94cd99d1bcd19aa",
+        "utilake.to.time": "2026-04-08T04:00:00+10:00",
+        "utilake.total-rows": "355298168",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1772287200013
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/ROOFTOP_PV_FORECAST/metadata/snap-5178204232094025955-15-ad40feea-1eb3-8d35-b898-ec7741ef94e6.avro",
+      "parent-snapshot-id": 8803360948558524718,
+      "schema-id": 0,
+      "sequence-number": 15,
+      "snapshot-id": 5178204232094025955,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1441",
+        "utilake.from.file": "PUBLIC_ARCHIVE#ROOFTOP_PV_FORECAST#FILE01#202603010000.zip",
+        "utilake.from.release": "2026-03",
+        "utilake.from.sha256": "a097d035f6ddc84850d39ee459527c2842534967789005af91f500fb82d3a038",
+        "utilake.from.time": "2026-03-01T01:00:00+10:00",
+        "utilake.kinds": "[\"archive\",\"reports/archive\"]",
+        "utilake.report-subtype": "FORECAST",
+        "utilake.report-type": "ROOFTOP",
+        "utilake.rows": "5383860",
+        "utilake.to.file": "PUBLIC_ROOFTOP_PV_FORECAST_20260430.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "e65a58c6e9d1235625009180d424f253af3f991a683e5e7c8099fd9a528bd6d7",
+        "utilake.to.time": "2026-05-08T04:00:00+10:00",
+        "utilake.total-rows": "360682028",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1772287200014
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/ROOFTOP_PV_FORECAST/metadata/snap-3032290767655337876-16-ad40feea-1eb3-8d35-b898-ec7741ef94e6.avro",
+      "parent-snapshot-id": 5178204232094025955,
+      "schema-id": 1,
+      "sequence-number": 16,
+      "snapshot-id": 3032290767655337876,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1440",
+        "utilake.from.file": "PUBLIC_ROOFTOP_PV_FORECAST_AREA_20260331.zip",
+        "utilake.from.release": "2026-04",
+        "utilake.from.sha256": "548ca504e72cf804be62f770bc820bdbb3ba5861fced2cb0f94cd99d1bcd19aa",
+        "utilake.from.time": "2026-04-01T00:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "FORECAST",
+        "utilake.report-type": "ROOFTOP",
+        "utilake.rows": "4236480",
+        "utilake.to.file": "PUBLIC_ROOFTOP_PV_FORECAST_AREA_20260428.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "a2165a98cde425450ee73f27a8939f9ce01977e4d312fa5e0d902b4df5c3253c",
+        "utilake.to.time": "2026-05-08T04:00:00+10:00",
+        "utilake.total-rows": "364918508",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1774965600015
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/ROOFTOP_PV_FORECAST/metadata/snap-3016405824441633952-17-ad40feea-1eb3-8d35-b898-ec7741ef94e6.avro",
+      "parent-snapshot-id": 3032290767655337876,
+      "schema-id": 0,
+      "sequence-number": 17,
+      "snapshot-id": 3016405824441633952,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1489",
+        "utilake.from.file": "PUBLIC_ARCHIVE#ROOFTOP_PV_FORECAST#FILE01#202604010000.zip",
+        "utilake.from.release": "2026-04",
+        "utilake.from.sha256": "6ac4477651c1dd6893a35849dd3cdd3869ed4063d2ef02534ca16e746de644ec",
+        "utilake.from.time": "2026-04-01T01:00:00+10:00",
+        "utilake.kinds": "[\"archive\",\"reports/archive\"]",
+        "utilake.report-subtype": "FORECAST",
+        "utilake.report-type": "ROOFTOP",
+        "utilake.rows": "5383860",
+        "utilake.to.file": "PUBLIC_ROOFTOP_PV_FORECAST_20260528.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "3344ee209043a760971a1a6077964b5ca03f0b55efe7e4d88a91e24cc6bc004e",
+        "utilake.to.time": "2026-06-08T04:00:00+10:00",
+        "utilake.total-rows": "370302368",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1774965600016
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/ROOFTOP_PV_FORECAST/metadata/snap-6487045368270552165-18-ad40feea-1eb3-8d35-b898-ec7741ef94e6.avro",
+      "parent-snapshot-id": 3016405824441633952,
+      "schema-id": 1,
+      "sequence-number": 18,
+      "snapshot-id": 6487045368270552165,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1488",
+        "utilake.from.file": "PUBLIC_ROOFTOP_PV_FORECAST_AREA_20260428.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "a2165a98cde425450ee73f27a8939f9ce01977e4d312fa5e0d902b4df5c3253c",
+        "utilake.from.time": "2026-05-01T00:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "FORECAST",
+        "utilake.report-type": "ROOFTOP",
+        "utilake.rows": "4377696",
+        "utilake.to.file": "PUBLIC_ROOFTOP_PV_FORECAST_AREA_20260526.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "d7aac004935258d464c23282ce43dd65666c3b0aa08e123b87f443761be787af",
+        "utilake.to.time": "2026-06-08T04:00:00+10:00",
+        "utilake.total-rows": "374680064",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1777557600017
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/ROOFTOP_PV_FORECAST/metadata/snap-7104347658995415706-19-ad40feea-1eb3-8d35-b898-ec7741ef94e6.avro",
+      "parent-snapshot-id": 6487045368270552165,
+      "schema-id": 0,
+      "sequence-number": 19,
+      "snapshot-id": 7104347658995415706,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1441",
+        "utilake.from.file": "PUBLIC_ARCHIVE#ROOFTOP_PV_FORECAST#FILE01#202605010000.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "6f331d567248514795f67235b9f8ae5d5b90fa4e52bf3fb738f9c78d595cfab2",
+        "utilake.from.time": "2026-05-01T01:00:00+10:00",
+        "utilake.kinds": "[\"archive\",\"reports/archive\"]",
+        "utilake.report-subtype": "FORECAST",
+        "utilake.report-type": "ROOFTOP",
+        "utilake.rows": "5383860",
+        "utilake.to.file": "PUBLIC_ROOFTOP_PV_FORECAST_20260625.zip",
+        "utilake.to.release": "2026-06",
+        "utilake.to.sha256": "f5ec2098deb61d1d94057700211473a018f1b1667d092016d2dfd74e208af21a",
+        "utilake.to.time": "2026-07-08T04:00:00+10:00",
+        "utilake.total-rows": "380063924",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1777557600018
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/ROOFTOP_PV_FORECAST/metadata/snap-910585088671608154-20-ad40feea-1eb3-8d35-b898-ec7741ef94e6.avro",
+      "parent-snapshot-id": 7104347658995415706,
+      "schema-id": 1,
+      "sequence-number": 20,
+      "snapshot-id": 910585088671608154,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1440",
+        "utilake.from.file": "PUBLIC_ROOFTOP_PV_FORECAST_AREA_20260526.zip",
+        "utilake.from.release": "2026-06",
+        "utilake.from.sha256": "d7aac004935258d464c23282ce43dd65666c3b0aa08e123b87f443761be787af",
+        "utilake.from.time": "2026-06-01T00:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "FORECAST",
+        "utilake.report-type": "ROOFTOP",
+        "utilake.rows": "4236480",
+        "utilake.to.file": "PUBLIC_ROOFTOP_PV_FORECAST_AREA_20260630.zip",
+        "utilake.to.release": "2026-06",
+        "utilake.to.sha256": "025ca10c88bef30da05d817fb96d9230b07500a1b97e0d7b95226cbde738d54c",
+        "utilake.to.time": "2026-07-08T04:00:00+10:00",
+        "utilake.total-rows": "384300404",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1780236000019
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/ROOFTOP_PV_FORECAST/metadata/snap-4973104323592276343-21-ad40feea-1eb3-8d35-b898-ec7741ef94e6.avro",
+      "parent-snapshot-id": 910585088671608154,
+      "schema-id": 0,
+      "sequence-number": 21,
+      "snapshot-id": 4973104323592276343,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1489",
+        "utilake.from.file": "PUBLIC_ARCHIVE#ROOFTOP_PV_FORECAST#FILE01#202606010000.zip",
+        "utilake.from.release": "2026-06",
+        "utilake.from.sha256": "36155a749da3dc1482234426db31cac59fbd11626c79f937aad077a368e3faca",
+        "utilake.from.time": "2026-06-01T01:00:00+10:00",
+        "utilake.kinds": "[\"archive\",\"reports/archive\"]",
+        "utilake.report-subtype": "FORECAST",
+        "utilake.report-type": "ROOFTOP",
+        "utilake.rows": "5383860",
+        "utilake.to.file": "PUBLIC_ROOFTOP_PV_FORECAST_20260730.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "96212b0450f35847456594b178af4cc3943f4a42e52aa8bf222dc34664416201",
+        "utilake.to.time": "2026-08-08T04:00:00+10:00",
+        "utilake.total-rows": "389684264",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1780236000020
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/ROOFTOP_PV_FORECAST/metadata/snap-4484432058514659004-22-ad40feea-1eb3-8d35-b898-ec7741ef94e6.avro",
+      "parent-snapshot-id": 4973104323592276343,
+      "schema-id": 1,
+      "sequence-number": 22,
+      "snapshot-id": 4484432058514659004,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1488",
+        "utilake.from.file": "PUBLIC_ROOFTOP_PV_FORECAST_AREA_20260630.zip",
+        "utilake.from.release": "2026-07",
+        "utilake.from.sha256": "025ca10c88bef30da05d817fb96d9230b07500a1b97e0d7b95226cbde738d54c",
+        "utilake.from.time": "2026-07-01T00:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "FORECAST",
+        "utilake.report-type": "ROOFTOP",
+        "utilake.rows": "4377696",
+        "utilake.to.file": "PUBLIC_ROOFTOP_PV_FORECAST_AREA_20260728.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "1c0a6dc23212eb0817395577bf1e9068c4d6a7d943d617ffa0c7fca5cc1d0421",
+        "utilake.to.time": "2026-08-08T04:00:00+10:00",
+        "utilake.total-rows": "394061960",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1782828000021
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/ROOFTOP_PV_FORECAST/metadata/snap-8266550595774893505-23-ad40feea-1eb3-8d35-b898-ec7741ef94e6.avro",
+      "parent-snapshot-id": 4484432058514659004,
+      "schema-id": 0,
+      "sequence-number": 23,
+      "snapshot-id": 8266550595774893505,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1489",
+        "utilake.from.file": "PUBLIC_ARCHIVE#ROOFTOP_PV_FORECAST#FILE01#202607010000.zip",
+        "utilake.from.release": "2026-07",
+        "utilake.from.sha256": "a09e8763d9a6b3b53c7548412925eafe15ca8d87f207dfae1a0e2ad35a6df187",
+        "utilake.from.time": "2026-07-01T01:00:00+10:00",
+        "utilake.kinds": "[\"archive\",\"reports/archive\"]",
+        "utilake.report-subtype": "FORECAST",
+        "utilake.report-type": "ROOFTOP",
+        "utilake.rows": "5472120",
+        "utilake.to.file": "PUBLIC_ROOFTOP_PV_FORECAST_20260827.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "08f592cfea87553f5d1edce7d5ff68e10bdcbb3e028d3535b5c3ebed63d4b5d9",
+        "utilake.to.time": "2026-09-08T04:00:00+10:00",
+        "utilake.total-rows": "399534080",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1782828000022
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/ROOFTOP_PV_FORECAST/metadata/snap-2467029633882731624-24-ad40feea-1eb3-8d35-b898-ec7741ef94e6.avro",
+      "parent-snapshot-id": 8266550595774893505,
+      "schema-id": 1,
+      "sequence-number": 24,
+      "snapshot-id": 2467029633882731624,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1488",
+        "utilake.from.file": "PUBLIC_ROOFTOP_PV_FORECAST_AREA_20260728.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "1c0a6dc23212eb0817395577bf1e9068c4d6a7d943d617ffa0c7fca5cc1d0421",
+        "utilake.from.time": "2026-08-01T00:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "FORECAST",
+        "utilake.report-type": "ROOFTOP",
+        "utilake.rows": "4377696",
+        "utilake.to.file": "PUBLIC_ROOFTOP_PV_FORECAST_AREA_20260825.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "5bb1fc53d63e8f8a97cabcff10a5a557fb4ee43a4082c4bc6c7f9d3c73618a29",
+        "utilake.to.time": "2026-09-08T04:00:00+10:00",
+        "utilake.total-rows": "403911776",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1785506400023
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/ROOFTOP_PV_FORECAST/metadata/snap-9120073846154589648-25-ad40feea-1eb3-8d35-b898-ec7741ef94e6.avro",
+      "parent-snapshot-id": 2467029633882731624,
+      "schema-id": 0,
+      "sequence-number": 25,
+      "snapshot-id": 9120073846154589648,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1441",
+        "utilake.from.file": "PUBLIC_ARCHIVE#ROOFTOP_PV_FORECAST#FILE01#202608010000.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "07b5258f3599732e08df27b39a5b8f3d92f0d2002c473e2b2aa9a3101d3fcdef",
+        "utilake.from.time": "2026-08-01T01:00:00+10:00",
+        "utilake.kinds": "[\"archive\",\"reports/archive\"]",
+        "utilake.report-subtype": "FORECAST",
+        "utilake.report-type": "ROOFTOP",
+        "utilake.rows": "5383860",
+        "utilake.to.file": "PUBLIC_ROOFTOP_PV_FORECAST_20260924.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "c840ac5b2ffcfc54f6c739fe5c7b6b2ea9b36a544d7e1f3cedfca521669f9a85",
+        "utilake.to.time": "2026-10-08T04:00:00+10:00",
+        "utilake.total-rows": "409295636",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1785506400024
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/ROOFTOP_PV_FORECAST/metadata/snap-3383312294296274947-26-ad40feea-1eb3-8d35-b898-ec7741ef94e6.avro",
+      "parent-snapshot-id": 9120073846154589648,
+      "schema-id": 1,
+      "sequence-number": 26,
+      "snapshot-id": 3383312294296274947,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1440",
+        "utilake.from.file": "PUBLIC_ROOFTOP_PV_FORECAST_AREA_20260901.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "058c9fff5affac3642e5cfa6ee6d0084eb6a8e5d7dbd072d405f75dc48354927",
+        "utilake.from.time": "2026-09-01T00:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "FORECAST",
+        "utilake.report-type": "ROOFTOP",
+        "utilake.rows": "4236480",
+        "utilake.to.file": "PUBLIC_ROOFTOP_PV_FORECAST_AREA_20260929.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "2fca49bfeda6adbf01be4c4f82e1d81889bb433be9d85bdec82315ba27e9b5ae",
+        "utilake.to.time": "2026-10-08T04:00:00+10:00",
+        "utilake.total-rows": "413532116",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1788184800025
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/ROOFTOP_PV_FORECAST/metadata/snap-7992334633283788684-27-ad40feea-1eb3-8d35-b898-ec7741ef94e6.avro",
+      "parent-snapshot-id": 3383312294296274947,
+      "schema-id": 0,
+      "sequence-number": 27,
+      "snapshot-id": 7992334633283788684,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "337",
+        "utilake.from.file": "PUBLIC_ARCHIVE#ROOFTOP_PV_FORECAST#FILE01#202609010000.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "ca5883e1a84092980fb344f69ebcdb7c3d25c833d02669a092da11de9ef2a640",
+        "utilake.from.time": "2026-09-01T01:00:00+10:00",
+        "utilake.kinds": "[\"archive\",\"reports/archive\"]",
+        "utilake.report-subtype": "FORECAST",
+        "utilake.report-type": "ROOFTOP",
+        "utilake.rows": "3265620",
+        "utilake.to.file": "PUBLIC_ROOFTOP_PV_FORECAST_20261001.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "31e122da3a0d6c9a52ad4e21d57df1858123ccee8861ced0e8f4b70be5cad7dd",
+        "utilake.to.time": "2026-10-15T04:00:00+10:00",
+        "utilake.total-rows": "416797736",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1788184800026
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/ROOFTOP_PV_FORECAST/metadata/snap-2167524901264524024-28-ad40feea-1eb3-8d35-b898-ec7741ef94e6.avro",
+      "parent-snapshot-id": 7992334633283788684,
+      "schema-id": 1,
+      "sequence-number": 28,
+      "snapshot-id": 2167524901264524024,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "576",
+        "utilake.from.file": "PUBLIC_ROOFTOP_PV_FORECAST_AREA_20260929.zip",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "2fca49bfeda6adbf01be4c4f82e1d81889bb433be9d85bdec82315ba27e9b5ae",
+        "utilake.from.time": "2026-10-01T00:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "FORECAST",
+        "utilake.report-type": "ROOFTOP",
+        "utilake.rows": "1694592",
+        "utilake.to.file": "PUBLIC_ROOFTOP_PV_FORECAST_AREA_20261006.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "8d6164d8fcd562fade91f958d2f6689737dcb80d6710dc8fdf17f928d038fa8e",
+        "utilake.to.time": "2026-10-20T04:00:00+10:00",
+        "utilake.total-rows": "418492328",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1790776800027
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/ROOFTOP_PV_FORECAST/metadata/snap-3377190445119860293-29-ad40feea-1eb3-8d35-b898-ec7741ef94e6.avro",
+      "parent-snapshot-id": 2167524901264524024,
+      "schema-id": 0,
+      "sequence-number": 29,
+      "snapshot-id": 3377190445119860293,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "723",
+        "utilake.from.file": "PUBLIC_ROOFTOP_PV_FORECAST_20261006213000_0000000541508115.zip",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "e1f56612517038d433eb420567493d0b46ac5dd30e0a155cffd01b68050d400d",
+        "utilake.from.time": "2026-10-06T22:00:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "FORECAST",
+        "utilake.report-type": "ROOFTOP",
+        "utilake.rows": "1329120",
+        "utilake.to.file": "PUBLIC_ROOFTOP_PV_FORECAST_20261021223000_0000000544127046.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "d746708b7cae73b48142e7a8703e2632217c556963f9483156a9bc70066e1be8",
+        "utilake.to.time": "2026-10-29T04:00:00+10:00",
+        "utilake.total-rows": "419821448",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1790776800028
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/ROOFTOP_PV_FORECAST/metadata/snap-8155747527567622573-30-ad40feea-1eb3-8d35-b898-ec7741ef94e6.avro",
+      "parent-snapshot-id": 3377190445119860293,
+      "schema-id": 1,
+      "sequence-number": 30,
+      "snapshot-id": 8155747527567622573,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "723",
+        "utilake.from.file": "PUBLIC_ROOFTOP_PV_FORECAST_AREA_20261006213000_0000000541508116.zip",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "c4fc4edc7ef8d5cb3b17601cda5ca2f7a779774588f1ae0e66c0437e03201996",
+        "utilake.from.time": "2026-10-06T22:00:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "FORECAST",
+        "utilake.report-type": "ROOFTOP",
+        "utilake.rows": "2126592",
+        "utilake.to.file": "PUBLIC_ROOFTOP_PV_FORECAST_AREA_20261021223000_0000000544127047.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "7f02cdba071b98f53241e406d227e8edfa58ac2b9a3a1729bc834d8fad4d38d3",
+        "utilake.to.time": "2026-10-29T04:00:00+10:00",
+        "utilake.total-rows": "421948040",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1790776800029
     }
   ],
   "sort-orders": [

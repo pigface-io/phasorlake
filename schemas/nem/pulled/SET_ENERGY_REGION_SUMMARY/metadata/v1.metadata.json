@@ -1,13 +1,13 @@
 {
   "current-schema-id": 0,
-  "current-snapshot-id": 7539047672409738236,
+  "current-snapshot-id": 9022748778754274326,
   "default-sort-order-id": 0,
   "default-spec-id": 0,
   "format-version": 3,
   "last-column-id": 13,
   "last-partition-id": 999,
   "last-sequence-number": 1,
-  "last-updated-ms": 1722434400000,
+  "last-updated-ms": 1717164000000,
   "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SET_ENERGY_REGION_SUMMARY",
   "metadata-log": [],
   "next-row-id": 0,
@@ -36,7 +36,7 @@
   },
   "refs": {
     "main": {
-      "snapshot-id": 7539047672409738236,
+      "snapshot-id": 9022748778754274326,
       "type": "branch"
     }
   },
@@ -142,37 +142,37 @@
   ],
   "snapshot-log": [
     {
-      "snapshot-id": 7539047672409738236,
-      "timestamp-ms": 1722434400000
+      "snapshot-id": 9022748778754274326,
+      "timestamp-ms": 1717164000000
     }
   ],
   "snapshots": [
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SET_ENERGY_REGION_SUMMARY/metadata/snap-7539047672409738236-1-657c79cc-cfaf-8368-9030-79da507d550f.avro",
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SET_ENERGY_REGION_SUMMARY/metadata/snap-9022748778754274326-1-657c79cc-cfaf-8368-9030-79da507d550f.avro",
       "schema-id": 0,
       "sequence-number": 1,
-      "snapshot-id": 7539047672409738236,
+      "snapshot-id": 9022748778754274326,
       "summary": {
         "operation": "append",
-        "utilake.files": "26",
-        "utilake.from.file": "PUBLIC_ARCHIVE#SET_ENERGY_REGION_SUMMARY#FILE01#202408010000.zip",
-        "utilake.from.release": "2024-08",
-        "utilake.from.sha256": "5060965aac91675f71efc51a426b874cb98f0580c34b59fc25e35d31cdabf725",
+        "utilake.files": "1923",
+        "utilake.from.file": "PUBLIC_SETTLEMENTS_20240603011601_0000000421728382.zip",
+        "utilake.from.release": "2024-06",
+        "utilake.from.sha256": "c8d0f9c10638c52e2d1571b5500ecfd5e978308a93ca241b0493dd5bce9b10a0",
         "utilake.from.time": "2024-06-02T00:00:00+10:00",
-        "utilake.kinds": "[\"archive\"]",
+        "utilake.kinds": "[\"archive\",\"reports/archive\",\"reports/current\"]",
         "utilake.report-subtype": "ENERGY_REGION_SUMMARY",
         "utilake.report-type": "SETTLEMENTS",
-        "utilake.rows": "74467480",
-        "utilake.to.file": "PUBLIC_ARCHIVE#SET_ENERGY_REGION_SUMMARY#FILE01#202609010000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "1a276e0bfbd474c2573187ae153e188a6c9193fba820106db6776fcd1fa2a9eb",
-        "utilake.to.time": "2026-10-01T00:00:00+10:00",
-        "utilake.total-rows": "74467480",
+        "utilake.rows": "82910200",
+        "utilake.to.file": "PUBLIC_SETTLEMENTS_20261021114528_0000000544040800.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "c68a417a99949935a9c021dc7c0c56f893effce43b8abdc6d25d5826c5316b02",
+        "utilake.to.time": "2026-10-20T00:00:00+10:00",
+        "utilake.total-rows": "82910200",
         "utilake.version": "1"
       },
-      "timestamp-ms": 1722434400000
+      "timestamp-ms": 1717164000000
     }
   ],
   "sort-orders": [

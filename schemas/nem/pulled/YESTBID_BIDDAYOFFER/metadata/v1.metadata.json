@@ -1,0 +1,256 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 5309307995223369011,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 29,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1480514400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/YESTBID_BIDDAYOFFER",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "false",
+    "utilake.format": "3",
+    "utilake.table": "YESTBID_BIDDAYOFFER"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 5309307995223369011,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 2,
+          "name": "DUID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "BIDTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "BIDSETTLEMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 5,
+          "name": "BIDOFFERDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 6,
+          "name": "FIRSTDISPATCH",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 7,
+          "name": "FIRSTPREDISPATCH",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 8,
+          "name": "DAILYENERGYCONSTRAINT",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "id": 9,
+          "name": "REBIDEXPLANATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 10,
+          "name": "PRICEBAND1",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 11,
+          "name": "PRICEBAND2",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 12,
+          "name": "PRICEBAND3",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 13,
+          "name": "PRICEBAND4",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 14,
+          "name": "PRICEBAND5",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 15,
+          "name": "PRICEBAND6",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 16,
+          "name": "PRICEBAND7",
+          "required": false,
+          "type": "decimal(7, 2)"
+        },
+        {
+          "id": 17,
+          "name": "PRICEBAND8",
+          "required": false,
+          "type": "decimal(7, 2)"
+        },
+        {
+          "id": 18,
+          "name": "PRICEBAND9",
+          "required": false,
+          "type": "decimal(7, 2)"
+        },
+        {
+          "id": 19,
+          "name": "PRICEBAND10",
+          "required": false,
+          "type": "decimal(7, 2)"
+        },
+        {
+          "id": 20,
+          "name": "MINIMUMLOAD",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "id": 21,
+          "name": "T1",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 22,
+          "name": "T2",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 23,
+          "name": "T3",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 24,
+          "name": "T4",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 25,
+          "name": "NORMALSTATUS",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 26,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 27,
+          "name": "BIDVERSIONNO",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "id": 28,
+          "name": "MR_FACTOR",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 29,
+          "name": "ENTRYTYPE",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 5309307995223369011,
+      "timestamp-ms": 1480514400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/YESTBID_BIDDAYOFFER/metadata/snap-5309307995223369011-1-30cc143f-2c2e-8d8b-89c0-d54e4e477e10.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 5309307995223369011,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_YESTBID_201612220000_20161223040519.zip",
+        "utilake.from.release": "2016-12",
+        "utilake.from.sha256": "2bf08875582930907733606568bbcf3592c88fb9ec7e19ea9509bcc8a779ad70",
+        "utilake.from.time": "2016-12-22T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "BIDDAYOFFER",
+        "utilake.report-type": "YESTBID",
+        "utilake.rows": "2617",
+        "utilake.to.file": "PUBLIC_YESTBID_201612220000_20161223040519.zip",
+        "utilake.to.release": "2016-12",
+        "utilake.to.sha256": "2bf08875582930907733606568bbcf3592c88fb9ec7e19ea9509bcc8a779ad70",
+        "utilake.to.time": "2016-12-22T00:00:00+10:00",
+        "utilake.total-rows": "2617",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1480514400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "30cc143f-2c2e-8d8b-89c0-d54e4e477e10"
+}

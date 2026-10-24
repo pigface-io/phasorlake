@@ -1,6 +1,6 @@
 {
   "current-schema-id": 1,
-  "current-snapshot-id": 2387854442112912083,
+  "current-snapshot-id": 8445620362772459352,
   "default-sort-order-id": 0,
   "default-spec-id": 0,
   "format-version": 3,
@@ -36,7 +36,7 @@
   },
   "refs": {
     "main": {
-      "snapshot-id": 2387854442112912083,
+      "snapshot-id": 8445620362772459352,
       "type": "branch"
     }
   },
@@ -219,11 +219,11 @@
   ],
   "snapshot-log": [
     {
-      "snapshot-id": 2614415540296969336,
+      "snapshot-id": 7190900610484546608,
       "timestamp-ms": 1732975200000
     },
     {
-      "snapshot-id": 2387854442112912083,
+      "snapshot-id": 8445620362772459352,
       "timestamp-ms": 1777557600001
     }
   ],
@@ -231,26 +231,26 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_FORECAST_DEFAULT_CF/metadata/snap-2614415540296969336-1-7530ea59-f177-8cd5-bda1-5f24cbb43b1e.avro",
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_FORECAST_DEFAULT_CF/metadata/snap-7190900610484546608-1-7530ea59-f177-8cd5-bda1-5f24cbb43b1e.avro",
       "schema-id": 0,
       "sequence-number": 1,
-      "snapshot-id": 2614415540296969336,
+      "snapshot-id": 7190900610484546608,
       "summary": {
         "operation": "append",
-        "utilake.files": "17",
-        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_FORECAST_DEFAULT_CF#FILE01#202412010000.zip",
+        "utilake.files": "1095",
+        "utilake.from.file": "PUBLIC_FPP_DCF_202412141802_0000000443338900.zip",
         "utilake.from.release": "2024-12",
-        "utilake.from.sha256": "98693dc48b2295ff9ecddd3c216becad2eeac269e7d6a3a91c1d9a5e0e681f17",
-        "utilake.from.time": "2024-12-29T00:05:00+10:00",
-        "utilake.kinds": "[\"archive\"]",
+        "utilake.from.sha256": "db45c77defd2a4f3fb6382697251068663a094bdadb7f5c66614c033ff31a958",
+        "utilake.from.time": "2024-12-22T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\",\"reports/current\"]",
         "utilake.report-subtype": "FORECAST_DEFAULT_CF",
         "utilake.report-type": "FPP",
-        "utilake.rows": "8443105",
-        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_FORECAST_DEFAULT_CF#FILE01#202604010000.zip",
-        "utilake.to.release": "2026-04",
-        "utilake.to.sha256": "2e3edd71269c27dcad5a773ed8909f14eb2e19c668c73a9a6b72c7d598951e11",
-        "utilake.to.time": "2026-05-10T00:05:00+10:00",
-        "utilake.total-rows": "8443105",
+        "utilake.rows": "9580350",
+        "utilake.to.file": "PUBLIC_FPP_DCF_202605091806_0000000516903477.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "2cdf02c8eec27d7b5e454e1c184c0db4d41a480ca92dbca676aeadf4628e1650",
+        "utilake.to.time": "2026-05-17T00:05:00+10:00",
+        "utilake.total-rows": "9580350",
         "utilake.version": "1"
       },
       "timestamp-ms": 1732975200000
@@ -258,27 +258,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_FORECAST_DEFAULT_CF/metadata/snap-2387854442112912083-2-7530ea59-f177-8cd5-bda1-5f24cbb43b1e.avro",
-      "parent-snapshot-id": 2614415540296969336,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_FORECAST_DEFAULT_CF/metadata/snap-8445620362772459352-2-7530ea59-f177-8cd5-bda1-5f24cbb43b1e.avro",
+      "parent-snapshot-id": 7190900610484546608,
       "schema-id": 1,
       "sequence-number": 2,
-      "snapshot-id": 2387854442112912083,
+      "snapshot-id": 8445620362772459352,
       "summary": {
         "operation": "append",
-        "utilake.files": "5",
-        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_FORECAST_DEFAULT_CF#FILE01#202605010000.zip",
+        "utilake.files": "265",
+        "utilake.from.file": "PUBLIC_FPP_DCF_202605141408_0000000517636376.zip",
         "utilake.from.release": "2026-05",
-        "utilake.from.sha256": "e9324a225bf4e5dffa58b1edab3f63419831263abe0c43dfb48954d51af23b13",
-        "utilake.from.time": "2024-12-29T00:05:00+10:00",
-        "utilake.kinds": "[\"archive\"]",
+        "utilake.from.sha256": "4de86c2b7f9ee887efaeb040bf77bbf2bdebe79a61960eb269266bc6db9f33d3",
+        "utilake.from.time": "2026-05-14T14:08:30+10:00",
+        "utilake.kinds": "[\"archive\",\"reports/current\"]",
         "utilake.report-subtype": "FORECAST_DEFAULT_CF",
         "utilake.report-type": "FPP",
-        "utilake.rows": "3790020",
-        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_FORECAST_DEFAULT_CF#FILE01#202609010000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "a9dc3cde274c71e9c60e2f9532399368499483b674138195124bbe36f784a297",
-        "utilake.to.time": "2026-09-29T04:14:28+10:00",
-        "utilake.total-rows": "12233125",
+        "utilake.rows": "4057014",
+        "utilake.to.file": "PUBLIC_FPP_DCF_202610201300_0000000543876499.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "d45255741694a70b443511d597ef9587a285b7c5585ff1377a14bbc0810e173f",
+        "utilake.to.time": "2026-10-20T13:00:20+10:00",
+        "utilake.total-rows": "13637364",
         "utilake.version": "1"
       },
       "timestamp-ms": 1777557600001

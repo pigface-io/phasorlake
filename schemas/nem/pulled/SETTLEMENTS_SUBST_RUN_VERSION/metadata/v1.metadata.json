@@ -1,0 +1,106 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 2207208108158871022,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 4,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1633010400000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SETTLEMENTS_SUBST_RUN_VERSION",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "false",
+    "utilake.format": "3",
+    "utilake.table": "SETTLEMENTS_SUBST_RUN_VERSION"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 2207208108158871022,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 2,
+          "name": "SETTLEMENTRUNNO",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 3,
+          "name": "REFERENCESETTLEMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 4,
+          "name": "REFERENCESETTLEMENTRUNNO",
+          "required": false,
+          "type": "decimal(2, 0)"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 2207208108158871022,
+      "timestamp-ms": 1633010400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SETTLEMENTS_SUBST_RUN_VERSION/metadata/snap-2207208108158871022-1-ab849c40-d5c9-8f4f-94ab-c450a98305a3.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 2207208108158871022,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1559",
+        "utilake.from.file": "PUBLIC_SETTLEMENTS_20211020011418_0000000351105508.zip",
+        "utilake.from.release": "2021-10",
+        "utilake.from.sha256": "ac3ca1b68747703d9162f0e1bb52391c6a20283f206d30ad688dba2130c36cd1",
+        "utilake.from.time": "2021-03-21T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "SUBST_RUN_VERSION",
+        "utilake.report-type": "SETTLEMENTS",
+        "utilake.rows": "144788",
+        "utilake.to.file": "PUBLIC_SETTLEMENTS_20241227085036_0000000444862173.zip",
+        "utilake.to.release": "2024-12",
+        "utilake.to.sha256": "1f2d8af553fb9d38d23122ca9509fab3a4b68338fb4bfd778376270a3855d99f",
+        "utilake.to.time": "2024-06-01T00:00:00+10:00",
+        "utilake.total-rows": "144788",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1633010400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "ab849c40-d5c9-8f4f-94ab-c450a98305a3"
+}

@@ -1,6 +1,6 @@
 {
   "current-schema-id": 1,
-  "current-snapshot-id": 6278143743178981358,
+  "current-snapshot-id": 29478239245431162,
   "default-sort-order-id": 0,
   "default-spec-id": 0,
   "format-version": 3,
@@ -36,7 +36,7 @@
   },
   "refs": {
     "main": {
-      "snapshot-id": 6278143743178981358,
+      "snapshot-id": 29478239245431162,
       "type": "branch"
     }
   },
@@ -209,7 +209,7 @@
       "timestamp-ms": 1743429600000
     },
     {
-      "snapshot-id": 6278143743178981358,
+      "snapshot-id": 29478239245431162,
       "timestamp-ms": 1777557600001
     }
   ],
@@ -223,20 +223,20 @@
       "snapshot-id": 4855264411759592693,
       "summary": {
         "operation": "append",
-        "utilake.files": "13",
+        "utilake.files": "65",
         "utilake.from.file": "PUBLIC_ARCHIVE#FPP_HIST_REGION_PERFORMANCE#FILE01#202504010000.zip",
         "utilake.from.release": "2025-04",
         "utilake.from.sha256": "45a30e11d2f77a54a57c4bb4a14a38d00c1354b2a1789f443bca7fd523a32262",
         "utilake.from.time": "2025-05-11T00:05:00+10:00",
-        "utilake.kinds": "[\"archive\"]",
+        "utilake.kinds": "[\"archive\",\"reports/current\"]",
         "utilake.report-subtype": "HIST_REGION_PERFORMANCE",
         "utilake.report-type": "FPP",
-        "utilake.rows": "1795",
-        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_HIST_REGION_PERFORMANCE#FILE01#202604010000.zip",
-        "utilake.to.release": "2026-04",
-        "utilake.to.sha256": "25ce631e12d40d6ca8a5ab3552528e70f8a8f3ecfde4ea4688970d9167f8f7c0",
-        "utilake.to.time": "2026-05-10T00:05:00+10:00",
-        "utilake.total-rows": "1795",
+        "utilake.rows": "2055",
+        "utilake.to.file": "PUBLIC_FPP_HIST_REGION_PERFORMANCE_20260509180638_0000000516903479.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "3d11801e27610c09c4071a76f9d6b6412a057130afed20b921e8f342133d16a3",
+        "utilake.to.time": "2026-05-17T00:05:00+10:00",
+        "utilake.total-rows": "2055",
         "utilake.version": "1"
       },
       "timestamp-ms": 1743429600000
@@ -244,27 +244,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_HIST_REGION_PERFORMANCE/metadata/snap-6278143743178981358-2-3b979a0d-a8bd-8003-8528-e8c7a76f592d.avro",
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_HIST_REGION_PERFORMANCE/metadata/snap-29478239245431162-2-3b979a0d-a8bd-8003-8528-e8c7a76f592d.avro",
       "parent-snapshot-id": 4855264411759592693,
       "schema-id": 1,
       "sequence-number": 2,
-      "snapshot-id": 6278143743178981358,
+      "snapshot-id": 29478239245431162,
       "summary": {
         "operation": "append",
-        "utilake.files": "5",
-        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_HIST_REGION_PERFORMANCE#FILE01#202605010000.zip",
+        "utilake.files": "28",
+        "utilake.from.file": "PUBLIC_FPP_HIST_REGION_PERFORMANCE_20260516180611_0000000517969514.zip",
         "utilake.from.release": "2026-05",
-        "utilake.from.sha256": "78e87f00e88bb7b55988ebef0f05936edbf78f87376a197cdc92e31da5ef3842",
-        "utilake.from.time": "2025-05-11T00:05:00+10:00",
-        "utilake.kinds": "[\"archive\"]",
+        "utilake.from.sha256": "6e7f1f01d0d76b5649265c7e9daab9311cfd4c8eef57c50e35437c154ada6049",
+        "utilake.from.time": "2026-05-16T18:06:11+10:00",
+        "utilake.kinds": "[\"archive\",\"reports/current\"]",
         "utilake.report-subtype": "HIST_REGION_PERFORMANCE",
         "utilake.report-type": "FPP",
-        "utilake.rows": "1675",
-        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_HIST_REGION_PERFORMANCE#FILE01#202609010000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "9db2931b9a5b8a49125ef560db288a602e7b1a75cd17fc8532e6ef3e2de98539",
-        "utilake.to.time": "2026-10-11T00:05:00+10:00",
-        "utilake.total-rows": "3470",
+        "utilake.rows": "1790",
+        "utilake.to.file": "PUBLIC_FPP_HIST_REGION_PERFORMANCE_20261017180736_0000000543392673.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "42e935049132bb5069b9280b5d11fc269714aed519f50779a4a8dc4c463317ce",
+        "utilake.to.time": "2026-10-17T18:07:36+10:00",
+        "utilake.total-rows": "3845",
         "utilake.version": "1"
       },
       "timestamp-ms": 1777557600001

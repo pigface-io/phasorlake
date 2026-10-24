@@ -1,13 +1,13 @@
 {
   "current-schema-id": 0,
-  "current-snapshot-id": 3828847200653729229,
+  "current-snapshot-id": 7159041409254800309,
   "default-sort-order-id": 0,
   "default-spec-id": 0,
   "format-version": 3,
   "last-column-id": 5,
   "last-partition-id": 999,
   "last-sequence-number": 1,
-  "last-updated-ms": 1722434400000,
+  "last-updated-ms": 1582984800000,
   "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INTERMITTENT_FORECAST_TRK",
   "metadata-log": [],
   "next-row-id": 0,
@@ -37,7 +37,7 @@
   },
   "refs": {
     "main": {
-      "snapshot-id": 3828847200653729229,
+      "snapshot-id": 7159041409254800309,
       "type": "branch"
     }
   },
@@ -90,37 +90,37 @@
   ],
   "snapshot-log": [
     {
-      "snapshot-id": 3828847200653729229,
-      "timestamp-ms": 1722434400000
+      "snapshot-id": 7159041409254800309,
+      "timestamp-ms": 1582984800000
     }
   ],
   "snapshots": [
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INTERMITTENT_FORECAST_TRK/metadata/snap-3828847200653729229-1-ffc5273e-266f-8f29-9c68-cf7709e03da7.avro",
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INTERMITTENT_FORECAST_TRK/metadata/snap-7159041409254800309-1-ffc5273e-266f-8f29-9c68-cf7709e03da7.avro",
       "schema-id": 0,
       "sequence-number": 1,
-      "snapshot-id": 3828847200653729229,
+      "snapshot-id": 7159041409254800309,
       "summary": {
         "operation": "append",
-        "utilake.files": "26",
-        "utilake.from.file": "PUBLIC_ARCHIVE#INTERMITTENT_FORECAST_TRK#FILE01#202408010000.zip",
-        "utilake.from.release": "2024-08",
-        "utilake.from.sha256": "51abb2ce8bb72243265c7b9ec66a22408c029605b39d56bde660d6907e64b98d",
-        "utilake.from.time": "2024-08-01T00:05:00+10:00",
-        "utilake.kinds": "[\"archive\"]",
+        "utilake.files": "456",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_INTERMITTENT_DS_20200313_0000000320315048.zip",
+        "utilake.from.release": "2020-03",
+        "utilake.from.sha256": "e2ffe2a22081b7fbeaace23188a3239b871db39189c869a99ec9fea84460a1d9",
+        "utilake.from.time": "2020-03-13T04:05:00+10:00",
+        "utilake.kinds": "[\"archive\",\"reports/archive\",\"reports/current\"]",
         "utilake.report-subtype": "INTERMITTENT_FORECAST_TRK",
         "utilake.report-type": "DISPATCH",
-        "utilake.rows": "43416089",
-        "utilake.to.file": "PUBLIC_ARCHIVE#INTERMITTENT_FORECAST_TRK#FILE01#202609010000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "b8be0c09827014d22c36b04d56439aeb8222cc8eda15b90064120e564cbf0597",
-        "utilake.to.time": "2026-10-01T00:00:00+10:00",
-        "utilake.total-rows": "43416089",
+        "utilake.rows": "68045993",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_INTERMITTENT_DS_20261021_0000000544169325.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "1158934191d8b22c0a017a67ae307a707ed87d1427b99d71450739087c1fd1de",
+        "utilake.to.time": "2026-10-22T04:00:00+10:00",
+        "utilake.total-rows": "68045993",
         "utilake.version": "1"
       },
-      "timestamp-ms": 1722434400000
+      "timestamp-ms": 1582984800000
     }
   ],
   "sort-orders": [

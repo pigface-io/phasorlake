@@ -1,0 +1,768 @@
+{
+  "current-schema-id": 2,
+  "current-snapshot-id": 4963682135891249367,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 37,
+  "last-partition-id": 999,
+  "last-sequence-number": 7,
+  "last-updated-ms": 1790776800006,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BILLING_DIRECTION",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "false",
+    "utilake.format": "3",
+    "utilake.table": "BILLING_DIRECTION"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 4963682135891249367,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "DIRECTION_ID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 2,
+          "name": "DIRECTION_DESC",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "DIRECTION_TYPE_ID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "DIRECTION_START_DATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 5,
+          "name": "DIRECTION_END_DATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 6,
+          "name": "DIRECTION_START_INTERVAL",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 7,
+          "name": "DIRECTION_END_INTERVAL",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 8,
+          "name": "COMPENSATION_AMOUNT",
+          "required": false,
+          "type": "decimal(14, 8)"
+        },
+        {
+          "id": 9,
+          "name": "INTEREST_AMOUNT",
+          "required": false,
+          "type": "decimal(8, 8)"
+        },
+        {
+          "id": 10,
+          "name": "INDEPENDENT_EXPERT_FEE",
+          "required": false,
+          "type": "decimal(8, 8)"
+        },
+        {
+          "id": 11,
+          "name": "CRA",
+          "required": false,
+          "type": "decimal(14, 8)"
+        },
+        {
+          "id": 12,
+          "name": "NSW_CUSTOMER_ENERGY",
+          "required": false,
+          "type": "decimal(14, 8)"
+        },
+        {
+          "id": 13,
+          "name": "QLD_CUSTOMER_ENERGY",
+          "required": false,
+          "type": "decimal(14, 8)"
+        },
+        {
+          "id": 14,
+          "name": "SA_CUSTOMER_ENERGY",
+          "required": false,
+          "type": "decimal(13, 8)"
+        },
+        {
+          "id": 15,
+          "name": "VIC_CUSTOMER_ENERGY",
+          "required": false,
+          "type": "decimal(14, 8)"
+        },
+        {
+          "id": 16,
+          "name": "TAS_CUSTOMER_ENERGY",
+          "required": false,
+          "type": "decimal(13, 8)"
+        },
+        {
+          "id": 17,
+          "name": "NSW_GENERATOR_ENERGY",
+          "required": false,
+          "type": "decimal(14, 8)"
+        },
+        {
+          "id": 18,
+          "name": "QLD_GENERATOR_ENERGY",
+          "required": false,
+          "type": "decimal(14, 8)"
+        },
+        {
+          "id": 19,
+          "name": "SA_GENERATOR_ENERGY",
+          "required": false,
+          "type": "decimal(14, 8)"
+        },
+        {
+          "id": 20,
+          "name": "VIC_GENERATOR_ENERGY",
+          "required": false,
+          "type": "decimal(14, 8)"
+        },
+        {
+          "id": 21,
+          "name": "TAS_GENERATOR_ENERGY",
+          "required": false,
+          "type": "decimal(13, 8)"
+        },
+        {
+          "id": 22,
+          "name": "NSW_RBF",
+          "required": false,
+          "type": "decimal(8, 8)"
+        },
+        {
+          "id": 23,
+          "name": "QLD_RBF",
+          "required": false,
+          "type": "decimal(8, 8)"
+        },
+        {
+          "id": 24,
+          "name": "SA_RBF",
+          "required": false,
+          "type": "decimal(9, 8)"
+        },
+        {
+          "id": 25,
+          "name": "VIC_RBF",
+          "required": false,
+          "type": "decimal(8, 8)"
+        },
+        {
+          "id": 26,
+          "name": "TAS_RBF",
+          "required": false,
+          "type": "decimal(8, 8)"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "DIRECTION_ID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 27,
+          "name": "DIRECTION_SERVICE_ID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 2,
+          "name": "DIRECTION_DESC",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "DIRECTION_TYPE_ID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "DIRECTION_START_DATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 5,
+          "name": "DIRECTION_END_DATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 6,
+          "name": "DIRECTION_START_INTERVAL",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 7,
+          "name": "DIRECTION_END_INTERVAL",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 8,
+          "name": "COMPENSATION_AMOUNT",
+          "required": false,
+          "type": "decimal(14, 8)"
+        },
+        {
+          "id": 9,
+          "name": "INTEREST_AMOUNT",
+          "required": false,
+          "type": "decimal(8, 8)"
+        },
+        {
+          "id": 10,
+          "name": "INDEPENDENT_EXPERT_FEE",
+          "required": false,
+          "type": "decimal(8, 8)"
+        },
+        {
+          "id": 11,
+          "name": "CRA",
+          "required": false,
+          "type": "decimal(14, 8)"
+        },
+        {
+          "id": 28,
+          "name": "NSW_ACE_ENERGY",
+          "required": false,
+          "type": "decimal(14, 8)"
+        },
+        {
+          "id": 29,
+          "name": "QLD_ACE_ENERGY",
+          "required": false,
+          "type": "decimal(14, 8)"
+        },
+        {
+          "id": 30,
+          "name": "SA_ACE_ENERGY",
+          "required": false,
+          "type": "decimal(13, 8)"
+        },
+        {
+          "id": 31,
+          "name": "VIC_ACE_ENERGY",
+          "required": false,
+          "type": "decimal(14, 8)"
+        },
+        {
+          "id": 32,
+          "name": "TAS_ACE_ENERGY",
+          "required": false,
+          "type": "decimal(13, 8)"
+        },
+        {
+          "id": 33,
+          "name": "NSW_ASOE_ENERGY",
+          "required": false,
+          "type": "decimal(14, 8)"
+        },
+        {
+          "id": 34,
+          "name": "QLD_ASOE_ENERGY",
+          "required": false,
+          "type": "decimal(14, 8)"
+        },
+        {
+          "id": 35,
+          "name": "SA_ASOE_ENERGY",
+          "required": false,
+          "type": "decimal(13, 8)"
+        },
+        {
+          "id": 36,
+          "name": "TAS_ASOE_ENERGY",
+          "required": false,
+          "type": "decimal(13, 8)"
+        },
+        {
+          "id": 37,
+          "name": "VIC_ASOE_ENERGY",
+          "required": false,
+          "type": "decimal(14, 8)"
+        },
+        {
+          "id": 22,
+          "name": "NSW_RBF",
+          "required": false,
+          "type": "decimal(8, 8)"
+        },
+        {
+          "id": 23,
+          "name": "QLD_RBF",
+          "required": false,
+          "type": "decimal(8, 8)"
+        },
+        {
+          "id": 24,
+          "name": "SA_RBF",
+          "required": false,
+          "type": "decimal(9, 8)"
+        },
+        {
+          "id": 25,
+          "name": "VIC_RBF",
+          "required": false,
+          "type": "decimal(8, 8)"
+        },
+        {
+          "id": 26,
+          "name": "TAS_RBF",
+          "required": false,
+          "type": "decimal(8, 8)"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 1,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "DIRECTION_ID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 27,
+          "name": "DIRECTION_SERVICE_ID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 2,
+          "name": "DIRECTION_DESC",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "DIRECTION_TYPE_ID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "DIRECTION_START_DATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 5,
+          "name": "DIRECTION_END_DATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 6,
+          "name": "DIRECTION_START_INTERVAL",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 7,
+          "name": "DIRECTION_END_INTERVAL",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 8,
+          "name": "COMPENSATION_AMOUNT",
+          "required": false,
+          "type": "decimal(14, 8)"
+        },
+        {
+          "id": 9,
+          "name": "INTEREST_AMOUNT",
+          "required": false,
+          "type": "decimal(8, 8)"
+        },
+        {
+          "id": 10,
+          "name": "INDEPENDENT_EXPERT_FEE",
+          "required": false,
+          "type": "decimal(8, 8)"
+        },
+        {
+          "id": 11,
+          "name": "CRA",
+          "required": false,
+          "type": "decimal(14, 8)"
+        },
+        {
+          "id": 28,
+          "name": "NSW_ACE_ENERGY",
+          "required": false,
+          "type": "decimal(14, 8)"
+        },
+        {
+          "id": 29,
+          "name": "QLD_ACE_ENERGY",
+          "required": false,
+          "type": "decimal(14, 8)"
+        },
+        {
+          "id": 30,
+          "name": "SA_ACE_ENERGY",
+          "required": false,
+          "type": "decimal(13, 8)"
+        },
+        {
+          "id": 32,
+          "name": "TAS_ACE_ENERGY",
+          "required": false,
+          "type": "decimal(13, 8)"
+        },
+        {
+          "id": 31,
+          "name": "VIC_ACE_ENERGY",
+          "required": false,
+          "type": "decimal(14, 8)"
+        },
+        {
+          "id": 33,
+          "name": "NSW_ASOE_ENERGY",
+          "required": false,
+          "type": "decimal(14, 8)"
+        },
+        {
+          "id": 34,
+          "name": "QLD_ASOE_ENERGY",
+          "required": false,
+          "type": "decimal(14, 8)"
+        },
+        {
+          "id": 35,
+          "name": "SA_ASOE_ENERGY",
+          "required": false,
+          "type": "decimal(13, 8)"
+        },
+        {
+          "id": 36,
+          "name": "TAS_ASOE_ENERGY",
+          "required": false,
+          "type": "decimal(13, 8)"
+        },
+        {
+          "id": 37,
+          "name": "VIC_ASOE_ENERGY",
+          "required": false,
+          "type": "decimal(14, 8)"
+        },
+        {
+          "id": 22,
+          "name": "NSW_RBF",
+          "required": false,
+          "type": "decimal(8, 8)"
+        },
+        {
+          "id": 23,
+          "name": "QLD_RBF",
+          "required": false,
+          "type": "decimal(8, 8)"
+        },
+        {
+          "id": 24,
+          "name": "SA_RBF",
+          "required": false,
+          "type": "decimal(9, 8)"
+        },
+        {
+          "id": 25,
+          "name": "VIC_RBF",
+          "required": false,
+          "type": "decimal(8, 8)"
+        },
+        {
+          "id": 26,
+          "name": "TAS_RBF",
+          "required": false,
+          "type": "decimal(8, 8)"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 2,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 5213755404693129967,
+      "timestamp-ms": 1588255200000
+    },
+    {
+      "snapshot-id": 4005109675047649569,
+      "timestamp-ms": 1785506400001
+    },
+    {
+      "snapshot-id": 2741012893703422776,
+      "timestamp-ms": 1785506400002
+    },
+    {
+      "snapshot-id": 4091424643197719618,
+      "timestamp-ms": 1788184800003
+    },
+    {
+      "snapshot-id": 205467937127107853,
+      "timestamp-ms": 1788184800004
+    },
+    {
+      "snapshot-id": 2704822819677798061,
+      "timestamp-ms": 1790776800005
+    },
+    {
+      "snapshot-id": 4963682135891249367,
+      "timestamp-ms": 1790776800006
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BILLING_DIRECTION/metadata/snap-5213755404693129967-1-fa04e675-d8ad-87d1-b9b2-f4c6f7636ace.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 5213755404693129967,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "3",
+        "utilake.from.file": "PUBLIC_BILLING_DIRECT_FINAL_RECON_2020Week1REVISE_20200519132635.zip",
+        "utilake.from.release": "2020-05",
+        "utilake.from.sha256": "84398ed9bc4c95598a7a78366e59839a7001b396108717125ad96a6fe59b448d",
+        "utilake.from.time": "2019-12-30T17:30:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "DIRECTION",
+        "utilake.report-type": "BILLING",
+        "utilake.rows": "29",
+        "utilake.to.file": "PUBLIC_BILLING_DIRECT_PROV_RECON_2021Week20FINAL_20210609114129.zip",
+        "utilake.to.release": "2021-06",
+        "utilake.to.sha256": "a8c8daddf07ceb2a6fbd96170bc02ead7fbe08496838881575fac32e61aea8b0",
+        "utilake.to.time": "2021-05-14T18:30:00+10:00",
+        "utilake.total-rows": "29",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1588255200000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BILLING_DIRECTION/metadata/snap-4005109675047649569-2-fa04e675-d8ad-87d1-b9b2-f4c6f7636ace.avro",
+      "parent-snapshot-id": 5213755404693129967,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 4005109675047649569,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_BILLING_DIRECT_FINAL_RECON_2026Week15REVISE_20260825115950.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "9a93e6616ed5b26fe3a181d11b0683d5a0e99f641016d7483461c230fc3cc084",
+        "utilake.from.time": "2026-04-05T13:20:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "DIRECTION",
+        "utilake.report-type": "BILLING",
+        "utilake.rows": "3",
+        "utilake.to.file": "PUBLIC_BILLING_DIRECT_FINAL_RECON_2026Week15REVISE_20260825115950.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "9a93e6616ed5b26fe3a181d11b0683d5a0e99f641016d7483461c230fc3cc084",
+        "utilake.to.time": "2026-04-06T07:35:00+10:00",
+        "utilake.total-rows": "32",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1785506400001
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BILLING_DIRECTION/metadata/snap-2741012893703422776-3-fa04e675-d8ad-87d1-b9b2-f4c6f7636ace.avro",
+      "parent-snapshot-id": 4005109675047649569,
+      "schema-id": 2,
+      "sequence-number": 3,
+      "snapshot-id": 2741012893703422776,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_BILLING_DIRECT_PROV_RECON_2026Week31FINAL_20260826143830.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "9b5bc4c04172812dd0dfdace87b104a5f70e4610468609ead2711cd489f76494",
+        "utilake.from.time": "2026-07-27T13:35:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "DIRECTION",
+        "utilake.report-type": "BILLING",
+        "utilake.rows": "2",
+        "utilake.to.file": "PUBLIC_BILLING_DIRECT_PROV_RECON_2026Week31FINAL_20260826143830.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "9b5bc4c04172812dd0dfdace87b104a5f70e4610468609ead2711cd489f76494",
+        "utilake.to.time": "2026-08-01T17:05:00+10:00",
+        "utilake.total-rows": "34",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1785506400002
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BILLING_DIRECTION/metadata/snap-4091424643197719618-4-fa04e675-d8ad-87d1-b9b2-f4c6f7636ace.avro",
+      "parent-snapshot-id": 2741012893703422776,
+      "schema-id": 1,
+      "sequence-number": 4,
+      "snapshot-id": 4091424643197719618,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "3",
+        "utilake.from.file": "PUBLIC_BILLING_DIRECT_FINAL_RECON_2026Week16REVISE_20260901114014.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "daf41cd769ddc25559003a340182231f4a1dab9f10990e80c18b7e5345e776a7",
+        "utilake.from.time": "2026-04-17T09:05:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "DIRECTION",
+        "utilake.report-type": "BILLING",
+        "utilake.rows": "4",
+        "utilake.to.file": "PUBLIC_BILLING_DIRECT_FINAL_RECON_2026Week20REVISE_20260929133452.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "ef955da695f7da136cce963e90135efe710cffe4f4489d047e500c0b266b68d2",
+        "utilake.to.time": "2026-05-15T16:00:00+10:00",
+        "utilake.total-rows": "38",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1788184800003
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BILLING_DIRECTION/metadata/snap-205467937127107853-5-fa04e675-d8ad-87d1-b9b2-f4c6f7636ace.avro",
+      "parent-snapshot-id": 4091424643197719618,
+      "schema-id": 2,
+      "sequence-number": 5,
+      "snapshot-id": 205467937127107853,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "4",
+        "utilake.from.file": "PUBLIC_BILLING_DIRECT_PROV_RECON_2026Week32FINAL_20260902121112.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "74baddd06a4b6995a525422de890af4eed46b04cd6aab86f2a33abaf193c2ca8",
+        "utilake.from.time": "2026-08-02T00:05:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "DIRECTION",
+        "utilake.report-type": "BILLING",
+        "utilake.rows": "9",
+        "utilake.to.file": "PUBLIC_BILLING_DIRECT_PROV_RECON_2026Week35REVISE_20260925122220.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "1585c9c0d24762eefadbeffe805871ac2d4cc021747ed60579331d6802398b5e",
+        "utilake.to.time": "2026-08-29T20:50:00+10:00",
+        "utilake.total-rows": "47",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1788184800004
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BILLING_DIRECTION/metadata/snap-2704822819677798061-6-fa04e675-d8ad-87d1-b9b2-f4c6f7636ace.avro",
+      "parent-snapshot-id": 205467937127107853,
+      "schema-id": 1,
+      "sequence-number": 6,
+      "snapshot-id": 2704822819677798061,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "3",
+        "utilake.from.file": "PUBLIC_BILLING_DIRECT_FINAL_RECON_2026Week11REVISE_20261008110723.zip",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "75f094dc68937bda5b7c8538ef52756fb512b2f2b698223e75f1ba8b0cc6ac24",
+        "utilake.from.time": "2026-03-08T13:25:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "DIRECTION",
+        "utilake.report-type": "BILLING",
+        "utilake.rows": "5",
+        "utilake.to.file": "PUBLIC_BILLING_DIRECT_FINAL_RECON_2026Week23REVISE_20261020110925.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "6a0f61dbdc41b67121572da9f34ebf7d4b0c652ab5460ac0d329f516047aba84",
+        "utilake.to.time": "2026-05-31T21:50:00+10:00",
+        "utilake.total-rows": "52",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1790776800005
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BILLING_DIRECTION/metadata/snap-4963682135891249367-7-fa04e675-d8ad-87d1-b9b2-f4c6f7636ace.avro",
+      "parent-snapshot-id": 2704822819677798061,
+      "schema-id": 2,
+      "sequence-number": 7,
+      "snapshot-id": 4963682135891249367,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "3",
+        "utilake.from.file": "PUBLIC_BILLING_DIRECT_PROV_RECON_2026Week36REVISE_20261002110905.zip",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "68aeed4731014ff7d3ed9fa0643068af02b5a70c16dc1ff2a8efbd5e443a4d03",
+        "utilake.from.time": "2026-08-30T00:05:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "DIRECTION",
+        "utilake.report-type": "BILLING",
+        "utilake.rows": "18",
+        "utilake.to.file": "PUBLIC_BILLING_DIRECT_PROV_RECON_2026Week38REVISE_20261016105405.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "338778db1a67bab0775c271fbb52e28bd983a6ad8f67291b10ea7133bcb99f3c",
+        "utilake.to.time": "2026-09-19T17:05:00+10:00",
+        "utilake.total-rows": "70",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1790776800006
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "fa04e675-d8ad-87d1-b9b2-f4c6f7636ace"
+}

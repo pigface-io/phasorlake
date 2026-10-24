@@ -1,13 +1,13 @@
 {
-  "current-schema-id": 5,
-  "current-snapshot-id": 5531869266332822353,
+  "current-schema-id": 6,
+  "current-snapshot-id": 3280408563814364651,
   "default-sort-order-id": 0,
   "default-spec-id": 0,
   "format-version": 3,
   "last-column-id": 127,
   "last-partition-id": 999,
-  "last-sequence-number": 8,
-  "last-updated-ms": 1748700000007,
+  "last-sequence-number": 33,
+  "last-updated-ms": 1790776800032,
   "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHREGIONSUM",
   "metadata-log": [],
   "next-row-id": 0,
@@ -38,7 +38,7 @@
   },
   "refs": {
     "main": {
-      "snapshot-id": 5531869266332822353,
+      "snapshot-id": 3280408563814364651,
       "type": "branch"
     }
   },
@@ -3239,7 +3239,7 @@
           "id": 121,
           "name": "BDU_ENERGY_STORAGE",
           "required": false,
-          "type": "decimal(15, 5)"
+          "type": "decimal(15, 6)"
         },
         {
           "doc": "Total available load side BDU summated for region (MW)",
@@ -3260,14 +3260,14 @@
           "id": 124,
           "name": "BDU_CLEAREDMW_GEN",
           "required": false,
-          "type": "decimal(15, 5)"
+          "type": "decimal(15, 6)"
         },
         {
           "doc": "Regional aggregated cleared MW where the DUID type is BDU. Net of import (Load)",
           "id": 125,
           "name": "BDU_CLEAREDMW_LOAD",
           "required": false,
-          "type": "decimal(15, 5)"
+          "type": "decimal(15, 6)"
         }
       ],
       "identifier-field-ids": [
@@ -4127,7 +4127,7 @@
           "id": 121,
           "name": "BDU_ENERGY_STORAGE",
           "required": false,
-          "type": "decimal(15, 5)"
+          "type": "decimal(15, 6)"
         },
         {
           "doc": "Total available load side BDU summated for region (MW)",
@@ -4148,14 +4148,14 @@
           "id": 124,
           "name": "BDU_CLEAREDMW_GEN",
           "required": false,
-          "type": "decimal(15, 5)"
+          "type": "decimal(15, 6)"
         },
         {
           "doc": "Regional aggregated cleared MW where the DUID type is BDU. Net of import (Load)",
           "id": 125,
           "name": "BDU_CLEAREDMW_LOAD",
           "required": false,
-          "type": "decimal(15, 5)"
+          "type": "decimal(15, 6)"
         }
       ],
       "identifier-field-ids": [
@@ -5015,7 +5015,7 @@
           "id": 121,
           "name": "BDU_ENERGY_STORAGE",
           "required": false,
-          "type": "decimal(15, 5)"
+          "type": "decimal(15, 6)"
         },
         {
           "doc": "Total available load side BDU summated for region (MW)",
@@ -5036,21 +5036,21 @@
           "id": 124,
           "name": "BDU_CLEAREDMW_GEN",
           "required": false,
-          "type": "decimal(15, 5)"
+          "type": "decimal(15, 6)"
         },
         {
           "doc": "Regional aggregated cleared MW where the DUID type is BDU. Net of import (Load)",
           "id": 125,
           "name": "BDU_CLEAREDMW_LOAD",
           "required": false,
-          "type": "decimal(15, 5)"
+          "type": "decimal(15, 6)"
         },
         {
           "doc": "Energy Storage for BDU at the start of the interval(MWh) - Region Aggregated",
           "id": 126,
           "name": "BDU_INITIAL_ENERGY_STORAGE",
           "required": false,
-          "type": "decimal(15, 5)"
+          "type": "decimal(15, 6)"
         },
         {
           "doc": "Energy storage for Daily Energy Constrained Scheduled Generating Units at the start of the interval(MWh) - Region Aggregated",
@@ -5068,6 +5068,901 @@
         5
       ],
       "schema-id": 5,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Market date and time starting at 04:05",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Dispatch run no; always 1",
+          "id": 2,
+          "name": "RUNNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Region Identifier",
+          "id": 3,
+          "name": "REGIONID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Dispatch period identifier, from 001 to 288 in format YYYYMMDDPPP.",
+          "id": 4,
+          "name": "DISPATCHINTERVAL",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Manual Intervention flag",
+          "id": 5,
+          "name": "INTERVENTION",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Demand (less loads)",
+          "id": 6,
+          "name": "TOTALDEMAND",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Aggregate generation bid available in region",
+          "id": 7,
+          "name": "AVAILABLEGENERATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Aggregate load bid available in region",
+          "id": 8,
+          "name": "AVAILABLELOAD",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "5 minute forecast adjust",
+          "id": 9,
+          "name": "DEMANDFORECAST",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Dispatched Generation",
+          "id": 10,
+          "name": "DISPATCHABLEGENERATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Dispatched Load (add to total demand to get inherent region demand).",
+          "id": 11,
+          "name": "DISPATCHABLELOAD",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Net interconnector flow from the regional reference node",
+          "id": 12,
+          "name": "NETINTERCHANGE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "MW quantity of excess",
+          "id": 13,
+          "name": "EXCESSGENERATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 5 min MW dispatch",
+          "id": 14,
+          "name": "LOWER5MINDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 5 min MW imported",
+          "id": 15,
+          "name": "LOWER5MINIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 5 min local dispatch",
+          "id": 16,
+          "name": "LOWER5MINLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Local price of lower 5 min",
+          "id": 17,
+          "name": "LOWER5MINLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 5 min local requirement",
+          "id": 18,
+          "name": "LOWER5MINLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of lower 5 min",
+          "id": 19,
+          "name": "LOWER5MINPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 5 min total requirement",
+          "id": 20,
+          "name": "LOWER5MINREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of lower 5 min",
+          "id": 21,
+          "name": "LOWER5MINSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 60 sec MW dispatch",
+          "id": 22,
+          "name": "LOWER60SECDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 60 sec MW imported",
+          "id": 23,
+          "name": "LOWER60SECIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 60 sec local dispatch",
+          "id": 24,
+          "name": "LOWER60SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Local price of lower 60 sec",
+          "id": 25,
+          "name": "LOWER60SECLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 60 sec local requirement",
+          "id": 26,
+          "name": "LOWER60SECLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of lower 60 sec",
+          "id": 27,
+          "name": "LOWER60SECPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 60 sec total requirement",
+          "id": 28,
+          "name": "LOWER60SECREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of lower 60 sec",
+          "id": 29,
+          "name": "LOWER60SECSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 6 sec MW dispatch",
+          "id": 30,
+          "name": "LOWER6SECDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 6 sec MW imported",
+          "id": 31,
+          "name": "LOWER6SECIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 6 sec local dispatch",
+          "id": 32,
+          "name": "LOWER6SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Local price of lower 6 sec",
+          "id": 33,
+          "name": "LOWER6SECLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 6 sec local requirement",
+          "id": 34,
+          "name": "LOWER6SECLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of lower 6 sec",
+          "id": 35,
+          "name": "LOWER6SECPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower 6 sec total requirement",
+          "id": 36,
+          "name": "LOWER6SECREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of lower 6 sec",
+          "id": 37,
+          "name": "LOWER6SECSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 5 min MW dispatch",
+          "id": 38,
+          "name": "RAISE5MINDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 5 min MW imported",
+          "id": 39,
+          "name": "RAISE5MINIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 5 min local dispatch",
+          "id": 40,
+          "name": "RAISE5MINLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise price of lower 5 min",
+          "id": 41,
+          "name": "RAISE5MINLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 5 min local requirement",
+          "id": 42,
+          "name": "RAISE5MINLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of raise 5 min",
+          "id": 43,
+          "name": "RAISE5MINPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 5 min total requirement",
+          "id": 44,
+          "name": "RAISE5MINREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of raise 5 min",
+          "id": 45,
+          "name": "RAISE5MINSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 60 sec MW dispatch",
+          "id": 46,
+          "name": "RAISE60SECDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 60 sec MW imported",
+          "id": 47,
+          "name": "RAISE60SECIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 60 sec local dispatch",
+          "id": 48,
+          "name": "RAISE60SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Local price of raise 60 sec",
+          "id": 49,
+          "name": "RAISE60SECLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 60 sec local requirement",
+          "id": 50,
+          "name": "RAISE60SECLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of raise 60 sec",
+          "id": 51,
+          "name": "RAISE60SECPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 60 sec total requirement",
+          "id": 52,
+          "name": "RAISE60SECREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of raise 60 sec",
+          "id": 53,
+          "name": "RAISE60SECSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 6 sec MW dispatch",
+          "id": 54,
+          "name": "RAISE6SECDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 6 sec MW imported",
+          "id": 55,
+          "name": "RAISE6SECIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 6 sec local dispatch",
+          "id": 56,
+          "name": "RAISE6SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Local price of raise 6 sec",
+          "id": 57,
+          "name": "RAISE6SECLOCALPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 6 sec local requirement",
+          "id": 58,
+          "name": "RAISE6SECLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Regional price of raise 6 sec",
+          "id": 59,
+          "name": "RAISE6SECPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise 6 sec total requirement",
+          "id": 60,
+          "name": "RAISE6SECREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Supply price of raise 6 sec",
+          "id": 61,
+          "name": "RAISE6SECSUPPLYPRICE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Calculated dispatch error",
+          "id": 62,
+          "name": "AGGEGATEDISPATCHERROR",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Calculated dispatch error",
+          "id": 63,
+          "name": "AGGREGATEDISPATCHERROR",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 64,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Sum of initial generation and import for region",
+          "id": 65,
+          "name": "INITIALSUPPLY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of cleared generation and import for region",
+          "id": 66,
+          "name": "CLEAREDSUPPLY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower Regulation MW imported",
+          "id": 67,
+          "name": "LOWERREGIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower Regulation local dispatch",
+          "id": 68,
+          "name": "LOWERREGLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower Regulation local requirement",
+          "id": 69,
+          "name": "LOWERREGLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Lower Regulation total requirement",
+          "id": 70,
+          "name": "LOWERREGREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise Regulation MW imported",
+          "id": 71,
+          "name": "RAISEREGIMPORT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise Regulation local dispatch",
+          "id": 72,
+          "name": "RAISEREGLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise Regulation local requirement",
+          "id": 73,
+          "name": "RAISEREGLOCALREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Raise Regulation total requirement",
+          "id": 74,
+          "name": "RAISEREGREQ",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 5 min local requirement",
+          "id": 75,
+          "name": "RAISE5MINLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise Reg local requirement",
+          "id": 76,
+          "name": "RAISEREGLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 60 sec local requirement",
+          "id": 77,
+          "name": "RAISE60SECLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 6 sec local requirement",
+          "id": 78,
+          "name": "RAISE6SECLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 5 min local requirement",
+          "id": 79,
+          "name": "LOWER5MINLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower Reg local requirement",
+          "id": 80,
+          "name": "LOWERREGLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 60 sec local requirement",
+          "id": 81,
+          "name": "LOWER60SECLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 6 sec local requirement",
+          "id": 82,
+          "name": "LOWER6SECLOCALVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 5 min requirement",
+          "id": 83,
+          "name": "RAISE5MINVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise Reg requirement",
+          "id": 84,
+          "name": "RAISEREGVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 60 seconds requirement",
+          "id": 85,
+          "name": "RAISE60SECVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Raise 6 seconds requirement",
+          "id": 86,
+          "name": "RAISE6SECVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 5 min requirement",
+          "id": 87,
+          "name": "LOWER5MINVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower Reg requirement",
+          "id": 88,
+          "name": "LOWERREGVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 60 seconds requirement",
+          "id": 89,
+          "name": "LOWER60SECVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used since Dec 2003. Violation (MW) of Lower 6 seconds requirement",
+          "id": 90,
+          "name": "LOWER6SECVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "trapezium adjusted raise 6sec availability",
+          "id": 91,
+          "name": "RAISE6SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise 60sec availability",
+          "id": 92,
+          "name": "RAISE60SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise 5min availability",
+          "id": 93,
+          "name": "RAISE5MINACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise reg availability",
+          "id": 94,
+          "name": "RAISEREGACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 6sec availability",
+          "id": 95,
+          "name": "LOWER6SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 60sec availability",
+          "id": 96,
+          "name": "LOWER60SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 5min availability",
+          "id": 97,
+          "name": "LOWER5MINACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower reg availability",
+          "id": 98,
+          "name": "LOWERREGACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Not in use after 17 Feb 2006. Total short term generation capacity reserve used in assessing lack of reserve condition",
+          "id": 99,
+          "name": "LORSURPLUS",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Not in use after 17 Feb 2006. Total short term generation capacity reserve above the stated low reserve condition requirement",
+          "id": 100,
+          "name": "LRCSURPLUS",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Allowance made for non-scheduled generation in the demand forecast (MW).",
+          "id": 101,
+          "name": "TOTALINTERMITTENTGENERATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of Cleared Scheduled generation, imported generation (at the region boundary) and allowances made for non-scheduled generation (MW).",
+          "id": 102,
+          "name": "DEMAND_AND_NONSCHEDGEN",
+          "required": false,
+          "type": "decimal(15, 6)"
+        },
+        {
+          "doc": "Regional aggregated Unconstrained Intermittent Generation Forecast of Semi-scheduled generation (MW).",
+          "id": 103,
+          "name": "UIGF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Semi-Schedule generator Cleared MW",
+          "id": 104,
+          "name": "SEMISCHEDULE_CLEAREDMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Semi-Schedule generator Cleared MW where Semi-Dispatch cap is enforced",
+          "id": 105,
+          "name": "SEMISCHEDULE_COMPLIANCEMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Unconstrained Intermittent Generation Forecast of Semi-scheduled generation (MW) where the primary fuel source is solar",
+          "id": 106,
+          "name": "SS_SOLAR_UIGF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Unconstrained Intermittent Generation Forecast of Semi-scheduled generation (MW) where the primary fuel source is wind",
+          "id": 107,
+          "name": "SS_WIND_UIGF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Semi-Schedule generator Cleared MW where the primary fuel source is solar",
+          "id": 108,
+          "name": "SS_SOLAR_CLEAREDMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Semi-Schedule generator Cleared MW where the primary fuel source is wind",
+          "id": 109,
+          "name": "SS_WIND_CLEAREDMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Semi-Schedule generator Cleared MW where Semi-Dispatch cap is enforced and the primary fuel source is solar",
+          "id": 110,
+          "name": "SS_SOLAR_COMPLIANCEMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated Semi-Schedule generator Cleared MW where Semi-Dispatch cap is enforced and the primary fuel source is wind",
+          "id": 111,
+          "name": "SS_WIND_COMPLIANCEMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated MW value at start of interval for Wholesale Demand Response (WDR) units",
+          "id": 112,
+          "name": "WDR_INITIALMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated available MW for Wholesale Demand Response (WDR) units",
+          "id": 113,
+          "name": "WDR_AVAILABLE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated dispatched MW for Wholesale Demand Response (WDR) units",
+          "id": 114,
+          "name": "WDR_DISPATCHED",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Total Raise1Sec Dispatched in Region - RegionSolution element R1Dispatch attribute",
+          "id": 115,
+          "name": "RAISE1SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Total Lower1Sec Dispatched in Region - RegionSolution element L1Dispatch attribute",
+          "id": 116,
+          "name": "LOWER1SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Trapezium adjusted Raise1Sec availability (summated from UnitSolution)",
+          "id": 117,
+          "name": "RAISE1SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Trapezium adjusted Lower1Sec availability (summated from UnitSolution)",
+          "id": 118,
+          "name": "LOWER1SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "For Semi-Scheduled units. Aggregate Energy Availability from Solar units in that region",
+          "id": 119,
+          "name": "SS_SOLAR_AVAILABILITY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "For Semi-Scheduled units. Aggregate Energy Availability from Wind units in that region",
+          "id": 120,
+          "name": "SS_WIND_AVAILABILITY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated energy storage where the DUID type is BDU (MWh)",
+          "id": 121,
+          "name": "BDU_ENERGY_STORAGE",
+          "required": false,
+          "type": "decimal(15, 6)"
+        },
+        {
+          "doc": "Total available load side BDU summated for region (MW)",
+          "id": 122,
+          "name": "BDU_MIN_AVAIL",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Total available generation side BDU summated for region (MW)",
+          "id": 123,
+          "name": "BDU_MAX_AVAIL",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional aggregated cleared MW where the DUID type is BDU. Net of export (Generation)",
+          "id": 124,
+          "name": "BDU_CLEAREDMW_GEN",
+          "required": false,
+          "type": "decimal(15, 6)"
+        },
+        {
+          "doc": "Regional aggregated cleared MW where the DUID type is BDU. Net of import (Load)",
+          "id": 125,
+          "name": "BDU_CLEAREDMW_LOAD",
+          "required": false,
+          "type": "decimal(15, 6)"
+        },
+        {
+          "doc": "Energy Storage for BDU at the start of the interval(MWh) - Region Aggregated",
+          "id": 126,
+          "name": "BDU_INITIAL_ENERGY_STORAGE",
+          "required": false,
+          "type": "decimal(15, 6)"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "schema-id": 6,
       "type": "struct"
     }
   ],
@@ -5103,6 +5998,106 @@
     {
       "snapshot-id": 5531869266332822353,
       "timestamp-ms": 1748700000007
+    },
+    {
+      "snapshot-id": 6737068546142851124,
+      "timestamp-ms": 1759240800008
+    },
+    {
+      "snapshot-id": 2051669998425736507,
+      "timestamp-ms": 1759240800009
+    },
+    {
+      "snapshot-id": 3783010616596827807,
+      "timestamp-ms": 1761919200010
+    },
+    {
+      "snapshot-id": 4067725636096918057,
+      "timestamp-ms": 1761919200011
+    },
+    {
+      "snapshot-id": 4942566549474913817,
+      "timestamp-ms": 1764511200012
+    },
+    {
+      "snapshot-id": 5107501684668244817,
+      "timestamp-ms": 1764511200013
+    },
+    {
+      "snapshot-id": 2311064381196139601,
+      "timestamp-ms": 1767189600014
+    },
+    {
+      "snapshot-id": 7482696617521861402,
+      "timestamp-ms": 1767189600015
+    },
+    {
+      "snapshot-id": 8732986336538100780,
+      "timestamp-ms": 1769868000016
+    },
+    {
+      "snapshot-id": 3747712278682431356,
+      "timestamp-ms": 1769868000017
+    },
+    {
+      "snapshot-id": 3737905353182677108,
+      "timestamp-ms": 1772287200018
+    },
+    {
+      "snapshot-id": 3546403130322356912,
+      "timestamp-ms": 1772287200019
+    },
+    {
+      "snapshot-id": 146093646060648718,
+      "timestamp-ms": 1774965600020
+    },
+    {
+      "snapshot-id": 1359481146041367883,
+      "timestamp-ms": 1774965600021
+    },
+    {
+      "snapshot-id": 911440587020087717,
+      "timestamp-ms": 1777557600022
+    },
+    {
+      "snapshot-id": 6539045949370714599,
+      "timestamp-ms": 1777557600023
+    },
+    {
+      "snapshot-id": 4335463538474654233,
+      "timestamp-ms": 1780236000024
+    },
+    {
+      "snapshot-id": 650987002031440290,
+      "timestamp-ms": 1780236000025
+    },
+    {
+      "snapshot-id": 3838647701182249634,
+      "timestamp-ms": 1782828000026
+    },
+    {
+      "snapshot-id": 4861113981792582279,
+      "timestamp-ms": 1782828000027
+    },
+    {
+      "snapshot-id": 5549904757850686273,
+      "timestamp-ms": 1785506400028
+    },
+    {
+      "snapshot-id": 8532402134720593557,
+      "timestamp-ms": 1785506400029
+    },
+    {
+      "snapshot-id": 1805273642089358215,
+      "timestamp-ms": 1788184800030
+    },
+    {
+      "snapshot-id": 3655983185947120693,
+      "timestamp-ms": 1788184800031
+    },
+    {
+      "snapshot-id": 3280408563814364651,
+      "timestamp-ms": 1790776800032
     }
   ],
   "snapshots": [
@@ -5311,7 +6306,7 @@
       "snapshot-id": 5531869266332822353,
       "summary": {
         "operation": "append",
-        "utilake.files": "16",
+        "utilake.files": "4",
         "utilake.from.file": "PUBLIC_ARCHIVE#DISPATCHREGIONSUM#FILE01#202506010000.zip",
         "utilake.from.release": "2025-06",
         "utilake.from.sha256": "08b2080b7e1e6dc91da5cd4fdfbccb9f93a156efda2cdeb80ad9c69a73d46c72",
@@ -5319,15 +6314,715 @@
         "utilake.kinds": "[\"archive\"]",
         "utilake.report-subtype": "REGIONSUM",
         "utilake.report-type": "DISPATCH",
-        "utilake.rows": "701280",
+        "utilake.rows": "175680",
+        "utilake.to.file": "PUBLIC_ARCHIVE#DISPATCHREGIONSUM#FILE01#202509010000.zip",
+        "utilake.to.release": "2025-09",
+        "utilake.to.sha256": "b71143fd2cc7167eb2059f25407f1520832ec9fd8f88ee20144118cd402ba8f9",
+        "utilake.to.time": "2025-10-01T00:00:00+10:00",
+        "utilake.total-rows": "8828830",
+        "utilake.version": "9"
+      },
+      "timestamp-ms": 1748700000007
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHREGIONSUM/metadata/snap-6737068546142851124-9-895eb9c5-ab0c-861b-b26d-d3ebf267a971.avro",
+      "parent-snapshot-id": 5531869266332822353,
+      "schema-id": 6,
+      "sequence-number": 9,
+      "snapshot-id": 6737068546142851124,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "6911",
+        "utilake.from.file": "PUBLIC_DISPATCHIS_20251008.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "0f3ec12f713ac48332c3964ed75f2dd74a6ab8a663a6312f84a0949e8b51f6fc",
+        "utilake.from.time": "2025-10-08T00:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "REGIONSUM",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "34555",
+        "utilake.to.file": "PUBLIC_DISPATCHIS_20251031.zip",
+        "utilake.to.release": "2025-10",
+        "utilake.to.sha256": "23edc372d33dfe6f3d2899676c60fe564be852795b0590b3b8d155f54e205fb2",
+        "utilake.to.time": "2025-10-31T23:55:00+10:00",
+        "utilake.total-rows": "8863385",
+        "utilake.version": "9"
+      },
+      "timestamp-ms": 1759240800008
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHREGIONSUM/metadata/snap-2051669998425736507-10-895eb9c5-ab0c-861b-b26d-d3ebf267a971.avro",
+      "parent-snapshot-id": 6737068546142851124,
+      "schema-id": 5,
+      "sequence-number": 10,
+      "snapshot-id": 2051669998425736507,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#DISPATCHREGIONSUM#FILE01#202510010000.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "5bfe4e31130eb5a3898d4b9ddf4f424ce697190dde3f1de1c0e970e946c390e8",
+        "utilake.from.time": "2025-10-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "REGIONSUM",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_ARCHIVE#DISPATCHREGIONSUM#FILE01#202510010000.zip",
+        "utilake.to.release": "2025-10",
+        "utilake.to.sha256": "5bfe4e31130eb5a3898d4b9ddf4f424ce697190dde3f1de1c0e970e946c390e8",
+        "utilake.to.time": "2025-11-01T00:00:00+10:00",
+        "utilake.total-rows": "8908025",
+        "utilake.version": "9"
+      },
+      "timestamp-ms": 1759240800009
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHREGIONSUM/metadata/snap-3783010616596827807-11-895eb9c5-ab0c-861b-b26d-d3ebf267a971.avro",
+      "parent-snapshot-id": 2051669998425736507,
+      "schema-id": 6,
+      "sequence-number": 11,
+      "snapshot-id": 3783010616596827807,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8640",
+        "utilake.from.file": "PUBLIC_DISPATCHIS_20251031.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "23edc372d33dfe6f3d2899676c60fe564be852795b0590b3b8d155f54e205fb2",
+        "utilake.from.time": "2025-11-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "REGIONSUM",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "43200",
+        "utilake.to.file": "PUBLIC_DISPATCHIS_20251130.zip",
+        "utilake.to.release": "2025-11",
+        "utilake.to.sha256": "484d736da9d286609f795bf4d4325054c85221c5272e82acd04ec8b3cbdfb2c2",
+        "utilake.to.time": "2025-11-30T23:55:00+10:00",
+        "utilake.total-rows": "8951225",
+        "utilake.version": "9"
+      },
+      "timestamp-ms": 1761919200010
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHREGIONSUM/metadata/snap-4067725636096918057-12-895eb9c5-ab0c-861b-b26d-d3ebf267a971.avro",
+      "parent-snapshot-id": 3783010616596827807,
+      "schema-id": 5,
+      "sequence-number": 12,
+      "snapshot-id": 4067725636096918057,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#DISPATCHREGIONSUM#FILE01#202511010000.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "014bbb724e8a8c9a9f1a199fa0e385d83e6fd29c58b549c875f160a1e28f73a6",
+        "utilake.from.time": "2025-11-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "REGIONSUM",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "43200",
+        "utilake.to.file": "PUBLIC_ARCHIVE#DISPATCHREGIONSUM#FILE01#202511010000.zip",
+        "utilake.to.release": "2025-11",
+        "utilake.to.sha256": "014bbb724e8a8c9a9f1a199fa0e385d83e6fd29c58b549c875f160a1e28f73a6",
+        "utilake.to.time": "2025-12-01T00:00:00+10:00",
+        "utilake.total-rows": "8994425",
+        "utilake.version": "9"
+      },
+      "timestamp-ms": 1761919200011
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHREGIONSUM/metadata/snap-4942566549474913817-13-895eb9c5-ab0c-861b-b26d-d3ebf267a971.avro",
+      "parent-snapshot-id": 4067725636096918057,
+      "schema-id": 6,
+      "sequence-number": 13,
+      "snapshot-id": 4942566549474913817,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8928",
+        "utilake.from.file": "PUBLIC_DISPATCHIS_20251130.zip",
+        "utilake.from.release": "2025-12",
+        "utilake.from.sha256": "484d736da9d286609f795bf4d4325054c85221c5272e82acd04ec8b3cbdfb2c2",
+        "utilake.from.time": "2025-12-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "REGIONSUM",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_DISPATCHIS_20251231.zip",
+        "utilake.to.release": "2025-12",
+        "utilake.to.sha256": "cd15da0353aa72554be1f50b081e20e9888a68278e73a23b8c5559647688b74e",
+        "utilake.to.time": "2025-12-31T23:55:00+10:00",
+        "utilake.total-rows": "9039065",
+        "utilake.version": "9"
+      },
+      "timestamp-ms": 1764511200012
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHREGIONSUM/metadata/snap-5107501684668244817-14-895eb9c5-ab0c-861b-b26d-d3ebf267a971.avro",
+      "parent-snapshot-id": 4942566549474913817,
+      "schema-id": 5,
+      "sequence-number": 14,
+      "snapshot-id": 5107501684668244817,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#DISPATCHREGIONSUM#FILE01#202512010000.zip",
+        "utilake.from.release": "2025-12",
+        "utilake.from.sha256": "873939f1bd37a941c58972b54ac370c394c885beb95274fce7c70b58cf6584d5",
+        "utilake.from.time": "2025-12-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "REGIONSUM",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_ARCHIVE#DISPATCHREGIONSUM#FILE01#202512010000.zip",
+        "utilake.to.release": "2025-12",
+        "utilake.to.sha256": "873939f1bd37a941c58972b54ac370c394c885beb95274fce7c70b58cf6584d5",
+        "utilake.to.time": "2026-01-01T00:00:00+10:00",
+        "utilake.total-rows": "9083705",
+        "utilake.version": "9"
+      },
+      "timestamp-ms": 1764511200013
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHREGIONSUM/metadata/snap-2311064381196139601-15-895eb9c5-ab0c-861b-b26d-d3ebf267a971.avro",
+      "parent-snapshot-id": 5107501684668244817,
+      "schema-id": 6,
+      "sequence-number": 15,
+      "snapshot-id": 2311064381196139601,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8928",
+        "utilake.from.file": "PUBLIC_DISPATCHIS_20251231.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "cd15da0353aa72554be1f50b081e20e9888a68278e73a23b8c5559647688b74e",
+        "utilake.from.time": "2026-01-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "REGIONSUM",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_DISPATCHIS_20260131.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "37e94a57b169878ca5844b0973a728331edcadc364e74926b82f90c39e1d549d",
+        "utilake.to.time": "2026-01-31T23:55:00+10:00",
+        "utilake.total-rows": "9128345",
+        "utilake.version": "9"
+      },
+      "timestamp-ms": 1767189600014
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHREGIONSUM/metadata/snap-7482696617521861402-16-895eb9c5-ab0c-861b-b26d-d3ebf267a971.avro",
+      "parent-snapshot-id": 2311064381196139601,
+      "schema-id": 5,
+      "sequence-number": 16,
+      "snapshot-id": 7482696617521861402,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#DISPATCHREGIONSUM#FILE01#202601010000.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "f53740a6fae78fa83948bde87aac32b48e13f5473f75ec68e0144c5310838acc",
+        "utilake.from.time": "2026-01-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "REGIONSUM",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_ARCHIVE#DISPATCHREGIONSUM#FILE01#202601010000.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "f53740a6fae78fa83948bde87aac32b48e13f5473f75ec68e0144c5310838acc",
+        "utilake.to.time": "2026-02-01T00:00:00+10:00",
+        "utilake.total-rows": "9172985",
+        "utilake.version": "9"
+      },
+      "timestamp-ms": 1767189600015
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHREGIONSUM/metadata/snap-8732986336538100780-17-895eb9c5-ab0c-861b-b26d-d3ebf267a971.avro",
+      "parent-snapshot-id": 7482696617521861402,
+      "schema-id": 6,
+      "sequence-number": 17,
+      "snapshot-id": 8732986336538100780,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8064",
+        "utilake.from.file": "PUBLIC_DISPATCHIS_20260131.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "37e94a57b169878ca5844b0973a728331edcadc364e74926b82f90c39e1d549d",
+        "utilake.from.time": "2026-02-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "REGIONSUM",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "40320",
+        "utilake.to.file": "PUBLIC_DISPATCHIS_20260228.zip",
+        "utilake.to.release": "2026-02",
+        "utilake.to.sha256": "9c0659c5692f364bf2e9d56e6dca17f1ce29ba8f6fb0b2ea41716db56bfc5a4b",
+        "utilake.to.time": "2026-02-28T23:55:00+10:00",
+        "utilake.total-rows": "9213305",
+        "utilake.version": "9"
+      },
+      "timestamp-ms": 1769868000016
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHREGIONSUM/metadata/snap-3747712278682431356-18-895eb9c5-ab0c-861b-b26d-d3ebf267a971.avro",
+      "parent-snapshot-id": 8732986336538100780,
+      "schema-id": 5,
+      "sequence-number": 18,
+      "snapshot-id": 3747712278682431356,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#DISPATCHREGIONSUM#FILE01#202602010000.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "f3d8b3ccaf64b8fa6acb5ad02a47cc005956a7a065914cbbd1b862c2d5309e10",
+        "utilake.from.time": "2026-02-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "REGIONSUM",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "40320",
+        "utilake.to.file": "PUBLIC_ARCHIVE#DISPATCHREGIONSUM#FILE01#202602010000.zip",
+        "utilake.to.release": "2026-02",
+        "utilake.to.sha256": "f3d8b3ccaf64b8fa6acb5ad02a47cc005956a7a065914cbbd1b862c2d5309e10",
+        "utilake.to.time": "2026-03-01T00:00:00+10:00",
+        "utilake.total-rows": "9253625",
+        "utilake.version": "9"
+      },
+      "timestamp-ms": 1769868000017
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHREGIONSUM/metadata/snap-3737905353182677108-19-895eb9c5-ab0c-861b-b26d-d3ebf267a971.avro",
+      "parent-snapshot-id": 3747712278682431356,
+      "schema-id": 6,
+      "sequence-number": 19,
+      "snapshot-id": 3737905353182677108,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8907",
+        "utilake.from.file": "PUBLIC_DISPATCHIS_20260228.zip",
+        "utilake.from.release": "2026-03",
+        "utilake.from.sha256": "9c0659c5692f364bf2e9d56e6dca17f1ce29ba8f6fb0b2ea41716db56bfc5a4b",
+        "utilake.from.time": "2026-03-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "REGIONSUM",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "44535",
+        "utilake.to.file": "PUBLIC_DISPATCHIS_20260331.zip",
+        "utilake.to.release": "2026-03",
+        "utilake.to.sha256": "b8daaedd0e0c939d623f15e3db1aba39b36fe20c385b3057b69486c2c4d387c8",
+        "utilake.to.time": "2026-03-31T23:55:00+10:00",
+        "utilake.total-rows": "9298160",
+        "utilake.version": "9"
+      },
+      "timestamp-ms": 1772287200018
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHREGIONSUM/metadata/snap-3546403130322356912-20-895eb9c5-ab0c-861b-b26d-d3ebf267a971.avro",
+      "parent-snapshot-id": 3737905353182677108,
+      "schema-id": 5,
+      "sequence-number": 20,
+      "snapshot-id": 3546403130322356912,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#DISPATCHREGIONSUM#FILE01#202603010000.zip",
+        "utilake.from.release": "2026-03",
+        "utilake.from.sha256": "22a297b71010e7edb19943eace04b355aac379ec457aff7e0330b2668ef2b3f4",
+        "utilake.from.time": "2026-03-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "REGIONSUM",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_ARCHIVE#DISPATCHREGIONSUM#FILE01#202603010000.zip",
+        "utilake.to.release": "2026-03",
+        "utilake.to.sha256": "22a297b71010e7edb19943eace04b355aac379ec457aff7e0330b2668ef2b3f4",
+        "utilake.to.time": "2026-04-01T00:00:00+10:00",
+        "utilake.total-rows": "9342800",
+        "utilake.version": "9"
+      },
+      "timestamp-ms": 1772287200019
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHREGIONSUM/metadata/snap-146093646060648718-21-895eb9c5-ab0c-861b-b26d-d3ebf267a971.avro",
+      "parent-snapshot-id": 3546403130322356912,
+      "schema-id": 6,
+      "sequence-number": 21,
+      "snapshot-id": 146093646060648718,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8640",
+        "utilake.from.file": "PUBLIC_DISPATCHIS_20260331.zip",
+        "utilake.from.release": "2026-04",
+        "utilake.from.sha256": "b8daaedd0e0c939d623f15e3db1aba39b36fe20c385b3057b69486c2c4d387c8",
+        "utilake.from.time": "2026-04-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "REGIONSUM",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "43200",
+        "utilake.to.file": "PUBLIC_DISPATCHIS_20260430.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "95f0fcd122b6da7bf1ac07bf2dcb1c1aa09a831a64341087245d68bd1e8435b3",
+        "utilake.to.time": "2026-04-30T23:55:00+10:00",
+        "utilake.total-rows": "9386000",
+        "utilake.version": "9"
+      },
+      "timestamp-ms": 1774965600020
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHREGIONSUM/metadata/snap-1359481146041367883-22-895eb9c5-ab0c-861b-b26d-d3ebf267a971.avro",
+      "parent-snapshot-id": 146093646060648718,
+      "schema-id": 5,
+      "sequence-number": 22,
+      "snapshot-id": 1359481146041367883,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#DISPATCHREGIONSUM#FILE01#202604010000.zip",
+        "utilake.from.release": "2026-04",
+        "utilake.from.sha256": "c80bcbc144e50907908d5f32025316f5858c4de47e9b816ad64f75733124c9b5",
+        "utilake.from.time": "2026-04-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "REGIONSUM",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "43200",
+        "utilake.to.file": "PUBLIC_ARCHIVE#DISPATCHREGIONSUM#FILE01#202604010000.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "c80bcbc144e50907908d5f32025316f5858c4de47e9b816ad64f75733124c9b5",
+        "utilake.to.time": "2026-05-01T00:00:00+10:00",
+        "utilake.total-rows": "9429200",
+        "utilake.version": "9"
+      },
+      "timestamp-ms": 1774965600021
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHREGIONSUM/metadata/snap-911440587020087717-23-895eb9c5-ab0c-861b-b26d-d3ebf267a971.avro",
+      "parent-snapshot-id": 1359481146041367883,
+      "schema-id": 6,
+      "sequence-number": 23,
+      "snapshot-id": 911440587020087717,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8931",
+        "utilake.from.file": "PUBLIC_DISPATCHIS_202605041330_0000000516089042.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "d0f277cd93a659d71834abb10badba4918f6d386d0541f76a18b1607c6ab629f",
+        "utilake.from.time": "2026-05-04T13:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "REGIONSUM",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "44655",
+        "utilake.to.file": "PUBLIC_DISPATCHIS_20260531.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "7a9faa71450791b3a83dbb011f613ff487e25c9a6d9bea613ed216d6673ace10",
+        "utilake.to.time": "2026-05-31T23:55:00+10:00",
+        "utilake.total-rows": "9473855",
+        "utilake.version": "9"
+      },
+      "timestamp-ms": 1777557600022
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHREGIONSUM/metadata/snap-6539045949370714599-24-895eb9c5-ab0c-861b-b26d-d3ebf267a971.avro",
+      "parent-snapshot-id": 911440587020087717,
+      "schema-id": 5,
+      "sequence-number": 24,
+      "snapshot-id": 6539045949370714599,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#DISPATCHREGIONSUM#FILE01#202605010000.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "386bd9ca70bd707d17a182c5636a3ac4217cf50f3780ed676eef7f502852db64",
+        "utilake.from.time": "2026-05-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "REGIONSUM",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_ARCHIVE#DISPATCHREGIONSUM#FILE01#202605010000.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "386bd9ca70bd707d17a182c5636a3ac4217cf50f3780ed676eef7f502852db64",
+        "utilake.to.time": "2026-06-01T00:00:00+10:00",
+        "utilake.total-rows": "9518495",
+        "utilake.version": "9"
+      },
+      "timestamp-ms": 1777557600023
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHREGIONSUM/metadata/snap-4335463538474654233-25-895eb9c5-ab0c-861b-b26d-d3ebf267a971.avro",
+      "parent-snapshot-id": 6539045949370714599,
+      "schema-id": 6,
+      "sequence-number": 25,
+      "snapshot-id": 4335463538474654233,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8641",
+        "utilake.from.file": "PUBLIC_DISPATCHIS_202606130750_0000000522227310.zip",
+        "utilake.from.release": "2026-06",
+        "utilake.from.sha256": "3f1f1285a8528576125e9ade70d101d97258359e6cdd382f1583dd0d2546ac5a",
+        "utilake.from.time": "2026-06-13T07:50:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "REGIONSUM",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "43205",
+        "utilake.to.file": "PUBLIC_DISPATCHIS_20260630.zip",
+        "utilake.to.release": "2026-06",
+        "utilake.to.sha256": "67afcc5da904a2bccc581acfaefcceaa86fc3fc17825f5f9f5e140c7971ed660",
+        "utilake.to.time": "2026-06-30T23:55:00+10:00",
+        "utilake.total-rows": "9561700",
+        "utilake.version": "9"
+      },
+      "timestamp-ms": 1780236000024
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHREGIONSUM/metadata/snap-650987002031440290-26-895eb9c5-ab0c-861b-b26d-d3ebf267a971.avro",
+      "parent-snapshot-id": 4335463538474654233,
+      "schema-id": 5,
+      "sequence-number": 26,
+      "snapshot-id": 650987002031440290,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#DISPATCHREGIONSUM#FILE01#202606010000.zip",
+        "utilake.from.release": "2026-06",
+        "utilake.from.sha256": "19daa5f7e84bd67c213bb690c783375c90cfcf47550bbec2bc955658fe8cc77c",
+        "utilake.from.time": "2026-06-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "REGIONSUM",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "43200",
+        "utilake.to.file": "PUBLIC_ARCHIVE#DISPATCHREGIONSUM#FILE01#202606010000.zip",
+        "utilake.to.release": "2026-06",
+        "utilake.to.sha256": "19daa5f7e84bd67c213bb690c783375c90cfcf47550bbec2bc955658fe8cc77c",
+        "utilake.to.time": "2026-07-01T00:00:00+10:00",
+        "utilake.total-rows": "9604900",
+        "utilake.version": "9"
+      },
+      "timestamp-ms": 1780236000025
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHREGIONSUM/metadata/snap-3838647701182249634-27-895eb9c5-ab0c-861b-b26d-d3ebf267a971.avro",
+      "parent-snapshot-id": 650987002031440290,
+      "schema-id": 6,
+      "sequence-number": 27,
+      "snapshot-id": 3838647701182249634,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8929",
+        "utilake.from.file": "PUBLIC_DISPATCHIS_202607052020_0000000525992870.zip",
+        "utilake.from.release": "2026-07",
+        "utilake.from.sha256": "02e0c402aa142815a6545fccb7030036ed79e9ebeeee2dd7b671d205e3887a43",
+        "utilake.from.time": "2026-07-05T20:20:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "REGIONSUM",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "44645",
+        "utilake.to.file": "PUBLIC_DISPATCHIS_20260731.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "626a048749e41d0a79c7393aadf09be11f1f0da4ac87cdd9c74d8682ad4bbd9f",
+        "utilake.to.time": "2026-07-31T23:55:00+10:00",
+        "utilake.total-rows": "9649545",
+        "utilake.version": "9"
+      },
+      "timestamp-ms": 1782828000026
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHREGIONSUM/metadata/snap-4861113981792582279-28-895eb9c5-ab0c-861b-b26d-d3ebf267a971.avro",
+      "parent-snapshot-id": 3838647701182249634,
+      "schema-id": 5,
+      "sequence-number": 28,
+      "snapshot-id": 4861113981792582279,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#DISPATCHREGIONSUM#FILE01#202607010000.zip",
+        "utilake.from.release": "2026-07",
+        "utilake.from.sha256": "da88e5c8da3cb9bb2d70da9305f222e2c21a8a153f8f31717c0538daffb9401b",
+        "utilake.from.time": "2026-07-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "REGIONSUM",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_ARCHIVE#DISPATCHREGIONSUM#FILE01#202607010000.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "da88e5c8da3cb9bb2d70da9305f222e2c21a8a153f8f31717c0538daffb9401b",
+        "utilake.to.time": "2026-08-01T00:00:00+10:00",
+        "utilake.total-rows": "9694185",
+        "utilake.version": "9"
+      },
+      "timestamp-ms": 1782828000027
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHREGIONSUM/metadata/snap-5549904757850686273-29-895eb9c5-ab0c-861b-b26d-d3ebf267a971.avro",
+      "parent-snapshot-id": 4861113981792582279,
+      "schema-id": 6,
+      "sequence-number": 29,
+      "snapshot-id": 5549904757850686273,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8929",
+        "utilake.from.file": "PUBLIC_DISPATCHIS_202608090305_0000000531687757.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "c0e4a6d931517edfa7e000ecbb964bd0688b79dcf83afca7b7f0cc622ad8b133",
+        "utilake.from.time": "2026-08-09T03:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "REGIONSUM",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "44645",
+        "utilake.to.file": "PUBLIC_DISPATCHIS_20260831.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "8969c146dd4e3778829fc34a03e6c08501d10817983cdbbbea03838566c7d97d",
+        "utilake.to.time": "2026-08-31T23:55:00+10:00",
+        "utilake.total-rows": "9738830",
+        "utilake.version": "9"
+      },
+      "timestamp-ms": 1785506400028
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHREGIONSUM/metadata/snap-8532402134720593557-30-895eb9c5-ab0c-861b-b26d-d3ebf267a971.avro",
+      "parent-snapshot-id": 5549904757850686273,
+      "schema-id": 5,
+      "sequence-number": 30,
+      "snapshot-id": 8532402134720593557,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#DISPATCHREGIONSUM#FILE01#202608010000.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "437746c80e9926070a1b00c9e9098fb9c8fff02e541e74d121aaac22292f4565",
+        "utilake.from.time": "2026-08-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "REGIONSUM",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_ARCHIVE#DISPATCHREGIONSUM#FILE01#202608010000.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "437746c80e9926070a1b00c9e9098fb9c8fff02e541e74d121aaac22292f4565",
+        "utilake.to.time": "2026-09-01T00:00:00+10:00",
+        "utilake.total-rows": "9783470",
+        "utilake.version": "9"
+      },
+      "timestamp-ms": 1785506400029
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHREGIONSUM/metadata/snap-1805273642089358215-31-895eb9c5-ab0c-861b-b26d-d3ebf267a971.avro",
+      "parent-snapshot-id": 8532402134720593557,
+      "schema-id": 6,
+      "sequence-number": 31,
+      "snapshot-id": 1805273642089358215,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8649",
+        "utilake.from.file": "PUBLIC_DISPATCHIS_202609091730_0000000536937403.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "732f3600552ba96990f5ed8bb3ae6f66173242f508ab7feedafd9aa863c6f4c6",
+        "utilake.from.time": "2026-09-09T17:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "REGIONSUM",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "43245",
+        "utilake.to.file": "PUBLIC_DISPATCHIS_20260930.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "65a4c40898ff634e8c514b1dfcada95d9506e34f952a5a5281aedee0bc9dd258",
+        "utilake.to.time": "2026-09-30T23:55:00+10:00",
+        "utilake.total-rows": "9826715",
+        "utilake.version": "9"
+      },
+      "timestamp-ms": 1788184800030
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHREGIONSUM/metadata/snap-3655983185947120693-32-895eb9c5-ab0c-861b-b26d-d3ebf267a971.avro",
+      "parent-snapshot-id": 1805273642089358215,
+      "schema-id": 5,
+      "sequence-number": 32,
+      "snapshot-id": 3655983185947120693,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#DISPATCHREGIONSUM#FILE01#202609010000.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "c9b384d926a508d5fcbdbd7c10bbb390833b2a5cdd589dfba7471098dff22795",
+        "utilake.from.time": "2026-09-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "REGIONSUM",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "43200",
         "utilake.to.file": "PUBLIC_ARCHIVE#DISPATCHREGIONSUM#FILE01#202609010000.zip",
         "utilake.to.release": "2026-09",
         "utilake.to.sha256": "c9b384d926a508d5fcbdbd7c10bbb390833b2a5cdd589dfba7471098dff22795",
         "utilake.to.time": "2026-10-01T00:00:00+10:00",
-        "utilake.total-rows": "9354430",
+        "utilake.total-rows": "9869915",
         "utilake.version": "9"
       },
-      "timestamp-ms": 1748700000007
+      "timestamp-ms": 1788184800031
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHREGIONSUM/metadata/snap-3280408563814364651-33-895eb9c5-ab0c-861b-b26d-d3ebf267a971.avro",
+      "parent-snapshot-id": 3655983185947120693,
+      "schema-id": 6,
+      "sequence-number": 33,
+      "snapshot-id": 3280408563814364651,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "6635",
+        "utilake.from.file": "PUBLIC_DISPATCHIS_202610071220_0000000541612934.zip",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "bc716d622acd23e65a3e571960f7b9fedfc2922ca3e0d8c6a8a8a19917bee465",
+        "utilake.from.time": "2026-10-07T12:20:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "REGIONSUM",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "33175",
+        "utilake.to.file": "PUBLIC_DISPATCHIS_202610220905_0000000544203628.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "3ab034a42eccf94c16978a7d4c396c55822c59b6ecd7f774d9a2d136f0121001",
+        "utilake.to.time": "2026-10-22T09:05:00+10:00",
+        "utilake.total-rows": "9903090",
+        "utilake.version": "9"
+      },
+      "timestamp-ms": 1790776800032
     }
   ],
   "sort-orders": [

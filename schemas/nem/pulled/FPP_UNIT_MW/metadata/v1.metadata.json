@@ -1,13 +1,13 @@
 {
-  "current-schema-id": 0,
-  "current-snapshot-id": 6956031886931787527,
+  "current-schema-id": 1,
+  "current-snapshot-id": 6288826481642971286,
   "default-sort-order-id": 0,
   "default-spec-id": 0,
   "format-version": 3,
-  "last-column-id": 9,
+  "last-column-id": 10,
   "last-partition-id": 999,
-  "last-sequence-number": 1,
-  "last-updated-ms": 1732975200000,
+  "last-sequence-number": 2,
+  "last-updated-ms": 1777557600001,
   "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_UNIT_MW",
   "metadata-log": [],
   "next-row-id": 0,
@@ -21,12 +21,12 @@
     "comment": "This report delivers the curated 4 second measurement MW data for each FPP unit",
     "utilake.declared": "false",
     "utilake.format": "3",
-    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(20)\",\"4\":\"NUMERIC(5)\",\"5\":\"NUMERIC(18,8)\",\"6\":\"NUMERIC(5)\",\"7\":\"NUMERIC(18,5)\",\"8\":\"NUMERIC(18,5)\",\"9\":\"VARCHAR(20)\"}",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(20)\",\"4\":\"NUMERIC(5)\",\"5\":\"NUMERIC(18,8)\",\"6\":\"NUMERIC(5)\",\"7\":\"NUMERIC(18,5)\",\"8\":\"NUMERIC(18,5)\",\"9\":\"VARCHAR(20)\",\"10\":\"TIMESTAMP(0)\"}",
     "utilake.table": "FPP_UNIT_MW"
   },
   "refs": {
     "main": {
-      "snapshot-id": 6956031886931787527,
+      "snapshot-id": 6288826481642971286,
       "type": "branch"
     }
   },
@@ -59,7 +59,7 @@
           "id": 4,
           "name": "VERSIONNO",
           "required": false,
-          "type": "long"
+          "type": "decimal(5, 0)"
         },
         {
           "doc": "Measured MW (4 second SCADA measurement in MW)",
@@ -73,7 +73,7 @@
           "id": 6,
           "name": "MW_QUALITY_FLAG",
           "required": false,
-          "type": "long"
+          "type": "decimal(5, 0)"
         },
         {
           "doc": "Scheduled MW (reference trajectory value from FPP calculation process)",
@@ -100,12 +100,93 @@
       "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Date and time of the trading interval (DD/MM/YYYY HH24:MI:SS) fixed to the UTC+10 time zone (NEM time)",
+          "id": 1,
+          "name": "INTERVAL_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Date and time of the SCADA data (DD/MM/YYYY HH24:MI:SS) fixed to the UTC+10 time zone (NEM time)",
+          "id": 2,
+          "name": "MEASUREMENT_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "FPP Unit ID (registered DUID/TNI)",
+          "id": 3,
+          "name": "FPP_UNITID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Version (FPP run number from the FPP database)",
+          "id": 4,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "doc": "Measured MW (4 second SCADA measurement in MW)",
+          "id": 5,
+          "name": "MEASURED_MW",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "MW Quality (4 second SCADA measurement Quality) Supported values are: 0 = Bad Quality 1 = Good Quality 2 = Suspect Quality -1 = Value not used as input in the FPP calculation (generally used to indicate when SCADA data was late arriving after the FPP calculation commenced)",
+          "id": 6,
+          "name": "MW_QUALITY_FLAG",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "doc": "Scheduled MW (reference trajectory value from FPP calculation process)",
+          "id": 7,
+          "name": "SCHEDULED_MW",
+          "required": false,
+          "type": "decimal(18, 5)"
+        },
+        {
+          "doc": "Unit Deviation (output of the FPP calculation process)",
+          "id": 8,
+          "name": "DEVIATION_MW",
+          "required": false,
+          "type": "decimal(18, 5)"
+        },
+        {
+          "doc": "Participant ID",
+          "id": 9,
+          "name": "PARTICIPANTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 10,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 1,
+      "type": "struct"
     }
   ],
   "snapshot-log": [
     {
       "snapshot-id": 6956031886931787527,
       "timestamp-ms": 1732975200000
+    },
+    {
+      "snapshot-id": 6288826481642971286,
+      "timestamp-ms": 1777557600001
     }
   ],
   "snapshots": [
@@ -118,23 +199,51 @@
       "snapshot-id": 6956031886931787527,
       "summary": {
         "operation": "append",
-        "utilake.files": "1",
+        "utilake.files": "475",
         "utilake.from.file": "PUBLIC_ARCHIVE#FPP_UNIT_MW#FILE01#202412010000.zip",
         "utilake.from.release": "2024-12",
         "utilake.from.sha256": "25794837d1142f76699834325b7c455b9bde9bef629bfe4776b0f78a28e39f61",
         "utilake.from.time": "2025-01-07T00:05:00+10:00",
-        "utilake.kinds": "[\"archive\"]",
+        "utilake.kinds": "[\"archive\",\"reports/archive\"]",
         "utilake.report-subtype": "UNIT_MW",
         "utilake.report-type": "FPP",
-        "utilake.rows": "9158400",
-        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_UNIT_MW#FILE01#202412010000.zip",
-        "utilake.to.release": "2024-12",
-        "utilake.to.sha256": "25794837d1142f76699834325b7c455b9bde9bef629bfe4776b0f78a28e39f61",
-        "utilake.to.time": "2025-01-08T00:00:00+10:00",
-        "utilake.total-rows": "9158400",
+        "utilake.rows": "2381518275",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_FPPMW_2_20260508.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "a1924147c7ba759d57e06c1b02523207aa7194e9d7242cc463bb9ae1cc381fc2",
+        "utilake.to.time": "2026-05-14T04:00:00+10:00",
+        "utilake.total-rows": "2381518275",
         "utilake.version": "1"
       },
       "timestamp-ms": 1732975200000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_UNIT_MW/metadata/snap-6288826481642971286-2-33c51bbc-ba10-8d7c-89ac-112800d03072.avro",
+      "parent-snapshot-id": 6956031886931787527,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 6288826481642971286,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "416",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_FPPMW_20260510.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "76c7241874988a15246af0f336c31f9699ddfc2a60a2644db2728f85f67819ae",
+        "utilake.from.time": "2026-05-14T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "UNIT_MW",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "2162473800",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_FPPMW_2_20261022070108_0000000544189503.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "9a9d8fddb3e3977f204e13d845c4a0e367b7f00d3e1e68c82147849433ee78b9",
+        "utilake.to.time": "2026-10-22T04:00:00+10:00",
+        "utilake.total-rows": "4543992075",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1777557600001
     }
   ],
   "sort-orders": [

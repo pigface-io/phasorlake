@@ -1,13 +1,13 @@
 {
-  "current-schema-id": 1,
-  "current-snapshot-id": 757031461320976139,
+  "current-schema-id": 0,
+  "current-snapshot-id": 5398227695202383707,
   "default-sort-order-id": 0,
   "default-spec-id": 0,
   "format-version": 3,
   "last-column-id": 24,
   "last-partition-id": 999,
-  "last-sequence-number": 2,
-  "last-updated-ms": 1722434400001,
+  "last-sequence-number": 23,
+  "last-updated-ms": 1782828000022,
   "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_DAYOFFER",
   "metadata-log": [],
   "next-row-id": 0,
@@ -38,7 +38,7 @@
   },
   "refs": {
     "main": {
-      "snapshot-id": 757031461320976139,
+      "snapshot-id": 5398227695202383707,
       "type": "branch"
     }
   },
@@ -407,6 +407,90 @@
     {
       "snapshot-id": 757031461320976139,
       "timestamp-ms": 1722434400001
+    },
+    {
+      "snapshot-id": 4867584598691698524,
+      "timestamp-ms": 1756648800002
+    },
+    {
+      "snapshot-id": 4415702872306471299,
+      "timestamp-ms": 1759240800003
+    },
+    {
+      "snapshot-id": 5823161700737992668,
+      "timestamp-ms": 1759240800004
+    },
+    {
+      "snapshot-id": 3352613137984964727,
+      "timestamp-ms": 1761919200005
+    },
+    {
+      "snapshot-id": 4637683875477358098,
+      "timestamp-ms": 1761919200006
+    },
+    {
+      "snapshot-id": 79741139166269300,
+      "timestamp-ms": 1764511200007
+    },
+    {
+      "snapshot-id": 5779066360247082612,
+      "timestamp-ms": 1764511200008
+    },
+    {
+      "snapshot-id": 6939264735862913677,
+      "timestamp-ms": 1767189600009
+    },
+    {
+      "snapshot-id": 5297148325746834544,
+      "timestamp-ms": 1767189600010
+    },
+    {
+      "snapshot-id": 8696812659899201454,
+      "timestamp-ms": 1769868000011
+    },
+    {
+      "snapshot-id": 5610149286866897879,
+      "timestamp-ms": 1769868000012
+    },
+    {
+      "snapshot-id": 5127292116255543860,
+      "timestamp-ms": 1772287200013
+    },
+    {
+      "snapshot-id": 8078747560146226038,
+      "timestamp-ms": 1772287200014
+    },
+    {
+      "snapshot-id": 2528693921204680723,
+      "timestamp-ms": 1774965600015
+    },
+    {
+      "snapshot-id": 2050165187498703331,
+      "timestamp-ms": 1774965600016
+    },
+    {
+      "snapshot-id": 1096631656828448705,
+      "timestamp-ms": 1777557600017
+    },
+    {
+      "snapshot-id": 6067938203693742063,
+      "timestamp-ms": 1777557600018
+    },
+    {
+      "snapshot-id": 2862222637204401322,
+      "timestamp-ms": 1780236000019
+    },
+    {
+      "snapshot-id": 1086612252608439171,
+      "timestamp-ms": 1780236000020
+    },
+    {
+      "snapshot-id": 6878538409333670690,
+      "timestamp-ms": 1782828000021
+    },
+    {
+      "snapshot-id": 5398227695202383707,
+      "timestamp-ms": 1782828000022
     }
   ],
   "snapshots": [
@@ -447,7 +531,7 @@
       "snapshot-id": 757031461320976139,
       "summary": {
         "operation": "append",
-        "utilake.files": "24",
+        "utilake.files": "14",
         "utilake.from.file": "PUBLIC_ARCHIVE#MNSP_DAYOFFER#FILE01#202408010000.zip",
         "utilake.from.release": "2024-08",
         "utilake.from.sha256": "d2a9b0d4ae68d52074c0d955f208b2aaa093a33fee23fa0b6e0a79e2fef82245",
@@ -455,15 +539,603 @@
         "utilake.kinds": "[\"archive\"]",
         "utilake.report-subtype": "MNSP_DAYOFFER",
         "utilake.report-type": "BIDS",
-        "utilake.rows": "297380",
+        "utilake.rows": "173760",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MNSP_DAYOFFER#FILE01#202509010000.zip",
+        "utilake.to.release": "2025-09",
+        "utilake.to.sha256": "c8631a0c4de604f0309f5a989c91b9aa04fb185048aa277202048b3c4b0a2815",
+        "utilake.to.time": "2025-09-30T00:00:00+10:00",
+        "utilake.total-rows": "241862",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1722434400001
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_DAYOFFER/metadata/snap-4867584598691698524-3-869d7c8d-4d94-861a-9598-7d1d23f8f2b4.avro",
+      "parent-snapshot-id": 757031461320976139,
+      "schema-id": 0,
+      "sequence-number": 3,
+      "snapshot-id": 4867584598691698524,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "30",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20250901.zip",
+        "utilake.from.release": "2025-09",
+        "utilake.from.sha256": "a1c5797b5a552ca7312c9b619df523d77d9c8ff0ca1a12b6ce4b982a8e34ccdc",
+        "utilake.from.time": "2025-09-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "MNSP_DAYOFFER",
+        "utilake.report-type": "BIDS",
+        "utilake.rows": "232",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20250901.zip",
+        "utilake.to.release": "2025-09",
+        "utilake.to.sha256": "a1c5797b5a552ca7312c9b619df523d77d9c8ff0ca1a12b6ce4b982a8e34ccdc",
+        "utilake.to.time": "2025-09-30T00:00:00+10:00",
+        "utilake.total-rows": "242094",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1756648800002
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_DAYOFFER/metadata/snap-4415702872306471299-4-869d7c8d-4d94-861a-9598-7d1d23f8f2b4.avro",
+      "parent-snapshot-id": 4867584598691698524,
+      "schema-id": 1,
+      "sequence-number": 4,
+      "snapshot-id": 4415702872306471299,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MNSP_DAYOFFER#FILE01#202510010000.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "247342c611731b81249e98c9f81b557b4bbe5015b7439eff39a77a8298d08114",
+        "utilake.from.time": "2025-10-01T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "MNSP_DAYOFFER",
+        "utilake.report-type": "BIDS",
+        "utilake.rows": "204",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MNSP_DAYOFFER#FILE01#202510010000.zip",
+        "utilake.to.release": "2025-10",
+        "utilake.to.sha256": "247342c611731b81249e98c9f81b557b4bbe5015b7439eff39a77a8298d08114",
+        "utilake.to.time": "2025-10-31T00:00:00+10:00",
+        "utilake.total-rows": "242298",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1759240800003
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_DAYOFFER/metadata/snap-5823161700737992668-5-869d7c8d-4d94-861a-9598-7d1d23f8f2b4.avro",
+      "parent-snapshot-id": 4415702872306471299,
+      "schema-id": 0,
+      "sequence-number": 5,
+      "snapshot-id": 5823161700737992668,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20251001.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "379b2b2a4dae8ff1ecd414147bd4a34a5592c4a5349d374cb77a3887cbb6304e",
+        "utilake.from.time": "2025-10-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "MNSP_DAYOFFER",
+        "utilake.report-type": "BIDS",
+        "utilake.rows": "204",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20251001.zip",
+        "utilake.to.release": "2025-10",
+        "utilake.to.sha256": "379b2b2a4dae8ff1ecd414147bd4a34a5592c4a5349d374cb77a3887cbb6304e",
+        "utilake.to.time": "2025-10-31T00:00:00+10:00",
+        "utilake.total-rows": "242502",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1759240800004
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_DAYOFFER/metadata/snap-3352613137984964727-6-869d7c8d-4d94-861a-9598-7d1d23f8f2b4.avro",
+      "parent-snapshot-id": 5823161700737992668,
+      "schema-id": 1,
+      "sequence-number": 6,
+      "snapshot-id": 3352613137984964727,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MNSP_DAYOFFER#FILE01#202511010000.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "bfe1c7251153e6655f9875443f47a831f0b0942273426e59255a7eb3297266bc",
+        "utilake.from.time": "2025-11-01T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "MNSP_DAYOFFER",
+        "utilake.report-type": "BIDS",
+        "utilake.rows": "188",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MNSP_DAYOFFER#FILE01#202511010000.zip",
+        "utilake.to.release": "2025-11",
+        "utilake.to.sha256": "bfe1c7251153e6655f9875443f47a831f0b0942273426e59255a7eb3297266bc",
+        "utilake.to.time": "2025-11-30T00:00:00+10:00",
+        "utilake.total-rows": "242690",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1761919200005
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_DAYOFFER/metadata/snap-4637683875477358098-7-869d7c8d-4d94-861a-9598-7d1d23f8f2b4.avro",
+      "parent-snapshot-id": 3352613137984964727,
+      "schema-id": 0,
+      "sequence-number": 7,
+      "snapshot-id": 4637683875477358098,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "30",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20251101.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "1884deb5ffe4eda270c6c14666b01a477971eeb5a543d7ce0050ccb2ce0180ec",
+        "utilake.from.time": "2025-11-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "MNSP_DAYOFFER",
+        "utilake.report-type": "BIDS",
+        "utilake.rows": "188",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20251101.zip",
+        "utilake.to.release": "2025-11",
+        "utilake.to.sha256": "1884deb5ffe4eda270c6c14666b01a477971eeb5a543d7ce0050ccb2ce0180ec",
+        "utilake.to.time": "2025-11-30T00:00:00+10:00",
+        "utilake.total-rows": "242878",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1761919200006
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_DAYOFFER/metadata/snap-79741139166269300-8-869d7c8d-4d94-861a-9598-7d1d23f8f2b4.avro",
+      "parent-snapshot-id": 4637683875477358098,
+      "schema-id": 1,
+      "sequence-number": 8,
+      "snapshot-id": 79741139166269300,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MNSP_DAYOFFER#FILE01#202512010000.zip",
+        "utilake.from.release": "2025-12",
+        "utilake.from.sha256": "390bf59782e11ee80bc7118d8d4d20b36420cc3cf60a0c66927f66563f00fdd8",
+        "utilake.from.time": "2025-12-01T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "MNSP_DAYOFFER",
+        "utilake.report-type": "BIDS",
+        "utilake.rows": "12446",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MNSP_DAYOFFER#FILE01#202512010000.zip",
+        "utilake.to.release": "2025-12",
+        "utilake.to.sha256": "390bf59782e11ee80bc7118d8d4d20b36420cc3cf60a0c66927f66563f00fdd8",
+        "utilake.to.time": "2025-12-31T00:00:00+10:00",
+        "utilake.total-rows": "255324",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1764511200007
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_DAYOFFER/metadata/snap-5779066360247082612-9-869d7c8d-4d94-861a-9598-7d1d23f8f2b4.avro",
+      "parent-snapshot-id": 79741139166269300,
+      "schema-id": 0,
+      "sequence-number": 9,
+      "snapshot-id": 5779066360247082612,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20251201.zip",
+        "utilake.from.release": "2025-12",
+        "utilake.from.sha256": "aeeee0540fa62c200d62ba6b13372c994d122e4ca3f4878ea27a257a6fb10b84",
+        "utilake.from.time": "2025-12-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "MNSP_DAYOFFER",
+        "utilake.report-type": "BIDS",
+        "utilake.rows": "12446",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20251201.zip",
+        "utilake.to.release": "2025-12",
+        "utilake.to.sha256": "aeeee0540fa62c200d62ba6b13372c994d122e4ca3f4878ea27a257a6fb10b84",
+        "utilake.to.time": "2025-12-31T00:00:00+10:00",
+        "utilake.total-rows": "267770",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1764511200008
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_DAYOFFER/metadata/snap-6939264735862913677-10-869d7c8d-4d94-861a-9598-7d1d23f8f2b4.avro",
+      "parent-snapshot-id": 5779066360247082612,
+      "schema-id": 1,
+      "sequence-number": 10,
+      "snapshot-id": 6939264735862913677,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MNSP_DAYOFFER#FILE01#202601010000.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "f5d9248178cba6677ccf3a1f93f2d290ffe2895cf1d9c1f05aa4e2909999ca5f",
+        "utilake.from.time": "2026-01-01T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "MNSP_DAYOFFER",
+        "utilake.report-type": "BIDS",
+        "utilake.rows": "17508",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MNSP_DAYOFFER#FILE01#202601010000.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "f5d9248178cba6677ccf3a1f93f2d290ffe2895cf1d9c1f05aa4e2909999ca5f",
+        "utilake.to.time": "2026-01-31T00:00:00+10:00",
+        "utilake.total-rows": "285278",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1767189600009
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_DAYOFFER/metadata/snap-5297148325746834544-11-869d7c8d-4d94-861a-9598-7d1d23f8f2b4.avro",
+      "parent-snapshot-id": 6939264735862913677,
+      "schema-id": 0,
+      "sequence-number": 11,
+      "snapshot-id": 5297148325746834544,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20260101.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "3bc4dcb3752551fccce0d1981a8df4eb867c49cad91fea337ec910f2131f6ba2",
+        "utilake.from.time": "2026-01-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "MNSP_DAYOFFER",
+        "utilake.report-type": "BIDS",
+        "utilake.rows": "17508",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20260101.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "3bc4dcb3752551fccce0d1981a8df4eb867c49cad91fea337ec910f2131f6ba2",
+        "utilake.to.time": "2026-01-31T00:00:00+10:00",
+        "utilake.total-rows": "302786",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1767189600010
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_DAYOFFER/metadata/snap-8696812659899201454-12-869d7c8d-4d94-861a-9598-7d1d23f8f2b4.avro",
+      "parent-snapshot-id": 5297148325746834544,
+      "schema-id": 1,
+      "sequence-number": 12,
+      "snapshot-id": 8696812659899201454,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MNSP_DAYOFFER#FILE01#202602010000.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "edd9e0c77010de1cba39361b64eca79f2a95b46cf303fd685038efd49320613d",
+        "utilake.from.time": "2026-02-01T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "MNSP_DAYOFFER",
+        "utilake.report-type": "BIDS",
+        "utilake.rows": "17134",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MNSP_DAYOFFER#FILE01#202602010000.zip",
+        "utilake.to.release": "2026-02",
+        "utilake.to.sha256": "edd9e0c77010de1cba39361b64eca79f2a95b46cf303fd685038efd49320613d",
+        "utilake.to.time": "2026-02-28T00:00:00+10:00",
+        "utilake.total-rows": "319920",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1769868000011
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_DAYOFFER/metadata/snap-5610149286866897879-13-869d7c8d-4d94-861a-9598-7d1d23f8f2b4.avro",
+      "parent-snapshot-id": 8696812659899201454,
+      "schema-id": 0,
+      "sequence-number": 13,
+      "snapshot-id": 5610149286866897879,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "28",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20260201.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "6806e9dd0e118b667957ddf1ebf6ccdb51c7705cbbacb110fe04446d0ea20a60",
+        "utilake.from.time": "2026-02-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "MNSP_DAYOFFER",
+        "utilake.report-type": "BIDS",
+        "utilake.rows": "17134",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20260201.zip",
+        "utilake.to.release": "2026-02",
+        "utilake.to.sha256": "6806e9dd0e118b667957ddf1ebf6ccdb51c7705cbbacb110fe04446d0ea20a60",
+        "utilake.to.time": "2026-02-28T00:00:00+10:00",
+        "utilake.total-rows": "337054",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1769868000012
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_DAYOFFER/metadata/snap-5127292116255543860-14-869d7c8d-4d94-861a-9598-7d1d23f8f2b4.avro",
+      "parent-snapshot-id": 5610149286866897879,
+      "schema-id": 1,
+      "sequence-number": 14,
+      "snapshot-id": 5127292116255543860,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MNSP_DAYOFFER#FILE01#202603010000.zip",
+        "utilake.from.release": "2026-03",
+        "utilake.from.sha256": "38ad535b98d94a7840bff0d1f78aa613da97451ec38f6dbab606e29f088fd843",
+        "utilake.from.time": "2026-03-01T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "MNSP_DAYOFFER",
+        "utilake.report-type": "BIDS",
+        "utilake.rows": "19420",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MNSP_DAYOFFER#FILE01#202603010000.zip",
+        "utilake.to.release": "2026-03",
+        "utilake.to.sha256": "38ad535b98d94a7840bff0d1f78aa613da97451ec38f6dbab606e29f088fd843",
+        "utilake.to.time": "2026-03-31T00:00:00+10:00",
+        "utilake.total-rows": "356474",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1772287200013
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_DAYOFFER/metadata/snap-8078747560146226038-15-869d7c8d-4d94-861a-9598-7d1d23f8f2b4.avro",
+      "parent-snapshot-id": 5127292116255543860,
+      "schema-id": 0,
+      "sequence-number": 15,
+      "snapshot-id": 8078747560146226038,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20260301.zip",
+        "utilake.from.release": "2026-03",
+        "utilake.from.sha256": "439ab008c3df1b95d13c5a92ee439e9fedebe8e0bedb06e8a999515accb47d3b",
+        "utilake.from.time": "2026-03-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "MNSP_DAYOFFER",
+        "utilake.report-type": "BIDS",
+        "utilake.rows": "19420",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20260301.zip",
+        "utilake.to.release": "2026-03",
+        "utilake.to.sha256": "439ab008c3df1b95d13c5a92ee439e9fedebe8e0bedb06e8a999515accb47d3b",
+        "utilake.to.time": "2026-03-31T00:00:00+10:00",
+        "utilake.total-rows": "375894",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1772287200014
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_DAYOFFER/metadata/snap-2528693921204680723-16-869d7c8d-4d94-861a-9598-7d1d23f8f2b4.avro",
+      "parent-snapshot-id": 8078747560146226038,
+      "schema-id": 1,
+      "sequence-number": 16,
+      "snapshot-id": 2528693921204680723,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MNSP_DAYOFFER#FILE01#202604010000.zip",
+        "utilake.from.release": "2026-04",
+        "utilake.from.sha256": "e1733f61ce7dcde1440d51fa5ce54995ea9ac0df73f142ec072817c3f7b4a518",
+        "utilake.from.time": "2026-04-01T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "MNSP_DAYOFFER",
+        "utilake.report-type": "BIDS",
+        "utilake.rows": "18836",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MNSP_DAYOFFER#FILE01#202604010000.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "e1733f61ce7dcde1440d51fa5ce54995ea9ac0df73f142ec072817c3f7b4a518",
+        "utilake.to.time": "2026-04-30T00:00:00+10:00",
+        "utilake.total-rows": "394730",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1774965600015
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_DAYOFFER/metadata/snap-2050165187498703331-17-869d7c8d-4d94-861a-9598-7d1d23f8f2b4.avro",
+      "parent-snapshot-id": 2528693921204680723,
+      "schema-id": 0,
+      "sequence-number": 17,
+      "snapshot-id": 2050165187498703331,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "30",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20260401.zip",
+        "utilake.from.release": "2026-04",
+        "utilake.from.sha256": "7b0f34c9ed6360b87fdaf2209e47c2e0eff5be69d15a65f44543ec090e54e94d",
+        "utilake.from.time": "2026-04-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "MNSP_DAYOFFER",
+        "utilake.report-type": "BIDS",
+        "utilake.rows": "18836",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20260401.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "7b0f34c9ed6360b87fdaf2209e47c2e0eff5be69d15a65f44543ec090e54e94d",
+        "utilake.to.time": "2026-04-30T00:00:00+10:00",
+        "utilake.total-rows": "413566",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1774965600016
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_DAYOFFER/metadata/snap-1096631656828448705-18-869d7c8d-4d94-861a-9598-7d1d23f8f2b4.avro",
+      "parent-snapshot-id": 2050165187498703331,
+      "schema-id": 1,
+      "sequence-number": 18,
+      "snapshot-id": 1096631656828448705,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MNSP_DAYOFFER#FILE01#202605010000.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "c9cb2c60d6982b9515c872c9f4e5d40f47c2f02dffaf9a36f770421a9870450a",
+        "utilake.from.time": "2026-05-01T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "MNSP_DAYOFFER",
+        "utilake.report-type": "BIDS",
+        "utilake.rows": "19340",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MNSP_DAYOFFER#FILE01#202605010000.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "c9cb2c60d6982b9515c872c9f4e5d40f47c2f02dffaf9a36f770421a9870450a",
+        "utilake.to.time": "2026-05-31T00:00:00+10:00",
+        "utilake.total-rows": "432906",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1777557600017
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_DAYOFFER/metadata/snap-6067938203693742063-19-869d7c8d-4d94-861a-9598-7d1d23f8f2b4.avro",
+      "parent-snapshot-id": 1096631656828448705,
+      "schema-id": 0,
+      "sequence-number": 19,
+      "snapshot-id": 6067938203693742063,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20260501.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "3e00a50d23bb8ce13458de9242d9ab4da29ab416b51b6ec4ab9e234ebc95958f",
+        "utilake.from.time": "2026-05-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "MNSP_DAYOFFER",
+        "utilake.report-type": "BIDS",
+        "utilake.rows": "19340",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20260501.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "3e00a50d23bb8ce13458de9242d9ab4da29ab416b51b6ec4ab9e234ebc95958f",
+        "utilake.to.time": "2026-05-31T00:00:00+10:00",
+        "utilake.total-rows": "452246",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1777557600018
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_DAYOFFER/metadata/snap-2862222637204401322-20-869d7c8d-4d94-861a-9598-7d1d23f8f2b4.avro",
+      "parent-snapshot-id": 6067938203693742063,
+      "schema-id": 1,
+      "sequence-number": 20,
+      "snapshot-id": 2862222637204401322,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MNSP_DAYOFFER#FILE01#202606010000.zip",
+        "utilake.from.release": "2026-06",
+        "utilake.from.sha256": "91c628a315bb015d85210837f7f4904460102640403522624d59d7eeec36b61a",
+        "utilake.from.time": "2026-06-01T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "MNSP_DAYOFFER",
+        "utilake.report-type": "BIDS",
+        "utilake.rows": "18526",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MNSP_DAYOFFER#FILE01#202606010000.zip",
+        "utilake.to.release": "2026-06",
+        "utilake.to.sha256": "91c628a315bb015d85210837f7f4904460102640403522624d59d7eeec36b61a",
+        "utilake.to.time": "2026-06-30T00:00:00+10:00",
+        "utilake.total-rows": "470772",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1780236000019
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_DAYOFFER/metadata/snap-1086612252608439171-21-869d7c8d-4d94-861a-9598-7d1d23f8f2b4.avro",
+      "parent-snapshot-id": 2862222637204401322,
+      "schema-id": 0,
+      "sequence-number": 21,
+      "snapshot-id": 1086612252608439171,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "30",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20260601.zip",
+        "utilake.from.release": "2026-06",
+        "utilake.from.sha256": "d7a2d657da8a95f168cff6c7de45a6c43f29ea1375621d3965add75f0ff5a266",
+        "utilake.from.time": "2026-06-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "MNSP_DAYOFFER",
+        "utilake.report-type": "BIDS",
+        "utilake.rows": "18526",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20260601.zip",
+        "utilake.to.release": "2026-06",
+        "utilake.to.sha256": "d7a2d657da8a95f168cff6c7de45a6c43f29ea1375621d3965add75f0ff5a266",
+        "utilake.to.time": "2026-06-30T00:00:00+10:00",
+        "utilake.total-rows": "489298",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1780236000020
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_DAYOFFER/metadata/snap-6878538409333670690-22-869d7c8d-4d94-861a-9598-7d1d23f8f2b4.avro",
+      "parent-snapshot-id": 1086612252608439171,
+      "schema-id": 1,
+      "sequence-number": 22,
+      "snapshot-id": 6878538409333670690,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MNSP_DAYOFFER#FILE01#202607010000.zip",
+        "utilake.from.release": "2026-07",
+        "utilake.from.sha256": "769923205d0e14164df902579659294846be0c0c7e5fb9918a8d85e13bdd0b10",
+        "utilake.from.time": "2026-07-01T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "MNSP_DAYOFFER",
+        "utilake.report-type": "BIDS",
+        "utilake.rows": "18",
         "utilake.to.file": "PUBLIC_ARCHIVE#MNSP_DAYOFFER#FILE01#202607010000.zip",
         "utilake.to.release": "2026-07",
         "utilake.to.sha256": "769923205d0e14164df902579659294846be0c0c7e5fb9918a8d85e13bdd0b10",
         "utilake.to.time": "2026-07-09T00:00:00+10:00",
-        "utilake.total-rows": "365482",
+        "utilake.total-rows": "489316",
         "utilake.version": "1"
       },
-      "timestamp-ms": 1722434400001
+      "timestamp-ms": 1782828000021
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_DAYOFFER/metadata/snap-5398227695202383707-23-869d7c8d-4d94-861a-9598-7d1d23f8f2b4.avro",
+      "parent-snapshot-id": 6878538409333670690,
+      "schema-id": 0,
+      "sequence-number": 23,
+      "snapshot-id": 5398227695202383707,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "9",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20260701.zip",
+        "utilake.from.release": "2026-07",
+        "utilake.from.sha256": "6b4c5046702039d94a69d14a4acb72200858d1ba93595fff47d2f04f816cd4c6",
+        "utilake.from.time": "2026-07-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "MNSP_DAYOFFER",
+        "utilake.report-type": "BIDS",
+        "utilake.rows": "18",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20260701.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "6b4c5046702039d94a69d14a4acb72200858d1ba93595fff47d2f04f816cd4c6",
+        "utilake.to.time": "2026-07-09T00:00:00+10:00",
+        "utilake.total-rows": "489334",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1782828000022
     }
   ],
   "sort-orders": [

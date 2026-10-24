@@ -70,7 +70,7 @@
           "id": 4,
           "name": "PERIODID",
           "required": false,
-          "type": "decimal(1, 0)"
+          "type": "decimal(2, 0)"
         },
         {
           "doc": "Flag to indicate if this result set was sourced from the pricing run (INTERVENTION=0) or the physical run (INTERVENTION=1). In the event that there is not intervention in the market, both pricing and physical runs correspond to INTERVENTION=0",
@@ -426,20 +426,20 @@
       "snapshot-id": 957959602401873367,
       "summary": {
         "operation": "append",
-        "utilake.files": "181",
+        "utilake.files": "19050",
         "utilake.from.file": "PUBLIC_DVD_PREDISPATCHINTERCONNECTR_SENS_D_200907010000.zip",
         "utilake.from.release": "2009-07",
         "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
         "utilake.from.time": "2009-07-01T00:30:00+10:00",
-        "utilake.kinds": "[\"dvd\"]",
+        "utilake.kinds": "[\"dvd\",\"reports/archive\",\"reports/current\"]",
         "utilake.report-subtype": "INTERCONNECTR_SENS",
         "utilake.report-type": "PREDISPATCH",
-        "utilake.rows": "1588896",
-        "utilake.to.file": "PUBLIC_DVD_PREDISPATCHINTERCONNECTR_SENS_D_202407010000.zip",
-        "utilake.to.release": "2024-07",
-        "utilake.to.sha256": "43f7c4b8e1c463feca3c9a4b45d6a9a4285a484d4e4574471fac52a2b2bcf16c",
-        "utilake.to.time": "2024-08-01T00:00:00+10:00",
-        "utilake.total-rows": "1588896",
+        "utilake.rows": "7949112",
+        "utilake.to.file": "PUBLIC_PREDISPATCH_SENSITIVITIES_20261021220759_0000000544124404.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "f414572f3fbb564da01ba327f2eee9e9e040e001f183750de97349fc2d4e4b6c",
+        "utilake.to.time": "2026-10-23T04:00:00+10:00",
+        "utilake.total-rows": "7949112",
         "utilake.version": "1"
       },
       "timestamp-ms": 1246370400000

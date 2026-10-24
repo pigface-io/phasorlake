@@ -1,6 +1,6 @@
 {
   "current-schema-id": 1,
-  "current-snapshot-id": 335626912101540611,
+  "current-snapshot-id": 4690964973877537782,
   "default-sort-order-id": 0,
   "default-spec-id": 0,
   "format-version": 3,
@@ -36,7 +36,7 @@
   },
   "refs": {
     "main": {
-      "snapshot-id": 335626912101540611,
+      "snapshot-id": 4690964973877537782,
       "type": "branch"
     }
   },
@@ -205,11 +205,11 @@
   ],
   "snapshot-log": [
     {
-      "snapshot-id": 8744728423827979292,
+      "snapshot-id": 7422953166156709349,
       "timestamp-ms": 1732975200000
     },
     {
-      "snapshot-id": 335626912101540611,
+      "snapshot-id": 4690964973877537782,
       "timestamp-ms": 1777557600001
     }
   ],
@@ -217,26 +217,26 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_HIST_PERFORMANCE/metadata/snap-8744728423827979292-1-6bb20129-d974-823e-b0f1-fad4f5ed010a.avro",
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_HIST_PERFORMANCE/metadata/snap-7422953166156709349-1-6bb20129-d974-823e-b0f1-fad4f5ed010a.avro",
       "schema-id": 0,
       "sequence-number": 1,
-      "snapshot-id": 8744728423827979292,
+      "snapshot-id": 7422953166156709349,
       "summary": {
         "operation": "append",
-        "utilake.files": "17",
-        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_HIST_PERFORMANCE#FILE01#202412010000.zip",
+        "utilake.files": "91",
+        "utilake.from.file": "PUBLIC_FPP_DCF_202412141802_0000000443338900.zip",
         "utilake.from.release": "2024-12",
-        "utilake.from.sha256": "8f6dd46d60cafa7361a59d193abb88e1fd847f9caf2c6741a0e25bb6a31b841b",
-        "utilake.from.time": "2024-12-29T00:05:00+10:00",
-        "utilake.kinds": "[\"archive\"]",
+        "utilake.from.sha256": "db45c77defd2a4f3fb6382697251068663a094bdadb7f5c66614c033ff31a958",
+        "utilake.from.time": "2024-12-22T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\",\"reports/current\"]",
         "utilake.report-subtype": "HIST_PERFORMANCE",
         "utilake.report-type": "FPP",
-        "utilake.rows": "282850",
-        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_HIST_PERFORMANCE#FILE01#202604010000.zip",
-        "utilake.to.release": "2026-04",
-        "utilake.to.sha256": "02770ed47a8624300eac8a7b72d3ab7f359c69bc01ce0ee6ceeb485f3fa74180",
-        "utilake.to.time": "2026-05-10T00:05:00+10:00",
-        "utilake.total-rows": "282850",
+        "utilake.rows": "315990",
+        "utilake.to.file": "PUBLIC_FPP_DCF_202605091806_0000000516903477.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "2cdf02c8eec27d7b5e454e1c184c0db4d41a480ca92dbca676aeadf4628e1650",
+        "utilake.to.time": "2026-05-17T00:05:00+10:00",
+        "utilake.total-rows": "315990",
         "utilake.version": "1"
       },
       "timestamp-ms": 1732975200000
@@ -244,27 +244,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_HIST_PERFORMANCE/metadata/snap-335626912101540611-2-6bb20129-d974-823e-b0f1-fad4f5ed010a.avro",
-      "parent-snapshot-id": 8744728423827979292,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_HIST_PERFORMANCE/metadata/snap-4690964973877537782-2-6bb20129-d974-823e-b0f1-fad4f5ed010a.avro",
+      "parent-snapshot-id": 7422953166156709349,
       "schema-id": 1,
       "sequence-number": 2,
-      "snapshot-id": 335626912101540611,
+      "snapshot-id": 4690964973877537782,
       "summary": {
         "operation": "append",
-        "utilake.files": "5",
-        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_HIST_PERFORMANCE#FILE01#202605010000.zip",
+        "utilake.files": "28",
+        "utilake.from.file": "PUBLIC_FPP_DCF_202605161806_0000000517969512.zip",
         "utilake.from.release": "2026-05",
-        "utilake.from.sha256": "6740d5b2fa20054b756a99b600903f6f329f7b391555ae1907fa95227fa2f668",
-        "utilake.from.time": "2024-12-29T00:05:00+10:00",
-        "utilake.kinds": "[\"archive\"]",
+        "utilake.from.sha256": "186dbb5789857efd870b0e4970d96e5d1e86e54d21fd63ba61b4f98ffac609a5",
+        "utilake.from.time": "2026-05-16T18:06:11+10:00",
+        "utilake.kinds": "[\"archive\",\"reports/current\"]",
         "utilake.report-subtype": "HIST_PERFORMANCE",
         "utilake.report-type": "FPP",
-        "utilake.rows": "194467",
-        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_HIST_PERFORMANCE#FILE01#202609010000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "4cca9375127c90ccb5f791337bdf4a45c902001c5ac14b6c4afce70884ae8f5a",
-        "utilake.to.time": "2026-10-11T00:05:00+10:00",
-        "utilake.total-rows": "477317",
+        "utilake.rows": "205592",
+        "utilake.to.file": "PUBLIC_FPP_DCF_202610171807_0000000543392671.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "33b7c48b208dcd8e085063422a3fcaaf9f2f31c035448b09fe74f0edc5bca772",
+        "utilake.to.time": "2026-10-17T18:07:37+10:00",
+        "utilake.total-rows": "521582",
         "utilake.version": "1"
       },
       "timestamp-ms": 1777557600001

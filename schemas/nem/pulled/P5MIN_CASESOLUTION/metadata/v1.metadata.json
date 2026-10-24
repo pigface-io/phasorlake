@@ -1,13 +1,13 @@
 {
-  "current-schema-id": 2,
-  "current-snapshot-id": 3972653930504303209,
+  "current-schema-id": 3,
+  "current-snapshot-id": 9136070060897749934,
   "default-sort-order-id": 0,
   "default-spec-id": 0,
   "format-version": 3,
   "last-column-id": 19,
   "last-partition-id": 999,
-  "last-sequence-number": 3,
-  "last-updated-ms": 1722434400002,
+  "last-sequence-number": 28,
+  "last-updated-ms": 1790776800027,
   "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_CASESOLUTION",
   "metadata-log": [],
   "next-row-id": 0,
@@ -38,7 +38,7 @@
   },
   "refs": {
     "main": {
-      "snapshot-id": 3972653930504303209,
+      "snapshot-id": 9136070060897749934,
       "type": "branch"
     }
   },
@@ -461,6 +461,148 @@
       ],
       "schema-id": 2,
       "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Unique Timestamp Identifier for this study",
+          "id": 1,
+          "name": "RUN_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Date and Time of first interval in study",
+          "id": 2,
+          "name": "STARTINTERVAL_DATETIME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Flag to indicate if this Predispatch case includes an intervention pricing run: 0 = case does not include an intervention pricing run, 1 = case does include an intervention pricing run. This field has a default value of 0 and is not nullable",
+          "id": 19,
+          "name": "INTERVENTION",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "The Objective function from the LP",
+          "id": 3,
+          "name": "TOTALOBJECTIVE",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Flag to indicate non-physical losses occurred in this study",
+          "id": 4,
+          "name": "NONPHYSICALLOSSES",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "Sum of Regional Energy balance violations",
+          "id": 5,
+          "name": "TOTALAREAGENVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of Interconnector violations of standing data limits",
+          "id": 6,
+          "name": "TOTALINTERCONNECTORVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of Generic Constraint violations",
+          "id": 7,
+          "name": "TOTALGENERICVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of Unit Ramp Rate violations",
+          "id": 8,
+          "name": "TOTALRAMPRATEVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of unit capacity violations",
+          "id": 9,
+          "name": "TOTALUNITMWCAPACITYVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of regional 5 min FCAS violations",
+          "id": 10,
+          "name": "TOTAL5MINVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of regional regulation FCAS violations",
+          "id": 11,
+          "name": "TOTALREGVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of regional 6 sec FCAS violations",
+          "id": 12,
+          "name": "TOTAL6SECVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of regional 60 sec FCAS violations",
+          "id": 13,
+          "name": "TOTAL60SECVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of unit energy constrained violations",
+          "id": 14,
+          "name": "TOTALENERGYCONSTRVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of unit offer violations",
+          "id": 15,
+          "name": "TOTALENERGYOFFERVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of unit FCAS profile offer violations",
+          "id": 16,
+          "name": "TOTALASPROFILEVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Sum of unit Fast start profile violations",
+          "id": 17,
+          "name": "TOTALFASTSTARTVIOLATION",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Last changed date and time of this record",
+          "id": 18,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1
+      ],
+      "schema-id": 3,
+      "type": "struct"
     }
   ],
   "snapshot-log": [
@@ -475,6 +617,106 @@
     {
       "snapshot-id": 3972653930504303209,
       "timestamp-ms": 1722434400002
+    },
+    {
+      "snapshot-id": 2465323511752205882,
+      "timestamp-ms": 1759240800003
+    },
+    {
+      "snapshot-id": 6711259721120675865,
+      "timestamp-ms": 1759240800004
+    },
+    {
+      "snapshot-id": 7495102938329355623,
+      "timestamp-ms": 1761919200005
+    },
+    {
+      "snapshot-id": 6538709361969903249,
+      "timestamp-ms": 1761919200006
+    },
+    {
+      "snapshot-id": 3416779689986267217,
+      "timestamp-ms": 1764511200007
+    },
+    {
+      "snapshot-id": 2938541540508218986,
+      "timestamp-ms": 1764511200008
+    },
+    {
+      "snapshot-id": 5605474347326039008,
+      "timestamp-ms": 1767189600009
+    },
+    {
+      "snapshot-id": 8744767303164962443,
+      "timestamp-ms": 1767189600010
+    },
+    {
+      "snapshot-id": 5426008156641657496,
+      "timestamp-ms": 1769868000011
+    },
+    {
+      "snapshot-id": 126962252829937322,
+      "timestamp-ms": 1769868000012
+    },
+    {
+      "snapshot-id": 86469557489334917,
+      "timestamp-ms": 1772287200013
+    },
+    {
+      "snapshot-id": 8297133611487249335,
+      "timestamp-ms": 1772287200014
+    },
+    {
+      "snapshot-id": 8196174333569752150,
+      "timestamp-ms": 1774965600015
+    },
+    {
+      "snapshot-id": 7065417261096661078,
+      "timestamp-ms": 1774965600016
+    },
+    {
+      "snapshot-id": 792820889407946733,
+      "timestamp-ms": 1777557600017
+    },
+    {
+      "snapshot-id": 2200683392416386460,
+      "timestamp-ms": 1777557600018
+    },
+    {
+      "snapshot-id": 7360222981041164004,
+      "timestamp-ms": 1780236000019
+    },
+    {
+      "snapshot-id": 8777788036850317209,
+      "timestamp-ms": 1780236000020
+    },
+    {
+      "snapshot-id": 5216888149113390217,
+      "timestamp-ms": 1782828000021
+    },
+    {
+      "snapshot-id": 238248989878592341,
+      "timestamp-ms": 1782828000022
+    },
+    {
+      "snapshot-id": 7745510713830146136,
+      "timestamp-ms": 1785506400023
+    },
+    {
+      "snapshot-id": 2316475248442983714,
+      "timestamp-ms": 1785506400024
+    },
+    {
+      "snapshot-id": 1715013368752376949,
+      "timestamp-ms": 1788184800025
+    },
+    {
+      "snapshot-id": 9138606568774175601,
+      "timestamp-ms": 1788184800026
+    },
+    {
+      "snapshot-id": 9136070060897749934,
+      "timestamp-ms": 1790776800027
     }
   ],
   "snapshots": [
@@ -543,7 +785,7 @@
       "snapshot-id": 3972653930504303209,
       "summary": {
         "operation": "append",
-        "utilake.files": "26",
+        "utilake.files": "14",
         "utilake.from.file": "PUBLIC_ARCHIVE#P5MIN_CASESOLUTION#FILE01#202408010000.zip",
         "utilake.from.release": "2024-08",
         "utilake.from.sha256": "c436afc0b14e984021c35d39425d60e45913014caf434f1021f41c37a2fbc939",
@@ -551,15 +793,715 @@
         "utilake.kinds": "[\"archive\"]",
         "utilake.report-subtype": "CASESOLUTION",
         "utilake.report-type": "P5MIN",
-        "utilake.rows": "227791",
+        "utilake.rows": "122671",
+        "utilake.to.file": "PUBLIC_ARCHIVE#P5MIN_CASESOLUTION#FILE01#202509010000.zip",
+        "utilake.to.release": "2025-09",
+        "utilake.to.sha256": "0f67b2c5fcfe535afb5f966c1a9807d0b0068adba7a852ad5f2f3ec9378db2a1",
+        "utilake.to.time": "2025-10-01T00:00:00+10:00",
+        "utilake.total-rows": "1711553",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1722434400002
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_CASESOLUTION/metadata/snap-2465323511752205882-4-dd0afe19-4fc9-83b8-a2ca-c7b044cd2e4a.avro",
+      "parent-snapshot-id": 3972653930504303209,
+      "schema-id": 3,
+      "sequence-number": 4,
+      "snapshot-id": 2465323511752205882,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "6911",
+        "utilake.from.file": "PUBLIC_P5MIN_20251008.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "48b67675f05695533829b57efb40e1aeeef9cbcfbd161f5ad5283f53b66c9811",
+        "utilake.from.time": "2025-10-08T00:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "CASESOLUTION",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "6911",
+        "utilake.to.file": "PUBLIC_P5MIN_20251031.zip",
+        "utilake.to.release": "2025-10",
+        "utilake.to.sha256": "e1a94f310c75c04644137fa77f3c741199fe4cce0a29c42a99edd3efcd168686",
+        "utilake.to.time": "2025-10-31T23:55:00+10:00",
+        "utilake.total-rows": "1718464",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1759240800003
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_CASESOLUTION/metadata/snap-6711259721120675865-5-dd0afe19-4fc9-83b8-a2ca-c7b044cd2e4a.avro",
+      "parent-snapshot-id": 2465323511752205882,
+      "schema-id": 2,
+      "sequence-number": 5,
+      "snapshot-id": 6711259721120675865,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#P5MIN_CASESOLUTION#FILE01#202510010000.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "4ea6ed99602db06451569c159c9f679972040a811eea836f2dece4da5a273781",
+        "utilake.from.time": "2025-10-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "CASESOLUTION",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "8928",
+        "utilake.to.file": "PUBLIC_ARCHIVE#P5MIN_CASESOLUTION#FILE01#202510010000.zip",
+        "utilake.to.release": "2025-10",
+        "utilake.to.sha256": "4ea6ed99602db06451569c159c9f679972040a811eea836f2dece4da5a273781",
+        "utilake.to.time": "2025-11-01T00:00:00+10:00",
+        "utilake.total-rows": "1727392",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1759240800004
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_CASESOLUTION/metadata/snap-7495102938329355623-6-dd0afe19-4fc9-83b8-a2ca-c7b044cd2e4a.avro",
+      "parent-snapshot-id": 6711259721120675865,
+      "schema-id": 3,
+      "sequence-number": 6,
+      "snapshot-id": 7495102938329355623,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8640",
+        "utilake.from.file": "PUBLIC_P5MIN_20251031.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "e1a94f310c75c04644137fa77f3c741199fe4cce0a29c42a99edd3efcd168686",
+        "utilake.from.time": "2025-11-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "CASESOLUTION",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "8640",
+        "utilake.to.file": "PUBLIC_P5MIN_20251130.zip",
+        "utilake.to.release": "2025-11",
+        "utilake.to.sha256": "c1ed4fb361416bce1ec19bdba047559c6d2356c11c5c76a9219710a2dd24a2d2",
+        "utilake.to.time": "2025-11-30T23:55:00+10:00",
+        "utilake.total-rows": "1736032",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1761919200005
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_CASESOLUTION/metadata/snap-6538709361969903249-7-dd0afe19-4fc9-83b8-a2ca-c7b044cd2e4a.avro",
+      "parent-snapshot-id": 7495102938329355623,
+      "schema-id": 2,
+      "sequence-number": 7,
+      "snapshot-id": 6538709361969903249,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#P5MIN_CASESOLUTION#FILE01#202511010000.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "f4d4df98777cf5a52e7594c8035cd91e88656fb9de36f26b908fb9983d3f219f",
+        "utilake.from.time": "2025-11-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "CASESOLUTION",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "8640",
+        "utilake.to.file": "PUBLIC_ARCHIVE#P5MIN_CASESOLUTION#FILE01#202511010000.zip",
+        "utilake.to.release": "2025-11",
+        "utilake.to.sha256": "f4d4df98777cf5a52e7594c8035cd91e88656fb9de36f26b908fb9983d3f219f",
+        "utilake.to.time": "2025-12-01T00:00:00+10:00",
+        "utilake.total-rows": "1744672",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1761919200006
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_CASESOLUTION/metadata/snap-3416779689986267217-8-dd0afe19-4fc9-83b8-a2ca-c7b044cd2e4a.avro",
+      "parent-snapshot-id": 6538709361969903249,
+      "schema-id": 3,
+      "sequence-number": 8,
+      "snapshot-id": 3416779689986267217,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8928",
+        "utilake.from.file": "PUBLIC_P5MIN_20251130.zip",
+        "utilake.from.release": "2025-12",
+        "utilake.from.sha256": "c1ed4fb361416bce1ec19bdba047559c6d2356c11c5c76a9219710a2dd24a2d2",
+        "utilake.from.time": "2025-12-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "CASESOLUTION",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "8928",
+        "utilake.to.file": "PUBLIC_P5MIN_20251231.zip",
+        "utilake.to.release": "2025-12",
+        "utilake.to.sha256": "c5f3b26357135c723dd0f7833f20733a8262c114eadfdcb16edb35e789609887",
+        "utilake.to.time": "2025-12-31T23:55:00+10:00",
+        "utilake.total-rows": "1753600",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1764511200007
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_CASESOLUTION/metadata/snap-2938541540508218986-9-dd0afe19-4fc9-83b8-a2ca-c7b044cd2e4a.avro",
+      "parent-snapshot-id": 3416779689986267217,
+      "schema-id": 2,
+      "sequence-number": 9,
+      "snapshot-id": 2938541540508218986,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#P5MIN_CASESOLUTION#FILE01#202512010000.zip",
+        "utilake.from.release": "2025-12",
+        "utilake.from.sha256": "9b5eb5e139f55e7bed0dde5c6b0cf57dc7c1bc1b1e3ebd6132cd8612dbc8f278",
+        "utilake.from.time": "2025-12-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "CASESOLUTION",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "8928",
+        "utilake.to.file": "PUBLIC_ARCHIVE#P5MIN_CASESOLUTION#FILE01#202512010000.zip",
+        "utilake.to.release": "2025-12",
+        "utilake.to.sha256": "9b5eb5e139f55e7bed0dde5c6b0cf57dc7c1bc1b1e3ebd6132cd8612dbc8f278",
+        "utilake.to.time": "2026-01-01T00:00:00+10:00",
+        "utilake.total-rows": "1762528",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1764511200008
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_CASESOLUTION/metadata/snap-5605474347326039008-10-dd0afe19-4fc9-83b8-a2ca-c7b044cd2e4a.avro",
+      "parent-snapshot-id": 2938541540508218986,
+      "schema-id": 3,
+      "sequence-number": 10,
+      "snapshot-id": 5605474347326039008,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8928",
+        "utilake.from.file": "PUBLIC_P5MIN_20251231.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "c5f3b26357135c723dd0f7833f20733a8262c114eadfdcb16edb35e789609887",
+        "utilake.from.time": "2026-01-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "CASESOLUTION",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "8928",
+        "utilake.to.file": "PUBLIC_P5MIN_20260131.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "6e3d8e42981f97ae354ada7d246eba58fac8d79e8e1620c2f82f1c91e603381e",
+        "utilake.to.time": "2026-01-31T23:55:00+10:00",
+        "utilake.total-rows": "1771456",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1767189600009
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_CASESOLUTION/metadata/snap-8744767303164962443-11-dd0afe19-4fc9-83b8-a2ca-c7b044cd2e4a.avro",
+      "parent-snapshot-id": 5605474347326039008,
+      "schema-id": 2,
+      "sequence-number": 11,
+      "snapshot-id": 8744767303164962443,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#P5MIN_CASESOLUTION#FILE01#202601010000.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "60f439d13dcabd7d0ed17229fb84656b4ca0facbb1a20a7a875b37cce258c332",
+        "utilake.from.time": "2026-01-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "CASESOLUTION",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "8928",
+        "utilake.to.file": "PUBLIC_ARCHIVE#P5MIN_CASESOLUTION#FILE01#202601010000.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "60f439d13dcabd7d0ed17229fb84656b4ca0facbb1a20a7a875b37cce258c332",
+        "utilake.to.time": "2026-02-01T00:00:00+10:00",
+        "utilake.total-rows": "1780384",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1767189600010
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_CASESOLUTION/metadata/snap-5426008156641657496-12-dd0afe19-4fc9-83b8-a2ca-c7b044cd2e4a.avro",
+      "parent-snapshot-id": 8744767303164962443,
+      "schema-id": 3,
+      "sequence-number": 12,
+      "snapshot-id": 5426008156641657496,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8064",
+        "utilake.from.file": "PUBLIC_P5MIN_20260131.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "6e3d8e42981f97ae354ada7d246eba58fac8d79e8e1620c2f82f1c91e603381e",
+        "utilake.from.time": "2026-02-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "CASESOLUTION",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "8064",
+        "utilake.to.file": "PUBLIC_P5MIN_20260228.zip",
+        "utilake.to.release": "2026-02",
+        "utilake.to.sha256": "0663009f32fe68c7bb7f7b3c6e7e2af007664d39547645bb5783f3e1eebaa874",
+        "utilake.to.time": "2026-02-28T23:55:00+10:00",
+        "utilake.total-rows": "1788448",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1769868000011
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_CASESOLUTION/metadata/snap-126962252829937322-13-dd0afe19-4fc9-83b8-a2ca-c7b044cd2e4a.avro",
+      "parent-snapshot-id": 5426008156641657496,
+      "schema-id": 2,
+      "sequence-number": 13,
+      "snapshot-id": 126962252829937322,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#P5MIN_CASESOLUTION#FILE01#202602010000.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "49f8362da0378f970978b207edeac6beda7ef7dad2bf04bacfc1e6b191c28612",
+        "utilake.from.time": "2026-02-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "CASESOLUTION",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "8064",
+        "utilake.to.file": "PUBLIC_ARCHIVE#P5MIN_CASESOLUTION#FILE01#202602010000.zip",
+        "utilake.to.release": "2026-02",
+        "utilake.to.sha256": "49f8362da0378f970978b207edeac6beda7ef7dad2bf04bacfc1e6b191c28612",
+        "utilake.to.time": "2026-03-01T00:00:00+10:00",
+        "utilake.total-rows": "1796512",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1769868000012
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_CASESOLUTION/metadata/snap-86469557489334917-14-dd0afe19-4fc9-83b8-a2ca-c7b044cd2e4a.avro",
+      "parent-snapshot-id": 126962252829937322,
+      "schema-id": 3,
+      "sequence-number": 14,
+      "snapshot-id": 86469557489334917,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8905",
+        "utilake.from.file": "PUBLIC_P5MIN_202603031345_20260303134116.zip",
+        "utilake.from.release": "2026-03",
+        "utilake.from.sha256": "661ab755e0ba138730c73810d32e0cdda8c5a41525179aff198737d80fa38ee2",
+        "utilake.from.time": "2026-03-03T13:45:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "CASESOLUTION",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "8905",
+        "utilake.to.file": "PUBLIC_P5MIN_20260331.zip",
+        "utilake.to.release": "2026-03",
+        "utilake.to.sha256": "fc9ef350c810651975b27b982bbeca9a4609f34567b9492710391e142b08e8cc",
+        "utilake.to.time": "2026-03-31T23:55:00+10:00",
+        "utilake.total-rows": "1805417",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1772287200013
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_CASESOLUTION/metadata/snap-8297133611487249335-15-dd0afe19-4fc9-83b8-a2ca-c7b044cd2e4a.avro",
+      "parent-snapshot-id": 86469557489334917,
+      "schema-id": 2,
+      "sequence-number": 15,
+      "snapshot-id": 8297133611487249335,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#P5MIN_CASESOLUTION#FILE01#202603010000.zip",
+        "utilake.from.release": "2026-03",
+        "utilake.from.sha256": "30314b0f11bf3352ba5908dee7aa838585752b66d2973d277645c4d5bbe6783f",
+        "utilake.from.time": "2026-03-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "CASESOLUTION",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "8928",
+        "utilake.to.file": "PUBLIC_ARCHIVE#P5MIN_CASESOLUTION#FILE01#202603010000.zip",
+        "utilake.to.release": "2026-03",
+        "utilake.to.sha256": "30314b0f11bf3352ba5908dee7aa838585752b66d2973d277645c4d5bbe6783f",
+        "utilake.to.time": "2026-04-01T00:00:00+10:00",
+        "utilake.total-rows": "1814345",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1772287200014
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_CASESOLUTION/metadata/snap-8196174333569752150-16-dd0afe19-4fc9-83b8-a2ca-c7b044cd2e4a.avro",
+      "parent-snapshot-id": 8297133611487249335,
+      "schema-id": 3,
+      "sequence-number": 16,
+      "snapshot-id": 8196174333569752150,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8640",
+        "utilake.from.file": "PUBLIC_P5MIN_20260331.zip",
+        "utilake.from.release": "2026-04",
+        "utilake.from.sha256": "fc9ef350c810651975b27b982bbeca9a4609f34567b9492710391e142b08e8cc",
+        "utilake.from.time": "2026-04-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "CASESOLUTION",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "8640",
+        "utilake.to.file": "PUBLIC_P5MIN_20260430.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "bb99b17f0cfed148a237985df8cff2bf9f6bc7e033e3a305b118c2e6786ad77f",
+        "utilake.to.time": "2026-04-30T23:55:00+10:00",
+        "utilake.total-rows": "1822985",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1774965600015
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_CASESOLUTION/metadata/snap-7065417261096661078-17-dd0afe19-4fc9-83b8-a2ca-c7b044cd2e4a.avro",
+      "parent-snapshot-id": 8196174333569752150,
+      "schema-id": 2,
+      "sequence-number": 17,
+      "snapshot-id": 7065417261096661078,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#P5MIN_CASESOLUTION#FILE01#202604010000.zip",
+        "utilake.from.release": "2026-04",
+        "utilake.from.sha256": "2ede3e6acb71b3e01abdd2c6043567cfdd23f5bfc41bf0c71a1224bd4f3fc611",
+        "utilake.from.time": "2026-04-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "CASESOLUTION",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "8640",
+        "utilake.to.file": "PUBLIC_ARCHIVE#P5MIN_CASESOLUTION#FILE01#202604010000.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "2ede3e6acb71b3e01abdd2c6043567cfdd23f5bfc41bf0c71a1224bd4f3fc611",
+        "utilake.to.time": "2026-05-01T00:00:00+10:00",
+        "utilake.total-rows": "1831625",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1774965600016
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_CASESOLUTION/metadata/snap-792820889407946733-18-dd0afe19-4fc9-83b8-a2ca-c7b044cd2e4a.avro",
+      "parent-snapshot-id": 7065417261096661078,
+      "schema-id": 3,
+      "sequence-number": 18,
+      "snapshot-id": 792820889407946733,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8928",
+        "utilake.from.file": "PUBLIC_P5MIN_20260430.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "bb99b17f0cfed148a237985df8cff2bf9f6bc7e033e3a305b118c2e6786ad77f",
+        "utilake.from.time": "2026-05-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "CASESOLUTION",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "8928",
+        "utilake.to.file": "PUBLIC_P5MIN_20260531.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "44a9474dac07db4c13ef60aa43afca7f97223126379dfe5b2e66a27e1a2f59b9",
+        "utilake.to.time": "2026-05-31T23:55:00+10:00",
+        "utilake.total-rows": "1840553",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1777557600017
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_CASESOLUTION/metadata/snap-2200683392416386460-19-dd0afe19-4fc9-83b8-a2ca-c7b044cd2e4a.avro",
+      "parent-snapshot-id": 792820889407946733,
+      "schema-id": 2,
+      "sequence-number": 19,
+      "snapshot-id": 2200683392416386460,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#P5MIN_CASESOLUTION#FILE01#202605010000.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "300eb5d88fd94ba4fbf5496a2bb3d1adf6fa7504bc960ae43959e72b72e1c020",
+        "utilake.from.time": "2026-05-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "CASESOLUTION",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "8928",
+        "utilake.to.file": "PUBLIC_ARCHIVE#P5MIN_CASESOLUTION#FILE01#202605010000.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "300eb5d88fd94ba4fbf5496a2bb3d1adf6fa7504bc960ae43959e72b72e1c020",
+        "utilake.to.time": "2026-06-01T00:00:00+10:00",
+        "utilake.total-rows": "1849481",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1777557600018
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_CASESOLUTION/metadata/snap-7360222981041164004-20-dd0afe19-4fc9-83b8-a2ca-c7b044cd2e4a.avro",
+      "parent-snapshot-id": 2200683392416386460,
+      "schema-id": 3,
+      "sequence-number": 20,
+      "snapshot-id": 7360222981041164004,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8640",
+        "utilake.from.file": "PUBLIC_P5MIN_20260531.zip",
+        "utilake.from.release": "2026-06",
+        "utilake.from.sha256": "44a9474dac07db4c13ef60aa43afca7f97223126379dfe5b2e66a27e1a2f59b9",
+        "utilake.from.time": "2026-06-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "CASESOLUTION",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "8640",
+        "utilake.to.file": "PUBLIC_P5MIN_20260630.zip",
+        "utilake.to.release": "2026-06",
+        "utilake.to.sha256": "d0f0a341b2397ad3b602ac254eee164e822aac0283cb9961c02ef9485f65a8a8",
+        "utilake.to.time": "2026-06-30T23:55:00+10:00",
+        "utilake.total-rows": "1858121",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1780236000019
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_CASESOLUTION/metadata/snap-8777788036850317209-21-dd0afe19-4fc9-83b8-a2ca-c7b044cd2e4a.avro",
+      "parent-snapshot-id": 7360222981041164004,
+      "schema-id": 2,
+      "sequence-number": 21,
+      "snapshot-id": 8777788036850317209,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#P5MIN_CASESOLUTION#FILE01#202606010000.zip",
+        "utilake.from.release": "2026-06",
+        "utilake.from.sha256": "91e79a7d8d6b7940606d3c8f4493a4f0efb0531edd80f44b5a0e00b50ab9352d",
+        "utilake.from.time": "2026-06-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "CASESOLUTION",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "8640",
+        "utilake.to.file": "PUBLIC_ARCHIVE#P5MIN_CASESOLUTION#FILE01#202606010000.zip",
+        "utilake.to.release": "2026-06",
+        "utilake.to.sha256": "91e79a7d8d6b7940606d3c8f4493a4f0efb0531edd80f44b5a0e00b50ab9352d",
+        "utilake.to.time": "2026-07-01T00:00:00+10:00",
+        "utilake.total-rows": "1866761",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1780236000020
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_CASESOLUTION/metadata/snap-5216888149113390217-22-dd0afe19-4fc9-83b8-a2ca-c7b044cd2e4a.avro",
+      "parent-snapshot-id": 8777788036850317209,
+      "schema-id": 3,
+      "sequence-number": 22,
+      "snapshot-id": 5216888149113390217,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8928",
+        "utilake.from.file": "PUBLIC_P5MIN_20260630.zip",
+        "utilake.from.release": "2026-07",
+        "utilake.from.sha256": "d0f0a341b2397ad3b602ac254eee164e822aac0283cb9961c02ef9485f65a8a8",
+        "utilake.from.time": "2026-07-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "CASESOLUTION",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "8928",
+        "utilake.to.file": "PUBLIC_P5MIN_20260731.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "9f536192651f1f01c804b8e697dae9d5ac41785ee19bae19150dac66d4d138cc",
+        "utilake.to.time": "2026-07-31T23:55:00+10:00",
+        "utilake.total-rows": "1875689",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1782828000021
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_CASESOLUTION/metadata/snap-238248989878592341-23-dd0afe19-4fc9-83b8-a2ca-c7b044cd2e4a.avro",
+      "parent-snapshot-id": 5216888149113390217,
+      "schema-id": 2,
+      "sequence-number": 23,
+      "snapshot-id": 238248989878592341,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#P5MIN_CASESOLUTION#FILE01#202607010000.zip",
+        "utilake.from.release": "2026-07",
+        "utilake.from.sha256": "68208a62ad8efeec103a1caadec780669e6e544b98a770ac67b8d78e158b80a2",
+        "utilake.from.time": "2026-07-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "CASESOLUTION",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "8928",
+        "utilake.to.file": "PUBLIC_ARCHIVE#P5MIN_CASESOLUTION#FILE01#202607010000.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "68208a62ad8efeec103a1caadec780669e6e544b98a770ac67b8d78e158b80a2",
+        "utilake.to.time": "2026-08-01T00:00:00+10:00",
+        "utilake.total-rows": "1884617",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1782828000022
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_CASESOLUTION/metadata/snap-7745510713830146136-24-dd0afe19-4fc9-83b8-a2ca-c7b044cd2e4a.avro",
+      "parent-snapshot-id": 238248989878592341,
+      "schema-id": 3,
+      "sequence-number": 24,
+      "snapshot-id": 7745510713830146136,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8928",
+        "utilake.from.file": "PUBLIC_P5MIN_20260731.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "9f536192651f1f01c804b8e697dae9d5ac41785ee19bae19150dac66d4d138cc",
+        "utilake.from.time": "2026-08-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "CASESOLUTION",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "8928",
+        "utilake.to.file": "PUBLIC_P5MIN_20260831.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "9bf6da4f3fed6e6ea3553cc2b3f9a22da75e3cc653c2ea2c523752a7d076209c",
+        "utilake.to.time": "2026-08-31T23:55:00+10:00",
+        "utilake.total-rows": "1893545",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1785506400023
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_CASESOLUTION/metadata/snap-2316475248442983714-25-dd0afe19-4fc9-83b8-a2ca-c7b044cd2e4a.avro",
+      "parent-snapshot-id": 7745510713830146136,
+      "schema-id": 2,
+      "sequence-number": 25,
+      "snapshot-id": 2316475248442983714,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#P5MIN_CASESOLUTION#FILE01#202608010000.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "092e8c7a6a5f1d2312455464d70c4796c1b36386a4b5632ae31f00e9ca08e1c6",
+        "utilake.from.time": "2026-08-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "CASESOLUTION",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "8928",
+        "utilake.to.file": "PUBLIC_ARCHIVE#P5MIN_CASESOLUTION#FILE01#202608010000.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "092e8c7a6a5f1d2312455464d70c4796c1b36386a4b5632ae31f00e9ca08e1c6",
+        "utilake.to.time": "2026-09-01T00:00:00+10:00",
+        "utilake.total-rows": "1902473",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1785506400024
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_CASESOLUTION/metadata/snap-1715013368752376949-26-dd0afe19-4fc9-83b8-a2ca-c7b044cd2e4a.avro",
+      "parent-snapshot-id": 2316475248442983714,
+      "schema-id": 3,
+      "sequence-number": 26,
+      "snapshot-id": 1715013368752376949,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8640",
+        "utilake.from.file": "PUBLIC_P5MIN_20260831.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "9bf6da4f3fed6e6ea3553cc2b3f9a22da75e3cc653c2ea2c523752a7d076209c",
+        "utilake.from.time": "2026-09-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "CASESOLUTION",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "8640",
+        "utilake.to.file": "PUBLIC_P5MIN_20260930.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "cde9d4b95e214da35beb3a69bec9fd3d005e85fc92603e7ee9562fca0f5e927e",
+        "utilake.to.time": "2026-09-30T23:55:00+10:00",
+        "utilake.total-rows": "1911113",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1788184800025
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_CASESOLUTION/metadata/snap-9138606568774175601-27-dd0afe19-4fc9-83b8-a2ca-c7b044cd2e4a.avro",
+      "parent-snapshot-id": 1715013368752376949,
+      "schema-id": 2,
+      "sequence-number": 27,
+      "snapshot-id": 9138606568774175601,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#P5MIN_CASESOLUTION#FILE01#202609010000.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "420d1e44346939d9a238966702f8f991511c06d592b773bbb2f9fbd02f93852b",
+        "utilake.from.time": "2026-09-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "CASESOLUTION",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "8640",
         "utilake.to.file": "PUBLIC_ARCHIVE#P5MIN_CASESOLUTION#FILE01#202609010000.zip",
         "utilake.to.release": "2026-09",
         "utilake.to.sha256": "420d1e44346939d9a238966702f8f991511c06d592b773bbb2f9fbd02f93852b",
         "utilake.to.time": "2026-10-01T00:00:00+10:00",
-        "utilake.total-rows": "1816673",
+        "utilake.total-rows": "1919753",
         "utilake.version": "2"
       },
-      "timestamp-ms": 1722434400002
+      "timestamp-ms": 1788184800026
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_CASESOLUTION/metadata/snap-9136070060897749934-28-dd0afe19-4fc9-83b8-a2ca-c7b044cd2e4a.avro",
+      "parent-snapshot-id": 9138606568774175601,
+      "schema-id": 3,
+      "sequence-number": 28,
+      "snapshot-id": 9136070060897749934,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "6365",
+        "utilake.from.file": "PUBLIC_P5MIN_20260930.zip",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "cde9d4b95e214da35beb3a69bec9fd3d005e85fc92603e7ee9562fca0f5e927e",
+        "utilake.from.time": "2026-10-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "CASESOLUTION",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "6365",
+        "utilake.to.file": "PUBLIC_P5MIN_202610212235_20261021223034.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "b550c8519a3866ead941c4b083a24e63ee95f3858b865e988c44ae411f060904",
+        "utilake.to.time": "2026-10-21T22:35:00+10:00",
+        "utilake.total-rows": "1926118",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1790776800027
     }
   ],
   "sort-orders": [

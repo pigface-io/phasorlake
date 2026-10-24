@@ -1,13 +1,13 @@
 {
   "current-schema-id": 3,
-  "current-snapshot-id": 7753622578685322785,
+  "current-snapshot-id": 3410575185422946331,
   "default-sort-order-id": 0,
   "default-spec-id": 0,
   "format-version": 3,
   "last-column-id": 32,
   "last-partition-id": 999,
-  "last-sequence-number": 5,
-  "last-updated-ms": 1761919200004,
+  "last-sequence-number": 29,
+  "last-updated-ms": 1788184800028,
   "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDPEROFFER_D",
   "metadata-log": [],
   "next-row-id": 0,
@@ -38,7 +38,7 @@
   },
   "refs": {
     "main": {
-      "snapshot-id": 7753622578685322785,
+      "snapshot-id": 3410575185422946331,
       "type": "branch"
     }
   },
@@ -719,6 +719,235 @@
           "type": "string"
         },
         {
+          "doc": "Market date for which the bid was submitted",
+          "id": 4,
+          "name": "BIDSETTLEMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Offer date and time",
+          "id": 5,
+          "name": "OFFERDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The trading interval period identifier (1-288)",
+          "id": 6,
+          "name": "PERIODID",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Version number of offer",
+          "id": 7,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Maximum availability for this BidType in this period",
+          "id": 8,
+          "name": "MAXAVAIL",
+          "required": false,
+          "type": "decimal(12, 6)"
+        },
+        {
+          "doc": "Fixed unit output MW (Energy Bids Only).  A value of zero means no fixed load so the unit is dispatched according to bid and market (rather than zero fixed load)",
+          "id": 9,
+          "name": "FIXEDLOAD",
+          "required": false,
+          "type": "decimal(12, 6)"
+        },
+        {
+          "doc": "MW/min for raise (Energy Bids Only)",
+          "id": 10,
+          "name": "ROCUP",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "MW/Min for lower (Energy Bids Only)",
+          "id": 11,
+          "name": "ROCDOWN",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Minimum Energy Output (MW) at which this ancillary service becomes available (AS Only)",
+          "id": 12,
+          "name": "ENABLEMENTMIN",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Maximum Energy Output (MW) at which this ancillary service can be supplied (AS Only)",
+          "id": 13,
+          "name": "ENABLEMENTMAX",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Minimum Energy Output (MW) at which the unit can provide the full availability (MAXAVAIL) for this ancillary service (AS Only)",
+          "id": 14,
+          "name": "LOWBREAKPOINT",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Maximum Energy Output (MW) at which the unit can provide the full availability (MAXAVAIL) for this ancillary service (AS Only)",
+          "id": 15,
+          "name": "HIGHBREAKPOINT",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Availability at price band 1",
+          "id": 16,
+          "name": "BANDAVAIL1",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 2",
+          "id": 17,
+          "name": "BANDAVAIL2",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 3",
+          "id": 18,
+          "name": "BANDAVAIL3",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 4",
+          "id": 19,
+          "name": "BANDAVAIL4",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 5",
+          "id": 20,
+          "name": "BANDAVAIL5",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 6",
+          "id": 21,
+          "name": "BANDAVAIL6",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 7",
+          "id": 22,
+          "name": "BANDAVAIL7",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 8",
+          "id": 23,
+          "name": "BANDAVAIL8",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 9",
+          "id": 24,
+          "name": "BANDAVAIL9",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Availability at price band 10",
+          "id": 25,
+          "name": "BANDAVAIL10",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 26,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Allows for future use for energy bids, being the physical plant capability including any capability potentially available within 24 hours",
+          "id": 27,
+          "name": "PASAAVAILABILITY",
+          "required": false,
+          "type": "decimal(12, 0)"
+        },
+        {
+          "doc": "Date and Time of the dispatch interval to which the offer applied",
+          "id": 28,
+          "name": "INTERVAL_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The power flow direction to which this offer applies: GEN, LOAD or BIDIRECTIONAL",
+          "id": 30,
+          "name": "DIRECTION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The Energy limit applying at the end of this dispatch interval in MWh. For GEN this is a lower energy limit. For LOAD this is an upper energy limit",
+          "id": 31,
+          "name": "ENERGYLIMIT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "The advance notice (in hours) that a Scheduled Resource requires to achieve the PASA Availability MW for this trading interval.",
+          "id": 32,
+          "name": "RECALL_PERIOD",
+          "required": false,
+          "type": "decimal(8, 3)"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        28
+      ],
+      "schema-id": 3,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Market date for which the bid applied",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Dispatchable Unit identifier",
+          "id": 2,
+          "name": "DUID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Bid Type Identifier",
+          "id": 3,
+          "name": "BIDTYPE",
+          "required": true,
+          "type": "string"
+        },
+        {
           "doc": "The power flow direction to which this offer applies: GEN, LOAD or BIDIRECTIONAL",
           "id": 30,
           "name": "DIRECTION",
@@ -928,7 +1157,7 @@
         3,
         28
       ],
-      "schema-id": 3,
+      "schema-id": 4,
       "type": "struct"
     }
   ],
@@ -950,8 +1179,104 @@
       "timestamp-ms": 1751292000003
     },
     {
-      "snapshot-id": 7753622578685322785,
-      "timestamp-ms": 1761919200004
+      "snapshot-id": 9204429294146600021,
+      "timestamp-ms": 1756648800004
+    },
+    {
+      "snapshot-id": 2177094758236701665,
+      "timestamp-ms": 1759240800005
+    },
+    {
+      "snapshot-id": 4734831923242185977,
+      "timestamp-ms": 1759240800006
+    },
+    {
+      "snapshot-id": 5427715423517249037,
+      "timestamp-ms": 1761919200007
+    },
+    {
+      "snapshot-id": 7687980498799378672,
+      "timestamp-ms": 1761919200008
+    },
+    {
+      "snapshot-id": 4932771055435185018,
+      "timestamp-ms": 1764511200009
+    },
+    {
+      "snapshot-id": 7678715336937615264,
+      "timestamp-ms": 1764511200010
+    },
+    {
+      "snapshot-id": 4393954113497773163,
+      "timestamp-ms": 1767189600011
+    },
+    {
+      "snapshot-id": 5165025320543929172,
+      "timestamp-ms": 1767189600012
+    },
+    {
+      "snapshot-id": 2375942024597893773,
+      "timestamp-ms": 1769868000013
+    },
+    {
+      "snapshot-id": 811381391753074372,
+      "timestamp-ms": 1769868000014
+    },
+    {
+      "snapshot-id": 3357891976289634742,
+      "timestamp-ms": 1772287200015
+    },
+    {
+      "snapshot-id": 1866643126237668835,
+      "timestamp-ms": 1772287200016
+    },
+    {
+      "snapshot-id": 5590235096721600270,
+      "timestamp-ms": 1774965600017
+    },
+    {
+      "snapshot-id": 1546045303106737121,
+      "timestamp-ms": 1774965600018
+    },
+    {
+      "snapshot-id": 5737651138325111990,
+      "timestamp-ms": 1777557600019
+    },
+    {
+      "snapshot-id": 2430310296824046986,
+      "timestamp-ms": 1777557600020
+    },
+    {
+      "snapshot-id": 2607793018711030226,
+      "timestamp-ms": 1780236000021
+    },
+    {
+      "snapshot-id": 2519168882431591464,
+      "timestamp-ms": 1780236000022
+    },
+    {
+      "snapshot-id": 79631271371274851,
+      "timestamp-ms": 1782828000023
+    },
+    {
+      "snapshot-id": 5382565296693051655,
+      "timestamp-ms": 1782828000024
+    },
+    {
+      "snapshot-id": 8254576647013935046,
+      "timestamp-ms": 1785506400025
+    },
+    {
+      "snapshot-id": 6369965505812316542,
+      "timestamp-ms": 1785506400026
+    },
+    {
+      "snapshot-id": 3689158156264344654,
+      "timestamp-ms": 1788184800027
+    },
+    {
+      "snapshot-id": 3410575185422946331,
+      "timestamp-ms": 1788184800028
     }
   ],
   "snapshots": [
@@ -1048,7 +1373,7 @@
       "snapshot-id": 5640622668882955666,
       "summary": {
         "operation": "append",
-        "utilake.files": "4",
+        "utilake.files": "3",
         "utilake.from.file": "PUBLIC_ARCHIVE#BIDPEROFFER_D#FILE01#202507010000.zip",
         "utilake.from.release": "2025-07",
         "utilake.from.sha256": "9af625df4e660bad6eb672abb397d0ad49ce29bc0ce6d5eef0197bedb42399fd",
@@ -1056,12 +1381,12 @@
         "utilake.kinds": "[\"archive\"]",
         "utilake.report-subtype": "BIDPEROFFER_D",
         "utilake.report-type": "BID",
-        "utilake.rows": "68319024",
-        "utilake.to.file": "PUBLIC_ARCHIVE#BIDPEROFFER_D#FILE01#202510010000.zip",
-        "utilake.to.release": "2025-10",
-        "utilake.to.sha256": "574a02ca4e0e1c7c3c03f43526ab9c332f1ca37116892fb9deb4dd3165fc1093",
-        "utilake.to.time": "2025-10-31T00:00:00+10:00",
-        "utilake.total-rows": "1458056058",
+        "utilake.rows": "50890032",
+        "utilake.to.file": "PUBLIC_ARCHIVE#BIDPEROFFER_D#FILE01#202509010000.zip",
+        "utilake.to.release": "2025-09",
+        "utilake.to.sha256": "67d5fe83478b448c2a8a2352ea68fd565306a1dfbc572c3c2d49b3dfbe85fae3",
+        "utilake.to.time": "2025-09-30T00:00:00+10:00",
+        "utilake.total-rows": "1440627066",
         "utilake.version": "4"
       },
       "timestamp-ms": 1751292000003
@@ -1069,14 +1394,98 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDPEROFFER_D/metadata/snap-7753622578685322785-5-08e2bd80-f05a-8abc-877d-80a3b7d03cd6.avro",
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDPEROFFER_D/metadata/snap-9204429294146600021-5-08e2bd80-f05a-8abc-877d-80a3b7d03cd6.avro",
       "parent-snapshot-id": 5640622668882955666,
       "schema-id": 3,
       "sequence-number": 5,
-      "snapshot-id": 7753622578685322785,
+      "snapshot-id": 9204429294146600021,
       "summary": {
         "operation": "append",
-        "utilake.files": "11",
+        "utilake.files": "29",
+        "utilake.from.file": "PUBLIC_BIDMOVE_COMPLETE_20250902.zip",
+        "utilake.from.release": "2025-09",
+        "utilake.from.sha256": "2d8835273f597fb47fb9eb0f74450cd8560e33878727f0359d242fe03946dd70",
+        "utilake.from.time": "2025-09-02T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "BIDPEROFFER_D",
+        "utilake.report-type": "BID",
+        "utilake.rows": "16250736",
+        "utilake.to.file": "PUBLIC_BIDMOVE_COMPLETE_20250902.zip",
+        "utilake.to.release": "2025-09",
+        "utilake.to.sha256": "2d8835273f597fb47fb9eb0f74450cd8560e33878727f0359d242fe03946dd70",
+        "utilake.to.time": "2025-09-30T00:00:00+10:00",
+        "utilake.total-rows": "1456877802",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1756648800004
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDPEROFFER_D/metadata/snap-2177094758236701665-6-08e2bd80-f05a-8abc-877d-80a3b7d03cd6.avro",
+      "parent-snapshot-id": 9204429294146600021,
+      "schema-id": 2,
+      "sequence-number": 6,
+      "snapshot-id": 2177094758236701665,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#BIDPEROFFER_D#FILE01#202510010000.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "574a02ca4e0e1c7c3c03f43526ab9c332f1ca37116892fb9deb4dd3165fc1093",
+        "utilake.from.time": "2025-10-01T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "BIDPEROFFER_D",
+        "utilake.report-type": "BID",
+        "utilake.rows": "17428992",
+        "utilake.to.file": "PUBLIC_ARCHIVE#BIDPEROFFER_D#FILE01#202510010000.zip",
+        "utilake.to.release": "2025-10",
+        "utilake.to.sha256": "574a02ca4e0e1c7c3c03f43526ab9c332f1ca37116892fb9deb4dd3165fc1093",
+        "utilake.to.time": "2025-10-31T00:00:00+10:00",
+        "utilake.total-rows": "1474306794",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1759240800005
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDPEROFFER_D/metadata/snap-4734831923242185977-7-08e2bd80-f05a-8abc-877d-80a3b7d03cd6.avro",
+      "parent-snapshot-id": 2177094758236701665,
+      "schema-id": 3,
+      "sequence-number": 7,
+      "snapshot-id": 4734831923242185977,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_BIDMOVE_COMPLETE_20250902.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "2d8835273f597fb47fb9eb0f74450cd8560e33878727f0359d242fe03946dd70",
+        "utilake.from.time": "2025-10-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "BIDPEROFFER_D",
+        "utilake.report-type": "BID",
+        "utilake.rows": "17428992",
+        "utilake.to.file": "PUBLIC_BIDMOVE_COMPLETE_20251002.zip",
+        "utilake.to.release": "2025-10",
+        "utilake.to.sha256": "d0e8dd469f9a1693d23a4cf6f9449d294289e08601411339494752ba4617f2b3",
+        "utilake.to.time": "2025-10-31T00:00:00+10:00",
+        "utilake.total-rows": "1491735786",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1759240800006
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDPEROFFER_D/metadata/snap-5427715423517249037-8-08e2bd80-f05a-8abc-877d-80a3b7d03cd6.avro",
+      "parent-snapshot-id": 4734831923242185977,
+      "schema-id": 4,
+      "sequence-number": 8,
+      "snapshot-id": 5427715423517249037,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
         "utilake.from.file": "PUBLIC_ARCHIVE#BIDPEROFFER_D#FILE01#202511010000.zip",
         "utilake.from.release": "2025-11",
         "utilake.from.sha256": "7f430f1b51181512683a6d059c57ca6baae4275f2b1199d38529e741e94e3f43",
@@ -1084,15 +1493,603 @@
         "utilake.kinds": "[\"archive\"]",
         "utilake.report-subtype": "BIDPEROFFER_D",
         "utilake.report-type": "BID",
-        "utilake.rows": "207135168",
+        "utilake.rows": "17323632",
+        "utilake.to.file": "PUBLIC_ARCHIVE#BIDPEROFFER_D#FILE01#202511010000.zip",
+        "utilake.to.release": "2025-11",
+        "utilake.to.sha256": "7f430f1b51181512683a6d059c57ca6baae4275f2b1199d38529e741e94e3f43",
+        "utilake.to.time": "2025-11-30T00:00:00+10:00",
+        "utilake.total-rows": "1509059418",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1761919200007
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDPEROFFER_D/metadata/snap-7687980498799378672-9-08e2bd80-f05a-8abc-877d-80a3b7d03cd6.avro",
+      "parent-snapshot-id": 5427715423517249037,
+      "schema-id": 3,
+      "sequence-number": 9,
+      "snapshot-id": 7687980498799378672,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "30",
+        "utilake.from.file": "PUBLIC_BIDMOVE_COMPLETE_20251002.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "d0e8dd469f9a1693d23a4cf6f9449d294289e08601411339494752ba4617f2b3",
+        "utilake.from.time": "2025-11-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "BIDPEROFFER_D",
+        "utilake.report-type": "BID",
+        "utilake.rows": "17323632",
+        "utilake.to.file": "PUBLIC_BIDMOVE_COMPLETE_20251102.zip",
+        "utilake.to.release": "2025-11",
+        "utilake.to.sha256": "da756d115db1400e60b262c51a8cfcfec5e620345c0aa22bc884654811e6f005",
+        "utilake.to.time": "2025-11-30T00:00:00+10:00",
+        "utilake.total-rows": "1526383050",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1761919200008
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDPEROFFER_D/metadata/snap-4932771055435185018-10-08e2bd80-f05a-8abc-877d-80a3b7d03cd6.avro",
+      "parent-snapshot-id": 7687980498799378672,
+      "schema-id": 4,
+      "sequence-number": 10,
+      "snapshot-id": 4932771055435185018,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#BIDPEROFFER_D#FILE01#202512010000.zip",
+        "utilake.from.release": "2025-12",
+        "utilake.from.sha256": "3f6c56862723c14302e03a2da3834224f03412a326c34136c85f84237624c2d0",
+        "utilake.from.time": "2025-12-01T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "BIDPEROFFER_D",
+        "utilake.report-type": "BID",
+        "utilake.rows": "18479472",
+        "utilake.to.file": "PUBLIC_ARCHIVE#BIDPEROFFER_D#FILE01#202512010000.zip",
+        "utilake.to.release": "2025-12",
+        "utilake.to.sha256": "3f6c56862723c14302e03a2da3834224f03412a326c34136c85f84237624c2d0",
+        "utilake.to.time": "2025-12-31T00:00:00+10:00",
+        "utilake.total-rows": "1544862522",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1764511200009
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDPEROFFER_D/metadata/snap-7678715336937615264-11-08e2bd80-f05a-8abc-877d-80a3b7d03cd6.avro",
+      "parent-snapshot-id": 4932771055435185018,
+      "schema-id": 3,
+      "sequence-number": 11,
+      "snapshot-id": 7678715336937615264,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_BIDMOVE_COMPLETE_20251102.zip",
+        "utilake.from.release": "2025-12",
+        "utilake.from.sha256": "da756d115db1400e60b262c51a8cfcfec5e620345c0aa22bc884654811e6f005",
+        "utilake.from.time": "2025-12-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "BIDPEROFFER_D",
+        "utilake.report-type": "BID",
+        "utilake.rows": "18479472",
+        "utilake.to.file": "PUBLIC_BIDMOVE_COMPLETE_20251202.zip",
+        "utilake.to.release": "2025-12",
+        "utilake.to.sha256": "4b1a81cbd33026a8f6baa75fc7b9d325a6d040ee411821db186df734baf16147",
+        "utilake.to.time": "2025-12-31T00:00:00+10:00",
+        "utilake.total-rows": "1563341994",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1764511200010
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDPEROFFER_D/metadata/snap-4393954113497773163-12-08e2bd80-f05a-8abc-877d-80a3b7d03cd6.avro",
+      "parent-snapshot-id": 7678715336937615264,
+      "schema-id": 4,
+      "sequence-number": 12,
+      "snapshot-id": 4393954113497773163,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#BIDPEROFFER_D#FILE01#202601010000.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "ab7cdd0d36cfe4bc541669cff24f6c494fabdee34f6e8eb3d2a50e23b11cf1f5",
+        "utilake.from.time": "2026-01-01T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "BIDPEROFFER_D",
+        "utilake.report-type": "BID",
+        "utilake.rows": "18882384",
+        "utilake.to.file": "PUBLIC_ARCHIVE#BIDPEROFFER_D#FILE01#202601010000.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "ab7cdd0d36cfe4bc541669cff24f6c494fabdee34f6e8eb3d2a50e23b11cf1f5",
+        "utilake.to.time": "2026-01-31T00:00:00+10:00",
+        "utilake.total-rows": "1582224378",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1767189600011
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDPEROFFER_D/metadata/snap-5165025320543929172-13-08e2bd80-f05a-8abc-877d-80a3b7d03cd6.avro",
+      "parent-snapshot-id": 4393954113497773163,
+      "schema-id": 3,
+      "sequence-number": 13,
+      "snapshot-id": 5165025320543929172,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_BIDMOVE_COMPLETE_20251202.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "4b1a81cbd33026a8f6baa75fc7b9d325a6d040ee411821db186df734baf16147",
+        "utilake.from.time": "2026-01-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "BIDPEROFFER_D",
+        "utilake.report-type": "BID",
+        "utilake.rows": "18882384",
+        "utilake.to.file": "PUBLIC_BIDMOVE_COMPLETE_20260102.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "59439c922acaa4d27988b2a31748d229028ddcf144236cb40cc3a5f5f55b1b8c",
+        "utilake.to.time": "2026-01-31T00:00:00+10:00",
+        "utilake.total-rows": "1601106762",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1767189600012
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDPEROFFER_D/metadata/snap-2375942024597893773-14-08e2bd80-f05a-8abc-877d-80a3b7d03cd6.avro",
+      "parent-snapshot-id": 5165025320543929172,
+      "schema-id": 4,
+      "sequence-number": 14,
+      "snapshot-id": 2375942024597893773,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#BIDPEROFFER_D#FILE01#202602010000.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "39970ff169774f89cba15fe542908c5aeb6e7d1f7e88d076ec9e13fa57d8a35c",
+        "utilake.from.time": "2026-02-01T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "BIDPEROFFER_D",
+        "utilake.report-type": "BID",
+        "utilake.rows": "17174736",
+        "utilake.to.file": "PUBLIC_ARCHIVE#BIDPEROFFER_D#FILE01#202602010000.zip",
+        "utilake.to.release": "2026-02",
+        "utilake.to.sha256": "39970ff169774f89cba15fe542908c5aeb6e7d1f7e88d076ec9e13fa57d8a35c",
+        "utilake.to.time": "2026-02-28T00:00:00+10:00",
+        "utilake.total-rows": "1618281498",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1769868000013
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDPEROFFER_D/metadata/snap-811381391753074372-15-08e2bd80-f05a-8abc-877d-80a3b7d03cd6.avro",
+      "parent-snapshot-id": 2375942024597893773,
+      "schema-id": 3,
+      "sequence-number": 15,
+      "snapshot-id": 811381391753074372,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "28",
+        "utilake.from.file": "PUBLIC_BIDMOVE_COMPLETE_20260102.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "59439c922acaa4d27988b2a31748d229028ddcf144236cb40cc3a5f5f55b1b8c",
+        "utilake.from.time": "2026-02-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "BIDPEROFFER_D",
+        "utilake.report-type": "BID",
+        "utilake.rows": "17174736",
+        "utilake.to.file": "PUBLIC_BIDMOVE_COMPLETE_20260202.zip",
+        "utilake.to.release": "2026-02",
+        "utilake.to.sha256": "3f2233da7e9d9e7e369b3ff15440cf6ca22bc9f6febeb8a522b6e6131a926d16",
+        "utilake.to.time": "2026-02-28T00:00:00+10:00",
+        "utilake.total-rows": "1635456234",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1769868000014
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDPEROFFER_D/metadata/snap-3357891976289634742-16-08e2bd80-f05a-8abc-877d-80a3b7d03cd6.avro",
+      "parent-snapshot-id": 811381391753074372,
+      "schema-id": 4,
+      "sequence-number": 16,
+      "snapshot-id": 3357891976289634742,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#BIDPEROFFER_D#FILE01#202603010000.zip",
+        "utilake.from.release": "2026-03",
+        "utilake.from.sha256": "4a3383907488b82d67788a0fc3a73a7aaae632b58d65a2c2a44835074c22f8f0",
+        "utilake.from.time": "2026-03-01T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "BIDPEROFFER_D",
+        "utilake.report-type": "BID",
+        "utilake.rows": "19071936",
+        "utilake.to.file": "PUBLIC_ARCHIVE#BIDPEROFFER_D#FILE01#202603010000.zip",
+        "utilake.to.release": "2026-03",
+        "utilake.to.sha256": "4a3383907488b82d67788a0fc3a73a7aaae632b58d65a2c2a44835074c22f8f0",
+        "utilake.to.time": "2026-03-31T00:00:00+10:00",
+        "utilake.total-rows": "1654528170",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1772287200015
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDPEROFFER_D/metadata/snap-1866643126237668835-17-08e2bd80-f05a-8abc-877d-80a3b7d03cd6.avro",
+      "parent-snapshot-id": 3357891976289634742,
+      "schema-id": 3,
+      "sequence-number": 17,
+      "snapshot-id": 1866643126237668835,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_BIDMOVE_COMPLETE_20260202.zip",
+        "utilake.from.release": "2026-03",
+        "utilake.from.sha256": "3f2233da7e9d9e7e369b3ff15440cf6ca22bc9f6febeb8a522b6e6131a926d16",
+        "utilake.from.time": "2026-03-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "BIDPEROFFER_D",
+        "utilake.report-type": "BID",
+        "utilake.rows": "19071936",
+        "utilake.to.file": "PUBLIC_BIDMOVE_COMPLETE_20260302.zip",
+        "utilake.to.release": "2026-03",
+        "utilake.to.sha256": "45cd6a9d1170510d163aec64ee13508ebdccdcf233d444dbbee84f00cd9b76d1",
+        "utilake.to.time": "2026-03-31T00:00:00+10:00",
+        "utilake.total-rows": "1673600106",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1772287200016
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDPEROFFER_D/metadata/snap-5590235096721600270-18-08e2bd80-f05a-8abc-877d-80a3b7d03cd6.avro",
+      "parent-snapshot-id": 1866643126237668835,
+      "schema-id": 4,
+      "sequence-number": 18,
+      "snapshot-id": 5590235096721600270,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#BIDPEROFFER_D#FILE01#202604010000.zip",
+        "utilake.from.release": "2026-04",
+        "utilake.from.sha256": "43f485a3a141a47493da8fc24917068afbbee5c50f94268ffab1b0a66a4cf591",
+        "utilake.from.time": "2026-04-01T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "BIDPEROFFER_D",
+        "utilake.report-type": "BID",
+        "utilake.rows": "18501312",
+        "utilake.to.file": "PUBLIC_ARCHIVE#BIDPEROFFER_D#FILE01#202604010000.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "43f485a3a141a47493da8fc24917068afbbee5c50f94268ffab1b0a66a4cf591",
+        "utilake.to.time": "2026-04-30T00:00:00+10:00",
+        "utilake.total-rows": "1692101418",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1774965600017
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDPEROFFER_D/metadata/snap-1546045303106737121-19-08e2bd80-f05a-8abc-877d-80a3b7d03cd6.avro",
+      "parent-snapshot-id": 5590235096721600270,
+      "schema-id": 3,
+      "sequence-number": 19,
+      "snapshot-id": 1546045303106737121,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "30",
+        "utilake.from.file": "PUBLIC_BIDMOVE_COMPLETE_20260302.zip",
+        "utilake.from.release": "2026-04",
+        "utilake.from.sha256": "45cd6a9d1170510d163aec64ee13508ebdccdcf233d444dbbee84f00cd9b76d1",
+        "utilake.from.time": "2026-04-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "BIDPEROFFER_D",
+        "utilake.report-type": "BID",
+        "utilake.rows": "18501312",
+        "utilake.to.file": "PUBLIC_BIDMOVE_COMPLETE_20260402.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "5dcfc754252e02168c170dc0d6929af3570805015454d9452ab3670955d4fb31",
+        "utilake.to.time": "2026-04-30T00:00:00+10:00",
+        "utilake.total-rows": "1710602730",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1774965600018
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDPEROFFER_D/metadata/snap-5737651138325111990-20-08e2bd80-f05a-8abc-877d-80a3b7d03cd6.avro",
+      "parent-snapshot-id": 1546045303106737121,
+      "schema-id": 4,
+      "sequence-number": 20,
+      "snapshot-id": 5737651138325111990,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#BIDPEROFFER_D#FILE01#202605010000.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "d61663eae576b1f7e172902709d17d1eb27cd0db9b7c6e6b9bf366f173c91cb0",
+        "utilake.from.time": "2026-05-01T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "BIDPEROFFER_D",
+        "utilake.report-type": "BID",
+        "utilake.rows": "19247904",
+        "utilake.to.file": "PUBLIC_ARCHIVE#BIDPEROFFER_D#FILE01#202605010000.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "d61663eae576b1f7e172902709d17d1eb27cd0db9b7c6e6b9bf366f173c91cb0",
+        "utilake.to.time": "2026-05-31T00:00:00+10:00",
+        "utilake.total-rows": "1729850634",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1777557600019
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDPEROFFER_D/metadata/snap-2430310296824046986-21-08e2bd80-f05a-8abc-877d-80a3b7d03cd6.avro",
+      "parent-snapshot-id": 5737651138325111990,
+      "schema-id": 3,
+      "sequence-number": 21,
+      "snapshot-id": 2430310296824046986,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_BIDMOVE_COMPLETE_20260402.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "5dcfc754252e02168c170dc0d6929af3570805015454d9452ab3670955d4fb31",
+        "utilake.from.time": "2026-05-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "BIDPEROFFER_D",
+        "utilake.report-type": "BID",
+        "utilake.rows": "19247904",
+        "utilake.to.file": "PUBLIC_BIDMOVE_COMPLETE_20260502.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "43809b14bac6061fd89acb1b469cee65a75f11fe559dff92843f2f487474f24a",
+        "utilake.to.time": "2026-05-31T00:00:00+10:00",
+        "utilake.total-rows": "1749098538",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1777557600020
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDPEROFFER_D/metadata/snap-2607793018711030226-22-08e2bd80-f05a-8abc-877d-80a3b7d03cd6.avro",
+      "parent-snapshot-id": 2430310296824046986,
+      "schema-id": 4,
+      "sequence-number": 22,
+      "snapshot-id": 2607793018711030226,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#BIDPEROFFER_D#FILE01#202606010000.zip",
+        "utilake.from.release": "2026-06",
+        "utilake.from.sha256": "58ac28c7a951d033011d730516a7b4c99da06f5e59e6aeb2e7b063d551fad6cb",
+        "utilake.from.time": "2026-06-01T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "BIDPEROFFER_D",
+        "utilake.report-type": "BID",
+        "utilake.rows": "19004544",
+        "utilake.to.file": "PUBLIC_ARCHIVE#BIDPEROFFER_D#FILE01#202606010000.zip",
+        "utilake.to.release": "2026-06",
+        "utilake.to.sha256": "58ac28c7a951d033011d730516a7b4c99da06f5e59e6aeb2e7b063d551fad6cb",
+        "utilake.to.time": "2026-06-30T00:00:00+10:00",
+        "utilake.total-rows": "1768103082",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1780236000021
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDPEROFFER_D/metadata/snap-2519168882431591464-23-08e2bd80-f05a-8abc-877d-80a3b7d03cd6.avro",
+      "parent-snapshot-id": 2607793018711030226,
+      "schema-id": 3,
+      "sequence-number": 23,
+      "snapshot-id": 2519168882431591464,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "30",
+        "utilake.from.file": "PUBLIC_BIDMOVE_COMPLETE_20260502.zip",
+        "utilake.from.release": "2026-06",
+        "utilake.from.sha256": "43809b14bac6061fd89acb1b469cee65a75f11fe559dff92843f2f487474f24a",
+        "utilake.from.time": "2026-06-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "BIDPEROFFER_D",
+        "utilake.report-type": "BID",
+        "utilake.rows": "19004544",
+        "utilake.to.file": "PUBLIC_BIDMOVE_COMPLETE_20260602.zip",
+        "utilake.to.release": "2026-06",
+        "utilake.to.sha256": "5076da788474164e03454a4e54224e3f22b6605568c0847f2a06be2703a23b4d",
+        "utilake.to.time": "2026-06-30T00:00:00+10:00",
+        "utilake.total-rows": "1787107626",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1780236000022
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDPEROFFER_D/metadata/snap-79631271371274851-24-08e2bd80-f05a-8abc-877d-80a3b7d03cd6.avro",
+      "parent-snapshot-id": 2519168882431591464,
+      "schema-id": 4,
+      "sequence-number": 24,
+      "snapshot-id": 79631271371274851,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#BIDPEROFFER_D#FILE01#202607010000.zip",
+        "utilake.from.release": "2026-07",
+        "utilake.from.sha256": "28831dab65d59b41d37b4a63a2a96c2b45c08a7856c32b7a502c2e28af386146",
+        "utilake.from.time": "2026-07-01T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "BIDPEROFFER_D",
+        "utilake.report-type": "BID",
+        "utilake.rows": "19835520",
+        "utilake.to.file": "PUBLIC_ARCHIVE#BIDPEROFFER_D#FILE01#202607010000.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "28831dab65d59b41d37b4a63a2a96c2b45c08a7856c32b7a502c2e28af386146",
+        "utilake.to.time": "2026-07-31T00:00:00+10:00",
+        "utilake.total-rows": "1806943146",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1782828000023
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDPEROFFER_D/metadata/snap-5382565296693051655-25-08e2bd80-f05a-8abc-877d-80a3b7d03cd6.avro",
+      "parent-snapshot-id": 79631271371274851,
+      "schema-id": 3,
+      "sequence-number": 25,
+      "snapshot-id": 5382565296693051655,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_BIDMOVE_COMPLETE_20260602.zip",
+        "utilake.from.release": "2026-07",
+        "utilake.from.sha256": "5076da788474164e03454a4e54224e3f22b6605568c0847f2a06be2703a23b4d",
+        "utilake.from.time": "2026-07-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "BIDPEROFFER_D",
+        "utilake.report-type": "BID",
+        "utilake.rows": "19835520",
+        "utilake.to.file": "PUBLIC_BIDMOVE_COMPLETE_20260702.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "b94e5eb3ad8ce13e0f15674337ebc605a018b6c38284f73779ff8cdc4eaa1caf",
+        "utilake.to.time": "2026-07-31T00:00:00+10:00",
+        "utilake.total-rows": "1826778666",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1782828000024
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDPEROFFER_D/metadata/snap-8254576647013935046-26-08e2bd80-f05a-8abc-877d-80a3b7d03cd6.avro",
+      "parent-snapshot-id": 5382565296693051655,
+      "schema-id": 4,
+      "sequence-number": 26,
+      "snapshot-id": 8254576647013935046,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#BIDPEROFFER_D#FILE01#202608010000.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "0b92379500dbbb326860a5d56a26d3f1ee39a3f0c1f86d2d52b35b6b01999ebd",
+        "utilake.from.time": "2026-08-01T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "BIDPEROFFER_D",
+        "utilake.report-type": "BID",
+        "utilake.rows": "20006016",
+        "utilake.to.file": "PUBLIC_ARCHIVE#BIDPEROFFER_D#FILE01#202608010000.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "0b92379500dbbb326860a5d56a26d3f1ee39a3f0c1f86d2d52b35b6b01999ebd",
+        "utilake.to.time": "2026-08-31T00:00:00+10:00",
+        "utilake.total-rows": "1846784682",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1785506400025
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDPEROFFER_D/metadata/snap-6369965505812316542-27-08e2bd80-f05a-8abc-877d-80a3b7d03cd6.avro",
+      "parent-snapshot-id": 8254576647013935046,
+      "schema-id": 3,
+      "sequence-number": 27,
+      "snapshot-id": 6369965505812316542,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "44",
+        "utilake.from.file": "PUBLIC_BIDMOVE_COMPLETE_20260702.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "b94e5eb3ad8ce13e0f15674337ebc605a018b6c38284f73779ff8cdc4eaa1caf",
+        "utilake.from.time": "2026-08-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "BIDPEROFFER_D",
+        "utilake.report-type": "BID",
+        "utilake.rows": "28437792",
+        "utilake.to.file": "PUBLIC_BIDMOVE_COMPLETE_20260802.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "c20af7673769e60107439d1bb53cc13981853428c3dff107a2066f01f5a689ec",
+        "utilake.to.time": "2026-09-01T00:00:00+10:00",
+        "utilake.total-rows": "1875222474",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1785506400026
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDPEROFFER_D/metadata/snap-3689158156264344654-28-08e2bd80-f05a-8abc-877d-80a3b7d03cd6.avro",
+      "parent-snapshot-id": 6369965505812316542,
+      "schema-id": 4,
+      "sequence-number": 28,
+      "snapshot-id": 3689158156264344654,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#BIDPEROFFER_D#FILE01#202609010000.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "242d173c0f9b771c714ea30c39b181efe5869c36164b1a4697bc00f62ca47cc2",
+        "utilake.from.time": "2026-09-01T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "BIDPEROFFER_D",
+        "utilake.report-type": "BID",
+        "utilake.rows": "19607712",
         "utilake.to.file": "PUBLIC_ARCHIVE#BIDPEROFFER_D#FILE01#202609010000.zip",
         "utilake.to.release": "2026-09",
         "utilake.to.sha256": "242d173c0f9b771c714ea30c39b181efe5869c36164b1a4697bc00f62ca47cc2",
         "utilake.to.time": "2026-09-30T00:00:00+10:00",
-        "utilake.total-rows": "1665191226",
+        "utilake.total-rows": "1894830186",
         "utilake.version": "4"
       },
-      "timestamp-ms": 1761919200004
+      "timestamp-ms": 1788184800027
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDPEROFFER_D/metadata/snap-3410575185422946331-29-08e2bd80-f05a-8abc-877d-80a3b7d03cd6.avro",
+      "parent-snapshot-id": 3689158156264344654,
+      "schema-id": 3,
+      "sequence-number": 29,
+      "snapshot-id": 3410575185422946331,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "51",
+        "utilake.from.file": "PUBLIC_BIDMOVE_COMPLETE_20260901_0000000535637491.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "6c27adb6ab357a8e9ce82519b862c969d9d4db8073781dce88d07d0653da19a4",
+        "utilake.from.time": "2026-09-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "BIDPEROFFER_D",
+        "utilake.report-type": "BID",
+        "utilake.rows": "33379104",
+        "utilake.to.file": "PUBLIC_BIDMOVE_COMPLETE_20261021_0000000544173628.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "80ff215caa3f44195b1a4765cd96d1815cc887ce017787616745db6a93cdf039",
+        "utilake.to.time": "2026-10-21T00:00:00+10:00",
+        "utilake.total-rows": "1928209290",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1788184800028
     }
   ],
   "sort-orders": [

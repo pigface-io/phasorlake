@@ -1,0 +1,6051 @@
+{
+  "folders": [
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 11,
+          "report": [
+            "DISPATCH",
+            "INTERCONNECTION"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 11,
+          "report": [
+            "DISPATCH",
+            "PRICE"
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2026-01",
+          "last-release": "2026-08",
+          "months": 3,
+          "report": [
+            "PRICELOAD",
+            "CONSTRAINTRELAXATION"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-01",
+          "last-release": "2026-08",
+          "months": 3,
+          "report": [
+            "PRICELOAD",
+            "CONSTRAINT_FCAS_OCD"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-03",
+          "last-release": "2026-03",
+          "months": 1,
+          "report": [
+            "PRICELOAD",
+            "PRICE_REVISION"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 11,
+          "report": [
+            "TRADING",
+            "PRICE"
+          ],
+          "version": 3
+        }
+      ],
+      "feed": "reports",
+      "folder": "Adjusted_Prices_Reports",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-09",
+          "months": 13,
+          "report": [
+            "BID",
+            "BIDDAYOFFER_D"
+          ],
+          "version": 3
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-09",
+          "months": 13,
+          "report": [
+            "BID",
+            "BIDPEROFFER_D"
+          ],
+          "version": 4
+        }
+      ],
+      "feed": "reports",
+      "folder": "Bidmove_Complete",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-09",
+          "months": 13,
+          "report": [
+            "BILLING",
+            "BILLING_DIRECTION_RECON_OTHER"
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-09",
+          "months": 13,
+          "report": [
+            "BILLING",
+            "DAYTRK"
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "BILLING",
+            "NMAS_TST_RECVRY_RBF"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "BILLING",
+            "NMAS_TST_RECVRY_TRK"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-09",
+          "months": 13,
+          "report": [
+            "BILLING",
+            "REGIONEXPORTS"
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-09",
+          "months": 13,
+          "report": [
+            "BILLING",
+            "REGIONFIGURES"
+          ],
+          "version": 6
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-09",
+          "months": 13,
+          "report": [
+            "BILLING",
+            "REGIONIMPORTS"
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-09",
+          "months": 13,
+          "report": [
+            "BILLING",
+            "RUNTRK"
+          ],
+          "version": 5
+        }
+      ],
+      "feed": "reports",
+      "folder": "Billing",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 13,
+          "report": [
+            "DISPATCH",
+            "FCAS_REQ_CONSTRAINT"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 13,
+          "report": [
+            "DISPATCH",
+            "FCAS_REQ_RUN"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "DISPATCHFCST",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "DISPATCH",
+            "CASESOLUTION"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "DISPATCH",
+            "REGIONFCASREQUIREMENT"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "DREGION",
+            ""
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "DREGION",
+            ""
+          ],
+          "version": 3
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "DUNIT",
+            ""
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "DUNIT",
+            ""
+          ],
+          "version": 3
+        }
+      ],
+      "feed": "reports",
+      "folder": "Daily_Reports",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 11,
+          "report": [
+            "DISPATCH",
+            "BLOCKED_CONSTRAINTS"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 13,
+          "report": [
+            "DISPATCH",
+            "CASE_SOLUTION"
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 13,
+          "report": [
+            "DISPATCH",
+            "CONSTRAINT"
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 13,
+          "report": [
+            "DISPATCH",
+            "INTERCONNECTION"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 13,
+          "report": [
+            "DISPATCH",
+            "INTERCONNECTORRES"
+          ],
+          "version": 3
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 13,
+          "report": [
+            "DISPATCH",
+            "LOCAL_PRICE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 13,
+          "report": [
+            "DISPATCH",
+            "PRICE"
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 13,
+          "report": [
+            "DISPATCH",
+            "REGIONSUM"
+          ],
+          "version": 9
+        }
+      ],
+      "feed": "reports",
+      "folder": "DispatchIS_Reports",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 13,
+          "report": [
+            "DISPATCH",
+            "IRSR"
+          ],
+          "version": 2
+        }
+      ],
+      "feed": "reports",
+      "folder": "Dispatch_IRSR",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-05",
+          "months": 8,
+          "report": [
+            "DISPATCH",
+            "NEGATIVE_RESIDUE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-05",
+          "last-release": "2026-10",
+          "months": 6,
+          "report": [
+            "DISPATCH",
+            "NEGATIVE_RESIDUE"
+          ],
+          "version": 2
+        }
+      ],
+      "feed": "reports",
+      "folder": "Dispatch_Negative_Residue",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 13,
+          "report": [
+            "DCONS",
+            ""
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 13,
+          "report": [
+            "DINT",
+            ""
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 13,
+          "report": [
+            "DISPATCH",
+            "CASESOLUTION"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 13,
+          "report": [
+            "DISPATCH",
+            "REGIONFCASREQUIREMENT"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 13,
+          "report": [
+            "DREGION",
+            ""
+          ],
+          "version": 3
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 13,
+          "report": [
+            "TINT",
+            ""
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Dispatch_Reports",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 13,
+          "report": [
+            "DISPATCH",
+            "UNIT_SCADA"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Dispatch_SCADA",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 13,
+          "report": [
+            "DISPATCH",
+            "PRE_AP_PRICE"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Dispatchprices_PRE_AP",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-09",
+          "months": 14,
+          "report": [
+            "FPP",
+            "CONTRIBUTION_FACTOR"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-09",
+          "months": 14,
+          "report": [
+            "FPP",
+            "FPP_PERFORMANCE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 30,
+          "report": [
+            "FPP",
+            "UNIT_MW"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "FPPDAILY",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "FPP",
+            "EST_PERF_COST_RATE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "FPP",
+            "EST_RESIDUAL_COST_RATE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "FPP",
+            "FCAS_SUMMARY"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "FPPRATES",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "FPP",
+            "CONSTRAINT_FREQ_MEASURE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "FPP",
+            "FPP_RCR"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "FPP",
+            "FPP_RUN"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "FPP",
+            "FPP_USAGE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "FPP",
+            "REGION_FREQ_MEASURE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "FPP",
+            "RESIDUAL_CF"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "FPP",
+            "RESIDUAL_PERFORMANCE"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "FPPRUN",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "DEMAND",
+            "HISTORIC"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "HistDemand",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 13,
+          "report": [
+            "MCC",
+            "CASESOLUTION"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 13,
+          "report": [
+            "MCC",
+            "CONSTRAINTSOLUTION"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "MCCDispatch",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "MTPASA",
+            "DUIDAVAILABILITY"
+          ],
+          "version": 3
+        }
+      ],
+      "feed": "reports",
+      "folder": "MTPASA_DUIDAvailability",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "MTPASA",
+            "REGIONAVAILABILITY"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "MTPASA",
+            "REGIONAVAILTRK"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "MTPASA_RegionAvailability",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "MTPASA",
+            "CASERESULT"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "MTPASA",
+            "CONSTRAINTRESULT"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "MTPASA",
+            "CONSTRAINTSUMMARY"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "MTPASA",
+            "INTERCONNECTORRESULT"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "MTPASA",
+            "LOLPRESULT"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "MTPASA",
+            "REGIONITERATION"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "MTPASA",
+            "REGIONRESULT"
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "MTPASA",
+            "REGIONSUMMARY"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Medium_Term_PASA_Reports",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "DEMAND",
+            "INTERMITTENT_CLUSTER_AVAIL"
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "DEMAND",
+            "INTERMITTENT_CLUSTER_AVAIL_DAY"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "NEXT_DAY_AVAIL_SUBMISS_CLUSTER",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "DEMAND",
+            "INTERMITTENT_GEN_LIMIT"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "DEMAND",
+            "INTERMITTENT_GEN_LIMIT_DAY"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "NEXT_DAY_AVAIL_SUBMISS_DAY",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-09",
+          "months": 13,
+          "report": [
+            "MCC",
+            "CASESOLUTION"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-09",
+          "months": 13,
+          "report": [
+            "MCC",
+            "CONSTRAINTSOLUTION"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "NEXT_DAY_MCCDISPATCH",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "NETWORK",
+            "EQUIPMENTDETAIL"
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "NETWORK",
+            "OUTAGECONSTRAINTSET"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "NETWORK",
+            "OUTAGEDETAIL"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "NETWORK",
+            "OUTAGESTATUSCODE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "NETWORK",
+            "RATING"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "NETWORK",
+            "STATICRATING"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "NETWORK",
+            "SUBSTATIONDETAIL"
+          ],
+          "version": 2
+        }
+      ],
+      "feed": "reports",
+      "folder": "Network",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "METER_DATA",
+            "GEN_DUID"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Next_Day_Actual_Gen",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "DISPATCH",
+            "CONSTRAINT"
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "DISPATCH",
+            "LOCAL_PRICE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-06",
+          "months": 10,
+          "report": [
+            "DISPATCH",
+            "MNSPBIDTRK"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "DISPATCH",
+            "OFFERTRK"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2025-11",
+          "months": 3,
+          "report": [
+            "DISPATCH",
+            "UNIT_SOLUTION"
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2025-11",
+          "last-release": "2026-08",
+          "months": 10,
+          "report": [
+            "DISPATCH",
+            "UNIT_SOLUTION"
+          ],
+          "version": 6
+        }
+      ],
+      "feed": "reports",
+      "folder": "Next_Day_Dispatch",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "DEMAND",
+            "INTERMITTENT_DS_PRED"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "DEMAND",
+            "INTERMITTENT_DS_RUN"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "DISPATCH",
+            "INTERMITTENT_FORECAST_TRK"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Next_Day_Intermittent_DS",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "DEMAND",
+            "INTERMITTENT_GEN_SCADA"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Next_Day_Intermittent_Gen_Scada",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "BIDS",
+            "BIDDAYOFFER"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "BIDS",
+            "BIDOFFERPERIOD_SPARSE"
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-07",
+          "months": 11,
+          "report": [
+            "BIDS",
+            "MNSP_BIDOFFERPERIOD"
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-07",
+          "months": 11,
+          "report": [
+            "BIDS",
+            "MNSP_DAYOFFER"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Next_Day_Offer_Energy_SPARSE",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "BIDS",
+            "BIDDAYOFFER"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "BIDS",
+            "BIDOFFERPERIOD_SPARSE"
+          ],
+          "version": 2
+        }
+      ],
+      "feed": "reports",
+      "folder": "Next_Day_Offer_FCAS_SPARSE",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-09",
+          "months": 13,
+          "report": [
+            "PREDISPATCH",
+            "CONSTRAINT_SOLUTION"
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-09",
+          "months": 13,
+          "report": [
+            "PREDISPATCH",
+            "LOCAL_PRICE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-06",
+          "months": 10,
+          "report": [
+            "PREDISPATCH",
+            "MNSPBIDTRK"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-09",
+          "months": 13,
+          "report": [
+            "PREDISPATCH",
+            "OFFERTRK"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2025-11",
+          "months": 3,
+          "report": [
+            "PREDISPATCH",
+            "UNIT_SOLUTION"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2025-11",
+          "last-release": "2026-09",
+          "months": 11,
+          "report": [
+            "PREDISPATCH",
+            "UNIT_SOLUTION"
+          ],
+          "version": 5
+        }
+      ],
+      "feed": "reports",
+      "folder": "Next_Day_PreDispatch",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-09",
+          "months": 13,
+          "report": [
+            "PREDISPATCH",
+            "CONSTRAINT_SOLUTION"
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-09",
+          "months": 13,
+          "report": [
+            "PREDISPATCH",
+            "LOCAL_PRICE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-06",
+          "months": 10,
+          "report": [
+            "PREDISPATCH",
+            "MNSPBIDTRK"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-09",
+          "months": 13,
+          "report": [
+            "PREDISPATCH",
+            "OFFERTRK"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2025-11",
+          "months": 3,
+          "report": [
+            "PREDISPATCH",
+            "UNIT_SOLUTION"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2025-11",
+          "last-release": "2026-09",
+          "months": 11,
+          "report": [
+            "PREDISPATCH",
+            "UNIT_SOLUTION"
+          ],
+          "version": 5
+        }
+      ],
+      "feed": "reports",
+      "folder": "Next_Day_PreDispatchD",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "OPERATIONAL_DEMAND",
+            "ACTUAL"
+          ],
+          "version": 3
+        }
+      ],
+      "feed": "reports",
+      "folder": "Operational_Demand/ACTUAL_DAILY",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "OPERATIONAL_DEMAND",
+            "ACTUAL"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Operational_Demand/ACTUAL_DAILY_AREA",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "OPERATIONAL_DEMAND",
+            "ACTUAL"
+          ],
+          "version": 3
+        }
+      ],
+      "feed": "reports",
+      "folder": "Operational_Demand/ACTUAL_HH",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "OPERATIONAL_DEMAND",
+            "ACTUAL"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Operational_Demand/ACTUAL_HH_AREA",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "OPERATIONAL_DEMAND",
+            "FORECAST"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Operational_Demand/FORECAST_HH",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "OPERATIONAL_DEMAND",
+            "FORECAST"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Operational_Demand/FORECAST_HH_AREA",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "OPERATIONAL_DEM_LESS_SNSG",
+            "ACTUAL"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Operational_Demand_Less_SNSG/ACTUAL_DAILY",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "OPERATIONAL_DEM_LESS_SNSG",
+            "ACTUAL"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Operational_Demand_Less_SNSG/ACTUAL_HH",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 13,
+          "report": [
+            "P5MIN",
+            "FCAS_REQ_CONSTRAINT"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 13,
+          "report": [
+            "P5MIN",
+            "FCAS_REQ_RUN"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "P5MINFCST",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 11,
+          "report": [
+            "P5MIN",
+            "BLOCKED_CONSTRAINTS"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 13,
+          "report": [
+            "P5MIN",
+            "CASESOLUTION"
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 13,
+          "report": [
+            "P5MIN",
+            "CONSTRAINTSOLUTION"
+          ],
+          "version": 6
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 13,
+          "report": [
+            "P5MIN",
+            "INTERCONNECTORSOLN"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 13,
+          "report": [
+            "P5MIN",
+            "LOCAL_PRICE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 13,
+          "report": [
+            "P5MIN",
+            "REGIONSOLUTION"
+          ],
+          "version": 10
+        }
+      ],
+      "feed": "reports",
+      "folder": "P5_Reports",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 13,
+          "report": [
+            "PDPASA",
+            "CASESOLUTION"
+          ],
+          "version": 3
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 13,
+          "report": [
+            "PDPASA",
+            "CONSTRAINTSOLUTION"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 13,
+          "report": [
+            "PDPASA",
+            "INTERCONNECTORSOLN"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 13,
+          "report": [
+            "PDPASA",
+            "REGIONSOLUTION"
+          ],
+          "version": 7
+        }
+      ],
+      "feed": "reports",
+      "folder": "PDPASA",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "PDPASA",
+            "DUIDAVAILABILITY"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "PDPASA_DUIDAVAILABILITY",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "PREDISPATCH",
+            "FCAS_REQ_CONSTRAINT"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "PREDISPATCH",
+            "FCAS_REQ_RUN"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "PREDISPATCHFCST",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-07",
+          "months": 6,
+          "report": [
+            "PREDISPATCH",
+            "BLOCKED_CONSTRAINTS"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "PREDISPATCH",
+            "CASE_SOLUTION"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "PREDISPATCH",
+            "CONSTRAINT_SOLUTION"
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "PREDISPATCH",
+            "INTERCONNECTOR_SOLN"
+          ],
+          "version": 3
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "PREDISPATCH",
+            "LOCAL_PRICE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "PREDISPATCH",
+            "REGION_PRICES"
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "PREDISPATCH",
+            "REGION_SOLUTION"
+          ],
+          "version": 9
+        }
+      ],
+      "feed": "reports",
+      "folder": "PredispatchIS_Reports",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "PREDISPATCH",
+            "IRSR"
+          ],
+          "version": 2
+        }
+      ],
+      "feed": "reports",
+      "folder": "Predispatch_IRSR",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "PDCONS",
+            ""
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "PDIINT",
+            ""
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "PDINT",
+            ""
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "PDIREGION",
+            ""
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "PDREGION",
+            ""
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "PREDISPATCH",
+            "CASESOLUTION"
+          ],
+          "version": 2
+        }
+      ],
+      "feed": "reports",
+      "folder": "Predispatch_Reports",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 13,
+          "report": [
+            "PREDISPATCH",
+            "INTERCONNECTR_SENS"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 13,
+          "report": [
+            "PREDISPATCH",
+            "PRICESENSITIVITIES"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Predispatch_Sensitivities",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "DREGION",
+            ""
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "DREGION",
+            ""
+          ],
+          "version": 3
+        }
+      ],
+      "feed": "reports",
+      "folder": "Public_Prices",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 26,
+          "report": [
+            "ROOFTOP",
+            "ACTUAL"
+          ],
+          "version": 2
+        }
+      ],
+      "feed": "reports",
+      "folder": "ROOFTOP_PV/ACTUAL",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 28,
+          "report": [
+            "ROOFTOP",
+            "ACTUAL"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "ROOFTOP_PV/ACTUAL_AREA",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 13,
+          "report": [
+            "ROOFTOP",
+            "FORECAST"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "ROOFTOP_PV/FORECAST",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "ROOFTOP",
+            "FORECAST"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "ROOFTOP_PV/FORECAST_AREA",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "SEVENDAYOUTLOOK",
+            "PEAK"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "SEVENDAYOUTLOOK_FULL",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "SEVENDAYOUTLOOK",
+            "PEAK"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "SEVENDAYOUTLOOK_PEAK",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "STPASA",
+            "DUIDAVAILABILITY"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "STPASA_DUIDAVAILABILITY",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-09",
+          "months": 13,
+          "report": [
+            "SETTLEMENTS",
+            "ANCILLARY_SUMMARY"
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-09",
+          "months": 13,
+          "report": [
+            "SETTLEMENTS",
+            "DAYTRACK"
+          ],
+          "version": 7
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-09",
+          "months": 13,
+          "report": [
+            "SETTLEMENTS",
+            "ENERGY_REGION_SUMMARY"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-09",
+          "months": 13,
+          "report": [
+            "SETTLEMENTS",
+            "FCASREGIONRECOVERY"
+          ],
+          "version": 6
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-09",
+          "months": 13,
+          "report": [
+            "SETTLEMENTS",
+            "INTRAREGIONRESIDUES"
+          ],
+          "version": 6
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-09",
+          "months": 13,
+          "report": [
+            "SETTLEMENTS",
+            "IRSURPLUS"
+          ],
+          "version": 6
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-09",
+          "months": 13,
+          "report": [
+            "SETTLEMENTS",
+            "LOCALAREAENERGY"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-09",
+          "months": 13,
+          "report": [
+            "SETTLEMENTS",
+            "LOCALAREATNI"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-09",
+          "months": 13,
+          "report": [
+            "SETTLEMENTS",
+            "NMAS_RECOVERY_RBF"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-09",
+          "months": 13,
+          "report": [
+            "SETTLEMENTS",
+            "SET_FCAS_REGULATION_TRK"
+          ],
+          "version": 3
+        }
+      ],
+      "feed": "reports",
+      "folder": "Settlements",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "STPASA",
+            "CASESOLUTION"
+          ],
+          "version": 3
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "STPASA",
+            "CONSTRAINTSOLUTION"
+          ],
+          "version": 3
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "STPASA",
+            "INTERCONNECTORSOLN"
+          ],
+          "version": 3
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "STPASA",
+            "REGIONSOLUTION"
+          ],
+          "version": 7
+        }
+      ],
+      "feed": "reports",
+      "folder": "Short_Term_PASA_Reports",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "TRADING",
+            "INTERCONNECTORRES"
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "TRADING",
+            "PRICE"
+          ],
+          "version": 3
+        }
+      ],
+      "feed": "reports",
+      "folder": "TradingIS_Reports",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "TRADING",
+            "CUMULATIVE_PRICE"
+          ],
+          "version": 2
+        }
+      ],
+      "feed": "reports",
+      "folder": "Trading_Cumulative_Price",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "TRADING",
+            "IRSR"
+          ],
+          "version": 2
+        }
+      ],
+      "feed": "reports",
+      "folder": "Trading_IRSR",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-08",
+          "months": 12,
+          "report": [
+            "DAILY",
+            "WDR_NO_SCADA"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "WDR_CAPACITY_NO_SCADA",
+      "label": "ARCHIVE",
+      "root": "Reports/ARCHIVE"
+    },
+    {
+      "blocks": [],
+      "feed": "reports",
+      "folder": "ANCILLARY_SERVICES_REPORTS",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-09",
+          "last-release": "2026-10",
+          "months": 2,
+          "report": [
+            "DISPATCH",
+            "INTERCONNECTION"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-09",
+          "last-release": "2026-10",
+          "months": 2,
+          "report": [
+            "DISPATCH",
+            "PRICE"
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2026-09",
+          "last-release": "2026-10",
+          "months": 2,
+          "report": [
+            "TRADING",
+            "PRICE"
+          ],
+          "version": 3
+        }
+      ],
+      "feed": "reports",
+      "folder": "Adjusted_Prices_Reports",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [],
+      "feed": "reports",
+      "folder": "Alt_Limits",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [],
+      "feed": "reports",
+      "folder": "Ancillary_Services_Payments",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [],
+      "feed": "reports",
+      "folder": "Ancillary_Services_Payments/DUPLICATE",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [],
+      "feed": "reports",
+      "folder": "Auction_Units_Reports",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "BID",
+            "BIDDAYOFFER_D"
+          ],
+          "version": 3
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "BID",
+            "BIDPEROFFER_D"
+          ],
+          "version": 4
+        }
+      ],
+      "feed": "reports",
+      "folder": "Bidmove_Complete",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2017-03",
+          "last-release": "2017-12",
+          "months": 9,
+          "report": [
+            "BILLING",
+            "BILLING_DIRECTION_RECON_OTHER"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2017-02",
+          "last-release": "2018-01",
+          "months": 12,
+          "report": [
+            "BILLING",
+            "DAYTRK"
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2020-05",
+          "last-release": "2021-06",
+          "months": 3,
+          "report": [
+            "BILLING",
+            "DIRECTION"
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2021-05",
+          "last-release": "2021-05",
+          "months": 1,
+          "report": [
+            "BILLING",
+            "DIRECTION_CRA"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2017-02",
+          "last-release": "2017-12",
+          "months": 10,
+          "report": [
+            "BILLING",
+            "NMAS_TST_RECVRY_RBF"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2017-06",
+          "last-release": "2017-10",
+          "months": 5,
+          "report": [
+            "BILLING",
+            "NMAS_TST_RECVRY_TRK"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2017-02",
+          "last-release": "2018-01",
+          "months": 12,
+          "report": [
+            "BILLING",
+            "REGIONEXPORTS"
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2017-02",
+          "last-release": "2018-01",
+          "months": 12,
+          "report": [
+            "BILLING",
+            "REGIONFIGURES"
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2017-02",
+          "last-release": "2018-01",
+          "months": 12,
+          "report": [
+            "BILLING",
+            "REGIONIMPORTS"
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2017-02",
+          "last-release": "2018-01",
+          "months": 12,
+          "report": [
+            "BILLING",
+            "RUNTRK"
+          ],
+          "version": 5
+        }
+      ],
+      "feed": "reports",
+      "folder": "Billing",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "CO2EII",
+            "PUBLISHING"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "CDEII",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 17,
+          "report": [
+            "BILLING",
+            "CSP_SUPPORTDATA_SRA"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "CSC_CSP_Settlements",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [],
+      "feed": "reports",
+      "folder": "Causer_Pays_Elements",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 13,
+          "report": [
+            "DISPATCHOCD",
+            "CONSTRAINTRELAXATION"
+          ],
+          "version": 2
+        }
+      ],
+      "feed": "reports",
+      "folder": "DAILYOCD",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "DISPATCH",
+            "FCAS_REQ_CONSTRAINT"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "DISPATCH",
+            "FCAS_REQ_RUN"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "DISPATCHFCST",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-07",
+          "last-release": "2026-10",
+          "months": 2,
+          "report": [
+            "DISPATCH",
+            "FCAS_REQ_CONSTRAINT"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-07",
+          "last-release": "2026-10",
+          "months": 2,
+          "report": [
+            "DISPATCH",
+            "FCAS_REQ_RUN"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "DISPATCHFCST/DUPLICATE",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-03",
+          "last-release": "2026-10",
+          "months": 19,
+          "report": [
+            "DISPATCH",
+            "INTERCONNECTION"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-03",
+          "last-release": "2026-10",
+          "months": 19,
+          "report": [
+            "DISPATCH",
+            "PRICE"
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2026-01",
+          "last-release": "2026-08",
+          "months": 3,
+          "report": [
+            "PRICELOAD",
+            "CONSTRAINTRELAXATION"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-01",
+          "last-release": "2026-08",
+          "months": 3,
+          "report": [
+            "PRICELOAD",
+            "CONSTRAINT_FCAS_OCD"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-03",
+          "last-release": "2026-03",
+          "months": 1,
+          "report": [
+            "PRICELOAD",
+            "PRICE_REVISION"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "DISPATCHIS_PRICE_REVISIONS",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "DISPATCH",
+            "NEGATIVE_RESIDUE"
+          ],
+          "version": 2
+        }
+      ],
+      "feed": "reports",
+      "folder": "DISPATCH_NEGATIVE_RESIDUE",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-03",
+          "last-release": "2026-03",
+          "months": 1,
+          "report": [
+            "DISPATCH",
+            "NEGATIVE_RESIDUE"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "DISPATCH_NEGATIVE_RESIDUE/DUPLICATE",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "DISPATCH",
+            "CASESOLUTION"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "DISPATCH",
+            "REGIONFCASREQUIREMENT"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "DREGION",
+            ""
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "DREGION",
+            ""
+          ],
+          "version": 3
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "DUNIT",
+            ""
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "DUNIT",
+            ""
+          ],
+          "version": 3
+        }
+      ],
+      "feed": "reports",
+      "folder": "Daily_Reports",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 7,
+          "report": [
+            "BILLING",
+            "DIRECTION"
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 7,
+          "report": [
+            "BILLING",
+            "DIRECTION_CRA"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Directions_Reconciliation",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "DISPATCH",
+            "CASE_SOLUTION"
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "DISPATCH",
+            "CONSTRAINT"
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "DISPATCH",
+            "INTERCONNECTION"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "DISPATCH",
+            "INTERCONNECTORRES"
+          ],
+          "version": 3
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "DISPATCH",
+            "LOCAL_PRICE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "DISPATCH",
+            "PRICE"
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "DISPATCH",
+            "REGIONSUM"
+          ],
+          "version": 9
+        }
+      ],
+      "feed": "reports",
+      "folder": "DispatchIS_Reports",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-05",
+          "last-release": "2026-10",
+          "months": 6,
+          "report": [
+            "DISPATCH",
+            "CASE_SOLUTION"
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2026-05",
+          "last-release": "2026-10",
+          "months": 6,
+          "report": [
+            "DISPATCH",
+            "CONSTRAINT"
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2026-05",
+          "last-release": "2026-10",
+          "months": 6,
+          "report": [
+            "DISPATCH",
+            "INTERCONNECTION"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-05",
+          "last-release": "2026-10",
+          "months": 6,
+          "report": [
+            "DISPATCH",
+            "INTERCONNECTORRES"
+          ],
+          "version": 3
+        },
+        {
+          "first-release": "2026-05",
+          "last-release": "2026-10",
+          "months": 5,
+          "report": [
+            "DISPATCH",
+            "LOCAL_PRICE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-05",
+          "last-release": "2026-10",
+          "months": 6,
+          "report": [
+            "DISPATCH",
+            "PRICE"
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2026-05",
+          "last-release": "2026-10",
+          "months": 6,
+          "report": [
+            "DISPATCH",
+            "REGIONSUM"
+          ],
+          "version": 9
+        }
+      ],
+      "feed": "reports",
+      "folder": "DispatchIS_Reports/DUPLICATE",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "DISPATCH",
+            "IRSR"
+          ],
+          "version": 2
+        }
+      ],
+      "feed": "reports",
+      "folder": "Dispatch_IRSR",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-11",
+          "last-release": "2026-07",
+          "months": 2,
+          "report": [
+            "DISPATCH",
+            "IRSR"
+          ],
+          "version": 2
+        }
+      ],
+      "feed": "reports",
+      "folder": "Dispatch_IRSR/DUPLICATE",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "DCONS",
+            ""
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "DINT",
+            ""
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "DISPATCH",
+            "CASESOLUTION"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "DISPATCH",
+            "REGIONFCASREQUIREMENT"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "DREGION",
+            ""
+          ],
+          "version": 3
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "TINT",
+            ""
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Dispatch_Reports",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-03",
+          "last-release": "2026-03",
+          "months": 1,
+          "report": [
+            "DCONS",
+            ""
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-03",
+          "last-release": "2026-03",
+          "months": 1,
+          "report": [
+            "DINT",
+            ""
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-03",
+          "last-release": "2026-03",
+          "months": 1,
+          "report": [
+            "DISPATCH",
+            "CASESOLUTION"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-03",
+          "last-release": "2026-03",
+          "months": 1,
+          "report": [
+            "DREGION",
+            ""
+          ],
+          "version": 3
+        },
+        {
+          "first-release": "2026-03",
+          "last-release": "2026-03",
+          "months": 1,
+          "report": [
+            "TINT",
+            ""
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Dispatch_Reports/DUPLICATE",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "DISPATCH",
+            "UNIT_SCADA"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Dispatch_SCADA",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-08",
+          "last-release": "2026-07",
+          "months": 3,
+          "report": [
+            "DISPATCH",
+            "UNIT_SCADA"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Dispatch_SCADA/DUPLICATE",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "DISPATCH",
+            "PRE_AP_PRICE"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Dispatchprices_PRE_AP",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "DISPATCH",
+            "PRE_AP_PRICE"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Dispatchprices_PRE_AP/DUPLICATE",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2024-12",
+          "last-release": "2026-10",
+          "months": 24,
+          "report": [
+            "FPP",
+            "FORECAST_DEFAULT_CF"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2024-12",
+          "last-release": "2026-10",
+          "months": 24,
+          "report": [
+            "FPP",
+            "FORECAST_RESIDUAL_DCF"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2024-12",
+          "last-release": "2026-10",
+          "months": 24,
+          "report": [
+            "FPP",
+            "HIST_PERFORMANCE"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "FPP",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "FPP",
+            "CONTRIBUTION_FACTOR"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "FPP",
+            "FPP_PERFORMANCE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 6,
+          "report": [
+            "FPP",
+            "UNIT_MW"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "FPPDAILY",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "FPP",
+            "EST_PERF_COST_RATE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "FPP",
+            "EST_RESIDUAL_COST_RATE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "FPP",
+            "FCAS_SUMMARY"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "FPPRATES",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-06",
+          "last-release": "2026-06",
+          "months": 1,
+          "report": [
+            "FPP",
+            "EST_PERF_COST_RATE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-06",
+          "last-release": "2026-06",
+          "months": 1,
+          "report": [
+            "FPP",
+            "EST_RESIDUAL_COST_RATE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-06",
+          "last-release": "2026-06",
+          "months": 1,
+          "report": [
+            "FPP",
+            "FCAS_SUMMARY"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "FPPRATES/DUPLICATE",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "FPP",
+            "CONSTRAINT_FREQ_MEASURE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "FPP",
+            "FPP_RCR"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "FPP",
+            "FPP_RUN"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "FPP",
+            "FPP_USAGE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "FPP",
+            "REGION_FREQ_MEASURE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "FPP",
+            "RESIDUAL_CF"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "FPP",
+            "RESIDUAL_PERFORMANCE"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "FPPRUN",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-06",
+          "last-release": "2026-06",
+          "months": 1,
+          "report": [
+            "FPP",
+            "CONSTRAINT_FREQ_MEASURE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-06",
+          "last-release": "2026-06",
+          "months": 1,
+          "report": [
+            "FPP",
+            "FPP_RCR"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-06",
+          "last-release": "2026-06",
+          "months": 1,
+          "report": [
+            "FPP",
+            "FPP_RUN"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-06",
+          "last-release": "2026-06",
+          "months": 1,
+          "report": [
+            "FPP",
+            "FPP_USAGE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-06",
+          "last-release": "2026-06",
+          "months": 1,
+          "report": [
+            "FPP",
+            "REGION_FREQ_MEASURE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-06",
+          "last-release": "2026-06",
+          "months": 1,
+          "report": [
+            "FPP",
+            "RESIDUAL_CF"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-06",
+          "last-release": "2026-06",
+          "months": 1,
+          "report": [
+            "FPP",
+            "RESIDUAL_PERFORMANCE"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "FPPRUN/DUPLICATE",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-05",
+          "last-release": "2026-10",
+          "months": 19,
+          "report": [
+            "FPP",
+            "HIST_REGION_PERFORMANCE"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "FPP_HIST_REG_PERF",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [],
+      "feed": "reports",
+      "folder": "HighImpactOutages",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "DEMAND",
+            "HISTORIC"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "HistDemand",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [],
+      "feed": "reports",
+      "folder": "IBEI",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "MCC",
+            "CASESOLUTION"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "MCC",
+            "CONSTRAINTSOLUTION"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "MCCDispatch",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2017-03",
+          "last-release": "2026-10",
+          "months": 5,
+          "report": [
+            "MCC",
+            "CASESOLUTION"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2017-03",
+          "last-release": "2026-10",
+          "months": 5,
+          "report": [
+            "MCC",
+            "CONSTRAINTSOLUTION"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "MCCDispatch/DUPLICATE",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2020-08",
+          "last-release": "2021-10",
+          "months": 15,
+          "report": [
+            "MTPASA",
+            "DUIDAVAILABILITY"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2021-10",
+          "last-release": "2023-05",
+          "months": 20,
+          "report": [
+            "MTPASA",
+            "DUIDAVAILABILITY"
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2023-05",
+          "last-release": "2026-10",
+          "months": 42,
+          "report": [
+            "MTPASA",
+            "DUIDAVAILABILITY"
+          ],
+          "version": 3
+        }
+      ],
+      "feed": "reports",
+      "folder": "MTPASA_DUIDAvailability",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "MTPASA",
+            "REGIONAVAILABILITY"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "MTPASA",
+            "REGIONAVAILTRK"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "MTPASA_RegionAvailability",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2020-10",
+          "last-release": "2026-10",
+          "months": 74,
+          "report": [
+            "DAILY",
+            "MLF"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Marginal_Loss_Factors",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [],
+      "feed": "reports",
+      "folder": "Market_Notice",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "MTPASA",
+            "CASERESULT"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "MTPASA",
+            "CONSTRAINTRESULT"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "MTPASA",
+            "CONSTRAINTSUMMARY"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "MTPASA",
+            "INTERCONNECTORRESULT"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "MTPASA",
+            "LOLPRESULT"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "MTPASA",
+            "REGIONITERATION"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "MTPASA",
+            "REGIONRESULT"
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "MTPASA",
+            "REGIONSUMMARY"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Medium_Term_PASA_Reports",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "FORCE_MAJEURE",
+            "MARKET_SUSPEND_SCHEDULE"
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "FORCE_MAJEURE",
+            "MARKET_SUSPEND_SCHEDULE_TRK"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Mktsusp_Pricing",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "DEMAND",
+            "INTERMITTENT_CLUSTER_AVAIL"
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "DEMAND",
+            "INTERMITTENT_CLUSTER_AVAIL_DAY"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "NEXT_DAY_AVAIL_SUBMISS_CLUSTER",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "DEMAND",
+            "INTERMITTENT_GEN_LIMIT"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "DEMAND",
+            "INTERMITTENT_GEN_LIMIT_DAY"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "NEXT_DAY_AVAIL_SUBMISS_DAY",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "MCC",
+            "CASESOLUTION"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "MCC",
+            "CONSTRAINTSOLUTION"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "NEXT_DAY_MCCDISPATCH",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "NETWORK",
+            "EQUIPMENTDETAIL"
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "NETWORK",
+            "OUTAGECONSTRAINTSET"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "NETWORK",
+            "OUTAGEDETAIL"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "NETWORK",
+            "OUTAGESTATUSCODE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "NETWORK",
+            "RATING"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "NETWORK",
+            "STATICRATING"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "NETWORK",
+            "SUBSTATIONDETAIL"
+          ],
+          "version": 2
+        }
+      ],
+      "feed": "reports",
+      "folder": "Network",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "METER_DATA",
+            "GEN_DUID"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Next_Day_Actual_Gen",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "DISPATCH",
+            "CONSTRAINT"
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "DISPATCH",
+            "LOCAL_PRICE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-06",
+          "months": 10,
+          "report": [
+            "DISPATCH",
+            "MNSPBIDTRK"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "DISPATCH",
+            "OFFERTRK"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2025-11",
+          "months": 3,
+          "report": [
+            "DISPATCH",
+            "UNIT_SOLUTION"
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2025-11",
+          "last-release": "2026-10",
+          "months": 12,
+          "report": [
+            "DISPATCH",
+            "UNIT_SOLUTION"
+          ],
+          "version": 6
+        }
+      ],
+      "feed": "reports",
+      "folder": "Next_Day_Dispatch",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "DEMAND",
+            "INTERMITTENT_DS_PRED"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "DEMAND",
+            "INTERMITTENT_DS_RUN"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "DISPATCH",
+            "INTERMITTENT_FORECAST_TRK"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Next_Day_Intermittent_DS",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2020-03",
+          "last-release": "2020-10",
+          "months": 3,
+          "report": [
+            "DEMAND",
+            "INTERMITTENT_DS_PRED"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2020-03",
+          "last-release": "2020-10",
+          "months": 3,
+          "report": [
+            "DEMAND",
+            "INTERMITTENT_DS_RUN"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2020-03",
+          "last-release": "2020-10",
+          "months": 3,
+          "report": [
+            "DISPATCH",
+            "INTERMITTENT_FORECAST_TRK"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Next_Day_Intermittent_DS/DUPLICATE",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "DEMAND",
+            "INTERMITTENT_GEN_SCADA"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Next_Day_Intermittent_Gen_Scada",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "BIDS",
+            "BIDDAYOFFER"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "BIDS",
+            "BIDOFFERPERIOD_SPARSE"
+          ],
+          "version": 2
+        }
+      ],
+      "feed": "reports",
+      "folder": "Next_Day_Offer_Energy_SPARSE",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "BIDS",
+            "BIDDAYOFFER"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "BIDS",
+            "BIDOFFERPERIOD_SPARSE"
+          ],
+          "version": 2
+        }
+      ],
+      "feed": "reports",
+      "folder": "Next_Day_Offer_FCAS_SPARSE",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "PREDISPATCH",
+            "CONSTRAINT_SOLUTION"
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "PREDISPATCH",
+            "LOCAL_PRICE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "PREDISPATCH",
+            "OFFERTRK"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 4,
+          "report": [
+            "PREDISPATCH",
+            "UNIT_SOLUTION"
+          ],
+          "version": 5
+        }
+      ],
+      "feed": "reports",
+      "folder": "Next_Day_PreDispatch",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2017-08",
+          "last-release": "2020-08",
+          "months": 6,
+          "report": [
+            "PREDISPATCH",
+            "CONSTRAINT_SOLUTION"
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2018-06",
+          "last-release": "2020-08",
+          "months": 5,
+          "report": [
+            "PREDISPATCH",
+            "LOCAL_PRICE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2017-08",
+          "last-release": "2020-08",
+          "months": 6,
+          "report": [
+            "PREDISPATCH",
+            "MNSPBIDTRK"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2017-08",
+          "last-release": "2020-08",
+          "months": 6,
+          "report": [
+            "PREDISPATCH",
+            "OFFERTRK"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2017-08",
+          "last-release": "2020-08",
+          "months": 6,
+          "report": [
+            "PREDISPATCH",
+            "UNIT_SOLUTION"
+          ],
+          "version": 2
+        }
+      ],
+      "feed": "reports",
+      "folder": "Next_Day_PreDispatch/DUPLICATE",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "PREDISPATCH",
+            "CONSTRAINT_SOLUTION"
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "PREDISPATCH",
+            "LOCAL_PRICE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "PREDISPATCH",
+            "OFFERTRK"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "PREDISPATCH",
+            "UNIT_SOLUTION"
+          ],
+          "version": 5
+        }
+      ],
+      "feed": "reports",
+      "folder": "Next_Day_PreDispatchD",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2017-02",
+          "last-release": "2021-09",
+          "months": 56,
+          "report": [
+            "TRADING",
+            "UNIT_SOLUTION"
+          ],
+          "version": 2
+        }
+      ],
+      "feed": "reports",
+      "folder": "Next_Day_Trading",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "OPERATIONAL_DEMAND",
+            "ACTUAL5M"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Operational_Demand/ACTUAL_5MIN",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "OPERATIONAL_DEMAND",
+            "ACTUAL"
+          ],
+          "version": 3
+        }
+      ],
+      "feed": "reports",
+      "folder": "Operational_Demand/ACTUAL_DAILY",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "OPERATIONAL_DEMAND",
+            "ACTUAL"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Operational_Demand/ACTUAL_DAILY_AREA",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "OPERATIONAL_DEMAND",
+            "ACTUAL"
+          ],
+          "version": 3
+        }
+      ],
+      "feed": "reports",
+      "folder": "Operational_Demand/ACTUAL_HH",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "OPERATIONAL_DEMAND",
+            "ACTUAL"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Operational_Demand/ACTUAL_HH_AREA",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "OPERATIONAL_DEMAND",
+            "FORECAST"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Operational_Demand/FORECAST_HH",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "OPERATIONAL_DEMAND",
+            "FORECAST"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Operational_Demand/FORECAST_HH_AREA",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-01",
+          "last-release": "2026-10",
+          "months": 22,
+          "report": [
+            "OPERATIONAL_DEM_LESS_SNSG",
+            "ACTUAL"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Operational_Demand_Less_SNSG/ACTUAL_DAILY",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-01",
+          "last-release": "2026-10",
+          "months": 22,
+          "report": [
+            "OPERATIONAL_DEM_LESS_SNSG",
+            "ACTUAL"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Operational_Demand_Less_SNSG/ACTUAL_HH",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-01",
+          "last-release": "2026-05",
+          "months": 4,
+          "report": [
+            "OPERATIONAL_DEM_LESS_SNSG",
+            "ACTUAL"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Operational_Demand_Less_SNSG/ACTUAL_UPDATE",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "P5MIN",
+            "FCAS_REQ_CONSTRAINT"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "P5MIN",
+            "FCAS_REQ_RUN"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "P5MINFCST",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-03",
+          "last-release": "2026-06",
+          "months": 2,
+          "report": [
+            "P5MIN",
+            "FCAS_REQ_CONSTRAINT"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-03",
+          "last-release": "2026-06",
+          "months": 2,
+          "report": [
+            "P5MIN",
+            "FCAS_REQ_RUN"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "P5MINFCST/DUPLICATE",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "P5MIN",
+            "CASESOLUTION"
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "P5MIN",
+            "CONSTRAINTSOLUTION"
+          ],
+          "version": 6
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "P5MIN",
+            "INTERCONNECTORSOLN"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "P5MIN",
+            "LOCAL_PRICE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "P5MIN",
+            "REGIONSOLUTION"
+          ],
+          "version": 10
+        }
+      ],
+      "feed": "reports",
+      "folder": "P5_Reports",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-03",
+          "last-release": "2026-03",
+          "months": 1,
+          "report": [
+            "P5MIN",
+            "CASESOLUTION"
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2026-03",
+          "last-release": "2026-03",
+          "months": 1,
+          "report": [
+            "P5MIN",
+            "CONSTRAINTSOLUTION"
+          ],
+          "version": 6
+        },
+        {
+          "first-release": "2026-03",
+          "last-release": "2026-03",
+          "months": 1,
+          "report": [
+            "P5MIN",
+            "INTERCONNECTORSOLN"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2026-03",
+          "last-release": "2026-03",
+          "months": 1,
+          "report": [
+            "P5MIN",
+            "LOCAL_PRICE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-03",
+          "last-release": "2026-03",
+          "months": 1,
+          "report": [
+            "P5MIN",
+            "REGIONSOLUTION"
+          ],
+          "version": 10
+        }
+      ],
+      "feed": "reports",
+      "folder": "P5_Reports/DUPLICATE",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "PD7DAY",
+            "CASESOLUTION"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "PD7DAY",
+            "CONSTRAINTSOLUTION"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "PD7DAY",
+            "INTERCONNECTORSOLUTION"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "PD7DAY",
+            "MARKET_SUMMARY"
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "PD7DAY",
+            "PRICESOLUTION"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "PD7Day",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "PDPASA",
+            "CASESOLUTION"
+          ],
+          "version": 3
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "PDPASA",
+            "CONSTRAINTSOLUTION"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "PDPASA",
+            "INTERCONNECTORSOLN"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "PDPASA",
+            "REGIONSOLUTION"
+          ],
+          "version": 7
+        }
+      ],
+      "feed": "reports",
+      "folder": "PDPASA",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "PDPASA",
+            "DUIDAVAILABILITY"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "PDPASA_DUIDAvailability",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "PREDISPATCH",
+            "FCAS_REQ_CONSTRAINT"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "PREDISPATCH",
+            "FCAS_REQ_RUN"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "PREDISPATCHFCST",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [],
+      "feed": "reports",
+      "folder": "PasaSnap",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "PREDISPATCH",
+            "CASE_SOLUTION"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "PREDISPATCH",
+            "CONSTRAINT_SOLUTION"
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "PREDISPATCH",
+            "INTERCONNECTOR_SOLN"
+          ],
+          "version": 3
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "PREDISPATCH",
+            "LOCAL_PRICE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "PREDISPATCH",
+            "REGION_PRICES"
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "PREDISPATCH",
+            "REGION_SOLUTION"
+          ],
+          "version": 9
+        }
+      ],
+      "feed": "reports",
+      "folder": "PredispatchIS_Reports",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2016-10",
+          "last-release": "2019-07",
+          "months": 7,
+          "report": [
+            "PREDISPATCH",
+            "CASE_SOLUTION"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2016-10",
+          "last-release": "2019-07",
+          "months": 7,
+          "report": [
+            "PREDISPATCH",
+            "CONSTRAINT_SOLUTION"
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2016-10",
+          "last-release": "2019-07",
+          "months": 7,
+          "report": [
+            "PREDISPATCH",
+            "INTERCONNECTOR_SOLN"
+          ],
+          "version": 3
+        },
+        {
+          "first-release": "2016-10",
+          "last-release": "2019-07",
+          "months": 7,
+          "report": [
+            "PREDISPATCH",
+            "LOCAL_PRICE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2016-10",
+          "last-release": "2019-07",
+          "months": 7,
+          "report": [
+            "PREDISPATCH",
+            "REGION_PRICES"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2016-10",
+          "last-release": "2019-07",
+          "months": 7,
+          "report": [
+            "PREDISPATCH",
+            "REGION_SOLUTION"
+          ],
+          "version": 4
+        }
+      ],
+      "feed": "reports",
+      "folder": "PredispatchIS_Reports/DUPLICATE",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "PREDISPATCH",
+            "IRSR"
+          ],
+          "version": 2
+        }
+      ],
+      "feed": "reports",
+      "folder": "Predispatch_IRSR",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-07",
+          "last-release": "2026-07",
+          "months": 1,
+          "report": [
+            "PREDISPATCH",
+            "IRSR"
+          ],
+          "version": 2
+        }
+      ],
+      "feed": "reports",
+      "folder": "Predispatch_IRSR/DUPLICATE",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "PDCONS",
+            ""
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "PDIINT",
+            ""
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "PDINT",
+            ""
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "PDIREGION",
+            ""
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "PDREGION",
+            ""
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "PREDISPATCH",
+            "CASESOLUTION"
+          ],
+          "version": 2
+        }
+      ],
+      "feed": "reports",
+      "folder": "Predispatch_Reports",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2017-06",
+          "last-release": "2017-06",
+          "months": 1,
+          "report": [
+            "PDCONS",
+            ""
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2017-06",
+          "last-release": "2017-06",
+          "months": 1,
+          "report": [
+            "PDIINT",
+            ""
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2017-06",
+          "last-release": "2017-06",
+          "months": 1,
+          "report": [
+            "PDINT",
+            ""
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2017-06",
+          "last-release": "2017-06",
+          "months": 1,
+          "report": [
+            "PDIREGION",
+            ""
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2017-06",
+          "last-release": "2017-06",
+          "months": 1,
+          "report": [
+            "PDREGION",
+            ""
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2017-06",
+          "last-release": "2017-06",
+          "months": 1,
+          "report": [
+            "PREDISPATCH",
+            "CASESOLUTION"
+          ],
+          "version": 2
+        }
+      ],
+      "feed": "reports",
+      "folder": "Predispatch_Reports/DUPLICATE",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "PREDISPATCH",
+            "INTERCONNECTR_SENS"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "PREDISPATCH",
+            "PRICESENSITIVITIES"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Predispatch_Sensitivities",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-03",
+          "last-release": "2026-03",
+          "months": 1,
+          "report": [
+            "PREDISPATCH",
+            "INTERCONNECTR_SENS"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-03",
+          "last-release": "2026-03",
+          "months": 1,
+          "report": [
+            "PREDISPATCH",
+            "PRICESENSITIVITIES"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Predispatch_Sensitivities/DUPLICATE",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "DREGION",
+            ""
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "DREGION",
+            ""
+          ],
+          "version": 3
+        }
+      ],
+      "feed": "reports",
+      "folder": "Public_Prices",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "ROOFTOP",
+            "ACTUAL"
+          ],
+          "version": 2
+        }
+      ],
+      "feed": "reports",
+      "folder": "ROOFTOP_PV/ACTUAL",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "ROOFTOP",
+            "ACTUAL"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "ROOFTOP_PV/ACTUAL_AREA",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "ROOFTOP",
+            "FORECAST"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "ROOFTOP_PV/FORECAST",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "ROOFTOP",
+            "FORECAST"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "ROOFTOP_PV/FORECAST_AREA",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [],
+      "feed": "reports",
+      "folder": "Regional_Summary_Report",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "SEVENDAYOUTLOOK",
+            "PEAK"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "SEVENDAYOUTLOOK_FULL",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2017-02",
+          "last-release": "2017-02",
+          "months": 1,
+          "report": [
+            "SEVENDAYOUTLOOK",
+            "PEAK"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "SEVENDAYOUTLOOK_FULL/DUPLICATE",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "SEVENDAYOUTLOOK",
+            "PEAK"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "SEVENDAYOUTLOOK_PEAK",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-12",
+          "last-release": "2026-09",
+          "months": 4,
+          "report": [
+            "RESIDUE_PRICE_BID",
+            ""
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "SRA_Bids",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 5,
+          "report": [
+            "SRAFINANCIALS",
+            "RECONCILIATION_SUMMARY"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "SRA_NSR_RECONCILIATION",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2019-12",
+          "last-release": "2026-09",
+          "months": 28,
+          "report": [
+            "RESIDUE_PRICE_OFFER",
+            ""
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "SRA_Offers",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [],
+      "feed": "reports",
+      "folder": "SRA_Results",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-12",
+          "last-release": "2026-10",
+          "months": 11,
+          "report": [
+            "SSM",
+            "ENABLEMENT_COSTS"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "SSM_ENABLEMENT_COSTS",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-12",
+          "last-release": "2026-10",
+          "months": 11,
+          "report": [
+            "SSM",
+            "ENABLEMENT_PERIOD"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "SSM_ENABLEMENT_PERIOD",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "STPASA",
+            "DUIDAVAILABILITY"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "STPASA_DUIDAvailability",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2017-02",
+          "last-release": "2026-10",
+          "months": 117,
+          "report": [
+            "SETTLEMENTS",
+            "ANCILLARY_SUMMARY"
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2017-02",
+          "last-release": "2024-12",
+          "months": 95,
+          "report": [
+            "SETTLEMENTS",
+            "CPDATAREGION"
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2017-02",
+          "last-release": "2021-04",
+          "months": 51,
+          "report": [
+            "SETTLEMENTS",
+            "DAYTRACK"
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2021-04",
+          "last-release": "2025-06",
+          "months": 51,
+          "report": [
+            "SETTLEMENTS",
+            "DAYTRACK"
+          ],
+          "version": 6
+        },
+        {
+          "first-release": "2025-06",
+          "last-release": "2026-10",
+          "months": 17,
+          "report": [
+            "SETTLEMENTS",
+            "DAYTRACK"
+          ],
+          "version": 7
+        },
+        {
+          "first-release": "2024-06",
+          "last-release": "2026-10",
+          "months": 29,
+          "report": [
+            "SETTLEMENTS",
+            "ENERGY_REGION_SUMMARY"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2017-02",
+          "last-release": "2024-05",
+          "months": 88,
+          "report": [
+            "SETTLEMENTS",
+            "FCASREGIONRECOVERY"
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2024-05",
+          "last-release": "2026-10",
+          "months": 30,
+          "report": [
+            "SETTLEMENTS",
+            "FCASREGIONRECOVERY"
+          ],
+          "version": 6
+        },
+        {
+          "first-release": "2026-02",
+          "last-release": "2026-08",
+          "months": 6,
+          "report": [
+            "SETTLEMENTS",
+            "FCAS_CLAWBACK_REQ"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-02",
+          "last-release": "2026-08",
+          "months": 6,
+          "report": [
+            "SETTLEMENTS",
+            "FCAS_CLAWBACK_RUN_TRK"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2017-02",
+          "last-release": "2024-12",
+          "months": 95,
+          "report": [
+            "SETTLEMENTS",
+            "GENDATAREGION"
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2017-02",
+          "last-release": "2024-05",
+          "months": 88,
+          "report": [
+            "SETTLEMENTS",
+            "INTRAREGIONRESIDUES"
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2024-05",
+          "last-release": "2026-10",
+          "months": 30,
+          "report": [
+            "SETTLEMENTS",
+            "INTRAREGIONRESIDUES"
+          ],
+          "version": 6
+        },
+        {
+          "first-release": "2017-02",
+          "last-release": "2026-10",
+          "months": 117,
+          "report": [
+            "SETTLEMENTS",
+            "IRSURPLUS"
+          ],
+          "version": 6
+        },
+        {
+          "first-release": "2021-08",
+          "last-release": "2026-10",
+          "months": 63,
+          "report": [
+            "SETTLEMENTS",
+            "LOCALAREAENERGY"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2021-10",
+          "last-release": "2026-10",
+          "months": 61,
+          "report": [
+            "SETTLEMENTS",
+            "LOCALAREATNI"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2017-02",
+          "last-release": "2026-10",
+          "months": 117,
+          "report": [
+            "SETTLEMENTS",
+            "NMAS_RECOVERY_RBF"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2017-02",
+          "last-release": "2021-10",
+          "months": 57,
+          "report": [
+            "SETTLEMENTS",
+            "SET_FCAS_REGULATION_TRK"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2021-10",
+          "last-release": "2025-06",
+          "months": 45,
+          "report": [
+            "SETTLEMENTS",
+            "SET_FCAS_REGULATION_TRK"
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2025-06",
+          "last-release": "2026-10",
+          "months": 17,
+          "report": [
+            "SETTLEMENTS",
+            "SET_FCAS_REGULATION_TRK"
+          ],
+          "version": 3
+        },
+        {
+          "first-release": "2021-10",
+          "last-release": "2024-12",
+          "months": 39,
+          "report": [
+            "SETTLEMENTS",
+            "SUBST_RUN_VERSION"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Settlements",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "STPASA",
+            "CASESOLUTION"
+          ],
+          "version": 3
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "STPASA",
+            "CONSTRAINTSOLUTION"
+          ],
+          "version": 3
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "STPASA",
+            "INTERCONNECTORSOLN"
+          ],
+          "version": 3
+        },
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "STPASA",
+            "REGIONSOLUTION"
+          ],
+          "version": 7
+        }
+      ],
+      "feed": "reports",
+      "folder": "Short_Term_PASA_Reports",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-05",
+          "last-release": "2026-07",
+          "months": 2,
+          "report": [
+            "STPASA",
+            "CASESOLUTION"
+          ],
+          "version": 3
+        },
+        {
+          "first-release": "2026-05",
+          "last-release": "2026-07",
+          "months": 2,
+          "report": [
+            "STPASA",
+            "CONSTRAINTSOLUTION"
+          ],
+          "version": 3
+        },
+        {
+          "first-release": "2026-05",
+          "last-release": "2026-07",
+          "months": 2,
+          "report": [
+            "STPASA",
+            "INTERCONNECTORSOLN"
+          ],
+          "version": 3
+        },
+        {
+          "first-release": "2026-05",
+          "last-release": "2026-07",
+          "months": 2,
+          "report": [
+            "STPASA",
+            "REGIONSOLUTION"
+          ],
+          "version": 7
+        }
+      ],
+      "feed": "reports",
+      "folder": "Short_Term_PASA_Reports/DUPLICATE",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [],
+      "feed": "reports",
+      "folder": "SupplyDemand",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "TRADING",
+            "INTERCONNECTORRES"
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "TRADING",
+            "PRICE"
+          ],
+          "version": 3
+        }
+      ],
+      "feed": "reports",
+      "folder": "TradingIS_Reports",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-03",
+          "last-release": "2026-03",
+          "months": 1,
+          "report": [
+            "TRADING",
+            "INTERCONNECTORRES"
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2026-03",
+          "last-release": "2026-03",
+          "months": 1,
+          "report": [
+            "TRADING",
+            "PRICE"
+          ],
+          "version": 3
+        }
+      ],
+      "feed": "reports",
+      "folder": "TradingIS_Reports/DUPLICATE",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "TRADING",
+            "CUMULATIVE_PRICE"
+          ],
+          "version": 2
+        }
+      ],
+      "feed": "reports",
+      "folder": "Trading_Cumulative_Price",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2020-08",
+          "last-release": "2020-08",
+          "months": 1,
+          "report": [
+            "TRADING",
+            "CUMULATIVE_PRICE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "TRADING",
+            "CUMULATIVE_PRICE"
+          ],
+          "version": 2
+        }
+      ],
+      "feed": "reports",
+      "folder": "Trading_Cumulative_Price/DUPLICATE",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "TRADING",
+            "IRSR"
+          ],
+          "version": 2
+        }
+      ],
+      "feed": "reports",
+      "folder": "Trading_IRSR",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "TRADING",
+            "VWAFCASPRICES"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Vwa_Fcas_Prices",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2021-10",
+          "last-release": "2026-10",
+          "months": 61,
+          "report": [
+            "DAILY",
+            "WDR_NO_SCADA"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "WDR_CAPACITY_NO_SCADA",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [],
+      "feed": "reports",
+      "folder": "Weekly_Constraint_Reports",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2016-12",
+          "last-release": "2016-12",
+          "months": 1,
+          "report": [
+            "YESTBID",
+            "BIDDAYOFFER"
+          ],
+          "version": 5
+        },
+        {
+          "first-release": "2016-12",
+          "last-release": "2016-12",
+          "months": 1,
+          "report": [
+            "YESTBID",
+            "BIDPEROFFER"
+          ],
+          "version": 3
+        }
+      ],
+      "feed": "reports",
+      "folder": "Yesterdays_Bids_Reports/DUPLICATE",
+      "label": "CURRENT",
+      "root": "Reports/CURRENT"
+    }
+  ],
+  "x-format": 3
+}

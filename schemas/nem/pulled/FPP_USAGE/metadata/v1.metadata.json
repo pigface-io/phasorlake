@@ -1,13 +1,13 @@
 {
-  "current-schema-id": 2,
-  "current-snapshot-id": 4579136999796493969,
+  "current-schema-id": 3,
+  "current-snapshot-id": 2500807428575730806,
   "default-sort-order-id": 0,
   "default-spec-id": 0,
   "format-version": 3,
   "last-column-id": 10,
   "last-partition-id": 999,
-  "last-sequence-number": 3,
-  "last-updated-ms": 1777557600002,
+  "last-sequence-number": 28,
+  "last-updated-ms": 1790776800027,
   "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_USAGE",
   "metadata-log": [],
   "next-row-id": 0,
@@ -36,7 +36,7 @@
   },
   "refs": {
     "main": {
-      "snapshot-id": 4579136999796493969,
+      "snapshot-id": 2500807428575730806,
       "type": "branch"
     }
   },
@@ -213,6 +213,153 @@
         },
         {
           "doc": "Usage (calculation of the proportion of regulation FCAS that was calculated to be used)",
+          "id": 7,
+          "name": "USAGE",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The reason flag showing the decision matrix for the usage calculation Supported values are: 0 = Usage is calculated based on good input data 1 = Usage is 0 as FM is unreliable 2 = Usage is 0 as the percentage of units with unavailable input or bad data is greater than the threshold percentage",
+          "id": 8,
+          "name": "USAGE_REASON_FLAG",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "doc": "Usage (calculation of the proportion of regulation FCAS that was calculated to be used)",
+          "id": 9,
+          "name": "USAGE_VALUE",
+          "required": false,
+          "type": "decimal(18, 8)"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 2,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Date and time of the trading interval (DD/MM/YYYY HH24:MI:SS) fixed to the UTC+10 time zone (NEM time)",
+          "id": 1,
+          "name": "INTERVAL_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Constraint ID (binding constraint ID from FCAS data used in FPP calculations)",
+          "id": 2,
+          "name": "CONSTRAINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Version (FPP run number from the FPP database)",
+          "id": 3,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "doc": "Bid type (the bid type saved in relation to constraint ID from FCAS data used in FPP calculations)",
+          "id": 4,
+          "name": "BIDTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Enabled regulation MW used in the FPP calculation (from FPP database)",
+          "id": 5,
+          "name": "REGULATION_MW",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Maximum used regulation MW value (quantity of regulation FCAS that was calculated to be used in MW)",
+          "id": 6,
+          "name": "USED_MW",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Usage (calculation of the proportion of regulation FCAS that was calculated to be used)",
+          "id": 7,
+          "name": "USAGE",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The reason flag showing the decision matrix for the usage calculation Supported values are: 0 = Usage is calculated based on good input data 1 = Usage is 0 as FM is unreliable 2 = Usage is 0 as the percentage of units with unavailable input or bad data is greater than the threshold percentage",
+          "id": 8,
+          "name": "USAGE_REASON_FLAG",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "doc": "Usage (calculation of the proportion of regulation FCAS that was calculated to be used)",
+          "id": 9,
+          "name": "USAGE_VALUE",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 10,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 3,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Date and time of the trading interval (DD/MM/YYYY HH24:MI:SS) fixed to the UTC+10 time zone (NEM time)",
+          "id": 1,
+          "name": "INTERVAL_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Constraint ID (binding constraint ID from FCAS data used in FPP calculations)",
+          "id": 2,
+          "name": "CONSTRAINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Version (FPP run number from the FPP database)",
+          "id": 3,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "doc": "Bid type (the bid type saved in relation to constraint ID from FCAS data used in FPP calculations)",
+          "id": 4,
+          "name": "BIDTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Enabled regulation MW used in the FPP calculation (from FPP database)",
+          "id": 5,
+          "name": "REGULATION_MW",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Maximum used regulation MW value (quantity of regulation FCAS that was calculated to be used in MW)",
+          "id": 6,
+          "name": "USED_MW",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Usage (calculation of the proportion of regulation FCAS that was calculated to be used)",
           "id": 9,
           "name": "USAGE_VALUE",
           "required": false,
@@ -234,7 +381,7 @@
         }
       ],
       "identifier-field-ids": [],
-      "schema-id": 2,
+      "schema-id": 4,
       "type": "struct"
     }
   ],
@@ -248,8 +395,108 @@
       "timestamp-ms": 1743429600001
     },
     {
-      "snapshot-id": 4579136999796493969,
-      "timestamp-ms": 1777557600002
+      "snapshot-id": 8536737252366017905,
+      "timestamp-ms": 1759240800002
+    },
+    {
+      "snapshot-id": 8308201316834203386,
+      "timestamp-ms": 1759240800003
+    },
+    {
+      "snapshot-id": 1587952004172298750,
+      "timestamp-ms": 1761919200004
+    },
+    {
+      "snapshot-id": 1842625288581900265,
+      "timestamp-ms": 1761919200005
+    },
+    {
+      "snapshot-id": 7935716779169417517,
+      "timestamp-ms": 1764511200006
+    },
+    {
+      "snapshot-id": 5587154748694270384,
+      "timestamp-ms": 1764511200007
+    },
+    {
+      "snapshot-id": 3153336265092903560,
+      "timestamp-ms": 1767189600008
+    },
+    {
+      "snapshot-id": 6819760033240982473,
+      "timestamp-ms": 1767189600009
+    },
+    {
+      "snapshot-id": 3650155234696508737,
+      "timestamp-ms": 1769868000010
+    },
+    {
+      "snapshot-id": 3232178434582521854,
+      "timestamp-ms": 1769868000011
+    },
+    {
+      "snapshot-id": 46249846784041879,
+      "timestamp-ms": 1772287200012
+    },
+    {
+      "snapshot-id": 6941494636475376700,
+      "timestamp-ms": 1772287200013
+    },
+    {
+      "snapshot-id": 8295477212132575762,
+      "timestamp-ms": 1774965600014
+    },
+    {
+      "snapshot-id": 576159099095212838,
+      "timestamp-ms": 1774965600015
+    },
+    {
+      "snapshot-id": 3238802084712989603,
+      "timestamp-ms": 1777557600016
+    },
+    {
+      "snapshot-id": 2253770854070317521,
+      "timestamp-ms": 1777557600017
+    },
+    {
+      "snapshot-id": 8038791241915107545,
+      "timestamp-ms": 1777557600018
+    },
+    {
+      "snapshot-id": 5594336327054491267,
+      "timestamp-ms": 1780236000019
+    },
+    {
+      "snapshot-id": 5604252240576424695,
+      "timestamp-ms": 1780236000020
+    },
+    {
+      "snapshot-id": 526924138937942631,
+      "timestamp-ms": 1782828000021
+    },
+    {
+      "snapshot-id": 4758699642111676662,
+      "timestamp-ms": 1782828000022
+    },
+    {
+      "snapshot-id": 2456815507861307657,
+      "timestamp-ms": 1785506400023
+    },
+    {
+      "snapshot-id": 332560140259642980,
+      "timestamp-ms": 1785506400024
+    },
+    {
+      "snapshot-id": 7429957998244270983,
+      "timestamp-ms": 1788184800025
+    },
+    {
+      "snapshot-id": 5228152618100122796,
+      "timestamp-ms": 1788184800026
+    },
+    {
+      "snapshot-id": 2500807428575730806,
+      "timestamp-ms": 1790776800027
     }
   ],
   "snapshots": [
@@ -290,7 +537,7 @@
       "snapshot-id": 5388768332010688698,
       "summary": {
         "operation": "append",
-        "utilake.files": "13",
+        "utilake.files": "6",
         "utilake.from.file": "PUBLIC_ARCHIVE#FPP_USAGE#FILE01#202504010000.zip",
         "utilake.from.release": "2025-04",
         "utilake.from.sha256": "2c53bfa5021f275a947a54e452c6e02fc1f29fb62871e823adb23511d76d0a73",
@@ -298,12 +545,12 @@
         "utilake.kinds": "[\"archive\"]",
         "utilake.report-subtype": "FPP_USAGE",
         "utilake.report-type": "FPP",
-        "utilake.rows": "4950103",
-        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_USAGE#FILE01#202604010000.zip",
-        "utilake.to.release": "2026-04",
-        "utilake.to.sha256": "4673f2c284fe93e7c45c54ced4077206d1b1c31002fb56cb5d9afe5aec8c448d",
-        "utilake.to.time": "2026-05-08T15:35:00+10:00",
-        "utilake.total-rows": "5315261",
+        "utilake.rows": "1554500",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_USAGE#FILE01#202509010000.zip",
+        "utilake.to.release": "2025-09",
+        "utilake.to.sha256": "9d40888be54b8913529693680537981c2c6bbc32e9ea769b4c9f0ba291c46c8b",
+        "utilake.to.time": "2025-10-08T03:50:00+10:00",
+        "utilake.total-rows": "1919658",
         "utilake.version": "1"
       },
       "timestamp-ms": 1743429600001
@@ -311,14 +558,462 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_USAGE/metadata/snap-4579136999796493969-3-0277df85-1205-8acb-a05a-33d8766bc3c0.avro",
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_USAGE/metadata/snap-8536737252366017905-3-0277df85-1205-8acb-a05a-33d8766bc3c0.avro",
       "parent-snapshot-id": 5388768332010688698,
       "schema-id": 2,
       "sequence-number": 3,
-      "snapshot-id": 4579136999796493969,
+      "snapshot-id": 8536737252366017905,
       "summary": {
         "operation": "append",
-        "utilake.files": "5",
+        "utilake.files": "6911",
+        "utilake.from.file": "PUBLIC_FPP_RUN_20251008.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "6514aecfc4190a90233a8ca0b5e16068c894ce24b6f81410ffa105458d29b4cf",
+        "utilake.from.time": "2025-10-08T00:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "FPP_USAGE",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "27426",
+        "utilake.to.file": "PUBLIC_FPP_RUN_20251031.zip",
+        "utilake.to.release": "2025-10",
+        "utilake.to.sha256": "7e7302c69a199c29b1235fcb068fda75132a612929340dffc37d626103c2a5ee",
+        "utilake.to.time": "2025-10-31T23:55:00+10:00",
+        "utilake.total-rows": "1947084",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1759240800002
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_USAGE/metadata/snap-8308201316834203386-4-0277df85-1205-8acb-a05a-33d8766bc3c0.avro",
+      "parent-snapshot-id": 8536737252366017905,
+      "schema-id": 1,
+      "sequence-number": 4,
+      "snapshot-id": 8308201316834203386,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_USAGE#FILE01#202510010000.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "2d72498441adad62b4dcf7003048ce329a813f43160d3733d9fd84f109bf6c27",
+        "utilake.from.time": "2024-12-09T11:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "FPP_USAGE",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "392087",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_USAGE#FILE01#202510010000.zip",
+        "utilake.to.release": "2025-10",
+        "utilake.to.sha256": "2d72498441adad62b4dcf7003048ce329a813f43160d3733d9fd84f109bf6c27",
+        "utilake.to.time": "2025-11-18T19:05:00+10:00",
+        "utilake.total-rows": "2339171",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1759240800003
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_USAGE/metadata/snap-1587952004172298750-5-0277df85-1205-8acb-a05a-33d8766bc3c0.avro",
+      "parent-snapshot-id": 8308201316834203386,
+      "schema-id": 2,
+      "sequence-number": 5,
+      "snapshot-id": 1587952004172298750,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8640",
+        "utilake.from.file": "PUBLIC_FPP_RUN_20251031.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "7e7302c69a199c29b1235fcb068fda75132a612929340dffc37d626103c2a5ee",
+        "utilake.from.time": "2025-11-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "FPP_USAGE",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "34455",
+        "utilake.to.file": "PUBLIC_FPP_RUN_20251130.zip",
+        "utilake.to.release": "2025-11",
+        "utilake.to.sha256": "0be39772f87efeecc3e266bdb8a6801c32ce9426b5bc16213c8f7e6fa334490a",
+        "utilake.to.time": "2025-11-30T23:55:00+10:00",
+        "utilake.total-rows": "2373626",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1761919200004
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_USAGE/metadata/snap-1842625288581900265-6-0277df85-1205-8acb-a05a-33d8766bc3c0.avro",
+      "parent-snapshot-id": 1587952004172298750,
+      "schema-id": 1,
+      "sequence-number": 6,
+      "snapshot-id": 1842625288581900265,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_USAGE#FILE01#202511010000.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "fac77f3107b81def656056992287ebdce7baf071401c60d9b7dc1ba77df837a1",
+        "utilake.from.time": "2024-12-09T11:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "FPP_USAGE",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "414702",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_USAGE#FILE01#202511010000.zip",
+        "utilake.to.release": "2025-11",
+        "utilake.to.sha256": "fac77f3107b81def656056992287ebdce7baf071401c60d9b7dc1ba77df837a1",
+        "utilake.to.time": "2025-12-08T15:25:00+10:00",
+        "utilake.total-rows": "2788328",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1761919200005
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_USAGE/metadata/snap-7935716779169417517-7-0277df85-1205-8acb-a05a-33d8766bc3c0.avro",
+      "parent-snapshot-id": 1842625288581900265,
+      "schema-id": 2,
+      "sequence-number": 7,
+      "snapshot-id": 7935716779169417517,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8928",
+        "utilake.from.file": "PUBLIC_FPP_RUN_20251130.zip",
+        "utilake.from.release": "2025-12",
+        "utilake.from.sha256": "0be39772f87efeecc3e266bdb8a6801c32ce9426b5bc16213c8f7e6fa334490a",
+        "utilake.from.time": "2025-12-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "FPP_USAGE",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "35207",
+        "utilake.to.file": "PUBLIC_FPP_RUN_20251231.zip",
+        "utilake.to.release": "2025-12",
+        "utilake.to.sha256": "905b6e0e2f55be732dc8f57b6deff97bc27154d6874f4f880e686459337ce751",
+        "utilake.to.time": "2025-12-31T23:55:00+10:00",
+        "utilake.total-rows": "2823535",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1764511200006
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_USAGE/metadata/snap-5587154748694270384-8-0277df85-1205-8acb-a05a-33d8766bc3c0.avro",
+      "parent-snapshot-id": 7935716779169417517,
+      "schema-id": 1,
+      "sequence-number": 8,
+      "snapshot-id": 5587154748694270384,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_USAGE#FILE01#202512010000.zip",
+        "utilake.from.release": "2025-12",
+        "utilake.from.sha256": "cad8bfedc4396a5f7c4e4c0b21d7d410e6702dce3d94c4642ca410a1570c36f7",
+        "utilake.from.time": "2024-12-09T11:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "FPP_USAGE",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "454289",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_USAGE#FILE01#202512010000.zip",
+        "utilake.to.release": "2025-12",
+        "utilake.to.sha256": "cad8bfedc4396a5f7c4e4c0b21d7d410e6702dce3d94c4642ca410a1570c36f7",
+        "utilake.to.time": "2026-01-12T11:15:00+10:00",
+        "utilake.total-rows": "3277824",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1764511200007
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_USAGE/metadata/snap-3153336265092903560-9-0277df85-1205-8acb-a05a-33d8766bc3c0.avro",
+      "parent-snapshot-id": 5587154748694270384,
+      "schema-id": 2,
+      "sequence-number": 9,
+      "snapshot-id": 3153336265092903560,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8928",
+        "utilake.from.file": "PUBLIC_FPP_RUN_20251231.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "905b6e0e2f55be732dc8f57b6deff97bc27154d6874f4f880e686459337ce751",
+        "utilake.from.time": "2026-01-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "FPP_USAGE",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "35014",
+        "utilake.to.file": "PUBLIC_FPP_RUN_20260131.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "05446f6cb82364545df7a8161db5acfdbef9fe337fc21b91763677a2f2b627bf",
+        "utilake.to.time": "2026-01-31T23:55:00+10:00",
+        "utilake.total-rows": "3312838",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1767189600008
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_USAGE/metadata/snap-6819760033240982473-10-0277df85-1205-8acb-a05a-33d8766bc3c0.avro",
+      "parent-snapshot-id": 3153336265092903560,
+      "schema-id": 1,
+      "sequence-number": 10,
+      "snapshot-id": 6819760033240982473,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_USAGE#FILE01#202601010000.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "70697fb924f7fe2f3eff20d616108c1e2420126d742991f6bb73705924a38a55",
+        "utilake.from.time": "2024-12-09T11:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "FPP_USAGE",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "486156",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_USAGE#FILE01#202601010000.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "70697fb924f7fe2f3eff20d616108c1e2420126d742991f6bb73705924a38a55",
+        "utilake.to.time": "2026-02-09T18:45:00+10:00",
+        "utilake.total-rows": "3798994",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1767189600009
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_USAGE/metadata/snap-3650155234696508737-11-0277df85-1205-8acb-a05a-33d8766bc3c0.avro",
+      "parent-snapshot-id": 6819760033240982473,
+      "schema-id": 2,
+      "sequence-number": 11,
+      "snapshot-id": 3650155234696508737,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8065",
+        "utilake.from.file": "PUBLIC_FPP_RUN_20260131.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "05446f6cb82364545df7a8161db5acfdbef9fe337fc21b91763677a2f2b627bf",
+        "utilake.from.time": "2026-02-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "FPP_USAGE",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "31391",
+        "utilake.to.file": "PUBLIC_FPP_RUN_20260228.zip",
+        "utilake.to.release": "2026-02",
+        "utilake.to.sha256": "d240aea655df922baa5bd272d923b10d5f636f5cbb1bb66307d2fc586fe83675",
+        "utilake.to.time": "2026-02-28T23:55:00+10:00",
+        "utilake.total-rows": "3830385",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1769868000010
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_USAGE/metadata/snap-3232178434582521854-12-0277df85-1205-8acb-a05a-33d8766bc3c0.avro",
+      "parent-snapshot-id": 3650155234696508737,
+      "schema-id": 1,
+      "sequence-number": 12,
+      "snapshot-id": 3232178434582521854,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_USAGE#FILE01#202602010000.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "6771b8550cde9ba052dca9bd431133771c64b816a3eaab3fba4409d1d5cbb8a6",
+        "utilake.from.time": "2024-12-09T11:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "FPP_USAGE",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "517269",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_USAGE#FILE01#202602010000.zip",
+        "utilake.to.release": "2026-02",
+        "utilake.to.sha256": "6771b8550cde9ba052dca9bd431133771c64b816a3eaab3fba4409d1d5cbb8a6",
+        "utilake.to.time": "2026-03-09T12:30:00+10:00",
+        "utilake.total-rows": "4347654",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1769868000011
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_USAGE/metadata/snap-46249846784041879-13-0277df85-1205-8acb-a05a-33d8766bc3c0.avro",
+      "parent-snapshot-id": 3232178434582521854,
+      "schema-id": 2,
+      "sequence-number": 13,
+      "snapshot-id": 46249846784041879,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8928",
+        "utilake.from.file": "PUBLIC_FPP_RUN_20260228.zip",
+        "utilake.from.release": "2026-03",
+        "utilake.from.sha256": "d240aea655df922baa5bd272d923b10d5f636f5cbb1bb66307d2fc586fe83675",
+        "utilake.from.time": "2026-03-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "FPP_USAGE",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "34715",
+        "utilake.to.file": "PUBLIC_FPP_RUN_20260331.zip",
+        "utilake.to.release": "2026-03",
+        "utilake.to.sha256": "5d94e86971b5ba232ab46d7e2a533c71ff6947dd89bb939a84d89f50c17a22fd",
+        "utilake.to.time": "2026-03-31T23:55:00+10:00",
+        "utilake.total-rows": "4382369",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1772287200012
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_USAGE/metadata/snap-6941494636475376700-14-0277df85-1205-8acb-a05a-33d8766bc3c0.avro",
+      "parent-snapshot-id": 46249846784041879,
+      "schema-id": 1,
+      "sequence-number": 14,
+      "snapshot-id": 6941494636475376700,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_USAGE#FILE01#202603010000.zip",
+        "utilake.from.release": "2026-03",
+        "utilake.from.sha256": "c393b3c58c4e68f7b3e4a590e07f094bfdc38f964f92a42e600607d0a2e6e6a4",
+        "utilake.from.time": "2024-12-09T11:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "FPP_USAGE",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "545523",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_USAGE#FILE01#202603010000.zip",
+        "utilake.to.release": "2026-03",
+        "utilake.to.sha256": "c393b3c58c4e68f7b3e4a590e07f094bfdc38f964f92a42e600607d0a2e6e6a4",
+        "utilake.to.time": "2026-04-07T14:50:00+10:00",
+        "utilake.total-rows": "4927892",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1772287200013
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_USAGE/metadata/snap-8295477212132575762-15-0277df85-1205-8acb-a05a-33d8766bc3c0.avro",
+      "parent-snapshot-id": 6941494636475376700,
+      "schema-id": 2,
+      "sequence-number": 15,
+      "snapshot-id": 8295477212132575762,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8640",
+        "utilake.from.file": "PUBLIC_FPP_RUN_20260331.zip",
+        "utilake.from.release": "2026-04",
+        "utilake.from.sha256": "5d94e86971b5ba232ab46d7e2a533c71ff6947dd89bb939a84d89f50c17a22fd",
+        "utilake.from.time": "2026-04-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "FPP_USAGE",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "34093",
+        "utilake.to.file": "PUBLIC_FPP_RUN_20260430.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "e6f5b92b2458ad26758ebf6e794577e07f1738ffc9fa2b8ce5fb8c08ac7dd395",
+        "utilake.to.time": "2026-04-30T23:55:00+10:00",
+        "utilake.total-rows": "4961985",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1774965600014
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_USAGE/metadata/snap-576159099095212838-16-0277df85-1205-8acb-a05a-33d8766bc3c0.avro",
+      "parent-snapshot-id": 8295477212132575762,
+      "schema-id": 1,
+      "sequence-number": 16,
+      "snapshot-id": 576159099095212838,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_USAGE#FILE01#202604010000.zip",
+        "utilake.from.release": "2026-04",
+        "utilake.from.sha256": "4673f2c284fe93e7c45c54ced4077206d1b1c31002fb56cb5d9afe5aec8c448d",
+        "utilake.from.time": "2024-12-09T11:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "FPP_USAGE",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "585577",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_USAGE#FILE01#202604010000.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "4673f2c284fe93e7c45c54ced4077206d1b1c31002fb56cb5d9afe5aec8c448d",
+        "utilake.to.time": "2026-05-08T15:35:00+10:00",
+        "utilake.total-rows": "5547562",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1774965600015
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_USAGE/metadata/snap-3238802084712989603-17-0277df85-1205-8acb-a05a-33d8766bc3c0.avro",
+      "parent-snapshot-id": 576159099095212838,
+      "schema-id": 2,
+      "sequence-number": 17,
+      "snapshot-id": 3238802084712989603,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "3875",
+        "utilake.from.file": "PUBLIC_FPP_RUN_20260430.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "e6f5b92b2458ad26758ebf6e794577e07f1738ffc9fa2b8ce5fb8c08ac7dd395",
+        "utilake.from.time": "2026-05-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "FPP_USAGE",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "15439",
+        "utilake.to.file": "PUBLIC_FPP_RUN_20260514.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "044f7c7f474ee59cec1dc88624cb7b3bf35c4551ccc375a51314993b719a644b",
+        "utilake.to.time": "2026-05-14T10:50:00+10:00",
+        "utilake.total-rows": "5563001",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1777557600016
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_USAGE/metadata/snap-2253770854070317521-18-0277df85-1205-8acb-a05a-33d8766bc3c0.avro",
+      "parent-snapshot-id": 3238802084712989603,
+      "schema-id": 3,
+      "sequence-number": 18,
+      "snapshot-id": 2253770854070317521,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "5055",
+        "utilake.from.file": "PUBLIC_FPP_RUN_20260514.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "044f7c7f474ee59cec1dc88624cb7b3bf35c4551ccc375a51314993b719a644b",
+        "utilake.from.time": "2026-05-14T10:55:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "FPP_USAGE",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "20220",
+        "utilake.to.file": "PUBLIC_FPP_RUN_20260531.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "67a0a53e20a0a2c955993526cb91d5abd85943e9d771cde1c678b8377b4fd10d",
+        "utilake.to.time": "2026-05-31T23:55:00+10:00",
+        "utilake.total-rows": "5583221",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1777557600017
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_USAGE/metadata/snap-8038791241915107545-19-0277df85-1205-8acb-a05a-33d8766bc3c0.avro",
+      "parent-snapshot-id": 2253770854070317521,
+      "schema-id": 4,
+      "sequence-number": 19,
+      "snapshot-id": 8038791241915107545,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
         "utilake.from.file": "PUBLIC_ARCHIVE#FPP_USAGE#FILE01#202605010000.zip",
         "utilake.from.release": "2026-05",
         "utilake.from.sha256": "031ef63d404aeb7ad6ffdf40f472f8acec2d4a4574cbb8bb856108bd98007102",
@@ -326,15 +1021,267 @@
         "utilake.kinds": "[\"archive\"]",
         "utilake.report-subtype": "FPP_USAGE",
         "utilake.report-type": "FPP",
-        "utilake.rows": "2039857",
+        "utilake.rows": "622399",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_USAGE#FILE01#202605010000.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "031ef63d404aeb7ad6ffdf40f472f8acec2d4a4574cbb8bb856108bd98007102",
+        "utilake.to.time": "2026-06-09T14:55:00+10:00",
+        "utilake.total-rows": "6205620",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1777557600018
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_USAGE/metadata/snap-5594336327054491267-20-0277df85-1205-8acb-a05a-33d8766bc3c0.avro",
+      "parent-snapshot-id": 8038791241915107545,
+      "schema-id": 3,
+      "sequence-number": 20,
+      "snapshot-id": 5594336327054491267,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8641",
+        "utilake.from.file": "PUBLIC_FPP_RUN_202606250925_0000000524184631.zip",
+        "utilake.from.release": "2026-06",
+        "utilake.from.sha256": "60663adfbaa957ee98a7fec7d96e55ae14179ae36bcf716fa0b0c9a918be90a1",
+        "utilake.from.time": "2026-06-25T09:25:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "FPP_USAGE",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "34417",
+        "utilake.to.file": "PUBLIC_FPP_RUN_20260630.zip",
+        "utilake.to.release": "2026-06",
+        "utilake.to.sha256": "01bebd8f15763d097d03818961a55dd6aaafcabae7cc840ece3065d04573b732",
+        "utilake.to.time": "2026-06-30T23:55:00+10:00",
+        "utilake.total-rows": "6240037",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1780236000019
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_USAGE/metadata/snap-5604252240576424695-21-0277df85-1205-8acb-a05a-33d8766bc3c0.avro",
+      "parent-snapshot-id": 5594336327054491267,
+      "schema-id": 4,
+      "sequence-number": 21,
+      "snapshot-id": 5604252240576424695,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_USAGE#FILE01#202606010000.zip",
+        "utilake.from.release": "2026-06",
+        "utilake.from.sha256": "fc2bc7f65ce406c6721bd2037e9b3bc30b909d9bd9ac958cdb7390ed0d6cb0a1",
+        "utilake.from.time": "2024-12-09T11:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "FPP_USAGE",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "655975",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_USAGE#FILE01#202606010000.zip",
+        "utilake.to.release": "2026-06",
+        "utilake.to.sha256": "fc2bc7f65ce406c6721bd2037e9b3bc30b909d9bd9ac958cdb7390ed0d6cb0a1",
+        "utilake.to.time": "2026-07-08T22:30:00+10:00",
+        "utilake.total-rows": "6896012",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1780236000020
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_USAGE/metadata/snap-526924138937942631-22-0277df85-1205-8acb-a05a-33d8766bc3c0.avro",
+      "parent-snapshot-id": 5604252240576424695,
+      "schema-id": 3,
+      "sequence-number": 22,
+      "snapshot-id": 526924138937942631,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8928",
+        "utilake.from.file": "PUBLIC_FPP_RUN_20260630.zip",
+        "utilake.from.release": "2026-07",
+        "utilake.from.sha256": "01bebd8f15763d097d03818961a55dd6aaafcabae7cc840ece3065d04573b732",
+        "utilake.from.time": "2026-07-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "FPP_USAGE",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "35573",
+        "utilake.to.file": "PUBLIC_FPP_RUN_20260731.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "48c723f427ba6f46038ed14b761dcaf25dfdc2ecb0776eb01b899efe05bc153f",
+        "utilake.to.time": "2026-07-31T23:55:00+10:00",
+        "utilake.total-rows": "6931585",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1782828000021
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_USAGE/metadata/snap-4758699642111676662-23-0277df85-1205-8acb-a05a-33d8766bc3c0.avro",
+      "parent-snapshot-id": 526924138937942631,
+      "schema-id": 4,
+      "sequence-number": 23,
+      "snapshot-id": 4758699642111676662,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_USAGE#FILE01#202607010000.zip",
+        "utilake.from.release": "2026-07",
+        "utilake.from.sha256": "1f7a734c2f5e4fd757105e56a8cb3aacab2fc2799318a80de3ef5141e5be70ce",
+        "utilake.from.time": "2024-12-09T11:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "FPP_USAGE",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "691258",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_USAGE#FILE01#202607010000.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "1f7a734c2f5e4fd757105e56a8cb3aacab2fc2799318a80de3ef5141e5be70ce",
+        "utilake.to.time": "2026-08-08T15:45:00+10:00",
+        "utilake.total-rows": "7622843",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1782828000022
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_USAGE/metadata/snap-2456815507861307657-24-0277df85-1205-8acb-a05a-33d8766bc3c0.avro",
+      "parent-snapshot-id": 4758699642111676662,
+      "schema-id": 3,
+      "sequence-number": 24,
+      "snapshot-id": 2456815507861307657,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8928",
+        "utilake.from.file": "PUBLIC_FPP_RUN_20260731.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "48c723f427ba6f46038ed14b761dcaf25dfdc2ecb0776eb01b899efe05bc153f",
+        "utilake.from.time": "2026-08-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "FPP_USAGE",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "35691",
+        "utilake.to.file": "PUBLIC_FPP_RUN_20260831.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "9fdf88a1af8fb185b6c350fa022dd26feb4f4cbd3fe3a1154ca8d76184a1c96a",
+        "utilake.to.time": "2026-08-31T23:55:00+10:00",
+        "utilake.total-rows": "7658534",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1785506400023
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_USAGE/metadata/snap-332560140259642980-25-0277df85-1205-8acb-a05a-33d8766bc3c0.avro",
+      "parent-snapshot-id": 2456815507861307657,
+      "schema-id": 4,
+      "sequence-number": 25,
+      "snapshot-id": 332560140259642980,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_USAGE#FILE01#202608010000.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "af02aa0ca03decf22901b7e593566ee5db7252a0c77173e96d468394e85b6d30",
+        "utilake.from.time": "2026-08-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "FPP_USAGE",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "35695",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_USAGE#FILE01#202608010000.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "af02aa0ca03decf22901b7e593566ee5db7252a0c77173e96d468394e85b6d30",
+        "utilake.to.time": "2026-09-01T00:00:00+10:00",
+        "utilake.total-rows": "7694229",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1785506400024
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_USAGE/metadata/snap-7429957998244270983-26-0277df85-1205-8acb-a05a-33d8766bc3c0.avro",
+      "parent-snapshot-id": 332560140259642980,
+      "schema-id": 3,
+      "sequence-number": 26,
+      "snapshot-id": 7429957998244270983,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8640",
+        "utilake.from.file": "PUBLIC_FPP_RUN_20260831.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "9fdf88a1af8fb185b6c350fa022dd26feb4f4cbd3fe3a1154ca8d76184a1c96a",
+        "utilake.from.time": "2026-09-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "FPP_USAGE",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "34530",
+        "utilake.to.file": "PUBLIC_FPP_RUN_20260930.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "fc4eb56ccc0d806c4d4aa24925fbb7999dffffb4be812ce551dfd654bc2176dc",
+        "utilake.to.time": "2026-09-30T23:55:00+10:00",
+        "utilake.total-rows": "7728759",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1788184800025
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_USAGE/metadata/snap-5228152618100122796-27-0277df85-1205-8acb-a05a-33d8766bc3c0.avro",
+      "parent-snapshot-id": 7429957998244270983,
+      "schema-id": 4,
+      "sequence-number": 27,
+      "snapshot-id": 5228152618100122796,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_USAGE#FILE01#202609010000.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "a7a038ae83f49863c253e54e4039abc94bde51b7a1060322429ee4f4b48bfc23",
+        "utilake.from.time": "2026-09-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "FPP_USAGE",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "34530",
         "utilake.to.file": "PUBLIC_ARCHIVE#FPP_USAGE#FILE01#202609010000.zip",
         "utilake.to.release": "2026-09",
         "utilake.to.sha256": "a7a038ae83f49863c253e54e4039abc94bde51b7a1060322429ee4f4b48bfc23",
         "utilake.to.time": "2026-10-01T00:00:00+10:00",
-        "utilake.total-rows": "7355118",
+        "utilake.total-rows": "7763289",
         "utilake.version": "1"
       },
-      "timestamp-ms": 1777557600002
+      "timestamp-ms": 1788184800026
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_USAGE/metadata/snap-2500807428575730806-28-0277df85-1205-8acb-a05a-33d8766bc3c0.avro",
+      "parent-snapshot-id": 5228152618100122796,
+      "schema-id": 3,
+      "sequence-number": 28,
+      "snapshot-id": 2500807428575730806,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "6609",
+        "utilake.from.file": "PUBLIC_FPP_RUN_20260930.zip",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "fc4eb56ccc0d806c4d4aa24925fbb7999dffffb4be812ce551dfd654bc2176dc",
+        "utilake.from.time": "2026-10-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "FPP_USAGE",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "25958",
+        "utilake.to.file": "PUBLIC_FPP_RUN_202610220855_0000000544203622.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "9efc3d46231354432218d491fa407faa01add6cee0530a5ea1133ee0de370b16",
+        "utilake.to.time": "2026-10-22T08:55:00+10:00",
+        "utilake.total-rows": "7789247",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1790776800027
     }
   ],
   "sort-orders": [

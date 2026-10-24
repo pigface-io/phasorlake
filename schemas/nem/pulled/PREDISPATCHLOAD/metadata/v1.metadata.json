@@ -1,13 +1,13 @@
 {
-  "current-schema-id": 4,
-  "current-snapshot-id": 2512685347127761788,
+  "current-schema-id": 7,
+  "current-snapshot-id": 5738311443761072007,
   "default-sort-order-id": 0,
   "default-spec-id": 0,
   "format-version": 3,
   "last-column-id": 65,
   "last-partition-id": 999,
-  "last-sequence-number": 5,
-  "last-updated-ms": 1761919200004,
+  "last-sequence-number": 48,
+  "last-updated-ms": 1790776800047,
   "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD",
   "metadata-log": [],
   "next-row-id": 0,
@@ -38,7 +38,7 @@
   },
   "refs": {
     "main": {
-      "snapshot-id": 2512685347127761788,
+      "snapshot-id": 5738311443761072007,
       "type": "branch"
     }
   },
@@ -2095,6 +2095,443 @@
           "type": "decimal(3, 0)"
         },
         {
+          "doc": "Dispatched Lower1Sec - TraderSolution element L1Target attribute",
+          "id": 52,
+          "name": "LOWER1SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Dispatched Raise1Sec - TraderSolution element R1Target attribute",
+          "id": 53,
+          "name": "RAISE1SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "TraderSolution element R1Flags attribute",
+          "id": 54,
+          "name": "RAISE1SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "TraderSolution element L1Flags attribute",
+          "id": 55,
+          "name": "LOWER1SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Trapezium adjusted Raise 1Sec Availability",
+          "id": 56,
+          "name": "RAISE1SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Trapezium adjusted Lower 1Sec Availability",
+          "id": 57,
+          "name": "LOWER1SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Mode specific to units within an aggregate. 0 - no monitoring, 1 - aggregate monitoring, 2 - individual monitoring due to constraint",
+          "id": 58,
+          "name": "CONFORMANCE_MODE",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "For Semi-Scheduled units. Unconstrained Intermittent Generation Forecast value provided to NEMDE",
+          "id": 59,
+          "name": "UIGF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "The projected energy storage based on cleared energy and regulation FCAS dispatch(MWh)",
+          "id": 61,
+          "name": "ENERGY_STORAGE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "BDU only. Load side availability (BidOfferPeriod.MAXAVAIL where DIRECTION = LOAD)",
+          "id": 62,
+          "name": "MIN_AVAILABILITY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        }
+      ],
+      "identifier-field-ids": [
+        3,
+        31
+      ],
+      "schema-id": 4,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Unique identifier of predispatch run in the form YYYYMMDDPP with 01 at 04:30",
+          "id": 1,
+          "name": "PREDISPATCHSEQNO",
+          "required": false,
+          "type": "decimal(10, 0)"
+        },
+        {
+          "doc": "SPD Predispatch run no, typically 1. It increments if the case is re-run.",
+          "id": 2,
+          "name": "RUNNO",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Dispatchable unit identifier for fast start",
+          "id": 3,
+          "name": "DUID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Not used",
+          "id": 4,
+          "name": "TRADETYPE",
+          "required": false,
+          "type": "long"
+        },
+        {
+          "doc": "PERIODID is just a period count, starting from 1 for each predispatch run. Use DATETIME to determine half hour period.",
+          "id": 5,
+          "name": "PERIODID",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "Flag to indicate if this result set was sourced from the pricing run (INTERVENTION=0) or the physical run (INTERVENTION=1). In the event that there is not intervention in the market, both pricing and physical runs correspond to INTERVENTION=0",
+          "id": 6,
+          "name": "INTERVENTION",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "Connection point identifier",
+          "id": 7,
+          "name": "CONNECTIONPOINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "AGC Status from EMS",
+          "id": 8,
+          "name": "AGCSTATUS",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "Dispatch mode of unit for fast start (1-4)",
+          "id": 9,
+          "name": "DISPATCHMODE",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "Initial MW at start of first period. For periods subsequent to the first period of a Pre-Dispatch run, this value represents the cleared target for the previous period of that Pre-Dispatch run. Negative values when Bi-directional Unit start from importing power, otherwise positive.",
+          "id": 10,
+          "name": "INITIALMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Target MW for end of period. Negative values when Bi-directional Unit is importing power, otherwise positive.",
+          "id": 11,
+          "name": "TOTALCLEARED",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 5 min MW target in period",
+          "id": 12,
+          "name": "LOWER5MIN",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 60 sec MW target in period",
+          "id": 13,
+          "name": "LOWER60SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 6 sec MW target in period",
+          "id": 14,
+          "name": "LOWER6SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 5 min MW target in period",
+          "id": 15,
+          "name": "RAISE5MIN",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 60 sec MW target in period",
+          "id": 16,
+          "name": "RAISE60SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 6 sec MW target in period",
+          "id": 17,
+          "name": "RAISE6SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Ramp down rate in period in MW/minute",
+          "id": 18,
+          "name": "RAMPDOWNRATE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Ramp up rate in period in MW/minute",
+          "id": 19,
+          "name": "RAMPUPRATE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used in Pre-Dispatch",
+          "id": 20,
+          "name": "DOWNEPF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used in Pre-Dispatch",
+          "id": 21,
+          "name": "UPEPF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Marginal $ value for 5 min from LP Solver",
+          "id": 22,
+          "name": "MARGINAL5MINVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Marginal $ value for 60 seconds from LP Solver",
+          "id": 23,
+          "name": "MARGINAL60SECVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Marginal $ value for 6 seconds from LP Solver",
+          "id": 24,
+          "name": "MARGINAL6SECVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Marginal $ value for energy from LP Solver",
+          "id": 25,
+          "name": "MARGINALVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Violation MW 5 min",
+          "id": 26,
+          "name": "VIOLATION5MINDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Violation MW 60 seconds",
+          "id": 27,
+          "name": "VIOLATION60SECDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Violation MW 6 seconds",
+          "id": 28,
+          "name": "VIOLATION6SECDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Violation MW energy",
+          "id": 29,
+          "name": "VIOLATIONDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 30,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Period date and time",
+          "id": 31,
+          "name": "DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Lower Regulation reserve target",
+          "id": 32,
+          "name": "LOWERREG",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise Regulation reserve target",
+          "id": 33,
+          "name": "RAISEREG",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "For Scheduled units, this is the MAXAVAIL bid availability For Semi-scheduled units, this is the lower of MAXAVAIL bid availability and UIGF",
+          "id": 34,
+          "name": "AVAILABILITY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 6sec status flag",
+          "id": 35,
+          "name": "RAISE6SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Raise 60sec status flag",
+          "id": 36,
+          "name": "RAISE60SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Raise 5min status flag",
+          "id": 37,
+          "name": "RAISE5MINFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Raise reg status flag",
+          "id": 38,
+          "name": "RAISEREGFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Lower 6sec status flag",
+          "id": 39,
+          "name": "LOWER6SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Lower 60sec status flag",
+          "id": 40,
+          "name": "LOWER60SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Lower 5min status flag",
+          "id": 41,
+          "name": "LOWER5MINFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Lower Reg status flag",
+          "id": 42,
+          "name": "LOWERREGFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "trapezium adjusted raise 6sec availability",
+          "id": 43,
+          "name": "RAISE6SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise 60sec availability",
+          "id": 44,
+          "name": "RAISE60SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise 5min availability",
+          "id": 45,
+          "name": "RAISE5MINACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise reg availability",
+          "id": 46,
+          "name": "RAISEREGACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 6sec availability",
+          "id": 47,
+          "name": "LOWER6SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 60sec availability",
+          "id": 48,
+          "name": "LOWER60SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 5min availability",
+          "id": 49,
+          "name": "LOWER5MINACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower reg availability",
+          "id": 50,
+          "name": "LOWERREGACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Boolean representation flagging if the Target is Capped",
+          "id": 51,
+          "name": "SEMIDISPATCHCAP",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
           "doc": "Mode specific to units within an aggregate. 0 - no monitoring, 1 - aggregate monitoring, 2 - individual monitoring due to constraint",
           "id": 58,
           "name": "CONFORMANCE_MODE",
@@ -2197,7 +2634,902 @@
         3,
         31
       ],
-      "schema-id": 4,
+      "schema-id": 5,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Unique identifier of predispatch run in the form YYYYMMDDPP with 01 at 04:30",
+          "id": 1,
+          "name": "PREDISPATCHSEQNO",
+          "required": false,
+          "type": "decimal(10, 0)"
+        },
+        {
+          "doc": "SPD Predispatch run no, typically 1. It increments if the case is re-run.",
+          "id": 2,
+          "name": "RUNNO",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Dispatchable unit identifier for fast start",
+          "id": 3,
+          "name": "DUID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Not used",
+          "id": 4,
+          "name": "TRADETYPE",
+          "required": false,
+          "type": "long"
+        },
+        {
+          "doc": "PERIODID is just a period count, starting from 1 for each predispatch run. Use DATETIME to determine half hour period.",
+          "id": 5,
+          "name": "PERIODID",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "Flag to indicate if this result set was sourced from the pricing run (INTERVENTION=0) or the physical run (INTERVENTION=1). In the event that there is not intervention in the market, both pricing and physical runs correspond to INTERVENTION=0",
+          "id": 6,
+          "name": "INTERVENTION",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "Connection point identifier",
+          "id": 7,
+          "name": "CONNECTIONPOINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "AGC Status from EMS",
+          "id": 8,
+          "name": "AGCSTATUS",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "Dispatch mode of unit for fast start (1-4)",
+          "id": 9,
+          "name": "DISPATCHMODE",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "Initial MW at start of first period. For periods subsequent to the first period of a Pre-Dispatch run, this value represents the cleared target for the previous period of that Pre-Dispatch run. Negative values when Bi-directional Unit start from importing power, otherwise positive.",
+          "id": 10,
+          "name": "INITIALMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Target MW for end of period. Negative values when Bi-directional Unit is importing power, otherwise positive.",
+          "id": 11,
+          "name": "TOTALCLEARED",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 5 min MW target in period",
+          "id": 12,
+          "name": "LOWER5MIN",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 60 sec MW target in period",
+          "id": 13,
+          "name": "LOWER60SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 6 sec MW target in period",
+          "id": 14,
+          "name": "LOWER6SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 5 min MW target in period",
+          "id": 15,
+          "name": "RAISE5MIN",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 60 sec MW target in period",
+          "id": 16,
+          "name": "RAISE60SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 6 sec MW target in period",
+          "id": 17,
+          "name": "RAISE6SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Ramp down rate in period in MW/minute",
+          "id": 18,
+          "name": "RAMPDOWNRATE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Ramp up rate in period in MW/minute",
+          "id": 19,
+          "name": "RAMPUPRATE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used in Pre-Dispatch",
+          "id": 20,
+          "name": "DOWNEPF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used in Pre-Dispatch",
+          "id": 21,
+          "name": "UPEPF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Marginal $ value for 5 min from LP Solver",
+          "id": 22,
+          "name": "MARGINAL5MINVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Marginal $ value for 60 seconds from LP Solver",
+          "id": 23,
+          "name": "MARGINAL60SECVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Marginal $ value for 6 seconds from LP Solver",
+          "id": 24,
+          "name": "MARGINAL6SECVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Marginal $ value for energy from LP Solver",
+          "id": 25,
+          "name": "MARGINALVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Violation MW 5 min",
+          "id": 26,
+          "name": "VIOLATION5MINDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Violation MW 60 seconds",
+          "id": 27,
+          "name": "VIOLATION60SECDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Violation MW 6 seconds",
+          "id": 28,
+          "name": "VIOLATION6SECDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Violation MW energy",
+          "id": 29,
+          "name": "VIOLATIONDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 30,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Period date and time",
+          "id": 31,
+          "name": "DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Lower Regulation reserve target",
+          "id": 32,
+          "name": "LOWERREG",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise Regulation reserve target",
+          "id": 33,
+          "name": "RAISEREG",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "For Scheduled units, this is the MAXAVAIL bid availability For Semi-scheduled units, this is the lower of MAXAVAIL bid availability and UIGF",
+          "id": 34,
+          "name": "AVAILABILITY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 6sec status flag",
+          "id": 35,
+          "name": "RAISE6SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Raise 60sec status flag",
+          "id": 36,
+          "name": "RAISE60SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Raise 5min status flag",
+          "id": 37,
+          "name": "RAISE5MINFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Raise reg status flag",
+          "id": 38,
+          "name": "RAISEREGFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Lower 6sec status flag",
+          "id": 39,
+          "name": "LOWER6SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Lower 60sec status flag",
+          "id": 40,
+          "name": "LOWER60SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Lower 5min status flag",
+          "id": 41,
+          "name": "LOWER5MINFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Lower Reg status flag",
+          "id": 42,
+          "name": "LOWERREGFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "trapezium adjusted raise 6sec availability",
+          "id": 43,
+          "name": "RAISE6SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise 60sec availability",
+          "id": 44,
+          "name": "RAISE60SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise 5min availability",
+          "id": 45,
+          "name": "RAISE5MINACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise reg availability",
+          "id": 46,
+          "name": "RAISEREGACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 6sec availability",
+          "id": 47,
+          "name": "LOWER6SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 60sec availability",
+          "id": 48,
+          "name": "LOWER60SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 5min availability",
+          "id": 49,
+          "name": "LOWER5MINACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower reg availability",
+          "id": 50,
+          "name": "LOWERREGACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Boolean representation flagging if the Target is Capped",
+          "id": 51,
+          "name": "SEMIDISPATCHCAP",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Dispatched Lower1Sec - TraderSolution element L1Target attribute",
+          "id": 52,
+          "name": "LOWER1SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Dispatched Raise1Sec - TraderSolution element R1Target attribute",
+          "id": 53,
+          "name": "RAISE1SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "TraderSolution element R1Flags attribute",
+          "id": 54,
+          "name": "RAISE1SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "TraderSolution element L1Flags attribute",
+          "id": 55,
+          "name": "LOWER1SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Trapezium adjusted Raise 1Sec Availability",
+          "id": 56,
+          "name": "RAISE1SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Trapezium adjusted Lower 1Sec Availability",
+          "id": 57,
+          "name": "LOWER1SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Mode specific to units within an aggregate. 0 - no monitoring, 1 - aggregate monitoring, 2 - individual monitoring due to constraint",
+          "id": 58,
+          "name": "CONFORMANCE_MODE",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "For Semi-Scheduled units. Unconstrained Intermittent Generation Forecast value provided to NEMDE",
+          "id": 59,
+          "name": "UIGF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "The energy storage at the start of this dispatch interval(MWh)",
+          "id": 60,
+          "name": "INITIAL_ENERGY_STORAGE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "The projected energy storage based on cleared energy and regulation FCAS dispatch(MWh)",
+          "id": 61,
+          "name": "ENERGY_STORAGE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "BDU only. Load side availability (BidOfferPeriod.MAXAVAIL where DIRECTION = LOAD)",
+          "id": 62,
+          "name": "MIN_AVAILABILITY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Cap on the number of turbines or inverters at a DUID.",
+          "id": 65,
+          "name": "ELEMENT_CAP",
+          "required": false,
+          "type": "long"
+        }
+      ],
+      "identifier-field-ids": [
+        3,
+        31
+      ],
+      "schema-id": 6,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Unique identifier of predispatch run in the form YYYYMMDDPP with 01 at 04:30",
+          "id": 1,
+          "name": "PREDISPATCHSEQNO",
+          "required": false,
+          "type": "decimal(10, 0)"
+        },
+        {
+          "doc": "SPD Predispatch run no, typically 1. It increments if the case is re-run.",
+          "id": 2,
+          "name": "RUNNO",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Dispatchable unit identifier for fast start",
+          "id": 3,
+          "name": "DUID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Not used",
+          "id": 4,
+          "name": "TRADETYPE",
+          "required": false,
+          "type": "long"
+        },
+        {
+          "doc": "PERIODID is just a period count, starting from 1 for each predispatch run. Use DATETIME to determine half hour period.",
+          "id": 5,
+          "name": "PERIODID",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "Flag to indicate if this result set was sourced from the pricing run (INTERVENTION=0) or the physical run (INTERVENTION=1). In the event that there is not intervention in the market, both pricing and physical runs correspond to INTERVENTION=0",
+          "id": 6,
+          "name": "INTERVENTION",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "Connection point identifier",
+          "id": 7,
+          "name": "CONNECTIONPOINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "AGC Status from EMS",
+          "id": 8,
+          "name": "AGCSTATUS",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "Dispatch mode of unit for fast start (1-4)",
+          "id": 9,
+          "name": "DISPATCHMODE",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "Initial MW at start of first period. For periods subsequent to the first period of a Pre-Dispatch run, this value represents the cleared target for the previous period of that Pre-Dispatch run. Negative values when Bi-directional Unit start from importing power, otherwise positive.",
+          "id": 10,
+          "name": "INITIALMW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Target MW for end of period. Negative values when Bi-directional Unit is importing power, otherwise positive.",
+          "id": 11,
+          "name": "TOTALCLEARED",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 5 min MW target in period",
+          "id": 12,
+          "name": "LOWER5MIN",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 60 sec MW target in period",
+          "id": 13,
+          "name": "LOWER60SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Lower 6 sec MW target in period",
+          "id": 14,
+          "name": "LOWER6SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 5 min MW target in period",
+          "id": 15,
+          "name": "RAISE5MIN",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 60 sec MW target in period",
+          "id": 16,
+          "name": "RAISE60SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 6 sec MW target in period",
+          "id": 17,
+          "name": "RAISE6SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Ramp down rate in period in MW/minute",
+          "id": 18,
+          "name": "RAMPDOWNRATE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Ramp up rate in period in MW/minute",
+          "id": 19,
+          "name": "RAMPUPRATE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used in Pre-Dispatch",
+          "id": 20,
+          "name": "DOWNEPF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Not used in Pre-Dispatch",
+          "id": 21,
+          "name": "UPEPF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Marginal $ value for 5 min from LP Solver",
+          "id": 22,
+          "name": "MARGINAL5MINVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Marginal $ value for 60 seconds from LP Solver",
+          "id": 23,
+          "name": "MARGINAL60SECVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Marginal $ value for 6 seconds from LP Solver",
+          "id": 24,
+          "name": "MARGINAL6SECVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Marginal $ value for energy from LP Solver",
+          "id": 25,
+          "name": "MARGINALVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Violation MW 5 min",
+          "id": 26,
+          "name": "VIOLATION5MINDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Violation MW 60 seconds",
+          "id": 27,
+          "name": "VIOLATION60SECDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Violation MW 6 seconds",
+          "id": 28,
+          "name": "VIOLATION6SECDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Violation MW energy",
+          "id": 29,
+          "name": "VIOLATIONDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 30,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Period date and time",
+          "id": 31,
+          "name": "DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Lower Regulation reserve target",
+          "id": 32,
+          "name": "LOWERREG",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise Regulation reserve target",
+          "id": 33,
+          "name": "RAISEREG",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "For Scheduled units, this is the MAXAVAIL bid availability For Semi-scheduled units, this is the lower of MAXAVAIL bid availability and UIGF",
+          "id": 34,
+          "name": "AVAILABILITY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Raise 6sec status flag",
+          "id": 35,
+          "name": "RAISE6SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Raise 60sec status flag",
+          "id": 36,
+          "name": "RAISE60SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Raise 5min status flag",
+          "id": 37,
+          "name": "RAISE5MINFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Raise reg status flag",
+          "id": 38,
+          "name": "RAISEREGFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Lower 6sec status flag",
+          "id": 39,
+          "name": "LOWER6SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Lower 60sec status flag",
+          "id": 40,
+          "name": "LOWER60SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Lower 5min status flag",
+          "id": 41,
+          "name": "LOWER5MINFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Lower Reg status flag",
+          "id": 42,
+          "name": "LOWERREGFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "trapezium adjusted raise 6sec availability",
+          "id": 43,
+          "name": "RAISE6SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise 60sec availability",
+          "id": 44,
+          "name": "RAISE60SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise 5min availability",
+          "id": 45,
+          "name": "RAISE5MINACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted raise reg availability",
+          "id": 46,
+          "name": "RAISEREGACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 6sec availability",
+          "id": 47,
+          "name": "LOWER6SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 60sec availability",
+          "id": 48,
+          "name": "LOWER60SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower 5min availability",
+          "id": 49,
+          "name": "LOWER5MINACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "trapezium adjusted lower reg availability",
+          "id": 50,
+          "name": "LOWERREGACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Boolean representation flagging if the Target is Capped",
+          "id": 51,
+          "name": "SEMIDISPATCHCAP",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Dispatched Lower1Sec - TraderSolution element L1Target attribute",
+          "id": 52,
+          "name": "LOWER1SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Dispatched Raise1Sec - TraderSolution element R1Target attribute",
+          "id": 53,
+          "name": "RAISE1SEC",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "TraderSolution element R1Flags attribute",
+          "id": 54,
+          "name": "RAISE1SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "TraderSolution element L1Flags attribute",
+          "id": 55,
+          "name": "LOWER1SECFLAGS",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Trapezium adjusted Raise 1Sec Availability",
+          "id": 56,
+          "name": "RAISE1SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Trapezium adjusted Lower 1Sec Availability",
+          "id": 57,
+          "name": "LOWER1SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Mode specific to units within an aggregate. 0 - no monitoring, 1 - aggregate monitoring, 2 - individual monitoring due to constraint",
+          "id": 58,
+          "name": "CONFORMANCE_MODE",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "For Semi-Scheduled units. Unconstrained Intermittent Generation Forecast value provided to NEMDE",
+          "id": 59,
+          "name": "UIGF",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "The projected energy storage based on cleared energy and regulation FCAS dispatch(MWh)",
+          "id": 61,
+          "name": "ENERGY_STORAGE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "BDU only. Load side availability (BidOfferPeriod.MAXAVAIL where DIRECTION = LOAD)",
+          "id": 62,
+          "name": "MIN_AVAILABILITY",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Cap on the number of turbines or inverters at a DUID.",
+          "id": 65,
+          "name": "ELEMENT_CAP",
+          "required": false,
+          "type": "long"
+        }
+      ],
+      "identifier-field-ids": [
+        3,
+        31
+      ],
+      "schema-id": 7,
       "type": "struct"
     }
   ],
@@ -2219,8 +3551,180 @@
       "timestamp-ms": 1722434400003
     },
     {
-      "snapshot-id": 2512685347127761788,
-      "timestamp-ms": 1761919200004
+      "snapshot-id": 8970525901085015498,
+      "timestamp-ms": 1756648800004
+    },
+    {
+      "snapshot-id": 1913685829101017437,
+      "timestamp-ms": 1756648800005
+    },
+    {
+      "snapshot-id": 3088714534738176718,
+      "timestamp-ms": 1759240800006
+    },
+    {
+      "snapshot-id": 2607651292577799653,
+      "timestamp-ms": 1759240800007
+    },
+    {
+      "snapshot-id": 1217199991962315530,
+      "timestamp-ms": 1759240800008
+    },
+    {
+      "snapshot-id": 6454533536062193611,
+      "timestamp-ms": 1761919200009
+    },
+    {
+      "snapshot-id": 3304128720359185684,
+      "timestamp-ms": 1761919200010
+    },
+    {
+      "snapshot-id": 1716960873022089870,
+      "timestamp-ms": 1761919200011
+    },
+    {
+      "snapshot-id": 4350775912923944949,
+      "timestamp-ms": 1761919200012
+    },
+    {
+      "snapshot-id": 2107537529691931886,
+      "timestamp-ms": 1761919200013
+    },
+    {
+      "snapshot-id": 3285357244259149437,
+      "timestamp-ms": 1764511200014
+    },
+    {
+      "snapshot-id": 5684458316709591321,
+      "timestamp-ms": 1764511200015
+    },
+    {
+      "snapshot-id": 4456882106114954302,
+      "timestamp-ms": 1764511200016
+    },
+    {
+      "snapshot-id": 6542729747568580640,
+      "timestamp-ms": 1767189600017
+    },
+    {
+      "snapshot-id": 2139466098955245129,
+      "timestamp-ms": 1767189600018
+    },
+    {
+      "snapshot-id": 8569273354608874144,
+      "timestamp-ms": 1767189600019
+    },
+    {
+      "snapshot-id": 1010300685026635821,
+      "timestamp-ms": 1769868000020
+    },
+    {
+      "snapshot-id": 2854348726078619151,
+      "timestamp-ms": 1769868000021
+    },
+    {
+      "snapshot-id": 4735174871010873450,
+      "timestamp-ms": 1769868000022
+    },
+    {
+      "snapshot-id": 4017156407628913339,
+      "timestamp-ms": 1772287200023
+    },
+    {
+      "snapshot-id": 6516328573221299635,
+      "timestamp-ms": 1772287200024
+    },
+    {
+      "snapshot-id": 2691536271639330848,
+      "timestamp-ms": 1772287200025
+    },
+    {
+      "snapshot-id": 8644771339151373198,
+      "timestamp-ms": 1774965600026
+    },
+    {
+      "snapshot-id": 4086102156768182156,
+      "timestamp-ms": 1774965600027
+    },
+    {
+      "snapshot-id": 3322805427769199713,
+      "timestamp-ms": 1774965600028
+    },
+    {
+      "snapshot-id": 1441595053174180198,
+      "timestamp-ms": 1777557600029
+    },
+    {
+      "snapshot-id": 8182908918243361596,
+      "timestamp-ms": 1777557600030
+    },
+    {
+      "snapshot-id": 5007319471118153479,
+      "timestamp-ms": 1777557600031
+    },
+    {
+      "snapshot-id": 314600592074016160,
+      "timestamp-ms": 1780236000032
+    },
+    {
+      "snapshot-id": 799276981205277217,
+      "timestamp-ms": 1780236000033
+    },
+    {
+      "snapshot-id": 8061071901205195808,
+      "timestamp-ms": 1780236000034
+    },
+    {
+      "snapshot-id": 3399703930610660771,
+      "timestamp-ms": 1782828000035
+    },
+    {
+      "snapshot-id": 7792438807837194671,
+      "timestamp-ms": 1782828000036
+    },
+    {
+      "snapshot-id": 4993912200614528195,
+      "timestamp-ms": 1782828000037
+    },
+    {
+      "snapshot-id": 127869570735162538,
+      "timestamp-ms": 1785506400038
+    },
+    {
+      "snapshot-id": 7973754328238284662,
+      "timestamp-ms": 1785506400039
+    },
+    {
+      "snapshot-id": 8007956561499838792,
+      "timestamp-ms": 1785506400040
+    },
+    {
+      "snapshot-id": 5914016518762413763,
+      "timestamp-ms": 1788184800041
+    },
+    {
+      "snapshot-id": 3274185226785513868,
+      "timestamp-ms": 1788184800042
+    },
+    {
+      "snapshot-id": 4389001534409462966,
+      "timestamp-ms": 1788184800043
+    },
+    {
+      "snapshot-id": 4416968335379505,
+      "timestamp-ms": 1788184800044
+    },
+    {
+      "snapshot-id": 2362516222993858430,
+      "timestamp-ms": 1788184800045
+    },
+    {
+      "snapshot-id": 5980284120683744314,
+      "timestamp-ms": 1790776800046
+    },
+    {
+      "snapshot-id": 5738311443761072007,
+      "timestamp-ms": 1790776800047
     }
   ],
   "snapshots": [
@@ -2233,20 +3737,20 @@
       "snapshot-id": 8020745578786472327,
       "summary": {
         "operation": "append",
-        "utilake.files": "502",
+        "utilake.files": "508",
         "utilake.from.file": "PUBLIC_DVD_PREDISPATCHLOAD1_200907010000.zip",
         "utilake.from.release": "2009-07",
         "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
         "utilake.from.time": "2009-07-01T04:30:00+10:00",
-        "utilake.kinds": "[\"dvd\"]",
+        "utilake.kinds": "[\"dvd\",\"reports/current\"]",
         "utilake.report-subtype": "UNIT_SOLUTION",
         "utilake.report-type": "PREDISPATCH",
-        "utilake.rows": "4049793361",
+        "utilake.rows": "4055899074",
         "utilake.to.file": "PUBLIC_DVD_PREDISPATCHLOAD2_202306010000.zip",
         "utilake.to.release": "2023-06",
         "utilake.to.sha256": "41b27f8125e2e01f9475c7ab0d433ad4b0621090a7dbcad2089f2b6e3ac629ca",
         "utilake.to.time": "2023-07-02T04:00:00+10:00",
-        "utilake.total-rows": "4049793361",
+        "utilake.total-rows": "4055899074",
         "utilake.version": "2"
       },
       "timestamp-ms": 1246370400000
@@ -2274,7 +3778,7 @@
         "utilake.to.release": "2024-04",
         "utilake.to.sha256": "59ca4be493197c9023b2b9e19327a2f9699175260df0a0f79c8a3ab9cb0f82f9",
         "utilake.to.time": "2024-05-02T04:00:00+10:00",
-        "utilake.total-rows": "4442556593",
+        "utilake.total-rows": "4448662306",
         "utilake.version": "2"
       },
       "timestamp-ms": 1688133600001
@@ -2302,7 +3806,7 @@
         "utilake.to.release": "2024-07",
         "utilake.to.sha256": "a39fe75889fa3053f4b31e53636d37515e059bb0eea322fe0e63b8be72139442",
         "utilake.to.time": "2024-08-02T04:00:00+10:00",
-        "utilake.total-rows": "4565725821",
+        "utilake.total-rows": "4571831534",
         "utilake.version": "4"
       },
       "timestamp-ms": 1714485600002
@@ -2317,7 +3821,7 @@
       "snapshot-id": 2125128677322314342,
       "summary": {
         "operation": "append",
-        "utilake.files": "30",
+        "utilake.files": "28",
         "utilake.from.file": "PUBLIC_ARCHIVE#PREDISPATCHLOAD#ALL#FILE01#202408010000.zip",
         "utilake.from.release": "2024-08",
         "utilake.from.sha256": "281b09b547e627715ab89f900638ee91ffc90edc3fb7b8e02c875dd7293c8190",
@@ -2325,12 +3829,12 @@
         "utilake.kinds": "[\"archive\",\"archive#all\"]",
         "utilake.report-subtype": "UNIT_SOLUTION",
         "utilake.report-type": "PREDISPATCH",
-        "utilake.rows": "22202416",
-        "utilake.to.file": "PUBLIC_ARCHIVE#PREDISPATCHLOAD#FILE01#202510010000.zip",
-        "utilake.to.release": "2025-10",
-        "utilake.to.sha256": "cbfeef50120b0e79e4fae324585af65b0c9cdc49267e6491de9fb944b44c97f7",
-        "utilake.to.time": "2025-11-01T04:00:00+10:00",
-        "utilake.total-rows": "4587928237",
+        "utilake.rows": "20633568",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PREDISPATCHLOAD#FILE01#202509010000.zip",
+        "utilake.to.release": "2025-09",
+        "utilake.to.sha256": "9925138c0968fbba4f794aca672e286345502eadc4edd9b8c3c06889f7152809",
+        "utilake.to.time": "2025-10-01T04:00:00+10:00",
+        "utilake.total-rows": "4592465102",
         "utilake.version": "4"
       },
       "timestamp-ms": 1722434400003
@@ -2338,14 +3842,210 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-2512685347127761788-5-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-8970525901085015498-5-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
       "parent-snapshot-id": 2125128677322314342,
-      "schema-id": 4,
+      "schema-id": 2,
       "sequence-number": 5,
-      "snapshot-id": 2512685347127761788,
+      "snapshot-id": 8970525901085015498,
       "summary": {
         "operation": "append",
-        "utilake.files": "22",
+        "utilake.files": "29",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_PREDISPATCH_20250902.zip",
+        "utilake.from.release": "2025-09",
+        "utilake.from.sha256": "1f287e7ba6d1699b0ee14f613bff80dd50edfa5bbd0992850ed1e9ce7a519dda",
+        "utilake.from.time": "2025-09-02T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "40649728",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_PREDISPATCH_20250902.zip",
+        "utilake.to.release": "2025-09",
+        "utilake.to.sha256": "1f287e7ba6d1699b0ee14f613bff80dd50edfa5bbd0992850ed1e9ce7a519dda",
+        "utilake.to.time": "2025-10-01T04:00:00+10:00",
+        "utilake.total-rows": "4633114830",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1756648800004
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-1913685829101017437-6-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 8970525901085015498,
+      "schema-id": 4,
+      "sequence-number": 6,
+      "snapshot-id": 1913685829101017437,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "29",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_PREDISPATCH_D_20250902.zip",
+        "utilake.from.release": "2025-09",
+        "utilake.from.sha256": "6b2e2ca92b0cf82fe5f59c11925610131523f98d8ea5a0fa06e41166fdc46e35",
+        "utilake.from.time": "2025-09-02T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "732416",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_PREDISPATCH_D_20250902.zip",
+        "utilake.to.release": "2025-09",
+        "utilake.to.sha256": "6b2e2ca92b0cf82fe5f59c11925610131523f98d8ea5a0fa06e41166fdc46e35",
+        "utilake.to.time": "2025-10-01T04:00:00+10:00",
+        "utilake.total-rows": "4633847246",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1756648800005
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-3088714534738176718-7-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 1913685829101017437,
+      "schema-id": 3,
+      "sequence-number": 7,
+      "snapshot-id": 3088714534738176718,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PREDISPATCHLOAD#ALL#FILE01#202510010000.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "f7ab41ad36728afdf91a228cd9ccaa036807f1af64e3b932f03a5427e7a8748a",
+        "utilake.from.time": "2025-10-01T04:30:00+10:00",
+        "utilake.kinds": "[\"archive\",\"archive#all\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "1568848",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PREDISPATCHLOAD#FILE01#202510010000.zip",
+        "utilake.to.release": "2025-10",
+        "utilake.to.sha256": "cbfeef50120b0e79e4fae324585af65b0c9cdc49267e6491de9fb944b44c97f7",
+        "utilake.to.time": "2025-11-01T04:00:00+10:00",
+        "utilake.total-rows": "4635416094",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1759240800006
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-2607651292577799653-8-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 3088714534738176718,
+      "schema-id": 2,
+      "sequence-number": 8,
+      "snapshot-id": 2607651292577799653,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_PREDISPATCH_20250902.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "1f287e7ba6d1699b0ee14f613bff80dd50edfa5bbd0992850ed1e9ce7a519dda",
+        "utilake.from.time": "2025-10-01T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "43538356",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_PREDISPATCH_20251002.zip",
+        "utilake.to.release": "2025-10",
+        "utilake.to.sha256": "25272b2a0c02f0637a9d8b7c0fbac50f2bbd03d38192b8112229eb8e13dc275e",
+        "utilake.to.time": "2025-11-01T04:00:00+10:00",
+        "utilake.total-rows": "4678954450",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1759240800007
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-1217199991962315530-9-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 2607651292577799653,
+      "schema-id": 4,
+      "sequence-number": 9,
+      "snapshot-id": 1217199991962315530,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_PREDISPATCH_D_20250902.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "6b2e2ca92b0cf82fe5f59c11925610131523f98d8ea5a0fa06e41166fdc46e35",
+        "utilake.from.time": "2025-10-01T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "784424",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_PREDISPATCH_D_20251002.zip",
+        "utilake.to.release": "2025-10",
+        "utilake.to.sha256": "2ae527c2829da4a6f0e495a5d527a7580e8db2060f411ca84a7845ab7550125b",
+        "utilake.to.time": "2025-11-01T04:00:00+10:00",
+        "utilake.total-rows": "4679738874",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1759240800008
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-6454533536062193611-10-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 1217199991962315530,
+      "schema-id": 2,
+      "sequence-number": 10,
+      "snapshot-id": 6454533536062193611,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "18",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_PREDISPATCH_20251002.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "25272b2a0c02f0637a9d8b7c0fbac50f2bbd03d38192b8112229eb8e13dc275e",
+        "utilake.from.time": "2025-11-01T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "25493380",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_PREDISPATCH_20251102.zip",
+        "utilake.to.release": "2025-11",
+        "utilake.to.sha256": "80ab7b911ba72f7f3fcc12f2059748ff77de33e613705fd6ce4b33d5cd751961",
+        "utilake.to.time": "2025-11-19T04:00:00+10:00",
+        "utilake.total-rows": "4705232254",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1761919200009
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-3304128720359185684-11-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 6454533536062193611,
+      "schema-id": 4,
+      "sequence-number": 11,
+      "snapshot-id": 3304128720359185684,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "18",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_PREDISPATCH_D_20251002.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "2ae527c2829da4a6f0e495a5d527a7580e8db2060f411ca84a7845ab7550125b",
+        "utilake.from.time": "2025-11-01T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "459320",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_PREDISPATCH_D_20251102.zip",
+        "utilake.to.release": "2025-11",
+        "utilake.to.sha256": "48d743bdc68b86c64e69952dac742c4b5d5d8fd26f043857bec27fd09940a127",
+        "utilake.to.time": "2025-11-19T04:00:00+10:00",
+        "utilake.total-rows": "4705691574",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1761919200010
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-1716960873022089870-12-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 3304128720359185684,
+      "schema-id": 5,
+      "sequence-number": 12,
+      "snapshot-id": 1716960873022089870,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
         "utilake.from.file": "PUBLIC_ARCHIVE#PREDISPATCHLOAD#ALL#FILE01#202511010000.zip",
         "utilake.from.release": "2025-11",
         "utilake.from.sha256": "b4c05f50105acd033a5ac056e138e293c917c80f86f27094412c8974c327f752",
@@ -2353,15 +4053,1023 @@
         "utilake.kinds": "[\"archive\",\"archive#all\"]",
         "utilake.report-subtype": "UNIT_SOLUTION",
         "utilake.report-type": "PREDISPATCH",
-        "utilake.rows": "17816912",
+        "utilake.rows": "1538256",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PREDISPATCHLOAD#FILE01#202511010000.zip",
+        "utilake.to.release": "2025-11",
+        "utilake.to.sha256": "298f967af9bcfe43d7243887e31ece31f1a5e9a116adff33ee73e90244a8531b",
+        "utilake.to.time": "2025-12-01T04:00:00+10:00",
+        "utilake.total-rows": "4707229830",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1761919200011
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-4350775912923944949-13-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 1716960873022089870,
+      "schema-id": 6,
+      "sequence-number": 13,
+      "snapshot-id": 4350775912923944949,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "12",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_PREDISPATCH_20251102.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "80ab7b911ba72f7f3fcc12f2059748ff77de33e613705fd6ce4b33d5cd751961",
+        "utilake.from.time": "2025-11-19T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "17194664",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_PREDISPATCH_20251102.zip",
+        "utilake.to.release": "2025-11",
+        "utilake.to.sha256": "80ab7b911ba72f7f3fcc12f2059748ff77de33e613705fd6ce4b33d5cd751961",
+        "utilake.to.time": "2025-12-01T04:00:00+10:00",
+        "utilake.total-rows": "4724424494",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1761919200012
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-2107537529691931886-14-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 4350775912923944949,
+      "schema-id": 7,
+      "sequence-number": 14,
+      "snapshot-id": 2107537529691931886,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "12",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_PREDISPATCH_D_20251102.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "48d743bdc68b86c64e69952dac742c4b5d5d8fd26f043857bec27fd09940a127",
+        "utilake.from.time": "2025-11-19T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "309808",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_PREDISPATCH_D_20251102.zip",
+        "utilake.to.release": "2025-11",
+        "utilake.to.sha256": "48d743bdc68b86c64e69952dac742c4b5d5d8fd26f043857bec27fd09940a127",
+        "utilake.to.time": "2025-12-01T04:00:00+10:00",
+        "utilake.total-rows": "4724734302",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1761919200013
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-3285357244259149437-15-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 2107537529691931886,
+      "schema-id": 5,
+      "sequence-number": 15,
+      "snapshot-id": 3285357244259149437,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PREDISPATCHLOAD#ALL#FILE01#202512010000.zip",
+        "utilake.from.release": "2025-12",
+        "utilake.from.sha256": "d8d558d826235e9f1d5e6af1996fb1895c14783d064f3d0e1a798e6e76e82b29",
+        "utilake.from.time": "2025-12-01T04:30:00+10:00",
+        "utilake.kinds": "[\"archive\",\"archive#all\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "1610288",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PREDISPATCHLOAD#FILE01#202512010000.zip",
+        "utilake.to.release": "2025-12",
+        "utilake.to.sha256": "b3558e26e5c37a2218383c92e27fd74cd312cdeab1de931fecefd6c90b606b5b",
+        "utilake.to.time": "2026-01-01T04:00:00+10:00",
+        "utilake.total-rows": "4726344590",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1764511200014
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-5684458316709591321-16-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 3285357244259149437,
+      "schema-id": 6,
+      "sequence-number": 16,
+      "snapshot-id": 5684458316709591321,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_PREDISPATCH_20251102.zip",
+        "utilake.from.release": "2025-12",
+        "utilake.from.sha256": "80ab7b911ba72f7f3fcc12f2059748ff77de33e613705fd6ce4b33d5cd751961",
+        "utilake.from.time": "2025-12-01T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "44685668",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_PREDISPATCH_20251202.zip",
+        "utilake.to.release": "2025-12",
+        "utilake.to.sha256": "d2ccc25853ab41a15ed93080e5468746be7a46bd56818d200881589a39683935",
+        "utilake.to.time": "2026-01-01T04:00:00+10:00",
+        "utilake.total-rows": "4771030258",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1764511200015
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-4456882106114954302-17-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 5684458316709591321,
+      "schema-id": 7,
+      "sequence-number": 17,
+      "snapshot-id": 4456882106114954302,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_PREDISPATCH_D_20251102.zip",
+        "utilake.from.release": "2025-12",
+        "utilake.from.sha256": "48d743bdc68b86c64e69952dac742c4b5d5d8fd26f043857bec27fd09940a127",
+        "utilake.from.time": "2025-12-01T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "805144",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_PREDISPATCH_D_20251202.zip",
+        "utilake.to.release": "2025-12",
+        "utilake.to.sha256": "423f5fd49233b51ad8e122d65fad2191cb5fcfa88ed758a4a82472f8d320b279",
+        "utilake.to.time": "2026-01-01T04:00:00+10:00",
+        "utilake.total-rows": "4771835402",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1764511200016
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-6542729747568580640-18-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 4456882106114954302,
+      "schema-id": 5,
+      "sequence-number": 18,
+      "snapshot-id": 6542729747568580640,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PREDISPATCHLOAD#ALL#FILE01#202601010000.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "2b21871996124c4f37216b271001d0a48f042e68fa467cfc6b2a0b0b0390f9d0",
+        "utilake.from.time": "2026-01-01T04:30:00+10:00",
+        "utilake.kinds": "[\"archive\",\"archive#all\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "1623616",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PREDISPATCHLOAD#FILE01#202601010000.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "17b9bc4571b882ff6acc78887826506578898b736fd32dc74068128d96f8b812",
+        "utilake.to.time": "2026-02-01T04:00:00+10:00",
+        "utilake.total-rows": "4773459018",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1767189600017
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-2139466098955245129-19-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 6542729747568580640,
+      "schema-id": 6,
+      "sequence-number": 19,
+      "snapshot-id": 2139466098955245129,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_PREDISPATCH_20251202.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "d2ccc25853ab41a15ed93080e5468746be7a46bd56818d200881589a39683935",
+        "utilake.from.time": "2026-01-01T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "45055984",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_PREDISPATCH_20260102.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "368cce4a505ecb611a94478e4c3c04059c5be1e0907093a25c463024866501f9",
+        "utilake.to.time": "2026-02-01T04:00:00+10:00",
+        "utilake.total-rows": "4818515002",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1767189600018
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-8569273354608874144-20-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 2139466098955245129,
+      "schema-id": 7,
+      "sequence-number": 20,
+      "snapshot-id": 8569273354608874144,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_PREDISPATCH_D_20251202.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "423f5fd49233b51ad8e122d65fad2191cb5fcfa88ed758a4a82472f8d320b279",
+        "utilake.from.time": "2026-01-01T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "811808",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_PREDISPATCH_D_20260102.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "2313532fb232147e2c9f7b20bfd99b2b8fb9e26ac49300917e65005386d2a7f4",
+        "utilake.to.time": "2026-02-01T04:00:00+10:00",
+        "utilake.total-rows": "4819326810",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1767189600019
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-1010300685026635821-21-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 8569273354608874144,
+      "schema-id": 5,
+      "sequence-number": 21,
+      "snapshot-id": 1010300685026635821,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PREDISPATCHLOAD#ALL#FILE01#202602010000.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "d2eff53b1ab9cab97a04c1c117710c610c27b63a3ed810f43e0a96bda6c4e33e",
+        "utilake.from.time": "2026-02-01T04:30:00+10:00",
+        "utilake.kinds": "[\"archive\",\"archive#all\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "1479744",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PREDISPATCHLOAD#FILE01#202602010000.zip",
+        "utilake.to.release": "2026-02",
+        "utilake.to.sha256": "52a37bddff786efda323747212549a5b8a68b7c17e982b11222d5d00ba2d561c",
+        "utilake.to.time": "2026-03-01T04:00:00+10:00",
+        "utilake.total-rows": "4820806554",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1769868000020
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-2854348726078619151-22-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 1010300685026635821,
+      "schema-id": 6,
+      "sequence-number": 22,
+      "snapshot-id": 2854348726078619151,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "28",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_PREDISPATCH_20260102.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "368cce4a505ecb611a94478e4c3c04059c5be1e0907093a25c463024866501f9",
+        "utilake.from.time": "2026-02-01T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "41063896",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_PREDISPATCH_20260202.zip",
+        "utilake.to.release": "2026-02",
+        "utilake.to.sha256": "2c887aa3138814a3cb5bcee5d20fa56b5bedda780e102fa0b2f52a84ba3e46e4",
+        "utilake.to.time": "2026-03-01T04:00:00+10:00",
+        "utilake.total-rows": "4861870450",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1769868000021
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-4735174871010873450-23-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 2854348726078619151,
+      "schema-id": 7,
+      "sequence-number": 23,
+      "snapshot-id": 4735174871010873450,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "28",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_PREDISPATCH_D_20260102.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "2313532fb232147e2c9f7b20bfd99b2b8fb9e26ac49300917e65005386d2a7f4",
+        "utilake.from.time": "2026-02-01T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "739872",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_PREDISPATCH_D_20260202.zip",
+        "utilake.to.release": "2026-02",
+        "utilake.to.sha256": "71636720f9e6eb60faccfb73ae87055e241e890fd470373c5be78f3ceb76361a",
+        "utilake.to.time": "2026-03-01T04:00:00+10:00",
+        "utilake.total-rows": "4862610322",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1769868000022
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-4017156407628913339-24-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 4735174871010873450,
+      "schema-id": 5,
+      "sequence-number": 24,
+      "snapshot-id": 4017156407628913339,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PREDISPATCHLOAD#ALL#FILE01#202603010000.zip",
+        "utilake.from.release": "2026-03",
+        "utilake.from.sha256": "1758c8284f6c087c956a55137f326d7e63910198ae99fd859003e905a3cb5740",
+        "utilake.from.time": "2026-03-01T04:30:00+10:00",
+        "utilake.kinds": "[\"archive\",\"archive#all\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "1653456",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PREDISPATCHLOAD#FILE01#202603010000.zip",
+        "utilake.to.release": "2026-03",
+        "utilake.to.sha256": "29687f02400abc3f12a2570564849ff7509b442e12ee37a71fb04028a1ad73eb",
+        "utilake.to.time": "2026-04-01T04:00:00+10:00",
+        "utilake.total-rows": "4864263778",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1772287200023
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-6516328573221299635-25-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 4017156407628913339,
+      "schema-id": 6,
+      "sequence-number": 25,
+      "snapshot-id": 6516328573221299635,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_PREDISPATCH_20260202.zip",
+        "utilake.from.release": "2026-03",
+        "utilake.from.sha256": "2c887aa3138814a3cb5bcee5d20fa56b5bedda780e102fa0b2f52a84ba3e46e4",
+        "utilake.from.time": "2026-03-01T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "45883820",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_PREDISPATCH_20260302.zip",
+        "utilake.to.release": "2026-03",
+        "utilake.to.sha256": "222e8a545f34c33fbfc2c62beee7eeac2c44beb558e7aa9964fb6cb8c835e113",
+        "utilake.to.time": "2026-04-01T04:00:00+10:00",
+        "utilake.total-rows": "4910147598",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1772287200024
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-2691536271639330848-26-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 6516328573221299635,
+      "schema-id": 7,
+      "sequence-number": 26,
+      "snapshot-id": 2691536271639330848,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_PREDISPATCH_D_20260202.zip",
+        "utilake.from.release": "2026-03",
+        "utilake.from.sha256": "71636720f9e6eb60faccfb73ae87055e241e890fd470373c5be78f3ceb76361a",
+        "utilake.from.time": "2026-03-01T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "826728",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_PREDISPATCH_D_20260302.zip",
+        "utilake.to.release": "2026-03",
+        "utilake.to.sha256": "d177f624de0c72495f2246b4d8fb2f55046783ab3d95e5037fa05e1ebcdce6ca",
+        "utilake.to.time": "2026-04-01T04:00:00+10:00",
+        "utilake.total-rows": "4910974326",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1772287200025
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-8644771339151373198-27-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 2691536271639330848,
+      "schema-id": 5,
+      "sequence-number": 27,
+      "snapshot-id": 8644771339151373198,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PREDISPATCHLOAD#ALL#FILE01#202604010000.zip",
+        "utilake.from.release": "2026-04",
+        "utilake.from.sha256": "de7eeb0a15af08a671902b62a74530fa24a4f7f9277420a880d9345679ae8400",
+        "utilake.from.time": "2026-04-01T04:30:00+10:00",
+        "utilake.kinds": "[\"archive\",\"archive#all\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "1606128",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PREDISPATCHLOAD#FILE01#202604010000.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "5b09f1305efb87726e9a116c436c9d14448965ddca1bf914b00b2d22a5546831",
+        "utilake.to.time": "2026-05-01T04:00:00+10:00",
+        "utilake.total-rows": "4912580454",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1774965600026
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-4086102156768182156-28-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 8644771339151373198,
+      "schema-id": 6,
+      "sequence-number": 28,
+      "snapshot-id": 4086102156768182156,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "30",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_PREDISPATCH_20260302.zip",
+        "utilake.from.release": "2026-04",
+        "utilake.from.sha256": "222e8a545f34c33fbfc2c62beee7eeac2c44beb558e7aa9964fb6cb8c835e113",
+        "utilake.from.time": "2026-04-01T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "44570524",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_PREDISPATCH_20260402.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "a42f425883164e0ab4b4dbd25450fde78e38dbb6e9c60f9e51c1123314166139",
+        "utilake.to.time": "2026-05-01T04:00:00+10:00",
+        "utilake.total-rows": "4957150978",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1774965600027
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-3322805427769199713-29-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 4086102156768182156,
+      "schema-id": 7,
+      "sequence-number": 29,
+      "snapshot-id": 3322805427769199713,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "30",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_PREDISPATCH_D_20260302.zip",
+        "utilake.from.release": "2026-04",
+        "utilake.from.sha256": "d177f624de0c72495f2246b4d8fb2f55046783ab3d95e5037fa05e1ebcdce6ca",
+        "utilake.from.time": "2026-04-01T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "803064",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_PREDISPATCH_D_20260402.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "127f196973f085f18e28f612214cc76c47d2da4b2a354740400cfe86a7154a02",
+        "utilake.to.time": "2026-05-01T04:00:00+10:00",
+        "utilake.total-rows": "4957954042",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1774965600028
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-1441595053174180198-30-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 3322805427769199713,
+      "schema-id": 5,
+      "sequence-number": 30,
+      "snapshot-id": 1441595053174180198,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PREDISPATCHLOAD#ALL#FILE01#202605010000.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "8d206101fef5f6b2aceabafecd78c4db8953a8b54a60d8f101d56cf57c4993e1",
+        "utilake.from.time": "2026-05-01T04:30:00+10:00",
+        "utilake.kinds": "[\"archive\",\"archive#all\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "1667152",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PREDISPATCHLOAD#FILE01#202605010000.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "a3192ba8601b0001f844fcba03dfd4bca2e5d828cdaae121bb7a6f022954b8ae",
+        "utilake.to.time": "2026-06-01T04:00:00+10:00",
+        "utilake.total-rows": "4959621194",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1777557600029
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-8182908918243361596-31-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 1441595053174180198,
+      "schema-id": 6,
+      "sequence-number": 31,
+      "snapshot-id": 8182908918243361596,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_PREDISPATCH_20260402.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "a42f425883164e0ab4b4dbd25450fde78e38dbb6e9c60f9e51c1123314166139",
+        "utilake.from.time": "2026-05-01T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "46263628",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_PREDISPATCH_20260502.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "7cbb3ae8a8bec27113a50ff591315130a0201945f8d527bfcfcbef5c917d25bd",
+        "utilake.to.time": "2026-06-01T04:00:00+10:00",
+        "utilake.total-rows": "5005884822",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1777557600030
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-5007319471118153479-32-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 8182908918243361596,
+      "schema-id": 7,
+      "sequence-number": 32,
+      "snapshot-id": 5007319471118153479,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_PREDISPATCH_D_20260402.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "127f196973f085f18e28f612214cc76c47d2da4b2a354740400cfe86a7154a02",
+        "utilake.from.time": "2026-05-01T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "833576",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_PREDISPATCH_D_20260502.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "bef5c733dc7acc5c22bd7273a1c24cfa5b04dad3bf50bde3daec93b10962a11e",
+        "utilake.to.time": "2026-06-01T04:00:00+10:00",
+        "utilake.total-rows": "5006718398",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1777557600031
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-314600592074016160-33-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 5007319471118153479,
+      "schema-id": 5,
+      "sequence-number": 33,
+      "snapshot-id": 314600592074016160,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PREDISPATCHLOAD#ALL#FILE01#202606010000.zip",
+        "utilake.from.release": "2026-06",
+        "utilake.from.sha256": "e595763a02354ef9cc2c3bc5ca3b94ae4b9f784a5e8f0a1058e9fccfe9028bff",
+        "utilake.from.time": "2026-06-01T04:30:00+10:00",
+        "utilake.kinds": "[\"archive\",\"archive#all\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "1622192",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PREDISPATCHLOAD#FILE01#202606010000.zip",
+        "utilake.to.release": "2026-06",
+        "utilake.to.sha256": "8fde2f086ca184db252a7c84582483b2587d9526de973c40a3f6d405bbcb27df",
+        "utilake.to.time": "2026-07-01T04:00:00+10:00",
+        "utilake.total-rows": "5008340590",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1780236000032
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-799276981205277217-34-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 314600592074016160,
+      "schema-id": 6,
+      "sequence-number": 34,
+      "snapshot-id": 799276981205277217,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "30",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_PREDISPATCH_20260502.zip",
+        "utilake.from.release": "2026-06",
+        "utilake.from.sha256": "7cbb3ae8a8bec27113a50ff591315130a0201945f8d527bfcfcbef5c917d25bd",
+        "utilake.from.time": "2026-06-01T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "45015476",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_PREDISPATCH_20260602.zip",
+        "utilake.to.release": "2026-06",
+        "utilake.to.sha256": "9fe5b62df356b787d8d125847fd92bcc2de3c812b22d0e34caa73ae767dd88d5",
+        "utilake.to.time": "2026-07-01T04:00:00+10:00",
+        "utilake.total-rows": "5053356066",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1780236000033
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-8061071901205195808-35-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 799276981205277217,
+      "schema-id": 7,
+      "sequence-number": 35,
+      "snapshot-id": 8061071901205195808,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "30",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_PREDISPATCH_D_20260502.zip",
+        "utilake.from.release": "2026-06",
+        "utilake.from.sha256": "bef5c733dc7acc5c22bd7273a1c24cfa5b04dad3bf50bde3daec93b10962a11e",
+        "utilake.from.time": "2026-06-01T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "811096",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_PREDISPATCH_D_20260602.zip",
+        "utilake.to.release": "2026-06",
+        "utilake.to.sha256": "3db4f152639fa11be1b132159c38c18d003870aec02a8cb1f3f8cab48ac0b6c3",
+        "utilake.to.time": "2026-07-01T04:00:00+10:00",
+        "utilake.total-rows": "5054167162",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1780236000034
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-3399703930610660771-36-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 8061071901205195808,
+      "schema-id": 5,
+      "sequence-number": 36,
+      "snapshot-id": 3399703930610660771,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PREDISPATCHLOAD#ALL#FILE01#202607010000.zip",
+        "utilake.from.release": "2026-07",
+        "utilake.from.sha256": "c368d4875bc5d8d6a0480d361187b0d88b451f584dcb69c5edf23af11eb54a77",
+        "utilake.from.time": "2026-07-01T04:30:00+10:00",
+        "utilake.kinds": "[\"archive\",\"archive#all\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "1685488",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PREDISPATCHLOAD#FILE01#202607010000.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "1b0c713a5170d9d3cf12c7f63d44b83d7ce0348e225b6ea77d81bc2e8d80cfb4",
+        "utilake.to.time": "2026-08-01T04:00:00+10:00",
+        "utilake.total-rows": "5055852650",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1782828000035
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-7792438807837194671-37-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 3399703930610660771,
+      "schema-id": 6,
+      "sequence-number": 37,
+      "snapshot-id": 7792438807837194671,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_PREDISPATCH_20260602.zip",
+        "utilake.from.release": "2026-07",
+        "utilake.from.sha256": "9fe5b62df356b787d8d125847fd92bcc2de3c812b22d0e34caa73ae767dd88d5",
+        "utilake.from.time": "2026-07-01T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "46772548",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_PREDISPATCH_20260702.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "efd01cec331b4ab9c0f990390922ad6eb658cbebadad51d481b97399abf3f509",
+        "utilake.to.time": "2026-08-01T04:00:00+10:00",
+        "utilake.total-rows": "5102625198",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1782828000036
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-4993912200614528195-38-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 7792438807837194671,
+      "schema-id": 7,
+      "sequence-number": 38,
+      "snapshot-id": 4993912200614528195,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_PREDISPATCH_D_20260602.zip",
+        "utilake.from.release": "2026-07",
+        "utilake.from.sha256": "3db4f152639fa11be1b132159c38c18d003870aec02a8cb1f3f8cab48ac0b6c3",
+        "utilake.from.time": "2026-07-01T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "842744",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_PREDISPATCH_D_20260702.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "fa9ae0418c78a70c8659c7686edd42032f5a63085f5a10188b851d69a7579a69",
+        "utilake.to.time": "2026-08-01T04:00:00+10:00",
+        "utilake.total-rows": "5103467942",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1782828000037
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-127869570735162538-39-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 4993912200614528195,
+      "schema-id": 5,
+      "sequence-number": 39,
+      "snapshot-id": 127869570735162538,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PREDISPATCHLOAD#ALL#FILE01#202608010000.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "2f753b2c7b7674a2a046013604d5b6398868d948dd25dd3067d098af59d7d15a",
+        "utilake.from.time": "2026-08-01T04:30:00+10:00",
+        "utilake.kinds": "[\"archive\",\"archive#all\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "1689424",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PREDISPATCHLOAD#FILE01#202608010000.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "5a1a206c8679e241ba4429d51808a8515e6e6144151a46d5b982c6b3b3d179a6",
+        "utilake.to.time": "2026-09-01T04:00:00+10:00",
+        "utilake.total-rows": "5105157366",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1785506400038
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-7973754328238284662-40-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 127869570735162538,
+      "schema-id": 6,
+      "sequence-number": 40,
+      "snapshot-id": 7973754328238284662,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "42",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_PREDISPATCH_20260702.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "efd01cec331b4ab9c0f990390922ad6eb658cbebadad51d481b97399abf3f509",
+        "utilake.from.time": "2026-08-01T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "63526348",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_PREDISPATCH_20260831_0000000535463933.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "63e5dd5170d029562bc0f3bc7f910ea84e1517173a2e18bc3c80c0f99e189b86",
+        "utilake.to.time": "2026-09-01T04:00:00+10:00",
+        "utilake.total-rows": "5168683714",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1785506400039
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-8007956561499838792-41-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 7973754328238284662,
+      "schema-id": 7,
+      "sequence-number": 41,
+      "snapshot-id": 8007956561499838792,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "42",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_PREDISPATCH_D_20260702.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "fa9ae0418c78a70c8659c7686edd42032f5a63085f5a10188b851d69a7579a69",
+        "utilake.from.time": "2026-08-01T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "1144616",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_PREDISPATCH_D_20260831_0000000535463934.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "2021dfaf8e35dbf4e1200f2a576307d5e6fa7247c73dd3992daaa7a93a703b6e",
+        "utilake.to.time": "2026-09-01T04:00:00+10:00",
+        "utilake.total-rows": "5169828330",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1785506400040
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-5914016518762413763-42-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 8007956561499838792,
+      "schema-id": 6,
+      "sequence-number": 42,
+      "snapshot-id": 5914016518762413763,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_PREDISPATCH_20260802.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "faeba6b965c12a431234e7003c4749836502e628b5cf331169a7414125d5e421",
+        "utilake.from.time": "2026-09-01T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "1513152",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_PREDISPATCH_20260802.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "faeba6b965c12a431234e7003c4749836502e628b5cf331169a7414125d5e421",
+        "utilake.to.time": "2026-09-02T04:00:00+10:00",
+        "utilake.total-rows": "5171341482",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1788184800041
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-3274185226785513868-43-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 5914016518762413763,
+      "schema-id": 7,
+      "sequence-number": 43,
+      "snapshot-id": 3274185226785513868,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_PREDISPATCH_D_20260802.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "fe94ae5378e3a540ef660e3ad6ec8f264eb35d8c6b3beca4c431bc2e59cec39b",
+        "utilake.from.time": "2026-09-01T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "27264",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_PREDISPATCH_D_20260802.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "fe94ae5378e3a540ef660e3ad6ec8f264eb35d8c6b3beca4c431bc2e59cec39b",
+        "utilake.to.time": "2026-09-02T04:00:00+10:00",
+        "utilake.total-rows": "5171368746",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1788184800042
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-4389001534409462966-44-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 3274185226785513868,
+      "schema-id": 5,
+      "sequence-number": 44,
+      "snapshot-id": 4389001534409462966,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PREDISPATCHLOAD#ALL#FILE01#202609010000.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "f7cec01d3c514634ba2a8e3370639fdec6c306cafbe4a6d46281d14b8fe1983c",
+        "utilake.from.time": "2026-09-01T04:30:00+10:00",
+        "utilake.kinds": "[\"archive\",\"archive#all\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "1641168",
         "utilake.to.file": "PUBLIC_ARCHIVE#PREDISPATCHLOAD#FILE01#202609010000.zip",
         "utilake.to.release": "2026-09",
         "utilake.to.sha256": "450ce90c5a2417cda534612f41fd53b145c352bc5b72b74425a56a3868613583",
         "utilake.to.time": "2026-10-01T04:00:00+10:00",
-        "utilake.total-rows": "4605745149",
+        "utilake.total-rows": "5173009914",
         "utilake.version": "5"
       },
-      "timestamp-ms": 1761919200004
+      "timestamp-ms": 1788184800043
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-4416968335379505-45-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 4389001534409462966,
+      "schema-id": 6,
+      "sequence-number": 45,
+      "snapshot-id": 4416968335379505,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "30",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_PREDISPATCH_20260901_0000000535637502.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "75a8f5ad158c9a3da74f661d766fae805279128141fa7313c2dc9b57139de2a0",
+        "utilake.from.time": "2026-09-01T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "45542892",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_PREDISPATCH_20260930_0000000540513472.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "c953ffd44001c816fe05c19228043761ce385ea80dddeebdf0cffa7ca09cc3a2",
+        "utilake.to.time": "2026-10-01T04:00:00+10:00",
+        "utilake.total-rows": "5218552806",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1788184800044
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-2362516222993858430-46-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 4416968335379505,
+      "schema-id": 7,
+      "sequence-number": 46,
+      "snapshot-id": 2362516222993858430,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_PREDISPATCH_D_20260901_0000000535637503.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "f75e33f44ef0a074989a1c020974009fec5f8c9813dfbbb55dad1bdac2b26508",
+        "utilake.from.time": "2026-09-01T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "848048",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_PREDISPATCH_D_20261008_0000000541913376.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "d0940b3c0e070e062e8054518690ec785f54777f673b3d48c68dc6fc20205686",
+        "utilake.to.time": "2026-10-09T04:00:00+10:00",
+        "utilake.total-rows": "5219400854",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1788184800045
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-5980284120683744314-47-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 2362516222993858430,
+      "schema-id": 6,
+      "sequence-number": 47,
+      "snapshot-id": 5980284120683744314,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "21",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_PREDISPATCH_20261001_0000000540695920.zip",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "5bd858ea34210cad2bc19444d59c90ec0f26fa4cb97f4a2099a4ab8dbffa8373",
+        "utilake.from.time": "2026-10-01T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "32028356",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_PREDISPATCH_20261021_0000000544173639.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "28fd2fba9098d1f279e5b8e1b47ee2060478a1fae71dc4a58d5e704015e3ea37",
+        "utilake.to.time": "2026-10-22T04:00:00+10:00",
+        "utilake.total-rows": "5251429210",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1790776800046
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHLOAD/metadata/snap-5738311443761072007-48-0b3f58b7-d89b-8a9e-8c0a-875e671e8343.avro",
+      "parent-snapshot-id": 5980284120683744314,
+      "schema-id": 7,
+      "sequence-number": 48,
+      "snapshot-id": 5738311443761072007,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "20",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_PREDISPATCH_D_20261001_0000000540695921.zip",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "d7d403cf4170146be0ac1e2261b25fbb51bd392ac7be5fc767167548027b9a19",
+        "utilake.from.time": "2026-10-01T04:30:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "UNIT_SOLUTION",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "549616",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_PREDISPATCH_D_20261021_0000000544173640.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "86d3381cd8609513643185ff6c8990ef31e0ac001679a81415adabefa365972d",
+        "utilake.to.time": "2026-10-22T04:00:00+10:00",
+        "utilake.total-rows": "5251978826",
+        "utilake.version": "5"
+      },
+      "timestamp-ms": 1790776800047
     }
   ],
   "sort-orders": [

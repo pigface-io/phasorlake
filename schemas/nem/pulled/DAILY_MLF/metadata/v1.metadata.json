@@ -1,0 +1,223 @@
+{
+  "current-schema-id": 1,
+  "current-snapshot-id": 9210021553448021697,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 9,
+  "last-partition-id": 999,
+  "last-sequence-number": 2,
+  "last-updated-ms": 1732975200001,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DAILY_MLF",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "false",
+    "utilake.format": "3",
+    "utilake.table": "DAILY_MLF"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 9210021553448021697,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "EFFECTIVEDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 2,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 3,
+          "name": "REGIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "CONNECTIONPOINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 5,
+          "name": "DUID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 6,
+          "name": "TRANSMISSIONLOSSFACTOR",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "id": 7,
+          "name": "SECONDARY_TLF",
+          "required": false,
+          "type": "decimal(5, 4)"
+        },
+        {
+          "id": 8,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "EFFECTIVEDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 2,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 3,
+          "name": "REGIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "CONNECTIONPOINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 9,
+          "name": "CONNECTIONPOINTTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 5,
+          "name": "DUID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 6,
+          "name": "TRANSMISSIONLOSSFACTOR",
+          "required": false,
+          "type": "double"
+        },
+        {
+          "id": 7,
+          "name": "SECONDARY_TLF",
+          "required": false,
+          "type": "decimal(5, 4)"
+        },
+        {
+          "id": 8,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 1,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 6719164928141182942,
+      "timestamp-ms": 1601474400000
+    },
+    {
+      "snapshot-id": 9210021553448021697,
+      "timestamp-ms": 1732975200001
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DAILY_MLF/metadata/snap-6719164928141182942-1-a61986d0-6f5d-8ba0-8a92-18e50d0040f7.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 6719164928141182942,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1514",
+        "utilake.from.file": "MLF_20201014090001.zip",
+        "utilake.from.release": "2020-10",
+        "utilake.from.sha256": "aba94b8490f8e528394703cd2a051c7e1fe9f56bbfd4926161b3a3c71fc22ff3",
+        "utilake.from.time": "2020-07-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "MLF",
+        "utilake.report-type": "DAILY",
+        "utilake.rows": "4084505",
+        "utilake.to.file": "MLF_20241205090000.zip",
+        "utilake.to.release": "2024-12",
+        "utilake.to.sha256": "83dad1d8c7ed561dd410a8ee4385497732eb32c2f2469b9d72a3e8a87592f3d8",
+        "utilake.to.time": "2024-11-26T00:00:00+10:00",
+        "utilake.total-rows": "4084505",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1601474400000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DAILY_MLF/metadata/snap-9210021553448021697-2-a61986d0-6f5d-8ba0-8a92-18e50d0040f7.avro",
+      "parent-snapshot-id": 6719164928141182942,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 9210021553448021697,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "686",
+        "utilake.from.file": "MLF_20241206090005.zip",
+        "utilake.from.release": "2024-12",
+        "utilake.from.sha256": "efa80f9a4099b77510ab36fc89511036649b0f3655f498e4a63808d2057f5a0f",
+        "utilake.from.time": "2011-07-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "MLF",
+        "utilake.report-type": "DAILY",
+        "utilake.rows": "1822243",
+        "utilake.to.file": "MLF_20261022090009.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "2bbb38fb0c11aedb87282847392ee469b9bad8edb5ae6a83d216adeffd26b0f5",
+        "utilake.to.time": "2026-10-16T00:00:00+10:00",
+        "utilake.total-rows": "5906748",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1732975200001
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "a61986d0-6f5d-8ba0-8a92-18e50d0040f7"
+}

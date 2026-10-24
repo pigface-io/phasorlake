@@ -1,13 +1,13 @@
 {
-  "current-schema-id": 0,
-  "current-snapshot-id": 218097601614720779,
+  "current-schema-id": 1,
+  "current-snapshot-id": 185658460631229079,
   "default-sort-order-id": 0,
   "default-spec-id": 0,
   "format-version": 3,
   "last-column-id": 5,
   "last-partition-id": 999,
-  "last-sequence-number": 1,
-  "last-updated-ms": 1722434400000,
+  "last-sequence-number": 28,
+  "last-updated-ms": 1790776800027,
   "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INTERMITTENT_GEN_LIMIT",
   "metadata-log": [],
   "next-row-id": 0,
@@ -38,7 +38,7 @@
   },
   "refs": {
     "main": {
-      "snapshot-id": 218097601614720779,
+      "snapshot-id": 185658460631229079,
       "type": "branch"
     }
   },
@@ -89,12 +89,167 @@
       ],
       "schema-id": 0,
       "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Unique Identifier of Dispatchable Unit",
+          "id": 2,
+          "name": "DUID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Trading Day for which this unit availability submission applies",
+          "id": 1,
+          "name": "TRADINGDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Date and Time when this unit availability submission was loaded",
+          "id": 3,
+          "name": "OFFERDATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Trading interval number (1...48) within this TRADINGDATE for which UPPERMWLIMIT applies",
+          "id": 4,
+          "name": "PERIODID",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Maximum imposed MW limit (down regulation in AWEFS/ASEFS). Value between 0 and the registered DUID Maximum Capacity. Value = -1 means no limit applies.",
+          "id": 5,
+          "name": "UPPERMWLIMIT",
+          "required": false,
+          "type": "decimal(6, 0)"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "schema-id": 1,
+      "type": "struct"
     }
   ],
   "snapshot-log": [
     {
       "snapshot-id": 218097601614720779,
       "timestamp-ms": 1722434400000
+    },
+    {
+      "snapshot-id": 755643687448441235,
+      "timestamp-ms": 1756648800001
+    },
+    {
+      "snapshot-id": 5174148239801342080,
+      "timestamp-ms": 1756648800002
+    },
+    {
+      "snapshot-id": 167640132693183414,
+      "timestamp-ms": 1759240800003
+    },
+    {
+      "snapshot-id": 8700564241472272920,
+      "timestamp-ms": 1759240800004
+    },
+    {
+      "snapshot-id": 2180209542530099993,
+      "timestamp-ms": 1761919200005
+    },
+    {
+      "snapshot-id": 1888514415621213193,
+      "timestamp-ms": 1761919200006
+    },
+    {
+      "snapshot-id": 8171758846333008532,
+      "timestamp-ms": 1764511200007
+    },
+    {
+      "snapshot-id": 8825641740675428254,
+      "timestamp-ms": 1764511200008
+    },
+    {
+      "snapshot-id": 649337408288197731,
+      "timestamp-ms": 1767189600009
+    },
+    {
+      "snapshot-id": 5555964604685860342,
+      "timestamp-ms": 1767189600010
+    },
+    {
+      "snapshot-id": 2699640357116248831,
+      "timestamp-ms": 1769868000011
+    },
+    {
+      "snapshot-id": 5286084202219296698,
+      "timestamp-ms": 1769868000012
+    },
+    {
+      "snapshot-id": 5720598206079906556,
+      "timestamp-ms": 1772287200013
+    },
+    {
+      "snapshot-id": 8573117739079220374,
+      "timestamp-ms": 1772287200014
+    },
+    {
+      "snapshot-id": 1913874848094055773,
+      "timestamp-ms": 1774965600015
+    },
+    {
+      "snapshot-id": 3980137843496363626,
+      "timestamp-ms": 1774965600016
+    },
+    {
+      "snapshot-id": 3520836855359587228,
+      "timestamp-ms": 1777557600017
+    },
+    {
+      "snapshot-id": 10202838499720393,
+      "timestamp-ms": 1777557600018
+    },
+    {
+      "snapshot-id": 1194574859614292365,
+      "timestamp-ms": 1780236000019
+    },
+    {
+      "snapshot-id": 1590139391295219579,
+      "timestamp-ms": 1780236000020
+    },
+    {
+      "snapshot-id": 428533886668391639,
+      "timestamp-ms": 1782828000021
+    },
+    {
+      "snapshot-id": 7756834504032774299,
+      "timestamp-ms": 1782828000022
+    },
+    {
+      "snapshot-id": 402145791760905017,
+      "timestamp-ms": 1785506400023
+    },
+    {
+      "snapshot-id": 6921838834991480026,
+      "timestamp-ms": 1785506400024
+    },
+    {
+      "snapshot-id": 7092306071095990790,
+      "timestamp-ms": 1788184800025
+    },
+    {
+      "snapshot-id": 7191355421358511516,
+      "timestamp-ms": 1788184800026
+    },
+    {
+      "snapshot-id": 185658460631229079,
+      "timestamp-ms": 1790776800027
     }
   ],
   "snapshots": [
@@ -107,7 +262,7 @@
       "snapshot-id": 218097601614720779,
       "summary": {
         "operation": "append",
-        "utilake.files": "26",
+        "utilake.files": "13",
         "utilake.from.file": "PUBLIC_ARCHIVE#INTERMITTENT_GEN_LIMIT#FILE01#202408010000.zip",
         "utilake.from.release": "2024-08",
         "utilake.from.sha256": "710e2064f12a184614b3a6dd89c7dc11f6dc1df96aca37e5aaf35e348067adcc",
@@ -115,15 +270,771 @@
         "utilake.kinds": "[\"archive\"]",
         "utilake.report-subtype": "INTERMITTENT_GEN_LIMIT",
         "utilake.report-type": "DEMAND",
-        "utilake.rows": "38095961",
+        "utilake.rows": "13320768",
+        "utilake.to.file": "PUBLIC_ARCHIVE#INTERMITTENT_GEN_LIMIT#FILE01#202508010000.zip",
+        "utilake.to.release": "2025-08",
+        "utilake.to.sha256": "4ac12afb5b54986b75bb9ee5da90adbaf24911e930d5dea41d5ac09572bf935d",
+        "utilake.to.time": "2025-09-01T00:00:00+10:00",
+        "utilake.total-rows": "13320768",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1722434400000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INTERMITTENT_GEN_LIMIT/metadata/snap-755643687448441235-2-376248e0-8abf-8e2f-af04-1f7daae3a380.avro",
+      "parent-snapshot-id": 218097601614720779,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 755643687448441235,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "30",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_AVAIL_SUBMISS_DAY_20250901.zip",
+        "utilake.from.release": "2025-09",
+        "utilake.from.sha256": "07dc23a208273bff6c6134f9c5c7f14d89f47d609e7a77c0ac21b36efe51440c",
+        "utilake.from.time": "2025-08-31T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "INTERMITTENT_GEN_LIMIT",
+        "utilake.report-type": "DEMAND",
+        "utilake.rows": "984432",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_AVAIL_SUBMISS_DAY_20250901.zip",
+        "utilake.to.release": "2025-09",
+        "utilake.to.sha256": "07dc23a208273bff6c6134f9c5c7f14d89f47d609e7a77c0ac21b36efe51440c",
+        "utilake.to.time": "2025-09-29T00:00:00+10:00",
+        "utilake.total-rows": "14305200",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1756648800001
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INTERMITTENT_GEN_LIMIT/metadata/snap-5174148239801342080-3-376248e0-8abf-8e2f-af04-1f7daae3a380.avro",
+      "parent-snapshot-id": 755643687448441235,
+      "schema-id": 0,
+      "sequence-number": 3,
+      "snapshot-id": 5174148239801342080,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#INTERMITTENT_GEN_LIMIT#FILE01#202509010000.zip",
+        "utilake.from.release": "2025-09",
+        "utilake.from.sha256": "044ca26df3d8d86713b1a38c582ee9a4ff3fefd68c9afa9c9ca710673855dea5",
+        "utilake.from.time": "2025-09-02T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "INTERMITTENT_GEN_LIMIT",
+        "utilake.report-type": "DEMAND",
+        "utilake.rows": "942864",
+        "utilake.to.file": "PUBLIC_ARCHIVE#INTERMITTENT_GEN_LIMIT#FILE01#202509010000.zip",
+        "utilake.to.release": "2025-09",
+        "utilake.to.sha256": "044ca26df3d8d86713b1a38c582ee9a4ff3fefd68c9afa9c9ca710673855dea5",
+        "utilake.to.time": "2025-09-30T00:00:00+10:00",
+        "utilake.total-rows": "15248064",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1756648800002
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INTERMITTENT_GEN_LIMIT/metadata/snap-167640132693183414-4-376248e0-8abf-8e2f-af04-1f7daae3a380.avro",
+      "parent-snapshot-id": 5174148239801342080,
+      "schema-id": 1,
+      "sequence-number": 4,
+      "snapshot-id": 167640132693183414,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_AVAIL_SUBMISS_DAY_20251001.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "b32b04b9aa7a35e26b9e7beb87aba3d70f2447273dae44278c957be411a1c585",
+        "utilake.from.time": "2025-09-30T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "INTERMITTENT_GEN_LIMIT",
+        "utilake.report-type": "DEMAND",
+        "utilake.rows": "1032288",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_AVAIL_SUBMISS_DAY_20251001.zip",
+        "utilake.to.release": "2025-10",
+        "utilake.to.sha256": "b32b04b9aa7a35e26b9e7beb87aba3d70f2447273dae44278c957be411a1c585",
+        "utilake.to.time": "2025-10-30T00:00:00+10:00",
+        "utilake.total-rows": "16280352",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1759240800003
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INTERMITTENT_GEN_LIMIT/metadata/snap-8700564241472272920-5-376248e0-8abf-8e2f-af04-1f7daae3a380.avro",
+      "parent-snapshot-id": 167640132693183414,
+      "schema-id": 0,
+      "sequence-number": 5,
+      "snapshot-id": 8700564241472272920,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#INTERMITTENT_GEN_LIMIT#FILE01#202510010000.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "03053c74b6dc6cee8d1083d12ba5322274a436dab5af2179cf5297946ba3bb4c",
+        "utilake.from.time": "2025-10-02T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "INTERMITTENT_GEN_LIMIT",
+        "utilake.report-type": "DEMAND",
+        "utilake.rows": "1037328",
+        "utilake.to.file": "PUBLIC_ARCHIVE#INTERMITTENT_GEN_LIMIT#FILE01#202510010000.zip",
+        "utilake.to.release": "2025-10",
+        "utilake.to.sha256": "03053c74b6dc6cee8d1083d12ba5322274a436dab5af2179cf5297946ba3bb4c",
+        "utilake.to.time": "2025-11-01T00:00:00+10:00",
+        "utilake.total-rows": "17317680",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1759240800004
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INTERMITTENT_GEN_LIMIT/metadata/snap-2180209542530099993-6-376248e0-8abf-8e2f-af04-1f7daae3a380.avro",
+      "parent-snapshot-id": 8700564241472272920,
+      "schema-id": 1,
+      "sequence-number": 6,
+      "snapshot-id": 2180209542530099993,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "30",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_AVAIL_SUBMISS_DAY_20251101.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "f348b7abcd5bac3d46e945f14e3efd9e12b758677fa97d24fbd166f1355af9cc",
+        "utilake.from.time": "2025-10-31T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "INTERMITTENT_GEN_LIMIT",
+        "utilake.report-type": "DEMAND",
+        "utilake.rows": "1187088",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_AVAIL_SUBMISS_DAY_20251101.zip",
+        "utilake.to.release": "2025-11",
+        "utilake.to.sha256": "f348b7abcd5bac3d46e945f14e3efd9e12b758677fa97d24fbd166f1355af9cc",
+        "utilake.to.time": "2025-11-29T00:00:00+10:00",
+        "utilake.total-rows": "18504768",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1761919200005
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INTERMITTENT_GEN_LIMIT/metadata/snap-1888514415621213193-7-376248e0-8abf-8e2f-af04-1f7daae3a380.avro",
+      "parent-snapshot-id": 2180209542530099993,
+      "schema-id": 0,
+      "sequence-number": 7,
+      "snapshot-id": 1888514415621213193,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#INTERMITTENT_GEN_LIMIT#FILE01#202511010000.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "86261c22db11ecdbad7f961d3fdcb59a58362b1af2a53e253f09515e395c14fe",
+        "utilake.from.time": "2025-11-02T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "INTERMITTENT_GEN_LIMIT",
+        "utilake.report-type": "DEMAND",
+        "utilake.rows": "1228416",
+        "utilake.to.file": "PUBLIC_ARCHIVE#INTERMITTENT_GEN_LIMIT#FILE01#202511010000.zip",
+        "utilake.to.release": "2025-11",
+        "utilake.to.sha256": "86261c22db11ecdbad7f961d3fdcb59a58362b1af2a53e253f09515e395c14fe",
+        "utilake.to.time": "2025-12-01T00:00:00+10:00",
+        "utilake.total-rows": "19733184",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1761919200006
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INTERMITTENT_GEN_LIMIT/metadata/snap-8171758846333008532-8-376248e0-8abf-8e2f-af04-1f7daae3a380.avro",
+      "parent-snapshot-id": 1888514415621213193,
+      "schema-id": 1,
+      "sequence-number": 8,
+      "snapshot-id": 8171758846333008532,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_AVAIL_SUBMISS_DAY_20251201.zip",
+        "utilake.from.release": "2025-12",
+        "utilake.from.sha256": "eb8a06e4544237f70a606424b54a1870bf0ad83b93f0f9eb358dd3bfac936aa0",
+        "utilake.from.time": "2025-11-30T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "INTERMITTENT_GEN_LIMIT",
+        "utilake.report-type": "DEMAND",
+        "utilake.rows": "1936608",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_AVAIL_SUBMISS_DAY_20251201.zip",
+        "utilake.to.release": "2025-12",
+        "utilake.to.sha256": "eb8a06e4544237f70a606424b54a1870bf0ad83b93f0f9eb358dd3bfac936aa0",
+        "utilake.to.time": "2025-12-30T00:00:00+10:00",
+        "utilake.total-rows": "21669792",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1764511200007
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INTERMITTENT_GEN_LIMIT/metadata/snap-8825641740675428254-9-376248e0-8abf-8e2f-af04-1f7daae3a380.avro",
+      "parent-snapshot-id": 8171758846333008532,
+      "schema-id": 0,
+      "sequence-number": 9,
+      "snapshot-id": 8825641740675428254,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#INTERMITTENT_GEN_LIMIT#FILE01#202512010000.zip",
+        "utilake.from.release": "2025-12",
+        "utilake.from.sha256": "07c9c34e1bdf68289857289b90364e7433c8a4f0955d710cf5f048ad58929063",
+        "utilake.from.time": "2025-12-02T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "INTERMITTENT_GEN_LIMIT",
+        "utilake.report-type": "DEMAND",
+        "utilake.rows": "1937856",
+        "utilake.to.file": "PUBLIC_ARCHIVE#INTERMITTENT_GEN_LIMIT#FILE01#202512010000.zip",
+        "utilake.to.release": "2025-12",
+        "utilake.to.sha256": "07c9c34e1bdf68289857289b90364e7433c8a4f0955d710cf5f048ad58929063",
+        "utilake.to.time": "2026-01-01T00:00:00+10:00",
+        "utilake.total-rows": "23607648",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1764511200008
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INTERMITTENT_GEN_LIMIT/metadata/snap-649337408288197731-10-376248e0-8abf-8e2f-af04-1f7daae3a380.avro",
+      "parent-snapshot-id": 8825641740675428254,
+      "schema-id": 1,
+      "sequence-number": 10,
+      "snapshot-id": 649337408288197731,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_AVAIL_SUBMISS_DAY_20260101.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "fb816f1c2159357c1ba0962fa802565b2708490501037bb0d89133606c9b8530",
+        "utilake.from.time": "2025-12-31T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "INTERMITTENT_GEN_LIMIT",
+        "utilake.report-type": "DEMAND",
+        "utilake.rows": "1965408",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_AVAIL_SUBMISS_DAY_20260101.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "fb816f1c2159357c1ba0962fa802565b2708490501037bb0d89133606c9b8530",
+        "utilake.to.time": "2026-01-30T00:00:00+10:00",
+        "utilake.total-rows": "25573056",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1767189600009
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INTERMITTENT_GEN_LIMIT/metadata/snap-5555964604685860342-11-376248e0-8abf-8e2f-af04-1f7daae3a380.avro",
+      "parent-snapshot-id": 649337408288197731,
+      "schema-id": 0,
+      "sequence-number": 11,
+      "snapshot-id": 5555964604685860342,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#INTERMITTENT_GEN_LIMIT#FILE01#202601010000.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "2b35365b10459f85e8b9e4ab9c258d23bb8ad351c6ba5a84612fe34cba016c6a",
+        "utilake.from.time": "2026-01-02T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "INTERMITTENT_GEN_LIMIT",
+        "utilake.report-type": "DEMAND",
+        "utilake.rows": "1976448",
+        "utilake.to.file": "PUBLIC_ARCHIVE#INTERMITTENT_GEN_LIMIT#FILE01#202601010000.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "2b35365b10459f85e8b9e4ab9c258d23bb8ad351c6ba5a84612fe34cba016c6a",
+        "utilake.to.time": "2026-02-01T00:00:00+10:00",
+        "utilake.total-rows": "27549504",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1767189600010
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INTERMITTENT_GEN_LIMIT/metadata/snap-2699640357116248831-12-376248e0-8abf-8e2f-af04-1f7daae3a380.avro",
+      "parent-snapshot-id": 5555964604685860342,
+      "schema-id": 1,
+      "sequence-number": 12,
+      "snapshot-id": 2699640357116248831,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "28",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_AVAIL_SUBMISS_DAY_20260201.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "bc94462048765d12a70b0ebed679c169a91b86a0b9fd35f56791e14a14081f15",
+        "utilake.from.time": "2026-01-31T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "INTERMITTENT_GEN_LIMIT",
+        "utilake.report-type": "DEMAND",
+        "utilake.rows": "1841184",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_AVAIL_SUBMISS_DAY_20260201.zip",
+        "utilake.to.release": "2026-02",
+        "utilake.to.sha256": "bc94462048765d12a70b0ebed679c169a91b86a0b9fd35f56791e14a14081f15",
+        "utilake.to.time": "2026-02-27T00:00:00+10:00",
+        "utilake.total-rows": "29390688",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1769868000011
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INTERMITTENT_GEN_LIMIT/metadata/snap-5286084202219296698-13-376248e0-8abf-8e2f-af04-1f7daae3a380.avro",
+      "parent-snapshot-id": 2699640357116248831,
+      "schema-id": 0,
+      "sequence-number": 13,
+      "snapshot-id": 5286084202219296698,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#INTERMITTENT_GEN_LIMIT#FILE01#202602010000.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "62001e03f00b432cc23cc4005d0c4522b37dabf0a714a9e66afe6f49f4da3e9f",
+        "utilake.from.time": "2026-02-02T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "INTERMITTENT_GEN_LIMIT",
+        "utilake.report-type": "DEMAND",
+        "utilake.rows": "1846848",
+        "utilake.to.file": "PUBLIC_ARCHIVE#INTERMITTENT_GEN_LIMIT#FILE01#202602010000.zip",
+        "utilake.to.release": "2026-02",
+        "utilake.to.sha256": "62001e03f00b432cc23cc4005d0c4522b37dabf0a714a9e66afe6f49f4da3e9f",
+        "utilake.to.time": "2026-03-01T00:00:00+10:00",
+        "utilake.total-rows": "31237536",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1769868000012
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INTERMITTENT_GEN_LIMIT/metadata/snap-5720598206079906556-14-376248e0-8abf-8e2f-af04-1f7daae3a380.avro",
+      "parent-snapshot-id": 5286084202219296698,
+      "schema-id": 1,
+      "sequence-number": 14,
+      "snapshot-id": 5720598206079906556,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_AVAIL_SUBMISS_DAY_20260301.zip",
+        "utilake.from.release": "2026-03",
+        "utilake.from.sha256": "793b484c8f2fedcb591a5f61b4f9a1e21043d3bd64e47601a01c73743d6bd0b7",
+        "utilake.from.time": "2026-02-28T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "INTERMITTENT_GEN_LIMIT",
+        "utilake.report-type": "DEMAND",
+        "utilake.rows": "1877616",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_AVAIL_SUBMISS_DAY_20260301.zip",
+        "utilake.to.release": "2026-03",
+        "utilake.to.sha256": "793b484c8f2fedcb591a5f61b4f9a1e21043d3bd64e47601a01c73743d6bd0b7",
+        "utilake.to.time": "2026-03-30T00:00:00+10:00",
+        "utilake.total-rows": "33115152",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1772287200013
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INTERMITTENT_GEN_LIMIT/metadata/snap-8573117739079220374-15-376248e0-8abf-8e2f-af04-1f7daae3a380.avro",
+      "parent-snapshot-id": 5720598206079906556,
+      "schema-id": 0,
+      "sequence-number": 15,
+      "snapshot-id": 8573117739079220374,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#INTERMITTENT_GEN_LIMIT#FILE01#202603010000.zip",
+        "utilake.from.release": "2026-03",
+        "utilake.from.sha256": "fe22244c3e2f16384b1b271d26c36c71c110b29c3f47044f8a027a2e6aaa49fc",
+        "utilake.from.time": "2026-03-02T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "INTERMITTENT_GEN_LIMIT",
+        "utilake.report-type": "DEMAND",
+        "utilake.rows": "1809072",
+        "utilake.to.file": "PUBLIC_ARCHIVE#INTERMITTENT_GEN_LIMIT#FILE01#202603010000.zip",
+        "utilake.to.release": "2026-03",
+        "utilake.to.sha256": "fe22244c3e2f16384b1b271d26c36c71c110b29c3f47044f8a027a2e6aaa49fc",
+        "utilake.to.time": "2026-03-31T00:00:00+10:00",
+        "utilake.total-rows": "34924224",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1772287200014
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INTERMITTENT_GEN_LIMIT/metadata/snap-1913874848094055773-16-376248e0-8abf-8e2f-af04-1f7daae3a380.avro",
+      "parent-snapshot-id": 8573117739079220374,
+      "schema-id": 1,
+      "sequence-number": 16,
+      "snapshot-id": 1913874848094055773,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "30",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_AVAIL_SUBMISS_DAY_20260401.zip",
+        "utilake.from.release": "2026-04",
+        "utilake.from.sha256": "e9851f99a07547cd557b85341326c892e86a9fb4a0ac9767583cc8f5f0895bfd",
+        "utilake.from.time": "2026-03-31T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "INTERMITTENT_GEN_LIMIT",
+        "utilake.report-type": "DEMAND",
+        "utilake.rows": "1926960",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_AVAIL_SUBMISS_DAY_20260401.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "e9851f99a07547cd557b85341326c892e86a9fb4a0ac9767583cc8f5f0895bfd",
+        "utilake.to.time": "2026-04-29T00:00:00+10:00",
+        "utilake.total-rows": "36851184",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1774965600015
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INTERMITTENT_GEN_LIMIT/metadata/snap-3980137843496363626-17-376248e0-8abf-8e2f-af04-1f7daae3a380.avro",
+      "parent-snapshot-id": 1913874848094055773,
+      "schema-id": 0,
+      "sequence-number": 17,
+      "snapshot-id": 3980137843496363626,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#INTERMITTENT_GEN_LIMIT#FILE01#202604010000.zip",
+        "utilake.from.release": "2026-04",
+        "utilake.from.sha256": "4336a0afaefa67865754431eac143071bc2ac911ad8475c9885a0cc84e9c148c",
+        "utilake.from.time": "2026-04-02T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "INTERMITTENT_GEN_LIMIT",
+        "utilake.report-type": "DEMAND",
+        "utilake.rows": "1931520",
+        "utilake.to.file": "PUBLIC_ARCHIVE#INTERMITTENT_GEN_LIMIT#FILE01#202604010000.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "4336a0afaefa67865754431eac143071bc2ac911ad8475c9885a0cc84e9c148c",
+        "utilake.to.time": "2026-05-01T00:00:00+10:00",
+        "utilake.total-rows": "38782704",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1774965600016
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INTERMITTENT_GEN_LIMIT/metadata/snap-3520836855359587228-18-376248e0-8abf-8e2f-af04-1f7daae3a380.avro",
+      "parent-snapshot-id": 3980137843496363626,
+      "schema-id": 1,
+      "sequence-number": 18,
+      "snapshot-id": 3520836855359587228,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_AVAIL_SUBMISS_DAY_20260501.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "414a8a3f2a675e0ba1bcaf6cee630ccf299bccda66f64a0745a1596c096c115d",
+        "utilake.from.time": "2026-04-30T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "INTERMITTENT_GEN_LIMIT",
+        "utilake.report-type": "DEMAND",
+        "utilake.rows": "1853328",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_AVAIL_SUBMISS_DAY_20260501.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "414a8a3f2a675e0ba1bcaf6cee630ccf299bccda66f64a0745a1596c096c115d",
+        "utilake.to.time": "2026-05-30T00:00:00+10:00",
+        "utilake.total-rows": "40636032",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1777557600017
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INTERMITTENT_GEN_LIMIT/metadata/snap-10202838499720393-19-376248e0-8abf-8e2f-af04-1f7daae3a380.avro",
+      "parent-snapshot-id": 3520836855359587228,
+      "schema-id": 0,
+      "sequence-number": 19,
+      "snapshot-id": 10202838499720393,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#INTERMITTENT_GEN_LIMIT#FILE01#202605010000.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "1313249ba2c2ff912185df05138ef217e497681f7c3286254ec0207ace457e34",
+        "utilake.from.time": "2026-05-02T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "INTERMITTENT_GEN_LIMIT",
+        "utilake.report-type": "DEMAND",
+        "utilake.rows": "1833120",
+        "utilake.to.file": "PUBLIC_ARCHIVE#INTERMITTENT_GEN_LIMIT#FILE01#202605010000.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "1313249ba2c2ff912185df05138ef217e497681f7c3286254ec0207ace457e34",
+        "utilake.to.time": "2026-06-01T00:00:00+10:00",
+        "utilake.total-rows": "42469152",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1777557600018
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INTERMITTENT_GEN_LIMIT/metadata/snap-1194574859614292365-20-376248e0-8abf-8e2f-af04-1f7daae3a380.avro",
+      "parent-snapshot-id": 10202838499720393,
+      "schema-id": 1,
+      "sequence-number": 20,
+      "snapshot-id": 1194574859614292365,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "30",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_AVAIL_SUBMISS_DAY_20260601.zip",
+        "utilake.from.release": "2026-06",
+        "utilake.from.sha256": "80b4dc9099da408039fb996f9e43e9e39c09a2187f0db6158415c93de99be67a",
+        "utilake.from.time": "2026-05-31T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "INTERMITTENT_GEN_LIMIT",
+        "utilake.report-type": "DEMAND",
+        "utilake.rows": "1613328",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_AVAIL_SUBMISS_DAY_20260601.zip",
+        "utilake.to.release": "2026-06",
+        "utilake.to.sha256": "80b4dc9099da408039fb996f9e43e9e39c09a2187f0db6158415c93de99be67a",
+        "utilake.to.time": "2026-06-29T00:00:00+10:00",
+        "utilake.total-rows": "44082480",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1780236000019
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INTERMITTENT_GEN_LIMIT/metadata/snap-1590139391295219579-21-376248e0-8abf-8e2f-af04-1f7daae3a380.avro",
+      "parent-snapshot-id": 1194574859614292365,
+      "schema-id": 0,
+      "sequence-number": 21,
+      "snapshot-id": 1590139391295219579,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#INTERMITTENT_GEN_LIMIT#FILE01#202606010000.zip",
+        "utilake.from.release": "2026-06",
+        "utilake.from.sha256": "a0547cd4f8780e9cc7ec547d5f5a3800c5d7a1b2bcbc1e8f2c350ed709510399",
+        "utilake.from.time": "2026-06-02T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "INTERMITTENT_GEN_LIMIT",
+        "utilake.report-type": "DEMAND",
+        "utilake.rows": "1613712",
+        "utilake.to.file": "PUBLIC_ARCHIVE#INTERMITTENT_GEN_LIMIT#FILE01#202606010000.zip",
+        "utilake.to.release": "2026-06",
+        "utilake.to.sha256": "a0547cd4f8780e9cc7ec547d5f5a3800c5d7a1b2bcbc1e8f2c350ed709510399",
+        "utilake.to.time": "2026-07-01T00:00:00+10:00",
+        "utilake.total-rows": "45696192",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1780236000020
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INTERMITTENT_GEN_LIMIT/metadata/snap-428533886668391639-22-376248e0-8abf-8e2f-af04-1f7daae3a380.avro",
+      "parent-snapshot-id": 1590139391295219579,
+      "schema-id": 1,
+      "sequence-number": 22,
+      "snapshot-id": 428533886668391639,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_AVAIL_SUBMISS_DAY_20260701.zip",
+        "utilake.from.release": "2026-07",
+        "utilake.from.sha256": "486eaa60f4f1a90a14bc1c2fb9fe142b4134d858d15183c951646c9c1216791a",
+        "utilake.from.time": "2026-06-30T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "INTERMITTENT_GEN_LIMIT",
+        "utilake.report-type": "DEMAND",
+        "utilake.rows": "1789680",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_AVAIL_SUBMISS_DAY_20260701.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "486eaa60f4f1a90a14bc1c2fb9fe142b4134d858d15183c951646c9c1216791a",
+        "utilake.to.time": "2026-07-30T00:00:00+10:00",
+        "utilake.total-rows": "47485872",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1782828000021
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INTERMITTENT_GEN_LIMIT/metadata/snap-7756834504032774299-23-376248e0-8abf-8e2f-af04-1f7daae3a380.avro",
+      "parent-snapshot-id": 428533886668391639,
+      "schema-id": 0,
+      "sequence-number": 23,
+      "snapshot-id": 7756834504032774299,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#INTERMITTENT_GEN_LIMIT#FILE01#202607010000.zip",
+        "utilake.from.release": "2026-07",
+        "utilake.from.sha256": "d5da26990f80f180629544be38e1bacea57b447c2957085e2b022f18eb6bf90e",
+        "utilake.from.time": "2026-07-02T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "INTERMITTENT_GEN_LIMIT",
+        "utilake.report-type": "DEMAND",
+        "utilake.rows": "1910832",
+        "utilake.to.file": "PUBLIC_ARCHIVE#INTERMITTENT_GEN_LIMIT#FILE01#202607010000.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "d5da26990f80f180629544be38e1bacea57b447c2957085e2b022f18eb6bf90e",
+        "utilake.to.time": "2026-08-01T00:00:00+10:00",
+        "utilake.total-rows": "49396704",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1782828000022
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INTERMITTENT_GEN_LIMIT/metadata/snap-402145791760905017-24-376248e0-8abf-8e2f-af04-1f7daae3a380.avro",
+      "parent-snapshot-id": 7756834504032774299,
+      "schema-id": 1,
+      "sequence-number": 24,
+      "snapshot-id": 402145791760905017,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "41",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_AVAIL_SUBMISS_DAY_20260801.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "515995a0a104ec255d3f2f27967d49cff0155e2b8502d1c2e74c842d15a81293",
+        "utilake.from.time": "2026-07-31T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "INTERMITTENT_GEN_LIMIT",
+        "utilake.report-type": "DEMAND",
+        "utilake.rows": "4523424",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_AVAIL_SUBMISS_DAY_20260831041044_0000000535295305.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "6f80b6dc83bce2ea4d161d908a32e77b51bfd2af42a21964d7379147aa1f7462",
+        "utilake.to.time": "2026-08-30T00:00:00+10:00",
+        "utilake.total-rows": "53920128",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1785506400023
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INTERMITTENT_GEN_LIMIT/metadata/snap-6921838834991480026-25-376248e0-8abf-8e2f-af04-1f7daae3a380.avro",
+      "parent-snapshot-id": 402145791760905017,
+      "schema-id": 0,
+      "sequence-number": 25,
+      "snapshot-id": 6921838834991480026,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#INTERMITTENT_GEN_LIMIT#FILE01#202608010000.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "ca23082ffeee083b5adb788c1046949eda0fc132e51747c7accbbb2219b89ffe",
+        "utilake.from.time": "2026-08-02T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "INTERMITTENT_GEN_LIMIT",
+        "utilake.report-type": "DEMAND",
+        "utilake.rows": "3402953",
+        "utilake.to.file": "PUBLIC_ARCHIVE#INTERMITTENT_GEN_LIMIT#FILE01#202608010000.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "ca23082ffeee083b5adb788c1046949eda0fc132e51747c7accbbb2219b89ffe",
+        "utilake.to.time": "2026-09-01T00:00:00+10:00",
+        "utilake.total-rows": "57323081",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1785506400024
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INTERMITTENT_GEN_LIMIT/metadata/snap-7092306071095990790-26-376248e0-8abf-8e2f-af04-1f7daae3a380.avro",
+      "parent-snapshot-id": 6921838834991480026,
+      "schema-id": 1,
+      "sequence-number": 26,
+      "snapshot-id": 7092306071095990790,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "30",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_AVAIL_SUBMISS_DAY_20260901041113_0000000535460211.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "9171fe36ddda874a39dd2ee2e1b154f8f018a57bd58a609e019db920907e598c",
+        "utilake.from.time": "2026-08-31T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "INTERMITTENT_GEN_LIMIT",
+        "utilake.report-type": "DEMAND",
+        "utilake.rows": "3295344",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_AVAIL_SUBMISS_DAY_20260930041109_0000000540333397.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "f2e25662d4dc6f8cb885de1100cb3d038785f81c0989d2b34d1ac5a8b08f3880",
+        "utilake.to.time": "2026-09-29T00:00:00+10:00",
+        "utilake.total-rows": "60618425",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1788184800025
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INTERMITTENT_GEN_LIMIT/metadata/snap-7191355421358511516-27-376248e0-8abf-8e2f-af04-1f7daae3a380.avro",
+      "parent-snapshot-id": 7092306071095990790,
+      "schema-id": 0,
+      "sequence-number": 27,
+      "snapshot-id": 7191355421358511516,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#INTERMITTENT_GEN_LIMIT#FILE01#202609010000.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "0905ab6047a63e529d39493824804992d825875fa9d503d084f5a15bddf6227b",
+        "utilake.from.time": "2026-09-02T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "INTERMITTENT_GEN_LIMIT",
+        "utilake.report-type": "DEMAND",
+        "utilake.rows": "3304224",
         "utilake.to.file": "PUBLIC_ARCHIVE#INTERMITTENT_GEN_LIMIT#FILE01#202609010000.zip",
         "utilake.to.release": "2026-09",
         "utilake.to.sha256": "0905ab6047a63e529d39493824804992d825875fa9d503d084f5a15bddf6227b",
         "utilake.to.time": "2026-10-01T00:00:00+10:00",
-        "utilake.total-rows": "38095961",
+        "utilake.total-rows": "63922649",
         "utilake.version": "1"
       },
-      "timestamp-ms": 1722434400000
+      "timestamp-ms": 1788184800026
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INTERMITTENT_GEN_LIMIT/metadata/snap-185658460631229079-28-376248e0-8abf-8e2f-af04-1f7daae3a380.avro",
+      "parent-snapshot-id": 7191355421358511516,
+      "schema-id": 1,
+      "sequence-number": 28,
+      "snapshot-id": 185658460631229079,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "22",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_AVAIL_SUBMISS_DAY_20261001041035_0000000540509477.zip",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "d785cea297bc8b1cbbb3dca3af7fda3af3a2642698fe3bade25f12333b7ccc1a",
+        "utilake.from.time": "2026-09-30T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "INTERMITTENT_GEN_LIMIT",
+        "utilake.report-type": "DEMAND",
+        "utilake.rows": "2338128",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_AVAIL_SUBMISS_DAY_20261022041047_0000000544169320.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "056f13d5c875974f323ccc44cb2db423b183d52a819c80907b39de634dcb4c87",
+        "utilake.to.time": "2026-10-21T00:00:00+10:00",
+        "utilake.total-rows": "66260777",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1790776800027
     }
   ],
   "sort-orders": [

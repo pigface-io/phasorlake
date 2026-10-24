@@ -1,13 +1,13 @@
 {
   "current-schema-id": 0,
-  "current-snapshot-id": 1743435587125672209,
+  "current-snapshot-id": 5067178762739523711,
   "default-sort-order-id": 0,
   "default-spec-id": 0,
   "format-version": 3,
   "last-column-id": 6,
   "last-partition-id": 999,
-  "last-sequence-number": 1,
-  "last-updated-ms": 1722434400000,
+  "last-sequence-number": 7,
+  "last-updated-ms": 1785506400006,
   "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/CONSTRAINTRELAXATION_OCD",
   "metadata-log": [],
   "next-row-id": 0,
@@ -38,7 +38,7 @@
   },
   "refs": {
     "main": {
-      "snapshot-id": 1743435587125672209,
+      "snapshot-id": 5067178762739523711,
       "type": "branch"
     }
   },
@@ -96,12 +96,90 @@
       ],
       "schema-id": 0,
       "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "End date and time of the dispatch interval",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Dispatch run no",
+          "id": 2,
+          "name": "RUNNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Constraint identifier",
+          "id": 3,
+          "name": "CONSTRAINTID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Relaxed RHS used in attempt to avoid constraint violation",
+          "id": 4,
+          "name": "RHS",
+          "required": false,
+          "type": "decimal(16, 6)"
+        },
+        {
+          "doc": "Version Number",
+          "id": 6,
+          "name": "VERSIONNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 5,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        6
+      ],
+      "schema-id": 1,
+      "type": "struct"
     }
   ],
   "snapshot-log": [
     {
       "snapshot-id": 1743435587125672209,
       "timestamp-ms": 1722434400000
+    },
+    {
+      "snapshot-id": 6030027828916283309,
+      "timestamp-ms": 1767189600001
+    },
+    {
+      "snapshot-id": 8561804659616170171,
+      "timestamp-ms": 1767189600002
+    },
+    {
+      "snapshot-id": 2205799932063239948,
+      "timestamp-ms": 1769868000003
+    },
+    {
+      "snapshot-id": 4232100155031588657,
+      "timestamp-ms": 1769868000004
+    },
+    {
+      "snapshot-id": 272067822496613208,
+      "timestamp-ms": 1785506400005
+    },
+    {
+      "snapshot-id": 5067178762739523711,
+      "timestamp-ms": 1785506400006
     }
   ],
   "snapshots": [
@@ -114,7 +192,7 @@
       "snapshot-id": 1743435587125672209,
       "summary": {
         "operation": "append",
-        "utilake.files": "25",
+        "utilake.files": "17",
         "utilake.from.file": "PUBLIC_ARCHIVE#CONSTRAINTRELAXATION_OCD#FILE01#202408010000.zip",
         "utilake.from.release": "2024-08",
         "utilake.from.sha256": "4926434120f9f86ec0d92eb242dc9d4e9de3d7491cd6c94ce05272bf85124239",
@@ -122,15 +200,183 @@
         "utilake.kinds": "[\"archive\"]",
         "utilake.report-subtype": "CONSTRAINTRELAXATION",
         "utilake.report-type": "PRICELOAD",
-        "utilake.rows": "346",
+        "utilake.rows": "257",
+        "utilake.to.file": "PUBLIC_ARCHIVE#CONSTRAINTRELAXATION_OCD#FILE01#202512010000.zip",
+        "utilake.to.release": "2025-12",
+        "utilake.to.sha256": "d1fb11483370303de98d8dab0f308a33c010da58d2576d14b28f443016840b3a",
+        "utilake.to.time": "2025-12-23T18:25:00+10:00",
+        "utilake.total-rows": "257",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1722434400000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/CONSTRAINTRELAXATION_OCD/metadata/snap-6030027828916283309-2-e2328a5f-2346-8ca6-bcc4-9141981e5de4.avro",
+      "parent-snapshot-id": 1743435587125672209,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 6030027828916283309,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
+        "utilake.from.file": "PUBLIC_PRICE_REVISION_DISPATCHIS_20260112170157_0000000498422789.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "65ae1ed1f2380159e971e7a78069632673fd04d124495257810ada3d76e7cdbb",
+        "utilake.from.time": "2026-01-12T17:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "CONSTRAINTRELAXATION",
+        "utilake.report-type": "PRICELOAD",
+        "utilake.rows": "16",
+        "utilake.to.file": "PUBLIC_PRICE_REVISION_DISPATCH_20260101.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "15d513a8d765cce4d4ce1bd3e463c6bd62298ccf52e26b9c1f9f2e6214bc89e5",
+        "utilake.to.time": "2026-01-12T17:00:00+10:00",
+        "utilake.total-rows": "273",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1767189600001
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/CONSTRAINTRELAXATION_OCD/metadata/snap-8561804659616170171-3-e2328a5f-2346-8ca6-bcc4-9141981e5de4.avro",
+      "parent-snapshot-id": 6030027828916283309,
+      "schema-id": 0,
+      "sequence-number": 3,
+      "snapshot-id": 8561804659616170171,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#CONSTRAINTRELAXATION_OCD#FILE01#202601010000.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "ce8f6b9ab1f87d83b4e7eef264b7f1e192b4cabba2ee68f858a14b184ebe93e2",
+        "utilake.from.time": "2026-01-11T03:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "CONSTRAINTRELAXATION",
+        "utilake.report-type": "PRICELOAD",
+        "utilake.rows": "25",
+        "utilake.to.file": "PUBLIC_ARCHIVE#CONSTRAINTRELAXATION_OCD#FILE01#202601010000.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "ce8f6b9ab1f87d83b4e7eef264b7f1e192b4cabba2ee68f858a14b184ebe93e2",
+        "utilake.to.time": "2026-01-27T07:05:00+10:00",
+        "utilake.total-rows": "298",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1767189600002
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/CONSTRAINTRELAXATION_OCD/metadata/snap-2205799932063239948-4-e2328a5f-2346-8ca6-bcc4-9141981e5de4.avro",
+      "parent-snapshot-id": 8561804659616170171,
+      "schema-id": 1,
+      "sequence-number": 4,
+      "snapshot-id": 2205799932063239948,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "12",
+        "utilake.from.file": "PUBLIC_PRICE_REVISION_DISPATCHIS_20260217124353_0000000503861880.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "2cab980356d77e0151fe77b843899fb810f0727034247056a8c3f624bb58f387",
+        "utilake.from.time": "2026-02-17T12:40:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "CONSTRAINTRELAXATION",
+        "utilake.report-type": "PRICELOAD",
+        "utilake.rows": "12",
+        "utilake.to.file": "PUBLIC_PRICE_REVISION_DISPATCH_20260201.zip",
+        "utilake.to.release": "2026-02",
+        "utilake.to.sha256": "684f9781247a9e38e52a6a57fec37f7d208f08eb49209ea63adeb9e3b86a0c52",
+        "utilake.to.time": "2026-02-17T13:30:00+10:00",
+        "utilake.total-rows": "310",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1769868000003
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/CONSTRAINTRELAXATION_OCD/metadata/snap-4232100155031588657-5-e2328a5f-2346-8ca6-bcc4-9141981e5de4.avro",
+      "parent-snapshot-id": 2205799932063239948,
+      "schema-id": 0,
+      "sequence-number": 5,
+      "snapshot-id": 4232100155031588657,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "5",
+        "utilake.from.file": "PUBLIC_ARCHIVE#CONSTRAINTRELAXATION_OCD#FILE01#202602010000.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "ad19a12ee43f6f42f84aa80c195801a2f1832696facc1f7e54e8295ac141ca6e",
+        "utilake.from.time": "2026-02-02T05:55:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "CONSTRAINTRELAXATION",
+        "utilake.report-type": "PRICELOAD",
+        "utilake.rows": "44",
+        "utilake.to.file": "PUBLIC_ARCHIVE#CONSTRAINTRELAXATION_OCD#FILE01#202607010000.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "73aaa525903afe92874a780db44217fd8fceb523ebe3f7b8fad25cf1631cba8f",
+        "utilake.to.time": "2026-07-08T13:45:00+10:00",
+        "utilake.total-rows": "354",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1769868000004
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/CONSTRAINTRELAXATION_OCD/metadata/snap-272067822496613208-6-e2328a5f-2346-8ca6-bcc4-9141981e5de4.avro",
+      "parent-snapshot-id": 4232100155031588657,
+      "schema-id": 1,
+      "sequence-number": 6,
+      "snapshot-id": 272067822496613208,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "4",
+        "utilake.from.file": "PUBLIC_PRICE_REVISION_DISPATCHIS_20260805165007_0000000531106990.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "a06583a826b123d3c75a69dd5d69008f398e072adca136ecc793a6d3cd86ff89",
+        "utilake.from.time": "2026-08-05T16:25:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "CONSTRAINTRELAXATION",
+        "utilake.report-type": "PRICELOAD",
+        "utilake.rows": "8",
+        "utilake.to.file": "PUBLIC_PRICE_REVISION_DISPATCH_20260801.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "f4c8b80a8d2e046d08a35832a611c3c00ff0952de5aa2449143ddc4ef4c93950",
+        "utilake.to.time": "2026-08-05T16:30:00+10:00",
+        "utilake.total-rows": "362",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1785506400005
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/CONSTRAINTRELAXATION_OCD/metadata/snap-5067178762739523711-7-e2328a5f-2346-8ca6-bcc4-9141981e5de4.avro",
+      "parent-snapshot-id": 272067822496613208,
+      "schema-id": 0,
+      "sequence-number": 7,
+      "snapshot-id": 5067178762739523711,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
+        "utilake.from.file": "PUBLIC_ARCHIVE#CONSTRAINTRELAXATION_OCD#FILE01#202608010000.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "6654f37596b9b63a039683b95129e10f841de3cfcb11cfdbc2e7d312fa1fda13",
+        "utilake.from.time": "2026-08-05T16:25:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "CONSTRAINTRELAXATION",
+        "utilake.report-type": "PRICELOAD",
+        "utilake.rows": "20",
         "utilake.to.file": "PUBLIC_ARCHIVE#CONSTRAINTRELAXATION_OCD#FILE01#202609010000.zip",
         "utilake.to.release": "2026-09",
         "utilake.to.sha256": "c78c826c700a7ec7578f41ba1c55798f50c89562e89badeade0496e82374f8b4",
         "utilake.to.time": "2026-09-26T10:50:00+10:00",
-        "utilake.total-rows": "346",
+        "utilake.total-rows": "382",
         "utilake.version": "1"
       },
-      "timestamp-ms": 1722434400000
+      "timestamp-ms": 1785506400006
     }
   ],
   "sort-orders": [

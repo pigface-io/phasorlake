@@ -1,13 +1,13 @@
 {
-  "current-schema-id": 2,
-  "current-snapshot-id": 4455444069536576126,
+  "current-schema-id": 3,
+  "current-snapshot-id": 643049686254211575,
   "default-sort-order-id": 0,
   "default-spec-id": 0,
   "format-version": 3,
   "last-column-id": 22,
   "last-partition-id": 999,
-  "last-sequence-number": 3,
-  "last-updated-ms": 1722434400002,
+  "last-sequence-number": 28,
+  "last-updated-ms": 1790776800027,
   "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_INTERCONNECTORSOLN",
   "metadata-log": [],
   "next-row-id": 0,
@@ -38,7 +38,7 @@
   },
   "refs": {
     "main": {
-      "snapshot-id": 4455444069536576126,
+      "snapshot-id": 643049686254211575,
       "type": "branch"
     }
   },
@@ -474,6 +474,171 @@
       ],
       "schema-id": 2,
       "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Unique Timestamp Identifier for this study",
+          "id": 1,
+          "name": "RUN_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Flag to indicate if this result set was sourced from the pricing run (INTERVENTION=0) or the physical run (INTERVENTION=1). In the event there is not intervention in the market, both pricing and physical runs correspond to INTERVENTION=0)",
+          "id": 18,
+          "name": "INTERVENTION",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "Interconnector identifier",
+          "id": 2,
+          "name": "INTERCONNECTORID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "The unique identifier for the interval within this study",
+          "id": 3,
+          "name": "INTERVAL_DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "SCADA MW Flow measured at Run start. For periods subsequent to the first period of a P5MIN run, this value represents the cleared target for the previous period of that P5MIN run.",
+          "id": 4,
+          "name": "METEREDMWFLOW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Cleared Interconnector loading level (MW)",
+          "id": 5,
+          "name": "MWFLOW",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Interconnector Losses at cleared flow",
+          "id": 6,
+          "name": "MWLOSSES",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Marginal cost of Interconnector standing data limits (if binding)",
+          "id": 7,
+          "name": "MARGINALVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Violation of Interconnector standing data limits",
+          "id": 8,
+          "name": "VIOLATIONDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Flag indicating MNSP registration",
+          "id": 9,
+          "name": "MNSP",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "Calculated Interconnector limit of exporting energy on the basis of invoked constraints and static interconnector export limit",
+          "id": 10,
+          "name": "EXPORTLIMIT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Calculated Interconnector limit of importing energy on the basis of invoked constraints and static interconnector import limit. Note unlike the input interconnector import limit this is a directional quantity and should be defined with respect to the interconnector flow.",
+          "id": 11,
+          "name": "IMPORTLIMIT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Marginal loss factor at the cleared flow",
+          "id": 12,
+          "name": "MARGINALLOSS",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Generic Constraint setting the export limit",
+          "id": 13,
+          "name": "EXPORTGENCONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Generic Constraint setting the import limit",
+          "id": 14,
+          "name": "IMPORTGENCONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Calculated export limit applying to energy + Frequency Controlled Ancillary Services.",
+          "id": 15,
+          "name": "FCASEXPORTLIMIT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Calculated import limit applying to energy + Frequency Controlled Ancillary Services.",
+          "id": 16,
+          "name": "FCASIMPORTLIMIT",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Last changed date of this record",
+          "id": 17,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Aggregate Constraint contribution cost of this Interconnector: Sum(MarginalValue x Factor) for all relevant Constraints, for Export (Factor >= 0)",
+          "id": 19,
+          "name": "LOCAL_PRICE_ADJUSTMENT_EXPORT",
+          "required": false,
+          "type": "decimal(10, 2)"
+        },
+        {
+          "doc": "Key for Local_Price_Adjustment_Export: 2 = at least one Outage Constraint; 1 = at least 1 System Normal Constraint (and no Outage Constraint); 0 = No System Normal or Outage Constraints",
+          "id": 20,
+          "name": "LOCALLY_CONSTRAINED_EXPORT",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "Aggregate Constraint contribution cost of this Interconnector: Sum(MarginalValue x Factor) for all relevant Constraints, for Import (Factor >= 0)",
+          "id": 21,
+          "name": "LOCAL_PRICE_ADJUSTMENT_IMPORT",
+          "required": false,
+          "type": "decimal(10, 2)"
+        },
+        {
+          "doc": "Key for Local_Price_Adjustment_Import: 2 = at least one Outage Constraint; 1 = at least 1 System Normal Constraint (and no Outage Constraint); 0 = No System Normal or Outage Constraints",
+          "id": 22,
+          "name": "LOCALLY_CONSTRAINED_IMPORT",
+          "required": false,
+          "type": "decimal(1, 0)"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3
+      ],
+      "schema-id": 3,
+      "type": "struct"
     }
   ],
   "snapshot-log": [
@@ -488,6 +653,106 @@
     {
       "snapshot-id": 4455444069536576126,
       "timestamp-ms": 1722434400002
+    },
+    {
+      "snapshot-id": 4159136564736497209,
+      "timestamp-ms": 1759240800003
+    },
+    {
+      "snapshot-id": 7293549383086989780,
+      "timestamp-ms": 1759240800004
+    },
+    {
+      "snapshot-id": 3752194488464693921,
+      "timestamp-ms": 1761919200005
+    },
+    {
+      "snapshot-id": 1433547578758998959,
+      "timestamp-ms": 1761919200006
+    },
+    {
+      "snapshot-id": 7782626876333671702,
+      "timestamp-ms": 1764511200007
+    },
+    {
+      "snapshot-id": 3029848774505394669,
+      "timestamp-ms": 1764511200008
+    },
+    {
+      "snapshot-id": 7203483356907620562,
+      "timestamp-ms": 1767189600009
+    },
+    {
+      "snapshot-id": 331542148829110429,
+      "timestamp-ms": 1767189600010
+    },
+    {
+      "snapshot-id": 5344189490183729652,
+      "timestamp-ms": 1769868000011
+    },
+    {
+      "snapshot-id": 6547234113326285810,
+      "timestamp-ms": 1769868000012
+    },
+    {
+      "snapshot-id": 422536321754136307,
+      "timestamp-ms": 1772287200013
+    },
+    {
+      "snapshot-id": 5535335863297029828,
+      "timestamp-ms": 1772287200014
+    },
+    {
+      "snapshot-id": 325894650359180304,
+      "timestamp-ms": 1774965600015
+    },
+    {
+      "snapshot-id": 4930856353998902456,
+      "timestamp-ms": 1774965600016
+    },
+    {
+      "snapshot-id": 826366085705520053,
+      "timestamp-ms": 1777557600017
+    },
+    {
+      "snapshot-id": 7696668891649997684,
+      "timestamp-ms": 1777557600018
+    },
+    {
+      "snapshot-id": 2140965815790350270,
+      "timestamp-ms": 1780236000019
+    },
+    {
+      "snapshot-id": 3738183718840635818,
+      "timestamp-ms": 1780236000020
+    },
+    {
+      "snapshot-id": 8049516244022650710,
+      "timestamp-ms": 1782828000021
+    },
+    {
+      "snapshot-id": 3590886105880007439,
+      "timestamp-ms": 1782828000022
+    },
+    {
+      "snapshot-id": 6994853525271162032,
+      "timestamp-ms": 1785506400023
+    },
+    {
+      "snapshot-id": 4774358262140115645,
+      "timestamp-ms": 1785506400024
+    },
+    {
+      "snapshot-id": 7232105385117191132,
+      "timestamp-ms": 1788184800025
+    },
+    {
+      "snapshot-id": 779801127416135995,
+      "timestamp-ms": 1788184800026
+    },
+    {
+      "snapshot-id": 643049686254211575,
+      "timestamp-ms": 1790776800027
     }
   ],
   "snapshots": [
@@ -556,7 +821,7 @@
       "snapshot-id": 4455444069536576126,
       "summary": {
         "operation": "append",
-        "utilake.files": "52",
+        "utilake.files": "28",
         "utilake.from.file": "PUBLIC_ARCHIVE#P5MIN_INTERCONNECTORSOLN#ALL#FILE01#202408010000.zip",
         "utilake.from.release": "2024-08",
         "utilake.from.sha256": "d0386b61a06b3a528913d4429eabfdaad5964808de9fa0c57fd761f3854deb89",
@@ -564,15 +829,715 @@
         "utilake.kinds": "[\"archive\",\"archive#all\"]",
         "utilake.report-subtype": "INTERCONNECTORSOLN",
         "utilake.report-type": "P5MIN",
-        "utilake.rows": "32802900",
+        "utilake.rows": "17665488",
+        "utilake.to.file": "PUBLIC_ARCHIVE#P5MIN_INTERCONNECTORSOLN#FILE01#202509010000.zip",
+        "utilake.to.release": "2025-09",
+        "utilake.to.sha256": "f5965e4f956f260b0a1282cd87f78cbb93818ef6716c1aabd57cdd70f3d87d87",
+        "utilake.to.time": "2025-10-01T00:55:00+10:00",
+        "utilake.total-rows": "174901176",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1722434400002
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_INTERCONNECTORSOLN/metadata/snap-4159136564736497209-4-a20cdbe5-d9aa-8761-9bef-d0cc8848136d.avro",
+      "parent-snapshot-id": 4455444069536576126,
+      "schema-id": 3,
+      "sequence-number": 4,
+      "snapshot-id": 4159136564736497209,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "6911",
+        "utilake.from.file": "PUBLIC_P5MIN_20251008.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "48b67675f05695533829b57efb40e1aeeef9cbcfbd161f5ad5283f53b66c9811",
+        "utilake.from.time": "2025-10-08T00:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "INTERCONNECTORSOLN",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "497592",
+        "utilake.to.file": "PUBLIC_P5MIN_20251031.zip",
+        "utilake.to.release": "2025-10",
+        "utilake.to.sha256": "e1a94f310c75c04644137fa77f3c741199fe4cce0a29c42a99edd3efcd168686",
+        "utilake.to.time": "2025-11-01T00:50:00+10:00",
+        "utilake.total-rows": "175398768",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1759240800003
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_INTERCONNECTORSOLN/metadata/snap-7293549383086989780-5-a20cdbe5-d9aa-8761-9bef-d0cc8848136d.avro",
+      "parent-snapshot-id": 4159136564736497209,
+      "schema-id": 2,
+      "sequence-number": 5,
+      "snapshot-id": 7293549383086989780,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
+        "utilake.from.file": "PUBLIC_ARCHIVE#P5MIN_INTERCONNECTORSOLN#ALL#FILE01#202510010000.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "67e4cdb9544fb490e2264f417b7f8d6c94c45df9324df51ab7179807c63452bc",
+        "utilake.from.time": "2025-10-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\",\"archive#all\"]",
+        "utilake.report-subtype": "INTERCONNECTORSOLN",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "1285632",
+        "utilake.to.file": "PUBLIC_ARCHIVE#P5MIN_INTERCONNECTORSOLN#FILE01#202510010000.zip",
+        "utilake.to.release": "2025-10",
+        "utilake.to.sha256": "85466f484c8d74736e7806618791bc800dd26bdae97b1aae043d7485cfb338b0",
+        "utilake.to.time": "2025-11-01T00:55:00+10:00",
+        "utilake.total-rows": "176684400",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1759240800004
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_INTERCONNECTORSOLN/metadata/snap-3752194488464693921-6-a20cdbe5-d9aa-8761-9bef-d0cc8848136d.avro",
+      "parent-snapshot-id": 7293549383086989780,
+      "schema-id": 3,
+      "sequence-number": 6,
+      "snapshot-id": 3752194488464693921,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8640",
+        "utilake.from.file": "PUBLIC_P5MIN_20251031.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "e1a94f310c75c04644137fa77f3c741199fe4cce0a29c42a99edd3efcd168686",
+        "utilake.from.time": "2025-11-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "INTERCONNECTORSOLN",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "622080",
+        "utilake.to.file": "PUBLIC_P5MIN_20251130.zip",
+        "utilake.to.release": "2025-11",
+        "utilake.to.sha256": "c1ed4fb361416bce1ec19bdba047559c6d2356c11c5c76a9219710a2dd24a2d2",
+        "utilake.to.time": "2025-12-01T00:50:00+10:00",
+        "utilake.total-rows": "177306480",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1761919200005
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_INTERCONNECTORSOLN/metadata/snap-1433547578758998959-7-a20cdbe5-d9aa-8761-9bef-d0cc8848136d.avro",
+      "parent-snapshot-id": 3752194488464693921,
+      "schema-id": 2,
+      "sequence-number": 7,
+      "snapshot-id": 1433547578758998959,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
+        "utilake.from.file": "PUBLIC_ARCHIVE#P5MIN_INTERCONNECTORSOLN#ALL#FILE01#202511010000.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "c2a03d7cf4b048074d2de343e8d76e107665f88db77bed660ef595d326924426",
+        "utilake.from.time": "2025-11-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\",\"archive#all\"]",
+        "utilake.report-subtype": "INTERCONNECTORSOLN",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "1244160",
+        "utilake.to.file": "PUBLIC_ARCHIVE#P5MIN_INTERCONNECTORSOLN#FILE01#202511010000.zip",
+        "utilake.to.release": "2025-11",
+        "utilake.to.sha256": "44ddd2782ef5bebe9a3ea3724aa93287fdd935ec0d540e61dd353e81457df787",
+        "utilake.to.time": "2025-12-01T00:55:00+10:00",
+        "utilake.total-rows": "178550640",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1761919200006
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_INTERCONNECTORSOLN/metadata/snap-7782626876333671702-8-a20cdbe5-d9aa-8761-9bef-d0cc8848136d.avro",
+      "parent-snapshot-id": 1433547578758998959,
+      "schema-id": 3,
+      "sequence-number": 8,
+      "snapshot-id": 7782626876333671702,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8928",
+        "utilake.from.file": "PUBLIC_P5MIN_20251130.zip",
+        "utilake.from.release": "2025-12",
+        "utilake.from.sha256": "c1ed4fb361416bce1ec19bdba047559c6d2356c11c5c76a9219710a2dd24a2d2",
+        "utilake.from.time": "2025-12-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "INTERCONNECTORSOLN",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "642816",
+        "utilake.to.file": "PUBLIC_P5MIN_20251231.zip",
+        "utilake.to.release": "2025-12",
+        "utilake.to.sha256": "c5f3b26357135c723dd0f7833f20733a8262c114eadfdcb16edb35e789609887",
+        "utilake.to.time": "2026-01-01T00:50:00+10:00",
+        "utilake.total-rows": "179193456",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1764511200007
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_INTERCONNECTORSOLN/metadata/snap-3029848774505394669-9-a20cdbe5-d9aa-8761-9bef-d0cc8848136d.avro",
+      "parent-snapshot-id": 7782626876333671702,
+      "schema-id": 2,
+      "sequence-number": 9,
+      "snapshot-id": 3029848774505394669,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
+        "utilake.from.file": "PUBLIC_ARCHIVE#P5MIN_INTERCONNECTORSOLN#ALL#FILE01#202512010000.zip",
+        "utilake.from.release": "2025-12",
+        "utilake.from.sha256": "e2cb67441c54f0354f36f949687e188dda582025a4c01622dd09591bad453e7c",
+        "utilake.from.time": "2025-12-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\",\"archive#all\"]",
+        "utilake.report-subtype": "INTERCONNECTORSOLN",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "1285632",
+        "utilake.to.file": "PUBLIC_ARCHIVE#P5MIN_INTERCONNECTORSOLN#FILE01#202512010000.zip",
+        "utilake.to.release": "2025-12",
+        "utilake.to.sha256": "d5195a0834fdf55b82f88cebc809d765a43001555ae43f4abf4882925312dd67",
+        "utilake.to.time": "2026-01-01T00:55:00+10:00",
+        "utilake.total-rows": "180479088",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1764511200008
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_INTERCONNECTORSOLN/metadata/snap-7203483356907620562-10-a20cdbe5-d9aa-8761-9bef-d0cc8848136d.avro",
+      "parent-snapshot-id": 3029848774505394669,
+      "schema-id": 3,
+      "sequence-number": 10,
+      "snapshot-id": 7203483356907620562,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8928",
+        "utilake.from.file": "PUBLIC_P5MIN_20251231.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "c5f3b26357135c723dd0f7833f20733a8262c114eadfdcb16edb35e789609887",
+        "utilake.from.time": "2026-01-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "INTERCONNECTORSOLN",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "642816",
+        "utilake.to.file": "PUBLIC_P5MIN_20260131.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "6e3d8e42981f97ae354ada7d246eba58fac8d79e8e1620c2f82f1c91e603381e",
+        "utilake.to.time": "2026-02-01T00:50:00+10:00",
+        "utilake.total-rows": "181121904",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1767189600009
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_INTERCONNECTORSOLN/metadata/snap-331542148829110429-11-a20cdbe5-d9aa-8761-9bef-d0cc8848136d.avro",
+      "parent-snapshot-id": 7203483356907620562,
+      "schema-id": 2,
+      "sequence-number": 11,
+      "snapshot-id": 331542148829110429,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
+        "utilake.from.file": "PUBLIC_ARCHIVE#P5MIN_INTERCONNECTORSOLN#ALL#FILE01#202601010000.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "a0c9febd40f5dca03eee3f47ae80d77898fd36db10a657d29cb0533a7579d982",
+        "utilake.from.time": "2026-01-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\",\"archive#all\"]",
+        "utilake.report-subtype": "INTERCONNECTORSOLN",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "1285632",
+        "utilake.to.file": "PUBLIC_ARCHIVE#P5MIN_INTERCONNECTORSOLN#FILE01#202601010000.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "9c98a00696aa799b75863726b01a913b4774e44f7b3dd3b6216406c0d7a05a6a",
+        "utilake.to.time": "2026-02-01T00:55:00+10:00",
+        "utilake.total-rows": "182407536",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1767189600010
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_INTERCONNECTORSOLN/metadata/snap-5344189490183729652-12-a20cdbe5-d9aa-8761-9bef-d0cc8848136d.avro",
+      "parent-snapshot-id": 331542148829110429,
+      "schema-id": 3,
+      "sequence-number": 12,
+      "snapshot-id": 5344189490183729652,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8064",
+        "utilake.from.file": "PUBLIC_P5MIN_20260131.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "6e3d8e42981f97ae354ada7d246eba58fac8d79e8e1620c2f82f1c91e603381e",
+        "utilake.from.time": "2026-02-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "INTERCONNECTORSOLN",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "580608",
+        "utilake.to.file": "PUBLIC_P5MIN_20260228.zip",
+        "utilake.to.release": "2026-02",
+        "utilake.to.sha256": "0663009f32fe68c7bb7f7b3c6e7e2af007664d39547645bb5783f3e1eebaa874",
+        "utilake.to.time": "2026-03-01T00:50:00+10:00",
+        "utilake.total-rows": "182988144",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1769868000011
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_INTERCONNECTORSOLN/metadata/snap-6547234113326285810-13-a20cdbe5-d9aa-8761-9bef-d0cc8848136d.avro",
+      "parent-snapshot-id": 5344189490183729652,
+      "schema-id": 2,
+      "sequence-number": 13,
+      "snapshot-id": 6547234113326285810,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
+        "utilake.from.file": "PUBLIC_ARCHIVE#P5MIN_INTERCONNECTORSOLN#ALL#FILE01#202602010000.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "325d45f7919f5671e38623f7acbe282f9b90876bb2f17df0df7611f37f2fcace",
+        "utilake.from.time": "2026-02-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\",\"archive#all\"]",
+        "utilake.report-subtype": "INTERCONNECTORSOLN",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "1161216",
+        "utilake.to.file": "PUBLIC_ARCHIVE#P5MIN_INTERCONNECTORSOLN#FILE01#202602010000.zip",
+        "utilake.to.release": "2026-02",
+        "utilake.to.sha256": "2b9fc1f64cd8dec0957021e5e4b67e455a9812bb965f3503c8e2e2a73b5e53aa",
+        "utilake.to.time": "2026-03-01T00:55:00+10:00",
+        "utilake.total-rows": "184149360",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1769868000012
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_INTERCONNECTORSOLN/metadata/snap-422536321754136307-14-a20cdbe5-d9aa-8761-9bef-d0cc8848136d.avro",
+      "parent-snapshot-id": 6547234113326285810,
+      "schema-id": 3,
+      "sequence-number": 14,
+      "snapshot-id": 422536321754136307,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8905",
+        "utilake.from.file": "PUBLIC_P5MIN_202603031345_20260303134116.zip",
+        "utilake.from.release": "2026-03",
+        "utilake.from.sha256": "661ab755e0ba138730c73810d32e0cdda8c5a41525179aff198737d80fa38ee2",
+        "utilake.from.time": "2026-03-03T13:45:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "INTERCONNECTORSOLN",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "641160",
+        "utilake.to.file": "PUBLIC_P5MIN_20260331.zip",
+        "utilake.to.release": "2026-03",
+        "utilake.to.sha256": "fc9ef350c810651975b27b982bbeca9a4609f34567b9492710391e142b08e8cc",
+        "utilake.to.time": "2026-04-01T00:50:00+10:00",
+        "utilake.total-rows": "184790520",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1772287200013
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_INTERCONNECTORSOLN/metadata/snap-5535335863297029828-15-a20cdbe5-d9aa-8761-9bef-d0cc8848136d.avro",
+      "parent-snapshot-id": 422536321754136307,
+      "schema-id": 2,
+      "sequence-number": 15,
+      "snapshot-id": 5535335863297029828,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
+        "utilake.from.file": "PUBLIC_ARCHIVE#P5MIN_INTERCONNECTORSOLN#ALL#FILE01#202603010000.zip",
+        "utilake.from.release": "2026-03",
+        "utilake.from.sha256": "31b633e0d351dc8709e7c4335e2f128efbcb07e246971b0bbefb9f5d12b19888",
+        "utilake.from.time": "2026-03-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\",\"archive#all\"]",
+        "utilake.report-subtype": "INTERCONNECTORSOLN",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "1285632",
+        "utilake.to.file": "PUBLIC_ARCHIVE#P5MIN_INTERCONNECTORSOLN#FILE01#202603010000.zip",
+        "utilake.to.release": "2026-03",
+        "utilake.to.sha256": "7ede5ab6c1d14faa05cf8bdca6f4564418731b1932f5e0e3e70b133c2d548121",
+        "utilake.to.time": "2026-04-01T00:55:00+10:00",
+        "utilake.total-rows": "186076152",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1772287200014
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_INTERCONNECTORSOLN/metadata/snap-325894650359180304-16-a20cdbe5-d9aa-8761-9bef-d0cc8848136d.avro",
+      "parent-snapshot-id": 5535335863297029828,
+      "schema-id": 3,
+      "sequence-number": 16,
+      "snapshot-id": 325894650359180304,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8640",
+        "utilake.from.file": "PUBLIC_P5MIN_20260331.zip",
+        "utilake.from.release": "2026-04",
+        "utilake.from.sha256": "fc9ef350c810651975b27b982bbeca9a4609f34567b9492710391e142b08e8cc",
+        "utilake.from.time": "2026-04-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "INTERCONNECTORSOLN",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "622080",
+        "utilake.to.file": "PUBLIC_P5MIN_20260430.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "bb99b17f0cfed148a237985df8cff2bf9f6bc7e033e3a305b118c2e6786ad77f",
+        "utilake.to.time": "2026-05-01T00:50:00+10:00",
+        "utilake.total-rows": "186698232",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1774965600015
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_INTERCONNECTORSOLN/metadata/snap-4930856353998902456-17-a20cdbe5-d9aa-8761-9bef-d0cc8848136d.avro",
+      "parent-snapshot-id": 325894650359180304,
+      "schema-id": 2,
+      "sequence-number": 17,
+      "snapshot-id": 4930856353998902456,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
+        "utilake.from.file": "PUBLIC_ARCHIVE#P5MIN_INTERCONNECTORSOLN#ALL#FILE01#202604010000.zip",
+        "utilake.from.release": "2026-04",
+        "utilake.from.sha256": "3e707b1b9ca2ed529c770cefb7698919787fab9e031766b0bede9a08869f04b5",
+        "utilake.from.time": "2026-04-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\",\"archive#all\"]",
+        "utilake.report-subtype": "INTERCONNECTORSOLN",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "1244160",
+        "utilake.to.file": "PUBLIC_ARCHIVE#P5MIN_INTERCONNECTORSOLN#FILE01#202604010000.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "ebe784d3d26ddc983112dd8ee4eef7c8fb30c6ee9b524d33b43d31fe89efc98c",
+        "utilake.to.time": "2026-05-01T00:55:00+10:00",
+        "utilake.total-rows": "187942392",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1774965600016
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_INTERCONNECTORSOLN/metadata/snap-826366085705520053-18-a20cdbe5-d9aa-8761-9bef-d0cc8848136d.avro",
+      "parent-snapshot-id": 4930856353998902456,
+      "schema-id": 3,
+      "sequence-number": 18,
+      "snapshot-id": 826366085705520053,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8928",
+        "utilake.from.file": "PUBLIC_P5MIN_20260430.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "bb99b17f0cfed148a237985df8cff2bf9f6bc7e033e3a305b118c2e6786ad77f",
+        "utilake.from.time": "2026-05-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "INTERCONNECTORSOLN",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "642816",
+        "utilake.to.file": "PUBLIC_P5MIN_20260531.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "44a9474dac07db4c13ef60aa43afca7f97223126379dfe5b2e66a27e1a2f59b9",
+        "utilake.to.time": "2026-06-01T00:50:00+10:00",
+        "utilake.total-rows": "188585208",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1777557600017
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_INTERCONNECTORSOLN/metadata/snap-7696668891649997684-19-a20cdbe5-d9aa-8761-9bef-d0cc8848136d.avro",
+      "parent-snapshot-id": 826366085705520053,
+      "schema-id": 2,
+      "sequence-number": 19,
+      "snapshot-id": 7696668891649997684,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
+        "utilake.from.file": "PUBLIC_ARCHIVE#P5MIN_INTERCONNECTORSOLN#ALL#FILE01#202605010000.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "ba0546fca69382951bdc50a01adf5280977d98930a9e76f524caaedf26bf83f7",
+        "utilake.from.time": "2026-05-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\",\"archive#all\"]",
+        "utilake.report-subtype": "INTERCONNECTORSOLN",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "1285632",
+        "utilake.to.file": "PUBLIC_ARCHIVE#P5MIN_INTERCONNECTORSOLN#FILE01#202605010000.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "97128086870380e5ffac54f221dd211db033f21a68fa1f41492a44090f58edbd",
+        "utilake.to.time": "2026-06-01T00:55:00+10:00",
+        "utilake.total-rows": "189870840",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1777557600018
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_INTERCONNECTORSOLN/metadata/snap-2140965815790350270-20-a20cdbe5-d9aa-8761-9bef-d0cc8848136d.avro",
+      "parent-snapshot-id": 7696668891649997684,
+      "schema-id": 3,
+      "sequence-number": 20,
+      "snapshot-id": 2140965815790350270,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8640",
+        "utilake.from.file": "PUBLIC_P5MIN_20260531.zip",
+        "utilake.from.release": "2026-06",
+        "utilake.from.sha256": "44a9474dac07db4c13ef60aa43afca7f97223126379dfe5b2e66a27e1a2f59b9",
+        "utilake.from.time": "2026-06-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "INTERCONNECTORSOLN",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "622080",
+        "utilake.to.file": "PUBLIC_P5MIN_20260630.zip",
+        "utilake.to.release": "2026-06",
+        "utilake.to.sha256": "d0f0a341b2397ad3b602ac254eee164e822aac0283cb9961c02ef9485f65a8a8",
+        "utilake.to.time": "2026-07-01T00:50:00+10:00",
+        "utilake.total-rows": "190492920",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1780236000019
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_INTERCONNECTORSOLN/metadata/snap-3738183718840635818-21-a20cdbe5-d9aa-8761-9bef-d0cc8848136d.avro",
+      "parent-snapshot-id": 2140965815790350270,
+      "schema-id": 2,
+      "sequence-number": 21,
+      "snapshot-id": 3738183718840635818,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
+        "utilake.from.file": "PUBLIC_ARCHIVE#P5MIN_INTERCONNECTORSOLN#ALL#FILE01#202606010000.zip",
+        "utilake.from.release": "2026-06",
+        "utilake.from.sha256": "c2e8f62689689e5f6becd1787ecb37b34c4bfe1126d5f8c188ea5b0770911e2e",
+        "utilake.from.time": "2026-06-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\",\"archive#all\"]",
+        "utilake.report-subtype": "INTERCONNECTORSOLN",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "1244160",
+        "utilake.to.file": "PUBLIC_ARCHIVE#P5MIN_INTERCONNECTORSOLN#FILE01#202606010000.zip",
+        "utilake.to.release": "2026-06",
+        "utilake.to.sha256": "dd715abb27daa4ca7edcf7109a1811620821c0e1a633dcbb6657abe08c6d3c50",
+        "utilake.to.time": "2026-07-01T00:55:00+10:00",
+        "utilake.total-rows": "191737080",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1780236000020
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_INTERCONNECTORSOLN/metadata/snap-8049516244022650710-22-a20cdbe5-d9aa-8761-9bef-d0cc8848136d.avro",
+      "parent-snapshot-id": 3738183718840635818,
+      "schema-id": 3,
+      "sequence-number": 22,
+      "snapshot-id": 8049516244022650710,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8928",
+        "utilake.from.file": "PUBLIC_P5MIN_20260630.zip",
+        "utilake.from.release": "2026-07",
+        "utilake.from.sha256": "d0f0a341b2397ad3b602ac254eee164e822aac0283cb9961c02ef9485f65a8a8",
+        "utilake.from.time": "2026-07-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "INTERCONNECTORSOLN",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "642816",
+        "utilake.to.file": "PUBLIC_P5MIN_20260731.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "9f536192651f1f01c804b8e697dae9d5ac41785ee19bae19150dac66d4d138cc",
+        "utilake.to.time": "2026-08-01T00:50:00+10:00",
+        "utilake.total-rows": "192379896",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1782828000021
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_INTERCONNECTORSOLN/metadata/snap-3590886105880007439-23-a20cdbe5-d9aa-8761-9bef-d0cc8848136d.avro",
+      "parent-snapshot-id": 8049516244022650710,
+      "schema-id": 2,
+      "sequence-number": 23,
+      "snapshot-id": 3590886105880007439,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
+        "utilake.from.file": "PUBLIC_ARCHIVE#P5MIN_INTERCONNECTORSOLN#ALL#FILE01#202607010000.zip",
+        "utilake.from.release": "2026-07",
+        "utilake.from.sha256": "090f508b58822a216b0920d1e19497cc3ab1fda9f188eda6bacd6ceb1909158b",
+        "utilake.from.time": "2026-07-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\",\"archive#all\"]",
+        "utilake.report-subtype": "INTERCONNECTORSOLN",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "1285632",
+        "utilake.to.file": "PUBLIC_ARCHIVE#P5MIN_INTERCONNECTORSOLN#FILE01#202607010000.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "94e074b3da1a7db732fe0ddacd99cc619975bf5a99cc0baba8639704b42ed2b5",
+        "utilake.to.time": "2026-08-01T00:55:00+10:00",
+        "utilake.total-rows": "193665528",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1782828000022
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_INTERCONNECTORSOLN/metadata/snap-6994853525271162032-24-a20cdbe5-d9aa-8761-9bef-d0cc8848136d.avro",
+      "parent-snapshot-id": 3590886105880007439,
+      "schema-id": 3,
+      "sequence-number": 24,
+      "snapshot-id": 6994853525271162032,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8928",
+        "utilake.from.file": "PUBLIC_P5MIN_20260731.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "9f536192651f1f01c804b8e697dae9d5ac41785ee19bae19150dac66d4d138cc",
+        "utilake.from.time": "2026-08-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "INTERCONNECTORSOLN",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "642816",
+        "utilake.to.file": "PUBLIC_P5MIN_20260831.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "9bf6da4f3fed6e6ea3553cc2b3f9a22da75e3cc653c2ea2c523752a7d076209c",
+        "utilake.to.time": "2026-09-01T00:50:00+10:00",
+        "utilake.total-rows": "194308344",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1785506400023
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_INTERCONNECTORSOLN/metadata/snap-4774358262140115645-25-a20cdbe5-d9aa-8761-9bef-d0cc8848136d.avro",
+      "parent-snapshot-id": 6994853525271162032,
+      "schema-id": 2,
+      "sequence-number": 25,
+      "snapshot-id": 4774358262140115645,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
+        "utilake.from.file": "PUBLIC_ARCHIVE#P5MIN_INTERCONNECTORSOLN#ALL#FILE01#202608010000.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "c76c5aa34f8b4807e00826ca539fb493361d2df0eea907a8f2ef967a23ec939a",
+        "utilake.from.time": "2026-08-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\",\"archive#all\"]",
+        "utilake.report-subtype": "INTERCONNECTORSOLN",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "1285632",
+        "utilake.to.file": "PUBLIC_ARCHIVE#P5MIN_INTERCONNECTORSOLN#FILE01#202608010000.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "0723092292352e4f64a175abbb76c5113a5474055796569728399ec0da25de02",
+        "utilake.to.time": "2026-09-01T00:55:00+10:00",
+        "utilake.total-rows": "195593976",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1785506400024
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_INTERCONNECTORSOLN/metadata/snap-7232105385117191132-26-a20cdbe5-d9aa-8761-9bef-d0cc8848136d.avro",
+      "parent-snapshot-id": 4774358262140115645,
+      "schema-id": 3,
+      "sequence-number": 26,
+      "snapshot-id": 7232105385117191132,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8640",
+        "utilake.from.file": "PUBLIC_P5MIN_20260831.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "9bf6da4f3fed6e6ea3553cc2b3f9a22da75e3cc653c2ea2c523752a7d076209c",
+        "utilake.from.time": "2026-09-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "INTERCONNECTORSOLN",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "622135",
+        "utilake.to.file": "PUBLIC_P5MIN_20260930.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "cde9d4b95e214da35beb3a69bec9fd3d005e85fc92603e7ee9562fca0f5e927e",
+        "utilake.to.time": "2026-10-01T00:50:00+10:00",
+        "utilake.total-rows": "196216111",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1788184800025
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_INTERCONNECTORSOLN/metadata/snap-779801127416135995-27-a20cdbe5-d9aa-8761-9bef-d0cc8848136d.avro",
+      "parent-snapshot-id": 7232105385117191132,
+      "schema-id": 2,
+      "sequence-number": 27,
+      "snapshot-id": 779801127416135995,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
+        "utilake.from.file": "PUBLIC_ARCHIVE#P5MIN_INTERCONNECTORSOLN#ALL#FILE01#202609010000.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "51e748f901177972d8b6173a7d615b35bc49737b5d044d97f39f22f066cf2240",
+        "utilake.from.time": "2026-09-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\",\"archive#all\"]",
+        "utilake.report-subtype": "INTERCONNECTORSOLN",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "1244292",
         "utilake.to.file": "PUBLIC_ARCHIVE#P5MIN_INTERCONNECTORSOLN#FILE01#202609010000.zip",
         "utilake.to.release": "2026-09",
         "utilake.to.sha256": "86d92ad8fc54350f07ad1d4b6852a0753a0525f8bc8554b2390ccd47c699deb8",
         "utilake.to.time": "2026-10-01T00:55:00+10:00",
-        "utilake.total-rows": "190038588",
+        "utilake.total-rows": "197460403",
         "utilake.version": "4"
       },
-      "timestamp-ms": 1722434400002
+      "timestamp-ms": 1788184800026
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_INTERCONNECTORSOLN/metadata/snap-643049686254211575-28-a20cdbe5-d9aa-8761-9bef-d0cc8848136d.avro",
+      "parent-snapshot-id": 779801127416135995,
+      "schema-id": 3,
+      "sequence-number": 28,
+      "snapshot-id": 643049686254211575,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "6365",
+        "utilake.from.file": "PUBLIC_P5MIN_20260930.zip",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "cde9d4b95e214da35beb3a69bec9fd3d005e85fc92603e7ee9562fca0f5e927e",
+        "utilake.from.time": "2026-10-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "INTERCONNECTORSOLN",
+        "utilake.report-type": "P5MIN",
+        "utilake.rows": "534659",
+        "utilake.to.file": "PUBLIC_P5MIN_202610212235_20261021223034.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "b550c8519a3866ead941c4b083a24e63ee95f3858b865e988c44ae411f060904",
+        "utilake.to.time": "2026-10-21T23:30:00+10:00",
+        "utilake.total-rows": "197995062",
+        "utilake.version": "4"
+      },
+      "timestamp-ms": 1790776800027
     }
   ],
   "sort-orders": [

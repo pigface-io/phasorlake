@@ -1,13 +1,13 @@
 {
-  "current-schema-id": 0,
-  "current-snapshot-id": 2301328853961727405,
+  "current-schema-id": 1,
+  "current-snapshot-id": 7736904801935115229,
   "default-sort-order-id": 0,
   "default-spec-id": 0,
   "format-version": 3,
   "last-column-id": 21,
   "last-partition-id": 999,
-  "last-sequence-number": 1,
-  "last-updated-ms": 1722434400000,
+  "last-sequence-number": 2,
+  "last-updated-ms": 1722434400001,
   "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BILLING_DIRECTION_RECON_OTHER",
   "metadata-log": [],
   "next-row-id": 0,
@@ -36,11 +36,150 @@
   },
   "refs": {
     "main": {
-      "snapshot-id": 2301328853961727405,
+      "snapshot-id": 7736904801935115229,
       "type": "branch"
     }
   },
   "schemas": [
+    {
+      "fields": [
+        {
+          "doc": "Billing contract year",
+          "id": 1,
+          "name": "CONTRACTYEAR",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Billing week no",
+          "id": 2,
+          "name": "WEEKNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Billing run no",
+          "id": 3,
+          "name": "BILLRUNNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Direction identifier",
+          "id": 4,
+          "name": "DIRECTION_ID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Region Identifier",
+          "id": 5,
+          "name": "REGIONID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Direction description",
+          "id": 6,
+          "name": "DIRECTION_DESC",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The service for which the direction occurred (ENERGY, ANCILLARY, NON_ENERGY_NON_AS, etc)",
+          "id": 7,
+          "name": "DIRECTION_TYPE_ID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Settlement day on which the direction starts",
+          "id": 8,
+          "name": "DIRECTION_START_DATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Settlement day on which the direction ends.  The same value for all regions",
+          "id": 9,
+          "name": "DIRECTION_END_DATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Dispatch interval in which the direction starts.  The same value for all regions",
+          "id": 10,
+          "name": "DIRECTION_START_INTERVAL",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Dispatch interval in which the direction ends.  The same value for all regions",
+          "id": 11,
+          "name": "DIRECTION_END_INTERVAL",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The final compensation amount for the direction.  The same value for all regions",
+          "id": 12,
+          "name": "COMPENSATION_AMOUNT",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The interest amount calculated on the final compensation amount for the direction.  The same value for all regions",
+          "id": 13,
+          "name": "INTEREST_AMOUNT",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The independent expert fee amount for the direction.  The same value for all regions",
+          "id": 14,
+          "name": "INDEPENDENT_EXPERT_FEE",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The total recovery amount for the direction.  The same value for all regions",
+          "id": 15,
+          "name": "CRA",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The total customer energy for this region, over the duration of the direction. NULL for Billing Week post the IESS rule effective date.",
+          "id": 16,
+          "name": "REGIONAL_CUSTOMER_ENERGY",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The total generator energy for this region, over the duration of the direction. NULL for Billing Week post the IESS rule effective date.",
+          "id": 17,
+          "name": "REGIONAL_GENERATOR_ENERGY",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "The regional benefit factor allocated to this region for the direction",
+          "id": 18,
+          "name": "REGIONAL_BENEFIT_FACTOR",
+          "required": false,
+          "type": "decimal(18, 8)"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    },
     {
       "fields": [
         {
@@ -198,43 +337,75 @@
         4,
         5
       ],
-      "schema-id": 0,
+      "schema-id": 1,
       "type": "struct"
     }
   ],
   "snapshot-log": [
     {
-      "snapshot-id": 2301328853961727405,
-      "timestamp-ms": 1722434400000
+      "snapshot-id": 6155286665180984479,
+      "timestamp-ms": 1488290400000
+    },
+    {
+      "snapshot-id": 7736904801935115229,
+      "timestamp-ms": 1722434400001
     }
   ],
   "snapshots": [
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BILLING_DIRECTION_RECON_OTHER/metadata/snap-2301328853961727405-1-05be25e2-723a-8313-9f29-deb51031a730.avro",
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BILLING_DIRECTION_RECON_OTHER/metadata/snap-6155286665180984479-1-05be25e2-723a-8313-9f29-deb51031a730.avro",
       "schema-id": 0,
       "sequence-number": 1,
-      "snapshot-id": 2301328853961727405,
+      "snapshot-id": 6155286665180984479,
       "summary": {
         "operation": "append",
         "utilake.files": "26",
+        "utilake.from.file": "PUBLIC_BILLING_20170308113829_0000000281601177.zip",
+        "utilake.from.release": "2017-03",
+        "utilake.from.sha256": "759df3ba66803fe870f40e288d39b3bcb5f5cdeb89365121d967078edcc22384",
+        "utilake.from.time": "2017-02-09T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "BILLING_DIRECTION_RECON_OTHER",
+        "utilake.report-type": "BILLING",
+        "utilake.rows": "250",
+        "utilake.to.file": "PUBLIC_BILLING_20171229102451_0000000290553604.zip",
+        "utilake.to.release": "2017-12",
+        "utilake.to.sha256": "0edb78b2b6181559ac24eec4e9418e8be27fc803c81effeec29942059e5c0cf2",
+        "utilake.to.time": "2017-12-02T00:00:00+10:00",
+        "utilake.total-rows": "250",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1488290400000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BILLING_DIRECTION_RECON_OTHER/metadata/snap-7736904801935115229-2-05be25e2-723a-8313-9f29-deb51031a730.avro",
+      "parent-snapshot-id": 6155286665180984479,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 7736904801935115229,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "135",
         "utilake.from.file": "PUBLIC_ARCHIVE#BILLING_DIRECTION_RECON_OTHER#FILE01#202408010000.zip",
         "utilake.from.release": "2024-08",
         "utilake.from.sha256": "f49046dedba7d000c3b8087371a6ad16f7326df210ebd898861ff48555452be2",
         "utilake.from.time": "2023-12-31T00:00:00+10:00",
-        "utilake.kinds": "[\"archive\"]",
+        "utilake.kinds": "[\"archive\",\"reports/archive\"]",
         "utilake.report-subtype": "BILLING_DIRECTION_RECON_OTHER",
         "utilake.report-type": "BILLING",
-        "utilake.rows": "10565",
+        "utilake.rows": "13280",
         "utilake.to.file": "PUBLIC_ARCHIVE#BILLING_DIRECTION_RECON_OTHER#FILE01#202609010000.zip",
         "utilake.to.release": "2026-09",
         "utilake.to.sha256": "bb3853a11f68e01bd688d121dfb5a2f7cc83b24814a0eaf333524f9986681a84",
         "utilake.to.time": "2026-08-29T00:00:00+10:00",
-        "utilake.total-rows": "10565",
+        "utilake.total-rows": "13530",
         "utilake.version": "2"
       },
-      "timestamp-ms": 1722434400000
+      "timestamp-ms": 1722434400001
     }
   ],
   "sort-orders": [

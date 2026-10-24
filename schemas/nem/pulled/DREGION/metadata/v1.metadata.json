@@ -1,0 +1,5407 @@
+{
+  "current-schema-id": 1,
+  "current-snapshot-id": 7042059511391566541,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 134,
+  "last-partition-id": 999,
+  "last-sequence-number": 73,
+  "last-updated-ms": 1790776800072,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "false",
+    "utilake.format": "3",
+    "utilake.table": "DREGION"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 7042059511391566541,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 2,
+          "name": "RUNNO",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 3,
+          "name": "REGIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "INTERVENTION",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 5,
+          "name": "RRP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 6,
+          "name": "EEP",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 7,
+          "name": "ROP",
+          "required": false,
+          "type": "decimal(12, 5)"
+        },
+        {
+          "id": 8,
+          "name": "APCFLAG",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 9,
+          "name": "MARKETSUSPENDEDFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 10,
+          "name": "TOTALDEMAND",
+          "required": false,
+          "type": "decimal(7, 2)"
+        },
+        {
+          "id": 11,
+          "name": "DEMANDFORECAST",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "id": 12,
+          "name": "DISPATCHABLEGENERATION",
+          "required": false,
+          "type": "decimal(7, 2)"
+        },
+        {
+          "id": 13,
+          "name": "DISPATCHABLELOAD",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 14,
+          "name": "NETINTERCHANGE",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 15,
+          "name": "EXCESSGENERATION",
+          "required": false,
+          "type": "decimal(4, 2)"
+        },
+        {
+          "id": 16,
+          "name": "LOWER5MINDISPATCH",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 17,
+          "name": "LOWER5MINIMPORT",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 18,
+          "name": "LOWER5MINLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 19,
+          "name": "LOWER5MINLOCALPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 20,
+          "name": "LOWER5MINLOCALREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 21,
+          "name": "LOWER5MINPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 22,
+          "name": "LOWER5MINREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 23,
+          "name": "LOWER5MINSUPPLYPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 24,
+          "name": "LOWER60SECDISPATCH",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 25,
+          "name": "LOWER60SECIMPORT",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 26,
+          "name": "LOWER60SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 27,
+          "name": "LOWER60SECLOCALPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 28,
+          "name": "LOWER60SECLOCALREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 29,
+          "name": "LOWER60SECPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 30,
+          "name": "LOWER60SECREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 31,
+          "name": "LOWER60SECSUPPLYPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 32,
+          "name": "LOWER6SECDISPATCH",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 33,
+          "name": "LOWER6SECIMPORT",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 34,
+          "name": "LOWER6SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 35,
+          "name": "LOWER6SECLOCALPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 36,
+          "name": "LOWER6SECLOCALREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 37,
+          "name": "LOWER6SECPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 38,
+          "name": "LOWER6SECREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 39,
+          "name": "LOWER6SECSUPPLYPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 40,
+          "name": "RAISE5MINDISPATCH",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 41,
+          "name": "RAISE5MINIMPORT",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 42,
+          "name": "RAISE5MINLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 43,
+          "name": "RAISE5MINLOCALPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 44,
+          "name": "RAISE5MINLOCALREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 45,
+          "name": "RAISE5MINPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 46,
+          "name": "RAISE5MINREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 47,
+          "name": "RAISE5MINSUPPLYPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 48,
+          "name": "RAISE60SECDISPATCH",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 49,
+          "name": "RAISE60SECIMPORT",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 50,
+          "name": "RAISE60SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 51,
+          "name": "RAISE60SECLOCALPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 52,
+          "name": "RAISE60SECLOCALREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 53,
+          "name": "RAISE60SECPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 54,
+          "name": "RAISE60SECREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 55,
+          "name": "RAISE60SECSUPPLYPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 56,
+          "name": "RAISE6SECDISPATCH",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 57,
+          "name": "RAISE6SECIMPORT",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 58,
+          "name": "RAISE6SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 59,
+          "name": "RAISE6SECLOCALPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 60,
+          "name": "RAISE6SECLOCALREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 61,
+          "name": "RAISE6SECPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 62,
+          "name": "RAISE6SECREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 63,
+          "name": "RAISE6SECSUPPLYPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 64,
+          "name": "AGGREGATEDISPATCHERROR",
+          "required": false,
+          "type": "decimal(7, 5)"
+        },
+        {
+          "id": 65,
+          "name": "AVAILABLEGENERATION",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 66,
+          "name": "AVAILABLELOAD",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 67,
+          "name": "INITIALSUPPLY",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 68,
+          "name": "CLEAREDSUPPLY",
+          "required": false,
+          "type": "decimal(7, 2)"
+        },
+        {
+          "id": 69,
+          "name": "LOWERREGIMPORT",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 70,
+          "name": "LOWERREGLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 71,
+          "name": "LOWERREGLOCALREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 72,
+          "name": "LOWERREGREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 73,
+          "name": "RAISEREGIMPORT",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 74,
+          "name": "RAISEREGLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 75,
+          "name": "RAISEREGLOCALREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 76,
+          "name": "RAISEREGREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 77,
+          "name": "RAISE5MINLOCALVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 78,
+          "name": "RAISEREGLOCALVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 79,
+          "name": "RAISE60SECLOCALVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 80,
+          "name": "RAISE6SECLOCALVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 81,
+          "name": "LOWER5MINLOCALVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 82,
+          "name": "LOWERREGLOCALVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 83,
+          "name": "LOWER60SECLOCALVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 84,
+          "name": "LOWER6SECLOCALVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 85,
+          "name": "RAISE5MINVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 86,
+          "name": "RAISEREGVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 87,
+          "name": "RAISE60SECVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 88,
+          "name": "RAISE6SECVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 89,
+          "name": "LOWER5MINVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 90,
+          "name": "LOWERREGVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 91,
+          "name": "LOWER60SECVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 92,
+          "name": "LOWER6SECVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 93,
+          "name": "RAISE6SECRRP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 94,
+          "name": "RAISE6SECROP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 95,
+          "name": "RAISE6SECAPCFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 96,
+          "name": "RAISE60SECRRP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 97,
+          "name": "RAISE60SECROP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 98,
+          "name": "RAISE60SECAPCFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 99,
+          "name": "RAISE5MINRRP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 100,
+          "name": "RAISE5MINROP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 101,
+          "name": "RAISE5MINAPCFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 102,
+          "name": "RAISEREGRRP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 103,
+          "name": "RAISEREGROP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 104,
+          "name": "RAISEREGAPCFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 105,
+          "name": "LOWER6SECRRP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 106,
+          "name": "LOWER6SECROP",
+          "required": false,
+          "type": "decimal(11, 5)"
+        },
+        {
+          "id": 107,
+          "name": "LOWER6SECAPCFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 108,
+          "name": "LOWER60SECRRP",
+          "required": false,
+          "type": "decimal(8, 5)"
+        },
+        {
+          "id": 109,
+          "name": "LOWER60SECROP",
+          "required": false,
+          "type": "decimal(8, 5)"
+        },
+        {
+          "id": 110,
+          "name": "LOWER60SECAPCFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 111,
+          "name": "LOWER5MINRRP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 112,
+          "name": "LOWER5MINROP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 113,
+          "name": "LOWER5MINAPCFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 114,
+          "name": "LOWERREGRRP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 115,
+          "name": "LOWERREGROP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 116,
+          "name": "LOWERREGAPCFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 2,
+          "name": "RUNNO",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 3,
+          "name": "REGIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "INTERVENTION",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 5,
+          "name": "RRP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 6,
+          "name": "EEP",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 7,
+          "name": "ROP",
+          "required": false,
+          "type": "decimal(12, 5)"
+        },
+        {
+          "id": 8,
+          "name": "APCFLAG",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 9,
+          "name": "MARKETSUSPENDEDFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 10,
+          "name": "TOTALDEMAND",
+          "required": false,
+          "type": "decimal(7, 2)"
+        },
+        {
+          "id": 11,
+          "name": "DEMANDFORECAST",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "id": 12,
+          "name": "DISPATCHABLEGENERATION",
+          "required": false,
+          "type": "decimal(7, 2)"
+        },
+        {
+          "id": 13,
+          "name": "DISPATCHABLELOAD",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 14,
+          "name": "NETINTERCHANGE",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 15,
+          "name": "EXCESSGENERATION",
+          "required": false,
+          "type": "decimal(4, 2)"
+        },
+        {
+          "id": 16,
+          "name": "LOWER5MINDISPATCH",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 17,
+          "name": "LOWER5MINIMPORT",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 18,
+          "name": "LOWER5MINLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 19,
+          "name": "LOWER5MINLOCALPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 20,
+          "name": "LOWER5MINLOCALREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 21,
+          "name": "LOWER5MINPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 22,
+          "name": "LOWER5MINREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 23,
+          "name": "LOWER5MINSUPPLYPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 24,
+          "name": "LOWER60SECDISPATCH",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 25,
+          "name": "LOWER60SECIMPORT",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 26,
+          "name": "LOWER60SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 27,
+          "name": "LOWER60SECLOCALPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 28,
+          "name": "LOWER60SECLOCALREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 29,
+          "name": "LOWER60SECPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 30,
+          "name": "LOWER60SECREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 31,
+          "name": "LOWER60SECSUPPLYPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 32,
+          "name": "LOWER6SECDISPATCH",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 33,
+          "name": "LOWER6SECIMPORT",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 34,
+          "name": "LOWER6SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 35,
+          "name": "LOWER6SECLOCALPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 36,
+          "name": "LOWER6SECLOCALREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 37,
+          "name": "LOWER6SECPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 38,
+          "name": "LOWER6SECREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 39,
+          "name": "LOWER6SECSUPPLYPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 40,
+          "name": "RAISE5MINDISPATCH",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 41,
+          "name": "RAISE5MINIMPORT",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 42,
+          "name": "RAISE5MINLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 43,
+          "name": "RAISE5MINLOCALPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 44,
+          "name": "RAISE5MINLOCALREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 45,
+          "name": "RAISE5MINPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 46,
+          "name": "RAISE5MINREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 47,
+          "name": "RAISE5MINSUPPLYPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 48,
+          "name": "RAISE60SECDISPATCH",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 49,
+          "name": "RAISE60SECIMPORT",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 50,
+          "name": "RAISE60SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 51,
+          "name": "RAISE60SECLOCALPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 52,
+          "name": "RAISE60SECLOCALREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 53,
+          "name": "RAISE60SECPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 54,
+          "name": "RAISE60SECREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 55,
+          "name": "RAISE60SECSUPPLYPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 56,
+          "name": "RAISE6SECDISPATCH",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 57,
+          "name": "RAISE6SECIMPORT",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 58,
+          "name": "RAISE6SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 59,
+          "name": "RAISE6SECLOCALPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 60,
+          "name": "RAISE6SECLOCALREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 61,
+          "name": "RAISE6SECPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 62,
+          "name": "RAISE6SECREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 63,
+          "name": "RAISE6SECSUPPLYPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 64,
+          "name": "AGGREGATEDISPATCHERROR",
+          "required": false,
+          "type": "decimal(7, 5)"
+        },
+        {
+          "id": 65,
+          "name": "AVAILABLEGENERATION",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 66,
+          "name": "AVAILABLELOAD",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 67,
+          "name": "INITIALSUPPLY",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 68,
+          "name": "CLEAREDSUPPLY",
+          "required": false,
+          "type": "decimal(7, 2)"
+        },
+        {
+          "id": 69,
+          "name": "LOWERREGIMPORT",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 70,
+          "name": "LOWERREGLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 71,
+          "name": "LOWERREGLOCALREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 72,
+          "name": "LOWERREGREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 73,
+          "name": "RAISEREGIMPORT",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 74,
+          "name": "RAISEREGLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 75,
+          "name": "RAISEREGLOCALREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 76,
+          "name": "RAISEREGREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 77,
+          "name": "RAISE5MINLOCALVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 78,
+          "name": "RAISEREGLOCALVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 79,
+          "name": "RAISE60SECLOCALVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 80,
+          "name": "RAISE6SECLOCALVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 81,
+          "name": "LOWER5MINLOCALVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 82,
+          "name": "LOWERREGLOCALVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 83,
+          "name": "LOWER60SECLOCALVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 84,
+          "name": "LOWER6SECLOCALVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 85,
+          "name": "RAISE5MINVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 86,
+          "name": "RAISEREGVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 87,
+          "name": "RAISE60SECVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 88,
+          "name": "RAISE6SECVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 89,
+          "name": "LOWER5MINVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 90,
+          "name": "LOWERREGVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 91,
+          "name": "LOWER60SECVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 92,
+          "name": "LOWER6SECVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 93,
+          "name": "RAISE6SECRRP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 94,
+          "name": "RAISE6SECROP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 95,
+          "name": "RAISE6SECAPCFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 96,
+          "name": "RAISE60SECRRP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 97,
+          "name": "RAISE60SECROP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 98,
+          "name": "RAISE60SECAPCFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 99,
+          "name": "RAISE5MINRRP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 100,
+          "name": "RAISE5MINROP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 101,
+          "name": "RAISE5MINAPCFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 102,
+          "name": "RAISEREGRRP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 103,
+          "name": "RAISEREGROP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 104,
+          "name": "RAISEREGAPCFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 105,
+          "name": "LOWER6SECRRP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 106,
+          "name": "LOWER6SECROP",
+          "required": false,
+          "type": "decimal(11, 5)"
+        },
+        {
+          "id": 107,
+          "name": "LOWER6SECAPCFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 108,
+          "name": "LOWER60SECRRP",
+          "required": false,
+          "type": "decimal(8, 5)"
+        },
+        {
+          "id": 109,
+          "name": "LOWER60SECROP",
+          "required": false,
+          "type": "decimal(8, 5)"
+        },
+        {
+          "id": 110,
+          "name": "LOWER60SECAPCFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 111,
+          "name": "LOWER5MINRRP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 112,
+          "name": "LOWER5MINROP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 113,
+          "name": "LOWER5MINAPCFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 114,
+          "name": "LOWERREGRRP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 115,
+          "name": "LOWERREGROP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 116,
+          "name": "LOWERREGAPCFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 117,
+          "name": "RAISE6SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(10, 6)"
+        },
+        {
+          "id": 118,
+          "name": "RAISE60SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(10, 6)"
+        },
+        {
+          "id": 119,
+          "name": "RAISE5MINACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(10, 6)"
+        },
+        {
+          "id": 120,
+          "name": "RAISEREGACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(10, 6)"
+        },
+        {
+          "id": 121,
+          "name": "LOWER6SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(10, 6)"
+        },
+        {
+          "id": 122,
+          "name": "LOWER60SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(10, 6)"
+        },
+        {
+          "id": 123,
+          "name": "LOWER5MINACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(10, 6)"
+        },
+        {
+          "id": 124,
+          "name": "LOWERREGACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(10, 6)"
+        },
+        {
+          "id": 125,
+          "name": "LORSURPLUS",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 126,
+          "name": "LRCSURPLUS",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 1,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 2,
+          "name": "RUNNO",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 3,
+          "name": "REGIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "INTERVENTION",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 5,
+          "name": "RRP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 6,
+          "name": "EEP",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 7,
+          "name": "ROP",
+          "required": false,
+          "type": "decimal(12, 5)"
+        },
+        {
+          "id": 8,
+          "name": "APCFLAG",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 9,
+          "name": "MARKETSUSPENDEDFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 10,
+          "name": "TOTALDEMAND",
+          "required": false,
+          "type": "decimal(7, 2)"
+        },
+        {
+          "id": 11,
+          "name": "DEMANDFORECAST",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "id": 12,
+          "name": "DISPATCHABLEGENERATION",
+          "required": false,
+          "type": "decimal(7, 2)"
+        },
+        {
+          "id": 13,
+          "name": "DISPATCHABLELOAD",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 14,
+          "name": "NETINTERCHANGE",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 15,
+          "name": "EXCESSGENERATION",
+          "required": false,
+          "type": "decimal(4, 2)"
+        },
+        {
+          "id": 16,
+          "name": "LOWER5MINDISPATCH",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 17,
+          "name": "LOWER5MINIMPORT",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 18,
+          "name": "LOWER5MINLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 19,
+          "name": "LOWER5MINLOCALPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 20,
+          "name": "LOWER5MINLOCALREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 21,
+          "name": "LOWER5MINPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 22,
+          "name": "LOWER5MINREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 23,
+          "name": "LOWER5MINSUPPLYPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 24,
+          "name": "LOWER60SECDISPATCH",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 25,
+          "name": "LOWER60SECIMPORT",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 26,
+          "name": "LOWER60SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 27,
+          "name": "LOWER60SECLOCALPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 28,
+          "name": "LOWER60SECLOCALREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 29,
+          "name": "LOWER60SECPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 30,
+          "name": "LOWER60SECREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 31,
+          "name": "LOWER60SECSUPPLYPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 32,
+          "name": "LOWER6SECDISPATCH",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 33,
+          "name": "LOWER6SECIMPORT",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 34,
+          "name": "LOWER6SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 35,
+          "name": "LOWER6SECLOCALPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 36,
+          "name": "LOWER6SECLOCALREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 37,
+          "name": "LOWER6SECPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 38,
+          "name": "LOWER6SECREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 39,
+          "name": "LOWER6SECSUPPLYPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 40,
+          "name": "RAISE5MINDISPATCH",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 41,
+          "name": "RAISE5MINIMPORT",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 42,
+          "name": "RAISE5MINLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 43,
+          "name": "RAISE5MINLOCALPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 44,
+          "name": "RAISE5MINLOCALREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 45,
+          "name": "RAISE5MINPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 46,
+          "name": "RAISE5MINREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 47,
+          "name": "RAISE5MINSUPPLYPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 48,
+          "name": "RAISE60SECDISPATCH",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 49,
+          "name": "RAISE60SECIMPORT",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 50,
+          "name": "RAISE60SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 51,
+          "name": "RAISE60SECLOCALPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 52,
+          "name": "RAISE60SECLOCALREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 53,
+          "name": "RAISE60SECPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 54,
+          "name": "RAISE60SECREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 55,
+          "name": "RAISE60SECSUPPLYPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 56,
+          "name": "RAISE6SECDISPATCH",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 57,
+          "name": "RAISE6SECIMPORT",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 58,
+          "name": "RAISE6SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 59,
+          "name": "RAISE6SECLOCALPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 60,
+          "name": "RAISE6SECLOCALREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 61,
+          "name": "RAISE6SECPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 62,
+          "name": "RAISE6SECREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 63,
+          "name": "RAISE6SECSUPPLYPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 64,
+          "name": "AGGREGATEDISPATCHERROR",
+          "required": false,
+          "type": "decimal(7, 5)"
+        },
+        {
+          "id": 65,
+          "name": "AVAILABLEGENERATION",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 66,
+          "name": "AVAILABLELOAD",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 67,
+          "name": "INITIALSUPPLY",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 68,
+          "name": "CLEAREDSUPPLY",
+          "required": false,
+          "type": "decimal(7, 2)"
+        },
+        {
+          "id": 69,
+          "name": "LOWERREGIMPORT",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 70,
+          "name": "LOWERREGLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 71,
+          "name": "LOWERREGLOCALREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 72,
+          "name": "LOWERREGREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 73,
+          "name": "RAISEREGIMPORT",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 74,
+          "name": "RAISEREGLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 75,
+          "name": "RAISEREGLOCALREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 76,
+          "name": "RAISEREGREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 77,
+          "name": "RAISE5MINLOCALVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 78,
+          "name": "RAISEREGLOCALVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 79,
+          "name": "RAISE60SECLOCALVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 80,
+          "name": "RAISE6SECLOCALVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 81,
+          "name": "LOWER5MINLOCALVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 82,
+          "name": "LOWERREGLOCALVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 83,
+          "name": "LOWER60SECLOCALVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 84,
+          "name": "LOWER6SECLOCALVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 85,
+          "name": "RAISE5MINVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 86,
+          "name": "RAISEREGVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 87,
+          "name": "RAISE60SECVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 88,
+          "name": "RAISE6SECVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 89,
+          "name": "LOWER5MINVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 90,
+          "name": "LOWERREGVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 91,
+          "name": "LOWER60SECVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 92,
+          "name": "LOWER6SECVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 93,
+          "name": "RAISE6SECRRP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 94,
+          "name": "RAISE6SECROP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 95,
+          "name": "RAISE6SECAPCFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 96,
+          "name": "RAISE60SECRRP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 97,
+          "name": "RAISE60SECROP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 98,
+          "name": "RAISE60SECAPCFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 99,
+          "name": "RAISE5MINRRP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 100,
+          "name": "RAISE5MINROP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 101,
+          "name": "RAISE5MINAPCFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 102,
+          "name": "RAISEREGRRP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 103,
+          "name": "RAISEREGROP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 104,
+          "name": "RAISEREGAPCFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 105,
+          "name": "LOWER6SECRRP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 106,
+          "name": "LOWER6SECROP",
+          "required": false,
+          "type": "decimal(11, 5)"
+        },
+        {
+          "id": 107,
+          "name": "LOWER6SECAPCFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 108,
+          "name": "LOWER60SECRRP",
+          "required": false,
+          "type": "decimal(8, 5)"
+        },
+        {
+          "id": 109,
+          "name": "LOWER60SECROP",
+          "required": false,
+          "type": "decimal(8, 5)"
+        },
+        {
+          "id": 110,
+          "name": "LOWER60SECAPCFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 111,
+          "name": "LOWER5MINRRP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 112,
+          "name": "LOWER5MINROP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 113,
+          "name": "LOWER5MINAPCFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 114,
+          "name": "LOWERREGRRP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 115,
+          "name": "LOWERREGROP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 116,
+          "name": "LOWERREGAPCFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 127,
+          "name": "LOWER1SECRRP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 128,
+          "name": "LOWER1SECROP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 129,
+          "name": "LOWER1SECAPCFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 130,
+          "name": "RAISE1SECRRP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 131,
+          "name": "RAISE1SECROP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 132,
+          "name": "RAISE1SECAPCFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 133,
+          "name": "RAISE1SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 134,
+          "name": "LOWER1SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(5, 2)"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 2,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 2,
+          "name": "RUNNO",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 3,
+          "name": "REGIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "INTERVENTION",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 5,
+          "name": "RRP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 6,
+          "name": "EEP",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 7,
+          "name": "ROP",
+          "required": false,
+          "type": "decimal(12, 5)"
+        },
+        {
+          "id": 8,
+          "name": "APCFLAG",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 9,
+          "name": "MARKETSUSPENDEDFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 10,
+          "name": "TOTALDEMAND",
+          "required": false,
+          "type": "decimal(7, 2)"
+        },
+        {
+          "id": 11,
+          "name": "DEMANDFORECAST",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "id": 12,
+          "name": "DISPATCHABLEGENERATION",
+          "required": false,
+          "type": "decimal(7, 2)"
+        },
+        {
+          "id": 13,
+          "name": "DISPATCHABLELOAD",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 14,
+          "name": "NETINTERCHANGE",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 15,
+          "name": "EXCESSGENERATION",
+          "required": false,
+          "type": "decimal(4, 2)"
+        },
+        {
+          "id": 16,
+          "name": "LOWER5MINDISPATCH",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 17,
+          "name": "LOWER5MINIMPORT",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 18,
+          "name": "LOWER5MINLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 19,
+          "name": "LOWER5MINLOCALPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 20,
+          "name": "LOWER5MINLOCALREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 21,
+          "name": "LOWER5MINPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 22,
+          "name": "LOWER5MINREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 23,
+          "name": "LOWER5MINSUPPLYPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 24,
+          "name": "LOWER60SECDISPATCH",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 25,
+          "name": "LOWER60SECIMPORT",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 26,
+          "name": "LOWER60SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 27,
+          "name": "LOWER60SECLOCALPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 28,
+          "name": "LOWER60SECLOCALREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 29,
+          "name": "LOWER60SECPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 30,
+          "name": "LOWER60SECREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 31,
+          "name": "LOWER60SECSUPPLYPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 32,
+          "name": "LOWER6SECDISPATCH",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 33,
+          "name": "LOWER6SECIMPORT",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 34,
+          "name": "LOWER6SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 35,
+          "name": "LOWER6SECLOCALPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 36,
+          "name": "LOWER6SECLOCALREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 37,
+          "name": "LOWER6SECPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 38,
+          "name": "LOWER6SECREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 39,
+          "name": "LOWER6SECSUPPLYPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 40,
+          "name": "RAISE5MINDISPATCH",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 41,
+          "name": "RAISE5MINIMPORT",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 42,
+          "name": "RAISE5MINLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 43,
+          "name": "RAISE5MINLOCALPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 44,
+          "name": "RAISE5MINLOCALREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 45,
+          "name": "RAISE5MINPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 46,
+          "name": "RAISE5MINREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 47,
+          "name": "RAISE5MINSUPPLYPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 48,
+          "name": "RAISE60SECDISPATCH",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 49,
+          "name": "RAISE60SECIMPORT",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 50,
+          "name": "RAISE60SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 51,
+          "name": "RAISE60SECLOCALPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 52,
+          "name": "RAISE60SECLOCALREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 53,
+          "name": "RAISE60SECPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 54,
+          "name": "RAISE60SECREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 55,
+          "name": "RAISE60SECSUPPLYPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 56,
+          "name": "RAISE6SECDISPATCH",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 57,
+          "name": "RAISE6SECIMPORT",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 58,
+          "name": "RAISE6SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 59,
+          "name": "RAISE6SECLOCALPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 60,
+          "name": "RAISE6SECLOCALREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 61,
+          "name": "RAISE6SECPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 62,
+          "name": "RAISE6SECREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 63,
+          "name": "RAISE6SECSUPPLYPRICE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 64,
+          "name": "AGGREGATEDISPATCHERROR",
+          "required": false,
+          "type": "decimal(7, 5)"
+        },
+        {
+          "id": 65,
+          "name": "AVAILABLEGENERATION",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 66,
+          "name": "AVAILABLELOAD",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 67,
+          "name": "INITIALSUPPLY",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 68,
+          "name": "CLEAREDSUPPLY",
+          "required": false,
+          "type": "decimal(7, 2)"
+        },
+        {
+          "id": 69,
+          "name": "LOWERREGIMPORT",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 70,
+          "name": "LOWERREGLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 71,
+          "name": "LOWERREGLOCALREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 72,
+          "name": "LOWERREGREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 73,
+          "name": "RAISEREGIMPORT",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 74,
+          "name": "RAISEREGLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 75,
+          "name": "RAISEREGLOCALREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 76,
+          "name": "RAISEREGREQ",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 77,
+          "name": "RAISE5MINLOCALVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 78,
+          "name": "RAISEREGLOCALVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 79,
+          "name": "RAISE60SECLOCALVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 80,
+          "name": "RAISE6SECLOCALVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 81,
+          "name": "LOWER5MINLOCALVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 82,
+          "name": "LOWERREGLOCALVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 83,
+          "name": "LOWER60SECLOCALVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 84,
+          "name": "LOWER6SECLOCALVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 85,
+          "name": "RAISE5MINVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 86,
+          "name": "RAISEREGVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 87,
+          "name": "RAISE60SECVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 88,
+          "name": "RAISE6SECVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 89,
+          "name": "LOWER5MINVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 90,
+          "name": "LOWERREGVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 91,
+          "name": "LOWER60SECVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 92,
+          "name": "LOWER6SECVIOLATION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 93,
+          "name": "RAISE6SECRRP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 94,
+          "name": "RAISE6SECROP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 95,
+          "name": "RAISE6SECAPCFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 96,
+          "name": "RAISE60SECRRP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 97,
+          "name": "RAISE60SECROP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 98,
+          "name": "RAISE60SECAPCFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 99,
+          "name": "RAISE5MINRRP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 100,
+          "name": "RAISE5MINROP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 101,
+          "name": "RAISE5MINAPCFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 102,
+          "name": "RAISEREGRRP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 103,
+          "name": "RAISEREGROP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 104,
+          "name": "RAISEREGAPCFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 105,
+          "name": "LOWER6SECRRP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 106,
+          "name": "LOWER6SECROP",
+          "required": false,
+          "type": "decimal(11, 5)"
+        },
+        {
+          "id": 107,
+          "name": "LOWER6SECAPCFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 108,
+          "name": "LOWER60SECRRP",
+          "required": false,
+          "type": "decimal(8, 5)"
+        },
+        {
+          "id": 109,
+          "name": "LOWER60SECROP",
+          "required": false,
+          "type": "decimal(8, 5)"
+        },
+        {
+          "id": 110,
+          "name": "LOWER60SECAPCFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 111,
+          "name": "LOWER5MINRRP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 112,
+          "name": "LOWER5MINROP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 113,
+          "name": "LOWER5MINAPCFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 114,
+          "name": "LOWERREGRRP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 115,
+          "name": "LOWERREGROP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 116,
+          "name": "LOWERREGAPCFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 117,
+          "name": "RAISE6SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(10, 6)"
+        },
+        {
+          "id": 118,
+          "name": "RAISE60SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(10, 6)"
+        },
+        {
+          "id": 119,
+          "name": "RAISE5MINACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(10, 6)"
+        },
+        {
+          "id": 120,
+          "name": "RAISEREGACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(10, 6)"
+        },
+        {
+          "id": 121,
+          "name": "LOWER6SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(10, 6)"
+        },
+        {
+          "id": 122,
+          "name": "LOWER60SECACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(10, 6)"
+        },
+        {
+          "id": 123,
+          "name": "LOWER5MINACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(10, 6)"
+        },
+        {
+          "id": 124,
+          "name": "LOWERREGACTUALAVAILABILITY",
+          "required": false,
+          "type": "decimal(10, 6)"
+        },
+        {
+          "id": 125,
+          "name": "LORSURPLUS",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 126,
+          "name": "LRCSURPLUS",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 127,
+          "name": "LOWER1SECRRP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 128,
+          "name": "LOWER1SECROP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 129,
+          "name": "LOWER1SECAPCFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 130,
+          "name": "RAISE1SECRRP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 131,
+          "name": "RAISE1SECROP",
+          "required": false,
+          "type": "decimal(10, 5)"
+        },
+        {
+          "id": 132,
+          "name": "RAISE1SECAPCFLAG",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 133,
+          "name": "RAISE1SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 134,
+          "name": "LOWER1SECLOCALDISPATCH",
+          "required": false,
+          "type": "decimal(5, 2)"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 3,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 9184721722098859497,
+      "timestamp-ms": 1756648800000
+    },
+    {
+      "snapshot-id": 9037444691493545677,
+      "timestamp-ms": 1756648800001
+    },
+    {
+      "snapshot-id": 6030774071310391850,
+      "timestamp-ms": 1756648800002
+    },
+    {
+      "snapshot-id": 5686932395169049616,
+      "timestamp-ms": 1756648800003
+    },
+    {
+      "snapshot-id": 4711445446335447345,
+      "timestamp-ms": 1759240800004
+    },
+    {
+      "snapshot-id": 5625789376597907982,
+      "timestamp-ms": 1759240800005
+    },
+    {
+      "snapshot-id": 654537060614551259,
+      "timestamp-ms": 1759240800006
+    },
+    {
+      "snapshot-id": 6006242357037921528,
+      "timestamp-ms": 1759240800007
+    },
+    {
+      "snapshot-id": 7847901755827219841,
+      "timestamp-ms": 1759240800008
+    },
+    {
+      "snapshot-id": 2503058971521138594,
+      "timestamp-ms": 1761919200009
+    },
+    {
+      "snapshot-id": 3766726876777059686,
+      "timestamp-ms": 1761919200010
+    },
+    {
+      "snapshot-id": 7064816956467304671,
+      "timestamp-ms": 1761919200011
+    },
+    {
+      "snapshot-id": 1133422958661722794,
+      "timestamp-ms": 1761919200012
+    },
+    {
+      "snapshot-id": 3881115580021833792,
+      "timestamp-ms": 1761919200013
+    },
+    {
+      "snapshot-id": 5222043233836770044,
+      "timestamp-ms": 1764511200014
+    },
+    {
+      "snapshot-id": 3192904559933712824,
+      "timestamp-ms": 1764511200015
+    },
+    {
+      "snapshot-id": 4716483415960295059,
+      "timestamp-ms": 1764511200016
+    },
+    {
+      "snapshot-id": 5598189738554421139,
+      "timestamp-ms": 1764511200017
+    },
+    {
+      "snapshot-id": 592377160695546525,
+      "timestamp-ms": 1764511200018
+    },
+    {
+      "snapshot-id": 5871508518054546063,
+      "timestamp-ms": 1767189600019
+    },
+    {
+      "snapshot-id": 1576537808941183628,
+      "timestamp-ms": 1767189600020
+    },
+    {
+      "snapshot-id": 6821997494545493590,
+      "timestamp-ms": 1767189600021
+    },
+    {
+      "snapshot-id": 2027460571666290579,
+      "timestamp-ms": 1767189600022
+    },
+    {
+      "snapshot-id": 9000892868709607965,
+      "timestamp-ms": 1767189600023
+    },
+    {
+      "snapshot-id": 9020666252764241929,
+      "timestamp-ms": 1769868000024
+    },
+    {
+      "snapshot-id": 7927348205343029671,
+      "timestamp-ms": 1769868000025
+    },
+    {
+      "snapshot-id": 278957662959166104,
+      "timestamp-ms": 1769868000026
+    },
+    {
+      "snapshot-id": 983850792399954499,
+      "timestamp-ms": 1769868000027
+    },
+    {
+      "snapshot-id": 3430539188423109441,
+      "timestamp-ms": 1769868000028
+    },
+    {
+      "snapshot-id": 7258781410675130931,
+      "timestamp-ms": 1772287200029
+    },
+    {
+      "snapshot-id": 191644377193516995,
+      "timestamp-ms": 1772287200030
+    },
+    {
+      "snapshot-id": 3714613831852477123,
+      "timestamp-ms": 1772287200031
+    },
+    {
+      "snapshot-id": 6344694491981864706,
+      "timestamp-ms": 1772287200032
+    },
+    {
+      "snapshot-id": 2892719309402928452,
+      "timestamp-ms": 1772287200033
+    },
+    {
+      "snapshot-id": 4400009322044160422,
+      "timestamp-ms": 1774965600034
+    },
+    {
+      "snapshot-id": 3383210226156550896,
+      "timestamp-ms": 1774965600035
+    },
+    {
+      "snapshot-id": 7372358728784566498,
+      "timestamp-ms": 1774965600036
+    },
+    {
+      "snapshot-id": 2882819801611868801,
+      "timestamp-ms": 1774965600037
+    },
+    {
+      "snapshot-id": 3832288460004419373,
+      "timestamp-ms": 1774965600038
+    },
+    {
+      "snapshot-id": 7615979171885612421,
+      "timestamp-ms": 1777557600039
+    },
+    {
+      "snapshot-id": 1505419604032432702,
+      "timestamp-ms": 1777557600040
+    },
+    {
+      "snapshot-id": 4398597665204182454,
+      "timestamp-ms": 1777557600041
+    },
+    {
+      "snapshot-id": 4541676876904584959,
+      "timestamp-ms": 1777557600042
+    },
+    {
+      "snapshot-id": 6898606636179384364,
+      "timestamp-ms": 1777557600043
+    },
+    {
+      "snapshot-id": 8675313687554389773,
+      "timestamp-ms": 1780236000044
+    },
+    {
+      "snapshot-id": 8417207023566892783,
+      "timestamp-ms": 1780236000045
+    },
+    {
+      "snapshot-id": 4135404967679077609,
+      "timestamp-ms": 1780236000046
+    },
+    {
+      "snapshot-id": 4037217770317624363,
+      "timestamp-ms": 1780236000047
+    },
+    {
+      "snapshot-id": 7794236611401188350,
+      "timestamp-ms": 1780236000048
+    },
+    {
+      "snapshot-id": 5932951945442251512,
+      "timestamp-ms": 1782828000049
+    },
+    {
+      "snapshot-id": 6254028349652935793,
+      "timestamp-ms": 1782828000050
+    },
+    {
+      "snapshot-id": 6969535732210643909,
+      "timestamp-ms": 1782828000051
+    },
+    {
+      "snapshot-id": 2349389978424139155,
+      "timestamp-ms": 1782828000052
+    },
+    {
+      "snapshot-id": 8097492979502447818,
+      "timestamp-ms": 1782828000053
+    },
+    {
+      "snapshot-id": 7575788983210586647,
+      "timestamp-ms": 1785506400054
+    },
+    {
+      "snapshot-id": 5727272134984123769,
+      "timestamp-ms": 1785506400055
+    },
+    {
+      "snapshot-id": 1665861129297132581,
+      "timestamp-ms": 1785506400056
+    },
+    {
+      "snapshot-id": 3902687102185453153,
+      "timestamp-ms": 1785506400057
+    },
+    {
+      "snapshot-id": 7972522049875268339,
+      "timestamp-ms": 1785506400058
+    },
+    {
+      "snapshot-id": 5323544395614258118,
+      "timestamp-ms": 1785506400059
+    },
+    {
+      "snapshot-id": 3722998527812817194,
+      "timestamp-ms": 1785506400060
+    },
+    {
+      "snapshot-id": 1771822721925606002,
+      "timestamp-ms": 1785506400061
+    },
+    {
+      "snapshot-id": 26390316823820704,
+      "timestamp-ms": 1785506400062
+    },
+    {
+      "snapshot-id": 4048475554263485453,
+      "timestamp-ms": 1788184800063
+    },
+    {
+      "snapshot-id": 6464630258465643300,
+      "timestamp-ms": 1788184800064
+    },
+    {
+      "snapshot-id": 318867152123956569,
+      "timestamp-ms": 1788184800065
+    },
+    {
+      "snapshot-id": 2071031263401070382,
+      "timestamp-ms": 1788184800066
+    },
+    {
+      "snapshot-id": 8406912150737440557,
+      "timestamp-ms": 1788184800067
+    },
+    {
+      "snapshot-id": 2278117105169694552,
+      "timestamp-ms": 1790776800068
+    },
+    {
+      "snapshot-id": 4213920929071301024,
+      "timestamp-ms": 1790776800069
+    },
+    {
+      "snapshot-id": 3822677826789159398,
+      "timestamp-ms": 1790776800070
+    },
+    {
+      "snapshot-id": 8879069217303660308,
+      "timestamp-ms": 1790776800071
+    },
+    {
+      "snapshot-id": 7042059511391566541,
+      "timestamp-ms": 1790776800072
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-9184721722098859497-1-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 9184721722098859497,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "30",
+        "utilake.from.file": "PUBLIC_DAILY_20250901.zip",
+        "utilake.from.release": "2025-09",
+        "utilake.from.sha256": "f32a1de67b3dde4bb2090f93af680c207ab9f9cc02e8f7be41591cc604412af0",
+        "utilake.from.time": "2025-09-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "43200",
+        "utilake.to.file": "PUBLIC_DAILY_20250901.zip",
+        "utilake.to.release": "2025-09",
+        "utilake.to.sha256": "f32a1de67b3dde4bb2090f93af680c207ab9f9cc02e8f7be41591cc604412af0",
+        "utilake.to.time": "2025-10-01T04:00:00+10:00",
+        "utilake.total-rows": "43200",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1756648800000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-9037444691493545677-2-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 9184721722098859497,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 9037444691493545677,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "30",
+        "utilake.from.file": "PUBLIC_DAILY_20250901.zip",
+        "utilake.from.release": "2025-09",
+        "utilake.from.sha256": "f32a1de67b3dde4bb2090f93af680c207ab9f9cc02e8f7be41591cc604412af0",
+        "utilake.from.time": "2025-09-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "43200",
+        "utilake.to.file": "PUBLIC_DAILY_20250901.zip",
+        "utilake.to.release": "2025-09",
+        "utilake.to.sha256": "f32a1de67b3dde4bb2090f93af680c207ab9f9cc02e8f7be41591cc604412af0",
+        "utilake.to.time": "2025-10-01T04:00:00+10:00",
+        "utilake.total-rows": "86400",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1756648800001
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-6030774071310391850-3-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 9037444691493545677,
+      "schema-id": 2,
+      "sequence-number": 3,
+      "snapshot-id": 6030774071310391850,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "30",
+        "utilake.from.file": "PUBLIC_PRICES_20250901.zip",
+        "utilake.from.release": "2025-09",
+        "utilake.from.sha256": "37c5b707e88caa722fbb2eff188e1608f89c4a7e1750e66158cce47590a5c0c2",
+        "utilake.from.time": "2025-09-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "43200",
+        "utilake.to.file": "PUBLIC_PRICES_20250901.zip",
+        "utilake.to.release": "2025-09",
+        "utilake.to.sha256": "37c5b707e88caa722fbb2eff188e1608f89c4a7e1750e66158cce47590a5c0c2",
+        "utilake.to.time": "2025-10-01T04:00:00+10:00",
+        "utilake.total-rows": "129600",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1756648800002
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-5686932395169049616-4-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 6030774071310391850,
+      "schema-id": 3,
+      "sequence-number": 4,
+      "snapshot-id": 5686932395169049616,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "30",
+        "utilake.from.file": "PUBLIC_PRICES_20250901.zip",
+        "utilake.from.release": "2025-09",
+        "utilake.from.sha256": "37c5b707e88caa722fbb2eff188e1608f89c4a7e1750e66158cce47590a5c0c2",
+        "utilake.from.time": "2025-09-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "43200",
+        "utilake.to.file": "PUBLIC_PRICES_20250901.zip",
+        "utilake.to.release": "2025-09",
+        "utilake.to.sha256": "37c5b707e88caa722fbb2eff188e1608f89c4a7e1750e66158cce47590a5c0c2",
+        "utilake.to.time": "2025-10-01T04:00:00+10:00",
+        "utilake.total-rows": "172800",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1756648800003
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-4711445446335447345-5-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 5686932395169049616,
+      "schema-id": 1,
+      "sequence-number": 5,
+      "snapshot-id": 4711445446335447345,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "6911",
+        "utilake.from.file": "PUBLIC_DISPATCH_20251008.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "f55307b6231d29833fe3fd02e4ba50135485f27685126ebc3df6e0fb5636657b",
+        "utilake.from.time": "2025-10-08T00:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "34555",
+        "utilake.to.file": "PUBLIC_DISPATCH_20251031.zip",
+        "utilake.to.release": "2025-10",
+        "utilake.to.sha256": "147eaed6d4e963e87f919ee9a49342704bb0406b0f69b90c210ee567c9d0e810",
+        "utilake.to.time": "2025-10-31T23:55:00+10:00",
+        "utilake.total-rows": "207355",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1759240800004
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-5625789376597907982-6-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 4711445446335447345,
+      "schema-id": 0,
+      "sequence-number": 6,
+      "snapshot-id": 5625789376597907982,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_DAILY_20251001.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "4750cfef08b9799af763b819db95baa5019f635f9b0d014adc3957b4fa49f44f",
+        "utilake.from.time": "2025-10-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_DAILY_20251001.zip",
+        "utilake.to.release": "2025-10",
+        "utilake.to.sha256": "4750cfef08b9799af763b819db95baa5019f635f9b0d014adc3957b4fa49f44f",
+        "utilake.to.time": "2025-11-01T04:00:00+10:00",
+        "utilake.total-rows": "251995",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1759240800005
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-654537060614551259-7-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 5625789376597907982,
+      "schema-id": 1,
+      "sequence-number": 7,
+      "snapshot-id": 654537060614551259,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_DAILY_20251001.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "4750cfef08b9799af763b819db95baa5019f635f9b0d014adc3957b4fa49f44f",
+        "utilake.from.time": "2025-10-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_DAILY_20251001.zip",
+        "utilake.to.release": "2025-10",
+        "utilake.to.sha256": "4750cfef08b9799af763b819db95baa5019f635f9b0d014adc3957b4fa49f44f",
+        "utilake.to.time": "2025-11-01T04:00:00+10:00",
+        "utilake.total-rows": "296635",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1759240800006
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-6006242357037921528-8-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 654537060614551259,
+      "schema-id": 2,
+      "sequence-number": 8,
+      "snapshot-id": 6006242357037921528,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_PRICES_20251001.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "39a187e686d654db6c22f1a64c310f8ed7f9518cbdf6ea8de23cd3f08c91e950",
+        "utilake.from.time": "2025-10-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_PRICES_20251001.zip",
+        "utilake.to.release": "2025-10",
+        "utilake.to.sha256": "39a187e686d654db6c22f1a64c310f8ed7f9518cbdf6ea8de23cd3f08c91e950",
+        "utilake.to.time": "2025-11-01T04:00:00+10:00",
+        "utilake.total-rows": "341275",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1759240800007
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-7847901755827219841-9-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 6006242357037921528,
+      "schema-id": 3,
+      "sequence-number": 9,
+      "snapshot-id": 7847901755827219841,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_PRICES_20251001.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "39a187e686d654db6c22f1a64c310f8ed7f9518cbdf6ea8de23cd3f08c91e950",
+        "utilake.from.time": "2025-10-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_PRICES_20251001.zip",
+        "utilake.to.release": "2025-10",
+        "utilake.to.sha256": "39a187e686d654db6c22f1a64c310f8ed7f9518cbdf6ea8de23cd3f08c91e950",
+        "utilake.to.time": "2025-11-01T04:00:00+10:00",
+        "utilake.total-rows": "385915",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1759240800008
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-2503058971521138594-10-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 7847901755827219841,
+      "schema-id": 1,
+      "sequence-number": 10,
+      "snapshot-id": 2503058971521138594,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8640",
+        "utilake.from.file": "PUBLIC_DISPATCH_20251031.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "147eaed6d4e963e87f919ee9a49342704bb0406b0f69b90c210ee567c9d0e810",
+        "utilake.from.time": "2025-11-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "43200",
+        "utilake.to.file": "PUBLIC_DISPATCH_20251130.zip",
+        "utilake.to.release": "2025-11",
+        "utilake.to.sha256": "e527d746186028261728db11b4d235ab2a2557657a1315cacdfd0f0cdc84b0f9",
+        "utilake.to.time": "2025-11-30T23:55:00+10:00",
+        "utilake.total-rows": "429115",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1761919200009
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-3766726876777059686-11-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 2503058971521138594,
+      "schema-id": 0,
+      "sequence-number": 11,
+      "snapshot-id": 3766726876777059686,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "30",
+        "utilake.from.file": "PUBLIC_DAILY_20251101.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "dfa6659a0bdff4a34831e0fa609ebb277c417e50588ec907dcc0a4c0e7b4f2ee",
+        "utilake.from.time": "2025-11-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "43200",
+        "utilake.to.file": "PUBLIC_DAILY_20251101.zip",
+        "utilake.to.release": "2025-11",
+        "utilake.to.sha256": "dfa6659a0bdff4a34831e0fa609ebb277c417e50588ec907dcc0a4c0e7b4f2ee",
+        "utilake.to.time": "2025-12-01T04:00:00+10:00",
+        "utilake.total-rows": "472315",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1761919200010
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-7064816956467304671-12-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 3766726876777059686,
+      "schema-id": 1,
+      "sequence-number": 12,
+      "snapshot-id": 7064816956467304671,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "30",
+        "utilake.from.file": "PUBLIC_DAILY_20251101.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "dfa6659a0bdff4a34831e0fa609ebb277c417e50588ec907dcc0a4c0e7b4f2ee",
+        "utilake.from.time": "2025-11-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "43200",
+        "utilake.to.file": "PUBLIC_DAILY_20251101.zip",
+        "utilake.to.release": "2025-11",
+        "utilake.to.sha256": "dfa6659a0bdff4a34831e0fa609ebb277c417e50588ec907dcc0a4c0e7b4f2ee",
+        "utilake.to.time": "2025-12-01T04:00:00+10:00",
+        "utilake.total-rows": "515515",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1761919200011
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-1133422958661722794-13-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 7064816956467304671,
+      "schema-id": 2,
+      "sequence-number": 13,
+      "snapshot-id": 1133422958661722794,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "30",
+        "utilake.from.file": "PUBLIC_PRICES_20251101.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "9d86023a7869c976a30cd41bcaa58d4dd52974a90187359f73119ff47cbcfb05",
+        "utilake.from.time": "2025-11-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "43200",
+        "utilake.to.file": "PUBLIC_PRICES_20251101.zip",
+        "utilake.to.release": "2025-11",
+        "utilake.to.sha256": "9d86023a7869c976a30cd41bcaa58d4dd52974a90187359f73119ff47cbcfb05",
+        "utilake.to.time": "2025-12-01T04:00:00+10:00",
+        "utilake.total-rows": "558715",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1761919200012
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-3881115580021833792-14-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 1133422958661722794,
+      "schema-id": 3,
+      "sequence-number": 14,
+      "snapshot-id": 3881115580021833792,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "30",
+        "utilake.from.file": "PUBLIC_PRICES_20251101.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "9d86023a7869c976a30cd41bcaa58d4dd52974a90187359f73119ff47cbcfb05",
+        "utilake.from.time": "2025-11-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "43200",
+        "utilake.to.file": "PUBLIC_PRICES_20251101.zip",
+        "utilake.to.release": "2025-11",
+        "utilake.to.sha256": "9d86023a7869c976a30cd41bcaa58d4dd52974a90187359f73119ff47cbcfb05",
+        "utilake.to.time": "2025-12-01T04:00:00+10:00",
+        "utilake.total-rows": "601915",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1761919200013
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-5222043233836770044-15-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 3881115580021833792,
+      "schema-id": 1,
+      "sequence-number": 15,
+      "snapshot-id": 5222043233836770044,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8928",
+        "utilake.from.file": "PUBLIC_DISPATCH_20251130.zip",
+        "utilake.from.release": "2025-12",
+        "utilake.from.sha256": "e527d746186028261728db11b4d235ab2a2557657a1315cacdfd0f0cdc84b0f9",
+        "utilake.from.time": "2025-12-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_DISPATCH_20251231.zip",
+        "utilake.to.release": "2025-12",
+        "utilake.to.sha256": "b6980eda17c97f318100dbd2a78801f04e589d62ad23e55fcf520b58a51d9f45",
+        "utilake.to.time": "2025-12-31T23:55:00+10:00",
+        "utilake.total-rows": "646555",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1764511200014
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-3192904559933712824-16-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 5222043233836770044,
+      "schema-id": 0,
+      "sequence-number": 16,
+      "snapshot-id": 3192904559933712824,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_DAILY_20251201.zip",
+        "utilake.from.release": "2025-12",
+        "utilake.from.sha256": "47ac12d2fc353a8e3662c7e5170b9c79d102f6e61cddc93aced80bc2f894e517",
+        "utilake.from.time": "2025-12-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_DAILY_20251201.zip",
+        "utilake.to.release": "2025-12",
+        "utilake.to.sha256": "47ac12d2fc353a8e3662c7e5170b9c79d102f6e61cddc93aced80bc2f894e517",
+        "utilake.to.time": "2026-01-01T04:00:00+10:00",
+        "utilake.total-rows": "691195",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1764511200015
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-4716483415960295059-17-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 3192904559933712824,
+      "schema-id": 1,
+      "sequence-number": 17,
+      "snapshot-id": 4716483415960295059,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_DAILY_20251201.zip",
+        "utilake.from.release": "2025-12",
+        "utilake.from.sha256": "47ac12d2fc353a8e3662c7e5170b9c79d102f6e61cddc93aced80bc2f894e517",
+        "utilake.from.time": "2025-12-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_DAILY_20251201.zip",
+        "utilake.to.release": "2025-12",
+        "utilake.to.sha256": "47ac12d2fc353a8e3662c7e5170b9c79d102f6e61cddc93aced80bc2f894e517",
+        "utilake.to.time": "2026-01-01T04:00:00+10:00",
+        "utilake.total-rows": "735835",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1764511200016
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-5598189738554421139-18-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 4716483415960295059,
+      "schema-id": 2,
+      "sequence-number": 18,
+      "snapshot-id": 5598189738554421139,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_PRICES_20251201.zip",
+        "utilake.from.release": "2025-12",
+        "utilake.from.sha256": "b55537ae1b1988e61d431335a043c5ddb63db40a3a568ebe099b143a869d189a",
+        "utilake.from.time": "2025-12-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_PRICES_20251201.zip",
+        "utilake.to.release": "2025-12",
+        "utilake.to.sha256": "b55537ae1b1988e61d431335a043c5ddb63db40a3a568ebe099b143a869d189a",
+        "utilake.to.time": "2026-01-01T04:00:00+10:00",
+        "utilake.total-rows": "780475",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1764511200017
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-592377160695546525-19-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 5598189738554421139,
+      "schema-id": 3,
+      "sequence-number": 19,
+      "snapshot-id": 592377160695546525,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_PRICES_20251201.zip",
+        "utilake.from.release": "2025-12",
+        "utilake.from.sha256": "b55537ae1b1988e61d431335a043c5ddb63db40a3a568ebe099b143a869d189a",
+        "utilake.from.time": "2025-12-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_PRICES_20251201.zip",
+        "utilake.to.release": "2025-12",
+        "utilake.to.sha256": "b55537ae1b1988e61d431335a043c5ddb63db40a3a568ebe099b143a869d189a",
+        "utilake.to.time": "2026-01-01T04:00:00+10:00",
+        "utilake.total-rows": "825115",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1764511200018
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-5871508518054546063-20-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 592377160695546525,
+      "schema-id": 1,
+      "sequence-number": 20,
+      "snapshot-id": 5871508518054546063,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8928",
+        "utilake.from.file": "PUBLIC_DISPATCH_20251231.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "b6980eda17c97f318100dbd2a78801f04e589d62ad23e55fcf520b58a51d9f45",
+        "utilake.from.time": "2026-01-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_DISPATCH_20260131.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "dfe764b0ab28eba6759d1b6125bb697b4674bb7eb30b7b4062b56349c582bc96",
+        "utilake.to.time": "2026-01-31T23:55:00+10:00",
+        "utilake.total-rows": "869755",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1767189600019
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-1576537808941183628-21-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 5871508518054546063,
+      "schema-id": 0,
+      "sequence-number": 21,
+      "snapshot-id": 1576537808941183628,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_DAILY_20260101.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "00d3fce0f66d152becee73165d743c23a055d3cf8f66757ea4cc39cd1e992ad8",
+        "utilake.from.time": "2026-01-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_DAILY_20260101.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "00d3fce0f66d152becee73165d743c23a055d3cf8f66757ea4cc39cd1e992ad8",
+        "utilake.to.time": "2026-02-01T04:00:00+10:00",
+        "utilake.total-rows": "914395",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1767189600020
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-6821997494545493590-22-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 1576537808941183628,
+      "schema-id": 1,
+      "sequence-number": 22,
+      "snapshot-id": 6821997494545493590,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_DAILY_20260101.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "00d3fce0f66d152becee73165d743c23a055d3cf8f66757ea4cc39cd1e992ad8",
+        "utilake.from.time": "2026-01-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_DAILY_20260101.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "00d3fce0f66d152becee73165d743c23a055d3cf8f66757ea4cc39cd1e992ad8",
+        "utilake.to.time": "2026-02-01T04:00:00+10:00",
+        "utilake.total-rows": "959035",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1767189600021
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-2027460571666290579-23-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 6821997494545493590,
+      "schema-id": 2,
+      "sequence-number": 23,
+      "snapshot-id": 2027460571666290579,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_PRICES_20260101.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "21925cd15ec40d9a41b057c79839d8b4d6e5049f663c84561e048dd3838b789b",
+        "utilake.from.time": "2026-01-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_PRICES_20260101.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "21925cd15ec40d9a41b057c79839d8b4d6e5049f663c84561e048dd3838b789b",
+        "utilake.to.time": "2026-02-01T04:00:00+10:00",
+        "utilake.total-rows": "1003675",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1767189600022
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-9000892868709607965-24-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 2027460571666290579,
+      "schema-id": 3,
+      "sequence-number": 24,
+      "snapshot-id": 9000892868709607965,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_PRICES_20260101.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "21925cd15ec40d9a41b057c79839d8b4d6e5049f663c84561e048dd3838b789b",
+        "utilake.from.time": "2026-01-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_PRICES_20260101.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "21925cd15ec40d9a41b057c79839d8b4d6e5049f663c84561e048dd3838b789b",
+        "utilake.to.time": "2026-02-01T04:00:00+10:00",
+        "utilake.total-rows": "1048315",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1767189600023
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-9020666252764241929-25-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 9000892868709607965,
+      "schema-id": 1,
+      "sequence-number": 25,
+      "snapshot-id": 9020666252764241929,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8064",
+        "utilake.from.file": "PUBLIC_DISPATCH_20260131.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "dfe764b0ab28eba6759d1b6125bb697b4674bb7eb30b7b4062b56349c582bc96",
+        "utilake.from.time": "2026-02-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "40320",
+        "utilake.to.file": "PUBLIC_DISPATCH_20260228.zip",
+        "utilake.to.release": "2026-02",
+        "utilake.to.sha256": "bfe65c5bb98fa891708871f51dcaaf6e2983a233773e4111c1e4df62082ca9f0",
+        "utilake.to.time": "2026-02-28T23:55:00+10:00",
+        "utilake.total-rows": "1088635",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1769868000024
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-7927348205343029671-26-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 9020666252764241929,
+      "schema-id": 0,
+      "sequence-number": 26,
+      "snapshot-id": 7927348205343029671,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "28",
+        "utilake.from.file": "PUBLIC_DAILY_20260201.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "2697335b89119a4f7209e6a236f6bdeb210dd1352c7f7dfcbce481df4ad79142",
+        "utilake.from.time": "2026-02-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "40320",
+        "utilake.to.file": "PUBLIC_DAILY_20260201.zip",
+        "utilake.to.release": "2026-02",
+        "utilake.to.sha256": "2697335b89119a4f7209e6a236f6bdeb210dd1352c7f7dfcbce481df4ad79142",
+        "utilake.to.time": "2026-03-01T04:00:00+10:00",
+        "utilake.total-rows": "1128955",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1769868000025
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-278957662959166104-27-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 7927348205343029671,
+      "schema-id": 1,
+      "sequence-number": 27,
+      "snapshot-id": 278957662959166104,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "28",
+        "utilake.from.file": "PUBLIC_DAILY_20260201.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "2697335b89119a4f7209e6a236f6bdeb210dd1352c7f7dfcbce481df4ad79142",
+        "utilake.from.time": "2026-02-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "40320",
+        "utilake.to.file": "PUBLIC_DAILY_20260201.zip",
+        "utilake.to.release": "2026-02",
+        "utilake.to.sha256": "2697335b89119a4f7209e6a236f6bdeb210dd1352c7f7dfcbce481df4ad79142",
+        "utilake.to.time": "2026-03-01T04:00:00+10:00",
+        "utilake.total-rows": "1169275",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1769868000026
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-983850792399954499-28-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 278957662959166104,
+      "schema-id": 2,
+      "sequence-number": 28,
+      "snapshot-id": 983850792399954499,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "28",
+        "utilake.from.file": "PUBLIC_PRICES_20260201.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "1c2070a63c4f2637a753e527f10ff6afaadeae74e61d86abb60a998cb0f6982f",
+        "utilake.from.time": "2026-02-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "40320",
+        "utilake.to.file": "PUBLIC_PRICES_20260201.zip",
+        "utilake.to.release": "2026-02",
+        "utilake.to.sha256": "1c2070a63c4f2637a753e527f10ff6afaadeae74e61d86abb60a998cb0f6982f",
+        "utilake.to.time": "2026-03-01T04:00:00+10:00",
+        "utilake.total-rows": "1209595",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1769868000027
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-3430539188423109441-29-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 983850792399954499,
+      "schema-id": 3,
+      "sequence-number": 29,
+      "snapshot-id": 3430539188423109441,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "28",
+        "utilake.from.file": "PUBLIC_PRICES_20260201.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "1c2070a63c4f2637a753e527f10ff6afaadeae74e61d86abb60a998cb0f6982f",
+        "utilake.from.time": "2026-02-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "40320",
+        "utilake.to.file": "PUBLIC_PRICES_20260201.zip",
+        "utilake.to.release": "2026-02",
+        "utilake.to.sha256": "1c2070a63c4f2637a753e527f10ff6afaadeae74e61d86abb60a998cb0f6982f",
+        "utilake.to.time": "2026-03-01T04:00:00+10:00",
+        "utilake.total-rows": "1249915",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1769868000028
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-7258781410675130931-30-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 3430539188423109441,
+      "schema-id": 1,
+      "sequence-number": 30,
+      "snapshot-id": 7258781410675130931,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8910",
+        "utilake.from.file": "PUBLIC_DISPATCH_202603031345_20260303134015_LEGACY.zip",
+        "utilake.from.release": "2026-03",
+        "utilake.from.sha256": "bbe437a71d852dbf208489ad45536a9ae6960a0fac2f6104018d301e44318f8a",
+        "utilake.from.time": "2026-03-03T13:45:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "44550",
+        "utilake.to.file": "PUBLIC_DISPATCH_20260331.zip",
+        "utilake.to.release": "2026-03",
+        "utilake.to.sha256": "62f820fe769b3ba7a43b28770a72fdeb1c40d3ffb6a63f513ecdb4d351bb3c91",
+        "utilake.to.time": "2026-03-31T23:55:00+10:00",
+        "utilake.total-rows": "1294465",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1772287200029
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-191644377193516995-31-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 7258781410675130931,
+      "schema-id": 0,
+      "sequence-number": 31,
+      "snapshot-id": 191644377193516995,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_DAILY_20260301.zip",
+        "utilake.from.release": "2026-03",
+        "utilake.from.sha256": "eae07c3364f3037446034ecd2501a8019ef68c8272fe14a29ade0181b8767e6d",
+        "utilake.from.time": "2026-03-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_DAILY_20260301.zip",
+        "utilake.to.release": "2026-03",
+        "utilake.to.sha256": "eae07c3364f3037446034ecd2501a8019ef68c8272fe14a29ade0181b8767e6d",
+        "utilake.to.time": "2026-04-01T04:00:00+10:00",
+        "utilake.total-rows": "1339105",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1772287200030
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-3714613831852477123-32-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 191644377193516995,
+      "schema-id": 1,
+      "sequence-number": 32,
+      "snapshot-id": 3714613831852477123,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_DAILY_20260301.zip",
+        "utilake.from.release": "2026-03",
+        "utilake.from.sha256": "eae07c3364f3037446034ecd2501a8019ef68c8272fe14a29ade0181b8767e6d",
+        "utilake.from.time": "2026-03-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_DAILY_20260301.zip",
+        "utilake.to.release": "2026-03",
+        "utilake.to.sha256": "eae07c3364f3037446034ecd2501a8019ef68c8272fe14a29ade0181b8767e6d",
+        "utilake.to.time": "2026-04-01T04:00:00+10:00",
+        "utilake.total-rows": "1383745",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1772287200031
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-6344694491981864706-33-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 3714613831852477123,
+      "schema-id": 2,
+      "sequence-number": 33,
+      "snapshot-id": 6344694491981864706,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_PRICES_20260301.zip",
+        "utilake.from.release": "2026-03",
+        "utilake.from.sha256": "7e18f7668e61a585cc11bd4e71cf51e009e490c6a73778e5a439f59dab920cbb",
+        "utilake.from.time": "2026-03-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_PRICES_20260301.zip",
+        "utilake.to.release": "2026-03",
+        "utilake.to.sha256": "7e18f7668e61a585cc11bd4e71cf51e009e490c6a73778e5a439f59dab920cbb",
+        "utilake.to.time": "2026-04-01T04:00:00+10:00",
+        "utilake.total-rows": "1428385",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1772287200032
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-2892719309402928452-34-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 6344694491981864706,
+      "schema-id": 3,
+      "sequence-number": 34,
+      "snapshot-id": 2892719309402928452,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_PRICES_20260301.zip",
+        "utilake.from.release": "2026-03",
+        "utilake.from.sha256": "7e18f7668e61a585cc11bd4e71cf51e009e490c6a73778e5a439f59dab920cbb",
+        "utilake.from.time": "2026-03-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_PRICES_20260301.zip",
+        "utilake.to.release": "2026-03",
+        "utilake.to.sha256": "7e18f7668e61a585cc11bd4e71cf51e009e490c6a73778e5a439f59dab920cbb",
+        "utilake.to.time": "2026-04-01T04:00:00+10:00",
+        "utilake.total-rows": "1473025",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1772287200033
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-4400009322044160422-35-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 2892719309402928452,
+      "schema-id": 1,
+      "sequence-number": 35,
+      "snapshot-id": 4400009322044160422,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8640",
+        "utilake.from.file": "PUBLIC_DISPATCH_20260331.zip",
+        "utilake.from.release": "2026-04",
+        "utilake.from.sha256": "62f820fe769b3ba7a43b28770a72fdeb1c40d3ffb6a63f513ecdb4d351bb3c91",
+        "utilake.from.time": "2026-04-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "43200",
+        "utilake.to.file": "PUBLIC_DISPATCH_20260430.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "b46185e1669686b3e40c9c52d90ae3167e8f76a5bd4a700cdc276b35396d27cc",
+        "utilake.to.time": "2026-04-30T23:55:00+10:00",
+        "utilake.total-rows": "1516225",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1774965600034
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-3383210226156550896-36-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 4400009322044160422,
+      "schema-id": 0,
+      "sequence-number": 36,
+      "snapshot-id": 3383210226156550896,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "30",
+        "utilake.from.file": "PUBLIC_DAILY_20260401.zip",
+        "utilake.from.release": "2026-04",
+        "utilake.from.sha256": "92875d2a61b2fba7b201843fc38faf77a318f094445cdf6ae3440cae2e91872e",
+        "utilake.from.time": "2026-04-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "43200",
+        "utilake.to.file": "PUBLIC_DAILY_20260401.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "92875d2a61b2fba7b201843fc38faf77a318f094445cdf6ae3440cae2e91872e",
+        "utilake.to.time": "2026-05-01T04:00:00+10:00",
+        "utilake.total-rows": "1559425",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1774965600035
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-7372358728784566498-37-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 3383210226156550896,
+      "schema-id": 1,
+      "sequence-number": 37,
+      "snapshot-id": 7372358728784566498,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "30",
+        "utilake.from.file": "PUBLIC_DAILY_20260401.zip",
+        "utilake.from.release": "2026-04",
+        "utilake.from.sha256": "92875d2a61b2fba7b201843fc38faf77a318f094445cdf6ae3440cae2e91872e",
+        "utilake.from.time": "2026-04-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "43200",
+        "utilake.to.file": "PUBLIC_DAILY_20260401.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "92875d2a61b2fba7b201843fc38faf77a318f094445cdf6ae3440cae2e91872e",
+        "utilake.to.time": "2026-05-01T04:00:00+10:00",
+        "utilake.total-rows": "1602625",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1774965600036
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-2882819801611868801-38-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 7372358728784566498,
+      "schema-id": 2,
+      "sequence-number": 38,
+      "snapshot-id": 2882819801611868801,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "30",
+        "utilake.from.file": "PUBLIC_PRICES_20260401.zip",
+        "utilake.from.release": "2026-04",
+        "utilake.from.sha256": "af74dff01d447f246354a7598dbfcf6821ac58d6ce793f96de9b7e6ce922e381",
+        "utilake.from.time": "2026-04-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "43200",
+        "utilake.to.file": "PUBLIC_PRICES_20260401.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "af74dff01d447f246354a7598dbfcf6821ac58d6ce793f96de9b7e6ce922e381",
+        "utilake.to.time": "2026-05-01T04:00:00+10:00",
+        "utilake.total-rows": "1645825",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1774965600037
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-3832288460004419373-39-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 2882819801611868801,
+      "schema-id": 3,
+      "sequence-number": 39,
+      "snapshot-id": 3832288460004419373,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "30",
+        "utilake.from.file": "PUBLIC_PRICES_20260401.zip",
+        "utilake.from.release": "2026-04",
+        "utilake.from.sha256": "af74dff01d447f246354a7598dbfcf6821ac58d6ce793f96de9b7e6ce922e381",
+        "utilake.from.time": "2026-04-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "43200",
+        "utilake.to.file": "PUBLIC_PRICES_20260401.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "af74dff01d447f246354a7598dbfcf6821ac58d6ce793f96de9b7e6ce922e381",
+        "utilake.to.time": "2026-05-01T04:00:00+10:00",
+        "utilake.total-rows": "1689025",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1774965600038
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-7615979171885612421-40-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 3832288460004419373,
+      "schema-id": 1,
+      "sequence-number": 40,
+      "snapshot-id": 7615979171885612421,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8928",
+        "utilake.from.file": "PUBLIC_DISPATCH_20260430.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "b46185e1669686b3e40c9c52d90ae3167e8f76a5bd4a700cdc276b35396d27cc",
+        "utilake.from.time": "2026-05-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_DISPATCH_20260531.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "3264d2cbdcd59deac2e68c4d192057a66f8285270819b421ded03bc7ca8d6614",
+        "utilake.to.time": "2026-05-31T23:55:00+10:00",
+        "utilake.total-rows": "1733665",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1777557600039
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-1505419604032432702-41-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 7615979171885612421,
+      "schema-id": 0,
+      "sequence-number": 41,
+      "snapshot-id": 1505419604032432702,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_DAILY_20260501.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "67c79098014dcb16ab99ae5a2042c6bdbc8e7ecafd2e4d8233bf86039274b327",
+        "utilake.from.time": "2026-05-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_DAILY_20260501.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "67c79098014dcb16ab99ae5a2042c6bdbc8e7ecafd2e4d8233bf86039274b327",
+        "utilake.to.time": "2026-06-01T04:00:00+10:00",
+        "utilake.total-rows": "1778305",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1777557600040
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-4398597665204182454-42-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 1505419604032432702,
+      "schema-id": 1,
+      "sequence-number": 42,
+      "snapshot-id": 4398597665204182454,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_DAILY_20260501.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "67c79098014dcb16ab99ae5a2042c6bdbc8e7ecafd2e4d8233bf86039274b327",
+        "utilake.from.time": "2026-05-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_DAILY_20260501.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "67c79098014dcb16ab99ae5a2042c6bdbc8e7ecafd2e4d8233bf86039274b327",
+        "utilake.to.time": "2026-06-01T04:00:00+10:00",
+        "utilake.total-rows": "1822945",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1777557600041
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-4541676876904584959-43-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 4398597665204182454,
+      "schema-id": 2,
+      "sequence-number": 43,
+      "snapshot-id": 4541676876904584959,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_PRICES_20260501.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "6231d5582aeb601f6b0f9b7a0e94f1dd88c2c9972e283e35f3c07221e984e567",
+        "utilake.from.time": "2026-05-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_PRICES_20260501.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "6231d5582aeb601f6b0f9b7a0e94f1dd88c2c9972e283e35f3c07221e984e567",
+        "utilake.to.time": "2026-06-01T04:00:00+10:00",
+        "utilake.total-rows": "1867585",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1777557600042
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-6898606636179384364-44-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 4541676876904584959,
+      "schema-id": 3,
+      "sequence-number": 44,
+      "snapshot-id": 6898606636179384364,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_PRICES_20260501.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "6231d5582aeb601f6b0f9b7a0e94f1dd88c2c9972e283e35f3c07221e984e567",
+        "utilake.from.time": "2026-05-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_PRICES_20260501.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "6231d5582aeb601f6b0f9b7a0e94f1dd88c2c9972e283e35f3c07221e984e567",
+        "utilake.to.time": "2026-06-01T04:00:00+10:00",
+        "utilake.total-rows": "1912225",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1777557600043
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-8675313687554389773-45-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 6898606636179384364,
+      "schema-id": 1,
+      "sequence-number": 45,
+      "snapshot-id": 8675313687554389773,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8640",
+        "utilake.from.file": "PUBLIC_DISPATCH_20260531.zip",
+        "utilake.from.release": "2026-06",
+        "utilake.from.sha256": "3264d2cbdcd59deac2e68c4d192057a66f8285270819b421ded03bc7ca8d6614",
+        "utilake.from.time": "2026-06-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "43200",
+        "utilake.to.file": "PUBLIC_DISPATCH_20260630.zip",
+        "utilake.to.release": "2026-06",
+        "utilake.to.sha256": "aed539bba9967c7270da5ab09ce54e99afa337497d6d52a03e4065b3fd420751",
+        "utilake.to.time": "2026-06-30T23:55:00+10:00",
+        "utilake.total-rows": "1955425",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1780236000044
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-8417207023566892783-46-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 8675313687554389773,
+      "schema-id": 0,
+      "sequence-number": 46,
+      "snapshot-id": 8417207023566892783,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "30",
+        "utilake.from.file": "PUBLIC_DAILY_20260601.zip",
+        "utilake.from.release": "2026-06",
+        "utilake.from.sha256": "308c01e89a77ac59da367d2a11c2ea43a311cdebd203a1c07d669ed5eb21ac4c",
+        "utilake.from.time": "2026-06-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "43200",
+        "utilake.to.file": "PUBLIC_DAILY_20260601.zip",
+        "utilake.to.release": "2026-06",
+        "utilake.to.sha256": "308c01e89a77ac59da367d2a11c2ea43a311cdebd203a1c07d669ed5eb21ac4c",
+        "utilake.to.time": "2026-07-01T04:00:00+10:00",
+        "utilake.total-rows": "1998625",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1780236000045
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-4135404967679077609-47-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 8417207023566892783,
+      "schema-id": 1,
+      "sequence-number": 47,
+      "snapshot-id": 4135404967679077609,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "30",
+        "utilake.from.file": "PUBLIC_DAILY_20260601.zip",
+        "utilake.from.release": "2026-06",
+        "utilake.from.sha256": "308c01e89a77ac59da367d2a11c2ea43a311cdebd203a1c07d669ed5eb21ac4c",
+        "utilake.from.time": "2026-06-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "43200",
+        "utilake.to.file": "PUBLIC_DAILY_20260601.zip",
+        "utilake.to.release": "2026-06",
+        "utilake.to.sha256": "308c01e89a77ac59da367d2a11c2ea43a311cdebd203a1c07d669ed5eb21ac4c",
+        "utilake.to.time": "2026-07-01T04:00:00+10:00",
+        "utilake.total-rows": "2041825",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1780236000046
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-4037217770317624363-48-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 4135404967679077609,
+      "schema-id": 2,
+      "sequence-number": 48,
+      "snapshot-id": 4037217770317624363,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "30",
+        "utilake.from.file": "PUBLIC_PRICES_20260601.zip",
+        "utilake.from.release": "2026-06",
+        "utilake.from.sha256": "bb665db2db427a1f11979f3491e8351566d8cd6f2d86c3ae1c1890899c4aff62",
+        "utilake.from.time": "2026-06-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "43200",
+        "utilake.to.file": "PUBLIC_PRICES_20260601.zip",
+        "utilake.to.release": "2026-06",
+        "utilake.to.sha256": "bb665db2db427a1f11979f3491e8351566d8cd6f2d86c3ae1c1890899c4aff62",
+        "utilake.to.time": "2026-07-01T04:00:00+10:00",
+        "utilake.total-rows": "2085025",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1780236000047
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-7794236611401188350-49-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 4037217770317624363,
+      "schema-id": 3,
+      "sequence-number": 49,
+      "snapshot-id": 7794236611401188350,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "30",
+        "utilake.from.file": "PUBLIC_PRICES_20260601.zip",
+        "utilake.from.release": "2026-06",
+        "utilake.from.sha256": "bb665db2db427a1f11979f3491e8351566d8cd6f2d86c3ae1c1890899c4aff62",
+        "utilake.from.time": "2026-06-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "43200",
+        "utilake.to.file": "PUBLIC_PRICES_20260601.zip",
+        "utilake.to.release": "2026-06",
+        "utilake.to.sha256": "bb665db2db427a1f11979f3491e8351566d8cd6f2d86c3ae1c1890899c4aff62",
+        "utilake.to.time": "2026-07-01T04:00:00+10:00",
+        "utilake.total-rows": "2128225",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1780236000048
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-5932951945442251512-50-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 7794236611401188350,
+      "schema-id": 1,
+      "sequence-number": 50,
+      "snapshot-id": 5932951945442251512,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8928",
+        "utilake.from.file": "PUBLIC_DISPATCH_20260630.zip",
+        "utilake.from.release": "2026-07",
+        "utilake.from.sha256": "aed539bba9967c7270da5ab09ce54e99afa337497d6d52a03e4065b3fd420751",
+        "utilake.from.time": "2026-07-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_DISPATCH_20260731.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "3a80b0993c9d7bb87068b8711d15ba626cff4e4a462d5045579f3a322db8a8fb",
+        "utilake.to.time": "2026-07-31T23:55:00+10:00",
+        "utilake.total-rows": "2172865",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1782828000049
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-6254028349652935793-51-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 5932951945442251512,
+      "schema-id": 0,
+      "sequence-number": 51,
+      "snapshot-id": 6254028349652935793,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_DAILY_20260701.zip",
+        "utilake.from.release": "2026-07",
+        "utilake.from.sha256": "ce0f100340f57bd3dae21ba6ade2617f0027e5c5e9d703ed4d31e544fafa92a7",
+        "utilake.from.time": "2026-07-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_DAILY_20260701.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "ce0f100340f57bd3dae21ba6ade2617f0027e5c5e9d703ed4d31e544fafa92a7",
+        "utilake.to.time": "2026-08-01T04:00:00+10:00",
+        "utilake.total-rows": "2217505",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1782828000050
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-6969535732210643909-52-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 6254028349652935793,
+      "schema-id": 1,
+      "sequence-number": 52,
+      "snapshot-id": 6969535732210643909,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_DAILY_20260701.zip",
+        "utilake.from.release": "2026-07",
+        "utilake.from.sha256": "ce0f100340f57bd3dae21ba6ade2617f0027e5c5e9d703ed4d31e544fafa92a7",
+        "utilake.from.time": "2026-07-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_DAILY_20260701.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "ce0f100340f57bd3dae21ba6ade2617f0027e5c5e9d703ed4d31e544fafa92a7",
+        "utilake.to.time": "2026-08-01T04:00:00+10:00",
+        "utilake.total-rows": "2262145",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1782828000051
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-2349389978424139155-53-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 6969535732210643909,
+      "schema-id": 2,
+      "sequence-number": 53,
+      "snapshot-id": 2349389978424139155,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_PRICES_20260701.zip",
+        "utilake.from.release": "2026-07",
+        "utilake.from.sha256": "5832a37130e60653a16f8059e6e361e07a243b1288bcf8d24ad9b8cbb440ad2e",
+        "utilake.from.time": "2026-07-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_PRICES_20260701.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "5832a37130e60653a16f8059e6e361e07a243b1288bcf8d24ad9b8cbb440ad2e",
+        "utilake.to.time": "2026-08-01T04:00:00+10:00",
+        "utilake.total-rows": "2306785",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1782828000052
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-8097492979502447818-54-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 2349389978424139155,
+      "schema-id": 3,
+      "sequence-number": 54,
+      "snapshot-id": 8097492979502447818,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_PRICES_20260701.zip",
+        "utilake.from.release": "2026-07",
+        "utilake.from.sha256": "5832a37130e60653a16f8059e6e361e07a243b1288bcf8d24ad9b8cbb440ad2e",
+        "utilake.from.time": "2026-07-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_PRICES_20260701.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "5832a37130e60653a16f8059e6e361e07a243b1288bcf8d24ad9b8cbb440ad2e",
+        "utilake.to.time": "2026-08-01T04:00:00+10:00",
+        "utilake.total-rows": "2351425",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1782828000053
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-7575788983210586647-55-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 8097492979502447818,
+      "schema-id": 1,
+      "sequence-number": 55,
+      "snapshot-id": 7575788983210586647,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8928",
+        "utilake.from.file": "PUBLIC_DISPATCH_20260731.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "3a80b0993c9d7bb87068b8711d15ba626cff4e4a462d5045579f3a322db8a8fb",
+        "utilake.from.time": "2026-08-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_DISPATCH_20260831.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "10afc45a5491b31c192ac4879eef25b0b7efca7ce083cc3ffbe76e6b0021fdae",
+        "utilake.to.time": "2026-08-31T23:55:00+10:00",
+        "utilake.total-rows": "2396065",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1785506400054
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-5727272134984123769-56-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 7575788983210586647,
+      "schema-id": 0,
+      "sequence-number": 56,
+      "snapshot-id": 5727272134984123769,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_DAILY_20260801.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "780dfd7e3af123bcca14fb2d90ef7693e281a25cfea79ad1e35f3d59d1c49cf1",
+        "utilake.from.time": "2026-08-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_DAILY_20260801.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "780dfd7e3af123bcca14fb2d90ef7693e281a25cfea79ad1e35f3d59d1c49cf1",
+        "utilake.to.time": "2026-09-01T04:00:00+10:00",
+        "utilake.total-rows": "2440705",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1785506400055
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-1665861129297132581-57-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 5727272134984123769,
+      "schema-id": 1,
+      "sequence-number": 57,
+      "snapshot-id": 1665861129297132581,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_DAILY_20260801.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "780dfd7e3af123bcca14fb2d90ef7693e281a25cfea79ad1e35f3d59d1c49cf1",
+        "utilake.from.time": "2026-08-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_DAILY_20260801.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "780dfd7e3af123bcca14fb2d90ef7693e281a25cfea79ad1e35f3d59d1c49cf1",
+        "utilake.to.time": "2026-09-01T04:00:00+10:00",
+        "utilake.total-rows": "2485345",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1785506400056
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-3902687102185453153-58-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 1665861129297132581,
+      "schema-id": 0,
+      "sequence-number": 58,
+      "snapshot-id": 3902687102185453153,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "11",
+        "utilake.from.file": "PUBLIC_DAILY_202608210000_20260822040503.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "a900c2aab53f9d60077d94856535c0da8ac91aeaedd1f099a31a4cf49aac80ce",
+        "utilake.from.time": "2026-08-21T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "15840",
+        "utilake.to.file": "PUBLIC_DAILY_202608310000_20260901040506.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "316bf5d2ffc8e0ee12018b64e91027d4108d51dd88633895ee4ec6900c236415",
+        "utilake.to.time": "2026-09-01T04:00:00+10:00",
+        "utilake.total-rows": "2501185",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1785506400057
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-7972522049875268339-59-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 3902687102185453153,
+      "schema-id": 1,
+      "sequence-number": 59,
+      "snapshot-id": 7972522049875268339,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "11",
+        "utilake.from.file": "PUBLIC_DAILY_202608210000_20260822040503.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "a900c2aab53f9d60077d94856535c0da8ac91aeaedd1f099a31a4cf49aac80ce",
+        "utilake.from.time": "2026-08-21T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "15840",
+        "utilake.to.file": "PUBLIC_DAILY_202608310000_20260901040506.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "316bf5d2ffc8e0ee12018b64e91027d4108d51dd88633895ee4ec6900c236415",
+        "utilake.to.time": "2026-09-01T04:00:00+10:00",
+        "utilake.total-rows": "2517025",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1785506400058
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-5323544395614258118-60-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 7972522049875268339,
+      "schema-id": 2,
+      "sequence-number": 60,
+      "snapshot-id": 5323544395614258118,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_PRICES_20260801.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "f031fb8ae0884765d9716ae602a5f7bc21ed22870c6565ee21b7fe82bd1b98f0",
+        "utilake.from.time": "2026-08-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_PRICES_20260801.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "f031fb8ae0884765d9716ae602a5f7bc21ed22870c6565ee21b7fe82bd1b98f0",
+        "utilake.to.time": "2026-09-01T04:00:00+10:00",
+        "utilake.total-rows": "2561665",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1785506400059
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-3722998527812817194-61-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 5323544395614258118,
+      "schema-id": 3,
+      "sequence-number": 61,
+      "snapshot-id": 3722998527812817194,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_PRICES_20260801.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "f031fb8ae0884765d9716ae602a5f7bc21ed22870c6565ee21b7fe82bd1b98f0",
+        "utilake.from.time": "2026-08-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "44640",
+        "utilake.to.file": "PUBLIC_PRICES_20260801.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "f031fb8ae0884765d9716ae602a5f7bc21ed22870c6565ee21b7fe82bd1b98f0",
+        "utilake.to.time": "2026-09-01T04:00:00+10:00",
+        "utilake.total-rows": "2606305",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1785506400060
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-1771822721925606002-62-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 3722998527812817194,
+      "schema-id": 2,
+      "sequence-number": 62,
+      "snapshot-id": 1771822721925606002,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "11",
+        "utilake.from.file": "PUBLIC_PRICES_202608210000_20260822040502.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "d0729b190aae94d40bbefa9547f1f3c5a143aea71a0662d20b8e0a1b3680f24e",
+        "utilake.from.time": "2026-08-21T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "15840",
+        "utilake.to.file": "PUBLIC_PRICES_202608310000_20260901040503.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "623fefb5501956afe3f166f918ce15e39847d4d2291e518d5bc06e98d57b3482",
+        "utilake.to.time": "2026-09-01T04:00:00+10:00",
+        "utilake.total-rows": "2622145",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1785506400061
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-26390316823820704-63-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 1771822721925606002,
+      "schema-id": 3,
+      "sequence-number": 63,
+      "snapshot-id": 26390316823820704,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "11",
+        "utilake.from.file": "PUBLIC_PRICES_202608210000_20260822040502.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "d0729b190aae94d40bbefa9547f1f3c5a143aea71a0662d20b8e0a1b3680f24e",
+        "utilake.from.time": "2026-08-21T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "15840",
+        "utilake.to.file": "PUBLIC_PRICES_202608310000_20260901040503.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "623fefb5501956afe3f166f918ce15e39847d4d2291e518d5bc06e98d57b3482",
+        "utilake.to.time": "2026-09-01T04:00:00+10:00",
+        "utilake.total-rows": "2637985",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1785506400062
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-4048475554263485453-64-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 26390316823820704,
+      "schema-id": 1,
+      "sequence-number": 64,
+      "snapshot-id": 4048475554263485453,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8640",
+        "utilake.from.file": "PUBLIC_DISPATCH_20260831.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "10afc45a5491b31c192ac4879eef25b0b7efca7ce083cc3ffbe76e6b0021fdae",
+        "utilake.from.time": "2026-09-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "43200",
+        "utilake.to.file": "PUBLIC_DISPATCH_20260930.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "0d90889e5e248a7a4bca12c7e4e10ab3b9f8c45e63c66ad5af15d9a9866c49b0",
+        "utilake.to.time": "2026-09-30T23:55:00+10:00",
+        "utilake.total-rows": "2681185",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1788184800063
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-6464630258465643300-65-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 4048475554263485453,
+      "schema-id": 0,
+      "sequence-number": 65,
+      "snapshot-id": 6464630258465643300,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "30",
+        "utilake.from.file": "PUBLIC_DAILY_202609010000_20260902040505.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "b627cfb097495c06ce323f8fbadeedc47d6b61a651dff93feb0eedb1fc855b52",
+        "utilake.from.time": "2026-09-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "43200",
+        "utilake.to.file": "PUBLIC_DAILY_202609300000_20261001040503.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "dde0105f76b4d3d029a49a8ee6aa34eead78b37ef9a238abd7891765c6437ed1",
+        "utilake.to.time": "2026-10-01T04:00:00+10:00",
+        "utilake.total-rows": "2724385",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1788184800064
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-318867152123956569-66-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 6464630258465643300,
+      "schema-id": 1,
+      "sequence-number": 66,
+      "snapshot-id": 318867152123956569,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "30",
+        "utilake.from.file": "PUBLIC_DAILY_202609010000_20260902040505.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "b627cfb097495c06ce323f8fbadeedc47d6b61a651dff93feb0eedb1fc855b52",
+        "utilake.from.time": "2026-09-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "43200",
+        "utilake.to.file": "PUBLIC_DAILY_202609300000_20261001040503.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "dde0105f76b4d3d029a49a8ee6aa34eead78b37ef9a238abd7891765c6437ed1",
+        "utilake.to.time": "2026-10-01T04:00:00+10:00",
+        "utilake.total-rows": "2767585",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1788184800065
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-2071031263401070382-67-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 318867152123956569,
+      "schema-id": 2,
+      "sequence-number": 67,
+      "snapshot-id": 2071031263401070382,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "30",
+        "utilake.from.file": "PUBLIC_PRICES_202609010000_20260902040503.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "669eb1bd3e72bacb76d9e29acce633ded3ee15d3e4e69bc19507eca4ac8eb3e8",
+        "utilake.from.time": "2026-09-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "43200",
+        "utilake.to.file": "PUBLIC_PRICES_202609300000_20261001040502.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "18f978150b43f6ee27c949b735e9c025c76099c49b7e175184bf937679475de2",
+        "utilake.to.time": "2026-10-01T04:00:00+10:00",
+        "utilake.total-rows": "2810785",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1788184800066
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-8406912150737440557-68-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 2071031263401070382,
+      "schema-id": 3,
+      "sequence-number": 68,
+      "snapshot-id": 8406912150737440557,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "30",
+        "utilake.from.file": "PUBLIC_PRICES_202609010000_20260902040503.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "669eb1bd3e72bacb76d9e29acce633ded3ee15d3e4e69bc19507eca4ac8eb3e8",
+        "utilake.from.time": "2026-09-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "43200",
+        "utilake.to.file": "PUBLIC_PRICES_202609300000_20261001040502.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "18f978150b43f6ee27c949b735e9c025c76099c49b7e175184bf937679475de2",
+        "utilake.to.time": "2026-10-01T04:00:00+10:00",
+        "utilake.total-rows": "2853985",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1788184800067
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-2278117105169694552-69-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 8406912150737440557,
+      "schema-id": 1,
+      "sequence-number": 69,
+      "snapshot-id": 2278117105169694552,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "5473",
+        "utilake.from.file": "PUBLIC_DISPATCH_20260930.zip",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "0d90889e5e248a7a4bca12c7e4e10ab3b9f8c45e63c66ad5af15d9a9866c49b0",
+        "utilake.from.time": "2026-10-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "27365",
+        "utilake.to.file": "PUBLIC_DISPATCH_20261019.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "1a4e3df48b71906e7554bbb37744efda68889d6d7ca262a9c7a8ef13e4774ea0",
+        "utilake.to.time": "2026-10-20T00:00:00+10:00",
+        "utilake.total-rows": "2881350",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1790776800068
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-4213920929071301024-70-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 2278117105169694552,
+      "schema-id": 2,
+      "sequence-number": 70,
+      "snapshot-id": 4213920929071301024,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "20",
+        "utilake.from.file": "PUBLIC_PRICES_202610010000_20261002040510.zip",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "780178b548a94394012f201686519d52ba73e5b48d648cf7711ecbca704a0a8d",
+        "utilake.from.time": "2026-10-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "28800",
+        "utilake.to.file": "PUBLIC_PRICES_202610200000_20261021040504.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "e0b7086843375b7360f2e90e530c967ad103ab5cc7740353fb109ab5eb9da423",
+        "utilake.to.time": "2026-10-21T04:00:00+10:00",
+        "utilake.total-rows": "2910150",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1790776800069
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-3822677826789159398-71-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 4213920929071301024,
+      "schema-id": 3,
+      "sequence-number": 71,
+      "snapshot-id": 3822677826789159398,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "20",
+        "utilake.from.file": "PUBLIC_PRICES_202610010000_20261002040510.zip",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "780178b548a94394012f201686519d52ba73e5b48d648cf7711ecbca704a0a8d",
+        "utilake.from.time": "2026-10-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "28800",
+        "utilake.to.file": "PUBLIC_PRICES_202610200000_20261021040504.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "e0b7086843375b7360f2e90e530c967ad103ab5cc7740353fb109ab5eb9da423",
+        "utilake.to.time": "2026-10-21T04:00:00+10:00",
+        "utilake.total-rows": "2938950",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1790776800070
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-8879069217303660308-72-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 3822677826789159398,
+      "schema-id": 0,
+      "sequence-number": 72,
+      "snapshot-id": 8879069217303660308,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "21",
+        "utilake.from.file": "PUBLIC_DAILY_202610010000_20261002040503.zip",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "85fe9c08ca71313733d01f616d8dc9c4a89c90b5043d87c3543e93e2a37d43ca",
+        "utilake.from.time": "2026-10-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "30240",
+        "utilake.to.file": "PUBLIC_DAILY_202610210000_20261022040504.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "bac06517d803861e78b6fe9e026953010ff38c78a9744595a735f4b156b84ed1",
+        "utilake.to.time": "2026-10-22T04:00:00+10:00",
+        "utilake.total-rows": "2969190",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1790776800071
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DREGION/metadata/snap-7042059511391566541-73-1406d77f-7da7-88b7-bfd3-3a88080e3f28.avro",
+      "parent-snapshot-id": 8879069217303660308,
+      "schema-id": 1,
+      "sequence-number": 73,
+      "snapshot-id": 7042059511391566541,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1177",
+        "utilake.from.file": "PUBLIC_DAILY_202610010000_20261002040503.zip",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "85fe9c08ca71313733d01f616d8dc9c4a89c90b5043d87c3543e93e2a37d43ca",
+        "utilake.from.time": "2026-10-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "",
+        "utilake.report-type": "DREGION",
+        "utilake.rows": "36020",
+        "utilake.to.file": "PUBLIC_DISPATCH_202610220905_20261022090010_LEGACY.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "b8096c5f4d1334a0d687a40a1abdff0449817f78441044b16bf39189b1a2017f",
+        "utilake.to.time": "2026-10-22T09:05:00+10:00",
+        "utilake.total-rows": "3005210",
+        "utilake.version": "3"
+      },
+      "timestamp-ms": 1790776800072
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "1406d77f-7da7-88b7-bfd3-3a88080e3f28"
+}

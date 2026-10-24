@@ -1,13 +1,13 @@
 {
-  "current-schema-id": 2,
-  "current-snapshot-id": 7771240607923525782,
+  "current-schema-id": 3,
+  "current-snapshot-id": 6282085063894758972,
   "default-sort-order-id": 0,
   "default-spec-id": 0,
   "format-version": 3,
   "last-column-id": 19,
   "last-partition-id": 999,
-  "last-sequence-number": 4,
-  "last-updated-ms": 1751292000003,
+  "last-sequence-number": 21,
+  "last-updated-ms": 1782828000020,
   "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_BIDOFFERPERIOD",
   "metadata-log": [],
   "next-row-id": 0,
@@ -38,7 +38,7 @@
   },
   "refs": {
     "main": {
-      "snapshot-id": 7771240607923525782,
+      "snapshot-id": 6282085063894758972,
       "type": "branch"
     }
   },
@@ -463,6 +463,151 @@
       ],
       "schema-id": 2,
       "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "The trading date this bid is for",
+          "id": 1,
+          "name": "TRADINGDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Time this bid was processed and loaded",
+          "id": 2,
+          "name": "OFFERDATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Identifier for each of the two MNSP Interconnector Links. Each link pertains to the direction from and to.",
+          "id": 3,
+          "name": "LINKID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "Period ID, 1 to 288",
+          "id": 4,
+          "name": "PERIODID",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Maximum planned availability MW",
+          "id": 5,
+          "name": "MAXAVAIL",
+          "required": false,
+          "type": "decimal(8, 3)"
+        },
+        {
+          "doc": "Availability at price band 1",
+          "id": 6,
+          "name": "BANDAVAIL1",
+          "required": false,
+          "type": "decimal(8, 3)"
+        },
+        {
+          "doc": "Availability at price band 2",
+          "id": 7,
+          "name": "BANDAVAIL2",
+          "required": false,
+          "type": "decimal(8, 3)"
+        },
+        {
+          "doc": "Availability at price band 3",
+          "id": 8,
+          "name": "BANDAVAIL3",
+          "required": false,
+          "type": "decimal(8, 3)"
+        },
+        {
+          "doc": "Availability at price band 4",
+          "id": 9,
+          "name": "BANDAVAIL4",
+          "required": false,
+          "type": "decimal(8, 3)"
+        },
+        {
+          "doc": "Availability at price band 5",
+          "id": 10,
+          "name": "BANDAVAIL5",
+          "required": false,
+          "type": "decimal(8, 3)"
+        },
+        {
+          "doc": "Availability at price band 6",
+          "id": 11,
+          "name": "BANDAVAIL6",
+          "required": false,
+          "type": "decimal(8, 3)"
+        },
+        {
+          "doc": "Availability at price band 7",
+          "id": 12,
+          "name": "BANDAVAIL7",
+          "required": false,
+          "type": "decimal(8, 3)"
+        },
+        {
+          "doc": "Availability at price band 8",
+          "id": 13,
+          "name": "BANDAVAIL8",
+          "required": false,
+          "type": "decimal(8, 3)"
+        },
+        {
+          "doc": "Availability at price band 9",
+          "id": 14,
+          "name": "BANDAVAIL9",
+          "required": false,
+          "type": "decimal(8, 3)"
+        },
+        {
+          "doc": "Availability at price band 10",
+          "id": 15,
+          "name": "BANDAVAIL10",
+          "required": false,
+          "type": "decimal(8, 3)"
+        },
+        {
+          "doc": "Fixed unit output, in MW. A value of NULL means no fixed load so the unit is dispatched according to bid and the market.",
+          "id": 16,
+          "name": "FIXEDLOAD",
+          "required": false,
+          "type": "decimal(8, 3)"
+        },
+        {
+          "doc": "Ramp rate (MW / min) in the positive direction of flow for this MNSP link for this half-hour period",
+          "id": 17,
+          "name": "RAMPUPRATE",
+          "required": false,
+          "type": "decimal(6, 0)"
+        },
+        {
+          "doc": "Allows for future use for Energy bids, being the physical plant capability including any capability potentially available within 24 hours",
+          "id": 18,
+          "name": "PASAAVAILABILITY",
+          "required": false,
+          "type": "decimal(8, 3)"
+        },
+        {
+          "doc": "The advance notice(in hours) that a Scheduled Resource requires to achieve the PASA Availability MW for this trading interval",
+          "id": 19,
+          "name": "RECALL_PERIOD",
+          "required": false,
+          "type": "decimal(8, 3)"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "schema-id": 3,
+      "type": "struct"
     }
   ],
   "snapshot-log": [
@@ -481,6 +626,74 @@
     {
       "snapshot-id": 7771240607923525782,
       "timestamp-ms": 1751292000003
+    },
+    {
+      "snapshot-id": 1686586152494144163,
+      "timestamp-ms": 1756648800004
+    },
+    {
+      "snapshot-id": 2407133493288020198,
+      "timestamp-ms": 1759240800005
+    },
+    {
+      "snapshot-id": 3861508532668065076,
+      "timestamp-ms": 1761919200006
+    },
+    {
+      "snapshot-id": 880212608466922045,
+      "timestamp-ms": 1761919200007
+    },
+    {
+      "snapshot-id": 8824727975173403887,
+      "timestamp-ms": 1764511200008
+    },
+    {
+      "snapshot-id": 5790182181969949856,
+      "timestamp-ms": 1764511200009
+    },
+    {
+      "snapshot-id": 1951070781921493754,
+      "timestamp-ms": 1767189600010
+    },
+    {
+      "snapshot-id": 3347036405298861147,
+      "timestamp-ms": 1767189600011
+    },
+    {
+      "snapshot-id": 8537078325776668242,
+      "timestamp-ms": 1769868000012
+    },
+    {
+      "snapshot-id": 981232436534428403,
+      "timestamp-ms": 1769868000013
+    },
+    {
+      "snapshot-id": 360193765264857911,
+      "timestamp-ms": 1772287200014
+    },
+    {
+      "snapshot-id": 6750166860528851769,
+      "timestamp-ms": 1774965600015
+    },
+    {
+      "snapshot-id": 6831635651357905489,
+      "timestamp-ms": 1777557600016
+    },
+    {
+      "snapshot-id": 245308966052427810,
+      "timestamp-ms": 1777557600017
+    },
+    {
+      "snapshot-id": 1717211959262704604,
+      "timestamp-ms": 1780236000018
+    },
+    {
+      "snapshot-id": 1388623036516552029,
+      "timestamp-ms": 1780236000019
+    },
+    {
+      "snapshot-id": 6282085063894758972,
+      "timestamp-ms": 1782828000020
     }
   ],
   "snapshots": [
@@ -577,7 +790,7 @@
       "snapshot-id": 7771240607923525782,
       "summary": {
         "operation": "append",
-        "utilake.files": "13",
+        "utilake.files": "3",
         "utilake.from.file": "PUBLIC_ARCHIVE#MNSP_BIDOFFERPERIOD#FILE01#202507010000.zip",
         "utilake.from.release": "2025-07",
         "utilake.from.sha256": "f95fb7b9c3aad47763a8c8b08e140649ee2f90b28f8a0bd54a85e9cd209034f5",
@@ -585,15 +798,491 @@
         "utilake.kinds": "[\"archive\"]",
         "utilake.report-subtype": "MNSP_BIDOFFERPERIOD",
         "utilake.report-type": "BIDS",
-        "utilake.rows": "35702784",
+        "utilake.rows": "268416",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MNSP_BIDOFFERPERIOD#FILE01#202509010000.zip",
+        "utilake.to.release": "2025-09",
+        "utilake.to.sha256": "eeae9359b92002097921428bab2e245ae175a664b92d5cfdfacb03757736048e",
+        "utilake.to.time": "2025-09-30T00:00:00+10:00",
+        "utilake.total-rows": "2312515008",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1751292000003
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_BIDOFFERPERIOD/metadata/snap-1686586152494144163-5-aa859b83-8001-817a-8c13-a796d18b271a.avro",
+      "parent-snapshot-id": 7771240607923525782,
+      "schema-id": 3,
+      "sequence-number": 5,
+      "snapshot-id": 1686586152494144163,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "61",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20250901.zip",
+        "utilake.from.release": "2025-09",
+        "utilake.from.sha256": "a1c5797b5a552ca7312c9b619df523d77d9c8ff0ca1a12b6ce4b982a8e34ccdc",
+        "utilake.from.time": "2025-09-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "MNSP_BIDOFFERPERIOD",
+        "utilake.report-type": "BIDS",
+        "utilake.rows": "125568",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20251001.zip",
+        "utilake.to.release": "2025-10",
+        "utilake.to.sha256": "379b2b2a4dae8ff1ecd414147bd4a34a5592c4a5349d374cb77a3887cbb6304e",
+        "utilake.to.time": "2025-10-31T00:00:00+10:00",
+        "utilake.total-rows": "2312640576",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1756648800004
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_BIDOFFERPERIOD/metadata/snap-2407133493288020198-6-aa859b83-8001-817a-8c13-a796d18b271a.avro",
+      "parent-snapshot-id": 1686586152494144163,
+      "schema-id": 2,
+      "sequence-number": 6,
+      "snapshot-id": 2407133493288020198,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MNSP_BIDOFFERPERIOD#FILE01#202510010000.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "8e2257c447ac0dbd32e36174ea61777647e90d6ccb4f31ed44d3448085e21284",
+        "utilake.from.time": "2025-10-02T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "MNSP_BIDOFFERPERIOD",
+        "utilake.report-type": "BIDS",
+        "utilake.rows": "59328",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MNSP_BIDOFFERPERIOD#FILE01#202510010000.zip",
+        "utilake.to.release": "2025-10",
+        "utilake.to.sha256": "8e2257c447ac0dbd32e36174ea61777647e90d6ccb4f31ed44d3448085e21284",
+        "utilake.to.time": "2025-11-01T00:00:00+10:00",
+        "utilake.total-rows": "2312699904",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1759240800005
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_BIDOFFERPERIOD/metadata/snap-3861508532668065076-7-aa859b83-8001-817a-8c13-a796d18b271a.avro",
+      "parent-snapshot-id": 2407133493288020198,
+      "schema-id": 3,
+      "sequence-number": 7,
+      "snapshot-id": 3861508532668065076,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "30",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20251101.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "1884deb5ffe4eda270c6c14666b01a477971eeb5a543d7ce0050ccb2ce0180ec",
+        "utilake.from.time": "2025-11-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "MNSP_BIDOFFERPERIOD",
+        "utilake.report-type": "BIDS",
+        "utilake.rows": "54144",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20251101.zip",
+        "utilake.to.release": "2025-11",
+        "utilake.to.sha256": "1884deb5ffe4eda270c6c14666b01a477971eeb5a543d7ce0050ccb2ce0180ec",
+        "utilake.to.time": "2025-11-30T00:00:00+10:00",
+        "utilake.total-rows": "2312754048",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1761919200006
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_BIDOFFERPERIOD/metadata/snap-880212608466922045-8-aa859b83-8001-817a-8c13-a796d18b271a.avro",
+      "parent-snapshot-id": 3861508532668065076,
+      "schema-id": 2,
+      "sequence-number": 8,
+      "snapshot-id": 880212608466922045,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MNSP_BIDOFFERPERIOD#FILE01#202511010000.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "af8900911de729bf46aa1ceb02dc4131aed03c476bc522be2cc515087a998c33",
+        "utilake.from.time": "2025-11-02T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "MNSP_BIDOFFERPERIOD",
+        "utilake.report-type": "BIDS",
+        "utilake.rows": "52992",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MNSP_BIDOFFERPERIOD#FILE01#202511010000.zip",
+        "utilake.to.release": "2025-11",
+        "utilake.to.sha256": "af8900911de729bf46aa1ceb02dc4131aed03c476bc522be2cc515087a998c33",
+        "utilake.to.time": "2025-12-01T00:00:00+10:00",
+        "utilake.total-rows": "2312807040",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1761919200007
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_BIDOFFERPERIOD/metadata/snap-8824727975173403887-9-aa859b83-8001-817a-8c13-a796d18b271a.avro",
+      "parent-snapshot-id": 880212608466922045,
+      "schema-id": 3,
+      "sequence-number": 9,
+      "snapshot-id": 8824727975173403887,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20251201.zip",
+        "utilake.from.release": "2025-12",
+        "utilake.from.sha256": "aeeee0540fa62c200d62ba6b13372c994d122e4ca3f4878ea27a257a6fb10b84",
+        "utilake.from.time": "2025-12-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "MNSP_BIDOFFERPERIOD",
+        "utilake.report-type": "BIDS",
+        "utilake.rows": "3584448",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20251201.zip",
+        "utilake.to.release": "2025-12",
+        "utilake.to.sha256": "aeeee0540fa62c200d62ba6b13372c994d122e4ca3f4878ea27a257a6fb10b84",
+        "utilake.to.time": "2025-12-31T00:00:00+10:00",
+        "utilake.total-rows": "2316391488",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1764511200008
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_BIDOFFERPERIOD/metadata/snap-5790182181969949856-10-aa859b83-8001-817a-8c13-a796d18b271a.avro",
+      "parent-snapshot-id": 8824727975173403887,
+      "schema-id": 2,
+      "sequence-number": 10,
+      "snapshot-id": 5790182181969949856,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MNSP_BIDOFFERPERIOD#FILE01#202512010000.zip",
+        "utilake.from.release": "2025-12",
+        "utilake.from.sha256": "280d4c479007f53d536f8e7410991a8a82e73bdab864c70bcdcb6af7fbf58dea",
+        "utilake.from.time": "2025-12-02T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "MNSP_BIDOFFERPERIOD",
+        "utilake.report-type": "BIDS",
+        "utilake.rows": "3754944",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MNSP_BIDOFFERPERIOD#FILE01#202512010000.zip",
+        "utilake.to.release": "2025-12",
+        "utilake.to.sha256": "280d4c479007f53d536f8e7410991a8a82e73bdab864c70bcdcb6af7fbf58dea",
+        "utilake.to.time": "2026-01-01T00:00:00+10:00",
+        "utilake.total-rows": "2320146432",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1764511200009
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_BIDOFFERPERIOD/metadata/snap-1951070781921493754-11-aa859b83-8001-817a-8c13-a796d18b271a.avro",
+      "parent-snapshot-id": 5790182181969949856,
+      "schema-id": 3,
+      "sequence-number": 11,
+      "snapshot-id": 1951070781921493754,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20260101.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "3bc4dcb3752551fccce0d1981a8df4eb867c49cad91fea337ec910f2131f6ba2",
+        "utilake.from.time": "2026-01-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "MNSP_BIDOFFERPERIOD",
+        "utilake.report-type": "BIDS",
+        "utilake.rows": "5042304",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20260101.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "3bc4dcb3752551fccce0d1981a8df4eb867c49cad91fea337ec910f2131f6ba2",
+        "utilake.to.time": "2026-01-31T00:00:00+10:00",
+        "utilake.total-rows": "2325188736",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1767189600010
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_BIDOFFERPERIOD/metadata/snap-3347036405298861147-12-aa859b83-8001-817a-8c13-a796d18b271a.avro",
+      "parent-snapshot-id": 1951070781921493754,
+      "schema-id": 2,
+      "sequence-number": 12,
+      "snapshot-id": 3347036405298861147,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MNSP_BIDOFFERPERIOD#FILE01#202601010000.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "53ae5c6cfb455ba40028da2b9afcde326f31bc80ac98b6f94541f7e326e28838",
+        "utilake.from.time": "2026-01-02T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "MNSP_BIDOFFERPERIOD",
+        "utilake.report-type": "BIDS",
+        "utilake.rows": "5008896",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MNSP_BIDOFFERPERIOD#FILE01#202601010000.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "53ae5c6cfb455ba40028da2b9afcde326f31bc80ac98b6f94541f7e326e28838",
+        "utilake.to.time": "2026-02-01T00:00:00+10:00",
+        "utilake.total-rows": "2330197632",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1767189600011
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_BIDOFFERPERIOD/metadata/snap-8537078325776668242-13-aa859b83-8001-817a-8c13-a796d18b271a.avro",
+      "parent-snapshot-id": 3347036405298861147,
+      "schema-id": 3,
+      "sequence-number": 13,
+      "snapshot-id": 8537078325776668242,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "28",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20260201.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "6806e9dd0e118b667957ddf1ebf6ccdb51c7705cbbacb110fe04446d0ea20a60",
+        "utilake.from.time": "2026-02-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "MNSP_BIDOFFERPERIOD",
+        "utilake.report-type": "BIDS",
+        "utilake.rows": "4934592",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20260201.zip",
+        "utilake.to.release": "2026-02",
+        "utilake.to.sha256": "6806e9dd0e118b667957ddf1ebf6ccdb51c7705cbbacb110fe04446d0ea20a60",
+        "utilake.to.time": "2026-02-28T00:00:00+10:00",
+        "utilake.total-rows": "2335132224",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1769868000012
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_BIDOFFERPERIOD/metadata/snap-981232436534428403-14-aa859b83-8001-817a-8c13-a796d18b271a.avro",
+      "parent-snapshot-id": 8537078325776668242,
+      "schema-id": 2,
+      "sequence-number": 14,
+      "snapshot-id": 981232436534428403,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MNSP_BIDOFFERPERIOD#FILE01#202602010000.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "81c7fb5b71c47d513fa65d8e47265defb5cd88b345a82bc57618a0f3e3db088e",
+        "utilake.from.time": "2026-02-02T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "MNSP_BIDOFFERPERIOD",
+        "utilake.report-type": "BIDS",
+        "utilake.rows": "10389312",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MNSP_BIDOFFERPERIOD#FILE01#202603010000.zip",
+        "utilake.to.release": "2026-03",
+        "utilake.to.sha256": "8d00b6892667c2e917d693a989a42e16032cf8f21deea01c9534f0afcf83b2a8",
+        "utilake.to.time": "2026-03-31T00:00:00+10:00",
+        "utilake.total-rows": "2345521536",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1769868000013
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_BIDOFFERPERIOD/metadata/snap-360193765264857911-15-aa859b83-8001-817a-8c13-a796d18b271a.avro",
+      "parent-snapshot-id": 981232436534428403,
+      "schema-id": 3,
+      "sequence-number": 15,
+      "snapshot-id": 360193765264857911,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "61",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20260301.zip",
+        "utilake.from.release": "2026-03",
+        "utilake.from.sha256": "439ab008c3df1b95d13c5a92ee439e9fedebe8e0bedb06e8a999515accb47d3b",
+        "utilake.from.time": "2026-03-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "MNSP_BIDOFFERPERIOD",
+        "utilake.report-type": "BIDS",
+        "utilake.rows": "11017728",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20260401.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "7b0f34c9ed6360b87fdaf2209e47c2e0eff5be69d15a65f44543ec090e54e94d",
+        "utilake.to.time": "2026-04-30T00:00:00+10:00",
+        "utilake.total-rows": "2356539264",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1772287200014
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_BIDOFFERPERIOD/metadata/snap-6750166860528851769-16-aa859b83-8001-817a-8c13-a796d18b271a.avro",
+      "parent-snapshot-id": 360193765264857911,
+      "schema-id": 2,
+      "sequence-number": 16,
+      "snapshot-id": 6750166860528851769,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MNSP_BIDOFFERPERIOD#FILE01#202604010000.zip",
+        "utilake.from.release": "2026-04",
+        "utilake.from.sha256": "db6633f0e5dff022f62f09aeb4c593cc8aea6714ed8d4e002076b8c4fd7c8786",
+        "utilake.from.time": "2026-04-02T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "MNSP_BIDOFFERPERIOD",
+        "utilake.report-type": "BIDS",
+        "utilake.rows": "5420736",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MNSP_BIDOFFERPERIOD#FILE01#202604010000.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "db6633f0e5dff022f62f09aeb4c593cc8aea6714ed8d4e002076b8c4fd7c8786",
+        "utilake.to.time": "2026-05-01T00:00:00+10:00",
+        "utilake.total-rows": "2361960000",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1774965600015
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_BIDOFFERPERIOD/metadata/snap-6831635651357905489-17-aa859b83-8001-817a-8c13-a796d18b271a.avro",
+      "parent-snapshot-id": 6750166860528851769,
+      "schema-id": 3,
+      "sequence-number": 17,
+      "snapshot-id": 6831635651357905489,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "31",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20260501.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "3e00a50d23bb8ce13458de9242d9ab4da29ab416b51b6ec4ab9e234ebc95958f",
+        "utilake.from.time": "2026-05-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "MNSP_BIDOFFERPERIOD",
+        "utilake.report-type": "BIDS",
+        "utilake.rows": "5569920",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20260501.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "3e00a50d23bb8ce13458de9242d9ab4da29ab416b51b6ec4ab9e234ebc95958f",
+        "utilake.to.time": "2026-05-31T00:00:00+10:00",
+        "utilake.total-rows": "2367529920",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1777557600016
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_BIDOFFERPERIOD/metadata/snap-245308966052427810-18-aa859b83-8001-817a-8c13-a796d18b271a.avro",
+      "parent-snapshot-id": 6831635651357905489,
+      "schema-id": 2,
+      "sequence-number": 18,
+      "snapshot-id": 245308966052427810,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MNSP_BIDOFFERPERIOD#FILE01#202605010000.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "c81b0d02a8648db62875ff47c75acc5b2395d9eca22e7f9753c782745ef1f562",
+        "utilake.from.time": "2026-05-02T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "MNSP_BIDOFFERPERIOD",
+        "utilake.report-type": "BIDS",
+        "utilake.rows": "5583744",
+        "utilake.to.file": "PUBLIC_ARCHIVE#MNSP_BIDOFFERPERIOD#FILE01#202605010000.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "c81b0d02a8648db62875ff47c75acc5b2395d9eca22e7f9753c782745ef1f562",
+        "utilake.to.time": "2026-06-01T00:00:00+10:00",
+        "utilake.total-rows": "2373113664",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1777557600017
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_BIDOFFERPERIOD/metadata/snap-1717211959262704604-19-aa859b83-8001-817a-8c13-a796d18b271a.avro",
+      "parent-snapshot-id": 245308966052427810,
+      "schema-id": 3,
+      "sequence-number": 19,
+      "snapshot-id": 1717211959262704604,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "30",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20260601.zip",
+        "utilake.from.release": "2026-06",
+        "utilake.from.sha256": "d7a2d657da8a95f168cff6c7de45a6c43f29ea1375621d3965add75f0ff5a266",
+        "utilake.from.time": "2026-06-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "MNSP_BIDOFFERPERIOD",
+        "utilake.report-type": "BIDS",
+        "utilake.rows": "5335488",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20260601.zip",
+        "utilake.to.release": "2026-06",
+        "utilake.to.sha256": "d7a2d657da8a95f168cff6c7de45a6c43f29ea1375621d3965add75f0ff5a266",
+        "utilake.to.time": "2026-06-30T00:00:00+10:00",
+        "utilake.total-rows": "2378449152",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1780236000018
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_BIDOFFERPERIOD/metadata/snap-1388623036516552029-20-aa859b83-8001-817a-8c13-a796d18b271a.avro",
+      "parent-snapshot-id": 1717211959262704604,
+      "schema-id": 2,
+      "sequence-number": 20,
+      "snapshot-id": 1388623036516552029,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
+        "utilake.from.file": "PUBLIC_ARCHIVE#MNSP_BIDOFFERPERIOD#FILE01#202606010000.zip",
+        "utilake.from.release": "2026-06",
+        "utilake.from.sha256": "480ef244eaaefe21e01e9e9da464e802a0a67af56bd48e51cdc1435fcf452900",
+        "utilake.from.time": "2026-06-02T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "MNSP_BIDOFFERPERIOD",
+        "utilake.report-type": "BIDS",
+        "utilake.rows": "5164416",
         "utilake.to.file": "PUBLIC_ARCHIVE#MNSP_BIDOFFERPERIOD#FILE01#202607010000.zip",
         "utilake.to.release": "2026-07",
         "utilake.to.sha256": "43578656e84d289edbb8bc510543e7fcb083d2a4b6dd85116b8b89cc3f621c5b",
         "utilake.to.time": "2026-07-09T00:00:00+10:00",
-        "utilake.total-rows": "2347949376",
+        "utilake.total-rows": "2383613568",
         "utilake.version": "2"
       },
-      "timestamp-ms": 1751292000003
+      "timestamp-ms": 1780236000019
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MNSP_BIDOFFERPERIOD/metadata/snap-6282085063894758972-21-aa859b83-8001-817a-8c13-a796d18b271a.avro",
+      "parent-snapshot-id": 1388623036516552029,
+      "schema-id": 3,
+      "sequence-number": 21,
+      "snapshot-id": 6282085063894758972,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "9",
+        "utilake.from.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20260701.zip",
+        "utilake.from.release": "2026-07",
+        "utilake.from.sha256": "6b4c5046702039d94a69d14a4acb72200858d1ba93595fff47d2f04f816cd4c6",
+        "utilake.from.time": "2026-07-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "MNSP_BIDOFFERPERIOD",
+        "utilake.report-type": "BIDS",
+        "utilake.rows": "5184",
+        "utilake.to.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20260701.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "6b4c5046702039d94a69d14a4acb72200858d1ba93595fff47d2f04f816cd4c6",
+        "utilake.to.time": "2026-07-09T00:00:00+10:00",
+        "utilake.total-rows": "2383618752",
+        "utilake.version": "2"
+      },
+      "timestamp-ms": 1782828000020
     }
   ],
   "sort-orders": [

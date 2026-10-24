@@ -928,7 +928,8 @@ mod tests {
 
     #[test]
     fn deviations_keep_what_the_file_carries_unless_strict() {
-        // DISPATCHPRICE in the live feed is version 5.
+        // DISPATCHPRICE in the live feed is version 5, with two of its
+        // columns swapped here: a layout no run of the history has.
         let r = reg();
         let text = fixture("multi_block_dispatchis.csv");
         let lines: Vec<&[u8]> = text.split(|&b| b == b'\n').collect();
@@ -937,6 +938,10 @@ mod tests {
             .filter(|l| l.starts_with(b"I,DISPATCH,PRICE") || l.starts_with(b"D,DISPATCH,PRICE"))
             .flat_map(|l| l.iter().copied().chain(std::iter::once(b'\n')))
             .collect();
+        let price = String::from_utf8(price)
+            .unwrap()
+            .replacen(",RRP,EEP,", ",EEP,RRP,", 1)
+            .into_bytes();
         let (out, stats) = collect(
             &r,
             price.as_slice(),
@@ -945,8 +950,8 @@ mod tests {
         )
         .unwrap();
         assert_eq!(stats.rows, 3);
-        // The live feed's DISPATCHPRICE lays the archive's columns out in
-        // another order: kept, and flagged.
+        // The swapped columns are kept as the file lays them out, and
+        // flagged.
         assert_eq!(out.blocks[0].2, "deviates");
         assert!(out.warnings.iter().any(|w| w.code == "schema.deviates"));
         // Strict mode with a hand-made unknown version.

@@ -1,13 +1,13 @@
 {
-  "current-schema-id": 0,
-  "current-snapshot-id": 7239800752689636064,
+  "current-schema-id": 1,
+  "current-snapshot-id": 845466536341414016,
   "default-sort-order-id": 0,
   "default-spec-id": 0,
   "format-version": 3,
   "last-column-id": 9,
   "last-partition-id": 999,
-  "last-sequence-number": 1,
-  "last-updated-ms": 1727704800000,
+  "last-sequence-number": 6,
+  "last-updated-ms": 1785506400005,
   "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCH_CONSTRAINT_FCAS_OCD",
   "metadata-log": [],
   "next-row-id": 0,
@@ -38,7 +38,7 @@
   },
   "refs": {
     "main": {
-      "snapshot-id": 7239800752689636064,
+      "snapshot-id": 845466536341414016,
       "type": "branch"
     }
   },
@@ -118,12 +118,108 @@
       ],
       "schema-id": 0,
       "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Dispatch interval that the prices were loaded to",
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Dispatch run no; always 1",
+          "id": 2,
+          "name": "RUNNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "Intervention 0/1",
+          "id": 3,
+          "name": "INTERVENTION",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "ConstraintID/GenconID",
+          "id": 4,
+          "name": "CONSTRAINTID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "VersionNo",
+          "id": 5,
+          "name": "VERSIONNO",
+          "required": true,
+          "type": "long"
+        },
+        {
+          "doc": "RHS from OCD re-run",
+          "id": 7,
+          "name": "RHS",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "marginalvalue from OCD re-run",
+          "id": 8,
+          "name": "MARGINALVALUE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "The violation degree of this constraint in the solution result",
+          "id": 9,
+          "name": "VIOLATIONDEGREE",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "The datetime that the record was last changed",
+          "id": 6,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "schema-id": 1,
+      "type": "struct"
     }
   ],
   "snapshot-log": [
     {
       "snapshot-id": 7239800752689636064,
       "timestamp-ms": 1727704800000
+    },
+    {
+      "snapshot-id": 3699407785321770624,
+      "timestamp-ms": 1767189600001
+    },
+    {
+      "snapshot-id": 3043527483357095186,
+      "timestamp-ms": 1769868000002
+    },
+    {
+      "snapshot-id": 2805542440625472682,
+      "timestamp-ms": 1769868000003
+    },
+    {
+      "snapshot-id": 4662187427850825268,
+      "timestamp-ms": 1785506400004
+    },
+    {
+      "snapshot-id": 845466536341414016,
+      "timestamp-ms": 1785506400005
     }
   ],
   "snapshots": [
@@ -136,7 +232,7 @@
       "snapshot-id": 7239800752689636064,
       "summary": {
         "operation": "append",
-        "utilake.files": "6",
+        "utilake.files": "4",
         "utilake.from.file": "PUBLIC_ARCHIVE#DISPATCH_CONSTRAINT_FCAS_OCD#FILE01#202410010000.zip",
         "utilake.from.release": "2024-10",
         "utilake.from.sha256": "ec200ce4ff51e2ffbc840ab51dd9d632dcb431e920472158d6e56b84934d2155",
@@ -144,15 +240,155 @@
         "utilake.kinds": "[\"archive\"]",
         "utilake.report-subtype": "CONSTRAINT_FCAS_OCD",
         "utilake.report-type": "PRICELOAD",
-        "utilake.rows": "2267",
+        "utilake.rows": "1045",
+        "utilake.to.file": "PUBLIC_ARCHIVE#DISPATCH_CONSTRAINT_FCAS_OCD#FILE01#202601010000.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "444766c5b4475c66fd18a70fb568c61bf3d030f489900d5622213f85047d8ac4",
+        "utilake.to.time": "2026-01-12T17:00:00+10:00",
+        "utilake.total-rows": "1045",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1727704800000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCH_CONSTRAINT_FCAS_OCD/metadata/snap-3699407785321770624-2-c84d2e4f-9342-8c52-8a3f-af013be7745d.avro",
+      "parent-snapshot-id": 7239800752689636064,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 3699407785321770624,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2",
+        "utilake.from.file": "PUBLIC_PRICE_REVISION_DISPATCHIS_20260112170157_0000000498422789.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "65ae1ed1f2380159e971e7a78069632673fd04d124495257810ada3d76e7cdbb",
+        "utilake.from.time": "2026-01-12T17:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "CONSTRAINT_FCAS_OCD",
+        "utilake.report-type": "PRICELOAD",
+        "utilake.rows": "386",
+        "utilake.to.file": "PUBLIC_PRICE_REVISION_DISPATCH_20260101.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "15d513a8d765cce4d4ce1bd3e463c6bd62298ccf52e26b9c1f9f2e6214bc89e5",
+        "utilake.to.time": "2026-01-12T17:00:00+10:00",
+        "utilake.total-rows": "1431",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1767189600001
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCH_CONSTRAINT_FCAS_OCD/metadata/snap-3043527483357095186-3-c84d2e4f-9342-8c52-8a3f-af013be7745d.avro",
+      "parent-snapshot-id": 3699407785321770624,
+      "schema-id": 0,
+      "sequence-number": 3,
+      "snapshot-id": 3043527483357095186,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#DISPATCH_CONSTRAINT_FCAS_OCD#FILE01#202602010000.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "86b6b970ab542e71bedf37f58140715bcc894ff1e13d5577485b0cea2826ea57",
+        "utilake.from.time": "2026-02-17T12:40:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "CONSTRAINT_FCAS_OCD",
+        "utilake.report-type": "PRICELOAD",
+        "utilake.rows": "808",
+        "utilake.to.file": "PUBLIC_ARCHIVE#DISPATCH_CONSTRAINT_FCAS_OCD#FILE01#202602010000.zip",
+        "utilake.to.release": "2026-02",
+        "utilake.to.sha256": "86b6b970ab542e71bedf37f58140715bcc894ff1e13d5577485b0cea2826ea57",
+        "utilake.to.time": "2026-02-17T13:30:00+10:00",
+        "utilake.total-rows": "2239",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1769868000002
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCH_CONSTRAINT_FCAS_OCD/metadata/snap-2805542440625472682-4-c84d2e4f-9342-8c52-8a3f-af013be7745d.avro",
+      "parent-snapshot-id": 3043527483357095186,
+      "schema-id": 1,
+      "sequence-number": 4,
+      "snapshot-id": 2805542440625472682,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "12",
+        "utilake.from.file": "PUBLIC_PRICE_REVISION_DISPATCHIS_20260217124353_0000000503861880.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "2cab980356d77e0151fe77b843899fb810f0727034247056a8c3f624bb58f387",
+        "utilake.from.time": "2026-02-17T12:40:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "CONSTRAINT_FCAS_OCD",
+        "utilake.report-type": "PRICELOAD",
+        "utilake.rows": "2424",
+        "utilake.to.file": "PUBLIC_PRICE_REVISION_DISPATCH_20260201.zip",
+        "utilake.to.release": "2026-02",
+        "utilake.to.sha256": "684f9781247a9e38e52a6a57fec37f7d208f08eb49209ea63adeb9e3b86a0c52",
+        "utilake.to.time": "2026-02-17T13:30:00+10:00",
+        "utilake.total-rows": "4663",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1769868000003
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCH_CONSTRAINT_FCAS_OCD/metadata/snap-4662187427850825268-5-c84d2e4f-9342-8c52-8a3f-af013be7745d.avro",
+      "parent-snapshot-id": 2805542440625472682,
+      "schema-id": 0,
+      "sequence-number": 5,
+      "snapshot-id": 4662187427850825268,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#DISPATCH_CONSTRAINT_FCAS_OCD#FILE01#202608010000.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "4d8db0240e34c8f77602e88ef67ef04c0c1c8a83cc46daf91be697cac3482878",
+        "utilake.from.time": "2026-08-05T16:25:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "CONSTRAINT_FCAS_OCD",
+        "utilake.report-type": "PRICELOAD",
+        "utilake.rows": "414",
         "utilake.to.file": "PUBLIC_ARCHIVE#DISPATCH_CONSTRAINT_FCAS_OCD#FILE01#202608010000.zip",
         "utilake.to.release": "2026-08",
         "utilake.to.sha256": "4d8db0240e34c8f77602e88ef67ef04c0c1c8a83cc46daf91be697cac3482878",
         "utilake.to.time": "2026-08-05T16:30:00+10:00",
-        "utilake.total-rows": "2267",
+        "utilake.total-rows": "5077",
         "utilake.version": "1"
       },
-      "timestamp-ms": 1727704800000
+      "timestamp-ms": 1785506400004
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCH_CONSTRAINT_FCAS_OCD/metadata/snap-845466536341414016-6-c84d2e4f-9342-8c52-8a3f-af013be7745d.avro",
+      "parent-snapshot-id": 4662187427850825268,
+      "schema-id": 1,
+      "sequence-number": 6,
+      "snapshot-id": 845466536341414016,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "4",
+        "utilake.from.file": "PUBLIC_PRICE_REVISION_DISPATCHIS_20260805165007_0000000531106990.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "a06583a826b123d3c75a69dd5d69008f398e072adca136ecc793a6d3cd86ff89",
+        "utilake.from.time": "2026-08-05T16:25:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "CONSTRAINT_FCAS_OCD",
+        "utilake.report-type": "PRICELOAD",
+        "utilake.rows": "828",
+        "utilake.to.file": "PUBLIC_PRICE_REVISION_DISPATCH_20260801.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "f4c8b80a8d2e046d08a35832a611c3c00ff0952de5aa2449143ddc4ef4c93950",
+        "utilake.to.time": "2026-08-05T16:30:00+10:00",
+        "utilake.total-rows": "5905",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1785506400005
     }
   ],
   "sort-orders": [

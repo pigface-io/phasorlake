@@ -1,13 +1,13 @@
 {
-  "current-schema-id": 2,
-  "current-snapshot-id": 430742818595246099,
+  "current-schema-id": 3,
+  "current-snapshot-id": 5892513469197412871,
   "default-sort-order-id": 0,
   "default-spec-id": 0,
   "format-version": 3,
   "last-column-id": 17,
   "last-partition-id": 999,
-  "last-sequence-number": 3,
-  "last-updated-ms": 1777557600002,
+  "last-sequence-number": 28,
+  "last-updated-ms": 1790776800027,
   "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_FCAS_SUMMARY",
   "metadata-log": [],
   "next-row-id": 0,
@@ -36,7 +36,7 @@
   },
   "refs": {
     "main": {
-      "snapshot-id": 430742818595246099,
+      "snapshot-id": 5892513469197412871,
       "type": "branch"
     }
   },
@@ -367,6 +367,132 @@
         },
         {
           "doc": "Usage (calculation of the proportion of regulation FCAS that was calculated to be used). Note that this is a join back to the FPP_USAGE table.",
+          "id": 15,
+          "name": "USAGE",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Usage (calculation of the proportion of regulation FCAS that was calculated to be used). Note that this is a join back to the FPP_USAGE table.",
+          "id": 16,
+          "name": "USAGE_VALUE",
+          "required": false,
+          "type": "decimal(18, 8)"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 2,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "The run date and time of the dispatch case that was the trigger for the constraint FCAS processor execution",
+          "id": 1,
+          "name": "RUN_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The dispatch case run number that was the trigger for the constraint FCAS processor execution",
+          "id": 2,
+          "name": "RUNNO",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "doc": "Date and time of the trading interval (DD/MM/YYYY HH24:MI:SS) fixed to the UTC+10 time zone (NEM time)",
+          "id": 3,
+          "name": "INTERVAL_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Constraint ID (binding constraint ID from FCAS data used in FPP calculations)",
+          "id": 4,
+          "name": "CONSTRAINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The version number. In most cases this version will be the FPP run number from the FPP database, however there are some cases (like a new pricing run of the constraint FCAS processor received by the FPP system) where the version number listed here will be the financial estimate run number from the FPP database (this number is a different sequence from the FPP run number because there is no recalculation of performance or contribution, just changes to pricing / p regulation hence only the financial estimation is performed).",
+          "id": 5,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "decimal(10, 0)"
+        },
+        {
+          "doc": "Bid type (the bid type saved in relation to constraint ID from FCAS data used in FPP calculations, i.e. RAISEREG or LOWERREG)",
+          "id": 6,
+          "name": "BIDTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Relevant regions (a comma separated list of the relevant regions for the constraint from FCAS data)",
+          "id": 7,
+          "name": "RELEVANT_REGIONS",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Enabled regulation MW used in the FPP calculation (from FPP database)",
+          "id": 8,
+          "name": "REGULATION_MW",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Marginal value in AUD/MW per hour related to the constraint (from FCAS data used for FPP calculations)",
+          "id": 9,
+          "name": "CONSTRAINT_MARGINAL_VALUE",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "P regulation value in AUD/MW per hour related to the constraint (from FCAS data used for FPP calculations also known as adjusted marginal value)",
+          "id": 10,
+          "name": "P_REGULATION",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Base cost in AUD related to the constraint (from FCAS data used for FPP calculations)",
+          "id": 11,
+          "name": "BASE_COST",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "TSFCAS in AUD related to the constraint (FCAS recovery amount related to the constraint also known as adjusted cost)",
+          "id": 12,
+          "name": "TSFCAS",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Total amount of FPP in AUD changing hands related to the constraint (note that this is not the sum of FPP)",
+          "id": 13,
+          "name": "TOTAL_FPP",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "RCR MW (the calculated requirement for corrective response from FPP database). Note that this is a join back to the FPP_RCR table.",
+          "id": 14,
+          "name": "RCR",
+          "required": false,
+          "type": "decimal(18, 5)"
+        },
+        {
+          "doc": "Usage (calculation of the proportion of regulation FCAS that was calculated to be used). Note that this is a join back to the FPP_USAGE table.",
+          "id": 15,
+          "name": "USAGE",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Usage (calculation of the proportion of regulation FCAS that was calculated to be used). Note that this is a join back to the FPP_USAGE table.",
           "id": 16,
           "name": "USAGE_VALUE",
           "required": false,
@@ -381,7 +507,126 @@
         }
       ],
       "identifier-field-ids": [],
-      "schema-id": 2,
+      "schema-id": 3,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "The run date and time of the dispatch case that was the trigger for the constraint FCAS processor execution",
+          "id": 1,
+          "name": "RUN_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "The dispatch case run number that was the trigger for the constraint FCAS processor execution",
+          "id": 2,
+          "name": "RUNNO",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "doc": "Date and time of the trading interval (DD/MM/YYYY HH24:MI:SS) fixed to the UTC+10 time zone (NEM time)",
+          "id": 3,
+          "name": "INTERVAL_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Constraint ID (binding constraint ID from FCAS data used in FPP calculations)",
+          "id": 4,
+          "name": "CONSTRAINTID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "The version number. In most cases this version will be the FPP run number from the FPP database, however there are some cases (like a new pricing run of the constraint FCAS processor received by the FPP system) where the version number listed here will be the financial estimate run number from the FPP database (this number is a different sequence from the FPP run number because there is no recalculation of performance or contribution, just changes to pricing / p regulation hence only the financial estimation is performed).",
+          "id": 5,
+          "name": "VERSIONNO",
+          "required": false,
+          "type": "decimal(10, 0)"
+        },
+        {
+          "doc": "Bid type (the bid type saved in relation to constraint ID from FCAS data used in FPP calculations, i.e. RAISEREG or LOWERREG)",
+          "id": 6,
+          "name": "BIDTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Relevant regions (a comma separated list of the relevant regions for the constraint from FCAS data)",
+          "id": 7,
+          "name": "RELEVANT_REGIONS",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Enabled regulation MW used in the FPP calculation (from FPP database)",
+          "id": 8,
+          "name": "REGULATION_MW",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Marginal value in AUD/MW per hour related to the constraint (from FCAS data used for FPP calculations)",
+          "id": 9,
+          "name": "CONSTRAINT_MARGINAL_VALUE",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "P regulation value in AUD/MW per hour related to the constraint (from FCAS data used for FPP calculations also known as adjusted marginal value)",
+          "id": 10,
+          "name": "P_REGULATION",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Base cost in AUD related to the constraint (from FCAS data used for FPP calculations)",
+          "id": 11,
+          "name": "BASE_COST",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "TSFCAS in AUD related to the constraint (FCAS recovery amount related to the constraint also known as adjusted cost)",
+          "id": 12,
+          "name": "TSFCAS",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Total amount of FPP in AUD changing hands related to the constraint (note that this is not the sum of FPP)",
+          "id": 13,
+          "name": "TOTAL_FPP",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "RCR MW (the calculated requirement for corrective response from FPP database). Note that this is a join back to the FPP_RCR table.",
+          "id": 14,
+          "name": "RCR",
+          "required": false,
+          "type": "decimal(18, 5)"
+        },
+        {
+          "doc": "Usage (calculation of the proportion of regulation FCAS that was calculated to be used). Note that this is a join back to the FPP_USAGE table.",
+          "id": 16,
+          "name": "USAGE_VALUE",
+          "required": false,
+          "type": "decimal(18, 8)"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 17,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 4,
       "type": "struct"
     }
   ],
@@ -395,8 +640,108 @@
       "timestamp-ms": 1743429600001
     },
     {
-      "snapshot-id": 430742818595246099,
-      "timestamp-ms": 1777557600002
+      "snapshot-id": 1825057572850079841,
+      "timestamp-ms": 1759240800002
+    },
+    {
+      "snapshot-id": 1174374086538258152,
+      "timestamp-ms": 1759240800003
+    },
+    {
+      "snapshot-id": 2186561689529515645,
+      "timestamp-ms": 1761919200004
+    },
+    {
+      "snapshot-id": 4867158705842953793,
+      "timestamp-ms": 1761919200005
+    },
+    {
+      "snapshot-id": 2022366159268059092,
+      "timestamp-ms": 1764511200006
+    },
+    {
+      "snapshot-id": 5840825014397964479,
+      "timestamp-ms": 1764511200007
+    },
+    {
+      "snapshot-id": 6260958741755530839,
+      "timestamp-ms": 1767189600008
+    },
+    {
+      "snapshot-id": 1147006088909231320,
+      "timestamp-ms": 1767189600009
+    },
+    {
+      "snapshot-id": 678878377486077476,
+      "timestamp-ms": 1769868000010
+    },
+    {
+      "snapshot-id": 5051601904356394365,
+      "timestamp-ms": 1769868000011
+    },
+    {
+      "snapshot-id": 6861525977644183634,
+      "timestamp-ms": 1772287200012
+    },
+    {
+      "snapshot-id": 4305548811718559611,
+      "timestamp-ms": 1772287200013
+    },
+    {
+      "snapshot-id": 4153275729049061940,
+      "timestamp-ms": 1774965600014
+    },
+    {
+      "snapshot-id": 7655623869692217769,
+      "timestamp-ms": 1774965600015
+    },
+    {
+      "snapshot-id": 8219226912022407411,
+      "timestamp-ms": 1777557600016
+    },
+    {
+      "snapshot-id": 5334977029107679112,
+      "timestamp-ms": 1777557600017
+    },
+    {
+      "snapshot-id": 4972581461266312419,
+      "timestamp-ms": 1777557600018
+    },
+    {
+      "snapshot-id": 3638094856572003998,
+      "timestamp-ms": 1780236000019
+    },
+    {
+      "snapshot-id": 7569462965840842043,
+      "timestamp-ms": 1780236000020
+    },
+    {
+      "snapshot-id": 3883400939471770483,
+      "timestamp-ms": 1782828000021
+    },
+    {
+      "snapshot-id": 5146748248536294665,
+      "timestamp-ms": 1782828000022
+    },
+    {
+      "snapshot-id": 1065615700176374681,
+      "timestamp-ms": 1785506400023
+    },
+    {
+      "snapshot-id": 5780330358927811320,
+      "timestamp-ms": 1785506400024
+    },
+    {
+      "snapshot-id": 4245400494925502202,
+      "timestamp-ms": 1788184800025
+    },
+    {
+      "snapshot-id": 4821861044205763379,
+      "timestamp-ms": 1788184800026
+    },
+    {
+      "snapshot-id": 5892513469197412871,
+      "timestamp-ms": 1790776800027
     }
   ],
   "snapshots": [
@@ -437,7 +782,7 @@
       "snapshot-id": 1188809050376789187,
       "summary": {
         "operation": "append",
-        "utilake.files": "13",
+        "utilake.files": "6",
         "utilake.from.file": "PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202504010000.zip",
         "utilake.from.release": "2025-04",
         "utilake.from.sha256": "e0f2c6b1e99f2f4c7fff75d4f2a8ad5987b8728196cd4800f7b05520ce064101",
@@ -445,12 +790,12 @@
         "utilake.kinds": "[\"archive\"]",
         "utilake.report-subtype": "FCAS_SUMMARY",
         "utilake.report-type": "FPP",
-        "utilake.rows": "4949133",
-        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202604010000.zip",
-        "utilake.to.release": "2026-04",
-        "utilake.to.sha256": "71b886649ebde9306c018383dc650b29ce130974127c9f7c360b6036691d4abf",
-        "utilake.to.time": "2026-05-08T15:35:00+10:00",
-        "utilake.total-rows": "5314279",
+        "utilake.rows": "1554463",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202509010000.zip",
+        "utilake.to.release": "2025-09",
+        "utilake.to.sha256": "38cb38b281820922c8aa4bb603a3e509d81e5335d8ea3321a54e76a87289e573",
+        "utilake.to.time": "2025-10-08T03:50:00+10:00",
+        "utilake.total-rows": "1919609",
         "utilake.version": "1"
       },
       "timestamp-ms": 1743429600001
@@ -458,14 +803,462 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_FCAS_SUMMARY/metadata/snap-430742818595246099-3-1c2879d3-d23c-8208-ae08-b48f1039ee4e.avro",
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_FCAS_SUMMARY/metadata/snap-1825057572850079841-3-1c2879d3-d23c-8208-ae08-b48f1039ee4e.avro",
       "parent-snapshot-id": 1188809050376789187,
       "schema-id": 2,
       "sequence-number": 3,
-      "snapshot-id": 430742818595246099,
+      "snapshot-id": 1825057572850079841,
       "summary": {
         "operation": "append",
-        "utilake.files": "5",
+        "utilake.files": "6911",
+        "utilake.from.file": "PUBLIC_FPP_RATES_20251008.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "f6c28e565336758323af82881359a0de2f196f3ee14a6f355b68edd226693630",
+        "utilake.from.time": "2025-10-08T00:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "FCAS_SUMMARY",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "27426",
+        "utilake.to.file": "PUBLIC_FPP_RATES_20251031.zip",
+        "utilake.to.release": "2025-10",
+        "utilake.to.sha256": "080775be383ef235adc9dcecf053b9c8e5d277284a4ae48abb9a2d01b0bbc118",
+        "utilake.to.time": "2025-10-31T23:55:00+10:00",
+        "utilake.total-rows": "1947035",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1759240800002
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_FCAS_SUMMARY/metadata/snap-1174374086538258152-4-1c2879d3-d23c-8208-ae08-b48f1039ee4e.avro",
+      "parent-snapshot-id": 1825057572850079841,
+      "schema-id": 1,
+      "sequence-number": 4,
+      "snapshot-id": 1174374086538258152,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202510010000.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "2cda9b4ac975b54a14fffbe9fa0443cbdbb3039a3ea64321b8d4b78bff932440",
+        "utilake.from.time": "2024-12-09T11:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "FCAS_SUMMARY",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "392079",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202510010000.zip",
+        "utilake.to.release": "2025-10",
+        "utilake.to.sha256": "2cda9b4ac975b54a14fffbe9fa0443cbdbb3039a3ea64321b8d4b78bff932440",
+        "utilake.to.time": "2025-11-18T19:05:00+10:00",
+        "utilake.total-rows": "2339114",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1759240800003
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_FCAS_SUMMARY/metadata/snap-2186561689529515645-5-1c2879d3-d23c-8208-ae08-b48f1039ee4e.avro",
+      "parent-snapshot-id": 1174374086538258152,
+      "schema-id": 2,
+      "sequence-number": 5,
+      "snapshot-id": 2186561689529515645,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8640",
+        "utilake.from.file": "PUBLIC_FPP_RATES_20251031.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "080775be383ef235adc9dcecf053b9c8e5d277284a4ae48abb9a2d01b0bbc118",
+        "utilake.from.time": "2025-11-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "FCAS_SUMMARY",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "34455",
+        "utilake.to.file": "PUBLIC_FPP_RATES_20251130.zip",
+        "utilake.to.release": "2025-11",
+        "utilake.to.sha256": "903eb791b497226df74884296c949241b81be06a83af6f14c7fcab25aa58ba33",
+        "utilake.to.time": "2025-11-30T23:55:00+10:00",
+        "utilake.total-rows": "2373569",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1761919200004
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_FCAS_SUMMARY/metadata/snap-4867158705842953793-6-1c2879d3-d23c-8208-ae08-b48f1039ee4e.avro",
+      "parent-snapshot-id": 2186561689529515645,
+      "schema-id": 1,
+      "sequence-number": 6,
+      "snapshot-id": 4867158705842953793,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202511010000.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "db97271be564feeb87a0bf782b63288062e960f1f643f9cedaf2e7956b586e03",
+        "utilake.from.time": "2024-12-09T11:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "FCAS_SUMMARY",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "414694",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202511010000.zip",
+        "utilake.to.release": "2025-11",
+        "utilake.to.sha256": "db97271be564feeb87a0bf782b63288062e960f1f643f9cedaf2e7956b586e03",
+        "utilake.to.time": "2025-12-08T15:25:00+10:00",
+        "utilake.total-rows": "2788263",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1761919200005
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_FCAS_SUMMARY/metadata/snap-2022366159268059092-7-1c2879d3-d23c-8208-ae08-b48f1039ee4e.avro",
+      "parent-snapshot-id": 4867158705842953793,
+      "schema-id": 2,
+      "sequence-number": 7,
+      "snapshot-id": 2022366159268059092,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8928",
+        "utilake.from.file": "PUBLIC_FPP_RATES_20251130.zip",
+        "utilake.from.release": "2025-12",
+        "utilake.from.sha256": "903eb791b497226df74884296c949241b81be06a83af6f14c7fcab25aa58ba33",
+        "utilake.from.time": "2025-12-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "FCAS_SUMMARY",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "35207",
+        "utilake.to.file": "PUBLIC_FPP_RATES_20251231.zip",
+        "utilake.to.release": "2025-12",
+        "utilake.to.sha256": "f2fdb2ce57d5473e0251344bb73c077640b376b8dd3e31cca29d0563678940c4",
+        "utilake.to.time": "2025-12-31T23:55:00+10:00",
+        "utilake.total-rows": "2823470",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1764511200006
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_FCAS_SUMMARY/metadata/snap-5840825014397964479-8-1c2879d3-d23c-8208-ae08-b48f1039ee4e.avro",
+      "parent-snapshot-id": 2022366159268059092,
+      "schema-id": 1,
+      "sequence-number": 8,
+      "snapshot-id": 5840825014397964479,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202512010000.zip",
+        "utilake.from.release": "2025-12",
+        "utilake.from.sha256": "4016b5e55f85d7f2c02ba4d9aef7c1c97e9b97a7aa88b9de9d89c89e94759cc3",
+        "utilake.from.time": "2024-12-09T11:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "FCAS_SUMMARY",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "454281",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202512010000.zip",
+        "utilake.to.release": "2025-12",
+        "utilake.to.sha256": "4016b5e55f85d7f2c02ba4d9aef7c1c97e9b97a7aa88b9de9d89c89e94759cc3",
+        "utilake.to.time": "2026-01-12T11:15:00+10:00",
+        "utilake.total-rows": "3277751",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1764511200007
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_FCAS_SUMMARY/metadata/snap-6260958741755530839-9-1c2879d3-d23c-8208-ae08-b48f1039ee4e.avro",
+      "parent-snapshot-id": 5840825014397964479,
+      "schema-id": 2,
+      "sequence-number": 9,
+      "snapshot-id": 6260958741755530839,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8928",
+        "utilake.from.file": "PUBLIC_FPP_RATES_20251231.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "f2fdb2ce57d5473e0251344bb73c077640b376b8dd3e31cca29d0563678940c4",
+        "utilake.from.time": "2026-01-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "FCAS_SUMMARY",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "35014",
+        "utilake.to.file": "PUBLIC_FPP_RATES_20260131.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "89a90d36defa6e1e8d97e10ef4f6f4f8c12b99113e463364dc13e981fe85ff68",
+        "utilake.to.time": "2026-01-31T23:55:00+10:00",
+        "utilake.total-rows": "3312765",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1767189600008
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_FCAS_SUMMARY/metadata/snap-1147006088909231320-10-1c2879d3-d23c-8208-ae08-b48f1039ee4e.avro",
+      "parent-snapshot-id": 6260958741755530839,
+      "schema-id": 1,
+      "sequence-number": 10,
+      "snapshot-id": 1147006088909231320,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202601010000.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "201fed4cccb3ce25da479fc2bc128a90ba7d744bca5dcdeb55f2524cce64fcb7",
+        "utilake.from.time": "2024-12-09T11:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "FCAS_SUMMARY",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "486148",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202601010000.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "201fed4cccb3ce25da479fc2bc128a90ba7d744bca5dcdeb55f2524cce64fcb7",
+        "utilake.to.time": "2026-02-09T18:45:00+10:00",
+        "utilake.total-rows": "3798913",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1767189600009
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_FCAS_SUMMARY/metadata/snap-678878377486077476-11-1c2879d3-d23c-8208-ae08-b48f1039ee4e.avro",
+      "parent-snapshot-id": 1147006088909231320,
+      "schema-id": 2,
+      "sequence-number": 11,
+      "snapshot-id": 678878377486077476,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8065",
+        "utilake.from.file": "PUBLIC_FPP_RATES_20260131.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "89a90d36defa6e1e8d97e10ef4f6f4f8c12b99113e463364dc13e981fe85ff68",
+        "utilake.from.time": "2026-02-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "FCAS_SUMMARY",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "31391",
+        "utilake.to.file": "PUBLIC_FPP_RATES_20260228.zip",
+        "utilake.to.release": "2026-02",
+        "utilake.to.sha256": "f3fb06ba9b8178d79fe1d9c5b07f4bf26d7b47ea33df9cf3c8137dd068cad8f2",
+        "utilake.to.time": "2026-02-28T23:55:00+10:00",
+        "utilake.total-rows": "3830304",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1769868000010
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_FCAS_SUMMARY/metadata/snap-5051601904356394365-12-1c2879d3-d23c-8208-ae08-b48f1039ee4e.avro",
+      "parent-snapshot-id": 678878377486077476,
+      "schema-id": 1,
+      "sequence-number": 12,
+      "snapshot-id": 5051601904356394365,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202602010000.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "32173a61e621a78111cb08d0c56d23729449ea60e169a125e727061f6384d225",
+        "utilake.from.time": "2024-12-09T11:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "FCAS_SUMMARY",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "517261",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202602010000.zip",
+        "utilake.to.release": "2026-02",
+        "utilake.to.sha256": "32173a61e621a78111cb08d0c56d23729449ea60e169a125e727061f6384d225",
+        "utilake.to.time": "2026-03-09T12:30:00+10:00",
+        "utilake.total-rows": "4347565",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1769868000011
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_FCAS_SUMMARY/metadata/snap-6861525977644183634-13-1c2879d3-d23c-8208-ae08-b48f1039ee4e.avro",
+      "parent-snapshot-id": 5051601904356394365,
+      "schema-id": 2,
+      "sequence-number": 13,
+      "snapshot-id": 6861525977644183634,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8907",
+        "utilake.from.file": "PUBLIC_FPP_RATES_20260228.zip",
+        "utilake.from.release": "2026-03",
+        "utilake.from.sha256": "f3fb06ba9b8178d79fe1d9c5b07f4bf26d7b47ea33df9cf3c8137dd068cad8f2",
+        "utilake.from.time": "2026-03-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "FCAS_SUMMARY",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "34631",
+        "utilake.to.file": "PUBLIC_FPP_RATES_20260331.zip",
+        "utilake.to.release": "2026-03",
+        "utilake.to.sha256": "85c3a8f5dab12275eaa3f18c45a3bacdd0494723811e470808eb701e870ac3b7",
+        "utilake.to.time": "2026-03-31T23:55:00+10:00",
+        "utilake.total-rows": "4382196",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1772287200012
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_FCAS_SUMMARY/metadata/snap-4305548811718559611-14-1c2879d3-d23c-8208-ae08-b48f1039ee4e.avro",
+      "parent-snapshot-id": 6861525977644183634,
+      "schema-id": 1,
+      "sequence-number": 14,
+      "snapshot-id": 4305548811718559611,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202603010000.zip",
+        "utilake.from.release": "2026-03",
+        "utilake.from.sha256": "7ec5d2a996717f22677b57e347272fedb5dd05eb066caac386d2690dfd7109b4",
+        "utilake.from.time": "2024-12-09T11:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "FCAS_SUMMARY",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "544634",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202603010000.zip",
+        "utilake.to.release": "2026-03",
+        "utilake.to.sha256": "7ec5d2a996717f22677b57e347272fedb5dd05eb066caac386d2690dfd7109b4",
+        "utilake.to.time": "2026-04-07T14:50:00+10:00",
+        "utilake.total-rows": "4926830",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1772287200013
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_FCAS_SUMMARY/metadata/snap-4153275729049061940-15-1c2879d3-d23c-8208-ae08-b48f1039ee4e.avro",
+      "parent-snapshot-id": 4305548811718559611,
+      "schema-id": 2,
+      "sequence-number": 15,
+      "snapshot-id": 4153275729049061940,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8640",
+        "utilake.from.file": "PUBLIC_FPP_RATES_20260331.zip",
+        "utilake.from.release": "2026-04",
+        "utilake.from.sha256": "85c3a8f5dab12275eaa3f18c45a3bacdd0494723811e470808eb701e870ac3b7",
+        "utilake.from.time": "2026-04-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "FCAS_SUMMARY",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "34093",
+        "utilake.to.file": "PUBLIC_FPP_RATES_20260430.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "8bd7879cfd8a75c07295d2adbcb7787d8c4e807d944adfd7b4f154453cc6476d",
+        "utilake.to.time": "2026-04-30T23:55:00+10:00",
+        "utilake.total-rows": "4960923",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1774965600014
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_FCAS_SUMMARY/metadata/snap-7655623869692217769-16-1c2879d3-d23c-8208-ae08-b48f1039ee4e.avro",
+      "parent-snapshot-id": 4153275729049061940,
+      "schema-id": 1,
+      "sequence-number": 16,
+      "snapshot-id": 7655623869692217769,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202604010000.zip",
+        "utilake.from.release": "2026-04",
+        "utilake.from.sha256": "71b886649ebde9306c018383dc650b29ce130974127c9f7c360b6036691d4abf",
+        "utilake.from.time": "2024-12-09T11:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "FCAS_SUMMARY",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "585573",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202604010000.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "71b886649ebde9306c018383dc650b29ce130974127c9f7c360b6036691d4abf",
+        "utilake.to.time": "2026-05-08T15:35:00+10:00",
+        "utilake.total-rows": "5546496",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1774965600015
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_FCAS_SUMMARY/metadata/snap-8219226912022407411-17-1c2879d3-d23c-8208-ae08-b48f1039ee4e.avro",
+      "parent-snapshot-id": 7655623869692217769,
+      "schema-id": 2,
+      "sequence-number": 17,
+      "snapshot-id": 8219226912022407411,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "3875",
+        "utilake.from.file": "PUBLIC_FPP_RATES_20260430.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "8bd7879cfd8a75c07295d2adbcb7787d8c4e807d944adfd7b4f154453cc6476d",
+        "utilake.from.time": "2026-05-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "FCAS_SUMMARY",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "15439",
+        "utilake.to.file": "PUBLIC_FPP_RATES_20260514.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "296a25fbca2d1d67c399b200008da4e9242b89d083e671a173801df041e6402a",
+        "utilake.to.time": "2026-05-14T10:50:00+10:00",
+        "utilake.total-rows": "5561935",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1777557600016
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_FCAS_SUMMARY/metadata/snap-5334977029107679112-18-1c2879d3-d23c-8208-ae08-b48f1039ee4e.avro",
+      "parent-snapshot-id": 8219226912022407411,
+      "schema-id": 3,
+      "sequence-number": 18,
+      "snapshot-id": 5334977029107679112,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "5055",
+        "utilake.from.file": "PUBLIC_FPP_RATES_20260514.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "296a25fbca2d1d67c399b200008da4e9242b89d083e671a173801df041e6402a",
+        "utilake.from.time": "2026-05-14T10:55:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "FCAS_SUMMARY",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "20220",
+        "utilake.to.file": "PUBLIC_FPP_RATES_20260531.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "3d06da9d70a7449de9ba6f23618d17ca3cefa08c0536d5e691fd8eaa0c6cc6b8",
+        "utilake.to.time": "2026-05-31T23:55:00+10:00",
+        "utilake.total-rows": "5582155",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1777557600017
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_FCAS_SUMMARY/metadata/snap-4972581461266312419-19-1c2879d3-d23c-8208-ae08-b48f1039ee4e.avro",
+      "parent-snapshot-id": 5334977029107679112,
+      "schema-id": 4,
+      "sequence-number": 19,
+      "snapshot-id": 4972581461266312419,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
         "utilake.from.file": "PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202605010000.zip",
         "utilake.from.release": "2026-05",
         "utilake.from.sha256": "1db4ff9f08453d54026c45d8bfea4e7cc7436be5b83d8be0b8d3a2e291891744",
@@ -473,15 +1266,267 @@
         "utilake.kinds": "[\"archive\"]",
         "utilake.report-subtype": "FCAS_SUMMARY",
         "utilake.report-type": "FPP",
-        "utilake.rows": "2039845",
+        "utilake.rows": "622395",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202605010000.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "1db4ff9f08453d54026c45d8bfea4e7cc7436be5b83d8be0b8d3a2e291891744",
+        "utilake.to.time": "2026-06-09T14:55:00+10:00",
+        "utilake.total-rows": "6204550",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1777557600018
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_FCAS_SUMMARY/metadata/snap-3638094856572003998-20-1c2879d3-d23c-8208-ae08-b48f1039ee4e.avro",
+      "parent-snapshot-id": 4972581461266312419,
+      "schema-id": 3,
+      "sequence-number": 20,
+      "snapshot-id": 3638094856572003998,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8641",
+        "utilake.from.file": "PUBLIC_FPP_RATES_202606150910_0000000522546026.zip",
+        "utilake.from.release": "2026-06",
+        "utilake.from.sha256": "a62f2e701432ebcbced60551ebe22f57501c45973af5b8627580d96d08c94c2c",
+        "utilake.from.time": "2026-06-15T09:10:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "FCAS_SUMMARY",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "34417",
+        "utilake.to.file": "PUBLIC_FPP_RATES_20260630.zip",
+        "utilake.to.release": "2026-06",
+        "utilake.to.sha256": "a352b3fae75051c8cb4a2b68db1116667e19000aeee021085a4a8e0b999ce2fb",
+        "utilake.to.time": "2026-06-30T23:55:00+10:00",
+        "utilake.total-rows": "6238967",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1780236000019
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_FCAS_SUMMARY/metadata/snap-7569462965840842043-21-1c2879d3-d23c-8208-ae08-b48f1039ee4e.avro",
+      "parent-snapshot-id": 3638094856572003998,
+      "schema-id": 4,
+      "sequence-number": 21,
+      "snapshot-id": 7569462965840842043,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202606010000.zip",
+        "utilake.from.release": "2026-06",
+        "utilake.from.sha256": "3c0e66e8ab06740b014f71c5c2ad7c8f84fdfaf560a6dc78a3a1f8dca580ecbe",
+        "utilake.from.time": "2024-12-09T11:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "FCAS_SUMMARY",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "655971",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202606010000.zip",
+        "utilake.to.release": "2026-06",
+        "utilake.to.sha256": "3c0e66e8ab06740b014f71c5c2ad7c8f84fdfaf560a6dc78a3a1f8dca580ecbe",
+        "utilake.to.time": "2026-07-08T22:30:00+10:00",
+        "utilake.total-rows": "6894938",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1780236000020
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_FCAS_SUMMARY/metadata/snap-3883400939471770483-22-1c2879d3-d23c-8208-ae08-b48f1039ee4e.avro",
+      "parent-snapshot-id": 7569462965840842043,
+      "schema-id": 3,
+      "sequence-number": 22,
+      "snapshot-id": 3883400939471770483,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8928",
+        "utilake.from.file": "PUBLIC_FPP_RATES_20260630.zip",
+        "utilake.from.release": "2026-07",
+        "utilake.from.sha256": "a352b3fae75051c8cb4a2b68db1116667e19000aeee021085a4a8e0b999ce2fb",
+        "utilake.from.time": "2026-07-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "FCAS_SUMMARY",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "35573",
+        "utilake.to.file": "PUBLIC_FPP_RATES_20260731.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "e34f3154544639c62273a5fb2b0ce954262672ef9b91086b525335df26d430ff",
+        "utilake.to.time": "2026-07-31T23:55:00+10:00",
+        "utilake.total-rows": "6930511",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1782828000021
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_FCAS_SUMMARY/metadata/snap-5146748248536294665-23-1c2879d3-d23c-8208-ae08-b48f1039ee4e.avro",
+      "parent-snapshot-id": 3883400939471770483,
+      "schema-id": 4,
+      "sequence-number": 23,
+      "snapshot-id": 5146748248536294665,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202607010000.zip",
+        "utilake.from.release": "2026-07",
+        "utilake.from.sha256": "90e5ef02a74bfa9cd98d416776f6add7ea332f946651dacc40ee236bf7d453e7",
+        "utilake.from.time": "2024-12-09T11:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "FCAS_SUMMARY",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "691254",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202607010000.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "90e5ef02a74bfa9cd98d416776f6add7ea332f946651dacc40ee236bf7d453e7",
+        "utilake.to.time": "2026-08-08T15:45:00+10:00",
+        "utilake.total-rows": "7621765",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1782828000022
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_FCAS_SUMMARY/metadata/snap-1065615700176374681-24-1c2879d3-d23c-8208-ae08-b48f1039ee4e.avro",
+      "parent-snapshot-id": 5146748248536294665,
+      "schema-id": 3,
+      "sequence-number": 24,
+      "snapshot-id": 1065615700176374681,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8928",
+        "utilake.from.file": "PUBLIC_FPP_RATES_20260731.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "e34f3154544639c62273a5fb2b0ce954262672ef9b91086b525335df26d430ff",
+        "utilake.from.time": "2026-08-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "FCAS_SUMMARY",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "35691",
+        "utilake.to.file": "PUBLIC_FPP_RATES_20260831.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "592ac4936a9cdd55733f69f6ee102efe8b1b2eeafa45d6d68e4bf37e5db4b78f",
+        "utilake.to.time": "2026-08-31T23:55:00+10:00",
+        "utilake.total-rows": "7657456",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1785506400023
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_FCAS_SUMMARY/metadata/snap-5780330358927811320-25-1c2879d3-d23c-8208-ae08-b48f1039ee4e.avro",
+      "parent-snapshot-id": 1065615700176374681,
+      "schema-id": 4,
+      "sequence-number": 25,
+      "snapshot-id": 5780330358927811320,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202608010000.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "ded242249fa74de8c3c7cabe566246343df2e6fb228550b982d03ef7dd51443f",
+        "utilake.from.time": "2026-08-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "FCAS_SUMMARY",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "35695",
+        "utilake.to.file": "PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202608010000.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "ded242249fa74de8c3c7cabe566246343df2e6fb228550b982d03ef7dd51443f",
+        "utilake.to.time": "2026-09-01T00:00:00+10:00",
+        "utilake.total-rows": "7693151",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1785506400024
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_FCAS_SUMMARY/metadata/snap-4245400494925502202-26-1c2879d3-d23c-8208-ae08-b48f1039ee4e.avro",
+      "parent-snapshot-id": 5780330358927811320,
+      "schema-id": 3,
+      "sequence-number": 26,
+      "snapshot-id": 4245400494925502202,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8640",
+        "utilake.from.file": "PUBLIC_FPP_RATES_20260831.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "592ac4936a9cdd55733f69f6ee102efe8b1b2eeafa45d6d68e4bf37e5db4b78f",
+        "utilake.from.time": "2026-09-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "FCAS_SUMMARY",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "34530",
+        "utilake.to.file": "PUBLIC_FPP_RATES_20260930.zip",
+        "utilake.to.release": "2026-09",
+        "utilake.to.sha256": "20e1f56d6fa6e519adcba826ed7ed194738d9c77d99355bd40bf298ba53009d8",
+        "utilake.to.time": "2026-09-30T23:55:00+10:00",
+        "utilake.total-rows": "7727681",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1788184800025
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_FCAS_SUMMARY/metadata/snap-4821861044205763379-27-1c2879d3-d23c-8208-ae08-b48f1039ee4e.avro",
+      "parent-snapshot-id": 4245400494925502202,
+      "schema-id": 4,
+      "sequence-number": 27,
+      "snapshot-id": 4821861044205763379,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202609010000.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "1eb3ae1bfc6858542a31f1aac304e00688ba5f8bd7065d9379c34fea2d7afda8",
+        "utilake.from.time": "2026-09-01T00:05:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "FCAS_SUMMARY",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "34530",
         "utilake.to.file": "PUBLIC_ARCHIVE#FPP_FCAS_SUMMARY#FILE01#202609010000.zip",
         "utilake.to.release": "2026-09",
         "utilake.to.sha256": "1eb3ae1bfc6858542a31f1aac304e00688ba5f8bd7065d9379c34fea2d7afda8",
         "utilake.to.time": "2026-10-01T00:00:00+10:00",
-        "utilake.total-rows": "7354124",
+        "utilake.total-rows": "7762211",
         "utilake.version": "1"
       },
-      "timestamp-ms": 1777557600002
+      "timestamp-ms": 1788184800026
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_FCAS_SUMMARY/metadata/snap-5892513469197412871-28-1c2879d3-d23c-8208-ae08-b48f1039ee4e.avro",
+      "parent-snapshot-id": 4821861044205763379,
+      "schema-id": 3,
+      "sequence-number": 28,
+      "snapshot-id": 5892513469197412871,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "6609",
+        "utilake.from.file": "PUBLIC_FPP_RATES_20260930.zip",
+        "utilake.from.release": "2026-10",
+        "utilake.from.sha256": "20e1f56d6fa6e519adcba826ed7ed194738d9c77d99355bd40bf298ba53009d8",
+        "utilake.from.time": "2026-10-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "FCAS_SUMMARY",
+        "utilake.report-type": "FPP",
+        "utilake.rows": "25958",
+        "utilake.to.file": "PUBLIC_FPP_RATES_202610220855_0000000544203625.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "29d5fcf08a29bf4a7966afb53b9f2a2ff65c4cc55767f39c2753faf85348a134",
+        "utilake.to.time": "2026-10-22T08:55:00+10:00",
+        "utilake.total-rows": "7788169",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1790776800027
     }
   ],
   "sort-orders": [

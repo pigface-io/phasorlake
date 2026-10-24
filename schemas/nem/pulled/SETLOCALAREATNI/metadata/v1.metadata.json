@@ -1,13 +1,13 @@
 {
   "current-schema-id": 0,
-  "current-snapshot-id": 8185869379944291445,
+  "current-snapshot-id": 2189508043059022475,
   "default-sort-order-id": 0,
   "default-spec-id": 0,
   "format-version": 3,
   "last-column-id": 5,
   "last-partition-id": 999,
   "last-sequence-number": 1,
-  "last-updated-ms": 1722434400000,
+  "last-updated-ms": 1633010400000,
   "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SETLOCALAREATNI",
   "metadata-log": [],
   "next-row-id": 0,
@@ -38,7 +38,7 @@
   },
   "refs": {
     "main": {
-      "snapshot-id": 8185869379944291445,
+      "snapshot-id": 2189508043059022475,
       "type": "branch"
     }
   },
@@ -93,37 +93,37 @@
   ],
   "snapshot-log": [
     {
-      "snapshot-id": 8185869379944291445,
-      "timestamp-ms": 1722434400000
+      "snapshot-id": 2189508043059022475,
+      "timestamp-ms": 1633010400000
     }
   ],
   "snapshots": [
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SETLOCALAREATNI/metadata/snap-8185869379944291445-1-46d812fd-5bae-8e41-8929-55e324d702f8.avro",
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SETLOCALAREATNI/metadata/snap-2189508043059022475-1-46d812fd-5bae-8e41-8929-55e324d702f8.avro",
       "schema-id": 0,
       "sequence-number": 1,
-      "snapshot-id": 8185869379944291445,
+      "snapshot-id": 2189508043059022475,
       "summary": {
         "operation": "append",
-        "utilake.files": "26",
-        "utilake.from.file": "PUBLIC_ARCHIVE#SETLOCALAREATNI#FILE01#202408010000.zip",
-        "utilake.from.release": "2024-08",
-        "utilake.from.sha256": "6fcb0c48fe06a09515e2846e025d7951e81860d9d08a77fc231e76fadf614b48",
-        "utilake.from.time": "2023-12-31T00:00:00+10:00",
-        "utilake.kinds": "[\"archive\"]",
+        "utilake.files": "1454",
+        "utilake.from.file": "PUBLIC_SETTLEMENTS_20211004011331_0000000350199156.zip",
+        "utilake.from.release": "2021-10",
+        "utilake.from.sha256": "cfcc552e85294df7b1467561cae600fe5842261939d744750b7fc6f4d591618a",
+        "utilake.from.time": "2021-10-01T00:00:00+10:00",
+        "utilake.kinds": "[\"archive\",\"reports/archive\",\"reports/current\"]",
         "utilake.report-subtype": "LOCALAREATNI",
         "utilake.report-type": "SETTLEMENTS",
-        "utilake.rows": "2480795",
-        "utilake.to.file": "PUBLIC_ARCHIVE#SETLOCALAREATNI#FILE01#202609010000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "552685be95b9c7d94157c81965564c304663004f07519df45f3a5cb0432e16ad",
-        "utilake.to.time": "2026-09-26T00:00:00+10:00",
-        "utilake.total-rows": "2480795",
+        "utilake.rows": "9068611",
+        "utilake.to.file": "PUBLIC_SETTLEMENTS_20261021114528_0000000544040800.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "c68a417a99949935a9c021dc7c0c56f893effce43b8abdc6d25d5826c5316b02",
+        "utilake.to.time": "2026-10-17T00:00:00+10:00",
+        "utilake.total-rows": "9068611",
         "utilake.version": "1"
       },
-      "timestamp-ms": 1722434400000
+      "timestamp-ms": 1633010400000
     }
   ],
   "sort-orders": [

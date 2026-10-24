@@ -1,13 +1,13 @@
 {
-  "current-schema-id": 1,
-  "current-snapshot-id": 7629266783597946454,
+  "current-schema-id": 0,
+  "current-snapshot-id": 6887209307823511040,
   "default-sort-order-id": 0,
   "default-spec-id": 0,
   "format-version": 3,
   "last-column-id": 18,
   "last-partition-id": 999,
-  "last-sequence-number": 2,
-  "last-updated-ms": 1743429600001,
+  "last-sequence-number": 5,
+  "last-updated-ms": 1788184800004,
   "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PD7DAY_PRICESOLUTION",
   "metadata-log": [],
   "next-row-id": 0,
@@ -36,7 +36,7 @@
   },
   "refs": {
     "main": {
-      "snapshot-id": 7629266783597946454,
+      "snapshot-id": 6887209307823511040,
       "type": "branch"
     }
   },
@@ -302,6 +302,18 @@
     {
       "snapshot-id": 7629266783597946454,
       "timestamp-ms": 1743429600001
+    },
+    {
+      "snapshot-id": 6176086769692665392,
+      "timestamp-ms": 1785506400002
+    },
+    {
+      "snapshot-id": 88734831457706343,
+      "timestamp-ms": 1788184800003
+    },
+    {
+      "snapshot-id": 6887209307823511040,
+      "timestamp-ms": 1788184800004
     }
   ],
   "snapshots": [
@@ -342,7 +354,7 @@
       "snapshot-id": 7629266783597946454,
       "summary": {
         "operation": "append",
-        "utilake.files": "18",
+        "utilake.files": "17",
         "utilake.from.file": "PUBLIC_ARCHIVE#PD7DAY_PRICESOLUTION#FILE01#202504010000.zip",
         "utilake.from.release": "2025-04",
         "utilake.from.sha256": "02e5dcbb23b75927c11ef223ec0f5096618700bc828f232d6cf48dbf9e2af2d5",
@@ -350,15 +362,99 @@
         "utilake.kinds": "[\"archive\"]",
         "utilake.report-subtype": "PRICESOLUTION",
         "utilake.report-type": "PD7DAY",
-        "utilake.rows": "40247400",
+        "utilake.rows": "40090950",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PD7DAY_PRICESOLUTION#FILE01#202608010000.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "a0b7be78b87bb0d51fef3a6a9d6f7822a88b1cc3e5512b1899df14a2235da2e9",
+        "utilake.to.time": "2026-09-08T04:00:00+10:00",
+        "utilake.total-rows": "48010420",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1743429600001
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PD7DAY_PRICESOLUTION/metadata/snap-6176086769692665392-3-aeb8f587-8ac8-883b-8ff9-6e955550532b.avro",
+      "parent-snapshot-id": 7629266783597946454,
+      "schema-id": 0,
+      "sequence-number": 3,
+      "snapshot-id": 6176086769692665392,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "30",
+        "utilake.from.file": "PUBLIC_PD7DAY_20260822070855_0000000533850902.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "0a4541f549fc18500db227cfb3e56333031cbd273188d1f6027835e706968dcd",
+        "utilake.from.time": "2026-08-22T07:30:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "PRICESOLUTION",
+        "utilake.report-type": "PD7DAY",
+        "utilake.rows": "52700",
+        "utilake.to.file": "PUBLIC_PD7DAY_20260831174534_0000000535392006.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "0ac71055c86d2d10e51ef6bb737a182efbc8842356a1b6c3b7cacaecdf56f763",
+        "utilake.to.time": "2026-09-08T04:00:00+10:00",
+        "utilake.total-rows": "48063120",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1785506400002
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PD7DAY_PRICESOLUTION/metadata/snap-88734831457706343-4-aeb8f587-8ac8-883b-8ff9-6e955550532b.avro",
+      "parent-snapshot-id": 6176086769692665392,
+      "schema-id": 1,
+      "sequence-number": 4,
+      "snapshot-id": 88734831457706343,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PD7DAY_PRICESOLUTION#FILE01#202609010000.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "b8b37b04a9a6f9ddb6fde28017c62150cb23b7dbb0d113ed375e8d0b65485f0b",
+        "utilake.from.time": "2026-09-01T07:30:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "PRICESOLUTION",
+        "utilake.report-type": "PD7DAY",
+        "utilake.rows": "156450",
         "utilake.to.file": "PUBLIC_ARCHIVE#PD7DAY_PRICESOLUTION#FILE01#202609010000.zip",
         "utilake.to.release": "2026-09",
         "utilake.to.sha256": "b8b37b04a9a6f9ddb6fde28017c62150cb23b7dbb0d113ed375e8d0b65485f0b",
         "utilake.to.time": "2026-10-08T04:00:00+10:00",
-        "utilake.total-rows": "48166870",
+        "utilake.total-rows": "48219570",
         "utilake.version": "1"
       },
-      "timestamp-ms": 1743429600001
+      "timestamp-ms": 1788184800003
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PD7DAY_PRICESOLUTION/metadata/snap-6887209307823511040-5-aeb8f587-8ac8-883b-8ff9-6e955550532b.avro",
+      "parent-snapshot-id": 88734831457706343,
+      "schema-id": 0,
+      "sequence-number": 5,
+      "snapshot-id": 6887209307823511040,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "153",
+        "utilake.from.file": "PUBLIC_PD7DAY_20260901071315_0000000535480150.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "30b950232478032a501fa801b06f098cd18c51db25e65496afc4aa46281079db",
+        "utilake.from.time": "2026-09-01T07:30:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "PRICESOLUTION",
+        "utilake.report-type": "PD7DAY",
+        "utilake.rows": "268770",
+        "utilake.to.file": "PUBLIC_PD7DAY_20261021174310_0000000544091388.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "72ae05930ddc8ae6b42e0842e74594616aefd65d3f055b077440ad574710332d",
+        "utilake.to.time": "2026-10-29T04:00:00+10:00",
+        "utilake.total-rows": "48488340",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1788184800004
     }
   ],
   "sort-orders": [

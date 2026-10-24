@@ -1,6 +1,6 @@
 {
   "current-schema-id": 0,
-  "current-snapshot-id": 4772426612180930289,
+  "current-snapshot-id": 8107832941769978096,
   "default-sort-order-id": 0,
   "default-spec-id": 0,
   "format-version": 3,
@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1246370400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SPDRC_",
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SPDRC",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -20,11 +20,11 @@
   "properties": {
     "utilake.declared": "false",
     "utilake.format": "3",
-    "utilake.table": "SPDRC_"
+    "utilake.table": "SPDRC"
   },
   "refs": {
     "main": {
-      "snapshot-id": 4772426612180930289,
+      "snapshot-id": 8107832941769978096,
       "type": "branch"
     }
   },
@@ -81,7 +81,7 @@
   ],
   "snapshot-log": [
     {
-      "snapshot-id": 4772426612180930289,
+      "snapshot-id": 8107832941769978096,
       "timestamp-ms": 1246370400000
     }
   ],
@@ -89,10 +89,10 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SPDRC_/metadata/snap-4772426612180930289-1-3850429d-0068-8ee2-8dd8-4e37728c034b.avro",
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SPDRC/metadata/snap-8107832941769978096-1-caea05ac-15c2-8eef-b7c0-06a6f8ececf7.avro",
       "schema-id": 0,
       "sequence-number": 1,
-      "snapshot-id": 4772426612180930289,
+      "snapshot-id": 8107832941769978096,
       "summary": {
         "operation": "append",
         "utilake.files": "115",
@@ -120,5 +120,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "3850429d-0068-8ee2-8dd8-4e37728c034b"
+  "table-uuid": "caea05ac-15c2-8eef-b7c0-06a6f8ececf7"
 }

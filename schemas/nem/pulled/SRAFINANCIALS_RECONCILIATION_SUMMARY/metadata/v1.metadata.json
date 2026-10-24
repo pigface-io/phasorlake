@@ -1,0 +1,134 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 7566035474591229241,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 9,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1759240800000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SRAFINANCIALS_RECONCILIATION_SUMMARY",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "false",
+    "utilake.format": "3",
+    "utilake.table": "SRAFINANCIALS_RECONCILIATION_SUMMARY"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 7566035474591229241,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "SRA_YEAR",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 2,
+          "name": "SRA_QUARTER",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 3,
+          "name": "PREVIOUS_QUARTERS_CARRYOVER",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 4,
+          "name": "LATEST_QUARTER_NEG_RESIDUE",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 5,
+          "name": "LATEST_QUARTER_INTEREST",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 6,
+          "name": "TOTAL_RECOVERY",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 7,
+          "name": "GROSS_PROCEEDS",
+          "required": false,
+          "type": "decimal(10, 2)"
+        },
+        {
+          "id": 8,
+          "name": "NET_PROCEEDS",
+          "required": false,
+          "type": "decimal(10, 2)"
+        },
+        {
+          "id": 9,
+          "name": "CARRYOVER",
+          "required": false,
+          "type": "decimal(1, 0)"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 7566035474591229241,
+      "timestamp-ms": 1759240800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SRAFINANCIALS_RECONCILIATION_SUMMARY/metadata/snap-7566035474591229241-1-5442e419-3736-89cb-9e9f-9ed407bf985d.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 7566035474591229241,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "9",
+        "utilake.from.file": "PUBLIC_SRAFINANCIALS_RECONCILIATION_2025_4_20251020100535.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "a543aa9a853f5c47d8deb2336e1695e3ca90c80dc999f25ca9dbca26c154c093",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "RECONCILIATION_SUMMARY",
+        "utilake.report-type": "SRAFINANCIALS",
+        "utilake.rows": "9",
+        "utilake.to.file": "PUBLIC_SRAFINANCIALS_RECONCILIATION_2026_4_20261020131825.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "43fe4274e06542fd5280ecfa003f7ff981cb0e32444112b51837ef9d5a481236",
+        "utilake.total-rows": "9",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1759240800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "5442e419-3736-89cb-9e9f-9ed407bf985d"
+}

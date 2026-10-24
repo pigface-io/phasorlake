@@ -1,0 +1,142 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 8750177948482309673,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 10,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1756648800000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCH_REGIONFCASREQUIREMENT",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "false",
+    "utilake.format": "3",
+    "utilake.table": "DISPATCH_REGIONFCASREQUIREMENT"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 8750177948482309673,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "SETTLEMENTDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 2,
+          "name": "RUNNO",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 3,
+          "name": "INTERVENTION",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 4,
+          "name": "GENCONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 5,
+          "name": "REGIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 6,
+          "name": "BIDTYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 7,
+          "name": "GENCONEFFECTIVEDATE",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 8,
+          "name": "GENCONVERSIONNO",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 9,
+          "name": "MARGINALVALUE",
+          "required": false,
+          "type": "decimal(12, 6)"
+        },
+        {
+          "id": 10,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 8750177948482309673,
+      "timestamp-ms": 1756648800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCH_REGIONFCASREQUIREMENT/metadata/snap-8750177948482309673-1-4056b217-d793-8b26-9a09-e032e0d630e8.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 8750177948482309673,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "7553",
+        "utilake.from.file": "PUBLIC_DAILY_20250901.zip",
+        "utilake.from.release": "2025-09",
+        "utilake.from.sha256": "f32a1de67b3dde4bb2090f93af680c207ab9f9cc02e8f7be41591cc604412af0",
+        "utilake.from.time": "2025-09-01T04:05:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "REGIONFCASREQUIREMENT",
+        "utilake.report-type": "DISPATCH",
+        "utilake.rows": "96678349",
+        "utilake.to.file": "PUBLIC_DISPATCH_202610220520_20261022051510_LEGACY.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "84b4a5279c9e3443bc59001095e53790ad6cf4652d178b85c79815b4b800bc2a",
+        "utilake.to.time": "2026-10-22T05:20:00+10:00",
+        "utilake.total-rows": "96678349",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1756648800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "4056b217-d793-8b26-9a09-e032e0d630e8"
+}

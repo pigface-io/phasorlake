@@ -1,13 +1,13 @@
 {
   "current-schema-id": 0,
-  "current-snapshot-id": 7413108250824029577,
+  "current-snapshot-id": 7538046317278936015,
   "default-sort-order-id": 0,
   "default-spec-id": 0,
   "format-version": 3,
   "last-column-id": 10,
   "last-partition-id": 999,
   "last-sequence-number": 1,
-  "last-updated-ms": 1727704800000,
+  "last-updated-ms": 1485871200000,
   "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BILLING_NMAS_TST_RECVRY_RBF",
   "metadata-log": [],
   "next-row-id": 0,
@@ -37,7 +37,7 @@
   },
   "refs": {
     "main": {
-      "snapshot-id": 7413108250824029577,
+      "snapshot-id": 7538046317278936015,
       "type": "branch"
     }
   },
@@ -129,37 +129,37 @@
   ],
   "snapshot-log": [
     {
-      "snapshot-id": 7413108250824029577,
-      "timestamp-ms": 1727704800000
+      "snapshot-id": 7538046317278936015,
+      "timestamp-ms": 1485871200000
     }
   ],
   "snapshots": [
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BILLING_NMAS_TST_RECVRY_RBF/metadata/snap-7413108250824029577-1-6d223d67-ac8b-89ce-981d-d3f3406755a9.avro",
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BILLING_NMAS_TST_RECVRY_RBF/metadata/snap-7538046317278936015-1-6d223d67-ac8b-89ce-981d-d3f3406755a9.avro",
       "schema-id": 0,
       "sequence-number": 1,
-      "snapshot-id": 7413108250824029577,
+      "snapshot-id": 7538046317278936015,
       "summary": {
         "operation": "append",
-        "utilake.files": "20",
-        "utilake.from.file": "PUBLIC_ARCHIVE#BILLING_NMAS_TST_RECVRY_RBF#FILE01#202410010000.zip",
-        "utilake.from.release": "2024-10",
-        "utilake.from.sha256": "a28e198525c5fd665f72d8bb3ed5501c5aeac0ad565bace4523b7242a2768c26",
-        "utilake.from.time": "2024-10-24T08:59:33+10:00",
-        "utilake.kinds": "[\"archive\"]",
+        "utilake.files": "147",
+        "utilake.from.file": "PUBLIC_BILLING_20170207101322_0000000280742011.zip",
+        "utilake.from.release": "2017-02",
+        "utilake.from.sha256": "f0638979b9c6ec2c353eb4e6b02ea9f68e0392e70f1966892451c68de85d8e40",
+        "utilake.from.time": "2017-01-30T13:20:12+10:00",
+        "utilake.kinds": "[\"archive\",\"reports/archive\",\"reports/current\"]",
         "utilake.report-subtype": "NMAS_TST_RECVRY_RBF",
         "utilake.report-type": "BILLING",
-        "utilake.rows": "1400",
+        "utilake.rows": "2700",
         "utilake.to.file": "PUBLIC_ARCHIVE#BILLING_NMAS_TST_RECVRY_RBF#FILE01#202609010000.zip",
         "utilake.to.release": "2026-09",
         "utilake.to.sha256": "d6a6700b2cc145825f7ceabeb03b672da71baaee7bc7e430c2072b4784b5a163",
         "utilake.to.time": "2026-09-24T10:01:39+10:00",
-        "utilake.total-rows": "1400",
+        "utilake.total-rows": "2700",
         "utilake.version": "1"
       },
-      "timestamp-ms": 1727704800000
+      "timestamp-ms": 1485871200000
     }
   ],
   "sort-orders": [

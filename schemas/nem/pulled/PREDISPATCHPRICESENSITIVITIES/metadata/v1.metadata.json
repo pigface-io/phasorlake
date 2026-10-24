@@ -1,13 +1,13 @@
 {
-  "current-schema-id": 0,
-  "current-snapshot-id": 3852384718580523351,
+  "current-schema-id": 1,
+  "current-snapshot-id": 6485150853299132183,
   "default-sort-order-id": 0,
   "default-spec-id": 0,
   "format-version": 3,
   "last-column-id": 51,
   "last-partition-id": 999,
-  "last-sequence-number": 1,
-  "last-updated-ms": 1246370400000,
+  "last-sequence-number": 24,
+  "last-updated-ms": 1788184800023,
   "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHPRICESENSITIVITIES",
   "metadata-log": [],
   "next-row-id": 0,
@@ -38,7 +38,7 @@
   },
   "refs": {
     "main": {
-      "snapshot-id": 3852384718580523351,
+      "snapshot-id": 6485150853299132183,
       "type": "branch"
     }
   },
@@ -71,7 +71,7 @@
           "id": 4,
           "name": "PERIODID",
           "required": false,
-          "type": "decimal(1, 0)"
+          "type": "decimal(2, 0)"
         },
         {
           "doc": "Flag to indicate if this result set was sourced from the pricing run (INTERVENTION=0) or the physical run (INTERVENTION=1). In the event that there is not intervention in the market, both pricing and physical runs correspond to INTERVENTION=0",
@@ -409,12 +409,471 @@
       ],
       "schema-id": 0,
       "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "Unique identifier of predispatch run in the form YYYYMMDDPP with 01 at 04:30",
+          "id": 1,
+          "name": "PREDISPATCHSEQNO",
+          "required": false,
+          "type": "decimal(10, 0)"
+        },
+        {
+          "doc": "LP Solver Predispatch run no, typically 1. It increments if the case is re-run.",
+          "id": 2,
+          "name": "RUNNO",
+          "required": false,
+          "type": "decimal(3, 0)"
+        },
+        {
+          "doc": "Unique region identifier",
+          "id": 3,
+          "name": "REGIONID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "doc": "PERIODID is just a period count, starting from 1 for each predispatch run. Use DATETIME to determine half hour period.",
+          "id": 4,
+          "name": "PERIODID",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "Flag to indicate if this result set was sourced from the pricing run (INTERVENTION=0) or the physical run (INTERVENTION=1). In the event that there is not intervention in the market, both pricing and physical runs correspond to INTERVENTION=0",
+          "id": 5,
+          "name": "INTERVENTION",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 1",
+          "id": 6,
+          "name": "RRPEEP1",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 2",
+          "id": 7,
+          "name": "RRPEEP2",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 3",
+          "id": 8,
+          "name": "RRPEEP3",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 4",
+          "id": 9,
+          "name": "RRPEEP4",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 5",
+          "id": 10,
+          "name": "RRPEEP5",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 6",
+          "id": 11,
+          "name": "RRPEEP6",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 7",
+          "id": 12,
+          "name": "RRPEEP7",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 8",
+          "id": 13,
+          "name": "RRPEEP8",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 9",
+          "id": 14,
+          "name": "RRPEEP9",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 10",
+          "id": 15,
+          "name": "RRPEEP10",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 11",
+          "id": 16,
+          "name": "RRPEEP11",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 12",
+          "id": 17,
+          "name": "RRPEEP12",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 13",
+          "id": 18,
+          "name": "RRPEEP13",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 14",
+          "id": 19,
+          "name": "RRPEEP14",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 15",
+          "id": 20,
+          "name": "RRPEEP15",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 16",
+          "id": 21,
+          "name": "RRPEEP16",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 17",
+          "id": 22,
+          "name": "RRPEEP17",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 18",
+          "id": 23,
+          "name": "RRPEEP18",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 19",
+          "id": 24,
+          "name": "RRPEEP19",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 20",
+          "id": 25,
+          "name": "RRPEEP20",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 21",
+          "id": 26,
+          "name": "RRPEEP21",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 22",
+          "id": 27,
+          "name": "RRPEEP22",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 23",
+          "id": 28,
+          "name": "RRPEEP23",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 24",
+          "id": 29,
+          "name": "RRPEEP24",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 25",
+          "id": 30,
+          "name": "RRPEEP25",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 26",
+          "id": 31,
+          "name": "RRPEEP26",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 27",
+          "id": 32,
+          "name": "RRPEEP27",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 28",
+          "id": 33,
+          "name": "RRPEEP28",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Period date and time",
+          "id": 35,
+          "name": "DATETIME",
+          "required": true,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Last date and time record changed",
+          "id": 34,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 29",
+          "id": 36,
+          "name": "RRPEEP29",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 30",
+          "id": 37,
+          "name": "RRPEEP30",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 31",
+          "id": 38,
+          "name": "RRPEEP31",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 32",
+          "id": 39,
+          "name": "RRPEEP32",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 33",
+          "id": 40,
+          "name": "RRPEEP33",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 34",
+          "id": 41,
+          "name": "RRPEEP34",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 35",
+          "id": 42,
+          "name": "RRPEEP35",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Flag to indicate if the sensitivity run contains an active intervention constraint: 0 = No, 1 = Yes",
+          "id": 43,
+          "name": "INTERVENTION_ACTIVE",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 36",
+          "id": 44,
+          "name": "RRPEEP36",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 37",
+          "id": 45,
+          "name": "RRPEEP37",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 38",
+          "id": 46,
+          "name": "RRPEEP38",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 39",
+          "id": 47,
+          "name": "RRPEEP39",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 40",
+          "id": 48,
+          "name": "RRPEEP40",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 41",
+          "id": 49,
+          "name": "RRPEEP41",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 42",
+          "id": 50,
+          "name": "RRPEEP42",
+          "required": false,
+          "type": "decimal(15, 5)"
+        },
+        {
+          "doc": "Regional Energy Price for scenario 43",
+          "id": 51,
+          "name": "RRPEEP43",
+          "required": false,
+          "type": "decimal(15, 5)"
+        }
+      ],
+      "identifier-field-ids": [
+        3,
+        35
+      ],
+      "schema-id": 1,
+      "type": "struct"
     }
   ],
   "snapshot-log": [
     {
       "snapshot-id": 3852384718580523351,
       "timestamp-ms": 1246370400000
+    },
+    {
+      "snapshot-id": 4483402849683267078,
+      "timestamp-ms": 1759240800001
+    },
+    {
+      "snapshot-id": 3664807633813041540,
+      "timestamp-ms": 1761919200002
+    },
+    {
+      "snapshot-id": 4042778009470977956,
+      "timestamp-ms": 1761919200003
+    },
+    {
+      "snapshot-id": 2096085884777793242,
+      "timestamp-ms": 1764511200004
+    },
+    {
+      "snapshot-id": 2276381238100717213,
+      "timestamp-ms": 1764511200005
+    },
+    {
+      "snapshot-id": 3040436721943914955,
+      "timestamp-ms": 1767189600006
+    },
+    {
+      "snapshot-id": 2845167449275969430,
+      "timestamp-ms": 1767189600007
+    },
+    {
+      "snapshot-id": 5209613205060745633,
+      "timestamp-ms": 1769868000008
+    },
+    {
+      "snapshot-id": 2402936356274357074,
+      "timestamp-ms": 1769868000009
+    },
+    {
+      "snapshot-id": 5153643901561206810,
+      "timestamp-ms": 1772287200010
+    },
+    {
+      "snapshot-id": 3298491959671402029,
+      "timestamp-ms": 1772287200011
+    },
+    {
+      "snapshot-id": 7878100986039658365,
+      "timestamp-ms": 1774965600012
+    },
+    {
+      "snapshot-id": 8733247511705870252,
+      "timestamp-ms": 1774965600013
+    },
+    {
+      "snapshot-id": 8854236602113359274,
+      "timestamp-ms": 1777557600014
+    },
+    {
+      "snapshot-id": 8878453338899639573,
+      "timestamp-ms": 1777557600015
+    },
+    {
+      "snapshot-id": 6467126447304104384,
+      "timestamp-ms": 1780236000016
+    },
+    {
+      "snapshot-id": 1134517999094557501,
+      "timestamp-ms": 1780236000017
+    },
+    {
+      "snapshot-id": 6511754856997754407,
+      "timestamp-ms": 1782828000018
+    },
+    {
+      "snapshot-id": 275310416618221587,
+      "timestamp-ms": 1782828000019
+    },
+    {
+      "snapshot-id": 2039295153125064319,
+      "timestamp-ms": 1785506400020
+    },
+    {
+      "snapshot-id": 1714436838210248776,
+      "timestamp-ms": 1785506400021
+    },
+    {
+      "snapshot-id": 3871112688641805321,
+      "timestamp-ms": 1788184800022
+    },
+    {
+      "snapshot-id": 6485150853299132183,
+      "timestamp-ms": 1788184800023
     }
   ],
   "snapshots": [
@@ -427,7 +886,7 @@
       "snapshot-id": 3852384718580523351,
       "summary": {
         "operation": "append",
-        "utilake.files": "207",
+        "utilake.files": "196",
         "utilake.from.file": "PUBLIC_DVD_PREDISPATCHPRICESENSITIVITIE_D_200907010000.zip",
         "utilake.from.release": "2009-07",
         "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
@@ -435,15 +894,659 @@
         "utilake.kinds": "[\"archive\",\"dvd\"]",
         "utilake.report-subtype": "PRICESENSITIVITIES",
         "utilake.report-type": "PREDISPATCH",
-        "utilake.rows": "1513890",
+        "utilake.rows": "1433730",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PREDISPATCHPRICESENSITIVITIES#FILE01#202510010000.zip",
+        "utilake.to.release": "2025-10",
+        "utilake.to.sha256": "54d43c9e0ffa25ed807ae624e35e8dd4fc1a4cd30f489c019a8dd31cd40cabe9",
+        "utilake.to.time": "2025-11-01T04:00:00+10:00",
+        "utilake.total-rows": "1433730",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1246370400000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHPRICESENSITIVITIES/metadata/snap-4483402849683267078-2-9c57e132-2237-8f0b-8389-ce00be653d11.avro",
+      "parent-snapshot-id": 3852384718580523351,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 4483402849683267078,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1487",
+        "utilake.from.file": "PUBLIC_PREDISPATCH_SENSITIVITIES_20251001_20251007.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "dde5345939b0726b4eb5dfb1b3dd04da28cfb4196af2cacf844832f41efe0df8",
+        "utilake.from.time": "2025-10-01T01:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "PRICESENSITIVITIES",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "412640",
+        "utilake.to.file": "PUBLIC_PREDISPATCH_SENSITIVITIES_20251029_20251104.zip",
+        "utilake.to.release": "2025-10",
+        "utilake.to.sha256": "8fb41cf497f2c10ed2fc9a7beb626da99988f43ca92147e54e811773a70af83f",
+        "utilake.to.time": "2025-11-02T04:00:00+10:00",
+        "utilake.total-rows": "1846370",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1759240800001
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHPRICESENSITIVITIES/metadata/snap-3664807633813041540-3-9c57e132-2237-8f0b-8389-ce00be653d11.avro",
+      "parent-snapshot-id": 4483402849683267078,
+      "schema-id": 0,
+      "sequence-number": 3,
+      "snapshot-id": 3664807633813041540,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PREDISPATCHPRICESENSITIVITIES#FILE01#202511010000.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "0fba539905d827ddc2445315abe3695b9849b4c35f9bb67e730164d5ec2a0cf7",
+        "utilake.from.time": "2025-11-01T04:30:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "PRICESENSITIVITIES",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "7200",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PREDISPATCHPRICESENSITIVITIES#FILE01#202511010000.zip",
+        "utilake.to.release": "2025-11",
+        "utilake.to.sha256": "0fba539905d827ddc2445315abe3695b9849b4c35f9bb67e730164d5ec2a0cf7",
+        "utilake.to.time": "2025-12-01T04:00:00+10:00",
+        "utilake.total-rows": "1853570",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1761919200002
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHPRICESENSITIVITIES/metadata/snap-4042778009470977956-4-9c57e132-2237-8f0b-8389-ce00be653d11.avro",
+      "parent-snapshot-id": 3664807633813041540,
+      "schema-id": 1,
+      "sequence-number": 4,
+      "snapshot-id": 4042778009470977956,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1440",
+        "utilake.from.file": "PUBLIC_PREDISPATCH_SENSITIVITIES_20251029_20251104.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "8fb41cf497f2c10ed2fc9a7beb626da99988f43ca92147e54e811773a70af83f",
+        "utilake.from.time": "2025-11-01T00:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "PRICESENSITIVITIES",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "399600",
+        "utilake.to.file": "PUBLIC_PREDISPATCH_SENSITIVITIES_20251126_20251202.zip",
+        "utilake.to.release": "2025-11",
+        "utilake.to.sha256": "c56da396e216ab8148d08f17a4c06124c0746ef114f5313cffa3ec7c6ebb52ac",
+        "utilake.to.time": "2025-12-02T04:00:00+10:00",
+        "utilake.total-rows": "2253170",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1761919200003
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHPRICESENSITIVITIES/metadata/snap-2096085884777793242-5-9c57e132-2237-8f0b-8389-ce00be653d11.avro",
+      "parent-snapshot-id": 4042778009470977956,
+      "schema-id": 0,
+      "sequence-number": 5,
+      "snapshot-id": 2096085884777793242,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PREDISPATCHPRICESENSITIVITIES#FILE01#202512010000.zip",
+        "utilake.from.release": "2025-12",
+        "utilake.from.sha256": "b8e7fb0c8aa1e8ba5aeabf1aa40f36a205fb99109a3259bd2a24265e553f4484",
+        "utilake.from.time": "2025-12-01T04:30:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "PRICESENSITIVITIES",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "7440",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PREDISPATCHPRICESENSITIVITIES#FILE01#202512010000.zip",
+        "utilake.to.release": "2025-12",
+        "utilake.to.sha256": "b8e7fb0c8aa1e8ba5aeabf1aa40f36a205fb99109a3259bd2a24265e553f4484",
+        "utilake.to.time": "2026-01-01T04:00:00+10:00",
+        "utilake.total-rows": "2260610",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1764511200004
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHPRICESENSITIVITIES/metadata/snap-2276381238100717213-6-9c57e132-2237-8f0b-8389-ce00be653d11.avro",
+      "parent-snapshot-id": 2096085884777793242,
+      "schema-id": 1,
+      "sequence-number": 6,
+      "snapshot-id": 2276381238100717213,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1488",
+        "utilake.from.file": "PUBLIC_PREDISPATCH_SENSITIVITIES_20251126_20251202.zip",
+        "utilake.from.release": "2025-12",
+        "utilake.from.sha256": "c56da396e216ab8148d08f17a4c06124c0746ef114f5313cffa3ec7c6ebb52ac",
+        "utilake.from.time": "2025-12-01T00:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "PRICESENSITIVITIES",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "412920",
+        "utilake.to.file": "PUBLIC_PREDISPATCH_SENSITIVITIES_20251231_20260106.zip",
+        "utilake.to.release": "2025-12",
+        "utilake.to.sha256": "e7c6fc6637bef1408d26c425dbf702ef11829e6baa39de997d36580b8c76f830",
+        "utilake.to.time": "2026-01-02T04:00:00+10:00",
+        "utilake.total-rows": "2673530",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1764511200005
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHPRICESENSITIVITIES/metadata/snap-3040436721943914955-7-9c57e132-2237-8f0b-8389-ce00be653d11.avro",
+      "parent-snapshot-id": 2276381238100717213,
+      "schema-id": 0,
+      "sequence-number": 7,
+      "snapshot-id": 3040436721943914955,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PREDISPATCHPRICESENSITIVITIES#FILE01#202601010000.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "02aa7c8cdc3604c4483f9d40e0027bfa7f15ae23df76fb79623c308835879e61",
+        "utilake.from.time": "2026-01-01T04:30:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "PRICESENSITIVITIES",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "7440",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PREDISPATCHPRICESENSITIVITIES#FILE01#202601010000.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "02aa7c8cdc3604c4483f9d40e0027bfa7f15ae23df76fb79623c308835879e61",
+        "utilake.to.time": "2026-02-01T04:00:00+10:00",
+        "utilake.total-rows": "2680970",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1767189600006
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHPRICESENSITIVITIES/metadata/snap-2845167449275969430-8-9c57e132-2237-8f0b-8389-ce00be653d11.avro",
+      "parent-snapshot-id": 3040436721943914955,
+      "schema-id": 1,
+      "sequence-number": 8,
+      "snapshot-id": 2845167449275969430,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1488",
+        "utilake.from.file": "PUBLIC_PREDISPATCH_SENSITIVITIES_20251231_20260106.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "e7c6fc6637bef1408d26c425dbf702ef11829e6baa39de997d36580b8c76f830",
+        "utilake.from.time": "2026-01-01T00:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "PRICESENSITIVITIES",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "412920",
+        "utilake.to.file": "PUBLIC_PREDISPATCH_SENSITIVITIES_20260128_20260203.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "aa39b6571c3c2d70ee3ec09ebb29444f75af216321e1a81d716be9cf2a0a934c",
+        "utilake.to.time": "2026-02-02T04:00:00+10:00",
+        "utilake.total-rows": "3093890",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1767189600007
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHPRICESENSITIVITIES/metadata/snap-5209613205060745633-9-9c57e132-2237-8f0b-8389-ce00be653d11.avro",
+      "parent-snapshot-id": 2845167449275969430,
+      "schema-id": 0,
+      "sequence-number": 9,
+      "snapshot-id": 5209613205060745633,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PREDISPATCHPRICESENSITIVITIES#FILE01#202602010000.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "47f7f34806809fba6073442e49dd8d0835210e22a30a59eb560ff6ade8ea82b5",
+        "utilake.from.time": "2026-02-01T04:30:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "PRICESENSITIVITIES",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "6720",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PREDISPATCHPRICESENSITIVITIES#FILE01#202602010000.zip",
+        "utilake.to.release": "2026-02",
+        "utilake.to.sha256": "47f7f34806809fba6073442e49dd8d0835210e22a30a59eb560ff6ade8ea82b5",
+        "utilake.to.time": "2026-03-01T04:00:00+10:00",
+        "utilake.total-rows": "3100610",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1769868000008
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHPRICESENSITIVITIES/metadata/snap-2402936356274357074-10-9c57e132-2237-8f0b-8389-ce00be653d11.avro",
+      "parent-snapshot-id": 5209613205060745633,
+      "schema-id": 1,
+      "sequence-number": 10,
+      "snapshot-id": 2402936356274357074,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1345",
+        "utilake.from.file": "PUBLIC_PREDISPATCH_SENSITIVITIES_20260128_20260203.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "aa39b6571c3c2d70ee3ec09ebb29444f75af216321e1a81d716be9cf2a0a934c",
+        "utilake.from.time": "2026-02-01T00:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "PRICESENSITIVITIES",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "373345",
+        "utilake.to.file": "PUBLIC_PREDISPATCH_SENSITIVITIES_20260303134002_0000000506103520.zip",
+        "utilake.to.release": "2026-03",
+        "utilake.to.sha256": "0e615b418e6a840aecd7dfa9aa5a1da8d580c0c2029b0aced3312f85b0e82607",
+        "utilake.to.time": "2026-03-05T04:00:00+10:00",
+        "utilake.total-rows": "3473955",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1769868000009
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHPRICESENSITIVITIES/metadata/snap-5153643901561206810-11-9c57e132-2237-8f0b-8389-ce00be653d11.avro",
+      "parent-snapshot-id": 2402936356274357074,
+      "schema-id": 0,
+      "sequence-number": 11,
+      "snapshot-id": 5153643901561206810,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PREDISPATCHPRICESENSITIVITIES#FILE01#202603010000.zip",
+        "utilake.from.release": "2026-03",
+        "utilake.from.sha256": "6da7eca087e543656f758509d4daa8dfbb1328ad14c4a3d32383386401a5dfd0",
+        "utilake.from.time": "2026-03-01T04:30:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "PRICESENSITIVITIES",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "7440",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PREDISPATCHPRICESENSITIVITIES#FILE01#202603010000.zip",
+        "utilake.to.release": "2026-03",
+        "utilake.to.sha256": "6da7eca087e543656f758509d4daa8dfbb1328ad14c4a3d32383386401a5dfd0",
+        "utilake.to.time": "2026-04-01T04:00:00+10:00",
+        "utilake.total-rows": "3481395",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1772287200010
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHPRICESENSITIVITIES/metadata/snap-3298491959671402029-12-9c57e132-2237-8f0b-8389-ce00be653d11.avro",
+      "parent-snapshot-id": 5153643901561206810,
+      "schema-id": 1,
+      "sequence-number": 12,
+      "snapshot-id": 3298491959671402029,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1488",
+        "utilake.from.file": "PUBLIC_PREDISPATCH_SENSITIVITIES_20260225_20260303.zip",
+        "utilake.from.release": "2026-03",
+        "utilake.from.sha256": "39e6fd5fec5fd3547d600422618025910a4bf465542a6aed0157d2ecc8f91606",
+        "utilake.from.time": "2026-03-01T00:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "PRICESENSITIVITIES",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "412920",
+        "utilake.to.file": "PUBLIC_PREDISPATCH_SENSITIVITIES_20260325_20260331.zip",
+        "utilake.to.release": "2026-03",
+        "utilake.to.sha256": "a5c84fe47e280b21c04ecc158074b6889aa7144fb49aa0cad8a31c25904f8f2f",
+        "utilake.to.time": "2026-04-02T04:00:00+10:00",
+        "utilake.total-rows": "3894315",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1772287200011
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHPRICESENSITIVITIES/metadata/snap-7878100986039658365-13-9c57e132-2237-8f0b-8389-ce00be653d11.avro",
+      "parent-snapshot-id": 3298491959671402029,
+      "schema-id": 0,
+      "sequence-number": 13,
+      "snapshot-id": 7878100986039658365,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PREDISPATCHPRICESENSITIVITIES#FILE01#202604010000.zip",
+        "utilake.from.release": "2026-04",
+        "utilake.from.sha256": "a5f0d813e71a146d5332fdb8095f902249c2be5df0820d5f3dfe6edf11e0e107",
+        "utilake.from.time": "2026-04-01T04:30:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "PRICESENSITIVITIES",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "7200",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PREDISPATCHPRICESENSITIVITIES#FILE01#202604010000.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "a5f0d813e71a146d5332fdb8095f902249c2be5df0820d5f3dfe6edf11e0e107",
+        "utilake.to.time": "2026-05-01T04:00:00+10:00",
+        "utilake.total-rows": "3901515",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1774965600012
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHPRICESENSITIVITIES/metadata/snap-8733247511705870252-14-9c57e132-2237-8f0b-8389-ce00be653d11.avro",
+      "parent-snapshot-id": 7878100986039658365,
+      "schema-id": 1,
+      "sequence-number": 14,
+      "snapshot-id": 8733247511705870252,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1440",
+        "utilake.from.file": "PUBLIC_PREDISPATCH_SENSITIVITIES_20260325_20260331.zip",
+        "utilake.from.release": "2026-04",
+        "utilake.from.sha256": "a5c84fe47e280b21c04ecc158074b6889aa7144fb49aa0cad8a31c25904f8f2f",
+        "utilake.from.time": "2026-04-01T00:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "PRICESENSITIVITIES",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "399600",
+        "utilake.to.file": "PUBLIC_PREDISPATCH_SENSITIVITIES_20260429_20260505.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "fc7467d26397ea14375f13fb99ae3f7be564ef8d6c7d41c54f3f131f0d8059c7",
+        "utilake.to.time": "2026-05-02T04:00:00+10:00",
+        "utilake.total-rows": "4301115",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1774965600013
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHPRICESENSITIVITIES/metadata/snap-8854236602113359274-15-9c57e132-2237-8f0b-8389-ce00be653d11.avro",
+      "parent-snapshot-id": 8733247511705870252,
+      "schema-id": 0,
+      "sequence-number": 15,
+      "snapshot-id": 8854236602113359274,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PREDISPATCHPRICESENSITIVITIES#FILE01#202605010000.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "4de276f21edac9955522aba704ed660682b202c967979cc3e5548ffed8ed6cdd",
+        "utilake.from.time": "2026-05-01T04:30:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "PRICESENSITIVITIES",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "7440",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PREDISPATCHPRICESENSITIVITIES#FILE01#202605010000.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "4de276f21edac9955522aba704ed660682b202c967979cc3e5548ffed8ed6cdd",
+        "utilake.to.time": "2026-06-01T04:00:00+10:00",
+        "utilake.total-rows": "4308555",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1777557600014
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHPRICESENSITIVITIES/metadata/snap-8878453338899639573-16-9c57e132-2237-8f0b-8389-ce00be653d11.avro",
+      "parent-snapshot-id": 8854236602113359274,
+      "schema-id": 1,
+      "sequence-number": 16,
+      "snapshot-id": 8878453338899639573,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1488",
+        "utilake.from.file": "PUBLIC_PREDISPATCH_SENSITIVITIES_20260429_20260505.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "fc7467d26397ea14375f13fb99ae3f7be564ef8d6c7d41c54f3f131f0d8059c7",
+        "utilake.from.time": "2026-05-01T00:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "PRICESENSITIVITIES",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "412920",
+        "utilake.to.file": "PUBLIC_PREDISPATCH_SENSITIVITIES_20260527_20260602.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "7cb7859e73a3af38181a2173c2033d7e2c9f176bd57cfc931c92541751add1bf",
+        "utilake.to.time": "2026-06-02T04:00:00+10:00",
+        "utilake.total-rows": "4721475",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1777557600015
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHPRICESENSITIVITIES/metadata/snap-6467126447304104384-17-9c57e132-2237-8f0b-8389-ce00be653d11.avro",
+      "parent-snapshot-id": 8878453338899639573,
+      "schema-id": 0,
+      "sequence-number": 17,
+      "snapshot-id": 6467126447304104384,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PREDISPATCHPRICESENSITIVITIES#FILE01#202606010000.zip",
+        "utilake.from.release": "2026-06",
+        "utilake.from.sha256": "397b4be1036ae551da0791c377e255db79889ad36ac3d2049920706161542ff3",
+        "utilake.from.time": "2026-06-01T04:30:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "PRICESENSITIVITIES",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "7200",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PREDISPATCHPRICESENSITIVITIES#FILE01#202606010000.zip",
+        "utilake.to.release": "2026-06",
+        "utilake.to.sha256": "397b4be1036ae551da0791c377e255db79889ad36ac3d2049920706161542ff3",
+        "utilake.to.time": "2026-07-01T04:00:00+10:00",
+        "utilake.total-rows": "4728675",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1780236000016
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHPRICESENSITIVITIES/metadata/snap-1134517999094557501-18-9c57e132-2237-8f0b-8389-ce00be653d11.avro",
+      "parent-snapshot-id": 6467126447304104384,
+      "schema-id": 1,
+      "sequence-number": 18,
+      "snapshot-id": 1134517999094557501,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1440",
+        "utilake.from.file": "PUBLIC_PREDISPATCH_SENSITIVITIES_20260527_20260602.zip",
+        "utilake.from.release": "2026-06",
+        "utilake.from.sha256": "7cb7859e73a3af38181a2173c2033d7e2c9f176bd57cfc931c92541751add1bf",
+        "utilake.from.time": "2026-06-01T00:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "PRICESENSITIVITIES",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "399600",
+        "utilake.to.file": "PUBLIC_PREDISPATCH_SENSITIVITIES_20260624_20260630.zip",
+        "utilake.to.release": "2026-06",
+        "utilake.to.sha256": "97e7854e49fad3802387c3a712cc62b63fb52d01801f67cc96cb790042c06c4b",
+        "utilake.to.time": "2026-07-02T04:00:00+10:00",
+        "utilake.total-rows": "5128275",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1780236000017
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHPRICESENSITIVITIES/metadata/snap-6511754856997754407-19-9c57e132-2237-8f0b-8389-ce00be653d11.avro",
+      "parent-snapshot-id": 1134517999094557501,
+      "schema-id": 0,
+      "sequence-number": 19,
+      "snapshot-id": 6511754856997754407,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PREDISPATCHPRICESENSITIVITIES#FILE01#202607010000.zip",
+        "utilake.from.release": "2026-07",
+        "utilake.from.sha256": "bce62c58c269ceb7f8ae288a5194563a30822b22166ab3d71191c88b368a1597",
+        "utilake.from.time": "2026-07-01T04:30:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "PRICESENSITIVITIES",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "7440",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PREDISPATCHPRICESENSITIVITIES#FILE01#202607010000.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "bce62c58c269ceb7f8ae288a5194563a30822b22166ab3d71191c88b368a1597",
+        "utilake.to.time": "2026-08-01T04:00:00+10:00",
+        "utilake.total-rows": "5135715",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1782828000018
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHPRICESENSITIVITIES/metadata/snap-275310416618221587-20-9c57e132-2237-8f0b-8389-ce00be653d11.avro",
+      "parent-snapshot-id": 6511754856997754407,
+      "schema-id": 1,
+      "sequence-number": 20,
+      "snapshot-id": 275310416618221587,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1488",
+        "utilake.from.file": "PUBLIC_PREDISPATCH_SENSITIVITIES_20260624_20260630.zip",
+        "utilake.from.release": "2026-07",
+        "utilake.from.sha256": "97e7854e49fad3802387c3a712cc62b63fb52d01801f67cc96cb790042c06c4b",
+        "utilake.from.time": "2026-07-01T00:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "PRICESENSITIVITIES",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "412920",
+        "utilake.to.file": "PUBLIC_PREDISPATCH_SENSITIVITIES_20260729_20260804.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "0b521f9ec2b23c85507006cbb845eb107236a0aa55ed9c94dba229955ab04ea3",
+        "utilake.to.time": "2026-08-02T04:00:00+10:00",
+        "utilake.total-rows": "5548635",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1782828000019
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHPRICESENSITIVITIES/metadata/snap-2039295153125064319-21-9c57e132-2237-8f0b-8389-ce00be653d11.avro",
+      "parent-snapshot-id": 275310416618221587,
+      "schema-id": 0,
+      "sequence-number": 21,
+      "snapshot-id": 2039295153125064319,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PREDISPATCHPRICESENSITIVITIES#FILE01#202608010000.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "a303c4ebe6cadfc1b743ebde0377937a444c3700e5f945f8df5549542a5380dc",
+        "utilake.from.time": "2026-08-01T04:30:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "PRICESENSITIVITIES",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "7440",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PREDISPATCHPRICESENSITIVITIES#FILE01#202608010000.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "a303c4ebe6cadfc1b743ebde0377937a444c3700e5f945f8df5549542a5380dc",
+        "utilake.to.time": "2026-09-01T04:00:00+10:00",
+        "utilake.total-rows": "5556075",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1785506400020
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHPRICESENSITIVITIES/metadata/snap-1714436838210248776-22-9c57e132-2237-8f0b-8389-ce00be653d11.avro",
+      "parent-snapshot-id": 2039295153125064319,
+      "schema-id": 1,
+      "sequence-number": 22,
+      "snapshot-id": 1714436838210248776,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1488",
+        "utilake.from.file": "PUBLIC_PREDISPATCH_SENSITIVITIES_20260729_20260804.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "0b521f9ec2b23c85507006cbb845eb107236a0aa55ed9c94dba229955ab04ea3",
+        "utilake.from.time": "2026-08-01T00:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "PRICESENSITIVITIES",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "412920",
+        "utilake.to.file": "PUBLIC_PREDISPATCH_SENSITIVITIES_20260826_20260901.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "d19270c0c82e4aff3923993f7d21a30f59df2283c326c4720aea38910cc0c270",
+        "utilake.to.time": "2026-09-02T04:00:00+10:00",
+        "utilake.total-rows": "5968995",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1785506400021
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHPRICESENSITIVITIES/metadata/snap-3871112688641805321-23-9c57e132-2237-8f0b-8389-ce00be653d11.avro",
+      "parent-snapshot-id": 1714436838210248776,
+      "schema-id": 0,
+      "sequence-number": 23,
+      "snapshot-id": 3871112688641805321,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PREDISPATCHPRICESENSITIVITIES#FILE01#202609010000.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "97ecb5e281c3cf9340b447f151c7988dc9ba87bf8c0e7685f3676b1317360507",
+        "utilake.from.time": "2026-09-01T04:30:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "PRICESENSITIVITIES",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "7200",
         "utilake.to.file": "PUBLIC_ARCHIVE#PREDISPATCHPRICESENSITIVITIES#FILE01#202609010000.zip",
         "utilake.to.release": "2026-09",
         "utilake.to.sha256": "97ecb5e281c3cf9340b447f151c7988dc9ba87bf8c0e7685f3676b1317360507",
         "utilake.to.time": "2026-10-01T04:00:00+10:00",
-        "utilake.total-rows": "1513890",
+        "utilake.total-rows": "5976195",
         "utilake.version": "1"
       },
-      "timestamp-ms": 1246370400000
+      "timestamp-ms": 1788184800022
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHPRICESENSITIVITIES/metadata/snap-6485150853299132183-24-9c57e132-2237-8f0b-8389-ce00be653d11.avro",
+      "parent-snapshot-id": 3871112688641805321,
+      "schema-id": 1,
+      "sequence-number": 24,
+      "snapshot-id": 6485150853299132183,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2789",
+        "utilake.from.file": "PUBLIC_PREDISPATCH_SENSITIVITIES_20260826_20260901.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "d19270c0c82e4aff3923993f7d21a30f59df2283c326c4720aea38910cc0c270",
+        "utilake.from.time": "2026-09-01T00:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "PRICESENSITIVITIES",
+        "utilake.report-type": "PREDISPATCH",
+        "utilake.rows": "774070",
+        "utilake.to.file": "PUBLIC_PREDISPATCH_SENSITIVITIES_20261021220759_0000000544124404.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "f414572f3fbb564da01ba327f2eee9e9e040e001f183750de97349fc2d4e4b6c",
+        "utilake.to.time": "2026-10-23T04:00:00+10:00",
+        "utilake.total-rows": "6750265",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1788184800023
     }
   ],
   "sort-orders": [

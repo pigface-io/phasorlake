@@ -1,13 +1,13 @@
 {
-  "current-schema-id": 0,
-  "current-snapshot-id": 8787898697860409480,
+  "current-schema-id": 1,
+  "current-snapshot-id": 1848678901975825565,
   "default-sort-order-id": 0,
   "default-spec-id": 0,
   "format-version": 3,
   "last-column-id": 10,
   "last-partition-id": 999,
-  "last-sequence-number": 1,
-  "last-updated-ms": 1751292000000,
+  "last-sequence-number": 26,
+  "last-updated-ms": 1788184800025,
   "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PDPASA_DUIDAVAILABILITY",
   "metadata-log": [],
   "next-row-id": 0,
@@ -36,7 +36,7 @@
   },
   "refs": {
     "main": {
-      "snapshot-id": 8787898697860409480,
+      "snapshot-id": 1848678901975825565,
       "type": "branch"
     }
   },
@@ -117,12 +117,189 @@
       "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "doc": "PDPASA run, identified by the first half hour ended interval of the run.",
+          "id": 1,
+          "name": "RUN_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "NEM Dispatchable Unit Identifier",
+          "id": 3,
+          "name": "DUID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "doc": "Half hour ended interval",
+          "id": 2,
+          "name": "INTERVAL_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "doc": "Available Capacity for a scheduled generating unit, semi-scheduled generating unit, BDU (Gen side), WDR or MNSP.",
+          "id": 4,
+          "name": "GENERATION_MAX_AVAILABILITY",
+          "required": false,
+          "type": "decimal(12, 6)"
+        },
+        {
+          "doc": "PASA Availability for a scheduled generating unit, BDU (Gen side), WDR or MNSP. Null for a semi-scheduled generating unit.",
+          "id": 5,
+          "name": "GENERATION_PASA_AVAILABILITY",
+          "required": false,
+          "type": "decimal(12, 0)"
+        },
+        {
+          "doc": "Recall Period associated with the PASA Availability for a scheduled generating unit, BDU (Gen side), WDR or MNSP. Null for a semi-scheduled generating unit.",
+          "id": 6,
+          "name": "GENERATION_RECALL_PERIOD",
+          "required": false,
+          "type": "decimal(8, 3)"
+        },
+        {
+          "doc": "Available Capacity for a scheduled load or BDU(Load side).",
+          "id": 7,
+          "name": "LOAD_MAX_AVAILABILITY",
+          "required": false,
+          "type": "decimal(12, 6)"
+        },
+        {
+          "doc": "PASA Availability for a scheduled load or BDU(Load side).",
+          "id": 8,
+          "name": "LOAD_PASA_AVAILABILITY",
+          "required": false,
+          "type": "decimal(12, 0)"
+        },
+        {
+          "doc": "Recall Period associated with the PASA Availability for a scheduled load or BDU(Load side).",
+          "id": 9,
+          "name": "LOAD_RECALL_PERIOD",
+          "required": false,
+          "type": "decimal(8, 3)"
+        },
+        {
+          "doc": "Report Creation Date Time.",
+          "id": 10,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 1,
+      "type": "struct"
     }
   ],
   "snapshot-log": [
     {
       "snapshot-id": 8787898697860409480,
       "timestamp-ms": 1751292000000
+    },
+    {
+      "snapshot-id": 711371255390419019,
+      "timestamp-ms": 1756648800001
+    },
+    {
+      "snapshot-id": 1527227028932982673,
+      "timestamp-ms": 1756648800002
+    },
+    {
+      "snapshot-id": 429521676549907921,
+      "timestamp-ms": 1759240800003
+    },
+    {
+      "snapshot-id": 3819595874368486432,
+      "timestamp-ms": 1759240800004
+    },
+    {
+      "snapshot-id": 6709706323813753297,
+      "timestamp-ms": 1761919200005
+    },
+    {
+      "snapshot-id": 8880146975685546379,
+      "timestamp-ms": 1761919200006
+    },
+    {
+      "snapshot-id": 18343137979844358,
+      "timestamp-ms": 1764511200007
+    },
+    {
+      "snapshot-id": 4735539864876061495,
+      "timestamp-ms": 1764511200008
+    },
+    {
+      "snapshot-id": 4473312671654043869,
+      "timestamp-ms": 1767189600009
+    },
+    {
+      "snapshot-id": 6975519105916449523,
+      "timestamp-ms": 1767189600010
+    },
+    {
+      "snapshot-id": 7133916887559957451,
+      "timestamp-ms": 1769868000011
+    },
+    {
+      "snapshot-id": 3133215278005199219,
+      "timestamp-ms": 1769868000012
+    },
+    {
+      "snapshot-id": 554920456272418881,
+      "timestamp-ms": 1772287200013
+    },
+    {
+      "snapshot-id": 6443632392800048491,
+      "timestamp-ms": 1772287200014
+    },
+    {
+      "snapshot-id": 8661063745809384397,
+      "timestamp-ms": 1774965600015
+    },
+    {
+      "snapshot-id": 2902367622513065861,
+      "timestamp-ms": 1774965600016
+    },
+    {
+      "snapshot-id": 8462298805239140035,
+      "timestamp-ms": 1777557600017
+    },
+    {
+      "snapshot-id": 1654145638632372393,
+      "timestamp-ms": 1777557600018
+    },
+    {
+      "snapshot-id": 4077033936992886449,
+      "timestamp-ms": 1780236000019
+    },
+    {
+      "snapshot-id": 4709758288560181697,
+      "timestamp-ms": 1780236000020
+    },
+    {
+      "snapshot-id": 3670343364147378725,
+      "timestamp-ms": 1782828000021
+    },
+    {
+      "snapshot-id": 2943957144585407925,
+      "timestamp-ms": 1782828000022
+    },
+    {
+      "snapshot-id": 2348457763330017436,
+      "timestamp-ms": 1785506400023
+    },
+    {
+      "snapshot-id": 8063097233814872142,
+      "timestamp-ms": 1788184800024
+    },
+    {
+      "snapshot-id": 1848678901975825565,
+      "timestamp-ms": 1788184800025
     }
   ],
   "snapshots": [
@@ -135,7 +312,7 @@
       "snapshot-id": 8787898697860409480,
       "summary": {
         "operation": "append",
-        "utilake.files": "63",
+        "utilake.files": "3",
         "utilake.from.file": "PUBLIC_ARCHIVE#PDPASA_DUIDAVAILABILITY#FILE01#202507010000.zip",
         "utilake.from.release": "2025-07",
         "utilake.from.sha256": "b74588238c1ccd47a6a77630cfc818b8ced66853c3cc1472472a4301c178b99b",
@@ -143,15 +320,715 @@
         "utilake.kinds": "[\"archive\"]",
         "utilake.report-subtype": "DUIDAVAILABILITY",
         "utilake.report-type": "PDPASA",
-        "utilake.rows": "3012919471",
+        "utilake.rows": "112761091",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PDPASA_DUIDAVAILABILITY#FILE01#202509010000.zip",
+        "utilake.to.release": "2025-09",
+        "utilake.to.sha256": "5613ca6cb0e1616ebb3c4fc69553504531b96999ecd9ed2c89baf6665bdb883c",
+        "utilake.to.time": "2025-09-20T04:00:00+10:00",
+        "utilake.total-rows": "112761091",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1751292000000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PDPASA_DUIDAVAILABILITY/metadata/snap-711371255390419019-2-b4b45b68-6b49-8005-8c4f-edc6f287e899.avro",
+      "parent-snapshot-id": 8787898697860409480,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 711371255390419019,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1440",
+        "utilake.from.file": "PUBLIC_PDPASA_DUIDAVAILABILITY_20250901.zip",
+        "utilake.from.release": "2025-09",
+        "utilake.from.sha256": "9d8657de35ebcd424f56dad6271925e5318d369cb988adcbb72c2ee5db79f094",
+        "utilake.from.time": "2025-09-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "PDPASA",
+        "utilake.rows": "34384236",
+        "utilake.to.file": "PUBLIC_PDPASA_DUIDAVAILABILITY_20250901.zip",
+        "utilake.to.release": "2025-09",
+        "utilake.to.sha256": "9d8657de35ebcd424f56dad6271925e5318d369cb988adcbb72c2ee5db79f094",
+        "utilake.to.time": "2025-10-02T04:00:00+10:00",
+        "utilake.total-rows": "147145327",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1756648800001
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PDPASA_DUIDAVAILABILITY/metadata/snap-1527227028932982673-3-b4b45b68-6b49-8005-8c4f-edc6f287e899.avro",
+      "parent-snapshot-id": 711371255390419019,
+      "schema-id": 0,
+      "sequence-number": 3,
+      "snapshot-id": 1527227028932982673,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PDPASA_DUIDAVAILABILITY#FILE02#202509010000.zip",
+        "utilake.from.release": "2025-09",
+        "utilake.from.sha256": "8f342425aba4bc42149db87b5802b6d6f379fee4528633c3cdf72c03c52a85ac",
+        "utilake.from.time": "2025-09-16T22:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "PDPASA",
+        "utilake.rows": "15886972",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PDPASA_DUIDAVAILABILITY#FILE02#202509010000.zip",
+        "utilake.to.release": "2025-09",
+        "utilake.to.sha256": "8f342425aba4bc42149db87b5802b6d6f379fee4528633c3cdf72c03c52a85ac",
+        "utilake.to.time": "2025-10-03T04:00:00+10:00",
+        "utilake.total-rows": "163032299",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1756648800002
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PDPASA_DUIDAVAILABILITY/metadata/snap-429521676549907921-4-b4b45b68-6b49-8005-8c4f-edc6f287e899.avro",
+      "parent-snapshot-id": 1527227028932982673,
+      "schema-id": 1,
+      "sequence-number": 4,
+      "snapshot-id": 429521676549907921,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1488",
+        "utilake.from.file": "PUBLIC_PDPASA_DUIDAVAILABILITY_20251001.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "cb3a38279cef6e01df3cbd43f346e458811dd2aa9e41b45f87265aa3d2c7bad7",
+        "utilake.from.time": "2025-10-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "PDPASA",
+        "utilake.rows": "35835636",
+        "utilake.to.file": "PUBLIC_PDPASA_DUIDAVAILABILITY_20251001.zip",
+        "utilake.to.release": "2025-10",
+        "utilake.to.sha256": "cb3a38279cef6e01df3cbd43f346e458811dd2aa9e41b45f87265aa3d2c7bad7",
+        "utilake.to.time": "2025-11-02T04:00:00+10:00",
+        "utilake.total-rows": "198867935",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1759240800003
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PDPASA_DUIDAVAILABILITY/metadata/snap-3819595874368486432-5-b4b45b68-6b49-8005-8c4f-edc6f287e899.avro",
+      "parent-snapshot-id": 429521676549907921,
+      "schema-id": 0,
+      "sequence-number": 5,
+      "snapshot-id": 3819595874368486432,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "3",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PDPASA_DUIDAVAILABILITY#FILE01#202510010000.zip",
+        "utilake.from.release": "2025-10",
+        "utilake.from.sha256": "4259141ce4f04ff8095d0790cbaae2a063d8c5d918fdff6f399af8da744f2b11",
+        "utilake.from.time": "2025-07-31T10:30:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "PDPASA",
+        "utilake.rows": "126840749",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PDPASA_DUIDAVAILABILITY#FILE03#202510010000.zip",
+        "utilake.to.release": "2025-10",
+        "utilake.to.sha256": "70a83d5bb200ccc9687201c55a13a65ac1b87fb10127cc8bf8620140e42fbcb9",
+        "utilake.to.time": "2025-11-20T04:00:00+10:00",
+        "utilake.total-rows": "325708684",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1759240800004
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PDPASA_DUIDAVAILABILITY/metadata/snap-6709706323813753297-6-b4b45b68-6b49-8005-8c4f-edc6f287e899.avro",
+      "parent-snapshot-id": 3819595874368486432,
+      "schema-id": 1,
+      "sequence-number": 6,
+      "snapshot-id": 6709706323813753297,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1440",
+        "utilake.from.file": "PUBLIC_PDPASA_DUIDAVAILABILITY_20251101.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "2e83c83477a42e177bb0b117c5f0e2e6699ae5358560f67a9bfc4e6923b3e184",
+        "utilake.from.time": "2025-11-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "PDPASA",
+        "utilake.rows": "35149536",
+        "utilake.to.file": "PUBLIC_PDPASA_DUIDAVAILABILITY_20251101.zip",
+        "utilake.to.release": "2025-11",
+        "utilake.to.sha256": "2e83c83477a42e177bb0b117c5f0e2e6699ae5358560f67a9bfc4e6923b3e184",
+        "utilake.to.time": "2025-12-02T04:00:00+10:00",
+        "utilake.total-rows": "360858220",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1761919200005
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PDPASA_DUIDAVAILABILITY/metadata/snap-8880146975685546379-7-b4b45b68-6b49-8005-8c4f-edc6f287e899.avro",
+      "parent-snapshot-id": 6709706323813753297,
+      "schema-id": 0,
+      "sequence-number": 7,
+      "snapshot-id": 8880146975685546379,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "3",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PDPASA_DUIDAVAILABILITY#FILE01#202511010000.zip",
+        "utilake.from.release": "2025-11",
+        "utilake.from.sha256": "03b64da575b0082250010c7930602204c1fe8293f1ece56a709ec1d270d13046",
+        "utilake.from.time": "2025-07-31T11:30:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "PDPASA",
+        "utilake.rows": "150233367",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PDPASA_DUIDAVAILABILITY#FILE03#202511010000.zip",
+        "utilake.to.release": "2025-11",
+        "utilake.to.sha256": "edb85b51a5c79628422f8c95962834a57fbdc24bcc7e0b25ea5b8d819aebbc30",
+        "utilake.to.time": "2025-12-10T04:00:00+10:00",
+        "utilake.total-rows": "511091587",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1761919200006
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PDPASA_DUIDAVAILABILITY/metadata/snap-18343137979844358-8-b4b45b68-6b49-8005-8c4f-edc6f287e899.avro",
+      "parent-snapshot-id": 8880146975685546379,
+      "schema-id": 1,
+      "sequence-number": 8,
+      "snapshot-id": 18343137979844358,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1488",
+        "utilake.from.file": "PUBLIC_PDPASA_DUIDAVAILABILITY_20251201.zip",
+        "utilake.from.release": "2025-12",
+        "utilake.from.sha256": "0114d395d8153b9e00c669049c30170a10b0f251b230fa0cdae6d29d109186e9",
+        "utilake.from.time": "2025-12-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "PDPASA",
+        "utilake.rows": "36769548",
+        "utilake.to.file": "PUBLIC_PDPASA_DUIDAVAILABILITY_20251201.zip",
+        "utilake.to.release": "2025-12",
+        "utilake.to.sha256": "0114d395d8153b9e00c669049c30170a10b0f251b230fa0cdae6d29d109186e9",
+        "utilake.to.time": "2026-01-02T04:00:00+10:00",
+        "utilake.total-rows": "547861135",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1764511200007
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PDPASA_DUIDAVAILABILITY/metadata/snap-4735539864876061495-9-b4b45b68-6b49-8005-8c4f-edc6f287e899.avro",
+      "parent-snapshot-id": 18343137979844358,
+      "schema-id": 0,
+      "sequence-number": 9,
+      "snapshot-id": 4735539864876061495,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "6",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PDPASA_DUIDAVAILABILITY#FILE01#202512010000.zip",
+        "utilake.from.release": "2025-12",
+        "utilake.from.sha256": "5bbaa542337a09204ec672cdc489ba28d7d4cb544c532dffbbed91a298c6c114",
+        "utilake.from.time": "2025-07-31T17:00:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "PDPASA",
+        "utilake.rows": "300756340",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PDPASA_DUIDAVAILABILITY#FILE02#202601010000.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "c53b8e4eea599c58b506e120c3a6bd4bb86e921ce74c9773b72b55b92851773b",
+        "utilake.to.time": "2026-02-01T04:00:00+10:00",
+        "utilake.total-rows": "848617475",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1764511200008
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PDPASA_DUIDAVAILABILITY/metadata/snap-4473312671654043869-10-b4b45b68-6b49-8005-8c4f-edc6f287e899.avro",
+      "parent-snapshot-id": 4735539864876061495,
+      "schema-id": 1,
+      "sequence-number": 10,
+      "snapshot-id": 4473312671654043869,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1488",
+        "utilake.from.file": "PUBLIC_PDPASA_DUIDAVAILABILITY_20260101.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "97202c05077706f3b3f8bbbcf5734b05a3831187cdd8456b9b3aa2bd8fd5b938",
+        "utilake.from.time": "2026-01-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "PDPASA",
+        "utilake.rows": "37029960",
+        "utilake.to.file": "PUBLIC_PDPASA_DUIDAVAILABILITY_20260101.zip",
+        "utilake.to.release": "2026-01",
+        "utilake.to.sha256": "97202c05077706f3b3f8bbbcf5734b05a3831187cdd8456b9b3aa2bd8fd5b938",
+        "utilake.to.time": "2026-02-02T04:00:00+10:00",
+        "utilake.total-rows": "885647435",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1767189600009
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PDPASA_DUIDAVAILABILITY/metadata/snap-6975519105916449523-11-b4b45b68-6b49-8005-8c4f-edc6f287e899.avro",
+      "parent-snapshot-id": 4473312671654043869,
+      "schema-id": 0,
+      "sequence-number": 11,
+      "snapshot-id": 6975519105916449523,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "5",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PDPASA_DUIDAVAILABILITY#FILE03#202601010000.zip",
+        "utilake.from.release": "2026-01",
+        "utilake.from.sha256": "f7e451b05b5c29e2075777b707a8332b8ef829495d98197f67b7d9817e336d14",
+        "utilake.from.time": "2025-07-31T17:30:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "PDPASA",
+        "utilake.rows": "225705311",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PDPASA_DUIDAVAILABILITY#FILE02#202602010000.zip",
+        "utilake.to.release": "2026-02",
+        "utilake.to.sha256": "b8a72f96188ba0116fbd64d5b2aec206f0fac05fa2ea04314aa74f5d7cb88774",
+        "utilake.to.time": "2026-02-23T04:00:00+10:00",
+        "utilake.total-rows": "1111352746",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1767189600010
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PDPASA_DUIDAVAILABILITY/metadata/snap-7133916887559957451-12-b4b45b68-6b49-8005-8c4f-edc6f287e899.avro",
+      "parent-snapshot-id": 6975519105916449523,
+      "schema-id": 1,
+      "sequence-number": 12,
+      "snapshot-id": 7133916887559957451,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1344",
+        "utilake.from.file": "PUBLIC_PDPASA_DUIDAVAILABILITY_20260201.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "aa2e42bb66ebbb1c79e29f87bf5c7d422b8f0f851ef7ca76b03c128be4196875",
+        "utilake.from.time": "2026-02-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "PDPASA",
+        "utilake.rows": "33821490",
+        "utilake.to.file": "PUBLIC_PDPASA_DUIDAVAILABILITY_20260201.zip",
+        "utilake.to.release": "2026-02",
+        "utilake.to.sha256": "aa2e42bb66ebbb1c79e29f87bf5c7d422b8f0f851ef7ca76b03c128be4196875",
+        "utilake.to.time": "2026-03-02T04:00:00+10:00",
+        "utilake.total-rows": "1145174236",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1769868000011
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PDPASA_DUIDAVAILABILITY/metadata/snap-3133215278005199219-13-b4b45b68-6b49-8005-8c4f-edc6f287e899.avro",
+      "parent-snapshot-id": 7133916887559957451,
+      "schema-id": 0,
+      "sequence-number": 13,
+      "snapshot-id": 3133215278005199219,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "6",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PDPASA_DUIDAVAILABILITY#FILE03#202602010000.zip",
+        "utilake.from.release": "2026-02",
+        "utilake.from.sha256": "8d6b4689fa46b627630cfb18a4c075de120868c5a390b42eed1f8b610324417d",
+        "utilake.from.time": "2025-07-31T17:30:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "PDPASA",
+        "utilake.rows": "314030315",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PDPASA_DUIDAVAILABILITY#FILE05#202602010000.zip",
+        "utilake.to.release": "2026-02",
+        "utilake.to.sha256": "8c7fdca75c2d622515d3939cdbfbcc25d5cd2ed3caee3f19240b0d97248211a5",
+        "utilake.to.time": "2026-03-11T04:00:00+10:00",
+        "utilake.total-rows": "1459204551",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1769868000012
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PDPASA_DUIDAVAILABILITY/metadata/snap-554920456272418881-14-b4b45b68-6b49-8005-8c4f-edc6f287e899.avro",
+      "parent-snapshot-id": 3133215278005199219,
+      "schema-id": 1,
+      "sequence-number": 14,
+      "snapshot-id": 554920456272418881,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1488",
+        "utilake.from.file": "PUBLIC_PDPASA_DUIDAVAILABILITY_20260301.zip",
+        "utilake.from.release": "2026-03",
+        "utilake.from.sha256": "7df8246740d0978fdab65436ece6e0f71028ed05e6e21cc8760b7d1f1a511f67",
+        "utilake.from.time": "2026-03-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "PDPASA",
+        "utilake.rows": "37923204",
+        "utilake.to.file": "PUBLIC_PDPASA_DUIDAVAILABILITY_20260301.zip",
+        "utilake.to.release": "2026-03",
+        "utilake.to.sha256": "7df8246740d0978fdab65436ece6e0f71028ed05e6e21cc8760b7d1f1a511f67",
+        "utilake.to.time": "2026-04-02T04:00:00+10:00",
+        "utilake.total-rows": "1497127755",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1772287200013
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PDPASA_DUIDAVAILABILITY/metadata/snap-6443632392800048491-15-b4b45b68-6b49-8005-8c4f-edc6f287e899.avro",
+      "parent-snapshot-id": 554920456272418881,
+      "schema-id": 0,
+      "sequence-number": 15,
+      "snapshot-id": 6443632392800048491,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "6",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PDPASA_DUIDAVAILABILITY#FILE04#202603010000.zip",
+        "utilake.from.release": "2026-03",
+        "utilake.from.sha256": "c33a93ae13547792115bf4e7e286007db0ab3ba4b7add9d05f14a17c3ee1da35",
+        "utilake.from.time": "2025-07-31T11:30:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "PDPASA",
+        "utilake.rows": "292022189",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PDPASA_DUIDAVAILABILITY#FILE06#202603010000.zip",
+        "utilake.to.release": "2026-03",
+        "utilake.to.sha256": "2b236c26adf4b6e6e30616c9737cdd94e349bc6046e123add4365cd14a99a630",
+        "utilake.to.time": "2026-04-08T04:00:00+10:00",
+        "utilake.total-rows": "1789149944",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1772287200014
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PDPASA_DUIDAVAILABILITY/metadata/snap-8661063745809384397-16-b4b45b68-6b49-8005-8c4f-edc6f287e899.avro",
+      "parent-snapshot-id": 6443632392800048491,
+      "schema-id": 1,
+      "sequence-number": 16,
+      "snapshot-id": 8661063745809384397,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1440",
+        "utilake.from.file": "PUBLIC_PDPASA_DUIDAVAILABILITY_20260401.zip",
+        "utilake.from.release": "2026-04",
+        "utilake.from.sha256": "2c5df6354c987afd42a0a27d15264846c9511761f6dc721dc815e63e8424b8b0",
+        "utilake.from.time": "2026-04-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "PDPASA",
+        "utilake.rows": "36843984",
+        "utilake.to.file": "PUBLIC_PDPASA_DUIDAVAILABILITY_20260401.zip",
+        "utilake.to.release": "2026-04",
+        "utilake.to.sha256": "2c5df6354c987afd42a0a27d15264846c9511761f6dc721dc815e63e8424b8b0",
+        "utilake.to.time": "2026-05-02T04:00:00+10:00",
+        "utilake.total-rows": "1825993928",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1774965600015
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PDPASA_DUIDAVAILABILITY/metadata/snap-2902367622513065861-17-b4b45b68-6b49-8005-8c4f-edc6f287e899.avro",
+      "parent-snapshot-id": 8661063745809384397,
+      "schema-id": 0,
+      "sequence-number": 17,
+      "snapshot-id": 2902367622513065861,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "8",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PDPASA_DUIDAVAILABILITY#FILE04#202604010000.zip",
+        "utilake.from.release": "2026-04",
+        "utilake.from.sha256": "34b10bcba4d4662f5c5cbe15bd2b705182f1a02852e25f3ad3ad33f94e883173",
+        "utilake.from.time": "2025-07-31T11:30:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "PDPASA",
+        "utilake.rows": "387753339",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PDPASA_DUIDAVAILABILITY#FILE04#202605010000.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "a5951290410ea0fd3d39c48260ff7b2e8726e8ddc538e7f40957acbef6f9b19c",
+        "utilake.to.time": "2026-05-23T04:00:00+10:00",
+        "utilake.total-rows": "2213747267",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1774965600016
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PDPASA_DUIDAVAILABILITY/metadata/snap-8462298805239140035-18-b4b45b68-6b49-8005-8c4f-edc6f287e899.avro",
+      "parent-snapshot-id": 2902367622513065861,
+      "schema-id": 1,
+      "sequence-number": 18,
+      "snapshot-id": 8462298805239140035,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1488",
+        "utilake.from.file": "PUBLIC_PDPASA_DUIDAVAILABILITY_20260501.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "0a6bc00b1eac7ebbb0bcb0fc905a3be45051e57c1beb0c2c262cf186cd83e305",
+        "utilake.from.time": "2026-05-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "PDPASA",
+        "utilake.rows": "38213340",
+        "utilake.to.file": "PUBLIC_PDPASA_DUIDAVAILABILITY_20260501.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "0a6bc00b1eac7ebbb0bcb0fc905a3be45051e57c1beb0c2c262cf186cd83e305",
+        "utilake.to.time": "2026-06-02T04:00:00+10:00",
+        "utilake.total-rows": "2251960607",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1777557600017
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PDPASA_DUIDAVAILABILITY/metadata/snap-1654145638632372393-19-b4b45b68-6b49-8005-8c4f-edc6f287e899.avro",
+      "parent-snapshot-id": 8462298805239140035,
+      "schema-id": 0,
+      "sequence-number": 19,
+      "snapshot-id": 1654145638632372393,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "6",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PDPASA_DUIDAVAILABILITY#FILE05#202605010000.zip",
+        "utilake.from.release": "2026-05",
+        "utilake.from.sha256": "de531d69c4d667eb8d07a77df139daadb15139ab97ca1ecbc61b0f204f8e5873",
+        "utilake.from.time": "2025-07-31T11:30:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "PDPASA",
+        "utilake.rows": "318169919",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PDPASA_DUIDAVAILABILITY#FILE07#202605010000.zip",
+        "utilake.to.release": "2026-05",
+        "utilake.to.sha256": "b34d228660c77407788a0b8af974b1589281902350c03421bd4d632f0ee82901",
+        "utilake.to.time": "2026-06-11T04:00:00+10:00",
+        "utilake.total-rows": "2570130526",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1777557600018
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PDPASA_DUIDAVAILABILITY/metadata/snap-4077033936992886449-20-b4b45b68-6b49-8005-8c4f-edc6f287e899.avro",
+      "parent-snapshot-id": 1654145638632372393,
+      "schema-id": 1,
+      "sequence-number": 20,
+      "snapshot-id": 4077033936992886449,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1440",
+        "utilake.from.file": "PUBLIC_PDPASA_DUIDAVAILABILITY_20260601.zip",
+        "utilake.from.release": "2026-06",
+        "utilake.from.sha256": "a5d64fbe63e5c84bfcddee63f430dd495de7e5ce2c6556ccde93b8fdd97a0c55",
+        "utilake.from.time": "2026-06-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "PDPASA",
+        "utilake.rows": "37189657",
+        "utilake.to.file": "PUBLIC_PDPASA_DUIDAVAILABILITY_20260601.zip",
+        "utilake.to.release": "2026-06",
+        "utilake.to.sha256": "a5d64fbe63e5c84bfcddee63f430dd495de7e5ce2c6556ccde93b8fdd97a0c55",
+        "utilake.to.time": "2026-07-02T04:00:00+10:00",
+        "utilake.total-rows": "2607320183",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1780236000019
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PDPASA_DUIDAVAILABILITY/metadata/snap-4709758288560181697-21-b4b45b68-6b49-8005-8c4f-edc6f287e899.avro",
+      "parent-snapshot-id": 4077033936992886449,
+      "schema-id": 0,
+      "sequence-number": 21,
+      "snapshot-id": 4709758288560181697,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "9",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PDPASA_DUIDAVAILABILITY#FILE04#202606010000.zip",
+        "utilake.from.release": "2026-06",
+        "utilake.from.sha256": "321d03d71233fc1a0cea8b31e115d66ce93498c7f20fd3db5b3432ce9851b5ae",
+        "utilake.from.time": "2025-07-31T13:30:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "PDPASA",
+        "utilake.rows": "463624415",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PDPASA_DUIDAVAILABILITY#FILE08#202606010000.zip",
+        "utilake.to.release": "2026-06",
+        "utilake.to.sha256": "e6f7e2c3fb581a1e076217a02ff7546dcd3e9de5a7e36060fdaccf371fd3cc9a",
+        "utilake.to.time": "2026-07-10T04:00:00+10:00",
+        "utilake.total-rows": "3070944598",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1780236000020
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PDPASA_DUIDAVAILABILITY/metadata/snap-3670343364147378725-22-b4b45b68-6b49-8005-8c4f-edc6f287e899.avro",
+      "parent-snapshot-id": 4709758288560181697,
+      "schema-id": 1,
+      "sequence-number": 22,
+      "snapshot-id": 3670343364147378725,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1488",
+        "utilake.from.file": "PUBLIC_PDPASA_DUIDAVAILABILITY_20260701.zip",
+        "utilake.from.release": "2026-07",
+        "utilake.from.sha256": "82ca9783297b233b393262310b0fd0b211c56ae41ca9e854dd7f76fd2961db62",
+        "utilake.from.time": "2026-07-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "PDPASA",
+        "utilake.rows": "38471139",
+        "utilake.to.file": "PUBLIC_PDPASA_DUIDAVAILABILITY_20260701.zip",
+        "utilake.to.release": "2026-07",
+        "utilake.to.sha256": "82ca9783297b233b393262310b0fd0b211c56ae41ca9e854dd7f76fd2961db62",
+        "utilake.to.time": "2026-08-02T04:00:00+10:00",
+        "utilake.total-rows": "3109415737",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1782828000021
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PDPASA_DUIDAVAILABILITY/metadata/snap-2943957144585407925-23-b4b45b68-6b49-8005-8c4f-edc6f287e899.avro",
+      "parent-snapshot-id": 3670343364147378725,
+      "schema-id": 0,
+      "sequence-number": 23,
+      "snapshot-id": 2943957144585407925,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "6",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PDPASA_DUIDAVAILABILITY#FILE05#202607010000.zip",
+        "utilake.from.release": "2026-07",
+        "utilake.from.sha256": "fdf6371e41927e1561f8e3799f07fc5cbc5c4a38a4d53d3ab976462f51a23ee2",
+        "utilake.from.time": "2025-07-31T10:30:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "PDPASA",
+        "utilake.rows": "267692302",
+        "utilake.to.file": "PUBLIC_ARCHIVE#PDPASA_DUIDAVAILABILITY#FILE01#202608010000.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "920d4629c623918836d43ab3515a7a546766ba41932d3ece11b9184bb5f7da6b",
+        "utilake.to.time": "2026-09-02T04:00:00+10:00",
+        "utilake.total-rows": "3377108039",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1782828000022
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PDPASA_DUIDAVAILABILITY/metadata/snap-2348457763330017436-24-b4b45b68-6b49-8005-8c4f-edc6f287e899.avro",
+      "parent-snapshot-id": 2943957144585407925,
+      "schema-id": 1,
+      "sequence-number": 24,
+      "snapshot-id": 2348457763330017436,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1974",
+        "utilake.from.file": "PUBLIC_PDPASA_DUIDAVAILABILITY_20260801.zip",
+        "utilake.from.release": "2026-08",
+        "utilake.from.sha256": "322d6b6f9acc12e24f4b966dc2b8cea43cb727a563addaf0af79138f20ada2c7",
+        "utilake.from.time": "2026-08-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "PDPASA",
+        "utilake.rows": "51201912",
+        "utilake.to.file": "PUBLIC_PDPASA_DUIDAVAILABILITY_202608312330_0000000535426955.zip",
+        "utilake.to.release": "2026-08",
+        "utilake.to.sha256": "f6fcd364af6768fec036ade4864117d7ec777947a31e5081c7218581e65744e7",
+        "utilake.to.time": "2026-09-02T04:00:00+10:00",
+        "utilake.total-rows": "3428309951",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1785506400023
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PDPASA_DUIDAVAILABILITY/metadata/snap-8063097233814872142-25-b4b45b68-6b49-8005-8c4f-edc6f287e899.avro",
+      "parent-snapshot-id": 2348457763330017436,
+      "schema-id": 0,
+      "sequence-number": 25,
+      "snapshot-id": 8063097233814872142,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "1",
+        "utilake.from.file": "PUBLIC_ARCHIVE#PDPASA_DUIDAVAILABILITY#FILE01#202609010000.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "c2145ad3dcb1249a263147b35e745ebf78147ad31ff1a1a2b5e44114db116783",
+        "utilake.from.time": "2026-09-01T00:30:00+10:00",
+        "utilake.kinds": "[\"archive\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "PDPASA",
+        "utilake.rows": "37443162",
         "utilake.to.file": "PUBLIC_ARCHIVE#PDPASA_DUIDAVAILABILITY#FILE01#202609010000.zip",
         "utilake.to.release": "2026-09",
         "utilake.to.sha256": "c2145ad3dcb1249a263147b35e745ebf78147ad31ff1a1a2b5e44114db116783",
         "utilake.to.time": "2026-10-02T04:00:00+10:00",
-        "utilake.total-rows": "3012919471",
+        "utilake.total-rows": "3465753113",
         "utilake.version": "1"
       },
-      "timestamp-ms": 1751292000000
+      "timestamp-ms": 1788184800024
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PDPASA_DUIDAVAILABILITY/metadata/snap-1848678901975825565-26-b4b45b68-6b49-8005-8c4f-edc6f287e899.avro",
+      "parent-snapshot-id": 8063097233814872142,
+      "schema-id": 1,
+      "sequence-number": 26,
+      "snapshot-id": 1848678901975825565,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "2446",
+        "utilake.from.file": "PUBLIC_PDPASA_DUIDAVAILABILITY_202609010000_0000000535430103.zip",
+        "utilake.from.release": "2026-09",
+        "utilake.from.sha256": "cef0776ab82726214a86faf5eca64380ee8970705511aab92c42217aa5410e06",
+        "utilake.from.time": "2026-09-01T00:00:00+10:00",
+        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.report-subtype": "DUIDAVAILABILITY",
+        "utilake.report-type": "PDPASA",
+        "utilake.rows": "63725016",
+        "utilake.to.file": "PUBLIC_PDPASA_DUIDAVAILABILITY_202610212230_0000000544123688.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "beab853dca6149a1d1d7091cebaf3bf9b811e5ddf33fc05c4a67dd484c63b883",
+        "utilake.to.time": "2026-10-23T04:00:00+10:00",
+        "utilake.total-rows": "3529478129",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1788184800025
     }
   ],
   "sort-orders": [

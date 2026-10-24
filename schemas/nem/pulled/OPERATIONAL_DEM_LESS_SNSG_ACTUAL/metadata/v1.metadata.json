@@ -1,0 +1,118 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 1631004381654029274,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 6,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1735653600000,
+  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/OPERATIONAL_DEM_LESS_SNSG_ACTUAL",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "utilake.declared": "false",
+    "utilake.format": "3",
+    "utilake.table": "OPERATIONAL_DEM_LESS_SNSG_ACTUAL"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 1631004381654029274,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "REGIONID",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 2,
+          "name": "INTERVAL_DATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 3,
+          "name": "OPERATIONAL_DEMAND_LESS_SNSG",
+          "required": false,
+          "type": "decimal(5, 0)"
+        },
+        {
+          "id": 4,
+          "name": "DEMAND_ADJUSTMENT",
+          "required": false,
+          "type": "decimal(1, 0)"
+        },
+        {
+          "id": 5,
+          "name": "WDR_ESTIMATE",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 6,
+          "name": "LASTCHANGED",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 1631004381654029274,
+      "timestamp-ms": 1735653600000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/OPERATIONAL_DEM_LESS_SNSG_ACTUAL/metadata/snap-1631004381654029274-1-f51ce2af-2d27-8a1f-8138-1dd4d10d1c89.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 1631004381654029274,
+      "summary": {
+        "operation": "append",
+        "utilake.files": "49399",
+        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEM_LESS_SNSG_UPDATE_202501310900_20250131115609.zip",
+        "utilake.from.release": "2025-01",
+        "utilake.from.sha256": "9d2263ca2f47a1164ddce36ff6a668de12b473ecea1d79283f4c1fad8c05abcb",
+        "utilake.from.time": "2025-01-31T09:30:00+10:00",
+        "utilake.kinds": "[\"reports/archive\",\"reports/current\"]",
+        "utilake.report-subtype": "ACTUAL",
+        "utilake.report-type": "OPERATIONAL_DEM_LESS_SNSG",
+        "utilake.rows": "485990",
+        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEM_LESS_SNSG_DAILY_202610210400_20261022044000.zip",
+        "utilake.to.release": "2026-10",
+        "utilake.to.sha256": "bd80c9e2dd06c456286a5e8dadf27d567760a356572bfa1c3a6615f2daf8e76d",
+        "utilake.to.time": "2026-10-22T04:00:00+10:00",
+        "utilake.total-rows": "485990",
+        "utilake.version": "1"
+      },
+      "timestamp-ms": 1735653600000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "f51ce2af-2d27-8a1f-8138-1dd4d10d1c89"
+}
