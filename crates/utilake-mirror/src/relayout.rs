@@ -164,9 +164,11 @@ pub fn relayout(
         }
         if !dry_run {
             let to = folder_step_to(archive, dir).filter(|t| free(t));
-            if let Some((to, n)) = to.and_then(|t| swappable(dir, &t).map(|n| (t, n))) {
-                swap(mirror, archive, dir, &to)?;
-                summary.moved += n;
+            let found = to.and_then(|t| swappable(dir, &t).map(|n| (t, n)));
+            if let Some((to, (n, both))) = found
+                && swap(mirror, archive, dir, &to, &both)?
+            {
+                summary.moved += n - both.len();
                 summary.folders_swapped += 1;
                 whole.push(dir.clone());
                 whole_to.push(to);
@@ -361,53 +363,109 @@ fn listing(dir: &Path) -> Option<(Vec<String>, Vec<String>, usize)> {
     Some((data, records, folders))
 }
 
-/// How many files `dir` holds, when it can be swapped for `to`, the
-/// folder they belong in: `to` holds fewer files than `dir`, and no
-/// folder; no name is in both; and every file of both has a record, and
-/// nothing else is there (no download or record in progress).
-fn swappable(dir: &Path, to: &Path) -> Option<usize> {
+/// When `dir` can be swapped for `to`, the folder its files belong in: how
+/// many files `dir` holds, and those of them also in `to` (copies a run
+/// cut off left there). `to` holds fewer files than `dir`, and no folder;
+/// every file of `to` has a record, and so has every file of `dir` not in
+/// `to`; nothing else is in either (no download or record in progress),
+/// and no record of `to` is in `dir` but those of the files in both.
+fn swappable(dir: &Path, to: &Path) -> Option<(usize, Vec<String>)> {
     let (data, records, _) = listing(dir)?;
     let (to_data, to_records, to_folders) = listing(to)?;
-    let all = |data: &[String], records: &[String]| {
-        let records: std::collections::HashSet<&str> = records.iter().map(String::as_str).collect();
-        records.len() == data.len()
-            && data.iter().all(|d| {
-                is_data_file(Path::new(d))
-                    && (records.contains(format!("{d}.json").as_str())
-                        || records.contains(format!("{d}.provenance.json").as_str()))
-            })
+    let set = |v: &[String]| -> std::collections::HashSet<String> { v.iter().cloned().collect() };
+    let (to_set, records_set, to_records_set) = (set(&to_data), set(&records), set(&to_records));
+    let has_record = |d: &str, records: &std::collections::HashSet<String>| {
+        records.contains(&format!("{d}.json")) || records.contains(&format!("{d}.provenance.json"))
     };
-    let mine: std::collections::HashSet<&String> = data.iter().chain(&records).collect();
-    (to_folders == 0
+    let of = |r: &str| {
+        r.strip_suffix(".provenance.json")
+            .or_else(|| r.strip_suffix(".json"))
+            .map(str::to_owned)
+    };
+    let both: Vec<String> = data
+        .iter()
+        .filter(|d| to_set.contains(*d))
+        .cloned()
+        .collect();
+    let ok = to_folders == 0
         && to_data.len() < data.len()
-        && all(&data, &records)
-        && all(&to_data, &to_records)
-        && !to_data.iter().chain(&to_records).any(|n| mine.contains(n)))
-    .then_some(data.len())
+        && to_records.len() == to_data.len()
+        && to_data
+            .iter()
+            .all(|d| is_data_file(Path::new(d)) && has_record(d, &to_records_set))
+        && data.iter().all(|d| {
+            is_data_file(Path::new(d)) && (to_set.contains(d) || has_record(d, &records_set))
+        })
+        && records
+            .iter()
+            .all(|r| of(r).is_some_and(|d| data.contains(&d)))
+        && to_records
+            .iter()
+            .all(|r| !records_set.contains(r) || of(r).is_some_and(|d| to_set.contains(&d)));
+    ok.then_some((data.len(), both))
 }
 
 /// Swaps the folder `dir` for `to`, the folder its files belong in, which
 /// holds fewer: `to`'s files and records are renamed into `dir` (a rename
 /// between folders takes seconds there whatever the file's size, and
-/// copies nothing), `to` is removed, and `dir` is renamed to `to`. A few renames, where
-/// moving `dir`'s files one by one would create each in a folder that
-/// grows, reading it whole each time. A run cut off part way finds `to`
-/// holding fewer still, and goes on; one cut off after `to` went moves
-/// `dir` whole.
-fn swap(mirror: &Mirror, archive: &Archive, dir: &Path, to: &Path) -> Result<(), MirrorError> {
+/// copies nothing), `to` is removed, and `dir` is renamed to `to`. A few
+/// renames, where moving `dir`'s files one by one would create each in a
+/// folder that grows, reading it whole each time. A file in both, a copy
+/// a run cut off left in `dir`, must hash to the record in `to`, else
+/// nothing is swapped; it is set aside under `state/tmp/trash/` with its
+/// record. A run cut off part way finds `to` holding fewer still, and
+/// goes on; one cut off after `to` went moves `dir` whole. Whether it was
+/// swapped.
+fn swap(
+    mirror: &Mirror,
+    archive: &Archive,
+    dir: &Path,
+    to: &Path,
+    both: &[String],
+) -> Result<bool, MirrorError> {
     let (data, _, _) = listing(to).unwrap_or_default();
-    let here: std::collections::HashSet<String> = std::fs::read_dir(to)
-        .map_err(MirrorError::io(to))?
-        .filter_map(Result::ok)
-        .map(|e| e.file_name().to_string_lossy().into_owned())
-        .collect();
+    let names = |d: &Path| -> Result<std::collections::HashSet<String>, MirrorError> {
+        Ok(std::fs::read_dir(d)
+            .map_err(MirrorError::io(d))?
+            .filter_map(Result::ok)
+            .map(|e| e.file_name().to_string_lossy().into_owned())
+            .collect())
+    };
+    let (here, mine) = (names(to)?, names(dir)?);
+    let record_of = |from: &Path, names: &std::collections::HashSet<String>| {
+        Archive::record_where(from, |n| names.contains(n))
+    };
+    let mut copies = Vec::with_capacity(both.len());
+    for name in both {
+        let record =
+            record_of(&to.join(name), &here).expect("a swappable folder's files have records");
+        let sidecar = Archive::read_record(&record)?;
+        if read_held(&dir.join(name), Some(&sidecar.content.sha256)).is_err() {
+            return Ok(false);
+        }
+        copies.push((name, sidecar));
+    }
+    for (name, sidecar) in copies {
+        let copy = dir.join(name);
+        let step = Step {
+            at: Stamp::now(),
+            url: sidecar.url().to_owned(),
+            from: copy.clone(),
+            to: to.join(name),
+            action: Action::Same,
+        };
+        log(mirror, &step, true)?;
+        if let Some(record) = record_of(&copy, &mine) {
+            set_aside(mirror, archive, &record)?;
+        }
+        set_aside(mirror, archive, &copy)?;
+    }
     for name in &data {
         let from = to.join(name);
-        let record = Archive::record_where(&from, |n| here.contains(n))
-            .expect("a swappable folder's files have records");
+        let record = record_of(&from, &here).expect("a swappable folder's files have records");
         let sidecar = Archive::read_record(&record)?;
-        // Logged where it is, which is where it stays: its copy is held at
-        // that path once `dir` is renamed.
+        // Logged where it is, which is where it stays once `dir` is
+        // renamed.
         let step = Step {
             at: Stamp::now(),
             url: sidecar.url().to_owned(),
@@ -431,7 +489,8 @@ fn swap(mirror: &Mirror, archive: &Archive, dir: &Path, to: &Path) -> Result<(),
     log(mirror, &step, true)?;
     // Empty but for AppleDouble files, which macOS removes with it.
     std::fs::remove_dir(to).map_err(MirrorError::io(to))?;
-    std::fs::rename(dir, to).map_err(MirrorError::io(to))
+    std::fs::rename(dir, to).map_err(MirrorError::io(to))?;
+    Ok(true)
 }
 
 /// Where the file at `path` goes, and how; none when it is in place.
@@ -1125,18 +1184,31 @@ mod tests {
         std::fs::rename(format!("{}.json", d.display()), few.join("d.zip.json")).unwrap();
         // Left behind by the renames, and removed with the folder.
         std::fs::write(few.join("._stray"), b"").unwrap();
+        // Copies a run cut off left: `d` without its record, `e` with.
+        std::fs::write(archive.url_path(&format!("{X}d.zip")), b"d").unwrap();
+        let e = old(&archive, &format!("{XA}e.zip"), None, b"e");
+        std::fs::rename(&e, few.join("e.zip")).unwrap();
+        std::fs::rename(format!("{}.json", e.display()), few.join("e.zip.json")).unwrap();
+        let cur_e = archive.url_path(&format!("{X}e.zip"));
+        std::fs::write(&cur_e, b"e").unwrap();
+        std::fs::copy(few.join("e.zip.json"), format!("{}.json", cur_e.display())).unwrap();
         let s = relayout(&mirror, &archive, false, |_| {}).unwrap();
         assert_eq!((s.folders_swapped, s.moved), (1, 3), "{s:?}");
-        for n in ["a", "b", "c", "d"] {
+        for n in ["a", "b", "c", "d", "e"] {
             let held = archive.lookup(&format!("{X}{n}.zip")).unwrap();
             let held = held.or_else(|| archive.lookup(&format!("{XA}{n}.zip")).unwrap());
             assert_eq!(std::fs::read(held.unwrap().path).unwrap(), n.as_bytes());
         }
         assert!(!archive.url_path(X).exists());
-        assert!(!mirror.tmp_dir().join("trash").exists());
-        // Logged: the file moved, where it stays, then the folder.
+        let trash = mirror
+            .tmp_dir()
+            .join("trash/www.nemweb.com.au/Reports/CURRENT/X");
+        assert_eq!(std::fs::read(trash.join("d.zip")).unwrap(), b"d");
+        assert!(trash.join("e.zip").exists() && trash.join("e.zip.json").exists());
+        // Logged: the copies set aside, the files moved where they stay,
+        // then the folder.
         let log = std::fs::read_to_string(mirror.relayout_path()).unwrap();
-        assert_eq!(log.lines().count(), 2);
+        assert_eq!(log.lines().count(), 5);
 
         // Not swapped: a name in both, a folder of few with a folder in
         // it, or with a file without a record; or not fewer.
@@ -1152,11 +1224,27 @@ mod tests {
         put(&dir, "b");
         std::fs::write(dir.join("e"), "e").unwrap();
         std::fs::write(dir.join("e.provenance.json"), "{}").unwrap();
-        assert_eq!(swappable(&dir, &to), Some(3));
+        assert_eq!(swappable(&dir, &to), Some((3, vec![])));
+        // A name in both: swapped only if the copy hashes to the record.
         put(&to, "a");
-        assert_eq!(swappable(&dir, &to), None);
+        let both = swappable(&dir, &to).unwrap().1;
+        assert_eq!(both, ["a"]);
+        let record = serde_json::json!({
+            "url": "https://h/a", "size": 1, "sha256": sha256_hex(b"other"),
+            "fetched_at": "2026-10-05T00:00:00Z",
+        });
+        std::fs::write(to.join("a.json"), record.to_string()).unwrap();
+        let (m, a) = (
+            Mirror::new(home.path().join("s2")),
+            Archive::new(home.path()),
+        );
+        assert!(!swap(&m, &a, &dir, &to, &both).unwrap());
         std::fs::remove_file(to.join("a")).unwrap();
         std::fs::remove_file(to.join("a.json")).unwrap();
+        // A record in `dir` of no file there.
+        std::fs::write(dir.join("z.json"), "{}").unwrap();
+        assert_eq!(swappable(&dir, &to), None);
+        std::fs::remove_file(dir.join("z.json")).unwrap();
         std::fs::create_dir(to.join("sub")).unwrap();
         assert_eq!(swappable(&dir, &to), None);
         std::fs::remove_dir(to.join("sub")).unwrap();
