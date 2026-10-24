@@ -59,6 +59,11 @@ what the data means, this knows what exists.
   disclaimer page does not count), so most are never downloaded
   (`run --delete-duplicates` does it as the download reaches each one);
   `--verify` reads the folders again and checks every removal still holds.
+  The same goes for each daily zip of a report folder's `ARCHIVE` listing
+  (a rollup) against the folder's files of that day held from `CURRENT`.
+- **Relayout**: both listings of a report folder are one folder in the
+  archive (`docs/archive.md`, Layout); `relayout` moves an archive kept the
+  old way, `--dry-run` first. Nothing is written over.
 
 ## Run
 
@@ -126,13 +131,14 @@ matches, without reading its sidecar.
 ## On disk
 
 ```
-{home}/archive/{host}/{path}             every file, with {path}.json beside it   (docs/archive.md)
+{home}/archive/{host}/{path}             every file, with {path}.json beside it; a report folder's listing segment dropped (docs/archive.md)
 {home}/mirror/config.toml                downloads, request_interval_ms, attempts, backoff_ms, read_timeout_secs, progress_every_secs, base_url, user_agent_suffix, jobs; watch_fast, watch_fast_secs, watch_current, watch_current_secs, watch_secs, watch_least_secs; [[hosts]] (base_url, listing_offset_secs, request_interval_ms, roots, watch_fast, watch_current)
 {home}/mirror/crawl/listings/…           each listing page as served
 {home}/mirror/crawl/remote.ndjson        every folder and file the crawl found
 {home}/mirror/peek.ndjson                zip entries read before download (`peek`: every zip; `run`: the whole-month zips), with when, against which listing, and the server's ETag and Last-Modified
 {home}/mirror/removed.ndjson             zips removed as the same as their folders
-{home}/mirror/journal/{host}/{path}/changes.ndjson   each folder's events: new, version, same, repacked, dropped, folder_gone
+{home}/mirror/journal/{host}/{path}/changes.ndjson   each folder's events, one journal for both listings: new, version, same, repacked, dropped, folder_gone
+{home}/mirror/relayout.ndjson            every move `relayout` made, logged before it was made
 {home}/mirror/crawl/folders/…            what a watch read of each folder since the crawl
 {home}/mirror/held.ndjson                every file a download pass found archived or fetched: its size, listed time and version
 {home}/mirror/progress.json              a run's counts, which `status` reads while it runs

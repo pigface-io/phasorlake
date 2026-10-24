@@ -17,8 +17,29 @@ Each path segment is percent-decoded (`%23` is `#`), and the characters no
 file system takes (control characters and `/ \ : * ? " < > |`) become `_`;
 `.`, `..` and empty segments become `_`. A query string, which no archive
 URL has, is folded into the file name as `name@{first 16 hex of its
-sha256}`; a fragment is not part of the file. `Archive::path_for`
-(`crates/utilake-mirror/src/net/archive.rs`) is the reference.
+sha256}`; a fragment is not part of the file.
+
+A report folder is one folder, whichever listing served a file. nemweb
+lists a folder's files under `Reports/CURRENT/{folder}/` for a few days,
+then the day's zip of them under `Reports/ARCHIVE/{folder}/`; the WA host
+lists a WEMDE dataset under `{dataset}/current/` and `{dataset}/previous/`.
+The listing segment is dropped from the path, and kept in the sidecar's
+`url`:
+
+```
+https://www.nemweb.com.au/Reports/CURRENT/Dispatch_SCADA/PUBLIC_DISPATCHSCADA_202610170005_0000000001.zip
+https://www.nemweb.com.au/Reports/ARCHIVE/Dispatch_SCADA/PUBLIC_DISPATCHSCADA_20261017.zip
+{home}/archive/www.nemweb.com.au/Reports/Dispatch_SCADA/…
+```
+
+`utilake_plain_decode::layout` (in utilake-schemas) holds the listings and
+is the reference; `Archive::path_for`
+(`crates/utilake-mirror/src/net/archive.rs`) applies it. Records of what a
+listing showed (the crawl's folder reads and kept pages) stay at the
+folder URL's own path, listing and all (`Archive::url_path`). An archive
+kept before this layout is moved by `utilake-mirror relayout` (below).
+Files named `._*`, which macOS writes beside files on a disk without
+extended attributes, are not part of the archive; every walk skips them.
 
 A file is written to `{path}.part` and renamed into place only after its
 size matches the server's `Content-Length`; a `.part` file is never part of
@@ -37,7 +58,15 @@ kept only when its data is new: a download with the bytes of any version
 archived already, or a zip that holds the same files as one (names,
 CRC-32 and sizes) packed again, is not kept, and its folder's journal
 says so. Nothing archived is moved or written over, so a path, once
-written, always holds the same bytes. `{home}/mirror/held.ndjson` names
+written, always holds the same bytes.
+
+Two URLs can share a path: the same name under both listings of a report
+folder. The same bytes are one file: the second URL joins its sidecar's
+`also` (`how = "same"`) and nothing is downloaded twice. Other bytes (a
+gas monthly file listed partial under `CURRENT`, final under `ARCHIVE`)
+are a version beside the first, `{path}@{at}`, with its own sidecar.
+`Archive::lookup` finds a URL's file at the path or among its versions by
+the sidecar's `url` or `also`. `{home}/mirror/held.ndjson` names
 the version each file was last found or downloaded in. `utilake-mirror
 versions` compares each version with the ones before it; `--prune`
 removes those kept before downloads compared with every version, noting
@@ -46,7 +75,8 @@ each in the journal first.
 ## Journal
 
 Each folder has a journal, `{home}/mirror/journal/{host}/{path}/changes.ndjson`
-(the folder's URL as a path, as for the archive), one JSON line per event,
+(the folder's path as in the archive, so both listings of a report folder
+share one journal; each line keeps its `url`), one JSON line per event,
 appended and never written over:
 
 | `event` | when |
@@ -83,9 +113,23 @@ Beside every file, `{path}.json`:
   "listed_size": 1469212391,
   "listed_modified": "Monday, October 12, 2026 10:45 AM",
   "listed_modified_at": "2026-10-12T10:45:00+10:00",
-  "tool": "utilake-mirror/0.1.0"
+  "tool": "utilake-mirror/0.1.0",
+  "also": [
+    {"url": "https://www.nemweb.com.au/Reports/ARCHIVE/…/PUBLIC_…_20261017.zip!PUBLIC_….zip",
+     "how": "entry", "seen_at": "2026-10-21T03:00:00Z"}
+  ]
 }
 ```
+
+`also` lists every other address of the same bytes, found after the
+download: `how = "same"`, another URL that served identical bytes
+(`listed_at` the time its listing gave); `how = "entry"`,
+`{zip URL}!{entry}`, an entry of an `ARCHIVE` daily zip with the file's
+name, size and CRC-32, the address that still serves the file once
+`CURRENT` stops listing it. `gone_at` on an address, and on the sidecar
+itself for `url`, is when a watch saw the listing stop naming it. The data
+file never changes, so its sha256 and CRC-32 never do; only the sidecar
+grows, rewritten whole (a temporary file, handed to the disk, renamed).
 
 `etag` and `last_modified` are present when the server sent them (nemweb
 sends `Last-Modified` and, for some files, an ETag). `listed_size` and
@@ -114,6 +158,16 @@ written without an offset is a defect.
 
 ## Removed duplicates
 
+A **rollup** is a daily zip of an `ARCHIVE` listing,
+`{prefix}{YYYYMMDD}.zip`, whose entries are the folder's files of that day
+held from `CURRENT`. `compare` pairs it with those files from the archive
+on disk (not the crawl, since `CURRENT` lists a file for about four days)
+and rules on it as on a whole-month zip. One whose every entry is held is
+removed as below, with `same_as` the folder's `CURRENT` URL, and each held
+file gains the entry's address in its sidecar's `also`; one with any entry
+not held is downloaded and kept whole, its held files still gaining the
+address (`compare --delete`).
+
 A zip removed by `utilake-mirror compare --delete` is gone from the archive
 or was never downloaded, and is recorded in `{home}/mirror/removed.ndjson`,
 one line per file: `url`, `size`, `sha256` (absent when it was never
@@ -129,3 +183,20 @@ A file of the zip named `.htm` or `.html` (`Readme.htm`, `disclaimer.htm`,
 `Index.htm`) is not data: one the folder lacks, or holds with other bytes,
 is listed as `ancillary` and does not keep the zip. Every data file still
 has to match.
+
+## Relayout
+
+`utilake-mirror relayout [--dry-run]` moves an archive kept with each URL
+as its path to the layout above, with the mirror's run lock held. Every
+file with a sidecar in a folder under a listing moves, with its sidecar,
+to the path of its sidecar's `url`: a rename on one volume, nothing
+copied. A file there already with the same bytes keeps its place and the
+moving file's URL and addresses join its `also`; the moving file is
+dropped. A file there with other bytes is never written over: the moving
+file becomes `{name}@{at}` beside it (`at` the listed time, else when it
+was downloaded). The journals of a folder's two listings merge into one,
+lines in time order; `held.ndjson` lines whose file became a version are
+rewritten; emptied folders are removed. Each step is logged to
+`{home}/mirror/relayout.ndjson` before it is taken, and a run cut off is
+finished by the next; a second run moves nothing. A file whose sidecar
+does not read is left where it is and named, and the run exits 1.

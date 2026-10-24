@@ -102,7 +102,7 @@ Global flags: `--home DIR` (or `UTILAKE_HOME`), `--json`, `-v`, `--offline`,
 ~/.utilake/
   lake/nem/{table}/year=YYYY/month=MM/{source}-v{version}-{shape8}-{sha8}.parquet   appended tables, partitioned by market-local month
   lake/nem/{table}/snapshot=YYYYMM/...                                     standing-data tables (REGION, PARTICIPANT, ...): each month's file is the whole table
-  archive/{host}/{path of the URL}[.json]                                  every download as the server sent it, with its record
+  archive/{host}/{path of the URL}[.json]                                  every download as the server sent it, with its record; a report folder's CURRENT or ARCHIVE segment dropped, so both listings are one folder
   archive/{host}/{path of a zip}!{entry}[.json]                            one entry of a zip, fetched alone by byte range; its record says where in the zip it was
   cache/tmp/                                                               scratch files of a running ingest, safe to delete
   quarantine/{table}/{source}.jsonl                                        rows whose structure was wrong for their block, with the reason

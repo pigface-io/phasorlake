@@ -27,7 +27,7 @@ zip's compressed bytes.
 
 | field | when | meaning |
 |---|---|---|
-| `file` | always | the file or folder nemweb lists, at its path under the archive (`docs/archive.md`); for an entry inside a zip, the zip's |
+| `file` | always | the file or folder nemweb lists, at its path under the archive (`docs/archive.md`); for an entry inside a zip, the zip's. Both listings of a report folder are one folder, so two rows of files can share a `file` only when their bytes are one file; a file kept beside another URL's as a version has its own `{path}@{at}` |
 | `url` | all but the folders above the roots | the exact URL of `file`, as crawled or as its sidecar records it |
 | `inside` | entries of zips | where inside `file`: one path per zip, outermost first, folders separated by `/` |
 | `kind` | always | `dir`, `file` or `zip` (a file that is also a folder of what it holds) |
