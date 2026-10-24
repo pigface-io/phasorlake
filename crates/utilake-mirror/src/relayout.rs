@@ -184,7 +184,7 @@ pub fn relayout(
             // folder too large for the cache reads it from the disk.
             let Some((sidecar, kept)) = read_held(&record, None)
                 .ok()
-                .and_then(|b| Some((Provenance::from_json(&b.0).ok()?, b)))
+                .and_then(|b| Some((Provenance::from_json(&b).ok()?, b)))
             else {
                 summary.unreadable.push(path);
                 continue;
@@ -488,15 +488,12 @@ fn rename_record(from: &Path, record: &Path, to: &Path) -> Result<(), MirrorErro
     std::fs::rename(record, &target).map_err(MirrorError::io(Path::new(&target)))
 }
 
-/// A file read whole, and its modified time.
-type Bytes = (Vec<u8>, Option<std::time::SystemTime>);
+/// A file read whole.
+type Bytes = Vec<u8>;
 
 /// Reads the file at `from` whole, held to `sha256` when given.
 fn read_held(from: &Path, sha256: Option<&Sha256>) -> Result<Bytes, MirrorError> {
-    let mut src = std::fs::File::open(from).map_err(MirrorError::io(from))?;
-    let modified = src.metadata().and_then(|m| m.modified()).ok();
-    let mut bytes = Vec::new();
-    std::io::Read::read_to_end(&mut src, &mut bytes).map_err(MirrorError::io(from))?;
+    let bytes = std::fs::read(from).map_err(MirrorError::io(from))?;
     let got = Sha256::of(&bytes);
     if let Some(want) = sha256.filter(|w| **w != got) {
         return Err(crate::net::FetchError::Sha256Mismatch {
@@ -506,7 +503,7 @@ fn read_held(from: &Path, sha256: Option<&Sha256>) -> Result<Bytes, MirrorError>
         }
         .into());
     }
-    Ok((bytes, modified))
+    Ok(bytes)
 }
 
 /// Writes `bytes` at `to`, in another folder than they came from, without
@@ -516,15 +513,13 @@ fn read_held(from: &Path, sha256: Option<&Sha256>) -> Result<Bytes, MirrorError>
 /// the bytes go straight to `to`, with no `.part` and rename: a source
 /// goes only after the batch's sync, and a copy cut off by a crash is
 /// found by hashing the copies before the set-aside sources are deleted.
-/// Handed to the disk when `durable` (else by the caller's sync), with
-/// the modified time they had.
-fn put(to: &Path, (bytes, modified): &Bytes, durable: bool) -> Result<(), MirrorError> {
+/// Handed to the disk when `durable` (else by the caller's sync). The
+/// copy is not given the modified time it had: setting one takes most of
+/// a second there, and the record keeps when the file was fetched.
+fn put(to: &Path, bytes: &Bytes, durable: bool) -> Result<(), MirrorError> {
     use std::io::Write as _;
     let mut dst = std::fs::File::create(to).map_err(MirrorError::io(to))?;
     dst.write_all(bytes).map_err(MirrorError::io(to))?;
-    if let Some(t) = modified {
-        let _ = dst.set_modified(*t);
-    }
     if durable {
         crate::net::archive::to_disk(&dst).map_err(MirrorError::io(to))?;
     }
@@ -913,10 +908,6 @@ mod tests {
         let held = read_held(&from, Some(&crate::net::Sha256::of(b"bytes"))).unwrap();
         put(&to, &held, true).unwrap();
         assert_eq!(std::fs::read(&to).unwrap(), b"bytes");
-        assert_eq!(
-            std::fs::metadata(&to).unwrap().modified().unwrap(),
-            std::fs::metadata(&from).unwrap().modified().unwrap()
-        );
         assert!(read_held(&dir.path().join("none"), None).is_err());
         assert!(put(&dir.path().join("no/such/c"), &held, false).is_err());
     }
@@ -971,7 +962,7 @@ mod tests {
             same(&step(Action::Same, &to), sc.clone()).unwrap();
         }
         std::fs::remove_file(format!("{}.json", to.display())).unwrap();
-        let none = (Vec::new(), None);
+        let none = Vec::new();
         let done = take(
             &mirror,
             vec![(step(Action::Same, &to), sc, record.clone(), none)],
