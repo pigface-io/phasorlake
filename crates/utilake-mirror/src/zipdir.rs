@@ -1,8 +1,8 @@
 //! A zip's central directory from byte spans of the file, without the rest
 //! of it, read by `utilake_zip::zipdir` (shared with the lake, which fetches
 //! single entries by the same directory): the mirror adds the entry's
-//! modified time as an instant in AEST, where AEMO packs its zips, and the
-//! record form `peek.ndjson` keeps.
+//! modified time as an instant in the host's clock (AEST for nemweb, AWST
+//! for AEMO's WA host), and the record form `peek.ndjson` keeps.
 //!
 //! [`read_directory`] drives the reads through a [`Spans`] source: ranged
 //! requests to nemweb, or a file on disk.
@@ -46,12 +46,14 @@ impl Entry {
     }
 }
 
-impl From<utilake_zip::zipdir::Entry> for Entry {
-    fn from(e: utilake_zip::zipdir::Entry) -> Self {
+impl Entry {
+    /// A directory entry with its DOS time read in the clock of the
+    /// machine that packed the zip (`offset` seconds east of UTC).
+    pub fn from_zip(e: utilake_zip::zipdir::Entry, offset: i32) -> Self {
         let (year, month, day, hour, minute, second) = e.modified_fields();
         Self {
             modified: e.modified_text(),
-            modified_at: Stamp::at(year, month, day, hour, minute, second, AEST),
+            modified_at: Stamp::at(year, month, day, hour, minute, second, offset),
             name: e.name,
             size: e.size,
             compressed: e.compressed,
@@ -95,8 +97,18 @@ pub trait Spans {
 
 /// Every entry of the zip of `len` bytes, from at most three reads: its
 /// tail, a zip64 end record when it lies outside the tail, and the
-/// directory when it does.
+/// directory when it does; the entries' times read in AEST.
 pub async fn read_directory<S: Spans>(src: &mut S, len: u64) -> Result<Vec<Entry>, S::Error> {
+    read_directory_in(src, len, AEST).await
+}
+
+/// [`read_directory`], the entries' DOS times read in the clock of the
+/// host whose zip it is (`offset` seconds east of UTC).
+pub async fn read_directory_in<S: Spans>(
+    src: &mut S,
+    len: u64,
+    offset: i32,
+) -> Result<Vec<Entry>, S::Error> {
     let mut reader = DirectoryReader::new(len);
     let mut step = reader.next();
     loop {
@@ -104,7 +116,12 @@ pub async fn read_directory<S: Spans>(src: &mut S, len: u64) -> Result<Vec<Entry
             Step::Read { start, end } => {
                 step = reader.feed(src.read(start, end).await?)?;
             }
-            Step::Done(entries) => return Ok(entries.into_iter().map(Entry::from).collect()),
+            Step::Done(entries) => {
+                return Ok(entries
+                    .into_iter()
+                    .map(|e| Entry::from_zip(e, offset))
+                    .collect());
+            }
         }
     }
 }
@@ -179,18 +196,39 @@ mod tests {
         );
         let kept = e[1].clone().derived();
         assert_eq!(kept.modified_at, e[1].modified_at);
-        let zero = Entry::from(utilake_zip::zipdir::Entry {
-            name: "z".into(),
-            size: 0,
-            compressed: 0,
-            crc32: 0,
-            method: 0,
-            dos_date: 0,
-            dos_time: 0,
-            local_header_offset: 0,
-        });
+        let zero = Entry::from_zip(
+            utilake_zip::zipdir::Entry {
+                name: "z".into(),
+                size: 0,
+                compressed: 0,
+                crc32: 0,
+                method: 0,
+                dos_date: 0,
+                dos_time: 0,
+                local_header_offset: 0,
+            },
+            AEST,
+        );
         assert_eq!(zero.modified, "1980-00-00 00:00:00");
         assert!(zero.modified_at.is_none());
+    }
+
+    #[tokio::test]
+    async fn a_zip_from_another_host_is_read_in_its_clock() {
+        let bytes = zip("");
+        let len = bytes.len() as u64;
+        let e = read_directory_in(&mut Mem(bytes, 0), len, 8 * 3600)
+            .await
+            .unwrap();
+        assert_eq!(e[1].modified, "2026-10-01 12:34:56");
+        assert_eq!(
+            e[1].modified_at.unwrap().to_string(),
+            "2026-10-01T12:34:56+08:00"
+        );
+        assert_eq!(
+            Stamp::from_dos_text_in("2026-10-01 12:34:56", 8 * 3600),
+            e[1].modified_at
+        );
     }
 
     #[tokio::test]

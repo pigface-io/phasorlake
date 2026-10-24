@@ -124,6 +124,11 @@ impl Fetcher {
         }
     }
 
+    /// The minimum gap between two of its requests.
+    pub fn min_interval(&self) -> Duration {
+        self.config.min_interval
+    }
+
     /// Requests that succeeded so far: a run that got somewhere.
     pub fn succeeded(&self) -> u64 {
         self.succeeded.load(std::sync::atomic::Ordering::Relaxed)

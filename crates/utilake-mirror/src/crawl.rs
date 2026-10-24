@@ -10,7 +10,7 @@ use std::collections::{BTreeMap, HashSet, VecDeque};
 use std::io::Write as _;
 use std::path::{Path, PathBuf};
 
-use crate::net::{Archive, Fetcher};
+use crate::net::{Archive, Fetchers};
 use serde::{Deserialize, Serialize};
 use url::Url;
 
@@ -149,9 +149,9 @@ pub struct Remote {
     pub size: Option<u64>,
     /// The date and time, as listed.
     pub modified: String,
-    /// The listed date and time as an instant: the listing's times are
-    /// AEST. Derived from `modified` when a record written before it was
-    /// kept is read.
+    /// The listed date and time as an instant, in the host's clock (AEST
+    /// for nemweb). Derived from `modified`, as AEST, when a record written
+    /// before it was kept is read: every such record is nemweb's.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub modified_at: Option<Stamp>,
     /// The folder whose page listed it.
@@ -212,7 +212,7 @@ pub struct PageRead<'a> {
 /// is asked of nemweb again. Without it, a finished crawl is left as it is
 /// and an unfinished one carries on from the pages it kept.
 pub async fn crawl(
-    fetcher: &Fetcher,
+    fetcher: &Fetchers,
     mirror: &Mirror,
     roots: &[Url],
     fresh: bool,
@@ -254,7 +254,8 @@ pub async fn crawl(
             .ok()
             .and_then(|t| t.duration_since(std::time::UNIX_EPOCH).ok())
             .map(|d| Stamp::from_unix(i64::try_from(d.as_secs()).unwrap_or(0)));
-        let links = read_page(&folder, &html, roots, crawled_at)?;
+        let offset = fetcher.offset_of(folder.as_str());
+        let links = read_page(&folder, &html, roots, crawled_at, offset)?;
         let count = links.len();
         for remote in links {
             if remote.kind == RemoteKind::Dir && seen.insert(remote.url.clone()) {
@@ -281,18 +282,20 @@ pub async fn crawl(
 }
 
 /// Every link of `folder`'s listing page as a record, read at
-/// `crawled_at`.
+/// `crawled_at`, the listed times in the host's clock (`offset` seconds
+/// east of UTC).
 pub(crate) fn read_page(
     folder: &Url,
     html: &[u8],
     roots: &[Url],
     crawled_at: Option<Stamp>,
+    offset: i32,
 ) -> Result<Vec<Remote>, MirrorError> {
     let bad = |source| MirrorError::Listing {
         url: folder.to_string(),
         source,
     };
-    listing::parse(html)
+    listing::parse_in(html, offset)
         .map_err(bad)?
         .iter()
         .map(|link| {
@@ -458,8 +461,8 @@ mod tests {
         t
     }
 
-    fn fetcher(t: &Arc<StaticTransport>, archive: &Path) -> Fetcher {
-        Fetcher::new(
+    fn fetcher(t: &Arc<StaticTransport>, archive: &Path) -> Fetchers {
+        Fetchers::one(crate::net::Fetcher::new(
             Arc::new(t.clone()),
             Archive::new(archive),
             FetcherConfig {
@@ -468,7 +471,7 @@ mod tests {
                 max_backoff: Duration::ZERO,
                 min_interval: Duration::ZERO,
             },
-        )
+        ))
     }
 
     fn roots() -> Vec<Url> {
@@ -547,6 +550,62 @@ mod tests {
         let fresh = crawl(&f, &mirror, &roots(), true, |_| {}).await.unwrap();
         assert_eq!(fresh.pages_fetched, 3);
         assert_eq!(t.request_count(), 9);
+    }
+
+    #[tokio::test]
+    async fn each_host_is_read_through_its_own_fetcher_in_its_own_clock() {
+        let home = tempfile::tempdir().unwrap();
+        let mirror = Mirror::new(home.path().join("mirror"));
+        let archive = Archive::new(home.path().join("archive"));
+        let nem = site();
+        let wa = Arc::new(StaticTransport::default());
+        wa.add(
+            "https://w/public/d/",
+            Canned::ok(
+                b"<html><body><H1>x</H1><hr><pre><A HREF=\"/public/\">[To Parent Directory]</A><br><br>10/20/2026  3:20 PM          714 <A HREF=\"/public/d/x.zip\">x.zip</A><br></pre><hr></body></html>",
+            ),
+        );
+        let fast = FetcherConfig {
+            attempts: 1,
+            backoff: Duration::ZERO,
+            max_backoff: Duration::ZERO,
+            min_interval: Duration::ZERO,
+        };
+        let host = |base: &str, offset: i32, t: &Arc<StaticTransport>| crate::net::HostFetcher {
+            base_url: base.to_owned(),
+            offset_secs: offset,
+            fetcher: crate::net::Fetcher::new(Arc::new(t.clone()), archive.clone(), fast.clone()),
+        };
+        let f = Fetchers::new(vec![
+            host("https://h", 36_000, &nem),
+            host("https://w", 28_800, &wa),
+        ]);
+        let roots = [
+            root("https://h/A/").unwrap(),
+            root("https://w/public/d/").unwrap(),
+        ];
+        let s = crawl(&f, &mirror, &roots, false, |_| {}).await.unwrap();
+        assert_eq!((s.pages, s.files), (4, 3));
+        assert_eq!((nem.request_count(), wa.request_count()), (3, 1));
+        let record = mirror.record().unwrap();
+        let at = |url: &str| {
+            record
+                .iter()
+                .find(|r| r.url == url)
+                .and_then(|r| r.modified_at)
+                .unwrap()
+                .to_string()
+        };
+        assert_eq!(at("https://h/A/x.zip"), "2026-10-12T10:45:00+10:00");
+        assert_eq!(at("https://w/public/d/x.zip"), "2026-10-20T15:20:00+08:00");
+        let wa_file = record
+            .iter()
+            .find(|r| r.url == "https://w/public/d/x.zip")
+            .unwrap();
+        assert_eq!(
+            (wa_file.size, wa_file.modified.as_str()),
+            (Some(714), "10/20/2026  3:20 PM")
+        );
     }
 
     #[tokio::test]

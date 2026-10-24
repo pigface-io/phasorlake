@@ -12,7 +12,8 @@ use anyhow::{Context as _, Result};
 use std::cell::RefCell;
 use utilake_mirror::config::{Config, Home};
 use utilake_mirror::net::{
-    Archive, FetchError, Fetcher, FetcherConfig, OfflineTransport, ReqwestTransport, Transport,
+    Archive, FetchError, Fetcher, FetcherConfig, Fetchers, HostFetcher, OfflineTransport,
+    ReqwestTransport, Transport, per_host,
 };
 
 use utilake_mirror::{Diagnose, Mirror, MirrorError, PeekCount, Status, Url};
@@ -60,9 +61,26 @@ impl Context {
         Archive::new(self.home.archive())
     }
 
-    /// A fetcher over the network, or offline, its requests the configured
-    /// interval apart.
-    pub fn fetcher(&self) -> Fetcher {
+    /// A fetcher per host over the network, or offline, each host's
+    /// requests its own interval apart.
+    pub fn fetchers(&self) -> Result<Fetchers, MirrorError> {
+        let hosts = self.config.hosts()?;
+        Ok(per_host(&hosts, &self.archive(), |h| {
+            self.fetcher_parts(h.request_interval)
+        }))
+    }
+
+    /// The fetchers with each host that refused given a new fetcher; the
+    /// others keep their pace and their count.
+    pub fn renewed(&self, fetchers: Fetchers) -> Fetchers {
+        fetchers.renewed(|h: &HostFetcher| {
+            let (transport, cfg) = self.fetcher_parts(h.fetcher.min_interval());
+            Fetcher::new(transport, self.archive(), cfg)
+        })
+    }
+
+    /// The transport and the knobs of one fetcher, paced at `interval`.
+    fn fetcher_parts(&self, interval: Duration) -> (Arc<dyn Transport>, FetcherConfig) {
         let ua = format!(
             "utilake-mirror/{} (+https://github.com/g0itb4/utilake){}",
             env!("CARGO_PKG_VERSION"),
@@ -82,9 +100,9 @@ impl Context {
             attempts: self.config.attempts,
             backoff,
             max_backoff: backoff * 60,
-            min_interval: Duration::from_millis(self.config.request_interval_ms),
+            min_interval: interval,
         };
-        Fetcher::new(transport, self.archive(), cfg)
+        (transport, cfg)
     }
 }
 
@@ -95,12 +113,15 @@ pub async fn run_command(cli: &Cli) -> Result<i32> {
     let mirror = ctx.home.records();
     let result = match cmd {
         Command::Crawl { roots, fresh } => {
-            let fetcher = ctx.fetcher();
-            locked(&mirror, crawl(ctx, &fetcher, &mirror, roots, *fresh)).await
+            let pass = async {
+                let fetcher = ctx.fetchers()?;
+                crawl(ctx, &fetcher, &mirror, roots, *fresh).await
+            };
+            locked(&mirror, pass).await
         }
         Command::Download { only } => {
-            let fetcher = ctx.fetcher();
             let pass = async {
+                let fetcher = ctx.fetchers()?;
                 download(ctx, &fetcher, &mirror, only, None, false, None)
                     .await
                     .map(|(code, _)| code)
@@ -108,8 +129,8 @@ pub async fn run_command(cli: &Cli) -> Result<i32> {
             locked(&mirror, pass).await
         }
         Command::Peek => {
-            let fetcher = ctx.fetcher();
             let pass = async {
+                let fetcher = ctx.fetchers()?;
                 peek(ctx, &fetcher, &mirror, false, None)
                     .await
                     .map(|(code, _)| code)
@@ -187,9 +208,15 @@ fn report(ctx: &Context, d: &utilake_mirror::Diagnostic) {
     }
 }
 
+/// The roots given, else every host's.
 fn roots(ctx: &Context, given: &[String]) -> Result<Vec<Url>, MirrorError> {
     if given.is_empty() {
-        utilake_mirror::default_roots(&ctx.config.base_url)
+        Ok(ctx
+            .config
+            .hosts()?
+            .into_iter()
+            .flat_map(|h| h.roots)
+            .collect())
     } else {
         given.iter().map(|r| utilake_mirror::root(r)).collect()
     }
@@ -213,9 +240,13 @@ async fn run(ctx: &Context, mirror: &Mirror, plan: &RunPlan<'_>) -> Result<i32, 
         (plan.given, plan.refusals, plan.wait, plan.delete_duplicates);
     let mut fresh = plan.fresh;
     let mut refused = 0;
+    let mut fetchers = Some(ctx.fetchers()?);
     loop {
         let (tx, rx) = tokio::sync::mpsc::channel(4096);
-        let fetcher = ctx.fetcher().with_events(tx);
+        let fetcher = fetchers
+            .take()
+            .expect("kept for the next pass")
+            .with_events(&tx);
         let attempt = async {
             crawl(ctx, &fetcher, mirror, given, fresh).await?;
             // The counts `status` reads while this runs: counted once,
@@ -273,7 +304,9 @@ async fn run(ctx: &Context, mirror: &Mirror, plan: &RunPlan<'_>) -> Result<i32, 
             );
         }
         tokio::time::sleep(wait).await;
-        // The crawl moved aside already; a second move would lose it.
+        // The crawl moved aside already; a second move would lose it. Only
+        // the host that refused gets a new fetcher.
+        fetchers = Some(ctx.renewed(fetcher));
         fresh = false;
     }
 }
@@ -304,14 +337,14 @@ async fn watch(ctx: &Context, mirror: &Mirror, plan: &WatchPlan<'_>) -> Result<i
         .filter(|r| r.kind == utilake_mirror::RemoteKind::Dir)
         .map(|r| r.url)
         .chain(roots.iter().map(ToString::to_string));
-    let cadence = ctx.config.cadence();
+    let cadence = ctx.config.cadence()?;
     let least = cadence.least;
     let mut schedule = utilake_mirror::Schedule::new(cadence, folders, std::time::Instant::now());
     // Rounds are no closer than the least interval: each one reads the
     // crawl record and, when anything changed, writes it again.
     let mut not_before = std::time::Instant::now();
     let archive = ctx.archive();
-    let mut fetcher = ctx.fetcher();
+    let mut fetcher = ctx.fetchers()?;
     let (mut rounds, mut refused) = (0, 0);
     while plan.rounds.is_none_or(|n| rounds < n) {
         let now = std::time::Instant::now();
@@ -402,7 +435,7 @@ async fn watch(ctx: &Context, mirror: &Mirror, plan: &WatchPlan<'_>) -> Result<i
         refused += 1;
         event(ctx, "waiting", &format!("{} seconds", plan.wait.as_secs()));
         tokio::time::sleep(plan.wait).await;
-        fetcher = ctx.fetcher();
+        fetcher = ctx.renewed(fetcher);
     }
     Ok(0)
 }
@@ -456,7 +489,7 @@ fn waits_out(e: &FetchError) -> bool {
 
 async fn crawl(
     ctx: &Context,
-    fetcher: &Fetcher,
+    fetcher: &Fetchers,
     mirror: &Mirror,
     given: &[String],
     fresh: bool,
@@ -500,7 +533,7 @@ async fn crawl(
 /// failed on the network, which passes with time.
 async fn peek(
     ctx: &Context,
-    fetcher: &Fetcher,
+    fetcher: &Fetchers,
     mirror: &Mirror,
     only_paired: bool,
     tracker: Option<&RefCell<Tracker>>,
@@ -554,7 +587,7 @@ fn passes_with_time(d: &utilake_mirror::Diagnostic) -> bool {
 /// on the network, which passes with time.
 async fn download(
     ctx: &Context,
-    fetcher: &Fetcher,
+    fetcher: &Fetchers,
     mirror: &Mirror,
     only: &[String],
     folders: Option<&[String]>,
@@ -607,7 +640,8 @@ async fn download(
 
 fn map(ctx: &Context, mirror: &Mirror, given: &[String], jobs: usize) -> Result<i32, MirrorError> {
     let roots = roots(ctx, given)?;
-    let s = utilake_mirror::map(mirror, &ctx.archive(), &roots, jobs)?;
+    let offsets = utilake_mirror::Offsets::of(&ctx.config.hosts()?);
+    let s = utilake_mirror::map(mirror, &ctx.archive(), &roots, jobs, &offsets)?;
     if ctx.json {
         render::json_line(&serde_json::json!({ "event": "map_done", "summary": s }));
     } else {
@@ -700,6 +734,7 @@ fn verify(ctx: &Context, mirror: &Mirror) -> Result<i32, MirrorError> {
 fn compare(ctx: &Context, mirror: &Mirror, delete: bool) -> Result<i32, MirrorError> {
     use utilake_mirror::Verdict;
     let archive = ctx.archive();
+    let offsets = utilake_mirror::Offsets::of(&ctx.config.hosts()?);
     let removed = mirror.removed()?;
     let listings: std::collections::HashMap<String, Vec<utilake_mirror::zipdir::Entry>> =
         utilake_mirror::peek::current(mirror)?
@@ -722,7 +757,8 @@ fn compare(ctx: &Context, mirror: &Mirror, delete: bool) -> Result<i32, MirrorEr
         compared += 1;
         let mut action = "kept";
         if delete && cmp.verdict == Verdict::Same {
-            let r = utilake_mirror::remove(mirror, &archive, &cmp)?;
+            let offset = offsets.offset_of(&cmp.zip);
+            let r = utilake_mirror::remove(mirror, &archive, &cmp, offset)?;
             if r.downloaded {
                 freed += r.size;
             } else {

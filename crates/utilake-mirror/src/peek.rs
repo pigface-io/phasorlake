@@ -17,7 +17,7 @@ use crate::compare::pairs;
 use crate::crawl::{Mirror, Remote, RemoteKind};
 use crate::diag::Diagnose as _;
 use crate::error::MirrorError;
-use crate::net::{FetchError, Fetcher, RangeRead, Span};
+use crate::net::{FetchError, Fetchers, RangeRead, Span};
 use crate::stamp::Stamp;
 use crate::zipdir::{self, DirError, Entry};
 
@@ -151,7 +151,7 @@ pub fn read_peeks(path: &Path) -> Result<Vec<Peeked>, MirrorError> {
 /// A file's spans read by ranged requests, keeping what the server said of
 /// the whole file the first time.
 struct Ranged<'a> {
-    fetcher: &'a Fetcher,
+    fetcher: &'a Fetchers,
     url: &'a str,
     seen: Option<RangeRead>,
 }
@@ -192,7 +192,7 @@ impl zipdir::Spans for Ranged<'_> {
 /// why; a network failure is reported and asked again next pass; a refusal
 /// or a full disk stops the pass.
 pub async fn peek(
-    fetcher: &Fetcher,
+    fetcher: &Fetchers,
     mirror: &Mirror,
     only_paired: bool,
     mut on_zip: impl FnMut(&ZipPeeked<'_>),
@@ -233,7 +233,8 @@ pub async fn peek(
             url,
             seen: None,
         };
-        let read = zipdir::read_directory(&mut src, remote.size.unwrap_or(0)).await;
+        let offset = fetcher.offset_of(url);
+        let read = zipdir::read_directory_in(&mut src, remote.size.unwrap_or(0), offset).await;
         let seen = src.seen.take();
         let last_modified = seen.as_ref().and_then(|s| s.last_modified.clone());
         let mut record = Peeked {
@@ -280,7 +281,12 @@ pub async fn peek(
 /// Records the listing of the zip `url` archived at `path`, read from its
 /// central directory on disk, unless the record has it already: kept when
 /// a downloaded zip is removed, so what it held stays known.
-pub fn keep_listing(mirror: &Mirror, url: &str, path: &Path) -> Result<(), MirrorError> {
+pub fn keep_listing(
+    mirror: &Mirror,
+    url: &str,
+    path: &Path,
+    offset: i32,
+) -> Result<(), MirrorError> {
     if current(mirror)?.contains_key(url) {
         return Ok(());
     }
@@ -288,7 +294,11 @@ pub fn keep_listing(mirror: &Mirror, url: &str, path: &Path) -> Result<(), Mirro
     let sidecar = crate::net::Archive::read_sidecar(path)?;
     let file = std::fs::File::open(path).map_err(MirrorError::io(path))?;
     let len = file.metadata().map_err(MirrorError::io(path))?.len();
-    let read = futures::executor::block_on(zipdir::read_directory(&mut zipdir::OnDisk(file), len));
+    let read = futures::executor::block_on(zipdir::read_directory_in(
+        &mut zipdir::OnDisk(file),
+        len,
+        offset,
+    ));
     let (entries, error) = match read {
         Ok(entries) => (Some(entries), None),
         Err(e) => (None, Some(peek_error(&e))),
@@ -386,8 +396,8 @@ mod tests {
         format!(" Monday, October 12, 2026 10:45 AM {what} <A HREF=\"{href}\">x</A><br>")
     }
 
-    fn fetcher(t: &Arc<StaticTransport>, archive: &Path) -> Fetcher {
-        Fetcher::new(
+    fn fetcher(t: &Arc<StaticTransport>, archive: &Path) -> Fetchers {
+        Fetchers::one(crate::net::Fetcher::new(
             Arc::new(t.clone()),
             Archive::new(archive),
             FetcherConfig {
@@ -396,7 +406,7 @@ mod tests {
                 max_backoff: Duration::ZERO,
                 min_interval: Duration::ZERO,
             },
-        )
+        ))
     }
 
     #[tokio::test]

@@ -13,7 +13,7 @@ use crate::crawl::{Mirror, RemoteKind};
 use crate::diag::{Diagnose as _, Diagnostic};
 use crate::error::MirrorError;
 use crate::journal::{Change, Event};
-use crate::net::{Archive, FetchError, Fetcher, LocalFile, RemoteFile};
+use crate::net::{Archive, FetchError, Fetchers, LocalFile, RemoteFile};
 use crate::peek::{Peeked, current};
 use crate::stamp::Stamp;
 
@@ -62,7 +62,7 @@ pub struct DownloadSummary {
 /// the pass, since every later file would fail the same way: a refusal by
 /// nemweb (`net.blocked`), and a full disk.
 pub async fn download(
-    fetcher: &Fetcher,
+    fetcher: &Fetchers,
     mirror: &Mirror,
     options: &DownloadOptions<'_>,
     mut on_file: impl FnMut(&FileDone<'_>),
@@ -333,7 +333,7 @@ pub struct DownloadOptions<'a> {
 
 /// One download pass: what every file's fetch shares.
 struct Pass<'a> {
-    fetcher: &'a Fetcher,
+    fetcher: &'a Fetchers,
     mirror: &'a Mirror,
     paired: &'a HashMap<String, Pair>,
     held: &'a HashMap<String, Held>,
@@ -353,7 +353,8 @@ impl<'a> Pass<'a> {
             if self.mirror.removed()?.contains_key(&pair.zip) {
                 return Ok((remote, None));
             }
-            if self.delete_duplicates && the_same(self.mirror, self.fetcher, pair, self.listings)? {
+            let (f, offset) = (self.fetcher, self.fetcher.offset_of(&pair.zip));
+            if self.delete_duplicates && the_same(self.mirror, f, pair, self.listings, offset)? {
                 return Ok((remote, None));
             }
         }
@@ -402,9 +403,10 @@ impl<'a> Pass<'a> {
 /// folder from its listing, and so recorded removed.
 fn the_same(
     mirror: &Mirror,
-    fetcher: &Fetcher,
+    fetcher: &Fetchers,
     pair: &Pair,
     listings: &std::sync::OnceLock<HashMap<String, Peeked>>,
+    offset: i32,
 ) -> Result<bool, MirrorError> {
     let archive = fetcher.archive();
     if archive.path_for(&pair.zip).is_file() {
@@ -424,7 +426,7 @@ fn the_same(
     if cmp.verdict != Verdict::Same {
         return Ok(false);
     }
-    remove(mirror, archive, &cmp)?;
+    remove(mirror, archive, &cmp, offset)?;
     Ok(true)
 }
 
@@ -451,8 +453,8 @@ mod tests {
 
     const PAGE: &str = "<pre> Monday, October 12, 2026 10:45 AM 3 <A HREF=\"/A/x.zip\">x</A><br> Monday, October 12, 2026 10:45 AM 4 <A HREF=\"/A/y.zip\">y</A><br> Monday, October 12, 2026 10:45 AM 5 <A HREF=\"/A/gone.zip\">g</A><br></pre>";
 
-    fn fetcher(t: &Arc<StaticTransport>, archive: &Path) -> Fetcher {
-        Fetcher::new(
+    fn fetcher(t: &Arc<StaticTransport>, archive: &Path) -> Fetchers {
+        Fetchers::one(crate::net::Fetcher::new(
             Arc::new(t.clone()),
             Archive::new(archive),
             FetcherConfig {
@@ -461,7 +463,7 @@ mod tests {
                 max_backoff: Duration::ZERO,
                 min_interval: Duration::ZERO,
             },
-        )
+        ))
     }
 
     #[tokio::test]

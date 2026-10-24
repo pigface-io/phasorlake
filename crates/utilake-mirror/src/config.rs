@@ -9,6 +9,8 @@ use serde::{Deserialize, Serialize};
 use url::Url;
 
 use crate::diag::{Category, Diagnose, Diagnostic};
+use crate::error::MirrorError;
+use crate::hosts::Host;
 use crate::net::Archive;
 use crate::watch::Cadence;
 
@@ -148,6 +150,39 @@ pub struct Config {
     pub watch_secs: u64,
     /// The fewest seconds between two reads of a folder found changed.
     pub watch_least_secs: u64,
+    /// Further hosts, each with its own roots and clock, read after
+    /// nemweb; none by default.
+    pub hosts: Vec<HostConfig>,
+}
+
+/// A further host: `[[hosts]]` in the config file.
+///
+/// ```toml
+/// [[hosts]]
+/// base_url = "https://data.wa.aemo.com.au"
+/// listing_offset_secs = 28800
+/// roots = ["public/public-data/datafiles/", "public/public-data/manifests/"]
+/// watch_current = ["public/public-data/datafiles/"]
+/// ```
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct HostConfig {
+    /// The site.
+    pub base_url: String,
+    /// Seconds east of UTC of the times its listings and zips carry.
+    pub listing_offset_secs: i32,
+    /// Its own minimum gap between two requests, in milliseconds; the
+    /// top-level `request_interval_ms` when absent.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub request_interval_ms: Option<u64>,
+    /// The folders mirrored, as paths under `base_url`.
+    pub roots: Vec<String>,
+    /// Folders a watch reads most often, as paths under `base_url`.
+    #[serde(default)]
+    pub watch_fast: Vec<String>,
+    /// Folders a watch reads next most often, as paths under `base_url`.
+    #[serde(default)]
+    pub watch_current: Vec<String>,
 }
 
 impl Default for Config {
@@ -171,6 +206,7 @@ impl Default for Config {
             watch_current_secs: 60 * 60,
             watch_secs: 24 * 60 * 60,
             watch_least_secs: 5 * 60,
+            hosts: Vec::new(),
         }
     }
 }
@@ -194,23 +230,32 @@ impl Config {
         })
     }
 
-    /// How often a watch reads each folder.
-    pub fn cadence(&self) -> Cadence {
-        let base = self.base_url.trim_end_matches('/');
-        let under = |paths: &[String]| -> Vec<String> {
-            paths
-                .iter()
-                .map(|p| format!("{base}/{}", p.trim_start_matches('/')))
-                .collect()
-        };
-        Cadence {
-            fast: under(&self.watch_fast),
+    /// Every host read: nemweb, from the top-level keys, then each of
+    /// `hosts`; a root that is not a folder URL refuses.
+    pub fn hosts(&self) -> Result<Vec<Host>, MirrorError> {
+        let mut hosts = vec![Host::nemweb(
+            &self.base_url,
+            self.request_interval_ms,
+            &self.watch_fast,
+            &self.watch_current,
+        )?];
+        for h in &self.hosts {
+            hosts.push(Host::from_config(h, self.request_interval_ms)?);
+        }
+        Ok(hosts)
+    }
+
+    /// How often a watch reads each folder, over every host.
+    pub fn cadence(&self) -> Result<Cadence, MirrorError> {
+        let hosts = self.hosts()?;
+        Ok(Cadence {
+            fast: hosts.iter().flat_map(|h| h.watch_fast.clone()).collect(),
             fast_every: Duration::from_secs(self.watch_fast_secs),
-            current: under(&self.watch_current),
+            current: hosts.iter().flat_map(|h| h.watch_current.clone()).collect(),
             current_every: Duration::from_secs(self.watch_current_secs),
             every: Duration::from_secs(self.watch_secs),
             least: Duration::from_secs(self.watch_least_secs),
-        }
+        })
     }
 
     /// The map's threads: `jobs`, or half the cores when it is 0.
@@ -308,13 +353,72 @@ mod tests {
     }
 
     #[test]
+    fn hosts_are_nemweb_then_the_configured_ones() {
+        let dir = tempfile::tempdir().unwrap();
+        let p = dir.path().join("config.toml");
+        std::fs::write(
+            &p,
+            r#"
+request_interval_ms = 400
+
+[[hosts]]
+base_url = "https://data.wa.aemo.com.au/"
+listing_offset_secs = 28800
+roots = ["public/public-data/datafiles/"]
+watch_current = ["public/market-data/wemde/"]
+"#,
+        )
+        .unwrap();
+        let c = Config::load(&p).unwrap();
+        let hosts = c.hosts().unwrap();
+        assert_eq!(hosts.len(), 2);
+        assert_eq!(hosts[0].base_url, "https://www.nemweb.com.au");
+        assert_eq!(hosts[1].base_url, "https://data.wa.aemo.com.au");
+        assert_eq!(hosts[1].offset_secs, 28_800);
+        assert_eq!(hosts[1].request_interval, Duration::from_millis(400));
+        let cadence = c.cadence().unwrap();
+        assert_eq!(cadence.fast.len(), 5);
+        assert_eq!(
+            cadence.current,
+            [
+                "https://www.nemweb.com.au/Reports/CURRENT/",
+                "https://data.wa.aemo.com.au/public/market-data/wemde/"
+            ]
+        );
+        // A host without its clock or roots is a config error, named.
+        std::fs::write(&p, "[[hosts]]\nbase_url = \"https://h\"\n").unwrap();
+        let d = Config::load(&p).unwrap_err().diagnostic();
+        assert_eq!(d.code, "config.parse");
+        assert!(d.message.contains("listing_offset_secs"), "{}", d.message);
+        // A root that is not a folder fails when the hosts are resolved.
+        std::fs::write(
+            &p,
+            "[[hosts]]\nbase_url = \"https://h\"\nlisting_offset_secs = 0\nroots = [\"a.csv\"]\n",
+        )
+        .unwrap();
+        let c = Config::load(&p).unwrap();
+        assert!(matches!(c.hosts().unwrap_err(), MirrorError::Root { .. }));
+        assert!(c.cadence().is_err());
+        assert_eq!(Config::default().hosts().unwrap().len(), 1);
+        let bad_base = Config {
+            base_url: "nemweb".to_owned(),
+            ..Config::default()
+        };
+        assert!(matches!(
+            bad_base.hosts().unwrap_err(),
+            MirrorError::Root { .. }
+        ));
+    }
+
+    #[test]
     fn a_watch_cadence_is_under_the_base_url() {
         let c = Config {
             base_url: "https://h/".to_owned(),
             watch_fast: vec!["/R/C/G/".to_owned()],
             ..Config::default()
         }
-        .cadence();
+        .cadence()
+        .unwrap();
         assert_eq!(c.fast, ["https://h/R/C/G/"]);
         assert_eq!(c.current, ["https://h/Reports/CURRENT/"]);
         assert_eq!(

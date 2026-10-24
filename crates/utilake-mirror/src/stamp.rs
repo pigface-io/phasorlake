@@ -6,8 +6,8 @@
 //! and a field named after it with `_at` holds the same time as a
 //! [`Stamp`]: `2026-10-12T10:45:00+10:00`, or `2026-10-12T00:45:00Z` for
 //! UTC. nemweb's listing times and the DOS times in AEMO's zips are AEST
-//! (UTC+10, no daylight saving); an HTTP date and the mirror's own clock
-//! are UTC. A record written before the `_at` fields were kept gets them
+//! (UTC+10, no daylight saving), AEMO's WA host's are AWST (UTC+8); an
+//! HTTP date and the mirror's own clock are UTC. A record written before the `_at` fields were kept gets them
 //! derived from its text fields when it is read.
 
 use std::fmt;
@@ -122,6 +122,12 @@ impl Stamp {
     /// A time as nemweb's IIS listings write it, AEST:
     /// `Monday, October 12, 2026 10:45 AM` or `2/13/2024  8:27 AM`.
     pub fn from_listing(text: &str) -> Option<Self> {
+        Self::from_listing_in(text, AEST)
+    }
+
+    /// A time as an IIS listing writes it, in the clock of the host that
+    /// served it: AEST for nemweb, AWST (`8 * 3600`) for AEMO's WA host.
+    pub fn from_listing_in(text: &str, offset: i32) -> Option<Self> {
         let mut w = words(text);
         let first = w.next()?;
         let (year, month, day) = if first.contains('/') {
@@ -145,16 +151,21 @@ impl Stamp {
             (1..=12, "PM") => hour % 12 + 12,
             _ => return None,
         };
-        Self::at(year, month, small(day)?, hour, minute, 0, AEST)
+        Self::at(year, month, small(day)?, hour, minute, 0, offset)
     }
 
     /// A time as a zip entry's DOS time is written, AEST:
     /// `2017-01-12 12:24:16`.
     pub fn from_dos_text(text: &str) -> Option<Self> {
+        Self::from_dos_text_in(text, AEST)
+    }
+
+    /// A zip entry's DOS time in the clock of the machine that packed it.
+    pub fn from_dos_text_in(text: &str, offset: i32) -> Option<Self> {
         let (date, clock) = text.split_once(' ')?;
         let (year, month, day) = ymd(date)?;
         let (hour, minute, second) = hms(clock)?;
-        Self::at(year, month, day, hour, minute, second, AEST)
+        Self::at(year, month, day, hour, minute, second, offset)
     }
 
     /// An HTTP date (RFC 7231, `Mon, 12 Oct 2026 00:32:30 GMT`), UTC.

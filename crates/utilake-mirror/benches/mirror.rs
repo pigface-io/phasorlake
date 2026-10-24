@@ -127,9 +127,15 @@ fn bench(c: &mut Criterion) {
     g.bench_function("map_zip_of_zips", |b| {
         b.iter(|| {
             black_box(
-                utilake_mirror::map(&mirror, &archive, &roots, 1)
-                    .unwrap()
-                    .zips,
+                utilake_mirror::map(
+                    &mirror,
+                    &archive,
+                    &roots,
+                    1,
+                    &utilake_mirror::Offsets::default(),
+                )
+                .unwrap()
+                .zips,
             )
         });
     });

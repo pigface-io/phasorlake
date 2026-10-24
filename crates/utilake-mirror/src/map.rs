@@ -21,6 +21,7 @@ use zip::ZipArchive;
 use crate::compare::Removed;
 use crate::crawl::{Mirror, RemoteKind};
 use crate::error::MirrorError;
+use crate::hosts::Offsets;
 use crate::peek::{Peeked, current, latest};
 use crate::stamp::{AEST, Stamp};
 use crate::zipdir::Entry;
@@ -234,6 +235,7 @@ pub fn map(
     archive: &Archive,
     roots: &[Url],
     workers: usize,
+    offsets: &Offsets,
 ) -> Result<MapSummary, MirrorError> {
     if !mirror.done_path().exists() {
         return Err(MirrorError::CrawlIncomplete {
@@ -258,7 +260,7 @@ pub fn map(
         .collect();
     let jobs: Vec<(Vec<String>, Top)> = tops.into_iter().collect();
     for batch in jobs.chunks(listers.len() * 4) {
-        let results = list_batch(archive, batch, &mut listers);
+        let results = list_batch(archive, batch, &mut listers, offsets);
         for nodes in results {
             for node in &nodes {
                 out.write(node)?;
@@ -408,6 +410,7 @@ fn list_batch(
     archive: &Archive,
     batch: &[(Vec<String>, Top)],
     listers: &mut [Lister],
+    offsets: &Offsets,
 ) -> Vec<Vec<Node>> {
     let next = std::sync::atomic::AtomicUsize::new(0);
     let mut results: Vec<Vec<Node>> = vec![Vec::new(); batch.len()];
@@ -423,6 +426,7 @@ fn list_batch(
                         let Some((key, top)) = batch.get(i) else {
                             break done;
                         };
+                        lister.offset = top.url.as_deref().map_or(AEST, |u| offsets.offset_of(u));
                         done.push((i, lister.top(archive, key, top)));
                     }
                 })
@@ -446,6 +450,9 @@ struct Lister {
     max_entries: u64,
     /// Entries this archived file may still list.
     entries_left: u64,
+    /// Seconds east of UTC of the DOS times in the zip being read: its
+    /// host's clock.
+    offset: i32,
 }
 
 impl Lister {
@@ -457,6 +464,7 @@ impl Lister {
             max_nested: MAX_NESTED,
             max_entries: MAX_ENTRIES,
             entries_left: MAX_ENTRIES,
+            offset: AEST,
         }
     }
 
@@ -678,7 +686,7 @@ impl Lister {
         node.size = Some(f.size());
         node.compressed = Some(f.compressed_size());
         node.crc32 = Some(f.crc32());
-        // The zip's DOS time, as AEMO's machines set it: AEST.
+        // The zip's DOS time, as AEMO's machines set it: the host's clock.
         if let Some(d) = f.last_modified() {
             node.modified = Some(d.to_string());
             node.modified_at = Stamp::at(
@@ -688,7 +696,7 @@ impl Lister {
                 d.hour(),
                 d.minute(),
                 d.second(),
-                AEST,
+                self.offset,
             );
         }
         let mut magic = [0u8; 4];
@@ -1167,7 +1175,7 @@ mod tests {
     #[test]
     fn maps_every_file_and_every_zip_as_a_folder() {
         let f = fixture();
-        let s = map(&f.mirror, &f.archive, &f.roots, 3).unwrap();
+        let s = map(&f.mirror, &f.archive, &f.roots, 3, &Offsets::default()).unwrap();
         let tree = std::fs::read_to_string(f.mirror.dir().join("map/tree.txt")).unwrap();
         let expected = "\
 h/
@@ -1243,7 +1251,7 @@ h/
         crate::stamp::check::assert_aware_lines(&ndjson);
 
         // The same archive maps to the same bytes, on any number of threads.
-        map(&f.mirror, &f.archive, &f.roots, 1).unwrap();
+        map(&f.mirror, &f.archive, &f.roots, 1, &Offsets::default()).unwrap();
         assert_eq!(
             std::fs::read_to_string(f.mirror.dir().join("map/tree.txt")).unwrap(),
             tree
@@ -1298,7 +1306,14 @@ h/
     fn needs_a_finished_crawl() {
         let home = tempfile::tempdir().unwrap();
         let mirror = Mirror::new(home.path());
-        let err = map(&mirror, &Archive::new(home.path()), &[], 1).unwrap_err();
+        let err = map(
+            &mirror,
+            &Archive::new(home.path()),
+            &[],
+            1,
+            &Offsets::default(),
+        )
+        .unwrap_err();
         assert!(matches!(err, MirrorError::CrawlIncomplete { .. }));
     }
 
@@ -1422,7 +1437,7 @@ h/
             .map(|p| serde_json::to_string(p).unwrap() + "\n")
             .collect();
         std::fs::write(f.mirror.peek_path(), lines).unwrap();
-        map(&f.mirror, &f.archive, &f.roots, 1).unwrap();
+        map(&f.mirror, &f.archive, &f.roots, 1, &Offsets::default()).unwrap();
         let ndjson = std::fs::read_to_string(f.mirror.dir().join("map/map.ndjson")).unwrap();
         assert_eq!(
             ndjson.lines().next().unwrap(),
@@ -1479,7 +1494,7 @@ h/
                 serde_json::to_string(&bad(code)).unwrap() + "\n",
             )
             .unwrap();
-            map(&f.mirror, &f.archive, &f.roots, 1).unwrap();
+            map(&f.mirror, &f.archive, &f.roots, 1, &Offsets::default()).unwrap();
             let tree = std::fs::read_to_string(f.mirror.dir().join("map/tree.txt")).unwrap();
             assert!(tree.contains(line), "{tree}");
         }
@@ -1644,7 +1659,7 @@ h/
             },
         )
         .unwrap();
-        map(&f.mirror, &f.archive, &f.roots, 1).unwrap();
+        map(&f.mirror, &f.archive, &f.roots, 1, &Offsets::default()).unwrap();
         let ndjson = std::fs::read_to_string(f.mirror.dir().join("map/map.ndjson")).unwrap();
         let b = ndjson
             .lines()

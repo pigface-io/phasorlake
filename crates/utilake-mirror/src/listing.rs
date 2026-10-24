@@ -59,8 +59,16 @@ impl Unparsed {
     }
 }
 
-/// Every folder and file a listing page links to, in page order.
+/// Every folder and file a listing page links to, in page order; the
+/// listed times read in AEST, nemweb's clock.
 pub fn parse(html: &[u8]) -> Result<Vec<Link>, Unparsed> {
+    parse_in(html, crate::stamp::AEST)
+}
+
+/// Every folder and file a listing page links to, in page order, the
+/// listed times read in the clock of the host that served it (`offset`
+/// seconds east of UTC).
+pub fn parse_in(html: &[u8], offset: i32) -> Result<Vec<Link>, Unparsed> {
     let open = find_ci(html, b"<pre>", 0)
         .ok_or_else(|| Unparsed::new("the page has no <pre> listing", html))?;
     let body_start = open + b"<pre>".len();
@@ -84,7 +92,7 @@ pub fn parse(html: &[u8]) -> Result<Vec<Link>, Unparsed> {
         if line.is_empty() {
             continue;
         }
-        match parse_line(line, &mut last_date)? {
+        match parse_line(line, &mut last_date, offset)? {
             Line::Parent if !parent_seen && out.is_empty() => parent_seen = true,
             Line::Parent => return Err(Unparsed::new("a second parent link", line)),
             Line::Link(link) => out.push(link),
@@ -101,7 +109,11 @@ enum Line {
 /// One `<br>`-separated line: `{date} {size|<dir>} <A HREF="{href}">{name}</A>`,
 /// or the parent link alone. `last_date` is the date text read before and
 /// its instant, reused when this line's is the same.
-fn parse_line(line: &[u8], last_date: &mut Option<(String, Stamp)>) -> Result<Line, Unparsed> {
+fn parse_line(
+    line: &[u8],
+    last_date: &mut Option<(String, Stamp)>,
+    offset: i32,
+) -> Result<Line, Unparsed> {
     let at = find_ci(line, b"<a href=\"", 0)
         .ok_or_else(|| Unparsed::new("a listing line without a link", line))?;
     let href_start = at + b"<a href=\"".len();
@@ -152,7 +164,7 @@ fn parse_line(line: &[u8], last_date: &mut Option<(String, Stamp)>) -> Result<Li
     let modified_at = match last_date {
         Some((text, at)) if *text == modified => *at,
         _ => {
-            let at = Stamp::from_listing(&modified)
+            let at = Stamp::from_listing_in(&modified, offset)
                 .ok_or_else(|| Unparsed::new("a line whose date cannot be read", line))?;
             *last_date = Some((modified.clone(), at));
             at
@@ -317,6 +329,26 @@ mod tests {
             "<html><head><script>var a='<a'</script></head><body><H1>x</H1><hr>\n<pre>{lines}</pre><hr></body></html>"
         )
         .into_bytes()
+    }
+
+    #[test]
+    fn reads_a_page_of_the_wa_host_in_its_clock() {
+        let links = parse_in(&fixture("wa_datafiles.html"), 8 * 3600).unwrap();
+        assert_eq!(links.len(), 4);
+        assert_eq!(links[0].name, "assigned-naq");
+        assert_eq!(links[0].kind, LinkKind::Dir);
+        assert_eq!(links[0].modified, "10/20/2026  3:20 PM");
+        assert_eq!(
+            links[0].modified_at.to_string(),
+            "2026-10-20T15:20:00+08:00"
+        );
+        assert_eq!(
+            links[1].modified_at.to_string(),
+            "2023-10-03T14:30:00+08:00"
+        );
+        // The same page read as nemweb's would be two hours out.
+        let aest = parse(&fixture("wa_datafiles.html")).unwrap();
+        assert_eq!(aest[0].modified_at.to_string(), "2026-10-20T15:20:00+10:00");
     }
 
     #[test]

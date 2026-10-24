@@ -362,6 +362,7 @@ pub fn remove(
     mirror: &Mirror,
     archive: &Archive,
     cmp: &Comparison,
+    offset: i32,
 ) -> Result<Removed, MirrorError> {
     if cmp.verdict != Verdict::Same {
         return Err(MirrorError::NotSame {
@@ -388,7 +389,7 @@ pub fn remove(
     // A downloaded zip's listing is kept before it goes, so its side of the
     // comparison stays in the record and the catalog.
     if removed.downloaded && !cmp.from_listing {
-        crate::peek::keep_listing(mirror, &cmp.zip, &path)?;
+        crate::peek::keep_listing(mirror, &cmp.zip, &path, offset)?;
     }
     let record = mirror.removed_path();
     let mut line = serde_json::to_vec(&removed).expect("a Removed always serialises");
@@ -631,6 +632,7 @@ mod tests {
     use std::time::Duration;
 
     use crate::diag::Diagnose as _;
+    use crate::hosts::Offsets;
     use crate::net::transport::StaticTransport;
     use crate::net::{Fetcher, FetcherConfig, Sidecar};
     use zip::write::SimpleFileOptions;
@@ -771,7 +773,7 @@ mod tests {
         assert_eq!((cmp.same, cmp.repacked), (1, 1));
         assert_eq!(cmp.only_in_folder, ["S/CTL/T1.ctl"]);
 
-        let removed = remove(&f.mirror, &f.archive, &cmp).unwrap();
+        let removed = remove(&f.mirror, &f.archive, &cmp, crate::stamp::AEST).unwrap();
         assert_eq!(removed.same_as, "https://h/A/M/");
         assert!(!f.archive.path_for("https://h/A/M.zip").exists());
         assert!(
@@ -783,7 +785,7 @@ mod tests {
 
         // Not fetched again; counted as removed; mapped as removed.
         let t = Arc::new(StaticTransport::default());
-        let fetcher = Fetcher::new(
+        let fetcher = crate::net::Fetchers::one(Fetcher::new(
             Arc::new(t.clone()),
             Archive::new(f.archive.root()),
             FetcherConfig {
@@ -792,7 +794,7 @@ mod tests {
                 max_backoff: Duration::ZERO,
                 min_interval: Duration::ZERO,
             },
-        );
+        ));
         let s = crate::download(
             &fetcher,
             &f.mirror,
@@ -820,7 +822,7 @@ mod tests {
             (st.roots[0].removed_files, st.roots[0].archived_files),
             (1, 3)
         );
-        let m = crate::map(&f.mirror, &f.archive, &roots, 1).unwrap();
+        let m = crate::map(&f.mirror, &f.archive, &roots, 1, &Offsets::default()).unwrap();
         assert_eq!(m.removed, 1);
         let tree = std::fs::read_to_string(f.mirror.dir().join("map/tree.txt")).unwrap();
         // Removed, its listing kept: the catalog still says what it held.
@@ -829,7 +831,13 @@ mod tests {
         assert!(tree.contains("T1#1.zip/ (zip, "), "{tree}");
         assert_eq!(f.mirror.removed().unwrap()["https://h/A/M.zip"].files, 2);
         // Kept once.
-        crate::peek::keep_listing(&f.mirror, "https://h/A/M.zip", Path::new("/none")).unwrap();
+        crate::peek::keep_listing(
+            &f.mirror,
+            "https://h/A/M.zip",
+            Path::new("/none"),
+            crate::stamp::AEST,
+        )
+        .unwrap();
         assert_eq!(
             crate::peek::read_peeks(&f.mirror.peek_path())
                 .unwrap()
@@ -855,7 +863,7 @@ mod tests {
         let cmp = compare(&f.archive, pair, None, &f.mirror.dir().join("tmp")).unwrap();
         assert_eq!(cmp.verdict, Verdict::Differs);
         assert_eq!(cmp.only_in_zip, ["M/README.txt"]);
-        let e = remove(&f.mirror, &f.archive, &cmp).unwrap_err();
+        let e = remove(&f.mirror, &f.archive, &cmp, crate::stamp::AEST).unwrap_err();
         assert_eq!(e.diagnostic().code, "mirror.not_same");
         assert!(f.archive.path_for(&pair.zip).exists());
     }
@@ -934,7 +942,7 @@ mod tests {
         );
         assert_eq!(cmp.ancillary, ["M/Readme.htm", "M/S/disclaimer.htm"]);
         // Recorded with the removal, and left out again when verified.
-        let r = remove(&f.mirror, &f.archive, &cmp).unwrap();
+        let r = remove(&f.mirror, &f.archive, &cmp, crate::stamp::AEST).unwrap();
         assert_eq!(r.ancillary, cmp.ancillary);
         let line = std::fs::read_to_string(f.mirror.removed_path()).unwrap();
         assert!(
@@ -1011,7 +1019,7 @@ mod tests {
         let pair2 = &pairs(&f2.mirror).unwrap()[0];
         let cmp = compare(&f2.archive, pair2, None, &f2.mirror.dir().join("tmp")).unwrap();
         std::fs::remove_file(Archive::sidecar_path(&f2.archive.path_for(&pair2.zip))).unwrap();
-        let e = remove(&f2.mirror, &f2.archive, &cmp).unwrap_err();
+        let e = remove(&f2.mirror, &f2.archive, &cmp, crate::stamp::AEST).unwrap_err();
         assert_eq!(e.diagnostic().code, "mirror.not_same");
         // A record of removals that is a folder cannot be read.
         std::fs::create_dir_all(f.mirror.removed_path()).unwrap();
@@ -1079,13 +1087,13 @@ mod tests {
         let unsure = compare(&f.archive, pair, Some(&listing), &tmp).unwrap();
         assert_eq!(unsure.verdict, Verdict::NeedsDownload);
         assert_eq!(unsure.unsure, ["S/DATA/T2.zip"]);
-        assert!(remove(&f.mirror, &f.archive, &unsure).is_err());
+        assert!(remove(&f.mirror, &f.archive, &unsure, crate::stamp::AEST).is_err());
         // A file the folder lacks settles it.
         listing.push(entry("M/README.txt", b"r"));
         let differs = compare(&f.archive, pair, Some(&listing), &tmp).unwrap();
         assert_eq!(differs.verdict, Verdict::Differs);
 
-        let r = remove(&f.mirror, &f.archive, &cmp).unwrap();
+        let r = remove(&f.mirror, &f.archive, &cmp, crate::stamp::AEST).unwrap();
         assert_eq!(
             (r.downloaded, r.sha256.as_deref(), r.size),
             (false, None, pair.zip_size)
@@ -1184,7 +1192,7 @@ mod tests {
         let tmp = f.mirror.dir().join("tmp");
         assert!(verify(&f.mirror, &f.archive).unwrap().is_empty());
         let cmp = compare(&f.archive, pair, None, &tmp).unwrap();
-        remove(&f.mirror, &f.archive, &cmp).unwrap();
+        remove(&f.mirror, &f.archive, &cmp, crate::stamp::AEST).unwrap();
         let v = &verify(&f.mirror, &f.archive).unwrap()[0];
         assert!(v.holds(), "{v:?}");
         assert_eq!(v.checked, 2);
@@ -1232,11 +1240,16 @@ mod tests {
         let dir = f.mirror.dir();
         let text = dir.join("text.zip");
         std::fs::write(&text, b"not a zip").unwrap();
-        crate::peek::keep_listing(&f.mirror, "https://h/t.zip", &text).unwrap();
+        crate::peek::keep_listing(&f.mirror, "https://h/t.zip", &text, crate::stamp::AEST).unwrap();
         let p = crate::peek::read_peeks(&f.mirror.peek_path()).unwrap();
         assert_eq!(p[0].error.as_ref().unwrap().code, "zip.not_a_zip");
-        let e =
-            crate::peek::keep_listing(&f.mirror, "https://h/u.zip", &dir.join("none")).unwrap_err();
+        let e = crate::peek::keep_listing(
+            &f.mirror,
+            "https://h/u.zip",
+            &dir.join("none"),
+            crate::stamp::AEST,
+        )
+        .unwrap_err();
         assert_eq!(e.diagnostic().code, "mirror.io");
     }
 }

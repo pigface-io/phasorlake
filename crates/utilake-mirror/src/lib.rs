@@ -1,5 +1,6 @@
-//! A copy of every file under nemweb's archive folders, and the catalog of
-//! it: every folder, file and zip entry, which nemlake reads.
+//! A copy of every file under nemweb's archive folders, and under any
+//! other host the config names ([`hosts`]), and the catalog of it: every
+//! folder, file and zip entry, which the lake reads.
 //!
 //! [`crawl()`] reads every listing page under the roots, strictly
 //! ([`listing`]), into one record of every folder and file. Every file of
@@ -15,6 +16,7 @@ pub mod diag;
 pub mod download;
 pub mod error;
 pub mod hash;
+pub mod hosts;
 pub mod journal;
 pub mod listing;
 pub mod lock;
@@ -38,6 +40,7 @@ pub use diag::{Category, Diagnose, Diagnostic};
 pub use download::{DownloadOptions, DownloadSummary, FileDone, download};
 pub use error::MirrorError;
 pub use hash::{FileHashed, HashSummary, hash};
+pub use hosts::{Host, Offsets};
 pub use journal::{Change, Event};
 pub use lock::RunLock;
 pub use map::{MapSummary, Node, NodeKind, State, map};

@@ -20,7 +20,7 @@ use url::Url;
 use crate::crawl::{Mirror, Remote, RemoteKind, read_page, root, write_atomic};
 use crate::error::MirrorError;
 use crate::journal::{Change, Event};
-use crate::net::{FetchError, Fetcher};
+use crate::net::{FetchError, Fetchers};
 use crate::stamp::Stamp;
 
 /// How often a watch reads each folder.
@@ -183,7 +183,7 @@ fn listed(r: &Remote) -> Listed {
 /// under it leave the record. Any other failure stops the refresh, and the
 /// record keeps what was read before it.
 pub async fn refresh(
-    fetcher: &Fetcher,
+    fetcher: &Fetchers,
     mirror: &Mirror,
     roots: &[Url],
     folders: &[String],
@@ -218,7 +218,8 @@ pub async fn refresh(
             }
         };
         write_atomic(&mirror.page_path(&url), &html)?;
-        let now = read_page(&url, &html, roots, Some(Stamp::now()))?;
+        let offset = fetcher.offset_of(&folder);
+        let now = read_page(&url, &html, roots, Some(Stamp::now()), offset)?;
         let before: BTreeMap<String, Remote> = record
             .values()
             .filter(|r| r.listed_on == folder)
@@ -360,7 +361,7 @@ mod tests {
         let home = tempfile::tempdir().unwrap();
         let mirror = Mirror::new(home.path().join("mirror"));
         let t = Arc::new(StaticTransport::default());
-        let f = Fetcher::new(
+        let f = Fetchers::one(crate::net::Fetcher::new(
             Arc::new(t.clone()),
             Archive::new(home.path().join("archive")),
             FetcherConfig {
@@ -369,7 +370,7 @@ mod tests {
                 max_backoff: Duration::ZERO,
                 min_interval: Duration::ZERO,
             },
-        );
+        ));
         let roots = [root("https://h/A/").unwrap()];
         let folders = |v: &[&str]| v.iter().map(|s| (*s).to_owned()).collect::<Vec<_>>();
         let e = refresh(&f, &mirror, &roots, &folders(&["https://h/A/"]))
