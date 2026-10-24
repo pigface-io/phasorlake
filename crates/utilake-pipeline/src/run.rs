@@ -68,6 +68,45 @@ pub fn local_remote(
     ))
 }
 
+/// A local path as a `RemoteFile` read by the kit `kit`: what one of its
+/// sources says of the name when one does, else the bare file. `None`
+/// when the binary has no such kit, or the kit reads no such file (no
+/// decoder for the name, and not a zip).
+pub fn local_remote_in(
+    kits: &KitRegistry,
+    kit: &str,
+    path: &std::path::Path,
+) -> Option<(&'static str, RemoteFile)> {
+    let k = kits.kit(kit)?;
+    let abs = std::path::absolute(path).ok()?;
+    let kept = abs.file_name()?.to_string_lossy().into_owned();
+    let (name, stamp) = utilake_kit::version_of(&kept);
+    let name = name.to_owned();
+    let mut url = Url::from_file_path(abs.with_file_name(&name)).ok()?;
+    url.set_fragment(stamp);
+    let is_zip = utilake_kit::container::has_extension(&name, ".zip");
+    if !is_zip && k.decoder_for(&name).is_none() {
+        return None;
+    }
+    let size = std::fs::metadata(&abs).ok().map(|m| m.len());
+    let mut remote = k
+        .sources
+        .iter()
+        .find_map(|s| s.describe(&url))
+        .unwrap_or(RemoteFile {
+            url,
+            source: "local",
+            table: None,
+            period: None,
+            size: None,
+            modified: None,
+            modified_at: None,
+        });
+    remote.source = "local";
+    remote.size = size;
+    Some((k.id, remote))
+}
+
 /// Hashes a local file into a `LocalFile`, reading it in pieces. Blocking:
 /// the run calls it off the async runtime.
 pub fn local_file(remote: RemoteFile, path: &std::path::Path) -> std::io::Result<LocalFile> {
@@ -236,10 +275,19 @@ pub async fn run(
                 Vec::new()
             }
         },
-        Input::Local(paths) => {
+        Input::Local(_) | Input::LocalIn { .. } => {
+            let (paths, kit) = match &plan.input {
+                Input::LocalIn { kit, paths } => (paths, Some(kit.as_str())),
+                Input::Local(paths) => (paths, None),
+                _ => unreachable!("matched above"),
+            };
             let mut out = Vec::new();
             for p in paths {
-                match local_remote(&deps.kits, p) {
+                let found = match kit {
+                    Some(k) => local_remote_in(&deps.kits, k, p),
+                    None => local_remote(&deps.kits, p),
+                };
+                match found {
                     Some((kit, remote)) => out.push(Listed {
                         kit,
                         picks: None,
@@ -252,10 +300,16 @@ pub async fn run(
                         let d = Diagnostic::error(
                             "config.bad_path",
                             Category::Config,
-                            format!(
-                                "The path {} is not a file any kit of utilake reads.",
-                                p.display()
-                            ),
+                            match kit {
+                                Some(k) => format!(
+                                    "The path {} is not a file the {k} kit reads.",
+                                    p.display()
+                                ),
+                                None => format!(
+                                    "The path {} is not a file any kit of utilake reads.",
+                                    p.display()
+                                ),
+                            },
                         )
                         .with_file(p.display().to_string())
                         .with_request(request.clone());

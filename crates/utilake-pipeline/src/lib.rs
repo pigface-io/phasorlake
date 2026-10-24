@@ -17,4 +17,4 @@ pub mod run;
 pub use get::{GetPlan, GetReport, GetRequest, SourceChoice, Step, days_of, plan_get, run_get};
 pub use plan::{DEFAULT_BATCH_ROWS, Deps, Input, Plan, RunOptions};
 pub use report::{RunReport, exit_code};
-pub use run::{local_remote, recorded_remote, run};
+pub use run::{local_remote, local_remote_in, recorded_remote, run};

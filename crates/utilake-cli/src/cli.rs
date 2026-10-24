@@ -413,6 +413,11 @@ pub struct ImportCmd {
     /// `PUBLIC_DVD_DISPATCHPRICE_202608010000.zip` or `downloads/`.
     #[arg(required = true)]
     pub paths: Vec<PathBuf>,
+    /// The kit that reads every file, e.g. `--kit gas`, whatever its name
+    /// or place says (default: the kit whose source knows the file, else
+    /// the NEM's).
+    #[arg(long)]
+    pub kit: Option<String>,
     /// Ingest flags.
     #[command(flatten)]
     pub ingest: IngestArgs,
@@ -424,6 +429,8 @@ Examples:
       One monthly file from disk.
   utilake import downloads/ --strict
       Every zip and CSV in a directory; a block no table declares fails its file.
+  utilake import ~/Downloads/Day01.zip --kit gas
+      A file whose name says nothing of its market, read by the gas kit.
 ";
 
 /// `ingest`: archived files into the lake.
@@ -435,8 +442,9 @@ pub struct IngestCmd {
     /// The window (default: whatever is archived and not yet in the lake).
     #[command(flatten)]
     pub window: WindowArgs,
-    /// Which archived source to read, e.g. `--source nem-mmsdm` or
-    /// `--source nem-reports` (default: the market's monthly source).
+    /// Which archived source to read, e.g. `--source nem-reports` or
+    /// `--source gas-sttm` (default: the market's monthly source that
+    /// publishes the tables, else its first that does).
     #[arg(long)]
     pub source: Option<String>,
     /// List what would be read and stop.

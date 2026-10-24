@@ -79,6 +79,16 @@ pub enum Input {
     },
     /// Local zips or CSVs.
     Local(Vec<PathBuf>),
+    /// Local zips or CSVs, every one read by the kit named, whatever source
+    /// would claim it by its name: for a file whose name or place says
+    /// nothing of its market (a renamed download, a copy outside the
+    /// mirror's folders).
+    LocalIn {
+        /// The kit's id, e.g. `gas`.
+        kit: String,
+        /// The files.
+        paths: Vec<PathBuf>,
+    },
     /// Every source the manifest has recorded that is not wholly in the
     /// lake by the current rules: its rules have changed since it was
     /// read, an earlier read failed, or a Parquet file is gone. Each is

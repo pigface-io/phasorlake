@@ -2605,3 +2605,34 @@ async fn a_restated_file_adds_only_its_new_rows() {
     );
     assert_eq!(local.table.as_deref(), Some("GBB_ACTUAL_FLOW_STORAGE"));
 }
+
+/// Files read by a named kit, whatever claims them by name: a WEM
+/// datafile's name read as MMS rows by the NEM kit; a kit the binary lacks
+/// reads nothing and says so.
+#[tokio::test]
+async fn local_files_read_by_a_named_kit() {
+    let e = env();
+    let csv = e.home.root().join("facility-scada-2023-10.csv");
+    std::fs::copy(fixtures().join("REGION_v1_head.csv"), &csv).unwrap();
+    let (kit, remote) = utilake_pipeline::local_remote_in(&e.deps.kits, "nem", &csv).unwrap();
+    assert_eq!((kit, remote.source), ("nem", "local"));
+    assert!(utilake_pipeline::local_remote_in(&e.deps.kits, "mars", &csv).is_none());
+    let txt = e.home.root().join("notes.txt");
+    std::fs::write(&txt, "x").unwrap();
+    assert!(utilake_pipeline::local_remote_in(&e.deps.kits, "nem", &txt).is_none());
+    let run_in = |kit: &str, paths: Vec<PathBuf>| Plan {
+        request: format!("import --kit {kit}"),
+        input: Input::LocalIn {
+            kit: kit.into(),
+            paths,
+        },
+        options: RunOptions::default(),
+    };
+    let (rep, _) = run_plan(&e, run_in("nem", vec![csv.clone()])).await;
+    assert_eq!(rep.exit_code, 0, "{:?}", rep.report.summary_lines());
+    assert_eq!(rep.summary.ingested, 1);
+    let (rep, _) = run_plan(&e, run_in("mars", vec![csv])).await;
+    assert_eq!(rep.summary.listed, 0);
+    let d = &rep.report.by_code["config.bad_path"].examples[0];
+    assert!(d.message.contains("the mars kit"), "{}", d.message);
+}

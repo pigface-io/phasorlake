@@ -105,8 +105,23 @@ async fn run_plan(cli: &Cli, ctx: &Context, plan: Plan) -> Result<i32> {
     Ok(report.exit_code)
 }
 
-/// `utilake import <paths>`: zips or CSVs from disk, straight into the lake.
-pub async fn import(cli: &Cli, ctx: &Context, paths: &[PathBuf], args: &IngestArgs) -> Result<i32> {
+/// `utilake import <paths> [--kit K]`: zips or CSVs from disk, straight
+/// into the lake; with `--kit`, every file read by that kit.
+pub async fn import(cli: &Cli, ctx: &Context, cmd: &crate::cli::ImportCmd) -> Result<i32> {
+    let (paths, args) = (&cmd.paths, &cmd.ingest);
+    if let Some(k) = &cmd.kit
+        && ctx.kits.kit(k).is_none()
+    {
+        anyhow::bail!(
+            "No kit named {k}; this binary reads with {}.",
+            ctx.kits
+                .kits()
+                .iter()
+                .map(|k| k.id)
+                .collect::<Vec<_>>()
+                .join(", ")
+        );
+    }
     let mut files = Vec::new();
     for p in paths {
         if p.is_dir() {
@@ -133,9 +148,16 @@ pub async fn import(cli: &Cli, ctx: &Context, paths: &[PathBuf], args: &IngestAr
             .collect::<Vec<_>>()
             .join(" ")
     );
+    let input = match &cmd.kit {
+        Some(kit) => Input::LocalIn {
+            kit: kit.to_ascii_lowercase(),
+            paths: files,
+        },
+        None => Input::Local(files),
+    };
     let plan = Plan {
         request,
-        input: Input::Local(files),
+        input,
         options: options(cli, ctx, args, None, false),
     };
     run_plan(cli, ctx, plan).await
@@ -182,15 +204,31 @@ pub async fn ingest(cli: &Cli, ctx: &Context, args: &IngestCmd) -> Result<i32> {
                         .join(", ")
                 )
             })?,
-        None => kit
-            .sources
-            .first()
-            .cloned()
-            .ok_or_else(|| anyhow::anyhow!("The {} kit has no source.", sel.kit))?,
+        // The monthly source that publishes every table, else the first
+        // that does: a kit of several feeds (gas) reads each table from
+        // its own.
+        None => {
+            let serves = |s: &&std::sync::Arc<dyn utilake_acquire::Source>| {
+                sel.names.iter().all(|t| s.serves(t))
+            };
+            kit.sources
+                .iter()
+                .filter(serves)
+                .find(|s| s.granularity() == utilake_acquire::Granularity::Month)
+                .or_else(|| kit.sources.iter().find(serves))
+                .cloned()
+                .ok_or_else(|| {
+                    anyhow::anyhow!(
+                        "No source of the {} kit publishes {}; name one with --source.",
+                        sel.kit,
+                        sel.names.join(", ")
+                    )
+                })?
+        }
     };
-    // The report folders are archived by day, the monthly archives by month.
+    // A source cut by day is archived by day, one cut by month by month.
     let days = w.days(&sel.def);
-    let range = if source.id().contains("reports") {
+    let range = if source.granularity() == utilake_acquire::Granularity::Day {
         days
     } else {
         TimeRange::months(days.from.first_day().month(), days.to.last_day().month())

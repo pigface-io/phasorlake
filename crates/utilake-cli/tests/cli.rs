@@ -109,6 +109,75 @@ fn ingest_ls_errors_verify_round_trip() {
     )
     .unwrap();
     cli.ok(&["import", unknown.to_str().unwrap()]);
+    // `--kit` names the kit that reads every file: a GBB file under the
+    // feed's folders reads as its declared table; the same bytes under a
+    // name no feed's rule reads name no block; an MMS file read by the NEM
+    // kit whatever its name; a kit the binary lacks is refused.
+    let gbb_dir = cli.home.path().join("mirror/Reports/CURRENT/GBB");
+    std::fs::create_dir_all(&gbb_dir).unwrap();
+    let gbb = gbb_dir.join("GasBBActualFlowStorageLast31.CSV");
+    std::fs::copy(
+        Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../../testdata/plain/gbb_actual_flow_storage_last31.csv"),
+        &gbb,
+    )
+    .unwrap();
+    let out = cli.ok(&["import", gbb.to_str().unwrap(), "--kit", "gas"]);
+    assert!(out.contains("1 listed, 1 ingested"), "{out}");
+    assert!(
+        cli.ok(&["list", "--ingests"])
+            .contains("GBB_ACTUAL_FLOW_STORAGE"),
+        "the declared gas table"
+    );
+    let loose = cli.home.path().join("flows.csv");
+    std::fs::copy(&gbb, &loose).unwrap();
+    let (code, out, err) = cli.code(&["import", loose.to_str().unwrap(), "--kit", "gas"]);
+    assert_ne!(code, 0);
+    assert!(
+        format!("{out}{err}").contains("csv.unnamed_block"),
+        "{out}{err}"
+    );
+    let renamed = cli.home.path().join("facility-scada-2023-10.csv");
+    std::fs::copy(fixtures().join("REGION_v1_head.csv"), &renamed).unwrap();
+    let out = cli.ok(&["import", renamed.to_str().unwrap(), "--kit", "nem"]);
+    assert!(out.contains("1 ingested"), "{out}");
+    let notes = cli.home.path().join("notes.txt");
+    std::fs::write(&notes, "x").unwrap();
+    let (_, out, err) = cli.code(&["import", notes.to_str().unwrap(), "--kit", "nem"]);
+    assert!(
+        format!("{out}{err}").contains("not a file the nem kit reads"),
+        "{out}{err}"
+    );
+    let (code, _, err) = cli.code(&["import", gbb.to_str().unwrap(), "--kit", "mars"]);
+    assert_eq!(code, 1);
+    assert!(
+        err.contains("No kit named mars") && err.contains("gas, wem, nem"),
+        "{err}"
+    );
+    // `ingest` reads a gas table from the feed that publishes it.
+    let (code, out, err) = cli.code(&[
+        "--offline",
+        "ingest",
+        "GBB_ACTUAL_FLOW_STORAGE",
+        "--from",
+        "2026-10",
+        "--to",
+        "2026-10",
+        "--dry-run",
+    ]);
+    assert_eq!(code, 0, "{out}{err}");
+    let (code, _, err) = cli.code(&[
+        "--offline",
+        "ingest",
+        "GBB_ACTUAL_FLOW_STORAGE",
+        "--from",
+        "2026-10",
+        "--to",
+        "2026-10",
+        "--source",
+        "gas-sttm",
+    ]);
+    assert!(code == 0 || !err.contains("has no source"), "{err}");
     let (code, out, _) = cli.code(&["iceberg", "--table", "UTILAKE_TEST_NOBODY"]);
     assert_eq!(code, 1, "{out}");
     assert!(

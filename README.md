@@ -47,7 +47,11 @@ utilake import PUBLIC_DVD_DISPATCHPRICE_202401010000.zip
 `fetch` downloads into the archive, each file once, politely; `ingest`
 writes Parquet from what is archived, without the network (with no
 arguments, everything archived and not yet in the lake, and everything
-behind its rules); `import` reads files you already have.
+behind its rules); `import` reads files you already have, by the kit
+whose source knows each one, or every one by `--kit gas` when the name
+says nothing of its market. `ingest --source gas-sttm` names which
+archived source to read; by default it is the one that publishes the
+tables.
 
 The result lands under `~/.utilake/lake/nem/dispatch_unit_scada/year=2024/month=01/`.
 Query it:

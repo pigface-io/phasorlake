@@ -22,7 +22,7 @@ pub async fn dispatch(cli: Cli) -> Result<i32> {
     match &cli.command {
         Command::Get(args) => get::get(&cli, &ctx, args).await,
         Command::Fetch(args) => fetch::fetch(&cli, &ctx, args).await,
-        Command::Import(args) => lake::import(&cli, &ctx, &args.paths, &args.ingest).await,
+        Command::Import(args) => lake::import(&cli, &ctx, args).await,
         Command::Ingest(args) => lake::ingest(&cli, &ctx, args).await,
         Command::List(args) => list::list(&ctx, args).await,
         Command::Verify { table, archive } => {
