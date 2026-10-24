@@ -149,17 +149,22 @@ pub fn relayout(
             .map(|rd| rd.filter_map(Result::ok).map(|e| e.path()).collect())
             .unwrap_or_default();
         files.sort();
+        // Each record found among the folder's names: on exFAT a look for
+        // a name not there reads the whole folder.
+        let here: std::collections::HashSet<String> = files
+            .iter()
+            .filter_map(|p| Some(p.file_name()?.to_string_lossy().into_owned()))
+            .collect();
         for path in files {
             if !is_data_file(&path) {
                 continue;
             }
-            let sidecar = match Archive::read(&path) {
-                Ok(Some(s)) => s,
-                Ok(None) => continue,
-                Err(_) => {
-                    summary.unreadable.push(path);
-                    continue;
-                }
+            let Some(record) = Archive::record_where(&path, |n| here.contains(n)) else {
+                continue;
+            };
+            let Ok(sidecar) = Archive::read_record(&record) else {
+                summary.unreadable.push(path);
+                continue;
             };
             let Some(step) = plan(archive, &path, &sidecar, &placed, &mut names) else {
                 continue;
@@ -184,7 +189,7 @@ pub fn relayout(
             }
             if !dry_run {
                 log(mirror, &step)?;
-                take(&step, sidecar)?;
+                take(&step, sidecar, &record)?;
             }
         }
     }
@@ -358,18 +363,22 @@ fn record_at(path: &Path) -> Option<PathBuf> {
 /// Moves the record of the file at `from` beside `to`, under the name it
 /// has: a rename, the record not read or written again.
 fn move_record(from: &Path, to: &Path) -> Result<(), MirrorError> {
-    record_at(from).map_or(Ok(()), |record| {
-        let suffix = record
-            .file_name()
-            .and_then(|r| {
-                let data = from.file_name()?.to_string_lossy().into_owned();
-                Some(r.to_string_lossy()[data.len()..].to_owned())
-            })
-            .unwrap_or_default();
-        let mut target = to.as_os_str().to_owned();
-        target.push(suffix);
-        std::fs::rename(&record, &target).map_err(MirrorError::io(Path::new(&target)))
-    })
+    record_at(from).map_or(Ok(()), |record| rename_record(from, &record, to))
+}
+
+/// Renames `record`, the record of the file at `from`, beside `to` under
+/// the same suffix.
+fn rename_record(from: &Path, record: &Path, to: &Path) -> Result<(), MirrorError> {
+    let suffix = record
+        .file_name()
+        .and_then(|r| {
+            let data = from.file_name()?.to_string_lossy().into_owned();
+            Some(r.to_string_lossy()[data.len()..].to_owned())
+        })
+        .unwrap_or_default();
+    let mut target = to.as_os_str().to_owned();
+    target.push(suffix);
+    std::fs::rename(record, &target).map_err(MirrorError::io(Path::new(&target)))
 }
 
 /// Removes every record beside `path`.
@@ -382,13 +391,13 @@ fn drop_records(path: &Path) -> Result<(), MirrorError> {
 
 /// Takes one step. A moved file's record is written again at its new
 /// path in the current format, then the old one removed.
-fn take(step: &Step, sidecar: Provenance) -> Result<(), MirrorError> {
+fn take(step: &Step, sidecar: Provenance, record: &Path) -> Result<(), MirrorError> {
     match step.action {
         Action::Move | Action::Version | Action::Folder => {
             let dir = step.to.parent().expect("an archived path is in a folder");
             std::fs::create_dir_all(dir).map_err(MirrorError::io(dir))?;
             std::fs::rename(&step.from, &step.to).map_err(MirrorError::io(&step.to))?;
-            move_record(&step.from, &step.to)?;
+            rename_record(&step.from, record, &step.to)?;
         }
         Action::Same => {
             if let Some(mut kept) = Archive::read(&step.to)? {
@@ -755,7 +764,7 @@ mod tests {
         // dropped all the same.
         std::fs::remove_file(format!("{}.json", to.display())).unwrap();
         let sc = Archive::read(&from3).unwrap().unwrap();
-        take(&step(Action::Same, &to), sc).unwrap();
+        take(&step(Action::Same, &to), sc, Path::new("")).unwrap();
         assert!(!from3.exists());
     }
 

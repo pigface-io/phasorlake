@@ -96,13 +96,13 @@ pub fn add_address(path: &Path, address: Address) -> Result<bool, FetchError> {
 /// its record, in path order. A folder that cannot be read, or a record
 /// that does not read, is passed over.
 pub fn entries_under(archive: &Archive, dir: Option<&Path>) -> Vec<Held> {
-    let Ok(paths) = Archive::walk(dir.unwrap_or(archive.root())) else {
+    let Ok(paths) = Archive::walk_records(dir.unwrap_or(archive.root())) else {
         return Vec::new();
     };
     paths
         .into_iter()
-        .filter_map(|path| {
-            let provenance = Archive::read(&path).ok().flatten()?;
+        .filter_map(|(path, record)| {
+            let provenance = Archive::read_record(&record).ok()?;
             Some(Held { path, provenance })
         })
         .collect()

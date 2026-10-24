@@ -177,13 +177,13 @@ pub fn remove(path: &Path) -> Result<(), FetchError> {
 /// that does not read, is passed over.
 pub fn entries_under(archive: &Archive, dir: Option<&Path>) -> Vec<Held> {
     let dir = dir.unwrap_or(archive.root());
-    let Ok(paths) = Archive::walk(dir) else {
+    let Ok(paths) = Archive::walk_records(dir) else {
         return Vec::new();
     };
     paths
         .into_iter()
-        .filter_map(|path| {
-            let provenance = Archive::read(&path).ok().flatten()?;
+        .filter_map(|(path, record)| {
+            let provenance = Archive::read_record(&record).ok()?;
             Some(Held { path, provenance })
         })
         .collect()
