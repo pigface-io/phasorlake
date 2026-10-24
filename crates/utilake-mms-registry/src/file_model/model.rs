@@ -10,31 +10,9 @@ use utilake_core::YearMonth;
 
 use crate::file_model::temporal::Temporal;
 
-/// The market a table belongs to.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum Market {
-    /// National Electricity Market (eastern states).
-    Nem,
-    /// Wholesale Electricity Market (Western Australia).
-    Wem,
-}
-
-impl Market {
-    /// The directory name under `schemas/` and `lake/`.
-    pub const fn as_str(self) -> &'static str {
-        match self {
-            Self::Nem => "nem",
-            Self::Wem => "wem",
-        }
-    }
-}
-
-impl fmt::Display for Market {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.write_str(self.as_str())
-    }
-}
+/// The market a table belongs to: the one the published metadata names,
+/// so the lake, the census and the explorer agree on its id and clock.
+pub use utilake_iceberg::Market;
 
 /// Per-market constants, from `schemas/{market}/market.toml`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -536,7 +514,8 @@ pub(crate) mod tests {
         };
         assert_eq!(neg.arrow_tz(), "-05:30");
         assert_eq!(Market::Nem.to_string(), "nem");
-        assert_eq!(Market::Wem.as_str(), "wem");
+        assert_eq!(Market::Wem.id(), "wem");
+        assert_eq!(Market::Gas.offset_secs(), 36_000);
         assert_eq!(ColumnId(3).to_string(), "3");
     }
 

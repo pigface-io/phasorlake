@@ -21,18 +21,19 @@ use crate::plan::ConformancePlan;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct TableId(pub u32);
 
-/// An owned `(report_type, report_subtype)` key that can be looked up with
-/// borrowed strings and no allocation.
+/// An owned `(market, report_type, report_subtype)` key that can be looked
+/// up with borrowed strings and no allocation. A pair names a table within
+/// its market: two markets may publish the same pair.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct PairKey(pub String, pub String);
+pub struct PairKey(pub Market, pub String, pub String);
 
 /// The borrowed form of [`PairKey`].
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct PairRef<'a>(pub &'a str, pub &'a str);
+pub struct PairRef<'a>(pub Market, pub &'a str, pub &'a str);
 
 impl Equivalent<PairKey> for PairRef<'_> {
     fn equivalent(&self, key: &PairKey) -> bool {
-        key.0 == self.0 && key.1 == self.1
+        key.0 == self.0 && key.1 == self.1 && key.2 == self.2
     }
 }
 
@@ -91,8 +92,8 @@ pub struct Registry {
     /// reference to one lives as long as the registry. Each is boxed: an
     /// empty slot costs a pointer, not a table.
     derived: Vec<OnceLock<Box<Derived>>>,
-    /// The report pair of each derived table, in slot order.
-    derived_pairs: Mutex<Vec<(String, String)>>,
+    /// The market and report pair of each derived table, in slot order.
+    derived_pairs: Mutex<Vec<(Market, String, String)>>,
 }
 
 /// What the files of one table are written with.
@@ -157,7 +158,7 @@ fn default_market(market: Market) -> MarketDef {
     let wem = market == Market::Wem;
     MarketDef {
         market,
-        utc_offset_secs: if wem { 28_800 } else { 36_000 },
+        utc_offset_secs: market.offset_secs(),
         timestamp_format: crate::file_model::TimestampFormat::AemoSlash,
         trading_day_start_secs: if wem { 28_800 } else { 14_400 },
     }
@@ -255,11 +256,11 @@ impl Registry {
             let id = TableId(i as u32);
             by_name.insert(t.name.clone(), id);
             for (k, (a, b)) in t.report_pairs.iter().enumerate() {
-                by_pair.insert(PairKey(a.clone(), b.clone()), (id, k as u16));
+                by_pair.insert(PairKey(t.market, a.clone(), b.clone()), (id, k as u16));
             }
         }
         // A market no file defines gets the definition its name implies.
-        for m in [Market::Nem, Market::Wem] {
+        for m in Market::ALL {
             if !markets.iter().any(|d| d.market == m) {
                 markets.push(default_market(m));
             }
@@ -398,10 +399,9 @@ impl Registry {
             .derived_pairs
             .lock()
             .expect("the derived-table list is never poisoned");
-        if let Some(i) = pairs
-            .iter()
-            .position(|(rt, st)| rt == irow.report_type && st == irow.report_subtype)
-        {
+        if let Some(i) = pairs.iter().position(|(m, rt, st)| {
+            *m == market && rt == irow.report_type && st == irow.report_subtype
+        }) {
             return Some(TableId((self.tables.len() + i) as u32));
         }
         let slot = pairs.len();
@@ -414,7 +414,11 @@ impl Registry {
             self.market(market).expect("every market has a definition"),
         );
         let _ = self.derived[slot].set(Box::new(Derived { table, lake }));
-        pairs.push((irow.report_type.to_owned(), irow.report_subtype.to_owned()));
+        pairs.push((
+            market,
+            irow.report_type.to_owned(),
+            irow.report_subtype.to_owned(),
+        ));
         Some(TableId((self.tables.len() + slot) as u32))
     }
 
@@ -426,30 +430,51 @@ impl Registry {
             .or_else(|| self.by_name.get(&name.to_ascii_uppercase()).copied())
     }
 
-    /// The handle for a report pair, without allocating: a table of the
-    /// registry, or failing that one derived earlier in this run.
-    pub fn table_by_pair(&self, report_type: &str, report_subtype: &str) -> Option<TableId> {
-        if let Some((id, _)) = self.by_pair.get(&PairRef(report_type, report_subtype)) {
+    /// The handle for a report pair of `market`, without allocating: a
+    /// table of the registry, or failing that one derived earlier in this
+    /// run.
+    pub fn table_by_pair(
+        &self,
+        market: Market,
+        report_type: &str,
+        report_subtype: &str,
+    ) -> Option<TableId> {
+        if let Some((id, _)) = self
+            .by_pair
+            .get(&PairRef(market, report_type, report_subtype))
+        {
             return Some(*id);
         }
         self.derived_pairs
             .lock()
             .expect("the derived-table list is never poisoned")
             .iter()
-            .position(|(rt, st)| rt == report_type && st == report_subtype)
+            .position(|(m, rt, st)| *m == market && rt == report_type && st == report_subtype)
             .map(|i| TableId((self.tables.len() + i) as u32))
     }
 
-    /// The handle for a report pair the registry itself declares.
-    pub fn declared_by_pair(&self, report_type: &str, report_subtype: &str) -> Option<TableId> {
-        self.pair(report_type, report_subtype).map(|(id, _)| id)
+    /// The handle for a report pair of `market` the registry itself
+    /// declares.
+    pub fn declared_by_pair(
+        &self,
+        market: Market,
+        report_type: &str,
+        report_subtype: &str,
+    ) -> Option<TableId> {
+        self.pair(market, report_type, report_subtype)
+            .map(|(id, _)| id)
     }
 
-    /// The table the registry declares for a report pair, and the pair's
-    /// place in the table's list.
-    pub(crate) fn pair(&self, report_type: &str, report_subtype: &str) -> Option<(TableId, u16)> {
+    /// The table the registry declares for a report pair of `market`, and
+    /// the pair's place in the table's list.
+    pub(crate) fn pair(
+        &self,
+        market: Market,
+        report_type: &str,
+        report_subtype: &str,
+    ) -> Option<(TableId, u16)> {
         self.by_pair
-            .get(&PairRef(report_type, report_subtype))
+            .get(&PairRef(market, report_type, report_subtype))
             .copied()
     }
 
@@ -612,9 +637,18 @@ mod tests {
         let r = Registry::load_embedded();
         assert!(Arc::ptr_eq(&r, &Registry::load_embedded()));
         let id = r.table_by_name("dispatch_unit_scada").unwrap();
-        assert_eq!(r.table_by_pair("DISPATCH", "UNIT_SCADA"), Some(id));
-        assert_eq!(r.declared_by_pair("DISPATCH", "UNIT_SCADA"), Some(id));
-        assert_eq!(r.table_by_pair("DISPATCH", "NOPE"), None);
+        assert_eq!(
+            r.table_by_pair(Market::Nem, "DISPATCH", "UNIT_SCADA"),
+            Some(id)
+        );
+        assert_eq!(
+            r.declared_by_pair(Market::Nem, "DISPATCH", "UNIT_SCADA"),
+            Some(id)
+        );
+        assert_eq!(r.table_by_pair(Market::Nem, "DISPATCH", "NOPE"), None);
+        // A pair names a table within its market only.
+        assert_eq!(r.table_by_pair(Market::Gas, "DISPATCH", "UNIT_SCADA"), None);
+        assert_eq!(r.market(Market::Gas).unwrap().utc_offset_secs, 36_000);
         assert_eq!(r.table(id).name, "DISPATCH_UNIT_SCADA");
         assert_eq!(r.market_of(id).arrow_tz(), "+10:00");
         assert_eq!(r.lake_schema(id).fields().len(), 4);
@@ -681,7 +715,7 @@ mod tests {
         let region = o.table_by_name("REGION").unwrap();
         assert_eq!(o.table(region).columns.len(), 1);
         assert_eq!(o.schema_source(region), SchemaSource::User);
-        assert!(o.table_by_pair("X", "Y").is_some());
+        assert!(o.table_by_pair(Market::Nem, "X", "Y").is_some());
         assert_eq!(o.tables().count(), r.tables().count() + 1);
         // An invalid overlay is refused.
         let mut bad = n.clone();

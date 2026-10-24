@@ -75,7 +75,7 @@ impl Sink for InspectSink<'_> {
         // shape of it does not resolve.
         let table = self
             .registry
-            .declared_by_pair(irow.report_type, irow.report_subtype)
+            .declared_by_pair(self.opts.market, irow.report_type, irow.report_subtype)
             .map(|id| self.registry.table(id).name.clone());
         let status = match self.registry.resolve(irow, self.opts) {
             Ok(r) => r.status.label().to_owned(),
@@ -137,7 +137,13 @@ mod tests {
             &fixture[footer..]
         );
         let text = text.into_bytes();
-        let mut s = InspectSink::new(&r, ResolveOptions { mode: Mode::Strict });
+        let mut s = InspectSink::new(
+            &r,
+            ResolveOptions {
+                mode: Mode::Strict,
+                ..Default::default()
+            },
+        );
         let stats = scan(
             text.as_slice(),
             &mut s,

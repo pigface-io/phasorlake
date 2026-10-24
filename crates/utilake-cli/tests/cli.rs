@@ -1435,13 +1435,13 @@ fn get_writes_an_interval_of_a_table_from_a_whole_month_zip() {
         "get",
         "TRADINGPRICE",
         "--market",
-        "gas",
+        "mars",
         "--from",
         "2024-01",
         "--to",
         "2024-01",
     ]);
-    assert!(code != 0 && err.contains("No market named gas"), "{err}");
+    assert!(code != 0 && err.contains("No market named mars"), "{err}");
     // A dry run: the plan and the listing, nothing fetched.
     let text = cli.ok(&[
         "get",

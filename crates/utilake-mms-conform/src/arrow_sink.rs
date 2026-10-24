@@ -812,7 +812,10 @@ mod tests {
         let e = collect(
             &r,
             with_unknown_block().as_slice(),
-            ResolveOptions { mode: Mode::Strict },
+            ResolveOptions {
+                mode: Mode::Strict,
+                ..Default::default()
+            },
             &ScanOptions::default(),
         )
         .unwrap_err();
@@ -890,7 +893,10 @@ mod tests {
         let (out, stats) = collect(
             &r,
             csv.as_bytes(),
-            ResolveOptions { mode: Mode::Strict },
+            ResolveOptions {
+                mode: Mode::Strict,
+                ..Default::default()
+            },
             &ScanOptions::default(),
         )
         .unwrap();
@@ -959,7 +965,10 @@ mod tests {
         let e = collect(
             &r,
             rows.as_slice(),
-            ResolveOptions { mode: Mode::Strict },
+            ResolveOptions {
+                mode: Mode::Strict,
+                ..Default::default()
+            },
             &ScanOptions::default(),
         )
         .unwrap_err();
@@ -1262,7 +1271,10 @@ D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",A,1\n";
     #[test]
     fn strict_mode_refuses_a_value_that_does_not_fit() {
         let r = reg();
-        let strict = ResolveOptions { mode: Mode::Strict };
+        let strict = ResolveOptions {
+            mode: Mode::Strict,
+            ..Default::default()
+        };
         let e = collect(&r, MISFITS, strict, &ScanOptions::default()).unwrap_err();
         let d = e.diagnostic();
         assert_eq!(d.code, "parse.timestamp");

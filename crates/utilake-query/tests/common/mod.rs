@@ -147,7 +147,9 @@ impl Fixture {
             .table_by_name(table)
             .or_else(|| {
                 let (rt, st) = table.split_once('.')?;
-                self.registry.table_by_pair(rt, st)
+                utilake_mms_registry::Market::ALL
+                    .into_iter()
+                    .find_map(|m| self.registry.table_by_pair(m, rt, st))
             })
             .unwrap_or_else(|| panic!("no table {table}"))
     }

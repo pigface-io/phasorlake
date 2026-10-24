@@ -16,6 +16,7 @@ use utilake_core::{Category, Diagnostic, YearMonth};
 use utilake_mms_decode::IRow;
 
 use crate::error::ResolveError;
+use crate::file_model::Market;
 use crate::plan::{ConformancePlan, PlanHash};
 use crate::registry::{Registry, Resolution, SchemaSource, TableId};
 
@@ -36,6 +37,9 @@ pub enum Mode {
 pub struct ResolveOptions {
     /// Strictness.
     pub mode: Mode,
+    /// The market the file belongs to: its pairs are looked up there, and
+    /// a pair no table claims is derived there.
+    pub market: Market,
 }
 
 /// How the I row matched the registry.
@@ -154,7 +158,7 @@ impl Registry {
         let fp = irow.fingerprint();
         // The hot path: a column list one schema of the history has, of a
         // version the history has, is read with that schema.
-        if let Some((id, k)) = self.pair(irow.report_type, irow.report_subtype) {
+        if let Some((id, k)) = self.pair(opts.market, irow.report_type, irow.report_subtype) {
             let shapes = self.shapes(id.0 as usize);
             if let Some(&schema) = shapes.exact.get(&(k, fp))
                 && shapes.versions.contains(&(k, irow.version))
@@ -171,14 +175,12 @@ impl Registry {
                 });
             }
         }
-        let id = match self.table_by_pair(irow.report_type, irow.report_subtype) {
+        let id = match self.table_by_pair(opts.market, irow.report_type, irow.report_subtype) {
             Some(id) => id,
             None if opts.mode == Mode::Strict => return Err(unknown()),
             // No table claims the pair. The rows are not skipped: the file's
             // own header says what they are, and that is what is kept.
-            None => self
-                .derive(crate::file_model::Market::Nem, irow)
-                .ok_or_else(unknown)?,
+            None => self.derive(opts.market, irow).ok_or_else(unknown)?,
         };
         if self.is_derived(id) {
             if opts.mode == Mode::Strict {
@@ -451,7 +453,10 @@ mod tests {
             (&[0, 1][..], Some(0))
         );
         // Strict mode takes it too, with the same plan.
-        let strict = ResolveOptions { mode: Mode::Strict };
+        let strict = ResolveOptions {
+            mode: Mode::Strict,
+            ..Default::default()
+        };
         let again = r
             .resolve_in(&scada(&FOUR), strict, month("2030-01"))
             .unwrap();
@@ -504,7 +509,10 @@ mod tests {
     fn a_block_that_deviates_is_kept_unless_strict() {
         let r = reg();
         let opts = ResolveOptions::default();
-        let strict = ResolveOptions { mode: Mode::Strict };
+        let strict = ResolveOptions {
+            mode: Mode::Strict,
+            ..Default::default()
+        };
         // A column nobody knows is kept as text; one the file lacks is null.
         let odd = ["DUID", "SETTLEMENTDATE", "NOBODY_KNOWS"];
         let res = r.resolve_in(&scada(&odd), opts, month("2026-08")).unwrap();
@@ -581,7 +589,14 @@ mod tests {
             ..scada(&FOUR)
         };
         let res = r
-            .resolve_in(&v2, ResolveOptions { mode: Mode::Strict }, month("2026-08"))
+            .resolve_in(
+                &v2,
+                ResolveOptions {
+                    mode: Mode::Strict,
+                    ..Default::default()
+                },
+                month("2026-08"),
+            )
             .unwrap();
         assert_eq!(res.status, Status::Conforms);
         assert_eq!(res.warnings[0].code, "schema.unseen_version");
@@ -598,7 +613,13 @@ mod tests {
             columns: &cols,
         };
         let e = r
-            .resolve(&irow, ResolveOptions { mode: Mode::Strict })
+            .resolve(
+                &irow,
+                ResolveOptions {
+                    mode: Mode::Strict,
+                    ..Default::default()
+                },
+            )
             .unwrap_err();
         assert!(matches!(e, ResolveError::UnknownTable { .. }));
         let res = r.resolve(&irow, ResolveOptions::default()).unwrap();
@@ -609,11 +630,22 @@ mod tests {
         assert_eq!(r.table(res.table).name, "NOBODY_CLAIMS");
         assert!(res.plan.routes.iter().all(|x| x.cast == Cast::Utf8));
         // Derived once; strict now refuses it, permissive reuses it.
-        assert_eq!(r.table_by_pair("NOBODY", "CLAIMS"), Some(res.table));
+        assert_eq!(
+            r.table_by_pair(Market::Nem, "NOBODY", "CLAIMS"),
+            Some(res.table)
+        );
+        // Derived in one market, unknown to another.
+        assert_eq!(r.table_by_pair(Market::Gas, "NOBODY", "CLAIMS"), None);
         assert!(r.is_derived(res.table));
         assert!(
-            r.resolve(&irow, ResolveOptions { mode: Mode::Strict })
-                .is_err()
+            r.resolve(
+                &irow,
+                ResolveOptions {
+                    mode: Mode::Strict,
+                    ..Default::default()
+                }
+            )
+            .is_err()
         );
         let again = r.resolve(&irow, ResolveOptions::default()).unwrap();
         assert!(Arc::ptr_eq(&again.plan, &res.plan));
@@ -670,7 +702,10 @@ mod tests {
     #[test]
     fn every_run_of_the_embedded_histories_conforms() {
         let r = Registry::load_embedded();
-        let strict = ResolveOptions { mode: Mode::Strict };
+        let strict = ResolveOptions {
+            mode: Mode::Strict,
+            ..Default::default()
+        };
         let mut runs = 0;
         for (id, t) in r.tables() {
             for run in &t.runs {

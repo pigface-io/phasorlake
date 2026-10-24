@@ -1134,7 +1134,7 @@ fn a_recorded_source_becomes_a_file_to_read() {
     assert!(utilake_pipeline::local_remote(&kits, Path::new("/x/a.ctl")).is_none());
 
     // An ingest recorded before rules were is never current.
-    let catalog = MmsCatalog::new(Registry::load_embedded());
+    let catalog = MmsCatalog::new(Registry::load_embedded(), Market::Nem);
     let old = utilake_kit::Transform::default();
     assert!(!catalog.plans_current(std::slice::from_ref(&old)));
     assert!(catalog.plans_current(&[]));

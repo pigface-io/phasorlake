@@ -21,15 +21,17 @@ use utilake_mms_registry::{Mode, Registry, ResolveOptions, Resolved, TableId};
 
 use crate::arrow_sink::{ArrowSink, BatchSink, BlockBatch};
 
-/// The MMS decoder: C/I/D rows, resolved through the registry.
+/// The MMS decoder: C/I/D rows, resolved through the registry within one
+/// market.
 pub struct MmsDecoder {
     registry: Arc<Registry>,
+    market: Market,
 }
 
 impl MmsDecoder {
-    /// A decoder over `registry`.
-    pub fn new(registry: Arc<Registry>) -> Self {
-        Self { registry }
+    /// A decoder over `registry` for the files of `market`.
+    pub fn new(registry: Arc<Registry>, market: Market) -> Self {
+        Self { registry, market }
     }
 }
 
@@ -57,7 +59,7 @@ fn table_ref(
 ) -> TableRef {
     let t = registry.table(id);
     TableRef {
-        market: t.market.as_str().to_owned(),
+        market: t.market.id().to_owned(),
         name: t.name.clone(),
         dir: registry.table_dir(id),
         utc_offset_secs: registry.market_of(id).utc_offset_secs,
@@ -188,7 +190,10 @@ impl Decoder for MmsDecoder {
         };
         let mut arrow = ArrowSink::new(
             &self.registry,
-            ResolveOptions { mode },
+            ResolveOptions {
+                mode,
+                market: self.market,
+            },
             ctx.options.batch_rows,
             bridge,
         )
@@ -207,15 +212,16 @@ impl Decoder for MmsDecoder {
     }
 }
 
-/// The registry's NEM tables as a [`Catalog`].
+/// The registry's tables of one market as a [`Catalog`].
 pub struct MmsCatalog {
     registry: Arc<Registry>,
+    market: Market,
 }
 
 impl MmsCatalog {
-    /// A catalog over `registry`.
-    pub fn new(registry: Arc<Registry>) -> Self {
-        Self { registry }
+    /// A catalog over `registry`'s tables of `market`.
+    pub fn new(registry: Arc<Registry>, market: Market) -> Self {
+        Self { registry, market }
     }
 
     /// The registry behind the catalog, for the schema commands.
@@ -240,14 +246,14 @@ impl MmsCatalog {
 
 impl Catalog for MmsCatalog {
     fn market(&self) -> &str {
-        Market::Nem.as_str()
+        self.market.id()
     }
 
     fn tables(&self) -> Vec<Arc<TableRef>> {
         let mut out: Vec<Arc<TableRef>> = self
             .registry
             .tables()
-            .filter(|(_, t)| t.market == Market::Nem)
+            .filter(|(_, t)| t.market == self.market)
             .map(|(id, _)| self.table_of(id))
             .collect();
         out.sort_by(|a, b| a.name.cmp(&b.name));
@@ -287,6 +293,7 @@ impl Catalog for MmsCatalog {
                     &irow,
                     ResolveOptions {
                         mode: Mode::Permissive,
+                        market: self.market,
                     },
                     period,
                 )
@@ -299,7 +306,7 @@ impl Catalog for MmsCatalog {
             .registry
             .with_overlay(dir)
             .map_err(|e| Box::new(e.diagnostic()))?;
-        Ok(Arc::new(Self::new(Arc::new(registry))))
+        Ok(Arc::new(Self::new(Arc::new(registry), self.market)))
     }
 }
 
@@ -314,7 +321,7 @@ mod tests {
     #[test]
     fn the_catalog_lists_nem_tables_and_finds_one_by_name() {
         let registry = Registry::load_embedded();
-        let cat = MmsCatalog::new(registry.clone());
+        let cat = MmsCatalog::new(registry.clone(), Market::Nem);
         assert_eq!(cat.market(), "nem");
         let tables = cat.tables();
         assert!(tables.len() > 200);
@@ -338,7 +345,7 @@ mod tests {
         assert!(Arc::clone(cat.registry()).table_by_name("REGION").is_some());
         let dir = tempfile::tempdir().unwrap();
         assert_eq!(cat.with_overlay(dir.path()).unwrap().market(), "nem");
-        let dec = MmsDecoder::new(registry);
+        let dec = MmsDecoder::new(registry, Market::Nem);
         assert!(dec.accepts("A.CSV") && !dec.accepts("A.ctl"));
         assert_eq!(dec.id(), "mms");
     }

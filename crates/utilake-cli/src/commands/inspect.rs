@@ -17,7 +17,10 @@ use crate::render;
 /// status other than `conforms` names what the registry lacks. Entries that
 /// are not CSVs are reported on stderr.
 fn scan_blocks(ctx: &Context, path: &Path) -> Result<Vec<(String, BlockSummary)>> {
-    let opts = ResolveOptions { mode: Mode::Strict };
+    let opts = ResolveOptions {
+        mode: Mode::Strict,
+        ..Default::default()
+    };
     let mut blocks: Vec<(String, BlockSummary)> = Vec::new();
     let mut handle = |entry: &str, reader: &mut dyn std::io::Read| -> Result<()> {
         let mut sink = InspectSink::new(&ctx.registry, opts);

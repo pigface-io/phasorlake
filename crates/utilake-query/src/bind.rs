@@ -56,7 +56,11 @@ pub fn bind(query: Query, lake: &Lake<'_>) -> Result<Bound, QueryError> {
         .table_by_name(&query.table)
         .or_else(|| {
             let (rt, st) = query.table.split_once('.')?;
-            r.table_by_pair(rt, st)
+            // A pair names a table within its market: the first market
+            // whose registry has it.
+            utilake_mms_registry::Market::ALL
+                .into_iter()
+                .find_map(|m| r.table_by_pair(m, rt, st))
         })
         .ok_or_else(|| QueryError::UnknownTable(query.table.clone()))?;
     let table = r.table(id);

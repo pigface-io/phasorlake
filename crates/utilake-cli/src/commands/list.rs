@@ -119,7 +119,7 @@ async fn tables(ctx: &Context, args: &ListCmd) -> Result<i32> {
         if args
             .market
             .as_deref()
-            .is_some_and(|m| !m.eq_ignore_ascii_case(t.market.as_str()))
+            .is_some_and(|m| !m.eq_ignore_ascii_case(t.market.id()))
         {
             continue;
         }
@@ -148,7 +148,7 @@ async fn tables(ctx: &Context, args: &ListCmd) -> Result<i32> {
             t.name.clone(),
             serde_json::json!({
                 "table": t.name,
-                "market": t.market.as_str(),
+                "market": t.market.id(),
                 "kind": t.temporal.valid.kind(),
                 "valid": t.temporal.valid.column(),
                 "entity": t.temporal.entity,
@@ -162,7 +162,7 @@ async fn tables(ctx: &Context, args: &ListCmd) -> Result<i32> {
             }),
             vec![
                 t.name.clone(),
-                t.market.as_str().to_owned(),
+                t.market.id().to_owned(),
                 kind,
                 t.temporal.entity.join(","),
                 h.map_or_else(|| "0".to_owned(), |h| h.rows.to_string()),

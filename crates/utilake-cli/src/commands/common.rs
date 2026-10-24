@@ -33,7 +33,9 @@ pub fn table_id(r: &Registry, name: &str) -> Option<TableId> {
     let upper = name.to_ascii_uppercase();
     r.table_by_name(&upper).or_else(|| {
         let (rt, st) = upper.split_once('.')?;
-        r.table_by_pair(rt, st)
+        Market::ALL
+            .into_iter()
+            .find_map(|m| r.table_by_pair(m, rt, st))
     })
 }
 
@@ -53,11 +55,9 @@ pub fn select(ctx: &Context, args: &TablesArg) -> Result<Selection> {
         }
     }
     let market = match (&args.market, ids.first()) {
-        (Some(m), _) => match m.to_ascii_lowercase().as_str() {
-            "nem" => Market::Nem,
-            "wem" => Market::Wem,
-            other => bail!("No market named {other}; the markets are nem and wem."),
-        },
+        (Some(m), _) => Market::parse(&m.to_ascii_lowercase()).ok_or_else(|| {
+            anyhow::anyhow!("No market named {m}; the markets are nem, wem and gas.")
+        })?,
         (None, Some(id)) => r.table(*id).market,
         (None, None) => bail!("Name a table, or --market for every table of a market."),
     };

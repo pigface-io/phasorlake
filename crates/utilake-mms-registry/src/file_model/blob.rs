@@ -65,10 +65,10 @@ impl SchemaSet {
                 set.markets.push(m.clone());
                 m.market
             } else {
-                match dir.file_name().and_then(|n| n.to_str()) {
-                    Some("wem") => Market::Wem,
-                    _ => Market::Nem,
-                }
+                dir.file_name()
+                    .and_then(|n| n.to_str())
+                    .and_then(Market::parse)
+                    .unwrap_or(Market::Nem)
             };
             set.read_market_dir(&dir, market)?;
         }

@@ -455,7 +455,7 @@ pub fn parse_market(path: &Path, text: &str) -> Result<MarketDef, SchemaFileErro
     if f.schema_format != MARKET_FORMAT {
         return Err(wrong_format(
             path,
-            f.market.as_str(),
+            f.market.id(),
             f.schema_format,
             MARKET_FORMAT,
         ));
