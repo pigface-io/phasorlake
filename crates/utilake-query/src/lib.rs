@@ -19,6 +19,7 @@
 pub mod bind;
 pub mod catalog;
 pub mod error;
+pub mod intervals;
 pub mod output;
 pub mod query;
 pub mod resolve;
@@ -34,6 +35,7 @@ use arrow_array::RecordBatch;
 pub use bind::bind;
 pub use catalog::{LakeFile, SourceStamp, catalog};
 pub use error::QueryError;
+pub use intervals::{Gap, Intervals};
 pub use output::{
     Codec, Format, Frame, Frames, RawBatch, Report, Resolved, SourceRef, Timing, WriteOptions,
     Writer, Written,
@@ -46,6 +48,7 @@ pub use time::{
 };
 pub use utilake_iceberg::Target;
 use utilake_mms_registry::Registry;
+use utilake_mms_registry::file_model::ValidAxis;
 
 /// Parquet's field-id metadata key, the one the lake writes.
 pub const FIELD_ID_KEY: &str = utilake_mms_registry::arrow::FIELD_ID_KEY;
@@ -107,6 +110,13 @@ pub fn read_with(
     let names = output::source_names(lake);
     let scan_schema = scan::scan_schema(&b.schema, &b.offset.tz());
     let out = output::output_schema(b);
+    // The valid times of an interval table's rows, for the count of
+    // intervals the window should hold.
+    let stepped = b.spec.as_ref().and_then(|s| match s.valid {
+        ValidAxis::IntervalEnd(c) | ValidAxis::Instant(c) => Some(c),
+        _ => None,
+    });
+    let mut times: Vec<i64> = Vec::new();
     let us = |t: std::time::Instant| u64::try_from(t.elapsed().as_micros()).unwrap_or(u64::MAX);
     for (_, reads) in &units {
         let mut batches: Vec<RecordBatch> = Vec::new();
@@ -140,6 +150,14 @@ pub fn read_with(
                     resolved = scan::apply_filters(&resolved, &b.value_filters)
                         .map_err(|e| QueryError::arrow(&b.table, e))?;
                 }
+                if let Some(c) = stepped
+                    && let Some(v) = scan::micros_of(resolved.column(c.0), b.offset)
+                {
+                    let mut seen: Vec<i64> = v.into_iter().flatten().collect();
+                    seen.sort_unstable();
+                    seen.dedup();
+                    times.extend(seen);
+                }
                 report.timing.resolve_us += us(t);
                 let t = std::time::Instant::now();
                 let f = Frame::Resolved(Resolved(output::finish(&resolved, b, &out, &names)?));
@@ -150,6 +168,7 @@ pub fn read_with(
         report.rows_out += frame.batch().num_rows() as u64;
         sink(frame)?;
     }
+    report.intervals = intervals::measure(&mut times, &b.query.window, b.offset);
     Ok(report)
 }
 

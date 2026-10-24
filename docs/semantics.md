@@ -117,8 +117,15 @@ Parquet is zstd at level 3 unless asked otherwise (`snappy`, `none`).
 Each part is written whole under a `.tmp` name and renamed, so a part
 that exists is complete. Beside the parts, `{TABLE}.json` (beside a
 file, `{file}.json`) names the window, the schema, the resolution, every
-source with its publish time, every file written, and the counts of rows
-read, returned and left out.
+source with its publish time, every file written, the counts of rows
+read, returned and left out, and, on an interval table, `intervals`: the
+step read off the frame (the most common gap between distinct valid
+times, as an ISO 8601 duration), every gap seen, how many distinct times
+are present against how many the window holds at that step, and the
+first twenty gaps between them. The registry declares no interval length
+and a table's can change (TRADINGPRICE went from 30 to 5 minutes in
+October 2021), so the step is measured, never assumed, and a window
+across such a change shows both.
 
 ## Memory
 

@@ -24,6 +24,7 @@ use utilake_core::Diagnostic;
 use utilake_mms_registry::file_model::ValidAxis;
 
 use crate::error::QueryError;
+use crate::intervals::Intervals;
 use crate::query::{Bound, Resolution};
 use crate::resolve::VALID_TO;
 use crate::scan::{KNOWN, SOURCE_IX};
@@ -97,6 +98,8 @@ pub struct Report {
     pub sources: Vec<SourceRef>,
     /// Where the time went.
     pub timing: Timing,
+    /// On an interval table, the intervals the window holds and lacks.
+    pub intervals: Option<Intervals>,
 }
 
 /// Microseconds spent in each stage of a read.
@@ -313,6 +316,8 @@ struct Sidecar<'a> {
     warnings: Vec<&'a str>,
     /// The data files, by name, beside the sidecar.
     files: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    intervals: Option<&'a Intervals>,
     utilake: &'a str,
 }
 
@@ -624,6 +629,7 @@ impl<'a> Writer<'a> {
             sources: &report.sources,
             warnings: report.warnings.iter().map(|d| d.code.as_ref()).collect(),
             files,
+            intervals: report.intervals.as_ref(),
             utilake: self.version,
         };
         let text = serde_json::to_string_pretty(&sidecar).expect("a sidecar is JSON");

@@ -432,6 +432,9 @@ fn extract_writes_a_file_and_its_sidecar() {
         assert_eq!(sidecar["window"]["after"], "2024-01-01T00:00:00+10:00");
         assert_eq!(sidecar["known_at"], "2023-12-31T14:11:00Z");
         assert_eq!(sidecar["sources"].as_array().unwrap().len(), 3);
+        // Two distinct times: too few to read a step off.
+        assert!(sidecar.get("intervals").is_none(), "{sidecar}");
+        assert!(w.report.intervals.is_none());
         assert_eq!(sidecar["utilake"], "test");
         assert_eq!(format.extension(), ext);
     }
@@ -664,6 +667,14 @@ fn a_directory_takes_parts_of_the_asked_size() {
             serde_json::json!([format!("part-00000.{ext}"), format!("part-00001.{ext}")])
         );
         assert_eq!(sidecar["rows"], 5);
+        // Four five-minute interval ends (00:00, 00:05, 00:10, 00:15) in a
+        // window that holds fifteen: the step is read, the shortfall shown.
+        assert_eq!(sidecar["intervals"]["step"], "PT5M");
+        assert_eq!(sidecar["intervals"]["present"], 4);
+        assert_eq!(sidecar["intervals"]["expected"], 15);
+        assert_eq!(sidecar["intervals"]["gaps"], serde_json::json!([]));
+        let i = w.report.intervals.as_ref().unwrap();
+        assert_eq!((i.present, i.expected, i.more_gaps), (4, Some(15), 0));
     }
     // The default target never fills on a fixture: one part. A path with
     // a format's extension is one file of that format, whatever the

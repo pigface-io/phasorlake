@@ -143,10 +143,10 @@ pub async fn read(ctx: &Context, args: &ReadArgs) -> Result<i32> {
                     "rows": r.rows_out, "rows_read": r.rows_read, "units": r.units, "files": r.files,
                     "dropped_window": r.dropped_window, "dropped_unknown": r.dropped_unknown,
                     "nan_rows": r.nan_rows, "columns": columns, "sources": r.sources,
-                    "timing": r.timing,
+                    "intervals": r.intervals, "timing": r.timing,
                 }));
             } else {
-                let rows = vec![
+                let mut rows = vec![
                     vec!["table".to_owned(), b.table.clone()],
                     vec![
                         "resolution".to_owned(),
@@ -178,6 +178,18 @@ pub async fn read(ctx: &Context, args: &ReadArgs) -> Result<i32> {
                         ),
                     ],
                 ];
+                if let Some(i) = &r.intervals {
+                    rows.push(vec![
+                        "intervals".to_owned(),
+                        format!(
+                            "step {}, {} present{}, {} gap(s)",
+                            i.step,
+                            i.present,
+                            i.expected.map_or_else(String::new, |e| format!(" of {e}")),
+                            i.gaps.len() as u64 + i.more_gaps
+                        ),
+                    ]);
+                }
                 print!("{}", render::table(&["", ""], &rows));
             }
             frames.report
