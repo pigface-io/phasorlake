@@ -156,18 +156,22 @@ pub fn relayout(
             whole_to.push(step.to);
             continue;
         }
-        let mut files: Vec<PathBuf> = std::fs::read_dir(dir)
-            .map(|rd| rd.filter_map(Result::ok).map(|e| e.path()).collect())
+        // Each entry with its type as the folder listing gives it: on
+        // exFAT a look at one name reads the whole folder.
+        let mut files: Vec<(PathBuf, bool)> = std::fs::read_dir(dir)
+            .map(|rd| {
+                rd.filter_map(Result::ok)
+                    .map(|e| (e.path(), e.file_type().is_ok_and(|t| t.is_file())))
+                    .collect()
+            })
             .unwrap_or_default();
         files.sort();
-        // Each record found among the folder's names: on exFAT a look for
-        // a name not there reads the whole folder.
         let here: std::collections::HashSet<String> = files
             .iter()
-            .filter_map(|p| Some(p.file_name()?.to_string_lossy().into_owned()))
+            .filter_map(|(p, _)| Some(p.file_name()?.to_string_lossy().into_owned()))
             .collect();
-        for path in files {
-            if !is_data_file(&path) {
+        for (path, is_file) in files {
+            if !is_file || !is_data_file(&path) {
                 continue;
             }
             let Some(record) = Archive::record_where(&path, |n| here.contains(n)) else {
@@ -230,15 +234,15 @@ pub fn relayout(
     Ok(summary)
 }
 
-/// Whether `path` is a data file a sidecar may describe: not a sidecar, a
-/// download in progress, a sidecar being written, or an AppleDouble file.
+/// Whether the file at `path` is a data file a sidecar may describe: not
+/// a sidecar, a download in progress, a sidecar being written, or an
+/// AppleDouble file.
 fn is_data_file(path: &Path) -> bool {
     let name = path.file_name().unwrap_or_default().to_string_lossy();
     !is_apple_double(path)
         && !name.ends_with(".json")
         && !name.ends_with(".part")
         && !name.ends_with(".tmp")
-        && path.is_file()
 }
 
 /// Every folder under the archive, parents before children, and those of
@@ -253,8 +257,9 @@ fn stale_dirs(archive: &Archive) -> (Vec<PathBuf>, Vec<PathBuf>) {
         };
         let mut subs: Vec<PathBuf> = rd
             .filter_map(Result::ok)
+            .filter(|e| e.file_type().is_ok_and(|t| t.is_dir()))
             .map(|e| e.path())
-            .filter(|p| !is_apple_double(p) && p.is_dir())
+            .filter(|p| !is_apple_double(p))
             .collect();
         subs.sort();
         stack.extend(subs.into_iter().rev());
