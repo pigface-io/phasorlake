@@ -43,7 +43,7 @@ fn shape_id(irow: &IRow<'_>) -> String {
         .to_string()
 }
 
-fn load_mode(m: utilake_mms_registry::LoadMode) -> LoadMode {
+pub(crate) fn load_mode(m: utilake_mms_registry::LoadMode) -> LoadMode {
     match m {
         utilake_mms_registry::LoadMode::Append => LoadMode::Append,
         utilake_mms_registry::LoadMode::Snapshot => LoadMode::Snapshot,
@@ -51,7 +51,7 @@ fn load_mode(m: utilake_mms_registry::LoadMode) -> LoadMode {
 }
 
 /// A table of the registry as a block names it.
-fn table_ref(
+pub(crate) fn table_ref(
     registry: &Registry,
     id: TableId,
     plan_mode: LoadMode,
@@ -69,12 +69,12 @@ fn table_ref(
 }
 
 /// Carries what the registry resolved across to a [`BlockSink`].
-struct Bridge<'a> {
-    out: &'a mut dyn BlockSink,
-    registry: &'a Registry,
-    period: Option<YearMonth>,
-    tables: HashMap<TableId, Arc<TableRef>>,
-    current: Option<(Arc<TableRef>, Arc<Transform>)>,
+pub(crate) struct Bridge<'a> {
+    pub(crate) out: &'a mut dyn BlockSink,
+    pub(crate) registry: &'a Registry,
+    pub(crate) period: Option<YearMonth>,
+    pub(crate) tables: HashMap<TableId, Arc<TableRef>>,
+    pub(crate) current: Option<(Arc<TableRef>, Arc<Transform>)>,
 }
 
 impl BatchSink for Bridge<'_> {
@@ -156,6 +156,7 @@ fn stats(s: &ScanStats) -> DecodeStats {
         blocks: s.blocks,
         rows: s.rows,
         bad_rows: s.bad_rows,
+        rows_repeated: 0,
         footer_declared: s.footer_declared,
     }
 }

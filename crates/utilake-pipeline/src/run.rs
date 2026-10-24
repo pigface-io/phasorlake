@@ -74,6 +74,7 @@ pub fn local_file(remote: RemoteFile, path: &std::path::Path) -> std::io::Result
         etag: None,
         last_modified: None,
         last_modified_at: None,
+        previous: None,
     })
 }
 

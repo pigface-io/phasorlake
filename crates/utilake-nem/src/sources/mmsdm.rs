@@ -435,6 +435,7 @@ impl Source for MmsdmArchive {
                     etag: sidecar.etag,
                     last_modified: sidecar.last_modified,
                     last_modified_at: sidecar.last_modified_at,
+                    previous: None,
                 });
             }
         }

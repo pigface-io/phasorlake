@@ -31,8 +31,11 @@ pub enum Category {
     Cache,
     /// Zip archives.
     Zip,
-    /// The C/I/D row structure of an MMS CSV.
+    /// The C/I/D row structure of an MMS CSV, or the header and rows of a
+    /// plain one.
     Csv,
+    /// A WEMDE JSON document's structure.
+    Json,
     /// A field's value failing its column type.
     Parse,
     /// The schema registry: resolution, drift, validation, import.
@@ -59,6 +62,7 @@ impl Category {
             Self::Cache => "cache",
             Self::Zip => "zip",
             Self::Csv => "csv",
+            Self::Json => "json",
             Self::Parse => "parse",
             Self::Schema => "schema",
             Self::Store => "store",
@@ -70,13 +74,14 @@ impl Category {
     }
 
     /// Every category, for documentation and exhaustiveness tests.
-    pub const ALL: [Self; 13] = [
+    pub const ALL: [Self; 14] = [
         Self::Config,
         Self::Net,
         Self::Listing,
         Self::Cache,
         Self::Zip,
         Self::Csv,
+        Self::Json,
         Self::Parse,
         Self::Schema,
         Self::Store,
@@ -651,7 +656,8 @@ mod tests {
         assert_eq!(back.line, d.line);
         assert_eq!(Category::Csv.to_string(), "csv");
         assert_eq!(Severity::Warning.to_string(), "warning");
-        assert_eq!(Category::ALL.len(), 13);
+        assert_eq!(Category::ALL.len(), 14);
+        assert_eq!(Category::Json.to_string(), "json");
     }
 
     #[test]

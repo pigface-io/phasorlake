@@ -14,6 +14,7 @@ workspace = true
 [dependencies]
 utilake-core.workspace = true
 utilake-mms-decode.workspace = true
+utilake-plain-decode.workspace = true
 utilake-mms-registry.workspace = true
 utilake-kit.workspace = true
 arrow-array.workspace = true
@@ -23,6 +24,8 @@ thiserror.workspace = true
 [dev-dependencies]
 criterion.workspace = true
 tempfile.workspace = true
+url.workspace = true
+utilake-acquire.workspace = true
 
 [[bench]]
 name = "scan"

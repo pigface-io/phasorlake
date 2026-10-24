@@ -82,6 +82,7 @@ utilake-core = { path = "crates/utilake-core" }
 utilake-iceberg = { git = "ssh://git@github.com/g0itb4/utilake-schemas.git", rev = "b4c0c28df24ecaa1bdf61fe3db507c190ee64c43" }
 # The MMS format layer and the repository gates, from the same repository.
 utilake-mms-decode = { git = "ssh://git@github.com/g0itb4/utilake-schemas.git", rev = "b4c0c28df24ecaa1bdf61fe3db507c190ee64c43" }
+utilake-plain-decode = { git = "ssh://git@github.com/g0itb4/utilake-schemas.git", rev = "b4c0c28df24ecaa1bdf61fe3db507c190ee64c43" }
 utilake-gates = { git = "ssh://git@github.com/g0itb4/utilake-schemas.git", rev = "b4c0c28df24ecaa1bdf61fe3db507c190ee64c43" }
 utilake-zip = { git = "ssh://git@github.com/g0itb4/utilake-schemas.git", rev = "b4c0c28df24ecaa1bdf61fe3db507c190ee64c43" }
 utilake-iceberg-store = { path = "crates/utilake-iceberg-store" }

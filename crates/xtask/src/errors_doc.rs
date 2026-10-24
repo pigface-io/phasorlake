@@ -8,9 +8,9 @@ use std::path::Path;
 
 use anyhow::Result;
 
-const CATEGORIES: [&str; 13] = [
-    "config", "net", "listing", "cache", "zip", "csv", "parse", "schema", "store", "manifest",
-    "verify", "query", "internal",
+const CATEGORIES: [&str; 14] = [
+    "config", "net", "listing", "cache", "zip", "csv", "json", "parse", "schema", "store",
+    "manifest", "verify", "query", "internal",
 ];
 
 /// Codes that are no longer raised. A code is a promise to whoever matches

@@ -1,0 +1,3 @@
+Dispatch Interval,Energy Clearing Price,Contingency Raise Clearing Price,Contingency Lower Clearing Price,Regulation Raise Clearing Price,Regulation Lower Clearing Price,RoCoF Clearing Price,Failure Reason,Extracted At
+"01/01/2024 08:00:00",61.21,1.02,0.11,12.5,3.3,0,,"02/01/2024 08:30:00"
+"01/01/2024 07:55:00",60.11,1.02,0.11,12.5,3.3,0,,"02/01/2024 08:30:00"

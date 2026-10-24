@@ -597,6 +597,7 @@ fn ingest_entry(
         entry,
         period: input.local.remote.period,
         options: &options,
+        previous: input.local.previous.as_deref(),
     };
     match decoder.decode(reader, &dctx, &mut sink, scan_buf) {
         Ok(stats) => {

@@ -1,0 +1,3 @@
+gas_date,hub_identifier,hub_name,schedule_identifier,ex_ante_market_price,administered_price_period,cap_applied,administered_price_cap,schedule_price,approval_datetime,report_datetime
+02 Oct 2026,ADL,Adelaide,70292,11.0944,N,,,,01 Oct 2026 11:31:18,01 Oct 2026 11:32:27
+02 Oct 2026,BRI,Brisbane,70293,10.9510,N,,,,01 Oct 2026 11:31:19,01 Oct 2026 11:32:27

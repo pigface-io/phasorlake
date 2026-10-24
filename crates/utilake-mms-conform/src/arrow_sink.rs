@@ -159,6 +159,10 @@ impl From<Block> for BlockBuffers {
 pub struct ArrowSink<'r, B: BatchSink> {
     registry: &'r Registry,
     opts: ResolveOptions,
+    /// Fields of a row before its data: [`PREFIX_FIELDS`] for an MMS D row
+    /// (`D`, type, subtype, version), 0 for a plain row, which carries only
+    /// its columns and belongs to the block that opened it.
+    prefix: usize,
     /// The month of the source being read, when it is known: it picks
     /// among the runs of a table's history that fit a block.
     period: Option<utilake_core::YearMonth>,
@@ -201,6 +205,7 @@ impl<'r, B: BatchSink> ArrowSink<'r, B> {
         Self {
             registry,
             opts,
+            prefix: PREFIX_FIELDS,
             period: None,
             batch_rows: batch_rows.max(1),
             out,
@@ -216,6 +221,15 @@ impl<'r, B: BatchSink> ArrowSink<'r, B> {
     #[must_use]
     pub fn with_period(mut self, period: Option<utilake_core::YearMonth>) -> Self {
         self.period = period;
+        self
+    }
+
+    /// Reads rows of `prefix` fields before their data: 0 for the rows of
+    /// a plain file, whose block is the header that opened it, so no field
+    /// names the block and none is compared.
+    #[must_use]
+    pub fn with_prefix(mut self, prefix: usize) -> Self {
+        self.prefix = prefix;
         self
     }
 
@@ -408,7 +422,7 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
         b.steps.clear();
         b.steps.extend(resolved.plan.routes.iter().filter_map(|r| {
             Some(Step {
-                field: (PREFIX_FIELDS + usize::from(r.source_index)) as u16,
+                field: (self.prefix + usize::from(r.source_index)) as u16,
                 target: r.target?,
                 cast: r.cast,
                 nullable: r.nullable,
@@ -460,13 +474,15 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
             .block
             .as_mut()
             .expect("the scanner delivers rows only after a header");
-        if row.len() < PREFIX_FIELDS {
+        if row.len() < self.prefix {
             return Err(RowError::TooShort(row.len()).into());
         }
-        // The prefix must match the block: a cheap byte compare.
-        if row.get(1) != Some(block.report_type.as_bytes())
-            || row.get(2) != Some(block.report_subtype.as_bytes())
-            || row.get(3).map(<[u8]>::trim_ascii) != Some(block.version_text.as_bytes())
+        // The prefix must match the block: a cheap byte compare. A plain
+        // row has none: its block is the header that opened it.
+        if self.prefix > 0
+            && (row.get(1) != Some(block.report_type.as_bytes())
+                || row.get(2) != Some(block.report_subtype.as_bytes())
+                || row.get(3).map(<[u8]>::trim_ascii) != Some(block.version_text.as_bytes()))
         {
             return Err(RowError::BlockMismatch {
                 report_type: String::from_utf8_lossy(row.get(1).unwrap_or(b"")).into_owned(),
@@ -479,11 +495,11 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
             .into());
         }
         let declared = block.resolved.plan.routes.len();
-        let observed = row.len_trimmed().saturating_sub(PREFIX_FIELDS);
+        let observed = row.len_trimmed().saturating_sub(self.prefix);
         if observed > declared {
             return Err(RowError::FieldCount {
                 declared,
-                observed: row.len() - PREFIX_FIELDS,
+                observed: row.len() - self.prefix,
             }
             .into());
         }

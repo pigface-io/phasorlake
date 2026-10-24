@@ -55,6 +55,11 @@ pub struct LocalFile {
     pub last_modified: Option<String>,
     /// `last_modified` as an instant (UTC).
     pub last_modified_at: Option<Stamp>,
+    /// The version of the same file published before this one, when the
+    /// source keeps versions and knows it: a feed whose files restate the
+    /// one before is read against it, so only the rows new to this version
+    /// are ingested.
+    pub previous: Option<PathBuf>,
 }
 
 impl LocalFile {
@@ -69,6 +74,7 @@ impl LocalFile {
             etag: found.sidecar.etag,
             last_modified: found.sidecar.last_modified,
             last_modified_at: found.sidecar.last_modified_at,
+            previous: None,
         }
     }
 }

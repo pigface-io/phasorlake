@@ -1,0 +1,3 @@
+GasDate,FacilityName,FacilityId,FacilityType,Demand,Supply,TransferIn,TransferOut,HeldInStorage,CushionGasStorage,State,LocationName,LocationId,LastUpdated
+2026/09/20,Adelaide Brighton,555091,BBLARGE,8.585,0.000,0.000,0.000,,,SA,Adelaide,550016,2026/10/08 17:00:00
+2026/09/20,AGP,580010,PIPE,17.687,0.000,0.000,12.544,,,NT,Darwin,580001,2026/09/21 12:46:15

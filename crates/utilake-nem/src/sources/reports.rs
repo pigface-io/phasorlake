@@ -316,6 +316,7 @@ impl Source for ReportFolders {
                         etag: a.sidecar.etag,
                         last_modified: a.sidecar.last_modified,
                         last_modified_at: a.sidecar.last_modified_at,
+                        previous: None,
                     });
                 }
             }
