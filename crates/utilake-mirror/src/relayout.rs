@@ -128,7 +128,7 @@ pub fn relayout(
     // the disk: one sync for a batch, not one for each file.
     let mut copied: Vec<(PathBuf, PathBuf)> = Vec::new();
     // Steps waiting to be taken together, and their bytes.
-    let mut pending: Vec<(Step, Provenance, PathBuf)> = Vec::new();
+    let mut pending: Vec<Pending> = Vec::new();
     let mut bytes = 0u64;
     for dir in &stale {
         if whole.iter().any(|w| dir.starts_with(w)) {
@@ -180,7 +180,12 @@ pub fn relayout(
             let Some(record) = Archive::record_where(&path, |n| here.contains(n)) else {
                 continue;
             };
-            let Ok(sidecar) = Archive::read_record(&record) else {
+            // Read once, kept for the copy: each look for a name in a
+            // folder too large for the cache reads it from the disk.
+            let Some((sidecar, kept)) = read_held(&record, None)
+                .ok()
+                .and_then(|b| Some((Provenance::from_json(&b.0).ok()?, b)))
+            else {
                 summary.unreadable.push(path);
                 continue;
             };
@@ -207,7 +212,7 @@ pub fn relayout(
             }
             if !dry_run {
                 bytes += sidecar.content.size;
-                pending.push((step, sidecar, record));
+                pending.push((step, sidecar, record, kept));
                 if pending.len() >= BATCH || bytes >= CHUNK_BYTES {
                     copied.extend(take(mirror, std::mem::take(&mut pending))?);
                     bytes = 0;
@@ -506,25 +511,29 @@ fn read_held(from: &Path, sha256: Option<&Sha256>) -> Result<Bytes, MirrorError>
 
 /// Writes `bytes` at `to`, in another folder than they came from, without
 /// a rename between folders: exFAT under macOS's FSKit takes seconds for
-/// one when a folder holds tens of thousands of entries. They go to
-/// `{to}.part`, handed to the disk when `durable` (else by the caller's
-/// sync), are renamed into place and given the modified time they had.
+/// one when a folder holds tens of thousands of entries, and each look for
+/// a name in a folder too large for the cache reads it from the disk. So
+/// the bytes go straight to `to`, with no `.part` and rename: a source
+/// goes only after the batch's sync, and a copy cut off by a crash is
+/// found by hashing the copies before the set-aside sources are deleted.
+/// Handed to the disk when `durable` (else by the caller's sync), with
+/// the modified time they had.
 fn put(to: &Path, (bytes, modified): &Bytes, durable: bool) -> Result<(), MirrorError> {
     use std::io::Write as _;
-    let mut part = to.as_os_str().to_owned();
-    part.push(".part");
-    let part = PathBuf::from(part);
-    let mut dst = std::fs::File::create(&part).map_err(MirrorError::io(&part))?;
-    dst.write_all(bytes).map_err(MirrorError::io(&part))?;
+    let mut dst = std::fs::File::create(to).map_err(MirrorError::io(to))?;
+    dst.write_all(bytes).map_err(MirrorError::io(to))?;
     if let Some(t) = modified {
         let _ = dst.set_modified(*t);
     }
     if durable {
-        crate::net::archive::to_disk(&dst).map_err(MirrorError::io(&part))?;
+        crate::net::archive::to_disk(&dst).map_err(MirrorError::io(to))?;
     }
-    drop(dst);
-    std::fs::rename(&part, to).map_err(MirrorError::io(to))
+    Ok(())
 }
+
+/// A step waiting to be taken: the step, the moving file's record, the
+/// record's path and its bytes as read.
+type Pending = (Step, Provenance, PathBuf, Bytes);
 
 /// Removes every record beside `path`.
 fn drop_records(path: &Path) -> Result<(), MirrorError> {
@@ -542,27 +551,21 @@ fn drop_records(path: &Path) -> Result<(), MirrorError> {
 /// copied to its place, held to its record's sha256; a file the same as
 /// the one there adds its addresses to that one's record. Each source and
 /// record is returned, to go once the batch is on the disk.
-fn take(
-    mirror: &Mirror,
-    steps: Vec<(Step, Provenance, PathBuf)>,
-) -> Result<Vec<(PathBuf, PathBuf)>, MirrorError> {
-    for (step, _, _) in &steps {
+fn take(mirror: &Mirror, steps: Vec<Pending>) -> Result<Vec<(PathBuf, PathBuf)>, MirrorError> {
+    for (step, ..) in &steps {
         log(mirror, step, false)?;
     }
     let mut read = Vec::with_capacity(steps.len());
-    for (step, sidecar, record) in &steps {
+    for (step, sidecar, ..) in &steps {
         read.push(match step.action {
             Action::Same => None,
-            _ => Some((
-                read_held(&step.from, Some(&sidecar.content.sha256))?,
-                read_held(record, None)?,
-            )),
+            _ => Some(read_held(&step.from, Some(&sidecar.content.sha256))?),
         });
     }
     let mut done = Vec::with_capacity(steps.len());
-    for ((step, sidecar, record), bytes) in steps.into_iter().zip(read) {
+    for ((step, sidecar, record, kept), bytes) in steps.into_iter().zip(read) {
         match bytes {
-            Some((data, kept)) => {
+            Some(data) => {
                 let dir = step.to.parent().expect("an archived path is in a folder");
                 std::fs::create_dir_all(dir).map_err(MirrorError::io(dir))?;
                 let mut record_to = step.to.as_os_str().to_owned();
@@ -968,7 +971,12 @@ mod tests {
             same(&step(Action::Same, &to), sc.clone()).unwrap();
         }
         std::fs::remove_file(format!("{}.json", to.display())).unwrap();
-        let done = take(&mirror, vec![(step(Action::Same, &to), sc, record.clone())]).unwrap();
+        let none = (Vec::new(), None);
+        let done = take(
+            &mirror,
+            vec![(step(Action::Same, &to), sc, record.clone(), none)],
+        )
+        .unwrap();
         assert_eq!(done, [(from3.clone(), record.clone())]);
         let done = done.into_iter().next().unwrap();
         std::fs::remove_file(&record).unwrap();
