@@ -92,6 +92,11 @@ fn old_home() -> (tempfile::TempDir, Home) {
         &old.join("journal/www.nemweb.com.au/Reports/X/changes.ndjson"),
         "{\"seen_at\":\"2026-10-20T00:00:00Z\",\"url\":\"u\",\"event\":\"same\"}\n",
     );
+    // The other listing's journal, not yet merged by a relayout.
+    put(
+        &old.join("journal/www.nemweb.com.au/Reports/CURRENT/X/changes.ndjson"),
+        "{\"seen_at\":\"2026-10-19T00:00:00Z\",\"url\":\"v\",\"event\":\"repacked\"}\n\nnot json\n",
+    );
     (dir, home)
 }
 
@@ -132,7 +137,7 @@ fn a_dry_run_says_what_would_move_and_moves_nothing() {
     let mut steps = Vec::new();
     let s = upgrade(&home, &archive, true, true, |st| steps.push(st.action)).unwrap();
     assert!(s.dry_run);
-    assert_eq!((s.moved, s.listings, s.records), (8 + 4 + 1, 1, 2));
+    assert_eq!((s.moved, s.listings, s.records), (8 + 5 + 1, 1, 2));
     assert_eq!(s.unreadable.len(), 1);
     assert_eq!(s.left, [home.old_records().join("notes.txt")]);
     assert!(steps.contains(&Action::Listings));
@@ -149,7 +154,7 @@ fn every_record_moves_to_its_name_and_a_second_run_does_nothing() {
         .map(|p| std::fs::metadata(p).unwrap().modified().unwrap())
         .collect();
     let s = upgrade(&home, &archive, false, true, |_| {}).unwrap();
-    assert_eq!((s.moved, s.listings, s.records), (8 + 4 + 1, 1, 2));
+    assert_eq!((s.moved, s.listings, s.records), (8 + 5 + 1, 1, 2));
     let state = home.records();
     let cache = state.cache_dir();
     for p in [
@@ -181,8 +186,10 @@ fn every_record_moves_to_its_name_and_a_second_run_does_nothing() {
         |u: &str| std::fs::read_to_string(state.page_path(&url::Url::parse(u).unwrap())).unwrap();
     assert_eq!((page(CUR), page(ARC)), ("<cur>".into(), "<arc>".into()));
     assert_eq!(page("https://www.nemweb.com.au/Reports/"), "<reports>");
+    // Both journals in one, in time order.
     let events = state.journal(CUR).unwrap();
-    assert_eq!(events.len(), 1);
+    assert_eq!(events.len(), 2);
+    assert_eq!((events[0].url.as_str(), events[1].url.as_str()), ("v", "u"));
     assert!(state.done_path().exists());
     // The old folder holds only what no step knows.
     assert!(home.old_records().join("notes.txt").exists());

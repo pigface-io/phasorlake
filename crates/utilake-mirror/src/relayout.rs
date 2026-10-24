@@ -26,7 +26,7 @@ use serde::{Deserialize, Serialize};
 use crate::crawl::Mirror;
 use crate::download::HeldEntry;
 use crate::error::MirrorError;
-use crate::net::{Address, Archive, Provenance, Sha256, Via, is_apple_double};
+use crate::net::{Address, Archive, DirNames, Provenance, Sha256, Via, is_apple_double};
 use crate::stamp::Stamp;
 
 /// What became of one archived file.
@@ -40,6 +40,9 @@ pub enum Action {
     /// The same bytes as the file at that path: its URL added there, the
     /// file dropped.
     Same,
+    /// A whole folder moved to its folder in the layout, which was not
+    /// there: one rename, whatever it holds.
+    Folder,
 }
 
 /// One step, as logged.
@@ -66,6 +69,8 @@ pub struct RelayoutSummary {
     pub versions: usize,
     /// Files dropped as the same bytes as the file at their path.
     pub same: usize,
+    /// Folders moved whole, their folder in the layout not there yet.
+    pub folders_moved: usize,
     /// Files whose sidecar does not read: left where they are.
     pub unreadable: Vec<PathBuf>,
     /// Journals merged into their folder's journal.
@@ -106,7 +111,40 @@ pub fn relayout(
     // there, so it plans as a run would.
     let mut placed: HashMap<PathBuf, Sha256> = HashMap::new();
     let mut versions: HashMap<String, Option<String>> = HashMap::new();
+    // The names in each folder a file may go to, read once: on exFAT a
+    // look for a name that is not there reads the whole folder.
+    let mut names = DirNames::default();
+    let mut whole: Vec<PathBuf> = Vec::new();
+    let mut whole_to: Vec<PathBuf> = Vec::new();
     for dir in &stale {
+        if whole.iter().any(|w| dir.starts_with(w)) {
+            continue;
+        }
+        // A folder goes whole only where nothing has gone yet, this run
+        // included: a dry run makes no folder.
+        let free = |to: &Path| !whole_to.iter().any(|t| to.starts_with(t));
+        if let Some(step) = folder_step(archive, dir).filter(|s| free(&s.to)) {
+            on_step(&step);
+            summary.folders_moved += 1;
+            if !dry_run {
+                log(mirror, &step)?;
+                let parent = step.to.parent().expect("a folder of the layout is in one");
+                std::fs::create_dir_all(parent).map_err(MirrorError::io(parent))?;
+                std::fs::rename(&step.from, &step.to).map_err(MirrorError::io(&step.to))?;
+            }
+            if dry_run {
+                // Where the folder's files would be, as a run would find
+                // them there.
+                for file in Archive::walk(dir).unwrap_or_default() {
+                    if let (Ok(rel), Ok(Some(p))) = (file.strip_prefix(dir), Archive::read(&file)) {
+                        placed.insert(step.to.join(rel), p.content.sha256);
+                    }
+                }
+            }
+            whole.push(dir.clone());
+            whole_to.push(step.to);
+            continue;
+        }
         let mut files: Vec<PathBuf> = std::fs::read_dir(dir)
             .map(|rd| rd.filter_map(Result::ok).map(|e| e.path()).collect())
             .unwrap_or_default();
@@ -123,12 +161,12 @@ pub fn relayout(
                     continue;
                 }
             };
-            let Some(step) = plan(archive, &path, &sidecar, &placed) else {
+            let Some(step) = plan(archive, &path, &sidecar, &placed, &mut names) else {
                 continue;
             };
             on_step(&step);
             match step.action {
-                Action::Move => summary.moved += 1,
+                Action::Move | Action::Folder => summary.moved += 1,
                 Action::Version => summary.versions += 1,
                 Action::Same => summary.same += 1,
             }
@@ -211,12 +249,33 @@ fn stale_dirs(archive: &Archive) -> (Vec<PathBuf>, Vec<PathBuf>) {
     (dirs, stale)
 }
 
+/// The move of the whole folder `dir` to its folder in the layout, when
+/// that folder is not there yet: everything in `dir` belongs there, so one
+/// rename moves it all.
+fn folder_step(archive: &Archive, dir: &Path) -> Option<Step> {
+    let rel = dir.strip_prefix(archive.root()).ok()?;
+    let rel: Vec<String> = rel
+        .components()
+        .map(|c| c.as_os_str().to_string_lossy().into_owned())
+        .collect();
+    let url = format!("https://{}/", rel.join("/"));
+    let to = archive.path_for(&format!("{url}_")).parent()?.to_path_buf();
+    (to != dir && std::fs::symlink_metadata(&to).is_err()).then(|| Step {
+        at: Stamp::now(),
+        url,
+        from: dir.to_path_buf(),
+        to,
+        action: Action::Folder,
+    })
+}
+
 /// Where the file at `path` goes, and how; none when it is in place.
 fn plan(
     archive: &Archive,
     path: &Path,
     sidecar: &Provenance,
     placed: &HashMap<PathBuf, Sha256>,
+    names: &mut DirNames,
 ) -> Option<Step> {
     let base = archive.path_for(sidecar.url());
     let name = path.file_name()?.to_string_lossy().into_owned();
@@ -242,7 +301,8 @@ fn plan(
     for to in candidates {
         // A file there whose record does not read holds other bytes.
         let held = placed.get(&to).copied().map(Some).or_else(|| {
-            to.exists()
+            names
+                .holds(&to)
                 .then(|| Archive::read(&to).ok().flatten().map(|s| s.content.sha256))
         });
         match held {
@@ -295,6 +355,23 @@ fn record_at(path: &Path) -> Option<PathBuf> {
         .find(|r| r.is_file())
 }
 
+/// Moves the record of the file at `from` beside `to`, under the name it
+/// has: a rename, the record not read or written again.
+fn move_record(from: &Path, to: &Path) -> Result<(), MirrorError> {
+    record_at(from).map_or(Ok(()), |record| {
+        let suffix = record
+            .file_name()
+            .and_then(|r| {
+                let data = from.file_name()?.to_string_lossy().into_owned();
+                Some(r.to_string_lossy()[data.len()..].to_owned())
+            })
+            .unwrap_or_default();
+        let mut target = to.as_os_str().to_owned();
+        target.push(suffix);
+        std::fs::rename(&record, &target).map_err(MirrorError::io(Path::new(&target)))
+    })
+}
+
 /// Removes every record beside `path`.
 fn drop_records(path: &Path) -> Result<(), MirrorError> {
     while let Some(r) = record_at(path) {
@@ -307,12 +384,11 @@ fn drop_records(path: &Path) -> Result<(), MirrorError> {
 /// path in the current format, then the old one removed.
 fn take(step: &Step, sidecar: Provenance) -> Result<(), MirrorError> {
     match step.action {
-        Action::Move | Action::Version => {
+        Action::Move | Action::Version | Action::Folder => {
             let dir = step.to.parent().expect("an archived path is in a folder");
             std::fs::create_dir_all(dir).map_err(MirrorError::io(dir))?;
             std::fs::rename(&step.from, &step.to).map_err(MirrorError::io(&step.to))?;
-            Archive::write(&step.to, &sidecar)?;
-            drop_records(&step.from)?;
+            move_record(&step.from, &step.to)?;
         }
         Action::Same => {
             if let Some(mut kept) = Archive::read(&step.to)? {
@@ -357,10 +433,8 @@ fn finish_last(mirror: &Mirror) -> Result<(), MirrorError> {
     if step.from.exists() {
         return Ok(());
     }
-    if matches!(step.action, Action::Move | Action::Version)
-        && let Some(p) = Archive::read(&step.from)?
-    {
-        Archive::write(&step.to, &p)?;
+    if matches!(step.action, Action::Move | Action::Version) {
+        return move_record(&step.from, &step.to);
     }
     std::fs::remove_file(&from_record).map_err(MirrorError::io(&from_record))?;
     drop_records(&step.from)
@@ -547,9 +621,17 @@ mod tests {
         let mut steps = Vec::new();
         let dry = relayout(&mirror, &archive, true, |s| steps.push(s.clone())).unwrap();
         assert!(dry.dry_run);
+        // The ARCHIVE folder goes whole; CURRENT's files go one by one
+        // into it.
         assert_eq!(
-            (dry.moved, dry.versions, dry.same, dry.journals),
-            (4, 1, 1, 2),
+            (
+                dry.folders_moved,
+                dry.moved,
+                dry.versions,
+                dry.same,
+                dry.journals
+            ),
+            (1, 2, 1, 1, 2),
             "{steps:?}"
         );
         assert!(
@@ -560,8 +642,15 @@ mod tests {
 
         let s = relayout(&mirror, &archive, false, |_| {}).unwrap();
         assert_eq!(
-            (s.moved, s.versions, s.same, s.journals, s.held),
-            (4, 1, 1, 2, 1),
+            (
+                s.folders_moved,
+                s.moved,
+                s.versions,
+                s.same,
+                s.journals,
+                s.held
+            ),
+            (1, 2, 1, 1, 2, 1),
             "{s:?}"
         );
         assert_eq!(s.unreadable, std::slice::from_ref(&bad));
@@ -606,7 +695,8 @@ mod tests {
         );
         assert!(lines.contains("not json"));
         let log = std::fs::read_to_string(mirror.relayout_path()).unwrap();
-        assert_eq!(log.lines().count(), 6);
+        // One step for the ARCHIVE folder, four for CURRENT's files.
+        assert_eq!(log.lines().count(), 5);
 
         // Again: nothing to move.
         let again = relayout(&mirror, &archive, false, |_| {}).unwrap();
@@ -646,7 +736,9 @@ mod tests {
         };
         log(&mirror, &step(Action::Move, &to)).unwrap();
         relayout(&mirror, &archive, false, |_| {}).unwrap();
-        assert!(Archive::record_path(&to).exists() && !Archive::record_path(&from).exists());
+        // The record moves under the name it had.
+        let v1 = |p: &Path| PathBuf::from(format!("{}.json", p.display()));
+        assert!(v1(&to).exists() && !v1(&from).exists());
         // Finished already: nothing to do.
         finish_last(&mirror).unwrap();
         // A drop cut off after the file, before its sidecar.
@@ -661,7 +753,7 @@ mod tests {
         assert!(from3.exists());
         // The same bytes, with no record left at the target: the file is
         // dropped all the same.
-        std::fs::remove_file(Archive::record_path(&to)).unwrap();
+        std::fs::remove_file(format!("{}.json", to.display())).unwrap();
         let sc = Archive::read(&from3).unwrap().unwrap();
         take(&step(Action::Same, &to), sc).unwrap();
         assert!(!from3.exists());
@@ -682,7 +774,7 @@ mod tests {
         let now = Archive::version_path(&base, Stamp::now());
         std::fs::create_dir_all(now.parent().unwrap()).unwrap();
         std::fs::write(&now, b"x").unwrap();
-        let p = plan(&archive, &from, &sc, &placed);
+        let p = plan(&archive, &from, &sc, &placed, &mut DirNames::default());
         // The second may tick over; either way nothing is written over.
         assert!(p.is_none() || p.unwrap().to != now);
     }

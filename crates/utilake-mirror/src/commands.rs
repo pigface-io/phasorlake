@@ -264,7 +264,7 @@ fn relayout(ctx: &Context, mirror: &Mirror, dry_run: bool) -> Result<i32, Mirror
             .parent()
             .map(|p| p.display().to_string())
             .unwrap_or_default();
-        let n = folders.entry(folder).or_default();
+        let mut n = [0usize; 3];
         match step.action {
             utilake_mirror::relayout::Action::Move => n[0] += 1,
             utilake_mirror::relayout::Action::Version => {
@@ -276,6 +276,19 @@ fn relayout(ctx: &Context, mirror: &Mirror, dry_run: bool) -> Result<i32, Mirror
                 );
             }
             utilake_mirror::relayout::Action::Same => n[2] += 1,
+            utilake_mirror::relayout::Action::Folder => {
+                eprintln!(
+                    "moved whole: {} -> {}",
+                    step.from.display(),
+                    step.to.display()
+                );
+            }
+        }
+        if n != [0; 3] {
+            let kept = folders.entry(folder).or_default();
+            for (k, v) in kept.iter_mut().zip(n) {
+                *k += v;
+            }
         }
     })?;
     if ctx.json {
@@ -285,8 +298,9 @@ fn relayout(ctx: &Context, mirror: &Mirror, dry_run: bool) -> Result<i32, Mirror
             println!("{folder}: {m} moved, {v} versions, {same} the same");
         }
         println!(
-            "{}{} moved, {} kept as versions, {} the same as the file there; {} journals merged, {} held lines rewritten, {} folders removed, {} unreadable",
+            "{}{} folders moved whole, {} moved, {} kept as versions, {} the same as the file there; {} journals merged, {} held lines rewritten, {} folders removed, {} unreadable",
             if s.dry_run { "dry run: " } else { "" },
+            s.folders_moved,
             s.moved,
             s.versions,
             s.same,

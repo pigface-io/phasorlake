@@ -808,7 +808,7 @@ fn relayout_moves_both_listings_into_one_folder() {
     put("CURRENT", "s.csv", b"s");
     let dry = cli.ok(&["relayout", "--dry-run"]);
     assert!(
-        dry.contains("dry run: 3 moved, 1 kept as versions"),
+        dry.contains("dry run: 1 folders moved whole, 1 moved, 1 kept as versions"),
         "{dry}"
     );
     assert!(archive.join("CURRENT/X/a.csv").exists());
@@ -821,7 +821,7 @@ fn relayout_moves_both_listings_into_one_folder() {
     assert!(done.status.success());
     let out = String::from_utf8_lossy(&done.stdout);
     assert!(
-        out.contains("3 moved, 1 kept as versions, 1 the same"),
+        out.contains("1 folders moved whole, 1 moved, 1 kept as versions, 1 the same"),
         "{out}"
     );
     assert!(String::from_utf8_lossy(&done.stderr).contains("kept as a version"));

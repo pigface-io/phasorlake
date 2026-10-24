@@ -106,13 +106,18 @@ pub fn upgrade(
     }
     for (from, to) in tree_moves(&old.join("crawl/listings"), "index.html", |url| {
         state.page_path(&url::Url::parse(url).ok()?).into()
-    })
-    .into_iter()
-    .chain(tree_moves(&old.join("journal"), "changes.ndjson", |url| {
-        Some(state.journal_path(url))
-    })) {
+    }) {
         if !to.exists() && take(step(Action::Move, &from, &to), &mut summary)? {
             rename(&from, &to)?;
+        }
+    }
+    // Both listings of a report folder have one journal now: a second is
+    // merged into the first, lines in time order.
+    for (from, to) in tree_moves(&old.join("journal"), "changes.ndjson", |url| {
+        Some(state.journal_path(url))
+    }) {
+        if take(step(Action::Move, &from, &to), &mut summary)? {
+            merge_into(&from, &to)?;
         }
     }
     let crawl = old.join("crawl");
@@ -330,6 +335,37 @@ fn prune_empty(dir: &Path) {
     if only_twins {
         let _ = std::fs::remove_dir_all(dir);
     }
+}
+
+/// Moves the journal `from` to `to`, its lines merged with those there in
+/// time order (`at`, or `seen_at` as an older mirror wrote it).
+fn merge_into(from: &Path, to: &Path) -> Result<(), MirrorError> {
+    if !to.exists() {
+        return rename(from, to);
+    }
+    let read = |p: &Path| std::fs::read_to_string(p).map_err(MirrorError::io(p));
+    let (a, b) = (read(to)?, read(from)?);
+    let mut lines: Vec<&str> = a
+        .lines()
+        .chain(b.lines())
+        .filter(|l| !l.is_empty())
+        .collect();
+    let at = |l: &str| {
+        serde_json::from_str::<serde_json::Value>(l)
+            .ok()
+            .and_then(|v| {
+                let t = v
+                    .get("at")
+                    .or_else(|| v.get("seen_at"))?
+                    .as_str()?
+                    .to_owned();
+                Stamp::parse(&t).ok()
+            })
+            .map_or(i64::MAX, Stamp::unix)
+    };
+    lines.sort_by_key(|l| at(l));
+    crate::crawl::write_atomic(to, (lines.join("\n") + "\n").as_bytes())?;
+    std::fs::remove_file(from).map_err(MirrorError::io(from))
 }
 
 /// Renames `from` to `to`, making `to`'s folder.
