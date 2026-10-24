@@ -81,13 +81,13 @@ uninlined_format_args = "deny"
 utilake-core = { path = "crates/utilake-core" }
 # The Iceberg contract every repository shares: types, schemas, histories,
 # the interval planner and the table writer, at the rev its schemas pin.
-utilake-iceberg = { git = "ssh://git@github.com/g0itb4/utilake-schemas.git", rev = "bdd04e5b768363ef88a2f08968a550119b926c50" }
+utilake-iceberg = { git = "ssh://git@github.com/g0itb4/utilake-schemas.git", rev = "d3daf31d224686c9892ef7b07a10b7d911f893c3" }
 # The MMS format layer and the repository gates, from the same repository.
-utilake-mms-decode = { git = "ssh://git@github.com/g0itb4/utilake-schemas.git", rev = "bdd04e5b768363ef88a2f08968a550119b926c50" }
-utilake-plain-decode = { git = "ssh://git@github.com/g0itb4/utilake-schemas.git", rev = "bdd04e5b768363ef88a2f08968a550119b926c50" }
-utilake-gates = { git = "ssh://git@github.com/g0itb4/utilake-schemas.git", rev = "bdd04e5b768363ef88a2f08968a550119b926c50" }
-utilake-zip = { git = "ssh://git@github.com/g0itb4/utilake-schemas.git", rev = "bdd04e5b768363ef88a2f08968a550119b926c50" }
-utilake-provenance = { git = "ssh://git@github.com/g0itb4/utilake-schemas.git", rev = "bdd04e5b768363ef88a2f08968a550119b926c50" }
+utilake-mms-decode = { git = "ssh://git@github.com/g0itb4/utilake-schemas.git", rev = "d3daf31d224686c9892ef7b07a10b7d911f893c3" }
+utilake-plain-decode = { git = "ssh://git@github.com/g0itb4/utilake-schemas.git", rev = "d3daf31d224686c9892ef7b07a10b7d911f893c3" }
+utilake-gates = { git = "ssh://git@github.com/g0itb4/utilake-schemas.git", rev = "d3daf31d224686c9892ef7b07a10b7d911f893c3" }
+utilake-zip = { git = "ssh://git@github.com/g0itb4/utilake-schemas.git", rev = "d3daf31d224686c9892ef7b07a10b7d911f893c3" }
+utilake-provenance = { git = "ssh://git@github.com/g0itb4/utilake-schemas.git", rev = "d3daf31d224686c9892ef7b07a10b7d911f893c3" }
 utilake-iceberg-store = { path = "crates/utilake-iceberg-store" }
 utilake-mms-registry = { path = "crates/utilake-mms-registry" }
 utilake-mms-conform = { path = "crates/utilake-mms-conform" }
