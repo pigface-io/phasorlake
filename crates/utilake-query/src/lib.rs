@@ -39,6 +39,7 @@ pub use output::{
     Writer, Written,
 };
 pub use query::{Bound, BoundSpec, FieldIx, Filter, Projection, Query, Resolution, Unit};
+pub use sql::Dialect;
 pub use time::{
     Known, KnownTime, MarketOffset, Micros, Valid, ValidEnd, ValidTime, ValidWindow, parse_local,
     rfc3339,

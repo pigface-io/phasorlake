@@ -6,8 +6,8 @@ use std::path::PathBuf;
 use anyhow::Result;
 use utilake_core::Diagnose;
 use utilake_query::{
-    Extract, Filter, Format, Known, Lake, MarketOffset, Query, QueryError, Resolution, Target,
-    Valid, ValidWindow, WriteOptions, bind, catalog, parse_local,
+    Dialect, Extract, Filter, Format, Known, Lake, MarketOffset, Query, QueryError, Resolution,
+    Target, Valid, ValidWindow, WriteOptions, bind, catalog, parse_local,
 };
 
 use crate::cli::ReadArgs;
@@ -201,6 +201,6 @@ pub async fn sql(ctx: &Context, args: &ReadArgs) -> Result<i32> {
     }
     let lake = lake(ctx, &q.table, off).await?;
     let b = bind(q, &lake).map_err(|e| fail(&e))?;
-    println!("{}", utilake_query::sql::render(&b, &lake));
+    println!("{}", utilake_query::sql::render(&b, &lake, Dialect::DuckDb));
     Ok(0)
 }

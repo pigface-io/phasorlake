@@ -51,7 +51,7 @@ worker; the async and sync worlds meet once per file.
 | pulled schemas | `schemas/nem/pulled/` against its manifest and the rev in `Cargo.lock` | `just schemas-check`, pre-commit |
 | benchmarks | criterion plus `utilake-bench` | `just bench-fast` pre-push, `just bench` in CI, against `bench/budgets.json` |
 | network | `crates/utilake-nem/tests/net.rs` | `just net-test`, weekly in CI |
-| oracle | `crates/utilake-query/tests/oracle.rs`, the kernel against DuckDB | `just oracle-test`, weekly in CI |
+| oracle | `crates/utilake-query/tests/oracle.rs`, the kernel against DuckDB running the same read as standard SQL | `just oracle-test`, weekly in CI |
 
 ## Floors and budgets
 

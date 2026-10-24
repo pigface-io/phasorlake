@@ -151,7 +151,7 @@ fn ingest_ls_errors_verify_round_trip() {
     // The time ends an interval: midnight is December's last row.
     assert!(
         sql.contains("read_parquet(")
-            && sql.contains("WHERE \"SETTLEMENTDATE\" > make_timestamptz(1704031200000000)"),
+            && sql.contains("WHERE \"SETTLEMENTDATE\" > TIMESTAMP WITH TIME ZONE '2023-12-31 14:00:00.000000+00:00'"),
         "{sql}"
     );
     assert!(!sql.contains("QUALIFY"), "plain sql is the raw read: {sql}");
@@ -166,7 +166,7 @@ fn ingest_ls_errors_verify_round_trip() {
         "2024-02-01",
     ]);
     assert!(
-        latest.contains("QUALIFY row_number()") && latest.contains("_nl_known <="),
+        latest.contains("row_number() OVER (") && latest.contains("_nl_known <="),
         "{latest}"
     );
     let (code, _, err) = cli.code(&[

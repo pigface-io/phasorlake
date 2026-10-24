@@ -129,15 +129,23 @@ frame is written before the next is read, so a read holds one partition
 in memory, however long the window. Snapshot and `from` tables, and
 tables whose valid time is not the partition column, resolve whole.
 
-## The SQL oracle
+## The same read as SQL
 
-`utilake sql` renders the same read as one DuckDB query: the files
-projected and unioned, each row joined to its source's publish time,
-`QUALIFY row_number()` over the fact with the same ranking, `lead()`
-over distinct valid times for `_nl_valid_to`, then the window. It is an
-independent statement of the roles: `just oracle-test` runs it through
-DuckDB and compares the rows with the kernel's on a fixture lake of every
-pattern above.
+The read renders as one standard SQL query: the rows, each joined to its
+source's publish time, `row_number()` over the fact with the same ranking
+(the first of each fact kept), `lead()` over distinct valid times for
+`_nl_valid_to`, then the window, with `TIMESTAMP WITH TIME ZONE` literals
+to the microsecond. Only the first clause, where the rows come from, is of
+a dialect: for DuckDB every lake file read in place with `read_parquet`
+and projected onto the schema; for Postgres one relation named for the
+table, already in the schema, whose rows carry `_nl_source` naming the
+lake file each came from. Everything after is the same text.
+
+It is an independent statement of the roles. `just oracle-test` runs the
+DuckDB form through DuckDB and compares the rows with the kernel's on a
+fixture lake of every pattern above (an oracle in the testing sense: the
+reference answer). The Postgres form differs by that one clause and has
+no run in CI, which would need a server and a loader.
 
 ## What a read does not do
 

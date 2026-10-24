@@ -75,7 +75,7 @@ table.
 | `utilake ls [--table T] [--failed] [--runs]` | what the manifest knows |
 | `utilake errors [--last] [--table T] [--code C]` | diagnostics recorded by past runs |
 | `utilake read T --from A --to B \| --at T [--known-at K] [--revisions \| --raw] [--as-of N] [--columns A,B] [--where COL=v,v] [-o PATH] [--format parquet\|csv\|arrow]` | one frame of a table over a window: one row per fact (the newest revision, as known at `K`), every revision, or every row as written; `-o` writes the frame with a JSON sidecar, else a summary. Times in the market's clock. `docs/semantics.md` |
-| `utilake sql T ...` | the same read as one DuckDB query, printed; without `--latest`, `--known-at` or `--revisions` it is the raw read |
+| `utilake sql T ...` | the same read as one standard SQL query, printed, with a DuckDB source; without `--latest`, `--known-at` or `--revisions` it is the raw read |
 | `utilake verify` | every Parquet file the manifest lists exists with its size |
 | `utilake schema list\|show\|history\|validate` | the registry; `history T` lists a table's schemas, with the columns each adds or drops, and the runs of files under each (`--json`: its Iceberg history) |
 | `utilake schema plan <type> <subtype> <version> --columns A,B,C [--month YYYY-MM]` | the conformance plan a shape is read with, as JSON: where each file column goes, its cast, what is written null |

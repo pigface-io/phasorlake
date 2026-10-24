@@ -10,7 +10,7 @@ use arrow_array::cast::AsArray;
 use arrow_array::types::{Decimal128Type, Float64Type, Int64Type, TimestampMicrosecondType};
 use common::{Fixture, ts};
 use utilake_query::{
-    KnownTime, Query, Resolution, ValidTime, ValidWindow, bind, read, sql::render,
+    Dialect, KnownTime, Query, Resolution, ValidTime, ValidWindow, bind, read, sql::render,
 };
 
 fn enabled() -> bool {
@@ -81,7 +81,11 @@ fn compare(fx: &Fixture, q: Query, cols: &[&str], times: &[&str]) {
             }
         })
         .collect();
-    let sql = format!("SELECT {} FROM ({})", select.join(", "), render(&b, &lake));
+    let sql = format!(
+        "SELECT {} FROM ({})",
+        select.join(", "),
+        render(&b, &lake, Dialect::DuckDb)
+    );
     let mut theirs: Vec<Vec<String>> = duck(&sql)
         .iter()
         .map(|row| {
