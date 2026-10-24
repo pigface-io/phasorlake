@@ -1,11 +1,13 @@
 //! Each folder's journal: what became of its files, one line per event,
 //! appended and never written over (`docs/archive.md`, Journal).
 //!
-//! A download pass notes each file it downloads: a file new to the
-//! archive, a later version with new data, or bytes the same as a version
-//! archived already (listed again with nothing changed, or a zip packed
-//! again). A watch notes each file nemweb stops listing, and each folder
-//! it stops serving.
+//! The journal keeps only what no provenance record holds: a file listed
+//! again with the bytes of a version archived already (`same`), a zip
+//! listed again and packed again with the same entries (`repacked`, its
+//! other bytes not kept), and a folder nemweb stops serving
+//! (`folder_gone`). A download's address, and a listing that stops naming
+//! a file, are in the file's record (`seen`, `gone`). Lines written before
+//! keep their other events and fields; they still read.
 
 use std::io::Write as _;
 use std::path::PathBuf;
@@ -40,6 +42,7 @@ pub enum Change {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Event {
     /// When it was seen, UTC.
+    #[serde(rename = "at", alias = "seen_at")]
     pub seen_at: Stamp,
     /// The file, or the folder when it is gone.
     pub url: String,
@@ -49,24 +52,10 @@ pub struct Event {
     /// `{name}` or `{name}@{at}` (`docs/archive.md`, Versions).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub file: Option<String>,
-    /// sha256 hex of the bytes nemweb served.
+    /// sha256 hex of bytes no record keeps: a zip packed again, which
+    /// was not kept.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sha256: Option<String>,
-    /// Their size.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub size: Option<u64>,
-    /// The time nemweb listed it with, as listed.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub listed_modified: Option<String>,
-    /// The same time as an instant (AEST).
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub listed_modified_at: Option<Stamp>,
-    /// The server's `Last-Modified`, as sent.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub last_modified: Option<String>,
-    /// The same time as an instant (UTC).
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub last_modified_at: Option<Stamp>,
 }
 
 impl Event {
@@ -78,11 +67,6 @@ impl Event {
             event,
             file: None,
             sha256: None,
-            size: None,
-            listed_modified: None,
-            listed_modified_at: None,
-            last_modified: None,
-            last_modified_at: None,
         }
     }
 }
@@ -136,15 +120,20 @@ mod tests {
         let mirror = Mirror::new(home.path().join("mirror"));
         let folder = "https://h/R/C/G/";
         assert!(mirror.journal(folder).unwrap().is_empty());
-        let mut e = Event::now("https://h/R/C/G/a.csv", Change::New);
-        e.size = Some(3);
+        let mut e = Event::now("https://h/R/C/G/a.csv", Change::Repacked);
+        e.sha256 = Some("ab".into());
         mirror.note(folder, &e).unwrap();
-        mirror
-            .note(
-                folder,
-                &Event::now("https://h/R/C/G/a.csv", Change::Dropped),
-            )
+        // A line of the form written before: its other fields pass.
+        let path = mirror.journal_path(folder);
+        let mut f = std::fs::OpenOptions::new()
+            .append(true)
+            .open(&path)
             .unwrap();
+        writeln!(
+            f,
+            r#"{{"seen_at":"2026-10-20T00:00:00Z","url":"https://h/R/C/G/a.csv","event":"dropped","size":3}}"#
+        )
+        .unwrap();
         let path = mirror.journal_path(folder);
         assert_eq!(
             path,
@@ -152,13 +141,14 @@ mod tests {
         );
         let mut text = std::fs::read_to_string(&path).unwrap();
         crate::stamp::check::assert_aware_lines(&text);
+        assert!(text.starts_with("{\"at\":"), "{text}");
         text.push_str("{\"cut");
         std::fs::write(&path, text).unwrap();
         let read = mirror.journal(folder).unwrap();
         assert_eq!(read.len(), 2);
         assert_eq!(
             (read[0].event, read[1].event),
-            (Change::New, Change::Dropped)
+            (Change::Repacked, Change::Dropped)
         );
         assert_eq!(read[0], e);
         // A journal that is not a file cannot be read or written.

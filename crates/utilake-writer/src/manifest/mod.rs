@@ -66,6 +66,10 @@ pub struct FileRecord {
     /// `last_modified` as an instant, RFC 3339 UTC.
     #[serde(default)]
     pub last_modified_at: Option<String>,
+    /// When the bytes were fetched, RFC 3339, as the archive's record says;
+    /// none records the time of recording.
+    #[serde(default)]
+    pub fetched_at: Option<String>,
 }
 
 /// How an ingest ended.
@@ -416,7 +420,7 @@ impl Manifest {
              VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)
              ON CONFLICT(url) DO UPDATE SET cache_path = excluded.cache_path, sha256 = excluded.sha256, size = excluded.size,
                  etag = excluded.etag, last_modified = excluded.last_modified, last_modified_at = excluded.last_modified_at, fetched_at = excluded.fetched_at",
-            params![f.source, f.url, f.cache_path, f.sha256, f.size as i64, f.etag, f.last_modified, f.last_modified_at, now()],
+            params![f.source, f.url, f.cache_path, f.sha256, f.size as i64, f.etag, f.last_modified, f.last_modified_at, f.fetched_at.clone().unwrap_or_else(now)],
         );
         self.sql(r)?;
         let r = self
@@ -431,7 +435,7 @@ impl Manifest {
     pub fn file_by_url(&self, url: &str) -> Result<Option<(i64, FileRecord)>, ManifestError> {
         let r = self
             .conn
-            .query_row("SELECT id, source, url, cache_path, sha256, size, etag, last_modified, last_modified_at FROM files WHERE url = ?1", [url], |r| {
+            .query_row("SELECT id, source, url, cache_path, sha256, size, etag, last_modified, last_modified_at, fetched_at FROM files WHERE url = ?1", [url], |r| {
                 Ok((
                     r.get::<_, i64>(0)?,
                     FileRecord {
@@ -443,6 +447,7 @@ impl Manifest {
                         etag: r.get(6)?,
                         last_modified: r.get(7)?,
                         last_modified_at: r.get(8)?,
+                        fetched_at: r.get(9)?,
                     },
                 ))
             })
@@ -454,7 +459,7 @@ impl Manifest {
     /// seen.
     pub fn list_files(&self) -> Result<Vec<FileRecord>, ManifestError> {
         let mut stmt = self.sql(self.conn.prepare(
-            "SELECT source, url, cache_path, sha256, size, etag, last_modified, last_modified_at FROM files ORDER BY id",
+            "SELECT source, url, cache_path, sha256, size, etag, last_modified, last_modified_at, fetched_at FROM files ORDER BY id",
         ))?;
         self.sql(
             stmt.query_map([], |r| {
@@ -467,6 +472,7 @@ impl Manifest {
                     etag: r.get(5)?,
                     last_modified: r.get(6)?,
                     last_modified_at: r.get(7)?,
+                    fetched_at: r.get(8)?,
                 })
             })
             .and_then(Iterator::collect),
@@ -930,6 +936,7 @@ mod tests {
             etag: Some("e".into()),
             last_modified: None,
             last_modified_at: Some("2024-02-01T00:00:00Z".into()),
+            fetched_at: Some("2024-02-01T01:00:00Z".into()),
         }
     }
 

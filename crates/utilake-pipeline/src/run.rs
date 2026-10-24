@@ -120,6 +120,7 @@ pub fn local_file(remote: RemoteFile, path: &std::path::Path) -> std::io::Result
         etag: None,
         last_modified: None,
         last_modified_at: None,
+        fetched_at: None,
         previous: None,
     })
 }
@@ -725,6 +726,7 @@ async fn commit(
             etag: local.etag.clone(),
             last_modified: local.last_modified.clone(),
             last_modified_at: local.last_modified_at.map(|s| s.rfc3339()),
+            fetched_at: local.fetched_at.map(|s| s.rfc3339()),
         })
         .await
     {

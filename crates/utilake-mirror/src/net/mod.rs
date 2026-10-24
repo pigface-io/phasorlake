@@ -1,7 +1,7 @@
 //! Moving bytes from nemweb and the other hosts into the archive:
 //! transports, the paced fetcher with its refusal breaker, one per host,
 //! and the archive that keeps each URL's
-//! bytes at its path with a sidecar.
+//! bytes at its path with its provenance record.
 
 pub mod archive;
 pub mod error;
@@ -14,7 +14,8 @@ pub mod testserver;
 pub mod transport;
 
 pub use archive::{
-    Also, Archive, Archived, Hashes, How, Listed, Sidecar, hashes_of, is_apple_double, sha256_file,
+    Address, Archive, Content, DirNames, Held, Provenance, Served, Sha256, Via, content_of,
+    is_apple_double,
 };
 pub use error::FetchError;
 pub use event::Event;

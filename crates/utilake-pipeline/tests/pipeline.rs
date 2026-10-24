@@ -1109,6 +1109,7 @@ fn a_recorded_source_becomes_a_file_to_read() {
         etag: None,
         last_modified: None,
         last_modified_at: None,
+        fetched_at: None,
     };
     let kits = kits_for(&Registry::load_embedded());
     let (kit, archived) = utilake_pipeline::recorded_remote(
@@ -1806,7 +1807,7 @@ async fn an_entry_picked_out_of_a_zip_and_the_whole_zip_do_not_double_up() {
     // alone: its entry is fetched, and then found to be in the lake from
     // the read of the whole zip, so it is not read again.
     std::fs::remove_file(archive.path_for(url.as_str())).unwrap();
-    std::fs::remove_file(utilake_acquire::Archive::sidecar_path(
+    std::fs::remove_file(utilake_acquire::Archive::record_path(
         &archive.path_for(url.as_str()),
     ))
     .unwrap();
@@ -2520,24 +2521,23 @@ async fn a_restated_file_adds_only_its_new_rows() {
         };
         std::fs::create_dir_all(path.parent().unwrap()).unwrap();
         std::fs::write(&path, bytes).unwrap();
-        utilake_acquire::Archive::write_sidecar(
-            &path,
-            &utilake_acquire::Sidecar {
+        let record = utilake_acquire::Provenance::new(
+            utilake_acquire::Content::of(bytes),
+            "test",
+            utilake_acquire::Address {
                 url: url.to_owned(),
-                size: bytes.len() as u64,
-                sha256: utilake_acquire::archive::sha256_hex(bytes),
-                fetched_at: "2026-10-21T12:00:00Z".into(),
-                etag: None,
-                last_modified: None,
-                last_modified_at: None,
-                listed_modified: Some(listed.to_owned()),
-                listed_modified_at: utilake_core::timetext::parse_iis_listing(listed, 36_000),
-                tool: "test".into(),
-                extracted_from: None,
-                also: Vec::new(),
+                seen: utilake_core::timetext::Stamp::new(1_792_540_800, 0),
+                gone: None,
+                via: utilake_acquire::Via::Fetched {
+                    listed: Some(utilake_acquire::archive::Listed {
+                        size: None,
+                        at: utilake_core::timetext::parse_iis_listing(listed, 36_000),
+                    }),
+                    served: None,
+                },
             },
-        )
-        .unwrap();
+        );
+        utilake_acquire::Archive::write(&path, &record).unwrap();
     };
     keep(None, &v1, "Monday, October 20, 2026 10:00 AM");
     keep(

@@ -511,8 +511,9 @@ fn a_duplicate_is_ruled_on_from_its_listing_and_never_downloaded() {
     std::fs::write(
         dir.join("t.zip.json"),
         format!(
-            r#"{{"url":"https://h/A/M/t.zip","size":{},"sha256":"x","fetched_at":"t","tool":"x"}}"#,
-            t.len()
+            r#"{{"url":"https://h/A/M/t.zip","size":{},"sha256":"{}","fetched_at":"2026-10-05T00:00:00Z","tool":"x"}}"#,
+            t.len(),
+            utilake_mirror::net::archive::sha256_hex(&t)
         ),
     )
     .unwrap();
@@ -693,8 +694,8 @@ fn a_watch_keeps_each_version_and_what_is_new() {
     let dup = g.join("r.csv@20261015T090000+1000");
     std::fs::copy(g.join("r.csv@20261014T090000+1000"), &dup).unwrap();
     std::fs::copy(
-        g.join("r.csv@20261014T090000+1000.json"),
-        g.join("r.csv@20261015T090000+1000.json"),
+        g.join("r.csv@20261014T090000+1000.provenance.json"),
+        g.join("r.csv@20261015T090000+1000.provenance.json"),
     )
     .unwrap();
     let out = cli.ok(&["versions"]);
@@ -794,7 +795,7 @@ fn relayout_moves_both_listings_into_one_folder() {
         let sidecar = format!(
             "{{\"url\":\"{url}\",\"size\":{},\"sha256\":\"{}\",\"fetched_at\":\"2026-10-05T00:00:00Z\"}}",
             bytes.len(),
-            bytes.len()
+            utilake_mirror::net::archive::sha256_hex(bytes)
         );
         std::fs::write(dir.join(format!("{name}.json")), sidecar).unwrap();
     };

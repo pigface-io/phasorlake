@@ -384,35 +384,30 @@ fn tops(
                 peek: None,
                 removed: None,
             });
-        for a in archive.entries_under(Some(&archive.path_for(root.as_str()))) {
+        for a in crate::net::archive::entries_under(archive, Some(&archive.path_for(root.as_str())))
+        {
             if shown.contains(&a.path) {
                 continue;
             }
             // A version beside the URL's path, listed or not, is its own
             // node; the first version is the listed file, or one gone.
-            let (modified, modified_at, state) = if a.path != archive.path_for(&a.sidecar.url) {
-                let s = &a.sidecar;
-                (
-                    s.listed_modified.clone(),
-                    s.listed_modified_at,
-                    State::Version,
-                )
-            } else if !listed.contains(&a.sidecar.url) {
-                let s = &a.sidecar;
-                (
-                    s.last_modified.clone(),
-                    s.last_modified_at,
-                    State::GoneUpstream,
-                )
+            // A record keeps instants only: a version's listing text is not
+            // there to show, a Last-Modified is written again as sent.
+            let (modified, modified_at, state) = if a.path != archive.path_for(a.provenance.url()) {
+                let s = &a.provenance;
+                (None, s.listed(s.url()).and_then(|l| l.at), State::Version)
+            } else if !listed.contains(a.provenance.url()) {
+                let at = a.provenance.modified();
+                (at.map(Stamp::http_date), at, State::GoneUpstream)
             } else {
                 continue;
             };
             tops.insert(
-                (path_key(&a.path), a.sidecar.url.clone()),
+                (path_key(&a.path), a.provenance.url().to_owned()),
                 Top {
-                    url: Some(a.sidecar.url.clone()),
+                    url: Some(a.provenance.url().to_owned()),
                     kind: NodeKind::File,
-                    size: Some(a.sidecar.size),
+                    size: Some(a.provenance.content.size),
                     modified,
                     modified_at,
                     state: Some(state),
@@ -576,12 +571,12 @@ impl Lister {
             }
         };
         out[0].size = Some(size);
-        if let Ok(Some(s)) = Archive::read_sidecar(&file).map(|s| s.filter(|s| s.size == size)) {
-            out[0].sha256 = Some(s.sha256);
-            out[0].crc32 = s.crc32;
-            out[0].etag = s.etag;
-            out[0].last_modified = s.last_modified;
-            out[0].last_modified_at = s.last_modified_at;
+        if let Ok(Some(s)) = Archive::read(&file).map(|s| s.filter(|s| s.content.size == size)) {
+            out[0].sha256 = Some(s.content.sha256.hex());
+            out[0].crc32 = s.content.crc32;
+            out[0].etag = s.etag().map(str::to_owned);
+            out[0].last_modified = s.modified().map(Stamp::http_date);
+            out[0].last_modified_at = s.modified();
         }
         let at = out[0].clone();
         let listed = match source {
@@ -1156,24 +1151,19 @@ mod tests {
         }
         let gone = archive.path_for("https://h/A/gone.txt");
         std::fs::write(&gone, b"old").unwrap();
-        Archive::write_sidecar(
+        Archive::write(
             &gone,
-            &crate::net::Sidecar {
-                url: "https://h/A/gone.txt".into(),
-                size: 3,
-                sha256: String::new(),
-                crc32: None,
-                fetched_at: "t".into(),
-                etag: None,
-                last_modified: Some("Mon, 12 Oct 2026 00:32:30 GMT".into()),
-                last_modified_at: None,
-                listed_size: None,
-                listed_modified: None,
-                listed_modified_at: None,
-                tool: "nemlake".into(),
-                also: Vec::new(),
-                gone_at: None,
-            },
+            &crate::net::Provenance::from_json(
+                serde_json::json!({
+                    "url": "https://h/A/gone.txt", "size": 3,
+                    "sha256": crate::net::archive::sha256_hex(b"old"),
+                    "fetched_at": "2026-10-05T00:00:00Z",
+                    "last_modified": "Mon, 12 Oct 2026 00:32:30 GMT", "tool": "nemlake",
+                })
+                .to_string()
+                .as_bytes(),
+            )
+            .unwrap(),
         )
         .unwrap();
         // b.txt, rewritten in place, and its later version beside it.
@@ -1186,24 +1176,20 @@ mod tests {
             .unwrap(),
         );
         std::fs::write(&later, b"hello!").unwrap();
-        Archive::write_sidecar(
+        Archive::write(
             &later,
-            &crate::net::Sidecar {
-                url: "https://h/A/b.txt".into(),
-                size: 6,
-                sha256: String::new(),
-                crc32: None,
-                fetched_at: "t".into(),
-                etag: None,
-                last_modified: None,
-                last_modified_at: None,
-                listed_size: Some(6),
-                listed_modified: Some("Tuesday, October 13, 2026 11:53 AM".into()),
-                listed_modified_at: None,
-                tool: "utilake-mirror".into(),
-                also: Vec::new(),
-                gone_at: None,
-            },
+            &crate::net::Provenance::from_json(
+                serde_json::json!({
+                    "url": "https://h/A/b.txt", "size": 6,
+                    "sha256": crate::net::archive::sha256_hex(b"hello!"),
+                    "fetched_at": "2026-10-05T00:00:00Z", "listed_size": 6,
+                    "listed_modified": "Tuesday, October 13, 2026 11:53 AM",
+                    "tool": "utilake-mirror",
+                })
+                .to_string()
+                .as_bytes(),
+            )
+            .unwrap(),
         )
         .unwrap();
         std::fs::create_dir_all(mirror.crawl_dir()).unwrap();
@@ -1323,11 +1309,7 @@ h/
         let hold = |url: &str, path: PathBuf, bytes: &[u8]| {
             std::fs::create_dir_all(path.parent().unwrap()).unwrap();
             std::fs::write(&path, bytes).unwrap();
-            let sc: crate::net::Sidecar = serde_json::from_value(serde_json::json!({
-                "url": url, "size": bytes.len(), "sha256": "s", "fetched_at": "2026-10-05T00:00:00Z",
-            }))
-            .unwrap();
-            Archive::write_sidecar(&path, &sc).unwrap();
+            Archive::write(&path, &crate::net::archive::test_record(url, bytes)).unwrap();
         };
         let base = archive.path_for(&format!("{cur}m.txt"));
         hold(&format!("{cur}m.txt"), base.clone(), b"partial");
@@ -1782,26 +1764,9 @@ h/
         // A downloaded file shows its sidecar's hashes.
         let f = fixture();
         let path = f.archive.path_for("https://h/A/b.txt");
-        Archive::write_sidecar(
-            &path,
-            &crate::net::Sidecar {
-                url: "https://h/A/b.txt".into(),
-                size: 5,
-                sha256: "abc".into(),
-                crc32: Some(9),
-                fetched_at: "t".into(),
-                etag: None,
-                last_modified: None,
-                last_modified_at: None,
-                listed_size: None,
-                listed_modified: None,
-                listed_modified_at: None,
-                tool: "x".into(),
-                also: Vec::new(),
-                gone_at: None,
-            },
-        )
-        .unwrap();
+        let mut r = crate::net::archive::test_record("https://h/A/b.txt", b"hello");
+        r.content.crc32 = Some(9);
+        Archive::write(&path, &r).unwrap();
         map(&f.mirror, &f.archive, &f.roots, 1, &Offsets::default()).unwrap();
         let ndjson = std::fs::read_to_string(f.mirror.dir().join("map/map.ndjson")).unwrap();
         let b = ndjson
@@ -1809,7 +1774,11 @@ h/
             .find(|l| l.contains("\"h/A/b.txt\""))
             .unwrap();
         assert!(
-            b.contains("\"crc32\":9") && b.contains("\"sha256\":\"abc\""),
+            b.contains("\"crc32\":9")
+                && b.contains(&format!(
+                    "\"sha256\":\"{}\"",
+                    crate::net::archive::sha256_hex(b"hello")
+                )),
             "{b}"
         );
         // Every node nemweb lists keeps its exact URL; the host above the

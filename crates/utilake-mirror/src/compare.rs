@@ -16,7 +16,7 @@ use std::fs::File;
 use std::io::{BufReader, Cursor, Read, Seek, Write as _};
 use std::path::{Path, PathBuf};
 
-use crate::net::{Archive, Sidecar};
+use crate::net::{Address, Archive, Provenance, Via};
 use serde::{Deserialize, Serialize};
 use zip::ZipArchive;
 
@@ -506,7 +506,7 @@ pub fn remove(
         });
     }
     let path = archive.path_for(&cmp.zip);
-    let sidecar = Archive::read_sidecar(&path)?;
+    let sidecar = Archive::read(&path)?;
     if !cmp.from_listing && sidecar.is_none() {
         return Err(MirrorError::NotSame {
             url: cmp.zip.clone(),
@@ -514,9 +514,9 @@ pub fn remove(
     }
     let removed = Removed {
         url: cmp.zip.clone(),
-        size: sidecar.as_ref().map_or(cmp.zip_size, |s| s.size),
+        size: sidecar.as_ref().map_or(cmp.zip_size, |s| s.content.size),
         downloaded: sidecar.is_some(),
-        sha256: sidecar.map(|s| s.sha256),
+        sha256: sidecar.map(|s| s.content.sha256.hex()),
         same_as: cmp.folder.clone(),
         files: cmp.same + cmp.repacked,
         ancillary: cmp.ancillary.clone(),
@@ -539,9 +539,7 @@ pub fn remove(
     f.sync_all().map_err(MirrorError::io(&record))?;
     note_entries(cmp)?;
     if removed.downloaded {
-        std::fs::remove_file(&path).map_err(MirrorError::io(&path))?;
-        let sc = Archive::sidecar_path(&path);
-        std::fs::remove_file(&sc).map_err(MirrorError::io(&sc))?;
+        crate::net::archive::remove(&path)?;
     }
     Ok(removed)
 }
@@ -559,7 +557,13 @@ pub fn note_entries(cmp: &Comparison) -> Result<usize, MirrorError> {
     let mut n = 0;
     for (name, path) in &cmp.held {
         let url = format!("{}!{name}", cmp.zip);
-        if Archive::add_also(path, &url, crate::net::How::Entry, now)? {
+        let entry = Address {
+            url,
+            seen: now,
+            gone: None,
+            via: Via::Entry,
+        };
+        if crate::net::archive::add_address(path, entry)? {
             n += 1;
         }
     }
@@ -640,12 +644,11 @@ pub fn verify(mirror: &Mirror, archive: &Archive) -> Result<Vec<Verified>, Mirro
             // folder file's sidecar (a file packed again matched by what it
             // holds, not its bytes), else the zip's.
             let path = &folder[&rel];
-            let want = match Archive::read_sidecar(path) {
-                Ok(Some(Sidecar {
-                    size,
-                    crc32: Some(crc32),
-                    ..
-                })) => Sum { size, crc32 },
+            let want = match Archive::read(path) {
+                Ok(Some(Provenance { content, .. })) if content.crc32.is_some() => Sum {
+                    size: content.size,
+                    crc32: content.crc32.unwrap_or_default(),
+                },
                 _ => Sum {
                     size: e.size,
                     crc32: e.crc32,
@@ -676,26 +679,20 @@ fn suffix_in(name: &str, folder: &BTreeMap<String, PathBuf>) -> Option<String> {
 /// The size and CRC-32 of an archived file: from its sidecar when it holds
 /// them, else read in full and recorded there, so a file is read once.
 fn known_sum(path: &Path) -> Result<Sum, MirrorError> {
-    let sidecar = Archive::read_sidecar(path)?;
+    let sidecar = Archive::read(path)?;
     let len = std::fs::metadata(path)
         .map_err(MirrorError::io(path))?
         .len();
-    if let Some(Sidecar {
-        crc32: Some(crc32),
-        size,
-        ..
-    }) = &sidecar
-        && *size == len
+    if let Some(p) = &sidecar
+        && p.content.size == len
+        && let Some(crc32) = p.content.crc32
     {
-        return Ok(Sum {
-            size: len,
-            crc32: *crc32,
-        });
+        return Ok(Sum { size: len, crc32 });
     }
     let sum = sum_of(path).map_err(MirrorError::io(path))?;
-    if let Some(mut s) = sidecar.filter(|s| s.size == sum.size) {
-        s.crc32 = Some(sum.crc32);
-        Archive::write_sidecar(path, &s)?;
+    if let Some(mut s) = sidecar.filter(|s| s.content.size == sum.size) {
+        s.content.crc32 = Some(sum.crc32);
+        Archive::write(path, &s)?;
     }
     Ok(sum)
 }
@@ -791,7 +788,7 @@ mod tests {
     use crate::diag::Diagnose as _;
     use crate::hosts::Offsets;
     use crate::net::transport::StaticTransport;
-    use crate::net::{Fetcher, FetcherConfig, Sidecar};
+    use crate::net::{Fetcher, FetcherConfig};
     use zip::write::SimpleFileOptions;
 
     use super::*;
@@ -811,26 +808,7 @@ mod tests {
         let p = archive.path_for(url);
         std::fs::create_dir_all(p.parent().unwrap()).unwrap();
         std::fs::write(&p, bytes).unwrap();
-        Archive::write_sidecar(
-            &p,
-            &Sidecar {
-                url: url.into(),
-                size: bytes.len() as u64,
-                sha256: crate::net::archive::sha256_hex(bytes),
-                crc32: None,
-                fetched_at: "t".into(),
-                etag: None,
-                last_modified: None,
-                last_modified_at: None,
-                listed_size: None,
-                listed_modified: None,
-                listed_modified_at: None,
-                tool: "nemlake".into(),
-                also: Vec::new(),
-                gone_at: None,
-            },
-        )
-        .unwrap();
+        Archive::write(&p, &crate::net::archive::test_record(url, bytes)).unwrap();
     }
 
     struct Fixture {
@@ -1004,13 +982,13 @@ mod tests {
         let removed = remove(&mirror, &archive, &cmp, crate::stamp::AEST).unwrap();
         assert_eq!(removed.same_as, cur);
         assert!(!archive.path_for(&day17).exists());
-        let sc = Archive::read_sidecar(&archive.path_for(&format!("{cur}{na}")))
+        let sc = Archive::read(&archive.path_for(&format!("{cur}{na}")))
             .unwrap()
             .unwrap();
-        assert_eq!(sc.also.len(), 1);
-        assert_eq!(sc.also[0].url, format!("{day17}!{na}"));
-        assert_eq!(sc.also[0].how, crate::net::How::Entry);
-        assert_eq!(sc.sha256, crate::net::archive::sha256_hex(&a));
+        assert_eq!(sc.addresses.len(), 2);
+        assert_eq!(sc.addresses[1].url, format!("{day17}!{na}"));
+        assert_eq!(sc.addresses[1].via, Via::Entry);
+        assert_eq!(sc.content.sha256.hex(), crate::net::archive::sha256_hex(&a));
         // Removed: left out unless asked for.
         let left: Vec<String> = pairs(&mirror, &archive, false)
             .unwrap()
@@ -1029,10 +1007,10 @@ mod tests {
         assert_eq!(cmp.verdict, Verdict::Differs);
         assert_eq!(note_entries(&cmp).unwrap(), 1);
         assert_eq!(note_entries(&cmp).unwrap(), 0);
-        let sc = Archive::read_sidecar(&archive.path_for(&format!("{cur}{nc}")))
+        let sc = Archive::read(&archive.path_for(&format!("{cur}{nc}")))
             .unwrap()
             .unwrap();
-        assert_eq!(sc.also[0].url, format!("{day19}!{nc}"));
+        assert_eq!(sc.addresses[1].url, format!("{day19}!{nc}"));
         // A pair that is not a rollup notes nothing.
         let plain = Comparison {
             rollup: false,
@@ -1249,7 +1227,7 @@ mod tests {
             entry("M/Readme.htm", b"only here"),
         ];
         std::fs::remove_file(&zip_path).unwrap();
-        std::fs::remove_file(Archive::sidecar_path(&zip_path)).unwrap();
+        std::fs::remove_file(Archive::record_path(&zip_path)).unwrap();
         let cmp = compare(&f.archive, pair, Some(&listing), &tmp).unwrap();
         assert_eq!(
             (cmp.verdict, cmp.unsure.len()),
@@ -1334,7 +1312,7 @@ mod tests {
         let f2 = fixture(false);
         let pair2 = &pairs(&f2.mirror, &f2.archive, true).unwrap()[0];
         let cmp = compare(&f2.archive, pair2, None, &f2.mirror.dir().join("tmp")).unwrap();
-        std::fs::remove_file(Archive::sidecar_path(&f2.archive.path_for(&pair2.zip))).unwrap();
+        std::fs::remove_file(Archive::record_path(&f2.archive.path_for(&pair2.zip))).unwrap();
         let e = remove(&f2.mirror, &f2.archive, &cmp, crate::stamp::AEST).unwrap_err();
         assert_eq!(e.diagnostic().code, "mirror.not_same");
         // A record of removals that is a folder cannot be read.
@@ -1378,7 +1356,7 @@ mod tests {
         let pair = &pairs(&f.mirror, &f.archive, true).unwrap()[0];
         let zip_path = f.archive.path_for(&pair.zip);
         std::fs::remove_file(&zip_path).unwrap();
-        std::fs::remove_file(Archive::sidecar_path(&zip_path)).unwrap();
+        std::fs::remove_file(Archive::record_path(&zip_path)).unwrap();
         let entry = |name: &str, bytes: &[u8]| Entry {
             name: name.into(),
             size: bytes.len() as u64,
@@ -1486,9 +1464,9 @@ mod tests {
         let pair = &pairs(&f.mirror, &f.archive, true).unwrap()[0];
         let tmp = f.mirror.dir().join("tmp");
         let t1 = f.archive.path_for("https://h/A/M/S/DATA/T1%231.zip");
-        assert!(Archive::read_sidecar(&t1).unwrap().unwrap().crc32.is_none());
+        assert!(Archive::read(&t1).unwrap().unwrap().content.crc32.is_none());
         compare(&f.archive, pair, None, &tmp).unwrap();
-        let crc = Archive::read_sidecar(&t1).unwrap().unwrap().crc32.unwrap();
+        let crc = Archive::read(&t1).unwrap().unwrap().content.crc32.unwrap();
         assert_eq!(crc, crc32fast::hash(&std::fs::read(&t1).unwrap()));
         // The kept CRC is used: bytes changed on disk at the same size go
         // unnoticed by compare (verify reads them again).
@@ -1517,9 +1495,9 @@ mod tests {
         assert_eq!(v.checked, 2);
         // A sidecar without a recorded CRC: the zip's is what was seen.
         let t1 = f.archive.path_for("https://h/A/M/S/DATA/T1%231.zip");
-        let mut sc = Archive::read_sidecar(&t1).unwrap().unwrap();
-        sc.crc32 = None;
-        Archive::write_sidecar(&t1, &sc).unwrap();
+        let mut sc = Archive::read(&t1).unwrap().unwrap();
+        sc.content.crc32 = None;
+        Archive::write(&t1, &sc).unwrap();
         assert!(verify(&f.mirror, &f.archive).unwrap()[0].holds());
         let mut bytes = std::fs::read(&t1).unwrap();
         bytes[0] ^= 1;

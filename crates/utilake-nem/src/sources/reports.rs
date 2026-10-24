@@ -301,14 +301,14 @@ impl Source for ReportFolders {
             }
             let held: Vec<_> = dirs
                 .iter()
-                .flat_map(|d| archive.entries_under(Some(d)))
-                .filter_map(|a| Some((parse_report_name(&a.sidecar.url)?, a)))
+                .flat_map(|d| utilake_acquire::archive::entries_under(archive, Some(d)))
+                .filter_map(|a| Some((parse_report_name(a.provenance.url())?, a)))
                 .filter(|(name, _)| days.contains(&name.day))
                 .collect();
             let whole_days: Vec<CivilDay> = held
                 .iter()
                 .filter(|(name, a)| {
-                    name.time.is_none() && a.sidecar.url.contains("/Reports/ARCHIVE/")
+                    name.time.is_none() && a.provenance.url().contains("/Reports/ARCHIVE/")
                 })
                 .map(|(name, _)| name.day)
                 .collect();
@@ -317,28 +317,20 @@ impl Source for ReportFolders {
                     if name.time.is_some() && whole_days.contains(&name.day) {
                         continue;
                     }
-                    let Ok(url) = Url::parse(&a.sidecar.url) else {
+                    let p = &a.provenance;
+                    let Ok(url) = Url::parse(p.url()) else {
                         continue;
                     };
-                    out.push(LocalFile {
-                        remote: RemoteFile {
-                            url,
-                            source: REPORTS_SOURCE_ID,
-                            table: None,
-                            period: Some(Period::Day(name.day)),
-                            size: Some(a.sidecar.size),
-                            modified: a.sidecar.listed_modified,
-                            modified_at: a.sidecar.listed_modified_at,
-                        },
-                        path: a.path,
-                        sha256: a.sidecar.sha256,
-                        size: a.sidecar.size,
-                        cached: true,
-                        etag: a.sidecar.etag,
-                        last_modified: a.sidecar.last_modified,
-                        last_modified_at: a.sidecar.last_modified_at,
-                        previous: None,
-                    });
+                    let remote = RemoteFile {
+                        url,
+                        source: REPORTS_SOURCE_ID,
+                        table: None,
+                        period: Some(Period::Day(name.day)),
+                        size: Some(p.content.size),
+                        modified: None,
+                        modified_at: p.listed(p.url()).and_then(|l| l.at),
+                    };
+                    out.push(LocalFile::from_held(&remote, a, true));
                 }
             }
         }
@@ -759,24 +751,20 @@ mod tests {
             let path = archive.path_for(url);
             std::fs::create_dir_all(path.parent().unwrap()).unwrap();
             std::fs::write(&path, b"zip").unwrap();
-            Archive::write_sidecar(
-                &path,
-                &utilake_acquire::Sidecar {
+            let record = utilake_acquire::Provenance::new(
+                utilake_acquire::Content::of(b"zip"),
+                "test",
+                utilake_acquire::Address {
                     url: url.into(),
-                    size: 3,
-                    sha256: "s".into(),
-                    fetched_at: "2026-10-20T00:00:00Z".into(),
-                    etag: None,
-                    last_modified: None,
-                    last_modified_at: None,
-                    listed_modified: None,
-                    listed_modified_at: None,
-                    tool: String::new(),
-                    extracted_from: None,
-                    also: Vec::new(),
+                    seen: utilake_core::timetext::Stamp::new(1_792_454_400, 0),
+                    gone: None,
+                    via: utilake_acquire::Via::Fetched {
+                        listed: None,
+                        served: None,
+                    },
                 },
-            )
-            .unwrap();
+            );
+            Archive::write(&path, &record).unwrap();
         };
         put("https://h/Reports/ARCHIVE/Dispatch_SCADA/PUBLIC_DISPATCHSCADA_20261018.zip");
         put(

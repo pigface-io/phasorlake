@@ -208,7 +208,7 @@ pub async fn refresh(
             Err(FetchError::HttpStatus { status: 404, .. }) => {
                 record.retain(|u, _| u == &folder || !u.starts_with(&folder));
                 mirror.folder_gone(&folder)?;
-                fetcher.archive().folder_gone(&folder, Stamp::now())?;
+                crate::net::archive::folder_gone(fetcher.archive(), &folder, Stamp::now())?;
                 mirror.note(&folder, &Event::now(&folder, Change::FolderGone))?;
                 out.removed.push(folder);
                 continue;
@@ -239,22 +239,14 @@ pub async fn refresh(
                 if r.kind == RemoteKind::Dir {
                     record.retain(|v, _| !v.starts_with(u.as_str()));
                     mirror.folder_gone(u)?;
-                    fetcher.archive().folder_gone(u, Stamp::now())?;
+                    crate::net::archive::folder_gone(fetcher.archive(), u, Stamp::now())?;
                     out.removed.push(u.clone());
                 } else {
-                    // Its held file keeps the bytes; its sidecar notes the
+                    // Its held file keeps the bytes; its record notes the
                     // address gone.
                     let held = fetcher.archive().lookup(u)?;
-                    held.map(|a| Archive::mark_gone(&a.path, [u.as_str()], Stamp::now()))
+                    held.map(|a| Archive::gone(&a.path, [u.as_str()], Stamp::now()))
                         .transpose()?;
-                    // A file, or a link out of the roots, no longer listed.
-                    let event = Event {
-                        size: r.size,
-                        listed_modified: Some(r.modified.clone()),
-                        listed_modified_at: r.modified_at,
-                        ..Event::now(u, Change::Dropped)
-                    };
-                    mirror.note(&folder, &event)?;
                 }
                 record.remove(u);
             }
@@ -427,14 +419,16 @@ mod tests {
             let p = archive.path_for(url);
             std::fs::create_dir_all(p.parent().unwrap()).unwrap();
             std::fs::write(&p, b"1").unwrap();
-            let mut sc: crate::net::Sidecar = serde_json::from_value(serde_json::json!({
-                "url": url, "size": 1, "sha256": "s", "fetched_at": "2026-10-05T00:00:00Z",
-            }))
-            .unwrap();
+            let mut sc = crate::net::archive::test_record(url, b"1");
             for a in also {
-                sc.add_also(a, crate::net::How::Same, Stamp::now());
+                sc.add(crate::net::Address {
+                    url: (*a).to_owned(),
+                    seen: Stamp::now(),
+                    gone: None,
+                    via: crate::net::Via::Same { listed: None },
+                });
             }
-            Archive::write_sidecar(&p, &sc).unwrap();
+            Archive::write(&p, &sc).unwrap();
             p
         };
         let dropped = hold("https://h/A/dropped.csv", &[]);
@@ -494,28 +488,24 @@ mod tests {
                 "https://h/A/y.csv"
             ]
         );
-        let journal = mirror.journal("https://h/A/").unwrap();
-        assert_eq!(journal.len(), 1);
-        assert_eq!(
-            (journal[0].url.as_str(), journal[0].event, journal[0].size),
-            ("https://h/A/dropped.csv", Change::Dropped, Some(6))
-        );
+        // A file no longer listed is in its record, not the journal.
+        assert!(mirror.journal("https://h/A/").unwrap().is_empty());
         let gone = mirror.journal("https://h/A/b/").unwrap();
         assert_eq!(gone[0].event, Change::FolderGone);
         // The held files stay; their sidecars note the addresses gone.
-        let sc = |p: &std::path::Path| Archive::read_sidecar(p).unwrap().unwrap();
-        assert!(sc(&dropped).gone_at.is_some());
-        assert!(sc(&o).gone_at.is_some());
+        let sc = |p: &std::path::Path| Archive::read(p).unwrap().unwrap();
+        assert!(sc(&dropped).origin().gone.is_some());
+        assert!(sc(&o).origin().gone.is_some());
         let zs = sc(&z);
-        assert!(zs.gone_at.is_some() && zs.also[0].gone_at.is_some());
-        assert!(zs.also[1].gone_at.is_none(), "not under the folder");
+        assert!(zs.origin().gone.is_some() && zs.addresses[1].gone.is_some());
+        assert!(zs.addresses[2].gone.is_none(), "not under the folder");
         assert!(z.exists() && dropped.exists());
         // Noted once: a second note changes nothing.
         let mut again = zs.clone();
-        assert!(!again.mark_gone("https://h/A/b/z.csv", Stamp::now()));
-        assert!(!again.mark_gone("https://h/A/b/z2.csv", Stamp::now()));
-        assert!(!Archive::mark_gone(&z, ["https://h/A/b/z.csv"], Stamp::now()).unwrap());
-        assert!(!Archive::mark_gone(&home.path().join("none"), ["x"], Stamp::now()).unwrap());
+        assert!(!again.gone("https://h/A/b/z.csv", Stamp::now()));
+        assert!(!again.gone("https://h/A/b/z2.csv", Stamp::now()));
+        assert!(!Archive::gone(&z, ["https://h/A/b/z.csv"], Stamp::now()).unwrap());
+        assert!(!Archive::gone(&home.path().join("none"), ["x"], Stamp::now()).unwrap());
         let kept = std::fs::read(mirror.page_path(&roots[0])).unwrap();
         assert_eq!(kept, second);
 

@@ -24,9 +24,9 @@ use std::path::{Path, PathBuf};
 use serde::{Deserialize, Serialize};
 
 use crate::crawl::Mirror;
-use crate::download::Held;
+use crate::download::HeldEntry;
 use crate::error::MirrorError;
-use crate::net::{Archive, How, Sidecar, is_apple_double};
+use crate::net::{Address, Archive, Provenance, Sha256, Via, is_apple_double};
 use crate::stamp::Stamp;
 
 /// What became of one archived file.
@@ -104,7 +104,7 @@ pub fn relayout(
     let (dirs, stale) = stale_dirs(archive);
     // Targets taken in this run, by sha256: what a dry run would have put
     // there, so it plans as a run would.
-    let mut placed: HashMap<PathBuf, String> = HashMap::new();
+    let mut placed: HashMap<PathBuf, Sha256> = HashMap::new();
     let mut versions: HashMap<String, Option<String>> = HashMap::new();
     for dir in &stale {
         let mut files: Vec<PathBuf> = std::fs::read_dir(dir)
@@ -115,7 +115,7 @@ pub fn relayout(
             if !is_data_file(&path) {
                 continue;
             }
-            let sidecar = match Archive::read_sidecar(&path) {
+            let sidecar = match Archive::read(&path) {
                 Ok(Some(s)) => s,
                 Ok(None) => continue,
                 Err(_) => {
@@ -133,7 +133,7 @@ pub fn relayout(
                 Action::Same => summary.same += 1,
             }
             if step.action != Action::Same {
-                placed.insert(step.to.clone(), sidecar.sha256.clone());
+                placed.insert(step.to.clone(), sidecar.content.sha256);
                 let plain = archive.path_for(&step.url);
                 let name = (step.to != plain)
                     .then(|| {
@@ -215,10 +215,10 @@ fn stale_dirs(archive: &Archive) -> (Vec<PathBuf>, Vec<PathBuf>) {
 fn plan(
     archive: &Archive,
     path: &Path,
-    sidecar: &Sidecar,
-    placed: &HashMap<PathBuf, String>,
+    sidecar: &Provenance,
+    placed: &HashMap<PathBuf, Sha256>,
 ) -> Option<Step> {
-    let base = archive.path_for(&sidecar.url);
+    let base = archive.path_for(sidecar.url());
     let name = path.file_name()?.to_string_lossy().into_owned();
     let base_name = base.file_name()?.to_string_lossy().into_owned();
     // A version keeps its `@{at}`.
@@ -230,9 +230,9 @@ fn plan(
         return None;
     }
     let at = sidecar
-        .listed_modified_at
-        .or_else(|| Stamp::parse(&sidecar.fetched_at).ok())
-        .unwrap_or_else(Stamp::now);
+        .listed(sidecar.url())
+        .and_then(|l| l.at)
+        .unwrap_or_else(|| sidecar.fetched_at());
     let candidates = [
         target.clone(),
         Archive::version_path(&base, at),
@@ -240,28 +240,25 @@ fn plan(
     ];
     let mut action = Action::Move;
     for to in candidates {
-        let held = placed.get(&to).cloned().or_else(|| {
-            to.exists().then(|| {
-                Archive::read_sidecar(&to)
-                    .ok()
-                    .flatten()
-                    .map_or_else(String::new, |s| s.sha256)
-            })
+        // A file there whose record does not read holds other bytes.
+        let held = placed.get(&to).copied().map(Some).or_else(|| {
+            to.exists()
+                .then(|| Archive::read(&to).ok().flatten().map(|s| s.content.sha256))
         });
         match held {
             None => {
                 return Some(Step {
                     at: Stamp::now(),
-                    url: sidecar.url.clone(),
+                    url: sidecar.url().to_owned(),
                     from: path.to_path_buf(),
                     to,
                     action,
                 });
             }
-            Some(sha) if sha == sidecar.sha256 => {
+            Some(Some(sha)) if sha == sidecar.content.sha256 => {
                 return Some(Step {
                     at: Stamp::now(),
-                    url: sidecar.url.clone(),
+                    url: sidecar.url().to_owned(),
                     from: path.to_path_buf(),
                     to,
                     action: Action::Same,
@@ -288,45 +285,59 @@ fn log(mirror: &Mirror, step: &Step) -> Result<(), MirrorError> {
     crate::net::archive::to_disk(&f).map_err(MirrorError::io(&path))
 }
 
-/// Takes one step.
-fn take(step: &Step, sidecar: Sidecar) -> Result<(), MirrorError> {
-    let (from_sc, to_sc) = (
-        Archive::sidecar_path(&step.from),
-        Archive::sidecar_path(&step.to),
-    );
+/// The record beside the file at `path`, whichever name it has.
+fn record_at(path: &Path) -> Option<PathBuf> {
+    let mut old = path.as_os_str().to_owned();
+    old.push(utilake_provenance::archive::OLD_RECORD);
+    [Archive::record_path(path), PathBuf::from(old)]
+        .into_iter()
+        .find(|r| r.is_file())
+}
+
+/// Removes every record beside `path`.
+fn drop_records(path: &Path) -> Result<(), MirrorError> {
+    while let Some(r) = record_at(path) {
+        std::fs::remove_file(&r).map_err(MirrorError::io(&r))?;
+    }
+    Ok(())
+}
+
+/// Takes one step. A moved file's record is written again at its new
+/// path in the current format, then the old one removed.
+fn take(step: &Step, sidecar: Provenance) -> Result<(), MirrorError> {
     match step.action {
         Action::Move | Action::Version => {
             let dir = step.to.parent().expect("an archived path is in a folder");
             std::fs::create_dir_all(dir).map_err(MirrorError::io(dir))?;
             std::fs::rename(&step.from, &step.to).map_err(MirrorError::io(&step.to))?;
-            std::fs::rename(&from_sc, &to_sc).map_err(MirrorError::io(&to_sc))?;
+            Archive::write(&step.to, &sidecar)?;
+            drop_records(&step.from)?;
         }
         Action::Same => {
-            let kept = Archive::read_sidecar(&step.to)?.map(|mut kept| {
-                kept.add_listed(
-                    &sidecar.url,
-                    How::Same,
-                    Stamp::now(),
-                    sidecar.listed_modified_at,
-                );
-                for a in sidecar.also {
-                    if !kept.names(&a.url) {
-                        kept.also.push(a);
-                    }
+            if let Some(mut kept) = Archive::read(&step.to)? {
+                let url = sidecar.url().to_owned();
+                kept.add(Address {
+                    via: Via::Same {
+                        listed: sidecar.listed(&url),
+                    },
+                    url,
+                    seen: Stamp::now(),
+                    gone: None,
+                });
+                for a in sidecar.addresses.into_iter().skip(1) {
+                    kept.add(a);
                 }
-                kept
-            });
-            kept.map(|k| Archive::write_sidecar(&step.to, &k))
-                .transpose()?;
+                Archive::write(&step.to, &kept)?;
+            }
             std::fs::remove_file(&step.from).map_err(MirrorError::io(&step.from))?;
-            std::fs::remove_file(&from_sc).map_err(MirrorError::io(&from_sc))?;
+            drop_records(&step.from)?;
         }
     }
     Ok(())
 }
 
 /// Finishes the step a run before logged last, when it was cut off
-/// between moving a file and its sidecar.
+/// between moving a file and its record.
 fn finish_last(mirror: &Mirror) -> Result<(), MirrorError> {
     let path = mirror.relayout_path();
     let Ok(text) = std::fs::read_to_string(&path) else {
@@ -339,17 +350,19 @@ fn finish_last(mirror: &Mirror) -> Result<(), MirrorError> {
     else {
         return Ok(());
     };
-    let from_sc = Archive::sidecar_path(&step.from);
-    if step.from.exists() || !from_sc.exists() {
+    let Some(from_record) = record_at(&step.from) else {
+        return Ok(());
+    };
+    if step.from.exists() {
         return Ok(());
     }
-    match step.action {
-        Action::Same => std::fs::remove_file(&from_sc).map_err(MirrorError::io(&from_sc)),
-        Action::Move | Action::Version => {
-            let to_sc = Archive::sidecar_path(&step.to);
-            std::fs::rename(&from_sc, &to_sc).map_err(MirrorError::io(&to_sc))
-        }
+    if matches!(step.action, Action::Move | Action::Version)
+        && let Some(p) = Archive::read(&step.from)?
+    {
+        Archive::write(&step.to, &p)?;
     }
+    std::fs::remove_file(&from_record).map_err(MirrorError::io(&from_record))?;
+    drop_records(&step.from)
 }
 
 /// Merges each journal kept under a listing into its folder's journal,
@@ -424,7 +437,7 @@ fn rewrite_held(
     let mut n = 0;
     let mut out = String::with_capacity(text.len());
     for line in text.lines() {
-        match serde_json::from_str::<Held>(line) {
+        match serde_json::from_str::<HeldEntry>(line) {
             Ok(mut h) if versions.get(&h.url).is_some_and(|v| *v != h.file) => {
                 h.file.clone_from(&versions[&h.url]);
                 out.push_str(&serde_json::to_string(&h).expect("a Held line serialises"));
@@ -443,6 +456,7 @@ fn rewrite_held(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::net::Address;
     use crate::net::archive::sha256_hex;
 
     const CUR: &str = "https://www.nemweb.com.au/Reports/CURRENT/GSH/B/";
@@ -456,12 +470,12 @@ mod tests {
         }
         std::fs::create_dir_all(p.parent().unwrap()).unwrap();
         std::fs::write(&p, bytes).unwrap();
-        let sc: Sidecar = serde_json::from_value(serde_json::json!({
+        // As the mirror wrote records before the relayout: format 1.
+        let v1 = serde_json::json!({
             "url": url, "size": bytes.len(), "sha256": sha256_hex(bytes),
             "fetched_at": "2026-10-05T00:00:00Z",
-        }))
-        .unwrap();
-        Archive::write_sidecar(&p, &sc).unwrap();
+        });
+        std::fs::write(format!("{}.json", p.display()), v1.to_string()).unwrap();
         p
     }
 
@@ -473,15 +487,24 @@ mod tests {
         old(&archive, &format!("{CUR}a.csv"), None, b"a");
         old(&archive, &format!("{ARC}s.csv"), None, b"same");
         let s_cur = old(&archive, &format!("{CUR}s.csv"), None, b"same");
-        Archive::add_also(&s_cur, "https://h/elsewhere/s.csv", How::Same, Stamp::now()).unwrap();
-        Archive::add_also(&s_cur, &format!("{ARC}s.csv"), How::Same, Stamp::now())
-            .unwrap_or_default();
+        let same = |url: &str| Address {
+            url: url.to_owned(),
+            seen: Stamp::now(),
+            gone: None,
+            via: Via::Same { listed: None },
+        };
+        crate::net::archive::add_address(&s_cur, same("https://h/elsewhere/s.csv")).unwrap();
+        crate::net::archive::add_address(&s_cur, same(&format!("{ARC}s.csv"))).unwrap();
         // A file whose URL is kept where it already is, under a listing.
         let odd = format!("{CUR}z.csv").replace("/CURRENT/", "/CURRENT/CURRENT/");
         let in_place = old(&archive, &odd, None, b"z");
         let z = archive.url_path(&format!("{CUR}z.csv"));
         std::fs::rename(&in_place, &z).unwrap();
-        std::fs::rename(Archive::sidecar_path(&in_place), Archive::sidecar_path(&z)).unwrap();
+        std::fs::rename(
+            format!("{}.json", in_place.display()),
+            format!("{}.json", z.display()),
+        )
+        .unwrap();
         old(&archive, &format!("{ARC}m.zip"), None, b"final");
         old(&archive, &format!("{CUR}m.zip"), None, b"partial");
         old(
@@ -498,7 +521,7 @@ mod tests {
         );
         let bad = archive.url_path(&format!("{CUR}bad.csv"));
         std::fs::write(&bad, b"b").unwrap();
-        std::fs::write(Archive::sidecar_path(&bad), b"{").unwrap();
+        std::fs::write(Archive::record_path(&bad), b"{").unwrap();
         let cur_dir = archive.url_path(CUR);
         std::fs::write(cur_dir.join("._a.csv"), b"apple").unwrap();
         std::fs::write(cur_dir.join("nosidecar.csv"), b"n").unwrap();
@@ -551,10 +574,8 @@ mod tests {
                 .to_string_lossy()
                 .contains("m.zip@20261005T000000")
         );
-        let same = Archive::read_sidecar(&folder.join("s.csv"))
-            .unwrap()
-            .unwrap();
-        assert_eq!(same.url, format!("{ARC}s.csv"));
+        let same = Archive::read(&folder.join("s.csv")).unwrap().unwrap();
+        assert_eq!(same.url(), format!("{ARC}s.csv"));
         assert!(same.names(&format!("{CUR}s.csv")));
         assert!(
             same.names("https://h/elsewhere/s.csv"),
@@ -576,7 +597,7 @@ mod tests {
         assert!(!journals.url_path(CUR).join("changes.ndjson").exists());
         // The held line of the version names it; the rest as they were.
         let lines = std::fs::read_to_string(mirror.held_path()).unwrap();
-        let first: Held = serde_json::from_str(lines.lines().next().unwrap()).unwrap();
+        let first: HeldEntry = serde_json::from_str(lines.lines().next().unwrap()).unwrap();
         assert_eq!(
             first.file.as_deref(),
             version.path.file_name().unwrap().to_str()
@@ -623,7 +644,7 @@ mod tests {
         };
         log(&mirror, &step(Action::Move, &to)).unwrap();
         relayout(&mirror, &archive, false, |_| {}).unwrap();
-        assert!(Archive::sidecar_path(&to).exists() && !Archive::sidecar_path(&from).exists());
+        assert!(Archive::record_path(&to).exists() && !Archive::record_path(&from).exists());
         // Finished already: nothing to do.
         finish_last(&mirror).unwrap();
         // A drop cut off after the file, before its sidecar.
@@ -631,7 +652,17 @@ mod tests {
         std::fs::remove_file(&from2).unwrap();
         log(&mirror, &step(Action::Same, &to)).unwrap();
         finish_last(&mirror).unwrap();
-        assert!(!Archive::sidecar_path(&from2).exists());
+        assert!(!Archive::record_path(&from2).exists());
+        // A step whose file is still where it was: nothing was taken yet.
+        let from3 = old(&archive, &format!("{CUR}a.csv"), None, b"a");
+        finish_last(&mirror).unwrap();
+        assert!(from3.exists());
+        // The same bytes, with no record left at the target: the file is
+        // dropped all the same.
+        std::fs::remove_file(Archive::record_path(&to)).unwrap();
+        let sc = Archive::read(&from3).unwrap().unwrap();
+        take(&step(Action::Same, &to), sc).unwrap();
+        assert!(!from3.exists());
     }
 
     #[test]
@@ -639,14 +670,12 @@ mod tests {
         let home = tempfile::tempdir().unwrap();
         let archive = Archive::new(home.path().join("archive"));
         let from = old(&archive, &format!("{CUR}t.csv"), None, b"mine");
-        let sc = Archive::read_sidecar(&from).unwrap().unwrap();
-        let base = archive.path_for(&sc.url);
+        let sc = Archive::read(&from).unwrap().unwrap();
+        let base = archive.path_for(sc.url());
         let mut placed = HashMap::new();
-        placed.insert(base.clone(), "other".to_owned());
-        placed.insert(
-            Archive::version_path(&base, Stamp::parse(&sc.fetched_at).unwrap()),
-            "other".to_owned(),
-        );
+        let other = crate::net::Sha256::of(b"other");
+        placed.insert(base.clone(), other);
+        placed.insert(Archive::version_path(&base, sc.fetched_at()), other);
         // The third, at the time now, taken too: a file without a sidecar.
         let now = Archive::version_path(&base, Stamp::now());
         std::fs::create_dir_all(now.parent().unwrap()).unwrap();

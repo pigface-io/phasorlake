@@ -1,12 +1,12 @@
 //! A CRC-32 for every downloaded file: files downloaded before downloads
 //! recorded one are read once, their sha256 checked against their sidecar
-//! on the way, and the CRC-32 recorded in the sidecar.
+//! on the way, and the CRC-32 recorded in the record.
 
 use serde::Serialize;
 
 use crate::diag::{Diagnose as _, Diagnostic};
 use crate::error::MirrorError;
-use crate::net::{Archive, FetchError, hashes_of};
+use crate::net::{Archive, Content, FetchError};
 
 /// One file read.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -43,10 +43,10 @@ pub fn hash(
     all: bool,
     mut on_file: impl FnMut(&FileHashed<'_>),
 ) -> Result<HashSummary, MirrorError> {
-    let entries = archive.entries_under(None);
+    let entries = crate::net::archive::entries_under(archive, None);
     let todo: Vec<_> = entries
         .iter()
-        .filter(|a| all || a.sidecar.crc32.is_none())
+        .filter(|a| all || a.provenance.content.crc32.is_none())
         .collect();
     let mut summary = HashSummary {
         files: entries.len(),
@@ -54,12 +54,15 @@ pub fn hash(
         ..HashSummary::default()
     };
     for (i, a) in todo.iter().enumerate() {
-        let intact = match hashes_of(&a.path) {
-            Ok(h) if h.sha256 == a.sidecar.sha256 && h.size == a.sidecar.size => {
-                if a.sidecar.crc32 != Some(h.crc32) {
-                    let mut sidecar = a.sidecar.clone();
-                    sidecar.crc32 = Some(h.crc32);
-                    Archive::write_sidecar(&a.path, &sidecar)?;
+        let intact = match Content::of_file(&a.path) {
+            Ok(h)
+                if h.sha256 == a.provenance.content.sha256
+                    && h.size == a.provenance.content.size =>
+            {
+                if a.provenance.content.crc32 != h.crc32 {
+                    let mut p = a.provenance.clone();
+                    p.content.crc32 = h.crc32;
+                    Archive::write(&a.path, &p)?;
                     summary.recorded += 1;
                 }
                 true
@@ -68,8 +71,8 @@ pub fn hash(
                 summary.failed.push(
                     FetchError::Sha256Mismatch {
                         path: a.path.display().to_string(),
-                        expected: a.sidecar.sha256.clone(),
-                        observed: h.sha256,
+                        expected: a.provenance.content.sha256.hex(),
+                        observed: h.sha256.hex(),
                     }
                     .diagnostic(),
                 );
@@ -83,7 +86,7 @@ pub fn hash(
             }
         };
         on_file(&FileHashed {
-            url: &a.sidecar.url,
+            url: a.provenance.url(),
             intact,
             done: i + 1,
             total: todo.len(),
@@ -95,8 +98,6 @@ pub fn hash(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::net::Sidecar;
-    use crate::net::archive::sha256_hex;
 
     fn archived(
         archive: &Archive,
@@ -107,26 +108,9 @@ mod tests {
         let p = archive.path_for(url);
         std::fs::create_dir_all(p.parent().unwrap()).unwrap();
         std::fs::write(&p, bytes).unwrap();
-        Archive::write_sidecar(
-            &p,
-            &Sidecar {
-                url: url.into(),
-                size: bytes.len() as u64,
-                sha256: sha256_hex(bytes),
-                crc32,
-                fetched_at: "t".into(),
-                etag: None,
-                last_modified: None,
-                last_modified_at: None,
-                listed_size: None,
-                listed_modified: None,
-                listed_modified_at: None,
-                tool: "x".into(),
-                also: Vec::new(),
-                gone_at: None,
-            },
-        )
-        .unwrap();
+        let mut r = crate::net::archive::test_record(url, bytes);
+        r.content.crc32 = crc32;
+        Archive::write(&p, &r).unwrap();
         p
     }
 
@@ -152,9 +136,9 @@ mod tests {
             seen,
             [("https://h/a".into(), true), ("https://h/c".into(), false)]
         );
-        let sc = Archive::read_sidecar(&a).unwrap().unwrap();
-        assert_eq!(sc.crc32, Some(crc32fast::hash(b"aaa")));
-        assert!(Archive::read_sidecar(&c).unwrap().unwrap().crc32.is_none());
+        let sc = Archive::read(&a).unwrap().unwrap();
+        assert_eq!(sc.content.crc32, Some(crc32fast::hash(b"aaa")));
+        assert!(Archive::read(&c).unwrap().unwrap().content.crc32.is_none());
 
         // Everything, again: what holds is not written twice.
         let s = hash(&archive, true, |_| {}).unwrap();

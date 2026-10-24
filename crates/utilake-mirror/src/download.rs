@@ -173,7 +173,7 @@ pub async fn download(
                     mirror.note(folder, event)?;
                 }
                 if let Some(held) = &local.note {
-                    let line = serde_json::to_string(held).expect("a Held always serialises");
+                    let line = serde_json::to_string(held).expect("a HeldEntry always serialises");
                     note.write_all(format!("{line}\n").as_bytes())
                         .map_err(MirrorError::io(&held_path))?;
                 }
@@ -195,7 +195,7 @@ pub async fn download(
 /// One file a download pass found in the archive, or put there: the
 /// version nemweb listed when it did.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct Held {
+pub struct HeldEntry {
     /// The file's URL.
     pub url: String,
     /// Its bytes.
@@ -214,7 +214,7 @@ pub struct Held {
     pub file: Option<String>,
 }
 
-impl Held {
+impl HeldEntry {
     /// Where its bytes are.
     pub fn path(&self, archive: &Archive) -> PathBuf {
         let path = archive.path_for(&self.url);
@@ -263,7 +263,7 @@ impl Mirror {
     /// there last. A line that does not read (the last one, cut short when
     /// a pass was killed) is passed over: that file's sidecar is read
     /// instead.
-    pub fn held(&self) -> Result<HashMap<String, Held>, MirrorError> {
+    pub fn held(&self) -> Result<HashMap<String, HeldEntry>, MirrorError> {
         let path = self.held_path();
         let text = match std::fs::read_to_string(&path) {
             Ok(t) => t,
@@ -272,7 +272,7 @@ impl Mirror {
         };
         Ok(text
             .lines()
-            .filter_map(|l| serde_json::from_str::<Held>(l).ok())
+            .filter_map(|l| serde_json::from_str::<HeldEntry>(l).ok())
             .map(|h| (h.url.clone(), h))
             .collect())
     }
@@ -283,35 +283,23 @@ struct Got {
     cached: bool,
     size: u64,
     /// The line to add to `held.ndjson`, when it does not say so already.
-    note: Option<Held>,
+    note: Option<HeldEntry>,
     /// The line to add to its folder's journal, when it was downloaded.
     event: Option<Event>,
 }
 
-/// The journal's line of a file downloaded: new, a later version, or the
-/// same as a version archived already; none when nothing was asked of
-/// nemweb.
-fn event_of(
-    remote: &RemoteFile,
-    l: &LocalFile,
-    first: bool,
-    file: Option<String>,
-) -> Option<Event> {
-    let (event, sha256, size, last_modified) = match &l.same_as {
-        Some(s) if s.repacked => (Change::Repacked, &s.sha256, s.size, &s.last_modified),
-        Some(s) => (Change::Same, &s.sha256, s.size, &s.last_modified),
-        None if l.cached => return None,
-        None if first => (Change::New, &l.sha256, l.size, &l.last_modified),
-        None => (Change::Version, &l.sha256, l.size, &l.last_modified),
+/// The journal's line of a file downloaded: bytes found the same as a
+/// version archived already, or a zip packed again and not kept. A
+/// download itself is in its record, not the journal.
+fn event_of(remote: &RemoteFile, l: &LocalFile, file: Option<String>) -> Option<Event> {
+    let (event, sha256) = match &l.same_as {
+        Some(s) if s.repacked => (Change::Repacked, Some(s.sha256.clone())),
+        Some(_) => (Change::Same, None),
+        None => return None,
     };
     Some(Event {
         file,
-        sha256: Some(sha256.clone()),
-        size: Some(size),
-        listed_modified: remote.modified.clone(),
-        listed_modified_at: remote.modified_at,
-        last_modified_at: last_modified.as_deref().and_then(Stamp::from_http_date),
-        last_modified: last_modified.clone(),
+        sha256,
         ..Event::now(remote.url.as_str(), event)
     })
 }
@@ -336,7 +324,7 @@ struct Pass<'a> {
     fetcher: &'a Fetchers,
     mirror: &'a Mirror,
     paired: &'a HashMap<String, Pair>,
-    held: &'a HashMap<String, Held>,
+    held: &'a HashMap<String, HeldEntry>,
     listings: &'a std::sync::OnceLock<HashMap<String, Peeked>>,
     delete_duplicates: bool,
 }
@@ -366,10 +354,11 @@ impl<'a> Pass<'a> {
         {
             // A line written before lines kept the listed time is
             // written again with it.
-            let note = (h.modified_at.is_none() && remote.modified_at.is_some()).then(|| Held {
-                modified_at: remote.modified_at,
-                ..h.clone()
-            });
+            let note =
+                (h.modified_at.is_none() && remote.modified_at.is_some()).then(|| HeldEntry {
+                    modified_at: remote.modified_at,
+                    ..h.clone()
+                });
             let got = Got {
                 cached: true,
                 size: h.size,
@@ -381,11 +370,11 @@ impl<'a> Pass<'a> {
         let got = self.fetcher.fetch(remote).await.map(|l| {
             let base = archive.path_for(url);
             let name = l.path.file_name().map(|n| n.to_string_lossy().into_owned());
-            let event = event_of(remote, &l, l.path == base, name.clone());
+            let event = event_of(remote, &l, name.clone());
             Got {
                 cached: l.cached,
                 size: l.size,
-                note: Some(Held {
+                note: Some(HeldEntry {
                     url: url.to_owned(),
                     size: l.size,
                     listed_size: remote.size.filter(|&s| s != l.size),
@@ -518,15 +507,10 @@ mod tests {
         assert_eq!(seen[0], ("https://h/A/x.zip".to_owned(), false, 3));
         assert_eq!(std::fs::read(archive.join("h/A/y.zip")).unwrap(), b"yyyy");
         // The sidecar says what the listing said of it too.
-        let sc = Archive::read_sidecar(&archive.join("h/A/y.zip"))
-            .unwrap()
-            .unwrap();
+        let sc = Archive::read(&archive.join("h/A/y.zip")).unwrap().unwrap();
+        assert_eq!(sc.listed(sc.url()).and_then(|l| l.size), Some(4));
         assert_eq!(
-            (sc.listed_size, sc.listed_modified.as_deref()),
-            (Some(4), Some("Monday, October 12, 2026 10:45 AM"))
-        );
-        assert_eq!(
-            sc.listed_modified_at.unwrap().to_string(),
+            sc.listed(sc.url()).and_then(|l| l.at).unwrap().to_string(),
             "2026-10-12T10:45:00+10:00"
         );
 
@@ -609,10 +593,10 @@ mod tests {
         );
 
         // A sidecar that does not read would stop a pass that read it.
-        std::fs::write(archive.join("h/A/x.zip.json"), "{").unwrap();
+        std::fs::write(archive.join("h/A/x.zip.provenance.json"), "{").unwrap();
         // A file whose size no longer matches is fetched again.
         std::fs::write(archive.join("h/A/y.zip"), b"y").unwrap();
-        std::fs::remove_file(archive.join("h/A/y.zip.json")).unwrap();
+        std::fs::remove_file(archive.join("h/A/y.zip.provenance.json")).unwrap();
         // A line cut short by a kill is passed over.
         let mut text = std::fs::read_to_string(mirror.held_path()).unwrap();
         text.push_str("{\"url\":\"https://h/A/");
@@ -685,27 +669,21 @@ mod tests {
             held["https://h/A/x.zip"].path(&a),
             archive.join("h/A/x.zip")
         );
-        // The folder's journal: both new, then x the same, y a version.
+        // The folder's journal: only x, the same bytes again; the downloads
+        // are in their records.
         let journal = mirror.journal("https://h/A/").unwrap();
         let events: Vec<(&str, Change)> = journal
             .iter()
             .map(|e| (e.url.rsplit('/').next().unwrap(), e.event))
             .collect();
-        let mut first = events[..2].to_vec();
-        first.sort_unstable_by_key(|e| e.0);
-        assert_eq!(first, [("x.zip", Change::New), ("y.zip", Change::New)]);
-        let mut later = events[2..].to_vec();
-        later.sort_unstable_by_key(|e| e.0);
-        assert_eq!(later, [("x.zip", Change::Same), ("y.zip", Change::Version)]);
-        let y_later = journal.iter().find(|e| e.event == Change::Version).unwrap();
-        assert_eq!(y_later.file.as_deref(), Some("y.zip@20261013T115300+1000"));
-        assert_eq!(y_later.size, Some(5));
+        assert_eq!(events, [("x.zip", Change::Same)]);
+        assert_eq!(journal[0].file.as_deref(), Some("x.zip"));
         // From then on, each is the version listed, with no request.
         let s = download(&f, &mirror, &options, ignore).await.unwrap();
         assert_eq!((s.cached, s.downloaded), (2, 0));
         assert_eq!(t.request_count(), requests + 3);
         // A line kept before the file was rewritten is not the version listed.
-        let h = Held {
+        let h = HeldEntry {
             modified_at: None,
             ..held["https://h/A/x.zip"].clone()
         };
@@ -953,24 +931,9 @@ mod tests {
         let p = Archive::new(&archive).path_for("https://h/A/P.zip");
         std::fs::create_dir_all(p.parent().unwrap()).unwrap();
         std::fs::write(&p, b"wholezip!").unwrap();
-        Archive::write_sidecar(
+        Archive::write(
             &p,
-            &crate::net::Sidecar {
-                url: "https://h/A/P.zip".into(),
-                size: 9,
-                sha256: "x".into(),
-                crc32: None,
-                fetched_at: "t".into(),
-                etag: None,
-                last_modified: None,
-                last_modified_at: None,
-                listed_size: None,
-                listed_modified: None,
-                listed_modified_at: None,
-                tool: "x".into(),
-                also: Vec::new(),
-                gone_at: None,
-            },
+            &crate::net::archive::test_record("https://h/A/P.zip", b"wholezip!"),
         )
         .unwrap();
 

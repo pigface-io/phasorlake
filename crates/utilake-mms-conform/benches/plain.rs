@@ -123,6 +123,7 @@ fn run(d: &dyn Decoder, url: &str, entry: &str, bytes: &[u8]) -> u64 {
         etag: None,
         last_modified: None,
         last_modified_at: None,
+        fetched_at: None,
         previous: None,
     };
     let options = DecodeOptions {

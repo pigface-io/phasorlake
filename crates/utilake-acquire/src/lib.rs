@@ -17,7 +17,7 @@ pub mod listing;
 pub mod source;
 pub mod transport;
 
-pub use archive::{Archive, Archived, Extracted, Sidecar, sha256_file};
+pub use archive::{Address, Archive, Content, Held, Provenance, Served, Via, sha256_file};
 pub use error::FetchError;
 pub use fetcher::{Fetcher, FetcherConfig, LocalFile, Picked, RangeRead};
 pub use source::{Entry, Granularity, Pick, Picks, Query, RemoteFile, Source};

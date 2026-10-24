@@ -486,24 +486,27 @@ async fn files(ctx: &Context, id: Option<TableId>) -> Result<i32> {
 /// Every archived download.
 fn archive(ctx: &Context) -> Result<i32> {
     let store = ctx.archive();
-    let entries = store.entries_under(None);
+    let entries = utilake_acquire::archive::entries_under(&store, None);
     if ctx.json {
         for e in &entries {
-            render::json_line(&serde_json::json!({ "path": e.path, "record": e.sidecar }));
+            render::json_line(&serde_json::json!({ "path": e.path, "record": e.provenance }));
         }
     } else {
         let rows: Vec<Vec<String>> = entries
             .iter()
             .map(|e| {
                 vec![
-                    format!("{:.1} MB", e.sidecar.size as f64 / 1e6),
-                    e.sidecar.fetched_at.clone(),
-                    e.sidecar.last_modified.clone().unwrap_or_default(),
-                    e.sidecar
-                        .last_modified_at
+                    format!("{:.1} MB", e.provenance.content.size as f64 / 1e6),
+                    e.provenance.fetched_at().rfc3339(),
+                    e.provenance
+                        .modified()
+                        .map(utilake_core::timetext::Stamp::http_date)
+                        .unwrap_or_default(),
+                    e.provenance
+                        .modified()
                         .map(|s| s.rfc3339())
                         .unwrap_or_default(),
-                    e.sidecar.url.clone(),
+                    e.provenance.url().to_owned(),
                 ]
             })
             .collect();
@@ -517,7 +520,11 @@ fn archive(ctx: &Context) -> Result<i32> {
         println!(
             "{} file(s), {:.1} MB, under {}",
             entries.len(),
-            entries.iter().map(|e| e.sidecar.size).sum::<u64>() as f64 / 1e6,
+            entries
+                .iter()
+                .map(|e| e.provenance.content.size)
+                .sum::<u64>() as f64
+                / 1e6,
             store.root().display()
         );
     }

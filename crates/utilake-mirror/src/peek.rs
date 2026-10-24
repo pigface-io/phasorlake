@@ -224,7 +224,7 @@ pub async fn peek(
     };
     for (done, remote) in zips.iter().enumerate() {
         let url = &remote.url;
-        // Archived, before the pass or by the download beside it: the
+        // Held, before the pass or by the download beside it: the
         // archive has the zip whole. Asked here, not up front, since on
         // exFAT each name not there costs a scan of its folder.
         if fetcher.archive().path_for(url).is_file() {
@@ -294,7 +294,7 @@ pub fn keep_listing(
         return Ok(());
     }
     let listed = mirror.record()?.into_iter().find(|r| r.url == url);
-    let sidecar = crate::net::Archive::read_sidecar(path)?;
+    let sidecar = crate::net::Archive::read(path)?;
     let file = std::fs::File::open(path).map_err(MirrorError::io(path))?;
     let len = file.metadata().map_err(MirrorError::io(path))?.len();
     let read = futures::executor::block_on(zipdir::read_directory_in(
@@ -313,9 +313,12 @@ pub fn keep_listing(
         listed_modified_at: listed.as_ref().and_then(|r| r.modified_at),
         listed_modified: listed.map(|r| r.modified),
         size: Some(len),
-        etag: sidecar.as_ref().and_then(|s| s.etag.clone()),
-        last_modified: sidecar.as_ref().and_then(|s| s.last_modified.clone()),
-        last_modified_at: sidecar.and_then(|s| s.last_modified_at),
+        etag: sidecar.as_ref().and_then(|s| s.etag().map(str::to_owned)),
+        last_modified: sidecar
+            .as_ref()
+            .and_then(crate::net::Provenance::modified)
+            .map(Stamp::http_date),
+        last_modified_at: sidecar.and_then(|s| s.modified()),
         entries,
         error,
     };

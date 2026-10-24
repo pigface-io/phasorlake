@@ -17,8 +17,8 @@ use std::sync::Arc;
 use async_trait::async_trait;
 use url::Url;
 use utilake_acquire::{
-    Archive, Archived, Entry, FetchError, Fetcher, LocalFile, Pick, Picks, Query, RemoteFile,
-    Source, listing,
+    Archive, Entry, FetchError, Fetcher, Held, LocalFile, Pick, Picks, Query, RemoteFile, Source,
+    listing,
 };
 use utilake_core::calendar::local_year_month;
 use utilake_core::timetext::{Stamp, parse_iis_listing};
@@ -160,13 +160,14 @@ impl FeedFolders {
 
     /// The version stamp a kept version carries in its file name
     /// (`{name}@{stamp}`), else the time it was listed with, else none.
-    fn version_tag(a: &Archived) -> Option<String> {
+    fn version_tag(a: &Held) -> Option<String> {
         let name = a.path.file_name()?.to_str()?;
         if let Some((_, stamp)) = name.rsplit_once('@') {
             return Some(stamp.to_owned());
         }
-        a.sidecar
-            .listed_modified_at
+        let p = &a.provenance;
+        p.listed(p.url())?
+            .at
             .map(|s| s.rfc3339().replace([':', '-'], ""))
     }
 }
@@ -240,9 +241,12 @@ impl Source for FeedFolders {
         let mut out = Vec::new();
         for root in self.roots()? {
             let dir = archive.path_for(root.as_str());
-            let mut by_url: BTreeMap<String, Vec<Archived>> = BTreeMap::new();
-            for a in archive.entries_under(Some(&dir)) {
-                by_url.entry(a.sidecar.url.clone()).or_default().push(a);
+            let mut by_url: BTreeMap<String, Vec<Held>> = BTreeMap::new();
+            for a in utilake_acquire::archive::entries_under(archive, Some(&dir)) {
+                by_url
+                    .entry(a.provenance.url().to_owned())
+                    .or_default()
+                    .push(a);
             }
             for (url, mut versions) in by_url {
                 let Ok(base) = Url::parse(&url) else {
@@ -252,9 +256,10 @@ impl Source for FeedFolders {
                     continue;
                 }
                 versions.sort_by(|a, b| {
-                    let key = |x: &Archived| {
+                    let key = |x: &Held| {
+                        let p = &x.provenance;
                         (
-                            x.sidecar.listed_modified_at.map(|s| s.secs_utc),
+                            p.listed(p.url()).and_then(|l| l.at).map(|s| s.secs_utc),
                             x.path.clone(),
                         )
                     };
@@ -267,24 +272,22 @@ impl Source for FeedFolders {
                         let tag = Self::version_tag(&a).unwrap_or_else(|| i.to_string());
                         url.set_fragment(Some(&tag));
                     }
-                    let remote = self.remote(
-                        url,
-                        Some(a.sidecar.size),
-                        a.sidecar.listed_modified.clone(),
-                        a.sidecar.listed_modified_at,
-                    );
+                    let p = &a.provenance;
+                    let listed_at = p.listed(p.url()).and_then(|l| l.at);
+                    let remote = self.remote(url, Some(p.content.size), None, listed_at);
                     let path = a.path.clone();
                     if self.wanted(&remote, query) {
                         out.push(LocalFile {
                             remote,
-                            path: a.path,
-                            sha256: a.sidecar.sha256,
-                            size: a.sidecar.size,
+                            sha256: p.content.sha256.hex(),
+                            size: p.content.size,
                             cached: true,
-                            etag: a.sidecar.etag,
-                            last_modified: a.sidecar.last_modified,
-                            last_modified_at: a.sidecar.last_modified_at,
+                            etag: p.etag().map(str::to_owned),
+                            last_modified: p.modified().map(Stamp::http_date),
+                            last_modified_at: p.modified(),
+                            fetched_at: Some(p.fetched_at()),
                             previous: previous.clone(),
+                            path: a.path,
                         });
                     }
                     previous = Some(path);
@@ -360,8 +363,8 @@ mod tests {
     use std::sync::Arc;
     use std::time::Duration;
 
+    use utilake_acquire::FetcherConfig;
     use utilake_acquire::transport::{Canned, StaticTransport};
-    use utilake_acquire::{FetcherConfig, Sidecar};
     use utilake_core::TimeRange;
     use utilake_plain_decode::feeds::feed;
 
@@ -608,25 +611,16 @@ mod tests {
         };
         std::fs::create_dir_all(path.parent().unwrap()).unwrap();
         std::fs::write(&path, bytes).unwrap();
-        let listed_modified_at = listed.and_then(|l| parse_iis_listing(l, 36_000));
-        Archive::write_sidecar(
-            &path,
-            &Sidecar {
-                url: url.to_owned(),
-                size: bytes.len() as u64,
-                sha256: utilake_acquire::archive::sha256_hex(bytes),
-                fetched_at: "2026-10-21T12:00:00Z".into(),
-                etag: None,
-                last_modified: None,
-                last_modified_at: None,
-                listed_modified: listed.map(str::to_owned),
-                listed_modified_at,
-                tool: "test".into(),
-                extracted_from: None,
-                also: Vec::new(),
-            },
-        )
-        .unwrap();
+        let v1 = serde_json::json!({
+            "url": url,
+            "size": bytes.len(),
+            "sha256": utilake_acquire::archive::sha256_hex(bytes),
+            "fetched_at": "2026-10-21T12:00:00Z",
+            "listed_modified": listed,
+            "tool": "test",
+        });
+        let record = utilake_acquire::Provenance::from_json(v1.to_string().as_bytes()).unwrap();
+        Archive::write(&path, &record).unwrap();
         path
     }
 
@@ -700,13 +694,13 @@ mod tests {
         );
         // A version without a stamp in its name or listing is numbered.
         let bare = archived(&archive, other, Some("x"), b"y\n", None);
-        let mut tagless = archive.entries_under(Some(bare.parent().unwrap()));
+        let mut tagless =
+            utilake_acquire::archive::entries_under(&archive, Some(bare.parent().unwrap()));
         tagless.retain(|a| a.path == bare);
         assert_eq!(FeedFolders::version_tag(&tagless[0]).as_deref(), Some("x"));
-        let plain = archive
-            .entries_under(None)
+        let plain = utilake_acquire::archive::entries_under(&archive, None)
             .into_iter()
-            .find(|a| a.sidecar.url == ignored)
+            .find(|a| a.provenance.url() == ignored)
             .unwrap();
         assert_eq!(FeedFolders::version_tag(&plain), None);
         // A sidecar whose URL does not parse, and a file in a folder the
@@ -724,11 +718,9 @@ mod tests {
         );
         let odd = archive.path_for("https://h/Reports/CURRENT/STTM/odd.csv");
         std::fs::write(&odd, b"a\n").unwrap();
-        let mut sidecar = Archive::read_sidecar(&archive.path_for(kept))
-            .unwrap()
-            .unwrap();
-        sidecar.url = "not a url".into();
-        Archive::write_sidecar(&odd, &sidecar).unwrap();
+        let mut sidecar = Archive::read(&archive.path_for(kept)).unwrap().unwrap();
+        sidecar.addresses[0].url = "not a url".into();
+        Archive::write(&odd, &sidecar).unwrap();
         let got = s2
             .archived(&archive, &query(&[], months("2026-10", "2026-10")))
             .unwrap();

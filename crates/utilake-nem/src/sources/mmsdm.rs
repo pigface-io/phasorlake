@@ -29,7 +29,8 @@ use url::Url;
 use utilake_core::YearMonth;
 
 use utilake_acquire::{
-    Archive, Entry, FetchError, Fetcher, LocalFile, Pick, Picks, Query, RemoteFile, Source, listing,
+    Archive, Entry, FetchError, Fetcher, Held, LocalFile, Pick, Picks, Query, RemoteFile, Source,
+    listing,
 };
 
 /// The source id.
@@ -216,8 +217,7 @@ impl MmsdmArchive {
                 what: "month zip URL",
                 message: e.to_string(),
             })?;
-        let mut out: Vec<PathBuf> = archive
-            .entries_under(Some(&dir))
+        let mut out: Vec<PathBuf> = utilake_acquire::archive::entries_under(archive, Some(&dir))
             .into_iter()
             .map(|e| e.path)
             .collect();
@@ -412,31 +412,26 @@ impl Source for MmsdmArchive {
                         continue;
                     }
                 }
-                let Some(sidecar) = Archive::read_sidecar(&path)? else {
+                let Some(provenance) = Archive::read(&path)? else {
                     continue;
                 };
-                let Ok(url) = Url::parse(&sidecar.url) else {
+                let Ok(url) = Url::parse(provenance.url()) else {
                     continue;
                 };
-                out.push(LocalFile {
-                    remote: RemoteFile {
-                        url,
-                        source: SOURCE_ID,
-                        table,
-                        period: Some(month.into()),
-                        size: Some(sidecar.size),
-                        modified: sidecar.listed_modified,
-                        modified_at: sidecar.listed_modified_at,
-                    },
-                    path,
-                    sha256: sidecar.sha256,
-                    size: sidecar.size,
-                    cached: true,
-                    etag: sidecar.etag,
-                    last_modified: sidecar.last_modified,
-                    last_modified_at: sidecar.last_modified_at,
-                    previous: None,
-                });
+                let remote = RemoteFile {
+                    url,
+                    source: SOURCE_ID,
+                    table,
+                    period: Some(month.into()),
+                    size: Some(provenance.content.size),
+                    modified: None,
+                    modified_at: provenance.listed(provenance.url()).and_then(|l| l.at),
+                };
+                out.push(LocalFile::from_held(
+                    &remote,
+                    Held { path, provenance },
+                    true,
+                ));
             }
         }
         Ok(out)

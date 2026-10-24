@@ -14,7 +14,9 @@ pub mod check {
 
     /// Whether a key names a time field.
     fn time_key(key: &str) -> bool {
-        key.ends_with("_at") || key.contains("modified") || key == "as_of"
+        key.ends_with("_at")
+            || key.contains("modified")
+            || matches!(key, "as_of" | "at" | "seen" | "gone" | "read")
     }
 
     /// Whether a string reads as a time in any form the mirror meets.

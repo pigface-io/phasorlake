@@ -23,15 +23,17 @@ use std::time::{Duration, Instant};
 use bytes::Bytes;
 use futures::StreamExt;
 use futures::stream::BoxStream;
-use sha2::{Digest, Sha256};
+use sha2::Digest;
 use tokio::sync::Mutex;
-use utilake_core::clock::now_utc_rfc3339;
 use utilake_core::event::Event;
 use utilake_core::timetext::{self, Stamp};
 
 use utilake_zip::zipdir::{DirectoryReader, Entry, LOCAL_HEADER, Step, TAIL, local_header_len};
 
-use crate::archive::{Archive, Archived, Extracted, Sidecar, hex, sha256_hex};
+use crate::archive::{
+    Address, Archive, Content, Held, Listed, Provenance, Served, Sha256, Span as ZipSpan, Via,
+    add_address,
+};
 use crate::error::FetchError;
 use crate::source::{Pick, Picks, RemoteFile};
 use crate::transport::{HttpResponse, Span, Transport};
@@ -55,6 +57,9 @@ pub struct LocalFile {
     pub last_modified: Option<String>,
     /// `last_modified` as an instant (UTC).
     pub last_modified_at: Option<Stamp>,
+    /// When the bytes were fetched, as their record says; none for a file
+    /// that is not from the archive.
+    pub fetched_at: Option<Stamp>,
     /// The version of the same file published before this one, when the
     /// source keeps versions and knows it: a feed whose files restate the
     /// one before is read against it, so only the rows new to this version
@@ -63,19 +68,36 @@ pub struct LocalFile {
 }
 
 impl LocalFile {
-    /// An archived file as the answer to `remote`.
-    fn archived(remote: &RemoteFile, found: Archived, cached: bool) -> Self {
+    /// An archived file as the answer to `remote`: its bytes as its record
+    /// gives them, `cached` when no request was made for them.
+    pub fn from_held(remote: &RemoteFile, found: Held, cached: bool) -> Self {
+        let p = &found.provenance;
         Self {
             remote: remote.clone(),
-            path: found.path,
-            sha256: found.sidecar.sha256,
-            size: found.sidecar.size,
+            sha256: p.content.sha256.hex(),
+            size: p.content.size,
             cached,
-            etag: found.sidecar.etag,
-            last_modified: found.sidecar.last_modified,
-            last_modified_at: found.sidecar.last_modified_at,
+            etag: p.etag().map(str::to_owned),
+            last_modified: p.modified().map(Stamp::http_date),
+            last_modified_at: p.modified(),
+            fetched_at: Some(p.fetched_at()),
             previous: None,
+            path: found.path,
         }
+    }
+}
+
+/// The listing line a remote file was listed with: its time as an
+/// instant, read from the listing's text in the host's clock when the
+/// source gave only the text.
+fn listed_of(remote: &RemoteFile) -> Listed {
+    let url = remote.url.as_str();
+    Listed {
+        size: remote.size,
+        at: remote.modified_at.or_else(|| {
+            let offset = utilake_provenance::layout::listing_offset(url);
+            timetext::parse(remote.modified.as_deref()?, offset)
+        }),
     }
 }
 
@@ -318,7 +340,7 @@ impl Fetcher {
         let mut todo: Vec<(usize, Pick)> = Vec::new();
         for (place, p) in picks.into_iter().enumerate() {
             match self.archive.lookup(p.remote.url.as_str())? {
-                Some(found) => out.push((place, LocalFile::archived(&p.remote, found, true))),
+                Some(found) => out.push((place, LocalFile::from_held(&p.remote, found, true))),
                 None => todo.push((place, p)),
             }
         }
@@ -411,32 +433,37 @@ impl Fetcher {
                 path: path.display().to_string(),
                 source,
             })?;
-        let sidecar = Sidecar {
-            url: remote.url.to_string(),
-            size: bytes.len() as u64,
-            sha256: sha256_hex(bytes),
-            fetched_at: now_utc_rfc3339(),
-            etag: etag.clone(),
-            last_modified_at: last_modified.as_deref().and_then(timetext::parse_http_date),
-            last_modified: last_modified.clone(),
-            listed_modified: zip.modified.clone(),
-            listed_modified_at: zip.modified_at,
-            tool: format!("utilake/{}", env!("CARGO_PKG_VERSION")),
-            extracted_from: Some(Extracted {
-                url: zip.url.to_string(),
-                entry: e.name.clone(),
-                zip_size,
-                offset: e.local_header_offset,
-                compressed: e.compressed,
-                method: e.method,
-                crc32: e.crc32,
-            }),
-            also: Vec::new(),
-        };
-        Archive::write_sidecar(&path, &sidecar)?;
-        Ok(LocalFile::archived(
+        let provenance = Provenance::new(
+            Content {
+                crc32: Some(e.crc32),
+                ..Content::of(bytes)
+            },
+            format!("utilake/{}", env!("CARGO_PKG_VERSION")),
+            Address {
+                url: remote.url.to_string(),
+                seen: Stamp::now(),
+                gone: None,
+                via: Via::Range {
+                    span: ZipSpan {
+                        zip: zip.url.to_string(),
+                        entry: e.name.clone(),
+                        zip_size,
+                        offset: e.local_header_offset,
+                        compressed: e.compressed,
+                        method: e.method,
+                    },
+                    listed: Some(listed_of(zip)),
+                    served: Some(Served {
+                        etag: etag.clone(),
+                        modified: last_modified.as_deref().and_then(timetext::parse_http_date),
+                    }),
+                },
+            },
+        );
+        Archive::write(&path, &provenance)?;
+        Ok(LocalFile::from_held(
             remote,
-            Archived { path, sidecar },
+            Held { path, provenance },
             false,
         ))
     }
@@ -446,17 +473,15 @@ impl Fetcher {
     pub async fn fetch(&self, remote: &RemoteFile) -> Result<LocalFile, FetchError> {
         let url = remote.url.as_str();
         if let Some(found) = self.archive.lookup(url)? {
-            return Ok(LocalFile::archived(remote, found, true));
+            return Ok(LocalFile::from_held(remote, found, true));
         }
         self.ensure_online(url)?;
         let base = self.archive.path_for(url);
         // Files other URLs keep at the path: both listings of a report
         // folder are one folder. Never written over.
-        let others: Vec<Archived> = self
-            .archive
-            .held_at(&base)?
+        let others: Vec<Held> = Archive::held_at(&base)?
             .into_iter()
-            .filter(|a| !a.sidecar.names(url))
+            .filter(|a| !a.provenance.names(url))
             .collect();
         make_room(&base)?;
         let part = Archive::part_path(&base);
@@ -465,22 +490,30 @@ impl Fetcher {
                 stream_to_file(url, resp, &part, self.events.clone())
             })
             .await?;
-        if let Some(same) = others.iter().find(|a| a.sidecar.sha256 == streamed.sha256) {
+        if let Some(same) = others
+            .iter()
+            .find(|a| a.provenance.content.sha256.hex() == streamed.sha256)
+        {
             let _ = std::fs::remove_file(&part);
-            Archive::add_also(&same.path, url, "same", &now_utc_rfc3339())?;
+            let also = Address {
+                url: url.to_owned(),
+                seen: Stamp::now(),
+                gone: None,
+                via: Via::Same {
+                    listed: Some(listed_of(remote)),
+                },
+            };
+            add_address(&same.path, also)?;
             let found = self.archive.lookup(url)?.unwrap_or_else(|| same.clone());
-            return Ok(LocalFile::archived(remote, found, false));
+            return Ok(LocalFile::from_held(remote, found, false));
         }
         let path = match others.iter().any(|a| a.path == base) {
             false => base,
             true => {
-                let at = remote
-                    .modified_at
-                    .map_or_else(now_utc_rfc3339, |s| s.rfc3339());
-                let v = Archive::version_path(&base, &at);
+                let v = Archive::version_path(&base, remote.modified_at.unwrap_or_else(Stamp::now));
                 match v.exists() {
                     false => v,
-                    true => Archive::version_path(&base, &now_utc_rfc3339()),
+                    true => Archive::version_path(&base, Stamp::now()),
                 }
             }
         };
@@ -488,28 +521,36 @@ impl Fetcher {
             path: path.display().to_string(),
             source,
         })?;
-        let sidecar = Sidecar {
-            url: url.to_owned(),
-            size: streamed.size,
-            sha256: streamed.sha256,
-            fetched_at: now_utc_rfc3339(),
-            etag: streamed.etag,
-            // The header as sent (an HTTP date, GMT), and the instant beside it.
-            last_modified_at: streamed
-                .last_modified
-                .as_deref()
-                .and_then(timetext::parse_http_date),
-            last_modified: streamed.last_modified,
-            listed_modified: remote.modified.clone(),
-            listed_modified_at: remote.modified_at,
-            tool: format!("utilake/{}", env!("CARGO_PKG_VERSION")),
-            extracted_from: None,
-            also: Vec::new(),
-        };
-        Archive::write_sidecar(&path, &sidecar)?;
-        Ok(LocalFile::archived(
+        let provenance = Provenance::new(
+            Content {
+                size: streamed.size,
+                sha256: streamed
+                    .sha256
+                    .parse::<Sha256>()
+                    .expect("the download's own hex"),
+                crc32: None,
+            },
+            format!("utilake/{}", env!("CARGO_PKG_VERSION")),
+            Address {
+                url: url.to_owned(),
+                seen: Stamp::now(),
+                gone: None,
+                via: Via::Fetched {
+                    listed: Some(listed_of(remote)),
+                    served: Some(Served {
+                        etag: streamed.etag,
+                        modified: streamed
+                            .last_modified
+                            .as_deref()
+                            .and_then(timetext::parse_http_date),
+                    }),
+                },
+            },
+        );
+        Archive::write(&path, &provenance)?;
+        Ok(LocalFile::from_held(
             remote,
-            Archived { path, sidecar },
+            Held { path, provenance },
             false,
         ))
     }
@@ -698,7 +739,7 @@ fn spool(
 ) -> std::io::Result<(String, u64)> {
     let file = std::fs::File::create(part)?;
     let mut out = std::io::BufWriter::with_capacity(WRITE_BUFFER, file);
-    let mut hasher = Sha256::new();
+    let mut hasher = sha2::Sha256::new();
     let mut size = 0u64;
     while let Some(chunk) = rx.blocking_recv() {
         hasher.update(&chunk);
@@ -709,7 +750,7 @@ fn spool(
         .into_inner()
         .map_err(std::io::IntoInnerError::into_error)?;
     file.sync_all()?;
-    Ok((hex(&hasher.finalize()), size))
+    Ok((Sha256(hasher.finalize().into()).hex(), size))
 }
 
 async fn stream_to_file(
@@ -843,23 +884,21 @@ mod tests {
         assert_eq!(std::fs::read(&local.path).unwrap(), body);
         assert_eq!(local.etag.as_deref(), Some("\"etag\""));
         assert!(!Archive::part_path(&local.path).exists());
-        let sc = Archive::read_sidecar(&local.path).unwrap().unwrap();
-        assert_eq!(sc.url, url);
-        assert_eq!(sc.sha256, local.sha256);
+        let sc = Archive::read(&local.path).unwrap().unwrap();
+        assert_eq!(sc.url(), url);
+        assert_eq!(sc.content.sha256.hex(), local.sha256);
         assert_eq!(sc.tool, format!("utilake/{}", env!("CARGO_PKG_VERSION")));
         assert_eq!(
-            sc.last_modified.as_deref(),
-            Some("Tue, 13 Feb 2024 08:27:00 GMT"),
-            "the header as sent"
+            sc.modified().map(|s| s.rfc3339()).as_deref(),
+            Some("2024-02-13T08:27:00Z"),
+            "the server's Last-Modified, as an instant"
         );
         assert_eq!(
-            sc.last_modified_at.map(|s| s.rfc3339()).as_deref(),
-            Some("2024-02-13T08:27:00Z"),
-            "and the same time as an instant"
+            local.last_modified.as_deref(),
+            Some("Tue, 13 Feb 2024 08:27:00 GMT"),
+            "and as the header was sent"
         );
-        assert_eq!(local.last_modified, sc.last_modified);
-        assert_eq!(local.last_modified_at, sc.last_modified_at);
-        assert!(timetext::is_rfc3339(&sc.fetched_at));
+        assert_eq!(local.last_modified_at, sc.modified());
         // Once archived, it is never asked for again.
         let again = f.fetch(&remote(url)).await.unwrap();
         assert!(again.cached);
@@ -907,7 +946,10 @@ mod tests {
         );
         t.add(c, Canned::ok(b"one")).add(a, Canned::ok(b"two"));
         let one = f.fetch(&remote(c)).await.unwrap();
-        let taken = Archive::version_path(&one.path, "2026-10-13T11:53:00+10:00");
+        let taken = Archive::version_path(
+            &one.path,
+            timetext::parse_rfc3339("2026-10-13T11:53:00+10:00").unwrap(),
+        );
         std::fs::write(&taken, b"x").unwrap();
         let two = f
             .fetch(&RemoteFile {
@@ -926,30 +968,18 @@ mod tests {
         t.add(s1, Canned::ok(b"same")).add(s2, Canned::ok(b"same"));
         let k = f.fetch(&remote(s1)).await.unwrap();
         let mut v: serde_json::Value =
-            serde_json::from_str(&std::fs::read_to_string(Archive::sidecar_path(&k.path)).unwrap())
+            serde_json::from_str(&std::fs::read_to_string(Archive::record_path(&k.path)).unwrap())
                 .unwrap();
         v["crc32"] = serde_json::json!(7);
-        std::fs::write(Archive::sidecar_path(&k.path), v.to_string()).unwrap();
+        std::fs::write(Archive::record_path(&k.path), v.to_string()).unwrap();
         let k2 = f.fetch(&remote(s2)).await.unwrap();
         assert_eq!(k2.path, k.path);
-        let sc = Archive::read_sidecar(&k.path).unwrap().unwrap();
+        let sc = Archive::read(&k.path).unwrap().unwrap();
         assert!(sc.names(s2) && sc.names(s1));
-        assert_eq!(sc.also[0].how, "same");
-        let v: serde_json::Value =
-            serde_json::from_str(&std::fs::read_to_string(Archive::sidecar_path(&k.path)).unwrap())
-                .unwrap();
-        assert_eq!(v["crc32"], 7);
-        assert!(!Archive::add_also(&k.path, s2, "same", "t").unwrap());
-        // A sidecar already listing addresses gains one more.
-        assert!(Archive::add_also(&k.path, "https://h/3", "same", "t").unwrap());
-        assert_eq!(
-            Archive::read_sidecar(&k.path).unwrap().unwrap().also.len(),
-            2
-        );
+        assert!(matches!(sc.addresses[1].via, Via::Same { .. }));
+        // What else the record held is kept.
+        assert_eq!(sc.content.crc32, Some(7));
         assert!(f.fetch(&remote(s2)).await.unwrap().cached);
-        assert!(Archive::add_also(&dir.path().join("none"), s2, "same", "t").is_err());
-        std::fs::write(Archive::sidecar_path(&k.path), "{").unwrap();
-        assert!(Archive::add_also(&k.path, s2, "same", "t").is_err());
     }
 
     #[tokio::test]
@@ -1243,16 +1273,23 @@ mod picks_tests {
         assert_eq!(std::fs::read(&got[1].path).unwrap(), text);
         assert!(got[1].path.ends_with("MMSDM_2014_01.zip!d/notes.csv"));
         assert!(!got[0].cached && got[0].etag.as_deref() == Some("\"etag\""));
-        let side = Archive::read_sidecar(&got[1].path).unwrap().unwrap();
-        let x = side.extracted_from.unwrap();
+        let side = Archive::read(&got[1].path).unwrap().unwrap();
+        let via = serde_json::to_value(&side.origin().via).unwrap();
         assert_eq!(
-            (x.url.as_str(), x.entry.as_str(), x.method),
-            (ZIP, "d/notes.csv", 8)
+            (&via["via"], &via["span"]["zip"], &via["span"]["entry"]),
+            (
+                &serde_json::json!("range"),
+                &serde_json::json!(ZIP),
+                &serde_json::json!("d/notes.csv")
+            )
         );
-        assert_eq!((x.zip_size, x.compressed > 0), (zip.len() as u64, true));
-        assert_eq!(side.listed_modified.as_deref(), Some("1/02/2014 10:00 AM"));
-        assert_eq!(side.size, text.len() as u64);
-        assert_eq!(side.sha256, sha256_hex(&text));
+        assert_eq!(via["span"]["method"], 8);
+        assert_eq!(via["span"]["zip_size"], zip.len());
+        assert!(via["span"]["compressed"].as_u64().unwrap() > 0);
+        assert!(via["listed"]["at"].is_string(), "the zip's listing time");
+        assert_eq!(side.content.size, text.len() as u64);
+        assert_eq!(side.content.sha256.hex(), crate::archive::sha256_hex(&text));
+        assert!(side.content.crc32.is_some());
         assert!(
             f.archive()
                 .lookup(&format!("{ZIP}!d/notes.csv"))
@@ -1427,11 +1464,7 @@ mod picks_tests {
             matches!(&e, FetchError::EntryCorrupt { entry, .. } if entry == "PUBLIC_DVD_A_201401010000.zip")
         );
         assert!(e.to_string().contains("CRC-32"), "{e}");
-        assert!(
-            crate::Archive::new(dir.path())
-                .entries_under(None)
-                .is_empty()
-        );
+        assert!(crate::archive::entries_under(&crate::Archive::new(dir.path()), None).is_empty());
         // A method that is neither stored nor deflated.
         let z = tampered(&zip, 0, |rec| rec[10] = 99);
         let (_dir, _t, f) = setup(Canned::ranged(&z));

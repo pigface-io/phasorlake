@@ -326,10 +326,10 @@ pub async fn iceberg(ctx: &Context, table: Option<&str>) -> Result<i32> {
 /// its record.
 pub fn verify_archive(ctx: &Context) -> Result<i32> {
     let store = ctx.archive();
-    let entries = store.entries_under(None);
+    let entries = utilake_acquire::archive::entries_under(&store, None);
     let mut bad = 0usize;
     for e in &entries {
-        if let Err(err) = utilake_acquire::Archive::verify(e) {
+        if let Err(err) = utilake_acquire::archive::verify(e) {
             bad += 1;
             let d = err.diagnostic();
             if ctx.json {

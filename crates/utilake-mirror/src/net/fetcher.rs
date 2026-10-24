@@ -16,10 +16,12 @@ use crate::stamp::Stamp;
 use bytes::Bytes;
 use futures::StreamExt;
 use futures::stream::BoxStream;
-use sha2::{Digest, Sha256};
+use sha2::Digest;
 use tokio::sync::Mutex;
 
-use crate::net::archive::{Archive, Archived, How, Sidecar, hex};
+use crate::net::archive::{
+    Address, Archive, Content, Held, Provenance, Served, Sha256, Via, lookup_at,
+};
 use crate::net::error::FetchError;
 use crate::net::source::RemoteFile;
 use crate::net::transport::{HttpResponse, Span, Transport};
@@ -63,16 +65,17 @@ pub struct Same {
 
 impl LocalFile {
     /// An archived file, as found.
-    fn cached(remote: &RemoteFile, found: Archived) -> Self {
+    fn cached(remote: &RemoteFile, found: Held) -> Self {
+        let p = &found.provenance;
         Self {
             remote: remote.clone(),
-            path: found.path,
-            sha256: found.sidecar.sha256,
-            size: found.sidecar.size,
+            sha256: p.content.sha256.hex(),
+            size: p.content.size,
             cached: true,
-            etag: found.sidecar.etag,
-            last_modified: found.sidecar.last_modified,
+            etag: p.etag().map(str::to_owned),
+            last_modified: p.modified().map(Stamp::http_date),
             same_as: None,
+            path: found.path,
         }
     }
 }
@@ -226,19 +229,21 @@ impl Fetcher {
         let base = self.archive.path_for(url);
         // The file at the path, from this URL and as listed: the common
         // case, answered without reading the folder.
-        if let Some(first) = Archive::lookup_at(base.clone(), url)?
+        if let Some(first) = lookup_at(&base, url)?
             && (remote.modified_at.is_none()
-                || first.sidecar.is_listed_as(remote.size, remote.modified_at))
+                || first
+                    .provenance
+                    .listed_as(url, remote.size, remote.modified_at))
         {
             return Ok(LocalFile::cached(remote, first));
         }
         // Every file at the path, from any URL: both listings of a report
         // folder are one folder, so another URL's file may be there.
         let held = Archive::held_at(&base)?;
-        let mine: Vec<&Archived> = held.iter().filter(|a| a.sidecar.names(url)).collect();
+        let mine: Vec<&Held> = held.iter().filter(|a| a.provenance.names(url)).collect();
         if let Some(found) = mine
             .iter()
-            .find(|a| a.sidecar.is_listed_at(url, remote.size, remote.modified_at))
+            .find(|a| a.provenance.listed_as(url, remote.size, remote.modified_at))
             .or(mine.first().filter(|_| remote.modified_at.is_none()))
         {
             return Ok(LocalFile::cached(remote, (*found).clone()));
@@ -276,20 +281,25 @@ impl Fetcher {
                 self.held_as(url, &held, &part, &streamed.sha256).await?
         {
             // Another URL's bytes, the same: one file, two addresses.
-            let held = match found.sidecar.names(url) {
+            let held = match found.provenance.names(url) {
                 true => found,
                 false => {
                     let mut found = found;
-                    found
-                        .sidecar
-                        .add_listed(url, How::Same, Stamp::now(), remote.modified_at);
-                    Archive::write_sidecar(&found.path, &found.sidecar)?;
+                    found.provenance.add(Address {
+                        url: url.to_owned(),
+                        seen: Stamp::now(),
+                        gone: None,
+                        via: Via::Same {
+                            listed: Some(listed_of(remote)),
+                        },
+                    });
+                    Archive::write(&found.path, &found.provenance)?;
                     found
                 }
             };
             let same = Same {
                 repacked,
-                sha256: streamed.sha256,
+                sha256: streamed.sha256.hex(),
                 size: streamed.size,
                 last_modified: streamed.last_modified,
             };
@@ -303,34 +313,39 @@ impl Fetcher {
             path: path.display().to_string(),
             source,
         })?;
-        let sidecar = Sidecar {
-            url: url.to_owned(),
-            size: streamed.size,
-            sha256: streamed.sha256,
-            crc32: Some(streamed.crc32),
-            fetched_at: Stamp::now().to_string(),
-            etag: streamed.etag,
-            last_modified_at: streamed
-                .last_modified
-                .as_deref()
-                .and_then(Stamp::from_http_date),
-            last_modified: streamed.last_modified,
-            listed_size: remote.size,
-            listed_modified: remote.modified.clone(),
-            listed_modified_at: remote.modified_at,
-            tool: format!("utilake-mirror/{}", env!("CARGO_PKG_VERSION")),
-            also: Vec::new(),
-            gone_at: None,
-        };
-        Archive::write_sidecar(&path, &sidecar)?;
+        let modified = streamed
+            .last_modified
+            .as_deref()
+            .and_then(Stamp::from_http_date);
+        let provenance = Provenance::new(
+            Content {
+                size: streamed.size,
+                sha256: streamed.sha256,
+                crc32: Some(streamed.crc32),
+            },
+            format!("utilake-mirror/{}", env!("CARGO_PKG_VERSION")),
+            Address {
+                url: url.to_owned(),
+                seen: Stamp::now(),
+                gone: None,
+                via: Via::Fetched {
+                    listed: Some(listed_of(remote)),
+                    served: Some(Served {
+                        etag: streamed.etag.clone(),
+                        modified,
+                    }),
+                },
+            },
+        );
+        Archive::write(&path, &provenance)?;
         Ok(LocalFile {
             remote: remote.clone(),
             path,
-            sha256: sidecar.sha256,
-            size: sidecar.size,
+            sha256: streamed.sha256.hex(),
+            size: streamed.size,
             cached: false,
-            etag: sidecar.etag,
-            last_modified: sidecar.last_modified,
+            etag: streamed.etag,
+            last_modified: streamed.last_modified,
             same_as: None,
         })
     }
@@ -341,17 +356,17 @@ impl Fetcher {
     async fn held_as(
         &self,
         url: &str,
-        held: &[Archived],
+        held: &[Held],
         part: &Path,
-        sha256: &str,
-    ) -> Result<Option<(Archived, bool)>, FetchError> {
-        if let Some(v) = held.iter().find(|v| v.sidecar.sha256 == sha256) {
+        sha256: &Sha256,
+    ) -> Result<Option<(Held, bool)>, FetchError> {
+        if let Some(v) = held.iter().find(|v| v.provenance.content.sha256 == *sha256) {
             return Ok(Some((v.clone(), false)));
         }
         let Some(holds) = crate::zipdir::contents(part).await else {
             return Ok(None);
         };
-        for v in held.iter().filter(|v| v.sidecar.names(url)) {
+        for v in held.iter().filter(|v| v.provenance.names(url)) {
             if crate::zipdir::contents(&v.path).await.as_ref() == Some(&holds) {
                 return Ok(Some((v.clone(), true)));
             }
@@ -374,13 +389,10 @@ impl Fetcher {
         };
         // Whole already, cut off just before it was renamed: no request.
         if begun.size == Some(from) {
-            let h = crate::net::archive::hashes_of(part).map_err(|source| FetchError::CacheIo {
-                path: part.display().to_string(),
-                source,
-            })?;
+            let h = crate::net::archive::content_of(part)?;
             return Ok(Some(Streamed {
                 sha256: h.sha256,
-                crc32: h.crc32,
+                crc32: h.crc32.unwrap_or_default(),
                 size: h.size,
                 etag: begun.etag,
                 last_modified: begun.last_modified,
@@ -547,9 +559,17 @@ pub struct RangeRead {
     pub last_modified: Option<String>,
 }
 
+/// The listing line a remote file was listed with.
+fn listed_of(remote: &RemoteFile) -> utilake_provenance::Listed {
+    utilake_provenance::Listed {
+        size: remote.size,
+        at: remote.modified_at,
+    }
+}
+
 /// A completed download: its bytes' hash and size, and what the server said.
 struct Streamed {
-    sha256: String,
+    sha256: Sha256,
     crc32: u32,
     size: u64,
     etag: Option<String>,
@@ -584,8 +604,8 @@ fn spool(
     part: &Path,
     from: u64,
     mut rx: tokio::sync::mpsc::Receiver<Bytes>,
-) -> std::io::Result<(String, u32, u64)> {
-    let mut hasher = Sha256::new();
+) -> std::io::Result<(Sha256, u32, u64)> {
+    let mut hasher = sha2::Sha256::new();
     let mut crc = crc32fast::Hasher::new();
     let file = if from > 0 {
         use std::io::{Read as _, Seek as _};
@@ -622,7 +642,7 @@ fn spool(
         .into_inner()
         .map_err(std::io::IntoInnerError::into_error)?;
     crate::net::archive::to_disk(&file)?;
-    Ok((hex(&hasher.finalize()), crc.finalize(), size))
+    Ok((Sha256(hasher.finalize().into()), crc.finalize(), size))
 }
 
 async fn stream_to_file(
@@ -768,24 +788,21 @@ mod tests {
         assert_eq!(std::fs::read(&local.path).unwrap(), body);
         assert_eq!(local.etag.as_deref(), Some("\"etag\""));
         assert!(!Archive::part_path(&local.path).exists());
-        let sc = Archive::read_sidecar(&local.path).unwrap().unwrap();
-        assert_eq!(sc.url, url);
-        assert_eq!(sc.sha256, local.sha256);
+        let sc = Archive::read(&local.path).unwrap().unwrap();
+        assert_eq!(sc.url(), url);
+        assert_eq!(sc.content.sha256.hex(), local.sha256);
         assert_eq!(
             sc.tool,
             format!("utilake-mirror/{}", env!("CARGO_PKG_VERSION"))
         );
-        assert_eq!(sc.crc32, Some(crc32fast::hash(&body)));
+        assert_eq!(sc.content.crc32, Some(crc32fast::hash(&body)));
         assert_eq!(
-            sc.last_modified.as_deref(),
+            sc.modified().map(Stamp::http_date).as_deref(),
             Some("Tue, 13 Feb 2024 08:27:00 GMT")
         );
-        assert_eq!(
-            sc.last_modified_at.unwrap().to_string(),
-            "2024-02-13T08:27:00Z"
-        );
+        assert_eq!(sc.modified().unwrap().to_string(), "2024-02-13T08:27:00Z");
         let written: serde_json::Value = serde_json::from_str(
-            &std::fs::read_to_string(Archive::sidecar_path(&local.path)).unwrap(),
+            &std::fs::read_to_string(Archive::record_path(&local.path)).unwrap(),
         )
         .unwrap();
         crate::stamp::check::assert_aware(&written);
@@ -893,7 +910,7 @@ mod tests {
         assert!(z3.same_as.is_none() && !z3.cached);
         assert_ne!(z3.path, z1.path);
         // Versions of a file in a folder that is not there: none.
-        let none = Archive::versions(&dir.path().join("no/such/a.csv"), zip).unwrap();
+        let none = crate::net::archive::versions(&dir.path().join("no/such/a.csv"), zip).unwrap();
         assert!(none.is_empty());
     }
 
@@ -964,12 +981,13 @@ mod tests {
             .unwrap();
         assert!(two.cached && two.same_as.is_some());
         assert_eq!(two.path, one.path);
-        let sc = Archive::read_sidecar(&one.path).unwrap().unwrap();
-        assert_eq!(sc.url, a);
-        assert_eq!(sc.also.len(), 1);
-        assert_eq!((sc.also[0].url.as_str(), sc.also[0].how), (b, How::Same));
+        let sc = Archive::read(&one.path).unwrap().unwrap();
+        assert_eq!(sc.url(), a);
+        assert_eq!(sc.addresses.len(), 2);
+        assert_eq!(sc.addresses[1].url, b);
+        assert!(matches!(sc.addresses[1].via, Via::Same { .. }));
         // The data file is untouched: its hash is the download's.
-        assert_eq!(sc.sha256, sha256_hex(b"same"));
+        assert_eq!(sc.content.sha256.hex(), sha256_hex(b"same"));
         assert_eq!(f.archive().lookup(b).unwrap().unwrap().path, one.path);
         let three = f
             .fetch(&listed(b, "Tuesday, October 13, 2026 11:53 AM"))
@@ -1269,8 +1287,8 @@ mod tests {
         let local = f.fetch(&remote(url)).await.unwrap();
         assert_eq!(std::fs::read(&local.path).unwrap(), body);
         assert_eq!(local.sha256, sha256_hex(&body));
-        let sc = Archive::read_sidecar(&local.path).unwrap().unwrap();
-        assert_eq!(sc.crc32, Some(crc32fast::hash(&body)));
+        let sc = Archive::read(&local.path).unwrap().unwrap();
+        assert_eq!(sc.content.crc32, Some(crc32fast::hash(&body)));
         assert!(!part.exists() && !part_meta(&part).exists());
         assert_eq!(t.request_count(), 2);
     }
@@ -1308,7 +1326,7 @@ mod tests {
         let local = f.fetch(&remote(url)).await.unwrap();
         assert_eq!(std::fs::read(&local.path).unwrap(), body);
         std::fs::remove_file(&local.path).unwrap();
-        std::fs::remove_file(Archive::sidecar_path(&local.path)).unwrap();
+        std::fs::remove_file(Archive::record_path(&local.path)).unwrap();
         // A server that sends the whole file for a range: begun again.
         let t = Arc::new(StaticTransport::default());
         let mut whole = Canned::ok(&body);
@@ -1319,7 +1337,7 @@ mod tests {
         let local = f.fetch(&remote(url)).await.unwrap();
         assert_eq!(std::fs::read(&local.path).unwrap(), body);
         std::fs::remove_file(&local.path).unwrap();
-        std::fs::remove_file(Archive::sidecar_path(&local.path)).unwrap();
+        std::fs::remove_file(Archive::record_path(&local.path)).unwrap();
         // A part already whole: finished without a request.
         let t = Arc::new(StaticTransport::default());
         let f = fresh_fetch(&t);
@@ -1330,7 +1348,7 @@ mod tests {
             (sha256_hex(&body), 0)
         );
         std::fs::remove_file(&local.path).unwrap();
-        std::fs::remove_file(Archive::sidecar_path(&local.path)).unwrap();
+        std::fs::remove_file(Archive::record_path(&local.path)).unwrap();
         // ...unless it cannot be read.
         leave(&f, &body, Some(same));
         let part = Archive::part_path(&f.archive().path_for(url));
@@ -1352,12 +1370,12 @@ mod tests {
         let local = f.fetch(&remote(url)).await.unwrap();
         assert_eq!(std::fs::read(&local.path).unwrap(), body);
         std::fs::remove_file(&local.path).unwrap();
-        std::fs::remove_file(Archive::sidecar_path(&local.path)).unwrap();
+        std::fs::remove_file(Archive::record_path(&local.path)).unwrap();
         leave(&f, b"0123", None);
         let local = f.fetch(&remote(url)).await.unwrap();
         assert_eq!(std::fs::read(&local.path).unwrap(), body);
         std::fs::remove_file(&local.path).unwrap();
-        std::fs::remove_file(Archive::sidecar_path(&local.path)).unwrap();
+        std::fs::remove_file(Archive::record_path(&local.path)).unwrap();
         // The resume itself refused: the error, not a fresh start.
         let t = Arc::new(StaticTransport::default());
         t.add(url, Canned::status(403));

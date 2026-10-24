@@ -130,6 +130,7 @@ mod tests {
                 etag: None,
                 last_modified: None,
                 last_modified_at: None,
+                fetched_at: None,
             })
             .await
             .unwrap();

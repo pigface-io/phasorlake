@@ -2,7 +2,7 @@
 
 use std::path::Path;
 
-use crate::net::{Archive, Listed};
+use crate::net::{Archive, DirNames};
 use serde::{Deserialize, Serialize};
 use url::Url;
 
@@ -66,7 +66,7 @@ pub struct Status {
 /// Counts the kept pages and, once the crawl is done, the files listed
 /// against the files in the archive in the version listed: a file
 /// `held.ndjson` lists at that size and listed time without a look at the
-/// disk (`Held::is_listed_as`), any other at its listed size only when its
+/// disk (`HeldEntry::is_listed_as`), any other at its listed size only when its
 /// directory holds its name.
 pub fn status(mirror: &Mirror, archive: &Archive, roots: &[Url]) -> Result<Status, MirrorError> {
     let mut status = Status {
@@ -90,7 +90,7 @@ pub fn status(mirror: &Mirror, archive: &Archive, roots: &[Url]) -> Result<Statu
     }
     let removed = mirror.removed()?;
     let held = mirror.held()?;
-    let mut listed = Listed::default();
+    let mut listed = DirNames::default();
     for remote in mirror.record()? {
         match remote.kind {
             RemoteKind::External => status.external += 1,

@@ -13,11 +13,12 @@ use std::io::Write as _;
 use serde::Serialize;
 
 use crate::crawl::Mirror;
-use crate::download::Held;
+use crate::download::HeldEntry;
 use crate::error::MirrorError;
 use crate::journal::{Change, Event};
-use crate::net::{Archive, Archived};
-use crate::stamp::Stamp;
+#[cfg(test)]
+use crate::net::Provenance;
+use crate::net::{Archive, Held};
 
 /// What a look at every version found, or a prune did.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize)]
@@ -45,7 +46,7 @@ fn folder_of(url: &str) -> &str {
 }
 
 /// The name of an archived file.
-fn name_of(a: &Archived) -> Option<String> {
+fn name_of(a: &Held) -> Option<String> {
     a.path.file_name().map(|n| n.to_string_lossy().into_owned())
 }
 
@@ -66,7 +67,7 @@ pub async fn versions(
     };
     let urls: BTreeSet<String> = text
         .lines()
-        .filter_map(|l| serde_json::from_str::<Held>(l).ok())
+        .filter_map(|l| serde_json::from_str::<HeldEntry>(l).ok())
         .filter(|h| h.file.is_some())
         .map(|h| h.url)
         .collect();
@@ -74,17 +75,17 @@ pub async fn versions(
     let mut summary = VersionsSummary::default();
     let mut lines = Vec::new();
     for url in &urls {
-        let all = Archive::versions(&archive.path_for(url), url)?;
+        let all = crate::net::archive::versions(&archive.path_for(url), url)?;
         if all.len() < 2 {
             continue;
         }
         summary.files += 1;
         summary.versions += all.len();
-        let mut kept: Vec<(Archived, Option<Holds>)> = Vec::new();
+        let mut kept: Vec<(Held, Option<Holds>)> = Vec::new();
         for v in all {
             let holds = crate::zipdir::contents(&v.path).await;
             let same = kept.iter().find_map(|(k, k_holds)| {
-                if k.sidecar.sha256 == v.sidecar.sha256 {
+                if k.provenance.content.sha256 == v.provenance.content.sha256 {
                     Some((k, Change::Same))
                 } else if holds.is_some() && *k_holds == holds {
                     Some((k, Change::Repacked))
@@ -101,16 +102,12 @@ pub async fn versions(
             } else {
                 summary.repacked += 1;
             }
-            let s = &v.sidecar;
+            let s = &v.provenance;
             let event = Event {
-                seen_at: Stamp::parse(&s.fetched_at).unwrap_or_else(|_| Stamp::now()),
+                seen_at: s.fetched_at(),
                 file: name_of(k),
-                sha256: Some(s.sha256.clone()),
-                size: Some(s.size),
-                listed_modified: s.listed_modified.clone(),
-                listed_modified_at: s.listed_modified_at,
-                last_modified: s.last_modified.clone(),
-                last_modified_at: s.last_modified_at,
+                // The version pruned: its bytes go with it.
+                sha256: Some(s.content.sha256.hex()),
                 ..Event::now(url, change)
             };
             on(&event);
@@ -118,22 +115,20 @@ pub async fn versions(
                 continue;
             }
             mirror.note(folder_of(url), &event)?;
-            for p in [Archive::sidecar_path(&v.path), v.path.clone()] {
-                std::fs::remove_file(&p).map_err(MirrorError::io(&p))?;
-            }
+            crate::net::archive::remove(&v.path)?;
             summary.removed += 1;
-            summary.bytes += s.size;
+            summary.bytes += s.content.size;
             // The ledger names the version it is the same as instead.
             if held.get(url).is_some_and(|h| h.file == name_of(&v)) {
                 let first = k.path == archive.path_for(url);
-                let line = Held {
+                let line = HeldEntry {
                     url: url.clone(),
-                    size: k.sidecar.size,
-                    listed_size: Some(s.size).filter(|&n| n != k.sidecar.size),
+                    size: k.provenance.content.size,
+                    listed_size: Some(s.content.size).filter(|&n| n != k.provenance.content.size),
                     modified_at: held[url].modified_at,
                     file: name_of(k).filter(|_| !first),
                 };
-                lines.push(serde_json::to_string(&line).expect("a Held always serialises"));
+                lines.push(serde_json::to_string(&line).expect("a HeldEntry always serialises"));
             }
         }
     }
@@ -152,8 +147,7 @@ pub async fn versions(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::net::Sidecar;
-    use crate::net::archive::sha256_hex;
+    use crate::stamp::Stamp;
 
     fn put(archive: &Archive, url: &str, at: Option<&str>, bytes: &[u8]) -> String {
         let base = archive.path_for(url);
@@ -165,23 +159,22 @@ mod tests {
         };
         std::fs::create_dir_all(path.parent().unwrap()).unwrap();
         std::fs::write(&path, bytes).unwrap();
-        let sidecar = Sidecar {
-            url: url.to_owned(),
-            size: bytes.len() as u64,
-            sha256: sha256_hex(bytes),
-            crc32: None,
-            fetched_at: "2026-10-21T10:00:00Z".to_owned(),
-            etag: None,
-            last_modified: Some("Wed, 21 Oct 2026 10:00:00 GMT".to_owned()),
-            last_modified_at: None,
-            listed_size: Some(bytes.len() as u64),
-            listed_modified: at.map(str::to_owned),
-            listed_modified_at: None,
-            tool: "utilake-mirror".to_owned(),
-            also: Vec::new(),
-            gone_at: None,
-        };
-        Archive::write_sidecar(&path, &sidecar).unwrap();
+        let sidecar = Provenance::from_json(
+            serde_json::json!({
+                "url": url,
+                "size": bytes.len(),
+                "sha256": crate::net::archive::sha256_hex(bytes),
+                "fetched_at": "2026-10-21T10:00:00Z",
+                "last_modified": "Wed, 21 Oct 2026 10:00:00 GMT",
+                "listed_size": bytes.len(),
+                "listed_modified": at,
+                "tool": "utilake-mirror",
+            })
+            .to_string()
+            .as_bytes(),
+        )
+        .unwrap();
+        Archive::write(&path, &sidecar).unwrap();
         path.file_name().unwrap().to_string_lossy().into_owned()
     }
 
@@ -253,14 +246,14 @@ mod tests {
         let dir = archive.path_for(csv).parent().unwrap().to_path_buf();
         for name in [&again, &back, &packed] {
             assert!(!dir.join(name).exists(), "{name}");
-            assert!(!Archive::sidecar_path(&dir.join(name)).exists(), "{name}");
+            assert!(!Archive::record_path(&dir.join(name)).exists(), "{name}");
         }
         assert!(dir.join(&two).exists());
         let journal = mirror.journal("https://h/R/C/G/").unwrap();
         assert_eq!(journal.len(), 3);
-        assert_eq!(
-            journal[0].listed_modified_at.unwrap().to_string(),
-            "2026-10-14T09:00:00+10:00"
+        assert!(
+            journal.iter().all(|e| e.sha256.is_some()),
+            "the pruned bytes"
         );
         // The ledger names the version each is the same as.
         let h = mirror.held().unwrap();

@@ -87,6 +87,12 @@ pub enum MirrorError {
     },
 }
 
+impl From<utilake_provenance::archive::Error> for MirrorError {
+    fn from(e: utilake_provenance::archive::Error) -> Self {
+        Self::Fetch(e.into())
+    }
+}
+
 impl MirrorError {
     pub(crate) fn io(path: &std::path::Path) -> impl Fn(std::io::Error) -> Self + '_ {
         move |source| Self::Io {
@@ -142,6 +148,7 @@ impl Diagnose for MirrorError {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::net::Archive;
 
     #[test]
     fn every_error_has_its_code_and_says_where() {
@@ -166,6 +173,11 @@ mod tests {
                 "mirror.summary_stale",
             ),
         ];
+        let dir = tempfile::tempdir().unwrap();
+        std::fs::create_dir(dir.path().join("f.provenance.json")).unwrap();
+        let store = Archive::read(&dir.path().join("f")).unwrap_err();
+        let e: MirrorError = store.into();
+        assert_eq!(e.diagnostic().code, "cache.io");
         for (e, code) in cases {
             let d = e.diagnostic();
             assert_eq!(d.code, code);
