@@ -198,6 +198,16 @@ pub async fn run_command(cli: &Cli) -> Result<i32> {
             dry_run,
             skip_records,
         } => upgrade(ctx, *dry_run, !*skip_records),
+        Command::Reindex => {
+            let _lock = mirror.lock()?;
+            let n = mirror.reindex(&ctx.archive())?;
+            if ctx.json {
+                render::json_line(&serde_json::json!({"event": "reindex_done", "lines": n}));
+            } else {
+                println!("{n} held lines written to {}", mirror.held_path().display());
+            }
+            Ok(0)
+        }
         Command::Relayout { dry_run } => {
             let _lock = mirror.lock()?;
             relayout(ctx, &mirror, *dry_run)

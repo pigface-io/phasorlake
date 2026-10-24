@@ -1,6 +1,6 @@
 //! Downloading every file of the crawl record into the archive.
 
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 use std::io::Write as _;
 use std::path::PathBuf;
 
@@ -13,7 +13,7 @@ use crate::crawl::{Mirror, RemoteKind};
 use crate::diag::{Diagnose as _, Diagnostic};
 use crate::error::MirrorError;
 use crate::journal::{Change, Event};
-use crate::net::{Archive, FetchError, Fetchers, LocalFile, RemoteFile};
+use crate::net::{Archive, FetchError, Fetchers, LocalFile, RemoteFile, Via};
 use crate::peek::{Peeked, current};
 use crate::stamp::Stamp;
 
@@ -279,6 +279,52 @@ impl Mirror {
     }
 }
 
+impl Mirror {
+    /// Writes `held.ndjson` again from the provenance records in
+    /// `archive`: a line for every address a listing named (downloaded
+    /// there, or found the same there), the latest listed version of each
+    /// URL. It is a cache: a pass reads the records of what it lacks. How
+    /// many lines were written.
+    pub fn reindex(&self, archive: &Archive) -> Result<usize, MirrorError> {
+        let mut lines: BTreeMap<String, HeldEntry> = BTreeMap::new();
+        for held in crate::net::archive::entries_under(archive, None) {
+            let p = &held.provenance;
+            let name = held
+                .path
+                .file_name()
+                .map(|n| n.to_string_lossy().into_owned());
+            let listed = p
+                .addresses
+                .iter()
+                .filter(|a| matches!(a.via, Via::Fetched { .. } | Via::Same { .. }));
+            for a in listed {
+                let l = p.listed(&a.url).unwrap_or_default();
+                let line = HeldEntry {
+                    url: a.url.clone(),
+                    size: p.content.size,
+                    listed_size: l.size.filter(|&n| n != p.content.size),
+                    modified_at: l.at,
+                    file: name
+                        .clone()
+                        .filter(|_| archive.path_for(&a.url) != held.path),
+                };
+                match lines.get(&a.url) {
+                    Some(kept) if kept.modified_at >= line.modified_at => {}
+                    _ => {
+                        lines.insert(a.url.clone(), line);
+                    }
+                }
+            }
+        }
+        let text: String = lines
+            .values()
+            .map(|h| serde_json::to_string(h).expect("a HeldEntry always serialises") + "\n")
+            .collect();
+        crate::crawl::write_atomic(&self.held_path(), text.as_bytes())?;
+        Ok(lines.len())
+    }
+}
+
 /// How a file of the pass was dealt with.
 struct Got {
     cached: bool,
@@ -431,6 +477,64 @@ fn stops_the_pass(e: &FetchError) -> bool {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn reindex_writes_a_line_for_every_listed_address() {
+        let home = tempfile::tempdir().unwrap();
+        let mirror = Mirror::new(home.path().join("state"));
+        let archive = Archive::new(home.path().join("archive"));
+        let url = "https://h/A/a.zip";
+        let path = archive.path_for(url);
+        std::fs::create_dir_all(path.parent().unwrap()).unwrap();
+        let at = |t: &str| Stamp::parse(t).unwrap();
+        let record = |bytes: &[u8], listed: Option<Stamp>| {
+            let mut r = crate::net::archive::test_record(url, bytes);
+            r.addresses[0].via = Via::Fetched {
+                listed: Some(utilake_provenance::Listed {
+                    size: Some(9),
+                    at: listed,
+                }),
+                served: None,
+            };
+            r
+        };
+        std::fs::write(&path, b"one").unwrap();
+        let mut first = record(b"one", Some(at("2026-10-12T10:45:00+10:00")));
+        first.add(crate::net::Address {
+            url: "https://h/B/a.zip".into(),
+            seen: Stamp::now(),
+            gone: None,
+            via: Via::Entry,
+        });
+        first.add(crate::net::Address {
+            url: "https://h/C/a.zip".into(),
+            seen: Stamp::now(),
+            gone: None,
+            via: Via::Same { listed: None },
+        });
+        Archive::write(&path, &first).unwrap();
+        let later = Archive::version_path(&path, at("2026-10-13T10:45:00+10:00"));
+        std::fs::write(&later, b"two").unwrap();
+        Archive::write(
+            &later,
+            &record(b"two", Some(at("2026-10-13T10:45:00+10:00"))),
+        )
+        .unwrap();
+        // An older version listed with no time loses to the one listed.
+        let older = Archive::version_path(&path, at("2026-10-11T10:45:00+10:00"));
+        std::fs::write(&older, b"old").unwrap();
+        Archive::write(&older, &record(b"old", None)).unwrap();
+        assert_eq!(mirror.reindex(&archive).unwrap(), 2, "a.zip and C's");
+        let held = mirror.held().unwrap();
+        let a = &held[url];
+        assert_eq!(a.file.as_deref(), Some("a.zip@20261013T104500+1000"));
+        assert_eq!((a.size, a.listed_size), (3, Some(9)));
+        assert_eq!(held["https://h/C/a.zip"].file.as_deref(), Some("a.zip"));
+        assert!(
+            !held.contains_key("https://h/B/a.zip"),
+            "an entry is no listing"
+        );
+    }
+
     use std::path::Path;
     use std::sync::Arc;
     use std::time::Duration;

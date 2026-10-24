@@ -170,6 +170,10 @@ pub enum Command {
         #[arg(long)]
         skip_records: bool,
     },
+    /// Writes `state/cache/held.ndjson` again from the provenance records:
+    /// what a download pass takes as archived without reading a record.
+    /// Reads every record once; offline.
+    Reindex,
     /// Pages read, and files archived out of those listed, per root.
     Status {
         /// The roots the crawl used, when not the default ones.

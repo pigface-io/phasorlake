@@ -72,6 +72,8 @@ what the data means, this knows what exists.
   and every sidecar written again as a provenance record. It reads and
   writes records only, never a downloaded file; `--dry-run` first,
   `--skip-records` to leave the sidecars for later.
+- **Reindex**: `state/cache/held.ndjson` written again from the records,
+  for a cache deleted or out of step.
 
 ## Run
 

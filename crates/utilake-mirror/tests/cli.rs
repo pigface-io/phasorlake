@@ -892,4 +892,7 @@ fn a_home_before_state_is_upgraded_first() {
         "{again}"
     );
     cli.ok(&["status"]);
+    // The held cache written again from the records.
+    assert!(cli.ok(&["reindex"]).starts_with("1 held lines written"));
+    assert!(cli.ok(&["--json", "reindex"]).contains("\"reindex_done\""));
 }
