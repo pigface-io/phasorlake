@@ -3,8 +3,12 @@
 //! listing segment (`CURRENT`, `ARCHIVE`, `current`, `previous`) dropped.
 //!
 //! Every file with a sidecar in a folder under a listing moves, with its
-//! sidecar, to the path of its sidecar's URL; a rename on the one volume,
-//! nothing copied. A file already at the target with the same bytes keeps
+//! sidecar, to the path of its sidecar's URL: a folder whose place is free
+//! by one rename, else file by file, copied and held to its sha256. On
+//! exFAT a rename into a large folder, and an unlink from one, take
+//! seconds, so a folder left holding only copied sources is set aside
+//! whole under `state/tmp/trash/`, to be deleted when nothing waits on the
+//! disk; any other folder has its copied sources removed. A file already at the target with the same bytes keeps
 //! its place, and the moving file's URL joins its sidecar's `also`
 //! (`how = "same"`); the moving file is dropped. A target with other bytes
 //! is never written over: the moving file is kept beside it as
@@ -13,7 +17,7 @@
 //! its one journal, and `held.ndjson` lines whose file is now a version
 //! are rewritten.
 //!
-//! Every step is logged to `mirror/relayout.ndjson` before it is taken, so
+//! Every step is logged to `state/migrations/relayout.ndjson` before it is taken, so
 //! a run cut off is finished by the next. A second run finds nothing to
 //! move.
 
@@ -79,6 +83,10 @@ pub struct RelayoutSummary {
     pub held: usize,
     /// Empty folders of the old layout removed.
     pub folders_removed: usize,
+    /// Folders left holding only sources already copied, set aside whole
+    /// under `state/tmp/trash/` to delete: on exFAT an unlink in a folder
+    /// of tens of thousands of entries takes seconds.
+    pub folders_set_aside: usize,
     /// Whether nothing was changed.
     pub dry_run: bool,
 }
@@ -192,13 +200,22 @@ pub fn relayout(
             }
             if !dry_run {
                 log(mirror, &step, false)?;
-                if let Some(done) = take(&step, sidecar, &record)? {
-                    copied.push(done);
+                copied.push(take(&step, sidecar, &record)?);
+                if copied.len().is_multiple_of(BATCH) {
+                    rustix::fs::sync();
                 }
-                settle(&mut copied, BATCH)?;
             }
         }
-        settle(&mut copied, 1)?;
+        if !copied.is_empty() {
+            rustix::fs::sync();
+            if drained(&here, &copied) {
+                set_aside(mirror, archive, dir)?;
+                copied.clear();
+                summary.folders_set_aside += 1;
+            } else {
+                settle(&mut copied)?;
+            }
+        }
     }
     summary.journals = merge_journals(mirror, dry_run)?;
     if !dry_run {
@@ -342,22 +359,59 @@ fn plan(
     None
 }
 
-/// Files copied before their sources go: one sync for them all.
-const BATCH: usize = 512;
+/// Copies handed to the disk together: one sync for them all.
+const BATCH: usize = if cfg!(test) { 2 } else { 512 };
 
-/// Once `at_least` copies are waiting, hands them to the disk, then
-/// removes their sources (the file, then its record): a source goes only
-/// once its copy is held.
-fn settle(copied: &mut Vec<(PathBuf, PathBuf)>, at_least: usize) -> Result<(), MirrorError> {
-    if copied.len() < at_least {
-        return Ok(());
-    }
-    rustix::fs::sync();
+/// Removes the sources of copies already on the disk (the file, then its
+/// record). A record gone already, by a run cut off, is passed over.
+fn settle(copied: &mut Vec<(PathBuf, PathBuf)>) -> Result<(), MirrorError> {
     for (from, record) in copied.drain(..) {
         std::fs::remove_file(&from).map_err(MirrorError::io(&from))?;
-        std::fs::remove_file(&record).map_err(MirrorError::io(&record))?;
+        match std::fs::remove_file(&record) {
+            Err(e) if e.kind() != std::io::ErrorKind::NotFound => {
+                return Err(MirrorError::io(&record)(e));
+            }
+            _ => {}
+        }
     }
     Ok(())
+}
+
+/// Whether the folder whose names are `here` holds nothing but the
+/// sources `copied` and their records, records whose file is gone (a run
+/// cut off between the two), and AppleDouble files: no folder, nothing
+/// uncopied.
+fn drained(here: &std::collections::HashSet<String>, copied: &[(PathBuf, PathBuf)]) -> bool {
+    let name = |p: &Path| p.file_name().map(|n| n.to_string_lossy().into_owned());
+    let gone: std::collections::HashSet<String> = copied
+        .iter()
+        .flat_map(|(from, record)| [name(from), name(record)])
+        .flatten()
+        .collect();
+    here.iter().all(|n| {
+        let orphan = n
+            .strip_suffix(".provenance.json")
+            .or_else(|| n.strip_suffix(".json"))
+            .is_some_and(|data| !here.contains(data));
+        gone.contains(n) || orphan || n.starts_with("._")
+    })
+}
+
+/// Moves the folder `dir` whole to `state/tmp/trash/`, under its path in
+/// the archive: one rename where removing its files one by one would read
+/// the folder again for each.
+fn set_aside(mirror: &Mirror, archive: &Archive, dir: &Path) -> Result<(), MirrorError> {
+    let rel = dir.strip_prefix(archive.root()).unwrap_or(dir);
+    let base = mirror.tmp_dir().join("trash").join(rel);
+    let mut to = base.clone();
+    let mut n = 1;
+    while to.exists() {
+        n += 1;
+        to = PathBuf::from(format!("{}.{n}", base.display()));
+    }
+    let parent = to.parent().expect("a folder set aside is in one");
+    std::fs::create_dir_all(parent).map_err(MirrorError::io(parent))?;
+    std::fs::rename(dir, &to).map_err(MirrorError::io(&to))
 }
 
 /// Appends `step` to the log, handed to the disk when `durable` (a batch's
@@ -476,15 +530,15 @@ fn drop_records(path: &Path) -> Result<(), MirrorError> {
     Ok(())
 }
 
-/// Takes one step. A moved file's record is written again at its new
-/// path in the current format, then the old one removed.
-/// Takes one step. A file moved is copied to its place, and its source and
-/// record returned to be removed once the copy is on the disk.
+/// Takes one step. A file moved is copied to its place; a file the same
+/// as the one there adds its addresses to that one's record. Either way
+/// its source and record are returned, to go once the batch is on the
+/// disk.
 fn take(
     step: &Step,
     sidecar: Provenance,
     record: &Path,
-) -> Result<Option<(PathBuf, PathBuf)>, MirrorError> {
+) -> Result<(PathBuf, PathBuf), MirrorError> {
     match step.action {
         Action::Move | Action::Version | Action::Folder => {
             let dir = step.to.parent().expect("an archived path is in a folder");
@@ -497,12 +551,12 @@ fn take(
             record_to.push(&suffix);
             copy_across(&step.from, &step.to, Some(&sidecar.content.sha256), false)?;
             copy_across(record, Path::new(&record_to), None, false)?;
-            return Ok(Some((step.from.clone(), record.to_path_buf())));
+            Ok((step.from.clone(), record.to_path_buf()))
         }
         Action::Same => {
             if let Some(mut kept) = Archive::read(&step.to)? {
                 let url = sidecar.url().to_owned();
-                kept.add(Address {
+                let mut changed = kept.add(Address {
                     via: Via::Same {
                         listed: sidecar.listed(&url),
                     },
@@ -511,15 +565,16 @@ fn take(
                     gone: None,
                 });
                 for a in sidecar.addresses.into_iter().skip(1) {
-                    kept.add(a);
+                    changed |= kept.add(a);
                 }
-                Archive::write(&step.to, &kept)?;
+                // Handed to the disk with the batch, before the source goes.
+                if changed {
+                    Archive::write_unsynced(&step.to, &kept)?;
+                }
             }
-            std::fs::remove_file(&step.from).map_err(MirrorError::io(&step.from))?;
-            drop_records(&step.from)?;
+            Ok((step.from.clone(), record.to_path_buf()))
         }
     }
-    Ok(None)
 }
 
 /// Finishes the step a run before logged last, when it was cut off
@@ -536,16 +591,15 @@ fn finish_last(mirror: &Mirror) -> Result<(), MirrorError> {
     else {
         return Ok(());
     };
-    let Some(from_record) = record_at(&step.from) else {
+    if record_at(&step.from).is_none() {
         return Ok(());
-    };
+    }
     if step.from.exists() {
         return Ok(());
     }
     if matches!(step.action, Action::Move | Action::Version) {
         return move_record(&step.from, &step.to);
     }
-    std::fs::remove_file(&from_record).map_err(MirrorError::io(&from_record))?;
     drop_records(&step.from)
 }
 
@@ -880,15 +934,53 @@ mod tests {
         let from3 = old(&archive, &format!("{CUR}a.csv"), None, b"a");
         finish_last(&mirror).unwrap();
         assert!(from3.exists());
-        // The same bytes, with no record left at the target: the file is
-        // dropped all the same.
-        std::fs::remove_file(format!("{}.json", to.display())).unwrap();
+        // The same bytes, with no record left at the target: the file goes
+        // all the same, once the batch is on the disk; its record went
+        // already.
         let sc = Archive::read(&from3).unwrap().unwrap();
-        assert_eq!(
-            take(&step(Action::Same, &to), sc, Path::new("")).unwrap(),
-            None
-        );
+        let record = v1(&from3);
+        // Twice: the second time the target names it already, and its
+        // record is left as it is.
+        for _ in 0..2 {
+            take(&step(Action::Same, &to), sc.clone(), &record).unwrap();
+        }
+        std::fs::remove_file(format!("{}.json", to.display())).unwrap();
+        let done = take(&step(Action::Same, &to), sc, &record).unwrap();
+        assert_eq!(done, (from3.clone(), record.clone()));
+        std::fs::remove_file(&record).unwrap();
+        settle(&mut vec![done]).unwrap();
         assert!(!from3.exists());
+        // A source already gone is an error, and so is a record that
+        // does not go.
+        assert!(settle(&mut vec![(from3.clone(), record)]).is_err());
+        let from4 = old(&archive, &format!("{CUR}a.csv"), None, b"a");
+        let stuck = home.path().join("stuck");
+        std::fs::create_dir_all(stuck.join("in")).unwrap();
+        assert!(settle(&mut vec![(from4, stuck)]).is_err());
+    }
+
+    #[test]
+    fn a_folder_of_copied_sources_is_set_aside_whole() {
+        let names = |n: &[&str]| n.iter().map(|s| (*s).to_owned()).collect();
+        let copied = vec![(PathBuf::from("/d/a.zip"), PathBuf::from("/d/a.zip.json"))];
+        // Copied sources, a record whose file went, AppleDouble files.
+        let here = names(&["a.zip", "a.zip.json", "b.zip.provenance.json", "._a.zip"]);
+        assert!(drained(&here, &copied));
+        // A file not copied, or a folder, keeps the folder.
+        assert!(!drained(&names(&["a.zip", "c.zip"]), &copied));
+        assert!(!drained(&names(&["a.zip", "DUPLICATE"]), &copied));
+
+        let home = tempfile::tempdir().unwrap();
+        let mirror = Mirror::new(home.path().join("state"));
+        let archive = Archive::new(home.path().join("archive"));
+        let dir = archive.root().join("h/Reports/CURRENT/X");
+        for _ in 0..2 {
+            std::fs::create_dir_all(&dir).unwrap();
+            set_aside(&mirror, &archive, &dir).unwrap();
+            assert!(!dir.exists());
+        }
+        let trash = mirror.tmp_dir().join("trash/h/Reports/CURRENT");
+        assert!(trash.join("X").is_dir() && trash.join("X.2").is_dir());
     }
 
     #[test]
