@@ -123,15 +123,20 @@ pub fn verify(held: &Held) -> Result<(), FetchError> {
 }
 
 /// Adds `address` to the record of the file at `path`, when its URL is
-/// not an address of it already. Whether the record changed.
-pub fn add_address(path: &Path, address: Address) -> Result<bool, FetchError> {
+/// not an address of it already. Whether the record changed. A record
+/// written not `durable` is left for the caller to sync, once for a batch.
+pub fn add_address(path: &Path, address: Address, durable: bool) -> Result<bool, FetchError> {
     let Some(mut p) = Archive::read(path)? else {
         return Ok(false);
     };
     if !p.add(address) {
         return Ok(false);
     }
-    Archive::write(path, &p)?;
+    if durable {
+        Archive::write(path, &p)?;
+    } else {
+        Archive::write_unsynced(path, &p)?;
+    }
     Ok(true)
 }
 

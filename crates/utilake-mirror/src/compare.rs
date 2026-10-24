@@ -563,9 +563,14 @@ pub fn note_entries(cmp: &Comparison) -> Result<usize, MirrorError> {
             gone: None,
             via: Via::Entry,
         };
-        if crate::net::archive::add_address(path, entry)? {
+        if crate::net::archive::add_address(path, entry, false)? {
             n += 1;
         }
+    }
+    // One sync for the batch: on the volume, a sync per record costs
+    // seconds once its folder is large.
+    if n > 0 {
+        rustix::fs::sync();
     }
     Ok(n)
 }

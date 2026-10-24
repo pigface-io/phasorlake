@@ -124,10 +124,13 @@ fn addresses_are_added_and_folders_go() {
         gone: None,
         via: Via::Entry,
     };
-    assert!(add_address(&path, entry.clone()).unwrap());
-    assert!(!add_address(&path, entry.clone()).unwrap(), "named already");
+    assert!(add_address(&path, entry.clone(), true).unwrap());
     assert!(
-        !add_address(&dir.path().join("none"), entry).unwrap(),
+        !add_address(&path, entry.clone(), false).unwrap(),
+        "named already"
+    );
+    assert!(
+        !add_address(&dir.path().join("none"), entry, true).unwrap(),
         "no record"
     );
     // AppleDouble twins and a file with no record are not entries.

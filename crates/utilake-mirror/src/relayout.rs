@@ -678,8 +678,8 @@ mod tests {
             gone: None,
             via: Via::Same { listed: None },
         };
-        crate::net::archive::add_address(&s_cur, same("https://h/elsewhere/s.csv")).unwrap();
-        crate::net::archive::add_address(&s_cur, same(&format!("{ARC}s.csv"))).unwrap();
+        crate::net::archive::add_address(&s_cur, same("https://h/elsewhere/s.csv"), true).unwrap();
+        crate::net::archive::add_address(&s_cur, same(&format!("{ARC}s.csv")), false).unwrap();
         // A file whose URL is kept where it already is, under a listing.
         let odd = format!("{CUR}z.csv").replace("/CURRENT/", "/CURRENT/CURRENT/");
         let in_place = old(&archive, &odd, None, b"z");
