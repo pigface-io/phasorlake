@@ -387,13 +387,13 @@ fn swappable(dir: &Path, to: &Path) -> Option<usize> {
 }
 
 /// Swaps the folder `dir` for `to`, the folder its files belong in, which
-/// holds fewer: `to`'s files and records are copied into `dir`, held to
-/// their records' sha256, and handed to the disk; `to` is set aside whole
-/// under `state/tmp/trash/`, and `dir` renamed to `to`. Two renames of a
-/// folder and a few copies, where moving `dir`'s files one by one would
-/// create each in a folder that grows, reading it whole each time. A run
-/// cut off before `to` is set aside finds the copies in `dir` the same as
-/// `to`'s files; one cut off after, `to` not there, moves `dir` whole.
+/// holds fewer: `to`'s files and records are renamed into `dir` (a rename
+/// between folders takes seconds there whatever the file's size, and
+/// copies nothing), `to` is removed, and `dir` is renamed to `to`. A few renames, where
+/// moving `dir`'s files one by one would create each in a folder that
+/// grows, reading it whole each time. A run cut off part way finds `to`
+/// holding fewer still, and goes on; one cut off after `to` went moves
+/// `dir` whole.
 fn swap(mirror: &Mirror, archive: &Archive, dir: &Path, to: &Path) -> Result<(), MirrorError> {
     let (data, _, _) = listing(to).unwrap_or_default();
     let here: std::collections::HashSet<String> = std::fs::read_dir(to)
@@ -406,7 +406,6 @@ fn swap(mirror: &Mirror, archive: &Archive, dir: &Path, to: &Path) -> Result<(),
         let record = Archive::record_where(&from, |n| here.contains(n))
             .expect("a swappable folder's files have records");
         let sidecar = Archive::read_record(&record)?;
-        let kept = read_held(&record, None)?;
         // Logged where it is, which is where it stays: its copy is held at
         // that path once `dir` is renamed.
         let step = Step {
@@ -416,13 +415,12 @@ fn swap(mirror: &Mirror, archive: &Archive, dir: &Path, to: &Path) -> Result<(),
             to: from.clone(),
             action: Action::Move,
         };
-        log(mirror, &step, false)?;
-        let bytes = read_held(&from, Some(&sidecar.content.sha256))?;
-        put(&dir.join(name), &bytes, false)?;
-        let record_name = record.file_name().expect("a record has a name");
-        put(&dir.join(record_name), &kept, false)?;
+        log(mirror, &step, true)?;
+        let into = dir.join(name);
+        std::fs::rename(&from, &into).map_err(MirrorError::io(&into))?;
+        let record_into = dir.join(record.file_name().expect("a record has a name"));
+        std::fs::rename(&record, &record_into).map_err(MirrorError::io(&record_into))?;
     }
-    rustix::fs::sync();
     let step = Step {
         at: Stamp::now(),
         url: folder_url(archive, dir).unwrap_or_default(),
@@ -431,7 +429,8 @@ fn swap(mirror: &Mirror, archive: &Archive, dir: &Path, to: &Path) -> Result<(),
         action: Action::Folder,
     };
     log(mirror, &step, true)?;
-    set_aside(mirror, archive, to)?;
+    // Empty but for AppleDouble files, which macOS removes with it.
+    std::fs::remove_dir(to).map_err(MirrorError::io(to))?;
     std::fs::rename(dir, to).map_err(MirrorError::io(to))
 }
 
@@ -1124,6 +1123,8 @@ mod tests {
         std::fs::create_dir_all(&few).unwrap();
         std::fs::rename(&d, few.join("d.zip")).unwrap();
         std::fs::rename(format!("{}.json", d.display()), few.join("d.zip.json")).unwrap();
+        // Left behind by the renames, and removed with the folder.
+        std::fs::write(few.join("._stray"), b"").unwrap();
         let s = relayout(&mirror, &archive, false, |_| {}).unwrap();
         assert_eq!((s.folders_swapped, s.moved), (1, 3), "{s:?}");
         for n in ["a", "b", "c", "d"] {
@@ -1132,9 +1133,8 @@ mod tests {
             assert_eq!(std::fs::read(held.unwrap().path).unwrap(), n.as_bytes());
         }
         assert!(!archive.url_path(X).exists());
-        let trash = mirror.tmp_dir().join("trash/www.nemweb.com.au/Reports/X");
-        assert_eq!(std::fs::read(trash.join("d.zip")).unwrap(), b"d");
-        // Logged: the copy, where it stays, then the folder.
+        assert!(!mirror.tmp_dir().join("trash").exists());
+        // Logged: the file moved, where it stays, then the folder.
         let log = std::fs::read_to_string(mirror.relayout_path()).unwrap();
         assert_eq!(log.lines().count(), 2);
 
