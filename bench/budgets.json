@@ -6,16 +6,16 @@
   },
   "benches": {
     "e2e/ingest_synthetic_zip": {
-      "max_ms": 143.092,
+      "max_ms": 141.403,
       "max_peak_heap_mb": 13.5,
-      "max_rss_mb": 102.655,
-      "min_rows_per_s": 3663999.13
+      "max_rss_mb": 100.06,
+      "min_rows_per_s": 3707749.565
     },
     "fetch/download": {
-      "min_mb_per_s": 800.0
+      "min_mb_per_s": 974.333
     },
     "fetch/listing_parse": {
-      "min_mb_per_s": 900.0
+      "min_mb_per_s": 1025.53
     },
     "mirror/listing_parse": {
       "min_mb_per_s": 720.0
@@ -27,22 +27,22 @@
       "min_mb_per_s": 870.0
     },
     "parse/scan_headers_only": {
-      "min_mb_per_s": 5300.0
+      "min_mb_per_s": 5551.326
     },
     "parse/scan_many_blocks": {
       "min_mb_per_s": 105.0
     },
     "parse/scan_split_only": {
-      "min_mb_per_s": 1378.312
+      "min_mb_per_s": 1426.723
     },
     "parse/scan_typed_arrow": {
       "min_mb_per_s": 474.192
     },
     "parse_values/decimal": {
-      "max_ns": 22.0
+      "max_ns": 21.541
     },
     "parse_values/float_long": {
-      "max_ns": 38.876
+      "max_ns": 37.719
     },
     "parse_values/float_short": {
       "max_ns": 6.274
@@ -53,23 +53,30 @@
     "parse_values/timestamp": {
       "max_ns": 8.908
     },
+    "plain/gbb_csv": {
+      "min_mb_per_s": 114.07
+    },
+    "plain/wemde_json": {
+      "min_mb_per_s": 39.73
+    },
     "query/resolve_from_table": {
       "min_rows_per_s": 6500000.0
     },
     "query/resolve_interval_day": {
-      "min_rows_per_s": 16700000.0
+      "min_rows_per_s": 17015936.791
     },
     "query/resolve_known_at": {
-      "min_rows_per_s": 27000000.0
+      "min_rows_per_s": 27076857.729
     },
     "query/resolve_revisions_day": {
       "min_rows_per_s": 16300000.0
     },
     "registry/load_embedded_from_blob": {
+      "max_ms": 2.148,
       "max_ns": 2000000.0
     },
     "registry/resolve_drift_cached": {
-      "max_ns": 529.553
+      "max_ns": 299.836
     },
     "registry/resolve_exact": {
       "max_ns": 45.891

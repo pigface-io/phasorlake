@@ -34,3 +34,7 @@ harness = false
 [[bench]]
 name = "values"
 harness = false
+
+[[bench]]
+name = "plain"
+harness = false
