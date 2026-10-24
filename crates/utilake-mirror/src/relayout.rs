@@ -127,6 +127,9 @@ pub fn relayout(
     // Files copied to their place whose sources go once the copies are on
     // the disk: one sync for a batch, not one for each file.
     let mut copied: Vec<(PathBuf, PathBuf)> = Vec::new();
+    // Steps waiting to be taken together, and their bytes.
+    let mut pending: Vec<(Step, Provenance, PathBuf)> = Vec::new();
+    let mut bytes = 0u64;
     for dir in &stale {
         if whole.iter().any(|w| dir.starts_with(w)) {
             continue;
@@ -203,13 +206,16 @@ pub fn relayout(
                 versions.insert(step.url.clone(), name);
             }
             if !dry_run {
-                log(mirror, &step, false)?;
-                copied.push(take(&step, sidecar, &record)?);
-                if copied.len().is_multiple_of(BATCH) {
+                bytes += sidecar.content.size;
+                pending.push((step, sidecar, record));
+                if pending.len() >= BATCH || bytes >= CHUNK_BYTES {
+                    copied.extend(take(mirror, std::mem::take(&mut pending))?);
+                    bytes = 0;
                     rustix::fs::sync();
                 }
             }
         }
+        copied.extend(take(mirror, std::mem::take(&mut pending))?);
         if !copied.is_empty() {
             rustix::fs::sync();
             if drained(&here, &copied) {
@@ -367,6 +373,9 @@ fn plan(
 /// Copies handed to the disk together: one sync for them all.
 const BATCH: usize = if cfg!(test) { 2 } else { 512 };
 
+/// The most bytes read into memory for one batch.
+const CHUNK_BYTES: u64 = 256 << 20;
+
 /// Removes the sources of copies already on the disk (the file, then its
 /// record). A record gone already, by a run cut off, is passed over.
 fn settle(copied: &mut Vec<(PathBuf, PathBuf)>) -> Result<(), MirrorError> {
@@ -474,42 +483,17 @@ fn rename_record(from: &Path, record: &Path, to: &Path) -> Result<(), MirrorErro
     std::fs::rename(record, &target).map_err(MirrorError::io(Path::new(&target)))
 }
 
-/// Puts the bytes of `from` at `to`, in another folder, without a rename
-/// between folders: exFAT under macOS's FSKit takes seconds for one when a
-/// folder holds tens of thousands of entries, where a copy, a rename
-/// within one folder and an unlink each take milliseconds (measured on
-/// the volume). The bytes go to `{to}.part`, hashed on the way and, with
-/// `sha256`, held to it; handed to the disk when `durable` (else by the
-/// caller's sync); renamed into place; and given `from`'s modified time.
-/// `from` is left for the caller to remove.
-fn copy_across(
-    from: &Path,
-    to: &Path,
-    sha256: Option<&Sha256>,
-    durable: bool,
-) -> Result<(), MirrorError> {
-    use sha2::Digest as _;
-    use std::io::{Read as _, Write as _};
-    let mut part = to.as_os_str().to_owned();
-    part.push(".part");
-    let part = PathBuf::from(part);
+/// A file read whole, and its modified time.
+type Bytes = (Vec<u8>, Option<std::time::SystemTime>);
+
+/// Reads the file at `from` whole, held to `sha256` when given.
+fn read_held(from: &Path, sha256: Option<&Sha256>) -> Result<Bytes, MirrorError> {
     let mut src = std::fs::File::open(from).map_err(MirrorError::io(from))?;
     let modified = src.metadata().and_then(|m| m.modified()).ok();
-    let mut dst = std::fs::File::create(&part).map_err(MirrorError::io(&part))?;
-    let mut hasher = sha2::Sha256::new();
-    let mut buf = vec![0u8; 1 << 20];
-    loop {
-        let n = src.read(&mut buf).map_err(MirrorError::io(from))?;
-        if n == 0 {
-            break;
-        }
-        hasher.update(&buf[..n]);
-        dst.write_all(&buf[..n]).map_err(MirrorError::io(&part))?;
-    }
-    let got = Sha256(hasher.finalize().into());
+    let mut bytes = Vec::new();
+    std::io::Read::read_to_end(&mut src, &mut bytes).map_err(MirrorError::io(from))?;
+    let got = Sha256::of(&bytes);
     if let Some(want) = sha256.filter(|w| **w != got) {
-        drop(dst);
-        let _ = std::fs::remove_file(&part);
         return Err(crate::net::FetchError::Sha256Mismatch {
             path: from.display().to_string(),
             expected: want.hex(),
@@ -517,8 +501,23 @@ fn copy_across(
         }
         .into());
     }
+    Ok((bytes, modified))
+}
+
+/// Writes `bytes` at `to`, in another folder than they came from, without
+/// a rename between folders: exFAT under macOS's FSKit takes seconds for
+/// one when a folder holds tens of thousands of entries. They go to
+/// `{to}.part`, handed to the disk when `durable` (else by the caller's
+/// sync), are renamed into place and given the modified time they had.
+fn put(to: &Path, (bytes, modified): &Bytes, durable: bool) -> Result<(), MirrorError> {
+    use std::io::Write as _;
+    let mut part = to.as_os_str().to_owned();
+    part.push(".part");
+    let part = PathBuf::from(part);
+    let mut dst = std::fs::File::create(&part).map_err(MirrorError::io(&part))?;
+    dst.write_all(bytes).map_err(MirrorError::io(&part))?;
     if let Some(t) = modified {
-        let _ = dst.set_modified(t);
+        let _ = dst.set_modified(*t);
     }
     if durable {
         crate::net::archive::to_disk(&dst).map_err(MirrorError::io(&part))?;
@@ -535,51 +534,70 @@ fn drop_records(path: &Path) -> Result<(), MirrorError> {
     Ok(())
 }
 
-/// Takes one step. A file moved is copied to its place; a file the same
-/// as the one there adds its addresses to that one's record. Either way
-/// its source and record are returned, to go once the batch is on the
-/// disk.
+/// Steps taken together, each logged first, every source read before
+/// any target is written: on exFAT a look for a name reads its whole
+/// folder, which stays in the cache only while that folder is the one in
+/// use, so going back and forth between a large source folder and a large
+/// target folder reads each from the disk every time. A file moved is
+/// copied to its place, held to its record's sha256; a file the same as
+/// the one there adds its addresses to that one's record. Each source and
+/// record is returned, to go once the batch is on the disk.
 fn take(
-    step: &Step,
-    sidecar: Provenance,
-    record: &Path,
-) -> Result<(PathBuf, PathBuf), MirrorError> {
-    match step.action {
-        Action::Move | Action::Version | Action::Folder => {
-            let dir = step.to.parent().expect("an archived path is in a folder");
-            std::fs::create_dir_all(dir).map_err(MirrorError::io(dir))?;
-            // The record first: a run cut off before the data's copy lands
-            // finds the target's record naming bytes not there, and the
-            // file still at `from`, which it moves again.
-            let suffix = record_suffix(&step.from, record);
-            let mut record_to = step.to.as_os_str().to_owned();
-            record_to.push(&suffix);
-            copy_across(&step.from, &step.to, Some(&sidecar.content.sha256), false)?;
-            copy_across(record, Path::new(&record_to), None, false)?;
-            Ok((step.from.clone(), record.to_path_buf()))
-        }
-        Action::Same => {
-            if let Some(mut kept) = Archive::read(&step.to)? {
-                let url = sidecar.url().to_owned();
-                let mut changed = kept.add(Address {
-                    via: Via::Same {
-                        listed: sidecar.listed(&url),
-                    },
-                    url,
-                    seen: Stamp::now(),
-                    gone: None,
-                });
-                for a in sidecar.addresses.into_iter().skip(1) {
-                    changed |= kept.add(a);
-                }
-                // Handed to the disk with the batch, before the source goes.
-                if changed {
-                    Archive::write_unsynced(&step.to, &kept)?;
-                }
+    mirror: &Mirror,
+    steps: Vec<(Step, Provenance, PathBuf)>,
+) -> Result<Vec<(PathBuf, PathBuf)>, MirrorError> {
+    for (step, _, _) in &steps {
+        log(mirror, step, false)?;
+    }
+    let mut read = Vec::with_capacity(steps.len());
+    for (step, sidecar, record) in &steps {
+        read.push(match step.action {
+            Action::Same => None,
+            _ => Some((
+                read_held(&step.from, Some(&sidecar.content.sha256))?,
+                read_held(record, None)?,
+            )),
+        });
+    }
+    let mut done = Vec::with_capacity(steps.len());
+    for ((step, sidecar, record), bytes) in steps.into_iter().zip(read) {
+        match bytes {
+            Some((data, kept)) => {
+                let dir = step.to.parent().expect("an archived path is in a folder");
+                std::fs::create_dir_all(dir).map_err(MirrorError::io(dir))?;
+                let mut record_to = step.to.as_os_str().to_owned();
+                record_to.push(record_suffix(&step.from, &record));
+                put(&step.to, &data, false)?;
+                put(Path::new(&record_to), &kept, false)?;
             }
-            Ok((step.from.clone(), record.to_path_buf()))
+            None => same(&step, sidecar)?,
+        }
+        done.push((step.from, record));
+    }
+    Ok(done)
+}
+
+/// Adds the addresses of a file dropped as the same bytes as the file at
+/// its target to the target's record, handed to the disk with the batch.
+fn same(step: &Step, sidecar: Provenance) -> Result<(), MirrorError> {
+    if let Some(mut kept) = Archive::read(&step.to)? {
+        let url = sidecar.url().to_owned();
+        let mut changed = kept.add(Address {
+            via: Via::Same {
+                listed: sidecar.listed(&url),
+            },
+            url,
+            seen: Stamp::now(),
+            gone: None,
+        });
+        for a in sidecar.addresses.into_iter().skip(1) {
+            changed |= kept.add(a);
+        }
+        if changed {
+            Archive::write_unsynced(&step.to, &kept)?;
         }
     }
+    Ok(())
 }
 
 /// Finishes the step a run before logged last, when it was cut off
@@ -887,17 +905,17 @@ mod tests {
         std::fs::create_dir_all(to.parent().unwrap()).unwrap();
         std::fs::write(&from, b"bytes").unwrap();
         let wrong = crate::net::Sha256::of(b"other");
-        let e = copy_across(&from, &to, Some(&wrong), true).unwrap_err();
+        let e = read_held(&from, Some(&wrong)).unwrap_err();
         assert!(e.to_string().contains("hashes to"), "{e}");
-        assert!(!to.exists() && !dir.path().join("b/a.part").exists());
-        copy_across(&from, &to, Some(&crate::net::Sha256::of(b"bytes")), true).unwrap();
+        let held = read_held(&from, Some(&crate::net::Sha256::of(b"bytes"))).unwrap();
+        put(&to, &held, true).unwrap();
         assert_eq!(std::fs::read(&to).unwrap(), b"bytes");
         assert_eq!(
             std::fs::metadata(&to).unwrap().modified().unwrap(),
             std::fs::metadata(&from).unwrap().modified().unwrap()
         );
-        assert!(copy_across(&dir.path().join("none"), &to, None, false).is_err());
-        assert!(copy_across(&from, &dir.path().join("no/such/c"), None, false).is_err());
+        assert!(read_held(&dir.path().join("none"), None).is_err());
+        assert!(put(&dir.path().join("no/such/c"), &held, false).is_err());
     }
 
     #[test]
@@ -947,11 +965,12 @@ mod tests {
         // Twice: the second time the target names it already, and its
         // record is left as it is.
         for _ in 0..2 {
-            take(&step(Action::Same, &to), sc.clone(), &record).unwrap();
+            same(&step(Action::Same, &to), sc.clone()).unwrap();
         }
         std::fs::remove_file(format!("{}.json", to.display())).unwrap();
-        let done = take(&step(Action::Same, &to), sc, &record).unwrap();
-        assert_eq!(done, (from3.clone(), record.clone()));
+        let done = take(&mirror, vec![(step(Action::Same, &to), sc, record.clone())]).unwrap();
+        assert_eq!(done, [(from3.clone(), record.clone())]);
+        let done = done.into_iter().next().unwrap();
         std::fs::remove_file(&record).unwrap();
         settle(&mut vec![done]).unwrap();
         assert!(!from3.exists());
