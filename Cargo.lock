@@ -3033,6 +3033,7 @@ dependencies = [
  "tracing-subscriber",
  "utilake-acquire",
  "utilake-core",
+ "utilake-gas",
  "utilake-iceberg",
  "utilake-kit",
  "utilake-mms-conform",
@@ -3061,6 +3062,23 @@ dependencies = [
  "utilake-mms-decode",
  "utilake-zip",
  "xxhash-rust",
+]
+
+[[package]]
+name = "utilake-gas"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "tempfile",
+ "toml",
+ "url",
+ "utilake-acquire",
+ "utilake-core",
+ "utilake-kit",
+ "utilake-mms-conform",
+ "utilake-mms-decode",
+ "utilake-mms-registry",
+ "utilake-plain-decode",
 ]
 
 [[package]]
@@ -3115,6 +3133,7 @@ dependencies = [
  "url",
  "utilake-acquire",
  "utilake-core",
+ "utilake-plain-decode",
  "utilake-zip",
  "zip",
 ]
@@ -3298,6 +3317,9 @@ dependencies = [
  "utilake-acquire",
  "utilake-core",
  "utilake-kit",
+ "utilake-mms-conform",
+ "utilake-mms-registry",
+ "utilake-plain-decode",
 ]
 
 [[package]]

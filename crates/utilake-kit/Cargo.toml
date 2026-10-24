@@ -15,6 +15,8 @@ workspace = true
 utilake-zip.workspace = true
 utilake-core.workspace = true
 utilake-acquire.workspace = true
+utilake-plain-decode.workspace = true
+async-trait.workspace = true
 arrow-array.workspace = true
 arrow-schema.workspace = true
 serde.workspace = true
@@ -27,6 +29,5 @@ flate2.workspace = true
 crc32fast.workspace = true
 
 [dev-dependencies]
-async-trait.workspace = true
 tempfile.workspace = true
 tokio = { workspace = true, features = ["rt", "macros"] }

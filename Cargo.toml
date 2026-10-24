@@ -18,6 +18,7 @@ members = [
     "crates/utilake-kit",
     "crates/utilake-nem",
     "crates/utilake-wem",
+    "crates/utilake-gas",
     "crates/utilake-writer",
     "crates/utilake-pipeline",
     "crates/utilake-query",
@@ -37,6 +38,7 @@ default-members = [
     "crates/utilake-kit",
     "crates/utilake-nem",
     "crates/utilake-wem",
+    "crates/utilake-gas",
     "crates/utilake-writer",
     "crates/utilake-pipeline",
     "crates/utilake-query",
@@ -92,6 +94,7 @@ utilake-acquire = { path = "crates/utilake-acquire" }
 utilake-kit = { path = "crates/utilake-kit" }
 utilake-nem = { path = "crates/utilake-nem" }
 utilake-wem = { path = "crates/utilake-wem" }
+utilake-gas = { path = "crates/utilake-gas" }
 utilake-writer = { path = "crates/utilake-writer" }
 utilake-pipeline = { path = "crates/utilake-pipeline" }
 utilake-query = { path = "crates/utilake-query" }

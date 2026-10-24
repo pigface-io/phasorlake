@@ -25,8 +25,9 @@ fn emit(tx: &mpsc::Sender<Event>, e: Event) {
 
 /// A local path as a `RemoteFile` with a `file://` URL, and the kit that
 /// reads it: the kit whose source recognises the name, which then says
-/// the file's table and period; else the first kit with a decoder for
-/// the name, or for a zip. `None` when no kit reads such a file.
+/// the file's table and period; else the fallback kit when it has a
+/// decoder for the name, or for a zip, else the nearest kit before it that
+/// has. `None` when no kit reads such a file.
 pub fn local_remote(
     kits: &KitRegistry,
     path: &std::path::Path,
@@ -46,6 +47,7 @@ pub fn local_remote(
     let kit = kits
         .kits()
         .iter()
+        .rev()
         .find(|k| is_zip || k.decoder_for(&name).is_some())?;
     Some((
         kit.id,
@@ -102,11 +104,11 @@ pub fn recorded_remote(kits: &KitRegistry, rec: &FileRecord) -> Option<(&'static
 }
 
 /// The kit of a listed file: the kit whose source listed it, else the
-/// first kit, which an assembled binary always has.
+/// fallback kit, which an assembled binary always has.
 fn kit_of<'k>(kits: &'k KitRegistry, source_id: &str) -> Option<&'k SourceKit> {
     kits.source(source_id)
         .map(|(k, _)| k)
-        .or_else(|| kits.kits().first())
+        .or_else(|| kits.fallback())
 }
 
 /// The transforms of recorded shapes.

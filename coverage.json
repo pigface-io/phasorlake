@@ -15,6 +15,7 @@
     "crates/utilake-kit/src": 98,
     "crates/utilake-nem/src": 96,
     "crates/utilake-wem/src": 96,
+    "crates/utilake-gas/src": 100,
     "crates/utilake-writer/src": 94,
     "crates/utilake-pipeline/src": 83,
     "crates/utilake-cli/src": 78,

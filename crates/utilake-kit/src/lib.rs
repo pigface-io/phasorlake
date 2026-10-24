@@ -15,6 +15,7 @@
 pub mod catalog;
 pub mod container;
 pub mod decoder;
+pub mod feed_folders;
 pub mod kit;
 pub mod quarantine;
 pub mod transform;
@@ -24,5 +25,6 @@ pub use decoder::{
     Block, BlockSink, DecodeCtx, DecodeOptions, DecodeStats, Decoder, Flow, LoadMode, RowAt,
     Strictness, TableRef,
 };
+pub use feed_folders::{FeedFolders, TableOf};
 pub use kit::{KitRegistry, SourceKit};
 pub use transform::Transform;

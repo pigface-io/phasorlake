@@ -51,6 +51,14 @@ impl KitRegistry {
         self.kits.iter().find(|k| k.id == id)
     }
 
+    /// The kit a file no source claims is read with: the last one
+    /// assembled, whose decoder reads a file by its own rows (the MMS
+    /// kit); the kits whose sources know a file by its path come before
+    /// it.
+    pub fn fallback(&self) -> Option<&SourceKit> {
+        self.kits.last()
+    }
+
     /// The kit and source of a source id, as the manifest records it.
     pub fn source(&self, source_id: &str) -> Option<(&SourceKit, &Arc<dyn Source>)> {
         self.kits.iter().find_map(|k| {
@@ -300,6 +308,8 @@ mod tests {
         assert_eq!(kits.kits().len(), 2);
         assert_eq!(kits.kit("b").unwrap().id, "b");
         assert!(kits.kit("c").is_none());
+        assert_eq!(kits.fallback().unwrap().id, "b");
+        assert!(KitRegistry::default().fallback().is_none());
         let (k, s) = kits.source("b-two").unwrap();
         assert_eq!((k.id, s.id()), ("b", "b-two"));
         assert!(kits.source("nope").is_none());

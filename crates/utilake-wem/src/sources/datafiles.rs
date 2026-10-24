@@ -7,8 +7,11 @@
 //!   generatedAt: "Thu Nov 02 2023 11:35:00Z"
 //! ```
 //!
-//! Only manifests are read today; downloading and parsing the CSVs needs
-//! the plain-CSV decoder, which is not written yet.
+//! The manifests list what the host publishes; the archive is read by the
+//! feed's folders (`public/public-data/datafiles/{dataset}/`), every
+//! version the mirror kept of a rewritten month in order.
+
+use std::sync::Arc;
 
 use async_trait::async_trait;
 use serde::Deserialize;
@@ -16,8 +19,10 @@ use url::Url;
 use utilake_core::YearMonth;
 use utilake_core::calendar::WEM_OFFSET_SECS;
 use utilake_core::timetext::{self, Stamp};
+use utilake_kit::{FeedFolders, TableOf};
+use utilake_plain_decode::feeds::feed;
 
-use utilake_acquire::{FetchError, Fetcher, Query, RemoteFile, Source};
+use utilake_acquire::{Archive, FetchError, Fetcher, LocalFile, Query, RemoteFile, Source};
 
 /// The source id.
 pub const SOURCE_ID: &str = "wem-datafiles";
@@ -88,22 +93,39 @@ pub fn parse_manifest(url: &str, text: &str) -> Result<Vec<ManifestEntry>, Fetch
 }
 
 /// WEM datasets.
-#[derive(Debug, Clone)]
 pub struct WemDatafiles {
     base: Url,
     /// Dataset names to list, e.g. `facility-scada`.
     pub datasets: Vec<String>,
+    /// The feed's folders, which find the files in the archive.
+    folders: FeedFolders,
 }
 
 impl WemDatafiles {
-    /// Over `base`, normally `https://data.wa.aemo.com.au`.
+    /// Over `base`, normally `https://data.wa.aemo.com.au`; no table
+    /// claims a file until [`Self::with_tables`].
     pub fn new(base: &str, datasets: Vec<String>) -> Result<Self, FetchError> {
-        let base = Url::parse(base).map_err(|e| FetchError::Parse {
+        let url = Url::parse(base).map_err(|e| FetchError::Parse {
             url: base.to_owned(),
             what: "base URL",
             message: e.to_string(),
         })?;
-        Ok(Self { base, datasets })
+        let feed = feed("datafiles").expect("the feeds table names the WEM datafiles");
+        let folders = FeedFolders::new(SOURCE_ID, base, feed, Arc::new(|_| None))?;
+        Ok(Self {
+            base: url,
+            datasets,
+            folders,
+        })
+    }
+
+    /// The same source, its files' tables named by `table_of`.
+    pub fn with_tables(self, table_of: TableOf) -> Result<Self, FetchError> {
+        let feed = feed("datafiles").expect("the feeds table names the WEM datafiles");
+        Ok(Self {
+            folders: FeedFolders::new(SOURCE_ID, self.base.as_str(), feed, table_of)?,
+            ..self
+        })
     }
 
     /// The manifest URL of a dataset.
@@ -118,8 +140,9 @@ impl WemDatafiles {
     }
 }
 
-/// What a datafile's name says: `{dataset}-YYYY-MM.csv`, as AEMO names
-/// them. `None` for any other name.
+/// What a datafile's name says: `{dataset}-YYYY-MM.csv` (a month) or
+/// `{dataset}-YYYY.csv` (a year, whose period no month names), as AEMO
+/// names them. `None` for any other name.
 pub fn describe_name(url: Url) -> Option<RemoteFile> {
     let name = url
         .path_segments()
@@ -127,17 +150,26 @@ pub fn describe_name(url: Url) -> Option<RemoteFile> {
         .filter(|s| !s.is_empty())?
         .to_owned();
     let stem = name.strip_suffix(".csv")?;
-    let (dataset, month) = stem.rsplit_once('-')?;
-    let (dataset, year) = dataset.rsplit_once('-')?;
-    if dataset.is_empty() || year.len() != 4 || month.len() != 2 {
+    let digits = |s: &str| !s.is_empty() && s.bytes().all(|b| b.is_ascii_digit());
+    let (dataset, last) = stem.rsplit_once('-')?;
+    let (dataset, period) = if last.len() == 4 && digits(last) {
+        (dataset, None)
+    } else {
+        let (dataset, year) = dataset.rsplit_once('-')?;
+        if year.len() != 4 || last.len() != 2 || !digits(year) || !digits(last) {
+            return None;
+        }
+        let ym: YearMonth = format!("{year}-{last}").parse().ok()?;
+        (dataset, Some(ym.into()))
+    };
+    if dataset.is_empty() {
         return None;
     }
-    let ym: YearMonth = format!("{year}-{month}").parse().ok()?;
     Some(RemoteFile {
         url,
         source: SOURCE_ID,
         table: Some(dataset.to_owned()),
-        period: Some(ym.into()),
+        period,
         size: None,
         modified: None,
         modified_at: None,
@@ -150,8 +182,21 @@ impl Source for WemDatafiles {
         SOURCE_ID
     }
 
+    /// A datafile by its name, with the table the registry gives its block
+    /// when the URL lies under the feed's folders.
     fn describe(&self, url: &Url) -> Option<RemoteFile> {
-        describe_name(url.clone())
+        let mut r = describe_name(url.clone())?;
+        if let Some(f) = self.folders.describe(url) {
+            r.table = f.table.or(r.table);
+            r.period = r.period.or(f.period);
+        }
+        Some(r)
+    }
+
+    /// The archived datafiles, every version the mirror kept of a
+    /// rewritten month in order, each naming the one before it.
+    fn archived(&self, archive: &Archive, query: &Query) -> Result<Vec<LocalFile>, FetchError> {
+        self.folders.archived(archive, query)
     }
 
     async fn list(&self, query: &Query, fetcher: &Fetcher) -> Result<Vec<RemoteFile>, FetchError> {
@@ -220,10 +265,43 @@ mod tests {
         ] {
             assert!(describe_name(Url::parse(bad).unwrap()).is_none(), "{bad}");
         }
+        // A year's file: its dataset, no month.
+        let yearly = describe_name(
+            Url::parse("https://h/public/public-data/datafiles/balancing-summary/balancing-summary-2022.csv").unwrap(),
+        )
+        .unwrap();
+        assert_eq!(yearly.table.as_deref(), Some("balancing-summary"));
+        assert_eq!(yearly.period, None);
         let w = WemDatafiles::new("https://h", Vec::new()).unwrap();
         assert!(
             w.describe(&Url::parse("https://h/facility-scada-2023-10.csv").unwrap())
                 .is_some()
+        );
+        // Under the feed's folders, the registry's table replaces the
+        // dataset once tables are named; the archive is read there too.
+        let named = w
+            .with_tables(Arc::new(|b| Some(format!("WEM_{}", b.name))))
+            .unwrap();
+        let r = named
+            .describe(
+                &Url::parse("https://h/public/public-data/datafiles/facility-scada/facility-scada-2023-10.csv")
+                    .unwrap(),
+            )
+            .unwrap();
+        assert_eq!(r.table.as_deref(), Some("WEM_FACILITY_SCADA"));
+        assert_eq!(r.period.unwrap().to_string(), "2023-10");
+        let dir = tempfile::tempdir().unwrap();
+        let q = Query {
+            tables: Vec::new(),
+            exclude: Vec::new(),
+            range: TimeRange::months("2023-10".parse().unwrap(), "2023-10".parse().unwrap()),
+            instants: None,
+        };
+        assert!(
+            named
+                .archived(&Archive::new(dir.path()), &q)
+                .unwrap()
+                .is_empty()
         );
     }
 
