@@ -302,7 +302,7 @@ fn rollups(
 fn rollup_of(url: &str) -> Option<(String, String, String)> {
     const ARCHIVE: &str = "/Reports/ARCHIVE/";
     let at = url.find(ARCHIVE)?;
-    if utilake_plain_decode::layout::listing(url).as_deref() != Some("ARCHIVE") {
+    if utilake_provenance::layout::listing(url).as_deref() != Some("ARCHIVE") {
         return None;
     }
     let (folder, name) = url.rsplit_once('/')?;

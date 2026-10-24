@@ -65,11 +65,11 @@ impl Folder {
     }
 
     /// Where its host lists it: one side per listing, as
-    /// `utilake_plain_decode::layout::listed_path` puts the listing back;
+    /// `utilake_provenance::layout::listed_path` puts the listing back;
     /// a folder of no listing is listed at its own path, under the listing
     /// that path names, if any.
     pub fn sides(&self) -> Vec<Side> {
-        use utilake_plain_decode::layout;
+        use utilake_provenance::layout;
         let host =
             utilake_plain_decode::feeds::feed(&self.feed).map_or("www.nemweb.com.au", |f| f.host);
         let path = self.path();

@@ -1,5 +1,5 @@
 //! Moving an archive kept with each URL as its path to the layout of
-//! `utilake_plain_decode::layout`: one folder per report folder, the
+//! `utilake_provenance::layout`: one folder per report folder, the
 //! listing segment (`CURRENT`, `ARCHIVE`, `current`, `previous`) dropped.
 //!
 //! Every file with a sidecar in a folder under a listing moves, with its
@@ -86,7 +86,7 @@ impl Mirror {
 }
 
 /// Moves the archive (and the mirror's journals) to the layout of
-/// `utilake_plain_decode::layout`. With `dry_run`, only says what it would
+/// `utilake_provenance::layout`. With `dry_run`, only says what it would
 /// do. `on_step` hears every step, before it is taken.
 pub fn relayout(
     mirror: &Mirror,

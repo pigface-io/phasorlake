@@ -15,6 +15,7 @@ workspace = true
 utilake-plain-decode.workspace = true
 utilake-core.workspace = true
 utilake-zip.workspace = true
+utilake-provenance.workspace = true
 async-trait.workspace = true
 bytes.workspace = true
 crc32fast.workspace = true

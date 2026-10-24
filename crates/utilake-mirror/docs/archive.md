@@ -32,7 +32,7 @@ https://www.nemweb.com.au/Reports/ARCHIVE/Dispatch_SCADA/PUBLIC_DISPATCHSCADA_20
 {home}/archive/www.nemweb.com.au/Reports/Dispatch_SCADA/…
 ```
 
-`utilake_plain_decode::layout` (in utilake-schemas) holds the listings and
+`utilake_provenance::layout` (in utilake-schemas) holds the listings and
 is the reference; `Archive::path_for`
 (`crates/utilake-mirror/src/net/archive.rs`) applies it. Records of what a
 listing showed (the crawl's folder reads and kept pages) stay at the

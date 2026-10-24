@@ -333,7 +333,7 @@ impl Archive {
         &self.root
     }
 
-    /// Where a URL's bytes are kept (`utilake_plain_decode::layout`): the
+    /// Where a URL's bytes are kept (`utilake_provenance::layout`): the
     /// URL as a path under the archive, host first, one folder per report
     /// folder (a `CURRENT` or `ARCHIVE` listing segment dropped). A query
     /// string, which no archive URL has, is folded into the file name as a
@@ -341,19 +341,19 @@ impl Archive {
     /// of the file.
     pub fn path_for(&self, url: &str) -> PathBuf {
         let mut path = self.root.clone();
-        for s in utilake_plain_decode::layout::local_segments(url) {
+        for s in utilake_provenance::layout::local_segments(url) {
             path.push(s);
         }
         path
     }
 
     /// `url` as a path under the archive with nothing dropped
-    /// (`utilake_plain_decode::layout::url_segments`): where a record of
+    /// (`utilake_provenance::layout::url_segments`): where a record of
     /// one listing is kept, so the two listings of a report folder keep a
     /// record each.
     pub fn url_path(&self, url: &str) -> PathBuf {
         let mut path = self.root.clone();
-        for s in utilake_plain_decode::layout::url_segments(url) {
+        for s in utilake_provenance::layout::url_segments(url) {
             path.push(s);
         }
         path
