@@ -27,6 +27,7 @@ url.workspace = true
 [dev-dependencies]
 utilake-mms-conform.workspace = true
 utilake-nem.workspace = true
+utilake-gas.workspace = true
 utilake-wem.workspace = true
 utilake-mms-decode.workspace = true
 utilake-mms-registry.workspace = true

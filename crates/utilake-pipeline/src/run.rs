@@ -27,14 +27,19 @@ fn emit(tx: &mpsc::Sender<Event>, e: Event) {
 /// reads it: the kit whose source recognises the name, which then says
 /// the file's table and period; else the fallback kit when it has a
 /// decoder for the name, or for a zip, else the nearest kit before it that
-/// has. `None` when no kit reads such a file.
+/// has. `None` when no kit reads such a file. A version the mirror kept
+/// beside the first (`{name}@{stamp}`) is the file's URL with the stamp as
+/// its fragment: the file it is a version of, told apart.
 pub fn local_remote(
     kits: &KitRegistry,
     path: &std::path::Path,
 ) -> Option<(&'static str, RemoteFile)> {
     let abs = std::path::absolute(path).ok()?;
-    let url = Url::from_file_path(&abs).ok()?;
-    let name = abs.file_name()?.to_string_lossy().into_owned();
+    let kept = abs.file_name()?.to_string_lossy().into_owned();
+    let (name, stamp) = utilake_kit::version_of(&kept);
+    let name = name.to_owned();
+    let mut url = Url::from_file_path(abs.with_file_name(&name)).ok()?;
+    url.set_fragment(stamp);
     let size = std::fs::metadata(&abs).ok().map(|m| m.len());
     if let Some((kit, mut remote)) = kits.claim(&url) {
         remote.source = "local";

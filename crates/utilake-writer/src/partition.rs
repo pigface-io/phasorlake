@@ -1,7 +1,7 @@
 //! Splitting a batch by the market-local month of its time column.
 
 use arrow_array::cast::AsArray;
-use arrow_array::types::{TimestampMicrosecondType, UInt32Type};
+use arrow_array::types::{Date32Type, TimestampMicrosecondType, UInt32Type};
 use arrow_array::{Array, PrimitiveArray, RecordBatch};
 use arrow_schema::{DataType, Field, Schema, TimeUnit};
 use utilake_core::calendar::local_year_month;
@@ -36,37 +36,56 @@ pub fn naive_timestamp(schema: &Schema) -> Option<&Field> {
     schema.fields().iter().find_map(|f| find(f))
 }
 
-/// Splits `batch` into one batch per month of `time_col` (UTC microseconds
-/// in a column that carries the market offset, partitioned in market
-/// time). The common case, every row in one month, returns the batch
-/// itself without copying. Null time values go to [`Partition::Unknown`].
+/// Splits `batch` into one batch per month of `time_col`: UTC microseconds
+/// in a column that carries the market offset, partitioned in market time,
+/// or a date (a gas day, which has no clock). The common case, every row
+/// in one month, returns the batch itself without copying. Null time
+/// values go to [`Partition::Unknown`].
 pub fn split_by_month(
     batch: &RecordBatch,
     time_col: usize,
     offset_secs: i32,
 ) -> Result<Vec<(Partition, RecordBatch)>, StoreError> {
     let col = batch.column(time_col);
-    let DataType::Timestamp(TimeUnit::Microsecond, Some(_)) = col.data_type() else {
-        return Err(StoreError::PartitionColumnNotTimestamp {
-            column: batch.schema().field(time_col).name().clone(),
-            observed: col.data_type().to_string(),
-        });
+    let month = |y: i32, m: u32| Partition::Month {
+        year: y,
+        month: m as u8,
     };
-    let ts: &PrimitiveArray<TimestampMicrosecondType> = col.as_primitive();
+    let parts: Vec<Partition> = match col.data_type() {
+        DataType::Timestamp(TimeUnit::Microsecond, Some(_)) => {
+            let ts: &PrimitiveArray<TimestampMicrosecondType> = col.as_primitive();
+            ts.iter()
+                .map(|v| {
+                    v.map_or(Partition::Unknown, |v| {
+                        let (y, m) = local_year_month(v.saturating_mul(1_000), offset_secs);
+                        month(y, m)
+                    })
+                })
+                .collect()
+        }
+        DataType::Date32 => {
+            let days: &PrimitiveArray<Date32Type> = col.as_primitive();
+            days.iter()
+                .map(|v| {
+                    v.map_or(Partition::Unknown, |d| {
+                        let (y, m) =
+                            local_year_month(i64::from(d).saturating_mul(86_400_000_000_000), 0);
+                        month(y, m)
+                    })
+                })
+                .collect()
+        }
+        other => {
+            return Err(StoreError::PartitionColumnNotTimestamp {
+                column: batch.schema().field(time_col).name().clone(),
+                observed: other.to_string(),
+            });
+        }
+    };
     if batch.num_rows() == 0 {
         return Ok(vec![]);
     }
-    let part_of = |i: usize| -> Partition {
-        if ts.is_null(i) {
-            Partition::Unknown
-        } else {
-            let (y, m) = local_year_month(ts.value(i).saturating_mul(1_000), offset_secs);
-            Partition::Month {
-                year: y,
-                month: m as u8,
-            }
-        }
-    };
+    let part_of = |i: usize| -> Partition { parts[i] };
     let first = part_of(0);
     let mut all_same = true;
     for i in 1..batch.num_rows() {
@@ -219,6 +238,42 @@ mod tests {
                 year: 2023,
                 month: 12
             }
+        );
+    }
+
+    #[test]
+    fn a_date_column_splits_by_its_month_with_no_clock() {
+        use arrow_array::Date32Array;
+        // 2026-09-30 and 2026-10-01 as days since the epoch, and a null.
+        let days = Date32Array::from(vec![Some(20_726), Some(20_727), None]);
+        let schema = Arc::new(Schema::new(vec![Field::new(
+            "GASDATE",
+            DataType::Date32,
+            true,
+        )]));
+        let b = RecordBatch::try_new(schema, vec![Arc::new(days)]).unwrap();
+        let parts = split_by_month(&b, 0, NEM_OFFSET_SECS).unwrap();
+        assert_eq!(parts.len(), 3);
+        assert_eq!(
+            parts[0].0,
+            Partition::Month {
+                year: 2026,
+                month: 9
+            }
+        );
+        assert_eq!(
+            parts[1].0,
+            Partition::Month {
+                year: 2026,
+                month: 10
+            }
+        );
+        assert_eq!(parts[2].0, Partition::Unknown);
+        let empty = b.slice(0, 0);
+        assert!(
+            split_by_month(&empty, 0, NEM_OFFSET_SECS)
+                .unwrap()
+                .is_empty()
         );
     }
 

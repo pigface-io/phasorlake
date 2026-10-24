@@ -2483,3 +2483,125 @@ async fn a_days_snapshot_is_partitioned_by_its_day() {
         "{outputs:?}"
     );
 }
+
+/// A feed whose files restate the one before: the archive holds two
+/// versions of a GBB file, as the mirror keeps them; the second ingests
+/// only the rows the first lacked, and the manifest tells the versions
+/// apart.
+#[tokio::test]
+async fn a_restated_file_adds_only_its_new_rows() {
+    let mut e = env();
+    let registry = e.registry.clone();
+    e.deps.kits = Arc::new(KitRegistry::new(vec![
+        utilake_gas::kit(registry.clone(), &utilake_gas::GasConfig::default()).unwrap(),
+        utilake_nem::kit(registry.clone(), "https://h").unwrap(),
+    ]));
+    let archive = Archive::new(e.home.archive());
+    let url = "https://www.nemweb.com.au/Reports/CURRENT/GBB/GasBBActualFlowStorageLast31.CSV";
+    let v1 = std::fs::read(
+        Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../../testdata/plain/gbb_actual_flow_storage_last31.csv"),
+    )
+    .unwrap();
+    let text = String::from_utf8(v1.clone()).unwrap();
+    let mut lines: Vec<&str> = text.lines().collect();
+    let added = lines[1].replace("2026/09/20", "2026/09/21");
+    lines.push(&added);
+    let v2 = lines.join("\n");
+    let keep = |version: Option<&str>, bytes: &[u8], listed: &str| {
+        let base = archive.path_for(url);
+        let path = match version {
+            Some(v) => {
+                let mut name = base.file_name().unwrap().to_os_string();
+                name.push(format!("@{v}"));
+                base.with_file_name(name)
+            }
+            None => base,
+        };
+        std::fs::create_dir_all(path.parent().unwrap()).unwrap();
+        std::fs::write(&path, bytes).unwrap();
+        utilake_acquire::Archive::write_sidecar(
+            &path,
+            &utilake_acquire::Sidecar {
+                url: url.to_owned(),
+                size: bytes.len() as u64,
+                sha256: utilake_acquire::archive::sha256_hex(bytes),
+                fetched_at: "2026-10-21T12:00:00Z".into(),
+                etag: None,
+                last_modified: None,
+                last_modified_at: None,
+                listed_modified: Some(listed.to_owned()),
+                listed_modified_at: utilake_core::timetext::parse_iis_listing(listed, 36_000),
+                tool: "test".into(),
+                extracted_from: None,
+            },
+        )
+        .unwrap();
+    };
+    keep(None, &v1, "Monday, October 20, 2026 10:00 AM");
+    keep(
+        Some("20261021T191100+1000"),
+        v2.as_bytes(),
+        "Tuesday, October 21, 2026 7:11 PM",
+    );
+    let gbb = e
+        .deps
+        .kits
+        .source("gas-gbb")
+        .map(|(_, s)| s.clone())
+        .unwrap();
+    let (rep, _) = run_plan(
+        &e,
+        Plan {
+            request: "ingest gas".into(),
+            input: Input::Archive {
+                source: gbb,
+                query: Query {
+                    exclude: Vec::new(),
+                    tables: vec!["GBB_ACTUAL_FLOW_STORAGE".into()],
+                    range: TimeRange::months(
+                        utilake_core::YearMonth::new(2026, 10).unwrap(),
+                        utilake_core::YearMonth::new(2026, 10).unwrap(),
+                    ),
+                    instants: None,
+                },
+            },
+            options: RunOptions::default(),
+        },
+    )
+    .await;
+    assert_eq!(rep.exit_code, 0, "{:?}", rep.report.summary_lines());
+    assert_eq!(rep.summary.ingested, 2);
+    // Two rows from the first version, one new from the second.
+    assert_eq!(rep.summary.rows, 3, "{:?}", rep.report.summary_lines());
+    let files = walk(&e.home.lake());
+    assert!(
+        files
+            .iter()
+            .all(|f| f.contains("gas/gbb_actual_flow_storage/year=2026/month=09/")),
+        "{files:?}"
+    );
+    let ingests = e.deps.manifest.list_ingests(None, false, 10).await.unwrap();
+    let urls: Vec<&str> = ingests.iter().map(|i| i.url.as_str()).collect();
+    assert!(urls.contains(&url), "{urls:?}");
+    assert!(
+        urls.iter().any(|u| u.ends_with("#20261021T191100+1000")),
+        "{urls:?}"
+    );
+    // The kept version as a local path is the file's URL with the stamp as
+    // its fragment, claimed by the GBB source.
+    let version = archive
+        .path_for(url)
+        .with_file_name("GasBBActualFlowStorageLast31.CSV@20261021T191100+1000");
+    let (kit, local) = utilake_pipeline::local_remote(&e.deps.kits, &version).unwrap();
+    assert_eq!(kit, "gas");
+    assert!(
+        local
+            .url
+            .as_str()
+            .ends_with("/GasBBActualFlowStorageLast31.CSV#20261021T191100+1000"),
+        "{}",
+        local.url
+    );
+    assert_eq!(local.table.as_deref(), Some("GBB_ACTUAL_FLOW_STORAGE"));
+}

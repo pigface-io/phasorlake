@@ -680,10 +680,9 @@ pub fn ingest_file(input: IngestInput) -> FileReport {
     // One read buffer for every entry of the file.
     let mut scan_buf = Vec::new();
     let path = input.local.path.clone();
-    let name = path
-        .file_name()
-        .map(|n| n.to_string_lossy().into_owned())
-        .unwrap_or_default();
+    // The file's name is its URL's: a version the mirror kept beside the
+    // first (`{name}@{stamp}`) is read as the file it is a version of.
+    let name = input.local.remote.file_name();
     let mut entries = Vec::new();
     let mut file_error = None;
     let Some(kit) = input.kits.kit(input.kit) else {

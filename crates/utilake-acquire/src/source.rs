@@ -99,6 +99,12 @@ impl RemoteFile {
     pub fn stem(&self) -> String {
         let name = self.file_name();
         let stem = name.rsplit_once('.').map_or(name.as_str(), |(s, _)| s);
+        // A version of a file (the URL's fragment, a stamp) keeps its own
+        // Parquet files.
+        let stem = match self.url.fragment() {
+            Some(f) => format!("{stem}-{f}"),
+            None => stem.to_owned(),
+        };
         stem.chars()
             .map(|c| {
                 let c = c.to_ascii_lowercase();
@@ -251,5 +257,15 @@ mod tests {
             ..r2
         };
         assert_eq!(odd.stem(), "a_20b_c_");
+        // A version of a file, told apart by its fragment, has its own stem.
+        let version = RemoteFile {
+            url: Url::parse("https://h/GBB/GasBBActualFlowStorageLast31.CSV#20261021T191100+1000")
+                .unwrap(),
+            ..odd.clone()
+        };
+        assert_eq!(
+            version.stem(),
+            "gasbbactualflowstoragelast31-20261021t191100_1000"
+        );
     }
 }

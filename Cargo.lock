@@ -3253,6 +3253,7 @@ dependencies = [
  "url",
  "utilake-acquire",
  "utilake-core",
+ "utilake-gas",
  "utilake-kit",
  "utilake-mms-conform",
  "utilake-mms-decode",
