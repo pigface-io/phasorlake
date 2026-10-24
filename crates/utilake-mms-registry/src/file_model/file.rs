@@ -163,6 +163,9 @@ struct MarketFile {
     market: Market,
     utc_offset_secs: i32,
     timestamp_format: TimestampFormat,
+    /// Absent in a file from before trading days were known: midnight.
+    #[serde(default)]
+    trading_day_start_secs: i32,
 }
 
 fn parse_err(path: &Path, text: &str, e: &toml::de::Error) -> SchemaFileError {
@@ -445,6 +448,7 @@ pub fn parse_market(path: &Path, text: &str) -> Result<MarketDef, SchemaFileErro
         market: f.market,
         utc_offset_secs: f.utc_offset_secs,
         timestamp_format: f.timestamp_format,
+        trading_day_start_secs: f.trading_day_start_secs,
     })
 }
 
@@ -464,6 +468,7 @@ pub fn write_market(m: &MarketDef) -> String {
         market: m.market,
         utc_offset_secs: m.utc_offset_secs,
         timestamp_format: m.timestamp_format,
+        trading_day_start_secs: m.trading_day_start_secs,
     };
     toml::to_string_pretty(&f).expect("a MarketDef always serialises")
 }
@@ -638,10 +643,18 @@ columns = ["REGIONID", "description"]
             market: Market::Wem,
             utc_offset_secs: 28_800,
             timestamp_format: TimestampFormat::Iso8601,
+            trading_day_start_secs: 28_800,
         };
         let mp = dir.path().join("market.toml");
         std::fs::write(&mp, write_market(&m)).unwrap();
         assert_eq!(read_market(&mp).unwrap(), m);
+        // A file from before trading days were kept starts its day at midnight.
+        let old = parse_market(
+            &mp,
+            "schema_format = 1\nmarket = \"wem\"\nutc_offset_secs = 28800\ntimestamp_format = \"iso8601\"\n",
+        )
+        .unwrap();
+        assert_eq!(old.trading_day_start_secs, 0);
         assert!(read_market(&dir.path().join("none.toml")).is_err());
         let bad = write_market(&m).replace("schema_format = 1", "schema_format = 2");
         assert!(parse_market(&mp, &bad).is_err());

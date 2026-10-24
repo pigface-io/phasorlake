@@ -45,6 +45,11 @@ pub struct MarketDef {
     pub utc_offset_secs: i32,
     /// How timestamps are written in this market's files.
     pub timestamp_format: TimestampFormat,
+    /// Seconds after midnight at which the market's trading day begins:
+    /// 14400 (04:00) for the NEM, 28800 (08:00) for the WEM. A table that
+    /// labels its rows with a trading day (`valid.kind = "day"`) covers
+    /// `[label + start, label + start + 1 day)`.
+    pub trading_day_start_secs: i32,
 }
 
 impl MarketDef {
@@ -513,18 +518,21 @@ pub(crate) mod tests {
             market: Market::Nem,
             utc_offset_secs: 36_000,
             timestamp_format: TimestampFormat::AemoSlash,
+            trading_day_start_secs: 14_400,
         };
         assert_eq!(m.arrow_tz(), "+10:00");
         let w = MarketDef {
             market: Market::Wem,
             utc_offset_secs: 28_800,
             timestamp_format: TimestampFormat::Iso8601,
+            trading_day_start_secs: 28_800,
         };
         assert_eq!(w.arrow_tz(), "+08:00");
         let neg = MarketDef {
             market: Market::Wem,
             utc_offset_secs: -(5 * 3600 + 1800),
             timestamp_format: TimestampFormat::default(),
+            trading_day_start_secs: 0,
         };
         assert_eq!(neg.arrow_tz(), "-05:30");
         assert_eq!(Market::Nem.to_string(), "nem");

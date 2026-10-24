@@ -147,6 +147,7 @@ mod tests {
             market: Market::Nem,
             utc_offset_secs: 36_000,
             timestamp_format: TimestampFormat::AemoSlash,
+            trading_day_start_secs: 14_400,
         }
     }
 

@@ -1,6 +1,8 @@
 # The Wholesale Electricity Market runs on Australian Western Standard Time:
-# UTC+8 with no daylight saving.
+# UTC+8 with no daylight saving. The trading day runs from 08:00 to 08:00 the
+# next day.
 schema_format = 1
 market = "wem"
 utc_offset_secs = 28800
 timestamp_format = "iso8601"
+trading_day_start_secs = 28800

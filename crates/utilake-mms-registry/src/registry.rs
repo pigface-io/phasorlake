@@ -152,16 +152,14 @@ struct Derived {
 const DERIVED_SLOTS: usize = 4096;
 
 /// The definition of a market no file defines: fixed market time, AEMO's
-/// timestamp format.
+/// timestamp format, the trading day's start.
 fn default_market(market: Market) -> MarketDef {
+    let wem = market == Market::Wem;
     MarketDef {
         market,
-        utc_offset_secs: if market == Market::Wem {
-            28_800
-        } else {
-            36_000
-        },
+        utc_offset_secs: if wem { 28_800 } else { 36_000 },
         timestamp_format: crate::file_model::TimestampFormat::AemoSlash,
+        trading_day_start_secs: if wem { 28_800 } else { 14_400 },
     }
 }
 

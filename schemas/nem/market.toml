@@ -1,7 +1,9 @@
 # The National Electricity Market runs on Australian Eastern Standard Time all
 # year: UTC+10 with no daylight saving. Every timestamp AEMO publishes for the
-# NEM is in this offset.
+# NEM is in this offset. The trading day runs from 04:00 to 04:00 the next day:
+# a table that labels its rows with a trading day covers that span.
 schema_format = 1
 market = "nem"
 utc_offset_secs = 36000
 timestamp_format = "aemo_slash"
+trading_day_start_secs = 14400
