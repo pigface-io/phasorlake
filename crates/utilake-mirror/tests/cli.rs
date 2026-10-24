@@ -779,3 +779,55 @@ fn a_watch_keeps_each_version_and_what_is_new() {
         }
     }
 }
+
+/// Relayout moves both listings of a report folder into one, says what it
+/// would do first, and fails when a sidecar does not read.
+#[test]
+fn relayout_moves_both_listings_into_one_folder() {
+    let cli = Cli::new();
+    let archive = cli.home.path().join("archive/www.nemweb.com.au/Reports");
+    let put = |listing: &str, name: &str, bytes: &[u8]| {
+        let dir = archive.join(listing).join("X");
+        std::fs::create_dir_all(&dir).unwrap();
+        std::fs::write(dir.join(name), bytes).unwrap();
+        let url = format!("https://www.nemweb.com.au/Reports/{listing}/X/{name}");
+        let sidecar = format!(
+            "{{\"url\":\"{url}\",\"size\":{},\"sha256\":\"{}\",\"fetched_at\":\"2026-10-05T00:00:00Z\"}}",
+            bytes.len(),
+            bytes.len()
+        );
+        std::fs::write(dir.join(format!("{name}.json")), sidecar).unwrap();
+    };
+    put("CURRENT", "a.csv", b"a");
+    put("CURRENT", "m.zip", b"partial");
+    put("ARCHIVE", "m.zip", b"final");
+    put("ARCHIVE", "s.csv", b"s");
+    put("CURRENT", "s.csv", b"s");
+    let dry = cli.ok(&["relayout", "--dry-run"]);
+    assert!(
+        dry.contains("dry run: 3 moved, 1 kept as versions"),
+        "{dry}"
+    );
+    assert!(archive.join("CURRENT/X/a.csv").exists());
+    let json = cli.ok(&["--json", "relayout", "--dry-run"]);
+    assert!(
+        json.contains("\"relayout_step\"") && json.contains("\"relayout_done\""),
+        "{json}"
+    );
+    let done = cli.run(&["relayout"]);
+    assert!(done.status.success());
+    let out = String::from_utf8_lossy(&done.stdout);
+    assert!(
+        out.contains("3 moved, 1 kept as versions, 1 the same"),
+        "{out}"
+    );
+    assert!(String::from_utf8_lossy(&done.stderr).contains("kept as a version"));
+    assert!(archive.join("X/a.csv").exists());
+    // A sidecar that does not read: left, and the run says so.
+    std::fs::create_dir_all(archive.join("CURRENT/X")).unwrap();
+    std::fs::write(archive.join("CURRENT/X/b.csv"), b"b").unwrap();
+    std::fs::write(archive.join("CURRENT/X/b.csv.json"), b"{").unwrap();
+    let (code, out, _) = cli.code(&["relayout"]);
+    assert_eq!(code, 1, "{out}");
+    assert!(out.contains("1 unreadable"), "{out}");
+}

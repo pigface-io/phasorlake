@@ -148,6 +148,16 @@ pub enum Command {
         #[arg(long)]
         check: bool,
     },
+    /// Move the archive to one folder per report folder (the CURRENT and
+    /// ARCHIVE listings of a folder, WEMDE's current and previous, held in
+    /// one place), and merge the journals likewise; offline. Nothing is
+    /// written over: the same bytes are kept once, other bytes as a
+    /// version beside them.
+    Relayout {
+        /// Say what would move, and change nothing.
+        #[arg(long)]
+        dry_run: bool,
+    },
     /// Pages read, and files archived out of those listed, per root.
     Status {
         /// The roots the crawl used, when not the default ones.

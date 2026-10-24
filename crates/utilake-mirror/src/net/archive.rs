@@ -88,9 +88,116 @@ pub struct Sidecar {
     /// The program and version that downloaded it, e.g. `utilake-mirror/0.1.0`.
     #[serde(default)]
     pub tool: String,
+    /// Every other place AEMO serves these bytes, found after the
+    /// download: the same path under the other listing, or an entry of a
+    /// daily zip. The bytes never change, so only this list grows.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub also: Vec<Also>,
+    /// When the listing stopped naming `url` (UTC).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub gone_at: Option<Stamp>,
+}
+
+/// Another address of an archived file's bytes.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Also {
+    /// The URL: a file's, or `{zip URL}!{entry}` for an entry of a zip.
+    pub url: String,
+    /// How the bytes were found there.
+    pub how: How,
+    /// When they were found there (UTC).
+    pub seen_at: Stamp,
+    /// When the listing stopped naming the address (UTC).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub gone_at: Option<Stamp>,
+    /// The date and time the listing gave the address when its bytes were
+    /// found the same, so a later version under it is told apart.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub listed_at: Option<Stamp>,
+}
+
+/// How another address was found to serve an archived file's bytes.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum How {
+    /// The URL served the same bytes (sha256 equal).
+    Same,
+    /// An entry of a zip with the file's name, size and CRC-32.
+    Entry,
 }
 
 impl Sidecar {
+    /// Whether `url` is an address of these bytes: the URL they were
+    /// downloaded from, or one of `also`.
+    pub fn names(&self, url: &str) -> bool {
+        self.url == url || self.also.iter().any(|a| a.url == url)
+    }
+
+    /// Adds `url` to `also`, unless it is an address already. Whether it
+    /// was added.
+    pub fn add_also(&mut self, url: &str, how: How, seen_at: Stamp) -> bool {
+        self.add_listed(url, how, seen_at, None)
+    }
+
+    /// `add_also`, with the time the listing gave the address.
+    pub fn add_listed(
+        &mut self,
+        url: &str,
+        how: How,
+        seen_at: Stamp,
+        listed_at: Option<Stamp>,
+    ) -> bool {
+        if self.names(url) {
+            return false;
+        }
+        self.also.push(Also {
+            url: url.to_owned(),
+            how,
+            seen_at,
+            gone_at: None,
+            listed_at,
+        });
+        true
+    }
+
+    /// Notes that the listing no longer names the address `url`, unless
+    /// it is noted already. Whether anything changed.
+    pub fn mark_gone(&mut self, url: &str, at: Stamp) -> bool {
+        if self.url == url {
+            return self.gone_at.is_none() && self.gone_at.replace(at).is_none();
+        }
+        let mut changed = false;
+        for a in self
+            .also
+            .iter_mut()
+            .filter(|a| a.url == url && a.gone_at.is_none())
+        {
+            a.gone_at = Some(at);
+            changed = true;
+        }
+        changed
+    }
+
+    /// Every address of these bytes: `url`, then each of `also`.
+    pub fn addresses(&self) -> impl Iterator<Item = &str> {
+        std::iter::once(self.url.as_str()).chain(self.also.iter().map(|a| a.url.as_str()))
+    }
+
+    /// `is_listed_as` for the address `url`: the download's listing when
+    /// it is the URL downloaded from, else the listing `also` recorded.
+    pub fn is_listed_at(&self, url: &str, size: Option<u64>, modified_at: Option<Stamp>) -> bool {
+        if self.url == url {
+            return self.is_listed_as(size, modified_at);
+        }
+        self.also.iter().filter(|a| a.url == url).any(|a| {
+            size.is_none_or(|s| s == self.size)
+                && match (a.listed_at, modified_at) {
+                    (Some(x), Some(y)) => x == y,
+                    _ => true,
+                }
+        })
+    }
+
     /// Whether these are the bytes nemweb lists at `size` and
     /// `modified_at`: the same size, and the same listed time when both
     /// have one. nemweb rewrites some files in place under the same name;
@@ -200,6 +307,14 @@ pub fn hashes_of(path: &Path) -> std::io::Result<Hashes> {
     })
 }
 
+/// Whether `path` names a macOS AppleDouble file (`._name`), which the
+/// system writes beside a file on a volume without extended attributes.
+/// It is not a download: every walk of the archive skips it.
+pub fn is_apple_double(path: &Path) -> bool {
+    path.file_name()
+        .is_some_and(|n| n.to_string_lossy().starts_with("._"))
+}
+
 fn io_err(path: &Path) -> impl Fn(std::io::Error) -> FetchError + '_ {
     move |source| FetchError::CacheIo {
         path: path.display().to_string(),
@@ -232,6 +347,18 @@ impl Archive {
         path
     }
 
+    /// `url` as a path under the archive with nothing dropped
+    /// (`utilake_plain_decode::layout::url_segments`): where a record of
+    /// one listing is kept, so the two listings of a report folder keep a
+    /// record each.
+    pub fn url_path(&self, url: &str) -> PathBuf {
+        let mut path = self.root.clone();
+        for s in utilake_plain_decode::layout::url_segments(url) {
+            path.push(s);
+        }
+        path
+    }
+
     /// The sidecar of an archived path.
     pub fn sidecar_path(path: &Path) -> PathBuf {
         let mut s = path.as_os_str().to_owned();
@@ -249,29 +376,59 @@ impl Archive {
         PathBuf::from(s)
     }
 
-    /// Every version of `url` archived: the file at `path`, the first,
-    /// then each `{name}@{at}` beside it, in name order, so in the order
-    /// nemweb listed them.
+    /// Every version of `url` archived: the files at `path` and each
+    /// `{name}@{at}` beside it whose sidecar names `url`, in name order,
+    /// so in the order nemweb listed them.
     pub fn versions(path: &Path, url: &str) -> Result<Vec<Archived>, FetchError> {
-        let mut out: Vec<Archived> = Self::lookup_at(path.to_path_buf(), url)?
+        Ok(Self::held_at(path)?
             .into_iter()
-            .collect();
+            .filter(|a| a.sidecar.names(url))
+            .collect())
+    }
+
+    /// Every file held at `path`, whatever URL it came from: the file at
+    /// `path`, then each `{name}@{at}` beside it, in name order. Two URLs
+    /// can share a path (`layout`: both listings of a report folder are
+    /// one folder); their files never replace each other.
+    pub fn held_at(path: &Path) -> Result<Vec<Archived>, FetchError> {
+        let mut out: Vec<Archived> = Self::held_file(path.to_path_buf())?.into_iter().collect();
+        // A version is kept only beside a first file: with none there, the
+        // folder (on exFAT, a scan of it) is not read.
+        if std::fs::symlink_metadata(path).is_err() {
+            return Ok(out);
+        }
         let dir = path.parent().unwrap_or(Path::new("."));
         let name = path.file_name().unwrap_or_default().to_string_lossy();
         let prefix = format!("{name}@");
-        let Ok(entries) = std::fs::read_dir(dir) else {
-            return Ok(out);
-        };
-        let mut names: Vec<String> = entries
+        let mut names: Vec<String> = std::fs::read_dir(dir)
+            .into_iter()
+            .flatten()
             .flatten()
             .map(|e| e.file_name().to_string_lossy().into_owned())
             .filter(|n| n.starts_with(&prefix) && !n.ends_with(".json") && !n.ends_with(".part"))
             .collect();
         names.sort();
         for n in names {
-            out.extend(Self::lookup_at(dir.join(n), url)?);
+            out.extend(Self::held_file(dir.join(n))?);
         }
         Ok(out)
+    }
+
+    /// The file at `path` with its sidecar, when both are there and agree
+    /// on the size.
+    fn held_file(path: PathBuf) -> Result<Option<Archived>, FetchError> {
+        let Ok(meta) = std::fs::metadata(&path) else {
+            return Ok(None);
+        };
+        let sidecar = match Self::read_sidecar(&path) {
+            Ok(Some(s)) => s,
+            Ok(None) | Err(FetchError::SidecarCorrupt { .. }) => return Ok(None),
+            Err(e) => return Err(e),
+        };
+        if sidecar.size != meta.len() {
+            return Ok(None);
+        }
+        Ok(Some(Archived { path, sidecar }))
     }
 
     /// The in-progress path of a download.
@@ -298,28 +455,22 @@ impl Archive {
             })
     }
 
-    /// The archived file of a URL, if it and its sidecar are there and
-    /// the sidecar names the same URL and size. A sidecar that does not
-    /// read (cut short when a run was stopped as it wrote it) is no
-    /// sidecar: the file is downloaded again and the sidecar rewritten.
+    /// The archived file of a URL: the first file at its path, or a
+    /// version beside it, whose sidecar names the URL (`Sidecar::names`)
+    /// and size. A sidecar that does not read (cut short when a run was
+    /// stopped as it wrote it) is no sidecar: the file is downloaded again
+    /// and the sidecar rewritten.
     pub fn lookup(&self, url: &str) -> Result<Option<Archived>, FetchError> {
-        Self::lookup_at(self.path_for(url), url)
+        let path = self.path_for(url);
+        if let Some(first) = Self::lookup_at(path.clone(), url)? {
+            return Ok(Some(first));
+        }
+        Ok(Self::versions(&path, url)?.into_iter().next())
     }
 
     /// The file at `path` with its sidecar, when it is archived from `url`.
     pub fn lookup_at(path: PathBuf, url: &str) -> Result<Option<Archived>, FetchError> {
-        let Ok(meta) = std::fs::metadata(&path) else {
-            return Ok(None);
-        };
-        let sidecar = match Self::read_sidecar(&path) {
-            Ok(Some(s)) => s,
-            Ok(None) | Err(FetchError::SidecarCorrupt { .. }) => return Ok(None),
-            Err(e) => return Err(e),
-        };
-        if sidecar.url != url || sidecar.size != meta.len() {
-            return Ok(None);
-        }
-        Ok(Some(Archived { path, sidecar }))
+        Ok(Self::held_file(path)?.filter(|a| a.sidecar.names(url)))
     }
 
     /// Hashes an archived file and compares it with its sidecar.
@@ -335,11 +486,71 @@ impl Archive {
         Ok(())
     }
 
-    /// Writes a sidecar.
+    /// Writes a sidecar whole or not at all: to a temporary file beside
+    /// it, handed to the disk, then renamed over it.
     pub fn write_sidecar(path: &Path, sidecar: &Sidecar) -> Result<(), FetchError> {
+        use std::io::Write as _;
         let sc = Self::sidecar_path(path);
+        let mut tmp = sc.as_os_str().to_owned();
+        tmp.push(".tmp");
+        let tmp = PathBuf::from(tmp);
         let text = serde_json::to_string_pretty(sidecar).expect("a Sidecar always serialises");
-        std::fs::write(&sc, text).map_err(io_err(&sc))
+        let mut f = std::fs::File::create(&tmp).map_err(io_err(&tmp))?;
+        f.write_all(text.as_bytes()).map_err(io_err(&tmp))?;
+        to_disk(&f).map_err(io_err(&tmp))?;
+        std::fs::rename(&tmp, &sc).map_err(io_err(&sc))
+    }
+
+    /// Notes in the sidecar of the file at `path` that the listing no
+    /// longer names each of `urls` (`Sidecar::mark_gone`). Whether the
+    /// sidecar changed.
+    pub fn mark_gone<'a>(
+        path: &Path,
+        urls: impl IntoIterator<Item = &'a str>,
+        at: Stamp,
+    ) -> Result<bool, FetchError> {
+        let Some(mut sidecar) = Self::read_sidecar(path)? else {
+            return Ok(false);
+        };
+        let mut changed = false;
+        for u in urls {
+            changed |= sidecar.mark_gone(u, at);
+        }
+        if changed {
+            Self::write_sidecar(path, &sidecar)?;
+        }
+        Ok(changed)
+    }
+
+    /// Notes, in every sidecar under the folder `folder` (a URL ending in
+    /// `/`), that each address under it is gone. How many sidecars changed.
+    pub fn folder_gone(&self, folder: &str, at: Stamp) -> Result<usize, FetchError> {
+        let mut n = 0;
+        for a in self.entries_under(Some(&self.path_for(folder))) {
+            let gone: Vec<String> = a
+                .sidecar
+                .addresses()
+                .filter(|u| u.starts_with(folder))
+                .map(str::to_owned)
+                .collect();
+            if Self::mark_gone(&a.path, gone.iter().map(String::as_str), at)? {
+                n += 1;
+            }
+        }
+        Ok(n)
+    }
+
+    /// Adds `url` to the `also` of the sidecar of the file at `path`, when
+    /// it is not an address of it already. Whether the sidecar changed.
+    pub fn add_also(path: &Path, url: &str, how: How, seen_at: Stamp) -> Result<bool, FetchError> {
+        let Some(mut sidecar) = Self::read_sidecar(path)? else {
+            return Ok(false);
+        };
+        if !sidecar.add_also(url, how, seen_at) {
+            return Ok(false);
+        }
+        Self::write_sidecar(path, &sidecar)?;
+        Ok(true)
     }
 
     /// Every archived file under `dir` (the archive itself by default),
@@ -352,6 +563,9 @@ impl Archive {
                 continue;
             };
             for p in rd.filter_map(Result::ok).map(|e| e.path()) {
+                if is_apple_double(&p) {
+                    continue;
+                }
                 if p.is_dir() {
                     stack.push(p);
                 } else if p.extension().is_some_and(|x| x == "json") {
@@ -391,6 +605,63 @@ mod tests {
     use crate::diag::Diagnose as _;
 
     #[test]
+    fn apple_double_files_are_not_downloads() {
+        let dir = tempfile::tempdir().unwrap();
+        let a = Archive::new(dir.path());
+        let url = "https://h/d/f.csv";
+        let path = a.path_for(url);
+        std::fs::create_dir_all(path.parent().unwrap()).unwrap();
+        std::fs::write(&path, b"abc").unwrap();
+        let sidecar = Sidecar {
+            url: url.into(),
+            size: 3,
+            sha256: sha256_hex(b"abc"),
+            crc32: None,
+            fetched_at: "2026-10-05T00:00:00Z".into(),
+            etag: None,
+            last_modified: None,
+            last_modified_at: None,
+            listed_size: None,
+            listed_modified: None,
+            listed_modified_at: None,
+            tool: "t".into(),
+            also: Vec::new(),
+            gone_at: None,
+        };
+        Archive::write_sidecar(&path, &sidecar).unwrap();
+        // AppleDouble twins of the file and its sidecar, with a sidecar of
+        // their own that reads.
+        let twin = path.with_file_name("._f.csv");
+        std::fs::write(&twin, b"abc").unwrap();
+        Archive::write_sidecar(&twin, &sidecar).unwrap();
+        std::fs::write(path.with_file_name("._f.csv.json.json"), b"{}").unwrap();
+        let found = a.entries_under(None);
+        assert_eq!(found.len(), 1);
+        assert_eq!(found[0].path, path);
+        assert!(is_apple_double(&twin) && !is_apple_double(&path));
+        // An address added once; the sidecar is rewritten whole.
+        let at = Stamp::now();
+        assert!(Archive::add_also(&path, "https://h/e/f.csv", How::Same, at).unwrap());
+        assert!(!Archive::add_also(&path, "https://h/e/f.csv", How::Same, at).unwrap());
+        assert!(!Archive::add_also(&path, url, How::Same, at).unwrap());
+        assert!(!Archive::add_also(&dir.path().join("none"), url, How::Same, at).unwrap());
+        let back = Archive::read_sidecar(&path).unwrap().unwrap();
+        assert!(back.names("https://h/e/f.csv") && back.names(url) && !back.names("https://h/x"));
+        assert_eq!(back.sha256, sidecar.sha256);
+        // An address with no listing time recorded is any listing of it.
+        assert!(back.is_listed_at("https://h/e/f.csv", Some(3), Some(at)));
+        assert!(!back.is_listed_at("https://h/e/f.csv", Some(4), None));
+        assert!(!back.is_listed_at("https://h/x", None, None));
+        let text = std::fs::read_to_string(Archive::sidecar_path(&path)).unwrap();
+        assert!(text.contains("\"how\": \"same\""), "{text}");
+        assert!(
+            !Archive::sidecar_path(&path)
+                .with_extension("json.tmp")
+                .exists()
+        );
+    }
+
+    #[test]
     fn the_archive_mirrors_the_url() {
         let a = Archive::new("/home/archive");
         assert_eq!(a.root(), Path::new("/home/archive"));
@@ -413,6 +684,18 @@ mod tests {
             a.path_for("https://h/a:b"),
             Path::new("/home/archive/h/a_b")
         );
+        // A report folder's two listings: one folder for their files, a
+        // record each for what they list.
+        let (c, r) = (
+            "https://www.nemweb.com.au/Reports/CURRENT/X/",
+            "https://www.nemweb.com.au/Reports/ARCHIVE/X/",
+        );
+        assert_eq!(a.path_for(c), a.path_for(r));
+        assert_eq!(
+            a.url_path(c),
+            Path::new("/home/archive/www.nemweb.com.au/Reports/CURRENT/X")
+        );
+        assert_ne!(a.url_path(c), a.url_path(r));
         assert_eq!(
             Archive::part_path(Path::new("/x/y.zip")),
             Path::new("/x/y.zip.part")
@@ -445,6 +728,8 @@ mod tests {
             listed_modified: Some("Monday, October 12, 2026 10:45 AM".into()),
             listed_modified_at: None,
             tool: "nemlake/test".into(),
+            also: Vec::new(),
+            gone_at: None,
         };
         Archive::write_sidecar(&path, &sidecar).unwrap();
         // A sidecar written without the instants reads back with them,

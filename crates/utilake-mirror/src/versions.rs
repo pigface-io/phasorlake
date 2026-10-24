@@ -176,6 +176,8 @@ mod tests {
             listed_modified: at.map(str::to_owned),
             listed_modified_at: None,
             tool: "utilake-mirror".to_owned(),
+            also: Vec::new(),
+            gone_at: None,
         };
         Archive::write_sidecar(&path, &sidecar).unwrap();
         path.file_name().unwrap().to_string_lossy().into_owned()

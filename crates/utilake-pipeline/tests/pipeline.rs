@@ -2534,6 +2534,7 @@ async fn a_restated_file_adds_only_its_new_rows() {
                 listed_modified_at: utilake_core::timetext::parse_iis_listing(listed, 36_000),
                 tool: "test".into(),
                 extracted_from: None,
+                also: Vec::new(),
             },
         )
         .unwrap();

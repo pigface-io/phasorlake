@@ -205,7 +205,10 @@ pub async fn peek(
     let path = mirror.peek_path();
     let peeked = current(mirror)?;
     let removed = mirror.removed()?;
-    let paired: HashSet<String> = pairs(mirror)?.into_iter().map(|p| p.zip).collect();
+    let paired: HashSet<String> = pairs(mirror, fetcher.archive(), false)?
+        .into_iter()
+        .map(|p| p.zip)
+        .collect();
     let mut zips: Vec<Remote> = mirror
         .record()?
         .into_iter()

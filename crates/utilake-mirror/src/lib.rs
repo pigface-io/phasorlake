@@ -23,6 +23,7 @@ pub mod lock;
 pub mod map;
 pub mod net;
 pub mod peek;
+pub mod relayout;
 pub mod stamp;
 pub mod status;
 pub mod summary;
@@ -32,7 +33,9 @@ pub mod versions;
 pub mod watch;
 pub mod zipdir;
 
-pub use compare::{Comparison, Pair, Removed, Verdict, Verified, compare, pairs, remove, verify};
+pub use compare::{
+    Comparison, Pair, Removed, Verdict, Verified, compare, note_entries, pairs, remove, verify,
+};
 pub use crawl::{
     CrawlSummary, Mirror, PageRead, Remote, RemoteKind, crawl, default_roots, read_record, root,
 };
@@ -45,6 +48,7 @@ pub use journal::{Change, Event};
 pub use lock::RunLock;
 pub use map::{MapSummary, Node, NodeKind, State, map};
 pub use peek::{PeekSummary, Peeked, ZipPeeked, peek, read_peeks};
+pub use relayout::{RelayoutSummary, Step, relayout};
 pub use stamp::Stamp;
 pub use status::{PeekCount, RootStatus, Status, status};
 pub use summary::{fold, summary};

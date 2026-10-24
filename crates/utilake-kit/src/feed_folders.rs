@@ -623,6 +623,7 @@ mod tests {
                 listed_modified_at,
                 tool: "test".into(),
                 extracted_from: None,
+                also: Vec::new(),
             },
         )
         .unwrap();

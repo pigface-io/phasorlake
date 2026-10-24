@@ -431,6 +431,7 @@ impl Fetcher {
                 method: e.method,
                 crc32: e.crc32,
             }),
+            also: Vec::new(),
         };
         Archive::write_sidecar(&path, &sidecar)?;
         Ok(LocalFile::archived(
@@ -448,14 +449,41 @@ impl Fetcher {
             return Ok(LocalFile::archived(remote, found, true));
         }
         self.ensure_online(url)?;
-        let path = self.archive.path_for(url);
-        make_room(&path)?;
-        let part = Archive::part_path(&path);
+        let base = self.archive.path_for(url);
+        // Files other URLs keep at the path: both listings of a report
+        // folder are one folder. Never written over.
+        let others: Vec<Archived> = self
+            .archive
+            .held_at(&base)?
+            .into_iter()
+            .filter(|a| !a.sidecar.names(url))
+            .collect();
+        make_room(&base)?;
+        let part = Archive::part_path(&base);
         let streamed = self
             .get_with_retries(url, None, |resp| {
                 stream_to_file(url, resp, &part, self.events.clone())
             })
             .await?;
+        if let Some(same) = others.iter().find(|a| a.sidecar.sha256 == streamed.sha256) {
+            let _ = std::fs::remove_file(&part);
+            Archive::add_also(&same.path, url, "same", &now_utc_rfc3339())?;
+            let found = self.archive.lookup(url)?.unwrap_or_else(|| same.clone());
+            return Ok(LocalFile::archived(remote, found, false));
+        }
+        let path = match others.iter().any(|a| a.path == base) {
+            false => base,
+            true => {
+                let at = remote
+                    .modified_at
+                    .map_or_else(now_utc_rfc3339, |s| s.rfc3339());
+                let v = Archive::version_path(&base, &at);
+                match v.exists() {
+                    false => v,
+                    true => Archive::version_path(&base, &now_utc_rfc3339()),
+                }
+            }
+        };
         std::fs::rename(&part, &path).map_err(|source| FetchError::CacheIo {
             path: path.display().to_string(),
             source,
@@ -476,6 +504,7 @@ impl Fetcher {
             listed_modified_at: remote.modified_at,
             tool: format!("utilake/{}", env!("CARGO_PKG_VERSION")),
             extracted_from: None,
+            also: Vec::new(),
         };
         Archive::write_sidecar(&path, &sidecar)?;
         Ok(LocalFile::archived(
@@ -841,6 +870,86 @@ mod tests {
             .expect("the fetcher reports a download start");
         assert!(matches!(got, Some(Event::DownloadStarted { .. })));
         assert_eq!(f.archive().root(), dir.path());
+    }
+
+    #[tokio::test]
+    async fn another_url_at_the_same_path_is_never_written_over() {
+        let dir = tempfile::tempdir().unwrap();
+        let cur = "https://www.nemweb.com.au/Reports/CURRENT/GSH/Benchmark_Price/B.zip";
+        let arc = "https://www.nemweb.com.au/Reports/ARCHIVE/GSH/Benchmark_Price/B.zip";
+        let t = Arc::new(StaticTransport::default());
+        t.add(cur, Canned::ok(b"partial"))
+            .add(arc, Canned::ok(b"final"));
+        let f = Fetcher::new(Arc::new(t.clone()), Archive::new(dir.path()), fast());
+        let first = f.fetch(&remote(cur)).await.unwrap();
+        let listed = RemoteFile {
+            modified_at: timetext::parse_rfc3339("2026-10-13T11:53:00+10:00"),
+            ..remote(arc)
+        };
+        let second = f.fetch(&listed).await.unwrap();
+        assert_ne!(first.path, second.path);
+        assert!(
+            second
+                .path
+                .to_string_lossy()
+                .ends_with("B.zip@20261013T115300+1000")
+        );
+        assert_eq!(std::fs::read(&first.path).unwrap(), b"partial");
+        assert_eq!(f.archive().lookup(arc).unwrap().unwrap().path, second.path);
+        assert_eq!(f.archive().lookup(cur).unwrap().unwrap().path, first.path);
+        // Found again with no request.
+        assert!(f.fetch(&listed).await.unwrap().cached);
+        assert_eq!(t.request_count(), 2);
+        // A version under that name already: kept under the download's time.
+        let (c, a) = (
+            "https://www.nemweb.com.au/Reports/CURRENT/GSH/X/c.csv",
+            "https://www.nemweb.com.au/Reports/ARCHIVE/GSH/X/c.csv",
+        );
+        t.add(c, Canned::ok(b"one")).add(a, Canned::ok(b"two"));
+        let one = f.fetch(&remote(c)).await.unwrap();
+        let taken = Archive::version_path(&one.path, "2026-10-13T11:53:00+10:00");
+        std::fs::write(&taken, b"x").unwrap();
+        let two = f
+            .fetch(&RemoteFile {
+                modified_at: timetext::parse_rfc3339("2026-10-13T11:53:00+10:00"),
+                ..remote(a)
+            })
+            .await
+            .unwrap();
+        assert!(two.path != taken && two.path != one.path);
+        // The same bytes: one file, both URLs on its sidecar, the other
+        // fields as written.
+        let (s1, s2) = (
+            "https://www.nemweb.com.au/Reports/CURRENT/GSH/X/s.csv",
+            "https://www.nemweb.com.au/Reports/ARCHIVE/GSH/X/s.csv",
+        );
+        t.add(s1, Canned::ok(b"same")).add(s2, Canned::ok(b"same"));
+        let k = f.fetch(&remote(s1)).await.unwrap();
+        let mut v: serde_json::Value =
+            serde_json::from_str(&std::fs::read_to_string(Archive::sidecar_path(&k.path)).unwrap())
+                .unwrap();
+        v["crc32"] = serde_json::json!(7);
+        std::fs::write(Archive::sidecar_path(&k.path), v.to_string()).unwrap();
+        let k2 = f.fetch(&remote(s2)).await.unwrap();
+        assert_eq!(k2.path, k.path);
+        let sc = Archive::read_sidecar(&k.path).unwrap().unwrap();
+        assert!(sc.names(s2) && sc.names(s1));
+        assert_eq!(sc.also[0].how, "same");
+        let v: serde_json::Value =
+            serde_json::from_str(&std::fs::read_to_string(Archive::sidecar_path(&k.path)).unwrap())
+                .unwrap();
+        assert_eq!(v["crc32"], 7);
+        assert!(!Archive::add_also(&k.path, s2, "same", "t").unwrap());
+        // A sidecar already listing addresses gains one more.
+        assert!(Archive::add_also(&k.path, "https://h/3", "same", "t").unwrap());
+        assert_eq!(
+            Archive::read_sidecar(&k.path).unwrap().unwrap().also.len(),
+            2
+        );
+        assert!(f.fetch(&remote(s2)).await.unwrap().cached);
+        assert!(Archive::add_also(&dir.path().join("none"), s2, "same", "t").is_err());
+        std::fs::write(Archive::sidecar_path(&k.path), "{").unwrap();
+        assert!(Archive::add_also(&k.path, s2, "same", "t").is_err());
     }
 
     #[tokio::test]

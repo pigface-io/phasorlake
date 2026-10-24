@@ -228,6 +228,11 @@ struct Top {
     removed: Option<Removed>,
 }
 
+/// A node's place in the tree: its archive path components, and, for a
+/// file, its URL, since two URLs can share one path (both listings of a
+/// report folder are one folder) and neither may replace the other.
+type TopKey = (Vec<String>, String);
+
 /// Writes the map of the crawl record and the archive under `roots`,
 /// reading zips on `workers` threads.
 pub fn map(
@@ -258,7 +263,7 @@ pub fn map(
     let mut listers: Vec<Lister> = (0..workers.max(1))
         .map(|_| Lister::new(tmp.clone()))
         .collect();
-    let jobs: Vec<(Vec<String>, Top)> = tops.into_iter().collect();
+    let jobs: Vec<(TopKey, Top)> = tops.into_iter().collect();
     for batch in jobs.chunks(listers.len() * 4) {
         let results = list_batch(archive, batch, &mut listers, offsets);
         for nodes in results {
@@ -279,7 +284,7 @@ fn tops(
     mirror: &Mirror,
     archive: &Archive,
     roots: &[Url],
-) -> Result<BTreeMap<Vec<String>, Top>, MirrorError> {
+) -> Result<BTreeMap<TopKey, Top>, MirrorError> {
     let path_key = |path: &Path| -> Vec<String> {
         path.strip_prefix(archive.root())
             .unwrap_or(path)
@@ -293,7 +298,15 @@ fn tops(
     let removed = mirror.removed()?;
     let mut peeks: HashMap<String, Peeked> = current(mirror)?;
     let mut evidence: HashMap<String, Peeked> = latest(mirror)?;
-    for r in mirror.record()? {
+    let record = mirror.record()?;
+    // Paths two listed files share: each URL's file is found by its
+    // sidecar there, the first file or a version beside it.
+    let mut at_path: HashMap<PathBuf, usize> = HashMap::new();
+    for r in record.iter().filter(|r| r.kind == RemoteKind::File) {
+        *at_path.entry(archive.path_for(&r.url)).or_default() += 1;
+    }
+    let mut shown: HashSet<PathBuf> = HashSet::new();
+    for r in record {
         let kind = match r.kind {
             RemoteKind::External => continue,
             RemoteKind::Dir => NodeKind::Dir,
@@ -303,17 +316,41 @@ fn tops(
             continue;
         }
         let gone = removed.get(&r.url);
+        let path = archive.path_for(&r.url);
+        let file = match kind == NodeKind::File && at_path.get(&path).is_some_and(|&n| n > 1) {
+            true => {
+                let found = archive.lookup(&r.url)?.map(|a| a.path);
+                shown.extend(found.clone());
+                Some(found)
+            }
+            false => None,
+        };
         let state = (kind == NodeKind::File).then(|| {
             if gone.is_some() {
                 State::Removed
-            } else if archive.path_for(&r.url).is_file() {
+            } else if file
+                .as_ref()
+                .map_or_else(|| path.is_file(), Option::is_some)
+            {
                 State::Archived
             } else {
                 State::NotArchived
             }
         });
+        let url_key = match kind {
+            NodeKind::Dir => String::new(),
+            _ => r.url.clone(),
+        };
+        if kind == NodeKind::Dir && tops.contains_key(&(key(&r.url), String::new())) {
+            continue;
+        }
+        // A file held as a version beside another URL's is at its own path.
+        let node = match file.as_ref().and_then(Option::as_deref) {
+            Some(found) => path_key(found),
+            None => key(&r.url),
+        };
         tops.insert(
-            key(&r.url),
+            (node, url_key),
             Top {
                 url: Some(r.url.clone()),
                 kind,
@@ -335,18 +372,22 @@ fn tops(
         listed.insert(r.url);
     }
     for root in roots {
-        tops.entry(key(root.as_str())).or_insert(Top {
-            url: Some(root.to_string()),
-            kind: NodeKind::Dir,
-            size: None,
-            modified: None,
-            modified_at: None,
-            state: None,
-            same_as: None,
-            peek: None,
-            removed: None,
-        });
+        tops.entry((key(root.as_str()), String::new()))
+            .or_insert(Top {
+                url: Some(root.to_string()),
+                kind: NodeKind::Dir,
+                size: None,
+                modified: None,
+                modified_at: None,
+                state: None,
+                same_as: None,
+                peek: None,
+                removed: None,
+            });
         for a in archive.entries_under(Some(&archive.path_for(root.as_str()))) {
+            if shown.contains(&a.path) {
+                continue;
+            }
             // A version beside the URL's path, listed or not, is its own
             // node; the first version is the listed file, or one gone.
             let (modified, modified_at, state) = if a.path != archive.path_for(&a.sidecar.url) {
@@ -367,7 +408,7 @@ fn tops(
                 continue;
             };
             tops.insert(
-                path_key(&a.path),
+                (path_key(&a.path), a.sidecar.url.clone()),
                 Top {
                     url: Some(a.sidecar.url.clone()),
                     kind: NodeKind::File,
@@ -383,13 +424,13 @@ fn tops(
         }
     }
     let mut parents = Vec::new();
-    for k in tops.keys() {
+    for (k, _) in tops.keys() {
         for n in 1..k.len() {
             parents.push(k[..n].to_vec());
         }
     }
     for p in parents {
-        tops.entry(p).or_insert(Top {
+        tops.entry((p, String::new())).or_insert(Top {
             url: None,
             kind: NodeKind::Dir,
             size: None,
@@ -408,7 +449,7 @@ fn tops(
 /// are read on the listers' threads.
 fn list_batch(
     archive: &Archive,
-    batch: &[(Vec<String>, Top)],
+    batch: &[(TopKey, Top)],
     listers: &mut [Lister],
     offsets: &Offsets,
 ) -> Vec<Vec<Node>> {
@@ -427,7 +468,7 @@ fn list_batch(
                             break done;
                         };
                         lister.offset = top.url.as_deref().map_or(AEST, |u| offsets.offset_of(u));
-                        done.push((i, lister.top(archive, key, top)));
+                        done.push((i, lister.top(archive, &key.0, top)));
                     }
                 })
             })
@@ -1130,6 +1171,8 @@ mod tests {
                 listed_modified: None,
                 listed_modified_at: None,
                 tool: "nemlake".into(),
+                also: Vec::new(),
+                gone_at: None,
             },
         )
         .unwrap();
@@ -1154,6 +1197,8 @@ mod tests {
                 listed_modified: Some("Tuesday, October 13, 2026 11:53 AM".into()),
                 listed_modified_at: None,
                 tool: "utilake-mirror".into(),
+                also: Vec::new(),
+                gone_at: None,
             },
         )
         .unwrap();
@@ -1260,6 +1305,98 @@ h/
             std::fs::read_to_string(f.mirror.dir().join("map/map.ndjson")).unwrap(),
             ndjson
         );
+    }
+
+    #[test]
+    fn two_listings_of_one_folder_each_keep_their_files() {
+        let home = tempfile::tempdir().unwrap();
+        let mirror = Mirror::new(home.path().join("mirror"));
+        let archive = Archive::new(home.path().join("archive"));
+        let (cur, arc) = (
+            "https://www.nemweb.com.au/Reports/CURRENT/X/",
+            "https://www.nemweb.com.au/Reports/ARCHIVE/X/",
+        );
+        let hold = |url: &str, path: PathBuf, bytes: &[u8]| {
+            std::fs::create_dir_all(path.parent().unwrap()).unwrap();
+            std::fs::write(&path, bytes).unwrap();
+            let sc: crate::net::Sidecar = serde_json::from_value(serde_json::json!({
+                "url": url, "size": bytes.len(), "sha256": "s", "fetched_at": "2026-10-05T00:00:00Z",
+            }))
+            .unwrap();
+            Archive::write_sidecar(&path, &sc).unwrap();
+        };
+        let base = archive.path_for(&format!("{cur}m.txt"));
+        hold(&format!("{cur}m.txt"), base.clone(), b"partial");
+        let version = base.with_file_name("m.txt@20261013T115300+1000");
+        hold(&format!("{arc}m.txt"), version.clone(), b"final!");
+        let dir = |url: &str| Remote {
+            url: url.into(),
+            kind: RemoteKind::Dir,
+            size: None,
+            modified: "m".into(),
+            modified_at: None,
+            listed_on: "https://www.nemweb.com.au/Reports/".into(),
+            crawled_at: None,
+        };
+        let file = |url: String, size| Remote {
+            url,
+            kind: RemoteKind::File,
+            size: Some(size),
+            modified: "m".into(),
+            modified_at: None,
+            listed_on: cur.into(),
+            crawled_at: None,
+        };
+        let record = [
+            dir(cur),
+            dir(arc),
+            file(format!("{cur}m.txt"), 7),
+            file(format!("{arc}m.txt"), 6),
+            file(format!("{cur}n.txt"), 1),
+            file(format!("{arc}n.txt"), 1),
+        ];
+        std::fs::create_dir_all(mirror.crawl_dir()).unwrap();
+        let lines: String = record
+            .iter()
+            .map(|r| serde_json::to_string(r).unwrap() + "\n")
+            .collect();
+        std::fs::write(mirror.record_path(), lines).unwrap();
+        std::fs::write(mirror.done_path(), "").unwrap();
+        let roots = [root("https://www.nemweb.com.au/Reports/").unwrap()];
+        map(&mirror, &archive, &roots, 1, &Offsets::default()).unwrap();
+        let ndjson = std::fs::read_to_string(mirror.dir().join("map/map.ndjson")).unwrap();
+        let nodes: Vec<serde_json::Value> = ndjson
+            .lines()
+            .skip(1)
+            .map(|l| serde_json::from_str(l).unwrap())
+            .collect();
+        let of = |url: String| {
+            nodes
+                .iter()
+                .find(|n| n["url"] == url.as_str())
+                .unwrap_or_else(|| panic!("{url} in {ndjson}"))
+                .clone()
+        };
+        assert_eq!(of(format!("{cur}m.txt"))["state"], "archived");
+        assert_eq!(of(format!("{arc}m.txt"))["state"], "archived");
+        assert_eq!(of(format!("{arc}m.txt"))["size"], 6);
+        assert_eq!(
+            of(format!("{arc}m.txt"))["file"],
+            "www.nemweb.com.au/Reports/X/m.txt@20261013T115300+1000"
+        );
+        assert_eq!(of(format!("{cur}n.txt"))["state"], "not_archived");
+        // The version is the ARCHIVE file's node, not a node of its own.
+        assert_eq!(
+            nodes.iter().filter(|n| n["state"] == "version").count(),
+            0,
+            "{ndjson}"
+        );
+        // One folder for both listings.
+        let folders = nodes
+            .iter()
+            .filter(|n| n["file"] == "www.nemweb.com.au/Reports/X")
+            .count();
+        assert_eq!(folders, 1, "{ndjson}");
     }
 
     #[test]
@@ -1656,6 +1793,8 @@ h/
                 listed_modified: None,
                 listed_modified_at: None,
                 tool: "x".into(),
+                also: Vec::new(),
+                gone_at: None,
             },
         )
         .unwrap();

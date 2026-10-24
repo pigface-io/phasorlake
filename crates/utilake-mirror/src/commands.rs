@@ -181,6 +181,10 @@ pub async fn run_command(cli: &Cli) -> Result<i32> {
         Command::Compare { delete, .. } => compare(ctx, &mirror, *delete),
         Command::Summary { out, check } => summary(ctx, &mirror, out, *check),
         Command::Status { roots, full } => status(ctx, &mirror, roots, *full),
+        Command::Relayout { dry_run } => {
+            let _lock = mirror.lock()?;
+            relayout(ctx, &mirror, *dry_run)
+        }
     };
     match result {
         Ok(code) => Ok(code),
@@ -189,6 +193,53 @@ pub async fn run_command(cli: &Cli) -> Result<i32> {
             Ok(1)
         }
     }
+}
+
+/// Moves the archive to one folder per report folder.
+fn relayout(ctx: &Context, mirror: &Mirror, dry_run: bool) -> Result<i32, MirrorError> {
+    let mut folders: std::collections::BTreeMap<String, [usize; 3]> = Default::default();
+    let s = utilake_mirror::relayout(mirror, &ctx.archive(), dry_run, |step| {
+        if ctx.json {
+            render::json_line(&serde_json::json!({"event": "relayout_step", "step": step}));
+        }
+        let folder = step
+            .to
+            .parent()
+            .map(|p| p.display().to_string())
+            .unwrap_or_default();
+        let n = folders.entry(folder).or_default();
+        match step.action {
+            utilake_mirror::relayout::Action::Move => n[0] += 1,
+            utilake_mirror::relayout::Action::Version => {
+                n[1] += 1;
+                eprintln!(
+                    "kept as a version: {} -> {}",
+                    step.from.display(),
+                    step.to.display()
+                );
+            }
+            utilake_mirror::relayout::Action::Same => n[2] += 1,
+        }
+    })?;
+    if ctx.json {
+        render::json_line(&serde_json::json!({"event": "relayout_done", "summary": s}));
+    } else {
+        for (folder, [m, v, same]) in &folders {
+            println!("{folder}: {m} moved, {v} versions, {same} the same");
+        }
+        println!(
+            "{}{} moved, {} kept as versions, {} the same as the file there; {} journals merged, {} held lines rewritten, {} folders removed, {} unreadable",
+            if s.dry_run { "dry run: " } else { "" },
+            s.moved,
+            s.versions,
+            s.same,
+            s.journals,
+            s.held,
+            s.folders_removed,
+            s.unreadable.len()
+        );
+    }
+    Ok(i32::from(!s.unreadable.is_empty()))
 }
 
 /// `work`, with the run lock held; the work does not start without it.
@@ -400,7 +451,7 @@ async fn watch(ctx: &Context, mirror: &Mirror, plan: &WatchPlan<'_>) -> Result<i
             // before did not get (it failed, or the watch was stopped) is
             // fetched the next time its folder is read.
             if !r.files.is_empty() {
-                let paired = utilake_mirror::pairs(mirror)?;
+                let paired = utilake_mirror::pairs(mirror, &ctx.archive(), false)?;
                 if paired.iter().any(|p| r.files.contains(&p.zip)) {
                     peek(ctx, &fetcher, mirror, true, None).await?;
                 }
@@ -735,7 +786,6 @@ fn compare(ctx: &Context, mirror: &Mirror, delete: bool) -> Result<i32, MirrorEr
     use utilake_mirror::Verdict;
     let archive = ctx.archive();
     let offsets = utilake_mirror::Offsets::of(&ctx.config.hosts()?);
-    let removed = mirror.removed()?;
     let listings: std::collections::HashMap<String, Vec<utilake_mirror::zipdir::Entry>> =
         utilake_mirror::peek::current(mirror)?
             .into_values()
@@ -744,10 +794,7 @@ fn compare(ctx: &Context, mirror: &Mirror, delete: bool) -> Result<i32, MirrorEr
     let tmp = mirror.dir().join("tmp");
     let (mut compared, mut waiting, mut freed, mut spared) = (0usize, 0usize, 0u64, 0u64);
     let mut rows = Vec::new();
-    for pair in utilake_mirror::pairs(mirror)? {
-        if removed.contains_key(&pair.zip) {
-            continue;
-        }
+    for pair in utilake_mirror::pairs(mirror, &archive, false)? {
         let listing = listings.get(&pair.zip).map(Vec::as_slice);
         let cmp = utilake_mirror::compare(&archive, &pair, listing, &tmp)?;
         if cmp.verdict == Verdict::NotArchived {
@@ -765,6 +812,10 @@ fn compare(ctx: &Context, mirror: &Mirror, delete: bool) -> Result<i32, MirrorEr
                 spared += r.size;
             }
             action = "removed";
+        } else if delete {
+            // A rollup kept whole: its files held from CURRENT still gain
+            // the address inside it.
+            utilake_mirror::note_entries(&cmp)?;
         }
         if ctx.json {
             render::json_line(&serde_json::json!({

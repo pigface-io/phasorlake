@@ -122,6 +122,8 @@ mod tests {
                 listed_modified: None,
                 listed_modified_at: None,
                 tool: "x".into(),
+                also: Vec::new(),
+                gone_at: None,
             },
         )
         .unwrap();

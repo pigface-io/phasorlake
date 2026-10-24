@@ -82,7 +82,7 @@ pub async fn download(
         .append(true)
         .open(&held_path)
         .map_err(MirrorError::io(&held_path))?;
-    let paired: HashMap<String, Pair> = pairs(mirror)?
+    let paired: HashMap<String, Pair> = pairs(mirror, fetcher.archive(), false)?
         .into_iter()
         .map(|p| (p.zip.clone(), p))
         .collect();
@@ -968,6 +968,8 @@ mod tests {
                 listed_modified: None,
                 listed_modified_at: None,
                 tool: "x".into(),
+                also: Vec::new(),
+                gone_at: None,
             },
         )
         .unwrap();

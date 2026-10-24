@@ -19,7 +19,7 @@ use futures::stream::BoxStream;
 use sha2::{Digest, Sha256};
 use tokio::sync::Mutex;
 
-use crate::net::archive::{Archive, Archived, Sidecar, hex};
+use crate::net::archive::{Archive, Archived, How, Sidecar, hex};
 use crate::net::error::FetchError;
 use crate::net::source::RemoteFile;
 use crate::net::transport::{HttpResponse, Span, Transport};
@@ -223,21 +223,35 @@ impl Fetcher {
     /// version is the file, as `cached`, with `same_as` saying how.
     pub async fn fetch(&self, remote: &RemoteFile) -> Result<LocalFile, FetchError> {
         let url = remote.url.as_str();
-        let first = self.archive.lookup(url)?;
-        let path = match &first {
-            None => self.archive.path_for(url),
-            Some(found) => {
-                let at = remote
-                    .modified_at
-                    .filter(|_| !found.sidecar.is_listed_as(remote.size, remote.modified_at));
-                let Some(at) = at else {
-                    return Ok(LocalFile::cached(remote, found.clone()));
-                };
-                let path = Archive::version_path(&found.path, at);
-                if let Some(version) = Archive::lookup_at(path.clone(), url)? {
-                    return Ok(LocalFile::cached(remote, version));
+        let base = self.archive.path_for(url);
+        // The file at the path, from this URL and as listed: the common
+        // case, answered without reading the folder.
+        if let Some(first) = Archive::lookup_at(base.clone(), url)?
+            && (remote.modified_at.is_none()
+                || first.sidecar.is_listed_as(remote.size, remote.modified_at))
+        {
+            return Ok(LocalFile::cached(remote, first));
+        }
+        // Every file at the path, from any URL: both listings of a report
+        // folder are one folder, so another URL's file may be there.
+        let held = Archive::held_at(&base)?;
+        let mine: Vec<&Archived> = held.iter().filter(|a| a.sidecar.names(url)).collect();
+        if let Some(found) = mine
+            .iter()
+            .find(|a| a.sidecar.is_listed_at(url, remote.size, remote.modified_at))
+            .or(mine.first().filter(|_| remote.modified_at.is_none()))
+        {
+            return Ok(LocalFile::cached(remote, (*found).clone()));
+        }
+        let path = match held.is_empty() {
+            true => base.clone(),
+            false => {
+                let at = remote.modified_at.unwrap_or_else(Stamp::now);
+                let p = Archive::version_path(&base, at);
+                match held.iter().any(|a| a.path == p) || p.exists() {
+                    true => Archive::version_path(&base, Stamp::now()),
+                    false => p,
                 }
-                path
             }
         };
         self.ensure_online(url)?;
@@ -257,9 +271,22 @@ impl Fetcher {
             }
         };
         let _ = std::fs::remove_file(part_meta(&part));
-        if first.is_some()
-            && let Some((held, repacked)) = self.held_as(url, &part, &streamed.sha256).await?
+        if !held.is_empty()
+            && let Some((found, repacked)) =
+                self.held_as(url, &held, &part, &streamed.sha256).await?
         {
+            // Another URL's bytes, the same: one file, two addresses.
+            let held = match found.sidecar.names(url) {
+                true => found,
+                false => {
+                    let mut found = found;
+                    found
+                        .sidecar
+                        .add_listed(url, How::Same, Stamp::now(), remote.modified_at);
+                    Archive::write_sidecar(&found.path, &found.sidecar)?;
+                    found
+                }
+            };
             let same = Same {
                 repacked,
                 sha256: streamed.sha256,
@@ -292,6 +319,8 @@ impl Fetcher {
             listed_modified: remote.modified.clone(),
             listed_modified_at: remote.modified_at,
             tool: format!("utilake-mirror/{}", env!("CARGO_PKG_VERSION")),
+            also: Vec::new(),
+            gone_at: None,
         };
         Archive::write_sidecar(&path, &sidecar)?;
         Ok(LocalFile {
@@ -306,24 +335,25 @@ impl Fetcher {
         })
     }
 
-    /// The version of `url` archived already that the download at `part`
-    /// is the same as: by its bytes, or, for a zip, by what it holds.
+    /// The file held at the download's path that the download at `part`
+    /// is the same as: by its bytes, from any URL, or, for a zip of the
+    /// same URL, by what it holds.
     async fn held_as(
         &self,
         url: &str,
+        held: &[Archived],
         part: &Path,
         sha256: &str,
     ) -> Result<Option<(Archived, bool)>, FetchError> {
-        let versions = Archive::versions(&self.archive.path_for(url), url)?;
-        if let Some(v) = versions.iter().find(|v| v.sidecar.sha256 == sha256) {
+        if let Some(v) = held.iter().find(|v| v.sidecar.sha256 == sha256) {
             return Ok(Some((v.clone(), false)));
         }
         let Some(holds) = crate::zipdir::contents(part).await else {
             return Ok(None);
         };
-        for v in versions {
+        for v in held.iter().filter(|v| v.sidecar.names(url)) {
             if crate::zipdir::contents(&v.path).await.as_ref() == Some(&holds) {
-                return Ok(Some((v, true)));
+                return Ok(Some((v.clone(), true)));
             }
         }
         Ok(None)
@@ -865,6 +895,114 @@ mod tests {
         // Versions of a file in a folder that is not there: none.
         let none = Archive::versions(&dir.path().join("no/such/a.csv"), zip).unwrap();
         assert!(none.is_empty());
+    }
+
+    #[tokio::test]
+    async fn both_listings_of_a_report_folder_share_one_folder() {
+        let dir = tempfile::tempdir().unwrap();
+        let current = "https://www.nemweb.com.au/Reports/CURRENT/GSH/Benchmark_Price/B.zip";
+        let archived = "https://www.nemweb.com.au/Reports/ARCHIVE/GSH/Benchmark_Price/B.zip";
+        let t = Arc::new(StaticTransport::default());
+        t.add(current, Canned::ok(b"partial"))
+            .add(archived, Canned::ok(b"final month"));
+        let f = Fetcher::new(Arc::new(t.clone()), Archive::new(dir.path()), fast());
+        let listed = |url: &str, at: &str| RemoteFile {
+            modified: Some(at.to_owned()),
+            modified_at: Stamp::from_listing(at),
+            ..remote(url)
+        };
+        let first = f
+            .fetch(&listed(current, "Monday, October 12, 2026 10:45 AM"))
+            .await
+            .unwrap();
+        let plain = dir
+            .path()
+            .join("www.nemweb.com.au/Reports/GSH/Benchmark_Price/B.zip");
+        assert_eq!(first.path, plain);
+        // The same name with other bytes is a version beside it, never an
+        // overwrite.
+        let second = f
+            .fetch(&listed(archived, "Tuesday, October 13, 2026 11:53 AM"))
+            .await
+            .unwrap();
+        assert!(!second.cached);
+        assert_eq!(
+            second.path,
+            Archive::version_path(
+                &plain,
+                Stamp::from_listing("Tuesday, October 13, 2026 11:53 AM").unwrap()
+            )
+        );
+        assert_eq!(std::fs::read(&plain).unwrap(), b"partial");
+        // Each is found by its own URL.
+        assert_eq!(f.archive().lookup(current).unwrap().unwrap().path, plain);
+        assert_eq!(
+            f.archive().lookup(archived).unwrap().unwrap().path,
+            second.path
+        );
+        assert_eq!(Archive::held_at(&plain).unwrap().len(), 2);
+        let again = f
+            .fetch(&listed(archived, "Tuesday, October 13, 2026 11:53 AM"))
+            .await
+            .unwrap();
+        assert!(again.cached);
+        assert_eq!(again.path, second.path);
+        assert_eq!(t.request_count(), 2);
+
+        // The same name with equal bytes: one file, both URLs on it.
+        let a = "https://www.nemweb.com.au/Reports/CURRENT/GSH/X/s.csv";
+        let b = "https://www.nemweb.com.au/Reports/ARCHIVE/GSH/X/s.csv";
+        t.add(a, Canned::ok(b"same")).add(b, Canned::ok(b"same"));
+        let one = f
+            .fetch(&listed(a, "Monday, October 12, 2026 10:45 AM"))
+            .await
+            .unwrap();
+        let two = f
+            .fetch(&listed(b, "Tuesday, October 13, 2026 11:53 AM"))
+            .await
+            .unwrap();
+        assert!(two.cached && two.same_as.is_some());
+        assert_eq!(two.path, one.path);
+        let sc = Archive::read_sidecar(&one.path).unwrap().unwrap();
+        assert_eq!(sc.url, a);
+        assert_eq!(sc.also.len(), 1);
+        assert_eq!((sc.also[0].url.as_str(), sc.also[0].how), (b, How::Same));
+        // The data file is untouched: its hash is the download's.
+        assert_eq!(sc.sha256, sha256_hex(b"same"));
+        assert_eq!(f.archive().lookup(b).unwrap().unwrap().path, one.path);
+        let three = f
+            .fetch(&listed(b, "Tuesday, October 13, 2026 11:53 AM"))
+            .await
+            .unwrap();
+        assert!(three.cached && three.same_as.is_none());
+        assert_eq!(t.request_count(), 4);
+
+        // A listing with no time, of a URL whose path another URL holds,
+        // is kept beside it under the time it was downloaded.
+        let c = "https://www.nemweb.com.au/Reports/ARCHIVE/GSH/X/t.csv";
+        let d = "https://www.nemweb.com.au/Reports/CURRENT/GSH/X/t.csv";
+        t.add(c, Canned::ok(b"c")).add(d, Canned::ok(b"dd"));
+        let c1 = f.fetch(&remote(c)).await.unwrap();
+        let d1 = f.fetch(&remote(d)).await.unwrap();
+        assert_ne!(c1.path, d1.path);
+        assert!(d1.path.to_string_lossy().contains("t.csv@"));
+        // A time already taken by a version: kept under the download's.
+        let e = "https://www.nemweb.com.au/Reports/ARCHIVE/GSH/X/u.csv";
+        let g = "https://www.nemweb.com.au/Reports/CURRENT/GSH/X/u.csv";
+        t.add(e, Canned::ok(b"e")).add(g, Canned::ok(b"gg"));
+        let at = "Monday, October 12, 2026 10:45 AM";
+        let e1 = f.fetch(&remote(e)).await.unwrap();
+        std::fs::write(
+            Archive::version_path(&e1.path, Stamp::from_listing(at).unwrap()),
+            b"x",
+        )
+        .unwrap();
+        let g1 = f.fetch(&listed(g, at)).await.unwrap();
+        assert!(!g1.cached);
+        assert_ne!(
+            g1.path,
+            Archive::version_path(&e1.path, Stamp::from_listing(at).unwrap())
+        );
     }
 
     #[tokio::test]

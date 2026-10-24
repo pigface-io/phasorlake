@@ -54,6 +54,29 @@ pub struct Sidecar {
     /// downloaded whole.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extracted_from: Option<Extracted>,
+    /// Every other place the bytes are served, as the mirror records them:
+    /// the same path under the other listing of a report folder
+    /// (`how = "same"`), or an entry of a daily zip (`how = "entry"`).
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub also: Vec<Also>,
+}
+
+/// Another address of an archived file's bytes. Times stay as written.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Also {
+    /// The URL: a file's, or `{zip URL}!{entry}`.
+    pub url: String,
+    /// How the bytes were found there: `same` or `entry`.
+    pub how: String,
+    /// When they were found there.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub seen_at: Option<String>,
+    /// When the listing stopped naming the address.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub gone_at: Option<String>,
+    /// The time the listing gave the address.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub listed_at: Option<String>,
 }
 
 /// One entry of a zip, fetched alone: what the zip's central directory
@@ -78,6 +101,12 @@ pub struct Extracted {
 }
 
 impl Sidecar {
+    /// Whether `url` is an address of these bytes: the URL they were
+    /// downloaded from, or one of `also`.
+    pub fn names(&self, url: &str) -> bool {
+        self.url == url || self.also.iter().any(|a| a.url == url)
+    }
+
     /// The sidecar with its `_at` instants derived from the text fields
     /// beside them, where a record written before they were kept (by an
     /// older utilake or mirror) lacks them. The text fields stay as
@@ -226,20 +255,95 @@ impl Archive {
         sidecar.derived(&sc).map(Some)
     }
 
-    /// The archived file of a URL, if it and its sidecar are there and
-    /// the sidecar names the same URL and size.
+    /// The archived file of a URL: the file at its path, or a version
+    /// beside it (`{name}@{at}`), whose sidecar names the URL
+    /// (`Sidecar::names`) and size. Both listings of a report folder are
+    /// one folder, so the file at the path may be another URL's.
     pub fn lookup(&self, url: &str) -> Result<Option<Archived>, FetchError> {
-        let path = self.path_for(url);
+        Ok(self
+            .held_at(&self.path_for(url))?
+            .into_iter()
+            .find(|a| a.sidecar.names(url)))
+    }
+
+    /// Every file held at `path`: the file there, then each version
+    /// beside it, in name order. The folder is read only when a file is
+    /// at `path`, since a version is kept only beside one.
+    pub fn held_at(&self, path: &Path) -> Result<Vec<Archived>, FetchError> {
+        let mut out: Vec<Archived> = Self::held_file(path.to_path_buf())?.into_iter().collect();
+        if std::fs::symlink_metadata(path).is_err() {
+            return Ok(out);
+        }
+        let dir = path.parent().unwrap_or(Path::new("."));
+        let name = path.file_name().unwrap_or_default().to_string_lossy();
+        let prefix = format!("{name}@");
+        let mut names: Vec<String> = std::fs::read_dir(dir)
+            .map_err(io_err(dir))?
+            .flatten()
+            .map(|e| e.file_name().to_string_lossy().into_owned())
+            .filter(|n| n.starts_with(&prefix) && !n.ends_with(".json") && !n.ends_with(".part"))
+            .collect();
+        names.sort();
+        for n in names {
+            out.extend(Self::held_file(dir.join(n))?);
+        }
+        Ok(out)
+    }
+
+    /// The file at `path` with its sidecar, when both are there and agree
+    /// on the size.
+    fn held_file(path: PathBuf) -> Result<Option<Archived>, FetchError> {
         let Ok(meta) = std::fs::metadata(&path) else {
             return Ok(None);
         };
         let Some(sidecar) = Self::read_sidecar(&path)? else {
             return Ok(None);
         };
-        if sidecar.url != url || sidecar.size != meta.len() {
-            return Ok(None);
+        Ok((sidecar.size == meta.len()).then_some(Archived { path, sidecar }))
+    }
+
+    /// Where a download is kept beside the file at `path` that another URL
+    /// holds: `{name}@{at}`, `at` the time given as RFC 3339 with its
+    /// separators dropped (`20261013T115300+1000`).
+    pub fn version_path(path: &Path, at_rfc3339: &str) -> PathBuf {
+        let at: String = at_rfc3339
+            .chars()
+            .filter(|c| !matches!(c, '-' | ':'))
+            .collect();
+        let mut s = path.as_os_str().to_owned();
+        s.push(format!("@{at}"));
+        PathBuf::from(s)
+    }
+
+    /// Adds `url` to the `also` of the sidecar at `path`'s side, as
+    /// `how`, keeping every other field as written. Whether it was added.
+    pub fn add_also(path: &Path, url: &str, how: &str, seen_at: &str) -> Result<bool, FetchError> {
+        let sc = Self::sidecar_path(path);
+        let text = std::fs::read_to_string(&sc).map_err(io_err(&sc))?;
+        let corrupt = |e: serde_json::Error| FetchError::SidecarCorrupt {
+            path: sc.display().to_string(),
+            message: e.to_string(),
+        };
+        let mut v: serde_json::Value = serde_json::from_str(&text).map_err(corrupt)?;
+        let sidecar: Sidecar = serde_json::from_value(v.clone()).map_err(corrupt)?;
+        if sidecar.names(url) {
+            return Ok(false);
         }
-        Ok(Some(Archived { path, sidecar }))
+        let also = serde_json::json!({"url": url, "how": how, "seen_at": seen_at});
+        match v.get_mut("also").and_then(serde_json::Value::as_array_mut) {
+            Some(list) => list.push(also),
+            None => {
+                v["also"] = serde_json::Value::Array(vec![also]);
+            }
+        }
+        let text = serde_json::to_string_pretty(&v).expect("a JSON value always serialises");
+        let mut tmp = sc.as_os_str().to_owned();
+        tmp.push(".tmp");
+        let tmp = PathBuf::from(tmp);
+        std::fs::write(&tmp, text)
+            .and_then(|()| std::fs::rename(&tmp, &sc))
+            .map_err(io_err(&sc))?;
+        Ok(true)
     }
 
     /// Hashes an archived file and compares it with its sidecar.
@@ -367,6 +471,7 @@ mod tests {
             listed_modified_at: timetext::parse_rfc3339("2024-02-13T18:27:00+10:00"),
             tool: "utilake/test".into(),
             extracted_from: None,
+            also: Vec::new(),
         };
         Archive::write_sidecar(&path, &sidecar).unwrap();
         let found = a.lookup(url).unwrap().unwrap();

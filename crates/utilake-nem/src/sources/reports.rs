@@ -773,6 +773,7 @@ mod tests {
                     listed_modified_at: None,
                     tool: String::new(),
                     extracted_from: None,
+                    also: Vec::new(),
                 },
             )
             .unwrap();

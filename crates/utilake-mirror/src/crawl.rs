@@ -80,9 +80,11 @@ impl Mirror {
         Ok(record.into_values().collect())
     }
 
-    /// Where a watch keeps what it read of a folder since the crawl.
+    /// Where a watch keeps what it read of a folder since the crawl: at
+    /// the folder URL's path, listing and all, since each listing is a
+    /// record of its own.
     fn folder_dir(&self, folder: &str) -> PathBuf {
-        Archive::new(self.crawl_dir().join("folders")).path_for(folder)
+        Archive::new(self.crawl_dir().join("folders")).url_path(folder)
     }
 
     /// Records `links` as what `folder` lists now, in place of what the

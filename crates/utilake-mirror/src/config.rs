@@ -107,7 +107,7 @@ impl Mirror {
 
     /// Where the page of a folder URL is kept.
     pub fn page_path(&self, folder: &Url) -> PathBuf {
-        let mut path = self.pages().path_for(folder.as_str());
+        let mut path = self.pages().url_path(folder.as_str());
         path.push("index.html");
         path
     }
