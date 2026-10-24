@@ -142,6 +142,9 @@ pub fn parse_doc(
     if temporal.valid.column().is_some_and(|c| !is_column(c)) {
         temporal.valid = crate::file_model::temporal::ValidAxis::Timeless;
     }
+    if let crate::file_model::temporal::ValidAxis::From { until, .. } = &mut temporal.valid {
+        *until = until.take().filter(is_column);
+    }
     let mut buf = String::new();
     let mut report_pairs: Vec<(String, String)> = decl
         .report_pairs
@@ -210,6 +213,7 @@ pub(crate) mod tests {
                     valid: Valid {
                         kind: "interval_end".into(),
                         column: Some("SETTLEMENTDATE".into()),
+                        until: None,
                     },
                     entity: vec!["DUID".into()],
                     order: vec!["LASTCHANGED".into()],

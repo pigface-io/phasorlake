@@ -30,9 +30,9 @@
     "utilake.temporal.cutoff": "LASTCHANGED",
     "utilake.temporal.entity": "[\"DUID\",\"BIDTYPE\"]",
     "utilake.temporal.order": "[\"OFFERDATE\",\"VERSIONNO\",\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
+    "utilake.temporal.origin": "hand",
     "utilake.temporal.valid.column": "SETTLEMENTDATE",
-    "utilake.temporal.valid.kind": "interval_end",
+    "utilake.temporal.valid.kind": "day",
     "utilake.time": "SETTLEMENTDATE",
     "utilake.visibility": "PUBLIC"
   },

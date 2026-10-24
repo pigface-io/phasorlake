@@ -127,7 +127,11 @@ pub fn bind(query: Query, lake: &Lake<'_>) -> Result<Bound, QueryError> {
         ValidAxis::Timeless => ValidAxis::Timeless,
         ValidAxis::IntervalEnd(c) => ValidAxis::IntervalEnd(role_ix("valid", *c)?),
         ValidAxis::Instant(c) => ValidAxis::Instant(role_ix("valid", *c)?),
-        ValidAxis::From(c) => ValidAxis::From(role_ix("valid", *c)?),
+        ValidAxis::Day(c) => ValidAxis::Day(role_ix("valid", *c)?),
+        ValidAxis::From { column, until } => ValidAxis::From {
+            column: role_ix("valid", *column)?,
+            until: until.map(|u| role_ix("until", u)).transpose()?,
+        },
     };
     let order = roles
         .order
@@ -194,7 +198,8 @@ pub fn bind(query: Query, lake: &Lake<'_>) -> Result<Bound, QueryError> {
     };
 
     // The files, each projected onto the target.
-    let bounds = plan_bounds(Some(&spec.valid), &query.window);
+    let day_start_us = i64::from(r.market_of(id).trading_day_start_secs) * 1_000_000;
+    let bounds = plan_bounds(Some(&spec.valid), &query.window, day_start_us);
     let mut reads = Vec::new();
     for (ix, f) in &files {
         let df = DataFile {
@@ -231,6 +236,7 @@ pub fn bind(query: Query, lake: &Lake<'_>) -> Result<Bound, QueryError> {
         value_filters,
         keep,
         offset,
+        day_start_us,
         warnings,
     }))
 }
@@ -317,7 +323,7 @@ fn bind_raw(
             column: String::new(),
         });
     }
-    let bounds = plan_bounds(None, &query.window);
+    let bounds = plan_bounds(None, &query.window, 0);
     let columns: Vec<Column> = schema
         .fields()
         .iter()
@@ -361,6 +367,7 @@ fn bind_raw(
         value_filters,
         keep,
         offset,
+        day_start_us: 0,
         warnings,
     }))
 }

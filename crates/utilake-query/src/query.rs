@@ -196,6 +196,9 @@ pub struct Bound {
     pub keep: Option<Vec<FieldIx>>,
     /// The market's clock.
     pub offset: MarketOffset,
+    /// The market's trading day start after midnight, in microseconds: what
+    /// a day label covers from.
+    pub day_start_us: i64,
     /// What binding noted.
     pub warnings: Vec<Diagnostic>,
 }

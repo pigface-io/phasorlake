@@ -33,6 +33,7 @@
     "utilake.temporal.origin": "derived",
     "utilake.temporal.valid.column": "VALIDFROM",
     "utilake.temporal.valid.kind": "from",
+    "utilake.temporal.valid.until": "VALIDTO",
     "utilake.time": "LASTCHANGED",
     "utilake.visibility": "PUBLIC"
   },

@@ -4,8 +4,9 @@
 //! Dedupe, "as of" reads, effective-date windows and forecast vintages are
 //! one question asked of these roles: which version of a fact is the
 //! truth, as known at some time. The roles are derived from the data
-//! model's primary key and the table's columns by [`derive()`], so no table
-//! has a hand-kept list; a table file may override them, marked
+//! model's primary key and the table's columns by the one rule every
+//! reader and the publisher share ([`utilake_iceberg::derive`]), so no
+//! table has a hand-kept list; a table file may override them, marked
 //! [`RoleOrigin::Hand`].
 //!
 //! The roles name columns by `C`: a [`Temporal<String>`] is what a table
@@ -44,10 +45,22 @@ pub enum ValidAxis<C> {
     /// (TRADINGDATE, DAY, RUN_DATETIME of a run's own result): a window
     /// keeps `after <= t < upto`.
     Instant(C),
+    /// The time labels the trading day the row is for, written at
+    /// midnight (the bid and settlement tables' SETTLEMENTDATE): the row
+    /// covers `[label + start, label + start + 1 day)` where `start` is
+    /// the market's trading day start, and a window keeps the labels whose
+    /// day overlaps it.
+    Day(C),
     /// The row is in force from the time until the next row of the same
-    /// entity (EFFECTIVEDATE): a window keeps each version whose span
-    /// overlaps it.
-    From(C),
+    /// entity (EFFECTIVEDATE), or until the end column says, whichever is
+    /// first: a window keeps each version whose span overlaps it.
+    From {
+        /// The column the version is in force from.
+        column: C,
+        /// The column that ends it early (END_DATE), when the table has
+        /// one; AEMO's "no end" dates are open ends.
+        until: Option<C>,
+    },
 }
 
 impl<C> ValidAxis<C> {
@@ -55,17 +68,30 @@ impl<C> ValidAxis<C> {
     pub const fn column(&self) -> Option<&C> {
         match self {
             Self::Timeless => None,
-            Self::IntervalEnd(c) | Self::Instant(c) | Self::From(c) => Some(c),
+            Self::IntervalEnd(c) | Self::Instant(c) | Self::Day(c) => Some(c),
+            Self::From { column, .. } => Some(column),
+        }
+    }
+
+    /// The column that ends a version, on a `from` axis that has one.
+    pub const fn until(&self) -> Option<&C> {
+        match self {
+            Self::From { until: Some(u), .. } => Some(u),
+            _ => None,
         }
     }
 
     /// The same axis over another column reference.
-    pub fn map<D>(self, f: impl FnOnce(C) -> D) -> ValidAxis<D> {
+    pub fn map<D>(self, mut f: impl FnMut(C) -> D) -> ValidAxis<D> {
         match self {
             Self::Timeless => ValidAxis::Timeless,
             Self::IntervalEnd(c) => ValidAxis::IntervalEnd(f(c)),
             Self::Instant(c) => ValidAxis::Instant(f(c)),
-            Self::From(c) => ValidAxis::From(f(c)),
+            Self::Day(c) => ValidAxis::Day(f(c)),
+            Self::From { column, until } => ValidAxis::From {
+                column: f(column),
+                until: until.map(f),
+            },
         }
     }
 
@@ -75,13 +101,15 @@ impl<C> ValidAxis<C> {
             Self::Timeless => "timeless",
             Self::IntervalEnd(_) => "interval_end",
             Self::Instant(_) => "instant",
-            Self::From(_) => "from",
+            Self::Day(_) => "day",
+            Self::From { .. } => "from",
         }
     }
 }
 
 /// A table's roles. Every primary-key column has exactly one of entity,
-/// valid or order; a column outside the key may be an order or the cutoff.
+/// valid or order; a column outside the key may be an order, the cutoff,
+/// or the end of a version.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct Temporal<C> {
     /// Who chose the roles.
@@ -105,126 +133,58 @@ impl<C> Temporal<C> {
         self.entity
             .iter()
             .chain(self.valid.column())
+            .chain(self.valid.until())
             .chain(&self.order)
             .chain(&self.cutoff)
     }
 }
 
-/// Valid-time columns of a period that ends at the time.
-const INTERVAL_END: &[&str] = &[
-    "SETTLEMENTDATE",
-    "INTERVAL_DATETIME",
-    "DATETIME",
-    "PERIOD_ENDING",
-];
-
-/// Valid-time columns from which a row is in force.
-const IN_FORCE_FROM: &[&str] = &["EFFECTIVEDATE", "VALIDFROM", "START_DATE", "STARTDATE"];
-
-/// Columns that rank revisions. A time among them may also be a cutoff,
-/// and is the valid time of a table that has no other.
-const KNOWLEDGE: &[&str] = &[
-    "RUN_DATETIME",
-    "VERSION_DATETIME",
-    "PUBLISH_DATETIME",
-    "OFFERDATETIME",
-    "OFFERDATE",
-    "PREDISPATCHSEQNO",
-    "VERSIONNO",
-    "BILLRUNNO",
-    "RUNNO",
-    "RUN_NO",
-];
-
-/// A column that names a scenario, never a revision: AEMO publishes an
-/// intervention run's rows beside the normal ones, and leaves it out of
-/// some keys (the P5MIN and PREDISPATCH tables). Merging the two would
-/// lose one, so it is always an entity where the table has it.
-const SCENARIO: &str = "INTERVENTION";
-
-/// The column every revision of most tables carries: when AEMO last
-/// changed the row.
-const LAST_CHANGED: &str = "LASTCHANGED";
-
 fn is_time(c: &Column) -> bool {
     matches!(c.ty, LakeType::Timestamp | LakeType::Date)
 }
 
-/// The roles of a table, from its primary key and columns.
-///
-/// - The valid time is the first key column in `IN_FORCE_FROM` (`from`),
-///   else in `INTERVAL_END` (`interval_end`), else the first other time
-///   in the key that is not a knowledge column (`instant`), else the first
-///   time among the key's knowledge columns (`instant`: a run's own
-///   result is a fact of that run), else none (`timeless`).
-/// - The order is the key's `KNOWLEDGE` columns in key order, then the
-///   knowledge columns outside the key, then `LASTCHANGED`.
-/// - The cutoff is the first time among the key's knowledge columns, else
-///   `LASTCHANGED`, else none.
-/// - Every other key column is the entity, and `INTERVENTION` wherever
-///   the table has it (see `SCENARIO`).
-pub fn derive(primary_key: &[String], columns: &[Column]) -> Temporal<String> {
-    let col = |n: &str| columns.iter().find(|c| c.name == n);
-    let timed = |n: &&String| col(n).is_some_and(is_time);
-    let knowledge = |n: &str| KNOWLEDGE.contains(&n);
-    let in_key = |list: &[&str]| {
-        primary_key
-            .iter()
-            .find(|k| list.contains(&k.as_str()))
-            .cloned()
+/// The roles as the publisher states them, as utilake's; `None` for a
+/// valid kind utilake does not know.
+pub fn from_published(t: &utilake_iceberg::Temporal) -> Option<Temporal<String>> {
+    let v = &t.valid;
+    let valid = match (v.kind.as_str(), v.column.clone()) {
+        ("timeless", None) => ValidAxis::Timeless,
+        ("interval_end", Some(c)) => ValidAxis::IntervalEnd(c),
+        ("instant", Some(c)) => ValidAxis::Instant(c),
+        ("day", Some(c)) => ValidAxis::Day(c),
+        ("from", Some(c)) => ValidAxis::From {
+            column: c,
+            until: v.until.clone(),
+        },
+        _ => return None,
     };
-    let key_knowledge_time = primary_key
-        .iter()
-        .filter(timed)
-        .find(|k| knowledge(k))
-        .cloned();
-    let valid = if let Some(c) = in_key(IN_FORCE_FROM).filter(|c| timed(&c)) {
-        ValidAxis::From(c)
-    } else if let Some(c) = in_key(INTERVAL_END).filter(|c| timed(&c)) {
-        ValidAxis::IntervalEnd(c)
-    } else if let Some(c) = primary_key
-        .iter()
-        .filter(timed)
-        .find(|k| !knowledge(k))
-        .cloned()
-    {
-        ValidAxis::Instant(c)
-    } else if let Some(c) = key_knowledge_time.clone() {
-        ValidAxis::Instant(c)
-    } else {
-        ValidAxis::Timeless
-    };
-    let is_valid = |n: &str| valid.column().is_some_and(|v| v == n);
-    let mut order: Vec<String> = primary_key
-        .iter()
-        .filter(|k| knowledge(k) && !is_valid(k))
-        .cloned()
-        .collect();
-    for k in KNOWLEDGE.iter().chain(&[LAST_CHANGED]) {
-        if col(k).is_some() && !order.iter().any(|o| o == k) && !is_valid(k) {
-            order.push((*k).to_owned());
-        }
-    }
-    let cutoff = key_knowledge_time.filter(|c| !is_valid(c)).or_else(|| {
-        col(LAST_CHANGED)
-            .filter(|c| is_time(c))
-            .map(|c| c.name.clone())
-    });
-    let mut entity: Vec<String> = primary_key
-        .iter()
-        .filter(|k| !is_valid(k) && !order.contains(k))
-        .cloned()
-        .collect();
-    if col(SCENARIO).is_some() && !entity.iter().any(|e| e == SCENARIO) {
-        entity.push(SCENARIO.to_owned());
-    }
-    Temporal {
-        origin: RoleOrigin::Derived,
-        entity,
+    Some(Temporal {
+        origin: match t.origin.as_str() {
+            "hand" => RoleOrigin::Hand,
+            _ => RoleOrigin::Derived,
+        },
+        entity: t.entity.clone(),
         valid,
-        order,
-        cutoff,
-    }
+        order: t.order.clone(),
+        cutoff: t.cutoff.clone(),
+    })
+}
+
+/// The roles of a table, from its primary key and columns: the publisher's
+/// rule ([`utilake_iceberg::derive`]) over the columns as Iceberg fields.
+pub fn derive(primary_key: &[String], columns: &[Column]) -> Temporal<String> {
+    let fields: Vec<utilake_iceberg::Field> = columns
+        .iter()
+        .map(|c| utilake_iceberg::Field {
+            id: c.id.0,
+            name: c.name.clone(),
+            ty: c.ty.iceberg(),
+            required: !c.nullable,
+            doc: None,
+        })
+        .collect();
+    from_published(&utilake_iceberg::derive(primary_key, &fields))
+        .expect("the publisher derives only kinds utilake knows")
 }
 
 impl Temporal<String> {
@@ -251,6 +211,7 @@ impl Temporal<String> {
             .column()
             .map(|n| ("valid", n))
             .into_iter()
+            .chain(self.valid.until().map(|n| ("until", n)))
             .chain(self.cutoff.as_ref().map(|n| ("cutoff", n)))
         {
             if let Some(c) = t.column(n)
@@ -267,6 +228,7 @@ impl Temporal<String> {
             .entity
             .iter()
             .chain(self.valid.column())
+            .chain(self.valid.until())
             .chain(&self.order)
         {
             if seen.contains(&n) {
@@ -336,123 +298,60 @@ mod tests {
     const D: LakeType = LakeType::Double;
 
     #[test]
-    fn effective_dated() {
+    fn the_publishers_rule_over_the_tables_columns() {
         let c = cols(&[
             ("DUID", S),
-            ("EFFECTIVEDATE", TS),
+            ("START_DATE", TS),
+            ("END_DATE", TS),
             ("VERSIONNO", D),
             ("LASTCHANGED", TS),
         ]);
-        let t = derive(&names(&["DUID", "EFFECTIVEDATE", "VERSIONNO"]), &c);
+        let t = derive(&names(&["DUID", "START_DATE", "VERSIONNO"]), &c);
         assert_eq!(t.entity, names(&["DUID"]));
-        assert_eq!(t.valid, ValidAxis::From("EFFECTIVEDATE".into()));
+        assert_eq!(
+            t.valid,
+            ValidAxis::From {
+                column: "START_DATE".into(),
+                until: Some("END_DATE".into())
+            }
+        );
         assert_eq!(t.order, names(&["VERSIONNO", "LASTCHANGED"]));
         assert_eq!(t.cutoff.as_deref(), Some("LASTCHANGED"));
         assert_eq!(t.origin, RoleOrigin::Derived);
-    }
-
-    #[test]
-    fn interval_with_runs() {
-        let c = cols(&[
-            ("SETTLEMENTDATE", TS),
-            ("RUNNO", D),
-            ("REGIONID", S),
-            ("INTERVENTION", D),
-            ("LASTCHANGED", TS),
-        ]);
-        let t = derive(
-            &names(&["SETTLEMENTDATE", "RUNNO", "REGIONID", "INTERVENTION"]),
-            &c,
-        );
+        assert_eq!(t.columns().count(), 6, "the end column is a role column");
+        let c = cols(&[("SETTLEMENTDATE", TS), ("REGIONID", S)]);
+        let t = derive(&names(&["SETTLEMENTDATE", "REGIONID"]), &c);
         assert_eq!(t.valid, ValidAxis::IntervalEnd("SETTLEMENTDATE".into()));
-        assert_eq!(t.entity, names(&["REGIONID", "INTERVENTION"]));
-        assert_eq!(t.order, names(&["RUNNO", "LASTCHANGED"]));
+        assert!(t.valid.until().is_none());
     }
 
     #[test]
-    fn forecast_runs_are_knowledge() {
-        let c = cols(&[
-            ("RUN_DATETIME", TS),
-            ("INTERVAL_DATETIME", TS),
-            ("REGIONID", S),
-            ("LASTCHANGED", TS),
-        ]);
-        let t = derive(
-            &names(&["RUN_DATETIME", "INTERVAL_DATETIME", "REGIONID"]),
-            &c,
-        );
-        assert_eq!(t.valid, ValidAxis::IntervalEnd("INTERVAL_DATETIME".into()));
-        assert_eq!(t.order, names(&["RUN_DATETIME", "LASTCHANGED"]));
+    fn published_roles_of_every_kind_read_back() {
+        let published =
+            |kind: &str, column: Option<&str>, until: Option<&str>| utilake_iceberg::Temporal {
+                valid: utilake_iceberg::Valid {
+                    kind: kind.into(),
+                    column: column.map(str::to_owned),
+                    until: until.map(str::to_owned),
+                },
+                entity: vec!["X".into()],
+                order: vec![],
+                cutoff: None,
+                origin: "hand".into(),
+            };
+        let day = from_published(&published("day", Some("SETTLEMENTDATE"), None)).unwrap();
+        assert_eq!(day.valid, ValidAxis::Day("SETTLEMENTDATE".into()));
+        assert_eq!(day.origin, RoleOrigin::Hand);
+        let from = from_published(&published("from", Some("A"), Some("B"))).unwrap();
+        assert_eq!(from.valid.until().map(String::as_str), Some("B"));
         assert_eq!(
-            t.cutoff.as_deref(),
-            Some("RUN_DATETIME"),
-            "the run is when it was known"
+            from_published(&published("timeless", None, None))
+                .unwrap()
+                .valid,
+            ValidAxis::Timeless
         );
-        assert_eq!(t.entity, names(&["REGIONID"]));
-    }
-
-    #[test]
-    fn a_runs_own_result_is_valid_at_the_run() {
-        let c = cols(&[("RUN_DATETIME", TS), ("LASTCHANGED", TS)]);
-        let t = derive(&names(&["RUN_DATETIME"]), &c);
-        assert_eq!(t.valid, ValidAxis::Instant("RUN_DATETIME".into()));
-        assert_eq!(t.order, names(&["LASTCHANGED"]));
-        assert_eq!(t.cutoff.as_deref(), Some("LASTCHANGED"));
-        assert!(t.entity.is_empty());
-    }
-
-    #[test]
-    fn a_day_label_with_a_run() {
-        let c = cols(&[("RUN_DATETIME", TS), ("DAY", TS), ("REGIONID", S)]);
-        let t = derive(&names(&["RUN_DATETIME", "DAY", "REGIONID"]), &c);
-        assert_eq!(t.valid, ValidAxis::Instant("DAY".into()));
-        assert_eq!(t.order, names(&["RUN_DATETIME"]));
-        assert_eq!(t.cutoff.as_deref(), Some("RUN_DATETIME"));
-    }
-
-    #[test]
-    fn a_knowledge_column_outside_the_key_ranks_revisions() {
-        // PREDISPATCHPRICE: the run is not in AEMO's key.
-        let c = cols(&[
-            ("PREDISPATCHSEQNO", S),
-            ("REGIONID", S),
-            ("DATETIME", TS),
-            ("LASTCHANGED", TS),
-        ]);
-        let t = derive(&names(&["REGIONID", "DATETIME"]), &c);
-        assert_eq!(t.order, names(&["PREDISPATCHSEQNO", "LASTCHANGED"]));
-        // The intervention scenario is kept apart even where the key omits it.
-        let mut with_iv = c.clone();
-        with_iv.push(cols(&[("INTERVENTION", D)]).remove(0));
-        let t = derive(&names(&["REGIONID", "DATETIME"]), &with_iv);
-        assert_eq!(t.entity, names(&["REGIONID", "INTERVENTION"]));
-        assert_eq!(t.cutoff.as_deref(), Some("LASTCHANGED"));
-    }
-
-    #[test]
-    fn no_key_no_time() {
-        let c = cols(&[
-            ("CONTRACTYEAR", D),
-            ("WEEKNO", D),
-            ("BILLRUNNO", D),
-            ("X", D),
-        ]);
-        let t = derive(&names(&["CONTRACTYEAR", "WEEKNO", "BILLRUNNO"]), &c);
-        assert_eq!(t.valid, ValidAxis::Timeless);
-        assert_eq!(t.order, names(&["BILLRUNNO"]));
-        assert_eq!(t.entity, names(&["CONTRACTYEAR", "WEEKNO"]));
-        assert_eq!(t.cutoff, None, "the source's publish time");
-        let empty = derive(&[], &c);
-        assert_eq!(empty.valid, ValidAxis::Timeless);
-        assert!(empty.entity.is_empty());
-    }
-
-    #[test]
-    fn a_time_named_like_a_valid_column_but_typed_as_text_is_not_one() {
-        let c = cols(&[("EFFECTIVEDATE", S), ("DUID", S)]);
-        let t = derive(&names(&["EFFECTIVEDATE", "DUID"]), &c);
-        assert_eq!(t.valid, ValidAxis::Timeless);
-        assert_eq!(t.entity, names(&["EFFECTIVEDATE", "DUID"]));
+        assert!(from_published(&published("instant", None, None)).is_none());
+        assert!(from_published(&published("epoch", Some("A"), None)).is_none());
     }
 
     #[test]
@@ -469,11 +368,15 @@ mod tests {
         let mut hand = roles.clone();
         hand.origin = RoleOrigin::Hand;
         hand.entity.push("NOPE".into());
-        hand.valid = ValidAxis::From("DUID".into());
+        hand.valid = ValidAxis::From {
+            column: "DUID".into(),
+            until: Some("SCADAVALUE".into()),
+        };
         hand.cutoff = Some("DUID".into());
         let p = hand.check(&t).unwrap_err().join("\n");
         assert!(p.contains("entity names NOPE"), "{p}");
         assert!(p.contains("valid DUID is string, not a time"), "{p}");
+        assert!(p.contains("until SCADAVALUE is "), "{p}");
         assert!(p.contains("cutoff DUID is string"), "{p}");
         assert!(p.contains("names DUID in two roles"), "{p}");
         assert!(p.contains("is also an entity or the valid time"), "{p}");
@@ -491,8 +394,22 @@ mod tests {
         assert_eq!(a.kind(), "instant");
         assert_eq!(a.map(|s| s.len()), ValidAxis::Instant(3));
         assert_eq!(ValidAxis::<String>::Timeless.kind(), "timeless");
-        assert_eq!(ValidAxis::From(1).kind(), "from");
         assert_eq!(ValidAxis::IntervalEnd(1).kind(), "interval_end");
+        assert_eq!(ValidAxis::Day(1).kind(), "day");
+        let f = ValidAxis::From {
+            column: 1,
+            until: Some(2),
+        };
+        assert_eq!(f.kind(), "from");
+        assert_eq!((f.column(), f.until()), (Some(&1), Some(&2)));
+        assert_eq!(
+            f.map(|n| n * 10),
+            ValidAxis::From {
+                column: 10,
+                until: Some(20)
+            }
+        );
         assert!(ValidAxis::<u8>::Timeless.column().is_none());
+        assert!(ValidAxis::Day(1).until().is_none());
     }
 }

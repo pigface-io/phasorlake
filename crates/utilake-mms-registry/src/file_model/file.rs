@@ -73,13 +73,15 @@ struct FormatOnly {
     name: String,
 }
 
-/// `valid = { kind = "from", column = "EFFECTIVEDATE" }`.
+/// `valid = { kind = "from", column = "EFFECTIVEDATE", until = "END_DATE" }`.
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct ValidFile {
     kind: ValidKind,
     #[serde(default)]
     column: Option<String>,
+    #[serde(default)]
+    until: Option<String>,
 }
 
 #[derive(Deserialize)]
@@ -88,11 +90,15 @@ enum ValidKind {
     Timeless,
     IntervalEnd,
     Instant,
+    Day,
     From,
 }
 
 impl ValidFile {
     fn axis(self) -> Result<ValidAxis<String>, &'static str> {
+        if self.until.is_some() && !matches!(self.kind, ValidKind::From) {
+            return Err("temporal valid takes an until column only when its kind is \"from\"");
+        }
         match (self.kind, self.column) {
             (ValidKind::Timeless, None) => Ok(ValidAxis::Timeless),
             (ValidKind::Timeless, Some(_)) => {
@@ -101,7 +107,11 @@ impl ValidFile {
             (_, None) => Err("temporal valid needs a column unless its kind is \"timeless\""),
             (ValidKind::IntervalEnd, Some(c)) => Ok(ValidAxis::IntervalEnd(c)),
             (ValidKind::Instant, Some(c)) => Ok(ValidAxis::Instant(c)),
-            (ValidKind::From, Some(c)) => Ok(ValidAxis::From(c)),
+            (ValidKind::Day, Some(c)) => Ok(ValidAxis::Day(c)),
+            (ValidKind::From, Some(c)) => Ok(ValidAxis::From {
+                column: c,
+                until: self.until,
+            }),
         }
     }
 }
@@ -418,9 +428,15 @@ fn write_temporal(out: &mut String, r: &Temporal<String>) {
         RoleOrigin::Derived => "derived",
         RoleOrigin::Hand => "hand",
     };
-    let valid = match r.valid.column() {
-        Some(c) => format!("{{ kind = \"{}\", column = {} }}", r.valid.kind(), q(c)),
-        None => format!("{{ kind = \"{}\" }}", r.valid.kind()),
+    let valid = match (r.valid.column(), r.valid.until()) {
+        (Some(c), Some(u)) => format!(
+            "{{ kind = \"{}\", column = {}, until = {} }}",
+            r.valid.kind(),
+            q(c),
+            q(u)
+        ),
+        (Some(c), None) => format!("{{ kind = \"{}\", column = {} }}", r.valid.kind(), q(c)),
+        (None, _) => format!("{{ kind = \"{}\" }}", r.valid.kind()),
     };
     let _ = write!(
         out,
@@ -531,13 +547,42 @@ mod tests {
         assert!(text.contains("valid = { kind = \"timeless\" }\n"), "{text}");
         assert!(!text.contains("cutoff"), "{text}");
         assert_eq!(parse(&text).unwrap(), all);
-        all.temporal.valid = ValidAxis::From("settlementdate".into());
+        all.temporal.valid = ValidAxis::From {
+            column: "settlementdate".into(),
+            until: None,
+        };
         let back = parse(&write_table(&all)).unwrap();
         assert_eq!(
             back.temporal.valid,
-            ValidAxis::From("SETTLEMENTDATE".into()),
+            ValidAxis::From {
+                column: "SETTLEMENTDATE".into(),
+                until: None
+            },
             "normalised"
         );
+        // An end column round-trips with its version's start; it belongs
+        // to a `from` axis only.
+        all.temporal.valid = ValidAxis::From {
+            column: "settlementdate".into(),
+            until: Some("duid".into()),
+        };
+        let text = write_table(&all);
+        assert!(
+            text.contains(
+                "valid = { kind = \"from\", column = \"settlementdate\", until = \"duid\" }"
+            ),
+            "{text}"
+        );
+        assert_eq!(
+            parse(&text).unwrap().temporal.valid,
+            ValidAxis::From {
+                column: "SETTLEMENTDATE".into(),
+                until: Some("DUID".into())
+            }
+        );
+        let wrong = text.replace("kind = \"from\"", "kind = \"instant\"");
+        let e = parse(&wrong).unwrap_err();
+        assert!(format!("{e}").contains("until"), "{e}");
         // A schema with no run has no month.
         let mut lone = t;
         lone.runs.clear();

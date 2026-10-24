@@ -252,7 +252,7 @@ pub fn render(b: &Bound, lake: &Lake<'_>, dialect: Dialect) -> String {
         rank = rank.join(", ")
     );
     let window = match (&spec.valid, &b.query.window) {
-        (ValidAxis::From(c), w) => {
+        (ValidAxis::From { column: c, until }, w) => {
             let valid = as_instant(b, *c);
             let entity = names(&spec.entity);
             let partition = if entity.is_empty() {
@@ -266,11 +266,26 @@ pub fn render(b: &Bound, lake: &Lake<'_>, dialect: Dialect) -> String {
             let valid_name = ident(b.schema.field(c.0).name());
             let mut using: Vec<String> = entity.clone();
             using.push(valid_name.clone());
+            // The next version's start, else open; an end column that is
+            // set, not AEMO's "no end", not before the start, and before
+            // the next version, ends it instead.
+            let open = instant(OPEN_US);
+            let next = format!(
+                "CASE WHEN next_ends.next_valid >= {open} THEN NULL ELSE next_ends.next_valid END"
+            );
+            let end = match until {
+                None => next,
+                Some(u) => {
+                    let u = as_instant(b, *u);
+                    format!(
+                        "CASE WHEN {u} IS NOT NULL AND {u} < {open} AND {u} >= {valid} AND (next_ends.next_valid IS NULL OR next_ends.next_valid >= {open} OR {u} < next_ends.next_valid) THEN {u} ELSE {next} END"
+                    )
+                }
+            };
             let _ = writeln!(
                 out,
-                "ends AS (SELECT DISTINCT {cols} FROM latest),\nnext_ends AS (SELECT {cols}, lead({valid}) OVER ({partition}ORDER BY {valid}) AS next_valid FROM ends),\nspans AS (SELECT latest.*, CASE WHEN next_ends.next_valid >= {open} THEN NULL ELSE next_ends.next_valid END AS _nl_valid_to FROM latest JOIN next_ends USING ({using}))",
+                "ends AS (SELECT DISTINCT {cols} FROM latest),\nnext_ends AS (SELECT {cols}, lead({valid}) OVER ({partition}ORDER BY {valid}) AS next_valid FROM ends),\nspans AS (SELECT latest.*, {end} AS _nl_valid_to FROM latest JOIN next_ends USING ({using}))",
                 cols = using.join(", "),
-                open = instant(OPEN_US),
                 using = using.join(", ")
             );
             let (upto, after) = match w {
@@ -286,13 +301,13 @@ pub fn render(b: &Bound, lake: &Lake<'_>, dialect: Dialect) -> String {
         (axis, w) => {
             let _ = writeln!(out, "spans AS (SELECT * FROM latest)");
             axis.column().map_or_else(String::new, |c| {
-                window_sql(Some(axis), w, &as_instant(b, *c))
+                window_sql(Some(axis), w, &as_instant(b, *c), b.day_start_us)
             })
         }
     };
     let mut cols = kept(b);
     cols.push("_nl_known".to_owned());
-    if matches!(spec.valid, ValidAxis::From(_)) {
+    if matches!(spec.valid, ValidAxis::From { .. }) {
         cols.push("_nl_valid_to".to_owned());
     }
     let _ = write!(out, "SELECT {} FROM spans {window}", cols.join(", "));
@@ -301,14 +316,33 @@ pub fn render(b: &Bound, lake: &Lake<'_>, dialect: Dialect) -> String {
 
 /// The window on an axis other than `from`, as a `WHERE` clause over the
 /// valid column `v`: `(after, upto]` where the time ends an interval,
-/// `[after, upto)` where it labels an instant.
-fn window_sql(axis: Option<&ValidAxis<FieldIx>>, w: &ValidWindow, v: &str) -> String {
+/// `[after, upto)` where it labels an instant, the trading day's overlap
+/// where it labels a day (`day_start` microseconds after midnight).
+fn window_sql(
+    axis: Option<&ValidAxis<FieldIx>>,
+    w: &ValidWindow,
+    v: &str,
+    day_start: i64,
+) -> String {
+    let secs = day_start / 1_000_000;
+    let day_from = format!("({v} + INTERVAL '{secs}' SECOND)");
+    let day_to = format!("({v} + INTERVAL '{}' SECOND)", secs + 86_400);
     match (axis, w) {
         (Some(ValidAxis::Timeless), _) => String::new(),
         (Some(ValidAxis::IntervalEnd(_)), ValidWindow::Range { after, upto }) => format!(
             "WHERE {v} > {} AND {v} <= {}",
             instant(after.get()),
             instant(upto.get())
+        ),
+        (Some(ValidAxis::Day(_)), ValidWindow::Range { after, upto }) => format!(
+            "WHERE {day_from} < {} AND {day_to} > {}",
+            instant(upto.get()),
+            instant(after.get())
+        ),
+        (Some(ValidAxis::Day(_)), ValidWindow::At(t)) => format!(
+            "WHERE {day_from} <= {} AND {} < {day_to}",
+            instant(t.get()),
+            instant(t.get())
         ),
         (_, ValidWindow::Range { after, upto }) => format!(
             "WHERE {v} >= {} AND {v} < {}",
@@ -338,7 +372,7 @@ fn finish_raw(mut out: String, b: &Bound) -> String {
         (None, t) => t,
     };
     let where_ = valid.map_or_else(String::new, |c| {
-        window_sql(axis, &b.query.window, &as_instant(b, c))
+        window_sql(axis, &b.query.window, &as_instant(b, c), b.day_start_us)
     });
     let _ = writeln!(
         out,
@@ -403,8 +437,63 @@ mod tests {
             value_filters: vec![],
             keep: None,
             offset: MarketOffset(36_000),
+            day_start_us: 14_400_000_000,
             warnings: vec![],
         }
+    }
+
+    #[test]
+    fn a_day_label_a_version_end_and_a_bare_range_render_their_windows() {
+        let lake = Lake {
+            registry: &utilake_nem::registry(),
+            files: vec![],
+            version: "test",
+        };
+        let after = ValidTime::new(1_704_031_200_000_000);
+        let upto = ValidTime::new(1_704_117_600_000_000);
+        let range = ValidWindow::Range { after, upto };
+        // A day label covers its trading day: label + start < upto, label
+        // + start + 1 day > after.
+        let s = render(
+            &dated(range, ValidAxis::Day(FieldIx(0))),
+            &lake,
+            Dialect::DuckDb,
+        );
+        assert!(
+            s.contains("INTERVAL '14400' SECOND) < TIMESTAMP WITH TIME ZONE '2024-01-01 14:00:00.000000+00:00'")
+                && s.contains("INTERVAL '100800' SECOND) > TIMESTAMP WITH TIME ZONE '2023-12-31 14:00:00.000000+00:00'"),
+            "{s}"
+        );
+        let at = ValidWindow::At(after);
+        let s = render(
+            &dated(at, ValidAxis::Day(FieldIx(0))),
+            &lake,
+            Dialect::DuckDb,
+        );
+        assert!(
+            s.contains("INTERVAL '14400' SECOND) <= TIMESTAMP WITH TIME ZONE '2023-12-31 14:00:00.000000+00:00' AND TIMESTAMP WITH TIME ZONE '2023-12-31 14:00:00.000000+00:00' < ("),
+            "{s}"
+        );
+        // A from table with an end column: the version ends at the end
+        // column when that comes first.
+        let from = ValidAxis::From {
+            column: FieldIx(0),
+            until: Some(FieldIx(1)),
+        };
+        let s = render(&dated(range, from), &lake, Dialect::Postgres);
+        assert!(
+            s.contains("CASE WHEN") && s.contains("\"X\"") && s.contains("next_ends.next_valid"),
+            "{s}"
+        );
+        // No roles: the time column alone bounds the read.
+        let mut bare = dated(range, ValidAxis::Timeless);
+        bare.spec = None;
+        let s = render(&bare, &lake, Dialect::DuckDb);
+        assert!(
+            s.contains(">= TIMESTAMP WITH TIME ZONE '2023-12-31 14:00:00.000000+00:00' AND")
+                && s.contains("< TIMESTAMP WITH TIME ZONE '2024-01-01 14:00:00.000000+00:00'"),
+            "{s}"
+        );
     }
 
     #[test]

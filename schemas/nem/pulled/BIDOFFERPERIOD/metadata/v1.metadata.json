@@ -30,9 +30,9 @@
     "utilake.temporal.cutoff": "OFFERDATETIME",
     "utilake.temporal.entity": "[\"DUID\",\"BIDTYPE\",\"PERIODID\"]",
     "utilake.temporal.order": "[\"OFFERDATETIME\"]",
-    "utilake.temporal.origin": "derived",
+    "utilake.temporal.origin": "hand",
     "utilake.temporal.valid.column": "TRADINGDATE",
-    "utilake.temporal.valid.kind": "instant",
+    "utilake.temporal.valid.kind": "day",
     "utilake.time": "TRADINGDATE",
     "utilake.visibility": "PUBLIC"
   },

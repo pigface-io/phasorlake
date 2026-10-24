@@ -150,7 +150,7 @@ pub fn scan(
         row_groups_in(
             &builder,
             &read.columns[ix.0],
-            window::plan_bounds(axis, &b.query.window),
+            window::plan_bounds(axis, &b.query.window, b.day_start_us),
             b.offset,
         )
     } else {
@@ -206,10 +206,15 @@ pub fn scan(
         let mut batch = RecordBatch::try_new(out_schema.clone(), columns).map_err(arrow_err)?;
         if trim_now && let Some(ix) = valid_ix {
             let us = micros_of(batch.column(ix.0), b.offset).unwrap_or_else(|| vec![None; n]);
-            let mask = BooleanArray::from_iter(
-                us.iter()
-                    .map(|v| Some(window::keeps(axis, &b.query.window, *v, None))),
-            );
+            let mask = BooleanArray::from_iter(us.iter().map(|v| {
+                Some(window::keeps(
+                    axis,
+                    &b.query.window,
+                    *v,
+                    None,
+                    b.day_start_us,
+                ))
+            }));
             let kept =
                 arrow_select::filter::filter_record_batch(&batch, &mask).map_err(arrow_err)?;
             report.dropped_window += (batch.num_rows() - kept.num_rows()) as u64;
@@ -466,6 +471,7 @@ mod file_tests {
             value_filters: vec![],
             keep: None,
             offset: NEM,
+            day_start_us: 0,
             warnings: vec![],
         }
     }

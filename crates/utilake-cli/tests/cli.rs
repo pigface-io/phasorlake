@@ -1113,6 +1113,30 @@ fn cache_wem_fetch_and_config() {
     let (code, _, err) = cli.code(&["--offline", "wem", "manifest", "facility-scada"]);
     assert_eq!(code, 1);
     assert!(err.contains("net.offline"), "{err}");
+    // A served manifest lists its files, as a table and as JSON lines.
+    let yaml = "- url: \"https://data.wa.aemo.com.au/datafiles/facility-scada/facility-scada-2023-10.csv\"\n  year: 2023\n  month: 10\n  generatedAt: \"Thu Nov 02 2023 11:35:00Z\"\n";
+    let base = serve_text(yaml.to_owned());
+    std::fs::write(
+        cli.home.path().join("config.toml"),
+        format!("request_interval_ms = 0\n[sources.wem]\nbase_url = \"{base}\"\n"),
+    )
+    .unwrap();
+    let out = cli.ok(&[
+        "wem",
+        "manifest",
+        "facility-scada",
+        "--from",
+        "2023-10",
+        "--to",
+        "2023-10",
+    ]);
+    assert!(
+        out.contains("facility-scada-2023-10.csv") && out.contains("2023-11-02T11:35:00Z"),
+        "{out}"
+    );
+    assert!(out.contains("1 file(s)"), "{out}");
+    let out = cli.ok(&["--json", "wem", "manifest", "facility-scada"]);
+    assert!(out.contains("\"period\":\"2023-10\""), "{out}");
     // An unknown config key is an error naming the key.
     std::fs::write(cli.home.path().join("config.toml"), "jobz = 1\n").unwrap();
     let (code, _, err) = cli.code(&["schema", "list"]);
@@ -1217,6 +1241,29 @@ fn walk(root: &Path) -> Vec<PathBuf> {
 /// A server on a local port for `get`: a year listing that names one
 /// whole-month zip, the zip itself served by byte range, and 404 for the
 /// rest. Answers until dropped.
+/// A local HTTP server answering every request with `text`, until the
+/// test ends; its base URL.
+fn serve_text(text: String) -> String {
+    use std::io::{Read, Write};
+    let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+    let port = listener.local_addr().unwrap().port();
+    std::thread::spawn(move || {
+        for sock in listener.incoming().flatten() {
+            let mut sock = sock;
+            let mut buf = vec![0u8; 4096];
+            let _ = sock.read(&mut buf);
+            let head = format!(
+                "HTTP/1.1 200 OK\r\nContent-Length: {}\r\nContent-Type: text/yaml\r\nConnection: close\r\n\r\n",
+                text.len()
+            );
+            let _ = sock.write_all(head.as_bytes());
+            let _ = sock.write_all(text.as_bytes());
+            let _ = sock.shutdown(std::net::Shutdown::Write);
+        }
+    });
+    format!("http://127.0.0.1:{port}")
+}
+
 struct MonthServer {
     base: String,
     stop: std::sync::Arc<std::sync::atomic::AtomicBool>,

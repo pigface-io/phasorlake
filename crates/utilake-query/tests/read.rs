@@ -713,3 +713,113 @@ fn a_directory_takes_parts_of_the_asked_size() {
     );
     assert_eq!(Format::of_extension("txt"), None);
 }
+
+/// The rows of a frame as (column, column) text pairs, sorted.
+fn pairs(frames: &utilake_query::Frames, a: &str, b: &str) -> Vec<(String, String)> {
+    let mut out = Vec::new();
+    for f in &frames.frames {
+        let batch = f.batch();
+        let ca = arrow_cast::cast(
+            batch.column_by_name(a).unwrap(),
+            &arrow_schema::DataType::Utf8,
+        )
+        .unwrap();
+        let cb = arrow_cast::cast(
+            batch.column_by_name(b).unwrap(),
+            &arrow_schema::DataType::Utf8,
+        )
+        .unwrap();
+        let (ca, cb) = (ca.as_string::<i32>(), cb.as_string::<i32>());
+        for i in 0..batch.num_rows() {
+            out.push((
+                if ca.is_null(i) {
+                    "null".into()
+                } else {
+                    ca.value(i).to_owned()
+                },
+                if cb.is_null(i) {
+                    "null".into()
+                } else {
+                    cb.value(i).to_owned()
+                },
+            ));
+        }
+    }
+    out.sort();
+    out
+}
+
+#[test]
+fn a_day_label_covers_its_trading_day() {
+    let mut fx = Fixture::new();
+    common::biddayoffer(&mut fx);
+    let lake = fx.lake();
+    let read_labels = |w: ValidWindow| {
+        let b = bind(Query::new("BIDDAYOFFER_D", w, LATEST), &lake).unwrap();
+        pairs(&read(&b, &lake).unwrap(), "SETTLEMENTDATE", "PRICEBAND1")
+    };
+    let dec = "2023-12-31T00:00:00+10:00".to_owned();
+    let jan = "2024-01-01T00:00:00+10:00".to_owned();
+    // The trading day of 1 January: 04:00 to 04:00 the next day; the
+    // newest version of each bid type.
+    let day = read_labels(range("2024-01-01T04:00", "2024-01-02T04:00"));
+    assert_eq!(
+        day,
+        [(jan.clone(), "21.00".into()), (jan.clone(), "22.00".into())]
+    );
+    // The calendar day overlaps two trading days.
+    let calendar = read_labels(range("2024-01-01T00:00", "2024-01-02T00:00"));
+    assert_eq!(calendar.len(), 4, "{calendar:?}");
+    assert!(calendar.iter().any(|(l, _)| *l == dec));
+    // 02:00 on the 1st is still the 31st's trading day; 06:00 the 1st's.
+    assert_eq!(
+        read_labels(at("2024-01-01T02:00")),
+        [(dec.clone(), "10.00".into()), (dec, "11.00".into())]
+    );
+    assert_eq!(read_labels(at("2024-01-01T06:00")).len(), 2);
+    // Every revision, and the step a day label has.
+    let b = bind(
+        Query::new(
+            "BIDDAYOFFER_D",
+            range("2023-12-31T04:00", "2024-01-02T04:00"),
+            Resolution::Revisions,
+        ),
+        &lake,
+    )
+    .unwrap();
+    let frames = read(&b, &lake).unwrap();
+    assert_eq!(frames.report.rows_out, 5);
+    let i = frames.report.intervals.as_ref();
+    assert!(i.is_none(), "two labels are too few for a step: {i:?}");
+}
+
+#[test]
+fn a_version_ends_at_its_end_column_or_the_next_version() {
+    let mut fx = Fixture::new();
+    common::dudetailsummary(&mut fx);
+    let lake = fx.lake();
+    let ends = |w: ValidWindow| {
+        let b = bind(Query::new("DUDETAILSUMMARY", w, LATEST), &lake).unwrap();
+        pairs(&read(&b, &lake).unwrap(), "REGIONID", "_nl_valid_to")
+    };
+    // In force on 2024-01-15: A's second version and C; B retired.
+    assert_eq!(
+        ends(at("2024-01-15T00:00")),
+        [
+            ("SA1".into(), "null".into()),
+            ("VIC1".into(), "null".into())
+        ]
+    );
+    // Over 2021: every version in force at some point, each with its end.
+    assert_eq!(
+        ends(range("2021-01-01T00:00", "2022-01-01T00:00")),
+        [
+            ("NSW1".into(), "2022-01-01T00:00:00+10:00".into()),
+            ("QLD1".into(), "2023-06-01T00:00:00+10:00".into()),
+            ("SA1".into(), "null".into()),
+            ("VIC1".into(), "null".into()),
+        ]
+    );
+    // In force on 2023-07-01: B has ended, though no later version came.
+    assert_eq!(ends(at("2023-07-01T00:00")).len(), 2);
+}

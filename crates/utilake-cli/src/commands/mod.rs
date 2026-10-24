@@ -8,7 +8,6 @@ mod inspect;
 mod lake;
 mod list;
 mod manifest;
-mod misc;
 mod schema;
 
 use anyhow::Result;
@@ -55,7 +54,7 @@ pub async fn dispatch(cli: Cli) -> Result<i32> {
             .await
         }
         Command::Schema { cmd } => schema::schema(&ctx, cmd).await,
-        Command::Wem { cmd } => misc::wem(&ctx, cmd).await,
+        Command::Wem { cmd } => manifest::wem(&ctx, cmd).await,
     }
 }
 

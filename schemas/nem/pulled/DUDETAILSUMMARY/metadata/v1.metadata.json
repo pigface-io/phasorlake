@@ -33,6 +33,7 @@
     "utilake.temporal.origin": "derived",
     "utilake.temporal.valid.column": "START_DATE",
     "utilake.temporal.valid.kind": "from",
+    "utilake.temporal.valid.until": "END_DATE",
     "utilake.visibility": "PUBLIC"
   },
   "refs": {

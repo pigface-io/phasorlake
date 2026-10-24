@@ -190,6 +190,35 @@ fn the_kernel_agrees_with_duckdb() {
             &du_times,
         );
     }
+    // A day label's trading day, and a version's end column.
+    common::biddayoffer(&mut fx);
+    common::dudetailsummary(&mut fx);
+    let bids = ["SETTLEMENTDATE", "BIDTYPE", "VERSIONNO", "PRICEBAND1"];
+    for w in [
+        range("2024-01-01T04:00", "2024-01-02T04:00"),
+        range("2024-01-01T00:00", "2024-01-02T00:00"),
+        ValidWindow::At(ValidTime::new(ts("2024-01-01T02:00"))),
+    ] {
+        compare(
+            &fx,
+            Query::new("BIDDAYOFFER_D", w, Resolution::Latest { known_at: None }),
+            &bids,
+            &["SETTLEMENTDATE"],
+        );
+    }
+    let summary = ["DUID", "START_DATE", "REGIONID", "_nl_valid_to"];
+    for w in [
+        ValidWindow::At(ValidTime::new(ts("2024-01-15T00:00"))),
+        ValidWindow::At(ValidTime::new(ts("2023-07-01T00:00"))),
+        range("2021-01-01T00:00", "2022-01-01T00:00"),
+    ] {
+        compare(
+            &fx,
+            Query::new("DUDETAILSUMMARY", w, Resolution::Latest { known_at: None }),
+            &summary,
+            &["START_DATE", "_nl_valid_to"],
+        );
+    }
     compare(
         &fx,
         Query::new(

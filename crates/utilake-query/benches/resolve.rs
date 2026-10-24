@@ -50,6 +50,7 @@ fn bound(schema: SchemaRef, window: ValidWindow, resolution: Resolution) -> Boun
         value_filters: vec![],
         keep: None,
         offset: MarketOffset(36_000),
+        day_start_us: 14_400_000_000,
         warnings: vec![],
     }
 }
@@ -230,7 +231,10 @@ fn dudetail() -> (RecordBatch, Bound, BoundSpec) {
     );
     let spec = BoundSpec {
         entity: vec![FieldIx(1)],
-        valid: ValidAxis::From(FieldIx(0)),
+        valid: ValidAxis::From {
+            column: FieldIx(0),
+            until: None,
+        },
         order: vec![FieldIx(2), FieldIx(4)],
         cutoff: Some(FieldIx(4)),
         unit: Unit::Table,

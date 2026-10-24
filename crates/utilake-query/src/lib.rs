@@ -113,7 +113,7 @@ pub fn read_with(
     // The valid times of an interval table's rows, for the count of
     // intervals the window should hold.
     let stepped = b.spec.as_ref().and_then(|s| match s.valid {
-        ValidAxis::IntervalEnd(c) | ValidAxis::Instant(c) => Some(c),
+        ValidAxis::IntervalEnd(c) | ValidAxis::Instant(c) | ValidAxis::Day(c) => Some(c),
         _ => None,
     });
     let mut times: Vec<i64> = Vec::new();

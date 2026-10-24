@@ -104,7 +104,9 @@ pub fn resolve(
     // by (fact…, rank…).
     let n_target = b.schema.fields().len();
     let by_time = match spec.valid {
-        ValidAxis::IntervalEnd(c) | ValidAxis::Instant(c) if !spec.collapse_all => {
+        ValidAxis::IntervalEnd(c) | ValidAxis::Instant(c) | ValidAxis::Day(c)
+            if !spec.collapse_all =>
+        {
             micros_of(batch.column(c.0), b.offset)
         }
         _ => None,
@@ -200,12 +202,22 @@ fn with_valid_to(
     report: &mut Report,
 ) -> Result<RecordBatch, QueryError> {
     let err = |e| QueryError::arrow(&b.table, e);
-    let ValidAxis::From(valid_ix) = spec.valid else {
+    let ValidAxis::From {
+        column: valid_ix,
+        until,
+    } = spec.valid
+    else {
         return Ok(batch);
     };
     let n = batch.num_rows();
     let tz = b.offset.tz();
     let valid = micros_of(batch.column(valid_ix.0), b.offset).unwrap_or_else(|| vec![None; n]);
+    // The end column, where the table has one: a version ends there when
+    // that is before the next version. An end before the version's own
+    // start, or AEMO's "no end" date, says nothing.
+    let until: Vec<Option<i64>> = until
+        .and_then(|u| micros_of(batch.column(u.0), b.offset))
+        .unwrap_or_else(|| vec![None; n]);
     // Rows are sorted by (entity…, valid, …): the end of a version is the
     // next greater valid of the same entity.
     let entity_rows = {
@@ -232,6 +244,13 @@ fn with_valid_to(
             }
             j += 1;
         }
+        if let Some(u) = until[i]
+            && ValidEnd::from_us(u) != ValidEnd::Open
+            && valid[i].is_some_and(|v| u >= v)
+            && ends[i].is_none_or(|e| u < e)
+        {
+            ends[i] = Some(u);
+        }
     }
     let end_col: ArrayRef =
         Arc::new(TimestampMicrosecondArray::from(ends.clone()).with_timezone(tz.as_str()));
@@ -255,6 +274,7 @@ fn with_valid_to(
             &b.query.window,
             valid[i],
             Some(ends[i].map_or(ValidEnd::Open, ValidEnd::from_us)),
+            b.day_start_us,
         ))
     }));
     let kept = arrow_select::filter::filter_record_batch(&batch, &mask).map_err(err)?;
@@ -317,6 +337,7 @@ mod tests {
             value_filters: vec![],
             keep: None,
             offset: MarketOffset(36_000),
+            day_start_us: 0,
             warnings: vec![],
         };
         let spec = BoundSpec {

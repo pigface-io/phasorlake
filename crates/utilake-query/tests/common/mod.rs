@@ -73,6 +73,8 @@ fn column(dt: &DataType, vals: &[V]) -> ArrayRef {
                     .map(|v| match v {
                         V::D(d) => Some(*d),
                         V::I(i) => Some(i128::from(*i) * 10i128.pow(u32::from(*s as u8))),
+                        // A float lands at the column's scale.
+                        V::F(f) => Some((f * 10f64.powi(i32::from(*s))).round() as i128),
                         _ => None,
                     })
                     .collect::<Vec<_>>(),
@@ -557,4 +559,162 @@ pub fn derived(fx: &mut Fixture) -> String {
         rows,
     });
     name
+}
+
+pub const BIDS_DEC: &str = "https://nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2023/MMSDM_2023_12/MMSDM/DATA/PUBLIC_DVD_BIDDAYOFFER_D_202312010000.zip";
+pub const BIDS_JAN: &str = "https://nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2024/MMSDM_2024_01/MMSDM/DATA/PUBLIC_DVD_BIDDAYOFFER_D_202401010000.zip";
+
+/// BIDDAYOFFER_D labels its rows with the trading day, written at
+/// midnight: one unit, two bid types, the trading days of 31 December and
+/// 1 January, each in its month's partition; January's offer has two
+/// versions.
+///
+/// | SETTLEMENTDATE | DUID | BIDTYPE | VERSIONNO | PRICEBAND1 |
+/// |---|---|---|---|---|
+/// | 2023-12-31 | A | ENERGY | 1 | 10 |
+/// | 2023-12-31 | A | RAISE6SEC | 1 | 11 |
+/// | 2024-01-01 | A | ENERGY | 1 | 20 |
+/// | 2024-01-01 | A | ENERGY | 2 | 21 |
+/// | 2024-01-01 | A | RAISE6SEC | 1 | 22 |
+pub fn biddayoffer(fx: &mut Fixture) {
+    let schema = fx.schema("BIDDAYOFFER_D");
+    let t = |s: &str| V::T(ts(s));
+    fx.write(&Source {
+        table: "BIDDAYOFFER_D",
+        partition: Partition::Month {
+            year: 2023,
+            month: 12,
+        },
+        schema_id: None,
+        url: BIDS_DEC,
+        entry: "PUBLIC_DVD_BIDDAYOFFER_D_202312010000.CSV",
+        last_modified_at: Some("2024-01-05T00:00:00Z"),
+        source_period: Some("2023-12"),
+        rows: batch(
+            &schema,
+            2,
+            &[
+                (
+                    "SETTLEMENTDATE",
+                    vec![t("2023-12-31T00:00"), t("2023-12-31T00:00")],
+                ),
+                ("DUID", vec![V::S("A"), V::S("A")]),
+                ("BIDTYPE", vec![V::S("ENERGY"), V::S("RAISE6SEC")]),
+                (
+                    "OFFERDATE",
+                    vec![t("2023-12-30T12:00"), t("2023-12-30T12:00")],
+                ),
+                ("VERSIONNO", vec![V::F(1.0), V::F(1.0)]),
+                ("PRICEBAND1", vec![V::F(10.0), V::F(11.0)]),
+                (
+                    "LASTCHANGED",
+                    vec![t("2023-12-30T12:00"), t("2023-12-30T12:00")],
+                ),
+            ],
+        ),
+    });
+    fx.write(&Source {
+        table: "BIDDAYOFFER_D",
+        partition: Partition::Month {
+            year: 2024,
+            month: 1,
+        },
+        schema_id: None,
+        url: BIDS_JAN,
+        entry: "PUBLIC_DVD_BIDDAYOFFER_D_202401010000.CSV",
+        last_modified_at: Some("2024-02-05T00:00:00Z"),
+        source_period: Some("2024-01"),
+        rows: batch(
+            &schema,
+            3,
+            &[
+                (
+                    "SETTLEMENTDATE",
+                    vec![
+                        t("2024-01-01T00:00"),
+                        t("2024-01-01T00:00"),
+                        t("2024-01-01T00:00"),
+                    ],
+                ),
+                ("DUID", vec![V::S("A"), V::S("A"), V::S("A")]),
+                (
+                    "BIDTYPE",
+                    vec![V::S("ENERGY"), V::S("ENERGY"), V::S("RAISE6SEC")],
+                ),
+                (
+                    "OFFERDATE",
+                    vec![
+                        t("2023-12-31T12:00"),
+                        t("2023-12-31T18:00"),
+                        t("2023-12-31T12:00"),
+                    ],
+                ),
+                ("VERSIONNO", vec![V::F(1.0), V::F(2.0), V::F(1.0)]),
+                ("PRICEBAND1", vec![V::F(20.0), V::F(21.0), V::F(22.0)]),
+                (
+                    "LASTCHANGED",
+                    vec![
+                        t("2023-12-31T12:00"),
+                        t("2023-12-31T18:00"),
+                        t("2023-12-31T12:00"),
+                    ],
+                ),
+            ],
+        ),
+    });
+}
+
+pub const SUMMARY_JAN: &str = "https://nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2024/MMSDM_2024_01/MMSDM/DATA/PUBLIC_DVD_DUDETAILSUMMARY_202401010000.zip";
+
+/// DUDETAILSUMMARY is in force from START_DATE and ends at END_DATE: unit
+/// A has two versions, the first ending where the second starts; unit B
+/// retired in June 2023; unit C's end is AEMO's "no end".
+///
+/// | DUID | START_DATE | END_DATE | REGIONID |
+/// |---|---|---|---|
+/// | A | 2020-01-01 | 2022-01-01 | NSW1 |
+/// | A | 2022-01-01 | 2999-12-31 (open) | VIC1 |
+/// | B | 2021-01-01 | 2023-06-01 | QLD1 |
+/// | C | 2021-01-01 | 2999-12-31 (open) | SA1 |
+pub fn dudetailsummary(fx: &mut Fixture) {
+    let schema = fx.schema("DUDETAILSUMMARY");
+    let t = |s: &str| V::T(ts(s));
+    let open = || V::T(utilake_query::time::OPEN_US);
+    fx.write(&Source {
+        table: "DUDETAILSUMMARY",
+        partition: Partition::Snapshot {
+            year: 2024,
+            month: 1,
+        },
+        schema_id: None,
+        url: SUMMARY_JAN,
+        entry: "PUBLIC_DVD_DUDETAILSUMMARY_202401010000.CSV",
+        last_modified_at: Some("2024-02-05T00:00:00Z"),
+        source_period: Some("2024-01"),
+        rows: batch(
+            &schema,
+            4,
+            &[
+                ("DUID", vec![V::S("A"), V::S("A"), V::S("B"), V::S("C")]),
+                (
+                    "START_DATE",
+                    vec![
+                        t("2020-01-01T00:00"),
+                        t("2022-01-01T00:00"),
+                        t("2021-01-01T00:00"),
+                        t("2021-01-01T00:00"),
+                    ],
+                ),
+                (
+                    "END_DATE",
+                    vec![t("2022-01-01T00:00"), open(), t("2023-06-01T00:00"), open()],
+                ),
+                (
+                    "REGIONID",
+                    vec![V::S("NSW1"), V::S("VIC1"), V::S("QLD1"), V::S("SA1")],
+                ),
+                ("LASTCHANGED", vec![t("2023-12-01T00:00"); 4]),
+            ],
+        ),
+    });
 }

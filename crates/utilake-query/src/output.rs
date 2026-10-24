@@ -252,7 +252,7 @@ pub fn output_schema(b: &Bound) -> SchemaRef {
         fields.push(Field::new(KNOWN, ts.clone(), true));
         if b.spec
             .as_ref()
-            .is_some_and(|s| matches!(s.valid, ValidAxis::From(_)))
+            .is_some_and(|s| matches!(s.valid, ValidAxis::From { .. }))
         {
             fields.push(Field::new(VALID_TO, ts, true));
         }
