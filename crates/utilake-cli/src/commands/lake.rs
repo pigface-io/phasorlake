@@ -1,29 +1,33 @@
-//! `fetch`, `ingest`, `verify`: the pipeline and the lake.
+//! `import`, `ingest`, `verify`, `iceberg`: the pipeline over local and
+//! archived files, and the lake's checks.
 
 use std::path::PathBuf;
-use std::sync::Arc;
 
 use anyhow::Result;
 use tokio_util::sync::CancellationToken;
-use utilake_acquire::{Query, Source};
+use utilake_acquire::Query;
 use utilake_core::Diagnose;
 use utilake_core::TimeRange;
 use utilake_pipeline::{Input, Plan, RunOptions};
 
-use crate::cli::{Cli, FetchMarket, IngestArgs};
+use crate::cli::{Cli, IngestArgs, IngestCmd};
 use crate::context::Context;
 use crate::render;
+
+use super::common;
 
 pub(crate) fn options(
     cli: &Cli,
     ctx: &Context,
     args: &IngestArgs,
-    downloads: Option<usize>,
+    downloads: Option<u8>,
     dry_run: bool,
 ) -> RunOptions {
     RunOptions {
         jobs: cli.jobs.unwrap_or_else(|| ctx.config.effective_jobs()),
-        downloads: downloads.unwrap_or(ctx.config.downloads).max(1),
+        downloads: downloads
+            .map_or(ctx.config.downloads, usize::from)
+            .clamp(1, 4),
         mode: if args.strict || ctx.config.strict {
             utilake_kit::Strictness::Strict
         } else {
@@ -101,61 +105,8 @@ async fn run_plan(cli: &Cli, ctx: &Context, plan: Plan) -> Result<i32> {
     Ok(report.exit_code)
 }
 
-/// The NEM archive, as the kits were assembled with it.
-fn nem_source(ctx: &Context) -> Result<Arc<dyn Source>> {
-    ctx.kits
-        .source(utilake_nem::SOURCE_ID)
-        .map(|(_, s)| s.clone())
-        .ok_or_else(|| anyhow::anyhow!("This binary was assembled without the NEM kit."))
-}
-
-/// `utilake fetch nem ...`
-pub async fn fetch(cli: &Cli, ctx: &Context, market: &FetchMarket) -> Result<i32> {
-    match market {
-        FetchMarket::Nem(args) => {
-            let source = nem_source(ctx)?;
-            // No table named: every file the archive has for the months,
-            // whether the registry declares its table or not.
-            let tables: Vec<String> = args.table.iter().map(|t| t.to_ascii_uppercase()).collect();
-            let exclude: Vec<String> = args
-                .exclude
-                .iter()
-                .map(|t| t.to_ascii_uppercase())
-                .collect();
-            let from = args.from;
-            let to = args.to.unwrap_or(from);
-            if to < from {
-                anyhow::bail!("--to {to} is before --from {from}.");
-            }
-            let plan = Plan {
-                request: args.request(to),
-                input: Input::Remote {
-                    source,
-                    query: Query {
-                        exclude,
-                        tables,
-                        range: TimeRange::months(from, to),
-                        instants: None,
-                    },
-                },
-                options: RunOptions {
-                    ingest: false,
-                    ..options(
-                        cli,
-                        ctx,
-                        &IngestArgs::default(),
-                        args.downloads,
-                        args.dry_run,
-                    )
-                },
-            };
-            run_plan(cli, ctx, plan).await
-        }
-    }
-}
-
-/// `utilake ingest <paths>`
-pub async fn ingest(cli: &Cli, ctx: &Context, paths: &[PathBuf], args: &IngestArgs) -> Result<i32> {
+/// `utilake import <paths>`: zips or CSVs from disk, straight into the lake.
+pub async fn import(cli: &Cli, ctx: &Context, paths: &[PathBuf], args: &IngestArgs) -> Result<i32> {
     let mut files = Vec::new();
     for p in paths {
         if p.is_dir() {
@@ -175,7 +126,7 @@ pub async fn ingest(cli: &Cli, ctx: &Context, paths: &[PathBuf], args: &IngestAr
         }
     }
     let request = format!(
-        "ingest {}",
+        "import {}",
         paths
             .iter()
             .map(|p| p.display().to_string())
@@ -190,58 +141,82 @@ pub async fn ingest(cli: &Cli, ctx: &Context, paths: &[PathBuf], args: &IngestAr
     run_plan(cli, ctx, plan).await
 }
 
-/// `utilake ingest --from ...`: the archived files of the months, as
-/// `fetch nem` downloaded them; no network.
-pub async fn ingest_archived(
-    cli: &Cli,
-    ctx: &Context,
-    from: utilake_core::YearMonth,
-    to: utilake_core::YearMonth,
-    tables: &[String],
-    exclude: &[String],
-    args: &IngestArgs,
-) -> Result<i32> {
-    if to < from {
-        anyhow::bail!("--to {to} is before --from {from}.");
+/// `utilake ingest [TABLES] [--from A --to B]`: archived files into the
+/// lake, no network. With a window, the archived files of the market's
+/// source over it; without, every recorded source whose lake files are
+/// behind the current rules, read again from where it is kept.
+pub async fn ingest(cli: &Cli, ctx: &Context, args: &IngestCmd) -> Result<i32> {
+    if args.tables.tables.is_empty() && args.tables.market.is_none() && !args.window.is_set() {
+        if args.source.is_some() {
+            anyhow::bail!("--source goes with a window: which archived files of it to read.");
+        }
+        let plan = Plan {
+            request: "ingest".to_owned(),
+            input: Input::Stale,
+            options: options(cli, ctx, &args.ingest, None, args.dry_run),
+        };
+        return run_plan(cli, ctx, plan).await;
     }
-    let source = nem_source(ctx)?;
-    let upper = |v: &[String]| v.iter().map(|t| t.to_ascii_uppercase()).collect::<Vec<_>>();
+    let sel = common::select(ctx, &args.tables)?;
+    let Some(w) = common::window(&args.window, &sel.def)? else {
+        anyhow::bail!("Name a window with the tables: --from and --to, or --day.");
+    };
+    let kit = ctx
+        .kits
+        .kit(&sel.kit)
+        .ok_or_else(|| anyhow::anyhow!("This binary was assembled without the {} kit.", sel.kit))?;
+    let source = match &args.source {
+        Some(id) => kit
+            .sources
+            .iter()
+            .find(|s| s.id() == id)
+            .cloned()
+            .ok_or_else(|| {
+                anyhow::anyhow!(
+                    "The {} kit has no source {id}; it has {}.",
+                    sel.kit,
+                    kit.sources
+                        .iter()
+                        .map(|s| s.id())
+                        .collect::<Vec<_>>()
+                        .join(", ")
+                )
+            })?,
+        None => kit
+            .sources
+            .first()
+            .cloned()
+            .ok_or_else(|| anyhow::anyhow!("The {} kit has no source.", sel.kit))?,
+    };
+    // The report folders are archived by day, the monthly archives by month.
+    let days = w.days(&sel.def);
+    let range = if source.id().contains("reports") {
+        days
+    } else {
+        TimeRange::months(days.from.first_day().month(), days.to.last_day().month())
+    };
     let plan = Plan {
-        request: format!(
-            "ingest nem {} {from}..{to}",
-            if tables.is_empty() {
-                "*".to_owned()
-            } else {
-                tables.join(",")
-            }
-        ),
+        request: common::request("ingest", &sel, Some(&w), &sel.def),
         input: Input::Archive {
             source,
             query: Query {
-                tables: upper(tables),
-                exclude: upper(exclude),
-                range: TimeRange::months(from, to),
-                instants: None,
+                tables: sel.names.clone(),
+                exclude: args
+                    .tables
+                    .exclude
+                    .iter()
+                    .map(|t| t.to_ascii_uppercase())
+                    .collect(),
+                range,
+                instants: Some(w.instants),
             },
         },
-        options: options(cli, ctx, args, None, false),
+        options: options(cli, ctx, &args.ingest, None, args.dry_run),
     };
     run_plan(cli, ctx, plan).await
 }
 
-/// `utilake reingest`: every recorded source whose lake files are behind
-/// the current rules, read again from where it is kept.
-pub async fn reingest(cli: &Cli, ctx: &Context, dry_run: bool, args: &IngestArgs) -> Result<i32> {
-    let plan = Plan {
-        request: "reingest".to_owned(),
-        input: Input::Stale,
-        options: options(cli, ctx, args, None, dry_run),
-    };
-    run_plan(cli, ctx, plan).await
-}
-
-/// `utilake verify`: every output the manifest lists exists with its size,
-/// and every quarantine file belongs to a current ingest.
+/// `utilake iceberg`: each table's Iceberg metadata from the manifest.
 pub async fn iceberg(ctx: &Context, table: Option<&str>) -> Result<i32> {
     let (manifest, thread) = ctx.manifest()?;
     let outputs = manifest
@@ -309,6 +284,34 @@ pub async fn iceberg(ctx: &Context, table: Option<&str>) -> Result<i32> {
     Ok(code)
 }
 
+/// `utilake verify --archive`: every archived file hashed again against
+/// its record.
+pub fn verify_archive(ctx: &Context) -> Result<i32> {
+    let store = ctx.archive();
+    let entries = store.entries_under(None);
+    let mut bad = 0usize;
+    for e in &entries {
+        if let Err(err) = utilake_acquire::Archive::verify(e) {
+            bad += 1;
+            let d = err.diagnostic();
+            if ctx.json {
+                render::json_line(&d);
+            } else {
+                eprintln!("{}", d.render());
+            }
+        }
+    }
+    if !ctx.json {
+        println!(
+            "{} file(s) checked, {bad} do not match their record",
+            entries.len()
+        );
+    }
+    Ok(i32::from(bad > 0))
+}
+
+/// `utilake verify`: every output the manifest lists exists with its size,
+/// and every quarantine file belongs to a current ingest.
 pub async fn verify(ctx: &Context, table: Option<&str>) -> Result<i32> {
     let (manifest, thread) = ctx.manifest()?;
     let report = utilake_writer::verify_lake(&manifest, &ctx.home.quarantine(), table)

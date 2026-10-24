@@ -1,11 +1,14 @@
 //! One module per command family; `dispatch` routes the parsed CLI.
 
+mod acquire;
+mod common;
+mod fetch;
 mod get;
 mod inspect;
 mod lake;
+mod list;
 mod manifest;
 mod misc;
-mod read;
 mod schema;
 
 use anyhow::Result;
@@ -19,41 +22,19 @@ pub async fn dispatch(cli: Cli) -> Result<i32> {
     let ctx = Context::new(&cli)?;
     match &cli.command {
         Command::Get(args) => get::get(&cli, &ctx, args).await,
-        Command::Fetch { market } => lake::fetch(&cli, &ctx, market).await,
-        Command::Ingest {
-            paths,
-            from,
-            to,
-            table,
-            exclude,
-            ingest,
-        } => match from {
-            Some(from) => {
-                lake::ingest_archived(
-                    &cli,
-                    &ctx,
-                    *from,
-                    to.unwrap_or(*from),
-                    table,
-                    exclude,
-                    ingest,
-                )
-                .await
+        Command::Fetch(args) => fetch::fetch(&cli, &ctx, args).await,
+        Command::Import(args) => lake::import(&cli, &ctx, &args.paths, &args.ingest).await,
+        Command::Ingest(args) => lake::ingest(&cli, &ctx, args).await,
+        Command::List(args) => list::list(&ctx, args).await,
+        Command::Verify { table, archive } => {
+            if *archive {
+                lake::verify_archive(&ctx)
+            } else {
+                lake::verify(&ctx, table.as_deref()).await
             }
-            None => lake::ingest(&cli, &ctx, paths, ingest).await,
-        },
-        Command::Reingest { dry_run, ingest } => lake::reingest(&cli, &ctx, *dry_run, ingest).await,
-        Command::Verify { table } => lake::verify(&ctx, table.as_deref()).await,
+        }
         Command::Iceberg { table } => lake::iceberg(&ctx, table.as_deref()).await,
-        Command::Read(args) => read::read(&ctx, args).await,
-        Command::Sql(args) => read::sql(&ctx, args).await,
         Command::Inspect { path } => inspect::inspect(&ctx, path),
-        Command::Ls {
-            table,
-            failed,
-            runs,
-            limit,
-        } => manifest::ls(&ctx, table.clone(), *failed, *runs, *limit).await,
         Command::Errors {
             run,
             last,
@@ -74,7 +55,6 @@ pub async fn dispatch(cli: Cli) -> Result<i32> {
             .await
         }
         Command::Schema { cmd } => schema::schema(&ctx, cmd).await,
-        Command::Archive { cmd } => misc::archive(&ctx, cmd),
         Command::Wem { cmd } => misc::wem(&ctx, cmd).await,
     }
 }

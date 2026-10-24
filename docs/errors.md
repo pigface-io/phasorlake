@@ -159,6 +159,7 @@ Every error and warning utilake reports carries one of these codes. Codes are st
 | `query.unknown_table` | `crates/utilake-query/src/error.rs` |
 | `query.window_empty` | `crates/utilake-query/src/error.rs` |
 | `query.window_ignored` | `crates/utilake-query/src/bind.rs` |
+| `query.window_uncovered` | `crates/utilake-query/src/error.rs` |
 | `query.write_failed` | `crates/utilake-query/src/error.rs` |
 
 ## internal

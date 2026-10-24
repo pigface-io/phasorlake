@@ -201,8 +201,18 @@ pub struct Extract {
 /// Binds, reads and writes, one unit at a time: what `utilake get` does.
 pub fn extract(req: Extract, lake: &Lake<'_>) -> Result<Written, QueryError> {
     let b = bind(req.query, lake)?;
-    let schema = output::output_schema(&b);
-    let mut w = output::Writer::open(&b, schema, req.options, &req.out, lake.version)?;
-    let report = read_with(&b, lake, &mut |f| w.write(&f))?;
+    extract_bound(&b, lake, req.options, &req.out)
+}
+
+/// Reads a bound query and writes it, one unit at a time.
+pub fn extract_bound(
+    b: &Bound,
+    lake: &Lake<'_>,
+    options: WriteOptions,
+    out: &std::path::Path,
+) -> Result<Written, QueryError> {
+    let schema = output::output_schema(b);
+    let mut w = output::Writer::open(b, schema, options, out, lake.version)?;
+    let report = read_with(b, lake, &mut |f| w.write(&f))?;
     w.close(report)
 }

@@ -77,6 +77,15 @@ pub enum QueryError {
         /// The end, as given.
         upto: String,
     },
+    /// No file of the table has rows in the window: the lake holds nothing
+    /// of it there, and nothing was fetched.
+    #[error("The lake holds no file of {table} over {window}; fetch it, or widen the window.")]
+    WindowUncovered {
+        /// The table.
+        table: String,
+        /// The window, as text.
+        window: String,
+    },
     /// A filter or projection names a column the target schema lacks.
     #[error("Table {table} has no column {column}.")]
     UnknownColumn {
@@ -198,6 +207,9 @@ impl Diagnose for QueryError {
                 .with_column(column.clone()),
             Self::WindowEmpty { after, upto } => e("query.window_empty")
                 .expected_observed("after < upto", format!("{after} .. {upto}")),
+            Self::WindowUncovered { table, window } => e("query.window_uncovered")
+                .with_table(table.clone())
+                .expected_observed("a file in the window", window.clone()),
             Self::UnknownColumn { table, column } => e("query.unknown_column")
                 .with_table(table.clone())
                 .with_column(column.clone()),
@@ -276,6 +288,13 @@ mod tests {
                     upto: "a".into(),
                 },
                 "query.window_empty",
+            ),
+            (
+                QueryError::WindowUncovered {
+                    table: "T".into(),
+                    window: "{}".into(),
+                },
+                "query.window_uncovered",
             ),
             (
                 QueryError::UnknownColumn {

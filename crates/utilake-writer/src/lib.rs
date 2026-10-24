@@ -10,7 +10,6 @@
 //! Iceberg metadata from the manifest and the census's history.
 
 pub mod error;
-pub mod extract;
 pub mod iceberg;
 pub mod manifest;
 pub mod parquet_hive;
@@ -19,7 +18,6 @@ pub mod verify;
 pub mod writer;
 
 pub use error::StoreError;
-pub use extract::{ExtractRequest, Extracted, extract};
 pub use manifest::{Manifest, ManifestHandle, ManifestThread};
 pub use parquet_hive::ParquetHive;
 pub use verify::{Problem, VerifyReport, verify_lake};

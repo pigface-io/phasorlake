@@ -15,7 +15,7 @@ crates/utilake-acquire       L1  the Source port, HTTP transport with pacing and
 crates/utilake-kit           L1  the ports a kit implements (Decoder, BlockSink, Catalog, SourceKit), Transform, the zip walker, quarantine
 crates/utilake-writer        L1  Parquet writer, partitioner, SQLite manifest actor, verify
 crates/utilake-pipeline      L2  list → fetch → decode → write → commit as tokio streams, over the kit ports only
-crates/utilake-query         L2  one frame of one table over a window: scan, resolve by the roles, write; the same read as SQL
+crates/utilake-query         L2  one frame of one table over a window: scan, resolve by the roles, write as parts; the same read as SQL
 crates/utilake-cli           L3  the command: flags, rendering, exit codes; kits.rs lists the kits a binary reads with
 
 The MMS format (AEMO's C/I/D rows and SQL*Loader control files):
@@ -24,7 +24,7 @@ crates/utilake-mms-registry  F   the table model (file_model), the shape id, the
 crates/utilake-mms-conform   F   resolves blocks through the registry, casts to typed Arrow batches; the kit's Decoder and Catalog
 
 The markets:
-crates/utilake-nem           M   the NEM kit: nemweb's monthly archive and report folders, AEMO's file names, [sources.nem], fetch nem, kit()
+crates/utilake-nem           M   the NEM kit: nemweb's monthly archive and report folders, AEMO's file names, [sources.nem], kit()
 crates/utilake-wem           M   the WEM kit: the datafiles source and [sources.wem]; no decoder yet
 crates/utilake-mdff          F   NEM12/13 meter data codes, std only, not yet used
 

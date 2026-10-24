@@ -77,24 +77,24 @@ fn ingest_ls_errors_verify_round_trip() {
         )],
     );
     let out = cli.ok(&[
-        "ingest",
+        "import",
         scada.to_str().unwrap(),
         zip_path.to_str().unwrap(),
     ]);
     assert!(out.contains("2 listed, 2 ingested"), "{out}");
     // Idempotent.
-    let out = cli.ok(&["ingest", scada.to_str().unwrap()]);
+    let out = cli.ok(&["import", scada.to_str().unwrap()]);
     assert!(out.contains("1 skipped"), "{out}");
-    let ls = cli.ok(&["ls"]);
+    let ls = cli.ok(&["list", "--ingests"]);
     assert!(
         ls.contains("DISPATCH_UNIT_SCADA") && ls.contains("REGION"),
         "{ls}"
     );
-    let ls_json = cli.ok(&["--json", "ls", "--table", "REGION"]);
+    let ls_json = cli.ok(&["--json", "list", "REGION", "--ingests"]);
     assert!(ls_json.contains("\"table\":\"REGION\""), "{ls_json}");
-    let runs = cli.ok(&["ls", "--runs"]);
-    assert!(runs.contains("ingest"), "{runs}");
-    let runs_json = cli.ok(&["--json", "ls", "--runs"]);
+    let runs = cli.ok(&["list", "--runs"]);
+    assert!(runs.contains("import"), "{runs}");
+    let runs_json = cli.ok(&["--json", "list", "--runs"]);
     assert!(runs_json.contains("\"exit_code\":0"), "{runs_json}");
     assert!(cli.ok(&["errors"]).contains("no diagnostics"));
     assert!(cli.ok(&["--json", "errors", "--last"]).is_empty());
@@ -108,7 +108,7 @@ fn ingest_ls_errors_verify_round_trip() {
         "C,NEMP.WORLD,TEST\nI,UTILAKE_TEST,NOBODY,1,A\nD,UTILAKE_TEST,NOBODY,1,x\nC,\"END OF REPORT\",3\n",
     )
     .unwrap();
-    cli.ok(&["ingest", unknown.to_str().unwrap()]);
+    cli.ok(&["import", unknown.to_str().unwrap()]);
     let (code, out, _) = cli.code(&["iceberg", "--table", "UTILAKE_TEST_NOBODY"]);
     assert_eq!(code, 1, "{out}");
     assert!(
@@ -140,12 +140,18 @@ fn ingest_ls_errors_verify_round_trip() {
         .join("lake/nem/dispatch_unit_scada/metadata/version-hint.text");
     assert!(meta.is_file());
     let sql = cli.ok(&[
-        "sql",
+        "--offline",
+        "get",
         "DISPATCH_UNIT_SCADA",
         "--from",
         "2023-12-31T14:00:00Z",
         "--to",
-        "2024-02-01",
+        "2024-01-31",
+        "--raw",
+        "--format",
+        "sql",
+        "-o",
+        "-",
     ]);
     // 2024-01-01 00:00 in market time is 2023-12-31 14:00 in UTC.
     // The time ends an interval: midnight is December's last row.
@@ -154,65 +160,92 @@ fn ingest_ls_errors_verify_round_trip() {
             && sql.contains("WHERE \"SETTLEMENTDATE\" > TIMESTAMP WITH TIME ZONE '2023-12-31 14:00:00.000000+00:00'"),
         "{sql}"
     );
-    assert!(!sql.contains("QUALIFY"), "plain sql is the raw read: {sql}");
+    assert!(!sql.contains("row_number"), "a raw read: {sql}");
     let latest = cli.ok(&[
-        "sql",
+        "--offline",
+        "get",
         "DISPATCH_UNIT_SCADA",
         "--from",
         "2024-01-01",
         "--to",
-        "2024-02-01",
+        "2024-01-31",
         "--known-at",
         "2024-02-01",
+        "--format",
+        "sql",
+        "--dialect",
+        "postgres",
+        "-o",
+        "-",
     ]);
     assert!(
-        latest.contains("row_number() OVER (") && latest.contains("_nl_known <="),
+        latest.contains("row_number() OVER (")
+            && latest.contains("_nl_known <=")
+            && latest.contains("FROM \"DISPATCH_UNIT_SCADA\""),
         "{latest}"
     );
     let (code, _, err) = cli.code(&[
-        "sql",
+        "--offline",
+        "get",
         "DISPATCH_UNIT_SCADA",
         "--from",
         "soon",
         "--to",
         "2024-02-01",
     ]);
-    assert!(code != 0 && err.contains("not an RFC 3339"), "{err}");
-    // The read itself: a summary, a file with its sidecar, the flags.
-    let summary = cli.ok(&[
-        "read",
+    assert!(code != 0 && err.contains("not a month, a day"), "{err}");
+    // The read itself: a dry run, the files with their sidecar, the flags.
+    let plan = cli.ok(&[
+        "--offline",
+        "get",
         "DISPATCH_UNIT_SCADA",
         "--from",
         "2024-01-01",
         "--to",
-        "2024-02-01",
+        "2024-01-31",
+        "--dry-run",
     ]);
     assert!(
-        summary.contains("resolution") && summary.contains("latest"),
-        "{summary}"
+        plan.contains("latest") && plan.contains("dry run: nothing written"),
+        "{plan}"
     );
+    let out_dir = cli.home.path().join("out");
     let json = cli.ok(&[
+        "--offline",
         "--json",
-        "read",
+        "get",
         "DISPATCH_UNIT_SCADA",
         "--from",
         "2024-01-01",
         "--to",
-        "2024-02-01",
+        "2024-01-31",
         "--revisions",
+        "-o",
+        out_dir.to_str().unwrap(),
     ]);
     assert!(
-        json.contains("\"resolution\":\"revisions\"") && json.contains("\"rows\":"),
+        json.contains("\"rows\":") && json.contains("part-00000.parquet"),
         "{json}"
+    );
+    assert!(
+        out_dir
+            .join("nem/DISPATCH_UNIT_SCADA/part-00000.parquet")
+            .is_file()
+    );
+    assert!(
+        out_dir
+            .join("nem/DISPATCH_UNIT_SCADA/DISPATCH_UNIT_SCADA.json")
+            .is_file()
     );
     let out = cli.home.path().join("scada.csv");
     let written = cli.ok(&[
-        "read",
+        "--offline",
+        "get",
         "DISPATCH_UNIT_SCADA",
         "--from",
         "2024-01-01",
         "--to",
-        "2024-02-01",
+        "2024-01-31",
         "--raw",
         "--columns",
         "DUID,SCADAVALUE",
@@ -220,47 +253,90 @@ fn ingest_ls_errors_verify_round_trip() {
         "DUID=BARCSF1",
         "-o",
         out.to_str().unwrap(),
-        "--format",
-        "csv",
     ]);
-    assert!(written.contains("rows written to"), "{written}");
+    assert!(written.contains("scada.csv"), "{written}");
     assert!(out.is_file() && cli.home.path().join("scada.csv.json").is_file());
-    let (code, _, err) = cli.code(&["read", "DISPATCH_UNIT_SCADA", "--at", "2024-01-01"]);
+    let (code, _, err) = cli.code(&[
+        "--offline",
+        "get",
+        "DISPATCH_UNIT_SCADA",
+        "--at",
+        "2024-01-01",
+    ]);
     assert!(
         code != 0 && err.contains("query.at_on_interval_table"),
         "{err}"
     );
     let (code, _, err) = cli.code(&[
-        "read",
+        "--offline",
+        "get",
         "DISPATCH_UNIT_SCADA",
-        "--at",
+        "--day",
         "2024-01-01",
         "--where",
         "DUID",
     ]);
     assert!(code != 0 && err.contains("COL=v1,v2"), "{err}");
-    let (code, _, err) = cli.code(&["read", "NOBODY", "--at", "2024-01-01"]);
+    let (code, _, err) = cli.code(&["--offline", "get", "NOBODY", "--at", "2024-01-01"]);
     assert!(code != 0 && err.contains("query.unknown_table"), "{err}");
     let (code, _, err) = cli.code(&[
-        "sql",
-        "NOBODY",
-        "--from",
-        "2024-01-01",
-        "--to",
-        "2024-02-01",
-    ]);
-    assert!(code != 0 && err.contains("query.unknown_table"), "{err}");
-    let (code, _, _) = cli.code(&[
-        "sql",
+        "--offline",
+        "get",
         "DISPATCH_UNIT_SCADA",
         "--from",
         "2024-01-01",
         "--to",
-        "2024-02-01",
+        "2024-01-31",
         "--as-of",
         "9",
     ]);
-    assert!(code != 0);
+    assert!(code != 0, "{err}");
+    // A window the lake has nothing for, offline, is said so.
+    let (code, _, err) = cli.code(&[
+        "--offline",
+        "get",
+        "DISPATCH_UNIT_SCADA",
+        "--from",
+        "2030-01-01",
+        "--to",
+        "2030-01-31",
+    ]);
+    assert!(code != 0 && err.contains("query.window_uncovered"), "{err}");
+    // What there is.
+    let tables = cli.ok(&["list"]);
+    assert!(
+        tables.contains("DISPATCH_UNIT_SCADA") && tables.contains("interval_end SETTLEMENTDATE"),
+        "{tables}"
+    );
+    let grep = cli.ok(&[
+        "--json",
+        "list",
+        "--grep",
+        "scada",
+        "--kind",
+        "interval_end",
+    ]);
+    assert!(
+        grep.contains("\"table\":\"DISPATCH_UNIT_SCADA\"") && !grep.contains("REGION"),
+        "{grep}"
+    );
+    let cols = cli.ok(&["list", "DISPATCH_UNIT_SCADA"]);
+    assert!(
+        cols.contains("SCADAVALUE") && cols.contains("entity") && cols.contains("valid"),
+        "{cols}"
+    );
+    let cov = cli.ok(&["list", "DISPATCH_UNIT_SCADA", "--coverage"]);
+    assert!(
+        cov.contains("year=2024/month=01") && cov.contains("no gap"),
+        "{cov}"
+    );
+    let vals = cli.ok(&["list", "DISPATCH_UNIT_SCADA", "--values", "DUID"]);
+    assert!(vals.contains("BUTLERSG"), "{vals}");
+    let files = cli.ok(&["list", "DISPATCH_UNIT_SCADA", "--files"]);
+    assert!(
+        files.contains("1 file(s)") && files.contains("local"),
+        "{files}"
+    );
     // The lake's checks leave the Iceberg metadata beside the files alone.
     assert!(cli.ok(&["verify"]).contains("no problems"));
     std::fs::remove_dir_all(meta.parent().unwrap()).unwrap();
@@ -272,7 +348,7 @@ fn ingest_ls_errors_verify_round_trip() {
     // A directory argument ingests its zips and CSVs; an empty one lists nothing.
     let empty = cli.home.path().join("empty");
     std::fs::create_dir_all(&empty).unwrap();
-    let out = cli.ok(&["ingest", empty.to_str().unwrap()]);
+    let out = cli.ok(&["import", empty.to_str().unwrap()]);
     assert!(out.contains("0 listed"), "{out}");
     // Delete a Parquet file: verify reports it.
     let mut files: Vec<PathBuf> = walk(&lake);
@@ -288,7 +364,7 @@ fn bad_rows_fail_and_are_explained() {
     let cli = Cli::new();
     let bad = cli.home.path().join("bad.csv");
     std::fs::write(&bad, b"I,DISPATCH,UNIT_SCADA,1,SETTLEMENTDATE,DUID,SCADAVALUE\r\nD,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",A,1,extra\r\nD,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",B,1\r\nC,\"END OF REPORT\",4\r\n").unwrap();
-    let (code, out, err) = cli.code(&["ingest", bad.to_str().unwrap()]);
+    let (code, out, err) = cli.code(&["import", bad.to_str().unwrap()]);
     assert_eq!(code, 1, "{out}{err}");
     assert!(out.contains("csv.too_many_bad_rows"), "{out}");
     let quarantine = walk(&cli.home.path().join("quarantine"));
@@ -363,13 +439,13 @@ fn bad_rows_fail_and_are_explained() {
         errors_json.contains("\"code\":\"csv.too_many_bad_rows\""),
         "{errors_json}"
     );
-    let failed = cli.ok(&["ls", "--failed"]);
+    let failed = cli.ok(&["list", "--ingests", "--failed"]);
     assert!(failed.contains("failed"), "{failed}");
     // Tolerating the row succeeds, in JSON too.
     let cli2 = Cli::new();
     let (code, out, _) = cli2.code(&[
         "--json",
-        "ingest",
+        "import",
         bad.to_str().unwrap(),
         "--max-bad-rows",
         "5",
@@ -381,14 +457,14 @@ fn bad_rows_fail_and_are_explained() {
     let misfit = cli.home.path().join("misfit.csv");
     std::fs::write(&misfit, b"I,DISPATCH,UNIT_SCADA,1,SETTLEMENTDATE,DUID,SCADAVALUE\r\nD,DISPATCH,UNIT_SCADA,1,\"2024/13/01 00:05:00\",A,1\r\nD,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",B,1\r\nC,\"END OF REPORT\",4\r\n").unwrap();
     let cli3 = Cli::new();
-    let (code, out, err) = cli3.code(&["ingest", misfit.to_str().unwrap()]);
+    let (code, out, err) = cli3.code(&["import", misfit.to_str().unwrap()]);
     assert_eq!(code, 0, "{out}{err}");
     assert!(out.contains("2 rows (0 quarantined)"), "{out}");
     assert!(out.contains("warning parse.value_kept_raw ×1"), "{out}");
-    let (code, out, err) = cli3.code(&["ingest", misfit.to_str().unwrap(), "--strict"]);
+    let (code, out, err) = cli3.code(&["import", misfit.to_str().unwrap(), "--strict"]);
     assert_eq!(code, 0, "already ingested: {out}{err}");
     let cli4 = Cli::new();
-    let (code, out, err) = cli4.code(&["ingest", misfit.to_str().unwrap(), "--strict"]);
+    let (code, out, err) = cli4.code(&["import", misfit.to_str().unwrap(), "--strict"]);
     assert_eq!(code, 1, "{out}{err}");
     let refusal: serde_json::Value = err
         .lines()
@@ -403,12 +479,12 @@ fn bad_rows_fail_and_are_explained() {
     // Strict mode refuses a footer mismatch; fail-fast stops at the first bad row.
     let strict = cli.home.path().join("strict.csv");
     std::fs::write(&strict, b"I,DISPATCH,UNIT_SCADA,1,SETTLEMENTDATE,DUID,SCADAVALUE\r\nD,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",B,1\r\nC,\"END OF REPORT\",99\r\n").unwrap();
-    let (code, out, _) = cli.code(&["ingest", strict.to_str().unwrap(), "--strict"]);
+    let (code, out, _) = cli.code(&["import", strict.to_str().unwrap(), "--strict"]);
     assert_eq!(code, 1, "{out}");
     assert!(out.contains("csv.footer_count_mismatch"), "{out}");
     // Fail-fast stops at the first bad row even when the tolerance would allow it.
     let (code, out, _) = cli.code(&[
-        "ingest",
+        "import",
         bad.to_str().unwrap(),
         "--fail-fast",
         "--max-bad-rows",
@@ -442,14 +518,14 @@ fn every_head_ingests_strictly(month: &str, at_least: usize, deviating: &[&str])
             .any(|d| l.contains(&format!("_{d}_")) || l.contains(&format!("#{d}#")))
     };
     let cli = Cli::new();
-    let (code, out, err) = cli.code(&["--json", "ingest", heads.to_str().unwrap(), "--strict"]);
+    let (code, out, err) = cli.code(&["--json", "import", heads.to_str().unwrap(), "--strict"]);
     assert_eq!(
         code == 0,
         deviating.is_empty(),
         "{month}: {err}{}",
         &out[out.len().saturating_sub(2000)..]
     );
-    let ls = cli.ok(&["--json", "ls", "--limit", "1000"]);
+    let ls = cli.ok(&["--json", "list", "--ingests", "--limit", "1000"]);
     let rows: Vec<&str> = ls.lines().collect();
     assert_eq!(
         rows.len() + deviating.len(),
@@ -496,9 +572,9 @@ fn every_head_ingests_strictly(month: &str, at_least: usize, deviating: &[&str])
     // Without --strict a deviating file is kept whole.
     if !deviating.is_empty() {
         let cli = Cli::new();
-        let (code, out, err) = cli.code(&["--json", "ingest", heads.to_str().unwrap()]);
+        let (code, out, err) = cli.code(&["--json", "import", heads.to_str().unwrap()]);
         assert_eq!(code, 0, "{month}: {err}{out}");
-        let ls = cli.ok(&["--json", "ls", "--limit", "1000"]);
+        let ls = cli.ok(&["--json", "list", "--ingests", "--limit", "1000"]);
         assert_eq!(ls.lines().count(), files);
         let kept: Vec<&str> = ls.lines().filter(|l| deviates(l)).collect();
         assert_eq!(kept.len(), deviating.len(), "{ls}");
@@ -648,7 +724,7 @@ fn what_the_registry_does_not_declare_is_kept_not_skipped() {
     )
     .unwrap();
     let csv = csv.to_str().unwrap();
-    let (code, out, err) = cli.code(&["ingest", csv]);
+    let (code, out, err) = cli.code(&["import", csv]);
     assert_eq!(code, 0, "{out}{err}");
     assert!(out.contains("3 rows (0 quarantined)"), "{out}");
     assert!(
@@ -672,7 +748,7 @@ fn what_the_registry_does_not_declare_is_kept_not_skipped() {
         .path()
         .join("lake/nem/dispatch_unit_scada/year=2024/month=03");
     assert_eq!(std::fs::read_dir(&scada).unwrap().count(), 1);
-    let ls = cli.ok(&["--json", "ls"]);
+    let ls = cli.ok(&["--json", "list", "--ingests"]);
     assert_eq!(ls.lines().count(), 2, "{ls}");
     assert!(
         ls.contains("\"table\":\"UTILAKE_TEST_NOBODY\"") && ls.contains("\"rows\":2"),
@@ -682,7 +758,7 @@ fn what_the_registry_does_not_declare_is_kept_not_skipped() {
     // Strict mode refuses the file instead.
     let strict = cli.home.path().join("PUBLIC_DVD_NOBODY_202404010000.CSV");
     std::fs::copy(csv, &strict).unwrap();
-    let (code, out, err) = cli.code(&["ingest", strict.to_str().unwrap(), "--strict"]);
+    let (code, out, err) = cli.code(&["import", strict.to_str().unwrap(), "--strict"]);
     assert_ne!(code, 0, "{out}{err}");
     assert!(out.contains("schema.unknown_table"), "{out}");
 }
@@ -709,7 +785,7 @@ fn reingest_brings_the_lake_up_to_the_schema() {
             .collect()
     };
 
-    let (code, out, err) = cli.code(&["ingest", csv_arg]);
+    let (code, out, err) = cli.code(&["import", csv_arg]);
     assert_eq!(code, 0, "{out}{err}");
     let before = parquet();
     assert_eq!(before.len(), 1, "{before:?}");
@@ -717,7 +793,7 @@ fn reingest_brings_the_lake_up_to_the_schema() {
         before[0].contains("nem/_unregistered/utilake_test.follows/"),
         "{before:?}"
     );
-    let ls = cli.ok(&["--json", "ls"]);
+    let ls = cli.ok(&["--json", "list", "--ingests"]);
     assert!(ls.contains("\"schema_source\":\"file\""), "{ls}");
     assert!(ls.contains("\"resolution\":\"derived\""), "{ls}");
     assert!(ls.contains("\"plan_hash\":\"plan:"), "{ls}");
@@ -726,18 +802,18 @@ fn reingest_brings_the_lake_up_to_the_schema() {
         "{ls}"
     );
     // Nothing is behind yet.
-    let out = cli.ok(&["reingest"]);
+    let out = cli.ok(&["ingest"]);
     assert!(out.contains("0 listed"), "{out}");
 
     // Adopt a schema for the table: the source is now behind it.
     user_table(&cli, "UTILAKE_TEST_FOLLOWS", FOLLOWS);
-    let out = cli.ok(&["reingest", "--dry-run"]);
+    let out = cli.ok(&["ingest", "--dry-run"]);
     assert!(
         out.contains("1 listed") && out.contains("PUBLIC_DVD_FOLLOWS"),
         "{out}"
     );
     assert_eq!(parquet(), before, "a dry run writes nothing");
-    let (code, out, err) = cli.code(&["reingest"]);
+    let (code, out, err) = cli.code(&["ingest"]);
     assert_eq!(code, 0, "{out}{err}");
     assert!(out.contains("1 listed, 1 ingested"), "{out}");
     assert!(out.contains("manifest.rules_changed"), "{out}");
@@ -748,19 +824,19 @@ fn reingest_brings_the_lake_up_to_the_schema() {
         !lake.join("nem/_unregistered").exists(),
         "the directory the text files were in is gone with them"
     );
-    let ls = cli.ok(&["--json", "ls"]);
+    let ls = cli.ok(&["--json", "list", "--ingests"]);
     assert_eq!(ls.lines().count(), 1, "{ls}");
     assert!(ls.contains("\"schema_source\":\"user\""), "{ls}");
     assert!(ls.contains("\"resolution\":\"conforms\""), "{ls}");
     assert!(cli.ok(&["verify"]).contains("no problems"));
     // Up to date again; an ordinary ingest of the same file is skipped.
-    assert!(cli.ok(&["reingest"]).contains("0 listed"));
-    assert!(cli.ok(&["ingest", csv_arg]).contains("1 skipped"));
+    assert!(cli.ok(&["ingest"]).contains("0 listed"));
+    assert!(cli.ok(&["import", csv_arg]).contains("1 skipped"));
 
     // Without the user's table the plan is the old one, and the source
     // is no longer there to read.
     std::fs::remove_file(&csv).unwrap();
-    let (code, out, err) = cli.code(&["--no-user-schemas", "reingest"]);
+    let (code, out, err) = cli.code(&["--no-user-schemas", "ingest"]);
     assert_ne!(code, 0, "{out}{err}");
     assert!(out.contains("cache.source_missing"), "{out}");
     assert_eq!(parquet(), after, "what is in the lake stays");
@@ -798,14 +874,14 @@ fn a_fix_in_table_toml_brings_in_the_files_that_deviate() {
         true,
     );
     let table = user_table(&cli, "UTILAKE_TEST_FIXED", FIXED);
-    let (code, out, err) = cli.code(&["ingest", &old, "--strict"]);
+    let (code, out, err) = cli.code(&["import", &old, "--strict"]);
     assert_eq!(code, 0, "{out}{err}");
     // The 2024 file carries a column the table's schema does not list:
     // strict mode refuses it, and otherwise it is kept as text of its own.
-    let (code, out, _) = cli.code(&["ingest", &new, "--strict"]);
+    let (code, out, _) = cli.code(&["import", &new, "--strict"]);
     assert_ne!(code, 0, "{out}");
     assert!(out.contains("schema.deviates"), "{out}");
-    let (code, out, _) = cli.code(&["ingest", &new]);
+    let (code, out, _) = cli.code(&["import", &new]);
     assert_eq!(code, 0, "{out}");
     assert!(out.contains("schema.deviates"), "{out}");
 
@@ -822,15 +898,15 @@ fn a_fix_in_table_toml_brings_in_the_files_that_deviate() {
     );
     // Only the 2024 file is behind: the 2010 file's shape does not carry
     // the new column, so the plan it is read by has not changed.
-    let out = cli.ok(&["reingest", "--dry-run"]);
+    let out = cli.ok(&["ingest", "--dry-run"]);
     assert!(
         out.contains("1 listed") && out.contains("FIXED_202403"),
         "{out}"
     );
-    let (code, out, err) = cli.code(&["reingest", "--strict"]);
+    let (code, out, err) = cli.code(&["ingest", "--strict"]);
     assert_eq!(code, 0, "{out}{err}");
     assert!(out.contains("1 ingested"), "{out}");
-    let ls = cli.ok(&["--json", "ls"]);
+    let ls = cli.ok(&["--json", "list", "--ingests"]);
     for period in ["2010-03", "2024-03"] {
         let line = ls
             .lines()
@@ -838,7 +914,7 @@ fn a_fix_in_table_toml_brings_in_the_files_that_deviate() {
             .unwrap_or_else(|| panic!("no ingest of {period}: {ls}"));
         assert!(line.contains("\"resolution\":\"conforms\""), "{line}");
     }
-    assert!(cli.ok(&["reingest"]).contains("0 listed"));
+    assert!(cli.ok(&["ingest"]).contains("0 listed"));
 
     // A schema that lists a column the table does not have is refused
     // with the reason.
@@ -884,9 +960,9 @@ fn user_schemas_take_effect() {
     );
     assert!(cli.ok(&["schema", "list"]).contains("UTILAKE_TEST_SECOND"));
     // The file now ingests in strict mode.
-    let (code, out, err) = cli.code(&["ingest", new, "--strict"]);
+    let (code, out, err) = cli.code(&["import", new, "--strict"]);
     assert_eq!(code, 0, "{out}{err}");
-    let ls = cli.ok(&["--json", "ls", "--limit", "100"]);
+    let ls = cli.ok(&["--json", "list", "--ingests", "--limit", "100"]);
     assert!(ls.contains("\"table\":\"UTILAKE_TEST_FIRST\""), "{ls}");
     assert!(ls.contains("\"table\":\"UTILAKE_TEST_SECOND\""), "{ls}");
     assert!(ls.contains("\"schema_source\":\"user\""), "{ls}");
@@ -903,7 +979,7 @@ fn user_schemas_take_effect() {
     )
     .unwrap();
     let v2 = v2.to_str().unwrap();
-    let (code, out, err) = cli.code(&["ingest", v2, "--strict"]);
+    let (code, out, err) = cli.code(&["import", v2, "--strict"]);
     assert_ne!(code, 0, "a deviation is refused in strict mode: {out}{err}");
     let show = cli.ok(&["schema", "show", "DISPATCH_UNIT_SCADA"]);
     let toml = &show[..show.find("\n# Arrow lake schema").unwrap()];
@@ -913,7 +989,7 @@ fn user_schemas_take_effect() {
         1,
     ) + "\n[[schema]]\nid = 9\nfrom = \"2026-09\"\nversions = [2]\ncolumns = [\"SETTLEMENTDATE\", \"DUID\", \"SCADAVALUE\", \"LASTCHANGED\", \"QUALITY\"]\n";
     user_table(&cli, "DISPATCH_UNIT_SCADA", &ours);
-    let (code, out, err) = cli.code(&["ingest", v2, "--strict"]);
+    let (code, out, err) = cli.code(&["import", v2, "--strict"]);
     assert_eq!(code, 0, "{out}{err}");
     assert!(
         cli.ok(&["schema", "history", "DISPATCH_UNIT_SCADA"])
@@ -939,9 +1015,12 @@ fn user_schemas_take_effect() {
 #[test]
 fn the_archive_lists_and_verifies_every_download() {
     let cli = Cli::new();
-    assert!(cli.ok(&["archive", "ls"]).contains("0 file(s)"));
-    assert!(cli.ok(&["--json", "archive", "ls"]).is_empty());
-    assert!(cli.ok(&["archive", "verify"]).contains("0 file(s) checked"));
+    assert!(cli.ok(&["list", "--archive"]).contains("0 file(s)"));
+    assert!(cli.ok(&["--json", "list", "--archive"]).is_empty());
+    assert!(
+        cli.ok(&["verify", "--archive"])
+            .contains("0 file(s) checked")
+    );
 
     // One archived download, at the path its URL gives it, with its record
     // (here as an older utilake wrote it, with more than this one keeps).
@@ -959,7 +1038,7 @@ fn the_archive_lists_and_verifies_every_download() {
     .unwrap();
     // A partial download beside it is not an archived file.
     std::fs::write(dir.join("b.zip.part"), b"half").unwrap();
-    let out = cli.ok(&["archive", "ls"]);
+    let out = cli.ok(&["list", "--archive"]);
     assert!(out.contains("1 file(s)"), "{out}");
     assert!(
         out.contains("https://h/DATA/a.zip")
@@ -968,16 +1047,16 @@ fn the_archive_lists_and_verifies_every_download() {
             && out.contains("2024-02-13T08:27:00Z"),
         "the record's HTTP date as written, and the instant derived from it: {out}"
     );
-    let out = cli.ok(&["--json", "archive", "ls"]);
+    let out = cli.ok(&["--json", "list", "--archive"]);
     assert_eq!(out.lines().count(), 1, "{out}");
     assert!(out.contains("\"record\""), "{out}");
     assert!(
-        cli.ok(&["archive", "verify"])
+        cli.ok(&["verify", "--archive"])
             .contains("1 file(s) checked, 0 do not match")
     );
     // A file that changed on disk is found out.
     std::fs::write(&file, b"zip bytez").unwrap();
-    let (code, out, err) = cli.code(&["archive", "verify"]);
+    let (code, out, err) = cli.code(&["verify", "--archive"]);
     assert_eq!(code, 1, "{out}{err}");
     assert!(out.contains("1 file(s) checked, 1 do not match"), "{out}");
     assert!(
@@ -993,10 +1072,10 @@ fn cache_wem_fetch_and_config() {
     let (code, out, err) = cli.code(&[
         "--offline",
         "fetch",
-        "nem",
-        "--table",
         "REGION",
         "--from",
+        "2024-01",
+        "--to",
         "2024-01",
     ]);
     assert_eq!(code, 4, "{out}{err}");
@@ -1008,6 +1087,7 @@ fn cache_wem_fetch_and_config() {
         "--offline",
         "--json",
         "fetch",
+        "--market",
         "nem",
         "--from",
         "2024-01",
@@ -1020,7 +1100,7 @@ fn cache_wem_fetch_and_config() {
         cli.code(&[
             "--offline",
             "fetch",
-            "nem",
+            "REGION",
             "--from",
             "2024-02",
             "--to",
@@ -1232,7 +1312,7 @@ impl Drop for MonthServer {
 }
 
 /// `get` over a whole-month zip: planned, picked out by range, read into
-/// the lake and written as one file with its sidecar; dry runs and refusals.
+/// the lake and written as parts with a sidecar; dry runs and refusals.
 #[test]
 fn get_writes_an_interval_of_a_table_from_a_whole_month_zip() {
     use std::io::Write as _;
@@ -1280,12 +1360,10 @@ fn get_writes_an_interval_of_a_table_from_a_whole_month_zip() {
     )
     .unwrap();
     let out = tmp.join("out");
-    // Offline: nothing can be listed.
+    // Offline: nothing is fetched, and the lake has nothing yet.
     let (code, _, err) = cli.code(&[
         "--offline",
         "get",
-        "nem",
-        "--table",
         "TRADINGPRICE",
         "--from",
         "2024-01",
@@ -1293,16 +1371,12 @@ fn get_writes_an_interval_of_a_table_from_a_whole_month_zip() {
         "2024-01",
     ]);
     assert_ne!(code, 0);
-    assert!(err.contains("offline") || err.contains("Offline"), "{err}");
+    assert!(err.contains("query.window_uncovered"), "{err}");
     // Refusals before any request.
-    let (code, _, err) = cli.code(&[
-        "get", "nem", "--table", "NOPE", "--from", "2024-01", "--to", "2024-01",
-    ]);
-    assert!(code != 0 && err.contains("No table named NOPE"), "{err}");
+    let (code, _, err) = cli.code(&["get", "NOPE", "--from", "2024-01", "--to", "2024-01"]);
+    assert!(code != 0 && err.contains("No table is named NOPE"), "{err}");
     let (code, _, err) = cli.code(&[
         "get",
-        "nem",
-        "--table",
         "TRADINGPRICE",
         "--from",
         "2024-02",
@@ -1312,9 +1386,9 @@ fn get_writes_an_interval_of_a_table_from_a_whole_month_zip() {
     assert!(code != 0 && err.contains("is not after"), "{err}");
     let (code, _, err) = cli.code(&[
         "get",
-        "gas",
-        "--table",
         "TRADINGPRICE",
+        "--market",
+        "gas",
         "--from",
         "2024-01",
         "--to",
@@ -1324,8 +1398,6 @@ fn get_writes_an_interval_of_a_table_from_a_whole_month_zip() {
     // A dry run: the plan and the listing, nothing fetched.
     let text = cli.ok(&[
         "get",
-        "nem",
-        "--table",
         "TRADINGPRICE",
         "--from",
         "2024-01",
@@ -1340,8 +1412,6 @@ fn get_writes_an_interval_of_a_table_from_a_whole_month_zip() {
     // The run: one table out of the zip by range, written with its sidecar.
     let text = cli.ok(&[
         "get",
-        "nem",
-        "--table",
         "TRADINGPRICE",
         "--from",
         "2024-01",
@@ -1351,12 +1421,14 @@ fn get_writes_an_interval_of_a_table_from_a_whole_month_zip() {
         out.to_str().unwrap(),
     ]);
     assert!(text.contains("TRADINGPRICE"), "{text}");
-    let written = out.join("nem").join("TRADINGPRICE.parquet");
+    let written = out.join("nem/TRADINGPRICE/part-00000.parquet");
     assert!(written.is_file(), "{text}");
     let side: serde_json::Value = serde_json::from_slice(
-        &std::fs::read(out.join("nem").join("TRADINGPRICE.parquet.json")).unwrap(),
+        &std::fs::read(out.join("nem/TRADINGPRICE/TRADINGPRICE.json")).unwrap(),
     )
     .unwrap();
+    assert_eq!(side["resolution"], "latest");
+    assert_eq!(side["files"], serde_json::json!(["part-00000.parquet"]));
     assert!(side["rows"].as_u64().unwrap() > 0, "{side}");
     assert_eq!(side["table"], "TRADINGPRICE");
     let requests = server.requests.lock().unwrap().clone();
@@ -1377,8 +1449,6 @@ fn get_writes_an_interval_of_a_table_from_a_whole_month_zip() {
     let json = cli.ok(&[
         "--json",
         "get",
-        "nem",
-        "--table",
         "TRADINGPRICE",
         "--from",
         "2024-01-02",
@@ -1391,7 +1461,7 @@ fn get_writes_an_interval_of_a_table_from_a_whole_month_zip() {
     let v: serde_json::Value = serde_json::from_str(last).unwrap();
     assert_eq!(v["type"], "get");
     assert!(v["written"][0]["schema_id"].as_u64().is_some());
-    let ls = cli.ok(&["ls"]);
+    let ls = cli.ok(&["list", "--ingests"]);
     assert!(
         ls.contains("TRADINGPRICE") && !ls.contains("DISPATCHPRICE"),
         "{ls}"
@@ -1399,8 +1469,6 @@ fn get_writes_an_interval_of_a_table_from_a_whole_month_zip() {
     // A side forced, an excluded table, and a JSON dry run.
     let text = cli.ok(&[
         "get",
-        "nem",
-        "--table",
         "TRADINGPRICE,DISPATCHPRICE",
         "--exclude",
         "DISPATCHPRICE",
@@ -1417,12 +1485,10 @@ fn get_writes_an_interval_of_a_table_from_a_whole_month_zip() {
         text.contains("plan: every month from the monthly archive, as asked"),
         "{text}"
     );
-    assert!(!out.join("nem").join("DISPATCHPRICE.parquet").exists());
+    assert!(!out.join("nem/DISPATCHPRICE").exists());
     let (_, json, err) = cli.code(&[
         "--json",
         "get",
-        "nem",
-        "--table",
         "TRADINGPRICE",
         "--source",
         "daily",
@@ -1436,23 +1502,16 @@ fn get_writes_an_interval_of_a_table_from_a_whole_month_zip() {
         json.contains("\"type\":\"get\"") || err.contains("report folder"),
         "{json}{err}"
     );
-    // Too many rows for the cap.
+    // Downloads are capped: AEMO's server blocks a client that asks too fast.
     let (code, _, err) = cli.code(&[
         "get",
-        "nem",
-        "--table",
         "TRADINGPRICE",
         "--from",
         "2024-01",
         "--to",
         "2024-01",
-        "--max-rows",
-        "1",
-        "--out",
-        out.to_str().unwrap(),
+        "--downloads",
+        "9",
     ]);
-    assert!(
-        code != 0 && err.contains("more than the 1 allowed"),
-        "{err}"
-    );
+    assert!(code != 0 && err.contains("9"), "{err}");
 }

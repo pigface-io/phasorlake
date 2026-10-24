@@ -1,4 +1,4 @@
-//! `ls` and `errors`: reading the manifest.
+//! `errors`: the diagnostics the manifest recorded.
 
 use anyhow::Result;
 use utilake_core::{Diagnose, Severity};
@@ -9,78 +9,6 @@ use crate::render;
 
 fn fail(e: &utilake_writer::error::ManifestError) -> anyhow::Error {
     anyhow::anyhow!("{}", e.diagnostic().render())
-}
-
-/// `utilake ls`
-pub async fn ls(
-    ctx: &Context,
-    table: Option<String>,
-    failed: bool,
-    runs: bool,
-    limit: usize,
-) -> Result<i32> {
-    let (m, thread) = ctx.manifest()?;
-    if runs {
-        let latest = m.latest_run().await.map_err(|e| fail(&e))?;
-        drop(thread);
-        if ctx.json {
-            render::json_line(&latest);
-        } else if let Some(r) = latest {
-            print!(
-                "{}",
-                render::table(
-                    &["run", "started", "finished", "exit", "argv"],
-                    &[vec![
-                        r.id.to_string(),
-                        r.started_at,
-                        r.finished_at.unwrap_or_default(),
-                        r.exit_code.map(|c| c.to_string()).unwrap_or_default(),
-                        r.argv
-                    ]]
-                )
-            );
-        } else {
-            println!("no runs yet");
-        }
-        return Ok(0);
-    }
-    let ingests = m
-        .list_ingests(table, failed, limit)
-        .await
-        .map_err(|e| fail(&e))?;
-    drop(thread);
-    if ctx.json {
-        for i in &ingests {
-            render::json_line(i);
-        }
-    } else {
-        let rows: Vec<Vec<String>> = ingests
-            .iter()
-            .map(|i| {
-                vec![
-                    i.id.to_string(),
-                    i.table.clone(),
-                    i.schema_version.to_string(),
-                    format!("{:?}", i.status).to_ascii_lowercase(),
-                    i.rows.to_string(),
-                    i.bad_rows.to_string(),
-                    i.outputs.len().to_string(),
-                    i.error_code.clone().unwrap_or_default(),
-                    format!("{}!{}", i.url.rsplit('/').next().unwrap_or(&i.url), i.entry),
-                ]
-            })
-            .collect();
-        print!(
-            "{}",
-            render::table(
-                &[
-                    "id", "table", "ver", "status", "rows", "bad", "files", "error", "source"
-                ],
-                &rows
-            )
-        );
-    }
-    Ok(0)
 }
 
 /// `utilake errors`
