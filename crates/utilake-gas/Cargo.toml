@@ -22,6 +22,7 @@ serde.workspace = true
 toml.workspace = true
 
 [dev-dependencies]
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }
 tempfile.workspace = true
 url.workspace = true
 utilake-mms-decode.workspace = true

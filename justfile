@@ -62,9 +62,9 @@ cover:
     cargo llvm-cov --workspace --locked --lcov --output-path coverage/rust.lcov
     cargo run -q -p xtask -- covergate coverage/rust.lcov
 
-# the real nemweb: one small month listing and the smallest zip (needs the network)
+# the real nemweb and WA host: a month listed per kit and the smallest file fetched (needs the network)
 net-test:
-    UTILAKE_NET_TESTS=1 cargo test --locked -p utilake-nem --test net -- --nocapture
+    UTILAKE_NET_TESTS=1 cargo test --locked -p utilake-nem -p utilake-gas -p utilake-wem --test net -- --nocapture
 
 # the read kernel against DuckDB running the same read as SQL (needs duckdb on PATH)
 oracle-test:
