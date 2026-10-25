@@ -169,6 +169,11 @@ pub enum Command {
         /// Leave the provenance records in the archive as they are.
         #[arg(long)]
         skip_records: bool,
+        /// Leave the records of any folder with more entries than this:
+        /// on exFAT each name far into a large folder costs seconds to
+        /// find. Format-1 records read as well as format 2.
+        #[arg(long, value_name = "N")]
+        max_entries: Option<usize>,
     },
     /// Writes `state/cache/held.ndjson` again from the provenance records:
     /// what a download pass takes as archived without reading a record.

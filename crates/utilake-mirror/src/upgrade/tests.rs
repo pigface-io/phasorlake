@@ -145,7 +145,10 @@ fn a_dry_run_says_what_would_move_and_moves_nothing() {
     let (_dir, home) = old_home();
     let (archive, _) = archive_of(&home);
     let mut steps = Vec::new();
-    let s = upgrade(&home, &archive, true, true, |st| steps.push(st.action)).unwrap();
+    let s = upgrade(&home, &archive, true, Some(usize::MAX), |st| {
+        steps.push(st.action);
+    })
+    .unwrap();
     assert!(s.dry_run);
     assert_eq!((s.moved, s.listings, s.records), (8 + 5 + 1, 1, 3));
     assert_eq!(s.unreadable.len(), 1);
@@ -156,6 +159,30 @@ fn a_dry_run_says_what_would_move_and_moves_nothing() {
 }
 
 #[test]
+fn a_folder_larger_than_the_cap_keeps_its_records() {
+    let (_dir, home) = old_home();
+    let (archive, files) = archive_of(&home);
+    let s = upgrade(&home, &archive, false, Some(3), |_| {}).unwrap();
+    assert_eq!(s.records, 0);
+    assert!(!s.skipped.is_empty());
+    assert!(s.skipped.iter().all(|(_, n)| *n > 3));
+    for f in &files {
+        let v1 = f.with_file_name(format!("{}.json", f.file_name().unwrap().to_string_lossy()));
+        if v1.exists() {
+            assert!(
+                s.skipped
+                    .iter()
+                    .any(|(d, _)| Some(d.as_path()) == f.parent())
+            );
+        }
+    }
+    // Without the cap the same folders are written again.
+    let again = upgrade(&home, &archive, false, Some(usize::MAX), |_| {}).unwrap();
+    assert_eq!(again.records, 3);
+    assert!(again.skipped.is_empty());
+}
+
+#[test]
 fn every_record_moves_to_its_name_and_a_second_run_does_nothing() {
     let (_dir, home) = old_home();
     let (archive, files) = archive_of(&home);
@@ -163,7 +190,7 @@ fn every_record_moves_to_its_name_and_a_second_run_does_nothing() {
         .iter()
         .map(|p| std::fs::metadata(p).unwrap().modified().unwrap())
         .collect();
-    let s = upgrade(&home, &archive, false, true, |_| {}).unwrap();
+    let s = upgrade(&home, &archive, false, Some(usize::MAX), |_| {}).unwrap();
     assert_eq!((s.moved, s.listings, s.records), (8 + 5 + 1, 1, 3));
     let state = home.records();
     let cache = state.cache_dir();
@@ -215,7 +242,7 @@ fn every_record_moves_to_its_name_and_a_second_run_does_nothing() {
     assert!(!both.with_extension("zip.json").exists());
     assert!(Archive::read(&both).unwrap().is_some());
     // Again: nothing to do.
-    let again = upgrade(&home, &archive, false, true, |_| {}).unwrap();
+    let again = upgrade(&home, &archive, false, Some(usize::MAX), |_| {}).unwrap();
     assert_eq!((again.moved, again.listings, again.records), (0, 0, 0));
 }
 
@@ -224,7 +251,7 @@ fn a_home_already_upgraded_or_never_used_has_nothing_to_move() {
     let dir = tempfile::tempdir().unwrap();
     let home = Home::at(dir.path());
     let archive = Archive::new(home.archive());
-    let s = upgrade(&home, &archive, false, false, |_| {}).unwrap();
+    let s = upgrade(&home, &archive, false, None, |_| {}).unwrap();
     assert_eq!(s, UpgradeSummary::default());
     // A crawl record with no overlays, and overlays with no crawl record.
     // Without the overlays G is not gone: two folders; without the crawl
@@ -239,16 +266,16 @@ fn a_home_already_upgraded_or_never_used_has_nothing_to_move() {
             std::fs::remove_file(&p).unwrap();
         }
         let archive = Archive::new(home.archive());
-        let s = upgrade(&home, &archive, false, false, |_| {}).unwrap();
+        let s = upgrade(&home, &archive, false, None, |_| {}).unwrap();
         assert_eq!(s.listings, listings, "{gone}");
     }
     // Records left in the archive when asked, and an archive not there.
     let (_d, home) = old_home();
     let (archive, files) = archive_of(&home);
-    upgrade(&home, &archive, false, false, |_| {}).unwrap();
+    upgrade(&home, &archive, false, None, |_| {}).unwrap();
     assert!(!Archive::record_path(&files[0]).exists());
     let gone = Archive::new(home.root().join("none"));
-    assert!(upgrade(&home, &gone, false, true, |_| {}).is_err());
+    assert!(upgrade(&home, &gone, false, Some(usize::MAX), |_| {}).is_err());
 }
 
 #[test]
@@ -260,12 +287,12 @@ fn what_cannot_be_read_stops_the_run() {
         &crawl.join("folders/www.nemweb.com.au/Reports/CURRENT/X/listing.json"),
         "{",
     );
-    let e = upgrade(&home, &archive, false, false, |_| {}).unwrap_err();
+    let e = upgrade(&home, &archive, false, None, |_| {}).unwrap_err();
     assert!(e.to_string().contains("listing.json"), "{e}");
     // A crawl record that is not a file.
     std::fs::remove_dir_all(crawl.join("folders")).unwrap();
     std::fs::remove_file(crawl.join("remote.ndjson")).unwrap();
     std::fs::create_dir(crawl.join("remote.ndjson")).unwrap();
-    assert!(upgrade(&home, &archive, false, false, |_| {}).is_err());
+    assert!(upgrade(&home, &archive, false, None, |_| {}).is_err());
     assert!(mtime(&home.root().join("none")).is_none());
 }

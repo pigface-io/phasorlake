@@ -60,6 +60,9 @@ pub struct UpgradeSummary {
     pub records: usize,
     /// Provenance records that do not read, left as they are.
     pub unreadable: Vec<PathBuf>,
+    /// Folders too large to write again, with their entries: their
+    /// format-1 records are left, and read as they are.
+    pub skipped: Vec<(PathBuf, usize)>,
     /// What is left under the old records' folder: files no step knows.
     pub left: Vec<PathBuf>,
 }
@@ -72,13 +75,18 @@ struct FolderRead {
 }
 
 /// Upgrades the home: the mirror's records first, then, with `records`,
-/// every format-1 provenance record in `archive`. `on_step` sees each
-/// step before it is taken.
+/// every format-1 provenance record in `archive` in a folder of at most
+/// that many entries. On exFAT a name is found by reading its folder's
+/// directory from the start, and only the start of a large one stays
+/// cached: in a folder of 150 thousand entries each name past the first
+/// tens of thousands costs seconds, so such a folder's records are left
+/// (format 1 reads as well) and named in [`UpgradeSummary::skipped`].
+/// `on_step` sees each step before it is taken.
 pub fn upgrade(
     home: &Home,
     archive: &Archive,
     dry_run: bool,
-    records: bool,
+    records: Option<usize>,
     mut on_step: impl FnMut(&Step),
 ) -> Result<UpgradeSummary, MirrorError> {
     let old = home.old_records();
@@ -162,7 +170,7 @@ pub fn upgrade(
     if dry_run {
         summary.left.retain(|p| !known(&old, p));
     }
-    if records {
+    if let Some(max_entries) = records {
         // Old records to remove, by folder, once the new ones are on the
         // disk: one sync for many folders, each folder's unlinks together.
         let mut done: Vec<Vec<PathBuf>> = Vec::new();
@@ -170,7 +178,9 @@ pub fn upgrade(
         // An archive not there is an error, not an archive with nothing.
         std::fs::read_dir(archive.root()).map_err(MirrorError::io(archive.root()))?;
         for dir in folders(archive.root()) {
-            let found = old_records(&dir, &mut summary.unreadable)?;
+            let Some(found) = old_records(&dir, max_entries, &mut summary)? else {
+                continue;
+            };
             let mut here = Vec::with_capacity(found.len());
             for (v1, v2, p) in found {
                 if take(step(Action::Record, &v1, &v2), &mut summary)? {
@@ -236,9 +246,14 @@ fn folders(root: &Path) -> Vec<PathBuf> {
 /// reads is there already (a run cut off wrote it, or a later write did:
 /// it is the one kept). One listing of the folder, then one read of each
 /// record: on exFAT each look for a name not cached reads the folder. A
-/// record that does not read is added to `unreadable` and left.
+/// record that does not read is added to `unreadable` and left; a folder
+/// of more than `max_entries` entries is added to `skipped`, and `None`.
 type Found = (PathBuf, PathBuf, Option<utilake_provenance::Provenance>);
-fn old_records(dir: &Path, unreadable: &mut Vec<PathBuf>) -> Result<Vec<Found>, MirrorError> {
+fn old_records(
+    dir: &Path,
+    max_entries: usize,
+    summary: &mut UpgradeSummary,
+) -> Result<Option<Vec<Found>>, MirrorError> {
     use utilake_provenance::Provenance;
     use utilake_provenance::archive::{OLD_RECORD, RECORD, is_noise};
     let mut names: Vec<String> = std::fs::read_dir(dir)
@@ -246,6 +261,10 @@ fn old_records(dir: &Path, unreadable: &mut Vec<PathBuf>) -> Result<Vec<Found>, 
         .filter_map(Result::ok)
         .map(|e| e.file_name().to_string_lossy().into_owned())
         .collect();
+    if names.len() > max_entries {
+        summary.skipped.push((dir.to_path_buf(), names.len()));
+        return Ok(None);
+    }
     names.sort();
     let here: std::collections::HashSet<&str> = names.iter().map(String::as_str).collect();
     let read = |path: &Path| {
@@ -272,10 +291,10 @@ fn old_records(dir: &Path, unreadable: &mut Vec<PathBuf>) -> Result<Vec<Found>, 
         }
         match read(&v1) {
             Some(p) => out.push((v1, v2, Some(p))),
-            None => unreadable.push(v1),
+            None => summary.unreadable.push(v1),
         }
     }
-    Ok(out)
+    Ok(Some(out))
 }
 
 fn step(action: Action, from: &Path, to: &Path) -> Step {

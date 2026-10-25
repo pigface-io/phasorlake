@@ -197,7 +197,12 @@ pub async fn run_command(cli: &Cli) -> Result<i32> {
         Command::Upgrade {
             dry_run,
             skip_records,
-        } => upgrade(ctx, *dry_run, !*skip_records),
+            max_entries,
+        } => upgrade(
+            ctx,
+            *dry_run,
+            (!*skip_records).then_some(max_entries.unwrap_or(usize::MAX)),
+        ),
         Command::Reindex => {
             let _lock = mirror.lock()?;
             let n = mirror.reindex(&ctx.archive())?;
@@ -223,7 +228,7 @@ pub async fn run_command(cli: &Cli) -> Result<i32> {
 }
 
 /// Moves a home to the layout of `state/`.
-fn upgrade(ctx: &Context, dry_run: bool, records: bool) -> Result<i32, MirrorError> {
+fn upgrade(ctx: &Context, dry_run: bool, records: Option<usize>) -> Result<i32, MirrorError> {
     // No mirror may run while its records move: the lock of the layout it
     // runs in, and the new one after.
     let old = Mirror::new(ctx.home.old_records());
@@ -247,6 +252,9 @@ fn upgrade(ctx: &Context, dry_run: bool, records: bool) -> Result<i32, MirrorErr
         );
         for p in &s.left {
             println!("left: {}", p.display());
+        }
+        for (dir, entries) in &s.skipped {
+            println!("skipped: {} ({entries} entries)", dir.display());
         }
     }
     Ok(i32::from(!s.unreadable.is_empty()))
