@@ -9,7 +9,7 @@ use clap::{Parser, Subcommand};
 #[command(name = "utilake-mirror", version, about, max_term_width = 100)]
 pub struct Cli {
     /// Home directory (default `~/.utilake-mirror`): the archive, and the
-    /// mirror's records with its config under `mirror/`.
+    /// mirror's records under `state/`, its config in `config.toml`.
     #[arg(long, global = true, env = "UTILAKE_MIRROR_HOME")]
     pub home: Option<PathBuf>,
     /// Machine-readable output: NDJSON, one event or record per line.
