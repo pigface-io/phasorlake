@@ -1,0 +1,6 @@
+FacilityName,facilityid,facilitytype,capacitytype,receiptlocation,ReceiptLocationName,deliverylocation,DeliveryLocationName,capacitydescription,flowdirection,capacityquantity,effectivedate,description,LastUpdated
+APLNG Pipeline,540093,PIPE,MDQ,1404048,DDP to APLNG Pipeline,1404050,Curtis Island,Nameplate Capacity,NONE,1560.000,30 Sep 2018 00:00:00,,2018/09/30 11:25:57
+Bellevue,540083,PROD,MDQ,-1,,-1,,This capacity is the amount of gas that the Bellevue production facility is able to process.,NONE,228.000,30 Sep 2018 00:00:00,,2018/09/30 10:20:13
+BWP,540096,PIPE,MDQ,1404069,Berwyndale Entry Delivery Stream,1404073,Silver Springs Delivery Stream,Maximum pipeline capacity achieved under normal operating conditions for the direction of flow specified,NONE,164.000,30 Sep 2018 00:00:00,,2018/09/30 12:46:09
+BWP,540096,PIPE,MDQ,1404071,BWP from SWQP (Wallumbilla) Delivery Stream,1404070,Berwyndale Exit Delivery Stream,Maximum pipeline capacity achieved under normal operating conditions for the direction of flow specified,NONE,164.000,30 Sep 2018 00:00:00,,2018/09/30 12:46:09
+Camden,520075,PROD,MDQ,-1,,-1,,,NONE,18.000,30 Sep 2018 00:00:00,Normal Operation,2018/09/30 10:45:02

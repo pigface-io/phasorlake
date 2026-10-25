@@ -1,0 +1,6 @@
+gas_date,hub_identifier,hub_name,schedule_identifier,facility_identifier,facility_name,provisional_capacity_qty,prov_cap_qty_quality_type,provisional_capacity_price,provisional_flow_constraint_price,provisional_schedule_type,report_datetime
+26 Oct 2026,ADL,Adelaide,,MAP,Moomba to Adelaide pipeline,252000,V,,,NA,23 Oct 2026 09:00:11
+26 Oct 2026,ADL,Adelaide,,SEAGAS,SEA Gas pipeline to Adelaide,125499,V,,,NA,23 Oct 2026 09:00:11
+26 Oct 2026,BRI,Brisbane,,RBP,Roma to Brisbane Pipeline,114000,V,,,NA,23 Oct 2026 09:00:11
+26 Oct 2026,SYD,Sydney,,EGP,Eastern Gas Pipeline to Sydney,335000,V,,,NA,23 Oct 2026 09:00:11
+26 Oct 2026,SYD,Sydney,,KKLP,Kurri Kurri Pipeline Storage Facility,60000,V,,,NA,23 Oct 2026 09:00:11

@@ -1,0 +1,6 @@
+gas_date,hub_identifier,hub_name,schedule_identifier,facility_identifier,facility_name,provisional_qty,provisional_firm_gas_scheduled,provisional_as_available_scheduled,flow_direction,price_taker_bid_provisional_not_sched_qty,price_taker_bid_provisional_qty,provisional_schedule_type,report_datetime
+26 Oct 2026,ADL,Adelaide,70562,NETADL1,Adelaide - Network 1,1490,,,F,0,48644,D-3,23 Oct 2026 13:32:30
+26 Oct 2026,ADL,Adelaide,70562,MAP,Moomba to Adelaide pipeline,1900,1750,150,F,,,D-3,23 Oct 2026 13:32:30
+26 Oct 2026,ADL,Adelaide,70562,MAP,Moomba to Adelaide pipeline,40434,31910,8524,T,,,D-3,23 Oct 2026 13:32:30
+26 Oct 2026,ADL,Adelaide,70562,SEAGAS,SEA Gas pipeline to Adelaide,400,0,400,F,,,D-3,23 Oct 2026 13:32:30
+26 Oct 2026,ADL,Adelaide,70562,SEAGAS,SEA Gas pipeline to Adelaide,12000,12000,0,T,,,D-3,23 Oct 2026 13:32:30

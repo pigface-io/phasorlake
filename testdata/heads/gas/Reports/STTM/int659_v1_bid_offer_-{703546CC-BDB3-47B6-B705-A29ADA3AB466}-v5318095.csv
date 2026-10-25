@@ -1,0 +1,6 @@
+gas_date,company_identifier,company_name,hub_identifier,hub_name,schedule_identifier,facility_identifier,facility_name,bid_offer_identifier,bid_offer_step_number,step_price,step_capped_cumulative_qty,bid_offer_type,report_datetime
+02 Dec 2013,143,AGL South Australia Pty Limited,ADL,Adelaide,13905,MAP,Moomba to Adelaide pipeline,340946,1,1.0300,3385,O,03 Dec 2013 09:06:47
+02 Dec 2013,143,AGL South Australia Pty Limited,ADL,Adelaide,13905,MAP,Moomba to Adelaide pipeline,340946,2,2.6500,5078,O,03 Dec 2013 09:06:47
+02 Dec 2013,143,AGL South Australia Pty Limited,ADL,Adelaide,13905,MAP,Moomba to Adelaide pipeline,340946,3,3.1100,10156,O,03 Dec 2013 09:06:47
+02 Dec 2013,143,AGL South Australia Pty Limited,ADL,Adelaide,13905,MAP,Moomba to Adelaide pipeline,340946,4,3.7500,14388,O,03 Dec 2013 09:06:47
+02 Dec 2013,143,AGL South Australia Pty Limited,ADL,Adelaide,13905,MAP,Moomba to Adelaide pipeline,340946,5,4.1800,16588,O,03 Dec 2013 09:06:47

@@ -1,0 +1,6 @@
+gas_date,hub_identifier,hub_name,positive_deviation_price,negative_deviation_price,ex_ante_market_price,ex_post_imbalance_price,low_contingency_gas_price,high_contingency_gas_price,mos_increase_cost,mos_decrease_cost,last_update_datetime,report_datetime
+16 Oct 2026,ADL,Adelaide,8.1371,12.0101,12.0101,12.0044,,,,8.1371,23 Oct 2026 11:58:03,23 Oct 2026 11:58:59
+16 Oct 2026,BRI,Brisbane,12.2988,12.4686,12.2988,12.3300,,,12.4686,,23 Oct 2026 11:58:04,23 Oct 2026 11:58:59
+16 Oct 2026,SYD,Sydney,12.4101,13.4386,12.4101,12.4219,,,13.4386,,23 Oct 2026 11:58:02,23 Oct 2026 11:58:59
+17 Oct 2026,ADL,Adelaide,9.2376,10.9009,10.9009,10.5663,,,,9.2376,23 Oct 2026 11:58:03,23 Oct 2026 11:58:59
+17 Oct 2026,BRI,Brisbane,12.1000,13.3064,12.1000,12.1991,,,13.3064,,23 Oct 2026 11:58:04,23 Oct 2026 11:58:59

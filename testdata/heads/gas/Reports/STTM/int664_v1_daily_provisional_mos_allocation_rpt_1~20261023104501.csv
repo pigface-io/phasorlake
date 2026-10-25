@@ -1,0 +1,6 @@
+gas_date,hub_identifier,hub_name,facility_identifier,facility_name,mos_allocated_qty,mos_overrun_qty,report_datetime
+15 Oct 2026,ADL,Adelaide,MAP,Moomba to Adelaide pipeline,-1456.000000000,0.000000000,23 Oct 2026 10:45:01
+15 Oct 2026,ADL,Adelaide,SEAGAS,SEA Gas pipeline to Adelaide,50.000000000,0.000000000,23 Oct 2026 10:45:01
+15 Oct 2026,BRI,Brisbane,RBP,Roma to Brisbane Pipeline,2070.000000000,0.000000000,23 Oct 2026 10:45:01
+15 Oct 2026,SYD,Sydney,EGP,Eastern Gas Pipeline to Sydney,9994.490090000,0.000000000,23 Oct 2026 10:45:01
+15 Oct 2026,SYD,Sydney,KKLP,Kurri Kurri Pipeline Storage Facility,0.000000000,0.000000000,23 Oct 2026 10:45:01

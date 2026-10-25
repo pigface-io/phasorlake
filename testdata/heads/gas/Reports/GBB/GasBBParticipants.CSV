@@ -1,0 +1,6 @@
+CompanyId,CompanyName,OrganisationTypeName,ABN,CompanyPhone,Locale,AddressType,Address,State,Postcode,CompanyFax,LastUpdated
+3,Origin Energy (VIC) Pty Limited,Shipper,11 086 013 283,02 8345 5000,Sydney,Head Office,"Level 45, Australia Square 264-278 George St PO Box 5376",NSW,2000,02 9252 8622,05 Feb 2024 19:30:00
+4,AGL Sales Pty Limited,Shipper,88 090 538 337,03 8633 6000,Docklands,Head Office,,VI,3008,,05 Feb 2024 19:30:00
+5,EnergyAustralia Pty Ltd,BB Reporting Entity,99 086 014 968,03 8628 1000,Docklands,Head Office,,,3008,03 8626 1050,05 Feb 2024 19:30:00
+13,Australian Energy Market Operator Ltd,Gas Market Operator,94 072 010 327,03 9609 8000,Melbourne,Head Office,,VI,3001,03 9609 8080,05 Feb 2024 19:30:00
+14,APA GasNet Australia (Operations) P/L,BB Reporting Entity,65 083 009 278,,Sydney,Head Office,,,2000,,08 Oct 2025 19:30:05

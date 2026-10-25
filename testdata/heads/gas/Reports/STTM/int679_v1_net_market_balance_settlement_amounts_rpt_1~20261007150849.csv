@@ -1,0 +1,4 @@
+settlement_run_identifier,period_start_date,period_end_date,hub_identifier,hub_name,net_market_balance,total_deviation_qty,total_withdrawals,total_variation_charges,report_datetime
+603,01 Dec 2025,31 Dec 2025,ADL,Adelaide,5697.2137,115305.406000000,1372605.004000000,16662.7187,07 Oct 2026 15:08:49
+603,01 Dec 2025,31 Dec 2025,BRI,Brisbane,-79460.7639,148666.489662991,1710993.222462711,25957.3298,07 Oct 2026 15:08:49
+603,01 Dec 2025,31 Dec 2025,SYD,Sydney,-451455.0010,364440.465310000,7065626.638120000,74670.6515,07 Oct 2026 15:08:49

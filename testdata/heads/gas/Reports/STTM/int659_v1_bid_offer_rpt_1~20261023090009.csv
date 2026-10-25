@@ -1,0 +1,6 @@
+gas_date,company_identifier,company_name,hub_identifier,hub_name,schedule_identifier,facility_identifier,facility_name,bid_offer_identifier,bid_offer_step_number,step_price,step_capped_cumulative_qty,bid_offer_type,report_datetime
+22 Oct 2026,150,Adelaide Brighton Cement Limited,ADL,Adelaide,70523,NETADL1,Adelaide - Network 1,3001030,1,0.0000,0,B,23 Oct 2026 09:00:10
+22 Oct 2026,150,Adelaide Brighton Cement Limited,ADL,Adelaide,70514,NETADL1,Adelaide - Network 1,3001030,1,0.0000,0,B,23 Oct 2026 09:00:10
+22 Oct 2026,150,Adelaide Brighton Cement Limited,ADL,Adelaide,70532,NETADL1,Adelaide - Network 1,3001030,1,0.0000,0,B,23 Oct 2026 09:00:10
+22 Oct 2026,150,Adelaide Brighton Cement Limited,ADL,Adelaide,70523,MAP,Moomba to Adelaide pipeline,3252523,1,0.0000,2500,O,23 Oct 2026 09:00:10
+22 Oct 2026,150,Adelaide Brighton Cement Limited,ADL,Adelaide,70514,MAP,Moomba to Adelaide pipeline,3252523,1,0.0000,2500,O,23 Oct 2026 09:00:10

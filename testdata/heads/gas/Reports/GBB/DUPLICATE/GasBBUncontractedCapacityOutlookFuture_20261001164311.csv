@@ -1,0 +1,6 @@
+FacilityId,FacilityName,FacilityType,OutlookYear,OutlookMonth,CapacityType,FlowDirection,OutlookQuantity,CapacityDescription,ReceiptLocation,ReceiptLocationName,DeliveryLocation,DeliveryLocationName,Description,LastUpdated
+580010,AGP,PIPE,2026,10,MDQ,NONE,0.000,Capacity that is available for contracting as Firm capacity,1808012,Palm Valley,1808003,Channel Island LP,,30 Sep 2026 18:14:43
+580010,AGP,PIPE,2026,11,MDQ,NONE,0.000,Capacity that is available for contracting as Firm capacity,1808012,Palm Valley,1808003,Channel Island LP,,30 Sep 2026 18:14:43
+580010,AGP,PIPE,2026,12,MDQ,NONE,0.000,Capacity that is available for contracting as Firm capacity,1808012,Palm Valley,1808003,Channel Island LP,,30 Sep 2026 18:14:43
+580010,AGP,PIPE,2027,1,MDQ,NONE,0.000,Capacity that is available for contracting as Firm capacity,1808012,Palm Valley,1808003,Channel Island LP,,30 Sep 2026 18:14:43
+580010,AGP,PIPE,2027,2,MDQ,NONE,0.000,Capacity that is available for contracting as Firm capacity,1808012,Palm Valley,1808003,Channel Island LP,,30 Sep 2026 18:14:43

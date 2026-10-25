@@ -1,0 +1,6 @@
+FacilityName,FacilityId,FromGasDate,ToGasDate,CapacityType,FlowDirection,ReceiptLocationName,ReceiptLocation,DeliveryLocationName,DeliveryLocation,CapacityDescription,OutlookQuantity,Description,LastUpdated
+RNMGP,640012,2026/01/06,2028/12/31,MDQ,NONE,Mimas Gas Pipeline Receipt Point,1490109,Mimas Gas Pipeline Delivery to CRWP,1490111,Mimas to CRWP,54.000,Normal conditions,2026/01/06 13:47:10
+RNMGP,640012,2026/01/06,2028/12/31,MDQ,NONE,Mimas Gas Pipeline Receipt Point,1490109,Mimas Gas Pipeline Delivery to Mooga QGP,1490110,Mimas to QGP,54.000,Normal conditions,2026/01/06 13:47:10
+MRP,580100,2026/05/09,2029/12/31,MDQ,NONE,Daly Waters Scrap Station on the AGP,1808026,McArthur River Mine Delivery Point,1808069,Forward Haul Capacity,15.000,Forward Haul Capacity,2026/05/09 09:31:31
+EO4PL,540055,2026/07/30,2029/04/11,MDQ,NONE,Windibri Connection Point (E04),1404246,Kenya Connection Point (E04),1404249,Full Capacity,180.000,Full Capacity - E04 Line,2026/07/23 10:05:52
+WGP,540091,2026/07/30,2026/10/14,MDQ,NONE,Woleebee Creek,1404143,Curtis Island  - D,1404194,Full Capacity,1598.000,Full Capacity - Export Line (WGP),2026/07/23 10:05:52

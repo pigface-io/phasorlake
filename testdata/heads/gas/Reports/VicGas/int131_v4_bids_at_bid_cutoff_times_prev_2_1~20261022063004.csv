@@ -1,0 +1,6 @@
+gas_date,type_1,type_2,participant_id,participant_name,code,name,offer_type,step1,step2,step3,step4,step5,step6,step7,step8,step9,step10,min_daily_qty,bid_id,bid_cutoff_time,schedule_type,schedule_time,current_date
+20 Oct 2026,a,a,3,Origin Energy (VIC) Pty Limited,20000001PC,20000001PC,INJEC,0.0000,,,,,,,,,,,1653769,09:00:00,D + 0,10:00:00,22 Oct 2026 06:30:04
+20 Oct 2026,a,a,3,Origin Energy (VIC) Pty Limited,20000001PC,20000001PC,INJEC,0.0000,,,,,,,,,,,1653769,13:00:00,D + 0,14:00:00,22 Oct 2026 06:30:04
+20 Oct 2026,a,a,3,Origin Energy (VIC) Pty Limited,20000001PC,20000001PC,INJEC,0.0000,,,,,,,,,,,1653769,17:00:00,D + 0,18:00:00,22 Oct 2026 06:30:04
+20 Oct 2026,a,a,3,Origin Energy (VIC) Pty Limited,20000001PC,20000001PC,INJEC,0.0000,,,,,,,,,,,1653769,21:00:00,D + 0,22:00:00,22 Oct 2026 06:30:04
+20 Oct 2026,a,a,3,Origin Energy (VIC) Pty Limited,20000001PC,20000001PC,INJEC,0.0000,12.4837,13.3987,14.9537,15.3333,19.9698,25.1147,100.9785,534.3360,789.7000,,1652663,11:00:00,D + 2,06:00:00,22 Oct 2026 06:30:04

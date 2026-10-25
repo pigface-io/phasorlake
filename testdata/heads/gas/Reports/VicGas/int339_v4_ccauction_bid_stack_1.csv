@@ -1,0 +1,6 @@
+auction_id,auction_date,bid_id,zone_id,zone_name,start_period,end_period,step,bid_price,bid_quantity_gj,current_date
+13,21 May 2026,29721,6,Gippsland Exit,Dec-2026,Dec-2026,1,0.0100,2000.000000000,21 May 2026 14:36:59
+13,21 May 2026,29722,6,Gippsland Exit,Jan-2027,Jan-2027,1,0.0100,2000.000000000,21 May 2026 14:36:59
+13,21 May 2026,29723,6,Gippsland Exit,Feb-2027,Feb-2027,1,0.0100,2000.000000000,21 May 2026 14:36:59
+13,21 May 2026,29724,6,Gippsland Exit,Mar-2027,Mar-2027,1,0.0100,2000.000000000,21 May 2026 14:36:59
+13,21 May 2026,29725,6,Gippsland Exit,Dec-2027,Dec-2027,1,0.0100,2000.000000000,21 May 2026 14:36:59

@@ -9,7 +9,7 @@
 //!      ends AS (SELECT DISTINCT entity…, valid FROM latest),
 //!      next_ends AS (SELECT entity…, valid, lead(valid) OVER (PARTITION BY entity… ORDER BY valid) AS next_valid FROM ends),
 //!      spans AS (SELECT latest.*, CASE WHEN next_valid >= <no end> THEN NULL ELSE next_valid END AS _nl_valid_to FROM latest JOIN next_ends USING (entity…, valid))
-//! SELECT <columns> FROM spans WHERE <window>
+//! SELECT <columns>, _nl_source, _nl_known FROM spans WHERE <window>
 //! ```
 //!
 //! Only `raw` is of one dialect. For DuckDB it is every lake file read
@@ -284,7 +284,9 @@ pub fn render(b: &Bound, lake: &Lake<'_>, dialect: Dialect) -> String {
             })
         }
     };
+    // The frame's columns: the kept ones, the source, the known time.
     let mut cols = kept(b);
+    cols.push("\"_nl_source\"".to_owned());
     cols.push("_nl_known".to_owned());
     if matches!(spec.valid, ValidAxis::From { .. }) {
         cols.push("_nl_valid_to".to_owned());
@@ -354,7 +356,9 @@ fn finish_raw(mut out: String, b: &Bound) -> String {
         window_sql(axis, &b.query.window, &as_instant(b, c), b.day_start_us)
     });
     let _ = writeln!(out, "spans AS (SELECT raw.* FROM raw)");
-    let _ = write!(out, "SELECT {} FROM spans {where_}", kept(b).join(", "));
+    let mut cols = kept(b);
+    cols.push("\"_nl_source\"".to_owned());
+    let _ = write!(out, "SELECT {} FROM spans {where_}", cols.join(", "));
     out
 }
 
@@ -497,7 +501,7 @@ mod tests {
         );
         assert!(!s.contains("VALUES"), "{s}");
         assert!(
-            s.contains("SELECT \"DAY\", \"X\", _nl_known FROM spans WHERE"),
+            s.contains("SELECT \"DAY\", \"X\", \"_nl_source\", _nl_known FROM spans WHERE"),
             "{s}"
         );
         // A timeless table takes no window; Postgres reads the relation.
@@ -508,7 +512,7 @@ mod tests {
         );
         assert!(!s.contains("read_parquet"), "{s}");
         assert!(
-            s.ends_with("SELECT \"DAY\", \"X\", _nl_known FROM spans "),
+            s.ends_with("SELECT \"DAY\", \"X\", \"_nl_source\", _nl_known FROM spans "),
             "{s}"
         );
     }

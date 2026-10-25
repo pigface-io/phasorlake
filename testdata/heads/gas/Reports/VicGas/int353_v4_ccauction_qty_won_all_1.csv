@@ -1,0 +1,6 @@
+auction_id,auction_date,zone_id,zone_name,zone_type,start_date,end_date,cc_period,clearing_price,quantities_won_gj,unallocated_qty,current_date
+13,21 May 2026,1,South West Entry,Entry,01 Jul 2026,31 Jul 2026,Jul-2026,0.0506,97005.000000000,0.000000000,21 May 2026 14:37:10
+13,21 May 2026,1,South West Entry,Entry,01 Aug 2026,31 Aug 2026,Aug-2026,0.0066,95685.000000000,0.000000000,21 May 2026 14:37:10
+13,21 May 2026,1,South West Entry,Entry,01 Sep 2026,30 Sep 2026,Sep-2026,0.0688,98396.000000000,0.000000000,21 May 2026 14:37:10
+13,21 May 2026,1,South West Entry,Entry,01 Oct 2026,31 Oct 2026,Oct-2026,0.0001,99653.000000000,0.000000000,21 May 2026 14:37:10
+13,21 May 2026,1,South West Entry,Entry,01 Nov 2026,30 Nov 2026,Nov-2026,0.0001,97733.000000000,0.000000000,21 May 2026 14:37:10

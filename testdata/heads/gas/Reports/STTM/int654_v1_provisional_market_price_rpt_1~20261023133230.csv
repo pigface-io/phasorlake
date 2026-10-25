@@ -1,0 +1,6 @@
+gas_date,hub_identifier,hub_name,schedule_identifier,provisional_price,provisional_schedule_type,report_datetime
+26 Oct 2026,ADL,Adelaide,70562,12.0500,D-3,23 Oct 2026 13:32:30
+26 Oct 2026,BRI,Brisbane,70563,12.1532,D-3,23 Oct 2026 13:32:30
+26 Oct 2026,SYD,Sydney,70561,12.1921,D-3,23 Oct 2026 13:32:30
+25 Oct 2026,ADL,Adelaide,70559,12.0250,D-2,23 Oct 2026 13:32:30
+25 Oct 2026,ADL,Adelaide,70550,11.9208,D-3,23 Oct 2026 13:32:30

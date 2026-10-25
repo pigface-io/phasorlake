@@ -1,0 +1,6 @@
+gas_date,hub_identifier,hub_name,facility_identifier,facility_name,allocation_qty_inc_mos,allocation_qty_quality_type,flow_direction,report_datetime
+22 Oct 2026,ADL,Adelaide,MAP,Moomba to Adelaide pipeline,36525.000000000,V,T,23 Oct 2026 10:32:25
+22 Oct 2026,ADL,Adelaide,MAP,Moomba to Adelaide pipeline,12525.000000000,V,F,23 Oct 2026 10:32:25
+22 Oct 2026,ADL,Adelaide,SEAGAS,SEA Gas pipeline to Adelaide,21000.000000000,V,T,23 Oct 2026 10:32:25
+22 Oct 2026,ADL,Adelaide,SEAGAS,SEA Gas pipeline to Adelaide,2546.000000000,V,F,23 Oct 2026 10:32:25
+22 Oct 2026,BRI,Brisbane,RBP,Roma to Brisbane Pipeline,56618.000000000,V,T,23 Oct 2026 10:32:25

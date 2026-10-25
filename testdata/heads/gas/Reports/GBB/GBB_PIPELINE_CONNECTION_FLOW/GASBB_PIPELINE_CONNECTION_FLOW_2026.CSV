@@ -1,0 +1,6 @@
+GasDate,FacilityName,FacilityId,ConnectionPointName,ConnectionPointId,ActualQuantity,FlowDirection,State,LocationName,LocationId,Quality
+01/01/2026,Eastern Gas Pipeline,520047,Tallawarra,1202002,0.000,DELIVERY,NSW,Regional - NSW,590011,OK
+01/01/2026,Eastern Gas Pipeline,520047,Horsley Park,1202003,59.566,DELIVERY,NSW,Sydney,520008,OK
+01/01/2026,Eastern Gas Pipeline,520047,Smithfield,1202004,2.890,DELIVERY,NSW,Regional - NSW,590011,OK
+01/01/2026,Eastern Gas Pipeline,520047,Cooma,1202009,0.102,DELIVERY,NSW,Regional - NSW,590011,OK
+01/01/2026,Eastern Gas Pipeline,520047,Bomaderry,1202010,0.147,DELIVERY,NSW,Regional - NSW,590011,OK

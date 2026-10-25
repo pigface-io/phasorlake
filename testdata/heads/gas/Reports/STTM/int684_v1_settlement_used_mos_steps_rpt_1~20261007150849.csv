@@ -1,0 +1,6 @@
+settlement_run_identifier,gas_date,hub_identifier,hub_name,facility_identifier,facility_name,stack_identifier,stack_type,stack_step_identifier,report_datetime
+603,01 Dec 2025,ADL,Adelaide,MAP,Moomba to Adelaide pipeline,1558,D,1,07 Oct 2026 15:08:49
+603,01 Dec 2025,ADL,Adelaide,SEAGAS,SEA Gas pipeline to Adelaide,1561,I,1,07 Oct 2026 15:08:49
+603,01 Dec 2025,BRI,Brisbane,RBP,Roma to Brisbane Pipeline,1565,I,1,07 Oct 2026 15:08:49
+603,01 Dec 2025,BRI,Brisbane,RBP,Roma to Brisbane Pipeline,1565,I,2,07 Oct 2026 15:08:49
+603,01 Dec 2025,BRI,Brisbane,RBP,Roma to Brisbane Pipeline,1565,I,3,07 Oct 2026 15:08:49

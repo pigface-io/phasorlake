@@ -1,0 +1,6 @@
+GasDate,FacilityName,FacilityId,ConnectionPointName,ConnectionPointId,ActualQuantity,FlowDirection,State,LocationName,LocationId,Quality,LastUpdated
+2026/09/01,AGP,580010,Ban Ban Springs Receipt Stream,1808000,0.000,RECEIPT,NT,Regional - NT,590017,OK,2026/09/02 12:46:48
+2026/09/01,AGP,580010,Channel Island HP,1808001,7.723,DELIVERY,NT,Darwin,580001,OK,2026/09/02 12:46:48
+2026/09/01,AGP,580010,Channel Island Line,1808002,7.986,DELIVERY,NT,Darwin,580001,OK,2026/09/02 12:46:48
+2026/09/01,AGP,580010,Channel Island LP,1808003,5.221,DELIVERY,NT,Darwin,580001,OK,2026/09/02 12:46:48
+2026/09/01,AGP,580010,Daly Waters,1808004,8.371,DELIVERY,NT,Regional - NT,590017,OK,2026/09/02 12:46:48

@@ -1,0 +1,6 @@
+LocationName,LocationId,LocationType,State,Description,LastUpdated
+Sydney,520008,STANDARD,NSW,Connections within Sydney STTM,2018/05/01 00:00:00
+Canberra,520009,STANDARD,NSW,Connections in the Canberra region,2018/05/01 00:00:00
+Longford Hub,530015,HUB,VIC,Production and transfer of gas within the Longford hub,2018/05/01 00:00:00
+Iona Hub,530016,HUB,VIC,"Supply, demand and transfer of gas within the Iona hub",2018/05/01 00:00:00
+Curtis Island,540030,STANDARD,QLD,"Deliveries to the LNG facilities on Curtis Island near Gladstone from LNG pipelines including Wallumbilla to Gladstone Pipeline, APLNG Pipeline, and GLNG Gas Transmission Pipeline",2018/05/01 00:00:00

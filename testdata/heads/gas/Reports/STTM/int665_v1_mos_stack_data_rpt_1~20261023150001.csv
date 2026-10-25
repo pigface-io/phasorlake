@@ -1,0 +1,6 @@
+effective_from_date,effective_to_date,stack_identifier,hub_identifier,hub_name,facility_identifier,facility_name,stack_type,estimated_maximum_quantity,stack_step_identifier,trading_participant_identifier,trading_participant_name,step_quantity,step_price,report_datetime
+01 Oct 2026,31 Oct 2026,1659,ADL,Adelaide,MAP,Moomba to Adelaide pipeline,I,7165,1,319,Eastern Energy Supply Pty Ltd,800.000000000,1.1150,23 Oct 2026 15:00:01
+01 Nov 2026,30 Nov 2026,1669,ADL,Adelaide,MAP,Moomba to Adelaide pipeline,I,12729,1,143,AGL South Australia Pty Limited,500.000000000,1.1090,23 Oct 2026 15:00:01
+01 Nov 2026,30 Nov 2026,1669,ADL,Adelaide,MAP,Moomba to Adelaide pipeline,I,12729,2,319,Eastern Energy Supply Pty Ltd,800.000000000,1.1130,23 Oct 2026 15:00:01
+01 Oct 2026,31 Oct 2026,1659,ADL,Adelaide,MAP,Moomba to Adelaide pipeline,I,7165,2,84,Origin Energy Retail Ltd,2500.000000000,1.1397,23 Oct 2026 15:00:01
+01 Oct 2026,31 Oct 2026,1659,ADL,Adelaide,MAP,Moomba to Adelaide pipeline,I,7165,3,329,Beach Energy Limited,1000.000000000,1.1402,23 Oct 2026 15:00:01

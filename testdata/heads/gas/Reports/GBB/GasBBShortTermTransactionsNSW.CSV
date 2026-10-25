@@ -1,0 +1,6 @@
+PeriodID,State,"Quantity (TJ)","VolumeWeightedPrice ($)",TransactionType,SupplyPeriodStart,SupplyPeriodEnd
+01-Mar-2023 to 31-Mar-2023,NSW,,,,,
+01-Apr-2023 to 30-Apr-2023,NSW,807.684930,17.797283,Supply,06-04-2023,31-05-2024
+01-May-2023 to 31-May-2023,NSW,874.120000,18.447563,Supply,22-05-2023,01-01-2025
+01-Jun-2023 to 30-Jun-2023,NSW,2567.437880,24.398087,Supply,16-06-2023,30-06-2024
+01-Jul-2023 to 31-Jul-2023,NSW,509.241360,18.310000,Supply,01-07-2023,30-06-2024

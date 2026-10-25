@@ -1,0 +1,6 @@
+hub_identifier,hub_name,facility_identifier,facility_name,facility_type,last_update_datetime,report_datetime
+ADL,Adelaide,NETADL1,Adelaide - Network 1,NETW,17 Oct 2011 22:00:35,23 Oct 2026 06:00:10
+ADL,Adelaide,MAP,Moomba to Adelaide pipeline,PIPE,17 Oct 2011 22:00:35,23 Oct 2026 06:00:10
+ADL,Adelaide,SEAGAS,SEA Gas pipeline to Adelaide,PIPE,17 Oct 2011 22:00:35,23 Oct 2026 06:00:10
+BRI,Brisbane,NETBRI1,Brisbane - Network 1,NETW,17 Oct 2011 22:00:35,23 Oct 2026 06:00:10
+BRI,Brisbane,NETXBRI3,Brisbane North and Ipswich Distribution System,NETX,17 Oct 2011 22:00:35,23 Oct 2026 06:00:10

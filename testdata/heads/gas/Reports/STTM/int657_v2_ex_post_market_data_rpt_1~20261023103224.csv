@@ -1,0 +1,6 @@
+gas_date,hub_identifier,hub_name,schedule_identifier,imbalance_qty,ex_post_imbalance_price,schedule_type_code,imbalance_type,schedule_imbalance_price,approval_datetime,report_datetime
+22 Oct 2026,ADL,Adelaide,70553,4926,12.1265,XPOST,S,,23 Oct 2026 10:30:38,23 Oct 2026 10:32:24
+22 Oct 2026,BRI,Brisbane,70554,2127,12.2500,XPOST,S,,23 Oct 2026 10:30:38,23 Oct 2026 10:32:24
+22 Oct 2026,SYD,Sydney,70552,14444,12.1400,XPOST,S,,23 Oct 2026 10:30:35,23 Oct 2026 10:32:24
+21 Oct 2026,ADL,Adelaide,70541,-263,12.1278,XPOST,L,,22 Oct 2026 10:30:36,23 Oct 2026 10:32:24
+21 Oct 2026,BRI,Brisbane,70542,1585,12.5000,XPOST,S,,22 Oct 2026 10:30:36,23 Oct 2026 10:32:24

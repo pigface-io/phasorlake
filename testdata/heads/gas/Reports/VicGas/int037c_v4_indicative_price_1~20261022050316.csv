@@ -1,0 +1,6 @@
+demand_type_name,price_value_gst_ex,transmission_group_id,schedule_type_id,transmission_id,gas_date,approval_datetime,current_date
+Normal,11.1265,119897,OS,281631,21 Oct 2026,21 Oct 2026 05:01:43,22 Oct 2026 05:03:16
+Normal,11.1000,119899,OS,281635,21 Oct 2026,21 Oct 2026 09:03:21,22 Oct 2026 05:03:16
+Normal,11.0010,119901,OS,281639,21 Oct 2026,21 Oct 2026 13:04:26,22 Oct 2026 05:03:16
+Normal,11.1400,119903,OS,281643,21 Oct 2026,21 Oct 2026 17:02:36,22 Oct 2026 05:03:16
+Normal,11.1265,119904,OS,281645,21 Oct 2026,21 Oct 2026 21:02:03,22 Oct 2026 05:03:16

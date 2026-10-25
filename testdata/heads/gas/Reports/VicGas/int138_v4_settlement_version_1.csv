@@ -1,0 +1,6 @@
+statement_version_id,settlement_cat_type,version_from_date,version_to_date,interest_rate,issued_date,version_desc,current_date
+673,REV,01 Feb 2012,29 Feb 2012,3.75,22 Aug 2012,,19 Oct 2026 12:59:25
+674,FNL,01 Jul 2012,31 Jul 2012,,24 Aug 2012,,19 Oct 2026 12:59:25
+677,REV,01 Mar 2012,31 Mar 2012,3.63,21 Sep 2012,,19 Oct 2026 12:59:25
+678,FNL,01 Aug 2012,31 Aug 2012,,26 Sep 2012,,19 Oct 2026 12:59:25
+679,PLM,01 Sep 2012,30 Sep 2012,,09 Oct 2012,,19 Oct 2026 12:59:25

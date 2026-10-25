@@ -1,0 +1,6 @@
+effective_from_date,effective_to_date,parameter_code,parameter_description,parameter_value,last_update_datetime,report_datetime
+01 Jan 2009,31 Dec 2099,APC,Administered Price Cap,40.0000,03 Dec 2013 18:52:01,23 Oct 2026 09:00:11
+01 Jan 2009,31 Dec 2099,CPT,Cumulative Price Threshold,440.0000,03 Dec 2013 18:52:01,23 Oct 2026 09:00:11
+01 Jan 2009,31 Dec 2099,MMP,Minimum Market Price,0.0000,03 Dec 2013 18:52:01,23 Oct 2026 09:00:11
+01 Jan 2009,31 Dec 2099,MOSCC,Market Operator Service Cost Cap,50.0000,03 Dec 2013 18:52:01,23 Oct 2026 09:00:11
+01 Jan 2009,31 Dec 2099,MPC,Market Price Cap,400.0000,03 Dec 2013 18:52:01,23 Oct 2026 09:00:11

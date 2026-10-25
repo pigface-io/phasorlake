@@ -1,0 +1,6 @@
+pipe_segment_id,pipe_segment_name,linepack_zone_id,commencement_date,termination_date,node_destination_id,node_origin_id,diameter,diameter_paired,length,max_pressure,min_pressure,max_pressure_delta,pressure_at_regulator_outlet,regulator_at_origin,reverse_flow,compressor,mean_pipe_altitude,last_mod_date,current_date
+1,Pre-Longford to Longford,6,23 Jun 1998,31 Dec 2099,3,2,1,0,1,8200,4600,500,,N,N,N,56,03 Dec 2019 09:32:32,02 Oct 2024 21:26:56
+2,Longford to Traralgon,6,23 Jun 1998,31 Dec 2099,5,3,0.7414,0.7414,64.7979,6890,3500,1350,,N,Y,N,70,10 Jan 2018 09:44:03,02 Oct 2024 21:26:56
+5,Traralgon to Lurgi,6,23 Jun 1998,31 Dec 2099,6,5,0.489,0,147.8407,2800,1400,1390,2760,Y,Y,N,54,30 Jun 2017 09:46:16,02 Oct 2024 21:26:56
+6,Traralgon to Gooding,6,23 Jun 1998,31 Dec 2099,8,5,0.7414,0,14.3203,6890,3500,1500,,N,Y,N,97,10 Jan 2018 09:44:19,02 Oct 2024 21:26:56
+7,Gooding CS (LMP),7,23 Jun 1998,31 Dec 2099,9,8,2,0,0.001,6890,4400,1870,,N,Y,Y,58,10 Jan 2018 09:44:46,02 Oct 2024 21:26:56

@@ -1,0 +1,6 @@
+gas_date,transmission_document_id,pipeline_id,pipeline_point_id,pipeline_point_name,participant_logical_meter,offer_type,participant_id,market_participant,daily_qty,hour_1,hour_2,hour_3,hour_4,hour_5,hour_6,hour_7,hour_8,hour_9,hour_10,hour_11,hour_12,hour_13,hour_14,hour_15,hour_16,hour_17,hour_18,hour_19,hour_20,hour_21,hour_22,hour_23,hour_24,comment,current_date
+01 Apr 2009,128987,1,1000,30000167PC,30000087LC,INJEC,4,AGL Sales Pty Limited,,,,,,,,,,,,,,,,,,,,,,,,,,,01 Apr 2009 22:22:45
+01 Apr 2009,128987,1,1000,30000167PC,30001048LC,INJEC,136,AETV Power,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,01 Apr 2009 22:22:45
+01 Apr 2009,128987,1,1000,30000167PC,Total 30000167PC,INJEC,,Total,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,01 Apr 2009 22:22:45
+01 Apr 2009,128987,1,999,30000166PC,30001047LC,CTLW,136,AETV Power,,,,,,,,,,,,,,,,,,,,,,,,,,,01 Apr 2009 22:22:45
+01 Apr 2009,128987,1,999,30000166PC,Total 30000166PC,CTLW,,Total,,,,,,,,,,,,,,,,,,,,,,,,,,,01 Apr 2009 22:22:45

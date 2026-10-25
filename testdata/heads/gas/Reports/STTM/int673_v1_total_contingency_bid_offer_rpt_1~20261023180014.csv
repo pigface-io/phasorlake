@@ -1,0 +1,6 @@
+gas_date,hub_identifier,hub_name,total_contingency_gas_bid_qty,total_contingency_gas_offer_qty,report_datetime
+26 Oct 2026,ADL,Adelaide,18000,66000,23 Oct 2026 18:00:14
+26 Oct 2026,BRI,Brisbane,,40000,23 Oct 2026 18:00:14
+26 Oct 2026,SYD,Sydney,47450,325500,23 Oct 2026 18:00:14
+25 Oct 2026,ADL,Adelaide,18000,66000,23 Oct 2026 18:00:14
+25 Oct 2026,BRI,Brisbane,,40000,23 Oct 2026 18:00:14

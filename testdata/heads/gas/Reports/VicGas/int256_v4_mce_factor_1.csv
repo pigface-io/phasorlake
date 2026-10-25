@@ -1,0 +1,6 @@
+general_information_id,r_factor,super_compressability_factor,t_factor,viscosity,voll_price,number_of_steps,eod_linepack_min,eod_linepack_max,commencement_date,termination_date,last_mod_date,current_date
+1,0.47264,0.86,288,0.000127,800.00,4,0,120000,23 Jun 1998,31 Dec 2000,06 Jul 1998 14:19:15,13 May 2024 10:34:22
+2,0.47264,0.86,288,0.000127,800.00,4,0,120000,07 Jul 1998,01 Jan 2099,06 Jul 1998 14:17:38,13 May 2024 10:34:22
+3,0.47264,0.86,288,0.000127,800.00,4,0,0,20 Aug 1998,01 Jan 2099,18 Aug 1998 09:35:00,13 May 2024 10:34:22
+4,0.47264,0.86,288,0.000127,800.00,4,0,0.1,20 Aug 1998,01 Jan 2099,18 Aug 1998 12:01:42,13 May 2024 10:34:22
+5,0.47264,0.86,288,0.000012,800.00,4,0,0.1,20 Feb 1999,01 Jan 2099,19 Feb 1999 12:01:18,13 May 2024 10:34:22

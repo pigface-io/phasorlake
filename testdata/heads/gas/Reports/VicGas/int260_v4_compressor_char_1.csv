@@ -1,0 +1,6 @@
+compressor_id,compressor_name,pipe_segment_id,min_pressure_delta,most_efficient_pressure_delta,max_pressure_delta,max_compressor_power,min_compressor_power,compressor_efficiency,compressor_efficiency_at_min,efficiency_coefficient,super_compressability_factor,compressor_station_id,station_name,last_mod_date,current_date
+1,Brooklyn Comp No 10 (BCP),17,1144,2209,3041,2840,1600,0.77,0.61,3.34,0.92,2,Brooklyn Compressor Stage III,10 Jan 2018 10:03:19,07 Feb 2024 10:22:33
+2,Brooklyn Comp No 11 (series) (BCP),17,1377,2670,3443,2840,1600,0.72,0.56,5.46,0.92,2,Brooklyn Compressor Stage III,10 Jan 2018 10:03:58,07 Feb 2024 10:22:33
+3,Brooklyn Comp No 8 (BBP-G2B),20,250,960,1110,850,450,0.69,0.5,1.5,0.88,1,Brooklyn Compressor Stage II,10 Jan 2018 10:06:26,07 Feb 2024 10:22:33
+4,Brooklyn Comp No 9 (BCP),17,250,960,1110,950,550,0.69,0.5,1.5,0.88,1,Brooklyn Compressor Stage II,10 Jan 2018 10:07:35,07 Feb 2024 10:22:33
+5,Brooklyn Comp No 12 (BBP-G2B),20,1941,2870,3631,3500,1600,0.75,0.68,3.34,0.92,2,Brooklyn Compressor Stage III,12 Jan 2018 14:24:33,07 Feb 2024 10:22:33

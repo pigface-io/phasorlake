@@ -131,7 +131,7 @@ fn each_kind_of_read_renders() {
     );
     assert!(s.contains("PARTITION BY \"END_TRADINGDATE\", \"ENABLEMENT_REASON\", \"ESTIMATED_COSTS\", \"LASTCHANGED\" ORDER BY \"_nl_published\" DESC NULLS LAST, \"_nl_source\" DESC) AS _nl_rank"), "{s}");
     assert!(
-        s.contains("SELECT \"END_TRADINGDATE\", \"ENABLEMENT_REASON\", \"ESTIMATED_COSTS\", \"LASTCHANGED\", _nl_known FROM spans "),
+        s.contains("SELECT \"END_TRADINGDATE\", \"ENABLEMENT_REASON\", \"ESTIMATED_COSTS\", \"LASTCHANGED\", \"_nl_source\", _nl_known FROM spans "),
         "{s}"
     );
 
@@ -151,7 +151,7 @@ fn each_kind_of_read_renders() {
     );
     assert!(
         s.contains(
-            "SELECT \"RRP\" FROM spans WHERE \"SETTLEMENTDATE\" > TIMESTAMP WITH TIME ZONE '"
+            "SELECT \"RRP\", \"_nl_source\" FROM spans WHERE \"SETTLEMENTDATE\" > TIMESTAMP WITH TIME ZONE '"
         ),
         "{s}"
     );

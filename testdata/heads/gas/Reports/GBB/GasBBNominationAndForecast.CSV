@@ -1,0 +1,6 @@
+Gasdate,FacilityId,FacilityName,FacilityType,LocationId,LocationName,State,Demand,Supply,TransferIn,TransferOut,LastUpdated
+2018/09/30,540093,APLNG Pipeline,PIPE,540030,Curtis Island,QLD,1550.000,0.000,0.000,0.000,2018/09/30 15:57:04
+2018/09/30,540093,APLNG Pipeline,PIPE,590001,Regional - QLD,QLD,0.000,1266.900,534.000,234.900,2018/09/30 15:57:04
+2018/09/30,540083,Bellevue,PROD,590001,Regional - QLD,QLD,0.000,195.000,0.000,0.000,2018/09/30 17:31:20
+2018/09/30,540096,Berwyndale to Wallumbilla Pipeline,PIPE,540032,Wallumbilla Hub,QLD,0.000,0.000,40.000,125.000,2018/09/30 19:10:10
+2018/09/30,540096,Berwyndale to Wallumbilla Pipeline,PIPE,590001,Regional - QLD,QLD,0.000,85.000,0.000,0.000,2018/09/30 19:10:10

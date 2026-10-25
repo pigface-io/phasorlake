@@ -1,0 +1,6 @@
+gas_date,hub_identifier,hub_name,schedule_identifier,imbalance_qty,ex_post_imbalance_price,imbalance_type,schedule_imbalance_price,approval_datetime,report_datetime
+14 Jun 2011,ADL,Adelaide,3768,-673.000000000,3.6700,L,,15 Jun 2011 11:02:22,15 Jun 2011 11:02:50
+14 Jun 2011,SYD,Sydney,3767,-1688.000000000,3.9400,L,,15 Jun 2011 11:02:24,15 Jun 2011 11:02:50
+13 Jun 2011,ADL,Adelaide,3760,1694.000000000,3.9969,S,,14 Jun 2011 11:02:21,15 Jun 2011 11:02:50
+13 Jun 2011,SYD,Sydney,3759,-4956.000000000,3.8500,L,,14 Jun 2011 11:02:21,15 Jun 2011 11:02:50
+12 Jun 2011,ADL,Adelaide,3752,-7741.000000000,2.5200,L,,13 Jun 2011 11:02:24,15 Jun 2011 11:02:50

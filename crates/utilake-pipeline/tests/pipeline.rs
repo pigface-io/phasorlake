@@ -3097,3 +3097,143 @@ async fn a_file_is_cut_at_its_size_and_the_rows_go_on() {
     assert_eq!(shares, rows as u64 + 1);
     assert_eq!(ingests[0].outputs.len(), files.len());
 }
+
+/// A plain CSV row whose every field is empty is a blank line, and a
+/// blank line is no row in any CSV: a one-column file with an empty value
+/// reads as one row fewer. Not a loss: AEMO cannot publish such a row
+/// either, as the bytes are the same.
+#[tokio::test]
+async fn a_blank_line_in_a_plain_file_is_no_row() {
+    let mut e = env();
+    let registry = e.registry.clone();
+    e.deps.kits = Arc::new(KitRegistry::new(vec![
+        utilake_gas::kit(registry.clone(), &utilake_gas::GasConfig::default()).unwrap(),
+        utilake_nem::kit(registry.clone(), "https://h").unwrap(),
+    ]));
+    let dir = e.home.archive().join("www.nemweb.com.au/Reports/VicGas");
+    std::fs::create_dir_all(&dir).unwrap();
+    let path = dir.join("int157_13.csv");
+    std::fs::write(&path, "gas_date\n02 Oct 2026\n\n03 Oct 2026\n").unwrap();
+    let (rep, _) = run_plan(
+        &e,
+        Plan {
+            request: "ingest a blank line".into(),
+            input: Input::Local(vec![path]),
+            options: RunOptions::default(),
+        },
+    )
+    .await;
+    assert_eq!(rep.exit_code, 0, "{:?}", rep.report.summary_lines());
+    assert_eq!(rep.summary.rows, 2);
+    assert_eq!(rep.summary.bad_rows, 0);
+}
+
+/// Every table's real file, as AEMO published it (the first rows of one
+/// file of each, in `testdata/heads`), goes into the lake whole: no file
+/// fails, no row is lost or quarantined, no value is turned to text, and
+/// every lake file ends with each row's source and publish time.
+#[tokio::test]
+async fn every_real_head_survives_the_lake() {
+    let mut e = env();
+    let registry = e.registry.clone();
+    e.deps.kits = Arc::new(KitRegistry::new(vec![
+        utilake_gas::kit(registry.clone(), &utilake_gas::GasConfig::default()).unwrap(),
+        utilake_nem::kit(registry.clone(), "https://h").unwrap(),
+    ]));
+    let heads = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../../testdata/heads")
+        .canonicalize()
+        .unwrap();
+    let mut files = Vec::new();
+    let mut stack = vec![heads.clone()];
+    while let Some(d) = stack.pop() {
+        for entry in std::fs::read_dir(&d).unwrap() {
+            let p = entry.unwrap().path();
+            if p.is_dir() {
+                stack.push(p);
+            } else {
+                files.push(p);
+            }
+        }
+    }
+    files.sort();
+    assert!(files.len() > 400, "{}", files.len());
+    // The rows each file holds: an MMS file's D rows, a plain one's lines
+    // after its header.
+    let held = |p: &Path| -> u64 {
+        let text = std::fs::read_to_string(p).unwrap();
+        if text.starts_with("C,") {
+            text.lines().filter(|l| l.starts_with("D,")).count() as u64
+        } else {
+            text.lines().skip(1).filter(|l| !l.is_empty()).count() as u64
+        }
+    };
+    let (rep, _) = run_plan(
+        &e,
+        Plan {
+            request: "ingest every real head".into(),
+            input: Input::Local(files.clone()),
+            options: RunOptions::default(),
+        },
+    )
+    .await;
+    let failed: Vec<String> = rep
+        .report
+        .failed()
+        .map(|f| {
+            format!(
+                "{} {:?}",
+                f.source.rsplit('/').next().unwrap_or(""),
+                f.failed_with
+            )
+        })
+        .collect();
+    assert!(failed.is_empty(), "{} failed: {failed:#?}", failed.len());
+    assert_eq!(rep.summary.bad_rows, 0, "{:#?}", rep.report.summary_lines());
+    let lake = walk(&e.home.lake());
+    let mut raw = Vec::new();
+    for f in &lake {
+        let b = parquet_batch(f);
+        let schema = b.schema();
+        let n = schema.fields().len();
+        assert_eq!(schema.field(n - 2).name(), "_nl_source", "{f}");
+        assert_eq!(schema.field(n - 1).name(), "_nl_published", "{f}");
+        raw.extend(
+            schema
+                .fields()
+                .iter()
+                .filter(|x| x.name().ends_with("__raw"))
+                .map(|x| format!("{}: {}", f.rsplit('/').nth(3).unwrap_or(""), x.name())),
+        );
+    }
+    assert!(raw.is_empty(), "values kept as text: {raw:#?}");
+    // Every row of every file is in the lake, by the file's own share:
+    // the same count, but for a feed that unpivots its forecast columns
+    // into rows of their own, which gives a whole number of rows per row.
+    let ingests = e
+        .deps
+        .manifest
+        .list_ingests(None, false, 10_000)
+        .await
+        .unwrap();
+    let mut by_path: std::collections::BTreeMap<PathBuf, u64> = std::collections::BTreeMap::new();
+    for i in &ingests {
+        let path = Url::parse(&i.url).unwrap().to_file_path().unwrap();
+        *by_path.entry(path).or_default() += i.entries.iter().map(|x| x.rows).sum::<u64>();
+    }
+    let mut short = Vec::new();
+    for p in &files {
+        let want = held(p);
+        let got = by_path.get(p).copied().unwrap_or(0);
+        let unpivoted = p.to_string_lossy().contains("ForecastUtilisation");
+        let whole = if unpivoted {
+            got > want && got % want == 0
+        } else {
+            got == want
+        };
+        if !whole {
+            short.push(format!("{}: file {want}, lake {got}", p.display()));
+        }
+    }
+    assert!(short.is_empty(), "{short:#?}");
+}

@@ -806,6 +806,78 @@ mod tests {
     }
 
     #[test]
+    fn pages_are_cut_at_their_size_and_rows() {
+        use parquet::arrow::arrow_reader::{ArrowReaderOptions, ParquetRecordBatchReaderBuilder};
+        use parquet::file::metadata::PageIndexPolicy;
+        let dir = tempfile::tempdir().unwrap();
+        let rows = 50_000;
+        let times: Vec<String> = (0..rows)
+            .map(|i| {
+                format!(
+                    "2024/08/{:02} {:02}:{:02}:00",
+                    1 + i / 1440 % 28,
+                    i / 60 % 24,
+                    i % 60
+                )
+            })
+            .collect();
+        let times: Vec<&str> = times.iter().map(String::as_str).collect();
+        let ids: Vec<String> = (0..rows)
+            .map(|i| format!("U{:08x}", i * 2_654_435_761u64 as usize))
+            .collect();
+        let ids: Vec<&str> = ids.iter().map(String::as_str).collect();
+        let vals: Vec<Option<f64>> = (0..rows).map(|i| Some(i as f64 * 0.731)).collect();
+        // Each page of the DUID column of the first row group: its size
+        // and its first row.
+        let pages = |layout: Lake| -> Vec<(i32, i64)> {
+            let mut w = ParquetHive::new(dir.path()).with_layout(layout);
+            let id = w.open(&key(8), schema(), &meta()).unwrap();
+            w.write(id, &batch(&times, &ids, &vals)).unwrap();
+            let f = w.close(id).unwrap();
+            w.commit().unwrap();
+            let b = ParquetRecordBatchReaderBuilder::try_new_with_options(
+                File::open(&f.path).unwrap(),
+                ArrowReaderOptions::new().with_page_index_policy(PageIndexPolicy::Required),
+            )
+            .unwrap();
+            let found = b
+                .metadata()
+                .page_index_for_row_group(0)
+                .offset_index(1)
+                .unwrap()
+                .page_locations()
+                .iter()
+                .map(|p| (p.compressed_page_size, p.first_row_index))
+                .collect();
+            std::fs::remove_file(&f.path).unwrap();
+            found
+        };
+        let big = pages(Lake::default());
+        let small = pages(Lake {
+            page_kb: 8,
+            ..Lake::default()
+        });
+        assert!(
+            small.len() > big.len(),
+            "{} pages at 8 KB, {} at 1 MB",
+            small.len(),
+            big.len()
+        );
+        // A page closes once it passes its size, checked each write batch:
+        // a few kilobytes over at most.
+        assert!(small.iter().all(|(s, _)| *s < 64 * 1024), "{small:?}");
+        // And once it passes its rows, checked each 1024 values.
+        let few = pages(Lake {
+            page_rows: 1000,
+            ..Lake::default()
+        });
+        let mut starts: Vec<i64> = few.iter().map(|(_, r)| *r).collect();
+        starts.push(rows as i64);
+        assert!(starts.windows(2).all(|w| w[1] - w[0] <= 1024), "{starts:?}");
+        assert!(few.len() > big.len());
+    }
+
+    #[test]
     fn a_closed_file_is_visible_only_once_committed() {
         let dir = tempfile::tempdir().unwrap();
         let mut w = ParquetHive::new(dir.path());

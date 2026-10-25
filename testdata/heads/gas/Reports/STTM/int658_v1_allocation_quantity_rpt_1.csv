@@ -1,0 +1,6 @@
+gas_date,hub_identifier,hub_name,facility_identifier,facility_name,allocation_qty_inc_mos,flow_direction,report_datetime
+14 Jun 2011,ADL,Adelaide,NETADL1,Adelaide - Network 1,100614.177000000,F,15 Jun 2011 11:10:10
+14 Jun 2011,ADL,Adelaide,MAP,Moomba to Adelaide pipeline,0,F,15 Jun 2011 11:10:10
+14 Jun 2011,ADL,Adelaide,MAP,Moomba to Adelaide pipeline,54032.000000000,T,15 Jun 2011 11:10:10
+14 Jun 2011,ADL,Adelaide,SEAGAS,SEA Gas pipeline to Adelaide,0,F,15 Jun 2011 11:10:10
+14 Jun 2011,ADL,Adelaide,SEAGAS,SEA Gas pipeline to Adelaide,46581.000000000,T,15 Jun 2011 11:10:10

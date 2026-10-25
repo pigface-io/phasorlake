@@ -1,0 +1,6 @@
+DevFacilityId,ProposedName,EffectiveDate,FacilityType,MinNameplate,MaxNameplate,Location,PlannedCommissionFrom,PlannedCommissionTo,DevelopmentStage,RelatedFacilityId,RelatedFacilityName,Comments,ReportingEntity
+620000,EGP PKET Lateral Connection,30 Mar 2026 00:00:00,PIPE,522.000,522.000,Port Kembla,2027-04,2027-07,COMMITTED,,,Lateral capacity,Jemena Eastern Gas Pipeline (1) Pty Ltd
+620000,EGP/PKET Lateral Connection,28 Mar 2025 00:00:00,PIPE,522.000,522.000,Port Kembla,2026-04,2026-07,COMMITTED, 520047, Eastern Gas Pipeline,Commissioning timing subject to arrival of FSRU at Port Kembla Energy Terminal,Jemena Eastern Gas Pipeline (1) Pty Ltd
+620000,EGP/PKET Lateral Connection,06 Mar 2025 00:00:00,PIPE,522.000,522.000,Port Kembla,2026-04,2026-07,COMMITTED,,,Commissioning timing subject to arrival of FSRU at Port Kembla Energy Terminal,Jemena Eastern Gas Pipeline (1) Pty Ltd
+620000,EGP/PKET Lateral Connection,26 Jul 2024 00:00:00,PIPE,522.000,522.000,Port Kembla,2025-04,2025-04,COMMITTED,,,Lateral Capacity,Jemena Eastern Gas Pipeline (1) Pty Ltd
+620000,EGP/PKET Lateral Connection,28 Mar 2024 00:00:00,PIPE,522.000,522.000,Port Kembla,2024-12,2024-12,COMMITTED,,,Lateral capacity,Jemena Eastern Gas Pipeline (1) Pty Ltd

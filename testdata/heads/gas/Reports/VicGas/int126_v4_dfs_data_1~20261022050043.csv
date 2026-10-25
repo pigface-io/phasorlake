@@ -1,0 +1,6 @@
+dfs_version,gas_date,last_update_datetime,previous_day_min,max,overnight_min,average_wind_speed,sunshine,effective_temperature,dfs_edd,total_demand_forecast,current_date
+105450,16 Oct 2026,15 Oct 2026 06:36:24,,,,,,19.2,0.0,331707,22 Oct 2026 05:00:43
+105451,15 Oct 2026,15 Oct 2026 08:36:18,,,,,,16.4,1.7,429004,22 Oct 2026 05:00:43
+105452,17 Oct 2026,15 Oct 2026 10:45:49,,,,,,20.9,0.0,277537,22 Oct 2026 05:00:43
+105453,15 Oct 2026,15 Oct 2026 12:54:33,,,,,,16.0,2.2,423307,22 Oct 2026 05:00:43
+105454,16 Oct 2026,15 Oct 2026 14:45:15,,,,,,19.3,0.0,298620,22 Oct 2026 05:00:43

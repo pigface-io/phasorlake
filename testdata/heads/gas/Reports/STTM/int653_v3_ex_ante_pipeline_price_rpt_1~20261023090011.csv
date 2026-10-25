@@ -1,0 +1,6 @@
+gas_date,hub_identifier,hub_name,schedule_identifier,facility_identifier,facility_name,capacity_qty,capacity_qty_quality_type,capacity_qty_datetime,ex_ante_capacity_price,ex_ante_flow_direction_constraint_price,schedule_capacity_price,approval_datetime,report_datetime
+24 Oct 2026,ADL,Adelaide,,MAP,Moomba to Adelaide pipeline,252000,V,23 Oct 2026 07:45:31,,,,,23 Oct 2026 09:00:11
+24 Oct 2026,ADL,Adelaide,,SEAGAS,SEA Gas pipeline to Adelaide,113603,V,23 Oct 2026 07:01:12,,,,,23 Oct 2026 09:00:11
+24 Oct 2026,BRI,Brisbane,,RBP,Roma to Brisbane Pipeline,156000,V,23 Oct 2026 06:42:42,,,,,23 Oct 2026 09:00:11
+24 Oct 2026,SYD,Sydney,,EGP,Eastern Gas Pipeline to Sydney,335000,V,23 Oct 2026 06:28:29,,,,,23 Oct 2026 09:00:11
+24 Oct 2026,SYD,Sydney,,KKLP,Kurri Kurri Pipeline Storage Facility,60000,V,23 Oct 2026 06:40:23,,,,,23 Oct 2026 09:00:11

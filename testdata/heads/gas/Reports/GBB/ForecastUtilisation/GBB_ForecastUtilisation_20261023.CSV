@@ -1,0 +1,6 @@
+State,FacilityId,FacilityName,FacilityType,ReceiptLocationId,ReceiptLocationName,DeliveryLocationId,DeliveryLocationName,Description,ForecastMethod,Units,Nameplate,"Saturday 24 Oct 2026","Sunday 25 Oct 2026","Monday 26 Oct 2026","Tuesday 27 Oct 2026","Wednesday 28 Oct 2026","Thursday 29 Oct 2026","Friday 30 Oct 2026"
+NSW,,,,,,,,Net Injections Withdrawals by State,,TJ/day,,-282.063,-176.026,-183.911,-188.912,-183.57,-171.798,-162.403
+NSW,523202,Bomaderry Gas Pipeline,PIPE,1290103,Bomaderry Receipt,1290104,Shoalhaven Starches Cogeneration Plant,Capacity Available,,TJ/day,42.000,41.096,41.096,41.096,41.096,41.096,41.096,41.096
+NSW,523202,Bomaderry Gas Pipeline,PIPE,1290103,Bomaderry Receipt,1290104,Shoalhaven Starches Cogeneration Plant,Capacity Factor,,%,,98%,98%,98%,98%,98%,98%,98%
+NSW,520090,ColongraGP,PIPE,1202075,Munmorah Compressor Station,1202076,Munmorah Delivery Station,Capacity Available,,TJ/day,43.000,43,43,43,43,43,43,43
+NSW,520090,ColongraGP,PIPE,1202075,Munmorah Compressor Station,1202076,Munmorah Delivery Station,Capacity Factor,,%,,100%,100%,100%,100%,100%,100%,100%

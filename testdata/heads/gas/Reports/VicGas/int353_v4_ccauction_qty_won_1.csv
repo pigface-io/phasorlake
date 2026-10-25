@@ -1,0 +1,6 @@
+auction_id,auction_date,zone_id,zone_name,zone_type,start_date,end_date,cc_period,clearing_price,quantities_won_gj,unallocated_qty,current_date
+1,21 Sep 2022,1,South West Entry,Entry,01 Jan 2023,31 Jan 2023,Jan-2023,0.7000,98239.000000000,0.000000000,21 Sep 2022 17:39:18
+1,21 Sep 2022,1,South West Entry,Entry,01 Feb 2023,28 Feb 2023,Feb-2023,0.5087,101906.000000000,0.000000000,21 Sep 2022 17:39:18
+1,21 Sep 2022,1,South West Entry,Entry,01 Mar 2023,31 Mar 2023,Mar-2023,0.5087,118061.000000000,0.000000000,21 Sep 2022 17:39:18
+1,21 Sep 2022,1,South West Entry,Entry,01 Apr 2023,30 Apr 2023,Apr-2023,0.4013,147614.000000000,0.000000000,21 Sep 2022 17:39:18
+1,21 Sep 2022,1,South West Entry,Entry,01 May 2023,31 May 2023,May-2023,1.5000,166832.000000000,0.000000000,21 Sep 2022 17:39:18

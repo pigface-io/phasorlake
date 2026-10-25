@@ -1,0 +1,6 @@
+auction_id,zone_id,zone_name,zone_type,capacity_period,auction_date,available_capacity_gj,current_date
+14,1,South West Entry,Entry,Jan-2027,25 Nov 2026,92544.000000000,02 Oct 2026 10:28:21
+14,1,South West Entry,Entry,Feb-2027,25 Nov 2026,93004.000000000,02 Oct 2026 10:28:21
+14,1,South West Entry,Entry,Mar-2027,25 Nov 2026,95396.000000000,02 Oct 2026 10:28:21
+14,1,South West Entry,Entry,Apr-2027,25 Nov 2026,99494.000000000,02 Oct 2026 10:28:21
+14,1,South West Entry,Entry,May-2027,25 Nov 2026,101574.000000000,02 Oct 2026 10:28:21

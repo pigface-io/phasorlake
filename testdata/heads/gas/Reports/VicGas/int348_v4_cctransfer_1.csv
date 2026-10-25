@@ -1,0 +1,4 @@
+transfer_id,zone_id,zone_name,start_date,end_date,transferred_qty_gj,current_date
+179,1,South West Entry,01 Jun 2026,30 Jun 2026,3000.000000000,19 Dec 2025 00:00:06
+179,1,South West Entry,01 Jul 2026,31 Jul 2026,3000.000000000,19 Dec 2025 00:00:06
+179,1,South West Entry,01 Aug 2026,31 Aug 2026,3000.000000000,19 Dec 2025 00:00:06

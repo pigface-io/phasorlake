@@ -1,0 +1,6 @@
+gas_date,hub_identifier,hub_name,facility_identifier,facility_name,total_deviation_qty,net_deviation_qty,deviation_charge,deviation_payment,report_datetime
+16 Sep 2026,ADL,Adelaide,MAP,Moomba to Adelaide pipeline,0.000000000,0.000000000,0.0000,0.0000,23 Oct 2026 16:00:07
+16 Sep 2026,ADL,Adelaide,NETADL1,Adelaide - Network 1,3210.851000000,989.999000000,11322.6807,17049.3599,23 Oct 2026 16:00:07
+16 Sep 2026,ADL,Adelaide,SEAGAS,SEA Gas pipeline to Adelaide,0.000000000,0.000000000,0.0000,0.0000,23 Oct 2026 16:00:07
+16 Sep 2026,BRI,Brisbane,NETBRI1,Brisbane - Network 1,3105.830078240,-982.000000000,23359.2918,10957.9013,23 Oct 2026 16:00:07
+16 Sep 2026,BRI,Brisbane,RBP,Roma to Brisbane Pipeline,0.000000000,0.000000000,0.0000,0.0000,23 Oct 2026 16:00:07

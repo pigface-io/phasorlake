@@ -1,0 +1,6 @@
+gas_date,direction_code_name,direction,commencement_datetime,termination_datetime,quantity,time_sort_order,mod_datetime,current_date
+21 Oct 2026,20000001PC,Injections,21 Oct 2026 23:00:00,22 Oct 2026 00:00:00,0.000,18,22 Oct 2026 00:24:10,22 Oct 2026 00:30:17
+21 Oct 2026,30000001PC,Injections,21 Oct 2026 23:00:00,22 Oct 2026 00:00:00,14217.100,18,22 Oct 2026 00:24:10,22 Oct 2026 00:30:17
+21 Oct 2026,30000101PC,Injections,21 Oct 2026 23:00:00,22 Oct 2026 00:00:00,7.378,18,22 Oct 2026 00:24:10,22 Oct 2026 00:30:17
+21 Oct 2026,30000154PC,Injections,21 Oct 2026 23:00:00,22 Oct 2026 00:00:00,0.000,18,22 Oct 2026 00:24:10,22 Oct 2026 00:30:17
+21 Oct 2026,30000167PC,Injections,21 Oct 2026 23:00:00,22 Oct 2026 00:00:00,1018.973,18,22 Oct 2026 00:24:10,22 Oct 2026 00:30:17

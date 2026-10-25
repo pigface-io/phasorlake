@@ -1,0 +1,6 @@
+gas_date,hub_identifier,hub_name,facility_identifier,facility_name,allocation_qty_inc_mos,flow_direction,report_datetime
+22 Oct 2026,ADL,Adelaide,NETADL1,Adelaide - Network 1,42454.757000000,F,23 Oct 2026 10:40:24
+22 Oct 2026,ADL,Adelaide,MAP,Moomba to Adelaide pipeline,36525.000000000,T,23 Oct 2026 10:40:24
+22 Oct 2026,ADL,Adelaide,MAP,Moomba to Adelaide pipeline,12525.000000000,F,23 Oct 2026 10:40:24
+22 Oct 2026,ADL,Adelaide,SEAGAS,SEA Gas pipeline to Adelaide,21000.000000000,T,23 Oct 2026 10:40:24
+22 Oct 2026,ADL,Adelaide,SEAGAS,SEA Gas pipeline to Adelaide,2546.000000000,F,23 Oct 2026 10:40:24

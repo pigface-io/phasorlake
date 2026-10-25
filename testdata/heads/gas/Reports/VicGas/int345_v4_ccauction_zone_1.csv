@@ -1,0 +1,6 @@
+zone_id,zone_name,zone_type,from_date,to_date,current_date
+1,South West Entry,Entry,01 May 2022,,22 Aug 2022 11:25:08
+2,South West Exit,Exit,01 May 2022,,22 Aug 2022 11:25:08
+3,Northern Entry,Entry,01 May 2022,,22 Aug 2022 11:25:08
+4,Northern Exit,Exit,01 May 2022,,22 Aug 2022 11:25:08
+5,Gippsland Entry,Entry,01 May 2022,,22 Aug 2022 11:25:08

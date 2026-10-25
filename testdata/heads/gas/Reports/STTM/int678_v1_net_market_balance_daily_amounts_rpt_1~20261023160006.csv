@@ -1,0 +1,4 @@
+period_start_date,period_end_date,hub_identifier,hub_name,net_market_balance,total_deviation_qty,total_withdrawals,total_variation_charges,report_datetime
+01 Oct 2026,22 Oct 2026,SYD,Sydney,-67700.4269,332244.420030000,5391323.824760000,44241.8689,23 Oct 2026 16:00:07
+01 Oct 2026,22 Oct 2026,ADL,Adelaide,22016.9965,84687.681000000,1075072.755000000,9042.1657,23 Oct 2026 16:00:07
+01 Oct 2026,22 Oct 2026,BRI,Brisbane,37650.6901,97919.694952889,1230757.000000003,24968.8574,23 Oct 2026 16:00:07

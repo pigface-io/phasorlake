@@ -1,0 +1,6 @@
+transmission_id,gas_date,schedule_interval,cumulative_price,cpt_exceeded_flag,schedule_type_id,transmission_doc_id,approval_datetime,current_date
+281649,22 Oct 2026,1,375.1271,N,OS,346635,22 Oct 2026 05:01:59,22 Oct 2026 05:03:04
+281645,21 Oct 2026,5,375.2616,N,OS,346631,21 Oct 2026 21:02:03,22 Oct 2026 05:03:04
+281643,21 Oct 2026,4,375.3562,N,OS,346629,21 Oct 2026 17:02:36,22 Oct 2026 05:03:04
+281639,21 Oct 2026,3,376.0862,N,OS,346625,21 Oct 2026 13:04:26,22 Oct 2026 05:03:04
+281635,21 Oct 2026,2,376.3052,N,OS,346621,21 Oct 2026 09:03:21,22 Oct 2026 05:03:04

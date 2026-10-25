@@ -1,0 +1,6 @@
+gas_date,hub_identifier,hub_name,facility_identifier,facility_name,upper_warning_limit,lower_warning_limit,last_update_datetime,report_datetime
+23 Oct 2026,ADL,Adelaide,MAP,Moomba to Adelaide pipeline,51627.412350152,999.654316514,23 Oct 2026 15:30:01,23 Oct 2026 15:30:04
+23 Oct 2026,ADL,Adelaide,SEAGAS,SEA Gas pipeline to Adelaide,39491.928055854,4251.005277480,23 Oct 2026 15:30:01,23 Oct 2026 15:30:04
+23 Oct 2026,BRI,Brisbane,RBP,Roma to Brisbane Pipeline,99112.031705740,10574.834960926,23 Oct 2026 15:30:01,23 Oct 2026 15:30:04
+23 Oct 2026,SYD,Sydney,EGP,Eastern Gas Pipeline to Sydney,206282.043523632,109099.959666368,23 Oct 2026 15:30:01,23 Oct 2026 15:30:04
+23 Oct 2026,SYD,Sydney,KKLP,Kurri Kurri Pipeline Storage Facility,30870.511714623,0.000000000,23 Oct 2026 15:30:01,23 Oct 2026 15:30:04

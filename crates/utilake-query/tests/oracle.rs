@@ -53,13 +53,20 @@ fn cell(b: &RecordBatch, col: &str, i: usize) -> String {
             (c.as_primitive::<Float64Type>().value(i) as i64).to_string()
         }
         arrow_schema::DataType::Int64 => c.as_primitive::<Int64Type>().value(i).to_string(),
+        arrow_schema::DataType::Dictionary(_, _) => {
+            let text = arrow_cast::cast(c, &arrow_schema::DataType::Utf8).unwrap();
+            text.as_string::<i32>().value(i).to_owned()
+        }
         _ => c.as_string::<i32>().value(i).to_owned(),
     }
 }
 
-/// Both sides of one read as sorted tuples of `cols`; `times` are the
-/// columns DuckDB must give as microseconds.
+/// Both sides of one read as sorted tuples of `cols` and each row's
+/// source; `times` are the columns DuckDB must give as microseconds.
 fn compare(fx: &Fixture, q: Query, cols: &[&str], times: &[&str]) {
+    // Every row's source is compared too: the same copy must win.
+    let cols: Vec<&str> = cols.iter().copied().chain(["_nl_source"]).collect();
+    let cols = cols.as_slice();
     let lake = fx.lake();
     let b = bind(q, &lake).unwrap();
     let frames = read(&b, &lake).unwrap();

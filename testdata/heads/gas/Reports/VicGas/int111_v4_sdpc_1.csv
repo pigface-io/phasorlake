@@ -1,0 +1,6 @@
+gas_date,ti,mirn,hourly_maximum_quantity,hourly_minimum_quantity,ramp_up_constraint,ramp_down_constraint,schedule_response_time,daily_minimum_quantity,daily_maximum_quantity,expiration_time,sdpc_id,current_date
+03 May 2015,1,20000001PC,,,,,00:00:00,0,,05:00:00,5047,03 May 2015 21:07:18
+03 May 2015,2,20000001PC,,,,,00:00:00,0,,05:00:00,5047,03 May 2015 21:07:18
+03 May 2015,3,20000001PC,,,,,00:00:00,0,,05:00:00,5047,03 May 2015 21:07:18
+03 May 2015,4,20000001PC,,,,,00:00:00,0,,05:00:00,5047,03 May 2015 21:07:18
+03 May 2015,5,20000001PC,,,,,00:00:00,0,,05:00:00,5047,03 May 2015 21:07:18

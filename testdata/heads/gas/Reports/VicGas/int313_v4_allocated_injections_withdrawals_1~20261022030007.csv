@@ -1,0 +1,6 @@
+gas_date,gas_hour,site_company,phy_mirn,inject_withdraw,energy_flow_gj
+18 Oct 2026,06:00:00,Bass Gas,30000170PC,I,17595.971000000
+18 Oct 2026,06:00:00,Culcairn Injection,20000001PC,I,0.999999996
+18 Oct 2026,06:00:00,Culcairn Withdrawal,20000002PC,W,78814.856999996
+18 Oct 2026,06:00:00,Iona Injection,30000154PC,I,0.000000000
+18 Oct 2026,06:00:00,Iona Withdrawal,30000156PC,W,99161.894287114

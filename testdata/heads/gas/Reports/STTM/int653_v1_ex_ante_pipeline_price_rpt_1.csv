@@ -1,0 +1,6 @@
+gas_date,hub_identifier,hub_name,schedule_identifier,facility_identifier,facility_name,capacity_qty,ex_ante_capacity_price,ex_ante_flow_direction_constraint_price,schedule_capacity_price,approval_datetime,report_datetime
+16 Jun 2011,ADL,Adelaide,3770,MAP,Moomba to Adelaide pipeline,163000,0,0,,15 Jun 2011 12:00:51,15 Jun 2011 12:01:11
+16 Jun 2011,ADL,Adelaide,3770,SEAGAS,SEA Gas pipeline to Adelaide,135624,0,0,,15 Jun 2011 12:00:51,15 Jun 2011 12:01:11
+16 Jun 2011,SYD,Sydney,3769,EGP,Eastern Gas Pipeline to Sydney,185000,0,0,,15 Jun 2011 12:00:52,15 Jun 2011 12:01:11
+16 Jun 2011,SYD,Sydney,3769,MSP,Moomba to Sydney pipeline,281889,0,0,,15 Jun 2011 12:00:52,15 Jun 2011 12:01:11
+16 Jun 2011,SYD,Sydney,3769,ROS,Rosalind Park Production Facility (Camden),17100,0,0,,15 Jun 2011 12:00:52,15 Jun 2011 12:01:11

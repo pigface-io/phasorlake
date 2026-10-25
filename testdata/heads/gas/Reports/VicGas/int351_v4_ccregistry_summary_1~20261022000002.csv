@@ -1,0 +1,6 @@
+zone_id,zone_name,zone_type,start_date,end_date,total_holding_gj,source,current_date
+1,South West Entry,Entry,01 Oct 2026,31 Oct 2026,503013.000000000,AUCTION,22 Oct 2026 00:00:02
+1,South West Entry,Entry,01 Nov 2026,30 Nov 2026,497893.000000000,AUCTION,22 Oct 2026 00:00:02
+1,South West Entry,Entry,01 Dec 2026,31 Dec 2026,455400.000000000,AUCTION,22 Oct 2026 00:00:02
+1,South West Entry,Entry,01 Jan 2027,31 Jan 2027,370176.000000000,AUCTION,22 Oct 2026 00:00:02
+1,South West Entry,Entry,01 Feb 2027,28 Feb 2027,372016.000000000,AUCTION,22 Oct 2026 00:00:02

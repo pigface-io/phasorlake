@@ -846,3 +846,107 @@ fn a_version_ends_at_its_end_column_or_the_next_version() {
     // In force on 2023-07-01: B has ended, though no later version came.
     assert_eq!(ends(at("2023-07-01T00:00")).len(), 2);
 }
+
+/// The rows of a lake file name their own source and publish time, so a
+/// file made of several (as another tool compacts them, its footer gone)
+/// still says, row by row, where each came from and when it went public;
+/// and several entries in one file rank as their own sources.
+#[test]
+fn provenance_rides_with_the_rows_through_a_compaction() {
+    let read_all = |path: &str| -> Vec<RecordBatch> {
+        let f = std::fs::File::open(path).unwrap();
+        parquet::arrow::arrow_reader::ParquetRecordBatchReaderBuilder::try_new(f)
+            .unwrap()
+            .build()
+            .unwrap()
+            .map(Result::unwrap)
+            .collect()
+    };
+    let pairs = |b: &RecordBatch| -> Vec<(String, Option<i64>)> {
+        let s = arrow_cast::cast(
+            b.column_by_name("_nl_source").unwrap(),
+            &arrow_schema::DataType::Utf8,
+        )
+        .unwrap();
+        let s = s.as_string::<i32>();
+        let p = b
+            .column_by_name("_nl_published")
+            .unwrap()
+            .as_primitive::<TimestampMicrosecondType>();
+        (0..b.num_rows())
+            .map(|i| (s.value(i).to_owned(), p.is_valid(i).then(|| p.value(i))))
+            .collect()
+    };
+    let mut fx = Fixture::new();
+    let schema = fx.schema("DISPATCHPRICE");
+    let row = |rrp: i64| {
+        common::batch(
+            &schema,
+            1,
+            &[
+                ("SETTLEMENTDATE", vec![common::V::T(ts("2024-01-01T00:05"))]),
+                ("RUNNO", vec![common::V::I(1)]),
+                ("REGIONID", vec![common::V::S("NSW1")]),
+                ("DISPATCHINTERVAL", vec![common::V::I(1)]),
+                ("INTERVENTION", vec![common::V::I(0)]),
+                ("RRP", vec![common::V::I(rrp)]),
+            ],
+        )
+    };
+    let source = |url: &'static str, entry: &'static str, lm, rrp| common::Source {
+        table: "DISPATCHPRICE",
+        partition: utilake_writer::Partition::Month {
+            year: 2024,
+            month: 1,
+        },
+        schema_id: None,
+        url,
+        entry,
+        last_modified_at: lm,
+        source_period: Some("2024-01"),
+        rows: row(rrp),
+    };
+    // Entries of one source file together in one lake file, equal in
+    // every rank but the entry: each is its own source, and the later
+    // entry's copy wins.
+    fx.write_together(&[
+        source(REPORT, "B.CSV", None, 2),
+        source(REPORT, "A.CSV", None, 1),
+    ]);
+    let window = range("2024-01-01T00:00", "2024-01-01T00:05");
+    let (b, _) = rows(&fx, Query::new("DISPATCHPRICE", window, LATEST));
+    assert_eq!(ints(&b, "RRP"), [Some(2)]);
+    assert!(strings(&b, "_nl_source")[0].ends_with("!B.CSV"));
+    let (b, _) = rows(&fx, Query::new("DISPATCHPRICE", window, Resolution::Raw));
+    let mut sources = strings(&b, "_nl_source");
+    sources.sort();
+    assert!(
+        sources[0].ends_with("!A.CSV") && sources[1].ends_with("!B.CSV"),
+        "{sources:?}"
+    );
+    // A second lake file of the table, from a source published later.
+    fx.write(&source(DVD, "D.CSV", Some("2024-02-05T00:00:00Z"), 3));
+    let paths: Vec<String> = fx.outputs.iter().map(|o| o.path.clone()).collect();
+    let before: Vec<RecordBatch> = paths.iter().flat_map(|p| read_all(p)).collect();
+    let expected: Vec<(String, Option<i64>)> = before.iter().flat_map(pairs).collect();
+    assert_eq!(expected.len(), 3);
+    assert_eq!(expected[2].1, Some(1_707_091_200_000_000));
+    // Compacted by plain Arrow into one file, with no footer of utilake's:
+    // every row keeps its source and publish time.
+    let out = fx.dir.path().join("compacted.parquet");
+    let mut w = parquet::arrow::ArrowWriter::try_new(
+        std::fs::File::create(&out).unwrap(),
+        before[0].schema(),
+        None,
+    )
+    .unwrap();
+    for b in &before {
+        w.write(b).unwrap();
+    }
+    w.close().unwrap();
+    let after: Vec<(String, Option<i64>)> = read_all(out.to_str().unwrap())
+        .iter()
+        .flat_map(pairs)
+        .collect();
+    assert_eq!(after, expected);
+}

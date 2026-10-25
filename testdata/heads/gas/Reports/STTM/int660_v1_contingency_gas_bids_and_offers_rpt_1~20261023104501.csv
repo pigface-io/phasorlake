@@ -1,0 +1,6 @@
+gas_date,hub_identifier,hub_name,facility_identifier,facility_name,flow_direction,contingency_gas_bid_offer_type,company_identifier,company_name,contingency_gas_bid_offer_identifier,contingency_gas_bid_offer_step_number,contingency_gas_bid_offer_step_price,contingency_gas_bid_offer_step_quantity,report_datetime
+22 Oct 2026,ADL,Adelaide,MAP,Moomba to Adelaide pipeline,F,B,5,EnergyAustralia Pty Ltd,377066,1,0.0100,3000,23 Oct 2026 10:45:01
+22 Oct 2026,ADL,Adelaide,MAP,Moomba to Adelaide pipeline,F,B,84,Origin Energy Retail Ltd,398996,2,0.0351,10000,23 Oct 2026 10:45:01
+22 Oct 2026,ADL,Adelaide,SEAGAS,SEA Gas pipeline to Adelaide,F,B,84,Origin Energy Retail Ltd,399010,2,0.0510,5000,23 Oct 2026 10:45:01
+22 Oct 2026,ADL,Adelaide,SEAGAS,SEA Gas pipeline to Adelaide,F,B,84,Origin Energy Retail Ltd,399010,1,400.0000,0,23 Oct 2026 10:45:01
+22 Oct 2026,ADL,Adelaide,MAP,Moomba to Adelaide pipeline,F,B,84,Origin Energy Retail Ltd,398996,1,400.0000,0,23 Oct 2026 10:45:01

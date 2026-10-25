@@ -133,3 +133,8 @@ secrets-push:
 # gitleaks over the whole history
 secrets:
     gitleaks git --no-banner --redact
+
+# testdata/heads: the first rows of one real file per table, read from the mirror at HOME
+table-heads home:
+    rm -rf testdata/heads
+    python3 -I scripts/table-heads.py schemas {{ home }}/archive/www.nemweb.com.au testdata/heads

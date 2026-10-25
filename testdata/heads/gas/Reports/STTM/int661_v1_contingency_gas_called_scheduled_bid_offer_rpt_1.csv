@@ -1,0 +1,6 @@
+gas_date,hub_identifier,hub_name,facility_identifier,facility_name,contingency_gas_called_identifier,flow_direction,contingency_gas_bid_offer_type,company_identifier,company_name,contingency_gas_bid_offer_identifier,contingency_gas_bid_offer_step_number,contingency_gas_bid_offer_step_price,contingency_gas_bid_offer_step_quantity,contingency_gas_bid_offer_confirmed_step_quantity,contingency_gas_bid_offer_called_step_quantity,approval_datetime,report_datetime
+27 May 2010,ADL,Adelaide,MAP,Moomba to Adelaide pipeline,13,T,O,142,AGL Wholesale Gas (SA) Pty Ltd,707,1,0,4000,4000,4000,28 May 2010 12:00:30,03 Jun 2010 11:00:13
+27 May 2010,ADL,Adelaide,MAP,Moomba to Adelaide pipeline,13,T,O,142,AGL Wholesale Gas (SA) Pty Ltd,707,2,3.0690,1000,1000,1000,28 May 2010 12:00:30,03 Jun 2010 11:00:13
+27 May 2010,ADL,Adelaide,MAP,Moomba to Adelaide pipeline,13,T,O,142,AGL Wholesale Gas (SA) Pty Ltd,707,3,4.1500,5000,5000,5000,28 May 2010 12:00:30,03 Jun 2010 11:00:13
+27 May 2010,ADL,Adelaide,MAP,Moomba to Adelaide pipeline,13,T,O,142,AGL Wholesale Gas (SA) Pty Ltd,707,4,5.8700,5000,5000,5000,28 May 2010 12:00:30,03 Jun 2010 11:00:13
+27 May 2010,ADL,Adelaide,MAP,Moomba to Adelaide pipeline,13,T,O,142,AGL Wholesale Gas (SA) Pty Ltd,707,5,70.0000,5000,5000,5000,28 May 2010 12:00:30,03 Jun 2010 11:00:13
