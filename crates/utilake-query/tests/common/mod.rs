@@ -209,6 +209,7 @@ impl Fixture {
         let w = hive.open(&key, schema, &meta).unwrap();
         hive.write(w, &s.rows).unwrap();
         let written = hive.close(w).unwrap();
+        hive.commit().unwrap();
         self.outputs.push(LiveOutput {
             table: table.name.clone(),
             path: written.path,

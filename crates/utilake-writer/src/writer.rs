@@ -137,8 +137,11 @@ pub trait LakeWriter: Send {
     ) -> Result<WriterId, StoreError>;
     /// Appends a batch in the writer's schema.
     fn write(&mut self, id: WriterId, batch: &RecordBatch) -> Result<(), StoreError>;
-    /// Finishes the file and makes it visible.
+    /// Finishes the file; it is visible once committed.
     fn close(&mut self, id: WriterId) -> Result<WrittenFile, StoreError>;
+    /// Makes every file closed since the last commit durable and visible.
+    /// Dropped uncommitted, they are removed.
+    fn commit(&mut self) -> Result<(), StoreError>;
     /// Discards the file.
     fn abort(&mut self, id: WriterId);
 }

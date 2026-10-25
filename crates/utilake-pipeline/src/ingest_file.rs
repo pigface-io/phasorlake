@@ -180,7 +180,12 @@ fn fitted(batch: &RecordBatch, schema: &SchemaRef) -> Result<RecordBatch, ArrowE
 
 /// Routes batches to Parquet writers and quarantines bad rows.
 struct LakeSink<'a> {
-    writer: ParquetHive,
+    /// The file's writer, shared by its entries: their files are committed
+    /// together once the file is read.
+    writer: &'a mut ParquetHive,
+    /// How many files the writer held closed when this entry began, so a
+    /// failed entry discards only its own.
+    mark: usize,
     /// Open writers by table, version, shape and partition. The shape is
     /// part of the key because two column lists of one version may differ
     /// in the columns they are written with.
@@ -287,6 +292,7 @@ impl LakeSink<'_> {
         for w in ids {
             self.writer.abort(w);
         }
+        self.writer.discard(self.mark);
         for r in &mut self.results {
             for o in r.outputs.drain(..) {
                 let _ = std::fs::remove_file(&o.path);
@@ -551,6 +557,7 @@ fn ingest_entry(
     entry: &str,
     reader: &mut dyn std::io::Read,
     scan_buf: &mut Vec<u8>,
+    hive: &mut ParquetHive,
 ) -> EntryReport {
     zone!(ENTRY);
     let ctx = utilake_core::diag::Context {
@@ -583,7 +590,8 @@ fn ingest_entry(
     };
     let period = input.local.remote.period.map(utilake_core::Period::month);
     let mut sink = LakeSink {
-        writer: ParquetHive::new(&input.lake_root),
+        mark: hive.closed(),
+        writer: hive,
         writers: HashMap::new(),
         parts: HashMap::new(),
         next_schema: HashMap::new(),
@@ -686,8 +694,9 @@ fn ingest_entry(
 /// decoder reads.
 pub fn ingest_file(input: IngestInput) -> FileReport {
     zone!(FILE);
-    // One read buffer for every entry of the file.
+    // One read buffer and one writer for every entry of the file.
     let mut scan_buf = Vec::new();
+    let mut hive = ParquetHive::new(&input.lake_root);
     let path = input.local.path.clone();
     // The file's name is its URL's: a version the mirror kept beside the
     // first (`{name}@{stamp}`) is read as the file it is a version of.
@@ -726,7 +735,14 @@ pub fn ingest_file(input: IngestInput) -> FileReport {
         );
     } else if kit.decoder_for(&name).is_some() {
         match std::fs::File::open(&path) {
-            Ok(mut f) => entries.push(ingest_entry(&input, kit, &name, &mut f, &mut scan_buf)),
+            Ok(mut f) => entries.push(ingest_entry(
+                &input,
+                kit,
+                &name,
+                &mut f,
+                &mut scan_buf,
+                &mut hive,
+            )),
             Err(e) => {
                 file_error = Some(
                     Diagnostic::error(
@@ -750,7 +766,7 @@ pub fn ingest_file(input: IngestInput) -> FileReport {
             &input.tmp_dir,
             accepts,
             &mut |e| {
-                let rep = ingest_entry(&input, kit, &e.name, e.reader, &mut scan_buf);
+                let rep = ingest_entry(&input, kit, &e.name, e.reader, &mut scan_buf, &mut hive);
                 let stop = fail_fast && rep.error.is_some();
                 entries.push(rep);
                 if stop { Err(()) } else { Ok(()) }
@@ -782,6 +798,20 @@ pub fn ingest_file(input: IngestInput) -> FileReport {
             Err(WalkError::Archive(e)) => file_error = Some(place(&e)),
             Err(WalkError::Callback(())) => {}
         }
+    }
+    // Every entry's files at once: one flush of the disk for the file.
+    if let Err(e) = hive.commit() {
+        for o in entries
+            .iter()
+            .flat_map(|e| &e.results)
+            .flat_map(|r| &r.outputs)
+        {
+            let _ = std::fs::remove_file(&o.path);
+        }
+        let mut d = e.diagnostic();
+        d.file = Some(path.display().to_string());
+        d.request = Some(input.request.clone());
+        file_error.get_or_insert(d);
     }
     FileReport {
         rules_changed: input.rules_changed,

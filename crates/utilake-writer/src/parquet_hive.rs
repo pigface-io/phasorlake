@@ -3,8 +3,11 @@
 //! Each source file (zip entry) writes one Parquet file per partition it
 //! touches, named `{source_stem}-v{version}-{sha8}.parquet`, so a re-ingest
 //! of the same source replaces exactly its own files. A file is written to a
-//! `.tmp-{pid}-{n}` sibling, fsynced and renamed, so a reader never sees a
-//! partial file.
+//! `.tmp-{pid}-{n}` sibling and handed to the disk when closed; a commit
+//! flushes the disk once for every file closed since the last, then renames
+//! each into place, so a reader never sees a partial file. One flush of the
+//! disk costs milliseconds (`F_FULLFSYNC` on macOS), so it is paid per
+//! commit, not per file.
 
 use std::collections::HashMap;
 use std::fs::File;
@@ -39,11 +42,19 @@ struct Open {
     time_column: Option<usize>,
 }
 
+/// A file closed, on the disk under its temporary name until a commit.
+/// Only its names are kept: a run closes more files than it may hold open.
+struct Closed {
+    tmp: PathBuf,
+    final_path: PathBuf,
+}
+
 /// The production lake writer.
 pub struct ParquetHive {
     lake_root: PathBuf,
     zstd_level: i32,
     open: HashMap<u32, Open>,
+    closed: Vec<Closed>,
     next: u32,
     version: &'static str,
 }
@@ -55,6 +66,7 @@ impl ParquetHive {
             lake_root: lake_root.into(),
             zstd_level: 3,
             open: HashMap::new(),
+            closed: Vec::new(),
             next: 1,
             version: env!("CARGO_PKG_VERSION"),
         }
@@ -179,6 +191,21 @@ impl ParquetHive {
             }
         }
         b.build()
+    }
+}
+
+impl ParquetHive {
+    /// How many files are closed and not yet committed: a mark to
+    /// [`discard`](Self::discard) back to.
+    pub fn closed(&self) -> usize {
+        self.closed.len()
+    }
+
+    /// Removes the files closed after `mark` and not yet committed.
+    pub fn discard(&mut self, mark: usize) {
+        for c in self.closed.drain(mark.min(self.closed.len())..) {
+            let _ = std::fs::remove_file(&c.tmp);
+        }
     }
 }
 
@@ -322,19 +349,18 @@ impl LakeWriter for ParquetHive {
             path: tmp.display().to_string(),
             message: e.to_string(),
         })?;
-        file.sync_all().map_err(|source| StoreError::Io {
+        // To the disk. Where `fsync` stops at the disk's cache (macOS), the
+        // commit flushes that once for every file.
+        rustix::fs::fsync(&file).map_err(|e| StoreError::Io {
             path: tmp.display().to_string(),
-            source,
+            source: e.into(),
         })?;
         let bytes = file.metadata().map_or(0, |m| m.len());
         drop(file);
-        std::fs::rename(&tmp, &final_path).map_err(|source| StoreError::Rename {
-            from: tmp.display().to_string(),
-            to: final_path.display().to_string(),
-            source,
-        })?;
+        let path = final_path.display().to_string();
+        self.closed.push(Closed { tmp, final_path });
         Ok(WrittenFile {
-            path: final_path.display().to_string(),
+            path,
             partition,
             rows,
             bytes,
@@ -342,6 +368,36 @@ impl LakeWriter for ParquetHive {
             max_time: max,
             sorted,
         })
+    }
+
+    fn commit(&mut self) -> Result<(), StoreError> {
+        zone!(COMMIT);
+        let Some(last) = self.closed.last() else {
+            return Ok(());
+        };
+        // One flush of the disk's cache makes every file before it durable.
+        File::open(&last.tmp)
+            .and_then(|f| f.sync_all())
+            .map_err(|source| StoreError::Io {
+                path: last.tmp.display().to_string(),
+                source,
+            })?;
+        let mut closed = std::mem::take(&mut self.closed).into_iter();
+        while let Some(c) = closed.next() {
+            if let Err(source) = std::fs::rename(&c.tmp, &c.final_path) {
+                let err = StoreError::Rename {
+                    from: c.tmp.display().to_string(),
+                    to: c.final_path.display().to_string(),
+                    source,
+                };
+                // Not put in place: neither this file nor those after it.
+                for c in std::iter::once(c).chain(closed) {
+                    let _ = std::fs::remove_file(&c.tmp);
+                }
+                return Err(err);
+            }
+        }
+        Ok(())
     }
 
     fn abort(&mut self, id: WriterId) {
@@ -354,11 +410,13 @@ impl LakeWriter for ParquetHive {
 
 impl Drop for ParquetHive {
     fn drop(&mut self) {
-        // Anything still open was not closed on purpose: remove its temp file.
+        // Anything still open was not closed on purpose, and anything
+        // closed but not committed was not kept: remove its temp file.
         let ids: Vec<u32> = self.open.keys().copied().collect();
         for id in ids {
             self.abort(WriterId(id));
         }
+        self.discard(0);
     }
 }
 
@@ -496,6 +554,7 @@ mod tests {
         .collect();
         assert_eq!(dir_listing.len(), 1, "only the temp file while open");
         let f = w.close(id).unwrap();
+        w.commit().unwrap();
         assert_eq!(f.rows, 3);
         assert!(f.bytes > 0);
         assert_eq!(
@@ -588,6 +647,61 @@ mod tests {
     }
 
     #[test]
+    fn a_closed_file_is_visible_only_once_committed() {
+        let dir = tempfile::tempdir().unwrap();
+        let mut w = ParquetHive::new(dir.path());
+        w.commit().unwrap();
+        let id = w.open(&key(3), schema(), &meta()).unwrap();
+        w.write(id, &batch(&["2024/03/01 00:00:00"], &["A"], &[None]))
+            .unwrap();
+        let f = w.close(id).unwrap();
+        assert!(!Path::new(&f.path).exists());
+        w.commit().unwrap();
+        assert!(Path::new(&f.path).exists());
+        // Closed and dropped without a commit: nothing is left, under
+        // either name.
+        let id = w.open(&key(4), schema(), &meta()).unwrap();
+        w.write(id, &batch(&["2024/04/01 00:00:00"], &["A"], &[None]))
+            .unwrap();
+        let g = w.close(id).unwrap();
+        let folder = Path::new(&g.path).parent().unwrap().to_path_buf();
+        drop(w);
+        assert!(std::fs::read_dir(&folder).unwrap().next().is_none());
+        // Discarded back to a mark: the files before it are kept.
+        let mut w = ParquetHive::new(dir.path());
+        let id = w.open(&key(5), schema(), &meta()).unwrap();
+        w.write(id, &batch(&["2024/05/01 00:00:00"], &["A"], &[None]))
+            .unwrap();
+        let kept = w.close(id).unwrap();
+        let mark = w.closed();
+        let id = w.open(&key(6), schema(), &meta()).unwrap();
+        w.write(id, &batch(&["2024/06/01 00:00:00"], &["A"], &[None]))
+            .unwrap();
+        let gone = w.close(id).unwrap();
+        w.discard(mark);
+        w.commit().unwrap();
+        assert!(Path::new(&kept.path).exists());
+        let gone = Path::new(&gone.path).parent().unwrap();
+        assert!(std::fs::read_dir(gone).unwrap().next().is_none());
+        // A file whose place is taken by a folder cannot be put there; one
+        // whose temporary file went cannot be flushed.
+        let mut w = ParquetHive::new(dir.path());
+        let id = w.open(&key(4), schema(), &meta()).unwrap();
+        w.write(id, &batch(&["2024/04/01 00:00:00"], &["A"], &[None]))
+            .unwrap();
+        let taken = w.close(id).unwrap();
+        std::fs::create_dir_all(Path::new(&taken.path).join("x")).unwrap();
+        assert!(matches!(w.commit(), Err(StoreError::Rename { .. })));
+        let mut w = ParquetHive::new(dir.path());
+        let id = w.open(&key(4), schema(), &meta()).unwrap();
+        w.write(id, &batch(&["2024/04/01 00:00:00"], &["A"], &[None]))
+            .unwrap();
+        w.close(id).unwrap();
+        std::fs::remove_dir_all(&folder).unwrap();
+        assert!(matches!(w.commit(), Err(StoreError::Io { .. })));
+    }
+
+    #[test]
     fn unsorted_batches_and_errors_and_abort() {
         let dir = tempfile::tempdir().unwrap();
         let mut w = ParquetHive::new(dir.path());
@@ -597,6 +711,7 @@ mod tests {
         w.write(id, &batch(&["2024/02/01 00:00:00"], &["B"], &[None]))
             .unwrap();
         let f = w.close(id).unwrap();
+        w.commit().unwrap();
         assert!(!f.sorted, "the second batch went backwards");
         assert_eq!(
             f.min_time,
@@ -660,6 +775,7 @@ mod tests {
         w.write(id, &batch(&["2024/01/01 00:00:00"], &["A"], &[None]))
             .unwrap();
         let f = w.close(id).unwrap();
+        w.commit().unwrap();
         assert!(f.path.contains("snapshot=202401/"));
         // With no source hash the shape's fingerprint stands in for it too.
         assert!(

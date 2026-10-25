@@ -379,6 +379,50 @@ async fn local_zip_ingests_idempotently_and_records_manifest() {
     );
 }
 
+#[tokio::test]
+async fn a_file_whose_parquet_cannot_be_put_in_place_fails_and_leaves_nothing() {
+    let scada = |e: &Env| {
+        let zip_path = e
+            .home
+            .root()
+            .join("PUBLIC_DVD_DISPATCH_UNIT_SCADA_202401010000.zip");
+        make_zip(
+            &zip_path,
+            &[(
+                "PUBLIC_DVD_DISPATCH_UNIT_SCADA_202401010000.CSV",
+                &std::fs::read(fixtures().join("DISPATCH_UNIT_SCADA_v1_head.csv")).unwrap(),
+            )],
+        );
+        Plan {
+            request: "ingest scada.zip".into(),
+            input: Input::Local(vec![zip_path]),
+            options: RunOptions::default(),
+        }
+    };
+    // Where the file goes, learnt from a lake of its own.
+    let first = env();
+    let (rep, _) = run_plan(&first, scada(&first)).await;
+    assert_eq!(rep.exit_code, 0);
+    let written = walk(&first.home.lake()).remove(0);
+    let place = Path::new(&written)
+        .strip_prefix(first.home.lake())
+        .unwrap()
+        .to_path_buf();
+    // A folder there: the commit cannot rename the file into place.
+    let e = env();
+    std::fs::create_dir_all(e.home.lake().join(&place).join("x")).unwrap();
+    let (rep, _) = run_plan(&e, scada(&e)).await;
+    assert_ne!(rep.exit_code, 0);
+    assert_eq!(rep.summary.failed, 1);
+    assert!(
+        rep.report.by_code.contains_key("store.rename"),
+        "{:?}",
+        rep.report.by_code.keys()
+    );
+    let left: Vec<String> = walk(&e.home.lake());
+    assert!(left.is_empty(), "{left:?}");
+}
+
 fn footer(path: &str, key: &str) -> String {
     let f = std::fs::File::open(path).unwrap();
     let b = parquet::arrow::arrow_reader::ParquetRecordBatchReaderBuilder::try_new(f).unwrap();

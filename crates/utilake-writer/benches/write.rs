@@ -75,6 +75,7 @@ fn bench(c: &mut Criterion) {
             let id = w.open(&key, b.schema(), &meta).unwrap();
             w.write(id, black_box(&b)).unwrap();
             let f = w.close(id).unwrap();
+            w.commit().unwrap();
             let _ = std::fs::remove_file(&f.path);
             black_box(f.rows);
         });
