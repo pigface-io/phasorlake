@@ -12,6 +12,7 @@ publish.workspace = true
 workspace = true
 
 [dependencies]
+zonetrace = { workspace = true, optional = true }
 utilake-core.workspace = true
 utilake-mms-decode.workspace = true
 utilake-plain-decode.workspace = true
@@ -38,3 +39,7 @@ harness = false
 [[bench]]
 name = "plain"
 harness = false
+
+[features]
+# Times the work in zones of zonetrace.
+zones = ["dep:zonetrace"]

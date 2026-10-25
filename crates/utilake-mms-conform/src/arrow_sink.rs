@@ -254,6 +254,7 @@ impl<'r, B: BatchSink> ArrowSink<'r, B> {
     }
 
     fn flush(&mut self) -> Result<(), SinkError> {
+        zone!(FLUSH);
         let Some(block) = self.block.as_mut() else {
             return Ok(());
         };
@@ -386,6 +387,7 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
 
     fn header(&mut self, irow: &IRow<'_>, pos: Pos) -> Result<(), SinkError> {
         self.flush()?;
+        zone!(BLOCK);
         let resolved = self
             .registry
             .resolve_in(irow, self.opts, self.period)
@@ -470,6 +472,7 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
 
     #[inline]
     fn row(&mut self, row: &Row<'_>, pos: Pos) -> Result<(), RowFailure> {
+        zone!(ROW);
         let block = self
             .block
             .as_mut()

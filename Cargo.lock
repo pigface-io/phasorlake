@@ -3013,6 +3013,7 @@ dependencies = [
  "utilake-pipeline",
  "utilake-writer",
  "zip",
+ "zonetrace",
 ]
 
 [[package]]
@@ -3190,6 +3191,7 @@ dependencies = [
  "utilake-mms-decode",
  "utilake-mms-registry",
  "utilake-plain-decode",
+ "zonetrace",
 ]
 
 [[package]]
@@ -3270,6 +3272,7 @@ dependencies = [
  "utilake-wem",
  "utilake-writer",
  "zip",
+ "zonetrace",
 ]
 
 [[package]]
@@ -3365,6 +3368,7 @@ dependencies = [
  "utilake-iceberg",
  "utilake-iceberg-store",
  "utilake-kit",
+ "zonetrace",
 ]
 
 [[package]]
@@ -3879,6 +3883,11 @@ name = "zmij"
 version = "1.0.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "29666d0abbfad1e3dc4dcf6144730dd3a3ab225bbbdac83319345b1b44ccfc1b"
+
+[[package]]
+name = "zonetrace"
+version = "0.1.0"
+source = "git+https://github.com/pigface-io/zonetrace?rev=3a6fde4a1c1001f4d32892f8effa923eb19cf352#3a6fde4a1c1001f4d32892f8effa923eb19cf352"
 
 [[package]]
 name = "zstd"

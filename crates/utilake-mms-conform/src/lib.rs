@@ -10,6 +10,19 @@
 //! decoder and catalog; [`plain`] reads the header-row CSV and WEMDE JSON
 //! files of the other feeds through the same sink.
 
+/// Opens a zone of `zonetrace` until the end of the block, with the
+/// feature `zones`; nothing without it.
+#[allow(unused_macros)]
+macro_rules! zone {
+    ($z:ident) => {
+        #[cfg(feature = "zones")]
+        let _zone = zonetrace::enter(&crate::zones::$z);
+    };
+}
+
+#[cfg(feature = "zones")]
+pub mod zones;
+
 pub mod arrow_sink;
 pub mod builders;
 pub mod error;

@@ -163,6 +163,7 @@ fn widened(file: &Schema, batch: &Schema) -> Option<Schema> {
 /// `batch` in `schema`, which has every column of `batch` and maybe more:
 /// those are null.
 fn fitted(batch: &RecordBatch, schema: &SchemaRef) -> Result<RecordBatch, ArrowError> {
+    zone!(FIT);
     if batch.schema().fields() == schema.fields() {
         return Ok(batch.clone());
     }
@@ -269,6 +270,7 @@ impl LakeSink<'_> {
     }
 
     fn close_all(&mut self) -> Result<(), utilake_writer::StoreError> {
+        zone!(CLOSE);
         let mut keys: Vec<_> = self.writers.drain().collect();
         keys.sort_by(|(a, _), (b, _)| a.cmp(b));
         for (key, w) in keys {
@@ -345,6 +347,7 @@ impl BlockSink for LakeSink<'_> {
     }
 
     fn batch(&mut self, b: Block) -> Result<(), Box<Diagnostic>> {
+        zone!(BATCH);
         let table = b.table.clone();
         let Some(idx) = self.current else {
             return Ok(());
@@ -549,6 +552,7 @@ fn ingest_entry(
     reader: &mut dyn std::io::Read,
     scan_buf: &mut Vec<u8>,
 ) -> EntryReport {
+    zone!(ENTRY);
     let ctx = utilake_core::diag::Context {
         request: Some(input.request.clone()),
         url: Some(input.local.remote.url.to_string()),
@@ -613,7 +617,11 @@ fn ingest_entry(
         options: &options,
         previous: input.local.previous.as_deref(),
     };
-    match decoder.decode(reader, &dctx, &mut sink, scan_buf) {
+    let decoded = {
+        zone!(DECODE);
+        decoder.decode(reader, &dctx, &mut sink, scan_buf)
+    };
+    match decoded {
         Ok(stats) => {
             if let Err(e) = sink.close_all() {
                 sink.abort_all();
@@ -677,6 +685,7 @@ fn ingest_entry(
 /// zip whose entries (nested zips included) are walked for the ones a
 /// decoder reads.
 pub fn ingest_file(input: IngestInput) -> FileReport {
+    zone!(FILE);
     // One read buffer for every entry of the file.
     let mut scan_buf = Vec::new();
     let path = input.local.path.clone();

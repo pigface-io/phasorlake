@@ -157,6 +157,8 @@ wiremock = "0.6"
 insta = { version = "1", features = ["json"] }
 tempfile = "3"
 peak_alloc = "0.3"
+# zones timed into a call tree, for finding where time goes (feature zones)
+zonetrace = { git = "https://github.com/pigface-io/zonetrace", rev = "3a6fde4a1c1001f4d32892f8effa923eb19cf352" }
 stats_alloc = "0.1"
 
 [profile.release]

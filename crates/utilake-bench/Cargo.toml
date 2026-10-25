@@ -30,3 +30,8 @@ tempfile.workspace = true
 tokio = { workspace = true, features = ["rt-multi-thread", "sync", "macros"] }
 tokio-util.workspace = true
 zip.workspace = true
+zonetrace = { workspace = true, optional = true }
+
+[features]
+# Prints where the ingest's time went, in zones.
+zones = ["dep:zonetrace", "utilake-pipeline/zones", "utilake-mms-conform/zones"]

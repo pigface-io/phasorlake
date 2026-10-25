@@ -73,8 +73,8 @@ fn synthetic_zip(dir: &Path) -> std::path::PathBuf {
     path
 }
 
-/// One ingest of the zip into a fresh home: wall time and peak heap.
-fn ingest_once(dir: &Path, zip_path: &Path, registry: &Arc<Registry>) -> (Duration, f64) {
+/// One ingest of the zip into a fresh home: wall time, peak heap and rows.
+fn ingest_once(dir: &Path, zip_path: &Path, registry: &Arc<Registry>) -> (Duration, f64, u64) {
     let home = Home::at(dir.join("home"));
     home.ensure_dirs().expect("home");
     let runtime = tokio::runtime::Builder::new_multi_thread()
@@ -116,16 +116,41 @@ fn ingest_once(dir: &Path, zip_path: &Path, registry: &Arc<Registry>) -> (Durati
     let elapsed = start.elapsed();
     let peak_mb = f64::from(PEAK.peak_usage_as_mb());
     assert_eq!(exit, 0, "the benchmark ingest must succeed: {summary:?}");
-    assert_eq!(summary.rows, ROWS as u64, "every row must land");
-    (elapsed, peak_mb)
+    (elapsed, peak_mb, summary.rows)
+}
+
+/// With the feature `zones`, where the time went, on stderr.
+fn print_zones() {
+    #[cfg(feature = "zones")]
+    eprint!("{}", zonetrace::take_all().text(zonetrace::overhead()));
 }
 
 fn main() {
     let dir = tempfile::tempdir().expect("tempdir");
+    let registry = Registry::load_embedded();
+    // `utilake-bench {zip}...` ingests real zips instead, one at a time,
+    // and prints what each took, its zones too with the feature.
+    let given: Vec<std::path::PathBuf> = std::env::args().skip(1).map(Into::into).collect();
+    if !given.is_empty() {
+        for zip in &given {
+            let (elapsed, peak_mb, rows) = ingest_once(dir.path(), zip, &registry);
+            let _ = std::fs::remove_dir_all(dir.path().join("home"));
+            eprintln!(
+                "== {}: {rows} rows in {:.0} ms ({:.0} rows/s); peak heap {:.1} MB",
+                zip.display(),
+                elapsed.as_secs_f64() * 1000.0,
+                rows as f64 / elapsed.as_secs_f64(),
+                peak_mb
+            );
+            print_zones();
+        }
+        return;
+    }
     let zip_path = synthetic_zip(dir.path());
     let zip_bytes = std::fs::metadata(&zip_path).map_or(0, |m| m.len());
-    let registry = Registry::load_embedded();
-    let (elapsed, peak_mb) = ingest_once(dir.path(), &zip_path, &registry);
+    let (elapsed, peak_mb, rows) = ingest_once(dir.path(), &zip_path, &registry);
+    assert_eq!(rows, ROWS as u64, "every row must land");
+    print_zones();
     let mut out = serde_json::Map::new();
     let mut m = serde_json::Map::new();
     m.insert(

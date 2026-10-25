@@ -559,7 +559,15 @@ pub async fn run(
                             rules_changed,
                             skip,
                         };
-                        match tokio::task::spawn_blocking(move || ingest_file(input)).await {
+                        let ingest = move || {
+                            let rep = ingest_file(input);
+                            // The worker's zones join the process's, for
+                            // zonetrace::take_all.
+                            #[cfg(feature = "zones")]
+                            zonetrace::flush();
+                            rep
+                        };
+                        match tokio::task::spawn_blocking(ingest).await {
                             Ok(rep) => Step::Ingested(Box::new(rep)),
                             Err(e) => Step::Panicked(req, e.to_string()),
                         }

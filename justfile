@@ -72,6 +72,11 @@ oracle-test:
 
 # ── benchmarks ───────────────────────────────────────────────────────────────
 
+# where an ingest's time goes, in zones (zonetrace): the synthetic zip, or
+# the zips given
+zones *zips:
+    cargo run -q --release -p utilake-bench --features zones -- {{zips}}
+
 # the fast benchmark set (parse, registry), held to bench/budgets.json
 bench-fast:
     cargo run -q --release -p xtask -- bench --set fast

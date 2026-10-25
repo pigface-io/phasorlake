@@ -189,6 +189,7 @@ impl LakeWriter for ParquetHive {
         schema: SchemaRef,
         meta: &FileMeta,
     ) -> Result<WriterId, StoreError> {
+        zone!(OPEN);
         if let Some(f) = crate::partition::naive_timestamp(&schema) {
             return Err(StoreError::NaiveTimestamp {
                 column: f.name().clone(),
@@ -243,6 +244,7 @@ impl LakeWriter for ParquetHive {
     }
 
     fn write(&mut self, id: WriterId, batch: &RecordBatch) -> Result<(), StoreError> {
+        zone!(WRITE);
         let o = self
             .open
             .get_mut(&id.0)
@@ -267,6 +269,7 @@ impl LakeWriter for ParquetHive {
             });
         }
         if let Some(tc) = o.time_column {
+            zone!(BOUNDS);
             let (mn, mx) = time_bounds(batch, tc);
             if o.sorted
                 && (!is_sorted(batch, tc)
@@ -284,7 +287,11 @@ impl LakeWriter for ParquetHive {
             };
             o.last_max = mx.or(o.last_max);
         }
-        o.writer.write(batch).map_err(|e| StoreError::Parquet {
+        let encoded = {
+            zone!(ENCODE);
+            o.writer.write(batch)
+        };
+        encoded.map_err(|e| StoreError::Parquet {
             path: o.tmp.display().to_string(),
             message: e.to_string(),
         })?;
@@ -293,6 +300,7 @@ impl LakeWriter for ParquetHive {
     }
 
     fn close(&mut self, id: WriterId) -> Result<WrittenFile, StoreError> {
+        zone!(CLOSE);
         let o = self
             .open
             .remove(&id.0)

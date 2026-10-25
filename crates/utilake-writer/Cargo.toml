@@ -12,6 +12,7 @@ publish.workspace = true
 workspace = true
 
 [dependencies]
+zonetrace = { workspace = true, optional = true }
 utilake-core.workspace = true
 utilake-iceberg.workspace = true
 utilake-iceberg-store.workspace = true
@@ -35,3 +36,7 @@ tokio = { workspace = true, features = ["rt", "macros"] }
 [[bench]]
 name = "write"
 harness = false
+
+[features]
+# Times the work in zones of zonetrace.
+zones = ["dep:zonetrace"]

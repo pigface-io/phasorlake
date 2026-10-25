@@ -46,6 +46,7 @@ pub fn split_by_month(
     time_col: usize,
     offset_secs: i32,
 ) -> Result<Vec<(Partition, RecordBatch)>, StoreError> {
+    zone!(SPLIT);
     let col = batch.column(time_col);
     let month = |y: i32, m: u32| Partition::Month {
         year: y,
