@@ -51,8 +51,8 @@
         {
           "id": 1,
           "name": "FIELDID",
-          "required": false,
-          "type": "decimal(6, 0)"
+          "required": true,
+          "type": "long"
         },
         {
           "id": 2,
@@ -64,8 +64,8 @@
           "doc": "A unique AEMO defined Field Interest Identifier",
           "id": 3,
           "name": "FIELDINTERESTID",
-          "required": false,
-          "type": "decimal(6, 0)"
+          "required": true,
+          "type": "long"
         },
         {
           "doc": "An estimate of the BB field interest 1P developed reserves",
@@ -261,7 +261,10 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [],
+      "identifier-field-ids": [
+        1,
+        3
+      ],
       "schema-id": 0,
       "type": "struct"
     }
@@ -282,20 +285,20 @@
       "snapshot-id": 8672285710148503032,
       "summary": {
         "operation": "append",
-        "utilake.files": "44",
+        "utilake.files": "45",
         "utilake.from.file": "GasBBReservesAndResources_20251028023045.csv",
         "utilake.from.release": "2025-10",
         "utilake.from.sha256": "cc03aba906ad860fdc12b07c43e1dbea1a7b1e920f110c56a0a0ea32773db1d4",
         "utilake.from.time": "2023-03-15T00:00:00+10:00",
-        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.kinds": "[\"gbb\"]",
         "utilake.report-subtype": "RESERVES_AND_RESOURCES",
         "utilake.report-type": "GBB",
-        "utilake.rows": "12700",
+        "utilake.rows": "12730",
         "utilake.to.file": "GasBBReservesAndResources_20261001153150.csv",
         "utilake.to.release": "2026-10",
         "utilake.to.sha256": "ad79720754d6552bac05f48580515546f2acdc7e9b355477f373cac3dc6ff02c",
         "utilake.to.time": "2026-08-25T00:00:00+10:00",
-        "utilake.total-rows": "12700",
+        "utilake.total-rows": "12730",
         "utilake.version": "1"
       },
       "timestamp-ms": 1759240800000

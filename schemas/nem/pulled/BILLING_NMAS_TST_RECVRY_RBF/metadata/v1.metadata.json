@@ -148,7 +148,7 @@
         "utilake.from.release": "2017-02",
         "utilake.from.sha256": "f0638979b9c6ec2c353eb4e6b02ea9f68e0392e70f1966892451c68de85d8e40",
         "utilake.from.time": "2017-01-30T13:20:12+10:00",
-        "utilake.kinds": "[\"archive\",\"reports/archive\",\"reports/current\"]",
+        "utilake.kinds": "[\"archive\",\"reports\"]",
         "utilake.report-subtype": "NMAS_TST_RECVRY_RBF",
         "utilake.report-type": "BILLING",
         "utilake.rows": "2700",

@@ -106,7 +106,7 @@
         "utilake.from.release": "2026-08",
         "utilake.from.sha256": "a16e18422bfeaaf7620a4a1c48d0490db5cf7b092bdd99ec8f25cd384ec58b50",
         "utilake.from.time": "2023-10-07T00:00:00+10:00",
-        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.kinds": "[\"gbb\"]",
         "utilake.report-subtype": "LNG_TRANSACTIONS",
         "utilake.report-type": "GBB",
         "utilake.rows": "14",

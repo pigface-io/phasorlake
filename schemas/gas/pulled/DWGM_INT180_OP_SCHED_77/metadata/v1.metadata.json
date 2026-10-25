@@ -288,7 +288,7 @@
         "utilake.from.release": "2026-05",
         "utilake.from.sha256": "76c7634ef0289e6a294a2da560d07694c65c75fa29875b7f96b2d10d771a4a25",
         "utilake.from.time": "2009-04-01T00:00:00+10:00",
-        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.kinds": "[\"dwgm\"]",
         "utilake.report-subtype": "INT180_OP_SCHED_77",
         "utilake.report-type": "DWGM",
         "utilake.rows": "15",

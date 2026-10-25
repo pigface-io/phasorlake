@@ -48,7 +48,7 @@
         {
           "id": 1,
           "name": "HUB_IDENTIFIER",
-          "required": false,
+          "required": true,
           "type": "string"
         },
         {
@@ -60,7 +60,7 @@
         {
           "id": 3,
           "name": "FACILITY_IDENTIFIER",
-          "required": false,
+          "required": true,
           "type": "string"
         },
         {
@@ -88,7 +88,10 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [],
+      "identifier-field-ids": [
+        1,
+        3
+      ],
       "schema-id": 0,
       "type": "struct"
     }
@@ -109,18 +112,18 @@
       "snapshot-id": 826679781877030754,
       "summary": {
         "operation": "append",
-        "utilake.files": "34",
+        "utilake.files": "38",
         "utilake.from.file": "Day31.zip",
         "utilake.from.release": "2026-08",
         "utilake.from.sha256": "ae9eda135c5f3c28548b31911da9dcc65c767009ef5b7d16ceee4cce2755509e",
         "utilake.from.time": "2011-10-17T22:00:35+10:00",
-        "utilake.kinds": "[\"sttm/current\"]",
+        "utilake.kinds": "[\"sttm\"]",
         "utilake.report-subtype": "INT671_HUB_FACILITY_DEFINITION_RPT_1",
         "utilake.report-type": "STTM",
         "utilake.rows": "16",
-        "utilake.to.file": "int671_v1_hub_facility_definition_rpt_1.csv@20261021T191600+1000",
+        "utilake.to.file": "int671_v1_hub_facility_definition_rpt_1.csv@20261024T113100+1000",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "19078b1e83c12549a1844fda7decbd861ecf615b6b10066c685a613ee259c18c",
+        "utilake.to.sha256": "553d5806c9f4ada6bfb39a64728466c36bd85a4be7d9a8fb5105dae17ebf642c",
         "utilake.to.time": "2025-04-04T14:03:32+10:00",
         "utilake.total-rows": "16",
         "utilake.version": "1"

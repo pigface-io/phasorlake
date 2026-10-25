@@ -101,7 +101,7 @@
         "utilake.from.release": "2024-08",
         "utilake.from.sha256": "66a14edc7f6e9cddd6f991f56cd485e5730e74bf342164b123df45c72acb922f",
         "utilake.from.time": "2010-09-12T07:00:00+10:00",
-        "utilake.kinds": "[\"archive\",\"reports/archive\",\"reports/current\"]",
+        "utilake.kinds": "[\"archive\",\"reports\"]",
         "utilake.report-subtype": "OUTAGECONSTRAINTSET",
         "utilake.report-type": "NETWORK",
         "utilake.rows": "13327790",

@@ -4,8 +4,8 @@
       "blocks": [
         {
           "first-release": "2025-10",
-          "last-release": "2026-09",
-          "months": 12,
+          "last-release": "2026-10",
+          "months": 13,
           "report": [
             "GSH",
             "BENCHMARK_PRICE"
@@ -14,8 +14,11 @@
         }
       ],
       "feed": "gsh",
-      "folder": "ARCHIVE/Benchmark_Price",
-      "listings": [],
+      "folder": "Benchmark_Price",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports/GSH"
     },
     {
@@ -32,16 +35,18 @@
         }
       ],
       "feed": "gsh",
-      "folder": "ARCHIVE/GSH_AUCTION_CURTAILMENT_NOTICE",
-      "listings": [],
+      "folder": "GSH_AUCTION_CURTAILMENT_NOTICE",
+      "listings": [
+        "ARCHIVE"
+      ],
       "root": "Reports/GSH"
     },
     {
       "blocks": [
         {
           "first-release": "2025-10",
-          "last-release": "2026-09",
-          "months": 12,
+          "last-release": "2026-10",
+          "months": 13,
           "report": [
             "GSH",
             "AUCTION_PRICE_VOLUME"
@@ -50,16 +55,19 @@
         }
       ],
       "feed": "gsh",
-      "folder": "ARCHIVE/GSH_AUCTION_PRICE_VOLUME",
-      "listings": [],
+      "folder": "GSH_AUCTION_PRICE_VOLUME",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports/GSH"
     },
     {
       "blocks": [
         {
           "first-release": "2025-10",
-          "last-release": "2026-09",
-          "months": 12,
+          "last-release": "2026-10",
+          "months": 13,
           "report": [
             "GSH",
             "AUCTION_QUANTITIES"
@@ -68,8 +76,11 @@
         }
       ],
       "feed": "gsh",
-      "folder": "ARCHIVE/GSH_AUCTION_QUANTITIES",
-      "listings": [],
+      "folder": "GSH_AUCTION_QUANTITIES",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports/GSH"
     },
     {
@@ -86,8 +97,10 @@
         }
       ],
       "feed": "gsh",
-      "folder": "ARCHIVE/GSH_CAPACITY_TRANSACTION",
-      "listings": [],
+      "folder": "GSH_CAPACITY_TRANSACTION",
+      "listings": [
+        "ARCHIVE"
+      ],
       "root": "Reports/GSH"
     },
     {
@@ -104,16 +117,19 @@
         }
       ],
       "feed": "gsh",
-      "folder": "ARCHIVE/GSH_CAPACITY_TRANSFER_AUCTION_NOTICE",
-      "listings": [],
+      "folder": "GSH_CAPACITY_TRANSFER_AUCTION_NOTICE",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports/GSH"
     },
     {
       "blocks": [
         {
           "first-release": "2025-10",
-          "last-release": "2026-09",
-          "months": 12,
+          "last-release": "2026-10",
+          "months": 13,
           "report": [
             "GSH",
             "TRANSACTION_SUMMARY"
@@ -122,16 +138,19 @@
         }
       ],
       "feed": "gsh",
-      "folder": "ARCHIVE/GSH_Daily_Trans_Summary",
-      "listings": [],
+      "folder": "GSH_Daily_Trans_Summary",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports/GSH"
     },
     {
       "blocks": [
         {
           "first-release": "2025-10",
-          "last-release": "2026-09",
-          "months": 12,
+          "last-release": "2026-10",
+          "months": 13,
           "report": [
             "GSH",
             "HISTORICAL_SUMMARY"
@@ -140,16 +159,19 @@
         }
       ],
       "feed": "gsh",
-      "folder": "ARCHIVE/GSH_Historical_Trans_Summary",
-      "listings": [],
+      "folder": "GSH_Historical_Trans_Summary",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports/GSH"
     },
     {
       "blocks": [
         {
           "first-release": "2025-10",
-          "last-release": "2026-09",
-          "months": 12,
+          "last-release": "2026-10",
+          "months": 13,
           "report": [
             "GSH",
             "PARTICIPANTS"
@@ -158,8 +180,8 @@
         },
         {
           "first-release": "2025-10",
-          "last-release": "2026-09",
-          "months": 12,
+          "last-release": "2026-10",
+          "months": 13,
           "report": [
             "GSH",
             "PARTICIPANT_OPSTATE"
@@ -168,16 +190,19 @@
         }
       ],
       "feed": "gsh",
-      "folder": "ARCHIVE/GSH_Participants",
-      "listings": [],
+      "folder": "GSH_Participants",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports/GSH"
     },
     {
       "blocks": [
         {
           "first-release": "2025-10",
-          "last-release": "2026-09",
-          "months": 12,
+          "last-release": "2026-10",
+          "months": 13,
           "report": [
             "GSH",
             "FACILITIES"
@@ -186,16 +211,19 @@
         }
       ],
       "feed": "gsh",
-      "folder": "ARCHIVE/GSH_REGISTERED_FACILITIES",
-      "listings": [],
+      "folder": "GSH_REGISTERED_FACILITIES",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports/GSH"
     },
     {
       "blocks": [
         {
           "first-release": "2025-10",
-          "last-release": "2026-09",
-          "months": 12,
+          "last-release": "2026-10",
+          "months": 13,
           "report": [
             "GSH",
             "NOTIONAL_POINTS"
@@ -204,8 +232,8 @@
         },
         {
           "first-release": "2025-10",
-          "last-release": "2026-09",
-          "months": 12,
+          "last-release": "2026-10",
+          "months": 13,
           "report": [
             "GSH",
             "PARK_SERVICES"
@@ -214,8 +242,8 @@
         },
         {
           "first-release": "2025-10",
-          "last-release": "2026-09",
-          "months": 12,
+          "last-release": "2026-10",
+          "months": 13,
           "report": [
             "GSH",
             "PIPELINE_SEGMENTS"
@@ -224,8 +252,8 @@
         },
         {
           "first-release": "2025-10",
-          "last-release": "2026-09",
-          "months": 12,
+          "last-release": "2026-10",
+          "months": 13,
           "report": [
             "GSH",
             "SERVICE_POINTS"
@@ -234,8 +262,8 @@
         },
         {
           "first-release": "2025-10",
-          "last-release": "2026-09",
-          "months": 12,
+          "last-release": "2026-10",
+          "months": 13,
           "report": [
             "GSH",
             "ZONES"
@@ -244,16 +272,19 @@
         }
       ],
       "feed": "gsh",
-      "folder": "ARCHIVE/GSH_REGISTERED_SERVICE_POINTS",
-      "listings": [],
+      "folder": "GSH_REGISTERED_SERVICE_POINTS",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports/GSH"
     },
     {
       "blocks": [
         {
           "first-release": "2025-10",
-          "last-release": "2026-09",
-          "months": 12,
+          "last-release": "2026-10",
+          "months": 13,
           "report": [
             "GSH",
             "REVISED_AUCTION_QUANTITIES"
@@ -262,16 +293,19 @@
         }
       ],
       "feed": "gsh",
-      "folder": "ARCHIVE/GSH_REVISED_AUCTION_QUANTITIES",
-      "listings": [],
+      "folder": "GSH_REVISED_AUCTION_QUANTITIES",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports/GSH"
     },
     {
       "blocks": [
         {
           "first-release": "2026-03",
-          "last-release": "2026-09",
-          "months": 3,
+          "last-release": "2026-10",
+          "months": 4,
           "report": [
             "GSH",
             "ZONE_CURTAILMENT_INFORMATION"
@@ -280,441 +314,12 @@
         }
       ],
       "feed": "gsh",
-      "folder": "ARCHIVE/GSH_ZONE_CURTAILMENT_INFORMATION",
-      "listings": [],
+      "folder": "GSH_ZONE_CURTAILMENT_INFORMATION",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports/GSH"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2026-07",
-          "last-release": "2026-10",
-          "months": 4,
-          "report": [
-            "GSH",
-            "BENCHMARK_PRICE"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "gsh",
-      "folder": "CURRENT/Benchmark_Price",
-      "listings": [],
-      "root": "Reports/GSH"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2026-07",
-          "last-release": "2026-10",
-          "months": 4,
-          "report": [
-            "GSH",
-            "AUCTION_PRICE_VOLUME"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "gsh",
-      "folder": "CURRENT/GSH_AUCTION_PRICE_VOLUME",
-      "listings": [],
-      "root": "Reports/GSH"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2026-07",
-          "last-release": "2026-10",
-          "months": 4,
-          "report": [
-            "GSH",
-            "AUCTION_QUANTITIES"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "gsh",
-      "folder": "CURRENT/GSH_AUCTION_QUANTITIES",
-      "listings": [],
-      "root": "Reports/GSH"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2026-08",
-          "last-release": "2026-08",
-          "months": 1,
-          "report": [
-            "GSH",
-            "CAPACITY_TRANSFER_AUCTION_NT"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "gsh",
-      "folder": "CURRENT/GSH_CAPACITY_TRANSFER_AUCTION_NOTICE",
-      "listings": [],
-      "root": "Reports/GSH"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2026-07",
-          "last-release": "2026-10",
-          "months": 4,
-          "report": [
-            "GSH",
-            "TRANSACTION_SUMMARY"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "gsh",
-      "folder": "CURRENT/GSH_Daily_Trans_Summary",
-      "listings": [],
-      "root": "Reports/GSH"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2026-07",
-          "last-release": "2026-10",
-          "months": 4,
-          "report": [
-            "GSH",
-            "HISTORICAL_SUMMARY"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "gsh",
-      "folder": "CURRENT/GSH_Historical_Trans_Summary",
-      "listings": [],
-      "root": "Reports/GSH"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2026-07",
-          "last-release": "2026-10",
-          "months": 4,
-          "report": [
-            "GSH",
-            "PARTICIPANTS"
-          ],
-          "version": 2
-        },
-        {
-          "first-release": "2026-07",
-          "last-release": "2026-10",
-          "months": 4,
-          "report": [
-            "GSH",
-            "PARTICIPANT_OPSTATE"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "gsh",
-      "folder": "CURRENT/GSH_Participants",
-      "listings": [],
-      "root": "Reports/GSH"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2026-08",
-          "last-release": "2026-10",
-          "months": 3,
-          "report": [
-            "GSH",
-            "FACILITIES"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "gsh",
-      "folder": "CURRENT/GSH_REGISTERED_FACILITIES",
-      "listings": [],
-      "root": "Reports/GSH"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2026-08",
-          "last-release": "2026-10",
-          "months": 3,
-          "report": [
-            "GSH",
-            "NOTIONAL_POINTS"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2026-08",
-          "last-release": "2026-10",
-          "months": 3,
-          "report": [
-            "GSH",
-            "PARK_SERVICES"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2026-08",
-          "last-release": "2026-10",
-          "months": 3,
-          "report": [
-            "GSH",
-            "PIPELINE_SEGMENTS"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2026-08",
-          "last-release": "2026-10",
-          "months": 3,
-          "report": [
-            "GSH",
-            "SERVICE_POINTS"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2026-08",
-          "last-release": "2026-10",
-          "months": 3,
-          "report": [
-            "GSH",
-            "ZONES"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "gsh",
-      "folder": "CURRENT/GSH_REGISTERED_SERVICE_POINTS",
-      "listings": [],
-      "root": "Reports/GSH"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2026-07",
-          "last-release": "2026-10",
-          "months": 4,
-          "report": [
-            "GSH",
-            "REVISED_AUCTION_QUANTITIES"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "gsh",
-      "folder": "CURRENT/GSH_REVISED_AUCTION_QUANTITIES",
-      "listings": [],
-      "root": "Reports/GSH"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2026-09",
-          "last-release": "2026-10",
-          "months": 2,
-          "report": [
-            "GSH",
-            "ZONE_CURTAILMENT_INFORMATION"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "gsh",
-      "folder": "CURRENT/GSH_ZONE_CURTAILMENT_INFORMATION",
-      "listings": [],
-      "root": "Reports/GSH"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2026-10",
-          "last-release": "2026-10",
-          "months": 1,
-          "report": [
-            "GBB",
-            "ACTUAL_FLOW_STORAGE"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 11,
-          "report": [
-            "GBB",
-            "ACTUAL_FLOW_STORAGE_LAST31"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 11,
-          "report": [
-            "GBB",
-            "FACILITY_DEVELOPMENTS"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 9,
-          "report": [
-            "GBB",
-            "LINEPACK_CAPACITY_ADEQUACY_FUTURE"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-04",
-          "last-release": "2026-10",
-          "months": 11,
-          "report": [
-            "GBB",
-            "MEDIUM_TERM_CAPACITY_OUTLOOK_FUTURE"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 11,
-          "report": [
-            "GBB",
-            "NAMEPLATE_RATING_CURRENT"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 9,
-          "report": [
-            "GBB",
-            "NOMINATION_AND_FORECAST_NEXT7"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2024-06",
-          "last-release": "2025-08",
-          "months": 15,
-          "report": [
-            "GBB",
-            "PIPELINE_CONNECTION_FLOW"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 11,
-          "report": [
-            "GBB",
-            "PIPELINE_CONNECTION_FLOW_LAST31"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 11,
-          "report": [
-            "GBB",
-            "RESERVES_AND_RESOURCES"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2026-09",
-          "last-release": "2026-09",
-          "months": 1,
-          "report": [
-            "GBB",
-            "SHORT_TERM_CAPACITY_OUTLOOK"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 9,
-          "report": [
-            "GBB",
-            "SHORT_TERM_CAPACITY_OUTLOOK_FUTURE"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 11,
-          "report": [
-            "GBB",
-            "UNCONTRACTED_CAPACITY_OUTLOOK_FUTURE"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "gbb",
-      "folder": "CURRENT/DUPLICATE",
-      "listings": [],
-      "root": "Reports/GBB"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2021-08",
-          "last-release": "2026-10",
-          "months": 64,
-          "report": [
-            "GBB",
-            "FORECAST_UTILISATION"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "gbb",
-      "folder": "CURRENT/ForecastUtilisation",
-      "listings": [],
-      "root": "Reports/GBB"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2021-07",
-          "last-release": "2026-10",
-          "months": 7,
-          "report": [
-            "GBB",
-            "PIPELINE_CONNECTION_FLOW"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2019-11",
-          "last-release": "2019-11",
-          "months": 1,
-          "report": [
-            "GBB",
-            "PIPELINE_CONNECTION_FLOW_HISTORY"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "gbb",
-      "folder": "CURRENT/GBB_PIPELINE_CONNECTION_FLOW",
-      "listings": [],
-      "root": "Reports/GBB"
     },
     {
       "blocks": [
@@ -1280,8 +885,200 @@
         }
       ],
       "feed": "gbb",
-      "folder": "CURRENT/_root",
-      "listings": [],
+      "folder": "GBB",
+      "listings": [
+        "CURRENT"
+      ],
+      "root": "Reports/GBB"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-10",
+          "last-release": "2026-10",
+          "months": 1,
+          "report": [
+            "GBB",
+            "ACTUAL_FLOW_STORAGE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 11,
+          "report": [
+            "GBB",
+            "ACTUAL_FLOW_STORAGE_LAST31"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 11,
+          "report": [
+            "GBB",
+            "FACILITY_DEVELOPMENTS"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 9,
+          "report": [
+            "GBB",
+            "LINEPACK_CAPACITY_ADEQUACY_FUTURE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-04",
+          "last-release": "2026-10",
+          "months": 11,
+          "report": [
+            "GBB",
+            "MEDIUM_TERM_CAPACITY_OUTLOOK_FUTURE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 11,
+          "report": [
+            "GBB",
+            "NAMEPLATE_RATING_CURRENT"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 9,
+          "report": [
+            "GBB",
+            "NOMINATION_AND_FORECAST_NEXT7"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2024-06",
+          "last-release": "2025-08",
+          "months": 15,
+          "report": [
+            "GBB",
+            "PIPELINE_CONNECTION_FLOW"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 11,
+          "report": [
+            "GBB",
+            "PIPELINE_CONNECTION_FLOW_LAST31"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 11,
+          "report": [
+            "GBB",
+            "RESERVES_AND_RESOURCES"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-09",
+          "last-release": "2026-09",
+          "months": 1,
+          "report": [
+            "GBB",
+            "SHORT_TERM_CAPACITY_OUTLOOK"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 9,
+          "report": [
+            "GBB",
+            "SHORT_TERM_CAPACITY_OUTLOOK_FUTURE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 11,
+          "report": [
+            "GBB",
+            "UNCONTRACTED_CAPACITY_OUTLOOK_FUTURE"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "gbb",
+      "folder": "DUPLICATE",
+      "listings": [
+        "CURRENT"
+      ],
+      "root": "Reports/GBB"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2021-08",
+          "last-release": "2026-10",
+          "months": 64,
+          "report": [
+            "GBB",
+            "FORECAST_UTILISATION"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "gbb",
+      "folder": "ForecastUtilisation",
+      "listings": [
+        "CURRENT"
+      ],
+      "root": "Reports/GBB"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2021-07",
+          "last-release": "2026-10",
+          "months": 7,
+          "report": [
+            "GBB",
+            "PIPELINE_CONNECTION_FLOW"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2019-11",
+          "last-release": "2019-11",
+          "months": 1,
+          "report": [
+            "GBB",
+            "PIPELINE_CONNECTION_FLOW_HISTORY"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "gbb",
+      "folder": "GBB_PIPELINE_CONNECTION_FLOW",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports/GBB"
     },
     {
@@ -1289,7 +1086,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 8,
           "report": [
             "STTM",
             "INT651_EX_ANTE_MARKET_PRICE_RPT_1"
@@ -1299,7 +1096,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 8,
           "report": [
             "STTM",
             "INT652_EX_ANTE_SCHEDULE_QUANTITY_RPT_1"
@@ -1329,7 +1126,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 8,
           "report": [
             "STTM",
             "INT653_EX_ANTE_PIPELINE_PRICE_RPT_1"
@@ -1339,7 +1136,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 8,
           "report": [
             "STTM",
             "INT654_PROVISIONAL_MARKET_PRICE_RPT_1"
@@ -1349,7 +1146,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 8,
           "report": [
             "STTM",
             "INT655_PROVISIONAL_SCHEDULE_QUANTITY_RPT_1"
@@ -1369,7 +1166,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 8,
           "report": [
             "STTM",
             "INT656_PROVISIONAL_PIPELINE_DATA_RPT_1"
@@ -1389,7 +1186,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 8,
           "report": [
             "STTM",
             "INT657_EX_POST_MARKET_DATA_RPT_1"
@@ -1409,7 +1206,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 8,
           "report": [
             "STTM",
             "INT658_LATEST_ALLOCATION_QUANTITY_RPT_1"
@@ -1429,7 +1226,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 8,
           "report": [
             "STTM",
             "INT659_BID_OFFER_RPT_1"
@@ -1439,7 +1236,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 8,
           "report": [
             "STTM",
             "INT660_CONTINGENCY_GAS_BIDS_AND_OFFERS_RPT_1"
@@ -1459,7 +1256,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 8,
           "report": [
             "STTM",
             "INT662_PROVISIONAL_DEVIATION_RPT_1"
@@ -1469,7 +1266,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 8,
           "report": [
             "STTM",
             "INT663_PROVISIONAL_VARIATION_RPT_1"
@@ -1479,7 +1276,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 8,
           "report": [
             "STTM",
             "INT664_DAILY_PROVISIONAL_MOS_ALLOCATION_RPT_1"
@@ -1489,7 +1286,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 8,
           "report": [
             "STTM",
             "INT665_MOS_STACK_DATA_RPT_1"
@@ -1509,7 +1306,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 8,
           "report": [
             "STTM",
             "INT667_MARKET_PARAMETERS_RPT_1"
@@ -1519,7 +1316,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 8,
           "report": [
             "STTM",
             "INT668_SCHEDULE_LOG_RPT_1"
@@ -1539,7 +1336,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 8,
           "report": [
             "STTM",
             "INT670_REGISTERED_PARTICIPANTS_RPT_1"
@@ -1549,7 +1346,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 8,
           "report": [
             "STTM",
             "INT671_HUB_FACILITY_DEFINITION_RPT_1"
@@ -1559,7 +1356,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 8,
           "report": [
             "STTM",
             "INT672_CUMULATIVE_PRICE_RPT_1"
@@ -1569,7 +1366,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 8,
           "report": [
             "STTM",
             "INT673_TOTAL_CONTINGENCY_BID_OFFER_RPT_1"
@@ -1599,7 +1396,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 8,
           "report": [
             "STTM",
             "INT676_ROLLING_AVERAGE_PRICE_RPT_1"
@@ -1619,7 +1416,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 8,
           "report": [
             "STTM",
             "INT678_NET_MARKET_BALANCE_DAILY_AMOUNTS_RPT_1"
@@ -1639,7 +1436,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 8,
           "report": [
             "STTM",
             "INT680_DP_FLAG_DATA_RPT_1"
@@ -1649,7 +1446,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 8,
           "report": [
             "STTM",
             "INT681_DAILY_PROVISIONAL_CAPACITY_RPT_1"
@@ -1669,7 +1466,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 8,
           "report": [
             "STTM",
             "INT683_PROVISIONAL_USED_MOS_STEPS_RPT_1"
@@ -1689,7 +1486,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 8,
           "report": [
             "STTM",
             "INT687_FACILITY_HUB_CAPACITY_DATA_RPT_1"
@@ -1699,7 +1496,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 8,
           "report": [
             "STTM",
             "INT688_ALLOCATION_WARNING_LIMIT_THRESHOLDS_RPT_1"
@@ -1709,7 +1506,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 8,
           "report": [
             "STTM",
             "INT689_EXPOST_FACILITY_ALLOCATION_QUANTITY_RPT_1"
@@ -1719,7 +1516,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 8,
           "report": [
             "STTM",
             "INT690_DEVIATION_PRICE_DATA_RPT_1"
@@ -1729,7 +1526,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 8,
           "report": [
             "STTM",
             "INT691_STTM_CTP_REGISTER_RPT_1"
@@ -1738,8 +1535,10 @@
         }
       ],
       "feed": "sttm",
-      "folder": "CURRENT/_root",
-      "listings": [],
+      "folder": "STTM",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports/STTM"
     },
     {
@@ -1747,7 +1546,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT029A_SYSTEM_NOTICES_1"
@@ -1757,7 +1556,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT037B_INDICATIVE_MKT_PRICE_1"
@@ -1767,7 +1566,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT037C_INDICATIVE_PRICE_1"
@@ -1777,7 +1576,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT039B_INDICATIVE_LOCATIONAL_PRICE_1"
@@ -1787,7 +1586,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT041_MARKET_AND_REFERENCE_PRICES_1"
@@ -1807,7 +1606,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT047_HEATING_VALUES_1"
@@ -1817,7 +1616,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT050_SCHED_WITHDRAWALS_1"
@@ -1827,7 +1626,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT079_TOTAL_GAS_WITHDRAWN_1"
@@ -1837,7 +1636,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT089_LINEPACK_BALANCE_1"
@@ -1847,7 +1646,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT091_EDDACT_1"
@@ -1857,7 +1656,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT108_SCHEDULED_RUN_LOG_7_1"
@@ -1877,7 +1676,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT111_SDPC_1"
@@ -1897,7 +1696,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT112B_NFTC_1"
@@ -1907,7 +1706,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT112C_SSC_1"
@@ -1917,7 +1716,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT112D_ZFTC_1"
@@ -1927,7 +1726,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT112_DFPC_1"
@@ -1937,7 +1736,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT117A_EST_ANCILLARY_PAYMENTS_1"
@@ -1947,7 +1746,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT117B_ANCILLARY_PAYMENTS_1"
@@ -1977,7 +1776,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT125_DETAILS_OF_ORGANISATIONS_1"
@@ -1987,7 +1786,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT126_DFS_DATA_1"
@@ -1997,7 +1796,7 @@
         {
           "first-release": "2012-09",
           "last-release": "2026-10",
-          "months": 6,
+          "months": 8,
           "report": [
             "DWGM",
             "INT128_ACTUAL_LINEPACK_1"
@@ -2007,7 +1806,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT131_BIDS_AT_BID_CUTOFF_TIMES_PREV_2_1"
@@ -2027,7 +1826,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT135_UPLIFT_CAP_1"
@@ -2047,7 +1846,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT139A_DAILY_ZONAL_HEATING_1"
@@ -2067,7 +1866,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT140_GAS_QUALITY_DATA_1"
@@ -2077,7 +1876,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT150_PUBLIC_METERING_DATA_1"
@@ -2087,7 +1886,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT152_SCHED_MIN_QTY_LINEPACK_1"
@@ -2097,7 +1896,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT153_DEMAND_FORECAST_RPT_1"
@@ -2117,7 +1916,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT171_LATEST_NSL_1"
@@ -2147,7 +1946,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT188_CTM_TO_HV_ZONE_MAPPING_1"
@@ -2157,7 +1956,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT199_CUMULATIVE_PRICE_1"
@@ -2167,7 +1966,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT235_SCHED_SYSTEM_TOTAL_1"
@@ -2177,7 +1976,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT236_OPERATIONAL_METER_READINGS_1"
@@ -2247,7 +2046,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT262_SPARE_CAPACITY_LIMITS_1"
@@ -2257,7 +2056,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT263_LNG_MONITOR_1"
@@ -2267,7 +2066,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT271_LATEST_TOTAL_HOURLY_NSL_1"
@@ -2277,7 +2076,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT276_HOURLY_SCADA_PRESSURES_AT_MCE_NODES_1"
@@ -2297,7 +2096,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT287_GAS_CONSUMPTION_1"
@@ -2317,7 +2116,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT310_PRICE_AND_WITHDRAWALS_1"
@@ -2347,7 +2146,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT311_CUSTOMER_TRANSFERS_1"
@@ -2357,7 +2156,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT312_SETTLEMENTS_ACTIVITY_1"
@@ -2377,7 +2176,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT313_ALLOCATED_INJECTIONS_WITHDRAWALS_1"
@@ -2387,7 +2186,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT314_BID_STACK_1"
@@ -2417,7 +2216,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT322B_UPLIFT_BREAKDOWN_PRUD_1"
@@ -2477,7 +2276,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT351_CCREGISTRY_SUMMARY_1"
@@ -2507,7 +2306,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT381_TIE_BREAKING_EVENT_1"
@@ -2537,7 +2336,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT471_LATEST_NSL_NON_PTS_RPT_1"
@@ -2557,7 +2356,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT539_DAILY_ZONAL_HV_1"
@@ -2567,7 +2366,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT571_LATEST_NSL_1"
@@ -2597,7 +2396,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT839A_DAILY_ZONAL_HV_1"
@@ -2607,7 +2406,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT871_ERFTDAILYNSLRPT_1"
@@ -2617,7 +2416,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT891_EDDACT_1"
@@ -2627,7 +2426,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT898_NEWSTREETLISTING_1"
@@ -2657,7 +2456,7 @@
         {
           "first-release": "2026-08",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 6,
           "report": [
             "DWGM",
             "INT934_ECGS_CONTACTS_1"
@@ -2666,8 +2465,10 @@
         }
       ],
       "feed": "dwgm",
-      "folder": "CURRENT/_root",
-      "listings": [],
+      "folder": "VicGas",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports/VicGas"
     }
   ],

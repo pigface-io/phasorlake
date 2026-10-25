@@ -94,7 +94,7 @@
         "utilake.from.release": "2025-09",
         "utilake.from.sha256": "373f78bd6b6ac5dc6f3b276a7f70c1107db719568fa36b086ea6946f617c0e54",
         "utilake.from.time": "2025-09-27T16:25:00+10:00",
-        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.kinds": "[\"reports\"]",
         "utilake.report-subtype": "CONSTRAINTRELAXATION",
         "utilake.report-type": "DISPATCHOCD",
         "utilake.rows": "109",

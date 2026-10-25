@@ -117,7 +117,7 @@
         "utilake.from.file": "PUBLIC_BILLING_20170616124141_0000000284563656.zip",
         "utilake.from.release": "2017-06",
         "utilake.from.sha256": "ff2ffe63ad625190e84cd6cdc38d781445ef664a79a28d187e54c7c5d2ae9eda",
-        "utilake.kinds": "[\"archive\",\"reports/archive\",\"reports/current\"]",
+        "utilake.kinds": "[\"archive\",\"reports\"]",
         "utilake.report-subtype": "NMAS_TST_RECVRY_TRK",
         "utilake.report-type": "BILLING",
         "utilake.rows": "1269",

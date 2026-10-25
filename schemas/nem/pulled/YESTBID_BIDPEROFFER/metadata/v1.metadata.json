@@ -232,7 +232,7 @@
         "utilake.from.release": "2016-12",
         "utilake.from.sha256": "2bf08875582930907733606568bbcf3592c88fb9ec7e19ea9509bcc8a779ad70",
         "utilake.from.time": "2016-12-22T00:00:00+10:00",
-        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.kinds": "[\"reports\"]",
         "utilake.report-subtype": "BIDPEROFFER",
         "utilake.report-type": "YESTBID",
         "utilake.rows": "125616",

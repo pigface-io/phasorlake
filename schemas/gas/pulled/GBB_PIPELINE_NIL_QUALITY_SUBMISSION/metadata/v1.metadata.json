@@ -101,7 +101,7 @@
         "utilake.from.release": "2026-10",
         "utilake.from.sha256": "104b471aa092767c02d6f08b83847f76bd2dbbee6623cd88430197b00a7b55f3",
         "utilake.from.time": "2018-12-06T00:00:00+10:00",
-        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.kinds": "[\"gbb\"]",
         "utilake.report-subtype": "PIPELINE_NIL_QUALITY_SUBMISSION",
         "utilake.report-type": "GBB",
         "utilake.rows": "2043",

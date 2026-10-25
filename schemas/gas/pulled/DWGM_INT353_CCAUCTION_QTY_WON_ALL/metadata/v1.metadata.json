@@ -144,7 +144,7 @@
         "utilake.from.release": "2026-10",
         "utilake.from.sha256": "c54f9d9e62ea773148f1d6d6b34c1f3924b395d5dab5a831024ac5e72470ba25",
         "utilake.from.time": "2026-07-01T00:00:00+10:00",
-        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.kinds": "[\"dwgm\"]",
         "utilake.report-subtype": "INT353_CCAUCTION_QTY_WON_ALL_1",
         "utilake.report-type": "DWGM",
         "utilake.rows": "231",

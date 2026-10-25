@@ -120,7 +120,7 @@
         "utilake.from.release": "2026-09",
         "utilake.from.sha256": "93d3280f33572aae5ab124371171d23d919fc22cbba7faba01d06c46b49950c0",
         "utilake.from.time": "2025-11-01T00:00:00+10:00",
-        "utilake.kinds": "[\"sttm/current\"]",
+        "utilake.kinds": "[\"sttm\"]",
         "utilake.report-subtype": "INT669_SETTLEMENT_VERSION_RPT_1",
         "utilake.report-type": "STTM",
         "utilake.rows": "7",

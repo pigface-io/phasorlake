@@ -143,7 +143,7 @@
         "utilake.from.release": "2024-08",
         "utilake.from.sha256": "48eb68e2e3609a92a137bc128a3bcd8127950def9d91251e2d1974d355a43f8c",
         "utilake.from.time": "2007-08-08T11:25:00+10:00",
-        "utilake.kinds": "[\"archive\",\"reports/archive\",\"reports/current\"]",
+        "utilake.kinds": "[\"archive\",\"reports\"]",
         "utilake.report-subtype": "STATICRATING",
         "utilake.report-type": "NETWORK",
         "utilake.rows": "11938512",

@@ -61,22 +61,22 @@
           "doc": "Unique Facility Identifier",
           "id": 3,
           "name": "FACILITYID",
-          "required": false,
-          "type": "decimal(6, 0)"
+          "required": true,
+          "type": "long"
         },
         {
           "doc": "Unique Node Identifier",
           "id": 4,
           "name": "NODEID",
-          "required": false,
-          "type": "decimal(5, 0)"
+          "required": true,
+          "type": "long"
         },
         {
           "doc": "Unique connection point identifier.",
           "id": 5,
           "name": "CONNECTIONPOINTID",
-          "required": false,
-          "type": "decimal(7, 0)"
+          "required": true,
+          "type": "long"
         },
         {
           "doc": "Direction of flow for the submission record. Must be one of ‘RECEIPT’ or ‘DELIVERY’",
@@ -105,7 +105,11 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [],
+      "identifier-field-ids": [
+        3,
+        4,
+        5
+      ],
       "schema-id": 0,
       "type": "struct"
     }
@@ -130,7 +134,7 @@
         "utilake.from.file": "GasBBDemandZonesPipelineConnectionPointMapping.csv",
         "utilake.from.release": "2026-10",
         "utilake.from.sha256": "4576619f1911f3201d10c834d4173cdce151350518600b80d2ebdd3bdd46d9c0",
-        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.kinds": "[\"gbb\"]",
         "utilake.report-subtype": "DEMAND_ZONES_PIPELINE_CONNECTION_POINT_MAPPING",
         "utilake.report-type": "GBB",
         "utilake.rows": "325",

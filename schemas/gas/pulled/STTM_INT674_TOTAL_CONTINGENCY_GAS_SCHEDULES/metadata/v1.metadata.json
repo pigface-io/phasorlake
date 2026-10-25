@@ -138,7 +138,7 @@
         "utilake.from.release": "2026-10",
         "utilake.from.sha256": "883b3b64409d9df2252e7a3407b6c551768e208aa9c224f0c351cfc423f03980",
         "utilake.from.time": "2010-05-27T00:00:00+10:00",
-        "utilake.kinds": "[\"sttm/current\"]",
+        "utilake.kinds": "[\"sttm\"]",
         "utilake.report-subtype": "INT674_TOTAL_CONTINGENCY_GAS_SCHEDULES_RPT_1",
         "utilake.report-type": "STTM",
         "utilake.rows": "2",

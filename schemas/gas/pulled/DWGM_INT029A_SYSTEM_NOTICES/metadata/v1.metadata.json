@@ -48,8 +48,8 @@
         {
           "id": 1,
           "name": "SYSTEM_WIDE_NOTICE_ID",
-          "required": false,
-          "type": "decimal(5, 0)"
+          "required": true,
+          "type": "long"
         },
         {
           "id": 2,
@@ -94,7 +94,9 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [],
+      "identifier-field-ids": [
+        1
+      ],
       "schema-id": 0,
       "type": "struct"
     }
@@ -115,20 +117,20 @@
       "snapshot-id": 3248816567870203441,
       "summary": {
         "operation": "append",
-        "utilake.files": "92",
+        "utilake.files": "98",
         "utilake.from.file": "PublicRpts31.zip",
         "utilake.from.release": "2026-08",
         "utilake.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
         "utilake.from.time": "2026-07-27T00:00:00+10:00",
-        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.kinds": "[\"dwgm\"]",
         "utilake.report-subtype": "INT029A_SYSTEM_NOTICES_1",
         "utilake.report-type": "DWGM",
-        "utilake.rows": "88",
-        "utilake.to.file": "int029a_v4_system_notices_1.csv@20261021T191100+1000",
+        "utilake.rows": "106",
+        "utilake.to.file": "int029a_v4_system_notices_1.csv@20261024T113400+1000",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "a34c4e94842caa74d8b8a27a6b93d90ba8898e6eb606bb2373ab808d884c403c",
-        "utilake.to.time": "2026-10-21T00:00:00+10:00",
-        "utilake.total-rows": "88",
+        "utilake.to.sha256": "04c1b3db11b0c87007dfcc36e0667403d7c619183dca8529243269fca2646a70",
+        "utilake.to.time": "2026-10-23T00:00:00+10:00",
+        "utilake.total-rows": "106",
         "utilake.version": "4"
       },
       "timestamp-ms": 1785506400000

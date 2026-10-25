@@ -147,7 +147,7 @@
         "utilake.from.release": "2009-07",
         "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
         "utilake.from.time": "2009-06-19T08:40:12+10:00",
-        "utilake.kinds": "[\"archive\",\"dvd\",\"reports/archive\",\"reports/current\"]",
+        "utilake.kinds": "[\"archive\",\"dvd\",\"reports\"]",
         "utilake.report-subtype": "REGIONEXPORTS",
         "utilake.report-type": "BILLING",
         "utilake.rows": "87152",

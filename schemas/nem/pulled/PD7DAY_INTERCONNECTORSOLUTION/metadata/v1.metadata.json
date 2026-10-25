@@ -217,7 +217,7 @@
         "utilake.from.release": "2024-08",
         "utilake.from.sha256": "9f10df015d46237b6c6012e2403447900f4c5c316ce63b1f4d111f9dc9f186f5",
         "utilake.from.time": "2024-04-23T18:00:00+10:00",
-        "utilake.kinds": "[\"archive\",\"reports/current\"]",
+        "utilake.kinds": "[\"archive\",\"reports\"]",
         "utilake.report-subtype": "INTERCONNECTORSOLUTION",
         "utilake.report-type": "PD7DAY",
         "utilake.rows": "58232912",

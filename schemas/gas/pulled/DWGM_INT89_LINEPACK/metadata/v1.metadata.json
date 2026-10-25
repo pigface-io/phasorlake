@@ -134,7 +134,7 @@
         "utilake.from.file": "int89_linepack_1.csv",
         "utilake.from.release": "2026-05",
         "utilake.from.sha256": "edb8e5bf5807fe94b5724e4604a36ce2b4fd09d4780ab1c6067898fbefbc5178",
-        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.kinds": "[\"dwgm\"]",
         "utilake.report-subtype": "INT89_LINEPACK_1",
         "utilake.report-type": "DWGM",
         "utilake.rows": "0",

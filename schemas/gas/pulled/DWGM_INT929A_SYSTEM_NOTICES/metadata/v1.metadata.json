@@ -120,7 +120,7 @@
         "utilake.from.release": "2026-10",
         "utilake.from.sha256": "035e93484ede99a2e46e8e4123e1dec40b13b33226e4af159409e8b194abf36f",
         "utilake.from.time": "2026-06-28T00:00:00+10:00",
-        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.kinds": "[\"dwgm\"]",
         "utilake.report-subtype": "INT929A_SYSTEM_NOTICES_1",
         "utilake.report-type": "DWGM",
         "utilake.rows": "4",

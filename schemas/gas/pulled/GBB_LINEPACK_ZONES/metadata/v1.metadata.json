@@ -88,7 +88,7 @@
         "utilake.from.file": "GasBBLinepackZones.CSV",
         "utilake.from.release": "2026-10",
         "utilake.from.sha256": "bd019316c5a2a9a73f94216e308469624b196841acff655fc11b54dbb61574d5",
-        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.kinds": "[\"gbb\"]",
         "utilake.report-subtype": "LINEPACK_ZONES",
         "utilake.report-type": "GBB",
         "utilake.rows": "56",

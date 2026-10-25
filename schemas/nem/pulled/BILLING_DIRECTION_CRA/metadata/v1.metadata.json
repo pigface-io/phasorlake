@@ -1,13 +1,13 @@
 {
-  "current-schema-id": 1,
-  "current-snapshot-id": 1312319332031163135,
+  "current-schema-id": 0,
+  "current-snapshot-id": 1422235458350109103,
   "default-sort-order-id": 0,
   "default-spec-id": 0,
   "format-version": 3,
-  "last-column-id": 10,
+  "last-column-id": 7,
   "last-partition-id": 999,
-  "last-sequence-number": 2,
-  "last-updated-ms": 1790776800001,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1619791200000,
   "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BILLING_DIRECTION_CRA",
   "metadata-log": [],
   "next-row-id": 0,
@@ -18,14 +18,13 @@
     }
   ],
   "properties": {
-    "utilake.breaks": "[{\"column\":\"NSW\",\"old-field-id\":3,\"old-type\":\"decimal(6, 6)\",\"new-field-id\":8,\"new-type\":\"decimal(11, 6)\",\"at\":{\"file\":\"PUBLIC_BILLING_DIRECT_FINAL_CRA_SPLIT_CAT_REG_2026Week11_20261008115308.zip\",\"sha256\":\"ba4317df9e2924bb862857d976d98fca8a052b96193fe8095eae856198766414\",\"release\":\"2026-10\",\"data-time\":null}},{\"column\":\"QLD\",\"old-field-id\":4,\"old-type\":\"decimal(6, 6)\",\"new-field-id\":9,\"new-type\":\"decimal(11, 6)\",\"at\":{\"file\":\"PUBLIC_BILLING_DIRECT_FINAL_CRA_SPLIT_CAT_REG_2026Week11_20261008115308.zip\",\"sha256\":\"ba4317df9e2924bb862857d976d98fca8a052b96193fe8095eae856198766414\",\"release\":\"2026-10\",\"data-time\":null}},{\"column\":\"VIC\",\"old-field-id\":7,\"old-type\":\"decimal(6, 6)\",\"new-field-id\":10,\"new-type\":\"decimal(11, 6)\",\"at\":{\"file\":\"PUBLIC_BILLING_DIRECT_FINAL_CRA_SPLIT_CAT_REG_2026Week11_20261008115308.zip\",\"sha256\":\"ba4317df9e2924bb862857d976d98fca8a052b96193fe8095eae856198766414\",\"release\":\"2026-10\",\"data-time\":null}}]",
     "utilake.declared": "false",
     "utilake.format": "3",
     "utilake.table": "BILLING_DIRECTION_CRA"
   },
   "refs": {
     "main": {
-      "snapshot-id": 1312319332031163135,
+      "snapshot-id": 1422235458350109103,
       "type": "branch"
     }
   },
@@ -48,13 +47,13 @@
           "id": 3,
           "name": "NSW",
           "required": false,
-          "type": "decimal(6, 6)"
+          "type": "decimal(11, 6)"
         },
         {
           "id": 4,
           "name": "QLD",
           "required": false,
-          "type": "decimal(6, 6)"
+          "type": "decimal(11, 6)"
         },
         {
           "id": 5,
@@ -72,60 +71,11 @@
           "id": 7,
           "name": "VIC",
           "required": false,
-          "type": "decimal(6, 6)"
+          "type": "decimal(11, 6)"
         }
       ],
       "identifier-field-ids": [],
       "schema-id": 0,
-      "type": "struct"
-    },
-    {
-      "fields": [
-        {
-          "id": 1,
-          "name": "DIRECTION_ID",
-          "required": false,
-          "type": "string"
-        },
-        {
-          "id": 2,
-          "name": "PARTICIPANT CATEGORY",
-          "required": false,
-          "type": "string"
-        },
-        {
-          "id": 8,
-          "name": "NSW",
-          "required": false,
-          "type": "decimal(11, 6)"
-        },
-        {
-          "id": 9,
-          "name": "QLD",
-          "required": false,
-          "type": "decimal(11, 6)"
-        },
-        {
-          "id": 5,
-          "name": "SA",
-          "required": false,
-          "type": "decimal(12, 6)"
-        },
-        {
-          "id": 6,
-          "name": "TAS",
-          "required": false,
-          "type": "decimal(6, 6)"
-        },
-        {
-          "id": 10,
-          "name": "VIC",
-          "required": false,
-          "type": "decimal(11, 6)"
-        }
-      ],
-      "identifier-field-ids": [],
-      "schema-id": 1,
       "type": "struct"
     }
   ],
@@ -133,10 +83,6 @@
     {
       "snapshot-id": 1422235458350109103,
       "timestamp-ms": 1619791200000
-    },
-    {
-      "snapshot-id": 1312319332031163135,
-      "timestamp-ms": 1790776800001
     }
   ],
   "snapshots": [
@@ -149,47 +95,21 @@
       "snapshot-id": 1422235458350109103,
       "summary": {
         "operation": "append",
-        "utilake.files": "10",
+        "utilake.files": "18",
         "utilake.from.file": "PUBLIC_BILLING_DIRECT_PROV_CRA_SPLIT_CAT_REG_2021Week17_20210519110609.zip",
         "utilake.from.release": "2021-05",
         "utilake.from.sha256": "4b545f104684ce0ed751b5fb13074eeb23c4ef694b4502cf5c99b4646ec707e5",
-        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.kinds": "[\"reports\"]",
         "utilake.report-subtype": "DIRECTION_CRA",
         "utilake.report-type": "BILLING",
-        "utilake.rows": "48",
-        "utilake.to.file": "PUBLIC_BILLING_DIRECT_PROV_CRA_SPLIT_CAT_REG_2026Week35_20260925125748.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "01506215374cb13d954b84183395e9d5046641d5616e6497f9a416b066a06da6",
-        "utilake.total-rows": "48",
-        "utilake.version": "1"
-      },
-      "timestamp-ms": 1619791200000
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BILLING_DIRECTION_CRA/metadata/snap-1312319332031163135-2-91ea92b6-1c68-8a60-807f-8db7135d0f6b.avro",
-      "parent-snapshot-id": 1422235458350109103,
-      "schema-id": 1,
-      "sequence-number": 2,
-      "snapshot-id": 1312319332031163135,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "8",
-        "utilake.from.file": "PUBLIC_BILLING_DIRECT_FINAL_CRA_SPLIT_CAT_REG_2026Week11_20261008115308.zip",
-        "utilake.from.release": "2026-10",
-        "utilake.from.sha256": "ba4317df9e2924bb862857d976d98fca8a052b96193fe8095eae856198766414",
-        "utilake.kinds": "[\"reports/current\"]",
-        "utilake.report-subtype": "DIRECTION_CRA",
-        "utilake.report-type": "BILLING",
-        "utilake.rows": "190",
+        "utilake.rows": "238",
         "utilake.to.file": "PUBLIC_BILLING_DIRECT_PROV_CRA_SPLIT_CAT_REG_2026Week39_20261023113409.zip",
         "utilake.to.release": "2026-10",
         "utilake.to.sha256": "02e62b456ec26fc74dc87f24fc611684198ffae3700023b405ad980a4d7196c6",
         "utilake.total-rows": "238",
         "utilake.version": "1"
       },
-      "timestamp-ms": 1790776800001
+      "timestamp-ms": 1619791200000
     }
   ],
   "sort-orders": [

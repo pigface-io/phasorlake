@@ -112,7 +112,7 @@
         "utilake.from.release": "2009-09",
         "utilake.from.sha256": "9cf326f7fabd7b91220c5950a2de3fdb28d9c7b97f1a4045f8075ad7b3abaaf5",
         "utilake.from.time": "2009-09-11T19:25:00+10:00",
-        "utilake.kinds": "[\"archive\",\"dvd\",\"reports/archive\",\"reports/current\"]",
+        "utilake.kinds": "[\"archive\",\"dvd\",\"reports\"]",
         "utilake.report-subtype": "PRICE_REVISION",
         "utilake.report-type": "PRICELOAD",
         "utilake.rows": "39754",

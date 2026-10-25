@@ -48,8 +48,8 @@
         {
           "id": 1,
           "name": "GENERAL_INFORMATION_ID",
-          "required": false,
-          "type": "decimal(1, 0)"
+          "required": true,
+          "type": "long"
         },
         {
           "id": 2,
@@ -124,7 +124,9 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [],
+      "identifier-field-ids": [
+        1
+      ],
       "schema-id": 0,
       "type": "struct"
     }
@@ -150,7 +152,7 @@
         "utilake.from.release": "2026-10",
         "utilake.from.sha256": "4846d8c1790cc5f552589656a22716710b2fe8c4e7a57c33f5bbdf95e7858734",
         "utilake.from.time": "1998-06-23T00:00:00+10:00",
-        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.kinds": "[\"dwgm\"]",
         "utilake.report-subtype": "INT256_MCE_FACTOR_1",
         "utilake.report-type": "DWGM",
         "utilake.rows": "7",

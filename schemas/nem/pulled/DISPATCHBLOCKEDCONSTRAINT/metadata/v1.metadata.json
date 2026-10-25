@@ -96,7 +96,7 @@
         "utilake.from.release": "2024-09",
         "utilake.from.sha256": "76637d754a9a4f519e8435c0deccaeab710157ace6c7f38f788cc470e9fb7fb8",
         "utilake.from.time": "2024-09-24T12:45:00+10:00",
-        "utilake.kinds": "[\"archive\",\"reports/archive\"]",
+        "utilake.kinds": "[\"archive\",\"reports\"]",
         "utilake.report-subtype": "BLOCKED_CONSTRAINTS",
         "utilake.report-type": "DISPATCH",
         "utilake.rows": "13788",

@@ -149,7 +149,7 @@
         "utilake.from.release": "2025-10",
         "utilake.from.sha256": "a2950aa92784afe780ac6acaff65195e97455b891085ecce355d7628c91990a4",
         "utilake.from.time": "2025-10-05T20:31:01+10:00",
-        "utilake.kinds": "[\"gsh/archive\"]",
+        "utilake.kinds": "[\"gsh\"]",
         "utilake.report-subtype": "AUCTION_CURTAILMENT_NOTICE",
         "utilake.report-type": "GSH",
         "utilake.rows": "1697",

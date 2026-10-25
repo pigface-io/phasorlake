@@ -58,14 +58,14 @@
           "doc": "A unique AEMO defined Field Interest Identifier",
           "id": 2,
           "name": "FIELDINTERESTID",
-          "required": false,
-          "type": "decimal(6, 0)"
+          "required": true,
+          "type": "long"
         },
         {
           "id": 3,
           "name": "COMPANYID",
-          "required": false,
-          "type": "decimal(3, 0)"
+          "required": true,
+          "type": "long"
         },
         {
           "id": 4,
@@ -93,7 +93,10 @@
           "type": "date"
         }
       ],
-      "identifier-field-ids": [],
+      "identifier-field-ids": [
+        2,
+        3
+      ],
       "schema-id": 0,
       "type": "struct"
     }
@@ -119,7 +122,7 @@
         "utilake.from.release": "2026-10",
         "utilake.from.sha256": "d5415103cd7d9a95d14e8148c0635edff94e90f4dcf387494ceaa5c8b195a5e2",
         "utilake.from.time": "2023-03-15T00:00:00+10:00",
-        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.kinds": "[\"gbb\"]",
         "utilake.report-subtype": "GAS_FIELD_INTEREST",
         "utilake.report-type": "GBB",
         "utilake.rows": "3163",

@@ -243,7 +243,7 @@
         "utilake.from.release": "2026-01",
         "utilake.from.sha256": "da63f7626735bdecb6bf4ba7e10a867938e9bd46631013e3c94bc88b96e4c032",
         "utilake.from.time": "2026-01-02T15:22:18+10:00",
-        "utilake.kinds": "[\"gsh/archive\"]",
+        "utilake.kinds": "[\"gsh\"]",
         "utilake.report-subtype": "CAPACITY_TRANSACTION",
         "utilake.report-type": "GSH",
         "utilake.rows": "1",

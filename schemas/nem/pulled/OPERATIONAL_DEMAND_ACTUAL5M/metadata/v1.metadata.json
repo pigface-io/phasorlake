@@ -94,7 +94,7 @@
         "utilake.from.release": "2026-10",
         "utilake.from.sha256": "fd29cb19aa1afad686e1dfc96f842d5e6002be2dc8832f0d83211294a18f9b17",
         "utilake.from.time": "2025-10-19T00:05:00+10:00",
-        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.kinds": "[\"reports\"]",
         "utilake.report-subtype": "ACTUAL5M",
         "utilake.report-type": "OPERATIONAL_DEMAND",
         "utilake.rows": "93155550",

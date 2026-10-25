@@ -49,8 +49,8 @@
           "doc": "A unique AEMO defined Facility Identifier",
           "id": 1,
           "name": "BASINID",
-          "required": false,
-          "type": "decimal(5, 0)"
+          "required": true,
+          "type": "long"
         },
         {
           "doc": "The name of the basin. If short name exists then short name included in report",
@@ -60,7 +60,9 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [],
+      "identifier-field-ids": [
+        1
+      ],
       "schema-id": 0,
       "type": "struct"
     }
@@ -85,7 +87,7 @@
         "utilake.from.file": "GasBBBasins.csv",
         "utilake.from.release": "2026-10",
         "utilake.from.sha256": "3b4cbc9ecc3017f3d9375f253db43159e7056c8ae130a8de3baa65f5ce8f67d7",
-        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.kinds": "[\"gbb\"]",
         "utilake.report-subtype": "BASINS",
         "utilake.report-type": "GBB",
         "utilake.rows": "15",

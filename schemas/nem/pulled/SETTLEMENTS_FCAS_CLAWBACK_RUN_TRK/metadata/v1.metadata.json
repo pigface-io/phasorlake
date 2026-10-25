@@ -100,7 +100,7 @@
         "utilake.from.release": "2026-01",
         "utilake.from.sha256": "7ae6cfef2822db4f4fce7677ac6bc6face49a7f31bf24652915a20f37270465f",
         "utilake.from.time": "2025-07-06T07:50:00+10:00",
-        "utilake.kinds": "[\"archive\",\"reports/current\"]",
+        "utilake.kinds": "[\"archive\",\"reports\"]",
         "utilake.report-subtype": "FCAS_CLAWBACK_RUN_TRK",
         "utilake.report-type": "SETTLEMENTS",
         "utilake.rows": "66617",

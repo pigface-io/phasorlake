@@ -47,8 +47,8 @@
         {
           "id": 1,
           "name": "COMPANY_ID",
-          "required": false,
-          "type": "decimal(3, 0)"
+          "required": true,
+          "type": "long"
         },
         {
           "id": 2,
@@ -147,7 +147,9 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [],
+      "identifier-field-ids": [
+        1
+      ],
       "schema-id": 0,
       "type": "struct"
     },
@@ -156,8 +158,8 @@
         {
           "id": 1,
           "name": "COMPANY_ID",
-          "required": false,
-          "type": "decimal(3, 0)"
+          "required": true,
+          "type": "long"
         },
         {
           "id": 2,
@@ -268,7 +270,9 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [],
+      "identifier-field-ids": [
+        1
+      ],
       "schema-id": 1,
       "type": "struct"
     }
@@ -298,7 +302,7 @@
         "utilake.from.release": "2026-05",
         "utilake.from.sha256": "f5f908ff550228c798ab5a9019c622ae3c6d309a79147e86232e42375e613e5e",
         "utilake.from.time": "2013-04-16T09:01:04+10:00",
-        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.kinds": "[\"dwgm\"]",
         "utilake.report-subtype": "INT125_DETAILS_OF_ORGANISATIONS_1",
         "utilake.report-type": "DWGM",
         "utilake.rows": "353",
@@ -321,20 +325,20 @@
       "snapshot-id": 4649441393267054268,
       "summary": {
         "operation": "append",
-        "utilake.files": "34",
+        "utilake.files": "37",
         "utilake.from.file": "PublicRpts31.zip",
         "utilake.from.release": "2026-08",
         "utilake.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
         "utilake.from.time": "2026-08-31T09:00:01+10:00",
-        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.kinds": "[\"dwgm\"]",
         "utilake.report-subtype": "INT125_DETAILS_OF_ORGANISATIONS_1",
         "utilake.report-type": "DWGM",
-        "utilake.rows": "849",
-        "utilake.to.file": "int125_v8_details_of_organisations_1.csv@20261021T191100+1000",
+        "utilake.rows": "855",
+        "utilake.to.file": "int125_v8_details_of_organisations_1.csv@20261024T113400+1000",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "ada93856250a8b82edae5fb4ca63405c8c243f42ebdd479e5b8657448156c164",
-        "utilake.to.time": "2026-10-21T09:00:02+10:00",
-        "utilake.total-rows": "1202",
+        "utilake.to.sha256": "572ad00f11c8b5e60a56e72aa26a4235c41691648419ca3b9409311c99cc3c95",
+        "utilake.to.time": "2026-10-24T09:00:01+10:00",
+        "utilake.total-rows": "1208",
         "utilake.version": "8"
       },
       "timestamp-ms": 1785506400001

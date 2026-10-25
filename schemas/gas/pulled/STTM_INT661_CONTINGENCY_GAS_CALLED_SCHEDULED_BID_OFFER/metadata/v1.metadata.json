@@ -180,7 +180,7 @@
         "utilake.from.release": "2026-10",
         "utilake.from.sha256": "ad4d8e9745c53de8d8d0f569454d5683af01e227be27a8a7ff6069f6376e0449",
         "utilake.from.time": "2010-05-27T00:00:00+10:00",
-        "utilake.kinds": "[\"sttm/current\"]",
+        "utilake.kinds": "[\"sttm\"]",
         "utilake.report-subtype": "INT661_CONTINGENCY_GAS_CALLED_SCHEDULED_BID_OFFER_RPT_1",
         "utilake.report-type": "STTM",
         "utilake.rows": "9",

@@ -116,7 +116,7 @@
         "utilake.from.release": "2026-10",
         "utilake.from.sha256": "7f4a42f5e448340a71eb487ce3e838eda3c50b2cdc31bc7daedc1193b67e00db",
         "utilake.from.time": "2023-03-15T00:00:00+10:00",
-        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.kinds": "[\"gbb\"]",
         "utilake.report-subtype": "LNG_SHIPMENTS",
         "utilake.report-type": "GBB",
         "utilake.rows": "2113",

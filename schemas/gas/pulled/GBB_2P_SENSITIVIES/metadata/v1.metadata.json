@@ -92,7 +92,7 @@
         "utilake.from.file": "GasBB2PSensitivies_20230705.csv",
         "utilake.from.release": "2023-07",
         "utilake.from.sha256": "8d289d78d158660cede09225c27bcb62262b2e166fc5877ace001f2eccb0de12",
-        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.kinds": "[\"gbb\"]",
         "utilake.report-subtype": "2P_SENSITIVIES",
         "utilake.report-type": "GBB",
         "utilake.rows": "164",

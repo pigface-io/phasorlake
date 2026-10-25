@@ -88,7 +88,7 @@
         "utilake.from.release": "2024-09",
         "utilake.from.sha256": "8fa6ca84543488604282024134a62174266d9ba62fca16c0d84a31a22776e5c0",
         "utilake.from.time": "2024-09-24T12:45:00+10:00",
-        "utilake.kinds": "[\"archive\",\"reports/archive\"]",
+        "utilake.kinds": "[\"archive\",\"reports\"]",
         "utilake.report-subtype": "BLOCKED_CONSTRAINTS",
         "utilake.report-type": "P5MIN",
         "utilake.rows": "13830",

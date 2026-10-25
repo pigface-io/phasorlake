@@ -120,7 +120,7 @@
         "utilake.from.release": "2026-10",
         "utilake.from.sha256": "d5329e6218fe85edcf8958566e9d84e3b9b36d79e15818ea6d38cf289019fe20",
         "utilake.from.time": "2026-05-16T00:00:00+10:00",
-        "utilake.kinds": "[\"sttm/current\"]",
+        "utilake.kinds": "[\"sttm\"]",
         "utilake.report-subtype": "INT675_DEFAULT_ALLOCATION_NOTICE_RPT_1",
         "utilake.report-type": "STTM",
         "utilake.rows": "1",

@@ -100,11 +100,11 @@
       "snapshot-id": 6212922200941735380,
       "summary": {
         "operation": "append",
-        "utilake.files": "33",
+        "utilake.files": "35",
         "utilake.from.file": "PublicRpts31.zip",
         "utilake.from.release": "2026-08",
         "utilake.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
-        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.kinds": "[\"dwgm\"]",
         "utilake.report-subtype": "INT039B_INDICATIVE_LOCATIONAL_PRICE_1",
         "utilake.report-type": "DWGM",
         "utilake.rows": "0",

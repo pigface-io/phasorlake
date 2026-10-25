@@ -207,7 +207,7 @@
         "utilake.from.release": "2026-10",
         "utilake.from.sha256": "6fa977f077f791091008b48670d921cad609571279e2213e6aafa6b305bfae81",
         "utilake.from.time": "2025-06-19T00:00:00+10:00",
-        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.kinds": "[\"gbb\"]",
         "utilake.report-subtype": "BLEND_CURTAILMENT",
         "utilake.report-type": "GBB",
         "utilake.rows": "16",

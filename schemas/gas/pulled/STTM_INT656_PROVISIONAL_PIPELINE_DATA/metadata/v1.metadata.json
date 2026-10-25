@@ -1,6 +1,6 @@
 {
   "current-schema-id": 0,
-  "current-snapshot-id": 6230970159295608018,
+  "current-snapshot-id": 946241950765618830,
   "default-sort-order-id": 0,
   "default-spec-id": 0,
   "format-version": 3,
@@ -38,7 +38,7 @@
   },
   "refs": {
     "main": {
-      "snapshot-id": 6230970159295608018,
+      "snapshot-id": 946241950765618830,
       "type": "branch"
     }
   },
@@ -206,7 +206,7 @@
       "timestamp-ms": 1790776800001
     },
     {
-      "snapshot-id": 6230970159295608018,
+      "snapshot-id": 946241950765618830,
       "timestamp-ms": 1790776800002
     }
   ],
@@ -225,15 +225,15 @@
         "utilake.from.release": "2026-08",
         "utilake.from.sha256": "ae9eda135c5f3c28548b31911da9dcc65c767009ef5b7d16ceee4cce2755509e",
         "utilake.from.time": "2026-08-27T00:00:00+10:00",
-        "utilake.kinds": "[\"sttm/current\"]",
+        "utilake.kinds": "[\"sttm\"]",
         "utilake.report-subtype": "INT656_PROVISIONAL_PIPELINE_DATA_RPT_1",
         "utilake.report-type": "STTM",
-        "utilake.rows": "496",
+        "utilake.rows": "704",
         "utilake.to.file": "Day30.zip",
         "utilake.to.release": "2026-09",
         "utilake.to.sha256": "cf4981d5315499b11dabe341b590c7f2c87c874365834d08431241d7996a598e",
         "utilake.to.time": "2026-10-03T00:00:00+10:00",
-        "utilake.total-rows": "496",
+        "utilake.total-rows": "704",
         "utilake.version": "2"
       },
       "timestamp-ms": 1785506400000
@@ -253,7 +253,7 @@
         "utilake.from.release": "2026-10",
         "utilake.from.sha256": "b961d2c76f349ad826653661baa88ee67cd5bd97ed7a197849d5d4c5af0ae723",
         "utilake.from.time": "2011-06-11T00:00:00+10:00",
-        "utilake.kinds": "[\"sttm/current\"]",
+        "utilake.kinds": "[\"sttm\"]",
         "utilake.report-subtype": "INT656_PROVISIONAL_PIPELINE_DATA_RPT_1",
         "utilake.report-type": "STTM",
         "utilake.rows": "75",
@@ -261,7 +261,7 @@
         "utilake.to.release": "2026-10",
         "utilake.to.sha256": "b961d2c76f349ad826653661baa88ee67cd5bd97ed7a197849d5d4c5af0ae723",
         "utilake.to.time": "2011-06-18T00:00:00+10:00",
-        "utilake.total-rows": "571",
+        "utilake.total-rows": "779",
         "utilake.version": "1"
       },
       "timestamp-ms": 1790776800001
@@ -269,27 +269,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/STTM_INT656_PROVISIONAL_PIPELINE_DATA/metadata/snap-6230970159295608018-3-34ef3048-9e95-88b0-b744-dfc4d67e2654.avro",
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/STTM_INT656_PROVISIONAL_PIPELINE_DATA/metadata/snap-946241950765618830-3-34ef3048-9e95-88b0-b744-dfc4d67e2654.avro",
       "parent-snapshot-id": 5694289171211128659,
       "schema-id": 0,
       "sequence-number": 3,
-      "snapshot-id": 6230970159295608018,
+      "snapshot-id": 946241950765618830,
       "summary": {
         "operation": "append",
-        "utilake.files": "90",
-        "utilake.from.file": "CurrentDay.zip",
+        "utilake.files": "104",
+        "utilake.from.file": "Day21.zip@20261024T114600+1000",
         "utilake.from.release": "2026-10",
-        "utilake.from.sha256": "dfafa8bc46e4792c6a997d432968550a1e39614f9ad96c9d55086f0efba64988",
-        "utilake.from.time": "2026-09-27T00:00:00+10:00",
-        "utilake.kinds": "[\"sttm/current\"]",
+        "utilake.from.sha256": "40459ebda4199a71718873864979344c5204f2c3b0273261cbc6496d429be623",
+        "utilake.from.time": "2026-10-17T00:00:00+10:00",
+        "utilake.kinds": "[\"sttm\"]",
         "utilake.report-subtype": "INT656_PROVISIONAL_PIPELINE_DATA_RPT_1",
         "utilake.report-type": "STTM",
-        "utilake.rows": "824",
-        "utilake.to.file": "int656_v2_provisional_pipeline_data_rpt_1.csv@20261021T191600+1000",
+        "utilake.rows": "1176",
+        "utilake.to.file": "int656_v2_provisional_pipeline_data_rpt_1.csv@20261024T113100+1000",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "cf53db6bfa104ffcb93e904737e059c3b25796d478bcdcb2a38821adc001aec1",
-        "utilake.to.time": "2026-10-24T00:00:00+10:00",
-        "utilake.total-rows": "1395",
+        "utilake.to.sha256": "a35bc79512d78c5961a95939827066110b729e1d5b6ad4b4fd38bbf007ade3f7",
+        "utilake.to.time": "2026-10-27T00:00:00+10:00",
+        "utilake.total-rows": "1955",
         "utilake.version": "2"
       },
       "timestamp-ms": 1790776800002

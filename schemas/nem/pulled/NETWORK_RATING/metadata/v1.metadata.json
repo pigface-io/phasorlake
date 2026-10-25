@@ -146,7 +146,7 @@
         "utilake.from.release": "2024-08",
         "utilake.from.sha256": "3c5168180570804fe66cff03e62dcf60c0f4ee62256bff5ade3fafd304e667fa",
         "utilake.from.time": "2007-07-09T12:00:00+10:00",
-        "utilake.kinds": "[\"archive\",\"reports/archive\",\"reports/current\"]",
+        "utilake.kinds": "[\"archive\",\"reports\"]",
         "utilake.report-subtype": "RATING",
         "utilake.report-type": "NETWORK",
         "utilake.rows": "1065636",

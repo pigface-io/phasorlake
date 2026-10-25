@@ -122,7 +122,7 @@
         "utilake.from.file": "int310_v1_price_and_withdrawals_rpt_1.csv",
         "utilake.from.release": "2026-10",
         "utilake.from.sha256": "92fcbeeb51dcd1f564ff79d38e3a085da4e9ad5b14ef043285dec6e4646574f4",
-        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.kinds": "[\"dwgm\"]",
         "utilake.report-subtype": "INT310_PRICE_AND_WITHDRAWALS_RPT_1",
         "utilake.report-type": "DWGM",
         "utilake.rows": "0",

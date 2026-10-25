@@ -74,7 +74,7 @@
         "utilake.from.file": "int157_13.csv",
         "utilake.from.release": "2026-05",
         "utilake.from.sha256": "794f67574a1ec184923576af272a91fb5eb2babfbda295ee045a8ce6bd53d318",
-        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.kinds": "[\"dwgm\"]",
         "utilake.report-subtype": "INT157_13",
         "utilake.report-type": "DWGM",
         "utilake.rows": "36",

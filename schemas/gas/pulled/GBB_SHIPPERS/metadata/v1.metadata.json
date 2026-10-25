@@ -59,8 +59,8 @@
           "doc": "A unique AEMO defined Facility Identifier",
           "id": 2,
           "name": "FACILITYID",
-          "required": false,
-          "type": "decimal(6, 0)"
+          "required": true,
+          "type": "long"
         },
         {
           "id": 3,
@@ -77,8 +77,8 @@
         {
           "id": 5,
           "name": "COMPANYID",
-          "required": false,
-          "type": "decimal(3, 0)"
+          "required": true,
+          "type": "long"
         },
         {
           "id": 6,
@@ -100,7 +100,10 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [],
+      "identifier-field-ids": [
+        2,
+        5
+      ],
       "schema-id": 0,
       "type": "struct"
     }
@@ -126,7 +129,7 @@
         "utilake.from.release": "2026-10",
         "utilake.from.sha256": "a87a124d620a8bf81341f5c5015acb30dfe807e84627bfbd13854ef021d4c336",
         "utilake.from.time": "2023-01-01T00:00:00+10:00",
-        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.kinds": "[\"gbb\"]",
         "utilake.report-subtype": "SHIPPERS_FULL_LIST",
         "utilake.report-type": "GBB",
         "utilake.rows": "5412",

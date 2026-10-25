@@ -1,11 +1,20 @@
 {
   "folders": [
     {
+      "blocks": [],
+      "feed": "reports",
+      "folder": "ANCILLARY_SERVICES_REPORTS",
+      "listings": [
+        "CURRENT"
+      ],
+      "root": "Reports"
+    },
+    {
       "blocks": [
         {
           "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 11,
+          "last-release": "2026-10",
+          "months": 13,
           "report": [
             "DISPATCH",
             "INTERCONNECTION"
@@ -14,8 +23,8 @@
         },
         {
           "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 11,
+          "last-release": "2026-10",
+          "months": 13,
           "report": [
             "DISPATCH",
             "PRICE"
@@ -54,8 +63,8 @@
         },
         {
           "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 11,
+          "last-release": "2026-10",
+          "months": 13,
           "report": [
             "TRADING",
             "PRICE"
@@ -64,16 +73,55 @@
         }
       ],
       "feed": "reports",
-      "folder": "ARCHIVE/Adjusted_Prices_Reports",
-      "listings": [],
+      "folder": "Adjusted_Prices_Reports",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
+      "root": "Reports"
+    },
+    {
+      "blocks": [],
+      "feed": "reports",
+      "folder": "Alt_Limits",
+      "listings": [
+        "CURRENT"
+      ],
+      "root": "Reports"
+    },
+    {
+      "blocks": [],
+      "feed": "reports",
+      "folder": "Ancillary_Services_Payments",
+      "listings": [
+        "CURRENT"
+      ],
+      "root": "Reports"
+    },
+    {
+      "blocks": [],
+      "feed": "reports",
+      "folder": "Ancillary_Services_Payments/DUPLICATE",
+      "listings": [
+        "CURRENT"
+      ],
+      "root": "Reports"
+    },
+    {
+      "blocks": [],
+      "feed": "reports",
+      "folder": "Auction_Units_Reports",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
           "first-release": "2025-09",
-          "last-release": "2026-09",
-          "months": 13,
+          "last-release": "2026-10",
+          "months": 14,
           "report": [
             "BID",
             "BIDDAYOFFER_D"
@@ -82,8 +130,8 @@
         },
         {
           "first-release": "2025-09",
-          "last-release": "2026-09",
-          "months": 13,
+          "last-release": "2026-10",
+          "months": 14,
           "report": [
             "BID",
             "BIDPEROFFER_D"
@@ -92,2299 +140,11 @@
         }
       ],
       "feed": "reports",
-      "folder": "ARCHIVE/Bidmove_Complete",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-09",
-          "months": 13,
-          "report": [
-            "BILLING",
-            "BILLING_DIRECTION_RECON_OTHER"
-          ],
-          "version": 2
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-09",
-          "months": 13,
-          "report": [
-            "BILLING",
-            "DAYTRK"
-          ],
-          "version": 5
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "BILLING",
-            "NMAS_TST_RECVRY_RBF"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "BILLING",
-            "NMAS_TST_RECVRY_TRK"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-09",
-          "months": 13,
-          "report": [
-            "BILLING",
-            "REGIONEXPORTS"
-          ],
-          "version": 5
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-09",
-          "months": 13,
-          "report": [
-            "BILLING",
-            "REGIONFIGURES"
-          ],
-          "version": 6
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-09",
-          "months": 13,
-          "report": [
-            "BILLING",
-            "REGIONIMPORTS"
-          ],
-          "version": 5
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-09",
-          "months": 13,
-          "report": [
-            "BILLING",
-            "RUNTRK"
-          ],
-          "version": 5
-        }
+      "folder": "Bidmove_Complete",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
       ],
-      "feed": "reports",
-      "folder": "ARCHIVE/Billing",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 13,
-          "report": [
-            "DISPATCH",
-            "FCAS_REQ_CONSTRAINT"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 13,
-          "report": [
-            "DISPATCH",
-            "FCAS_REQ_RUN"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/DISPATCHFCST",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "DISPATCH",
-            "CASESOLUTION"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "DISPATCH",
-            "REGIONFCASREQUIREMENT"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "DREGION",
-            ""
-          ],
-          "version": 2
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "DREGION",
-            ""
-          ],
-          "version": 3
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "DUNIT",
-            ""
-          ],
-          "version": 2
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "DUNIT",
-            ""
-          ],
-          "version": 3
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/Daily_Reports",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 11,
-          "report": [
-            "DISPATCH",
-            "BLOCKED_CONSTRAINTS"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 13,
-          "report": [
-            "DISPATCH",
-            "CASE_SOLUTION"
-          ],
-          "version": 2
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 13,
-          "report": [
-            "DISPATCH",
-            "CONSTRAINT"
-          ],
-          "version": 5
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 13,
-          "report": [
-            "DISPATCH",
-            "INTERCONNECTION"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 13,
-          "report": [
-            "DISPATCH",
-            "INTERCONNECTORRES"
-          ],
-          "version": 3
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 13,
-          "report": [
-            "DISPATCH",
-            "LOCAL_PRICE"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 13,
-          "report": [
-            "DISPATCH",
-            "PRICE"
-          ],
-          "version": 5
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 13,
-          "report": [
-            "DISPATCH",
-            "REGIONSUM"
-          ],
-          "version": 9
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/DispatchIS_Reports",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 13,
-          "report": [
-            "DISPATCH",
-            "IRSR"
-          ],
-          "version": 2
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/Dispatch_IRSR",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-05",
-          "months": 8,
-          "report": [
-            "DISPATCH",
-            "NEGATIVE_RESIDUE"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2026-05",
-          "last-release": "2026-10",
-          "months": 6,
-          "report": [
-            "DISPATCH",
-            "NEGATIVE_RESIDUE"
-          ],
-          "version": 2
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/Dispatch_Negative_Residue",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 13,
-          "report": [
-            "DCONS",
-            ""
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 13,
-          "report": [
-            "DINT",
-            ""
-          ],
-          "version": 4
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 13,
-          "report": [
-            "DISPATCH",
-            "CASESOLUTION"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 13,
-          "report": [
-            "DISPATCH",
-            "REGIONFCASREQUIREMENT"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 13,
-          "report": [
-            "DREGION",
-            ""
-          ],
-          "version": 3
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 13,
-          "report": [
-            "TINT",
-            ""
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/Dispatch_Reports",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 13,
-          "report": [
-            "DISPATCH",
-            "UNIT_SCADA"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/Dispatch_SCADA",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 13,
-          "report": [
-            "DISPATCH",
-            "PRE_AP_PRICE"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/Dispatchprices_PRE_AP",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-09",
-          "months": 14,
-          "report": [
-            "FPP",
-            "CONTRIBUTION_FACTOR"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-09",
-          "months": 14,
-          "report": [
-            "FPP",
-            "FPP_PERFORMANCE"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 30,
-          "report": [
-            "FPP",
-            "UNIT_MW"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/FPPDAILY",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "FPP",
-            "EST_PERF_COST_RATE"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "FPP",
-            "EST_RESIDUAL_COST_RATE"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "FPP",
-            "FCAS_SUMMARY"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/FPPRATES",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "FPP",
-            "CONSTRAINT_FREQ_MEASURE"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "FPP",
-            "FPP_RCR"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "FPP",
-            "FPP_RUN"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "FPP",
-            "FPP_USAGE"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "FPP",
-            "REGION_FREQ_MEASURE"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "FPP",
-            "RESIDUAL_CF"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "FPP",
-            "RESIDUAL_PERFORMANCE"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/FPPRUN",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "DEMAND",
-            "HISTORIC"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/HistDemand",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 13,
-          "report": [
-            "MCC",
-            "CASESOLUTION"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 13,
-          "report": [
-            "MCC",
-            "CONSTRAINTSOLUTION"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/MCCDispatch",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "MTPASA",
-            "DUIDAVAILABILITY"
-          ],
-          "version": 3
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/MTPASA_DUIDAvailability",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "MTPASA",
-            "REGIONAVAILABILITY"
-          ],
-          "version": 4
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "MTPASA",
-            "REGIONAVAILTRK"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/MTPASA_RegionAvailability",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "MTPASA",
-            "CASERESULT"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "MTPASA",
-            "CONSTRAINTRESULT"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "MTPASA",
-            "CONSTRAINTSUMMARY"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "MTPASA",
-            "INTERCONNECTORRESULT"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "MTPASA",
-            "LOLPRESULT"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "MTPASA",
-            "REGIONITERATION"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "MTPASA",
-            "REGIONRESULT"
-          ],
-          "version": 2
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "MTPASA",
-            "REGIONSUMMARY"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/Medium_Term_PASA_Reports",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "DEMAND",
-            "INTERMITTENT_CLUSTER_AVAIL"
-          ],
-          "version": 2
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "DEMAND",
-            "INTERMITTENT_CLUSTER_AVAIL_DAY"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/NEXT_DAY_AVAIL_SUBMISS_CLUSTER",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "DEMAND",
-            "INTERMITTENT_GEN_LIMIT"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "DEMAND",
-            "INTERMITTENT_GEN_LIMIT_DAY"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/NEXT_DAY_AVAIL_SUBMISS_DAY",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-09",
-          "months": 13,
-          "report": [
-            "MCC",
-            "CASESOLUTION"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-09",
-          "months": 13,
-          "report": [
-            "MCC",
-            "CONSTRAINTSOLUTION"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/NEXT_DAY_MCCDISPATCH",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "NETWORK",
-            "EQUIPMENTDETAIL"
-          ],
-          "version": 2
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "NETWORK",
-            "OUTAGECONSTRAINTSET"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "NETWORK",
-            "OUTAGEDETAIL"
-          ],
-          "version": 4
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "NETWORK",
-            "OUTAGESTATUSCODE"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "NETWORK",
-            "RATING"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "NETWORK",
-            "STATICRATING"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "NETWORK",
-            "SUBSTATIONDETAIL"
-          ],
-          "version": 2
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/Network",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "METER_DATA",
-            "GEN_DUID"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/Next_Day_Actual_Gen",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "DISPATCH",
-            "CONSTRAINT"
-          ],
-          "version": 5
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "DISPATCH",
-            "LOCAL_PRICE"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-06",
-          "months": 10,
-          "report": [
-            "DISPATCH",
-            "MNSPBIDTRK"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "DISPATCH",
-            "OFFERTRK"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2025-11",
-          "months": 3,
-          "report": [
-            "DISPATCH",
-            "UNIT_SOLUTION"
-          ],
-          "version": 5
-        },
-        {
-          "first-release": "2025-11",
-          "last-release": "2026-08",
-          "months": 10,
-          "report": [
-            "DISPATCH",
-            "UNIT_SOLUTION"
-          ],
-          "version": 6
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/Next_Day_Dispatch",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "DEMAND",
-            "INTERMITTENT_DS_PRED"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "DEMAND",
-            "INTERMITTENT_DS_RUN"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "DISPATCH",
-            "INTERMITTENT_FORECAST_TRK"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/Next_Day_Intermittent_DS",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "DEMAND",
-            "INTERMITTENT_GEN_SCADA"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/Next_Day_Intermittent_Gen_Scada",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "BIDS",
-            "BIDDAYOFFER"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "BIDS",
-            "BIDOFFERPERIOD_SPARSE"
-          ],
-          "version": 2
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-07",
-          "months": 11,
-          "report": [
-            "BIDS",
-            "MNSP_BIDOFFERPERIOD"
-          ],
-          "version": 2
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-07",
-          "months": 11,
-          "report": [
-            "BIDS",
-            "MNSP_DAYOFFER"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/Next_Day_Offer_Energy_SPARSE",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "BIDS",
-            "BIDDAYOFFER"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "BIDS",
-            "BIDOFFERPERIOD_SPARSE"
-          ],
-          "version": 2
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/Next_Day_Offer_FCAS_SPARSE",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-09",
-          "months": 13,
-          "report": [
-            "PREDISPATCH",
-            "CONSTRAINT_SOLUTION"
-          ],
-          "version": 5
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-09",
-          "months": 13,
-          "report": [
-            "PREDISPATCH",
-            "LOCAL_PRICE"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-06",
-          "months": 10,
-          "report": [
-            "PREDISPATCH",
-            "MNSPBIDTRK"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-09",
-          "months": 13,
-          "report": [
-            "PREDISPATCH",
-            "OFFERTRK"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2025-11",
-          "months": 3,
-          "report": [
-            "PREDISPATCH",
-            "UNIT_SOLUTION"
-          ],
-          "version": 4
-        },
-        {
-          "first-release": "2025-11",
-          "last-release": "2026-09",
-          "months": 11,
-          "report": [
-            "PREDISPATCH",
-            "UNIT_SOLUTION"
-          ],
-          "version": 5
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/Next_Day_PreDispatch",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-09",
-          "months": 13,
-          "report": [
-            "PREDISPATCH",
-            "CONSTRAINT_SOLUTION"
-          ],
-          "version": 5
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-09",
-          "months": 13,
-          "report": [
-            "PREDISPATCH",
-            "LOCAL_PRICE"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-06",
-          "months": 10,
-          "report": [
-            "PREDISPATCH",
-            "MNSPBIDTRK"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-09",
-          "months": 13,
-          "report": [
-            "PREDISPATCH",
-            "OFFERTRK"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2025-11",
-          "months": 3,
-          "report": [
-            "PREDISPATCH",
-            "UNIT_SOLUTION"
-          ],
-          "version": 4
-        },
-        {
-          "first-release": "2025-11",
-          "last-release": "2026-09",
-          "months": 11,
-          "report": [
-            "PREDISPATCH",
-            "UNIT_SOLUTION"
-          ],
-          "version": 5
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/Next_Day_PreDispatchD",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "OPERATIONAL_DEMAND",
-            "ACTUAL"
-          ],
-          "version": 3
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/Operational_Demand/ACTUAL_DAILY",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "OPERATIONAL_DEMAND",
-            "ACTUAL"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/Operational_Demand/ACTUAL_DAILY_AREA",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "OPERATIONAL_DEMAND",
-            "ACTUAL"
-          ],
-          "version": 3
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/Operational_Demand/ACTUAL_HH",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "OPERATIONAL_DEMAND",
-            "ACTUAL"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/Operational_Demand/ACTUAL_HH_AREA",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "OPERATIONAL_DEMAND",
-            "FORECAST"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/Operational_Demand/FORECAST_HH",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "OPERATIONAL_DEMAND",
-            "FORECAST"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/Operational_Demand/FORECAST_HH_AREA",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "OPERATIONAL_DEM_LESS_SNSG",
-            "ACTUAL"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/Operational_Demand_Less_SNSG/ACTUAL_DAILY",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "OPERATIONAL_DEM_LESS_SNSG",
-            "ACTUAL"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/Operational_Demand_Less_SNSG/ACTUAL_HH",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 13,
-          "report": [
-            "P5MIN",
-            "FCAS_REQ_CONSTRAINT"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 13,
-          "report": [
-            "P5MIN",
-            "FCAS_REQ_RUN"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/P5MINFCST",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 11,
-          "report": [
-            "P5MIN",
-            "BLOCKED_CONSTRAINTS"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 13,
-          "report": [
-            "P5MIN",
-            "CASESOLUTION"
-          ],
-          "version": 2
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 13,
-          "report": [
-            "P5MIN",
-            "CONSTRAINTSOLUTION"
-          ],
-          "version": 6
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 13,
-          "report": [
-            "P5MIN",
-            "INTERCONNECTORSOLN"
-          ],
-          "version": 4
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 13,
-          "report": [
-            "P5MIN",
-            "LOCAL_PRICE"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 13,
-          "report": [
-            "P5MIN",
-            "REGIONSOLUTION"
-          ],
-          "version": 10
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/P5_Reports",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 13,
-          "report": [
-            "PDPASA",
-            "CASESOLUTION"
-          ],
-          "version": 3
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 13,
-          "report": [
-            "PDPASA",
-            "CONSTRAINTSOLUTION"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 13,
-          "report": [
-            "PDPASA",
-            "INTERCONNECTORSOLN"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 13,
-          "report": [
-            "PDPASA",
-            "REGIONSOLUTION"
-          ],
-          "version": 7
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/PDPASA",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "PDPASA",
-            "DUIDAVAILABILITY"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/PDPASA_DUIDAVAILABILITY",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "PREDISPATCH",
-            "FCAS_REQ_CONSTRAINT"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "PREDISPATCH",
-            "FCAS_REQ_RUN"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/PREDISPATCHFCST",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-07",
-          "months": 6,
-          "report": [
-            "PREDISPATCH",
-            "BLOCKED_CONSTRAINTS"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "PREDISPATCH",
-            "CASE_SOLUTION"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "PREDISPATCH",
-            "CONSTRAINT_SOLUTION"
-          ],
-          "version": 5
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "PREDISPATCH",
-            "INTERCONNECTOR_SOLN"
-          ],
-          "version": 3
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "PREDISPATCH",
-            "LOCAL_PRICE"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "PREDISPATCH",
-            "REGION_PRICES"
-          ],
-          "version": 2
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "PREDISPATCH",
-            "REGION_SOLUTION"
-          ],
-          "version": 9
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/PredispatchIS_Reports",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "PREDISPATCH",
-            "IRSR"
-          ],
-          "version": 2
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/Predispatch_IRSR",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "PDCONS",
-            ""
-          ],
-          "version": 2
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "PDIINT",
-            ""
-          ],
-          "version": 2
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "PDINT",
-            ""
-          ],
-          "version": 5
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "PDIREGION",
-            ""
-          ],
-          "version": 2
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "PDREGION",
-            ""
-          ],
-          "version": 5
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "PREDISPATCH",
-            "CASESOLUTION"
-          ],
-          "version": 2
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/Predispatch_Reports",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 13,
-          "report": [
-            "PREDISPATCH",
-            "INTERCONNECTR_SENS"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 13,
-          "report": [
-            "PREDISPATCH",
-            "PRICESENSITIVITIES"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/Predispatch_Sensitivities",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "DREGION",
-            ""
-          ],
-          "version": 2
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "DREGION",
-            ""
-          ],
-          "version": 3
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/Public_Prices",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 26,
-          "report": [
-            "ROOFTOP",
-            "ACTUAL"
-          ],
-          "version": 2
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/ROOFTOP_PV/ACTUAL",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 28,
-          "report": [
-            "ROOFTOP",
-            "ACTUAL"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/ROOFTOP_PV/ACTUAL_AREA",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-10",
-          "last-release": "2026-10",
-          "months": 13,
-          "report": [
-            "ROOFTOP",
-            "FORECAST"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/ROOFTOP_PV/FORECAST",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "ROOFTOP",
-            "FORECAST"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/ROOFTOP_PV/FORECAST_AREA",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "SEVENDAYOUTLOOK",
-            "PEAK"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/SEVENDAYOUTLOOK_FULL",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "SEVENDAYOUTLOOK",
-            "PEAK"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/SEVENDAYOUTLOOK_PEAK",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "STPASA",
-            "DUIDAVAILABILITY"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/STPASA_DUIDAVAILABILITY",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-09",
-          "months": 13,
-          "report": [
-            "SETTLEMENTS",
-            "ANCILLARY_SUMMARY"
-          ],
-          "version": 5
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-09",
-          "months": 13,
-          "report": [
-            "SETTLEMENTS",
-            "DAYTRACK"
-          ],
-          "version": 7
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-09",
-          "months": 13,
-          "report": [
-            "SETTLEMENTS",
-            "ENERGY_REGION_SUMMARY"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-09",
-          "months": 13,
-          "report": [
-            "SETTLEMENTS",
-            "FCASREGIONRECOVERY"
-          ],
-          "version": 6
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-09",
-          "months": 13,
-          "report": [
-            "SETTLEMENTS",
-            "INTRAREGIONRESIDUES"
-          ],
-          "version": 6
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-09",
-          "months": 13,
-          "report": [
-            "SETTLEMENTS",
-            "IRSURPLUS"
-          ],
-          "version": 6
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-09",
-          "months": 13,
-          "report": [
-            "SETTLEMENTS",
-            "LOCALAREAENERGY"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-09",
-          "months": 13,
-          "report": [
-            "SETTLEMENTS",
-            "LOCALAREATNI"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-09",
-          "months": 13,
-          "report": [
-            "SETTLEMENTS",
-            "NMAS_RECOVERY_RBF"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-09",
-          "months": 13,
-          "report": [
-            "SETTLEMENTS",
-            "SET_FCAS_REGULATION_TRK"
-          ],
-          "version": 3
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/Settlements",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "STPASA",
-            "CASESOLUTION"
-          ],
-          "version": 3
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "STPASA",
-            "CONSTRAINTSOLUTION"
-          ],
-          "version": 3
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "STPASA",
-            "INTERCONNECTORSOLN"
-          ],
-          "version": 3
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "STPASA",
-            "REGIONSOLUTION"
-          ],
-          "version": 7
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/Short_Term_PASA_Reports",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "TRADING",
-            "INTERCONNECTORRES"
-          ],
-          "version": 2
-        },
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "TRADING",
-            "PRICE"
-          ],
-          "version": 3
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/TradingIS_Reports",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "TRADING",
-            "CUMULATIVE_PRICE"
-          ],
-          "version": 2
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/Trading_Cumulative_Price",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-10",
-          "months": 14,
-          "report": [
-            "TRADING",
-            "IRSR"
-          ],
-          "version": 2
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/Trading_IRSR",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2025-09",
-          "last-release": "2026-08",
-          "months": 12,
-          "report": [
-            "DAILY",
-            "WDR_NO_SCADA"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "reports",
-      "folder": "ARCHIVE/WDR_CAPACITY_NO_SCADA",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [],
-      "feed": "reports",
-      "folder": "CURRENT/ANCILLARY_SERVICES_REPORTS",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2026-09",
-          "last-release": "2026-10",
-          "months": 2,
-          "report": [
-            "DISPATCH",
-            "INTERCONNECTION"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2026-09",
-          "last-release": "2026-10",
-          "months": 2,
-          "report": [
-            "DISPATCH",
-            "PRICE"
-          ],
-          "version": 5
-        },
-        {
-          "first-release": "2026-09",
-          "last-release": "2026-10",
-          "months": 2,
-          "report": [
-            "TRADING",
-            "PRICE"
-          ],
-          "version": 3
-        }
-      ],
-      "feed": "reports",
-      "folder": "CURRENT/Adjusted_Prices_Reports",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [],
-      "feed": "reports",
-      "folder": "CURRENT/Alt_Limits",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [],
-      "feed": "reports",
-      "folder": "CURRENT/Ancillary_Services_Payments",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [],
-      "feed": "reports",
-      "folder": "CURRENT/Ancillary_Services_Payments/DUPLICATE",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [],
-      "feed": "reports",
-      "folder": "CURRENT/Auction_Units_Reports",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2026-08",
-          "last-release": "2026-10",
-          "months": 3,
-          "report": [
-            "BID",
-            "BIDDAYOFFER_D"
-          ],
-          "version": 3
-        },
-        {
-          "first-release": "2026-08",
-          "last-release": "2026-10",
-          "months": 3,
-          "report": [
-            "BID",
-            "BIDPEROFFER_D"
-          ],
-          "version": 4
-        }
-      ],
-      "feed": "reports",
-      "folder": "CURRENT/Bidmove_Complete",
-      "listings": [],
       "root": "Reports"
     },
     {
@@ -2400,9 +160,19 @@
           "version": 1
         },
         {
+          "first-release": "2025-09",
+          "last-release": "2026-09",
+          "months": 13,
+          "report": [
+            "BILLING",
+            "BILLING_DIRECTION_RECON_OTHER"
+          ],
+          "version": 2
+        },
+        {
           "first-release": "2017-02",
-          "last-release": "2018-01",
-          "months": 12,
+          "last-release": "2026-09",
+          "months": 25,
           "report": [
             "BILLING",
             "DAYTRK"
@@ -2431,8 +201,8 @@
         },
         {
           "first-release": "2017-02",
-          "last-release": "2017-12",
-          "months": 10,
+          "last-release": "2026-08",
+          "months": 22,
           "report": [
             "BILLING",
             "NMAS_TST_RECVRY_RBF"
@@ -2441,8 +211,8 @@
         },
         {
           "first-release": "2017-06",
-          "last-release": "2017-10",
-          "months": 5,
+          "last-release": "2026-08",
+          "months": 17,
           "report": [
             "BILLING",
             "NMAS_TST_RECVRY_TRK"
@@ -2451,8 +221,8 @@
         },
         {
           "first-release": "2017-02",
-          "last-release": "2018-01",
-          "months": 12,
+          "last-release": "2026-09",
+          "months": 25,
           "report": [
             "BILLING",
             "REGIONEXPORTS"
@@ -2470,9 +240,19 @@
           "version": 5
         },
         {
+          "first-release": "2025-09",
+          "last-release": "2026-09",
+          "months": 13,
+          "report": [
+            "BILLING",
+            "REGIONFIGURES"
+          ],
+          "version": 6
+        },
+        {
           "first-release": "2017-02",
-          "last-release": "2018-01",
-          "months": 12,
+          "last-release": "2026-09",
+          "months": 25,
           "report": [
             "BILLING",
             "REGIONIMPORTS"
@@ -2481,8 +261,8 @@
         },
         {
           "first-release": "2017-02",
-          "last-release": "2018-01",
-          "months": 12,
+          "last-release": "2026-09",
+          "months": 25,
           "report": [
             "BILLING",
             "RUNTRK"
@@ -2491,8 +271,11 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Billing",
-      "listings": [],
+      "folder": "Billing",
+      "listings": [
+        "CURRENT",
+        "ARCHIVE"
+      ],
       "root": "Reports"
     },
     {
@@ -2509,8 +292,10 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/CDEII",
-      "listings": [],
+      "folder": "CDEII",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
@@ -2527,15 +312,19 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/CSC_CSP_Settlements",
-      "listings": [],
+      "folder": "CSC_CSP_Settlements",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [],
       "feed": "reports",
-      "folder": "CURRENT/Causer_Pays_Elements",
-      "listings": [],
+      "folder": "Causer_Pays_Elements",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
@@ -2552,16 +341,18 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/DAILYOCD",
-      "listings": [],
+      "folder": "DAILYOCD",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-10",
+          "first-release": "2025-10",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 13,
           "report": [
             "DISPATCH",
             "FCAS_REQ_CONSTRAINT"
@@ -2569,9 +360,9 @@
           "version": 1
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-10",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 13,
           "report": [
             "DISPATCH",
             "FCAS_REQ_RUN"
@@ -2580,8 +371,11 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/DISPATCHFCST",
-      "listings": [],
+      "folder": "DISPATCHFCST",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
@@ -2608,8 +402,10 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/DISPATCHFCST/DUPLICATE",
-      "listings": [],
+      "folder": "DISPATCHFCST/DUPLICATE",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
@@ -2666,52 +462,18 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/DISPATCHIS_PRICE_REVISIONS",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2026-10",
-          "last-release": "2026-10",
-          "months": 1,
-          "report": [
-            "DISPATCH",
-            "NEGATIVE_RESIDUE"
-          ],
-          "version": 2
-        }
+      "folder": "DISPATCHIS_PRICE_REVISIONS",
+      "listings": [
+        "CURRENT"
       ],
-      "feed": "reports",
-      "folder": "CURRENT/DISPATCH_NEGATIVE_RESIDUE",
-      "listings": [],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-03",
-          "last-release": "2026-03",
-          "months": 1,
-          "report": [
-            "DISPATCH",
-            "NEGATIVE_RESIDUE"
-          ],
-          "version": 1
-        }
-      ],
-      "feed": "reports",
-      "folder": "CURRENT/DISPATCH_NEGATIVE_RESIDUE/DUPLICATE",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "DISPATCH",
             "CASESOLUTION"
@@ -2719,9 +481,9 @@
           "version": 1
         },
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "DISPATCH",
             "REGIONFCASREQUIREMENT"
@@ -2729,9 +491,9 @@
           "version": 1
         },
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "DREGION",
             ""
@@ -2739,9 +501,9 @@
           "version": 2
         },
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "DREGION",
             ""
@@ -2749,9 +511,9 @@
           "version": 3
         },
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "DUNIT",
             ""
@@ -2759,9 +521,9 @@
           "version": 2
         },
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "DUNIT",
             ""
@@ -2770,8 +532,11 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Daily_Reports",
-      "listings": [],
+      "folder": "Daily_Reports",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
@@ -2798,16 +563,28 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Directions_Reconciliation",
-      "listings": [],
+      "folder": "Directions_Reconciliation",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-10",
+          "first-release": "2025-10",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 11,
+          "report": [
+            "DISPATCH",
+            "BLOCKED_CONSTRAINTS"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 13,
           "report": [
             "DISPATCH",
             "CASE_SOLUTION"
@@ -2815,9 +592,9 @@
           "version": 2
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-10",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 13,
           "report": [
             "DISPATCH",
             "CONSTRAINT"
@@ -2825,9 +602,9 @@
           "version": 5
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-10",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 13,
           "report": [
             "DISPATCH",
             "INTERCONNECTION"
@@ -2835,9 +612,9 @@
           "version": 1
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-10",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 13,
           "report": [
             "DISPATCH",
             "INTERCONNECTORRES"
@@ -2845,9 +622,9 @@
           "version": 3
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-10",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 13,
           "report": [
             "DISPATCH",
             "LOCAL_PRICE"
@@ -2855,9 +632,9 @@
           "version": 1
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-10",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 13,
           "report": [
             "DISPATCH",
             "PRICE"
@@ -2865,9 +642,9 @@
           "version": 5
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-10",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 13,
           "report": [
             "DISPATCH",
             "REGIONSUM"
@@ -2876,8 +653,11 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/DispatchIS_Reports",
-      "listings": [],
+      "folder": "DispatchIS_Reports",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
@@ -2954,16 +734,18 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/DispatchIS_Reports/DUPLICATE",
-      "listings": [],
+      "folder": "DispatchIS_Reports/DUPLICATE",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-10",
+          "first-release": "2025-10",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 13,
           "report": [
             "DISPATCH",
             "IRSR"
@@ -2972,8 +754,11 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Dispatch_IRSR",
-      "listings": [],
+      "folder": "Dispatch_IRSR",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
@@ -2990,16 +775,69 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Dispatch_IRSR/DUPLICATE",
-      "listings": [],
+      "folder": "Dispatch_IRSR/DUPLICATE",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-10",
+          "first-release": "2025-10",
+          "last-release": "2026-05",
+          "months": 8,
+          "report": [
+            "DISPATCH",
+            "NEGATIVE_RESIDUE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-05",
           "last-release": "2026-10",
+          "months": 6,
+          "report": [
+            "DISPATCH",
+            "NEGATIVE_RESIDUE"
+          ],
+          "version": 2
+        }
+      ],
+      "feed": "reports",
+      "folder": "Dispatch_Negative_Residue",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
+      "root": "Reports"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-03",
+          "last-release": "2026-03",
           "months": 1,
+          "report": [
+            "DISPATCH",
+            "NEGATIVE_RESIDUE"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Dispatch_Negative_Residue/DUPLICATE",
+      "listings": [
+        "CURRENT"
+      ],
+      "root": "Reports"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 13,
           "report": [
             "DCONS",
             ""
@@ -3007,9 +845,9 @@
           "version": 1
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-10",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 13,
           "report": [
             "DINT",
             ""
@@ -3017,9 +855,9 @@
           "version": 4
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-10",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 13,
           "report": [
             "DISPATCH",
             "CASESOLUTION"
@@ -3027,9 +865,9 @@
           "version": 1
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-10",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 13,
           "report": [
             "DISPATCH",
             "REGIONFCASREQUIREMENT"
@@ -3037,9 +875,9 @@
           "version": 1
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-10",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 13,
           "report": [
             "DREGION",
             ""
@@ -3047,9 +885,9 @@
           "version": 3
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-10",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 13,
           "report": [
             "TINT",
             ""
@@ -3058,8 +896,11 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Dispatch_Reports",
-      "listings": [],
+      "folder": "Dispatch_Reports",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
@@ -3116,16 +957,18 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Dispatch_Reports/DUPLICATE",
-      "listings": [],
+      "folder": "Dispatch_Reports/DUPLICATE",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-10",
+          "first-release": "2025-10",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 13,
           "report": [
             "DISPATCH",
             "UNIT_SCADA"
@@ -3134,8 +977,11 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Dispatch_SCADA",
-      "listings": [],
+      "folder": "Dispatch_SCADA",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
@@ -3152,16 +998,18 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Dispatch_SCADA/DUPLICATE",
-      "listings": [],
+      "folder": "Dispatch_SCADA/DUPLICATE",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-10",
+          "first-release": "2025-10",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 13,
           "report": [
             "DISPATCH",
             "PRE_AP_PRICE"
@@ -3170,8 +1018,11 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Dispatchprices_PRE_AP",
-      "listings": [],
+      "folder": "Dispatchprices_PRE_AP",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
@@ -3188,8 +1039,10 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Dispatchprices_PRE_AP/DUPLICATE",
-      "listings": [],
+      "folder": "Dispatchprices_PRE_AP/DUPLICATE",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
@@ -3226,16 +1079,18 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/FPP",
-      "listings": [],
+      "folder": "FPP",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 15,
           "report": [
             "FPP",
             "CONTRIBUTION_FACTOR"
@@ -3243,9 +1098,9 @@
           "version": 1
         },
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 15,
           "report": [
             "FPP",
             "FPP_PERFORMANCE"
@@ -3253,9 +1108,9 @@
           "version": 1
         },
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 6,
+          "months": 30,
           "report": [
             "FPP",
             "UNIT_MW"
@@ -3264,15 +1119,59 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/FPPDAILY",
-      "listings": [],
+      "folder": "FPPDAILY",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-10",
+          "first-release": "2025-10",
           "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "FPP",
+            "EST_PERF_COST_RATE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "FPP",
+            "EST_RESIDUAL_COST_RATE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "FPP",
+            "FCAS_SUMMARY"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "FPPRATES",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
+      "root": "Reports"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-06",
+          "last-release": "2026-06",
           "months": 1,
           "report": [
             "FPP",
@@ -3281,8 +1180,8 @@
           "version": 1
         },
         {
-          "first-release": "2026-10",
-          "last-release": "2026-10",
+          "first-release": "2026-06",
+          "last-release": "2026-06",
           "months": 1,
           "report": [
             "FPP",
@@ -3291,8 +1190,8 @@
           "version": 1
         },
         {
-          "first-release": "2026-10",
-          "last-release": "2026-10",
+          "first-release": "2026-06",
+          "last-release": "2026-06",
           "months": 1,
           "report": [
             "FPP",
@@ -3302,54 +1201,18 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/FPPRATES",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2026-06",
-          "last-release": "2026-06",
-          "months": 1,
-          "report": [
-            "FPP",
-            "EST_PERF_COST_RATE"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2026-06",
-          "last-release": "2026-06",
-          "months": 1,
-          "report": [
-            "FPP",
-            "EST_RESIDUAL_COST_RATE"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2026-06",
-          "last-release": "2026-06",
-          "months": 1,
-          "report": [
-            "FPP",
-            "FCAS_SUMMARY"
-          ],
-          "version": 1
-        }
+      "folder": "FPPRATES/DUPLICATE",
+      "listings": [
+        "CURRENT"
       ],
-      "feed": "reports",
-      "folder": "CURRENT/FPPRATES/DUPLICATE",
-      "listings": [],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-10",
+          "first-release": "2025-10",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 14,
           "report": [
             "FPP",
             "CONSTRAINT_FREQ_MEASURE"
@@ -3357,9 +1220,9 @@
           "version": 1
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-10",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 14,
           "report": [
             "FPP",
             "FPP_RCR"
@@ -3367,9 +1230,9 @@
           "version": 1
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-10",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 14,
           "report": [
             "FPP",
             "FPP_RUN"
@@ -3377,9 +1240,9 @@
           "version": 1
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-10",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 14,
           "report": [
             "FPP",
             "FPP_USAGE"
@@ -3387,9 +1250,9 @@
           "version": 1
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-10",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 14,
           "report": [
             "FPP",
             "REGION_FREQ_MEASURE"
@@ -3397,9 +1260,9 @@
           "version": 1
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-10",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 14,
           "report": [
             "FPP",
             "RESIDUAL_CF"
@@ -3407,9 +1270,9 @@
           "version": 1
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-10",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 14,
           "report": [
             "FPP",
             "RESIDUAL_PERFORMANCE"
@@ -3418,8 +1281,11 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/FPPRUN",
-      "listings": [],
+      "folder": "FPPRUN",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
@@ -3496,8 +1362,10 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/FPPRUN/DUPLICATE",
-      "listings": [],
+      "folder": "FPPRUN/DUPLICATE",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
@@ -3514,23 +1382,27 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/FPP_HIST_REG_PERF",
-      "listings": [],
+      "folder": "FPP_HIST_REG_PERF",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [],
       "feed": "reports",
-      "folder": "CURRENT/HighImpactOutages",
-      "listings": [],
+      "folder": "HighImpactOutages",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "DEMAND",
             "HISTORIC"
@@ -3539,23 +1411,28 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/HistDemand",
-      "listings": [],
+      "folder": "HistDemand",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [],
       "feed": "reports",
-      "folder": "CURRENT/IBEI",
-      "listings": [],
+      "folder": "IBEI",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-10",
+          "first-release": "2025-10",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 13,
           "report": [
             "MCC",
             "CASESOLUTION"
@@ -3563,9 +1440,9 @@
           "version": 1
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-10",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 13,
           "report": [
             "MCC",
             "CONSTRAINTSOLUTION"
@@ -3574,8 +1451,11 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/MCCDispatch",
-      "listings": [],
+      "folder": "MCCDispatch",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
@@ -3602,8 +1482,10 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/MCCDispatch/DUPLICATE",
-      "listings": [],
+      "folder": "MCCDispatch/DUPLICATE",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
@@ -3640,16 +1522,19 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/MTPASA_DUIDAvailability",
-      "listings": [],
+      "folder": "MTPASA_DUIDAvailability",
+      "listings": [
+        "CURRENT",
+        "ARCHIVE"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "MTPASA",
             "REGIONAVAILABILITY"
@@ -3657,9 +1542,9 @@
           "version": 4
         },
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "MTPASA",
             "REGIONAVAILTRK"
@@ -3668,8 +1553,11 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/MTPASA_RegionAvailability",
-      "listings": [],
+      "folder": "MTPASA_RegionAvailability",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
@@ -3686,23 +1574,27 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Marginal_Loss_Factors",
-      "listings": [],
+      "folder": "Marginal_Loss_Factors",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [],
       "feed": "reports",
-      "folder": "CURRENT/Market_Notice",
-      "listings": [],
+      "folder": "Market_Notice",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "MTPASA",
             "CASERESULT"
@@ -3710,9 +1602,9 @@
           "version": 1
         },
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "MTPASA",
             "CONSTRAINTRESULT"
@@ -3720,9 +1612,9 @@
           "version": 1
         },
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "MTPASA",
             "CONSTRAINTSUMMARY"
@@ -3730,9 +1622,9 @@
           "version": 1
         },
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "MTPASA",
             "INTERCONNECTORRESULT"
@@ -3740,9 +1632,9 @@
           "version": 1
         },
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "MTPASA",
             "LOLPRESULT"
@@ -3750,9 +1642,9 @@
           "version": 1
         },
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "MTPASA",
             "REGIONITERATION"
@@ -3760,9 +1652,9 @@
           "version": 1
         },
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "MTPASA",
             "REGIONRESULT"
@@ -3770,9 +1662,9 @@
           "version": 2
         },
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "MTPASA",
             "REGIONSUMMARY"
@@ -3781,8 +1673,11 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Medium_Term_PASA_Reports",
-      "listings": [],
+      "folder": "Medium_Term_PASA_Reports",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
@@ -3809,16 +1704,18 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Mktsusp_Pricing",
-      "listings": [],
+      "folder": "Mktsusp_Pricing",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "DEMAND",
             "INTERMITTENT_CLUSTER_AVAIL"
@@ -3826,9 +1723,9 @@
           "version": 2
         },
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "DEMAND",
             "INTERMITTENT_CLUSTER_AVAIL_DAY"
@@ -3837,16 +1734,19 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/NEXT_DAY_AVAIL_SUBMISS_CLUSTER",
-      "listings": [],
+      "folder": "NEXT_DAY_AVAIL_SUBMISS_CLUSTER",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "DEMAND",
             "INTERMITTENT_GEN_LIMIT"
@@ -3854,9 +1754,9 @@
           "version": 1
         },
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "DEMAND",
             "INTERMITTENT_GEN_LIMIT_DAY"
@@ -3865,16 +1765,19 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/NEXT_DAY_AVAIL_SUBMISS_DAY",
-      "listings": [],
+      "folder": "NEXT_DAY_AVAIL_SUBMISS_DAY",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "MCC",
             "CASESOLUTION"
@@ -3882,9 +1785,9 @@
           "version": 1
         },
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "MCC",
             "CONSTRAINTSOLUTION"
@@ -3893,16 +1796,19 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/NEXT_DAY_MCCDISPATCH",
-      "listings": [],
+      "folder": "NEXT_DAY_MCCDISPATCH",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-10",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 14,
           "report": [
             "NETWORK",
             "EQUIPMENTDETAIL"
@@ -3910,9 +1816,9 @@
           "version": 2
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 14,
           "report": [
             "NETWORK",
             "OUTAGECONSTRAINTSET"
@@ -3920,9 +1826,9 @@
           "version": 1
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 14,
           "report": [
             "NETWORK",
             "OUTAGEDETAIL"
@@ -3930,9 +1836,9 @@
           "version": 4
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 14,
           "report": [
             "NETWORK",
             "OUTAGESTATUSCODE"
@@ -3940,9 +1846,9 @@
           "version": 1
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 14,
           "report": [
             "NETWORK",
             "RATING"
@@ -3950,9 +1856,9 @@
           "version": 1
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 14,
           "report": [
             "NETWORK",
             "STATICRATING"
@@ -3960,9 +1866,9 @@
           "version": 1
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 14,
           "report": [
             "NETWORK",
             "SUBSTATIONDETAIL"
@@ -3971,16 +1877,19 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Network",
-      "listings": [],
+      "folder": "Network",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "METER_DATA",
             "GEN_DUID"
@@ -3989,8 +1898,11 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Next_Day_Actual_Gen",
-      "listings": [],
+      "folder": "Next_Day_Actual_Gen",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
@@ -4057,15 +1969,59 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Next_Day_Dispatch",
-      "listings": [],
+      "folder": "Next_Day_Dispatch",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "DEMAND",
+            "INTERMITTENT_DS_PRED"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "DEMAND",
+            "INTERMITTENT_DS_RUN"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "DISPATCH",
+            "INTERMITTENT_FORECAST_TRK"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Next_Day_Intermittent_DS",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
+      "root": "Reports"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2020-03",
+          "last-release": "2020-10",
           "months": 3,
           "report": [
             "DEMAND",
@@ -4074,8 +2030,8 @@
           "version": 1
         },
         {
-          "first-release": "2026-08",
-          "last-release": "2026-10",
+          "first-release": "2020-03",
+          "last-release": "2020-10",
           "months": 3,
           "report": [
             "DEMAND",
@@ -4084,8 +2040,8 @@
           "version": 1
         },
         {
-          "first-release": "2026-08",
-          "last-release": "2026-10",
+          "first-release": "2020-03",
+          "last-release": "2020-10",
           "months": 3,
           "report": [
             "DISPATCH",
@@ -4095,54 +2051,18 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Next_Day_Intermittent_DS",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2020-03",
-          "last-release": "2020-10",
-          "months": 3,
-          "report": [
-            "DEMAND",
-            "INTERMITTENT_DS_PRED"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2020-03",
-          "last-release": "2020-10",
-          "months": 3,
-          "report": [
-            "DEMAND",
-            "INTERMITTENT_DS_RUN"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2020-03",
-          "last-release": "2020-10",
-          "months": 3,
-          "report": [
-            "DISPATCH",
-            "INTERMITTENT_FORECAST_TRK"
-          ],
-          "version": 1
-        }
+      "folder": "Next_Day_Intermittent_DS/DUPLICATE",
+      "listings": [
+        "CURRENT"
       ],
-      "feed": "reports",
-      "folder": "CURRENT/Next_Day_Intermittent_DS/DUPLICATE",
-      "listings": [],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "DEMAND",
             "INTERMITTENT_GEN_SCADA"
@@ -4151,16 +2071,19 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Next_Day_Intermittent_Gen_Scada",
-      "listings": [],
+      "folder": "Next_Day_Intermittent_Gen_Scada",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "BIDS",
             "BIDDAYOFFER"
@@ -4168,9 +2091,60 @@
           "version": 1
         },
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
+          "report": [
+            "BIDS",
+            "BIDOFFERPERIOD_SPARSE"
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-07",
+          "months": 11,
+          "report": [
+            "BIDS",
+            "MNSP_BIDOFFERPERIOD"
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-07",
+          "months": 11,
+          "report": [
+            "BIDS",
+            "MNSP_DAYOFFER"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "reports",
+      "folder": "Next_Day_Offer_Energy_SPARSE",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
+      "root": "Reports"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 14,
+          "report": [
+            "BIDS",
+            "BIDDAYOFFER"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
+          "last-release": "2026-10",
+          "months": 14,
           "report": [
             "BIDS",
             "BIDOFFERPERIOD_SPARSE"
@@ -4179,44 +2153,19 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Next_Day_Offer_Energy_SPARSE",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2026-08",
-          "last-release": "2026-10",
-          "months": 3,
-          "report": [
-            "BIDS",
-            "BIDDAYOFFER"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2026-08",
-          "last-release": "2026-10",
-          "months": 3,
-          "report": [
-            "BIDS",
-            "BIDOFFERPERIOD_SPARSE"
-          ],
-          "version": 2
-        }
+      "folder": "Next_Day_Offer_FCAS_SPARSE",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
       ],
-      "feed": "reports",
-      "folder": "CURRENT/Next_Day_Offer_FCAS_SPARSE",
-      "listings": [],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "PREDISPATCH",
             "CONSTRAINT_SOLUTION"
@@ -4224,9 +2173,9 @@
           "version": 5
         },
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "PREDISPATCH",
             "LOCAL_PRICE"
@@ -4234,9 +2183,19 @@
           "version": 1
         },
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
+          "last-release": "2026-06",
+          "months": 10,
+          "report": [
+            "PREDISPATCH",
+            "MNSPBIDTRK"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "PREDISPATCH",
             "OFFERTRK"
@@ -4244,9 +2203,19 @@
           "version": 1
         },
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
+          "last-release": "2025-11",
+          "months": 3,
+          "report": [
+            "PREDISPATCH",
+            "UNIT_SOLUTION"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2025-11",
           "last-release": "2026-10",
-          "months": 4,
+          "months": 13,
           "report": [
             "PREDISPATCH",
             "UNIT_SOLUTION"
@@ -4255,8 +2224,11 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Next_Day_PreDispatch",
-      "listings": [],
+      "folder": "Next_Day_PreDispatch",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
@@ -4313,16 +2285,18 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Next_Day_PreDispatch/DUPLICATE",
-      "listings": [],
+      "folder": "Next_Day_PreDispatch/DUPLICATE",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "PREDISPATCH",
             "CONSTRAINT_SOLUTION"
@@ -4330,9 +2304,9 @@
           "version": 5
         },
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "PREDISPATCH",
             "LOCAL_PRICE"
@@ -4340,9 +2314,19 @@
           "version": 1
         },
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
+          "last-release": "2026-06",
+          "months": 10,
+          "report": [
+            "PREDISPATCH",
+            "MNSPBIDTRK"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "PREDISPATCH",
             "OFFERTRK"
@@ -4350,9 +2334,19 @@
           "version": 1
         },
         {
-          "first-release": "2026-08",
-          "last-release": "2026-10",
+          "first-release": "2025-09",
+          "last-release": "2025-11",
           "months": 3,
+          "report": [
+            "PREDISPATCH",
+            "UNIT_SOLUTION"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2025-11",
+          "last-release": "2026-10",
+          "months": 12,
           "report": [
             "PREDISPATCH",
             "UNIT_SOLUTION"
@@ -4361,8 +2355,11 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Next_Day_PreDispatchD",
-      "listings": [],
+      "folder": "Next_Day_PreDispatchD",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
@@ -4379,8 +2376,10 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Next_Day_Trading",
-      "listings": [],
+      "folder": "Next_Day_Trading",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
@@ -4397,16 +2396,18 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Operational_Demand/ACTUAL_5MIN",
-      "listings": [],
+      "folder": "Operational_Demand/ACTUAL_5MIN",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "OPERATIONAL_DEMAND",
             "ACTUAL"
@@ -4415,16 +2416,19 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Operational_Demand/ACTUAL_DAILY",
-      "listings": [],
+      "folder": "Operational_Demand/ACTUAL_DAILY",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "OPERATIONAL_DEMAND",
             "ACTUAL"
@@ -4433,16 +2437,19 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Operational_Demand/ACTUAL_DAILY_AREA",
-      "listings": [],
+      "folder": "Operational_Demand/ACTUAL_DAILY_AREA",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "OPERATIONAL_DEMAND",
             "ACTUAL"
@@ -4451,16 +2458,19 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Operational_Demand/ACTUAL_HH",
-      "listings": [],
+      "folder": "Operational_Demand/ACTUAL_HH",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "OPERATIONAL_DEMAND",
             "ACTUAL"
@@ -4469,16 +2479,19 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Operational_Demand/ACTUAL_HH_AREA",
-      "listings": [],
+      "folder": "Operational_Demand/ACTUAL_HH_AREA",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "OPERATIONAL_DEMAND",
             "FORECAST"
@@ -4487,8 +2500,11 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Operational_Demand/FORECAST_HH",
-      "listings": [],
+      "folder": "Operational_Demand/FORECAST_HH",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
@@ -4505,16 +2521,18 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Operational_Demand/FORECAST_HH/DUPLICATE",
-      "listings": [],
+      "folder": "Operational_Demand/FORECAST_HH/DUPLICATE",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "OPERATIONAL_DEMAND",
             "FORECAST"
@@ -4523,8 +2541,11 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Operational_Demand/FORECAST_HH_AREA",
-      "listings": [],
+      "folder": "Operational_Demand/FORECAST_HH_AREA",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
@@ -4541,8 +2562,11 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Operational_Demand_Less_SNSG/ACTUAL_DAILY",
-      "listings": [],
+      "folder": "Operational_Demand_Less_SNSG/ACTUAL_DAILY",
+      "listings": [
+        "CURRENT",
+        "ARCHIVE"
+      ],
       "root": "Reports"
     },
     {
@@ -4559,8 +2583,11 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Operational_Demand_Less_SNSG/ACTUAL_HH",
-      "listings": [],
+      "folder": "Operational_Demand_Less_SNSG/ACTUAL_HH",
+      "listings": [
+        "CURRENT",
+        "ARCHIVE"
+      ],
       "root": "Reports"
     },
     {
@@ -4577,16 +2604,18 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Operational_Demand_Less_SNSG/ACTUAL_UPDATE",
-      "listings": [],
+      "folder": "Operational_Demand_Less_SNSG/ACTUAL_UPDATE",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-10",
+          "first-release": "2025-10",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 13,
           "report": [
             "P5MIN",
             "FCAS_REQ_CONSTRAINT"
@@ -4594,9 +2623,9 @@
           "version": 1
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-10",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 13,
           "report": [
             "P5MIN",
             "FCAS_REQ_RUN"
@@ -4605,8 +2634,11 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/P5MINFCST",
-      "listings": [],
+      "folder": "P5MINFCST",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
@@ -4633,15 +2665,88 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/P5MINFCST/DUPLICATE",
-      "listings": [],
+      "folder": "P5MINFCST/DUPLICATE",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-10",
+          "first-release": "2025-10",
           "last-release": "2026-10",
+          "months": 11,
+          "report": [
+            "P5MIN",
+            "BLOCKED_CONSTRAINTS"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 13,
+          "report": [
+            "P5MIN",
+            "CASESOLUTION"
+          ],
+          "version": 2
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 13,
+          "report": [
+            "P5MIN",
+            "CONSTRAINTSOLUTION"
+          ],
+          "version": 6
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 13,
+          "report": [
+            "P5MIN",
+            "INTERCONNECTORSOLN"
+          ],
+          "version": 4
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 13,
+          "report": [
+            "P5MIN",
+            "LOCAL_PRICE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-10",
+          "last-release": "2026-10",
+          "months": 13,
+          "report": [
+            "P5MIN",
+            "REGIONSOLUTION"
+          ],
+          "version": 10
+        }
+      ],
+      "feed": "reports",
+      "folder": "P5_Reports",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
+      "root": "Reports"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-03",
+          "last-release": "2026-03",
           "months": 1,
           "report": [
             "P5MIN",
@@ -4650,8 +2755,8 @@
           "version": 2
         },
         {
-          "first-release": "2026-10",
-          "last-release": "2026-10",
+          "first-release": "2026-03",
+          "last-release": "2026-03",
           "months": 1,
           "report": [
             "P5MIN",
@@ -4660,8 +2765,8 @@
           "version": 6
         },
         {
-          "first-release": "2026-10",
-          "last-release": "2026-10",
+          "first-release": "2026-03",
+          "last-release": "2026-03",
           "months": 1,
           "report": [
             "P5MIN",
@@ -4670,8 +2775,8 @@
           "version": 4
         },
         {
-          "first-release": "2026-10",
-          "last-release": "2026-10",
+          "first-release": "2026-03",
+          "last-release": "2026-03",
           "months": 1,
           "report": [
             "P5MIN",
@@ -4680,8 +2785,8 @@
           "version": 1
         },
         {
-          "first-release": "2026-10",
-          "last-release": "2026-10",
+          "first-release": "2026-03",
+          "last-release": "2026-03",
           "months": 1,
           "report": [
             "P5MIN",
@@ -4691,66 +2796,10 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/P5_Reports",
-      "listings": [],
-      "root": "Reports"
-    },
-    {
-      "blocks": [
-        {
-          "first-release": "2026-03",
-          "last-release": "2026-03",
-          "months": 1,
-          "report": [
-            "P5MIN",
-            "CASESOLUTION"
-          ],
-          "version": 2
-        },
-        {
-          "first-release": "2026-03",
-          "last-release": "2026-03",
-          "months": 1,
-          "report": [
-            "P5MIN",
-            "CONSTRAINTSOLUTION"
-          ],
-          "version": 6
-        },
-        {
-          "first-release": "2026-03",
-          "last-release": "2026-03",
-          "months": 1,
-          "report": [
-            "P5MIN",
-            "INTERCONNECTORSOLN"
-          ],
-          "version": 4
-        },
-        {
-          "first-release": "2026-03",
-          "last-release": "2026-03",
-          "months": 1,
-          "report": [
-            "P5MIN",
-            "LOCAL_PRICE"
-          ],
-          "version": 1
-        },
-        {
-          "first-release": "2026-03",
-          "last-release": "2026-03",
-          "months": 1,
-          "report": [
-            "P5MIN",
-            "REGIONSOLUTION"
-          ],
-          "version": 10
-        }
+      "folder": "P5_Reports/DUPLICATE",
+      "listings": [
+        "CURRENT"
       ],
-      "feed": "reports",
-      "folder": "CURRENT/P5_Reports/DUPLICATE",
-      "listings": [],
       "root": "Reports"
     },
     {
@@ -4807,16 +2856,18 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/PD7Day",
-      "listings": [],
+      "folder": "PD7Day",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-10",
+          "first-release": "2025-10",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 13,
           "report": [
             "PDPASA",
             "CASESOLUTION"
@@ -4824,9 +2875,9 @@
           "version": 3
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-10",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 13,
           "report": [
             "PDPASA",
             "CONSTRAINTSOLUTION"
@@ -4834,9 +2885,9 @@
           "version": 1
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-10",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 13,
           "report": [
             "PDPASA",
             "INTERCONNECTORSOLN"
@@ -4844,9 +2895,9 @@
           "version": 1
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-10",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 13,
           "report": [
             "PDPASA",
             "REGIONSOLUTION"
@@ -4855,16 +2906,19 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/PDPASA",
-      "listings": [],
+      "folder": "PDPASA",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "PDPASA",
             "DUIDAVAILABILITY"
@@ -4873,16 +2927,19 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/PDPASA_DUIDAvailability",
-      "listings": [],
+      "folder": "PDPASA_DUIDAVAILABILITY",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-10",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 14,
           "report": [
             "PREDISPATCH",
             "FCAS_REQ_CONSTRAINT"
@@ -4890,9 +2947,9 @@
           "version": 1
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 14,
           "report": [
             "PREDISPATCH",
             "FCAS_REQ_RUN"
@@ -4901,23 +2958,38 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/PREDISPATCHFCST",
-      "listings": [],
+      "folder": "PREDISPATCHFCST",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [],
       "feed": "reports",
-      "folder": "CURRENT/PasaSnap",
-      "listings": [],
+      "folder": "PasaSnap",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-10",
+          "first-release": "2025-10",
+          "last-release": "2026-07",
+          "months": 6,
+          "report": [
+            "PREDISPATCH",
+            "BLOCKED_CONSTRAINTS"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 14,
           "report": [
             "PREDISPATCH",
             "CASE_SOLUTION"
@@ -4925,9 +2997,9 @@
           "version": 1
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 14,
           "report": [
             "PREDISPATCH",
             "CONSTRAINT_SOLUTION"
@@ -4935,9 +3007,9 @@
           "version": 5
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 14,
           "report": [
             "PREDISPATCH",
             "INTERCONNECTOR_SOLN"
@@ -4945,9 +3017,9 @@
           "version": 3
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 14,
           "report": [
             "PREDISPATCH",
             "LOCAL_PRICE"
@@ -4955,9 +3027,9 @@
           "version": 1
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 14,
           "report": [
             "PREDISPATCH",
             "REGION_PRICES"
@@ -4965,9 +3037,9 @@
           "version": 2
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 14,
           "report": [
             "PREDISPATCH",
             "REGION_SOLUTION"
@@ -4976,8 +3048,11 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/PredispatchIS_Reports",
-      "listings": [],
+      "folder": "PredispatchIS_Reports",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
@@ -5044,16 +3119,18 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/PredispatchIS_Reports/DUPLICATE",
-      "listings": [],
+      "folder": "PredispatchIS_Reports/DUPLICATE",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-10",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 14,
           "report": [
             "PREDISPATCH",
             "IRSR"
@@ -5062,8 +3139,11 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Predispatch_IRSR",
-      "listings": [],
+      "folder": "Predispatch_IRSR",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
@@ -5080,16 +3160,18 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Predispatch_IRSR/DUPLICATE",
-      "listings": [],
+      "folder": "Predispatch_IRSR/DUPLICATE",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-10",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 14,
           "report": [
             "PDCONS",
             ""
@@ -5097,9 +3179,9 @@
           "version": 2
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 14,
           "report": [
             "PDIINT",
             ""
@@ -5107,9 +3189,9 @@
           "version": 2
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 14,
           "report": [
             "PDINT",
             ""
@@ -5117,9 +3199,9 @@
           "version": 5
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 14,
           "report": [
             "PDIREGION",
             ""
@@ -5127,9 +3209,9 @@
           "version": 2
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 14,
           "report": [
             "PDREGION",
             ""
@@ -5137,9 +3219,9 @@
           "version": 5
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 14,
           "report": [
             "PREDISPATCH",
             "CASESOLUTION"
@@ -5148,8 +3230,11 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Predispatch_Reports",
-      "listings": [],
+      "folder": "Predispatch_Reports",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
@@ -5216,16 +3301,18 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Predispatch_Reports/DUPLICATE",
-      "listings": [],
+      "folder": "Predispatch_Reports/DUPLICATE",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-10",
+          "first-release": "2025-10",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 13,
           "report": [
             "PREDISPATCH",
             "INTERCONNECTR_SENS"
@@ -5233,9 +3320,9 @@
           "version": 1
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-10",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 13,
           "report": [
             "PREDISPATCH",
             "PRICESENSITIVITIES"
@@ -5244,8 +3331,11 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Predispatch_Sensitivities",
-      "listings": [],
+      "folder": "Predispatch_Sensitivities",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
@@ -5272,16 +3362,18 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Predispatch_Sensitivities/DUPLICATE",
-      "listings": [],
+      "folder": "Predispatch_Sensitivities/DUPLICATE",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "DREGION",
             ""
@@ -5289,9 +3381,9 @@
           "version": 2
         },
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "DREGION",
             ""
@@ -5300,16 +3392,19 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Public_Prices",
-      "listings": [],
+      "folder": "Public_Prices",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-10",
+          "first-release": "2025-10",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 26,
           "report": [
             "ROOFTOP",
             "ACTUAL"
@@ -5318,16 +3413,19 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/ROOFTOP_PV/ACTUAL",
-      "listings": [],
+      "folder": "ROOFTOP_PV/ACTUAL",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-10",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 28,
           "report": [
             "ROOFTOP",
             "ACTUAL"
@@ -5336,16 +3434,19 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/ROOFTOP_PV/ACTUAL_AREA",
-      "listings": [],
+      "folder": "ROOFTOP_PV/ACTUAL_AREA",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-10",
+          "first-release": "2025-10",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 13,
           "report": [
             "ROOFTOP",
             "FORECAST"
@@ -5354,16 +3455,19 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/ROOFTOP_PV/FORECAST",
-      "listings": [],
+      "folder": "ROOFTOP_PV/FORECAST",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-10",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 14,
           "report": [
             "ROOFTOP",
             "FORECAST"
@@ -5372,23 +3476,28 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/ROOFTOP_PV/FORECAST_AREA",
-      "listings": [],
+      "folder": "ROOFTOP_PV/FORECAST_AREA",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [],
       "feed": "reports",
-      "folder": "CURRENT/Regional_Summary_Report",
-      "listings": [],
+      "folder": "Regional_Summary_Report",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "SEVENDAYOUTLOOK",
             "PEAK"
@@ -5397,8 +3506,11 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/SEVENDAYOUTLOOK_FULL",
-      "listings": [],
+      "folder": "SEVENDAYOUTLOOK_FULL",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
@@ -5415,16 +3527,18 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/SEVENDAYOUTLOOK_FULL/DUPLICATE",
-      "listings": [],
+      "folder": "SEVENDAYOUTLOOK_FULL/DUPLICATE",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "SEVENDAYOUTLOOK",
             "PEAK"
@@ -5433,8 +3547,11 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/SEVENDAYOUTLOOK_PEAK",
-      "listings": [],
+      "folder": "SEVENDAYOUTLOOK_PEAK",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
@@ -5451,8 +3568,10 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/SRA_Bids",
-      "listings": [],
+      "folder": "SRA_Bids",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
@@ -5469,8 +3588,10 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/SRA_NSR_RECONCILIATION",
-      "listings": [],
+      "folder": "SRA_NSR_RECONCILIATION",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
@@ -5487,15 +3608,19 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/SRA_Offers",
-      "listings": [],
+      "folder": "SRA_Offers",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [],
       "feed": "reports",
-      "folder": "CURRENT/SRA_Results",
-      "listings": [],
+      "folder": "SRA_Results",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
@@ -5512,8 +3637,10 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/SSM_ENABLEMENT_COSTS",
-      "listings": [],
+      "folder": "SSM_ENABLEMENT_COSTS",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
@@ -5530,16 +3657,18 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/SSM_ENABLEMENT_PERIOD",
-      "listings": [],
+      "folder": "SSM_ENABLEMENT_PERIOD",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "STPASA",
             "DUIDAVAILABILITY"
@@ -5548,8 +3677,11 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/STPASA_DUIDAvailability",
-      "listings": [],
+      "folder": "STPASA_DUIDAvailability",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
@@ -5766,16 +3898,19 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Settlements",
-      "listings": [],
+      "folder": "Settlements",
+      "listings": [
+        "CURRENT",
+        "ARCHIVE"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "STPASA",
             "CASESOLUTION"
@@ -5783,9 +3918,9 @@
           "version": 3
         },
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "STPASA",
             "CONSTRAINTSOLUTION"
@@ -5793,9 +3928,9 @@
           "version": 3
         },
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "STPASA",
             "INTERCONNECTORSOLN"
@@ -5803,9 +3938,9 @@
           "version": 3
         },
         {
-          "first-release": "2026-08",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 3,
+          "months": 14,
           "report": [
             "STPASA",
             "REGIONSOLUTION"
@@ -5814,8 +3949,11 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Short_Term_PASA_Reports",
-      "listings": [],
+      "folder": "Short_Term_PASA_Reports",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
@@ -5862,23 +4000,27 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Short_Term_PASA_Reports/DUPLICATE",
-      "listings": [],
+      "folder": "Short_Term_PASA_Reports/DUPLICATE",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [],
       "feed": "reports",
-      "folder": "CURRENT/SupplyDemand",
-      "listings": [],
+      "folder": "SupplyDemand",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-10",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 14,
           "report": [
             "TRADING",
             "INTERCONNECTORRES"
@@ -5886,9 +4028,9 @@
           "version": 2
         },
         {
-          "first-release": "2026-10",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 14,
           "report": [
             "TRADING",
             "PRICE"
@@ -5897,8 +4039,11 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/TradingIS_Reports",
-      "listings": [],
+      "folder": "TradingIS_Reports",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
@@ -5925,16 +4070,18 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/TradingIS_Reports/DUPLICATE",
-      "listings": [],
+      "folder": "TradingIS_Reports/DUPLICATE",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-10",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 14,
           "report": [
             "TRADING",
             "CUMULATIVE_PRICE"
@@ -5943,8 +4090,11 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Trading_Cumulative_Price",
-      "listings": [],
+      "folder": "Trading_Cumulative_Price",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
@@ -5971,16 +4121,18 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Trading_Cumulative_Price/DUPLICATE",
-      "listings": [],
+      "folder": "Trading_Cumulative_Price/DUPLICATE",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [
         {
-          "first-release": "2026-10",
+          "first-release": "2025-09",
           "last-release": "2026-10",
-          "months": 1,
+          "months": 14,
           "report": [
             "TRADING",
             "IRSR"
@@ -5989,8 +4141,11 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Trading_IRSR",
-      "listings": [],
+      "folder": "Trading_IRSR",
+      "listings": [
+        "ARCHIVE",
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
@@ -6007,8 +4162,10 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Vwa_Fcas_Prices",
-      "listings": [],
+      "folder": "Vwa_Fcas_Prices",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
@@ -6025,15 +4182,20 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/WDR_CAPACITY_NO_SCADA",
-      "listings": [],
+      "folder": "WDR_CAPACITY_NO_SCADA",
+      "listings": [
+        "CURRENT",
+        "ARCHIVE"
+      ],
       "root": "Reports"
     },
     {
       "blocks": [],
       "feed": "reports",
-      "folder": "CURRENT/Weekly_Constraint_Reports",
-      "listings": [],
+      "folder": "Weekly_Constraint_Reports",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     },
     {
@@ -6060,8 +4222,10 @@
         }
       ],
       "feed": "reports",
-      "folder": "CURRENT/Yesterdays_Bids_Reports/DUPLICATE",
-      "listings": [],
+      "folder": "Yesterdays_Bids_Reports/DUPLICATE",
+      "listings": [
+        "CURRENT"
+      ],
       "root": "Reports"
     }
   ],

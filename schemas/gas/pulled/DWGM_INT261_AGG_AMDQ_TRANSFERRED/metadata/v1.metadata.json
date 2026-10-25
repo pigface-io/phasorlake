@@ -86,7 +86,7 @@
         "utilake.from.file": "int261_v4_agg_amdq_transferred_1.csv",
         "utilake.from.release": "2026-10",
         "utilake.from.sha256": "ffcb143d06824896afea46afa4a7be936a4ca7f402279bc1fab411d68b6691c0",
-        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.kinds": "[\"dwgm\"]",
         "utilake.report-subtype": "INT261_AGG_AMDQ_TRANSFERRED_1",
         "utilake.report-type": "DWGM",
         "utilake.rows": "0",

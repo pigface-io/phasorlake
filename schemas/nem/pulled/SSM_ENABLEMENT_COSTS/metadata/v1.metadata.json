@@ -98,7 +98,7 @@
         "utilake.from.release": "2025-11",
         "utilake.from.sha256": "ad77d7a0f66ea2d1cc05939ec87d0b194fbf4aa69a170bbd04077e8201ba277c",
         "utilake.from.time": "2025-12-02T12:00:16+10:00",
-        "utilake.kinds": "[\"archive\",\"reports/current\"]",
+        "utilake.kinds": "[\"archive\",\"reports\"]",
         "utilake.report-subtype": "ENABLEMENT_COSTS",
         "utilake.report-type": "SSM",
         "utilake.rows": "1752",

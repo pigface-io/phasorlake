@@ -186,7 +186,7 @@
         "utilake.from.release": "2026-09",
         "utilake.from.sha256": "af810782dbd1bd4baac2e55d7e29f26ac9a0abc27819b40c86f2b6b1a0678793",
         "utilake.from.time": "2026-03-01T00:00:00+10:00",
-        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.kinds": "[\"dwgm\"]",
         "utilake.report-subtype": "INT322A_UPLIFT_BREAKDOWN_SETT_1",
         "utilake.report-type": "DWGM",
         "utilake.rows": "760",

@@ -1,6 +1,6 @@
 {
   "current-schema-id": 0,
-  "current-snapshot-id": 9001427189404721937,
+  "current-snapshot-id": 2569129563643422648,
   "default-sort-order-id": 0,
   "default-spec-id": 0,
   "format-version": 3,
@@ -38,7 +38,7 @@
   },
   "refs": {
     "main": {
-      "snapshot-id": 9001427189404721937,
+      "snapshot-id": 2569129563643422648,
       "type": "branch"
     }
   },
@@ -313,7 +313,7 @@
       "timestamp-ms": 1790776800002
     },
     {
-      "snapshot-id": 9001427189404721937,
+      "snapshot-id": 2569129563643422648,
       "timestamp-ms": 1790776800003
     }
   ],
@@ -332,15 +332,15 @@
         "utilake.from.release": "2026-08",
         "utilake.from.sha256": "ae9eda135c5f3c28548b31911da9dcc65c767009ef5b7d16ceee4cce2755509e",
         "utilake.from.time": "2026-08-26T00:00:00+10:00",
-        "utilake.kinds": "[\"sttm/current\"]",
+        "utilake.kinds": "[\"sttm\"]",
         "utilake.report-subtype": "INT653_EX_ANTE_PIPELINE_PRICE_RPT_1",
         "utilake.report-type": "STTM",
-        "utilake.rows": "288",
+        "utilake.rows": "384",
         "utilake.to.file": "Day30.zip",
         "utilake.to.release": "2026-09",
         "utilake.to.sha256": "cf4981d5315499b11dabe341b590c7f2c87c874365834d08431241d7996a598e",
         "utilake.to.time": "2026-10-01T00:00:00+10:00",
-        "utilake.total-rows": "288",
+        "utilake.total-rows": "384",
         "utilake.version": "3"
       },
       "timestamp-ms": 1785506400000
@@ -360,7 +360,7 @@
         "utilake.from.release": "2026-10",
         "utilake.from.sha256": "96c95693c93630ccbb436c8300afa8fc761bb7f6b1f31a62820e3f1395f1123c",
         "utilake.from.time": "2011-06-10T00:00:00+10:00",
-        "utilake.kinds": "[\"sttm/current\"]",
+        "utilake.kinds": "[\"sttm\"]",
         "utilake.report-subtype": "INT653_EX_ANTE_PIPELINE_PRICE_RPT_1",
         "utilake.report-type": "STTM",
         "utilake.rows": "35",
@@ -368,7 +368,7 @@
         "utilake.to.release": "2026-10",
         "utilake.to.sha256": "96c95693c93630ccbb436c8300afa8fc761bb7f6b1f31a62820e3f1395f1123c",
         "utilake.to.time": "2011-06-16T00:00:00+10:00",
-        "utilake.total-rows": "323",
+        "utilake.total-rows": "419",
         "utilake.version": "1"
       },
       "timestamp-ms": 1790776800001
@@ -388,7 +388,7 @@
         "utilake.from.release": "2026-10",
         "utilake.from.sha256": "384de642fb594f172a53e6fb7b13f729640190077250e72bc0dcba515a5700bd",
         "utilake.from.time": "2012-04-12T00:00:00+10:00",
-        "utilake.kinds": "[\"sttm/current\"]",
+        "utilake.kinds": "[\"sttm\"]",
         "utilake.report-subtype": "INT653_EX_ANTE_PIPELINE_PRICE_RPT_1",
         "utilake.report-type": "STTM",
         "utilake.rows": "42",
@@ -396,7 +396,7 @@
         "utilake.to.release": "2026-10",
         "utilake.to.sha256": "384de642fb594f172a53e6fb7b13f729640190077250e72bc0dcba515a5700bd",
         "utilake.to.time": "2012-04-18T00:00:00+10:00",
-        "utilake.total-rows": "365",
+        "utilake.total-rows": "461",
         "utilake.version": "2"
       },
       "timestamp-ms": 1790776800002
@@ -404,27 +404,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/STTM_INT653_EX_ANTE_PIPELINE_PRICE/metadata/snap-9001427189404721937-4-edcc4ae2-c56c-8014-ba2c-76a825437f82.avro",
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/STTM_INT653_EX_ANTE_PIPELINE_PRICE/metadata/snap-2569129563643422648-4-edcc4ae2-c56c-8014-ba2c-76a825437f82.avro",
       "parent-snapshot-id": 4733851820718490934,
       "schema-id": 0,
       "sequence-number": 4,
-      "snapshot-id": 9001427189404721937,
+      "snapshot-id": 2569129563643422648,
       "summary": {
         "operation": "append",
-        "utilake.files": "62",
-        "utilake.from.file": "CurrentDay.zip",
+        "utilake.files": "72",
+        "utilake.from.file": "Day21.zip@20261024T114600+1000",
         "utilake.from.release": "2026-10",
-        "utilake.from.sha256": "dfafa8bc46e4792c6a997d432968550a1e39614f9ad96c9d55086f0efba64988",
-        "utilake.from.time": "2026-09-26T00:00:00+10:00",
-        "utilake.kinds": "[\"sttm/current\"]",
+        "utilake.from.sha256": "40459ebda4199a71718873864979344c5204f2c3b0273261cbc6496d429be623",
+        "utilake.from.time": "2026-10-16T00:00:00+10:00",
+        "utilake.kinds": "[\"sttm\"]",
         "utilake.report-subtype": "INT653_EX_ANTE_PIPELINE_PRICE_RPT_1",
         "utilake.report-type": "STTM",
-        "utilake.rows": "480",
-        "utilake.to.file": "int653_v3_ex_ante_pipeline_price_rpt_1.csv@20261021T191600+1000",
+        "utilake.rows": "664",
+        "utilake.to.file": "int653_v3_ex_ante_pipeline_price_rpt_1.csv@20261024T113100+1000",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "f8a98bbd595fce03369dbdbffdeeefa79081b870bde388cd549cdb9fd30548b7",
-        "utilake.to.time": "2026-10-22T00:00:00+10:00",
-        "utilake.total-rows": "845",
+        "utilake.to.sha256": "efa74b5c82f7341d4f815d3af702793be4c08706b16add789128ef76e74edcf1",
+        "utilake.to.time": "2026-10-25T00:00:00+10:00",
+        "utilake.total-rows": "1125",
         "utilake.version": "3"
       },
       "timestamp-ms": 1790776800003

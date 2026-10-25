@@ -111,7 +111,7 @@
         "utilake.from.file": "PUBLIC_SRAFINANCIALS_RECONCILIATION_2025_4_20251020100535.zip",
         "utilake.from.release": "2025-10",
         "utilake.from.sha256": "a543aa9a853f5c47d8deb2336e1695e3ca90c80dc999f25ca9dbca26c154c093",
-        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.kinds": "[\"reports\"]",
         "utilake.report-subtype": "RECONCILIATION_SUMMARY",
         "utilake.report-type": "SRAFINANCIALS",
         "utilake.rows": "9",

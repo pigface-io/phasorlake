@@ -149,7 +149,7 @@
         "utilake.from.release": "2019-11",
         "utilake.from.sha256": "430cd7af776bc3d3a912ad0657121040ff1cc0de06fdffaaf5ffa508ccd355a9",
         "utilake.from.time": "2018-09-29T00:00:00+10:00",
-        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.kinds": "[\"gbb\"]",
         "utilake.report-subtype": "PIPELINE_CONNECTION_FLOW_HISTORY",
         "utilake.report-type": "GBB",
         "utilake.rows": "216897",

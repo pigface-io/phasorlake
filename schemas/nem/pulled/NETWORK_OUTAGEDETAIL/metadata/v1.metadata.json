@@ -211,7 +211,7 @@
         "utilake.from.release": "2024-08",
         "utilake.from.sha256": "1925b2e45c025e589309657abf767c5930593b086f68819561da66ee8e52782c",
         "utilake.from.time": "2003-04-29T14:14:58.000+10:00",
-        "utilake.kinds": "[\"archive\",\"reports/archive\",\"reports/current\"]",
+        "utilake.kinds": "[\"archive\",\"reports\"]",
         "utilake.report-subtype": "OUTAGEDETAIL",
         "utilake.report-type": "NETWORK",
         "utilake.rows": "222941278",

@@ -58,8 +58,8 @@
           "doc": "Unique Facility Identifier",
           "id": 2,
           "name": "FACILITYID",
-          "required": false,
-          "type": "decimal(6, 0)"
+          "required": true,
+          "type": "long"
         },
         {
           "id": 3,
@@ -71,8 +71,8 @@
           "doc": "Unique connection point identifier.",
           "id": 4,
           "name": "CONNECTIONPOINTID",
-          "required": false,
-          "type": "decimal(7, 0)"
+          "required": true,
+          "type": "long"
         },
         {
           "doc": "Name of the Connection point",
@@ -105,15 +105,15 @@
           "doc": "Unique Node Identifier",
           "id": 9,
           "name": "NODEID",
-          "required": false,
-          "type": "decimal(5, 0)"
+          "required": true,
+          "type": "long"
         },
         {
           "doc": "Unique StateIdentifier",
           "id": 10,
           "name": "STATEID",
-          "required": false,
-          "type": "decimal(1, 0)"
+          "required": true,
+          "type": "long"
         },
         {
           "id": 11,
@@ -131,8 +131,8 @@
           "doc": "Unique Location Identifier",
           "id": 13,
           "name": "LOCATIONID",
-          "required": false,
-          "type": "decimal(6, 0)"
+          "required": true,
+          "type": "long"
         },
         {
           "id": 14,
@@ -141,7 +141,13 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [],
+      "identifier-field-ids": [
+        2,
+        4,
+        9,
+        10,
+        13
+      ],
       "schema-id": 0,
       "type": "struct"
     },
@@ -157,8 +163,8 @@
           "doc": "Unique Facility Identifier",
           "id": 2,
           "name": "FACILITYID",
-          "required": false,
-          "type": "decimal(6, 0)"
+          "required": true,
+          "type": "long"
         },
         {
           "id": 3,
@@ -176,8 +182,8 @@
           "doc": "Unique connection point identifier.",
           "id": 4,
           "name": "CONNECTIONPOINTID",
-          "required": false,
-          "type": "decimal(7, 0)"
+          "required": true,
+          "type": "long"
         },
         {
           "doc": "Name of the Connection point",
@@ -210,15 +216,15 @@
           "doc": "Unique Node Identifier",
           "id": 9,
           "name": "NODEID",
-          "required": false,
-          "type": "decimal(5, 0)"
+          "required": true,
+          "type": "long"
         },
         {
           "doc": "Unique StateIdentifier",
           "id": 10,
           "name": "STATEID",
-          "required": false,
-          "type": "decimal(1, 0)"
+          "required": true,
+          "type": "long"
         },
         {
           "id": 11,
@@ -236,8 +242,8 @@
           "doc": "Unique Location Identifier",
           "id": 13,
           "name": "LOCATIONID",
-          "required": false,
-          "type": "decimal(6, 0)"
+          "required": true,
+          "type": "long"
         },
         {
           "doc": "Effective date of the record",
@@ -253,7 +259,13 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [],
+      "identifier-field-ids": [
+        2,
+        4,
+        9,
+        10,
+        13
+      ],
       "schema-id": 1,
       "type": "struct"
     }
@@ -278,20 +290,20 @@
       "snapshot-id": 2693635760520512007,
       "summary": {
         "operation": "append",
-        "utilake.files": "2",
+        "utilake.files": "3",
         "utilake.from.file": "GasBBNodesAndConnectionPoints.CSV",
         "utilake.from.release": "2026-10",
         "utilake.from.sha256": "798b75f8ad6656f76110af3bc1f62de92689d7f016324838d179f6adf6092bcd",
         "utilake.from.time": "2018-11-08T00:00:00+10:00",
-        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.kinds": "[\"gbb\"]",
         "utilake.report-subtype": "NODES_AND_CONNECTION_POINTS",
         "utilake.report-type": "GBB",
-        "utilake.rows": "817",
-        "utilake.to.file": "GasBBNodesAndConnectionPoints.CSV@20261021T050100+1000",
+        "utilake.rows": "819",
+        "utilake.to.file": "GasBBNodesAndConnectionPoints.CSV@20261024T050200+1000",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "2b197d3fcc995b27d802289672732641bcbc55c75ae35076d4351d1b046e362a",
+        "utilake.to.sha256": "f036f8fae2181f7c3766b5395a093be2696091ba8918ca4d421a80bd9e824cfb",
         "utilake.to.time": "2026-10-20T13:29:43+10:00",
-        "utilake.total-rows": "817",
+        "utilake.total-rows": "819",
         "utilake.version": "1"
       },
       "timestamp-ms": 1790776800000
@@ -306,20 +318,20 @@
       "snapshot-id": 3459602027628909021,
       "summary": {
         "operation": "append",
-        "utilake.files": "2",
+        "utilake.files": "3",
         "utilake.from.file": "GasBBNodesAndConnectionPointsFull.CSV",
         "utilake.from.release": "2026-10",
         "utilake.from.sha256": "243412f2543be1a9e11416d92403256a400d309f212b5adc7222d3face39ae34",
         "utilake.from.time": "2018-05-01T00:00:00+10:00",
-        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.kinds": "[\"gbb\"]",
         "utilake.report-subtype": "NODES_AND_CONNECTION_POINTS_FULL",
         "utilake.report-type": "GBB",
-        "utilake.rows": "2931",
-        "utilake.to.file": "GasBBNodesAndConnectionPointsFull.CSV@20261021T052700+1000",
+        "utilake.rows": "2934",
+        "utilake.to.file": "GasBBNodesAndConnectionPointsFull.CSV@20261024T052700+1000",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "fc357505c0cc2d8351034c780a6289acc93f6a7f4db42d450c1a1af0a7c70914",
+        "utilake.to.sha256": "ea770a267fd76595245ac7d21ec1dacdc0c84291667daa1088db89b380bab3a9",
         "utilake.to.time": "2026-11-01T00:00:00+10:00",
-        "utilake.total-rows": "3748",
+        "utilake.total-rows": "3753",
         "utilake.version": "1"
       },
       "timestamp-ms": 1790776800001

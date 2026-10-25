@@ -116,7 +116,7 @@
         "utilake.from.release": "2024-08",
         "utilake.from.sha256": "1981d5ad0a92894e8625adf87e0e2016509468ca7d1376d9923ed29173fb83ff",
         "utilake.from.time": "2017-12-25T00:00:00+10:00",
-        "utilake.kinds": "[\"archive\",\"reports/current\"]",
+        "utilake.kinds": "[\"archive\",\"reports\"]",
         "utilake.report-subtype": "MARKET_SUSPEND_SCHEDULE_TRK",
         "utilake.report-type": "FORCE_MAJEURE",
         "utilake.rows": "10596",

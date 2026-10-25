@@ -124,11 +124,11 @@
       "snapshot-id": 6856195731211148448,
       "summary": {
         "operation": "append",
-        "utilake.files": "291",
+        "utilake.files": "309",
         "utilake.from.file": "PublicRpts31.zip",
         "utilake.from.release": "2026-08",
         "utilake.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
-        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.kinds": "[\"dwgm\"]",
         "utilake.report-subtype": "INT112D_ZFTC_1",
         "utilake.report-type": "DWGM",
         "utilake.rows": "0",

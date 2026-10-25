@@ -160,7 +160,7 @@
         "utilake.from.release": "2026-01",
         "utilake.from.sha256": "86e6548f9913c3e7efa240d67d8c5cc2694ab0c1119183de602c84a35ba2119d",
         "utilake.from.time": "2025-07-06T07:50:00+10:00",
-        "utilake.kinds": "[\"archive\",\"reports/current\"]",
+        "utilake.kinds": "[\"archive\",\"reports\"]",
         "utilake.report-subtype": "FCAS_CLAWBACK_REQ",
         "utilake.report-type": "SETTLEMENTS",
         "utilake.rows": "1985094",

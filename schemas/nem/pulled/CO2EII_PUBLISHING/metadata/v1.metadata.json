@@ -99,7 +99,7 @@
         "utilake.from.file": "CO2EII_AVAILABLE_GENERATORS_2026_34_20260826101453.CSV",
         "utilake.from.release": "2026-08",
         "utilake.from.sha256": "c68fb127db5757b6cefc39e5bb9c255a57c3e233ef943efbf39cc301713d5bd3",
-        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.kinds": "[\"reports\"]",
         "utilake.report-subtype": "PUBLISHING",
         "utilake.report-type": "CO2EII",
         "utilake.rows": "5657",

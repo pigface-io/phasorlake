@@ -153,7 +153,7 @@
         "utilake.from.file": "PUBLIC_BILLINGCSP_2026WEEK15REVISE_20260825120126_0000000534371107.zip",
         "utilake.from.release": "2026-08",
         "utilake.from.sha256": "f41ed3f26c7ccdc3d8833200d32c5e3127de6480709f1a063ed5c3baf19b4bda",
-        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.kinds": "[\"reports\"]",
         "utilake.report-subtype": "CSP_SUPPORTDATA_SRA",
         "utilake.report-type": "BILLING",
         "utilake.rows": "334",

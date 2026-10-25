@@ -133,7 +133,7 @@
         "utilake.from.release": "2024-08",
         "utilake.from.sha256": "e46ba33bc3c46dce12ae695b7788a54f1f98090155a9f90e4e36a7fe6553b244",
         "utilake.from.time": "2024-04-24T07:30:00+10:00",
-        "utilake.kinds": "[\"archive\",\"reports/current\"]",
+        "utilake.kinds": "[\"archive\",\"reports\"]",
         "utilake.report-subtype": "CONSTRAINTSOLUTION",
         "utilake.report-type": "PD7DAY",
         "utilake.rows": "8114810377",

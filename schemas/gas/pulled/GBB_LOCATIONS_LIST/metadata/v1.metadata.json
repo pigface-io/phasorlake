@@ -58,8 +58,8 @@
           "doc": "Unique Node Location Identifier",
           "id": 2,
           "name": "LOCATIONID",
-          "required": false,
-          "type": "decimal(6, 0)"
+          "required": true,
+          "type": "long"
         },
         {
           "doc": "Type of location",
@@ -88,7 +88,9 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [],
+      "identifier-field-ids": [
+        2
+      ],
       "schema-id": 0,
       "type": "struct"
     }
@@ -114,7 +116,7 @@
         "utilake.from.release": "2026-10",
         "utilake.from.sha256": "6e9b57a5d37b979209184fe3b04b114d2582fa7ec0d2f6e8cf3f01a6fed8f56d",
         "utilake.from.time": "2018-05-01T00:00:00+10:00",
-        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.kinds": "[\"gbb\"]",
         "utilake.report-subtype": "LOCATIONS_LIST",
         "utilake.report-type": "GBB",
         "utilake.rows": "25",

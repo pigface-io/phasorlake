@@ -51,8 +51,8 @@
           "doc": "A unique AEMO defined Development Facility Identifier",
           "id": 1,
           "name": "DEVFACILITYID",
-          "required": false,
-          "type": "decimal(6, 0)"
+          "required": true,
+          "type": "long"
         },
         {
           "doc": "The name of the Facility development",
@@ -143,7 +143,9 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [],
+      "identifier-field-ids": [
+        1
+      ],
       "schema-id": 0,
       "type": "struct"
     }
@@ -169,7 +171,7 @@
         "utilake.from.release": "2025-10",
         "utilake.from.sha256": "4f459459ee796ba8d279ffe5d047c183a83a53dc7dba500fa64371e9731a09f5",
         "utilake.from.time": "2023-03-15T00:00:00+10:00",
-        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.kinds": "[\"gbb\"]",
         "utilake.report-subtype": "FACILITY_DEVELOPMENTS",
         "utilake.report-type": "GBB",
         "utilake.rows": "311",

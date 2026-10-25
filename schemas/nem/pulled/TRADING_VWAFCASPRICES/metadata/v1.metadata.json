@@ -220,7 +220,7 @@
         "utilake.from.release": "2026-08",
         "utilake.from.sha256": "0d39e4a671e0e9a908266df8caca24b7411e7a0b786a1a734350251abc1b21c8",
         "utilake.from.time": "2026-08-21T04:30:00+10:00",
-        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.kinds": "[\"reports\"]",
         "utilake.report-subtype": "VWAFCASPRICES",
         "utilake.report-type": "TRADING",
         "utilake.rows": "3072",

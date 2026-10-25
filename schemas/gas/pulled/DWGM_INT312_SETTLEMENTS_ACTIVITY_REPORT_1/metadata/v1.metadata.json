@@ -170,7 +170,7 @@
         "utilake.from.file": "int312_v1_settlements_activity_report_1.csv",
         "utilake.from.release": "2026-05",
         "utilake.from.sha256": "ee4381a8b14f173cdb1b608b46316a9370a2a2997a39cdd381bdbc726e1780bb",
-        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.kinds": "[\"dwgm\"]",
         "utilake.report-subtype": "INT312_SETTLEMENTS_ACTIVITY_REPORT_1",
         "utilake.report-type": "DWGM",
         "utilake.rows": "0",

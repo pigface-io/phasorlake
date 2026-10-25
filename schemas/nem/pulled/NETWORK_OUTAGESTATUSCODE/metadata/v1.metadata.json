@@ -94,7 +94,7 @@
         "utilake.from.release": "2024-08",
         "utilake.from.sha256": "e79cd8edda3bb5e069f37ff1d6c563eedb3e16c8b40b9ecef50c37f51e48ad01",
         "utilake.from.time": "2012-04-01T00:00:00+10:00",
-        "utilake.kinds": "[\"archive\",\"reports/archive\",\"reports/current\"]",
+        "utilake.kinds": "[\"archive\",\"reports\"]",
         "utilake.report-subtype": "OUTAGESTATUSCODE",
         "utilake.report-type": "NETWORK",
         "utilake.rows": "4980",

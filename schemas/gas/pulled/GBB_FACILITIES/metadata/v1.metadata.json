@@ -66,8 +66,8 @@
           "doc": "Unique Facility Identifier",
           "id": 3,
           "name": "FACILITYID",
-          "required": false,
-          "type": "decimal(6, 0)"
+          "required": true,
+          "type": "long"
         },
         {
           "doc": "Describes the type of facility. Refer to the GAS_FACILITY_TYPE table",
@@ -105,7 +105,7 @@
           "id": 9,
           "name": "OPERATORID",
           "required": false,
-          "type": "decimal(3, 0)"
+          "type": "long"
         },
         {
           "id": 10,
@@ -114,7 +114,9 @@
           "type": "date"
         }
       ],
-      "identifier-field-ids": [],
+      "identifier-field-ids": [
+        3
+      ],
       "schema-id": 0,
       "type": "struct"
     },
@@ -138,8 +140,8 @@
           "doc": "Unique Facility Identifier",
           "id": 3,
           "name": "FACILITYID",
-          "required": false,
-          "type": "decimal(6, 0)"
+          "required": true,
+          "type": "long"
         },
         {
           "doc": "Describes the type of facility. Refer to the GAS_FACILITY_TYPE table",
@@ -177,7 +179,7 @@
           "id": 9,
           "name": "OPERATORID",
           "required": false,
-          "type": "decimal(3, 0)"
+          "type": "long"
         },
         {
           "id": 10,
@@ -192,7 +194,9 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [],
+      "identifier-field-ids": [
+        3
+      ],
       "schema-id": 1,
       "type": "struct"
     }
@@ -217,20 +221,20 @@
       "snapshot-id": 2054818152468970949,
       "summary": {
         "operation": "append",
-        "utilake.files": "1",
+        "utilake.files": "2",
         "utilake.from.file": "GasBBFacilities.CSV",
         "utilake.from.release": "2026-10",
         "utilake.from.sha256": "9e28806670e13042b2c0d723f3579d55e6dac09207d812968de78f4f4cb94e49",
         "utilake.from.time": "2008-07-01T00:00:00+10:00",
-        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.kinds": "[\"gbb\"]",
         "utilake.report-subtype": "FACILITIES",
         "utilake.report-type": "GBB",
-        "utilake.rows": "159",
-        "utilake.to.file": "GasBBFacilities.CSV",
+        "utilake.rows": "161",
+        "utilake.to.file": "GasBBFacilities.CSV@20261024T030200+1000",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "9e28806670e13042b2c0d723f3579d55e6dac09207d812968de78f4f4cb94e49",
+        "utilake.to.sha256": "f5e79820d3bdc8abcccdfa06c9eefe75e91f5665f764dccb41cfa91de878c4f2",
         "utilake.to.time": "2026-09-01T00:00:00+10:00",
-        "utilake.total-rows": "159",
+        "utilake.total-rows": "161",
         "utilake.version": "1"
       },
       "timestamp-ms": 1790776800000
@@ -245,20 +249,20 @@
       "snapshot-id": 784793777290506993,
       "summary": {
         "operation": "append",
-        "utilake.files": "1",
+        "utilake.files": "2",
         "utilake.from.file": "GasBBFacilitiesFull.CSV",
         "utilake.from.release": "2026-10",
         "utilake.from.sha256": "4a86674156d4a3bb885792c1507cf782848377d2261433f6ccb4ac99a9e6eda0",
         "utilake.from.time": "2008-01-01T00:00:00+10:00",
-        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.kinds": "[\"gbb\"]",
         "utilake.report-subtype": "FACILITIES_FULL",
         "utilake.report-type": "GBB",
-        "utilake.rows": "266",
-        "utilake.to.file": "GasBBFacilitiesFull.CSV",
+        "utilake.rows": "270",
+        "utilake.to.file": "GasBBFacilitiesFull.CSV@20261024T040000+1000",
         "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "4a86674156d4a3bb885792c1507cf782848377d2261433f6ccb4ac99a9e6eda0",
+        "utilake.to.sha256": "b78addf0d5b1d523265d9a08929f4e3cd412e9ccf56e9fdc04759d32d1c212ce",
         "utilake.to.time": "2026-09-01T00:00:00+10:00",
-        "utilake.total-rows": "425",
+        "utilake.total-rows": "431",
         "utilake.version": "1"
       },
       "timestamp-ms": 1790776800001

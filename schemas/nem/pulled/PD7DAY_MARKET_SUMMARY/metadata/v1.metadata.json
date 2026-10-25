@@ -90,7 +90,7 @@
         "utilake.from.release": "2024-08",
         "utilake.from.sha256": "859021b47528054218f41faf8de80dc042fabd2dedeb8f2408b969cc707d4f60",
         "utilake.from.time": "2024-04-23T00:00:00+10:00",
-        "utilake.kinds": "[\"archive\",\"reports/current\"]",
+        "utilake.kinds": "[\"archive\",\"reports\"]",
         "utilake.report-subtype": "MARKET_SUMMARY",
         "utilake.report-type": "PD7DAY",
         "utilake.rows": "213970",

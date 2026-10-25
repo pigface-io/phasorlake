@@ -112,7 +112,7 @@
         "utilake.from.release": "2025-11",
         "utilake.from.sha256": "66eba899473cf20567db8388ca225e8c74b228560ed7c1396e13ebd7de70c98d",
         "utilake.from.time": "2025-12-02T12:00:16+10:00",
-        "utilake.kinds": "[\"archive\",\"reports/current\"]",
+        "utilake.kinds": "[\"archive\",\"reports\"]",
         "utilake.report-subtype": "ENABLEMENT_PERIOD",
         "utilake.report-type": "SSM",
         "utilake.rows": "3188",

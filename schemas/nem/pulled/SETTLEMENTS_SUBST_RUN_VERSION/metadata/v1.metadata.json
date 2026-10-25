@@ -82,7 +82,7 @@
         "utilake.from.release": "2021-10",
         "utilake.from.sha256": "ac3ca1b68747703d9162f0e1bb52391c6a20283f206d30ad688dba2130c36cd1",
         "utilake.from.time": "2021-03-21T00:00:00+10:00",
-        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.kinds": "[\"reports\"]",
         "utilake.report-subtype": "SUBST_RUN_VERSION",
         "utilake.report-type": "SETTLEMENTS",
         "utilake.rows": "144788",

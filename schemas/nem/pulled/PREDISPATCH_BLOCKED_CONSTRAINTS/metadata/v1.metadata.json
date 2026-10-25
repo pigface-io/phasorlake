@@ -69,7 +69,7 @@
         "utilake.from.file": "PUBLIC_ARCHIVE#PREDISPATCHBLOCKEDCONSTRAINT#FILE01#202502010000.zip",
         "utilake.from.release": "2025-02",
         "utilake.from.sha256": "b32c5b91e6b8d924817f1eb838a82272b5fbbef417b023af05f6de66b50149f9",
-        "utilake.kinds": "[\"archive\",\"reports/archive\"]",
+        "utilake.kinds": "[\"archive\",\"reports\"]",
         "utilake.report-subtype": "BLOCKED_CONSTRAINTS",
         "utilake.report-type": "PREDISPATCH",
         "utilake.rows": "2214",

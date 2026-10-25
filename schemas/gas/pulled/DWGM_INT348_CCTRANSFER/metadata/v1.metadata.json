@@ -114,7 +114,7 @@
         "utilake.from.release": "2026-10",
         "utilake.from.sha256": "c2c3ead5d2a0c907b1ce010fe41f4101a1af784e8acb049873f7078f80a621ee",
         "utilake.from.time": "2026-06-01T00:00:00+10:00",
-        "utilake.kinds": "[\"dwgm/current\"]",
+        "utilake.kinds": "[\"dwgm\"]",
         "utilake.report-subtype": "INT348_CCTRANSFER_1",
         "utilake.report-type": "DWGM",
         "utilake.rows": "3",

@@ -93,7 +93,7 @@
         "utilake.from.file": "PUBLIC_SROFFER_A201912_20191216151208.CSV",
         "utilake.from.release": "2019-12",
         "utilake.from.sha256": "1f19adc72edb9fd150918aad112047dce446bc892a60d5a45daa665b9d581d2c",
-        "utilake.kinds": "[\"reports/current\"]",
+        "utilake.kinds": "[\"reports\"]",
         "utilake.report-subtype": "",
         "utilake.report-type": "RESIDUE_PRICE_OFFER",
         "utilake.rows": "37388",

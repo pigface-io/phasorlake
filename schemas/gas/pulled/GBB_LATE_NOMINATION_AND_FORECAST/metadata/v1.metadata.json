@@ -113,7 +113,7 @@
         "utilake.from.release": "2026-10",
         "utilake.from.sha256": "f219693e1d2f0a051524430e8f0aa190e7146f00a9cb0947474d1fb2f9af25a1",
         "utilake.from.time": "2026-08-28T00:00:00+10:00",
-        "utilake.kinds": "[\"gbb/current\"]",
+        "utilake.kinds": "[\"gbb\"]",
         "utilake.report-subtype": "LATE_NOMINATION_AND_FORECAST",
         "utilake.report-type": "GBB",
         "utilake.rows": "257",
