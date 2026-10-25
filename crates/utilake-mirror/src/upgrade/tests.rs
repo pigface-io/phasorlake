@@ -124,6 +124,16 @@ fn archive_of(home: &Home) -> (Archive, Vec<PathBuf>) {
         &crate::net::archive::test_record(&format!("{CUR}n.zip"), b"n"),
     )
     .unwrap();
+    // Both records, as a run cut off after the new one leaves them: the
+    // new one is kept, the old one goes.
+    let both = dir.join("both.zip");
+    put(&both, "b");
+    Archive::write(
+        &both,
+        &crate::net::archive::test_record(&format!("{CUR}both.zip"), b"b"),
+    )
+    .unwrap();
+    put(&dir.join("both.zip.json"), "{}");
     put(&dir.join("cut.zip"), "c");
     put(&dir.join("cut.zip.json"), "{");
     put(&dir.join("bare.zip"), "b");
@@ -137,7 +147,7 @@ fn a_dry_run_says_what_would_move_and_moves_nothing() {
     let mut steps = Vec::new();
     let s = upgrade(&home, &archive, true, true, |st| steps.push(st.action)).unwrap();
     assert!(s.dry_run);
-    assert_eq!((s.moved, s.listings, s.records), (8 + 5 + 1, 1, 2));
+    assert_eq!((s.moved, s.listings, s.records), (8 + 5 + 1, 1, 3));
     assert_eq!(s.unreadable.len(), 1);
     assert_eq!(s.left, [home.old_records().join("notes.txt")]);
     assert!(steps.contains(&Action::Listings));
@@ -154,7 +164,7 @@ fn every_record_moves_to_its_name_and_a_second_run_does_nothing() {
         .map(|p| std::fs::metadata(p).unwrap().modified().unwrap())
         .collect();
     let s = upgrade(&home, &archive, false, true, |_| {}).unwrap();
-    assert_eq!((s.moved, s.listings, s.records), (8 + 5 + 1, 1, 2));
+    assert_eq!((s.moved, s.listings, s.records), (8 + 5 + 1, 1, 3));
     let state = home.records();
     let cache = state.cache_dir();
     for p in [
@@ -201,6 +211,9 @@ fn every_record_moves_to_its_name_and_a_second_run_does_nothing() {
         assert_eq!(std::fs::metadata(p).unwrap().modified().unwrap(), t);
     }
     assert!(s.unreadable[0].ends_with("cut.zip.json"));
+    let both = files[0].with_file_name("both.zip");
+    assert!(!both.with_extension("zip.json").exists());
+    assert!(Archive::read(&both).unwrap().is_some());
     // Again: nothing to do.
     let again = upgrade(&home, &archive, false, true, |_| {}).unwrap();
     assert_eq!((again.moved, again.listings, again.records), (0, 0, 0));

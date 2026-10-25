@@ -163,24 +163,119 @@ pub fn upgrade(
         summary.left.retain(|p| !known(&old, p));
     }
     if records {
-        for path in Archive::walk(archive.root())? {
-            let mut v1 = path.as_os_str().to_owned();
-            v1.push(utilake_provenance::archive::OLD_RECORD);
-            let v1 = PathBuf::from(v1);
-            if !v1.exists() || Archive::record_path(&path).exists() {
-                continue;
+        // Old records to remove, by folder, once the new ones are on the
+        // disk: one sync for many folders, each folder's unlinks together.
+        let mut done: Vec<Vec<PathBuf>> = Vec::new();
+        let mut waiting = 0;
+        // An archive not there is an error, not an archive with nothing.
+        std::fs::read_dir(archive.root()).map_err(MirrorError::io(archive.root()))?;
+        for dir in folders(archive.root()) {
+            let found = old_records(&dir, &mut summary.unreadable)?;
+            let mut here = Vec::with_capacity(found.len());
+            for (v1, v2, p) in found {
+                if take(step(Action::Record, &v1, &v2), &mut summary)? {
+                    if let Some(p) = p {
+                        std::fs::write(&v2, p.to_json()).map_err(MirrorError::io(&v2))?;
+                    }
+                    here.push(v1);
+                }
             }
-            let Ok(Some(p)) = Archive::read(&path) else {
-                summary.unreadable.push(v1);
-                continue;
-            };
-            let to = Archive::record_path(&path);
-            if take(step(Action::Record, &v1, &to), &mut summary)? {
-                Archive::write(&path, &p)?;
+            waiting += here.len();
+            done.push(here);
+            if waiting >= RECORDS_PER_SYNC {
+                remove_old(&mut done)?;
+                waiting = 0;
             }
         }
+        remove_old(&mut done)?;
     }
     Ok(summary)
+}
+
+/// Old records written again before one sync hands them to the disk.
+const RECORDS_PER_SYNC: usize = if cfg!(test) { 2 } else { 4096 };
+
+/// Hands the new records to the disk, then removes the old ones beside
+/// them, folder by folder.
+fn remove_old(done: &mut Vec<Vec<PathBuf>>) -> Result<(), MirrorError> {
+    if done.iter().all(Vec::is_empty) {
+        done.clear();
+        return Ok(());
+    }
+    rustix::fs::sync();
+    for v1 in done.drain(..).flatten() {
+        std::fs::remove_file(&v1).map_err(MirrorError::io(&v1))?;
+    }
+    Ok(())
+}
+
+/// Every folder under `root`, `root` first, from the folder listings
+/// alone: on exFAT a `stat` of one name reads its whole folder.
+fn folders(root: &Path) -> Vec<PathBuf> {
+    let mut out = Vec::new();
+    let mut stack = vec![root.to_path_buf()];
+    while let Some(d) = stack.pop() {
+        // A folder that does not read has nothing to upgrade.
+        let mut subs: Vec<PathBuf> = std::fs::read_dir(&d)
+            .into_iter()
+            .flatten()
+            .filter_map(Result::ok)
+            .filter(|e| e.file_type().is_ok_and(|t| t.is_dir()))
+            .filter(|e| !e.file_name().to_string_lossy().starts_with("._"))
+            .map(|e| e.path())
+            .collect();
+        subs.sort();
+        stack.extend(subs.into_iter().rev());
+        out.push(d);
+    }
+    out
+}
+
+/// The format-1 records in `dir` of files there: each with its format-2
+/// path and the record to write there, none when a format-2 record that
+/// reads is there already (a run cut off wrote it, or a later write did:
+/// it is the one kept). One listing of the folder, then one read of each
+/// record: on exFAT each look for a name not cached reads the folder. A
+/// record that does not read is added to `unreadable` and left.
+type Found = (PathBuf, PathBuf, Option<utilake_provenance::Provenance>);
+fn old_records(dir: &Path, unreadable: &mut Vec<PathBuf>) -> Result<Vec<Found>, MirrorError> {
+    use utilake_provenance::Provenance;
+    use utilake_provenance::archive::{OLD_RECORD, RECORD, is_noise};
+    let mut names: Vec<String> = std::fs::read_dir(dir)
+        .map_err(MirrorError::io(dir))?
+        .filter_map(Result::ok)
+        .map(|e| e.file_name().to_string_lossy().into_owned())
+        .collect();
+    names.sort();
+    let here: std::collections::HashSet<&str> = names.iter().map(String::as_str).collect();
+    let read = |path: &Path| {
+        std::fs::read(path)
+            .ok()
+            .and_then(|b| Provenance::from_json(&b).ok())
+    };
+    let mut out = Vec::new();
+    for name in &names {
+        let Some(data) = name.strip_suffix(OLD_RECORD) else {
+            continue;
+        };
+        if name.ends_with(RECORD)
+            || name.starts_with("._")
+            || is_noise(name)
+            || !here.contains(data)
+        {
+            continue;
+        }
+        let (v1, v2) = (dir.join(name), dir.join(format!("{data}{RECORD}")));
+        if here.contains(format!("{data}{RECORD}").as_str()) && read(&v2).is_some() {
+            out.push((v1, v2, None));
+            continue;
+        }
+        match read(&v1) {
+            Some(p) => out.push((v1, v2, Some(p))),
+            None => unreadable.push(v1),
+        }
+    }
+    Ok(out)
 }
 
 fn step(action: Action, from: &Path, to: &Path) -> Step {
