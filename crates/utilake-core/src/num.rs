@@ -135,6 +135,22 @@ pub fn parse_decimal(s: &[u8], precision: u8, scale: u8) -> Result<i128, NumberE
         }
     }
     let frac = &frac[..frac.len().min(usize::from(scale))];
+    if int.len() + frac.len() <= 18 {
+        return short_decimal(neg, int, frac, precision, scale)
+            .unwrap_or_else(|| exponent_form(s, precision, scale));
+    }
+    long_decimal(s, neg, int, frac, precision, scale)
+}
+
+/// [`parse_decimal`] digit by digit in an `i128`, for any length.
+fn long_decimal(
+    s: &[u8],
+    neg: bool,
+    int: &[u8],
+    frac: &[u8],
+    precision: u8,
+    scale: u8,
+) -> Result<i128, NumberError> {
     let mut v: i128 = 0;
     let mut digits = 0u32;
     for &b in int.iter().chain(frac) {
@@ -163,6 +179,53 @@ pub fn parse_decimal(s: &[u8], precision: u8, scale: u8) -> Result<i128, NumberE
     }
     Ok(if neg { -v } else { v })
 }
+
+/// [`parse_decimal`] for at most 18 digits, which a `u64` holds: almost
+/// every value AEMO writes. `None` when a byte is not a digit.
+#[inline]
+fn short_decimal(
+    neg: bool,
+    int: &[u8],
+    frac: &[u8],
+    precision: u8,
+    scale: u8,
+) -> Option<Result<i128, NumberError>> {
+    let mut v: u64 = 0;
+    for &b in int {
+        let d = b.wrapping_sub(b'0');
+        if d >= 10 {
+            return None;
+        }
+        v = v * 10 + u64::from(d);
+    }
+    for &b in frac {
+        let d = b.wrapping_sub(b'0');
+        if d >= 10 {
+            return None;
+        }
+        v = v * 10 + u64::from(d);
+    }
+    let pad = usize::from(scale) - frac.len();
+    // Leading zeros are not digits of the value; the padding zeros are.
+    let digits = v.checked_ilog10().map_or(0, |l| l as usize + 1) + pad;
+    if digits > usize::from(precision) || digits > 38 {
+        return Some(Err(NumberError::DecimalOverflow));
+    }
+    // At most 38 digits: the product fits.
+    let v = i128::from(v) * POW10[pad];
+    Some(Ok(if neg { -v } else { v }))
+}
+
+/// Ten to the power of each index, to 10^38, the most `Decimal128` holds.
+const POW10: [i128; 39] = {
+    let mut p = [1i128; 39];
+    let mut i = 1;
+    while i < 39 {
+        p[i] = p[i - 1] * 10;
+        i += 1;
+    }
+    p
+};
 
 /// The digits of `s` as one integer, and how many of them there are.
 fn digits_of(s: &[u8]) -> Option<(i128, u32)> {
@@ -294,6 +357,48 @@ mod tests {
             Err(NumberError::Integer)
         );
         assert_eq!(parse_i64(b"-0").unwrap(), 0);
+    }
+
+    #[test]
+    fn a_short_decimal_reads_as_the_long_way_does() {
+        let texts = [
+            "0",
+            "00",
+            "0.0",
+            "1",
+            "-1",
+            "+7",
+            "12.5",
+            "0.00001",
+            "00012.30",
+            "999999999999999999",
+            "-123456789.123456789",
+            "1.2.3",
+            "1e5",
+            "-3E-05",
+            "12a",
+            "100000",
+            "0.000",
+        ];
+        for t in texts {
+            for (precision, scale) in [(3, 0), (5, 2), (15, 5), (18, 9), (38, 20), (3, 5)] {
+                let s = t.as_bytes();
+                let (neg, body) = match s.first() {
+                    Some(b'-') => (true, &s[1..]),
+                    Some(b'+') => (false, &s[1..]),
+                    _ => (false, s),
+                };
+                let (int, frac) = match memchr::memchr(b'.', body) {
+                    Some(i) => (&body[..i], &body[i + 1..]),
+                    None => (body, &body[body.len()..]),
+                };
+                let frac = &frac[..frac.len().min(usize::from(scale))];
+                let short = short_decimal(neg, int, frac, precision, scale)
+                    .unwrap_or_else(|| exponent_form(s, precision, scale));
+                let long = long_decimal(s, neg, int, frac, precision, scale);
+                assert_eq!((t, precision, scale, short), (t, precision, scale, long));
+            }
+        }
     }
 
     #[test]
