@@ -3089,7 +3089,7 @@ dependencies = [
 [[package]]
 name = "utilake-gates"
 version = "0.1.0"
-source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=56e62ed6f748552b6649e62f23d7b403ba463377#56e62ed6f748552b6649e62f23d7b403ba463377"
+source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=d8d694c17d7b57bda5c80295daf6e9761820bad5#d8d694c17d7b57bda5c80295daf6e9761820bad5"
 dependencies = [
  "anyhow",
  "serde",
@@ -3099,7 +3099,7 @@ dependencies = [
 [[package]]
 name = "utilake-iceberg"
 version = "0.1.0"
-source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=56e62ed6f748552b6649e62f23d7b403ba463377#56e62ed6f748552b6649e62f23d7b403ba463377"
+source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=d8d694c17d7b57bda5c80295daf6e9761820bad5#d8d694c17d7b57bda5c80295daf6e9761820bad5"
 dependencies = [
  "serde",
  "serde_json",
@@ -3197,7 +3197,7 @@ dependencies = [
 [[package]]
 name = "utilake-mms-decode"
 version = "0.1.0"
-source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=56e62ed6f748552b6649e62f23d7b403ba463377#56e62ed6f748552b6649e62f23d7b403ba463377"
+source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=d8d694c17d7b57bda5c80295daf6e9761820bad5#d8d694c17d7b57bda5c80295daf6e9761820bad5"
 dependencies = [
  "memchr",
  "serde",
@@ -3278,7 +3278,7 @@ dependencies = [
 [[package]]
 name = "utilake-plain-decode"
 version = "0.1.0"
-source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=56e62ed6f748552b6649e62f23d7b403ba463377#56e62ed6f748552b6649e62f23d7b403ba463377"
+source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=d8d694c17d7b57bda5c80295daf6e9761820bad5#d8d694c17d7b57bda5c80295daf6e9761820bad5"
 dependencies = [
  "memchr",
  "serde_json",
@@ -3291,7 +3291,7 @@ dependencies = [
 [[package]]
 name = "utilake-provenance"
 version = "0.1.0"
-source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=56e62ed6f748552b6649e62f23d7b403ba463377#56e62ed6f748552b6649e62f23d7b403ba463377"
+source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=d8d694c17d7b57bda5c80295daf6e9761820bad5#d8d694c17d7b57bda5c80295daf6e9761820bad5"
 dependencies = [
  "crc32fast",
  "rustix",
@@ -3374,7 +3374,7 @@ dependencies = [
 [[package]]
 name = "utilake-zip"
 version = "0.1.0"
-source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=56e62ed6f748552b6649e62f23d7b403ba463377#56e62ed6f748552b6649e62f23d7b403ba463377"
+source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=d8d694c17d7b57bda5c80295daf6e9761820bad5#d8d694c17d7b57bda5c80295daf6e9761820bad5"
 dependencies = [
  "flate2",
  "tempfile",
